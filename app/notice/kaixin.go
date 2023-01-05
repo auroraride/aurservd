@@ -32,8 +32,8 @@ func kaixin() {
             service.NewCabinet().Sync(msg.(*cabdef.CabinetMessage))
 
         case message.TypeCabkitBattery:
-            // 同步电池信息
-            service.NewBattery().Sync(msg.(*cabdef.BatteryMessage))
+            // TODO 同步电池信息, 是否有必要?
+            // service.NewBattery().Sync(msg.(*cabdef.BatteryMessage))
 
         case message.TypeCabkitExchangeStep:
             // 换电步骤

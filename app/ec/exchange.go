@@ -23,6 +23,14 @@ const (
     ExchangeStepPutOut                            // 第四步, 取出新电池并关闭仓门
 )
 
+func (es ExchangeStep) Is(step ExchangeStep) bool {
+    return es == step
+}
+
+func (es ExchangeStep) EqualInt(n int) bool {
+    return es == ExchangeStep(n)
+}
+
 func (es ExchangeStep) Int() int {
     return int(es)
 }

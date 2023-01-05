@@ -212,12 +212,13 @@ var schemaGraph = func() *sqlgraph.Schema {
 			battery.FieldLastModifier: {Type: field.TypeJSON, Column: battery.FieldLastModifier},
 			battery.FieldRemark:       {Type: field.TypeString, Column: battery.FieldRemark},
 			battery.FieldCityID:       {Type: field.TypeUint64, Column: battery.FieldCityID},
-			battery.FieldCabinetID:    {Type: field.TypeUint64, Column: battery.FieldCabinetID},
 			battery.FieldSubscribeID:  {Type: field.TypeUint64, Column: battery.FieldSubscribeID},
 			battery.FieldRiderID:      {Type: field.TypeUint64, Column: battery.FieldRiderID},
+			battery.FieldCabinetID:    {Type: field.TypeUint64, Column: battery.FieldCabinetID},
 			battery.FieldSn:           {Type: field.TypeString, Column: battery.FieldSn},
 			battery.FieldEnable:       {Type: field.TypeBool, Column: battery.FieldEnable},
 			battery.FieldModel:        {Type: field.TypeString, Column: battery.FieldModel},
+			battery.FieldOrdinal:      {Type: field.TypeInt, Column: battery.FieldOrdinal},
 		},
 	}
 	graph.Nodes[5] = &sqlgraph.Node{
@@ -1695,18 +1696,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"City",
 	)
 	graph.MustAddE(
-		"cabinet",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   battery.CabinetTable,
-			Columns: []string{battery.CabinetColumn},
-			Bidi:    false,
-		},
-		"Battery",
-		"Cabinet",
-	)
-	graph.MustAddE(
 		"subscribe",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1729,6 +1718,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Battery",
 		"Rider",
+	)
+	graph.MustAddE(
+		"cabinet",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   battery.CabinetTable,
+			Columns: []string{battery.CabinetColumn},
+			Bidi:    false,
+		},
+		"Battery",
+		"Cabinet",
 	)
 	graph.MustAddE(
 		"cabinets",
@@ -2005,6 +2006,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Cabinet",
 		"Stock",
+	)
+	graph.MustAddE(
+		"batteries",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   cabinet.BatteriesTable,
+			Columns: []string{cabinet.BatteriesColumn},
+			Bidi:    false,
+		},
+		"Cabinet",
+		"Battery",
 	)
 	graph.MustAddE(
 		"city",
@@ -4846,11 +4859,6 @@ func (f *BatteryFilter) WhereCityID(p entql.Uint64P) {
 	f.Where(p.Field(battery.FieldCityID))
 }
 
-// WhereCabinetID applies the entql uint64 predicate on the cabinet_id field.
-func (f *BatteryFilter) WhereCabinetID(p entql.Uint64P) {
-	f.Where(p.Field(battery.FieldCabinetID))
-}
-
 // WhereSubscribeID applies the entql uint64 predicate on the subscribe_id field.
 func (f *BatteryFilter) WhereSubscribeID(p entql.Uint64P) {
 	f.Where(p.Field(battery.FieldSubscribeID))
@@ -4859,6 +4867,11 @@ func (f *BatteryFilter) WhereSubscribeID(p entql.Uint64P) {
 // WhereRiderID applies the entql uint64 predicate on the rider_id field.
 func (f *BatteryFilter) WhereRiderID(p entql.Uint64P) {
 	f.Where(p.Field(battery.FieldRiderID))
+}
+
+// WhereCabinetID applies the entql uint64 predicate on the cabinet_id field.
+func (f *BatteryFilter) WhereCabinetID(p entql.Uint64P) {
+	f.Where(p.Field(battery.FieldCabinetID))
 }
 
 // WhereSn applies the entql string predicate on the sn field.
@@ -4876,6 +4889,11 @@ func (f *BatteryFilter) WhereModel(p entql.StringP) {
 	f.Where(p.Field(battery.FieldModel))
 }
 
+// WhereOrdinal applies the entql int predicate on the ordinal field.
+func (f *BatteryFilter) WhereOrdinal(p entql.IntP) {
+	f.Where(p.Field(battery.FieldOrdinal))
+}
+
 // WhereHasCity applies a predicate to check if query has an edge city.
 func (f *BatteryFilter) WhereHasCity() {
 	f.Where(entql.HasEdge("city"))
@@ -4884,20 +4902,6 @@ func (f *BatteryFilter) WhereHasCity() {
 // WhereHasCityWith applies a predicate to check if query has an edge city with a given conditions (other predicates).
 func (f *BatteryFilter) WhereHasCityWith(preds ...predicate.City) {
 	f.Where(entql.HasEdgeWith("city", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// WhereHasCabinet applies a predicate to check if query has an edge cabinet.
-func (f *BatteryFilter) WhereHasCabinet() {
-	f.Where(entql.HasEdge("cabinet"))
-}
-
-// WhereHasCabinetWith applies a predicate to check if query has an edge cabinet with a given conditions (other predicates).
-func (f *BatteryFilter) WhereHasCabinetWith(preds ...predicate.Cabinet) {
-	f.Where(entql.HasEdgeWith("cabinet", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -4926,6 +4930,20 @@ func (f *BatteryFilter) WhereHasRider() {
 // WhereHasRiderWith applies a predicate to check if query has an edge rider with a given conditions (other predicates).
 func (f *BatteryFilter) WhereHasRiderWith(preds ...predicate.Rider) {
 	f.Where(entql.HasEdgeWith("rider", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasCabinet applies a predicate to check if query has an edge cabinet.
+func (f *BatteryFilter) WhereHasCabinet() {
+	f.Where(entql.HasEdge("cabinet"))
+}
+
+// WhereHasCabinetWith applies a predicate to check if query has an edge cabinet with a given conditions (other predicates).
+func (f *BatteryFilter) WhereHasCabinetWith(preds ...predicate.Cabinet) {
+	f.Where(entql.HasEdgeWith("cabinet", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -5863,6 +5881,20 @@ func (f *CabinetFilter) WhereHasStocks() {
 // WhereHasStocksWith applies a predicate to check if query has an edge stocks with a given conditions (other predicates).
 func (f *CabinetFilter) WhereHasStocksWith(preds ...predicate.Stock) {
 	f.Where(entql.HasEdgeWith("stocks", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasBatteries applies a predicate to check if query has an edge batteries.
+func (f *CabinetFilter) WhereHasBatteries() {
+	f.Where(entql.HasEdge("batteries"))
+}
+
+// WhereHasBatteriesWith applies a predicate to check if query has an edge batteries with a given conditions (other predicates).
+func (f *CabinetFilter) WhereHasBatteriesWith(preds ...predicate.Battery) {
+	f.Where(entql.HasEdgeWith("batteries", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

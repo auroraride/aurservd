@@ -36,18 +36,20 @@ type Battery struct {
 	Remark string `json:"remark,omitempty"`
 	// 城市ID
 	CityID *uint64 `json:"city_id,omitempty"`
-	// 电柜ID
-	CabinetID *uint64 `json:"cabinet_id,omitempty"`
 	// SubscribeID holds the value of the "subscribe_id" field.
 	SubscribeID *uint64 `json:"subscribe_id,omitempty"`
 	// 骑手ID
 	RiderID *uint64 `json:"rider_id,omitempty"`
+	// 电柜ID
+	CabinetID *uint64 `json:"cabinet_id,omitempty"`
 	// 电池编号
 	Sn string `json:"sn,omitempty"`
 	// 是否启用
 	Enable bool `json:"enable,omitempty"`
 	// 电池型号
 	Model string `json:"model,omitempty"`
+	// 所在智能柜仓位序号
+	Ordinal *int `json:"ordinal,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the BatteryQuery when eager-loading is set.
 	Edges BatteryEdges `json:"edges"`
@@ -57,12 +59,12 @@ type Battery struct {
 type BatteryEdges struct {
 	// City holds the value of the city edge.
 	City *City `json:"city,omitempty"`
-	// Cabinet holds the value of the cabinet edge.
-	Cabinet *Cabinet `json:"cabinet,omitempty"`
 	// Subscribe holds the value of the subscribe edge.
 	Subscribe *Subscribe `json:"subscribe,omitempty"`
 	// 所属骑手
 	Rider *Rider `json:"rider,omitempty"`
+	// 所属电柜
+	Cabinet *Cabinet `json:"cabinet,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [4]bool
@@ -81,23 +83,10 @@ func (e BatteryEdges) CityOrErr() (*City, error) {
 	return nil, &NotLoadedError{edge: "city"}
 }
 
-// CabinetOrErr returns the Cabinet value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e BatteryEdges) CabinetOrErr() (*Cabinet, error) {
-	if e.loadedTypes[1] {
-		if e.Cabinet == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: cabinet.Label}
-		}
-		return e.Cabinet, nil
-	}
-	return nil, &NotLoadedError{edge: "cabinet"}
-}
-
 // SubscribeOrErr returns the Subscribe value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e BatteryEdges) SubscribeOrErr() (*Subscribe, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[1] {
 		if e.Subscribe == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: subscribe.Label}
@@ -110,7 +99,7 @@ func (e BatteryEdges) SubscribeOrErr() (*Subscribe, error) {
 // RiderOrErr returns the Rider value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e BatteryEdges) RiderOrErr() (*Rider, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[2] {
 		if e.Rider == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: rider.Label}
@@ -118,6 +107,19 @@ func (e BatteryEdges) RiderOrErr() (*Rider, error) {
 		return e.Rider, nil
 	}
 	return nil, &NotLoadedError{edge: "rider"}
+}
+
+// CabinetOrErr returns the Cabinet value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e BatteryEdges) CabinetOrErr() (*Cabinet, error) {
+	if e.loadedTypes[3] {
+		if e.Cabinet == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: cabinet.Label}
+		}
+		return e.Cabinet, nil
+	}
+	return nil, &NotLoadedError{edge: "cabinet"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -129,7 +131,7 @@ func (*Battery) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case battery.FieldEnable:
 			values[i] = new(sql.NullBool)
-		case battery.FieldID, battery.FieldCityID, battery.FieldCabinetID, battery.FieldSubscribeID, battery.FieldRiderID:
+		case battery.FieldID, battery.FieldCityID, battery.FieldSubscribeID, battery.FieldRiderID, battery.FieldCabinetID, battery.FieldOrdinal:
 			values[i] = new(sql.NullInt64)
 		case battery.FieldRemark, battery.FieldSn, battery.FieldModel:
 			values[i] = new(sql.NullString)
@@ -204,13 +206,6 @@ func (b *Battery) assignValues(columns []string, values []any) error {
 				b.CityID = new(uint64)
 				*b.CityID = uint64(value.Int64)
 			}
-		case battery.FieldCabinetID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field cabinet_id", values[i])
-			} else if value.Valid {
-				b.CabinetID = new(uint64)
-				*b.CabinetID = uint64(value.Int64)
-			}
 		case battery.FieldSubscribeID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field subscribe_id", values[i])
@@ -224,6 +219,13 @@ func (b *Battery) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				b.RiderID = new(uint64)
 				*b.RiderID = uint64(value.Int64)
+			}
+		case battery.FieldCabinetID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field cabinet_id", values[i])
+			} else if value.Valid {
+				b.CabinetID = new(uint64)
+				*b.CabinetID = uint64(value.Int64)
 			}
 		case battery.FieldSn:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -243,6 +245,13 @@ func (b *Battery) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				b.Model = value.String
 			}
+		case battery.FieldOrdinal:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field ordinal", values[i])
+			} else if value.Valid {
+				b.Ordinal = new(int)
+				*b.Ordinal = int(value.Int64)
+			}
 		}
 	}
 	return nil
@@ -253,11 +262,6 @@ func (b *Battery) QueryCity() *CityQuery {
 	return (&BatteryClient{config: b.config}).QueryCity(b)
 }
 
-// QueryCabinet queries the "cabinet" edge of the Battery entity.
-func (b *Battery) QueryCabinet() *CabinetQuery {
-	return (&BatteryClient{config: b.config}).QueryCabinet(b)
-}
-
 // QuerySubscribe queries the "subscribe" edge of the Battery entity.
 func (b *Battery) QuerySubscribe() *SubscribeQuery {
 	return (&BatteryClient{config: b.config}).QuerySubscribe(b)
@@ -266,6 +270,11 @@ func (b *Battery) QuerySubscribe() *SubscribeQuery {
 // QueryRider queries the "rider" edge of the Battery entity.
 func (b *Battery) QueryRider() *RiderQuery {
 	return (&BatteryClient{config: b.config}).QueryRider(b)
+}
+
+// QueryCabinet queries the "cabinet" edge of the Battery entity.
+func (b *Battery) QueryCabinet() *CabinetQuery {
+	return (&BatteryClient{config: b.config}).QueryCabinet(b)
 }
 
 // Update returns a builder for updating this Battery.
@@ -316,11 +325,6 @@ func (b *Battery) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	if v := b.CabinetID; v != nil {
-		builder.WriteString("cabinet_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
-	builder.WriteString(", ")
 	if v := b.SubscribeID; v != nil {
 		builder.WriteString("subscribe_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
@@ -328,6 +332,11 @@ func (b *Battery) String() string {
 	builder.WriteString(", ")
 	if v := b.RiderID; v != nil {
 		builder.WriteString("rider_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := b.CabinetID; v != nil {
+		builder.WriteString("cabinet_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
@@ -339,6 +348,11 @@ func (b *Battery) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("model=")
 	builder.WriteString(b.Model)
+	builder.WriteString(", ")
+	if v := b.Ordinal; v != nil {
+		builder.WriteString("ordinal=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

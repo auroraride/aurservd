@@ -62,3 +62,8 @@ type BatteryDetail struct {
     SN    string  `json:"sn"`    // 电池编码
     Soc   float64 `json:"soc"`   // 当前电量, 暂时隐藏
 }
+
+type BatteryInCabinet struct {
+    CabinetID uint64 `json:"cabinetId"` // 所在电柜ID
+    Ordinal   int    `json:"ordinal"`   // 仓位序号
+}

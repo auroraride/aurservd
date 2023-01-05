@@ -80,11 +80,6 @@ func CityID(v uint64) predicate.Battery {
 	return predicate.Battery(sql.FieldEQ(FieldCityID, v))
 }
 
-// CabinetID applies equality check predicate on the "cabinet_id" field. It's identical to CabinetIDEQ.
-func CabinetID(v uint64) predicate.Battery {
-	return predicate.Battery(sql.FieldEQ(FieldCabinetID, v))
-}
-
 // SubscribeID applies equality check predicate on the "subscribe_id" field. It's identical to SubscribeIDEQ.
 func SubscribeID(v uint64) predicate.Battery {
 	return predicate.Battery(sql.FieldEQ(FieldSubscribeID, v))
@@ -93,6 +88,11 @@ func SubscribeID(v uint64) predicate.Battery {
 // RiderID applies equality check predicate on the "rider_id" field. It's identical to RiderIDEQ.
 func RiderID(v uint64) predicate.Battery {
 	return predicate.Battery(sql.FieldEQ(FieldRiderID, v))
+}
+
+// CabinetID applies equality check predicate on the "cabinet_id" field. It's identical to CabinetIDEQ.
+func CabinetID(v uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldEQ(FieldCabinetID, v))
 }
 
 // Sn applies equality check predicate on the "sn" field. It's identical to SnEQ.
@@ -108,6 +108,11 @@ func Enable(v bool) predicate.Battery {
 // Model applies equality check predicate on the "model" field. It's identical to ModelEQ.
 func Model(v string) predicate.Battery {
 	return predicate.Battery(sql.FieldEQ(FieldModel, v))
+}
+
+// Ordinal applies equality check predicate on the "ordinal" field. It's identical to OrdinalEQ.
+func Ordinal(v int) predicate.Battery {
+	return predicate.Battery(sql.FieldEQ(FieldOrdinal, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -365,36 +370,6 @@ func CityIDNotNil() predicate.Battery {
 	return predicate.Battery(sql.FieldNotNull(FieldCityID))
 }
 
-// CabinetIDEQ applies the EQ predicate on the "cabinet_id" field.
-func CabinetIDEQ(v uint64) predicate.Battery {
-	return predicate.Battery(sql.FieldEQ(FieldCabinetID, v))
-}
-
-// CabinetIDNEQ applies the NEQ predicate on the "cabinet_id" field.
-func CabinetIDNEQ(v uint64) predicate.Battery {
-	return predicate.Battery(sql.FieldNEQ(FieldCabinetID, v))
-}
-
-// CabinetIDIn applies the In predicate on the "cabinet_id" field.
-func CabinetIDIn(vs ...uint64) predicate.Battery {
-	return predicate.Battery(sql.FieldIn(FieldCabinetID, vs...))
-}
-
-// CabinetIDNotIn applies the NotIn predicate on the "cabinet_id" field.
-func CabinetIDNotIn(vs ...uint64) predicate.Battery {
-	return predicate.Battery(sql.FieldNotIn(FieldCabinetID, vs...))
-}
-
-// CabinetIDIsNil applies the IsNil predicate on the "cabinet_id" field.
-func CabinetIDIsNil() predicate.Battery {
-	return predicate.Battery(sql.FieldIsNull(FieldCabinetID))
-}
-
-// CabinetIDNotNil applies the NotNil predicate on the "cabinet_id" field.
-func CabinetIDNotNil() predicate.Battery {
-	return predicate.Battery(sql.FieldNotNull(FieldCabinetID))
-}
-
 // SubscribeIDEQ applies the EQ predicate on the "subscribe_id" field.
 func SubscribeIDEQ(v uint64) predicate.Battery {
 	return predicate.Battery(sql.FieldEQ(FieldSubscribeID, v))
@@ -453,6 +428,36 @@ func RiderIDIsNil() predicate.Battery {
 // RiderIDNotNil applies the NotNil predicate on the "rider_id" field.
 func RiderIDNotNil() predicate.Battery {
 	return predicate.Battery(sql.FieldNotNull(FieldRiderID))
+}
+
+// CabinetIDEQ applies the EQ predicate on the "cabinet_id" field.
+func CabinetIDEQ(v uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldEQ(FieldCabinetID, v))
+}
+
+// CabinetIDNEQ applies the NEQ predicate on the "cabinet_id" field.
+func CabinetIDNEQ(v uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldNEQ(FieldCabinetID, v))
+}
+
+// CabinetIDIn applies the In predicate on the "cabinet_id" field.
+func CabinetIDIn(vs ...uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldIn(FieldCabinetID, vs...))
+}
+
+// CabinetIDNotIn applies the NotIn predicate on the "cabinet_id" field.
+func CabinetIDNotIn(vs ...uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldNotIn(FieldCabinetID, vs...))
+}
+
+// CabinetIDIsNil applies the IsNil predicate on the "cabinet_id" field.
+func CabinetIDIsNil() predicate.Battery {
+	return predicate.Battery(sql.FieldIsNull(FieldCabinetID))
+}
+
+// CabinetIDNotNil applies the NotNil predicate on the "cabinet_id" field.
+func CabinetIDNotNil() predicate.Battery {
+	return predicate.Battery(sql.FieldNotNull(FieldCabinetID))
 }
 
 // SnEQ applies the EQ predicate on the "sn" field.
@@ -595,6 +600,56 @@ func ModelContainsFold(v string) predicate.Battery {
 	return predicate.Battery(sql.FieldContainsFold(FieldModel, v))
 }
 
+// OrdinalEQ applies the EQ predicate on the "ordinal" field.
+func OrdinalEQ(v int) predicate.Battery {
+	return predicate.Battery(sql.FieldEQ(FieldOrdinal, v))
+}
+
+// OrdinalNEQ applies the NEQ predicate on the "ordinal" field.
+func OrdinalNEQ(v int) predicate.Battery {
+	return predicate.Battery(sql.FieldNEQ(FieldOrdinal, v))
+}
+
+// OrdinalIn applies the In predicate on the "ordinal" field.
+func OrdinalIn(vs ...int) predicate.Battery {
+	return predicate.Battery(sql.FieldIn(FieldOrdinal, vs...))
+}
+
+// OrdinalNotIn applies the NotIn predicate on the "ordinal" field.
+func OrdinalNotIn(vs ...int) predicate.Battery {
+	return predicate.Battery(sql.FieldNotIn(FieldOrdinal, vs...))
+}
+
+// OrdinalGT applies the GT predicate on the "ordinal" field.
+func OrdinalGT(v int) predicate.Battery {
+	return predicate.Battery(sql.FieldGT(FieldOrdinal, v))
+}
+
+// OrdinalGTE applies the GTE predicate on the "ordinal" field.
+func OrdinalGTE(v int) predicate.Battery {
+	return predicate.Battery(sql.FieldGTE(FieldOrdinal, v))
+}
+
+// OrdinalLT applies the LT predicate on the "ordinal" field.
+func OrdinalLT(v int) predicate.Battery {
+	return predicate.Battery(sql.FieldLT(FieldOrdinal, v))
+}
+
+// OrdinalLTE applies the LTE predicate on the "ordinal" field.
+func OrdinalLTE(v int) predicate.Battery {
+	return predicate.Battery(sql.FieldLTE(FieldOrdinal, v))
+}
+
+// OrdinalIsNil applies the IsNil predicate on the "ordinal" field.
+func OrdinalIsNil() predicate.Battery {
+	return predicate.Battery(sql.FieldIsNull(FieldOrdinal))
+}
+
+// OrdinalNotNil applies the NotNil predicate on the "ordinal" field.
+func OrdinalNotNil() predicate.Battery {
+	return predicate.Battery(sql.FieldNotNull(FieldOrdinal))
+}
+
 // HasCity applies the HasEdge predicate on the "city" edge.
 func HasCity() predicate.Battery {
 	return predicate.Battery(func(s *sql.Selector) {
@@ -613,33 +668,6 @@ func HasCityWith(preds ...predicate.City) predicate.Battery {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(CityInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasCabinet applies the HasEdge predicate on the "cabinet" edge.
-func HasCabinet() predicate.Battery {
-	return predicate.Battery(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, CabinetTable, CabinetColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasCabinetWith applies the HasEdge predicate on the "cabinet" edge with a given conditions (other predicates).
-func HasCabinetWith(preds ...predicate.Cabinet) predicate.Battery {
-	return predicate.Battery(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CabinetInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, CabinetTable, CabinetColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
@@ -694,6 +722,33 @@ func HasRiderWith(preds ...predicate.Rider) predicate.Battery {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(RiderInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, RiderTable, RiderColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasCabinet applies the HasEdge predicate on the "cabinet" edge.
+func HasCabinet() predicate.Battery {
+	return predicate.Battery(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, CabinetTable, CabinetColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCabinetWith applies the HasEdge predicate on the "cabinet" edge with a given conditions (other predicates).
+func HasCabinetWith(preds ...predicate.Cabinet) predicate.Battery {
+	return predicate.Battery(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CabinetInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, CabinetTable, CabinetColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

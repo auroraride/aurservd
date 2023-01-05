@@ -109,20 +109,6 @@ func (bc *BatteryCreate) SetNillableCityID(u *uint64) *BatteryCreate {
 	return bc
 }
 
-// SetCabinetID sets the "cabinet_id" field.
-func (bc *BatteryCreate) SetCabinetID(u uint64) *BatteryCreate {
-	bc.mutation.SetCabinetID(u)
-	return bc
-}
-
-// SetNillableCabinetID sets the "cabinet_id" field if the given value is not nil.
-func (bc *BatteryCreate) SetNillableCabinetID(u *uint64) *BatteryCreate {
-	if u != nil {
-		bc.SetCabinetID(*u)
-	}
-	return bc
-}
-
 // SetSubscribeID sets the "subscribe_id" field.
 func (bc *BatteryCreate) SetSubscribeID(u uint64) *BatteryCreate {
 	bc.mutation.SetSubscribeID(u)
@@ -147,6 +133,20 @@ func (bc *BatteryCreate) SetRiderID(u uint64) *BatteryCreate {
 func (bc *BatteryCreate) SetNillableRiderID(u *uint64) *BatteryCreate {
 	if u != nil {
 		bc.SetRiderID(*u)
+	}
+	return bc
+}
+
+// SetCabinetID sets the "cabinet_id" field.
+func (bc *BatteryCreate) SetCabinetID(u uint64) *BatteryCreate {
+	bc.mutation.SetCabinetID(u)
+	return bc
+}
+
+// SetNillableCabinetID sets the "cabinet_id" field if the given value is not nil.
+func (bc *BatteryCreate) SetNillableCabinetID(u *uint64) *BatteryCreate {
+	if u != nil {
+		bc.SetCabinetID(*u)
 	}
 	return bc
 }
@@ -177,14 +177,23 @@ func (bc *BatteryCreate) SetModel(s string) *BatteryCreate {
 	return bc
 }
 
+// SetOrdinal sets the "ordinal" field.
+func (bc *BatteryCreate) SetOrdinal(i int) *BatteryCreate {
+	bc.mutation.SetOrdinal(i)
+	return bc
+}
+
+// SetNillableOrdinal sets the "ordinal" field if the given value is not nil.
+func (bc *BatteryCreate) SetNillableOrdinal(i *int) *BatteryCreate {
+	if i != nil {
+		bc.SetOrdinal(*i)
+	}
+	return bc
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (bc *BatteryCreate) SetCity(c *City) *BatteryCreate {
 	return bc.SetCityID(c.ID)
-}
-
-// SetCabinet sets the "cabinet" edge to the Cabinet entity.
-func (bc *BatteryCreate) SetCabinet(c *Cabinet) *BatteryCreate {
-	return bc.SetCabinetID(c.ID)
 }
 
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
@@ -195,6 +204,11 @@ func (bc *BatteryCreate) SetSubscribe(s *Subscribe) *BatteryCreate {
 // SetRider sets the "rider" edge to the Rider entity.
 func (bc *BatteryCreate) SetRider(r *Rider) *BatteryCreate {
 	return bc.SetRiderID(r.ID)
+}
+
+// SetCabinet sets the "cabinet" edge to the Cabinet entity.
+func (bc *BatteryCreate) SetCabinet(c *Cabinet) *BatteryCreate {
+	return bc.SetCabinetID(c.ID)
 }
 
 // Mutation returns the BatteryMutation object of the builder.
@@ -341,6 +355,10 @@ func (bc *BatteryCreate) createSpec() (*Battery, *sqlgraph.CreateSpec) {
 		_spec.SetField(battery.FieldModel, field.TypeString, value)
 		_node.Model = value
 	}
+	if value, ok := bc.mutation.Ordinal(); ok {
+		_spec.SetField(battery.FieldOrdinal, field.TypeInt, value)
+		_node.Ordinal = &value
+	}
 	if nodes := bc.mutation.CityIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -359,26 +377,6 @@ func (bc *BatteryCreate) createSpec() (*Battery, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.CityID = &nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := bc.mutation.CabinetIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   battery.CabinetTable,
-			Columns: []string{battery.CabinetColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: cabinet.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.CabinetID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := bc.mutation.SubscribeIDs(); len(nodes) > 0 {
@@ -419,6 +417,26 @@ func (bc *BatteryCreate) createSpec() (*Battery, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.RiderID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := bc.mutation.CabinetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   battery.CabinetTable,
+			Columns: []string{battery.CabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinet.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.CabinetID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -557,24 +575,6 @@ func (u *BatteryUpsert) ClearCityID() *BatteryUpsert {
 	return u
 }
 
-// SetCabinetID sets the "cabinet_id" field.
-func (u *BatteryUpsert) SetCabinetID(v uint64) *BatteryUpsert {
-	u.Set(battery.FieldCabinetID, v)
-	return u
-}
-
-// UpdateCabinetID sets the "cabinet_id" field to the value that was provided on create.
-func (u *BatteryUpsert) UpdateCabinetID() *BatteryUpsert {
-	u.SetExcluded(battery.FieldCabinetID)
-	return u
-}
-
-// ClearCabinetID clears the value of the "cabinet_id" field.
-func (u *BatteryUpsert) ClearCabinetID() *BatteryUpsert {
-	u.SetNull(battery.FieldCabinetID)
-	return u
-}
-
 // SetSubscribeID sets the "subscribe_id" field.
 func (u *BatteryUpsert) SetSubscribeID(v uint64) *BatteryUpsert {
 	u.Set(battery.FieldSubscribeID, v)
@@ -611,6 +611,24 @@ func (u *BatteryUpsert) ClearRiderID() *BatteryUpsert {
 	return u
 }
 
+// SetCabinetID sets the "cabinet_id" field.
+func (u *BatteryUpsert) SetCabinetID(v uint64) *BatteryUpsert {
+	u.Set(battery.FieldCabinetID, v)
+	return u
+}
+
+// UpdateCabinetID sets the "cabinet_id" field to the value that was provided on create.
+func (u *BatteryUpsert) UpdateCabinetID() *BatteryUpsert {
+	u.SetExcluded(battery.FieldCabinetID)
+	return u
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (u *BatteryUpsert) ClearCabinetID() *BatteryUpsert {
+	u.SetNull(battery.FieldCabinetID)
+	return u
+}
+
 // SetSn sets the "sn" field.
 func (u *BatteryUpsert) SetSn(v string) *BatteryUpsert {
 	u.Set(battery.FieldSn, v)
@@ -644,6 +662,30 @@ func (u *BatteryUpsert) SetModel(v string) *BatteryUpsert {
 // UpdateModel sets the "model" field to the value that was provided on create.
 func (u *BatteryUpsert) UpdateModel() *BatteryUpsert {
 	u.SetExcluded(battery.FieldModel)
+	return u
+}
+
+// SetOrdinal sets the "ordinal" field.
+func (u *BatteryUpsert) SetOrdinal(v int) *BatteryUpsert {
+	u.Set(battery.FieldOrdinal, v)
+	return u
+}
+
+// UpdateOrdinal sets the "ordinal" field to the value that was provided on create.
+func (u *BatteryUpsert) UpdateOrdinal() *BatteryUpsert {
+	u.SetExcluded(battery.FieldOrdinal)
+	return u
+}
+
+// AddOrdinal adds v to the "ordinal" field.
+func (u *BatteryUpsert) AddOrdinal(v int) *BatteryUpsert {
+	u.Add(battery.FieldOrdinal, v)
+	return u
+}
+
+// ClearOrdinal clears the value of the "ordinal" field.
+func (u *BatteryUpsert) ClearOrdinal() *BatteryUpsert {
+	u.SetNull(battery.FieldOrdinal)
 	return u
 }
 
@@ -793,27 +835,6 @@ func (u *BatteryUpsertOne) ClearCityID() *BatteryUpsertOne {
 	})
 }
 
-// SetCabinetID sets the "cabinet_id" field.
-func (u *BatteryUpsertOne) SetCabinetID(v uint64) *BatteryUpsertOne {
-	return u.Update(func(s *BatteryUpsert) {
-		s.SetCabinetID(v)
-	})
-}
-
-// UpdateCabinetID sets the "cabinet_id" field to the value that was provided on create.
-func (u *BatteryUpsertOne) UpdateCabinetID() *BatteryUpsertOne {
-	return u.Update(func(s *BatteryUpsert) {
-		s.UpdateCabinetID()
-	})
-}
-
-// ClearCabinetID clears the value of the "cabinet_id" field.
-func (u *BatteryUpsertOne) ClearCabinetID() *BatteryUpsertOne {
-	return u.Update(func(s *BatteryUpsert) {
-		s.ClearCabinetID()
-	})
-}
-
 // SetSubscribeID sets the "subscribe_id" field.
 func (u *BatteryUpsertOne) SetSubscribeID(v uint64) *BatteryUpsertOne {
 	return u.Update(func(s *BatteryUpsert) {
@@ -856,6 +877,27 @@ func (u *BatteryUpsertOne) ClearRiderID() *BatteryUpsertOne {
 	})
 }
 
+// SetCabinetID sets the "cabinet_id" field.
+func (u *BatteryUpsertOne) SetCabinetID(v uint64) *BatteryUpsertOne {
+	return u.Update(func(s *BatteryUpsert) {
+		s.SetCabinetID(v)
+	})
+}
+
+// UpdateCabinetID sets the "cabinet_id" field to the value that was provided on create.
+func (u *BatteryUpsertOne) UpdateCabinetID() *BatteryUpsertOne {
+	return u.Update(func(s *BatteryUpsert) {
+		s.UpdateCabinetID()
+	})
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (u *BatteryUpsertOne) ClearCabinetID() *BatteryUpsertOne {
+	return u.Update(func(s *BatteryUpsert) {
+		s.ClearCabinetID()
+	})
+}
+
 // SetSn sets the "sn" field.
 func (u *BatteryUpsertOne) SetSn(v string) *BatteryUpsertOne {
 	return u.Update(func(s *BatteryUpsert) {
@@ -895,6 +937,34 @@ func (u *BatteryUpsertOne) SetModel(v string) *BatteryUpsertOne {
 func (u *BatteryUpsertOne) UpdateModel() *BatteryUpsertOne {
 	return u.Update(func(s *BatteryUpsert) {
 		s.UpdateModel()
+	})
+}
+
+// SetOrdinal sets the "ordinal" field.
+func (u *BatteryUpsertOne) SetOrdinal(v int) *BatteryUpsertOne {
+	return u.Update(func(s *BatteryUpsert) {
+		s.SetOrdinal(v)
+	})
+}
+
+// AddOrdinal adds v to the "ordinal" field.
+func (u *BatteryUpsertOne) AddOrdinal(v int) *BatteryUpsertOne {
+	return u.Update(func(s *BatteryUpsert) {
+		s.AddOrdinal(v)
+	})
+}
+
+// UpdateOrdinal sets the "ordinal" field to the value that was provided on create.
+func (u *BatteryUpsertOne) UpdateOrdinal() *BatteryUpsertOne {
+	return u.Update(func(s *BatteryUpsert) {
+		s.UpdateOrdinal()
+	})
+}
+
+// ClearOrdinal clears the value of the "ordinal" field.
+func (u *BatteryUpsertOne) ClearOrdinal() *BatteryUpsertOne {
+	return u.Update(func(s *BatteryUpsert) {
+		s.ClearOrdinal()
 	})
 }
 
@@ -1206,27 +1276,6 @@ func (u *BatteryUpsertBulk) ClearCityID() *BatteryUpsertBulk {
 	})
 }
 
-// SetCabinetID sets the "cabinet_id" field.
-func (u *BatteryUpsertBulk) SetCabinetID(v uint64) *BatteryUpsertBulk {
-	return u.Update(func(s *BatteryUpsert) {
-		s.SetCabinetID(v)
-	})
-}
-
-// UpdateCabinetID sets the "cabinet_id" field to the value that was provided on create.
-func (u *BatteryUpsertBulk) UpdateCabinetID() *BatteryUpsertBulk {
-	return u.Update(func(s *BatteryUpsert) {
-		s.UpdateCabinetID()
-	})
-}
-
-// ClearCabinetID clears the value of the "cabinet_id" field.
-func (u *BatteryUpsertBulk) ClearCabinetID() *BatteryUpsertBulk {
-	return u.Update(func(s *BatteryUpsert) {
-		s.ClearCabinetID()
-	})
-}
-
 // SetSubscribeID sets the "subscribe_id" field.
 func (u *BatteryUpsertBulk) SetSubscribeID(v uint64) *BatteryUpsertBulk {
 	return u.Update(func(s *BatteryUpsert) {
@@ -1269,6 +1318,27 @@ func (u *BatteryUpsertBulk) ClearRiderID() *BatteryUpsertBulk {
 	})
 }
 
+// SetCabinetID sets the "cabinet_id" field.
+func (u *BatteryUpsertBulk) SetCabinetID(v uint64) *BatteryUpsertBulk {
+	return u.Update(func(s *BatteryUpsert) {
+		s.SetCabinetID(v)
+	})
+}
+
+// UpdateCabinetID sets the "cabinet_id" field to the value that was provided on create.
+func (u *BatteryUpsertBulk) UpdateCabinetID() *BatteryUpsertBulk {
+	return u.Update(func(s *BatteryUpsert) {
+		s.UpdateCabinetID()
+	})
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (u *BatteryUpsertBulk) ClearCabinetID() *BatteryUpsertBulk {
+	return u.Update(func(s *BatteryUpsert) {
+		s.ClearCabinetID()
+	})
+}
+
 // SetSn sets the "sn" field.
 func (u *BatteryUpsertBulk) SetSn(v string) *BatteryUpsertBulk {
 	return u.Update(func(s *BatteryUpsert) {
@@ -1308,6 +1378,34 @@ func (u *BatteryUpsertBulk) SetModel(v string) *BatteryUpsertBulk {
 func (u *BatteryUpsertBulk) UpdateModel() *BatteryUpsertBulk {
 	return u.Update(func(s *BatteryUpsert) {
 		s.UpdateModel()
+	})
+}
+
+// SetOrdinal sets the "ordinal" field.
+func (u *BatteryUpsertBulk) SetOrdinal(v int) *BatteryUpsertBulk {
+	return u.Update(func(s *BatteryUpsert) {
+		s.SetOrdinal(v)
+	})
+}
+
+// AddOrdinal adds v to the "ordinal" field.
+func (u *BatteryUpsertBulk) AddOrdinal(v int) *BatteryUpsertBulk {
+	return u.Update(func(s *BatteryUpsert) {
+		s.AddOrdinal(v)
+	})
+}
+
+// UpdateOrdinal sets the "ordinal" field to the value that was provided on create.
+func (u *BatteryUpsertBulk) UpdateOrdinal() *BatteryUpsertBulk {
+	return u.Update(func(s *BatteryUpsert) {
+		s.UpdateOrdinal()
+	})
+}
+
+// ClearOrdinal clears the value of the "ordinal" field.
+func (u *BatteryUpsertBulk) ClearOrdinal() *BatteryUpsertBulk {
+	return u.Update(func(s *BatteryUpsert) {
+		s.ClearOrdinal()
 	})
 }
 

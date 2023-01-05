@@ -161,7 +161,7 @@ func init() {
 	// battery.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	battery.UpdateDefaultUpdatedAt = batteryDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// batteryDescEnable is the schema descriptor for enable field.
-	batteryDescEnable := batteryFields[2].Descriptor()
+	batteryDescEnable := batteryFields[3].Descriptor()
 	// battery.DefaultEnable holds the default value on creation for the enable field.
 	battery.DefaultEnable = batteryDescEnable.Default.(bool)
 	batterymodelFields := schema.BatteryModel{}.Fields()

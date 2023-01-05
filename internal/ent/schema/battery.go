@@ -60,9 +60,11 @@ func (Battery) Annotations() []schema.Annotation {
 func (Battery) Fields() []ent.Field {
     return []ent.Field{
         field.Uint64("rider_id").Optional().Nillable().Comment("骑手ID"),
+        field.Uint64("cabinet_id").Optional().Nillable().Comment("电柜ID"),
         field.String("sn").Unique().Comment("电池编号"),
         field.Bool("enable").Default(true).Comment("是否启用"),
         field.String("model").Comment("电池型号"),
+        field.Int("ordinal").Optional().Nillable().Comment("所在智能柜仓位序号"),
     }
 }
 
@@ -70,6 +72,7 @@ func (Battery) Fields() []ent.Field {
 func (Battery) Edges() []ent.Edge {
     return []ent.Edge{
         edge.From("rider", Rider.Type).Ref("battery").Unique().Field("rider_id").Comment("所属骑手"),
+        edge.From("cabinet", Cabinet.Type).Ref("batteries").Unique().Field("cabinet_id").Comment("所属电柜"),
     }
 }
 
@@ -80,13 +83,13 @@ func (Battery) Mixin() []ent.Mixin {
         internal.Modifier{},
 
         CityMixin{Optional: true},      // 所在城市
-        CabinetMixin{Optional: true},   // 所在电柜
         SubscribeMixin{Optional: true}, // 所在订阅
     }
 }
 
 func (Battery) Indexes() []ent.Index {
     return []ent.Index{
+        index.Fields("cabinet_id", "ordinal"),
         index.Fields("enable"),
         index.Fields("model").StorageKey("index_battery_model"),
         index.Fields("sn").Annotations(

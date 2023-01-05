@@ -716,6 +716,8 @@ func (s *cabinetService) Sync(data *cabdef.CabinetMessage) {
             }
             // 电池数
             if hasBattery {
+                // 如果该仓位有电池
+                _, _ = NewBattery().SyncPutin(b.BatterySn, cab.ID, b.Ordinal)
                 bn += 1
                 if b.Soc >= model.IntelligentBatteryFullSoc {
                     // 满电
@@ -726,6 +728,8 @@ func (s *cabinetService) Sync(data *cabdef.CabinetMessage) {
                     bc += 1
                 }
             } else {
+                // 如果该仓位无电池
+                NewBattery().SyncPutout(cab.ID, b.Ordinal)
                 // 空仓
                 be += 1
             }
@@ -758,10 +762,6 @@ func (s *cabinetService) Sync(data *cabdef.CabinetMessage) {
                         bins[i] = cb
                     }
                 }
-            }
-
-            if b.BatterySn != "" && cab.CityID != nil {
-                _, _ = NewBattery().PutinCabinet(b.BatterySn, cab)
             }
         }
 

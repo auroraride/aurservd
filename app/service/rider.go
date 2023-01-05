@@ -391,6 +391,7 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
             cq.Where(contract.DeletedAtIsNil(), contract.Status(model.ContractStatusSuccess.Value())).Order(ent.Desc(contract.FieldCreatedAt))
         }).
         WithEnterprise().
+        WithBattery().
         Order(ent.Desc(rider.FieldCreatedAt))
     if req.Keyword != nil {
         info["关键词"] = *req.Keyword

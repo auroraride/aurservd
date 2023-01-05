@@ -115,6 +115,7 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
         putout   string
         putin    string
         empty    *model.BinInfo
+        bs       = NewBattery()
     )
 
     defer func() {
@@ -150,19 +151,6 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
             SetPutinBattery(putin).
             Exec(s.ctx)
 
-        bs := NewBattery()
-
-        // 更新用户取走的电池
-        if putout != "" {
-            bat := bs.RiderPutout(putout, sub)
-            // 更新订阅
-            _ = ent.Database.Subscribe.UpdateOneID(sub.ID).SetBatterySn(bat.Sn).SetBatteryID(bat.ID).Exec(s.ctx)
-        }
-
-        // 更新放入的电池
-        if putin != "" {
-            bs.RiderPutin(putin, sub, cab)
-        }
     }()
 
     var r *resty.Response
@@ -190,27 +178,54 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
             return
         }
 
-        // 若换电成功 直接返回
-        if res.Data.Success {
-            putin = res.Data.PutinBattery
-            putout = res.Data.PutoutBattery
-            success = true
-            steps := res.Data.Results
-            n := len(steps)
-            for i, result := range steps {
-                after := result.After
-                duration += result.Duration
-                if i == n-1 {
-                    stopAt = result.StopAt
-                }
-                if i == ec.ExchangeStepPutInto.Int() && after != nil {
+        // 查询结果
+        for _, result := range res.Data.Results {
+            after := result.After
+            before := result.Before
+
+            duration += result.Duration
+            stopAt = result.StopAt
+
+            if result.Success {
+                // 记录用户放入的电池
+                if ec.ExchangeStepPutInto.EqualInt(result.Step) && after != nil {
+                    putin = after.BatterySN
                     empty = &model.BinInfo{
                         Index:       after.Ordinal - 1,
                         Electricity: model.BatteryElectricity(after.Current),
                         Voltage:     after.Voltage,
                     }
+
+                    // 更新电池
+                    bat, _ := bs.LoadOrCreate(putin)
+                    if bat != nil {
+                        _ = NewBattery().UpdateSubscribe(bat, nil)
+                        _ = NewSubscribeWithRider(s.entRider).UpdateBattery(sub, nil)
+                    }
+
+                    go bs.RiderBusiness(true, putin, s.rider, cab, after.Ordinal)
+                }
+
+                // 记录用户取走的电池
+                if result.Step == ec.ExchangeStepOpenFull.Int() && before != nil {
+                    putout = before.BatterySN
+
+                    go bs.RiderBusiness(false, putout, s.rider, cab, before.Ordinal)
+
+                    bat, _ := bs.LoadOrCreate(putout)
+                    if bat != nil {
+                        // 更新订阅
+                        _ = NewSubscribe().UpdateBattery(sub, bat)
+                        // 更新电池
+                        _ = NewBattery().UpdateSubscribe(bat, sub)
+                    }
                 }
             }
+        }
+
+        // 若换电成功 直接返回
+        if res.Data.Success {
+            success = true
             return
         }
 
@@ -447,22 +462,31 @@ func (s *intelligentCabinetService) DoBusiness(uidstr string, bus adapter.Busine
         Voltage:     b.Voltage,
     }
 
-    bs := NewBattery(s.rider)
+    // 获取电池
     var bat *ent.Battery
-    if putin {
-        bat = bs.RiderPutin(sn, sub, cab)
-        // 更新订阅
-        _ = ent.Database.Subscribe.UpdateOneID(sub.ID).ClearBatterySn().ClearBatteryID().Exec(s.ctx)
-    } else {
-        bat = bs.RiderPutout(sn, sub)
-        // 更新订阅
-        _ = ent.Database.Subscribe.UpdateOneID(sub.ID).SetBatterySn(bat.Sn).SetBatteryID(bat.ID).Exec(s.ctx)
+    bat, err = NewBattery().LoadOrCreate(sn)
+    if err != nil {
+        log.Errorf("业务记录失败: %v", err)
+        return
     }
 
     batinfo = &model.Battery{
         ID:    bat.ID,
         SN:    sn,
         Model: bat.Model,
+    }
+
+    // 更新订阅和电池
+    ss := NewSubscribeWithRider(s.entRider)
+    bs := NewBattery(s.rider)
+    if putin {
+        // 放入电池
+        _ = ss.UpdateBattery(sub, nil)
+        _ = bs.UpdateSubscribe(bat, nil)
+    } else {
+        // 取走电池
+        _ = ss.UpdateBattery(sub, bat)
+        _ = bs.UpdateSubscribe(bat, sub)
     }
 
     return

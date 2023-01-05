@@ -27,26 +27,28 @@ const (
 	FieldRemark = "remark"
 	// FieldCityID holds the string denoting the city_id field in the database.
 	FieldCityID = "city_id"
-	// FieldCabinetID holds the string denoting the cabinet_id field in the database.
-	FieldCabinetID = "cabinet_id"
 	// FieldSubscribeID holds the string denoting the subscribe_id field in the database.
 	FieldSubscribeID = "subscribe_id"
 	// FieldRiderID holds the string denoting the rider_id field in the database.
 	FieldRiderID = "rider_id"
+	// FieldCabinetID holds the string denoting the cabinet_id field in the database.
+	FieldCabinetID = "cabinet_id"
 	// FieldSn holds the string denoting the sn field in the database.
 	FieldSn = "sn"
 	// FieldEnable holds the string denoting the enable field in the database.
 	FieldEnable = "enable"
 	// FieldModel holds the string denoting the model field in the database.
 	FieldModel = "model"
+	// FieldOrdinal holds the string denoting the ordinal field in the database.
+	FieldOrdinal = "ordinal"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
-	// EdgeCabinet holds the string denoting the cabinet edge name in mutations.
-	EdgeCabinet = "cabinet"
 	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
 	EdgeSubscribe = "subscribe"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
+	// EdgeCabinet holds the string denoting the cabinet edge name in mutations.
+	EdgeCabinet = "cabinet"
 	// Table holds the table name of the battery in the database.
 	Table = "battery"
 	// CityTable is the table that holds the city relation/edge.
@@ -56,13 +58,6 @@ const (
 	CityInverseTable = "city"
 	// CityColumn is the table column denoting the city relation/edge.
 	CityColumn = "city_id"
-	// CabinetTable is the table that holds the cabinet relation/edge.
-	CabinetTable = "battery"
-	// CabinetInverseTable is the table name for the Cabinet entity.
-	// It exists in this package in order to avoid circular dependency with the "cabinet" package.
-	CabinetInverseTable = "cabinet"
-	// CabinetColumn is the table column denoting the cabinet relation/edge.
-	CabinetColumn = "cabinet_id"
 	// SubscribeTable is the table that holds the subscribe relation/edge.
 	SubscribeTable = "battery"
 	// SubscribeInverseTable is the table name for the Subscribe entity.
@@ -77,6 +72,13 @@ const (
 	RiderInverseTable = "rider"
 	// RiderColumn is the table column denoting the rider relation/edge.
 	RiderColumn = "rider_id"
+	// CabinetTable is the table that holds the cabinet relation/edge.
+	CabinetTable = "battery"
+	// CabinetInverseTable is the table name for the Cabinet entity.
+	// It exists in this package in order to avoid circular dependency with the "cabinet" package.
+	CabinetInverseTable = "cabinet"
+	// CabinetColumn is the table column denoting the cabinet relation/edge.
+	CabinetColumn = "cabinet_id"
 )
 
 // Columns holds all SQL columns for battery fields.
@@ -89,12 +91,13 @@ var Columns = []string{
 	FieldLastModifier,
 	FieldRemark,
 	FieldCityID,
-	FieldCabinetID,
 	FieldSubscribeID,
 	FieldRiderID,
+	FieldCabinetID,
 	FieldSn,
 	FieldEnable,
 	FieldModel,
+	FieldOrdinal,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

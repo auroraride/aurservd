@@ -43,6 +43,8 @@ const (
     OperateRiderCreate                         // 添加骑手
     OperateForceOffWork                        // 强制下班
     OperateBindBattery                         // 绑定电池
+    OperateRiderPutin                          // 骑手放入电池
+    OperateRiderPutout                         // 骑手取出电池
 )
 
 func (o Operate) String() string {
@@ -91,6 +93,10 @@ func (o Operate) String() string {
         return "强制下班"
     case OperateBindBattery:
         return "绑定电池"
+    case OperateRiderPutin:
+        return "骑手放入电池"
+    case OperateRiderPutout:
+        return "骑手取出电池"
     default:
         return "未知操作"
     }
