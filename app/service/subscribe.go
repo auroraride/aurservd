@@ -580,9 +580,7 @@ func (s *subscribeService) Signed(riderID, subscribeID uint64) (res model.Subscr
 }
 
 // UpdateBattery 更新电池
-func (s *subscribeService) UpdateBattery(sub *ent.Subscribe, bat *ent.Battery) (err error) {
-    var ns *ent.Subscribe
-
+func (s *subscribeService) UpdateBattery(sub *ent.Subscribe, bat *ent.Battery) (*ent.Subscribe, error) {
     updater := sub.Update()
 
     if bat == nil {
@@ -591,11 +589,5 @@ func (s *subscribeService) UpdateBattery(sub *ent.Subscribe, bat *ent.Battery) (
         updater.SetBatteryID(bat.ID).SetBatterySn(bat.Sn)
     }
 
-    ns, err = updater.Save(s.ctx)
-
-    if ns != nil {
-        *sub = *ns
-    }
-
-    return
+    return updater.Save(s.ctx)
 }

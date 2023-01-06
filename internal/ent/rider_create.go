@@ -416,14 +416,14 @@ func (rc *RiderCreate) AddFollowups(r ...*RiderFollowUp) *RiderCreate {
 	return rc.AddFollowupIDs(ids...)
 }
 
-// AddBatteryIDs adds the "battery" edge to the Battery entity by IDs.
+// AddBatteryIDs adds the "batteries" edge to the Battery entity by IDs.
 func (rc *RiderCreate) AddBatteryIDs(ids ...uint64) *RiderCreate {
 	rc.mutation.AddBatteryIDs(ids...)
 	return rc
 }
 
-// AddBattery adds the "battery" edges to the Battery entity.
-func (rc *RiderCreate) AddBattery(b ...*Battery) *RiderCreate {
+// AddBatteries adds the "batteries" edges to the Battery entity.
+func (rc *RiderCreate) AddBatteries(b ...*Battery) *RiderCreate {
 	ids := make([]uint64, len(b))
 	for i := range b {
 		ids[i] = b[i].ID
@@ -830,12 +830,12 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := rc.mutation.BatteryIDs(); len(nodes) > 0 {
+	if nodes := rc.mutation.BatteriesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   rider.BatteryTable,
-			Columns: []string{rider.BatteryColumn},
+			Table:   rider.BatteriesTable,
+			Columns: []string{rider.BatteriesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

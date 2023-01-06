@@ -8,6 +8,7 @@ package service
 import (
     "context"
     "fmt"
+    "github.com/auroraride/adapter/async"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
@@ -365,138 +366,140 @@ func (s *businessRiderService) doTask() (bin *model.BinInfo, bat *model.Battery,
 
 // do 处理业务
 func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
-    sts := map[business.Type]uint8{
-        business.TypeActive:      model.StockTypeRiderActive,
-        business.TypeUnsubscribe: model.StockTypeRiderUnSubscribe,
-        business.TypePause:       model.StockTypeRiderPause,
-        business.TypeContinue:    model.StockTypeRiderContinue,
-    }
+    async.WithTask(func() {
+        sts := map[business.Type]uint8{
+            business.TypeActive:      model.StockTypeRiderActive,
+            business.TypeUnsubscribe: model.StockTypeRiderUnSubscribe,
+            business.TypePause:       model.StockTypeRiderPause,
+            business.TypeContinue:    model.StockTypeRiderContinue,
+        }
 
-    ops := map[business.Type]model.Operate{
-        business.TypeActive:      model.OperateActive,
-        business.TypeUnsubscribe: model.OperateUnsubscribe,
-        business.TypePause:       model.OperateSubscribePause,
-        business.TypeContinue:    model.OperateSubscribeContinue,
-    }
+        ops := map[business.Type]model.Operate{
+            business.TypeActive:      model.OperateActive,
+            business.TypeUnsubscribe: model.OperateUnsubscribe,
+            business.TypePause:       model.OperateSubscribePause,
+            business.TypeContinue:    model.OperateSubscribeContinue,
+        }
 
-    bfs := map[business.Type]string{
-        business.TypeActive:      "未激活",
-        business.TypeUnsubscribe: "生效中",
-        business.TypePause:       "计费中",
-        business.TypeContinue:    "寄存中",
-    }
+        bfs := map[business.Type]string{
+            business.TypeActive:      "未激活",
+            business.TypeUnsubscribe: "生效中",
+            business.TypePause:       "计费中",
+            business.TypeContinue:    "寄存中",
+        }
 
-    afs := map[business.Type]string{
-        business.TypeActive:      "已激活",
-        business.TypeUnsubscribe: "已退租",
-        business.TypePause:       "已寄存",
-        business.TypeContinue:    "计费中",
-    }
+        afs := map[business.Type]string{
+            business.TypeActive:      "已激活",
+            business.TypeUnsubscribe: "已退租",
+            business.TypePause:       "已寄存",
+            business.TypeContinue:    "计费中",
+        }
 
-    var bin *model.BinInfo
-    var err error
+        var bin *model.BinInfo
+        var err error
 
-    // 放入电池优先执行
-    var bat *model.Battery
-    if s.task != nil && (bt == business.TypePause || bt == business.TypeUnsubscribe) {
-        bin, bat, err = s.doTask()
+        // 放入电池优先执行
+        var bat *model.Battery
+        if s.task != nil && (bt == business.TypePause || bt == business.TypeUnsubscribe) {
+            bin, bat, err = s.doTask()
+            if err != nil {
+                snag.Panic(err)
+            }
+        }
+
+        // 激活业务查找提成
+        var co *ent.Commission
+        if bt == business.TypeActive {
+            co, _ = ent.Database.Commission.QueryNotDeleted().Where(commission.SubscribeID(s.subscribe.ID)).First(s.ctx)
+        }
+
+        // 库存管理
+        // TODO 智能电池
+        var sk *ent.Stock
+        ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
+            cb(tx)
+
+            sk, err = NewStockWithModifier(s.modifier).RiderBusiness(
+                tx,
+                &model.StockBusinessReq{
+                    RiderID:   s.subscribe.RiderID,
+                    Model:     s.subscribe.Model,
+                    CityID:    s.subscribe.CityID,
+                    StockType: sts[bt],
+
+                    StoreID:     s.storeID,
+                    EmployeeID:  s.employeeID,
+                    CabinetID:   s.cabinetID,
+                    SubscribeID: s.subscribeID,
+
+                    Ebike:   s.ebikeInfo,
+                    Battery: bat,
+                },
+            )
+
+            if err != nil {
+                log.Errorf("骑手业务出入库失败: %v", err)
+            }
+
+            return err
+        })
+
+        // 取出电池滞后执行
+        if s.task != nil && (bt == business.TypeActive || bt == business.TypeContinue) {
+            bin, bat, err = s.doTask()
+            if err != nil {
+                log.Error(err)
+            }
+            if bat != nil && s.cabinet.Intelligent {
+                _ = sk.Update().SetBatteryID(bat.ID).Exec(s.ctx)
+            }
+        }
+
+        // 保存业务日志
+        var b *ent.Business
+        b, err = NewBusinessLog(s.subscribe).
+            SetModifier(s.modifier).
+            SetEmployee(s.employee).
+            SetCabinet(s.cabinet).
+            SetStore(s.store).
+            SetBinInfo(bin).
+            SetStock(sk).
+            SetBattery(bat).
+            Save(bt)
+        var bussinessID *uint64
+        revStatus := model.ReserveStatusFail
+        if b != nil {
+            revStatus = model.ReserveStatusSuccess
+            bussinessID = silk.Pointer(b.ID)
+        }
+
+        // 更新预约
+        if s.reserve != nil {
+            _, _ = s.reserve.Update().
+                SetStatus(revStatus.Value()).
+                SetNillableBusinessID(bussinessID).
+                Save(s.ctx)
+        }
+
+        // 更新提成
+        if bt == business.TypeActive && co != nil && b != nil && s.employeeID != nil {
+            _, _ = co.Update().SetBusiness(b).SetEmployeeID(*s.employeeID).Save(s.ctx)
+        }
+
+        // 记录日志
+        go logging.NewOperateLog().
+            SetRef(s.rider).
+            SetOperate(ops[bt]).
+            SetEmployee(s.employeeInfo).
+            SetModifier(s.modifier).
+            SetCabinet(s.cabinetInfo).
+            SetDiff(bfs[bt], afs[bt]).
+            Send()
+
         if err != nil {
             snag.Panic(err)
         }
-    }
-
-    // 激活业务查找提成
-    var co *ent.Commission
-    if bt == business.TypeActive {
-        co, _ = ent.Database.Commission.QueryNotDeleted().Where(commission.SubscribeID(s.subscribe.ID)).First(s.ctx)
-    }
-
-    // 库存管理
-    // TODO 智能电池
-    var sk *ent.Stock
-    ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
-        cb(tx)
-
-        sk, err = NewStockWithModifier(s.modifier).RiderBusiness(
-            tx,
-            &model.StockBusinessReq{
-                RiderID:   s.subscribe.RiderID,
-                Model:     s.subscribe.Model,
-                CityID:    s.subscribe.CityID,
-                StockType: sts[bt],
-
-                StoreID:     s.storeID,
-                EmployeeID:  s.employeeID,
-                CabinetID:   s.cabinetID,
-                SubscribeID: s.subscribeID,
-
-                Ebike:   s.ebikeInfo,
-                Battery: bat,
-            },
-        )
-
-        if err != nil {
-            log.Errorf("骑手业务出入库失败: %v", err)
-        }
-
-        return err
     })
-
-    // 取出电池滞后执行
-    if s.task != nil && (bt == business.TypeActive || bt == business.TypeContinue) {
-        bin, bat, err = s.doTask()
-        if err != nil {
-            log.Error(err)
-        }
-        if bat != nil && s.cabinet.Intelligent {
-            _ = sk.Update().SetBatteryID(bat.ID).Exec(s.ctx)
-        }
-    }
-
-    // 保存业务日志
-    var b *ent.Business
-    b, err = NewBusinessLog(s.subscribe).
-        SetModifier(s.modifier).
-        SetEmployee(s.employee).
-        SetCabinet(s.cabinet).
-        SetStore(s.store).
-        SetBinInfo(bin).
-        SetStock(sk).
-        SetBattery(bat).
-        Save(bt)
-    var bussinessID *uint64
-    revStatus := model.ReserveStatusFail
-    if b != nil {
-        revStatus = model.ReserveStatusSuccess
-        bussinessID = silk.Pointer(b.ID)
-    }
-
-    // 更新预约
-    if s.reserve != nil {
-        _, _ = s.reserve.Update().
-            SetStatus(revStatus.Value()).
-            SetNillableBusinessID(bussinessID).
-            Save(s.ctx)
-    }
-
-    // 更新提成
-    if bt == business.TypeActive && co != nil && b != nil && s.employeeID != nil {
-        _, _ = co.Update().SetBusiness(b).SetEmployeeID(*s.employeeID).Save(s.ctx)
-    }
-
-    // 记录日志
-    go logging.NewOperateLog().
-        SetRef(s.rider).
-        SetOperate(ops[bt]).
-        SetEmployee(s.employeeInfo).
-        SetModifier(s.modifier).
-        SetCabinet(s.cabinetInfo).
-        SetDiff(bfs[bt], afs[bt]).
-        Send()
-
-    if err != nil {
-        snag.Panic(err)
-    }
 }
 
 // Active 激活订阅

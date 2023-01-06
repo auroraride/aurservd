@@ -6,6 +6,7 @@
 package controller
 
 import (
+    "github.com/auroraride/adapter/async"
     "github.com/auroraride/aurservd/app/service"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/labstack/echo/v4"
@@ -26,12 +27,7 @@ func (*maintain) Update(echo.Context) (err error) {
 
     for ; true; <-ticker.C {
         // 是否有进行中的异步业务
-        n := 0
-        ar.AsynchronousTask.Range(func(_, _ any) bool {
-            n += 1
-            return true
-        })
-        if n == 0 {
+        if async.IsDone() {
             ar.Quit <- true
             service.NewMaintain().CreateMaintainFile()
             return

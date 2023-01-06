@@ -9,11 +9,11 @@ import (
     "context"
     "fmt"
     "github.com/auroraride/adapter"
+    "github.com/auroraride/adapter/async"
     "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/provider"
-    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/exchange"
     "github.com/auroraride/aurservd/pkg/cache"
@@ -285,7 +285,9 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
     }
 
     if cab.Intelligent {
-        go NewIntelligentCabinet(s.rider).Exchange(req.UUID, s.exchange, sub, cab)
+        go async.WithTask(func() {
+            NewIntelligentCabinet(s.rider).Exchange(req.UUID, s.exchange, sub, cab)
+        })
     } else {
         // 开始任务
         t.Start(func(task *ec.Task) {
@@ -296,7 +298,9 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
         })
 
         // 处理换电流程
-        go s.ProcessByStep()
+        go async.WithTask(func() {
+            s.ProcessByStep()
+        })
     }
 }
 
@@ -352,13 +356,6 @@ func (s *riderExchangeService) ProcessStepEnd() {
 
 // ProcessByStep 按步骤换电操作
 func (s *riderExchangeService) ProcessByStep() {
-    // 添加异步任务
-    ar.AsynchronousTask.Store(s.task.ID.Hex(), 1)
-    // 退出移除异步任务
-    defer func() {
-        ar.AsynchronousTask.Delete(s.task.ID.Hex())
-    }()
-
     defer s.ProcessStepEnd()
 
     // 第一步: 开启空电仓

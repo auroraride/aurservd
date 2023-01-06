@@ -12,7 +12,6 @@ import (
     "github.com/auroraride/adapter/defs/cabdef"
     "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/silk"
@@ -78,13 +77,6 @@ func (s *intelligentCabinetService) exchangeCacheKey(uid string) string {
 
 // Exchange 请求换电
 func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *ent.Subscribe, cab *ent.Cabinet) {
-    // 添加异步任务
-    ar.AsynchronousTask.Store(uid, 1)
-    // 退出移除异步任务
-    defer func() {
-        ar.AsynchronousTask.Delete(uid)
-    }()
-
     id, err := uuid.Parse(uid)
     if err != nil {
         snag.Panic("请求参数错误")
@@ -174,8 +166,8 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
                 // 更新电池
                 bat, _ := bs.LoadOrCreate(putin)
                 if bat != nil {
-                    _ = NewBattery().UpdateSubscribe(bat, nil)
-                    _ = NewSubscribeWithRider(s.entRider).UpdateBattery(sub, nil)
+                    _, _ = NewBattery().UpdateSubscribe(bat, nil)
+                    _, _ = NewSubscribeWithRider(s.entRider).UpdateBattery(sub, nil)
                 }
 
                 go bs.RiderBusiness(true, putin, s.rider, cab, after.Ordinal)
@@ -190,9 +182,9 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
                 bat, _ := bs.LoadOrCreate(putout)
                 if bat != nil {
                     // 更新订阅
-                    _ = NewSubscribe().UpdateBattery(sub, bat)
+                    _, _ = NewSubscribe().UpdateBattery(sub, bat)
                     // 更新电池
-                    _ = NewBattery().UpdateSubscribe(bat, sub)
+                    _, _ = NewBattery().UpdateSubscribe(bat, sub)
                 }
             }
         }
@@ -441,12 +433,12 @@ func (s *intelligentCabinetService) DoBusiness(br model.CabinetBrand, uidstr str
     bs := NewBattery(s.rider)
     if putin {
         // 放入电池
-        _ = ss.UpdateBattery(sub, nil)
-        _ = bs.UpdateSubscribe(bat, nil)
+        _, _ = ss.UpdateBattery(sub, nil)
+        _, _ = bs.UpdateSubscribe(bat, nil)
     } else {
         // 取走电池
-        _ = ss.UpdateBattery(sub, bat)
-        _ = bs.UpdateSubscribe(bat, sub)
+        _, _ = ss.UpdateBattery(sub, bat)
+        _, _ = bs.UpdateSubscribe(bat, sub)
     }
 
     return
@@ -460,7 +452,7 @@ func (s *intelligentCabinetService) Operate(br model.CabinetBrand, op cabdef.Ope
         Remark:  remark,
     }
 
-    _, err := adapter.Post[[]*cabdef.BinOperateResult](s.GetCabinetAdapterUrlX(br, "/business/do"), s.GetAdapterUserX(), playload)
+    _, err := adapter.Post[[]*cabdef.BinOperateResult](s.GetCabinetAdapterUrlX(br, "/operate/bin"), s.GetAdapterUserX(), playload)
 
     return err == nil
 }

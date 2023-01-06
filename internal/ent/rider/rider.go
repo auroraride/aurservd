@@ -75,8 +75,8 @@ const (
 	EdgeStocks = "stocks"
 	// EdgeFollowups holds the string denoting the followups edge name in mutations.
 	EdgeFollowups = "followups"
-	// EdgeBattery holds the string denoting the battery edge name in mutations.
-	EdgeBattery = "battery"
+	// EdgeBatteries holds the string denoting the batteries edge name in mutations.
+	EdgeBatteries = "batteries"
 	// Table holds the table name of the rider in the database.
 	Table = "rider"
 	// StationTable is the table that holds the station relation/edge.
@@ -149,13 +149,13 @@ const (
 	FollowupsInverseTable = "rider_follow_up"
 	// FollowupsColumn is the table column denoting the followups relation/edge.
 	FollowupsColumn = "rider_id"
-	// BatteryTable is the table that holds the battery relation/edge.
-	BatteryTable = "battery"
-	// BatteryInverseTable is the table name for the Battery entity.
+	// BatteriesTable is the table that holds the batteries relation/edge.
+	BatteriesTable = "battery"
+	// BatteriesInverseTable is the table name for the Battery entity.
 	// It exists in this package in order to avoid circular dependency with the "battery" package.
-	BatteryInverseTable = "battery"
-	// BatteryColumn is the table column denoting the battery relation/edge.
-	BatteryColumn = "rider_id"
+	BatteriesInverseTable = "battery"
+	// BatteriesColumn is the table column denoting the batteries relation/edge.
+	BatteriesColumn = "rider_id"
 )
 
 // Columns holds all SQL columns for rider fields.

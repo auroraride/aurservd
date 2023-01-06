@@ -1340,24 +1340,24 @@ func HasFollowupsWith(preds ...predicate.RiderFollowUp) predicate.Rider {
 	})
 }
 
-// HasBattery applies the HasEdge predicate on the "battery" edge.
-func HasBattery() predicate.Rider {
+// HasBatteries applies the HasEdge predicate on the "batteries" edge.
+func HasBatteries() predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, BatteryTable, BatteryColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, BatteriesTable, BatteriesColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasBatteryWith applies the HasEdge predicate on the "battery" edge with a given conditions (other predicates).
-func HasBatteryWith(preds ...predicate.Battery) predicate.Rider {
+// HasBatteriesWith applies the HasEdge predicate on the "batteries" edge with a given conditions (other predicates).
+func HasBatteriesWith(preds ...predicate.Battery) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(BatteryInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, BatteryTable, BatteryColumn),
+			sqlgraph.To(BatteriesInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, BatteriesTable, BatteriesColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

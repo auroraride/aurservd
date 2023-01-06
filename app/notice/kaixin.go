@@ -18,6 +18,7 @@ import (
 func kaixin() {
     s := tcp.NewServer(ar.Config.Adapter.Kaixin.TcpBind, log.StandardLogger(), &codec.HeaderLength{}, func(b []byte) {
         // fmt.Println(string(b))
+        log.Infof("[SYNC] %s", string(b))
 
         t, msg, err := message.Unpack(b)
         if err != nil {

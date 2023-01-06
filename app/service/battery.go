@@ -316,11 +316,8 @@ func (s *batteryService) RiderBusiness(putin bool, sn string, r *model.Rider, ca
 
 // Bind 绑定骑手
 func (s *batteryService) Bind(req *model.BatteryBind) {
-    // 查找骑手
-    r := NewRider().Query(req.RiderID)
-
     // 查找订阅
-    sub := NewSubscribe().QueryEffectiveX(r.ID, ent.SubscribeQueryWithBattery, ent.SubscribeQueryWithRider)
+    sub := NewSubscribe().QueryEffectiveX(req.RiderID, ent.SubscribeQueryWithBattery, ent.SubscribeQueryWithRider)
     if sub.BatteryID != nil {
         snag.Panic("当前骑手有绑定中的电池, 无法重复绑定")
     }
@@ -328,6 +325,8 @@ func (s *batteryService) Bind(req *model.BatteryBind) {
     if !sub.Intelligent {
         snag.Panic("非智能柜套餐, 无法绑定智能电池")
     }
+
+    rd := sub.Edges.Rider
 
     // 查找电池
     bat := NewBattery().QueryIDX(req.BatteryID)
@@ -344,7 +343,7 @@ func (s *batteryService) Bind(req *model.BatteryBind) {
 
     ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
         // 绑定骑手
-        err = NewSubscribeWithModifier(s.modifier).UpdateBattery(sub, bat)
+        _, err = NewSubscribeWithModifier(s.modifier).UpdateBattery(sub, bat)
         if err != nil {
             return
         }
@@ -352,12 +351,13 @@ func (s *batteryService) Bind(req *model.BatteryBind) {
         after = "新电池: " + bat.Sn
 
         // 更新电池
-        return NewBattery(s.modifier, s.rider).UpdateSubscribe(bat, sub)
+        _, err = NewBattery(s.modifier, s.rider).UpdateSubscribe(bat, sub)
+        return
     })
 
     go logging.NewOperateLog().
         SetOperate(model.OperateBindBattery).
-        SetRef(sub.Edges.Rider).
+        SetRef(rd).
         SetDiff(before, after).
         SetModifier(s.modifier).
         Send()
@@ -377,18 +377,12 @@ func (s *batteryService) RiderDetail(riderID uint64) (res model.BatteryDetail) {
 }
 
 // UpdateSubscribe 更新订阅
-func (s *batteryService) UpdateSubscribe(bat *ent.Battery, sub *ent.Subscribe) error {
+func (s *batteryService) UpdateSubscribe(bat *ent.Battery, sub *ent.Subscribe) (*ent.Battery, error) {
     updater := bat.Update()
     if sub == nil {
         updater.ClearSubscribeID().ClearRiderID()
     } else {
         updater.SetSubscribeID(sub.ID).SetRiderID(sub.RiderID)
     }
-    nb, err := updater.Save(s.ctx)
-    if err != nil {
-        return err
-    }
-
-    *bat = *nb
-    return nil
+    return updater.Save(s.ctx)
 }

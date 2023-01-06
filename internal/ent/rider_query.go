@@ -46,7 +46,7 @@ type RiderQuery struct {
 	withSubscribes *SubscribeQuery
 	withStocks     *StockQuery
 	withFollowups  *RiderFollowUpQuery
-	withBattery    *BatteryQuery
+	withBatteries  *BatteryQuery
 	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -304,8 +304,8 @@ func (rq *RiderQuery) QueryFollowups() *RiderFollowUpQuery {
 	return query
 }
 
-// QueryBattery chains the current query on the "battery" edge.
-func (rq *RiderQuery) QueryBattery() *BatteryQuery {
+// QueryBatteries chains the current query on the "batteries" edge.
+func (rq *RiderQuery) QueryBatteries() *BatteryQuery {
 	query := (&BatteryClient{config: rq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := rq.prepareQuery(ctx); err != nil {
@@ -318,7 +318,7 @@ func (rq *RiderQuery) QueryBattery() *BatteryQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(rider.Table, rider.FieldID, selector),
 			sqlgraph.To(battery.Table, battery.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, rider.BatteryTable, rider.BatteryColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, rider.BatteriesTable, rider.BatteriesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
 		return fromU, nil
@@ -526,7 +526,7 @@ func (rq *RiderQuery) Clone() *RiderQuery {
 		withSubscribes: rq.withSubscribes.Clone(),
 		withStocks:     rq.withStocks.Clone(),
 		withFollowups:  rq.withFollowups.Clone(),
-		withBattery:    rq.withBattery.Clone(),
+		withBatteries:  rq.withBatteries.Clone(),
 		// clone intermediate query.
 		sql:    rq.sql.Clone(),
 		path:   rq.path,
@@ -644,14 +644,14 @@ func (rq *RiderQuery) WithFollowups(opts ...func(*RiderFollowUpQuery)) *RiderQue
 	return rq
 }
 
-// WithBattery tells the query-builder to eager-load the nodes that are connected to
-// the "battery" edge. The optional arguments are used to configure the query builder of the edge.
-func (rq *RiderQuery) WithBattery(opts ...func(*BatteryQuery)) *RiderQuery {
+// WithBatteries tells the query-builder to eager-load the nodes that are connected to
+// the "batteries" edge. The optional arguments are used to configure the query builder of the edge.
+func (rq *RiderQuery) WithBatteries(opts ...func(*BatteryQuery)) *RiderQuery {
 	query := (&BatteryClient{config: rq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	rq.withBattery = query
+	rq.withBatteries = query
 	return rq
 }
 
@@ -744,7 +744,7 @@ func (rq *RiderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Rider,
 			rq.withSubscribes != nil,
 			rq.withStocks != nil,
 			rq.withFollowups != nil,
-			rq.withBattery != nil,
+			rq.withBatteries != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -835,10 +835,10 @@ func (rq *RiderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Rider,
 			return nil, err
 		}
 	}
-	if query := rq.withBattery; query != nil {
-		if err := rq.loadBattery(ctx, query, nodes,
-			func(n *Rider) { n.Edges.Battery = []*Battery{} },
-			func(n *Rider, e *Battery) { n.Edges.Battery = append(n.Edges.Battery, e) }); err != nil {
+	if query := rq.withBatteries; query != nil {
+		if err := rq.loadBatteries(ctx, query, nodes,
+			func(n *Rider) { n.Edges.Batteries = []*Battery{} },
+			func(n *Rider, e *Battery) { n.Edges.Batteries = append(n.Edges.Batteries, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -1125,7 +1125,7 @@ func (rq *RiderQuery) loadFollowups(ctx context.Context, query *RiderFollowUpQue
 	}
 	return nil
 }
-func (rq *RiderQuery) loadBattery(ctx context.Context, query *BatteryQuery, nodes []*Rider, init func(*Rider), assign func(*Rider, *Battery)) error {
+func (rq *RiderQuery) loadBatteries(ctx context.Context, query *BatteryQuery, nodes []*Rider, init func(*Rider), assign func(*Rider, *Battery)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[uint64]*Rider)
 	for i := range nodes {
@@ -1136,7 +1136,7 @@ func (rq *RiderQuery) loadBattery(ctx context.Context, query *BatteryQuery, node
 		}
 	}
 	query.Where(predicate.Battery(func(s *sql.Selector) {
-		s.Where(sql.InValues(rider.BatteryColumn, fks...))
+		s.Where(sql.InValues(rider.BatteriesColumn, fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1270,7 +1270,7 @@ var (
 	RiderQueryWithSubscribes RiderQueryWith = "Subscribes"
 	RiderQueryWithStocks     RiderQueryWith = "Stocks"
 	RiderQueryWithFollowups  RiderQueryWith = "Followups"
-	RiderQueryWithBattery    RiderQueryWith = "Battery"
+	RiderQueryWithBatteries  RiderQueryWith = "Batteries"
 )
 
 func (rq *RiderQuery) With(withEdges ...RiderQueryWith) *RiderQuery {
@@ -1296,8 +1296,8 @@ func (rq *RiderQuery) With(withEdges ...RiderQueryWith) *RiderQuery {
 			rq.WithStocks()
 		case RiderQueryWithFollowups:
 			rq.WithFollowups()
-		case RiderQueryWithBattery:
-			rq.WithBattery()
+		case RiderQueryWithBatteries:
+			rq.WithBatteries()
 		}
 	}
 	return rq

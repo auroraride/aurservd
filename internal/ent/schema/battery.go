@@ -71,7 +71,7 @@ func (Battery) Fields() []ent.Field {
 // Edges of the Battery.
 func (Battery) Edges() []ent.Edge {
     return []ent.Edge{
-        edge.From("rider", Rider.Type).Ref("battery").Unique().Field("rider_id").Comment("所属骑手"),
+        edge.From("rider", Rider.Type).Ref("batteries").Unique().Field("rider_id").Comment("所属骑手"),
         edge.From("cabinet", Cabinet.Type).Ref("batteries").Unique().Field("cabinet_id").Comment("所属电柜"),
     }
 }

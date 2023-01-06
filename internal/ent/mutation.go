@@ -58768,9 +58768,9 @@ type RiderMutation struct {
 	followups         map[uint64]struct{}
 	removedfollowups  map[uint64]struct{}
 	clearedfollowups  bool
-	battery           map[uint64]struct{}
-	removedbattery    map[uint64]struct{}
-	clearedbattery    bool
+	batteries         map[uint64]struct{}
+	removedbatteries  map[uint64]struct{}
+	clearedbatteries  bool
 	done              bool
 	oldValue          func(context.Context) (*Rider, error)
 	predicates        []predicate.Rider
@@ -60322,58 +60322,58 @@ func (m *RiderMutation) ResetFollowups() {
 	m.removedfollowups = nil
 }
 
-// AddBatteryIDs adds the "battery" edge to the Battery entity by ids.
+// AddBatteryIDs adds the "batteries" edge to the Battery entity by ids.
 func (m *RiderMutation) AddBatteryIDs(ids ...uint64) {
-	if m.battery == nil {
-		m.battery = make(map[uint64]struct{})
+	if m.batteries == nil {
+		m.batteries = make(map[uint64]struct{})
 	}
 	for i := range ids {
-		m.battery[ids[i]] = struct{}{}
+		m.batteries[ids[i]] = struct{}{}
 	}
 }
 
-// ClearBattery clears the "battery" edge to the Battery entity.
-func (m *RiderMutation) ClearBattery() {
-	m.clearedbattery = true
+// ClearBatteries clears the "batteries" edge to the Battery entity.
+func (m *RiderMutation) ClearBatteries() {
+	m.clearedbatteries = true
 }
 
-// BatteryCleared reports if the "battery" edge to the Battery entity was cleared.
-func (m *RiderMutation) BatteryCleared() bool {
-	return m.clearedbattery
+// BatteriesCleared reports if the "batteries" edge to the Battery entity was cleared.
+func (m *RiderMutation) BatteriesCleared() bool {
+	return m.clearedbatteries
 }
 
-// RemoveBatteryIDs removes the "battery" edge to the Battery entity by IDs.
+// RemoveBatteryIDs removes the "batteries" edge to the Battery entity by IDs.
 func (m *RiderMutation) RemoveBatteryIDs(ids ...uint64) {
-	if m.removedbattery == nil {
-		m.removedbattery = make(map[uint64]struct{})
+	if m.removedbatteries == nil {
+		m.removedbatteries = make(map[uint64]struct{})
 	}
 	for i := range ids {
-		delete(m.battery, ids[i])
-		m.removedbattery[ids[i]] = struct{}{}
+		delete(m.batteries, ids[i])
+		m.removedbatteries[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedBattery returns the removed IDs of the "battery" edge to the Battery entity.
-func (m *RiderMutation) RemovedBatteryIDs() (ids []uint64) {
-	for id := range m.removedbattery {
+// RemovedBatteries returns the removed IDs of the "batteries" edge to the Battery entity.
+func (m *RiderMutation) RemovedBatteriesIDs() (ids []uint64) {
+	for id := range m.removedbatteries {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// BatteryIDs returns the "battery" edge IDs in the mutation.
-func (m *RiderMutation) BatteryIDs() (ids []uint64) {
-	for id := range m.battery {
+// BatteriesIDs returns the "batteries" edge IDs in the mutation.
+func (m *RiderMutation) BatteriesIDs() (ids []uint64) {
+	for id := range m.batteries {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetBattery resets all changes to the "battery" edge.
-func (m *RiderMutation) ResetBattery() {
-	m.battery = nil
-	m.clearedbattery = false
-	m.removedbattery = nil
+// ResetBatteries resets all changes to the "batteries" edge.
+func (m *RiderMutation) ResetBatteries() {
+	m.batteries = nil
+	m.clearedbatteries = false
+	m.removedbatteries = nil
 }
 
 // Where appends a list predicates to the RiderMutation builder.
@@ -61000,8 +61000,8 @@ func (m *RiderMutation) AddedEdges() []string {
 	if m.followups != nil {
 		edges = append(edges, rider.EdgeFollowups)
 	}
-	if m.battery != nil {
-		edges = append(edges, rider.EdgeBattery)
+	if m.batteries != nil {
+		edges = append(edges, rider.EdgeBatteries)
 	}
 	return edges
 }
@@ -61064,9 +61064,9 @@ func (m *RiderMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case rider.EdgeBattery:
-		ids := make([]ent.Value, 0, len(m.battery))
-		for id := range m.battery {
+	case rider.EdgeBatteries:
+		ids := make([]ent.Value, 0, len(m.batteries))
+		for id := range m.batteries {
 			ids = append(ids, id)
 		}
 		return ids
@@ -61098,8 +61098,8 @@ func (m *RiderMutation) RemovedEdges() []string {
 	if m.removedfollowups != nil {
 		edges = append(edges, rider.EdgeFollowups)
 	}
-	if m.removedbattery != nil {
-		edges = append(edges, rider.EdgeBattery)
+	if m.removedbatteries != nil {
+		edges = append(edges, rider.EdgeBatteries)
 	}
 	return edges
 }
@@ -61150,9 +61150,9 @@ func (m *RiderMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case rider.EdgeBattery:
-		ids := make([]ent.Value, 0, len(m.removedbattery))
-		for id := range m.removedbattery {
+	case rider.EdgeBatteries:
+		ids := make([]ent.Value, 0, len(m.removedbatteries))
+		for id := range m.removedbatteries {
 			ids = append(ids, id)
 		}
 		return ids
@@ -61193,8 +61193,8 @@ func (m *RiderMutation) ClearedEdges() []string {
 	if m.clearedfollowups {
 		edges = append(edges, rider.EdgeFollowups)
 	}
-	if m.clearedbattery {
-		edges = append(edges, rider.EdgeBattery)
+	if m.clearedbatteries {
+		edges = append(edges, rider.EdgeBatteries)
 	}
 	return edges
 }
@@ -61223,8 +61223,8 @@ func (m *RiderMutation) EdgeCleared(name string) bool {
 		return m.clearedstocks
 	case rider.EdgeFollowups:
 		return m.clearedfollowups
-	case rider.EdgeBattery:
-		return m.clearedbattery
+	case rider.EdgeBatteries:
+		return m.clearedbatteries
 	}
 	return false
 }
@@ -61280,8 +61280,8 @@ func (m *RiderMutation) ResetEdge(name string) error {
 	case rider.EdgeFollowups:
 		m.ResetFollowups()
 		return nil
-	case rider.EdgeBattery:
-		m.ResetBattery()
+	case rider.EdgeBatteries:
+		m.ResetBatteries()
 		return nil
 	}
 	return fmt.Errorf("unknown Rider edge %s", name)

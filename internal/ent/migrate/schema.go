@@ -412,7 +412,7 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "battery_rider_battery",
+				Symbol:     "battery_rider_batteries",
 				Columns:    []*schema.Column{BatteryColumns[14]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.SetNull,

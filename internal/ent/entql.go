@@ -3256,12 +3256,12 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"RiderFollowUp",
 	)
 	graph.MustAddE(
-		"battery",
+		"batteries",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   rider.BatteryTable,
-			Columns: []string{rider.BatteryColumn},
+			Table:   rider.BatteriesTable,
+			Columns: []string{rider.BatteriesColumn},
 			Bidi:    false,
 		},
 		"Rider",
@@ -10688,14 +10688,14 @@ func (f *RiderFilter) WhereHasFollowupsWith(preds ...predicate.RiderFollowUp) {
 	})))
 }
 
-// WhereHasBattery applies a predicate to check if query has an edge battery.
-func (f *RiderFilter) WhereHasBattery() {
-	f.Where(entql.HasEdge("battery"))
+// WhereHasBatteries applies a predicate to check if query has an edge batteries.
+func (f *RiderFilter) WhereHasBatteries() {
+	f.Where(entql.HasEdge("batteries"))
 }
 
-// WhereHasBatteryWith applies a predicate to check if query has an edge battery with a given conditions (other predicates).
-func (f *RiderFilter) WhereHasBatteryWith(preds ...predicate.Battery) {
-	f.Where(entql.HasEdgeWith("battery", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasBatteriesWith applies a predicate to check if query has an edge batteries with a given conditions (other predicates).
+func (f *RiderFilter) WhereHasBatteriesWith(preds ...predicate.Battery) {
+	f.Where(entql.HasEdgeWith("batteries", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
