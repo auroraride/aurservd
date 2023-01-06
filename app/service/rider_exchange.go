@@ -164,12 +164,6 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
 
 // Start 开始换电
 func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
-    ar.AsynchronousTask.Store(req.UUID, 1)
-
-    defer func() {
-        ar.AsynchronousTask.Delete(req.UUID)
-    }()
-
     // 是否有生效中套餐
     sub := NewSubscribe().RecentX(s.rider.ID)
 
@@ -358,6 +352,13 @@ func (s *riderExchangeService) ProcessStepEnd() {
 
 // ProcessByStep 按步骤换电操作
 func (s *riderExchangeService) ProcessByStep() {
+    // 添加异步任务
+    ar.AsynchronousTask.Store(s.task.ID.Hex(), 1)
+    // 退出移除异步任务
+    defer func() {
+        ar.AsynchronousTask.Delete(s.task.ID.Hex())
+    }()
+
     defer s.ProcessStepEnd()
 
     // 第一步: 开启空电仓

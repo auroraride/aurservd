@@ -12,6 +12,7 @@ import (
     "github.com/auroraride/adapter/defs/cabdef"
     "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/silk"
@@ -77,6 +78,13 @@ func (s *intelligentCabinetService) exchangeCacheKey(uid string) string {
 
 // Exchange 请求换电
 func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *ent.Subscribe, cab *ent.Cabinet) {
+    // 添加异步任务
+    ar.AsynchronousTask.Store(uid, 1)
+    // 退出移除异步任务
+    defer func() {
+        ar.AsynchronousTask.Delete(uid)
+    }()
+
     id, err := uuid.Parse(uid)
     if err != nil {
         snag.Panic("请求参数错误")

@@ -3,12 +3,9 @@ node {
         if (TAG == 'latest' || TAG == 'dev') {
             echo '开始部署Development环境'
             sshagent (credentials: ['Jenkins']) {
-                sh "ssh -o StrictHostKeyChecking=no root@39.106.77.239 '${deploy('next-api', TAG)}'"
+                sh "ssh -o StrictHostKeyChecking=no root@39.106.77.239 '${deploy('next-api', TAG, 'https://next-api.auroraride.com/maintain/update')}'"
             }
-        } else {
-            echo '不需要部署Development环境'
         }
-        echo '完成Development环境部署'
     }
     stage('Production') {
         if (TAG == 'latest' || TAG == 'prod') {
@@ -17,18 +14,16 @@ node {
             }
             echo '开始部署Production环境'
             sshagent (credentials: ['Jenkins']) {
-                sh "ssh -o StrictHostKeyChecking=no root@39.106.77.239 '${deploy('api', TAG)}'"
+                sh "ssh -o StrictHostKeyChecking=no root@39.106.77.239 '${deploy('api', TAG, 'https://api.auroraride.com/maintain/update')}'"
             }
-        } else {
-            echo '不需要部署Production环境'
         }
-        echo '已结束Production环境部署'
     }
 }
 
-def deploy(path, tag) {
+def deploy(path, tag, url) {
     def str = """
         docker pull registry-vpc.cn-beijing.aliyuncs.com/liasica/aurservd:$tag
+        curl $url
         docker rm -f ${path}
         mkdir -p /var/www/${path}.auroraride.com/runtime
         docker run -itd --name ${path} --restart=always \
