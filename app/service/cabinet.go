@@ -356,7 +356,7 @@ func (s *cabinetService) DetailFromID(id uint64) *model.CabinetDetailRes {
 }
 
 func (s *cabinetService) Detail(item *ent.Cabinet) *model.CabinetDetailRes {
-    if time.Now().Sub(item.UpdatedAt).Seconds() > 2 {
+    if !item.Intelligent && time.Now().Sub(item.UpdatedAt).Seconds() > 2 {
         err := s.UpdateStatus(item)
         if err != nil {
             snag.Panic(err)
@@ -683,6 +683,10 @@ func (s *cabinetService) Sync(data *cabdef.CabinetMessage) {
 
     updater := cab.Update()
 
+    defer func() {
+        _ = updater.Exec(s.ctx)
+    }()
+
     c := data.Cabinet
     if c != nil {
         health := model.CabinetHealthStatusOffline
@@ -765,6 +769,10 @@ func (s *cabinetService) Sync(data *cabdef.CabinetMessage) {
             }
         }
 
+        sort.Slice(bins, func(i, j int) bool {
+            return bins[i].Index <= bins[j].Index
+        })
+
         updater.SetDoors(len(bins)).
             SetBatteryNum(bn).
             SetBatteryFullNum(bf).
@@ -773,6 +781,4 @@ func (s *cabinetService) Sync(data *cabdef.CabinetMessage) {
             SetLockedBinNum(bl).
             SetBin(bins)
     }
-
-    _ = updater.Exec(s.ctx)
 }
