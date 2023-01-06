@@ -6,24 +6,37 @@
 package controller
 
 import (
-    "github.com/auroraride/aurservd/app"
     "github.com/auroraride/aurservd/app/service"
+    "github.com/auroraride/aurservd/internal/ar"
     "github.com/labstack/echo/v4"
+    "time"
 )
 
 type maintain struct{}
 
 var Maintain = new(maintain)
 
-func (*maintain) Update(c echo.Context) (err error) {
-    ctx := app.Context(c)
-
+func (*maintain) Update(echo.Context) (err error) {
     // 标记为维护中
     service.NewMaintain().SetMaintain(true)
 
-    // 是否有进行中的换电业务
+    // 查询任务
+    ticker := time.NewTicker(time.Second)
+    defer ticker.Stop()
 
-    // 是否有进行中的其他业务
+    for ; true; <-ticker.C {
+        // 是否有进行中的异步业务
+        n := 0
+        ar.AsynchronousTask.Range(func(_, _ any) bool {
+            n += 1
+            return true
+        })
+        if n == 0 {
+            ar.Quit <- true
+            service.NewMaintain().CreateMaintainFile()
+            return
+        }
+    }
 
-    return ctx.SendResponse()
+    return
 }

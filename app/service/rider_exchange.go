@@ -13,6 +13,7 @@ import (
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/provider"
+    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/exchange"
     "github.com/auroraride/aurservd/pkg/cache"
@@ -163,6 +164,12 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
 
 // Start 开始换电
 func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
+    ar.AsynchronousTask.Store(req.UUID, 1)
+
+    defer func() {
+        ar.AsynchronousTask.Delete(req.UUID)
+    }()
+
     // 是否有生效中套餐
     sub := NewSubscribe().RecentX(s.rider.ID)
 

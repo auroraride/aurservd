@@ -14,6 +14,7 @@ import (
     "github.com/auroraride/aurservd/app/service"
     "github.com/auroraride/aurservd/app/task"
     "github.com/auroraride/aurservd/app/task/reminder"
+    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/exchange"
     log "github.com/sirupsen/logrus"
@@ -61,7 +62,12 @@ func serverCommand() *cobra.Command {
             go notice.Run()
 
             // 启动服务器
-            router.Run()
+            go router.Run()
+
+            // 判定是否有维护任务
+            go service.NewMaintain().UpdateMaintain()
+
+            <-ar.Quit
         },
     }
 
