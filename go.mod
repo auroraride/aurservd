@@ -16,7 +16,7 @@ require (
 	github.com/auroraride/adapter v0.0.0
 	github.com/fsnotify/fsnotify v1.6.0
 	github.com/getkin/kin-openapi v0.112.0
-	github.com/go-playground/locales v0.14.0
+	github.com/go-playground/locales v0.14.1
 	github.com/go-playground/universal-translator v0.18.0
 	github.com/go-playground/validator/v10 v10.11.1
 	github.com/go-redis/redis/v8 v8.11.5
@@ -53,7 +53,7 @@ require (
 	github.com/xuri/excelize/v2 v2.6.1
 	go.mongodb.org/mongo-driver v1.11.1
 	golang.org/x/crypto v0.5.0
-	golang.org/x/exp v0.0.0-20230105000112-eab7a2c85304
+	golang.org/x/exp v0.0.0-20230105202349-8879d0199aa3
 	golang.org/x/time v0.3.0
 	golang.org/x/tools v0.5.0
 	gopkg.in/yaml.v3 v3.0.1
