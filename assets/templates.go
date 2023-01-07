@@ -11,6 +11,7 @@ import (
     "html/template"
     "io"
     "io/fs"
+    "strings"
 )
 
 const (
@@ -34,21 +35,18 @@ func (t *htmlTemplate) Render(w io.Writer, name string, data interface{}, _ echo
 
 func LoadTemplates() {
     Templates = &htmlTemplate{Templates: make(map[string]*template.Template)}
-    tmplFiles, err := fs.ReadDir(views, templatesDir)
-    if err != nil {
+
+    _ = fs.WalkDir(views, templatesDir, func(path string, d fs.DirEntry, _ error) (err error) {
+        if d.IsDir() {
+            return
+        }
+
+        name := strings.Replace(path, templatesDir+"/", "", 1)
+        pt := template.New(name)
+        b, _ := views.ReadFile(path)
+        _, _ = pt.Parse(string(b))
+
+        Templates.Templates[name] = pt
         return
-    }
-
-    for _, tmpl := range tmplFiles {
-        if tmpl.IsDir() {
-            continue
-        }
-        var pt *template.Template
-        pt, err = template.ParseFS(views, templatesDir+"/"+tmpl.Name())
-        if err != nil {
-            continue
-        }
-
-        Templates.Templates[tmpl.Name()] = pt
-    }
+    })
 }

@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>订阅转换</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+{{/*    <link href="https://fonts.font.im/css2?family=JetBrains+Mono&display=swap" rel="stylesheet">*/}}
+    <link rel="stylesheet" href="https://cdn.staticfile.org/bulma/0.9.4/css/bulma.css">
+    <style>
+      body {
+        /*font-family: 'JetBrains Mono', monospace;*/
+      }
+    </style>
+</head>
+<body>
+<section class="section">
+    <div class="container is-fluid">
+        {{ if .message }}
+            <div class="notification is-{{ if .state }}success{{ else }}danger{{ end }}">
+                <button class="delete"></button>
+                {{ .message }}
+            </div>
+        {{ end }}
+        <form method="POST">
+            <div class="field">
+                <label class="label">手机号</label>
+                <div class="control">
+                    <input class="input" type="text" placeholder="输入需要转换的手机号" name="phone">
+                </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                    <label class="radio">
+                        <input type="radio" name="intelligent" value="1" checked>
+                        智能
+                    </label>
+                    <label class="radio">
+                        <input type="radio" name="intelligent" value="0">
+                        非智能
+                    </label>
+                </div>
+            </div>
+            <div class="field is-grouped">
+                <div class="control">
+                    <button class="button is-link">提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+</body>
+</html>

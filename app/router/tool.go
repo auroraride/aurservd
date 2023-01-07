@@ -10,4 +10,5 @@ import "github.com/auroraride/aurservd/app/controller/tool"
 func loadToolRoutes() {
     g := root.Group("tools")
     g.GET("/cabinet/exchange/wR3l9ozNbxvmE8597eHqt0tdeoLiSdwl", tool.Cabinet.Exchange)
+    g.Any("/transfer/subscribe", tool.Transfer.Subscribe)
 }
