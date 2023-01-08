@@ -167,7 +167,7 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
                 bat, _ := bs.LoadOrCreate(putin)
                 if bat != nil {
                     _, _ = NewBattery().UpdateSubscribe(bat.Update(), bat, nil)
-                    _, _ = NewSubscribeWithRider(s.entRider).UpdateBattery(sub.Update(), sub, nil)
+                    _, _ = NewSubscribe().UpdateBattery(sub.Update(), sub, nil)
                 }
 
                 go bs.RiderBusiness(true, putin, s.rider, cab, after.Ordinal)

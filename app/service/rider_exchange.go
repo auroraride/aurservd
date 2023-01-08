@@ -76,6 +76,10 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
 
     // 判断设备是否智能设备
     if cab.Intelligent {
+        if sub.BatteryID == nil || sub.BatterySn == nil {
+            snag.Panic("未找到智能电池, 请先绑定电池")
+        }
+        // 判定是否可以换电
         NewIntelligentCabinet(s.rider).BusinessCensorX(adapter.BusinessExchange, sub, cab)
         uid, info = NewIntelligentCabinet(s.rider).ExchangeUsable(sub.Model, cab.Serial, model.CabinetBrand(cab.Brand))
     } else {
@@ -285,6 +289,9 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
     }
 
     if cab.Intelligent {
+        if sub.BatteryID == nil || sub.BatterySn == nil {
+            snag.Panic("未找到智能电池, 请先绑定电池")
+        }
         go async.WithTask(func() {
             NewIntelligentCabinet(s.rider).Exchange(req.UUID, s.exchange, sub, cab)
         })

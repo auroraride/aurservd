@@ -110,7 +110,7 @@ func (s *batteryService) SyncPutin(sn string, cabinetID uint64, ordinal int) (ba
     }
 
     // 更新电池电柜信息
-    bat, err = bat.Update().SetCabinetID(cabinetID).SetOrdinal(ordinal).Save(s.ctx)
+    bat, err = bat.Update().SetCabinetID(cabinetID).SetOrdinal(ordinal).ClearRiderID().ClearSubscribeID().Save(s.ctx)
     if err != nil {
         return
     }
@@ -335,16 +335,17 @@ func (s *batteryService) Bind(req *model.BatteryBind) {
         snag.Panic("非智能柜套餐, 无法绑定智能电池")
     }
 
-    // 查看是否冲突
-    if exists, _ := ent.Database.Battery.Query().Where(battery.RiderID(sub.RiderID)).Exist(s.ctx); exists {
-        snag.Panic("当前骑手有绑定中的电池, 无法重复绑定")
-    }
+    // // 查看是否冲突
+    // if exists, _ := ent.Database.Battery.Query().Where(battery.RiderID(sub.RiderID)).Exist(s.ctx); exists {
+    //     snag.Panic("当前骑手有绑定中的电池, 无法重复绑定")
+    // }
 
     rd := sub.Edges.Rider
 
     // 查找电池
     bat := NewBattery().QueryIDX(req.BatteryID)
-    if bat.RiderID != nil || bat.SubscribeID != nil {
+    // 查看是否冲突
+    if (bat.RiderID != nil && *bat.RiderID != sub.RiderID) || (bat.SubscribeID != nil && *bat.SubscribeID != sub.ID) {
         snag.Panic("当前电池有绑定中的骑手, 无法重复绑定")
     }
 
