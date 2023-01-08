@@ -15,6 +15,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/battery"
     "github.com/auroraride/aurservd/internal/ent/city"
     "github.com/auroraride/aurservd/internal/ent/rider"
+    "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/labstack/echo/v4"
@@ -108,7 +109,18 @@ func (s *batteryService) SyncPutin(sn string, cabinetID uint64, ordinal int) (ba
         return
     }
 
-    return bat.Update().SetCabinetID(cabinetID).SetOrdinal(ordinal).Save(s.ctx)
+    // 更新电池电柜信息
+    bat, err = bat.Update().SetCabinetID(cabinetID).SetOrdinal(ordinal).Save(s.ctx)
+    if err != nil {
+        return
+    }
+
+    // 如果有绑定中的订阅, 清除订阅中的电池信息
+    if berr := ent.Database.Subscribe.Update().Where(subscribe.BatteryID(bat.ID)).ClearBatteryID().ClearBatterySn().Exec(s.ctx); berr != nil {
+        log.Errorf("清除订阅电池信息失败: %v", berr)
+    }
+
+    return
 }
 
 // TODO 电池需要做库存管理
@@ -318,12 +330,14 @@ func (s *batteryService) RiderBusiness(putin bool, sn string, r *model.Rider, ca
 func (s *batteryService) Bind(req *model.BatteryBind) {
     // 查找订阅
     sub := NewSubscribe().QueryEffectiveX(req.RiderID, ent.SubscribeQueryWithBattery, ent.SubscribeQueryWithRider)
-    if sub.BatteryID != nil {
-        snag.Panic("当前骑手有绑定中的电池, 无法重复绑定")
-    }
 
     if !sub.Intelligent {
         snag.Panic("非智能柜套餐, 无法绑定智能电池")
+    }
+
+    // 查看是否冲突
+    if exists, _ := ent.Database.Battery.Query().Where(battery.RiderID(sub.RiderID)).Exist(s.ctx); exists {
+        snag.Panic("当前骑手有绑定中的电池, 无法重复绑定")
     }
 
     rd := sub.Edges.Rider
