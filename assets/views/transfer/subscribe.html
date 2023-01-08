@@ -6,11 +6,10 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>订阅转换</title>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-{{/*    <link href="https://fonts.font.im/css2?family=JetBrains+Mono&display=swap" rel="stylesheet">*/}}
     <link rel="stylesheet" href="https://cdn.staticfile.org/bulma/0.9.4/css/bulma.css">
     <style>
-      body {
-        /*font-family: 'JetBrains Mono', monospace;*/
+      .hidden {
+        display: none;
       }
     </style>
 </head>
@@ -42,6 +41,12 @@
                     </label>
                 </div>
             </div>
+            <div class="field" id="battery">
+                <label class="label">电池编号</label>
+                <div class="control">
+                    <input class="input" type="text" placeholder="输入需要绑定的电池编号" name="battery">
+                </div>
+            </div>
             <div class="field is-grouped">
                 <div class="control">
                     <button class="button is-link">提交</button>
@@ -50,5 +55,24 @@
         </form>
     </div>
 </section>
+
+<script>
+    window.EventTarget.prototype.addDelegatedListener = function(type, delegateSelector, listener) {
+        this.addEventListener(type, function (event) {
+            if (event.target && event.target.matches(delegateSelector)) {
+                listener.call(event.target, event)
+            }
+        });
+    }
+    document.addDelegatedListener('click', 'input[name=intelligent]', function(e) {
+        const $battery = document.querySelector('#battery')
+        if (e.target.value == 1) {
+            $battery.classList.remove('hidden')
+        } else {
+            $battery.classList.add('hidden')
+            $battery.querySelector('input').value = ''
+        }
+    })
+</script>
 </body>
 </html>

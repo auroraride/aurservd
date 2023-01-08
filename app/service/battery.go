@@ -343,7 +343,7 @@ func (s *batteryService) Bind(req *model.BatteryBind) {
 
     ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
         // 绑定骑手
-        _, err = NewSubscribeWithModifier(s.modifier).UpdateBattery(sub, bat)
+        _, err = NewSubscribeWithModifier(s.modifier).UpdateBattery(tx.Subscribe.UpdateOneID(sub.ID), sub, bat)
         if err != nil {
             return
         }
@@ -351,7 +351,7 @@ func (s *batteryService) Bind(req *model.BatteryBind) {
         after = "新电池: " + bat.Sn
 
         // 更新电池
-        _, err = NewBattery(s.modifier, s.rider).UpdateSubscribe(bat, sub)
+        _, err = NewBattery(s.modifier, s.rider).UpdateSubscribe(tx.Battery.UpdateOneID(bat.ID), bat, sub)
         return
     })
 
@@ -377,8 +377,7 @@ func (s *batteryService) RiderDetail(riderID uint64) (res model.BatteryDetail) {
 }
 
 // UpdateSubscribe 更新订阅
-func (s *batteryService) UpdateSubscribe(bat *ent.Battery, sub *ent.Subscribe) (*ent.Battery, error) {
-    updater := bat.Update()
+func (s *batteryService) UpdateSubscribe(updater *ent.BatteryUpdateOne, bat *ent.Battery, sub *ent.Subscribe) (*ent.Battery, error) {
     if sub == nil {
         updater.ClearSubscribeID().ClearRiderID()
     } else {

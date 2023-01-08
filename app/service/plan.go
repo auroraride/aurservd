@@ -392,6 +392,7 @@ func (s *planService) Renewal(req *model.PlanListRiderReq) map[string]*[]model.R
                 city.ID(req.CityID),
             ),
             plan.Model(req.Model),
+            plan.Intelligent(req.Intelligent),
         ).
         Order(ent.Asc(plan.FieldDays))
 
@@ -591,6 +592,7 @@ func (s *planService) RiderListRenewal() model.RiderPlanRenewalRes {
         Min:          min,
         Model:        sub.Model,
         EbikeBrandID: sub.BrandID,
+        Intelligent:  sub.Intelligent,
     })
 
     items := make([]model.RiderPlanItem, 0)

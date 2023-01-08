@@ -166,8 +166,8 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
                 // 更新电池
                 bat, _ := bs.LoadOrCreate(putin)
                 if bat != nil {
-                    _, _ = NewBattery().UpdateSubscribe(bat, nil)
-                    _, _ = NewSubscribeWithRider(s.entRider).UpdateBattery(sub, nil)
+                    _, _ = NewBattery().UpdateSubscribe(bat.Update(), bat, nil)
+                    _, _ = NewSubscribeWithRider(s.entRider).UpdateBattery(sub.Update(), sub, nil)
                 }
 
                 go bs.RiderBusiness(true, putin, s.rider, cab, after.Ordinal)
@@ -182,9 +182,9 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
                 bat, _ := bs.LoadOrCreate(putout)
                 if bat != nil {
                     // 更新订阅
-                    _, _ = NewSubscribe().UpdateBattery(sub, bat)
+                    _, _ = NewSubscribe().UpdateBattery(sub.Update(), sub, bat)
                     // 更新电池
-                    _, _ = NewBattery().UpdateSubscribe(bat, sub)
+                    _, _ = NewBattery().UpdateSubscribe(bat.Update(), bat, sub)
                 }
             }
         }
@@ -433,12 +433,12 @@ func (s *intelligentCabinetService) DoBusiness(br model.CabinetBrand, uidstr str
     bs := NewBattery(s.rider)
     if putin {
         // 放入电池
-        _, _ = ss.UpdateBattery(sub, nil)
-        _, _ = bs.UpdateSubscribe(bat, nil)
+        _, _ = ss.UpdateBattery(sub.Update(), sub, nil)
+        _, _ = bs.UpdateSubscribe(bat.Update(), bat, nil)
     } else {
         // 取走电池
-        _, _ = ss.UpdateBattery(sub, bat)
-        _, _ = bs.UpdateSubscribe(bat, sub)
+        _, _ = ss.UpdateBattery(sub.Update(), sub, bat)
+        _, _ = bs.UpdateSubscribe(bat.Update(), bat, sub)
     }
 
     return

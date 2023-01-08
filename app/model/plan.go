@@ -107,6 +107,7 @@ type PlanListRiderReq struct {
     Min          uint    `json:"min" swaggerignore:"true"`          // 最小天数
     Model        string  `json:"model" swaggerignore:"true"`        // 电池型号
     EbikeBrandID *uint64 `json:"ebikeBrandId" swaggerignore:"true"` // 电车型号
+    Intelligent  bool    `json:"intelligent" swaggerignore:"true"`  // 是否智能
 }
 
 // RiderPlanItem 骑士返回数据

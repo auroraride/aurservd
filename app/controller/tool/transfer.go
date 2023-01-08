@@ -7,11 +7,14 @@ package tool
 
 import (
     "context"
+    "github.com/auroraride/adapter"
     "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/app/service"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
+    "github.com/auroraride/aurservd/pkg/silk"
     "github.com/labstack/echo/v4"
     "net/http"
 )
@@ -30,6 +33,7 @@ func (*transfer) Subscribe(c echo.Context) (err error) {
     if c.Request().Method == "POST" {
         phone := c.FormValue("phone")
         intelligent := c.FormValue("intelligent") == "1"
+        bsn := c.FormValue("battery")
 
         ctx := context.Background()
         sub, _ := ent.Database.Subscribe.Query().Where(
@@ -42,12 +46,62 @@ func (*transfer) Subscribe(c echo.Context) (err error) {
             goto RENDER
         }
 
-        if !intelligent && (sub.BatterySn != nil || sub.BatteryID != nil) {
-            message = "当前骑手已绑定电池, 无法转为非智能套餐"
+        if sub.BatterySn != nil || sub.BatteryID != nil {
+            message = "当前骑手已绑定电池, 无法转化"
             goto RENDER
         }
 
-        sub, err = sub.Update().SetIntelligent(intelligent).Save(ctx)
+        var (
+            bat *ent.Battery
+            sn  *string
+            bid *uint64
+
+            bm = sub.Model
+        )
+
+        // 如果是智能电池, 解析并查找电池信息
+        if intelligent {
+            ab := adapter.ParseBatterySN(bsn)
+            if ab.Model == "" {
+                message = "电池编号解析错误"
+                goto RENDER
+            }
+
+            // 查找电池
+            bat, _ = service.NewBattery().QuerySn(ab.SN)
+            if bat == nil {
+                message = "未找到电池信息"
+                goto RENDER
+            }
+
+            // 设置电池信息
+            bm = ab.Model
+            sn = silk.String(ab.SN)
+            bid = silk.UInt64(bat.ID)
+        }
+
+        err = ent.WithTx(ctx, func(tx *ent.Tx) (err error) {
+            err = tx.Subscribe.UpdateOneID(sub.ID).
+                SetIntelligent(intelligent).
+                SetNillableBatteryID(bid).
+                SetNillableBatterySn(sn).
+                SetModel(bm).
+                Exec(ctx)
+            if err != nil {
+                return
+            }
+
+            // 更新电池信息
+            if intelligent && bat != nil {
+                err = tx.Battery.UpdateOneID(bat.ID).
+                    SetRiderID(sub.RiderID).
+                    SetSubscribeID(sub.ID).
+                    Exec(ctx)
+            }
+
+            return
+        })
+
         if err != nil {
             message = err.Error()
             goto RENDER
