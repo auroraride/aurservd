@@ -19,7 +19,7 @@ var Maintain = new(maintain)
 
 func (*maintain) Update(echo.Context) (err error) {
     // 标记为维护中
-    service.NewMaintain().SetMaintain(true)
+    service.NewMaintain().CreateMaintainFile()
 
     // 查询任务
     ticker := time.NewTicker(time.Second)
@@ -29,7 +29,6 @@ func (*maintain) Update(echo.Context) (err error) {
         // 是否有进行中的异步业务
         if async.IsDone() {
             ar.Quit <- true
-            service.NewMaintain().CreateMaintainFile()
             return
         }
     }

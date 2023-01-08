@@ -7,22 +7,20 @@ package service
 
 import (
     "fmt"
+    "github.com/auroraride/adapter/maintain"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/setting"
     "github.com/labstack/gommon/log"
-    "os"
 )
 
 type maintainService struct {
     *BaseService
-    maintainFile string
 }
 
 func NewMaintain(params ...any) *maintainService {
     return &maintainService{
-        BaseService:  newService(params...),
-        maintainFile: "runtime/MAINTAIN",
+        BaseService: newService(params...),
     }
 }
 
@@ -31,20 +29,17 @@ func (s *maintainService) SetMaintain(state bool) {
 }
 
 func (s *maintainService) UpdateMaintain() {
-    _, err := os.Stat(s.maintainFile)
-    if err == nil {
+    if maintain.Exists() {
         s.SetMaintain(false)
+        _ = maintain.Remove()
     }
 }
 
 func (s *maintainService) CreateMaintainFile() {
-    f, err := os.OpenFile(s.maintainFile, os.O_CREATE, 0644)
+    err := maintain.Create()
     if err != nil {
-        log.Errorf("%s create failed: %v", s.maintainFile, err)
+        log.Errorf("%s create failed: %v", maintain.File(), err)
         return
     }
-
-    defer func(f *os.File) {
-        _ = f.Close()
-    }(f)
+    NewMaintain().SetMaintain(true)
 }
