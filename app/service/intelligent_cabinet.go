@@ -76,7 +76,7 @@ func (s *intelligentCabinetService) exchangeCacheKey(uid string) string {
 }
 
 // Exchange 请求换电
-func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *ent.Subscribe, cab *ent.Cabinet) {
+func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *ent.Subscribe, old *ent.Battery, cab *ent.Cabinet) {
     id, err := uuid.Parse(uid)
     if err != nil {
         snag.Panic("请求参数错误")
@@ -129,7 +129,7 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 
     playload := &cabdef.ExchangeRequest{
         UUID:    id,
-        Battery: *sub.BatterySn,
+        Battery: old.Sn,
         Expires: model.IntelligentBusinessScanExpires,
         Timeout: model.IntelligentBusinessStepTimeout,
         Minsoc:  cache.Float64(model.SettingExchangeMinBattery),
@@ -163,12 +163,8 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
                     Voltage:     after.Voltage,
                 }
 
-                // 更新电池
-                bat, _ := bs.LoadOrCreate(putin)
-                if bat != nil {
-                    _, _ = NewBattery().UpdateSubscribe(bat.Update(), bat, nil)
-                    _, _ = NewSubscribe().UpdateBattery(sub.Update(), sub, nil)
-                }
+                // 清除旧电池分配信息
+                _ = old.Update().Unallocate()
 
                 go bs.RiderBusiness(true, putin, s.rider, cab, after.Ordinal)
             }
@@ -179,12 +175,10 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 
                 go bs.RiderBusiness(false, putout, s.rider, cab, before.Ordinal)
 
+                // 更新新电池信息
                 bat, _ := bs.LoadOrCreate(putout)
                 if bat != nil {
-                    // 更新订阅
-                    _, _ = NewSubscribe().UpdateBattery(sub.Update(), sub, bat)
-                    // 更新电池
-                    _, _ = NewBattery().UpdateSubscribe(bat.Update(), bat, sub)
+                    _ = bat.Update().Allocate(sub)
                 }
             }
         }
@@ -307,16 +301,14 @@ func (s *intelligentCabinetService) BusinessCensorX(bus adapter.Business, sub *e
         snag.Panic("套餐不匹配")
     }
 
+    // 获取电池
+    bat, _ = sub.QueryBattery().First(s.ctx)
+
     // 业务如果需要电池, 查找电池信息
     if bus.BatteryNeed() {
-        // 判定是否智能电池
-        if sub.BatterySn == nil || sub.BatteryID == nil {
-            snag.Panic("必须是智能电池")
-        }
-
-        bat, _ = NewBattery().QuerySn(*sub.BatterySn)
+        // 未找到当前绑定的电池信息
         if bat == nil {
-            snag.Panic("未找到电池信息")
+            snag.Panic(adapter.ErrorBatteryNotFound)
         }
 
         // 检查电池型号与电柜型号兼容
@@ -428,17 +420,15 @@ func (s *intelligentCabinetService) DoBusiness(br model.CabinetBrand, uidstr str
         Model: bat.Model,
     }
 
-    // 更新订阅和电池
-    ss := NewSubscribeWithRider(s.entRider)
-    bs := NewBattery(s.rider)
-    if putin {
-        // 放入电池
-        _, _ = ss.UpdateBattery(sub.Update(), sub, nil)
-        _, _ = bs.UpdateSubscribe(bat.Update(), bat, nil)
-    } else {
-        // 取走电池
-        _, _ = ss.UpdateBattery(sub.Update(), sub, bat)
-        _, _ = bs.UpdateSubscribe(bat.Update(), bat, sub)
+    // 放入电池
+    // TODO 是否有必要?
+    // if putin {
+    //     _, _ = bs.Unallocate(bat)
+    // }
+
+    // 取走电池
+    if !putin {
+        _ = bat.Update().Allocate(sub)
     }
 
     return

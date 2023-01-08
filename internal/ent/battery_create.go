@@ -109,20 +109,6 @@ func (bc *BatteryCreate) SetNillableCityID(u *uint64) *BatteryCreate {
 	return bc
 }
 
-// SetSubscribeID sets the "subscribe_id" field.
-func (bc *BatteryCreate) SetSubscribeID(u uint64) *BatteryCreate {
-	bc.mutation.SetSubscribeID(u)
-	return bc
-}
-
-// SetNillableSubscribeID sets the "subscribe_id" field if the given value is not nil.
-func (bc *BatteryCreate) SetNillableSubscribeID(u *uint64) *BatteryCreate {
-	if u != nil {
-		bc.SetSubscribeID(*u)
-	}
-	return bc
-}
-
 // SetRiderID sets the "rider_id" field.
 func (bc *BatteryCreate) SetRiderID(u uint64) *BatteryCreate {
 	bc.mutation.SetRiderID(u)
@@ -147,6 +133,20 @@ func (bc *BatteryCreate) SetCabinetID(u uint64) *BatteryCreate {
 func (bc *BatteryCreate) SetNillableCabinetID(u *uint64) *BatteryCreate {
 	if u != nil {
 		bc.SetCabinetID(*u)
+	}
+	return bc
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (bc *BatteryCreate) SetSubscribeID(u uint64) *BatteryCreate {
+	bc.mutation.SetSubscribeID(u)
+	return bc
+}
+
+// SetNillableSubscribeID sets the "subscribe_id" field if the given value is not nil.
+func (bc *BatteryCreate) SetNillableSubscribeID(u *uint64) *BatteryCreate {
+	if u != nil {
+		bc.SetSubscribeID(*u)
 	}
 	return bc
 }
@@ -196,11 +196,6 @@ func (bc *BatteryCreate) SetCity(c *City) *BatteryCreate {
 	return bc.SetCityID(c.ID)
 }
 
-// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
-func (bc *BatteryCreate) SetSubscribe(s *Subscribe) *BatteryCreate {
-	return bc.SetSubscribeID(s.ID)
-}
-
 // SetRider sets the "rider" edge to the Rider entity.
 func (bc *BatteryCreate) SetRider(r *Rider) *BatteryCreate {
 	return bc.SetRiderID(r.ID)
@@ -209,6 +204,11 @@ func (bc *BatteryCreate) SetRider(r *Rider) *BatteryCreate {
 // SetCabinet sets the "cabinet" edge to the Cabinet entity.
 func (bc *BatteryCreate) SetCabinet(c *Cabinet) *BatteryCreate {
 	return bc.SetCabinetID(c.ID)
+}
+
+// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
+func (bc *BatteryCreate) SetSubscribe(s *Subscribe) *BatteryCreate {
+	return bc.SetSubscribeID(s.ID)
 }
 
 // Mutation returns the BatteryMutation object of the builder.
@@ -379,29 +379,9 @@ func (bc *BatteryCreate) createSpec() (*Battery, *sqlgraph.CreateSpec) {
 		_node.CityID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := bc.mutation.SubscribeIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   battery.SubscribeTable,
-			Columns: []string{battery.SubscribeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: subscribe.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.SubscribeID = &nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
 	if nodes := bc.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
+			Rel:     sqlgraph.O2O,
 			Inverse: true,
 			Table:   battery.RiderTable,
 			Columns: []string{battery.RiderColumn},
@@ -437,6 +417,26 @@ func (bc *BatteryCreate) createSpec() (*Battery, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.CabinetID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := bc.mutation.SubscribeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   battery.SubscribeTable,
+			Columns: []string{battery.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.SubscribeID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -575,24 +575,6 @@ func (u *BatteryUpsert) ClearCityID() *BatteryUpsert {
 	return u
 }
 
-// SetSubscribeID sets the "subscribe_id" field.
-func (u *BatteryUpsert) SetSubscribeID(v uint64) *BatteryUpsert {
-	u.Set(battery.FieldSubscribeID, v)
-	return u
-}
-
-// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
-func (u *BatteryUpsert) UpdateSubscribeID() *BatteryUpsert {
-	u.SetExcluded(battery.FieldSubscribeID)
-	return u
-}
-
-// ClearSubscribeID clears the value of the "subscribe_id" field.
-func (u *BatteryUpsert) ClearSubscribeID() *BatteryUpsert {
-	u.SetNull(battery.FieldSubscribeID)
-	return u
-}
-
 // SetRiderID sets the "rider_id" field.
 func (u *BatteryUpsert) SetRiderID(v uint64) *BatteryUpsert {
 	u.Set(battery.FieldRiderID, v)
@@ -626,6 +608,24 @@ func (u *BatteryUpsert) UpdateCabinetID() *BatteryUpsert {
 // ClearCabinetID clears the value of the "cabinet_id" field.
 func (u *BatteryUpsert) ClearCabinetID() *BatteryUpsert {
 	u.SetNull(battery.FieldCabinetID)
+	return u
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (u *BatteryUpsert) SetSubscribeID(v uint64) *BatteryUpsert {
+	u.Set(battery.FieldSubscribeID, v)
+	return u
+}
+
+// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
+func (u *BatteryUpsert) UpdateSubscribeID() *BatteryUpsert {
+	u.SetExcluded(battery.FieldSubscribeID)
+	return u
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (u *BatteryUpsert) ClearSubscribeID() *BatteryUpsert {
+	u.SetNull(battery.FieldSubscribeID)
 	return u
 }
 
@@ -835,27 +835,6 @@ func (u *BatteryUpsertOne) ClearCityID() *BatteryUpsertOne {
 	})
 }
 
-// SetSubscribeID sets the "subscribe_id" field.
-func (u *BatteryUpsertOne) SetSubscribeID(v uint64) *BatteryUpsertOne {
-	return u.Update(func(s *BatteryUpsert) {
-		s.SetSubscribeID(v)
-	})
-}
-
-// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
-func (u *BatteryUpsertOne) UpdateSubscribeID() *BatteryUpsertOne {
-	return u.Update(func(s *BatteryUpsert) {
-		s.UpdateSubscribeID()
-	})
-}
-
-// ClearSubscribeID clears the value of the "subscribe_id" field.
-func (u *BatteryUpsertOne) ClearSubscribeID() *BatteryUpsertOne {
-	return u.Update(func(s *BatteryUpsert) {
-		s.ClearSubscribeID()
-	})
-}
-
 // SetRiderID sets the "rider_id" field.
 func (u *BatteryUpsertOne) SetRiderID(v uint64) *BatteryUpsertOne {
 	return u.Update(func(s *BatteryUpsert) {
@@ -895,6 +874,27 @@ func (u *BatteryUpsertOne) UpdateCabinetID() *BatteryUpsertOne {
 func (u *BatteryUpsertOne) ClearCabinetID() *BatteryUpsertOne {
 	return u.Update(func(s *BatteryUpsert) {
 		s.ClearCabinetID()
+	})
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (u *BatteryUpsertOne) SetSubscribeID(v uint64) *BatteryUpsertOne {
+	return u.Update(func(s *BatteryUpsert) {
+		s.SetSubscribeID(v)
+	})
+}
+
+// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
+func (u *BatteryUpsertOne) UpdateSubscribeID() *BatteryUpsertOne {
+	return u.Update(func(s *BatteryUpsert) {
+		s.UpdateSubscribeID()
+	})
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (u *BatteryUpsertOne) ClearSubscribeID() *BatteryUpsertOne {
+	return u.Update(func(s *BatteryUpsert) {
+		s.ClearSubscribeID()
 	})
 }
 
@@ -1276,27 +1276,6 @@ func (u *BatteryUpsertBulk) ClearCityID() *BatteryUpsertBulk {
 	})
 }
 
-// SetSubscribeID sets the "subscribe_id" field.
-func (u *BatteryUpsertBulk) SetSubscribeID(v uint64) *BatteryUpsertBulk {
-	return u.Update(func(s *BatteryUpsert) {
-		s.SetSubscribeID(v)
-	})
-}
-
-// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
-func (u *BatteryUpsertBulk) UpdateSubscribeID() *BatteryUpsertBulk {
-	return u.Update(func(s *BatteryUpsert) {
-		s.UpdateSubscribeID()
-	})
-}
-
-// ClearSubscribeID clears the value of the "subscribe_id" field.
-func (u *BatteryUpsertBulk) ClearSubscribeID() *BatteryUpsertBulk {
-	return u.Update(func(s *BatteryUpsert) {
-		s.ClearSubscribeID()
-	})
-}
-
 // SetRiderID sets the "rider_id" field.
 func (u *BatteryUpsertBulk) SetRiderID(v uint64) *BatteryUpsertBulk {
 	return u.Update(func(s *BatteryUpsert) {
@@ -1336,6 +1315,27 @@ func (u *BatteryUpsertBulk) UpdateCabinetID() *BatteryUpsertBulk {
 func (u *BatteryUpsertBulk) ClearCabinetID() *BatteryUpsertBulk {
 	return u.Update(func(s *BatteryUpsert) {
 		s.ClearCabinetID()
+	})
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (u *BatteryUpsertBulk) SetSubscribeID(v uint64) *BatteryUpsertBulk {
+	return u.Update(func(s *BatteryUpsert) {
+		s.SetSubscribeID(v)
+	})
+}
+
+// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
+func (u *BatteryUpsertBulk) UpdateSubscribeID() *BatteryUpsertBulk {
+	return u.Update(func(s *BatteryUpsert) {
+		s.UpdateSubscribeID()
+	})
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (u *BatteryUpsertBulk) ClearSubscribeID() *BatteryUpsertBulk {
+	return u.Update(func(s *BatteryUpsert) {
+		s.ClearSubscribeID()
 	})
 }
 

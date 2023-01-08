@@ -493,19 +493,23 @@ func (ru *RiderUpdate) AddFollowups(r ...*RiderFollowUp) *RiderUpdate {
 	return ru.AddFollowupIDs(ids...)
 }
 
-// AddBatteryIDs adds the "batteries" edge to the Battery entity by IDs.
-func (ru *RiderUpdate) AddBatteryIDs(ids ...uint64) *RiderUpdate {
-	ru.mutation.AddBatteryIDs(ids...)
+// SetBatteryID sets the "battery" edge to the Battery entity by ID.
+func (ru *RiderUpdate) SetBatteryID(id uint64) *RiderUpdate {
+	ru.mutation.SetBatteryID(id)
 	return ru
 }
 
-// AddBatteries adds the "batteries" edges to the Battery entity.
-func (ru *RiderUpdate) AddBatteries(b ...*Battery) *RiderUpdate {
-	ids := make([]uint64, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
+// SetNillableBatteryID sets the "battery" edge to the Battery entity by ID if the given value is not nil.
+func (ru *RiderUpdate) SetNillableBatteryID(id *uint64) *RiderUpdate {
+	if id != nil {
+		ru = ru.SetBatteryID(*id)
 	}
-	return ru.AddBatteryIDs(ids...)
+	return ru
+}
+
+// SetBattery sets the "battery" edge to the Battery entity.
+func (ru *RiderUpdate) SetBattery(b *Battery) *RiderUpdate {
+	return ru.SetBatteryID(b.ID)
 }
 
 // Mutation returns the RiderMutation object of the builder.
@@ -678,25 +682,10 @@ func (ru *RiderUpdate) RemoveFollowups(r ...*RiderFollowUp) *RiderUpdate {
 	return ru.RemoveFollowupIDs(ids...)
 }
 
-// ClearBatteries clears all "batteries" edges to the Battery entity.
-func (ru *RiderUpdate) ClearBatteries() *RiderUpdate {
-	ru.mutation.ClearBatteries()
+// ClearBattery clears the "battery" edge to the Battery entity.
+func (ru *RiderUpdate) ClearBattery() *RiderUpdate {
+	ru.mutation.ClearBattery()
 	return ru
-}
-
-// RemoveBatteryIDs removes the "batteries" edge to Battery entities by IDs.
-func (ru *RiderUpdate) RemoveBatteryIDs(ids ...uint64) *RiderUpdate {
-	ru.mutation.RemoveBatteryIDs(ids...)
-	return ru
-}
-
-// RemoveBatteries removes "batteries" edges to Battery entities.
-func (ru *RiderUpdate) RemoveBatteries(b ...*Battery) *RiderUpdate {
-	ids := make([]uint64, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
-	}
-	return ru.RemoveBatteryIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1361,12 +1350,12 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if ru.mutation.BatteriesCleared() {
+	if ru.mutation.BatteryCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.O2O,
 			Inverse: false,
-			Table:   rider.BatteriesTable,
-			Columns: []string{rider.BatteriesColumn},
+			Table:   rider.BatteryTable,
+			Columns: []string{rider.BatteryColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -1377,31 +1366,12 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ru.mutation.RemovedBatteriesIDs(); len(nodes) > 0 && !ru.mutation.BatteriesCleared() {
+	if nodes := ru.mutation.BatteryIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.O2O,
 			Inverse: false,
-			Table:   rider.BatteriesTable,
-			Columns: []string{rider.BatteriesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: battery.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := ru.mutation.BatteriesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   rider.BatteriesTable,
-			Columns: []string{rider.BatteriesColumn},
+			Table:   rider.BatteryTable,
+			Columns: []string{rider.BatteryColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -1889,19 +1859,23 @@ func (ruo *RiderUpdateOne) AddFollowups(r ...*RiderFollowUp) *RiderUpdateOne {
 	return ruo.AddFollowupIDs(ids...)
 }
 
-// AddBatteryIDs adds the "batteries" edge to the Battery entity by IDs.
-func (ruo *RiderUpdateOne) AddBatteryIDs(ids ...uint64) *RiderUpdateOne {
-	ruo.mutation.AddBatteryIDs(ids...)
+// SetBatteryID sets the "battery" edge to the Battery entity by ID.
+func (ruo *RiderUpdateOne) SetBatteryID(id uint64) *RiderUpdateOne {
+	ruo.mutation.SetBatteryID(id)
 	return ruo
 }
 
-// AddBatteries adds the "batteries" edges to the Battery entity.
-func (ruo *RiderUpdateOne) AddBatteries(b ...*Battery) *RiderUpdateOne {
-	ids := make([]uint64, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
+// SetNillableBatteryID sets the "battery" edge to the Battery entity by ID if the given value is not nil.
+func (ruo *RiderUpdateOne) SetNillableBatteryID(id *uint64) *RiderUpdateOne {
+	if id != nil {
+		ruo = ruo.SetBatteryID(*id)
 	}
-	return ruo.AddBatteryIDs(ids...)
+	return ruo
+}
+
+// SetBattery sets the "battery" edge to the Battery entity.
+func (ruo *RiderUpdateOne) SetBattery(b *Battery) *RiderUpdateOne {
+	return ruo.SetBatteryID(b.ID)
 }
 
 // Mutation returns the RiderMutation object of the builder.
@@ -2074,25 +2048,10 @@ func (ruo *RiderUpdateOne) RemoveFollowups(r ...*RiderFollowUp) *RiderUpdateOne 
 	return ruo.RemoveFollowupIDs(ids...)
 }
 
-// ClearBatteries clears all "batteries" edges to the Battery entity.
-func (ruo *RiderUpdateOne) ClearBatteries() *RiderUpdateOne {
-	ruo.mutation.ClearBatteries()
+// ClearBattery clears the "battery" edge to the Battery entity.
+func (ruo *RiderUpdateOne) ClearBattery() *RiderUpdateOne {
+	ruo.mutation.ClearBattery()
 	return ruo
-}
-
-// RemoveBatteryIDs removes the "batteries" edge to Battery entities by IDs.
-func (ruo *RiderUpdateOne) RemoveBatteryIDs(ids ...uint64) *RiderUpdateOne {
-	ruo.mutation.RemoveBatteryIDs(ids...)
-	return ruo
-}
-
-// RemoveBatteries removes "batteries" edges to Battery entities.
-func (ruo *RiderUpdateOne) RemoveBatteries(b ...*Battery) *RiderUpdateOne {
-	ids := make([]uint64, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
-	}
-	return ruo.RemoveBatteryIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -2781,12 +2740,12 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if ruo.mutation.BatteriesCleared() {
+	if ruo.mutation.BatteryCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.O2O,
 			Inverse: false,
-			Table:   rider.BatteriesTable,
-			Columns: []string{rider.BatteriesColumn},
+			Table:   rider.BatteryTable,
+			Columns: []string{rider.BatteryColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -2797,31 +2756,12 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ruo.mutation.RemovedBatteriesIDs(); len(nodes) > 0 && !ruo.mutation.BatteriesCleared() {
+	if nodes := ruo.mutation.BatteryIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.O2O,
 			Inverse: false,
-			Table:   rider.BatteriesTable,
-			Columns: []string{rider.BatteriesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: battery.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := ruo.mutation.BatteriesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   rider.BatteriesTable,
-			Columns: []string{rider.BatteriesColumn},
+			Table:   rider.BatteryTable,
+			Columns: []string{rider.BatteryColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

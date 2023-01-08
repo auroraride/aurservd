@@ -61,6 +61,7 @@ func (Battery) Fields() []ent.Field {
     return []ent.Field{
         field.Uint64("rider_id").Optional().Nillable().Comment("骑手ID"),
         field.Uint64("cabinet_id").Optional().Nillable().Comment("电柜ID"),
+        field.Uint64("subscribe_id").Optional().Nillable().Comment("订阅ID"),
         field.String("sn").Unique().Comment("电池编号"),
         field.Bool("enable").Default(true).Comment("是否启用"),
         field.String("model").Comment("电池型号"),
@@ -71,8 +72,9 @@ func (Battery) Fields() []ent.Field {
 // Edges of the Battery.
 func (Battery) Edges() []ent.Edge {
     return []ent.Edge{
-        edge.From("rider", Rider.Type).Ref("batteries").Unique().Field("rider_id").Comment("所属骑手"),
+        edge.From("rider", Rider.Type).Ref("battery").Unique().Field("rider_id").Comment("所属骑手"),
         edge.From("cabinet", Cabinet.Type).Ref("batteries").Unique().Field("cabinet_id").Comment("所属电柜"),
+        edge.From("subscribe", Subscribe.Type).Ref("battery").Unique().Field("subscribe_id").Comment("所属订阅"),
     }
 }
 
@@ -82,8 +84,7 @@ func (Battery) Mixin() []ent.Mixin {
         internal.DeleteMixin{},
         internal.Modifier{},
 
-        CityMixin{Optional: true},      // 所在城市
-        SubscribeMixin{Optional: true}, // 所在订阅
+        CityMixin{Optional: true}, // 所在城市
     }
 }
 

@@ -416,19 +416,23 @@ func (rc *RiderCreate) AddFollowups(r ...*RiderFollowUp) *RiderCreate {
 	return rc.AddFollowupIDs(ids...)
 }
 
-// AddBatteryIDs adds the "batteries" edge to the Battery entity by IDs.
-func (rc *RiderCreate) AddBatteryIDs(ids ...uint64) *RiderCreate {
-	rc.mutation.AddBatteryIDs(ids...)
+// SetBatteryID sets the "battery" edge to the Battery entity by ID.
+func (rc *RiderCreate) SetBatteryID(id uint64) *RiderCreate {
+	rc.mutation.SetBatteryID(id)
 	return rc
 }
 
-// AddBatteries adds the "batteries" edges to the Battery entity.
-func (rc *RiderCreate) AddBatteries(b ...*Battery) *RiderCreate {
-	ids := make([]uint64, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
+// SetNillableBatteryID sets the "battery" edge to the Battery entity by ID if the given value is not nil.
+func (rc *RiderCreate) SetNillableBatteryID(id *uint64) *RiderCreate {
+	if id != nil {
+		rc = rc.SetBatteryID(*id)
 	}
-	return rc.AddBatteryIDs(ids...)
+	return rc
+}
+
+// SetBattery sets the "battery" edge to the Battery entity.
+func (rc *RiderCreate) SetBattery(b *Battery) *RiderCreate {
+	return rc.SetBatteryID(b.ID)
 }
 
 // Mutation returns the RiderMutation object of the builder.
@@ -830,12 +834,12 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := rc.mutation.BatteriesIDs(); len(nodes) > 0 {
+	if nodes := rc.mutation.BatteryIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.O2O,
 			Inverse: false,
-			Table:   rider.BatteriesTable,
-			Columns: []string{rider.BatteriesColumn},
+			Table:   rider.BatteryTable,
+			Columns: []string{rider.BatteryColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

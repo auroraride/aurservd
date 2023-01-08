@@ -96,7 +96,6 @@ func (Subscribe) Fields() []ent.Field {
         field.String("formula").Optional().Nillable().Comment("计算公式"),
         field.Bool("need_contract").Default(false).Comment("是否需要签约"),
         field.Bool("intelligent").Default(false).Comment("是否智能柜套餐"),
-        field.String("battery_sn").Optional().Nillable().Comment("智能电池编号"),
     }
 }
 
@@ -114,6 +113,8 @@ func (Subscribe) Edges() []ent.Edge {
         edge.To("initial_order", Order.Type).Unique().Field("initial_order_id").Comment("对应初始订单"),
 
         edge.To("bills", EnterpriseBill.Type),
+
+        edge.To("battery", Battery.Type).Unique(),
     }
 }
 
@@ -133,9 +134,6 @@ func (Subscribe) Mixin() []ent.Mixin {
         // 电车
         EbikeBrandMixin{Optional: true},
         EbikeMixin{Optional: true},
-
-        // 电池
-        BatteryMixin{Optional: true},
     }
 }
 

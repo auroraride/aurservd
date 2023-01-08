@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/person"
@@ -90,8 +91,8 @@ type RiderEdges struct {
 	Stocks []*Stock `json:"stocks,omitempty"`
 	// Followups holds the value of the followups edge.
 	Followups []*RiderFollowUp `json:"followups,omitempty"`
-	// Batteries holds the value of the batteries edge.
-	Batteries []*Battery `json:"batteries,omitempty"`
+	// Battery holds the value of the battery edge.
+	Battery *Battery `json:"battery,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [11]bool
@@ -199,13 +200,17 @@ func (e RiderEdges) FollowupsOrErr() ([]*RiderFollowUp, error) {
 	return nil, &NotLoadedError{edge: "followups"}
 }
 
-// BatteriesOrErr returns the Batteries value or an error if the edge
-// was not loaded in eager-loading.
-func (e RiderEdges) BatteriesOrErr() ([]*Battery, error) {
+// BatteryOrErr returns the Battery value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e RiderEdges) BatteryOrErr() (*Battery, error) {
 	if e.loadedTypes[10] {
-		return e.Batteries, nil
+		if e.Battery == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: battery.Label}
+		}
+		return e.Battery, nil
 	}
-	return nil, &NotLoadedError{edge: "batteries"}
+	return nil, &NotLoadedError{edge: "battery"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -437,9 +442,9 @@ func (r *Rider) QueryFollowups() *RiderFollowUpQuery {
 	return (&RiderClient{config: r.config}).QueryFollowups(r)
 }
 
-// QueryBatteries queries the "batteries" edge of the Rider entity.
-func (r *Rider) QueryBatteries() *BatteryQuery {
-	return (&RiderClient{config: r.config}).QueryBatteries(r)
+// QueryBattery queries the "battery" edge of the Rider entity.
+func (r *Rider) QueryBattery() *BatteryQuery {
+	return (&RiderClient{config: r.config}).QueryBattery(r)
 }
 
 // Update returns a builder for updating this Rider.

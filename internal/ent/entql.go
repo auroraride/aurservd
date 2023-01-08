@@ -212,9 +212,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 			battery.FieldLastModifier: {Type: field.TypeJSON, Column: battery.FieldLastModifier},
 			battery.FieldRemark:       {Type: field.TypeString, Column: battery.FieldRemark},
 			battery.FieldCityID:       {Type: field.TypeUint64, Column: battery.FieldCityID},
-			battery.FieldSubscribeID:  {Type: field.TypeUint64, Column: battery.FieldSubscribeID},
 			battery.FieldRiderID:      {Type: field.TypeUint64, Column: battery.FieldRiderID},
 			battery.FieldCabinetID:    {Type: field.TypeUint64, Column: battery.FieldCabinetID},
+			battery.FieldSubscribeID:  {Type: field.TypeUint64, Column: battery.FieldSubscribeID},
 			battery.FieldSn:           {Type: field.TypeString, Column: battery.FieldSn},
 			battery.FieldEnable:       {Type: field.TypeBool, Column: battery.FieldEnable},
 			battery.FieldModel:        {Type: field.TypeString, Column: battery.FieldModel},
@@ -1338,7 +1338,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribe.FieldCabinetID:         {Type: field.TypeUint64, Column: subscribe.FieldCabinetID},
 			subscribe.FieldBrandID:           {Type: field.TypeUint64, Column: subscribe.FieldBrandID},
 			subscribe.FieldEbikeID:           {Type: field.TypeUint64, Column: subscribe.FieldEbikeID},
-			subscribe.FieldBatteryID:         {Type: field.TypeUint64, Column: subscribe.FieldBatteryID},
 			subscribe.FieldRiderID:           {Type: field.TypeUint64, Column: subscribe.FieldRiderID},
 			subscribe.FieldInitialOrderID:    {Type: field.TypeUint64, Column: subscribe.FieldInitialOrderID},
 			subscribe.FieldEnterpriseID:      {Type: field.TypeUint64, Column: subscribe.FieldEnterpriseID},
@@ -1364,7 +1363,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribe.FieldFormula:           {Type: field.TypeString, Column: subscribe.FieldFormula},
 			subscribe.FieldNeedContract:      {Type: field.TypeBool, Column: subscribe.FieldNeedContract},
 			subscribe.FieldIntelligent:       {Type: field.TypeBool, Column: subscribe.FieldIntelligent},
-			subscribe.FieldBatterySn:         {Type: field.TypeString, Column: subscribe.FieldBatterySn},
 		},
 	}
 	graph.Nodes[46] = &sqlgraph.Node{
@@ -1696,21 +1694,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"City",
 	)
 	graph.MustAddE(
-		"subscribe",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   battery.SubscribeTable,
-			Columns: []string{battery.SubscribeColumn},
-			Bidi:    false,
-		},
-		"Battery",
-		"Subscribe",
-	)
-	graph.MustAddE(
 		"rider",
 		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
+			Rel:     sqlgraph.O2O,
 			Inverse: true,
 			Table:   battery.RiderTable,
 			Columns: []string{battery.RiderColumn},
@@ -1730,6 +1716,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Battery",
 		"Cabinet",
+	)
+	graph.MustAddE(
+		"subscribe",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   battery.SubscribeTable,
+			Columns: []string{battery.SubscribeColumn},
+			Bidi:    false,
+		},
+		"Battery",
+		"Subscribe",
 	)
 	graph.MustAddE(
 		"cabinets",
@@ -3256,12 +3254,12 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"RiderFollowUp",
 	)
 	graph.MustAddE(
-		"batteries",
+		"battery",
 		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.O2O,
 			Inverse: false,
-			Table:   rider.BatteriesTable,
-			Columns: []string{rider.BatteriesColumn},
+			Table:   rider.BatteryTable,
+			Columns: []string{rider.BatteryColumn},
 			Bidi:    false,
 		},
 		"Rider",
@@ -3616,18 +3614,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Ebike",
 	)
 	graph.MustAddE(
-		"battery",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   subscribe.BatteryTable,
-			Columns: []string{subscribe.BatteryColumn},
-			Bidi:    false,
-		},
-		"Subscribe",
-		"Battery",
-	)
-	graph.MustAddE(
 		"rider",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -3722,6 +3708,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Subscribe",
 		"EnterpriseBill",
+	)
+	graph.MustAddE(
+		"battery",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   subscribe.BatteryTable,
+			Columns: []string{subscribe.BatteryColumn},
+			Bidi:    false,
+		},
+		"Subscribe",
+		"Battery",
 	)
 	graph.MustAddE(
 		"rider",
@@ -4859,11 +4857,6 @@ func (f *BatteryFilter) WhereCityID(p entql.Uint64P) {
 	f.Where(p.Field(battery.FieldCityID))
 }
 
-// WhereSubscribeID applies the entql uint64 predicate on the subscribe_id field.
-func (f *BatteryFilter) WhereSubscribeID(p entql.Uint64P) {
-	f.Where(p.Field(battery.FieldSubscribeID))
-}
-
 // WhereRiderID applies the entql uint64 predicate on the rider_id field.
 func (f *BatteryFilter) WhereRiderID(p entql.Uint64P) {
 	f.Where(p.Field(battery.FieldRiderID))
@@ -4872,6 +4865,11 @@ func (f *BatteryFilter) WhereRiderID(p entql.Uint64P) {
 // WhereCabinetID applies the entql uint64 predicate on the cabinet_id field.
 func (f *BatteryFilter) WhereCabinetID(p entql.Uint64P) {
 	f.Where(p.Field(battery.FieldCabinetID))
+}
+
+// WhereSubscribeID applies the entql uint64 predicate on the subscribe_id field.
+func (f *BatteryFilter) WhereSubscribeID(p entql.Uint64P) {
+	f.Where(p.Field(battery.FieldSubscribeID))
 }
 
 // WhereSn applies the entql string predicate on the sn field.
@@ -4908,20 +4906,6 @@ func (f *BatteryFilter) WhereHasCityWith(preds ...predicate.City) {
 	})))
 }
 
-// WhereHasSubscribe applies a predicate to check if query has an edge subscribe.
-func (f *BatteryFilter) WhereHasSubscribe() {
-	f.Where(entql.HasEdge("subscribe"))
-}
-
-// WhereHasSubscribeWith applies a predicate to check if query has an edge subscribe with a given conditions (other predicates).
-func (f *BatteryFilter) WhereHasSubscribeWith(preds ...predicate.Subscribe) {
-	f.Where(entql.HasEdgeWith("subscribe", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
 // WhereHasRider applies a predicate to check if query has an edge rider.
 func (f *BatteryFilter) WhereHasRider() {
 	f.Where(entql.HasEdge("rider"))
@@ -4944,6 +4928,20 @@ func (f *BatteryFilter) WhereHasCabinet() {
 // WhereHasCabinetWith applies a predicate to check if query has an edge cabinet with a given conditions (other predicates).
 func (f *BatteryFilter) WhereHasCabinetWith(preds ...predicate.Cabinet) {
 	f.Where(entql.HasEdgeWith("cabinet", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasSubscribe applies a predicate to check if query has an edge subscribe.
+func (f *BatteryFilter) WhereHasSubscribe() {
+	f.Where(entql.HasEdge("subscribe"))
+}
+
+// WhereHasSubscribeWith applies a predicate to check if query has an edge subscribe with a given conditions (other predicates).
+func (f *BatteryFilter) WhereHasSubscribeWith(preds ...predicate.Subscribe) {
+	f.Where(entql.HasEdgeWith("subscribe", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -10688,14 +10686,14 @@ func (f *RiderFilter) WhereHasFollowupsWith(preds ...predicate.RiderFollowUp) {
 	})))
 }
 
-// WhereHasBatteries applies a predicate to check if query has an edge batteries.
-func (f *RiderFilter) WhereHasBatteries() {
-	f.Where(entql.HasEdge("batteries"))
+// WhereHasBattery applies a predicate to check if query has an edge battery.
+func (f *RiderFilter) WhereHasBattery() {
+	f.Where(entql.HasEdge("battery"))
 }
 
-// WhereHasBatteriesWith applies a predicate to check if query has an edge batteries with a given conditions (other predicates).
-func (f *RiderFilter) WhereHasBatteriesWith(preds ...predicate.Battery) {
-	f.Where(entql.HasEdgeWith("batteries", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasBatteryWith applies a predicate to check if query has an edge battery with a given conditions (other predicates).
+func (f *RiderFilter) WhereHasBatteryWith(preds ...predicate.Battery) {
+	f.Where(entql.HasEdgeWith("battery", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -11606,11 +11604,6 @@ func (f *SubscribeFilter) WhereEbikeID(p entql.Uint64P) {
 	f.Where(p.Field(subscribe.FieldEbikeID))
 }
 
-// WhereBatteryID applies the entql uint64 predicate on the battery_id field.
-func (f *SubscribeFilter) WhereBatteryID(p entql.Uint64P) {
-	f.Where(p.Field(subscribe.FieldBatteryID))
-}
-
 // WhereRiderID applies the entql uint64 predicate on the rider_id field.
 func (f *SubscribeFilter) WhereRiderID(p entql.Uint64P) {
 	f.Where(p.Field(subscribe.FieldRiderID))
@@ -11736,11 +11729,6 @@ func (f *SubscribeFilter) WhereIntelligent(p entql.BoolP) {
 	f.Where(p.Field(subscribe.FieldIntelligent))
 }
 
-// WhereBatterySn applies the entql string predicate on the battery_sn field.
-func (f *SubscribeFilter) WhereBatterySn(p entql.StringP) {
-	f.Where(p.Field(subscribe.FieldBatterySn))
-}
-
 // WhereHasPlan applies a predicate to check if query has an edge plan.
 func (f *SubscribeFilter) WhereHasPlan() {
 	f.Where(entql.HasEdge("plan"))
@@ -11853,20 +11841,6 @@ func (f *SubscribeFilter) WhereHasEbikeWith(preds ...predicate.Ebike) {
 	})))
 }
 
-// WhereHasBattery applies a predicate to check if query has an edge battery.
-func (f *SubscribeFilter) WhereHasBattery() {
-	f.Where(entql.HasEdge("battery"))
-}
-
-// WhereHasBatteryWith applies a predicate to check if query has an edge battery with a given conditions (other predicates).
-func (f *SubscribeFilter) WhereHasBatteryWith(preds ...predicate.Battery) {
-	f.Where(entql.HasEdgeWith("battery", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
 // WhereHasRider applies a predicate to check if query has an edge rider.
 func (f *SubscribeFilter) WhereHasRider() {
 	f.Where(entql.HasEdge("rider"))
@@ -11973,6 +11947,20 @@ func (f *SubscribeFilter) WhereHasBills() {
 // WhereHasBillsWith applies a predicate to check if query has an edge bills with a given conditions (other predicates).
 func (f *SubscribeFilter) WhereHasBillsWith(preds ...predicate.EnterpriseBill) {
 	f.Where(entql.HasEdgeWith("bills", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasBattery applies a predicate to check if query has an edge battery.
+func (f *SubscribeFilter) WhereHasBattery() {
+	f.Where(entql.HasEdge("battery"))
+}
+
+// WhereHasBatteryWith applies a predicate to check if query has an edge battery with a given conditions (other predicates).
+func (f *SubscribeFilter) WhereHasBatteryWith(preds ...predicate.Battery) {
+	f.Where(entql.HasEdgeWith("battery", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

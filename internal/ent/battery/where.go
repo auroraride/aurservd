@@ -80,11 +80,6 @@ func CityID(v uint64) predicate.Battery {
 	return predicate.Battery(sql.FieldEQ(FieldCityID, v))
 }
 
-// SubscribeID applies equality check predicate on the "subscribe_id" field. It's identical to SubscribeIDEQ.
-func SubscribeID(v uint64) predicate.Battery {
-	return predicate.Battery(sql.FieldEQ(FieldSubscribeID, v))
-}
-
 // RiderID applies equality check predicate on the "rider_id" field. It's identical to RiderIDEQ.
 func RiderID(v uint64) predicate.Battery {
 	return predicate.Battery(sql.FieldEQ(FieldRiderID, v))
@@ -93,6 +88,11 @@ func RiderID(v uint64) predicate.Battery {
 // CabinetID applies equality check predicate on the "cabinet_id" field. It's identical to CabinetIDEQ.
 func CabinetID(v uint64) predicate.Battery {
 	return predicate.Battery(sql.FieldEQ(FieldCabinetID, v))
+}
+
+// SubscribeID applies equality check predicate on the "subscribe_id" field. It's identical to SubscribeIDEQ.
+func SubscribeID(v uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldEQ(FieldSubscribeID, v))
 }
 
 // Sn applies equality check predicate on the "sn" field. It's identical to SnEQ.
@@ -370,36 +370,6 @@ func CityIDNotNil() predicate.Battery {
 	return predicate.Battery(sql.FieldNotNull(FieldCityID))
 }
 
-// SubscribeIDEQ applies the EQ predicate on the "subscribe_id" field.
-func SubscribeIDEQ(v uint64) predicate.Battery {
-	return predicate.Battery(sql.FieldEQ(FieldSubscribeID, v))
-}
-
-// SubscribeIDNEQ applies the NEQ predicate on the "subscribe_id" field.
-func SubscribeIDNEQ(v uint64) predicate.Battery {
-	return predicate.Battery(sql.FieldNEQ(FieldSubscribeID, v))
-}
-
-// SubscribeIDIn applies the In predicate on the "subscribe_id" field.
-func SubscribeIDIn(vs ...uint64) predicate.Battery {
-	return predicate.Battery(sql.FieldIn(FieldSubscribeID, vs...))
-}
-
-// SubscribeIDNotIn applies the NotIn predicate on the "subscribe_id" field.
-func SubscribeIDNotIn(vs ...uint64) predicate.Battery {
-	return predicate.Battery(sql.FieldNotIn(FieldSubscribeID, vs...))
-}
-
-// SubscribeIDIsNil applies the IsNil predicate on the "subscribe_id" field.
-func SubscribeIDIsNil() predicate.Battery {
-	return predicate.Battery(sql.FieldIsNull(FieldSubscribeID))
-}
-
-// SubscribeIDNotNil applies the NotNil predicate on the "subscribe_id" field.
-func SubscribeIDNotNil() predicate.Battery {
-	return predicate.Battery(sql.FieldNotNull(FieldSubscribeID))
-}
-
 // RiderIDEQ applies the EQ predicate on the "rider_id" field.
 func RiderIDEQ(v uint64) predicate.Battery {
 	return predicate.Battery(sql.FieldEQ(FieldRiderID, v))
@@ -458,6 +428,36 @@ func CabinetIDIsNil() predicate.Battery {
 // CabinetIDNotNil applies the NotNil predicate on the "cabinet_id" field.
 func CabinetIDNotNil() predicate.Battery {
 	return predicate.Battery(sql.FieldNotNull(FieldCabinetID))
+}
+
+// SubscribeIDEQ applies the EQ predicate on the "subscribe_id" field.
+func SubscribeIDEQ(v uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldEQ(FieldSubscribeID, v))
+}
+
+// SubscribeIDNEQ applies the NEQ predicate on the "subscribe_id" field.
+func SubscribeIDNEQ(v uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldNEQ(FieldSubscribeID, v))
+}
+
+// SubscribeIDIn applies the In predicate on the "subscribe_id" field.
+func SubscribeIDIn(vs ...uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldIn(FieldSubscribeID, vs...))
+}
+
+// SubscribeIDNotIn applies the NotIn predicate on the "subscribe_id" field.
+func SubscribeIDNotIn(vs ...uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldNotIn(FieldSubscribeID, vs...))
+}
+
+// SubscribeIDIsNil applies the IsNil predicate on the "subscribe_id" field.
+func SubscribeIDIsNil() predicate.Battery {
+	return predicate.Battery(sql.FieldIsNull(FieldSubscribeID))
+}
+
+// SubscribeIDNotNil applies the NotNil predicate on the "subscribe_id" field.
+func SubscribeIDNotNil() predicate.Battery {
+	return predicate.Battery(sql.FieldNotNull(FieldSubscribeID))
 }
 
 // SnEQ applies the EQ predicate on the "sn" field.
@@ -677,39 +677,12 @@ func HasCityWith(preds ...predicate.City) predicate.Battery {
 	})
 }
 
-// HasSubscribe applies the HasEdge predicate on the "subscribe" edge.
-func HasSubscribe() predicate.Battery {
-	return predicate.Battery(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, SubscribeTable, SubscribeColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasSubscribeWith applies the HasEdge predicate on the "subscribe" edge with a given conditions (other predicates).
-func HasSubscribeWith(preds ...predicate.Subscribe) predicate.Battery {
-	return predicate.Battery(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(SubscribeInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, SubscribeTable, SubscribeColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
 // HasRider applies the HasEdge predicate on the "rider" edge.
 func HasRider() predicate.Battery {
 	return predicate.Battery(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, RiderTable, RiderColumn),
+			sqlgraph.Edge(sqlgraph.O2O, true, RiderTable, RiderColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -721,7 +694,7 @@ func HasRiderWith(preds ...predicate.Rider) predicate.Battery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(RiderInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, RiderTable, RiderColumn),
+			sqlgraph.Edge(sqlgraph.O2O, true, RiderTable, RiderColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
@@ -749,6 +722,33 @@ func HasCabinetWith(preds ...predicate.Cabinet) predicate.Battery {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(CabinetInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, CabinetTable, CabinetColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasSubscribe applies the HasEdge predicate on the "subscribe" edge.
+func HasSubscribe() predicate.Battery {
+	return predicate.Battery(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, SubscribeTable, SubscribeColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasSubscribeWith applies the HasEdge predicate on the "subscribe" edge with a given conditions (other predicates).
+func HasSubscribeWith(preds ...predicate.Subscribe) predicate.Battery {
+	return predicate.Battery(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(SubscribeInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, SubscribeTable, SubscribeColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

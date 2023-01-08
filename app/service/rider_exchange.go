@@ -76,9 +76,6 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
 
     // 判断设备是否智能设备
     if cab.Intelligent {
-        if sub.BatteryID == nil || sub.BatterySn == nil {
-            snag.Panic("未找到智能电池, 请先绑定电池")
-        }
         // 判定是否可以换电
         NewIntelligentCabinet(s.rider).BusinessCensorX(adapter.BusinessExchange, sub, cab)
         uid, info = NewIntelligentCabinet(s.rider).ExchangeUsable(sub.Model, cab.Serial, model.CabinetBrand(cab.Brand))
@@ -190,11 +187,13 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
     }
 
     var (
-        cab  *ent.Cabinet
-        info model.RiderExchangeInfo
-        tcab *ec.Cabinet
-        tex  *ec.Exchange
-        t    *ec.Task
+        cab   *ent.Cabinet
+        info  model.RiderExchangeInfo
+        tcab  *ec.Cabinet
+        tex   *ec.Exchange
+        t     *ec.Task
+        bat   *ent.Battery
+        batSN *string
     )
 
     // 尝试从缓存获取智能电柜换电信息
@@ -203,7 +202,8 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
     // 判断设备是否智能设备
     if err == nil {
         cab = NewCabinet().QueryOneSerialX(info.Serial)
-        NewIntelligentCabinet(s.rider).BusinessCensorX(adapter.BusinessExchange, sub, cab)
+        bat = NewIntelligentCabinet(s.rider).BusinessCensorX(adapter.BusinessExchange, sub, cab)
+        batSN = silk.String(bat.Sn)
 
         tex = &ec.Exchange{
             Model:       sub.Model,
@@ -281,7 +281,7 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
         SetSubscribeID(s.subscribe.ID).
         SetAlternative(tex.Alternative).
         SetStartAt(time.Now()).
-        SetNillableRiderBattery(sub.BatterySn).
+        SetNillableRiderBattery(batSN).
         Save(s.ctx)
 
     if s.exchange == nil {
@@ -289,11 +289,8 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
     }
 
     if cab.Intelligent {
-        if sub.BatteryID == nil || sub.BatterySn == nil {
-            snag.Panic("未找到智能电池, 请先绑定电池")
-        }
         go async.WithTask(func() {
-            NewIntelligentCabinet(s.rider).Exchange(req.UUID, s.exchange, sub, cab)
+            NewIntelligentCabinet(s.rider).Exchange(req.UUID, s.exchange, sub, bat, cab)
         })
     } else {
         // 开始任务

@@ -46,14 +46,13 @@ func (*transfer) Subscribe(c echo.Context) (err error) {
             goto RENDER
         }
 
-        if sub.BatterySn != nil || sub.BatteryID != nil {
+        if exists, _ := sub.QueryBattery().Exist(ctx); exists {
             message = "当前骑手已绑定电池, 无法转化"
             goto RENDER
         }
 
         var (
             bat *ent.Battery
-            sn  *string
             bid *uint64
 
             bm = sub.Model
@@ -76,7 +75,6 @@ func (*transfer) Subscribe(c echo.Context) (err error) {
 
             // 设置电池信息
             bm = ab.Model
-            sn = silk.String(ab.SN)
             bid = silk.UInt64(bat.ID)
         }
 
@@ -84,7 +82,6 @@ func (*transfer) Subscribe(c echo.Context) (err error) {
             err = tx.Subscribe.UpdateOneID(sub.ID).
                 SetIntelligent(intelligent).
                 SetNillableBatteryID(bid).
-                SetNillableBatterySn(sn).
                 SetModel(bm).
                 Exec(ctx)
             if err != nil {
@@ -93,10 +90,7 @@ func (*transfer) Subscribe(c echo.Context) (err error) {
 
             // 更新电池信息
             if intelligent && bat != nil {
-                err = tx.Battery.UpdateOneID(bat.ID).
-                    SetRiderID(sub.RiderID).
-                    SetSubscribeID(sub.ID).
-                    Exec(ctx)
+                err = tx.Battery.UpdateOneID(bat.ID).Allocate(sub)
             }
 
             return

@@ -15,7 +15,6 @@ import (
     "github.com/auroraride/aurservd/internal/ent/battery"
     "github.com/auroraride/aurservd/internal/ent/city"
     "github.com/auroraride/aurservd/internal/ent/rider"
-    "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/labstack/echo/v4"
@@ -111,15 +110,6 @@ func (s *batteryService) SyncPutin(sn string, cabinetID uint64, ordinal int) (ba
 
     // 更新电池电柜信息
     bat, err = bat.Update().SetCabinetID(cabinetID).SetOrdinal(ordinal).ClearRiderID().ClearSubscribeID().Save(s.ctx)
-    if err != nil {
-        return
-    }
-
-    // 如果有绑定中的订阅, 清除订阅中的电池信息
-    if berr := ent.Database.Subscribe.Update().Where(subscribe.BatteryID(bat.ID)).ClearBatteryID().ClearBatterySn().Exec(s.ctx); berr != nil {
-        log.Errorf("清除订阅电池信息失败: %v", berr)
-    }
-
     return
 }
 
@@ -355,20 +345,12 @@ func (s *batteryService) Bind(req *model.BatteryBind) {
 
     // diff
     var before, after string
+    err := bat.Update().Allocate(sub)
+    if err != nil {
+        snag.Panic(err)
+    }
 
-    ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
-        // 绑定骑手
-        _, err = NewSubscribeWithModifier(s.modifier).UpdateBattery(tx.Subscribe.UpdateOneID(sub.ID), sub, bat)
-        if err != nil {
-            return
-        }
-
-        after = "新电池: " + bat.Sn
-
-        // 更新电池
-        _, err = NewBattery(s.modifier, s.rider).UpdateSubscribe(tx.Battery.UpdateOneID(bat.ID), bat, sub)
-        return
-    })
+    after = "新电池: " + bat.Sn
 
     go logging.NewOperateLog().
         SetOperate(model.OperateBindBattery).
@@ -389,14 +371,4 @@ func (s *batteryService) RiderDetail(riderID uint64) (res model.BatteryDetail) {
         }
     }
     return
-}
-
-// UpdateSubscribe 更新订阅
-func (s *batteryService) UpdateSubscribe(updater *ent.BatteryUpdateOne, bat *ent.Battery, sub *ent.Subscribe) (*ent.Battery, error) {
-    if sub == nil {
-        updater.ClearSubscribeID().ClearRiderID()
-    } else {
-        updater.SetSubscribeID(sub.ID).SetRiderID(sub.RiderID)
-    }
-    return updater.Save(s.ctx)
 }

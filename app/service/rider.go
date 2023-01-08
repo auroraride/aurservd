@@ -391,7 +391,7 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
             cq.Where(contract.DeletedAtIsNil(), contract.Status(model.ContractStatusSuccess.Value())).Order(ent.Desc(contract.FieldCreatedAt))
         }).
         WithEnterprise().
-        WithBatteries().
+        WithBattery().
         Order(ent.Desc(rider.FieldCreatedAt))
     if req.Keyword != nil {
         info["关键词"] = *req.Keyword
@@ -580,7 +580,7 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
 
     if req.BatteryID != 0 {
         info["电池型号"] = ent.NewExportInfo(req.BatteryID, battery.Table)
-        q.Where(rider.HasBatteriesWith(battery.ID(req.BatteryID)))
+        q.Where(rider.HasBatteryWith(battery.ID(req.BatteryID)))
     }
     return
 }
@@ -700,9 +700,8 @@ func (s *riderService) detailRiderItem(item *ent.Rider) model.RiderItem {
     }
 
     // 获取电池
-    bats := item.Edges.Batteries
-    if len(bats) > 0 {
-        bat := bats[0]
+    bat := item.Edges.Battery
+    if bat != nil {
         ri.Battery = &model.Battery{
             ID:    bat.ID,
             SN:    bat.Sn,
