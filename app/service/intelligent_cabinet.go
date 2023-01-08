@@ -123,8 +123,8 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
             SetDuration(int(duration)).
             SetPutoutBattery(putout).
             SetPutinBattery(putin).
+            SetInfo(ex.Info).
             Exec(s.ctx)
-
     }()
 
     playload := &cabdef.ExchangeRequest{
