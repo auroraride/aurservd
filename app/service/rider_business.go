@@ -276,8 +276,8 @@ func (s *riderBusinessService) batteryDetect() (ds ec.DoorStatus) {
         s.empty.Voltage = pv
     }
 
-    // 判断是否 有电池 并且 (电压大于40 或 电量大于0)
-    if cbin.Battery && (pv > 40 || pe > 0) {
+    // 曹博文说: 判断是否 有电池 并且 (电压大于40 或 电量大于0)
+    if cbin.Battery && (pv > 45 || pe > 0) {
         return ec.DoorStatusClose
     }
 
