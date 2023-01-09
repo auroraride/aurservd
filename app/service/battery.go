@@ -108,6 +108,9 @@ func (s *batteryService) SyncPutin(sn string, cabinetID uint64, ordinal int) (ba
         return
     }
 
+    // 移除别的电池信息
+    s.SyncPutout(cabinetID, ordinal)
+
     // 更新电池电柜信息
     bat, err = bat.Update().SetCabinetID(cabinetID).SetOrdinal(ordinal).ClearRiderID().ClearSubscribeID().Save(s.ctx)
     return
