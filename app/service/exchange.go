@@ -192,10 +192,10 @@ func (s *exchangeService) RiderList(riderID uint64, req model.PaginationReq) *mo
                     }
                 }
             }
-            store := item.Edges.Store
-            if store != nil {
+            st := item.Edges.Store
+            if st != nil {
                 res.Type = "门店"
-                res.Name = store.Name
+                res.Name = st.Name
             }
 
             return res
@@ -455,6 +455,10 @@ func (s *exchangeService) listDetail(item *ent.Exchange) (res model.ExchangeMana
                 res.Error = "未找到换电信息"
             }
         }
+    }
+
+    if item.Remark != "" {
+        res.Error = item.Remark
     }
     return res
 }
