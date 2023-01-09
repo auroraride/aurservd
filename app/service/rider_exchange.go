@@ -262,6 +262,10 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
         tex = t.Exchange
     }
 
+    if cab == nil || cab.CityID == nil {
+        snag.Panic("未找到电柜信息, 请重试")
+    }
+
     // 记录换电人
     // TODO 超时处理
     s.exchange, _ = ent.Database.Exchange.

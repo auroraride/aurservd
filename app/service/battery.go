@@ -260,16 +260,19 @@ func (s *batteryService) listFilter(req model.BatteryFilter) (q *ent.BatteryQuer
 func (s *batteryService) List(req *model.BatteryListReq) *model.PaginationRes {
     q, _ := s.listFilter(req.BatteryFilter)
     return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Battery) (res model.BatteryListRes) {
-        c := item.Edges.City
         res = model.BatteryListRes{
-            ID: item.ID,
-            City: model.City{
-                ID:   c.ID,
-                Name: c.Name,
-            },
+            ID:     item.ID,
             Model:  item.Model,
             Enable: item.Enable,
             SN:     item.Sn,
+        }
+
+        c := item.Edges.City
+        if c != nil {
+            res.City = &model.City{
+                ID:   c.ID,
+                Name: c.Name,
+            }
         }
 
         r := item.Edges.Rider

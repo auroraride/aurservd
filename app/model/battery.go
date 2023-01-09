@@ -32,7 +32,7 @@ type BatteryListReq struct {
 
 type BatteryListRes struct {
     ID      uint64            `json:"id"`
-    City    City              `json:"city"`              // 城市
+    City    *City             `json:"city,omitempty"`    // 城市
     Model   string            `json:"model"`             // 型号
     Enable  bool              `json:"enable"`            // 是否启用
     SN      string            `json:"sn"`                // 编号
