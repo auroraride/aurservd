@@ -543,7 +543,7 @@ func (s *riderExchangeService) ProcessOpenBin() *riderExchangeService {
     index := silk.Pointer(bin.Index)
 
     status, err := NewCabinet().DoorOperate(&model.CabinetDoorOperateReq{
-        ID:        &id,
+        ID:        id,
         Index:     index,
         Remark:    fmt.Sprintf("骑手换电 - %s", reason),
         Operation: &operation,
@@ -573,7 +573,7 @@ func (s *riderExchangeService) ProcessOpenBin() *riderExchangeService {
 
     provider.AutoBinFault(operator, s.cabinet, bin.Index, status, func() {
         _, _ = NewCabinet().DoorOperate(&model.CabinetDoorOperateReq{
-            ID:        &id,
+            ID:        id,
             Index:     index,
             Remark:    fmt.Sprintf("换电仓门处理失败自动锁仓 - %s", s.rider.Phone),
             Operation: silk.Pointer(model.CabinetDoorOperateLock),

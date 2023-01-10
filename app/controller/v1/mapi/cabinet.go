@@ -214,3 +214,19 @@ func (*cabinet) Maintain(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.CabinetMaintainReq](c)
     return ctx.SendResponse(service.NewCabinetMgrWithModifier(ctx.Modifier).Maintain(req))
 }
+
+// OpenBind
+// @ID           ManagerCabinetOpenBind
+// @Router       /manager/v1/cabinet/openbind [POST]
+// @Summary      M5013 开仓取电池并绑定骑手 <仅智能电柜可用, 普通电柜无法请求, 判定标准: `intelligent = true`>
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        body  body     model.CabinetOpenBindReq  true  "操作请求"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*cabinet) OpenBind(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.CabinetOpenBindReq](c)
+    service.NewIntelligentCabinet(ctx.Modifier).OpenBind(req)
+    return ctx.SendResponse()
+}

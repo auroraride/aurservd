@@ -63,6 +63,14 @@ func (s *batteryService) QuerySn(sn string) (bat *ent.Battery, err error) {
     return s.orm.Query().Where(battery.Sn(sn)).First(s.ctx)
 }
 
+func (s *batteryService) QuerySnX(sn string) (bat *ent.Battery) {
+    bat, _ = s.QuerySn(sn)
+    if bat == nil {
+        snag.Panic("未找到电池")
+    }
+    return
+}
+
 // LoadOrCreate 加载电池, 若电池不存在则先创建电池, 若电池存在, 则不更新电池直接返回
 func (s *batteryService) LoadOrCreate(sn string, params ...any) (bat *ent.Battery, err error) {
     bat, _ = s.QuerySn(sn)
@@ -322,21 +330,38 @@ func (s *batteryService) RiderBusiness(putin bool, sn string, r *model.Rider, ca
         Send()
 }
 
-// Bind 绑定骑手
-func (s *batteryService) Bind(req *model.BatteryBind) {
-    // 查找订阅
-    sub := NewSubscribe().QueryEffectiveX(req.RiderID, ent.SubscribeQueryWithBattery, ent.SubscribeQueryWithRider)
+// RiderDetail 获取电池详情
+func (s *batteryService) RiderDetail(riderID uint64) (res model.BatteryDetail) {
+    bat, _ := s.QueryRiderID(riderID)
+    if bat != nil {
+        res = model.BatteryDetail{
+            ID:    bat.ID,
+            Model: bat.Model,
+            SN:    bat.Sn,
+            Soc:   0,
+        }
+    }
+    return
+}
 
-    if !sub.Intelligent {
-        snag.Panic("非智能柜套餐, 无法绑定智能电池")
+func (s *batteryService) Bind(bat *ent.Battery, sub *ent.Subscribe, rd *ent.Rider) {
+    err := bat.Update().Allocate(sub)
+    if err != nil {
+        snag.Panic(err)
     }
 
-    // // 查看是否冲突
-    // if exists, _ := ent.Database.Battery.Query().Where(battery.RiderID(sub.RiderID)).Exist(s.ctx); exists {
-    //     snag.Panic("当前骑手有绑定中的电池, 无法重复绑定")
-    // }
+    go logging.NewOperateLog().
+        SetOperate(model.OperateBindBattery).
+        SetRef(rd).
+        SetDiff("", "新电池: "+bat.Sn).
+        SetModifier(s.modifier).
+        Send()
+}
 
-    rd := sub.Edges.Rider
+// BindRequest 绑定骑手
+func (s *batteryService) BindRequest(req *model.BatteryBind) {
+    // 查找订阅
+    sub := NewSubscribe().QueryEffectiveIntelligentX(req.RiderID, ent.SubscribeQueryWithBattery, ent.SubscribeQueryWithRider)
 
     // 查找电池
     bat := NewBattery().QueryIDX(req.BatteryID)
@@ -349,32 +374,31 @@ func (s *batteryService) Bind(req *model.BatteryBind) {
         snag.Panic("电柜中的电池无法手动绑定骑手")
     }
 
-    // diff
-    var before, after string
-    err := bat.Update().Allocate(sub)
+    s.Bind(bat, sub, sub.Edges.Rider)
+}
+
+func (s *batteryService) Unbind(bat *ent.Battery, rd *ent.Rider) {
+    err := bat.Update().Unallocate()
     if err != nil {
         snag.Panic(err)
     }
 
-    after = "新电池: " + bat.Sn
-
     go logging.NewOperateLog().
-        SetOperate(model.OperateBindBattery).
+        SetOperate(model.OperateUnbindBattery).
         SetRef(rd).
-        SetDiff(before, after).
+        SetDiff("旧电池: "+bat.Sn, "无电池").
         SetModifier(s.modifier).
         Send()
 }
 
-func (s *batteryService) RiderDetail(riderID uint64) (res model.BatteryDetail) {
-    bat, _ := s.QueryRiderID(riderID)
-    if bat != nil {
-        res = model.BatteryDetail{
-            ID:    bat.ID,
-            Model: bat.Model,
-            SN:    bat.Sn,
-            Soc:   0,
-        }
+func (s *batteryService) UnbindRequest(req *model.BatteryUnbindRequest) {
+    // 查找订阅
+    sub := NewSubscribe().QueryEffectiveIntelligentX(req.RiderID, ent.SubscribeQueryWithBattery, ent.SubscribeQueryWithRider, ent.SubscribeQueryWithBattery)
+
+    bat := sub.Edges.Battery
+    if bat == nil {
+        snag.Panic("未找到绑定的电池")
     }
-    return
+
+    s.Unbind(bat, sub.Edges.Rider)
 }

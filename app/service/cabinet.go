@@ -11,14 +11,11 @@ import (
     "entgo.io/ent/dialect/sql/sqljson"
     "errors"
     "fmt"
-    "github.com/alibabacloud-go/tea/tea"
-    sls "github.com/aliyun/aliyun-log-go-sdk"
     "github.com/auroraride/adapter/defs/cabdef"
     "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/provider"
-    "github.com/auroraride/aurservd/internal/ali"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/batterymodel"
@@ -396,7 +393,7 @@ func (s *cabinetService) DoorOperate(req *model.CabinetDoorOperateReq, operator 
     opId := shortuuid.New()
     now := time.Now()
     // 查找柜子和仓位
-    item := s.QueryOne(*req.ID)
+    item := s.QueryOne(req.ID)
     if len(item.Bin) < *req.Index {
         err = errors.New("柜门不存在")
         return
@@ -445,30 +442,21 @@ func (s *cabinetService) DoorOperate(req *model.CabinetDoorOperateReq, operator 
     }
     go func() {
         // 上传日志
-        slsCfg := ar.Config.Aliyun.Sls
-        lg := &sls.LogGroup{
-            Logs: []*sls.Log{{
-                Time: tea.Uint32(uint32(now.Unix())),
-                Contents: logging.GenerateLogContent(&logging.DoorOperateLog{
-                    ID:            opId,
-                    Brand:         brand.String(),
-                    OperatorName:  operator.Name,
-                    OperatorID:    operator.ID,
-                    OperatorPhone: operator.Phone,
-                    Serial:        item.Serial,
-                    Name:          item.Bin[*req.Index].Name,
-                    Operation:     req.Operation.String(),
-                    OperatorRole:  operator.Role,
-                    Success:       state,
-                    Remark:        req.Remark,
-                    Time:          now.Format(carbon.DateTimeLayout),
-                }),
-            }},
+        dlog := &logging.DoorOperateLog{
+            ID:            opId,
+            Brand:         brand.String(),
+            OperatorName:  operator.Name,
+            OperatorID:    operator.ID,
+            OperatorPhone: operator.Phone,
+            Serial:        item.Serial,
+            Name:          item.Bin[*req.Index].Name,
+            Operation:     req.Operation.String(),
+            OperatorRole:  operator.Role,
+            Success:       state,
+            Remark:        req.Remark,
+            Time:          now.Format(carbon.DateTimeLayout),
         }
-        err = ali.NewSls().PutLogs(slsCfg.Project, slsCfg.DoorLog, lg)
-        if err != nil {
-            log.Error(err)
-        }
+        dlog.Send()
     }()
     return
 }

@@ -8,20 +8,15 @@ package service
 import (
     "context"
     "fmt"
-    "github.com/alibabacloud-go/tea/tea"
-    sls "github.com/aliyun/aliyun-log-go-sdk"
     "github.com/auroraride/adapter/defs/cabdef"
     "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/provider"
-    "github.com/auroraride/aurservd/internal/ali"
-    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/golang-module/carbon/v2"
     "github.com/lithammer/shortuuid/v4"
-    log "github.com/sirupsen/logrus"
     "time"
 )
 
@@ -87,11 +82,9 @@ func (s *cabinetMgrService) BinOperate(req *model.CabinetDoorOperateReq) bool {
         snag.Panic("权限校验失败")
     }
 
-    ec.BusyFromIDX(*req.ID)
-
     cs := NewCabinetWithModifier(s.modifier)
 
-    cab := cs.QueryOne(*req.ID)
+    cab := cs.QueryOne(req.ID)
 
     if model.CabinetStatus(cab.Status) != model.CabinetStatusMaintenance {
         snag.Panic("非操作维护中不可操作")
@@ -107,11 +100,13 @@ func (s *cabinetMgrService) BinOperate(req *model.CabinetDoorOperateReq) bool {
         case model.CabinetDoorOperateUnlock:
             op = cabdef.OperateBinEnable
         }
-        return NewIntelligentCabinet(s.modifier).Operate(model.CabinetBrand(cab.Brand), op, cab.Serial, *req.Index+1, req.Remark)
+        return NewIntelligentCabinet(s.modifier).Operate(cab, op, req)
     }
 
+    ec.BusyFromIDX(req.ID)
+
     task := &ec.Task{
-        CabinetID: *req.ID,
+        CabinetID: req.ID,
         Serial:    cab.Serial,
         Cabinet:   cab.GetTaskInfo(),
     }
@@ -219,29 +214,19 @@ func (s *cabinetMgrService) Reboot(req *model.IDPostReq) bool {
     brand := model.CabinetBrand(cab.Brand)
     go func() {
         // 上传日志
-        slsCfg := ar.Config.Aliyun.Sls
-        lg := &sls.LogGroup{
-            Logs: []*sls.Log{{
-                Time: tea.Uint32(uint32(now.Unix())),
-                Contents: logging.GenerateLogContent(&logging.DoorOperateLog{
-                    ID:            opId,
-                    Brand:         brand.String(),
-                    OperatorName:  s.modifier.Name,
-                    OperatorID:    s.modifier.ID,
-                    OperatorPhone: s.modifier.Phone,
-                    OperatorRole:  model.CabinetDoorOperatorRoleManager,
-                    Serial:        cab.Serial,
-                    Operation:     "重启",
-                    Success:       status,
-                    Time:          now.Format(carbon.DateTimeLayout),
-                }),
-            }},
+        dlog := &logging.DoorOperateLog{
+            ID:            opId,
+            Brand:         brand.String(),
+            OperatorName:  s.modifier.Name,
+            OperatorID:    s.modifier.ID,
+            OperatorPhone: s.modifier.Phone,
+            OperatorRole:  model.CabinetDoorOperatorRoleManager,
+            Serial:        cab.Serial,
+            Operation:     "重启",
+            Success:       status,
+            Time:          now.Format(carbon.DateTimeLayout),
         }
-        err := ali.NewSls().PutLogs(slsCfg.Project, slsCfg.DoorLog, lg)
-        if err != nil {
-            log.Error(err)
-            return
-        }
+        dlog.Send()
     }()
 
     return status

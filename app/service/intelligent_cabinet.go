@@ -11,13 +11,16 @@ import (
     "github.com/auroraride/adapter"
     "github.com/auroraride/adapter/defs/cabdef"
     "github.com/auroraride/aurservd/app/ec"
+    "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/go-resty/resty/v2"
+    "github.com/golang-module/carbon/v2"
     "github.com/google/uuid"
+    "github.com/lithammer/shortuuid/v4"
     log "github.com/sirupsen/logrus"
     "golang.org/x/exp/slices"
     "time"
@@ -434,15 +437,84 @@ func (s *intelligentCabinetService) DoBusiness(br model.CabinetBrand, uidstr str
     return
 }
 
-func (s *intelligentCabinetService) Operate(br model.CabinetBrand, op cabdef.Operate, serial string, ordinal int, remark string) bool {
+func (s *intelligentCabinetService) Operate(cab *ent.Cabinet, op cabdef.Operate, req *model.CabinetDoorOperateReq) (success bool) {
+    if s.modifier == nil {
+        return false
+    }
+
+    now := time.Now()
+    br := model.CabinetBrand(cab.Brand)
+    ordinal := *req.Index + 1
+
+    go func() {
+        // 上传日志
+        dlog := &logging.DoorOperateLog{
+            ID:            shortuuid.New(),
+            Brand:         br.String(),
+            OperatorName:  s.modifier.Name,
+            OperatorID:    s.modifier.ID,
+            OperatorPhone: s.modifier.Phone,
+            Serial:        cab.Serial,
+            Name:          cab.Bin[ordinal-1].Name,
+            Operation:     req.Operation.String(),
+            OperatorRole:  model.CabinetDoorOperatorRoleManager,
+            Success:       success,
+            Remark:        req.Remark,
+            Time:          now.Format(carbon.DateTimeLayout),
+        }
+        dlog.Send()
+    }()
+
     playload := &cabdef.OperateBinRequest{
         Operate: op,
         Ordinal: silk.Int(ordinal),
-        Serial:  serial,
-        Remark:  remark,
+        Serial:  cab.Serial,
+        Remark:  req.Remark,
     }
 
     _, err := adapter.Post[[]*cabdef.BinOperateResult](s.GetCabinetAdapterUrlX(br, "/operate/bin"), s.GetAdapterUserX(), playload)
 
-    return err == nil
+    success = err == nil
+    return
+}
+
+// OpenBind 开电池仓并绑定骑手
+func (s *intelligentCabinetService) OpenBind(req *model.CabinetOpenBindReq) {
+    bs := NewBattery(s.modifier)
+    // 查找骑手
+    rd := NewRider().QueryPhoneX(req.Phone)
+    // 查找订阅
+    sub := NewSubscribe().QueryEffectiveIntelligentX(rd.ID, ent.SubscribeQueryWithBattery, ent.SubscribeQueryWithRider)
+    // 查询电柜
+    cab := NewCabinet().QueryOne(req.ID)
+    // 查询电柜最新信息
+    info, _ := s.Bininfo(model.CabinetBrand(cab.Brand), cab.Serial, *req.Index+1)
+    if info == nil {
+        snag.Panic("获取最新仓位信息失败")
+    }
+    if info.BatterySN != req.BatterySN {
+        snag.Panic("电池编码有变动, 请刷新后重试")
+    }
+    // 判定
+    if exists, _ := sub.QueryBattery().Where().Exist(s.ctx); exists {
+        snag.Panic("该骑手当前有绑定的电池")
+    }
+    // 查找电池
+    bat := bs.QuerySnX(req.BatterySN)
+    // 开门
+    success := s.Operate(cab, cabdef.OperateDoorOpen, &model.CabinetDoorOperateReq{
+        ID: req.ID,
+    })
+    if !success {
+        snag.Panic("仓门开启失败")
+    }
+    // 绑定
+    bs.Bind(bat, sub, rd)
+}
+
+func (s *intelligentCabinetService) Bininfo(br model.CabinetBrand, serial string, ordinal int) (*cabdef.BinInfo, error) {
+    return adapter.Post[*cabdef.BinInfo](s.GetCabinetAdapterUrlX(br, "/exchange/usable"), s.GetAdapterUserX(), &cabdef.BinInfoRequest{
+        Serial:  serial,
+        Ordinal: silk.Int(ordinal),
+    })
 }

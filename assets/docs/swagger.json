@@ -2907,6 +2907,47 @@
                 }
             }
         },
+        "/manager/v1/battery/unbind": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M4009 解绑骑手",
+                "operationId": "ManagerBatteryUnbind",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "解绑参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.BatteryUnbindRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/battery/{id}": {
             "put": {
                 "consumes": [
@@ -4168,6 +4209,47 @@
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.CabinetDetailRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/cabinet/openbind": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M5013 开仓取电池并绑定骑手 \u003c仅智能电柜可用, 普通电柜无法请求, 判定标准: `intelligent = true`\u003e",
+                "operationId": "ManagerCabinetOpenBind",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "操作请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.CabinetOpenBindReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
                         }
                     }
                 }
@@ -15295,6 +15377,18 @@
                 }
             }
         },
+        "model.BatteryUnbindRequest": {
+            "type": "object",
+            "required": [
+                "riderId"
+            ],
+            "properties": {
+                "riderId": {
+                    "description": "骑手ID",
+                    "type": "integer"
+                }
+            }
+        },
         "model.BillOverview": {
             "type": "object",
             "properties": {
@@ -16874,6 +16968,38 @@
                 "maintain": {
                     "description": "是否维护",
                     "type": "boolean"
+                }
+            }
+        },
+        "model.CabinetOpenBindReq": {
+            "type": "object",
+            "required": [
+                "batterySn",
+                "id",
+                "index",
+                "phone",
+                "remark"
+            ],
+            "properties": {
+                "batterySn": {
+                    "description": "电池编码 ",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "电柜ID ",
+                    "type": "integer"
+                },
+                "index": {
+                    "description": "仓门序号 ",
+                    "type": "integer"
+                },
+                "phone": {
+                    "description": "骑手电话 ",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "操作原因 可手动输入, 预留项: `吞电池` `柜门未关好` `仓位不足`",
+                    "type": "string"
                 }
             }
         },
@@ -20844,6 +20970,10 @@
                     "description": "订阅ID",
                     "type": "integer"
                 },
+                "intelligent": {
+                    "description": "是否智能电柜订阅",
+                    "type": "boolean"
+                },
                 "model": {
                     "description": "骑士卡可用电池型号",
                     "type": "string"
@@ -22486,6 +22616,10 @@
                 "initialDays": {
                     "description": "初始购买骑士卡天数",
                     "type": "integer"
+                },
+                "intelligent": {
+                    "description": "是否智能柜订阅",
+                    "type": "boolean"
                 },
                 "model": {
                     "description": "可用电池型号",

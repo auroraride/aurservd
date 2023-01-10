@@ -72,6 +72,7 @@ type Subscribe struct {
     Business     bool   `json:"business"`                   // 是否可办理业务
     Suspend      bool   `json:"suspend"`                    // 是否暂停扣费
     NeedContract bool   `json:"needContract,omitempty"`     // 是否需要签约
+    Intelligent  bool   `json:"intelligent"`                // 是否智能柜订阅
 
     City       *City               `json:"city,omitempty"`       // 所属城市
     Models     []BatteryModel      `json:"models,omitempty"`     // 可用电池型号

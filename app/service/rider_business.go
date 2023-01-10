@@ -187,7 +187,7 @@ func (s *riderBusinessService) open(bin *model.BinInfo, remark string) (status b
     operation := model.CabinetDoorOperateOpen
 
     status, err = NewCabinet().DoorOperate(&model.CabinetDoorOperateReq{
-        ID:        silk.UInt64(s.cabinet.ID),
+        ID:        s.cabinet.ID,
         Index:     silk.Pointer(bin.Index),
         Remark:    fmt.Sprintf("%s - %s", s.task.Job.Label(), remark),
         Operation: &operation,

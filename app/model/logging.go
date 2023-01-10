@@ -43,6 +43,7 @@ const (
     OperateRiderCreate                         // 添加骑手
     OperateForceOffWork                        // 强制下班
     OperateBindBattery                         // 绑定电池
+    OperateUnbindBattery                       // 解绑电池
     OperateRiderPutin                          // 骑手放入电池
     OperateRiderPutout                         // 骑手取出电池
 )
@@ -92,6 +93,8 @@ func (o Operate) String() string {
     case OperateForceOffWork:
         return "强制下班"
     case OperateBindBattery:
+        return "绑定电池"
+    case OperateUnbindBattery:
         return "绑定电池"
     case OperateRiderPutin:
         return "骑手放入电池"

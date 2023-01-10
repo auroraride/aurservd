@@ -170,6 +170,7 @@ func (s *subscribeService) Detail(sub *ent.Subscribe) *model.Subscribe {
         Business:     model.SubscribeBusinessable(sub.Status),
         Suspend:      sub.SuspendAt != nil,
         NeedContract: sub.NeedContract,
+        Intelligent:  sub.Intelligent,
         City: &model.City{
             ID:   sub.Edges.City.ID,
             Name: sub.Edges.City.Name,
@@ -265,6 +266,17 @@ func (s *subscribeService) QueryEffectiveX(riderID uint64, edges ...ent.Subscrib
     sub, _ := s.QueryEffective(riderID, edges...)
     if sub == nil {
         snag.Panic("未找到生效中的订阅")
+    }
+    return sub
+}
+
+func (s *subscribeService) QueryEffectiveIntelligentX(riderID uint64, edges ...ent.SubscribeQueryWith) *ent.Subscribe {
+    sub, _ := s.QueryEffective(riderID, edges...)
+    if sub == nil {
+        snag.Panic("未找到生效中的订阅")
+    }
+    if !sub.Intelligent {
+        snag.Panic("骑手当前为非智能柜订阅")
     }
     return sub
 }

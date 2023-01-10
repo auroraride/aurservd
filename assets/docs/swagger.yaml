@@ -1209,6 +1209,14 @@ definitions:
         description: 是否启用
         type: boolean
     type: object
+  model.BatteryUnbindRequest:
+    properties:
+      riderId:
+        description: 骑手ID
+        type: integer
+    required:
+    - riderId
+    type: object
   model.BillOverview:
     properties:
       city:
@@ -2328,6 +2336,30 @@ definitions:
     required:
     - id
     - maintain
+    type: object
+  model.CabinetOpenBindReq:
+    properties:
+      batterySn:
+        description: '电池编码 '
+        type: string
+      id:
+        description: '电柜ID '
+        type: integer
+      index:
+        description: '仓门序号 '
+        type: integer
+      phone:
+        description: '骑手电话 '
+        type: string
+      remark:
+        description: '操作原因 可手动输入, 预留项: `吞电池` `柜门未关好` `仓位不足`'
+        type: string
+    required:
+    - batterySn
+    - id
+    - index
+    - phone
+    - remark
     type: object
   model.CabinetTransferReq:
     properties:
@@ -5112,6 +5144,9 @@ definitions:
       id:
         description: 订阅ID
         type: integer
+      intelligent:
+        description: 是否智能电柜订阅
+        type: boolean
       model:
         description: 骑士卡可用电池型号
         type: string
@@ -6255,6 +6290,9 @@ definitions:
       initialDays:
         description: 初始购买骑士卡天数
         type: integer
+      intelligent:
+        description: 是否智能柜订阅
+        type: boolean
       model:
         description: 可用电池型号
         type: string
@@ -8581,6 +8619,33 @@ paths:
       summary: M4002 创建电池型号
       tags:
       - '[M]管理接口'
+  /manager/v1/battery/unbind:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerBatteryUnbind
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 解绑参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.BatteryUnbindRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M4009 解绑骑手
+      tags:
+      - '[M]管理接口'
   /manager/v1/branch:
     get:
       consumes:
@@ -9443,6 +9508,33 @@ paths:
           schema:
             $ref: '#/definitions/model.CabinetDetailRes'
       summary: M5012 电柜操作维护
+      tags:
+      - '[M]管理接口'
+  /manager/v1/cabinet/openbind:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerCabinetOpenBind
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 操作请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.CabinetOpenBindReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 'M5013 开仓取电池并绑定骑手 <仅智能电柜可用, 普通电柜无法请求, 判定标准: `intelligent = true`>'
       tags:
       - '[M]管理接口'
   /manager/v1/cabinet/reboot:

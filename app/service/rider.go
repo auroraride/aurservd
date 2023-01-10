@@ -659,14 +659,15 @@ func (s *riderService) detailRiderItem(item *ent.Rider) model.RiderItem {
         }
 
         ri.Subscribe = &model.RiderItemSubscribe{
-            ID:        sub.ID,
-            Status:    sub.Status,
-            Remaining: remaining,
-            Model:     sub.Model,
-            Suspend:   sub.SuspendAt != nil,
-            Formula:   sub.Formula,
-            Type:      model.SubscribeTypeBattery,
-            Ebike:     NewEbike().Detail(sub.Edges.Ebike, sub.Edges.Brand),
+            ID:          sub.ID,
+            Status:      sub.Status,
+            Remaining:   remaining,
+            Model:       sub.Model,
+            Suspend:     sub.SuspendAt != nil,
+            Formula:     sub.Formula,
+            Type:        model.SubscribeTypeBattery,
+            Ebike:       NewEbike().Detail(sub.Edges.Ebike, sub.Edges.Brand),
+            Intelligent: sub.Intelligent,
         }
         if sub.BrandID != nil {
             ri.Subscribe.Type = model.SubscribeTypeEbike
@@ -1032,6 +1033,18 @@ func (s *riderService) QueryPhones(phones []string) (riders []*ent.Rider, ids []
     // 未找到的手机号
     for k := range m {
         notfound = append(notfound, k)
+    }
+    return
+}
+
+func (s *riderService) QueryPhone(phone string) (*ent.Rider, error) {
+    return s.orm.Query().Where(rider.Phone(phone), rider.DeletedAtIsNil()).Order(ent.Desc(rider.FieldCreatedAt)).First(s.ctx)
+}
+
+func (s *riderService) QueryPhoneX(phone string) (rd *ent.Rider) {
+    rd, _ = s.QueryPhone(phone)
+    if rd == nil {
+        snag.Panic("未找到有效骑手")
     }
     return
 }

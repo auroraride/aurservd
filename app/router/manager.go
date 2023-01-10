@@ -60,6 +60,7 @@ func loadManagerRoutes() {
     g.PUT("/battery/:id", mapi.Battery.Modify)
     g.POST("/battery/batch", mapi.Battery.BatchCreate)
     g.POST("/battery/bind", mapi.Battery.Bind)
+    g.POST("/battery/unbind", mapi.Battery.Unbind)
 
     // 电柜
     g.POST("/cabinet", mapi.Cabinet.Create)
@@ -74,6 +75,7 @@ func loadManagerRoutes() {
     g.GET("/cabinet/data", mapi.Cabinet.Data)
     g.POST("/cabinet/transfer", mapi.Cabinet.Transfer)
     g.POST("/cabinet/maintain", mapi.Cabinet.Maintain)
+    g.POST("/cabinet/openbind", mapi.Cabinet.OpenBind)
 
     // 骑士卡
     g.GET("/plan", mapi.Plan.List)
