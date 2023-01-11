@@ -503,7 +503,10 @@ func (s *intelligentCabinetService) OpenBind(req *model.CabinetOpenBindReq) {
     bat := bs.QuerySnX(req.BatterySN)
     // 开门
     success := s.Operate(cab, cabdef.OperateDoorOpen, &model.CabinetDoorOperateReq{
-        ID: req.ID,
+        ID:        req.ID,
+        Index:     req.Index,
+        Remark:    req.Remark,
+        Operation: silk.Pointer(model.CabinetDoorOperateOpen),
     })
     if !success {
         snag.Panic("仓门开启失败")
@@ -513,7 +516,7 @@ func (s *intelligentCabinetService) OpenBind(req *model.CabinetOpenBindReq) {
 }
 
 func (s *intelligentCabinetService) Bininfo(br model.CabinetBrand, serial string, ordinal int) (*cabdef.BinInfo, error) {
-    return adapter.Post[*cabdef.BinInfo](s.GetCabinetAdapterUrlX(br, "/exchange/usable"), s.GetAdapterUserX(), &cabdef.BinInfoRequest{
+    return adapter.Post[*cabdef.BinInfo](s.GetCabinetAdapterUrlX(br, "/device/bininfo"), s.GetAdapterUserX(), &cabdef.BinInfoRequest{
         Serial:  serial,
         Ordinal: silk.Int(ordinal),
     })
