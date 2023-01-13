@@ -4224,6 +4224,7 @@ const docTemplate = `{
         },
         "/manager/v1/cabinet/openbind": {
             "post": {
+                "description": "\u003c仅智能电柜可用, 普通电柜无法请求, 判定标准: ` + "`" + `intelligent = true` + "`" + `\u003e",
                 "consumes": [
                     "application/json"
                 ],
@@ -4233,7 +4234,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M5013 开仓取电池并绑定骑手 \u003c仅智能电柜可用, 普通电柜无法请求, 判定标准: ` + "`" + `intelligent = true` + "`" + `\u003e",
+                "summary": "M5013 开仓取电池并绑定骑手",
                 "operationId": "ManagerCabinetOpenBind",
                 "parameters": [
                     {
