@@ -10,7 +10,7 @@ require (
 	github.com/alibabacloud-go/dysmsapi-20170525/v2 v2.0.18
 	github.com/alibabacloud-go/dyvmsapi-20170525/v2 v2.1.4
 	github.com/alibabacloud-go/tea v1.1.20
-	github.com/aliyun/alibaba-cloud-sdk-go v1.62.134
+	github.com/aliyun/alibaba-cloud-sdk-go v1.62.138
 	github.com/aliyun/aliyun-log-go-sdk v0.1.43
 	github.com/aliyun/aliyun-oss-go-sdk v2.2.6+incompatible
 	github.com/auroraride/adapter v0.0.0
@@ -38,7 +38,7 @@ require (
 	github.com/mojocn/base64Captcha v1.3.5
 	github.com/povsister/scp v0.0.0-20210427074412-33febfd9f13e
 	github.com/qiniu/qmgo v1.1.4
-	github.com/r3labs/diff/v3 v3.0.0
+	github.com/r3labs/diff/v3 v3.0.1
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/rs/xid v1.4.0
 	github.com/shopspring/decimal v1.3.1
@@ -55,7 +55,7 @@ require (
 	github.com/xuri/excelize/v2 v2.7.0
 	go.mongodb.org/mongo-driver v1.11.1
 	golang.org/x/crypto v0.5.0
-	golang.org/x/exp v0.0.0-20230113213754-f9f960f08ad4
+	golang.org/x/exp v0.0.0-20230116083435-1de6713980de
 	golang.org/x/time v0.3.0
 	golang.org/x/tools v0.5.0
 	gopkg.in/yaml.v3 v3.0.1
@@ -82,8 +82,8 @@ require (
 	github.com/go-logfmt/logfmt v0.5.1 // indirect
 	github.com/go-openapi/inflect v0.19.0 // indirect
 	github.com/go-openapi/jsonpointer v0.19.6 // indirect
-	github.com/go-openapi/jsonreference v0.20.1 // indirect
-	github.com/go-openapi/spec v0.20.7 // indirect
+	github.com/go-openapi/jsonreference v0.20.2 // indirect
+	github.com/go-openapi/spec v0.20.8 // indirect
 	github.com/go-openapi/swag v0.22.3 // indirect
 	github.com/gofrs/uuid v4.2.0+incompatible // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
@@ -119,7 +119,7 @@ require (
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
 	github.com/montanaflynn/stats v0.7.0 // indirect
 	github.com/opentracing/opentracing-go v1.2.1-0.20220228012449-10b1cf09e00b // indirect
-	github.com/panjf2000/gnet/v2 v2.2.3 // indirect
+	github.com/panjf2000/gnet/v2 v2.2.4 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.6 // indirect
 	github.com/pierrec/lz4 v2.6.1+incompatible // indirect
@@ -146,7 +146,8 @@ require (
 	github.com/tjfoc/gmsm v1.4.1 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
-	github.com/vmihailenco/msgpack v4.0.4+incompatible // indirect
+	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect
+	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.2 // indirect
 	github.com/xdg-go/stringprep v1.0.4 // indirect
@@ -163,7 +164,6 @@ require (
 	golang.org/x/sync v0.1.0 // indirect
 	golang.org/x/sys v0.4.0 // indirect
 	golang.org/x/text v0.6.0 // indirect
-	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect

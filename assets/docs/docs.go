@@ -650,12 +650,6 @@ const docTemplate = `{
                         "description": "每页数据, 默认20",
                         "name": "pageSize",
                         "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "1:未激活 2:已签约 3:已作废",
-                        "name": "status",
-                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1180,17 +1174,6 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "企业ID",
                         "name": "enterpriseId",
-                        "in": "query"
-                    },
-                    {
-                        "enum": [
-                            0,
-                            1,
-                            2
-                        ],
-                        "type": "integer",
-                        "description": "查询目标, 0:不筛选 1:门店 2:电柜",
-                        "name": "goal",
                         "in": "query"
                     },
                     {
@@ -3385,17 +3368,6 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
-                        "enum": [
-                            0,
-                            1,
-                            2
-                        ],
-                        "type": "integer",
-                        "description": "查询目标, 0:不筛选 1:门店 2:电柜",
-                        "name": "goal",
-                        "in": "query"
-                    },
-                    {
                         "type": "string",
                         "description": "筛选骑手姓名或电话",
                         "name": "keyword",
@@ -3966,16 +3938,6 @@ const docTemplate = `{
                         "name": "X-Manager-Token",
                         "in": "header",
                         "required": true
-                    },
-                    {
-                        "enum": [
-                            "KAIXIN",
-                            "YUNDONG"
-                        ],
-                        "type": "string",
-                        "description": "品牌 品牌: KAIXIN(凯信) YUNDONG(云动)",
-                        "name": "brand",
-                        "in": "query"
                     },
                     {
                         "type": "integer",
@@ -4754,28 +4716,6 @@ const docTemplate = `{
                         "type": "integer",
                         "name": "riderId",
                         "in": "query"
-                    },
-                    {
-                        "enum": [
-                            0,
-                            1,
-                            2,
-                            3
-                        ],
-                        "type": "integer",
-                        "description": "状态, 不携带参数为全部, 0:库存中 1:未使用 2:已使用 3:已过期",
-                        "name": "status",
-                        "in": "query"
-                    },
-                    {
-                        "enum": [
-                            1,
-                            2
-                        ],
-                        "type": "integer",
-                        "description": "发送对象, 不携带参数为全部, 1:骑手 2:库存",
-                        "name": "target",
-                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -5239,18 +5179,6 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "骑手ID",
                         "name": "riderId",
-                        "in": "query"
-                    },
-                    {
-                        "enum": [
-                            0,
-                            1,
-                            2,
-                            3
-                        ],
-                        "type": "integer",
-                        "description": "状态, 0:库存中 1:使用中 2:维修中 3:已报废, 不携带为获取全部",
-                        "name": "status",
                         "in": "query"
                     },
                     {
@@ -8355,16 +8283,6 @@ const docTemplate = `{
                         "description": "每页数据, 默认20",
                         "name": "pageSize",
                         "in": "query"
-                    },
-                    {
-                        "enum": [
-                            1,
-                            2
-                        ],
-                        "type": "integer",
-                        "description": "骑士卡类别 ",
-                        "name": "type",
-                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -8801,16 +8719,6 @@ const docTemplate = `{
                         "description": "骑手",
                         "name": "riderId",
                         "in": "query"
-                    },
-                    {
-                        "enum": [
-                            1,
-                            2
-                        ],
-                        "type": "integer",
-                        "description": "类别 1:消费 2:奖励",
-                        "name": "type",
-                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -8899,18 +8807,6 @@ const docTemplate = `{
                         "name": "X-Manager-Token",
                         "in": "header",
                         "required": true
-                    },
-                    {
-                        "enum": [
-                            0,
-                            1,
-                            2,
-                            3
-                        ],
-                        "type": "integer",
-                        "description": "认证状态 0:未认证 1:认证中 2:已认证 3:认证失败",
-                        "name": "authStatus",
-                        "in": "query"
                     },
                     {
                         "type": "integer",
@@ -10181,17 +10077,6 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
-                        "enum": [
-                            0,
-                            1,
-                            2
-                        ],
-                        "type": "integer",
-                        "description": "查询目标, 0:不筛选 1:门店 2:电柜",
-                        "name": "goal",
-                        "in": "query"
-                    },
-                    {
                         "type": "string",
                         "description": "开始时间",
                         "name": "start",
@@ -10346,18 +10231,6 @@ const docTemplate = `{
                         "type": "string",
                         "description": "结束时间",
                         "name": "end",
-                        "in": "query"
-                    },
-                    {
-                        "enum": [
-                            0,
-                            1,
-                            2,
-                            3
-                        ],
-                        "type": "integer",
-                        "description": "查询目标, 0:不筛选 1:门店 2:电柜",
-                        "name": "goal",
                         "in": "query"
                     },
                     {
@@ -14307,11 +14180,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "profile": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.AgentProfile"
-                        }
-                    ]
+                    "$ref": "#/definitions/model.AgentProfile"
                 },
                 "token": {
                     "type": "string"
@@ -14386,7 +14255,11 @@ const docTemplate = `{
                 },
                 "status": {
                     "description": "1:未激活 2:已签约 3:已作废",
-                    "type": "integer"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AllocateStatus"
+                        }
+                    ]
                 },
                 "time": {
                     "description": "分配时间",
@@ -14410,6 +14283,24 @@ const docTemplate = `{
                     "type": "boolean"
                 }
             }
+        },
+        "model.AllocateStatus": {
+            "type": "integer",
+            "enum": [
+                1,
+                2,
+                3
+            ],
+            "x-enum-comments": {
+                "AllocateStatusPending": "未激活",
+                "AllocateStatusSigned": "已签约",
+                "AllocateStatusVoid": "已作废"
+            },
+            "x-enum-varnames": [
+                "AllocateStatusPending",
+                "AllocateStatusSigned",
+                "AllocateStatusVoid"
+            ]
         },
         "model.AssistanceAllocateReq": {
             "type": "object",
@@ -15435,7 +15326,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "electricity": {
-                    "description": "当前电量",
+                    "description": "电量",
                     "type": "number"
                 },
                 "index": {
@@ -15737,7 +15628,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "electricity": {
-                    "description": "当前电量",
+                    "description": "当前电量 锁仓或空仓无此字段",
                     "type": "number"
                 },
                 "status": {
@@ -16093,11 +15984,15 @@ const docTemplate = `{
                 },
                 "goal": {
                     "description": "查询目标, 0:不筛选 1:门店 2:电柜",
-                    "type": "integer",
                     "enum": [
                         0,
                         1,
                         2
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.StoreCabiletGoal"
+                        }
                     ]
                 },
                 "keyword": {
@@ -16331,10 +16226,14 @@ const docTemplate = `{
             "properties": {
                 "brand": {
                     "description": "品牌: KAIXIN(凯信) YUNDONG(云动)",
-                    "type": "string",
                     "enum": [
                         "KAIXIN",
                         "YUNDONG"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.CabinetBrand"
+                        }
                     ]
                 },
                 "id": {
@@ -16406,6 +16305,21 @@ const docTemplate = `{
                 }
             }
         },
+        "model.CabinetBrand": {
+            "type": "string",
+            "enum": [
+                "KAIXIN",
+                "YUNDONG"
+            ],
+            "x-enum-comments": {
+                "CabinetBrandKaixin": "凯信电柜",
+                "CabinetBrandYundong": "云动电柜"
+            },
+            "x-enum-varnames": [
+                "CabinetBrandKaixin",
+                "CabinetBrandYundong"
+            ]
+        },
         "model.CabinetCreateReq": {
             "type": "object",
             "required": [
@@ -16420,11 +16334,15 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "brand": {
-                    "description": "品牌 品牌: KAIXIN(凯信) YUNDONG(云动)",
-                    "type": "string",
+                    "description": "品牌 KAIXIN(凯信) YUNDONG(云动)",
                     "enum": [
                         "KAIXIN",
                         "YUNDONG"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.CabinetBrand"
+                        }
                     ]
                 },
                 "doors": {
@@ -16468,11 +16386,15 @@ const docTemplate = `{
                 },
                 "status": {
                     "description": "电柜状态 0未投放 1运营中 2维护中",
-                    "type": "integer",
                     "enum": [
                         0,
                         1,
                         2
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.CabinetStatus"
+                        }
                     ]
                 }
             }
@@ -16579,11 +16501,15 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "brand": {
-                    "description": "品牌 品牌: KAIXIN(凯信) YUNDONG(云动)",
-                    "type": "string",
+                    "description": "品牌 KAIXIN(凯信) YUNDONG(云动)",
                     "enum": [
                         "KAIXIN",
                         "YUNDONG"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.CabinetBrand"
+                        }
                     ]
                 },
                 "city": {
@@ -16654,11 +16580,15 @@ const docTemplate = `{
                 },
                 "status": {
                     "description": "电柜状态 0未投放 1运营中 2维护中",
-                    "type": "integer",
                     "enum": [
                         0,
                         1,
                         2
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.CabinetStatus"
+                        }
                     ]
                 },
                 "stockNum": {
@@ -16670,6 +16600,24 @@ const docTemplate = `{
                     "type": "boolean"
                 }
             }
+        },
+        "model.CabinetDoorOperate": {
+            "type": "integer",
+            "enum": [
+                1,
+                2,
+                3
+            ],
+            "x-enum-comments": {
+                "CabinetDoorOperateLock": "锁定(标记为故障)",
+                "CabinetDoorOperateOpen": "开仓",
+                "CabinetDoorOperateUnlock": "解锁(取消标记故障)"
+            },
+            "x-enum-varnames": [
+                "CabinetDoorOperateOpen",
+                "CabinetDoorOperateLock",
+                "CabinetDoorOperateUnlock"
+            ]
         },
         "model.CabinetDoorOperateReq": {
             "type": "object",
@@ -16689,7 +16637,11 @@ const docTemplate = `{
                 },
                 "operation": {
                     "description": "操作方式 1:开仓 2:锁定(标记为故障) 3:解锁(取消标记故障)",
-                    "type": "integer"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.CabinetDoorOperate"
+                        }
+                    ]
                 },
                 "remark": {
                     "description": "操作原因",
@@ -16850,11 +16802,15 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "brand": {
-                    "description": "品牌 品牌: KAIXIN(凯信) YUNDONG(云动)",
-                    "type": "string",
+                    "description": "品牌 KAIXIN(凯信) YUNDONG(云动)",
                     "enum": [
                         "KAIXIN",
                         "YUNDONG"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.CabinetBrand"
+                        }
                     ]
                 },
                 "city": {
@@ -16918,11 +16874,15 @@ const docTemplate = `{
                 },
                 "status": {
                     "description": "电柜状态 0未投放 1运营中 2维护中",
-                    "type": "integer",
                     "enum": [
                         0,
                         1,
                         2
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.CabinetStatus"
+                        }
                     ]
                 },
                 "transferred": {
@@ -16936,10 +16896,14 @@ const docTemplate = `{
             "properties": {
                 "brand": {
                     "description": "品牌: KAIXIN(凯信) YUNDONG(云动)",
-                    "type": "string",
                     "enum": [
                         "KAIXIN",
                         "YUNDONG"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.CabinetBrand"
+                        }
                     ]
                 },
                 "health": {
@@ -17011,6 +16975,24 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "model.CabinetStatus": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2
+            ],
+            "x-enum-comments": {
+                "CabinetStatusMaintenance": "维护中",
+                "CabinetStatusNormal": "运营中",
+                "CabinetStatusPending": "未投放"
+            },
+            "x-enum-varnames": [
+                "CabinetStatusPending",
+                "CabinetStatusNormal",
+                "CabinetStatusMaintenance"
+            ]
         },
         "model.CabinetTransferReq": {
             "type": "object",
@@ -17337,6 +17319,21 @@ const docTemplate = `{
                 }
             }
         },
+        "model.CouponDurationRule": {
+            "type": "integer",
+            "enum": [
+                1,
+                2
+            ],
+            "x-enum-comments": {
+                "CouponDurationFixed": "固定时间 (固定自然时间)",
+                "CouponDurationRelative": "相对时间 (自领取日算起)"
+            },
+            "x-enum-varnames": [
+                "CouponDurationFixed",
+                "CouponDurationRelative"
+            ]
+        },
         "model.CouponGenerateReq": {
             "type": "object",
             "required": [
@@ -17431,8 +17428,12 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status": {
-                    "description": "状态, 不携带参数为全部, 0:库存中 1:未使用 2:已使用 3:已过期",
-                    "type": "integer"
+                    "description": "状态, 0:库存中 1:未使用 2:已使用 3:已过期",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.CouponStatus"
+                        }
+                    ]
                 },
                 "templateId": {
                     "description": "模板ID",
@@ -17473,6 +17474,57 @@ const docTemplate = `{
                 }
             }
         },
+        "model.CouponRule": {
+            "type": "integer",
+            "enum": [
+                1,
+                2
+            ],
+            "x-enum-comments": {
+                "CouponRuleExclusive": "互斥",
+                "CouponRuleStackable": "可叠加"
+            },
+            "x-enum-varnames": [
+                "CouponRuleExclusive",
+                "CouponRuleStackable"
+            ]
+        },
+        "model.CouponStatus": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "x-enum-comments": {
+                "CouponStatusExpired": "已过期",
+                "CouponStatusInStock": "库存中",
+                "CouponStatusUnused": "未使用",
+                "CouponStatusUsed": "已使用"
+            },
+            "x-enum-varnames": [
+                "CouponStatusInStock",
+                "CouponStatusUnused",
+                "CouponStatusUsed",
+                "CouponStatusExpired"
+            ]
+        },
+        "model.CouponTarget": {
+            "type": "integer",
+            "enum": [
+                1,
+                2
+            ],
+            "x-enum-comments": {
+                "CouponTargetRider": "骑手",
+                "CouponTargetStock": "库存"
+            },
+            "x-enum-varnames": [
+                "CouponTargetRider",
+                "CouponTargetStock"
+            ]
+        },
         "model.CouponTemplateCreateReq": {
             "type": "object",
             "required": [
@@ -17495,10 +17547,14 @@ const docTemplate = `{
                 },
                 "durationRule": {
                     "description": "有效期规则 1:固定时间(固定自然时间) 2:相对时间(自领取日算起)",
-                    "type": "integer",
                     "enum": [
                         1,
                         2
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.CouponDurationRule"
+                        }
                     ]
                 },
                 "durationTime": {
@@ -17527,10 +17583,14 @@ const docTemplate = `{
                 },
                 "rule": {
                     "description": "使用规则 1:互斥 2:可叠加",
-                    "type": "integer",
                     "enum": [
                         1,
                         2
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.CouponRule"
+                        }
                     ]
                 }
             }
@@ -17562,10 +17622,14 @@ const docTemplate = `{
                 },
                 "durationRule": {
                     "description": "有效期规则 1:固定时间(固定自然时间) 2:相对时间(自领取日算起)",
-                    "type": "integer",
                     "enum": [
                         1,
                         2
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.CouponDurationRule"
+                        }
                     ]
                 },
                 "durationTime": {
@@ -17612,10 +17676,14 @@ const docTemplate = `{
                 },
                 "rule": {
                     "description": "使用规则 1:互斥 2:可叠加",
-                    "type": "integer",
                     "enum": [
                         1,
                         2
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.CouponRule"
+                        }
                     ]
                 },
                 "time": {
@@ -17663,10 +17731,14 @@ const docTemplate = `{
                 },
                 "durationRule": {
                     "description": "有效期规则 1:固定时间(固定自然时间) 2:相对时间(自领取日算起)",
-                    "type": "integer",
                     "enum": [
                         1,
                         2
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.CouponDurationRule"
+                        }
                     ]
                 },
                 "durationTime": {
@@ -17693,10 +17765,14 @@ const docTemplate = `{
                 },
                 "rule": {
                     "description": "使用规则 1:互斥 2:可叠加",
-                    "type": "integer",
                     "enum": [
                         1,
                         2
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.CouponRule"
+                        }
                     ]
                 }
             }
@@ -17919,6 +17995,27 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "model.EbikeStatus": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "x-enum-comments": {
+                "EbikeStatusInStock": "库存中",
+                "EbikeStatusMaintenance": "维修中",
+                "EbikeStatusScrapped": "已报废",
+                "EbikeStatusUsing": "使用中"
+            },
+            "x-enum-varnames": [
+                "EbikeStatusInStock",
+                "EbikeStatusUsing",
+                "EbikeStatusMaintenance",
+                "EbikeStatusScrapped"
+            ]
         },
         "model.Employee": {
             "type": "object",
@@ -19756,6 +19853,27 @@ const docTemplate = `{
                 }
             }
         },
+        "model.PersonAuthStatus": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "x-enum-comments": {
+                "PersonAuthPending": "认证中",
+                "PersonAuthenticated": "已认证",
+                "PersonAuthenticationFailed": "认证失败",
+                "PersonUnauthenticated": "未认证"
+            },
+            "x-enum-varnames": [
+                "PersonUnauthenticated",
+                "PersonAuthPending",
+                "PersonAuthenticated",
+                "PersonAuthenticationFailed"
+            ]
+        },
         "model.PersonBanReq": {
             "type": "object",
             "properties": {
@@ -19894,7 +20012,7 @@ const docTemplate = `{
                 },
                 "type": {
                     "description": "骑士卡类别 ",
-                    "type": "integer"
+                    "$ref": "#/definitions/model.PlanType"
                 }
             }
         },
@@ -19966,11 +20084,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "ebikeBrand": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.EbikeBrand"
-                        }
-                    ]
+                    "$ref": "#/definitions/model.EbikeBrand"
                 },
                 "id": {
                     "type": "integer"
@@ -20083,8 +20197,12 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "type": {
-                    "description": "骑士卡类别 ",
-                    "type": "integer"
+                    "description": "类别",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.PlanType"
+                        }
+                    ]
                 }
             }
         },
@@ -20184,6 +20302,21 @@ const docTemplate = `{
                 }
             }
         },
+        "model.PlanType": {
+            "type": "integer",
+            "enum": [
+                1,
+                2
+            ],
+            "x-enum-comments": {
+                "PlanTypeBattery": "单电",
+                "PlanTypeEbikeWithBattery": "车加电"
+            },
+            "x-enum-varnames": [
+                "PlanTypeBattery",
+                "PlanTypeEbikeWithBattery"
+            ]
+        },
         "model.PointBatchReq": {
             "type": "object",
             "required": [
@@ -20210,11 +20343,15 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "type": {
-                    "description": "类别 类别 1:消费 2:奖励",
-                    "type": "integer",
+                    "description": "类别 1:消费 2:奖励",
                     "enum": [
                         1,
                         2
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.PointLogType"
+                        }
                     ]
                 }
             }
@@ -20255,6 +20392,21 @@ const docTemplate = `{
                 }
             }
         },
+        "model.PointLogType": {
+            "type": "integer",
+            "enum": [
+                1,
+                2
+            ],
+            "x-enum-comments": {
+                "PointLogTypeAward": "奖励",
+                "PointLogTypeConsume": "消费"
+            },
+            "x-enum-varnames": [
+                "PointLogTypeConsume",
+                "PointLogTypeAward"
+            ]
+        },
         "model.PointModifyReq": {
             "type": "object",
             "required": [
@@ -20278,10 +20430,14 @@ const docTemplate = `{
                 },
                 "type": {
                     "description": "类别 1:消费 2:奖励",
-                    "type": "integer",
                     "enum": [
                         1,
                         2
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.PointLogType"
+                        }
                     ]
                 }
             }
@@ -20557,6 +20713,36 @@ const docTemplate = `{
                 }
             }
         },
+        "model.ReserveStatus": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+            ],
+            "x-enum-comments": {
+                "ReserveStatusCancel": "已取消",
+                "ReserveStatusFail": "已失败",
+                "ReserveStatusInvalid": "已失效",
+                "ReserveStatusPending": "已预约",
+                "ReserveStatusProcessing": "进行中",
+                "ReserveStatusSuccess": "已完成",
+                "ReserveStatusTimeout": "已超时"
+            },
+            "x-enum-varnames": [
+                "ReserveStatusPending",
+                "ReserveStatusProcessing",
+                "ReserveStatusSuccess",
+                "ReserveStatusFail",
+                "ReserveStatusTimeout",
+                "ReserveStatusCancel",
+                "ReserveStatusInvalid"
+            ]
+        },
         "model.ReserveUnfinishedRes": {
             "type": "object",
             "properties": {
@@ -20578,7 +20764,11 @@ const docTemplate = `{
                 },
                 "status": {
                     "description": "状态 0:已预约 1:进行中",
-                    "type": "integer"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.ReserveStatus"
+                        }
+                    ]
                 },
                 "time": {
                     "description": "预约时间",
@@ -20650,7 +20840,11 @@ const docTemplate = `{
             "properties": {
                 "authStatus": {
                     "description": "认证状态 0:未认证 1:认证中 2:已认证 3:认证失败",
-                    "type": "integer"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.PersonAuthStatus"
+                        }
+                    ]
                 },
                 "enterprise": {
                     "description": "团签企业, 团签骑手判定依据(非空是团签), 个签无此字段",
@@ -20717,8 +20911,12 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "brand": {
-                    "description": "品牌 品牌: KAIXIN(凯信) YUNDONG(云动)",
-                    "type": "string"
+                    "description": "电柜型号",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.CabinetBrand"
+                        }
+                    ]
                 },
                 "cityId": {
                     "description": "城市ID",
@@ -20861,7 +21059,11 @@ const docTemplate = `{
                 },
                 "authStatus": {
                     "description": "认证状态 0:未认证 1:认证中 2:已认证 3:认证失败",
-                    "type": "integer"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.PersonAuthStatus"
+                        }
+                    ]
                 },
                 "balance": {
                     "description": "余额",
@@ -21013,12 +21215,16 @@ const docTemplate = `{
             "properties": {
                 "authStatus": {
                     "description": "认证状态 0:未认证 1:认证中 2:已认证 3:认证失败",
-                    "type": "integer",
                     "enum": [
                         0,
                         1,
                         2,
                         3
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.PersonAuthStatus"
+                        }
                     ]
                 },
                 "batteryId": {
@@ -21128,12 +21334,16 @@ const docTemplate = `{
             "properties": {
                 "authStatus": {
                     "description": "认证状态 0:未认证 1:认证中 2:已认证 3:认证失败",
-                    "type": "integer",
                     "enum": [
                         0,
                         1,
                         2,
                         3
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.PersonAuthStatus"
+                        }
                     ]
                 },
                 "contact": {
@@ -22033,13 +22243,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "goal": {
-                    "description": "查询目标, 0:不筛选 1:门店 2:电柜",
-                    "type": "integer",
+                    "description": "查询目标 0:不筛选 1:门店(默认) 2:电柜 3:平台",
                     "enum": [
                         0,
                         1,
                         2,
                         3
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.StoreCabiletGoal"
+                        }
                     ]
                 },
                 "materials": {
@@ -22397,6 +22611,19 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "model.StoreCabiletGoal": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2
+            ],
+            "x-enum-varnames": [
+                "StockGoalAll",
+                "StockGoalStore",
+                "StockGoalCabinet"
+            ]
         },
         "model.StoreCreateReq": {
             "type": "object",
