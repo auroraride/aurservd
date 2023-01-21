@@ -21,6 +21,7 @@ def deploy(path, tag, url) {
     def str = """
         docker pull registry-vpc.cn-beijing.aliyuncs.com/liasica/aurservd:$tag
         curl $url
+        docker stop ${path}
         docker rm -f ${path}
         mkdir -p /var/www/${path}.auroraride.com/runtime
         docker run -itd --name ${path} --restart=always \
