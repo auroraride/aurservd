@@ -3,8 +3,8 @@ module github.com/auroraride/aurservd
 go 1.19
 
 require (
-	ariga.io/atlas v0.9.0
-	entgo.io/ent v0.11.5
+	ariga.io/atlas v0.9.1-0.20230119123307-a3ab6808892b
+	entgo.io/ent v0.11.6
 	github.com/LucaTheHacker/go-haversine v0.0.0-20220213075817-0d811fb84a1a
 	github.com/alibabacloud-go/darabonba-openapi v0.2.1
 	github.com/alibabacloud-go/dysmsapi-20170525/v2 v2.0.18
@@ -15,11 +15,11 @@ require (
 	github.com/aliyun/aliyun-oss-go-sdk v2.2.6+incompatible
 	github.com/auroraride/adapter v0.0.0
 	github.com/fsnotify/fsnotify v1.6.0
-	github.com/getkin/kin-openapi v0.112.0
+	github.com/getkin/kin-openapi v0.113.0
 	github.com/go-playground/locales v0.14.1
 	github.com/go-playground/universal-translator v0.18.0
 	github.com/go-playground/validator/v10 v10.11.1
-	github.com/go-redis/redis/v8 v8.11.5
+	github.com/go-redis/redis/v9 v9.0.0-rc.2
 	github.com/go-resty/resty/v2 v2.7.1-0.20220719224223-313f4190d9b8
 	github.com/golang-module/carbon/v2 v2.2.3
 	github.com/google/uuid v1.3.0
@@ -37,7 +37,7 @@ require (
 	github.com/mattn/go-colorable v0.1.13
 	github.com/mojocn/base64Captcha v1.3.5
 	github.com/povsister/scp v0.0.0-20210427074412-33febfd9f13e
-	github.com/qiniu/qmgo v1.1.4
+	github.com/qiniu/qmgo v1.1.5
 	github.com/r3labs/diff/v3 v3.0.1
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/rs/xid v1.4.0
@@ -48,14 +48,14 @@ require (
 	github.com/sony/sonyflake v1.1.0
 	github.com/speps/go-hashids/v2 v2.0.1
 	github.com/spf13/cobra v1.6.1
-	github.com/spf13/viper v1.14.1-0.20230108223946-ce7393644044
+	github.com/spf13/viper v1.15.0
 	github.com/swaggo/echo-swagger v1.3.5
 	github.com/swaggo/swag v1.8.9
 	github.com/wechatpay-apiv3/wechatpay-go v0.2.16
 	github.com/xuri/excelize/v2 v2.7.0
 	go.mongodb.org/mongo-driver v1.11.1
 	golang.org/x/crypto v0.5.0
-	golang.org/x/exp v0.0.0-20230116083435-1de6713980de
+	golang.org/x/exp v0.0.0-20230118134722-a68e582fa157
 	golang.org/x/time v0.3.0
 	golang.org/x/tools v0.5.0
 	gopkg.in/yaml.v3 v3.0.1
@@ -108,6 +108,7 @@ require (
 	github.com/klauspost/compress v1.15.14 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/lestrrat-go/strftime v1.0.6 // indirect
+	github.com/magefile/mage v1.14.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-isatty v0.0.17 // indirect
@@ -120,8 +121,8 @@ require (
 	github.com/montanaflynn/stats v0.7.0 // indirect
 	github.com/opentracing/opentracing-go v1.2.1-0.20220228012449-10b1cf09e00b // indirect
 	github.com/panjf2000/gnet/v2 v2.2.4 // indirect
-	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.6 // indirect
+	github.com/perimeterx/marshmallow v1.1.4 // indirect
 	github.com/pierrec/lz4 v2.6.1+incompatible // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/richardlehane/mscfb v1.0.4 // indirect
@@ -155,6 +156,7 @@ require (
 	github.com/xuri/nfp v0.0.0-20220409054826-5e722a1d9e22 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a // indirect
 	github.com/zclconf/go-cty v1.12.1 // indirect
+	go.elastic.co/ecszap v1.0.1 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/multierr v1.9.0 // indirect
 	go.uber.org/zap v1.24.0 // indirect
@@ -167,7 +169,6 @@ require (
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 
 //replace github.com/swaggo/swag => /Users/liasica/Downloads/swag

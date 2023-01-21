@@ -55,8 +55,9 @@ type EsignConfig struct {
 }
 
 type config struct {
-    Debug   bool
-    Adapter struct {
+    Debug       bool
+    Application string
+    Adapter     struct {
         Kaixin struct {
             TcpBind string
             Api     string

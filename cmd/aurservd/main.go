@@ -34,6 +34,5 @@ func main() {
 }
 
 func createCache() {
-    cfg := ar.Config.Database.Redis
-    cache.CreateClient(cfg.Addr, cfg.Password, cfg.DB)
+    cache.CreateClient(ar.Redis)
 }

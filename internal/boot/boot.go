@@ -6,6 +6,7 @@
 package boot
 
 import (
+    "github.com/auroraride/adapter/zlog"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/assets"
     "github.com/auroraride/aurservd/internal/ar"
@@ -13,6 +14,7 @@ import (
     "github.com/auroraride/aurservd/internal/mgo"
     "github.com/auroraride/aurservd/internal/payment"
     "github.com/auroraride/aurservd/pkg/logger"
+    "github.com/go-redis/redis/v9"
     "github.com/golang-module/carbon/v2"
     "os"
     "time"
@@ -30,6 +32,16 @@ func Bootstrap() {
 
     // 载入配置
     ar.LoadConfig()
+
+    // 创建redis客户端
+    ar.Redis = redis.NewClient(&redis.Options{
+        Addr:     ar.Config.Database.Redis.Addr,
+        Password: ar.Config.Database.Redis.Password,
+        DB:       ar.Config.Database.Redis.DB,
+    })
+
+    // 配置elk+zap
+    zlog.New(ar.Config.Application, zlog.NewRedisWriter(ar.Redis), ar.Config.Debug)
 
     // 配置日志
     l := ar.Config.Logging

@@ -7,7 +7,7 @@ package cache
 
 import (
     "context"
-    "github.com/go-redis/redis/v8"
+    "github.com/go-redis/redis/v9"
     "time"
 )
 
@@ -22,7 +22,7 @@ var (
     HSet    func(ctx context.Context, key string, values ...interface{}) *redis.IntCmd
     HDel    func(ctx context.Context, key string, fields ...string) *redis.IntCmd
     HGet    func(ctx context.Context, key, field string) *redis.StringCmd
-    HGetAll func(ctx context.Context, key string) *redis.StringStringMapCmd
+    HGetAll func(ctx context.Context, key string) *redis.MapStringStringCmd
 
     Rpush func(ctx context.Context, key string, values ...interface{}) *redis.IntCmd
     BRPop func(ctx context.Context, timeout time.Duration, keys ...string) *redis.StringSliceCmd
@@ -35,12 +35,8 @@ var (
     TTL func(ctx context.Context, key string) *redis.DurationCmd
 )
 
-func CreateClient(addr, password string, db int) {
-    client = redis.NewClient(&redis.Options{
-        Addr:     addr,
-        Password: password,
-        DB:       db,
-    })
+func CreateClient(c *redis.Client) {
+    client = c
 
     Set = client.Set
     Get = client.Get

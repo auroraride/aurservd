@@ -10,13 +10,14 @@ import (
     "github.com/auroraride/adapter/defs/cabdef"
     "github.com/auroraride/adapter/message"
     "github.com/auroraride/adapter/tcp"
+    "github.com/auroraride/adapter/zlog"
     "github.com/auroraride/aurservd/app/service"
     "github.com/auroraride/aurservd/internal/ar"
     log "github.com/sirupsen/logrus"
 )
 
 func kaixin() {
-    s := tcp.NewServer(ar.Config.Adapter.Kaixin.TcpBind, log.StandardLogger(), &codec.HeaderLength{}, func(b []byte) {
+    s := tcp.NewServer(ar.Config.Adapter.Kaixin.TcpBind, zlog.StandardLogger(), &codec.HeaderLength{}, func(b []byte) {
         // log.Infof("[SYNC] %s", string(b))
 
         t, msg, err := message.Unpack(b)
