@@ -26,7 +26,7 @@ func (g *Geometry) Scan(val interface{}) error {
     }
     r := bytes.NewReader(b)
     var wkbByteOrder uint8
-    if err := binary.Read(r, binary.LittleEndian, &wkbByteOrder); err != nil {
+    if err = binary.Read(r, binary.LittleEndian, &wkbByteOrder); err != nil {
         return err
     }
 
