@@ -20,7 +20,7 @@ func main() {
         boot.Bootstrap()
 
         // 初始化缓存
-        createCache()
+        cache.CreateClient(ar.Redis)
 
         // 初始化系统设置
         service.NewSetting().Initialize()
@@ -31,8 +31,4 @@ func main() {
         // 启动脚本
         script.Execute()
     })
-}
-
-func createCache() {
-    cache.CreateClient(ar.Redis)
 }

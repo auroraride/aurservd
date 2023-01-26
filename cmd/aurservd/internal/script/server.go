@@ -67,6 +67,9 @@ func serverCommand() *cobra.Command {
             // 判定是否有维护任务
             go service.NewMaintain().UpdateMaintain()
 
+            // 缓存所有电柜名称
+            go service.NewCabinet().CacheAll()
+
             <-ar.Quit
         },
     }

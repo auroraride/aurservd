@@ -770,3 +770,10 @@ func (s *cabinetService) Sync(data *cabdef.CabinetMessage) {
             SetBin(bins)
     }
 }
+
+func (s *cabinetService) CacheAll() {
+    items, _ := s.orm.Query().All(s.ctx)
+    for _, item := range items {
+        cache.HSet(s.ctx, cache.CabinetNameCacheKey, item.Serial, item.Name)
+    }
+}
