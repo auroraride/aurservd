@@ -25,11 +25,8 @@ import (
 // ExchangeQuery is the builder for querying Exchange entities.
 type ExchangeQuery struct {
 	config
-	limit          *int
-	offset         *int
-	unique         *bool
+	ctx            *QueryContext
 	order          []OrderFunc
-	fields         []string
 	inters         []Interceptor
 	predicates     []predicate.Exchange
 	withSubscribe  *SubscribeQuery
@@ -54,20 +51,20 @@ func (eq *ExchangeQuery) Where(ps ...predicate.Exchange) *ExchangeQuery {
 
 // Limit the number of records to be returned by this query.
 func (eq *ExchangeQuery) Limit(limit int) *ExchangeQuery {
-	eq.limit = &limit
+	eq.ctx.Limit = &limit
 	return eq
 }
 
 // Offset to start from.
 func (eq *ExchangeQuery) Offset(offset int) *ExchangeQuery {
-	eq.offset = &offset
+	eq.ctx.Offset = &offset
 	return eq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (eq *ExchangeQuery) Unique(unique bool) *ExchangeQuery {
-	eq.unique = &unique
+	eq.ctx.Unique = &unique
 	return eq
 }
 
@@ -256,7 +253,7 @@ func (eq *ExchangeQuery) QueryEmployee() *EmployeeQuery {
 // First returns the first Exchange entity from the query.
 // Returns a *NotFoundError when no Exchange was found.
 func (eq *ExchangeQuery) First(ctx context.Context) (*Exchange, error) {
-	nodes, err := eq.Limit(1).All(newQueryContext(ctx, TypeExchange, "First"))
+	nodes, err := eq.Limit(1).All(setContextOp(ctx, eq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -279,7 +276,7 @@ func (eq *ExchangeQuery) FirstX(ctx context.Context) *Exchange {
 // Returns a *NotFoundError when no Exchange ID was found.
 func (eq *ExchangeQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = eq.Limit(1).IDs(newQueryContext(ctx, TypeExchange, "FirstID")); err != nil {
+	if ids, err = eq.Limit(1).IDs(setContextOp(ctx, eq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -302,7 +299,7 @@ func (eq *ExchangeQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Exchange entity is found.
 // Returns a *NotFoundError when no Exchange entities are found.
 func (eq *ExchangeQuery) Only(ctx context.Context) (*Exchange, error) {
-	nodes, err := eq.Limit(2).All(newQueryContext(ctx, TypeExchange, "Only"))
+	nodes, err := eq.Limit(2).All(setContextOp(ctx, eq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -330,7 +327,7 @@ func (eq *ExchangeQuery) OnlyX(ctx context.Context) *Exchange {
 // Returns a *NotFoundError when no entities are found.
 func (eq *ExchangeQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = eq.Limit(2).IDs(newQueryContext(ctx, TypeExchange, "OnlyID")); err != nil {
+	if ids, err = eq.Limit(2).IDs(setContextOp(ctx, eq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -355,7 +352,7 @@ func (eq *ExchangeQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Exchanges.
 func (eq *ExchangeQuery) All(ctx context.Context) ([]*Exchange, error) {
-	ctx = newQueryContext(ctx, TypeExchange, "All")
+	ctx = setContextOp(ctx, eq.ctx, "All")
 	if err := eq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -375,7 +372,7 @@ func (eq *ExchangeQuery) AllX(ctx context.Context) []*Exchange {
 // IDs executes the query and returns a list of Exchange IDs.
 func (eq *ExchangeQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
-	ctx = newQueryContext(ctx, TypeExchange, "IDs")
+	ctx = setContextOp(ctx, eq.ctx, "IDs")
 	if err := eq.Select(exchange.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -393,7 +390,7 @@ func (eq *ExchangeQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (eq *ExchangeQuery) Count(ctx context.Context) (int, error) {
-	ctx = newQueryContext(ctx, TypeExchange, "Count")
+	ctx = setContextOp(ctx, eq.ctx, "Count")
 	if err := eq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -411,7 +408,7 @@ func (eq *ExchangeQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (eq *ExchangeQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = newQueryContext(ctx, TypeExchange, "Exist")
+	ctx = setContextOp(ctx, eq.ctx, "Exist")
 	switch _, err := eq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -439,9 +436,9 @@ func (eq *ExchangeQuery) Clone() *ExchangeQuery {
 	}
 	return &ExchangeQuery{
 		config:         eq.config,
-		limit:          eq.limit,
-		offset:         eq.offset,
+		ctx:            eq.ctx.Clone(),
 		order:          append([]OrderFunc{}, eq.order...),
+		inters:         append([]Interceptor{}, eq.inters...),
 		predicates:     append([]predicate.Exchange{}, eq.predicates...),
 		withSubscribe:  eq.withSubscribe.Clone(),
 		withCity:       eq.withCity.Clone(),
@@ -452,9 +449,8 @@ func (eq *ExchangeQuery) Clone() *ExchangeQuery {
 		withRider:      eq.withRider.Clone(),
 		withEmployee:   eq.withEmployee.Clone(),
 		// clone intermediate query.
-		sql:    eq.sql.Clone(),
-		path:   eq.path,
-		unique: eq.unique,
+		sql:  eq.sql.Clone(),
+		path: eq.path,
 	}
 }
 
@@ -561,9 +557,9 @@ func (eq *ExchangeQuery) WithEmployee(opts ...func(*EmployeeQuery)) *ExchangeQue
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (eq *ExchangeQuery) GroupBy(field string, fields ...string) *ExchangeGroupBy {
-	eq.fields = append([]string{field}, fields...)
+	eq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &ExchangeGroupBy{build: eq}
-	grbuild.flds = &eq.fields
+	grbuild.flds = &eq.ctx.Fields
 	grbuild.label = exchange.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -582,10 +578,10 @@ func (eq *ExchangeQuery) GroupBy(field string, fields ...string) *ExchangeGroupB
 //		Select(exchange.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (eq *ExchangeQuery) Select(fields ...string) *ExchangeSelect {
-	eq.fields = append(eq.fields, fields...)
+	eq.ctx.Fields = append(eq.ctx.Fields, fields...)
 	sbuild := &ExchangeSelect{ExchangeQuery: eq}
 	sbuild.label = exchange.Label
-	sbuild.flds, sbuild.scan = &eq.fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &eq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
@@ -605,7 +601,7 @@ func (eq *ExchangeQuery) prepareQuery(ctx context.Context) error {
 			}
 		}
 	}
-	for _, f := range eq.fields {
+	for _, f := range eq.ctx.Fields {
 		if !exchange.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -717,6 +713,9 @@ func (eq *ExchangeQuery) loadSubscribe(ctx context.Context, query *SubscribeQuer
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(subscribe.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -742,6 +741,9 @@ func (eq *ExchangeQuery) loadCity(ctx context.Context, query *CityQuery, nodes [
 			ids = append(ids, fk)
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
 	}
 	query.Where(city.IDIn(ids...))
 	neighbors, err := query.All(ctx)
@@ -772,6 +774,9 @@ func (eq *ExchangeQuery) loadStore(ctx context.Context, query *StoreQuery, nodes
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(store.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -800,6 +805,9 @@ func (eq *ExchangeQuery) loadEnterprise(ctx context.Context, query *EnterpriseQu
 			ids = append(ids, fk)
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
 	}
 	query.Where(enterprise.IDIn(ids...))
 	neighbors, err := query.All(ctx)
@@ -830,6 +838,9 @@ func (eq *ExchangeQuery) loadStation(ctx context.Context, query *EnterpriseStati
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(enterprisestation.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -856,6 +867,9 @@ func (eq *ExchangeQuery) loadCabinet(ctx context.Context, query *CabinetQuery, n
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(cabinet.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -881,6 +895,9 @@ func (eq *ExchangeQuery) loadRider(ctx context.Context, query *RiderQuery, nodes
 			ids = append(ids, fk)
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
 	}
 	query.Where(rider.IDIn(ids...))
 	neighbors, err := query.All(ctx)
@@ -911,6 +928,9 @@ func (eq *ExchangeQuery) loadEmployee(ctx context.Context, query *EmployeeQuery,
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(employee.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -933,9 +953,9 @@ func (eq *ExchangeQuery) sqlCount(ctx context.Context) (int, error) {
 	if len(eq.modifiers) > 0 {
 		_spec.Modifiers = eq.modifiers
 	}
-	_spec.Node.Columns = eq.fields
-	if len(eq.fields) > 0 {
-		_spec.Unique = eq.unique != nil && *eq.unique
+	_spec.Node.Columns = eq.ctx.Fields
+	if len(eq.ctx.Fields) > 0 {
+		_spec.Unique = eq.ctx.Unique != nil && *eq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, eq.driver, _spec)
 }
@@ -953,10 +973,10 @@ func (eq *ExchangeQuery) querySpec() *sqlgraph.QuerySpec {
 		From:   eq.sql,
 		Unique: true,
 	}
-	if unique := eq.unique; unique != nil {
+	if unique := eq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
 	}
-	if fields := eq.fields; len(fields) > 0 {
+	if fields := eq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, exchange.FieldID)
 		for i := range fields {
@@ -972,10 +992,10 @@ func (eq *ExchangeQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := eq.limit; limit != nil {
+	if limit := eq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := eq.offset; offset != nil {
+	if offset := eq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := eq.order; len(ps) > 0 {
@@ -991,7 +1011,7 @@ func (eq *ExchangeQuery) querySpec() *sqlgraph.QuerySpec {
 func (eq *ExchangeQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(eq.driver.Dialect())
 	t1 := builder.Table(exchange.Table)
-	columns := eq.fields
+	columns := eq.ctx.Fields
 	if len(columns) == 0 {
 		columns = exchange.Columns
 	}
@@ -1000,7 +1020,7 @@ func (eq *ExchangeQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = eq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if eq.unique != nil && *eq.unique {
+	if eq.ctx.Unique != nil && *eq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, m := range eq.modifiers {
@@ -1012,12 +1032,12 @@ func (eq *ExchangeQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range eq.order {
 		p(selector)
 	}
-	if offset := eq.offset; offset != nil {
+	if offset := eq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := eq.limit; limit != nil {
+	if limit := eq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -1080,7 +1100,7 @@ func (egb *ExchangeGroupBy) Aggregate(fns ...AggregateFunc) *ExchangeGroupBy {
 
 // Scan applies the selector query and scans the result into the given value.
 func (egb *ExchangeGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeExchange, "GroupBy")
+	ctx = setContextOp(ctx, egb.build.ctx, "GroupBy")
 	if err := egb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -1128,7 +1148,7 @@ func (es *ExchangeSelect) Aggregate(fns ...AggregateFunc) *ExchangeSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (es *ExchangeSelect) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeExchange, "Select")
+	ctx = setContextOp(ctx, es.ctx, "Select")
 	if err := es.prepareQuery(ctx); err != nil {
 		return err
 	}

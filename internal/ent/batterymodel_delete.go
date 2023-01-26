@@ -69,6 +69,12 @@ type BatteryModelDeleteOne struct {
 	bmd *BatteryModelDelete
 }
 
+// Where appends a list predicates to the BatteryModelDelete builder.
+func (bmdo *BatteryModelDeleteOne) Where(ps ...predicate.BatteryModel) *BatteryModelDeleteOne {
+	bmdo.bmd.mutation.Where(ps...)
+	return bmdo
+}
+
 // Exec executes the deletion query.
 func (bmdo *BatteryModelDeleteOne) Exec(ctx context.Context) error {
 	n, err := bmdo.bmd.Exec(ctx)
@@ -84,5 +90,7 @@ func (bmdo *BatteryModelDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (bmdo *BatteryModelDeleteOne) ExecX(ctx context.Context) {
-	bmdo.bmd.ExecX(ctx)
+	if err := bmdo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

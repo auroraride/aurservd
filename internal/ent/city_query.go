@@ -19,11 +19,8 @@ import (
 // CityQuery is the builder for querying City entities.
 type CityQuery struct {
 	config
-	limit        *int
-	offset       *int
-	unique       *bool
+	ctx          *QueryContext
 	order        []OrderFunc
-	fields       []string
 	inters       []Interceptor
 	predicates   []predicate.City
 	withParent   *CityQuery
@@ -43,20 +40,20 @@ func (cq *CityQuery) Where(ps ...predicate.City) *CityQuery {
 
 // Limit the number of records to be returned by this query.
 func (cq *CityQuery) Limit(limit int) *CityQuery {
-	cq.limit = &limit
+	cq.ctx.Limit = &limit
 	return cq
 }
 
 // Offset to start from.
 func (cq *CityQuery) Offset(offset int) *CityQuery {
-	cq.offset = &offset
+	cq.ctx.Offset = &offset
 	return cq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (cq *CityQuery) Unique(unique bool) *CityQuery {
-	cq.unique = &unique
+	cq.ctx.Unique = &unique
 	return cq
 }
 
@@ -135,7 +132,7 @@ func (cq *CityQuery) QueryPlans() *PlanQuery {
 // First returns the first City entity from the query.
 // Returns a *NotFoundError when no City was found.
 func (cq *CityQuery) First(ctx context.Context) (*City, error) {
-	nodes, err := cq.Limit(1).All(newQueryContext(ctx, TypeCity, "First"))
+	nodes, err := cq.Limit(1).All(setContextOp(ctx, cq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -158,7 +155,7 @@ func (cq *CityQuery) FirstX(ctx context.Context) *City {
 // Returns a *NotFoundError when no City ID was found.
 func (cq *CityQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = cq.Limit(1).IDs(newQueryContext(ctx, TypeCity, "FirstID")); err != nil {
+	if ids, err = cq.Limit(1).IDs(setContextOp(ctx, cq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -181,7 +178,7 @@ func (cq *CityQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one City entity is found.
 // Returns a *NotFoundError when no City entities are found.
 func (cq *CityQuery) Only(ctx context.Context) (*City, error) {
-	nodes, err := cq.Limit(2).All(newQueryContext(ctx, TypeCity, "Only"))
+	nodes, err := cq.Limit(2).All(setContextOp(ctx, cq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -209,7 +206,7 @@ func (cq *CityQuery) OnlyX(ctx context.Context) *City {
 // Returns a *NotFoundError when no entities are found.
 func (cq *CityQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = cq.Limit(2).IDs(newQueryContext(ctx, TypeCity, "OnlyID")); err != nil {
+	if ids, err = cq.Limit(2).IDs(setContextOp(ctx, cq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -234,7 +231,7 @@ func (cq *CityQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Cities.
 func (cq *CityQuery) All(ctx context.Context) ([]*City, error) {
-	ctx = newQueryContext(ctx, TypeCity, "All")
+	ctx = setContextOp(ctx, cq.ctx, "All")
 	if err := cq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -254,7 +251,7 @@ func (cq *CityQuery) AllX(ctx context.Context) []*City {
 // IDs executes the query and returns a list of City IDs.
 func (cq *CityQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
-	ctx = newQueryContext(ctx, TypeCity, "IDs")
+	ctx = setContextOp(ctx, cq.ctx, "IDs")
 	if err := cq.Select(city.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -272,7 +269,7 @@ func (cq *CityQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (cq *CityQuery) Count(ctx context.Context) (int, error) {
-	ctx = newQueryContext(ctx, TypeCity, "Count")
+	ctx = setContextOp(ctx, cq.ctx, "Count")
 	if err := cq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -290,7 +287,7 @@ func (cq *CityQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (cq *CityQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = newQueryContext(ctx, TypeCity, "Exist")
+	ctx = setContextOp(ctx, cq.ctx, "Exist")
 	switch _, err := cq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -318,17 +315,16 @@ func (cq *CityQuery) Clone() *CityQuery {
 	}
 	return &CityQuery{
 		config:       cq.config,
-		limit:        cq.limit,
-		offset:       cq.offset,
+		ctx:          cq.ctx.Clone(),
 		order:        append([]OrderFunc{}, cq.order...),
+		inters:       append([]Interceptor{}, cq.inters...),
 		predicates:   append([]predicate.City{}, cq.predicates...),
 		withParent:   cq.withParent.Clone(),
 		withChildren: cq.withChildren.Clone(),
 		withPlans:    cq.withPlans.Clone(),
 		// clone intermediate query.
-		sql:    cq.sql.Clone(),
-		path:   cq.path,
-		unique: cq.unique,
+		sql:  cq.sql.Clone(),
+		path: cq.path,
 	}
 }
 
@@ -380,9 +376,9 @@ func (cq *CityQuery) WithPlans(opts ...func(*PlanQuery)) *CityQuery {
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (cq *CityQuery) GroupBy(field string, fields ...string) *CityGroupBy {
-	cq.fields = append([]string{field}, fields...)
+	cq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &CityGroupBy{build: cq}
-	grbuild.flds = &cq.fields
+	grbuild.flds = &cq.ctx.Fields
 	grbuild.label = city.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -401,10 +397,10 @@ func (cq *CityQuery) GroupBy(field string, fields ...string) *CityGroupBy {
 //		Select(city.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (cq *CityQuery) Select(fields ...string) *CitySelect {
-	cq.fields = append(cq.fields, fields...)
+	cq.ctx.Fields = append(cq.ctx.Fields, fields...)
 	sbuild := &CitySelect{CityQuery: cq}
 	sbuild.label = city.Label
-	sbuild.flds, sbuild.scan = &cq.fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &cq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
@@ -424,7 +420,7 @@ func (cq *CityQuery) prepareQuery(ctx context.Context) error {
 			}
 		}
 	}
-	for _, f := range cq.fields {
+	for _, f := range cq.ctx.Fields {
 		if !city.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -506,6 +502,9 @@ func (cq *CityQuery) loadParent(ctx context.Context, query *CityQuery, nodes []*
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(city.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -575,27 +574,30 @@ func (cq *CityQuery) loadPlans(ctx context.Context, query *PlanQuery, nodes []*C
 	if err := query.prepareQuery(ctx); err != nil {
 		return err
 	}
-	neighbors, err := query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
-		assign := spec.Assign
-		values := spec.ScanValues
-		spec.ScanValues = func(columns []string) ([]any, error) {
-			values, err := values(columns[1:])
-			if err != nil {
-				return nil, err
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullInt64)}, values...), nil
 			}
-			return append([]any{new(sql.NullInt64)}, values...), nil
-		}
-		spec.Assign = func(columns []string, values []any) error {
-			outValue := uint64(values[0].(*sql.NullInt64).Int64)
-			inValue := uint64(values[1].(*sql.NullInt64).Int64)
-			if nids[inValue] == nil {
-				nids[inValue] = map[*City]struct{}{byID[outValue]: {}}
-				return assign(columns[1:], values[1:])
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := uint64(values[0].(*sql.NullInt64).Int64)
+				inValue := uint64(values[1].(*sql.NullInt64).Int64)
+				if nids[inValue] == nil {
+					nids[inValue] = map[*City]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
 			}
-			nids[inValue][byID[outValue]] = struct{}{}
-			return nil
-		}
+		})
 	})
+	neighbors, err := withInterceptors[[]*Plan](ctx, query, qr, query.inters)
 	if err != nil {
 		return err
 	}
@@ -616,9 +618,9 @@ func (cq *CityQuery) sqlCount(ctx context.Context) (int, error) {
 	if len(cq.modifiers) > 0 {
 		_spec.Modifiers = cq.modifiers
 	}
-	_spec.Node.Columns = cq.fields
-	if len(cq.fields) > 0 {
-		_spec.Unique = cq.unique != nil && *cq.unique
+	_spec.Node.Columns = cq.ctx.Fields
+	if len(cq.ctx.Fields) > 0 {
+		_spec.Unique = cq.ctx.Unique != nil && *cq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, cq.driver, _spec)
 }
@@ -636,10 +638,10 @@ func (cq *CityQuery) querySpec() *sqlgraph.QuerySpec {
 		From:   cq.sql,
 		Unique: true,
 	}
-	if unique := cq.unique; unique != nil {
+	if unique := cq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
 	}
-	if fields := cq.fields; len(fields) > 0 {
+	if fields := cq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, city.FieldID)
 		for i := range fields {
@@ -655,10 +657,10 @@ func (cq *CityQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := cq.limit; limit != nil {
+	if limit := cq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := cq.offset; offset != nil {
+	if offset := cq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := cq.order; len(ps) > 0 {
@@ -674,7 +676,7 @@ func (cq *CityQuery) querySpec() *sqlgraph.QuerySpec {
 func (cq *CityQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(cq.driver.Dialect())
 	t1 := builder.Table(city.Table)
-	columns := cq.fields
+	columns := cq.ctx.Fields
 	if len(columns) == 0 {
 		columns = city.Columns
 	}
@@ -683,7 +685,7 @@ func (cq *CityQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = cq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if cq.unique != nil && *cq.unique {
+	if cq.ctx.Unique != nil && *cq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, m := range cq.modifiers {
@@ -695,12 +697,12 @@ func (cq *CityQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range cq.order {
 		p(selector)
 	}
-	if offset := cq.offset; offset != nil {
+	if offset := cq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := cq.limit; limit != nil {
+	if limit := cq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -748,7 +750,7 @@ func (cgb *CityGroupBy) Aggregate(fns ...AggregateFunc) *CityGroupBy {
 
 // Scan applies the selector query and scans the result into the given value.
 func (cgb *CityGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeCity, "GroupBy")
+	ctx = setContextOp(ctx, cgb.build.ctx, "GroupBy")
 	if err := cgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -796,7 +798,7 @@ func (cs *CitySelect) Aggregate(fns ...AggregateFunc) *CitySelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (cs *CitySelect) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeCity, "Select")
+	ctx = setContextOp(ctx, cs.ctx, "Select")
 	if err := cs.prepareQuery(ctx); err != nil {
 		return err
 	}

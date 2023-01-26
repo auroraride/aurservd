@@ -19,11 +19,8 @@ import (
 // PersonQuery is the builder for querying Person entities.
 type PersonQuery struct {
 	config
-	limit      *int
-	offset     *int
-	unique     *bool
+	ctx        *QueryContext
 	order      []OrderFunc
-	fields     []string
 	inters     []Interceptor
 	predicates []predicate.Person
 	withRider  *RiderQuery
@@ -41,20 +38,20 @@ func (pq *PersonQuery) Where(ps ...predicate.Person) *PersonQuery {
 
 // Limit the number of records to be returned by this query.
 func (pq *PersonQuery) Limit(limit int) *PersonQuery {
-	pq.limit = &limit
+	pq.ctx.Limit = &limit
 	return pq
 }
 
 // Offset to start from.
 func (pq *PersonQuery) Offset(offset int) *PersonQuery {
-	pq.offset = &offset
+	pq.ctx.Offset = &offset
 	return pq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (pq *PersonQuery) Unique(unique bool) *PersonQuery {
-	pq.unique = &unique
+	pq.ctx.Unique = &unique
 	return pq
 }
 
@@ -89,7 +86,7 @@ func (pq *PersonQuery) QueryRider() *RiderQuery {
 // First returns the first Person entity from the query.
 // Returns a *NotFoundError when no Person was found.
 func (pq *PersonQuery) First(ctx context.Context) (*Person, error) {
-	nodes, err := pq.Limit(1).All(newQueryContext(ctx, TypePerson, "First"))
+	nodes, err := pq.Limit(1).All(setContextOp(ctx, pq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -112,7 +109,7 @@ func (pq *PersonQuery) FirstX(ctx context.Context) *Person {
 // Returns a *NotFoundError when no Person ID was found.
 func (pq *PersonQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = pq.Limit(1).IDs(newQueryContext(ctx, TypePerson, "FirstID")); err != nil {
+	if ids, err = pq.Limit(1).IDs(setContextOp(ctx, pq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -135,7 +132,7 @@ func (pq *PersonQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Person entity is found.
 // Returns a *NotFoundError when no Person entities are found.
 func (pq *PersonQuery) Only(ctx context.Context) (*Person, error) {
-	nodes, err := pq.Limit(2).All(newQueryContext(ctx, TypePerson, "Only"))
+	nodes, err := pq.Limit(2).All(setContextOp(ctx, pq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -163,7 +160,7 @@ func (pq *PersonQuery) OnlyX(ctx context.Context) *Person {
 // Returns a *NotFoundError when no entities are found.
 func (pq *PersonQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = pq.Limit(2).IDs(newQueryContext(ctx, TypePerson, "OnlyID")); err != nil {
+	if ids, err = pq.Limit(2).IDs(setContextOp(ctx, pq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -188,7 +185,7 @@ func (pq *PersonQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Persons.
 func (pq *PersonQuery) All(ctx context.Context) ([]*Person, error) {
-	ctx = newQueryContext(ctx, TypePerson, "All")
+	ctx = setContextOp(ctx, pq.ctx, "All")
 	if err := pq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -208,7 +205,7 @@ func (pq *PersonQuery) AllX(ctx context.Context) []*Person {
 // IDs executes the query and returns a list of Person IDs.
 func (pq *PersonQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
-	ctx = newQueryContext(ctx, TypePerson, "IDs")
+	ctx = setContextOp(ctx, pq.ctx, "IDs")
 	if err := pq.Select(person.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -226,7 +223,7 @@ func (pq *PersonQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (pq *PersonQuery) Count(ctx context.Context) (int, error) {
-	ctx = newQueryContext(ctx, TypePerson, "Count")
+	ctx = setContextOp(ctx, pq.ctx, "Count")
 	if err := pq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -244,7 +241,7 @@ func (pq *PersonQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (pq *PersonQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = newQueryContext(ctx, TypePerson, "Exist")
+	ctx = setContextOp(ctx, pq.ctx, "Exist")
 	switch _, err := pq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -272,15 +269,14 @@ func (pq *PersonQuery) Clone() *PersonQuery {
 	}
 	return &PersonQuery{
 		config:     pq.config,
-		limit:      pq.limit,
-		offset:     pq.offset,
+		ctx:        pq.ctx.Clone(),
 		order:      append([]OrderFunc{}, pq.order...),
+		inters:     append([]Interceptor{}, pq.inters...),
 		predicates: append([]predicate.Person{}, pq.predicates...),
 		withRider:  pq.withRider.Clone(),
 		// clone intermediate query.
-		sql:    pq.sql.Clone(),
-		path:   pq.path,
-		unique: pq.unique,
+		sql:  pq.sql.Clone(),
+		path: pq.path,
 	}
 }
 
@@ -310,9 +306,9 @@ func (pq *PersonQuery) WithRider(opts ...func(*RiderQuery)) *PersonQuery {
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (pq *PersonQuery) GroupBy(field string, fields ...string) *PersonGroupBy {
-	pq.fields = append([]string{field}, fields...)
+	pq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &PersonGroupBy{build: pq}
-	grbuild.flds = &pq.fields
+	grbuild.flds = &pq.ctx.Fields
 	grbuild.label = person.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -331,10 +327,10 @@ func (pq *PersonQuery) GroupBy(field string, fields ...string) *PersonGroupBy {
 //		Select(person.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (pq *PersonQuery) Select(fields ...string) *PersonSelect {
-	pq.fields = append(pq.fields, fields...)
+	pq.ctx.Fields = append(pq.ctx.Fields, fields...)
 	sbuild := &PersonSelect{PersonQuery: pq}
 	sbuild.label = person.Label
-	sbuild.flds, sbuild.scan = &pq.fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &pq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
@@ -354,7 +350,7 @@ func (pq *PersonQuery) prepareQuery(ctx context.Context) error {
 			}
 		}
 	}
-	for _, f := range pq.fields {
+	for _, f := range pq.ctx.Fields {
 		if !person.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -444,9 +440,9 @@ func (pq *PersonQuery) sqlCount(ctx context.Context) (int, error) {
 	if len(pq.modifiers) > 0 {
 		_spec.Modifiers = pq.modifiers
 	}
-	_spec.Node.Columns = pq.fields
-	if len(pq.fields) > 0 {
-		_spec.Unique = pq.unique != nil && *pq.unique
+	_spec.Node.Columns = pq.ctx.Fields
+	if len(pq.ctx.Fields) > 0 {
+		_spec.Unique = pq.ctx.Unique != nil && *pq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, pq.driver, _spec)
 }
@@ -464,10 +460,10 @@ func (pq *PersonQuery) querySpec() *sqlgraph.QuerySpec {
 		From:   pq.sql,
 		Unique: true,
 	}
-	if unique := pq.unique; unique != nil {
+	if unique := pq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
 	}
-	if fields := pq.fields; len(fields) > 0 {
+	if fields := pq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, person.FieldID)
 		for i := range fields {
@@ -483,10 +479,10 @@ func (pq *PersonQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := pq.limit; limit != nil {
+	if limit := pq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := pq.offset; offset != nil {
+	if offset := pq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := pq.order; len(ps) > 0 {
@@ -502,7 +498,7 @@ func (pq *PersonQuery) querySpec() *sqlgraph.QuerySpec {
 func (pq *PersonQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(pq.driver.Dialect())
 	t1 := builder.Table(person.Table)
-	columns := pq.fields
+	columns := pq.ctx.Fields
 	if len(columns) == 0 {
 		columns = person.Columns
 	}
@@ -511,7 +507,7 @@ func (pq *PersonQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = pq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if pq.unique != nil && *pq.unique {
+	if pq.ctx.Unique != nil && *pq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, m := range pq.modifiers {
@@ -523,12 +519,12 @@ func (pq *PersonQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range pq.order {
 		p(selector)
 	}
-	if offset := pq.offset; offset != nil {
+	if offset := pq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := pq.limit; limit != nil {
+	if limit := pq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -570,7 +566,7 @@ func (pgb *PersonGroupBy) Aggregate(fns ...AggregateFunc) *PersonGroupBy {
 
 // Scan applies the selector query and scans the result into the given value.
 func (pgb *PersonGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypePerson, "GroupBy")
+	ctx = setContextOp(ctx, pgb.build.ctx, "GroupBy")
 	if err := pgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -618,7 +614,7 @@ func (ps *PersonSelect) Aggregate(fns ...AggregateFunc) *PersonSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (ps *PersonSelect) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypePerson, "Select")
+	ctx = setContextOp(ctx, ps.ctx, "Select")
 	if err := ps.prepareQuery(ctx); err != nil {
 		return err
 	}

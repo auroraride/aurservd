@@ -199,19 +199,19 @@ func (pl *PointLog) assignValues(columns []string, values []any) error {
 
 // QueryRider queries the "rider" edge of the PointLog entity.
 func (pl *PointLog) QueryRider() *RiderQuery {
-	return (&PointLogClient{config: pl.config}).QueryRider(pl)
+	return NewPointLogClient(pl.config).QueryRider(pl)
 }
 
 // QueryOrder queries the "order" edge of the PointLog entity.
 func (pl *PointLog) QueryOrder() *OrderQuery {
-	return (&PointLogClient{config: pl.config}).QueryOrder(pl)
+	return NewPointLogClient(pl.config).QueryOrder(pl)
 }
 
 // Update returns a builder for updating this PointLog.
 // Note that you need to call PointLog.Unwrap() before calling this method if this PointLog
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (pl *PointLog) Update() *PointLogUpdateOne {
-	return (&PointLogClient{config: pl.config}).UpdateOne(pl)
+	return NewPointLogClient(pl.config).UpdateOne(pl)
 }
 
 // Unwrap unwraps the PointLog entity that was returned from a transaction after it was closed,

@@ -259,29 +259,29 @@ func (b *Battery) assignValues(columns []string, values []any) error {
 
 // QueryCity queries the "city" edge of the Battery entity.
 func (b *Battery) QueryCity() *CityQuery {
-	return (&BatteryClient{config: b.config}).QueryCity(b)
+	return NewBatteryClient(b.config).QueryCity(b)
 }
 
 // QueryRider queries the "rider" edge of the Battery entity.
 func (b *Battery) QueryRider() *RiderQuery {
-	return (&BatteryClient{config: b.config}).QueryRider(b)
+	return NewBatteryClient(b.config).QueryRider(b)
 }
 
 // QueryCabinet queries the "cabinet" edge of the Battery entity.
 func (b *Battery) QueryCabinet() *CabinetQuery {
-	return (&BatteryClient{config: b.config}).QueryCabinet(b)
+	return NewBatteryClient(b.config).QueryCabinet(b)
 }
 
 // QuerySubscribe queries the "subscribe" edge of the Battery entity.
 func (b *Battery) QuerySubscribe() *SubscribeQuery {
-	return (&BatteryClient{config: b.config}).QuerySubscribe(b)
+	return NewBatteryClient(b.config).QuerySubscribe(b)
 }
 
 // Update returns a builder for updating this Battery.
 // Note that you need to call Battery.Unwrap() before calling this method if this Battery
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (b *Battery) Update() *BatteryUpdateOne {
-	return (&BatteryClient{config: b.config}).UpdateOne(b)
+	return NewBatteryClient(b.config).UpdateOne(b)
 }
 
 // Unwrap unwraps the Battery entity that was returned from a transaction after it was closed,

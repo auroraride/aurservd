@@ -20,11 +20,8 @@ import (
 // ExceptionQuery is the builder for querying Exception entities.
 type ExceptionQuery struct {
 	config
-	limit        *int
-	offset       *int
-	unique       *bool
+	ctx          *QueryContext
 	order        []OrderFunc
-	fields       []string
 	inters       []Interceptor
 	predicates   []predicate.Exception
 	withCity     *CityQuery
@@ -44,20 +41,20 @@ func (eq *ExceptionQuery) Where(ps ...predicate.Exception) *ExceptionQuery {
 
 // Limit the number of records to be returned by this query.
 func (eq *ExceptionQuery) Limit(limit int) *ExceptionQuery {
-	eq.limit = &limit
+	eq.ctx.Limit = &limit
 	return eq
 }
 
 // Offset to start from.
 func (eq *ExceptionQuery) Offset(offset int) *ExceptionQuery {
-	eq.offset = &offset
+	eq.ctx.Offset = &offset
 	return eq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (eq *ExceptionQuery) Unique(unique bool) *ExceptionQuery {
-	eq.unique = &unique
+	eq.ctx.Unique = &unique
 	return eq
 }
 
@@ -136,7 +133,7 @@ func (eq *ExceptionQuery) QueryStore() *StoreQuery {
 // First returns the first Exception entity from the query.
 // Returns a *NotFoundError when no Exception was found.
 func (eq *ExceptionQuery) First(ctx context.Context) (*Exception, error) {
-	nodes, err := eq.Limit(1).All(newQueryContext(ctx, TypeException, "First"))
+	nodes, err := eq.Limit(1).All(setContextOp(ctx, eq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -159,7 +156,7 @@ func (eq *ExceptionQuery) FirstX(ctx context.Context) *Exception {
 // Returns a *NotFoundError when no Exception ID was found.
 func (eq *ExceptionQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = eq.Limit(1).IDs(newQueryContext(ctx, TypeException, "FirstID")); err != nil {
+	if ids, err = eq.Limit(1).IDs(setContextOp(ctx, eq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -182,7 +179,7 @@ func (eq *ExceptionQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Exception entity is found.
 // Returns a *NotFoundError when no Exception entities are found.
 func (eq *ExceptionQuery) Only(ctx context.Context) (*Exception, error) {
-	nodes, err := eq.Limit(2).All(newQueryContext(ctx, TypeException, "Only"))
+	nodes, err := eq.Limit(2).All(setContextOp(ctx, eq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -210,7 +207,7 @@ func (eq *ExceptionQuery) OnlyX(ctx context.Context) *Exception {
 // Returns a *NotFoundError when no entities are found.
 func (eq *ExceptionQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = eq.Limit(2).IDs(newQueryContext(ctx, TypeException, "OnlyID")); err != nil {
+	if ids, err = eq.Limit(2).IDs(setContextOp(ctx, eq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -235,7 +232,7 @@ func (eq *ExceptionQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Exceptions.
 func (eq *ExceptionQuery) All(ctx context.Context) ([]*Exception, error) {
-	ctx = newQueryContext(ctx, TypeException, "All")
+	ctx = setContextOp(ctx, eq.ctx, "All")
 	if err := eq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -255,7 +252,7 @@ func (eq *ExceptionQuery) AllX(ctx context.Context) []*Exception {
 // IDs executes the query and returns a list of Exception IDs.
 func (eq *ExceptionQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
-	ctx = newQueryContext(ctx, TypeException, "IDs")
+	ctx = setContextOp(ctx, eq.ctx, "IDs")
 	if err := eq.Select(exception.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -273,7 +270,7 @@ func (eq *ExceptionQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (eq *ExceptionQuery) Count(ctx context.Context) (int, error) {
-	ctx = newQueryContext(ctx, TypeException, "Count")
+	ctx = setContextOp(ctx, eq.ctx, "Count")
 	if err := eq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -291,7 +288,7 @@ func (eq *ExceptionQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (eq *ExceptionQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = newQueryContext(ctx, TypeException, "Exist")
+	ctx = setContextOp(ctx, eq.ctx, "Exist")
 	switch _, err := eq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -319,17 +316,16 @@ func (eq *ExceptionQuery) Clone() *ExceptionQuery {
 	}
 	return &ExceptionQuery{
 		config:       eq.config,
-		limit:        eq.limit,
-		offset:       eq.offset,
+		ctx:          eq.ctx.Clone(),
 		order:        append([]OrderFunc{}, eq.order...),
+		inters:       append([]Interceptor{}, eq.inters...),
 		predicates:   append([]predicate.Exception{}, eq.predicates...),
 		withCity:     eq.withCity.Clone(),
 		withEmployee: eq.withEmployee.Clone(),
 		withStore:    eq.withStore.Clone(),
 		// clone intermediate query.
-		sql:    eq.sql.Clone(),
-		path:   eq.path,
-		unique: eq.unique,
+		sql:  eq.sql.Clone(),
+		path: eq.path,
 	}
 }
 
@@ -381,9 +377,9 @@ func (eq *ExceptionQuery) WithStore(opts ...func(*StoreQuery)) *ExceptionQuery {
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (eq *ExceptionQuery) GroupBy(field string, fields ...string) *ExceptionGroupBy {
-	eq.fields = append([]string{field}, fields...)
+	eq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &ExceptionGroupBy{build: eq}
-	grbuild.flds = &eq.fields
+	grbuild.flds = &eq.ctx.Fields
 	grbuild.label = exception.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -402,10 +398,10 @@ func (eq *ExceptionQuery) GroupBy(field string, fields ...string) *ExceptionGrou
 //		Select(exception.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (eq *ExceptionQuery) Select(fields ...string) *ExceptionSelect {
-	eq.fields = append(eq.fields, fields...)
+	eq.ctx.Fields = append(eq.ctx.Fields, fields...)
 	sbuild := &ExceptionSelect{ExceptionQuery: eq}
 	sbuild.label = exception.Label
-	sbuild.flds, sbuild.scan = &eq.fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &eq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
@@ -425,7 +421,7 @@ func (eq *ExceptionQuery) prepareQuery(ctx context.Context) error {
 			}
 		}
 	}
-	for _, f := range eq.fields {
+	for _, f := range eq.ctx.Fields {
 		if !exception.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -502,6 +498,9 @@ func (eq *ExceptionQuery) loadCity(ctx context.Context, query *CityQuery, nodes 
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(city.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -527,6 +526,9 @@ func (eq *ExceptionQuery) loadEmployee(ctx context.Context, query *EmployeeQuery
 			ids = append(ids, fk)
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
 	}
 	query.Where(employee.IDIn(ids...))
 	neighbors, err := query.All(ctx)
@@ -554,6 +556,9 @@ func (eq *ExceptionQuery) loadStore(ctx context.Context, query *StoreQuery, node
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(store.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -576,9 +581,9 @@ func (eq *ExceptionQuery) sqlCount(ctx context.Context) (int, error) {
 	if len(eq.modifiers) > 0 {
 		_spec.Modifiers = eq.modifiers
 	}
-	_spec.Node.Columns = eq.fields
-	if len(eq.fields) > 0 {
-		_spec.Unique = eq.unique != nil && *eq.unique
+	_spec.Node.Columns = eq.ctx.Fields
+	if len(eq.ctx.Fields) > 0 {
+		_spec.Unique = eq.ctx.Unique != nil && *eq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, eq.driver, _spec)
 }
@@ -596,10 +601,10 @@ func (eq *ExceptionQuery) querySpec() *sqlgraph.QuerySpec {
 		From:   eq.sql,
 		Unique: true,
 	}
-	if unique := eq.unique; unique != nil {
+	if unique := eq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
 	}
-	if fields := eq.fields; len(fields) > 0 {
+	if fields := eq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, exception.FieldID)
 		for i := range fields {
@@ -615,10 +620,10 @@ func (eq *ExceptionQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := eq.limit; limit != nil {
+	if limit := eq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := eq.offset; offset != nil {
+	if offset := eq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := eq.order; len(ps) > 0 {
@@ -634,7 +639,7 @@ func (eq *ExceptionQuery) querySpec() *sqlgraph.QuerySpec {
 func (eq *ExceptionQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(eq.driver.Dialect())
 	t1 := builder.Table(exception.Table)
-	columns := eq.fields
+	columns := eq.ctx.Fields
 	if len(columns) == 0 {
 		columns = exception.Columns
 	}
@@ -643,7 +648,7 @@ func (eq *ExceptionQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = eq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if eq.unique != nil && *eq.unique {
+	if eq.ctx.Unique != nil && *eq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, m := range eq.modifiers {
@@ -655,12 +660,12 @@ func (eq *ExceptionQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range eq.order {
 		p(selector)
 	}
-	if offset := eq.offset; offset != nil {
+	if offset := eq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := eq.limit; limit != nil {
+	if limit := eq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -708,7 +713,7 @@ func (egb *ExceptionGroupBy) Aggregate(fns ...AggregateFunc) *ExceptionGroupBy {
 
 // Scan applies the selector query and scans the result into the given value.
 func (egb *ExceptionGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeException, "GroupBy")
+	ctx = setContextOp(ctx, egb.build.ctx, "GroupBy")
 	if err := egb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -756,7 +761,7 @@ func (es *ExceptionSelect) Aggregate(fns ...AggregateFunc) *ExceptionSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (es *ExceptionSelect) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeException, "Select")
+	ctx = setContextOp(ctx, es.ctx, "Select")
 	if err := es.prepareQuery(ctx); err != nil {
 		return err
 	}

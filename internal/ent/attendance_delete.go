@@ -69,6 +69,12 @@ type AttendanceDeleteOne struct {
 	ad *AttendanceDelete
 }
 
+// Where appends a list predicates to the AttendanceDelete builder.
+func (ado *AttendanceDeleteOne) Where(ps ...predicate.Attendance) *AttendanceDeleteOne {
+	ado.ad.mutation.Where(ps...)
+	return ado
+}
+
 // Exec executes the deletion query.
 func (ado *AttendanceDeleteOne) Exec(ctx context.Context) error {
 	n, err := ado.ad.Exec(ctx)
@@ -84,5 +90,7 @@ func (ado *AttendanceDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (ado *AttendanceDeleteOne) ExecX(ctx context.Context) {
-	ado.ad.ExecX(ctx)
+	if err := ado.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

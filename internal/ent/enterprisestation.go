@@ -156,14 +156,14 @@ func (es *EnterpriseStation) assignValues(columns []string, values []any) error 
 
 // QueryEnterprise queries the "enterprise" edge of the EnterpriseStation entity.
 func (es *EnterpriseStation) QueryEnterprise() *EnterpriseQuery {
-	return (&EnterpriseStationClient{config: es.config}).QueryEnterprise(es)
+	return NewEnterpriseStationClient(es.config).QueryEnterprise(es)
 }
 
 // Update returns a builder for updating this EnterpriseStation.
 // Note that you need to call EnterpriseStation.Unwrap() before calling this method if this EnterpriseStation
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (es *EnterpriseStation) Update() *EnterpriseStationUpdateOne {
-	return (&EnterpriseStationClient{config: es.config}).UpdateOne(es)
+	return NewEnterpriseStationClient(es.config).UpdateOne(es)
 }
 
 // Unwrap unwraps the EnterpriseStation entity that was returned from a transaction after it was closed,

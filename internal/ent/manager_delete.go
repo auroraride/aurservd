@@ -69,6 +69,12 @@ type ManagerDeleteOne struct {
 	md *ManagerDelete
 }
 
+// Where appends a list predicates to the ManagerDelete builder.
+func (mdo *ManagerDeleteOne) Where(ps ...predicate.Manager) *ManagerDeleteOne {
+	mdo.md.mutation.Where(ps...)
+	return mdo
+}
+
 // Exec executes the deletion query.
 func (mdo *ManagerDeleteOne) Exec(ctx context.Context) error {
 	n, err := mdo.md.Exec(ctx)
@@ -84,5 +90,7 @@ func (mdo *ManagerDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (mdo *ManagerDeleteOne) ExecX(ctx context.Context) {
-	mdo.md.ExecX(ctx)
+	if err := mdo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

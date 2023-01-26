@@ -69,6 +69,12 @@ type EnterpriseStatementDeleteOne struct {
 	esd *EnterpriseStatementDelete
 }
 
+// Where appends a list predicates to the EnterpriseStatementDelete builder.
+func (esdo *EnterpriseStatementDeleteOne) Where(ps ...predicate.EnterpriseStatement) *EnterpriseStatementDeleteOne {
+	esdo.esd.mutation.Where(ps...)
+	return esdo
+}
+
 // Exec executes the deletion query.
 func (esdo *EnterpriseStatementDeleteOne) Exec(ctx context.Context) error {
 	n, err := esdo.esd.Exec(ctx)
@@ -84,5 +90,7 @@ func (esdo *EnterpriseStatementDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (esdo *EnterpriseStatementDeleteOne) ExecX(ctx context.Context) {
-	esdo.esd.ExecX(ctx)
+	if err := esdo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

@@ -427,49 +427,49 @@ func (e *Exchange) assignValues(columns []string, values []any) error {
 
 // QuerySubscribe queries the "subscribe" edge of the Exchange entity.
 func (e *Exchange) QuerySubscribe() *SubscribeQuery {
-	return (&ExchangeClient{config: e.config}).QuerySubscribe(e)
+	return NewExchangeClient(e.config).QuerySubscribe(e)
 }
 
 // QueryCity queries the "city" edge of the Exchange entity.
 func (e *Exchange) QueryCity() *CityQuery {
-	return (&ExchangeClient{config: e.config}).QueryCity(e)
+	return NewExchangeClient(e.config).QueryCity(e)
 }
 
 // QueryStore queries the "store" edge of the Exchange entity.
 func (e *Exchange) QueryStore() *StoreQuery {
-	return (&ExchangeClient{config: e.config}).QueryStore(e)
+	return NewExchangeClient(e.config).QueryStore(e)
 }
 
 // QueryEnterprise queries the "enterprise" edge of the Exchange entity.
 func (e *Exchange) QueryEnterprise() *EnterpriseQuery {
-	return (&ExchangeClient{config: e.config}).QueryEnterprise(e)
+	return NewExchangeClient(e.config).QueryEnterprise(e)
 }
 
 // QueryStation queries the "station" edge of the Exchange entity.
 func (e *Exchange) QueryStation() *EnterpriseStationQuery {
-	return (&ExchangeClient{config: e.config}).QueryStation(e)
+	return NewExchangeClient(e.config).QueryStation(e)
 }
 
 // QueryCabinet queries the "cabinet" edge of the Exchange entity.
 func (e *Exchange) QueryCabinet() *CabinetQuery {
-	return (&ExchangeClient{config: e.config}).QueryCabinet(e)
+	return NewExchangeClient(e.config).QueryCabinet(e)
 }
 
 // QueryRider queries the "rider" edge of the Exchange entity.
 func (e *Exchange) QueryRider() *RiderQuery {
-	return (&ExchangeClient{config: e.config}).QueryRider(e)
+	return NewExchangeClient(e.config).QueryRider(e)
 }
 
 // QueryEmployee queries the "employee" edge of the Exchange entity.
 func (e *Exchange) QueryEmployee() *EmployeeQuery {
-	return (&ExchangeClient{config: e.config}).QueryEmployee(e)
+	return NewExchangeClient(e.config).QueryEmployee(e)
 }
 
 // Update returns a builder for updating this Exchange.
 // Note that you need to call Exchange.Unwrap() before calling this method if this Exchange
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (e *Exchange) Update() *ExchangeUpdateOne {
-	return (&ExchangeClient{config: e.config}).UpdateOne(e)
+	return NewExchangeClient(e.config).UpdateOne(e)
 }
 
 // Unwrap unwraps the Exchange entity that was returned from a transaction after it was closed,

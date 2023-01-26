@@ -20,11 +20,8 @@ import (
 // SubscribeReminderQuery is the builder for querying SubscribeReminder entities.
 type SubscribeReminderQuery struct {
 	config
-	limit         *int
-	offset        *int
-	unique        *bool
+	ctx           *QueryContext
 	order         []OrderFunc
-	fields        []string
 	inters        []Interceptor
 	predicates    []predicate.SubscribeReminder
 	withSubscribe *SubscribeQuery
@@ -44,20 +41,20 @@ func (srq *SubscribeReminderQuery) Where(ps ...predicate.SubscribeReminder) *Sub
 
 // Limit the number of records to be returned by this query.
 func (srq *SubscribeReminderQuery) Limit(limit int) *SubscribeReminderQuery {
-	srq.limit = &limit
+	srq.ctx.Limit = &limit
 	return srq
 }
 
 // Offset to start from.
 func (srq *SubscribeReminderQuery) Offset(offset int) *SubscribeReminderQuery {
-	srq.offset = &offset
+	srq.ctx.Offset = &offset
 	return srq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (srq *SubscribeReminderQuery) Unique(unique bool) *SubscribeReminderQuery {
-	srq.unique = &unique
+	srq.ctx.Unique = &unique
 	return srq
 }
 
@@ -136,7 +133,7 @@ func (srq *SubscribeReminderQuery) QueryRider() *RiderQuery {
 // First returns the first SubscribeReminder entity from the query.
 // Returns a *NotFoundError when no SubscribeReminder was found.
 func (srq *SubscribeReminderQuery) First(ctx context.Context) (*SubscribeReminder, error) {
-	nodes, err := srq.Limit(1).All(newQueryContext(ctx, TypeSubscribeReminder, "First"))
+	nodes, err := srq.Limit(1).All(setContextOp(ctx, srq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -159,7 +156,7 @@ func (srq *SubscribeReminderQuery) FirstX(ctx context.Context) *SubscribeReminde
 // Returns a *NotFoundError when no SubscribeReminder ID was found.
 func (srq *SubscribeReminderQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = srq.Limit(1).IDs(newQueryContext(ctx, TypeSubscribeReminder, "FirstID")); err != nil {
+	if ids, err = srq.Limit(1).IDs(setContextOp(ctx, srq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -182,7 +179,7 @@ func (srq *SubscribeReminderQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one SubscribeReminder entity is found.
 // Returns a *NotFoundError when no SubscribeReminder entities are found.
 func (srq *SubscribeReminderQuery) Only(ctx context.Context) (*SubscribeReminder, error) {
-	nodes, err := srq.Limit(2).All(newQueryContext(ctx, TypeSubscribeReminder, "Only"))
+	nodes, err := srq.Limit(2).All(setContextOp(ctx, srq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -210,7 +207,7 @@ func (srq *SubscribeReminderQuery) OnlyX(ctx context.Context) *SubscribeReminder
 // Returns a *NotFoundError when no entities are found.
 func (srq *SubscribeReminderQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = srq.Limit(2).IDs(newQueryContext(ctx, TypeSubscribeReminder, "OnlyID")); err != nil {
+	if ids, err = srq.Limit(2).IDs(setContextOp(ctx, srq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -235,7 +232,7 @@ func (srq *SubscribeReminderQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of SubscribeReminders.
 func (srq *SubscribeReminderQuery) All(ctx context.Context) ([]*SubscribeReminder, error) {
-	ctx = newQueryContext(ctx, TypeSubscribeReminder, "All")
+	ctx = setContextOp(ctx, srq.ctx, "All")
 	if err := srq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -255,7 +252,7 @@ func (srq *SubscribeReminderQuery) AllX(ctx context.Context) []*SubscribeReminde
 // IDs executes the query and returns a list of SubscribeReminder IDs.
 func (srq *SubscribeReminderQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
-	ctx = newQueryContext(ctx, TypeSubscribeReminder, "IDs")
+	ctx = setContextOp(ctx, srq.ctx, "IDs")
 	if err := srq.Select(subscribereminder.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -273,7 +270,7 @@ func (srq *SubscribeReminderQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (srq *SubscribeReminderQuery) Count(ctx context.Context) (int, error) {
-	ctx = newQueryContext(ctx, TypeSubscribeReminder, "Count")
+	ctx = setContextOp(ctx, srq.ctx, "Count")
 	if err := srq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -291,7 +288,7 @@ func (srq *SubscribeReminderQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (srq *SubscribeReminderQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = newQueryContext(ctx, TypeSubscribeReminder, "Exist")
+	ctx = setContextOp(ctx, srq.ctx, "Exist")
 	switch _, err := srq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -319,17 +316,16 @@ func (srq *SubscribeReminderQuery) Clone() *SubscribeReminderQuery {
 	}
 	return &SubscribeReminderQuery{
 		config:        srq.config,
-		limit:         srq.limit,
-		offset:        srq.offset,
+		ctx:           srq.ctx.Clone(),
 		order:         append([]OrderFunc{}, srq.order...),
+		inters:        append([]Interceptor{}, srq.inters...),
 		predicates:    append([]predicate.SubscribeReminder{}, srq.predicates...),
 		withSubscribe: srq.withSubscribe.Clone(),
 		withPlan:      srq.withPlan.Clone(),
 		withRider:     srq.withRider.Clone(),
 		// clone intermediate query.
-		sql:    srq.sql.Clone(),
-		path:   srq.path,
-		unique: srq.unique,
+		sql:  srq.sql.Clone(),
+		path: srq.path,
 	}
 }
 
@@ -381,9 +377,9 @@ func (srq *SubscribeReminderQuery) WithRider(opts ...func(*RiderQuery)) *Subscri
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (srq *SubscribeReminderQuery) GroupBy(field string, fields ...string) *SubscribeReminderGroupBy {
-	srq.fields = append([]string{field}, fields...)
+	srq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &SubscribeReminderGroupBy{build: srq}
-	grbuild.flds = &srq.fields
+	grbuild.flds = &srq.ctx.Fields
 	grbuild.label = subscribereminder.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -402,10 +398,10 @@ func (srq *SubscribeReminderQuery) GroupBy(field string, fields ...string) *Subs
 //		Select(subscribereminder.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (srq *SubscribeReminderQuery) Select(fields ...string) *SubscribeReminderSelect {
-	srq.fields = append(srq.fields, fields...)
+	srq.ctx.Fields = append(srq.ctx.Fields, fields...)
 	sbuild := &SubscribeReminderSelect{SubscribeReminderQuery: srq}
 	sbuild.label = subscribereminder.Label
-	sbuild.flds, sbuild.scan = &srq.fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &srq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
@@ -425,7 +421,7 @@ func (srq *SubscribeReminderQuery) prepareQuery(ctx context.Context) error {
 			}
 		}
 	}
-	for _, f := range srq.fields {
+	for _, f := range srq.ctx.Fields {
 		if !subscribereminder.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -502,6 +498,9 @@ func (srq *SubscribeReminderQuery) loadSubscribe(ctx context.Context, query *Sub
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(subscribe.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -527,6 +526,9 @@ func (srq *SubscribeReminderQuery) loadPlan(ctx context.Context, query *PlanQuer
 			ids = append(ids, fk)
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
 	}
 	query.Where(plan.IDIn(ids...))
 	neighbors, err := query.All(ctx)
@@ -554,6 +556,9 @@ func (srq *SubscribeReminderQuery) loadRider(ctx context.Context, query *RiderQu
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(rider.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -576,9 +581,9 @@ func (srq *SubscribeReminderQuery) sqlCount(ctx context.Context) (int, error) {
 	if len(srq.modifiers) > 0 {
 		_spec.Modifiers = srq.modifiers
 	}
-	_spec.Node.Columns = srq.fields
-	if len(srq.fields) > 0 {
-		_spec.Unique = srq.unique != nil && *srq.unique
+	_spec.Node.Columns = srq.ctx.Fields
+	if len(srq.ctx.Fields) > 0 {
+		_spec.Unique = srq.ctx.Unique != nil && *srq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, srq.driver, _spec)
 }
@@ -596,10 +601,10 @@ func (srq *SubscribeReminderQuery) querySpec() *sqlgraph.QuerySpec {
 		From:   srq.sql,
 		Unique: true,
 	}
-	if unique := srq.unique; unique != nil {
+	if unique := srq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
 	}
-	if fields := srq.fields; len(fields) > 0 {
+	if fields := srq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, subscribereminder.FieldID)
 		for i := range fields {
@@ -615,10 +620,10 @@ func (srq *SubscribeReminderQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := srq.limit; limit != nil {
+	if limit := srq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := srq.offset; offset != nil {
+	if offset := srq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := srq.order; len(ps) > 0 {
@@ -634,7 +639,7 @@ func (srq *SubscribeReminderQuery) querySpec() *sqlgraph.QuerySpec {
 func (srq *SubscribeReminderQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(srq.driver.Dialect())
 	t1 := builder.Table(subscribereminder.Table)
-	columns := srq.fields
+	columns := srq.ctx.Fields
 	if len(columns) == 0 {
 		columns = subscribereminder.Columns
 	}
@@ -643,7 +648,7 @@ func (srq *SubscribeReminderQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = srq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if srq.unique != nil && *srq.unique {
+	if srq.ctx.Unique != nil && *srq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, m := range srq.modifiers {
@@ -655,12 +660,12 @@ func (srq *SubscribeReminderQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range srq.order {
 		p(selector)
 	}
-	if offset := srq.offset; offset != nil {
+	if offset := srq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := srq.limit; limit != nil {
+	if limit := srq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -708,7 +713,7 @@ func (srgb *SubscribeReminderGroupBy) Aggregate(fns ...AggregateFunc) *Subscribe
 
 // Scan applies the selector query and scans the result into the given value.
 func (srgb *SubscribeReminderGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeSubscribeReminder, "GroupBy")
+	ctx = setContextOp(ctx, srgb.build.ctx, "GroupBy")
 	if err := srgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -756,7 +761,7 @@ func (srs *SubscribeReminderSelect) Aggregate(fns ...AggregateFunc) *SubscribeRe
 
 // Scan applies the selector query and scans the result into the given value.
 func (srs *SubscribeReminderSelect) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeSubscribeReminder, "Select")
+	ctx = setContextOp(ctx, srs.ctx, "Select")
 	if err := srs.prepareQuery(ctx); err != nil {
 		return err
 	}

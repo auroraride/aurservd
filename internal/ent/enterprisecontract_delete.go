@@ -69,6 +69,12 @@ type EnterpriseContractDeleteOne struct {
 	ecd *EnterpriseContractDelete
 }
 
+// Where appends a list predicates to the EnterpriseContractDelete builder.
+func (ecdo *EnterpriseContractDeleteOne) Where(ps ...predicate.EnterpriseContract) *EnterpriseContractDeleteOne {
+	ecdo.ecd.mutation.Where(ps...)
+	return ecdo
+}
+
 // Exec executes the deletion query.
 func (ecdo *EnterpriseContractDeleteOne) Exec(ctx context.Context) error {
 	n, err := ecdo.ecd.Exec(ctx)
@@ -84,5 +90,7 @@ func (ecdo *EnterpriseContractDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (ecdo *EnterpriseContractDeleteOne) ExecX(ctx context.Context) {
-	ecdo.ecd.ExecX(ctx)
+	if err := ecdo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

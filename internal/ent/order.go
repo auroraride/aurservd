@@ -480,69 +480,69 @@ func (o *Order) assignValues(columns []string, values []any) error {
 
 // QueryPlan queries the "plan" edge of the Order entity.
 func (o *Order) QueryPlan() *PlanQuery {
-	return (&OrderClient{config: o.config}).QueryPlan(o)
+	return NewOrderClient(o.config).QueryPlan(o)
 }
 
 // QueryCity queries the "city" edge of the Order entity.
 func (o *Order) QueryCity() *CityQuery {
-	return (&OrderClient{config: o.config}).QueryCity(o)
+	return NewOrderClient(o.config).QueryCity(o)
 }
 
 // QueryBrand queries the "brand" edge of the Order entity.
 func (o *Order) QueryBrand() *EbikeBrandQuery {
-	return (&OrderClient{config: o.config}).QueryBrand(o)
+	return NewOrderClient(o.config).QueryBrand(o)
 }
 
 // QueryEbike queries the "ebike" edge of the Order entity.
 func (o *Order) QueryEbike() *EbikeQuery {
-	return (&OrderClient{config: o.config}).QueryEbike(o)
+	return NewOrderClient(o.config).QueryEbike(o)
 }
 
 // QueryRider queries the "rider" edge of the Order entity.
 func (o *Order) QueryRider() *RiderQuery {
-	return (&OrderClient{config: o.config}).QueryRider(o)
+	return NewOrderClient(o.config).QueryRider(o)
 }
 
 // QuerySubscribe queries the "subscribe" edge of the Order entity.
 func (o *Order) QuerySubscribe() *SubscribeQuery {
-	return (&OrderClient{config: o.config}).QuerySubscribe(o)
+	return NewOrderClient(o.config).QuerySubscribe(o)
 }
 
 // QueryCommission queries the "commission" edge of the Order entity.
 func (o *Order) QueryCommission() *CommissionQuery {
-	return (&OrderClient{config: o.config}).QueryCommission(o)
+	return NewOrderClient(o.config).QueryCommission(o)
 }
 
 // QueryParent queries the "parent" edge of the Order entity.
 func (o *Order) QueryParent() *OrderQuery {
-	return (&OrderClient{config: o.config}).QueryParent(o)
+	return NewOrderClient(o.config).QueryParent(o)
 }
 
 // QueryChildren queries the "children" edge of the Order entity.
 func (o *Order) QueryChildren() *OrderQuery {
-	return (&OrderClient{config: o.config}).QueryChildren(o)
+	return NewOrderClient(o.config).QueryChildren(o)
 }
 
 // QueryRefund queries the "refund" edge of the Order entity.
 func (o *Order) QueryRefund() *OrderRefundQuery {
-	return (&OrderClient{config: o.config}).QueryRefund(o)
+	return NewOrderClient(o.config).QueryRefund(o)
 }
 
 // QueryAssistance queries the "assistance" edge of the Order entity.
 func (o *Order) QueryAssistance() *AssistanceQuery {
-	return (&OrderClient{config: o.config}).QueryAssistance(o)
+	return NewOrderClient(o.config).QueryAssistance(o)
 }
 
 // QueryCoupons queries the "coupons" edge of the Order entity.
 func (o *Order) QueryCoupons() *CouponQuery {
-	return (&OrderClient{config: o.config}).QueryCoupons(o)
+	return NewOrderClient(o.config).QueryCoupons(o)
 }
 
 // Update returns a builder for updating this Order.
 // Note that you need to call Order.Unwrap() before calling this method if this Order
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (o *Order) Update() *OrderUpdateOne {
-	return (&OrderClient{config: o.config}).UpdateOne(o)
+	return NewOrderClient(o.config).UpdateOne(o)
 }
 
 // Unwrap unwraps the Order entity that was returned from a transaction after it was closed,

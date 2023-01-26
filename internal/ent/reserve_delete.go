@@ -69,6 +69,12 @@ type ReserveDeleteOne struct {
 	rd *ReserveDelete
 }
 
+// Where appends a list predicates to the ReserveDelete builder.
+func (rdo *ReserveDeleteOne) Where(ps ...predicate.Reserve) *ReserveDeleteOne {
+	rdo.rd.mutation.Where(ps...)
+	return rdo
+}
+
 // Exec executes the deletion query.
 func (rdo *ReserveDeleteOne) Exec(ctx context.Context) error {
 	n, err := rdo.rd.Exec(ctx)
@@ -84,5 +90,7 @@ func (rdo *ReserveDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (rdo *ReserveDeleteOne) ExecX(ctx context.Context) {
-	rdo.rd.ExecX(ctx)
+	if err := rdo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

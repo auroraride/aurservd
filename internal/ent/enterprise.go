@@ -352,49 +352,49 @@ func (e *Enterprise) assignValues(columns []string, values []any) error {
 
 // QueryCity queries the "city" edge of the Enterprise entity.
 func (e *Enterprise) QueryCity() *CityQuery {
-	return (&EnterpriseClient{config: e.config}).QueryCity(e)
+	return NewEnterpriseClient(e.config).QueryCity(e)
 }
 
 // QueryRiders queries the "riders" edge of the Enterprise entity.
 func (e *Enterprise) QueryRiders() *RiderQuery {
-	return (&EnterpriseClient{config: e.config}).QueryRiders(e)
+	return NewEnterpriseClient(e.config).QueryRiders(e)
 }
 
 // QueryContracts queries the "contracts" edge of the Enterprise entity.
 func (e *Enterprise) QueryContracts() *EnterpriseContractQuery {
-	return (&EnterpriseClient{config: e.config}).QueryContracts(e)
+	return NewEnterpriseClient(e.config).QueryContracts(e)
 }
 
 // QueryPrices queries the "prices" edge of the Enterprise entity.
 func (e *Enterprise) QueryPrices() *EnterprisePriceQuery {
-	return (&EnterpriseClient{config: e.config}).QueryPrices(e)
+	return NewEnterpriseClient(e.config).QueryPrices(e)
 }
 
 // QuerySubscribes queries the "subscribes" edge of the Enterprise entity.
 func (e *Enterprise) QuerySubscribes() *SubscribeQuery {
-	return (&EnterpriseClient{config: e.config}).QuerySubscribes(e)
+	return NewEnterpriseClient(e.config).QuerySubscribes(e)
 }
 
 // QueryStatements queries the "statements" edge of the Enterprise entity.
 func (e *Enterprise) QueryStatements() *EnterpriseStatementQuery {
-	return (&EnterpriseClient{config: e.config}).QueryStatements(e)
+	return NewEnterpriseClient(e.config).QueryStatements(e)
 }
 
 // QueryStations queries the "stations" edge of the Enterprise entity.
 func (e *Enterprise) QueryStations() *EnterpriseStationQuery {
-	return (&EnterpriseClient{config: e.config}).QueryStations(e)
+	return NewEnterpriseClient(e.config).QueryStations(e)
 }
 
 // QueryBills queries the "bills" edge of the Enterprise entity.
 func (e *Enterprise) QueryBills() *EnterpriseBillQuery {
-	return (&EnterpriseClient{config: e.config}).QueryBills(e)
+	return NewEnterpriseClient(e.config).QueryBills(e)
 }
 
 // Update returns a builder for updating this Enterprise.
 // Note that you need to call Enterprise.Unwrap() before calling this method if this Enterprise
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (e *Enterprise) Update() *EnterpriseUpdateOne {
-	return (&EnterpriseClient{config: e.config}).UpdateOne(e)
+	return NewEnterpriseClient(e.config).UpdateOne(e)
 }
 
 // Unwrap unwraps the Enterprise entity that was returned from a transaction after it was closed,

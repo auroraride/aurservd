@@ -69,6 +69,12 @@ type SubscribePauseDeleteOne struct {
 	spd *SubscribePauseDelete
 }
 
+// Where appends a list predicates to the SubscribePauseDelete builder.
+func (spdo *SubscribePauseDeleteOne) Where(ps ...predicate.SubscribePause) *SubscribePauseDeleteOne {
+	spdo.spd.mutation.Where(ps...)
+	return spdo
+}
+
 // Exec executes the deletion query.
 func (spdo *SubscribePauseDeleteOne) Exec(ctx context.Context) error {
 	n, err := spdo.spd.Exec(ctx)
@@ -84,5 +90,7 @@ func (spdo *SubscribePauseDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (spdo *SubscribePauseDeleteOne) ExecX(ctx context.Context) {
-	spdo.spd.ExecX(ctx)
+	if err := spdo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

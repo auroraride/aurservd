@@ -415,59 +415,59 @@ func (sp *SubscribePause) assignValues(columns []string, values []any) error {
 
 // QueryRider queries the "rider" edge of the SubscribePause entity.
 func (sp *SubscribePause) QueryRider() *RiderQuery {
-	return (&SubscribePauseClient{config: sp.config}).QueryRider(sp)
+	return NewSubscribePauseClient(sp.config).QueryRider(sp)
 }
 
 // QueryEmployee queries the "employee" edge of the SubscribePause entity.
 func (sp *SubscribePause) QueryEmployee() *EmployeeQuery {
-	return (&SubscribePauseClient{config: sp.config}).QueryEmployee(sp)
+	return NewSubscribePauseClient(sp.config).QueryEmployee(sp)
 }
 
 // QueryCity queries the "city" edge of the SubscribePause entity.
 func (sp *SubscribePause) QueryCity() *CityQuery {
-	return (&SubscribePauseClient{config: sp.config}).QueryCity(sp)
+	return NewSubscribePauseClient(sp.config).QueryCity(sp)
 }
 
 // QueryStore queries the "store" edge of the SubscribePause entity.
 func (sp *SubscribePause) QueryStore() *StoreQuery {
-	return (&SubscribePauseClient{config: sp.config}).QueryStore(sp)
+	return NewSubscribePauseClient(sp.config).QueryStore(sp)
 }
 
 // QueryEndStore queries the "endStore" edge of the SubscribePause entity.
 func (sp *SubscribePause) QueryEndStore() *StoreQuery {
-	return (&SubscribePauseClient{config: sp.config}).QueryEndStore(sp)
+	return NewSubscribePauseClient(sp.config).QueryEndStore(sp)
 }
 
 // QueryCabinet queries the "cabinet" edge of the SubscribePause entity.
 func (sp *SubscribePause) QueryCabinet() *CabinetQuery {
-	return (&SubscribePauseClient{config: sp.config}).QueryCabinet(sp)
+	return NewSubscribePauseClient(sp.config).QueryCabinet(sp)
 }
 
 // QueryEndCabinet queries the "endCabinet" edge of the SubscribePause entity.
 func (sp *SubscribePause) QueryEndCabinet() *CabinetQuery {
-	return (&SubscribePauseClient{config: sp.config}).QueryEndCabinet(sp)
+	return NewSubscribePauseClient(sp.config).QueryEndCabinet(sp)
 }
 
 // QuerySubscribe queries the "subscribe" edge of the SubscribePause entity.
 func (sp *SubscribePause) QuerySubscribe() *SubscribeQuery {
-	return (&SubscribePauseClient{config: sp.config}).QuerySubscribe(sp)
+	return NewSubscribePauseClient(sp.config).QuerySubscribe(sp)
 }
 
 // QueryEndEmployee queries the "end_employee" edge of the SubscribePause entity.
 func (sp *SubscribePause) QueryEndEmployee() *EmployeeQuery {
-	return (&SubscribePauseClient{config: sp.config}).QueryEndEmployee(sp)
+	return NewSubscribePauseClient(sp.config).QueryEndEmployee(sp)
 }
 
 // QuerySuspends queries the "suspends" edge of the SubscribePause entity.
 func (sp *SubscribePause) QuerySuspends() *SubscribeSuspendQuery {
-	return (&SubscribePauseClient{config: sp.config}).QuerySuspends(sp)
+	return NewSubscribePauseClient(sp.config).QuerySuspends(sp)
 }
 
 // Update returns a builder for updating this SubscribePause.
 // Note that you need to call SubscribePause.Unwrap() before calling this method if this SubscribePause
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (sp *SubscribePause) Update() *SubscribePauseUpdateOne {
-	return (&SubscribePauseClient{config: sp.config}).UpdateOne(sp)
+	return NewSubscribePauseClient(sp.config).UpdateOne(sp)
 }
 
 // Unwrap unwraps the SubscribePause entity that was returned from a transaction after it was closed,

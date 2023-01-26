@@ -18,11 +18,8 @@ import (
 // EnterpriseStationQuery is the builder for querying EnterpriseStation entities.
 type EnterpriseStationQuery struct {
 	config
-	limit          *int
-	offset         *int
-	unique         *bool
+	ctx            *QueryContext
 	order          []OrderFunc
-	fields         []string
 	inters         []Interceptor
 	predicates     []predicate.EnterpriseStation
 	withEnterprise *EnterpriseQuery
@@ -40,20 +37,20 @@ func (esq *EnterpriseStationQuery) Where(ps ...predicate.EnterpriseStation) *Ent
 
 // Limit the number of records to be returned by this query.
 func (esq *EnterpriseStationQuery) Limit(limit int) *EnterpriseStationQuery {
-	esq.limit = &limit
+	esq.ctx.Limit = &limit
 	return esq
 }
 
 // Offset to start from.
 func (esq *EnterpriseStationQuery) Offset(offset int) *EnterpriseStationQuery {
-	esq.offset = &offset
+	esq.ctx.Offset = &offset
 	return esq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (esq *EnterpriseStationQuery) Unique(unique bool) *EnterpriseStationQuery {
-	esq.unique = &unique
+	esq.ctx.Unique = &unique
 	return esq
 }
 
@@ -88,7 +85,7 @@ func (esq *EnterpriseStationQuery) QueryEnterprise() *EnterpriseQuery {
 // First returns the first EnterpriseStation entity from the query.
 // Returns a *NotFoundError when no EnterpriseStation was found.
 func (esq *EnterpriseStationQuery) First(ctx context.Context) (*EnterpriseStation, error) {
-	nodes, err := esq.Limit(1).All(newQueryContext(ctx, TypeEnterpriseStation, "First"))
+	nodes, err := esq.Limit(1).All(setContextOp(ctx, esq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -111,7 +108,7 @@ func (esq *EnterpriseStationQuery) FirstX(ctx context.Context) *EnterpriseStatio
 // Returns a *NotFoundError when no EnterpriseStation ID was found.
 func (esq *EnterpriseStationQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = esq.Limit(1).IDs(newQueryContext(ctx, TypeEnterpriseStation, "FirstID")); err != nil {
+	if ids, err = esq.Limit(1).IDs(setContextOp(ctx, esq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -134,7 +131,7 @@ func (esq *EnterpriseStationQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one EnterpriseStation entity is found.
 // Returns a *NotFoundError when no EnterpriseStation entities are found.
 func (esq *EnterpriseStationQuery) Only(ctx context.Context) (*EnterpriseStation, error) {
-	nodes, err := esq.Limit(2).All(newQueryContext(ctx, TypeEnterpriseStation, "Only"))
+	nodes, err := esq.Limit(2).All(setContextOp(ctx, esq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -162,7 +159,7 @@ func (esq *EnterpriseStationQuery) OnlyX(ctx context.Context) *EnterpriseStation
 // Returns a *NotFoundError when no entities are found.
 func (esq *EnterpriseStationQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = esq.Limit(2).IDs(newQueryContext(ctx, TypeEnterpriseStation, "OnlyID")); err != nil {
+	if ids, err = esq.Limit(2).IDs(setContextOp(ctx, esq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -187,7 +184,7 @@ func (esq *EnterpriseStationQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of EnterpriseStations.
 func (esq *EnterpriseStationQuery) All(ctx context.Context) ([]*EnterpriseStation, error) {
-	ctx = newQueryContext(ctx, TypeEnterpriseStation, "All")
+	ctx = setContextOp(ctx, esq.ctx, "All")
 	if err := esq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -207,7 +204,7 @@ func (esq *EnterpriseStationQuery) AllX(ctx context.Context) []*EnterpriseStatio
 // IDs executes the query and returns a list of EnterpriseStation IDs.
 func (esq *EnterpriseStationQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
-	ctx = newQueryContext(ctx, TypeEnterpriseStation, "IDs")
+	ctx = setContextOp(ctx, esq.ctx, "IDs")
 	if err := esq.Select(enterprisestation.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -225,7 +222,7 @@ func (esq *EnterpriseStationQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (esq *EnterpriseStationQuery) Count(ctx context.Context) (int, error) {
-	ctx = newQueryContext(ctx, TypeEnterpriseStation, "Count")
+	ctx = setContextOp(ctx, esq.ctx, "Count")
 	if err := esq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -243,7 +240,7 @@ func (esq *EnterpriseStationQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (esq *EnterpriseStationQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = newQueryContext(ctx, TypeEnterpriseStation, "Exist")
+	ctx = setContextOp(ctx, esq.ctx, "Exist")
 	switch _, err := esq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -271,15 +268,14 @@ func (esq *EnterpriseStationQuery) Clone() *EnterpriseStationQuery {
 	}
 	return &EnterpriseStationQuery{
 		config:         esq.config,
-		limit:          esq.limit,
-		offset:         esq.offset,
+		ctx:            esq.ctx.Clone(),
 		order:          append([]OrderFunc{}, esq.order...),
+		inters:         append([]Interceptor{}, esq.inters...),
 		predicates:     append([]predicate.EnterpriseStation{}, esq.predicates...),
 		withEnterprise: esq.withEnterprise.Clone(),
 		// clone intermediate query.
-		sql:    esq.sql.Clone(),
-		path:   esq.path,
-		unique: esq.unique,
+		sql:  esq.sql.Clone(),
+		path: esq.path,
 	}
 }
 
@@ -309,9 +305,9 @@ func (esq *EnterpriseStationQuery) WithEnterprise(opts ...func(*EnterpriseQuery)
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (esq *EnterpriseStationQuery) GroupBy(field string, fields ...string) *EnterpriseStationGroupBy {
-	esq.fields = append([]string{field}, fields...)
+	esq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &EnterpriseStationGroupBy{build: esq}
-	grbuild.flds = &esq.fields
+	grbuild.flds = &esq.ctx.Fields
 	grbuild.label = enterprisestation.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -330,10 +326,10 @@ func (esq *EnterpriseStationQuery) GroupBy(field string, fields ...string) *Ente
 //		Select(enterprisestation.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (esq *EnterpriseStationQuery) Select(fields ...string) *EnterpriseStationSelect {
-	esq.fields = append(esq.fields, fields...)
+	esq.ctx.Fields = append(esq.ctx.Fields, fields...)
 	sbuild := &EnterpriseStationSelect{EnterpriseStationQuery: esq}
 	sbuild.label = enterprisestation.Label
-	sbuild.flds, sbuild.scan = &esq.fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &esq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
@@ -353,7 +349,7 @@ func (esq *EnterpriseStationQuery) prepareQuery(ctx context.Context) error {
 			}
 		}
 	}
-	for _, f := range esq.fields {
+	for _, f := range esq.ctx.Fields {
 		if !enterprisestation.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -416,6 +412,9 @@ func (esq *EnterpriseStationQuery) loadEnterprise(ctx context.Context, query *En
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(enterprise.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -438,9 +437,9 @@ func (esq *EnterpriseStationQuery) sqlCount(ctx context.Context) (int, error) {
 	if len(esq.modifiers) > 0 {
 		_spec.Modifiers = esq.modifiers
 	}
-	_spec.Node.Columns = esq.fields
-	if len(esq.fields) > 0 {
-		_spec.Unique = esq.unique != nil && *esq.unique
+	_spec.Node.Columns = esq.ctx.Fields
+	if len(esq.ctx.Fields) > 0 {
+		_spec.Unique = esq.ctx.Unique != nil && *esq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, esq.driver, _spec)
 }
@@ -458,10 +457,10 @@ func (esq *EnterpriseStationQuery) querySpec() *sqlgraph.QuerySpec {
 		From:   esq.sql,
 		Unique: true,
 	}
-	if unique := esq.unique; unique != nil {
+	if unique := esq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
 	}
-	if fields := esq.fields; len(fields) > 0 {
+	if fields := esq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, enterprisestation.FieldID)
 		for i := range fields {
@@ -477,10 +476,10 @@ func (esq *EnterpriseStationQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := esq.limit; limit != nil {
+	if limit := esq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := esq.offset; offset != nil {
+	if offset := esq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := esq.order; len(ps) > 0 {
@@ -496,7 +495,7 @@ func (esq *EnterpriseStationQuery) querySpec() *sqlgraph.QuerySpec {
 func (esq *EnterpriseStationQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(esq.driver.Dialect())
 	t1 := builder.Table(enterprisestation.Table)
-	columns := esq.fields
+	columns := esq.ctx.Fields
 	if len(columns) == 0 {
 		columns = enterprisestation.Columns
 	}
@@ -505,7 +504,7 @@ func (esq *EnterpriseStationQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = esq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if esq.unique != nil && *esq.unique {
+	if esq.ctx.Unique != nil && *esq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, m := range esq.modifiers {
@@ -517,12 +516,12 @@ func (esq *EnterpriseStationQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range esq.order {
 		p(selector)
 	}
-	if offset := esq.offset; offset != nil {
+	if offset := esq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := esq.limit; limit != nil {
+	if limit := esq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -564,7 +563,7 @@ func (esgb *EnterpriseStationGroupBy) Aggregate(fns ...AggregateFunc) *Enterpris
 
 // Scan applies the selector query and scans the result into the given value.
 func (esgb *EnterpriseStationGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeEnterpriseStation, "GroupBy")
+	ctx = setContextOp(ctx, esgb.build.ctx, "GroupBy")
 	if err := esgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -612,7 +611,7 @@ func (ess *EnterpriseStationSelect) Aggregate(fns ...AggregateFunc) *EnterpriseS
 
 // Scan applies the selector query and scans the result into the given value.
 func (ess *EnterpriseStationSelect) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeEnterpriseStation, "Select")
+	ctx = setContextOp(ctx, ess.ctx, "Select")
 	if err := ess.prepareQuery(ctx); err != nil {
 		return err
 	}

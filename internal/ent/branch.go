@@ -246,34 +246,34 @@ func (b *Branch) assignValues(columns []string, values []any) error {
 
 // QueryCity queries the "city" edge of the Branch entity.
 func (b *Branch) QueryCity() *CityQuery {
-	return (&BranchClient{config: b.config}).QueryCity(b)
+	return NewBranchClient(b.config).QueryCity(b)
 }
 
 // QueryContracts queries the "contracts" edge of the Branch entity.
 func (b *Branch) QueryContracts() *BranchContractQuery {
-	return (&BranchClient{config: b.config}).QueryContracts(b)
+	return NewBranchClient(b.config).QueryContracts(b)
 }
 
 // QueryCabinets queries the "cabinets" edge of the Branch entity.
 func (b *Branch) QueryCabinets() *CabinetQuery {
-	return (&BranchClient{config: b.config}).QueryCabinets(b)
+	return NewBranchClient(b.config).QueryCabinets(b)
 }
 
 // QueryFaults queries the "faults" edge of the Branch entity.
 func (b *Branch) QueryFaults() *CabinetFaultQuery {
-	return (&BranchClient{config: b.config}).QueryFaults(b)
+	return NewBranchClient(b.config).QueryFaults(b)
 }
 
 // QueryStores queries the "stores" edge of the Branch entity.
 func (b *Branch) QueryStores() *StoreQuery {
-	return (&BranchClient{config: b.config}).QueryStores(b)
+	return NewBranchClient(b.config).QueryStores(b)
 }
 
 // Update returns a builder for updating this Branch.
 // Note that you need to call Branch.Unwrap() before calling this method if this Branch
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (b *Branch) Update() *BranchUpdateOne {
-	return (&BranchClient{config: b.config}).UpdateOne(b)
+	return NewBranchClient(b.config).UpdateOne(b)
 }
 
 // Unwrap unwraps the Branch entity that was returned from a transaction after it was closed,

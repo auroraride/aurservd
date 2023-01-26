@@ -69,6 +69,12 @@ type RiderFollowUpDeleteOne struct {
 	rfud *RiderFollowUpDelete
 }
 
+// Where appends a list predicates to the RiderFollowUpDelete builder.
+func (rfudo *RiderFollowUpDeleteOne) Where(ps ...predicate.RiderFollowUp) *RiderFollowUpDeleteOne {
+	rfudo.rfud.mutation.Where(ps...)
+	return rfudo
+}
+
 // Exec executes the deletion query.
 func (rfudo *RiderFollowUpDeleteOne) Exec(ctx context.Context) error {
 	n, err := rfudo.rfud.Exec(ctx)
@@ -84,5 +90,7 @@ func (rfudo *RiderFollowUpDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (rfudo *RiderFollowUpDeleteOne) ExecX(ctx context.Context) {
-	rfudo.rfud.ExecX(ctx)
+	if err := rfudo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

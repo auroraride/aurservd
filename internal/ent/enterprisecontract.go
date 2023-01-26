@@ -172,14 +172,14 @@ func (ec *EnterpriseContract) assignValues(columns []string, values []any) error
 
 // QueryEnterprise queries the "enterprise" edge of the EnterpriseContract entity.
 func (ec *EnterpriseContract) QueryEnterprise() *EnterpriseQuery {
-	return (&EnterpriseContractClient{config: ec.config}).QueryEnterprise(ec)
+	return NewEnterpriseContractClient(ec.config).QueryEnterprise(ec)
 }
 
 // Update returns a builder for updating this EnterpriseContract.
 // Note that you need to call EnterpriseContract.Unwrap() before calling this method if this EnterpriseContract
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (ec *EnterpriseContract) Update() *EnterpriseContractUpdateOne {
-	return (&EnterpriseContractClient{config: ec.config}).UpdateOne(ec)
+	return NewEnterpriseContractClient(ec.config).UpdateOne(ec)
 }
 
 // Unwrap unwraps the EnterpriseContract entity that was returned from a transaction after it was closed,

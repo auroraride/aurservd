@@ -131,7 +131,7 @@ func (s *Setting) assignValues(columns []string, values []any) error {
 // Note that you need to call Setting.Unwrap() before calling this method if this Setting
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (s *Setting) Update() *SettingUpdateOne {
-	return (&SettingClient{config: s.config}).UpdateOne(s)
+	return NewSettingClient(s.config).UpdateOne(s)
 }
 
 // Unwrap unwraps the Setting entity that was returned from a transaction after it was closed,

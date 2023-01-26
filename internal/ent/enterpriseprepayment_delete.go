@@ -69,6 +69,12 @@ type EnterprisePrepaymentDeleteOne struct {
 	epd *EnterprisePrepaymentDelete
 }
 
+// Where appends a list predicates to the EnterprisePrepaymentDelete builder.
+func (epdo *EnterprisePrepaymentDeleteOne) Where(ps ...predicate.EnterprisePrepayment) *EnterprisePrepaymentDeleteOne {
+	epdo.epd.mutation.Where(ps...)
+	return epdo
+}
+
 // Exec executes the deletion query.
 func (epdo *EnterprisePrepaymentDeleteOne) Exec(ctx context.Context) error {
 	n, err := epdo.epd.Exec(ctx)
@@ -84,5 +90,7 @@ func (epdo *EnterprisePrepaymentDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (epdo *EnterprisePrepaymentDeleteOne) ExecX(ctx context.Context) {
-	epdo.epd.ExecX(ctx)
+	if err := epdo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

@@ -244,14 +244,14 @@ func (pe *Person) assignValues(columns []string, values []any) error {
 
 // QueryRider queries the "rider" edge of the Person entity.
 func (pe *Person) QueryRider() *RiderQuery {
-	return (&PersonClient{config: pe.config}).QueryRider(pe)
+	return NewPersonClient(pe.config).QueryRider(pe)
 }
 
 // Update returns a builder for updating this Person.
 // Note that you need to call Person.Unwrap() before calling this method if this Person
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (pe *Person) Update() *PersonUpdateOne {
-	return (&PersonClient{config: pe.config}).UpdateOne(pe)
+	return NewPersonClient(pe.config).UpdateOne(pe)
 }
 
 // Unwrap unwraps the Person entity that was returned from a transaction after it was closed,

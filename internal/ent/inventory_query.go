@@ -17,11 +17,8 @@ import (
 // InventoryQuery is the builder for querying Inventory entities.
 type InventoryQuery struct {
 	config
-	limit      *int
-	offset     *int
-	unique     *bool
+	ctx        *QueryContext
 	order      []OrderFunc
-	fields     []string
 	inters     []Interceptor
 	predicates []predicate.Inventory
 	modifiers  []func(*sql.Selector)
@@ -38,20 +35,20 @@ func (iq *InventoryQuery) Where(ps ...predicate.Inventory) *InventoryQuery {
 
 // Limit the number of records to be returned by this query.
 func (iq *InventoryQuery) Limit(limit int) *InventoryQuery {
-	iq.limit = &limit
+	iq.ctx.Limit = &limit
 	return iq
 }
 
 // Offset to start from.
 func (iq *InventoryQuery) Offset(offset int) *InventoryQuery {
-	iq.offset = &offset
+	iq.ctx.Offset = &offset
 	return iq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (iq *InventoryQuery) Unique(unique bool) *InventoryQuery {
-	iq.unique = &unique
+	iq.ctx.Unique = &unique
 	return iq
 }
 
@@ -64,7 +61,7 @@ func (iq *InventoryQuery) Order(o ...OrderFunc) *InventoryQuery {
 // First returns the first Inventory entity from the query.
 // Returns a *NotFoundError when no Inventory was found.
 func (iq *InventoryQuery) First(ctx context.Context) (*Inventory, error) {
-	nodes, err := iq.Limit(1).All(newQueryContext(ctx, TypeInventory, "First"))
+	nodes, err := iq.Limit(1).All(setContextOp(ctx, iq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -87,7 +84,7 @@ func (iq *InventoryQuery) FirstX(ctx context.Context) *Inventory {
 // Returns a *NotFoundError when no Inventory ID was found.
 func (iq *InventoryQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = iq.Limit(1).IDs(newQueryContext(ctx, TypeInventory, "FirstID")); err != nil {
+	if ids, err = iq.Limit(1).IDs(setContextOp(ctx, iq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -110,7 +107,7 @@ func (iq *InventoryQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Inventory entity is found.
 // Returns a *NotFoundError when no Inventory entities are found.
 func (iq *InventoryQuery) Only(ctx context.Context) (*Inventory, error) {
-	nodes, err := iq.Limit(2).All(newQueryContext(ctx, TypeInventory, "Only"))
+	nodes, err := iq.Limit(2).All(setContextOp(ctx, iq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -138,7 +135,7 @@ func (iq *InventoryQuery) OnlyX(ctx context.Context) *Inventory {
 // Returns a *NotFoundError when no entities are found.
 func (iq *InventoryQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = iq.Limit(2).IDs(newQueryContext(ctx, TypeInventory, "OnlyID")); err != nil {
+	if ids, err = iq.Limit(2).IDs(setContextOp(ctx, iq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -163,7 +160,7 @@ func (iq *InventoryQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Inventories.
 func (iq *InventoryQuery) All(ctx context.Context) ([]*Inventory, error) {
-	ctx = newQueryContext(ctx, TypeInventory, "All")
+	ctx = setContextOp(ctx, iq.ctx, "All")
 	if err := iq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -183,7 +180,7 @@ func (iq *InventoryQuery) AllX(ctx context.Context) []*Inventory {
 // IDs executes the query and returns a list of Inventory IDs.
 func (iq *InventoryQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
-	ctx = newQueryContext(ctx, TypeInventory, "IDs")
+	ctx = setContextOp(ctx, iq.ctx, "IDs")
 	if err := iq.Select(inventory.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -201,7 +198,7 @@ func (iq *InventoryQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (iq *InventoryQuery) Count(ctx context.Context) (int, error) {
-	ctx = newQueryContext(ctx, TypeInventory, "Count")
+	ctx = setContextOp(ctx, iq.ctx, "Count")
 	if err := iq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -219,7 +216,7 @@ func (iq *InventoryQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (iq *InventoryQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = newQueryContext(ctx, TypeInventory, "Exist")
+	ctx = setContextOp(ctx, iq.ctx, "Exist")
 	switch _, err := iq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -247,14 +244,13 @@ func (iq *InventoryQuery) Clone() *InventoryQuery {
 	}
 	return &InventoryQuery{
 		config:     iq.config,
-		limit:      iq.limit,
-		offset:     iq.offset,
+		ctx:        iq.ctx.Clone(),
 		order:      append([]OrderFunc{}, iq.order...),
+		inters:     append([]Interceptor{}, iq.inters...),
 		predicates: append([]predicate.Inventory{}, iq.predicates...),
 		// clone intermediate query.
-		sql:    iq.sql.Clone(),
-		path:   iq.path,
-		unique: iq.unique,
+		sql:  iq.sql.Clone(),
+		path: iq.path,
 	}
 }
 
@@ -273,9 +269,9 @@ func (iq *InventoryQuery) Clone() *InventoryQuery {
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (iq *InventoryQuery) GroupBy(field string, fields ...string) *InventoryGroupBy {
-	iq.fields = append([]string{field}, fields...)
+	iq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &InventoryGroupBy{build: iq}
-	grbuild.flds = &iq.fields
+	grbuild.flds = &iq.ctx.Fields
 	grbuild.label = inventory.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -294,10 +290,10 @@ func (iq *InventoryQuery) GroupBy(field string, fields ...string) *InventoryGrou
 //		Select(inventory.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (iq *InventoryQuery) Select(fields ...string) *InventorySelect {
-	iq.fields = append(iq.fields, fields...)
+	iq.ctx.Fields = append(iq.ctx.Fields, fields...)
 	sbuild := &InventorySelect{InventoryQuery: iq}
 	sbuild.label = inventory.Label
-	sbuild.flds, sbuild.scan = &iq.fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &iq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
@@ -317,7 +313,7 @@ func (iq *InventoryQuery) prepareQuery(ctx context.Context) error {
 			}
 		}
 	}
-	for _, f := range iq.fields {
+	for _, f := range iq.ctx.Fields {
 		if !inventory.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -365,9 +361,9 @@ func (iq *InventoryQuery) sqlCount(ctx context.Context) (int, error) {
 	if len(iq.modifiers) > 0 {
 		_spec.Modifiers = iq.modifiers
 	}
-	_spec.Node.Columns = iq.fields
-	if len(iq.fields) > 0 {
-		_spec.Unique = iq.unique != nil && *iq.unique
+	_spec.Node.Columns = iq.ctx.Fields
+	if len(iq.ctx.Fields) > 0 {
+		_spec.Unique = iq.ctx.Unique != nil && *iq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, iq.driver, _spec)
 }
@@ -385,10 +381,10 @@ func (iq *InventoryQuery) querySpec() *sqlgraph.QuerySpec {
 		From:   iq.sql,
 		Unique: true,
 	}
-	if unique := iq.unique; unique != nil {
+	if unique := iq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
 	}
-	if fields := iq.fields; len(fields) > 0 {
+	if fields := iq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, inventory.FieldID)
 		for i := range fields {
@@ -404,10 +400,10 @@ func (iq *InventoryQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := iq.limit; limit != nil {
+	if limit := iq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := iq.offset; offset != nil {
+	if offset := iq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := iq.order; len(ps) > 0 {
@@ -423,7 +419,7 @@ func (iq *InventoryQuery) querySpec() *sqlgraph.QuerySpec {
 func (iq *InventoryQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(iq.driver.Dialect())
 	t1 := builder.Table(inventory.Table)
-	columns := iq.fields
+	columns := iq.ctx.Fields
 	if len(columns) == 0 {
 		columns = inventory.Columns
 	}
@@ -432,7 +428,7 @@ func (iq *InventoryQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = iq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if iq.unique != nil && *iq.unique {
+	if iq.ctx.Unique != nil && *iq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, m := range iq.modifiers {
@@ -444,12 +440,12 @@ func (iq *InventoryQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range iq.order {
 		p(selector)
 	}
-	if offset := iq.offset; offset != nil {
+	if offset := iq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := iq.limit; limit != nil {
+	if limit := iq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -487,7 +483,7 @@ func (igb *InventoryGroupBy) Aggregate(fns ...AggregateFunc) *InventoryGroupBy {
 
 // Scan applies the selector query and scans the result into the given value.
 func (igb *InventoryGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeInventory, "GroupBy")
+	ctx = setContextOp(ctx, igb.build.ctx, "GroupBy")
 	if err := igb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -535,7 +531,7 @@ func (is *InventorySelect) Aggregate(fns ...AggregateFunc) *InventorySelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (is *InventorySelect) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeInventory, "Select")
+	ctx = setContextOp(ctx, is.ctx, "Select")
 	if err := is.prepareQuery(ctx); err != nil {
 		return err
 	}

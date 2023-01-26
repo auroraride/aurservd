@@ -247,19 +247,19 @@ func (a *Attendance) assignValues(columns []string, values []any) error {
 
 // QueryStore queries the "store" edge of the Attendance entity.
 func (a *Attendance) QueryStore() *StoreQuery {
-	return (&AttendanceClient{config: a.config}).QueryStore(a)
+	return NewAttendanceClient(a.config).QueryStore(a)
 }
 
 // QueryEmployee queries the "employee" edge of the Attendance entity.
 func (a *Attendance) QueryEmployee() *EmployeeQuery {
-	return (&AttendanceClient{config: a.config}).QueryEmployee(a)
+	return NewAttendanceClient(a.config).QueryEmployee(a)
 }
 
 // Update returns a builder for updating this Attendance.
 // Note that you need to call Attendance.Unwrap() before calling this method if this Attendance
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (a *Attendance) Update() *AttendanceUpdateOne {
-	return (&AttendanceClient{config: a.config}).UpdateOne(a)
+	return NewAttendanceClient(a.config).UpdateOne(a)
 }
 
 // Unwrap unwraps the Attendance entity that was returned from a transaction after it was closed,

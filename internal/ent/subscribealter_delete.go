@@ -69,6 +69,12 @@ type SubscribeAlterDeleteOne struct {
 	sad *SubscribeAlterDelete
 }
 
+// Where appends a list predicates to the SubscribeAlterDelete builder.
+func (sado *SubscribeAlterDeleteOne) Where(ps ...predicate.SubscribeAlter) *SubscribeAlterDeleteOne {
+	sado.sad.mutation.Where(ps...)
+	return sado
+}
+
 // Exec executes the deletion query.
 func (sado *SubscribeAlterDeleteOne) Exec(ctx context.Context) error {
 	n, err := sado.sad.Exec(ctx)
@@ -84,5 +90,7 @@ func (sado *SubscribeAlterDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (sado *SubscribeAlterDeleteOne) ExecX(ctx context.Context) {
-	sado.sad.ExecX(ctx)
+	if err := sado.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

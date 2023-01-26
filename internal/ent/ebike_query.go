@@ -20,11 +20,8 @@ import (
 // EbikeQuery is the builder for querying Ebike entities.
 type EbikeQuery struct {
 	config
-	limit      *int
-	offset     *int
-	unique     *bool
+	ctx        *QueryContext
 	order      []OrderFunc
-	fields     []string
 	inters     []Interceptor
 	predicates []predicate.Ebike
 	withBrand  *EbikeBrandQuery
@@ -44,20 +41,20 @@ func (eq *EbikeQuery) Where(ps ...predicate.Ebike) *EbikeQuery {
 
 // Limit the number of records to be returned by this query.
 func (eq *EbikeQuery) Limit(limit int) *EbikeQuery {
-	eq.limit = &limit
+	eq.ctx.Limit = &limit
 	return eq
 }
 
 // Offset to start from.
 func (eq *EbikeQuery) Offset(offset int) *EbikeQuery {
-	eq.offset = &offset
+	eq.ctx.Offset = &offset
 	return eq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (eq *EbikeQuery) Unique(unique bool) *EbikeQuery {
-	eq.unique = &unique
+	eq.ctx.Unique = &unique
 	return eq
 }
 
@@ -136,7 +133,7 @@ func (eq *EbikeQuery) QueryStore() *StoreQuery {
 // First returns the first Ebike entity from the query.
 // Returns a *NotFoundError when no Ebike was found.
 func (eq *EbikeQuery) First(ctx context.Context) (*Ebike, error) {
-	nodes, err := eq.Limit(1).All(newQueryContext(ctx, TypeEbike, "First"))
+	nodes, err := eq.Limit(1).All(setContextOp(ctx, eq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -159,7 +156,7 @@ func (eq *EbikeQuery) FirstX(ctx context.Context) *Ebike {
 // Returns a *NotFoundError when no Ebike ID was found.
 func (eq *EbikeQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = eq.Limit(1).IDs(newQueryContext(ctx, TypeEbike, "FirstID")); err != nil {
+	if ids, err = eq.Limit(1).IDs(setContextOp(ctx, eq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -182,7 +179,7 @@ func (eq *EbikeQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Ebike entity is found.
 // Returns a *NotFoundError when no Ebike entities are found.
 func (eq *EbikeQuery) Only(ctx context.Context) (*Ebike, error) {
-	nodes, err := eq.Limit(2).All(newQueryContext(ctx, TypeEbike, "Only"))
+	nodes, err := eq.Limit(2).All(setContextOp(ctx, eq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -210,7 +207,7 @@ func (eq *EbikeQuery) OnlyX(ctx context.Context) *Ebike {
 // Returns a *NotFoundError when no entities are found.
 func (eq *EbikeQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = eq.Limit(2).IDs(newQueryContext(ctx, TypeEbike, "OnlyID")); err != nil {
+	if ids, err = eq.Limit(2).IDs(setContextOp(ctx, eq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -235,7 +232,7 @@ func (eq *EbikeQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Ebikes.
 func (eq *EbikeQuery) All(ctx context.Context) ([]*Ebike, error) {
-	ctx = newQueryContext(ctx, TypeEbike, "All")
+	ctx = setContextOp(ctx, eq.ctx, "All")
 	if err := eq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -255,7 +252,7 @@ func (eq *EbikeQuery) AllX(ctx context.Context) []*Ebike {
 // IDs executes the query and returns a list of Ebike IDs.
 func (eq *EbikeQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
-	ctx = newQueryContext(ctx, TypeEbike, "IDs")
+	ctx = setContextOp(ctx, eq.ctx, "IDs")
 	if err := eq.Select(ebike.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -273,7 +270,7 @@ func (eq *EbikeQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (eq *EbikeQuery) Count(ctx context.Context) (int, error) {
-	ctx = newQueryContext(ctx, TypeEbike, "Count")
+	ctx = setContextOp(ctx, eq.ctx, "Count")
 	if err := eq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -291,7 +288,7 @@ func (eq *EbikeQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (eq *EbikeQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = newQueryContext(ctx, TypeEbike, "Exist")
+	ctx = setContextOp(ctx, eq.ctx, "Exist")
 	switch _, err := eq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -319,17 +316,16 @@ func (eq *EbikeQuery) Clone() *EbikeQuery {
 	}
 	return &EbikeQuery{
 		config:     eq.config,
-		limit:      eq.limit,
-		offset:     eq.offset,
+		ctx:        eq.ctx.Clone(),
 		order:      append([]OrderFunc{}, eq.order...),
+		inters:     append([]Interceptor{}, eq.inters...),
 		predicates: append([]predicate.Ebike{}, eq.predicates...),
 		withBrand:  eq.withBrand.Clone(),
 		withRider:  eq.withRider.Clone(),
 		withStore:  eq.withStore.Clone(),
 		// clone intermediate query.
-		sql:    eq.sql.Clone(),
-		path:   eq.path,
-		unique: eq.unique,
+		sql:  eq.sql.Clone(),
+		path: eq.path,
 	}
 }
 
@@ -381,9 +377,9 @@ func (eq *EbikeQuery) WithStore(opts ...func(*StoreQuery)) *EbikeQuery {
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (eq *EbikeQuery) GroupBy(field string, fields ...string) *EbikeGroupBy {
-	eq.fields = append([]string{field}, fields...)
+	eq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &EbikeGroupBy{build: eq}
-	grbuild.flds = &eq.fields
+	grbuild.flds = &eq.ctx.Fields
 	grbuild.label = ebike.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -402,10 +398,10 @@ func (eq *EbikeQuery) GroupBy(field string, fields ...string) *EbikeGroupBy {
 //		Select(ebike.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (eq *EbikeQuery) Select(fields ...string) *EbikeSelect {
-	eq.fields = append(eq.fields, fields...)
+	eq.ctx.Fields = append(eq.ctx.Fields, fields...)
 	sbuild := &EbikeSelect{EbikeQuery: eq}
 	sbuild.label = ebike.Label
-	sbuild.flds, sbuild.scan = &eq.fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &eq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
@@ -425,7 +421,7 @@ func (eq *EbikeQuery) prepareQuery(ctx context.Context) error {
 			}
 		}
 	}
-	for _, f := range eq.fields {
+	for _, f := range eq.ctx.Fields {
 		if !ebike.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -502,6 +498,9 @@ func (eq *EbikeQuery) loadBrand(ctx context.Context, query *EbikeBrandQuery, nod
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(ebikebrand.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -530,6 +529,9 @@ func (eq *EbikeQuery) loadRider(ctx context.Context, query *RiderQuery, nodes []
 			ids = append(ids, fk)
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
 	}
 	query.Where(rider.IDIn(ids...))
 	neighbors, err := query.All(ctx)
@@ -560,6 +562,9 @@ func (eq *EbikeQuery) loadStore(ctx context.Context, query *StoreQuery, nodes []
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(store.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -582,9 +587,9 @@ func (eq *EbikeQuery) sqlCount(ctx context.Context) (int, error) {
 	if len(eq.modifiers) > 0 {
 		_spec.Modifiers = eq.modifiers
 	}
-	_spec.Node.Columns = eq.fields
-	if len(eq.fields) > 0 {
-		_spec.Unique = eq.unique != nil && *eq.unique
+	_spec.Node.Columns = eq.ctx.Fields
+	if len(eq.ctx.Fields) > 0 {
+		_spec.Unique = eq.ctx.Unique != nil && *eq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, eq.driver, _spec)
 }
@@ -602,10 +607,10 @@ func (eq *EbikeQuery) querySpec() *sqlgraph.QuerySpec {
 		From:   eq.sql,
 		Unique: true,
 	}
-	if unique := eq.unique; unique != nil {
+	if unique := eq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
 	}
-	if fields := eq.fields; len(fields) > 0 {
+	if fields := eq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, ebike.FieldID)
 		for i := range fields {
@@ -621,10 +626,10 @@ func (eq *EbikeQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := eq.limit; limit != nil {
+	if limit := eq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := eq.offset; offset != nil {
+	if offset := eq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := eq.order; len(ps) > 0 {
@@ -640,7 +645,7 @@ func (eq *EbikeQuery) querySpec() *sqlgraph.QuerySpec {
 func (eq *EbikeQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(eq.driver.Dialect())
 	t1 := builder.Table(ebike.Table)
-	columns := eq.fields
+	columns := eq.ctx.Fields
 	if len(columns) == 0 {
 		columns = ebike.Columns
 	}
@@ -649,7 +654,7 @@ func (eq *EbikeQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = eq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if eq.unique != nil && *eq.unique {
+	if eq.ctx.Unique != nil && *eq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, m := range eq.modifiers {
@@ -661,12 +666,12 @@ func (eq *EbikeQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range eq.order {
 		p(selector)
 	}
-	if offset := eq.offset; offset != nil {
+	if offset := eq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := eq.limit; limit != nil {
+	if limit := eq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -714,7 +719,7 @@ func (egb *EbikeGroupBy) Aggregate(fns ...AggregateFunc) *EbikeGroupBy {
 
 // Scan applies the selector query and scans the result into the given value.
 func (egb *EbikeGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeEbike, "GroupBy")
+	ctx = setContextOp(ctx, egb.build.ctx, "GroupBy")
 	if err := egb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -762,7 +767,7 @@ func (es *EbikeSelect) Aggregate(fns ...AggregateFunc) *EbikeSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (es *EbikeSelect) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeEbike, "Select")
+	ctx = setContextOp(ctx, es.ctx, "Select")
 	if err := es.prepareQuery(ctx); err != nil {
 		return err
 	}

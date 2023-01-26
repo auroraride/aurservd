@@ -69,6 +69,12 @@ type OrderRefundDeleteOne struct {
 	ord *OrderRefundDelete
 }
 
+// Where appends a list predicates to the OrderRefundDelete builder.
+func (ordo *OrderRefundDeleteOne) Where(ps ...predicate.OrderRefund) *OrderRefundDeleteOne {
+	ordo.ord.mutation.Where(ps...)
+	return ordo
+}
+
 // Exec executes the deletion query.
 func (ordo *OrderRefundDeleteOne) Exec(ctx context.Context) error {
 	n, err := ordo.ord.Exec(ctx)
@@ -84,5 +90,7 @@ func (ordo *OrderRefundDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (ordo *OrderRefundDeleteOne) ExecX(ctx context.Context) {
-	ordo.ord.ExecX(ctx)
+	if err := ordo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

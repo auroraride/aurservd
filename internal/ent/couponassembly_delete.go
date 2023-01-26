@@ -69,6 +69,12 @@ type CouponAssemblyDeleteOne struct {
 	cad *CouponAssemblyDelete
 }
 
+// Where appends a list predicates to the CouponAssemblyDelete builder.
+func (cado *CouponAssemblyDeleteOne) Where(ps ...predicate.CouponAssembly) *CouponAssemblyDeleteOne {
+	cado.cad.mutation.Where(ps...)
+	return cado
+}
+
 // Exec executes the deletion query.
 func (cado *CouponAssemblyDeleteOne) Exec(ctx context.Context) error {
 	n, err := cado.cad.Exec(ctx)
@@ -84,5 +90,7 @@ func (cado *CouponAssemblyDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (cado *CouponAssemblyDeleteOne) ExecX(ctx context.Context) {
-	cado.cad.ExecX(ctx)
+	if err := cado.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

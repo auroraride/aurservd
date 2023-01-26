@@ -313,29 +313,29 @@ func (pl *Plan) assignValues(columns []string, values []any) error {
 
 // QueryBrand queries the "brand" edge of the Plan entity.
 func (pl *Plan) QueryBrand() *EbikeBrandQuery {
-	return (&PlanClient{config: pl.config}).QueryBrand(pl)
+	return NewPlanClient(pl.config).QueryBrand(pl)
 }
 
 // QueryCities queries the "cities" edge of the Plan entity.
 func (pl *Plan) QueryCities() *CityQuery {
-	return (&PlanClient{config: pl.config}).QueryCities(pl)
+	return NewPlanClient(pl.config).QueryCities(pl)
 }
 
 // QueryParent queries the "parent" edge of the Plan entity.
 func (pl *Plan) QueryParent() *PlanQuery {
-	return (&PlanClient{config: pl.config}).QueryParent(pl)
+	return NewPlanClient(pl.config).QueryParent(pl)
 }
 
 // QueryComplexes queries the "complexes" edge of the Plan entity.
 func (pl *Plan) QueryComplexes() *PlanQuery {
-	return (&PlanClient{config: pl.config}).QueryComplexes(pl)
+	return NewPlanClient(pl.config).QueryComplexes(pl)
 }
 
 // Update returns a builder for updating this Plan.
 // Note that you need to call Plan.Unwrap() before calling this method if this Plan
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (pl *Plan) Update() *PlanUpdateOne {
-	return (&PlanClient{config: pl.config}).UpdateOne(pl)
+	return NewPlanClient(pl.config).UpdateOne(pl)
 }
 
 // Unwrap unwraps the Plan entity that was returned from a transaction after it was closed,

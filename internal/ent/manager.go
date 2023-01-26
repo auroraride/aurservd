@@ -182,14 +182,14 @@ func (m *Manager) assignValues(columns []string, values []any) error {
 
 // QueryRole queries the "role" edge of the Manager entity.
 func (m *Manager) QueryRole() *RoleQuery {
-	return (&ManagerClient{config: m.config}).QueryRole(m)
+	return NewManagerClient(m.config).QueryRole(m)
 }
 
 // Update returns a builder for updating this Manager.
 // Note that you need to call Manager.Unwrap() before calling this method if this Manager
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (m *Manager) Update() *ManagerUpdateOne {
-	return (&ManagerClient{config: m.config}).UpdateOne(m)
+	return NewManagerClient(m.config).UpdateOne(m)
 }
 
 // Unwrap unwraps the Manager entity that was returned from a transaction after it was closed,

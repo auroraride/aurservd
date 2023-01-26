@@ -94,14 +94,14 @@ func (bm *BatteryModel) assignValues(columns []string, values []any) error {
 
 // QueryCabinets queries the "cabinets" edge of the BatteryModel entity.
 func (bm *BatteryModel) QueryCabinets() *CabinetQuery {
-	return (&BatteryModelClient{config: bm.config}).QueryCabinets(bm)
+	return NewBatteryModelClient(bm.config).QueryCabinets(bm)
 }
 
 // Update returns a builder for updating this BatteryModel.
 // Note that you need to call BatteryModel.Unwrap() before calling this method if this BatteryModel
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (bm *BatteryModel) Update() *BatteryModelUpdateOne {
-	return (&BatteryModelClient{config: bm.config}).UpdateOne(bm)
+	return NewBatteryModelClient(bm.config).UpdateOne(bm)
 }
 
 // Unwrap unwraps the BatteryModel entity that was returned from a transaction after it was closed,

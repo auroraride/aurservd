@@ -132,7 +132,7 @@ func (eb *EbikeBrand) assignValues(columns []string, values []any) error {
 // Note that you need to call EbikeBrand.Unwrap() before calling this method if this EbikeBrand
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (eb *EbikeBrand) Update() *EbikeBrandUpdateOne {
-	return (&EbikeBrandClient{config: eb.config}).UpdateOne(eb)
+	return NewEbikeBrandClient(eb.config).UpdateOne(eb)
 }
 
 // Unwrap unwraps the EbikeBrand entity that was returned from a transaction after it was closed,

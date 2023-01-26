@@ -23,11 +23,8 @@ import (
 // BranchQuery is the builder for querying Branch entities.
 type BranchQuery struct {
 	config
-	limit         *int
-	offset        *int
-	unique        *bool
+	ctx           *QueryContext
 	order         []OrderFunc
-	fields        []string
 	inters        []Interceptor
 	predicates    []predicate.Branch
 	withCity      *CityQuery
@@ -49,20 +46,20 @@ func (bq *BranchQuery) Where(ps ...predicate.Branch) *BranchQuery {
 
 // Limit the number of records to be returned by this query.
 func (bq *BranchQuery) Limit(limit int) *BranchQuery {
-	bq.limit = &limit
+	bq.ctx.Limit = &limit
 	return bq
 }
 
 // Offset to start from.
 func (bq *BranchQuery) Offset(offset int) *BranchQuery {
-	bq.offset = &offset
+	bq.ctx.Offset = &offset
 	return bq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (bq *BranchQuery) Unique(unique bool) *BranchQuery {
-	bq.unique = &unique
+	bq.ctx.Unique = &unique
 	return bq
 }
 
@@ -185,7 +182,7 @@ func (bq *BranchQuery) QueryStores() *StoreQuery {
 // First returns the first Branch entity from the query.
 // Returns a *NotFoundError when no Branch was found.
 func (bq *BranchQuery) First(ctx context.Context) (*Branch, error) {
-	nodes, err := bq.Limit(1).All(newQueryContext(ctx, TypeBranch, "First"))
+	nodes, err := bq.Limit(1).All(setContextOp(ctx, bq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -208,7 +205,7 @@ func (bq *BranchQuery) FirstX(ctx context.Context) *Branch {
 // Returns a *NotFoundError when no Branch ID was found.
 func (bq *BranchQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = bq.Limit(1).IDs(newQueryContext(ctx, TypeBranch, "FirstID")); err != nil {
+	if ids, err = bq.Limit(1).IDs(setContextOp(ctx, bq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -231,7 +228,7 @@ func (bq *BranchQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Branch entity is found.
 // Returns a *NotFoundError when no Branch entities are found.
 func (bq *BranchQuery) Only(ctx context.Context) (*Branch, error) {
-	nodes, err := bq.Limit(2).All(newQueryContext(ctx, TypeBranch, "Only"))
+	nodes, err := bq.Limit(2).All(setContextOp(ctx, bq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -259,7 +256,7 @@ func (bq *BranchQuery) OnlyX(ctx context.Context) *Branch {
 // Returns a *NotFoundError when no entities are found.
 func (bq *BranchQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = bq.Limit(2).IDs(newQueryContext(ctx, TypeBranch, "OnlyID")); err != nil {
+	if ids, err = bq.Limit(2).IDs(setContextOp(ctx, bq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -284,7 +281,7 @@ func (bq *BranchQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Branches.
 func (bq *BranchQuery) All(ctx context.Context) ([]*Branch, error) {
-	ctx = newQueryContext(ctx, TypeBranch, "All")
+	ctx = setContextOp(ctx, bq.ctx, "All")
 	if err := bq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -304,7 +301,7 @@ func (bq *BranchQuery) AllX(ctx context.Context) []*Branch {
 // IDs executes the query and returns a list of Branch IDs.
 func (bq *BranchQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
-	ctx = newQueryContext(ctx, TypeBranch, "IDs")
+	ctx = setContextOp(ctx, bq.ctx, "IDs")
 	if err := bq.Select(branch.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -322,7 +319,7 @@ func (bq *BranchQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (bq *BranchQuery) Count(ctx context.Context) (int, error) {
-	ctx = newQueryContext(ctx, TypeBranch, "Count")
+	ctx = setContextOp(ctx, bq.ctx, "Count")
 	if err := bq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -340,7 +337,7 @@ func (bq *BranchQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (bq *BranchQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = newQueryContext(ctx, TypeBranch, "Exist")
+	ctx = setContextOp(ctx, bq.ctx, "Exist")
 	switch _, err := bq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -368,9 +365,9 @@ func (bq *BranchQuery) Clone() *BranchQuery {
 	}
 	return &BranchQuery{
 		config:        bq.config,
-		limit:         bq.limit,
-		offset:        bq.offset,
+		ctx:           bq.ctx.Clone(),
 		order:         append([]OrderFunc{}, bq.order...),
+		inters:        append([]Interceptor{}, bq.inters...),
 		predicates:    append([]predicate.Branch{}, bq.predicates...),
 		withCity:      bq.withCity.Clone(),
 		withContracts: bq.withContracts.Clone(),
@@ -378,9 +375,8 @@ func (bq *BranchQuery) Clone() *BranchQuery {
 		withFaults:    bq.withFaults.Clone(),
 		withStores:    bq.withStores.Clone(),
 		// clone intermediate query.
-		sql:    bq.sql.Clone(),
-		path:   bq.path,
-		unique: bq.unique,
+		sql:  bq.sql.Clone(),
+		path: bq.path,
 	}
 }
 
@@ -454,9 +450,9 @@ func (bq *BranchQuery) WithStores(opts ...func(*StoreQuery)) *BranchQuery {
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (bq *BranchQuery) GroupBy(field string, fields ...string) *BranchGroupBy {
-	bq.fields = append([]string{field}, fields...)
+	bq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &BranchGroupBy{build: bq}
-	grbuild.flds = &bq.fields
+	grbuild.flds = &bq.ctx.Fields
 	grbuild.label = branch.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -475,10 +471,10 @@ func (bq *BranchQuery) GroupBy(field string, fields ...string) *BranchGroupBy {
 //		Select(branch.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (bq *BranchQuery) Select(fields ...string) *BranchSelect {
-	bq.fields = append(bq.fields, fields...)
+	bq.ctx.Fields = append(bq.ctx.Fields, fields...)
 	sbuild := &BranchSelect{BranchQuery: bq}
 	sbuild.label = branch.Label
-	sbuild.flds, sbuild.scan = &bq.fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &bq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
@@ -498,7 +494,7 @@ func (bq *BranchQuery) prepareQuery(ctx context.Context) error {
 			}
 		}
 	}
-	for _, f := range bq.fields {
+	for _, f := range bq.ctx.Fields {
 		if !branch.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -592,6 +588,9 @@ func (bq *BranchQuery) loadCity(ctx context.Context, query *CityQuery, nodes []*
 			ids = append(ids, fk)
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
 	}
 	query.Where(city.IDIn(ids...))
 	neighbors, err := query.All(ctx)
@@ -726,9 +725,9 @@ func (bq *BranchQuery) sqlCount(ctx context.Context) (int, error) {
 	if len(bq.modifiers) > 0 {
 		_spec.Modifiers = bq.modifiers
 	}
-	_spec.Node.Columns = bq.fields
-	if len(bq.fields) > 0 {
-		_spec.Unique = bq.unique != nil && *bq.unique
+	_spec.Node.Columns = bq.ctx.Fields
+	if len(bq.ctx.Fields) > 0 {
+		_spec.Unique = bq.ctx.Unique != nil && *bq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, bq.driver, _spec)
 }
@@ -746,10 +745,10 @@ func (bq *BranchQuery) querySpec() *sqlgraph.QuerySpec {
 		From:   bq.sql,
 		Unique: true,
 	}
-	if unique := bq.unique; unique != nil {
+	if unique := bq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
 	}
-	if fields := bq.fields; len(fields) > 0 {
+	if fields := bq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, branch.FieldID)
 		for i := range fields {
@@ -765,10 +764,10 @@ func (bq *BranchQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := bq.limit; limit != nil {
+	if limit := bq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := bq.offset; offset != nil {
+	if offset := bq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := bq.order; len(ps) > 0 {
@@ -784,7 +783,7 @@ func (bq *BranchQuery) querySpec() *sqlgraph.QuerySpec {
 func (bq *BranchQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(bq.driver.Dialect())
 	t1 := builder.Table(branch.Table)
-	columns := bq.fields
+	columns := bq.ctx.Fields
 	if len(columns) == 0 {
 		columns = branch.Columns
 	}
@@ -793,7 +792,7 @@ func (bq *BranchQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = bq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if bq.unique != nil && *bq.unique {
+	if bq.ctx.Unique != nil && *bq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, m := range bq.modifiers {
@@ -805,12 +804,12 @@ func (bq *BranchQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range bq.order {
 		p(selector)
 	}
-	if offset := bq.offset; offset != nil {
+	if offset := bq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := bq.limit; limit != nil {
+	if limit := bq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -864,7 +863,7 @@ func (bgb *BranchGroupBy) Aggregate(fns ...AggregateFunc) *BranchGroupBy {
 
 // Scan applies the selector query and scans the result into the given value.
 func (bgb *BranchGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeBranch, "GroupBy")
+	ctx = setContextOp(ctx, bgb.build.ctx, "GroupBy")
 	if err := bgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -912,7 +911,7 @@ func (bs *BranchSelect) Aggregate(fns ...AggregateFunc) *BranchSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (bs *BranchSelect) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeBranch, "Select")
+	ctx = setContextOp(ctx, bs.ctx, "Select")
 	if err := bs.prepareQuery(ctx); err != nil {
 		return err
 	}

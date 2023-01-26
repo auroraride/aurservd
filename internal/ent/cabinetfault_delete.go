@@ -69,6 +69,12 @@ type CabinetFaultDeleteOne struct {
 	cfd *CabinetFaultDelete
 }
 
+// Where appends a list predicates to the CabinetFaultDelete builder.
+func (cfdo *CabinetFaultDeleteOne) Where(ps ...predicate.CabinetFault) *CabinetFaultDeleteOne {
+	cfdo.cfd.mutation.Where(ps...)
+	return cfdo
+}
+
 // Exec executes the deletion query.
 func (cfdo *CabinetFaultDeleteOne) Exec(ctx context.Context) error {
 	n, err := cfdo.cfd.Exec(ctx)
@@ -84,5 +90,7 @@ func (cfdo *CabinetFaultDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (cfdo *CabinetFaultDeleteOne) ExecX(ctx context.Context) {
-	cfdo.cfd.ExecX(ctx)
+	if err := cfdo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

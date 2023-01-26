@@ -703,6 +703,7 @@ func (c *AgentClient) DeleteOneID(id uint64) *AgentDeleteOne {
 func (c *AgentClient) Query() *AgentQuery {
 	return &AgentQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeAgent},
 		inters: c.Interceptors(),
 	}
 }
@@ -837,6 +838,7 @@ func (c *AllocateClient) DeleteOneID(id uint64) *AllocateDeleteOne {
 func (c *AllocateClient) Query() *AllocateQuery {
 	return &AllocateQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeAllocate},
 		inters: c.Interceptors(),
 	}
 }
@@ -1083,6 +1085,7 @@ func (c *AssistanceClient) DeleteOneID(id uint64) *AssistanceDeleteOne {
 func (c *AssistanceClient) Query() *AssistanceQuery {
 	return &AssistanceQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeAssistance},
 		inters: c.Interceptors(),
 	}
 }
@@ -1297,6 +1300,7 @@ func (c *AttendanceClient) DeleteOneID(id uint64) *AttendanceDeleteOne {
 func (c *AttendanceClient) Query() *AttendanceQuery {
 	return &AttendanceQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeAttendance},
 		inters: c.Interceptors(),
 	}
 }
@@ -1447,6 +1451,7 @@ func (c *BatteryClient) DeleteOneID(id uint64) *BatteryDeleteOne {
 func (c *BatteryClient) Query() *BatteryQuery {
 	return &BatteryQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeBattery},
 		inters: c.Interceptors(),
 	}
 }
@@ -1629,6 +1634,7 @@ func (c *BatteryModelClient) DeleteOneID(id uint64) *BatteryModelDeleteOne {
 func (c *BatteryModelClient) Query() *BatteryModelQuery {
 	return &BatteryModelQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeBatteryModel},
 		inters: c.Interceptors(),
 	}
 }
@@ -1762,6 +1768,7 @@ func (c *BranchClient) DeleteOneID(id uint64) *BranchDeleteOne {
 func (c *BranchClient) Query() *BranchQuery {
 	return &BranchQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeBranch},
 		inters: c.Interceptors(),
 	}
 }
@@ -1960,6 +1967,7 @@ func (c *BranchContractClient) DeleteOneID(id uint64) *BranchContractDeleteOne {
 func (c *BranchContractClient) Query() *BranchContractQuery {
 	return &BranchContractQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeBranchContract},
 		inters: c.Interceptors(),
 	}
 }
@@ -2094,6 +2102,7 @@ func (c *BusinessClient) DeleteOneID(id uint64) *BusinessDeleteOne {
 func (c *BusinessClient) Query() *BusinessQuery {
 	return &BusinessQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeBusiness},
 		inters: c.Interceptors(),
 	}
 }
@@ -2372,6 +2381,7 @@ func (c *CabinetClient) DeleteOneID(id uint64) *CabinetDeleteOne {
 func (c *CabinetClient) Query() *CabinetQuery {
 	return &CabinetQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeCabinet},
 		inters: c.Interceptors(),
 	}
 }
@@ -2602,6 +2612,7 @@ func (c *CabinetFaultClient) DeleteOneID(id uint64) *CabinetFaultDeleteOne {
 func (c *CabinetFaultClient) Query() *CabinetFaultQuery {
 	return &CabinetFaultQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeCabinetFault},
 		inters: c.Interceptors(),
 	}
 }
@@ -2784,6 +2795,7 @@ func (c *CityClient) DeleteOneID(id uint64) *CityDeleteOne {
 func (c *CityClient) Query() *CityQuery {
 	return &CityQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeCity},
 		inters: c.Interceptors(),
 	}
 }
@@ -2950,6 +2962,7 @@ func (c *CommissionClient) DeleteOneID(id uint64) *CommissionDeleteOne {
 func (c *CommissionClient) Query() *CommissionQuery {
 	return &CommissionQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeCommission},
 		inters: c.Interceptors(),
 	}
 }
@@ -3164,6 +3177,7 @@ func (c *ContractClient) DeleteOneID(id uint64) *ContractDeleteOne {
 func (c *ContractClient) Query() *ContractQuery {
 	return &ContractQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeContract},
 		inters: c.Interceptors(),
 	}
 }
@@ -3346,6 +3360,7 @@ func (c *CouponClient) DeleteOneID(id uint64) *CouponDeleteOne {
 func (c *CouponClient) Query() *CouponQuery {
 	return &CouponQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeCoupon},
 		inters: c.Interceptors(),
 	}
 }
@@ -3544,6 +3559,7 @@ func (c *CouponAssemblyClient) DeleteOneID(id uint64) *CouponAssemblyDeleteOne {
 func (c *CouponAssemblyClient) Query() *CouponAssemblyQuery {
 	return &CouponAssemblyQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeCouponAssembly},
 		inters: c.Interceptors(),
 	}
 }
@@ -3678,6 +3694,7 @@ func (c *CouponTemplateClient) DeleteOneID(id uint64) *CouponTemplateDeleteOne {
 func (c *CouponTemplateClient) Query() *CouponTemplateQuery {
 	return &CouponTemplateQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeCouponTemplate},
 		inters: c.Interceptors(),
 	}
 }
@@ -3812,6 +3829,7 @@ func (c *EbikeClient) DeleteOneID(id uint64) *EbikeDeleteOne {
 func (c *EbikeClient) Query() *EbikeQuery {
 	return &EbikeQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeEbike},
 		inters: c.Interceptors(),
 	}
 }
@@ -3978,6 +3996,7 @@ func (c *EbikeBrandClient) DeleteOneID(id uint64) *EbikeBrandDeleteOne {
 func (c *EbikeBrandClient) Query() *EbikeBrandQuery {
 	return &EbikeBrandQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeEbikeBrand},
 		inters: c.Interceptors(),
 	}
 }
@@ -4096,6 +4115,7 @@ func (c *EmployeeClient) DeleteOneID(id uint64) *EmployeeDeleteOne {
 func (c *EmployeeClient) Query() *EmployeeQuery {
 	return &EmployeeQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeEmployee},
 		inters: c.Interceptors(),
 	}
 }
@@ -4326,6 +4346,7 @@ func (c *EnterpriseClient) DeleteOneID(id uint64) *EnterpriseDeleteOne {
 func (c *EnterpriseClient) Query() *EnterpriseQuery {
 	return &EnterpriseQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeEnterprise},
 		inters: c.Interceptors(),
 	}
 }
@@ -4572,6 +4593,7 @@ func (c *EnterpriseBillClient) DeleteOneID(id uint64) *EnterpriseBillDeleteOne {
 func (c *EnterpriseBillClient) Query() *EnterpriseBillQuery {
 	return &EnterpriseBillQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeEnterpriseBill},
 		inters: c.Interceptors(),
 	}
 }
@@ -4786,6 +4808,7 @@ func (c *EnterpriseContractClient) DeleteOneID(id uint64) *EnterpriseContractDel
 func (c *EnterpriseContractClient) Query() *EnterpriseContractQuery {
 	return &EnterpriseContractQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeEnterpriseContract},
 		inters: c.Interceptors(),
 	}
 }
@@ -4920,6 +4943,7 @@ func (c *EnterprisePrepaymentClient) DeleteOneID(id uint64) *EnterprisePrepaymen
 func (c *EnterprisePrepaymentClient) Query() *EnterprisePrepaymentQuery {
 	return &EnterprisePrepaymentQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeEnterprisePrepayment},
 		inters: c.Interceptors(),
 	}
 }
@@ -5054,6 +5078,7 @@ func (c *EnterprisePriceClient) DeleteOneID(id uint64) *EnterprisePriceDeleteOne
 func (c *EnterprisePriceClient) Query() *EnterprisePriceQuery {
 	return &EnterprisePriceQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeEnterprisePrice},
 		inters: c.Interceptors(),
 	}
 }
@@ -5204,6 +5229,7 @@ func (c *EnterpriseStatementClient) DeleteOneID(id uint64) *EnterpriseStatementD
 func (c *EnterpriseStatementClient) Query() *EnterpriseStatementQuery {
 	return &EnterpriseStatementQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeEnterpriseStatement},
 		inters: c.Interceptors(),
 	}
 }
@@ -5354,6 +5380,7 @@ func (c *EnterpriseStationClient) DeleteOneID(id uint64) *EnterpriseStationDelet
 func (c *EnterpriseStationClient) Query() *EnterpriseStationQuery {
 	return &EnterpriseStationQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeEnterpriseStation},
 		inters: c.Interceptors(),
 	}
 }
@@ -5488,6 +5515,7 @@ func (c *ExceptionClient) DeleteOneID(id uint64) *ExceptionDeleteOne {
 func (c *ExceptionClient) Query() *ExceptionQuery {
 	return &ExceptionQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeException},
 		inters: c.Interceptors(),
 	}
 }
@@ -5654,6 +5682,7 @@ func (c *ExchangeClient) DeleteOneID(id uint64) *ExchangeDeleteOne {
 func (c *ExchangeClient) Query() *ExchangeQuery {
 	return &ExchangeQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeExchange},
 		inters: c.Interceptors(),
 	}
 }
@@ -5900,6 +5929,7 @@ func (c *ExportClient) DeleteOneID(id uint64) *ExportDeleteOne {
 func (c *ExportClient) Query() *ExportQuery {
 	return &ExportQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeExport},
 		inters: c.Interceptors(),
 	}
 }
@@ -6033,6 +6063,7 @@ func (c *InventoryClient) DeleteOneID(id uint64) *InventoryDeleteOne {
 func (c *InventoryClient) Query() *InventoryQuery {
 	return &InventoryQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeInventory},
 		inters: c.Interceptors(),
 	}
 }
@@ -6151,6 +6182,7 @@ func (c *ManagerClient) DeleteOneID(id uint64) *ManagerDeleteOne {
 func (c *ManagerClient) Query() *ManagerQuery {
 	return &ManagerQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeManager},
 		inters: c.Interceptors(),
 	}
 }
@@ -6285,6 +6317,7 @@ func (c *OrderClient) DeleteOneID(id uint64) *OrderDeleteOne {
 func (c *OrderClient) Query() *OrderQuery {
 	return &OrderQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeOrder},
 		inters: c.Interceptors(),
 	}
 }
@@ -6595,6 +6628,7 @@ func (c *OrderRefundClient) DeleteOneID(id uint64) *OrderRefundDeleteOne {
 func (c *OrderRefundClient) Query() *OrderRefundQuery {
 	return &OrderRefundQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeOrderRefund},
 		inters: c.Interceptors(),
 	}
 }
@@ -6729,6 +6763,7 @@ func (c *PersonClient) DeleteOneID(id uint64) *PersonDeleteOne {
 func (c *PersonClient) Query() *PersonQuery {
 	return &PersonQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypePerson},
 		inters: c.Interceptors(),
 	}
 }
@@ -6863,6 +6898,7 @@ func (c *PlanClient) DeleteOneID(id uint64) *PlanDeleteOne {
 func (c *PlanClient) Query() *PlanQuery {
 	return &PlanQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypePlan},
 		inters: c.Interceptors(),
 	}
 }
@@ -7045,6 +7081,7 @@ func (c *PlanIntroduceClient) DeleteOneID(id uint64) *PlanIntroduceDeleteOne {
 func (c *PlanIntroduceClient) Query() *PlanIntroduceQuery {
 	return &PlanIntroduceQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypePlanIntroduce},
 		inters: c.Interceptors(),
 	}
 }
@@ -7178,6 +7215,7 @@ func (c *PointLogClient) DeleteOneID(id uint64) *PointLogDeleteOne {
 func (c *PointLogClient) Query() *PointLogQuery {
 	return &PointLogQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypePointLog},
 		inters: c.Interceptors(),
 	}
 }
@@ -7328,6 +7366,7 @@ func (c *ReserveClient) DeleteOneID(id uint64) *ReserveDeleteOne {
 func (c *ReserveClient) Query() *ReserveQuery {
 	return &ReserveQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeReserve},
 		inters: c.Interceptors(),
 	}
 }
@@ -7510,6 +7549,7 @@ func (c *RiderClient) DeleteOneID(id uint64) *RiderDeleteOne {
 func (c *RiderClient) Query() *RiderQuery {
 	return &RiderQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeRider},
 		inters: c.Interceptors(),
 	}
 }
@@ -7804,6 +7844,7 @@ func (c *RiderFollowUpClient) DeleteOneID(id uint64) *RiderFollowUpDeleteOne {
 func (c *RiderFollowUpClient) Query() *RiderFollowUpQuery {
 	return &RiderFollowUpQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeRiderFollowUp},
 		inters: c.Interceptors(),
 	}
 }
@@ -7954,6 +7995,7 @@ func (c *RoleClient) DeleteOneID(id uint64) *RoleDeleteOne {
 func (c *RoleClient) Query() *RoleQuery {
 	return &RoleQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeRole},
 		inters: c.Interceptors(),
 	}
 }
@@ -8087,6 +8129,7 @@ func (c *SettingClient) DeleteOneID(id uint64) *SettingDeleteOne {
 func (c *SettingClient) Query() *SettingQuery {
 	return &SettingQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeSetting},
 		inters: c.Interceptors(),
 	}
 }
@@ -8205,6 +8248,7 @@ func (c *StockClient) DeleteOneID(id uint64) *StockDeleteOne {
 func (c *StockClient) Query() *StockQuery {
 	return &StockQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeStock},
 		inters: c.Interceptors(),
 	}
 }
@@ -8515,6 +8559,7 @@ func (c *StoreClient) DeleteOneID(id uint64) *StoreDeleteOne {
 func (c *StoreClient) Query() *StoreQuery {
 	return &StoreQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeStore},
 		inters: c.Interceptors(),
 	}
 }
@@ -8729,6 +8774,7 @@ func (c *SubscribeClient) DeleteOneID(id uint64) *SubscribeDeleteOne {
 func (c *SubscribeClient) Query() *SubscribeQuery {
 	return &SubscribeQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeSubscribe},
 		inters: c.Interceptors(),
 	}
 }
@@ -9119,6 +9165,7 @@ func (c *SubscribeAlterClient) DeleteOneID(id uint64) *SubscribeAlterDeleteOne {
 func (c *SubscribeAlterClient) Query() *SubscribeAlterQuery {
 	return &SubscribeAlterQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeSubscribeAlter},
 		inters: c.Interceptors(),
 	}
 }
@@ -9317,6 +9364,7 @@ func (c *SubscribePauseClient) DeleteOneID(id uint64) *SubscribePauseDeleteOne {
 func (c *SubscribePauseClient) Query() *SubscribePauseQuery {
 	return &SubscribePauseQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeSubscribePause},
 		inters: c.Interceptors(),
 	}
 }
@@ -9595,6 +9643,7 @@ func (c *SubscribeReminderClient) DeleteOneID(id uint64) *SubscribeReminderDelet
 func (c *SubscribeReminderClient) Query() *SubscribeReminderQuery {
 	return &SubscribeReminderQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeSubscribeReminder},
 		inters: c.Interceptors(),
 	}
 }
@@ -9760,6 +9809,7 @@ func (c *SubscribeSuspendClient) DeleteOneID(id uint64) *SubscribeSuspendDeleteO
 func (c *SubscribeSuspendClient) Query() *SubscribeSuspendQuery {
 	return &SubscribeSuspendQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeSubscribeSuspend},
 		inters: c.Interceptors(),
 	}
 }

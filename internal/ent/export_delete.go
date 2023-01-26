@@ -69,6 +69,12 @@ type ExportDeleteOne struct {
 	ed *ExportDelete
 }
 
+// Where appends a list predicates to the ExportDelete builder.
+func (edo *ExportDeleteOne) Where(ps ...predicate.Export) *ExportDeleteOne {
+	edo.ed.mutation.Where(ps...)
+	return edo
+}
+
 // Exec executes the deletion query.
 func (edo *ExportDeleteOne) Exec(ctx context.Context) error {
 	n, err := edo.ed.Exec(ctx)
@@ -84,5 +90,7 @@ func (edo *ExportDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (edo *ExportDeleteOne) ExecX(ctx context.Context) {
-	edo.ed.ExecX(ctx)
+	if err := edo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

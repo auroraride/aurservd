@@ -69,6 +69,12 @@ type AllocateDeleteOne struct {
 	ad *AllocateDelete
 }
 
+// Where appends a list predicates to the AllocateDelete builder.
+func (ado *AllocateDeleteOne) Where(ps ...predicate.Allocate) *AllocateDeleteOne {
+	ado.ad.mutation.Where(ps...)
+	return ado
+}
+
 // Exec executes the deletion query.
 func (ado *AllocateDeleteOne) Exec(ctx context.Context) error {
 	n, err := ado.ad.Exec(ctx)
@@ -84,5 +90,7 @@ func (ado *AllocateDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (ado *AllocateDeleteOne) ExecX(ctx context.Context) {
-	ado.ad.ExecX(ctx)
+	if err := ado.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

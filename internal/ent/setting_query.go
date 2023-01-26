@@ -17,11 +17,8 @@ import (
 // SettingQuery is the builder for querying Setting entities.
 type SettingQuery struct {
 	config
-	limit      *int
-	offset     *int
-	unique     *bool
+	ctx        *QueryContext
 	order      []OrderFunc
-	fields     []string
 	inters     []Interceptor
 	predicates []predicate.Setting
 	modifiers  []func(*sql.Selector)
@@ -38,20 +35,20 @@ func (sq *SettingQuery) Where(ps ...predicate.Setting) *SettingQuery {
 
 // Limit the number of records to be returned by this query.
 func (sq *SettingQuery) Limit(limit int) *SettingQuery {
-	sq.limit = &limit
+	sq.ctx.Limit = &limit
 	return sq
 }
 
 // Offset to start from.
 func (sq *SettingQuery) Offset(offset int) *SettingQuery {
-	sq.offset = &offset
+	sq.ctx.Offset = &offset
 	return sq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (sq *SettingQuery) Unique(unique bool) *SettingQuery {
-	sq.unique = &unique
+	sq.ctx.Unique = &unique
 	return sq
 }
 
@@ -64,7 +61,7 @@ func (sq *SettingQuery) Order(o ...OrderFunc) *SettingQuery {
 // First returns the first Setting entity from the query.
 // Returns a *NotFoundError when no Setting was found.
 func (sq *SettingQuery) First(ctx context.Context) (*Setting, error) {
-	nodes, err := sq.Limit(1).All(newQueryContext(ctx, TypeSetting, "First"))
+	nodes, err := sq.Limit(1).All(setContextOp(ctx, sq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -87,7 +84,7 @@ func (sq *SettingQuery) FirstX(ctx context.Context) *Setting {
 // Returns a *NotFoundError when no Setting ID was found.
 func (sq *SettingQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = sq.Limit(1).IDs(newQueryContext(ctx, TypeSetting, "FirstID")); err != nil {
+	if ids, err = sq.Limit(1).IDs(setContextOp(ctx, sq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -110,7 +107,7 @@ func (sq *SettingQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Setting entity is found.
 // Returns a *NotFoundError when no Setting entities are found.
 func (sq *SettingQuery) Only(ctx context.Context) (*Setting, error) {
-	nodes, err := sq.Limit(2).All(newQueryContext(ctx, TypeSetting, "Only"))
+	nodes, err := sq.Limit(2).All(setContextOp(ctx, sq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -138,7 +135,7 @@ func (sq *SettingQuery) OnlyX(ctx context.Context) *Setting {
 // Returns a *NotFoundError when no entities are found.
 func (sq *SettingQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = sq.Limit(2).IDs(newQueryContext(ctx, TypeSetting, "OnlyID")); err != nil {
+	if ids, err = sq.Limit(2).IDs(setContextOp(ctx, sq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -163,7 +160,7 @@ func (sq *SettingQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Settings.
 func (sq *SettingQuery) All(ctx context.Context) ([]*Setting, error) {
-	ctx = newQueryContext(ctx, TypeSetting, "All")
+	ctx = setContextOp(ctx, sq.ctx, "All")
 	if err := sq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -183,7 +180,7 @@ func (sq *SettingQuery) AllX(ctx context.Context) []*Setting {
 // IDs executes the query and returns a list of Setting IDs.
 func (sq *SettingQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
-	ctx = newQueryContext(ctx, TypeSetting, "IDs")
+	ctx = setContextOp(ctx, sq.ctx, "IDs")
 	if err := sq.Select(setting.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -201,7 +198,7 @@ func (sq *SettingQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (sq *SettingQuery) Count(ctx context.Context) (int, error) {
-	ctx = newQueryContext(ctx, TypeSetting, "Count")
+	ctx = setContextOp(ctx, sq.ctx, "Count")
 	if err := sq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -219,7 +216,7 @@ func (sq *SettingQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (sq *SettingQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = newQueryContext(ctx, TypeSetting, "Exist")
+	ctx = setContextOp(ctx, sq.ctx, "Exist")
 	switch _, err := sq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -247,14 +244,13 @@ func (sq *SettingQuery) Clone() *SettingQuery {
 	}
 	return &SettingQuery{
 		config:     sq.config,
-		limit:      sq.limit,
-		offset:     sq.offset,
+		ctx:        sq.ctx.Clone(),
 		order:      append([]OrderFunc{}, sq.order...),
+		inters:     append([]Interceptor{}, sq.inters...),
 		predicates: append([]predicate.Setting{}, sq.predicates...),
 		// clone intermediate query.
-		sql:    sq.sql.Clone(),
-		path:   sq.path,
-		unique: sq.unique,
+		sql:  sq.sql.Clone(),
+		path: sq.path,
 	}
 }
 
@@ -273,9 +269,9 @@ func (sq *SettingQuery) Clone() *SettingQuery {
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (sq *SettingQuery) GroupBy(field string, fields ...string) *SettingGroupBy {
-	sq.fields = append([]string{field}, fields...)
+	sq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &SettingGroupBy{build: sq}
-	grbuild.flds = &sq.fields
+	grbuild.flds = &sq.ctx.Fields
 	grbuild.label = setting.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -294,10 +290,10 @@ func (sq *SettingQuery) GroupBy(field string, fields ...string) *SettingGroupBy 
 //		Select(setting.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (sq *SettingQuery) Select(fields ...string) *SettingSelect {
-	sq.fields = append(sq.fields, fields...)
+	sq.ctx.Fields = append(sq.ctx.Fields, fields...)
 	sbuild := &SettingSelect{SettingQuery: sq}
 	sbuild.label = setting.Label
-	sbuild.flds, sbuild.scan = &sq.fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &sq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
@@ -317,7 +313,7 @@ func (sq *SettingQuery) prepareQuery(ctx context.Context) error {
 			}
 		}
 	}
-	for _, f := range sq.fields {
+	for _, f := range sq.ctx.Fields {
 		if !setting.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -365,9 +361,9 @@ func (sq *SettingQuery) sqlCount(ctx context.Context) (int, error) {
 	if len(sq.modifiers) > 0 {
 		_spec.Modifiers = sq.modifiers
 	}
-	_spec.Node.Columns = sq.fields
-	if len(sq.fields) > 0 {
-		_spec.Unique = sq.unique != nil && *sq.unique
+	_spec.Node.Columns = sq.ctx.Fields
+	if len(sq.ctx.Fields) > 0 {
+		_spec.Unique = sq.ctx.Unique != nil && *sq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, sq.driver, _spec)
 }
@@ -385,10 +381,10 @@ func (sq *SettingQuery) querySpec() *sqlgraph.QuerySpec {
 		From:   sq.sql,
 		Unique: true,
 	}
-	if unique := sq.unique; unique != nil {
+	if unique := sq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
 	}
-	if fields := sq.fields; len(fields) > 0 {
+	if fields := sq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, setting.FieldID)
 		for i := range fields {
@@ -404,10 +400,10 @@ func (sq *SettingQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := sq.limit; limit != nil {
+	if limit := sq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := sq.offset; offset != nil {
+	if offset := sq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := sq.order; len(ps) > 0 {
@@ -423,7 +419,7 @@ func (sq *SettingQuery) querySpec() *sqlgraph.QuerySpec {
 func (sq *SettingQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(sq.driver.Dialect())
 	t1 := builder.Table(setting.Table)
-	columns := sq.fields
+	columns := sq.ctx.Fields
 	if len(columns) == 0 {
 		columns = setting.Columns
 	}
@@ -432,7 +428,7 @@ func (sq *SettingQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = sq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if sq.unique != nil && *sq.unique {
+	if sq.ctx.Unique != nil && *sq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, m := range sq.modifiers {
@@ -444,12 +440,12 @@ func (sq *SettingQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range sq.order {
 		p(selector)
 	}
-	if offset := sq.offset; offset != nil {
+	if offset := sq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := sq.limit; limit != nil {
+	if limit := sq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -487,7 +483,7 @@ func (sgb *SettingGroupBy) Aggregate(fns ...AggregateFunc) *SettingGroupBy {
 
 // Scan applies the selector query and scans the result into the given value.
 func (sgb *SettingGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeSetting, "GroupBy")
+	ctx = setContextOp(ctx, sgb.build.ctx, "GroupBy")
 	if err := sgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -535,7 +531,7 @@ func (ss *SettingSelect) Aggregate(fns ...AggregateFunc) *SettingSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (ss *SettingSelect) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeSetting, "Select")
+	ctx = setContextOp(ctx, ss.ctx, "Select")
 	if err := ss.prepareQuery(ctx); err != nil {
 		return err
 	}

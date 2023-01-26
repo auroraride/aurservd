@@ -255,24 +255,24 @@ func (e *Exception) assignValues(columns []string, values []any) error {
 
 // QueryCity queries the "city" edge of the Exception entity.
 func (e *Exception) QueryCity() *CityQuery {
-	return (&ExceptionClient{config: e.config}).QueryCity(e)
+	return NewExceptionClient(e.config).QueryCity(e)
 }
 
 // QueryEmployee queries the "employee" edge of the Exception entity.
 func (e *Exception) QueryEmployee() *EmployeeQuery {
-	return (&ExceptionClient{config: e.config}).QueryEmployee(e)
+	return NewExceptionClient(e.config).QueryEmployee(e)
 }
 
 // QueryStore queries the "store" edge of the Exception entity.
 func (e *Exception) QueryStore() *StoreQuery {
-	return (&ExceptionClient{config: e.config}).QueryStore(e)
+	return NewExceptionClient(e.config).QueryStore(e)
 }
 
 // Update returns a builder for updating this Exception.
 // Note that you need to call Exception.Unwrap() before calling this method if this Exception
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (e *Exception) Update() *ExceptionUpdateOne {
-	return (&ExceptionClient{config: e.config}).UpdateOne(e)
+	return NewExceptionClient(e.config).UpdateOne(e)
 }
 
 // Unwrap unwraps the Exception entity that was returned from a transaction after it was closed,

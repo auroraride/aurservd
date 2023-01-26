@@ -256,44 +256,44 @@ func (e *Employee) assignValues(columns []string, values []any) error {
 
 // QueryCity queries the "city" edge of the Employee entity.
 func (e *Employee) QueryCity() *CityQuery {
-	return (&EmployeeClient{config: e.config}).QueryCity(e)
+	return NewEmployeeClient(e.config).QueryCity(e)
 }
 
 // QueryStore queries the "store" edge of the Employee entity.
 func (e *Employee) QueryStore() *StoreQuery {
-	return (&EmployeeClient{config: e.config}).QueryStore(e)
+	return NewEmployeeClient(e.config).QueryStore(e)
 }
 
 // QueryAttendances queries the "attendances" edge of the Employee entity.
 func (e *Employee) QueryAttendances() *AttendanceQuery {
-	return (&EmployeeClient{config: e.config}).QueryAttendances(e)
+	return NewEmployeeClient(e.config).QueryAttendances(e)
 }
 
 // QueryStocks queries the "stocks" edge of the Employee entity.
 func (e *Employee) QueryStocks() *StockQuery {
-	return (&EmployeeClient{config: e.config}).QueryStocks(e)
+	return NewEmployeeClient(e.config).QueryStocks(e)
 }
 
 // QueryExchanges queries the "exchanges" edge of the Employee entity.
 func (e *Employee) QueryExchanges() *ExchangeQuery {
-	return (&EmployeeClient{config: e.config}).QueryExchanges(e)
+	return NewEmployeeClient(e.config).QueryExchanges(e)
 }
 
 // QueryCommissions queries the "commissions" edge of the Employee entity.
 func (e *Employee) QueryCommissions() *CommissionQuery {
-	return (&EmployeeClient{config: e.config}).QueryCommissions(e)
+	return NewEmployeeClient(e.config).QueryCommissions(e)
 }
 
 // QueryAssistances queries the "assistances" edge of the Employee entity.
 func (e *Employee) QueryAssistances() *AssistanceQuery {
-	return (&EmployeeClient{config: e.config}).QueryAssistances(e)
+	return NewEmployeeClient(e.config).QueryAssistances(e)
 }
 
 // Update returns a builder for updating this Employee.
 // Note that you need to call Employee.Unwrap() before calling this method if this Employee
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (e *Employee) Update() *EmployeeUpdateOne {
-	return (&EmployeeClient{config: e.config}).UpdateOne(e)
+	return NewEmployeeClient(e.config).UpdateOne(e)
 }
 
 // Unwrap unwraps the Employee entity that was returned from a transaction after it was closed,

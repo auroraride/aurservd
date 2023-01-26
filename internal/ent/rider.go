@@ -394,64 +394,64 @@ func (r *Rider) assignValues(columns []string, values []any) error {
 
 // QueryStation queries the "station" edge of the Rider entity.
 func (r *Rider) QueryStation() *EnterpriseStationQuery {
-	return (&RiderClient{config: r.config}).QueryStation(r)
+	return NewRiderClient(r.config).QueryStation(r)
 }
 
 // QueryPerson queries the "person" edge of the Rider entity.
 func (r *Rider) QueryPerson() *PersonQuery {
-	return (&RiderClient{config: r.config}).QueryPerson(r)
+	return NewRiderClient(r.config).QueryPerson(r)
 }
 
 // QueryEnterprise queries the "enterprise" edge of the Rider entity.
 func (r *Rider) QueryEnterprise() *EnterpriseQuery {
-	return (&RiderClient{config: r.config}).QueryEnterprise(r)
+	return NewRiderClient(r.config).QueryEnterprise(r)
 }
 
 // QueryContracts queries the "contracts" edge of the Rider entity.
 func (r *Rider) QueryContracts() *ContractQuery {
-	return (&RiderClient{config: r.config}).QueryContracts(r)
+	return NewRiderClient(r.config).QueryContracts(r)
 }
 
 // QueryFaults queries the "faults" edge of the Rider entity.
 func (r *Rider) QueryFaults() *CabinetFaultQuery {
-	return (&RiderClient{config: r.config}).QueryFaults(r)
+	return NewRiderClient(r.config).QueryFaults(r)
 }
 
 // QueryOrders queries the "orders" edge of the Rider entity.
 func (r *Rider) QueryOrders() *OrderQuery {
-	return (&RiderClient{config: r.config}).QueryOrders(r)
+	return NewRiderClient(r.config).QueryOrders(r)
 }
 
 // QueryExchanges queries the "exchanges" edge of the Rider entity.
 func (r *Rider) QueryExchanges() *ExchangeQuery {
-	return (&RiderClient{config: r.config}).QueryExchanges(r)
+	return NewRiderClient(r.config).QueryExchanges(r)
 }
 
 // QuerySubscribes queries the "subscribes" edge of the Rider entity.
 func (r *Rider) QuerySubscribes() *SubscribeQuery {
-	return (&RiderClient{config: r.config}).QuerySubscribes(r)
+	return NewRiderClient(r.config).QuerySubscribes(r)
 }
 
 // QueryStocks queries the "stocks" edge of the Rider entity.
 func (r *Rider) QueryStocks() *StockQuery {
-	return (&RiderClient{config: r.config}).QueryStocks(r)
+	return NewRiderClient(r.config).QueryStocks(r)
 }
 
 // QueryFollowups queries the "followups" edge of the Rider entity.
 func (r *Rider) QueryFollowups() *RiderFollowUpQuery {
-	return (&RiderClient{config: r.config}).QueryFollowups(r)
+	return NewRiderClient(r.config).QueryFollowups(r)
 }
 
 // QueryBattery queries the "battery" edge of the Rider entity.
 func (r *Rider) QueryBattery() *BatteryQuery {
-	return (&RiderClient{config: r.config}).QueryBattery(r)
+	return NewRiderClient(r.config).QueryBattery(r)
 }
 
 // Update returns a builder for updating this Rider.
 // Note that you need to call Rider.Unwrap() before calling this method if this Rider
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (r *Rider) Update() *RiderUpdateOne {
-	return (&RiderClient{config: r.config}).UpdateOne(r)
+	return NewRiderClient(r.config).UpdateOne(r)
 }
 
 // Unwrap unwraps the Rider entity that was returned from a transaction after it was closed,

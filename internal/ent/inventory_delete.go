@@ -69,6 +69,12 @@ type InventoryDeleteOne struct {
 	id *InventoryDelete
 }
 
+// Where appends a list predicates to the InventoryDelete builder.
+func (ido *InventoryDeleteOne) Where(ps ...predicate.Inventory) *InventoryDeleteOne {
+	ido.id.mutation.Where(ps...)
+	return ido
+}
+
 // Exec executes the deletion query.
 func (ido *InventoryDeleteOne) Exec(ctx context.Context) error {
 	n, err := ido.id.Exec(ctx)
@@ -84,5 +90,7 @@ func (ido *InventoryDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (ido *InventoryDeleteOne) ExecX(ctx context.Context) {
-	ido.id.ExecX(ctx)
+	if err := ido.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

@@ -158,14 +158,14 @@ func (ep *EnterprisePrepayment) assignValues(columns []string, values []any) err
 
 // QueryEnterprise queries the "enterprise" edge of the EnterprisePrepayment entity.
 func (ep *EnterprisePrepayment) QueryEnterprise() *EnterpriseQuery {
-	return (&EnterprisePrepaymentClient{config: ep.config}).QueryEnterprise(ep)
+	return NewEnterprisePrepaymentClient(ep.config).QueryEnterprise(ep)
 }
 
 // Update returns a builder for updating this EnterprisePrepayment.
 // Note that you need to call EnterprisePrepayment.Unwrap() before calling this method if this EnterprisePrepayment
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (ep *EnterprisePrepayment) Update() *EnterprisePrepaymentUpdateOne {
-	return (&EnterprisePrepaymentClient{config: ep.config}).UpdateOne(ep)
+	return NewEnterprisePrepaymentClient(ep.config).UpdateOne(ep)
 }
 
 // Unwrap unwraps the EnterprisePrepayment entity that was returned from a transaction after it was closed,

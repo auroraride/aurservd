@@ -69,6 +69,12 @@ type EmployeeDeleteOne struct {
 	ed *EmployeeDelete
 }
 
+// Where appends a list predicates to the EmployeeDelete builder.
+func (edo *EmployeeDeleteOne) Where(ps ...predicate.Employee) *EmployeeDeleteOne {
+	edo.ed.mutation.Where(ps...)
+	return edo
+}
+
 // Exec executes the deletion query.
 func (edo *EmployeeDeleteOne) Exec(ctx context.Context) error {
 	n, err := edo.ed.Exec(ctx)
@@ -84,5 +90,7 @@ func (edo *EmployeeDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (edo *EmployeeDeleteOne) ExecX(ctx context.Context) {
-	edo.ed.ExecX(ctx)
+	if err := edo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

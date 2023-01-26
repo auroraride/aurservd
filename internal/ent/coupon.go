@@ -329,34 +329,34 @@ func (c *Coupon) assignValues(columns []string, values []any) error {
 
 // QueryRider queries the "rider" edge of the Coupon entity.
 func (c *Coupon) QueryRider() *RiderQuery {
-	return (&CouponClient{config: c.config}).QueryRider(c)
+	return NewCouponClient(c.config).QueryRider(c)
 }
 
 // QueryAssembly queries the "assembly" edge of the Coupon entity.
 func (c *Coupon) QueryAssembly() *CouponAssemblyQuery {
-	return (&CouponClient{config: c.config}).QueryAssembly(c)
+	return NewCouponClient(c.config).QueryAssembly(c)
 }
 
 // QueryPlan queries the "plan" edge of the Coupon entity.
 func (c *Coupon) QueryPlan() *PlanQuery {
-	return (&CouponClient{config: c.config}).QueryPlan(c)
+	return NewCouponClient(c.config).QueryPlan(c)
 }
 
 // QueryTemplate queries the "template" edge of the Coupon entity.
 func (c *Coupon) QueryTemplate() *CouponTemplateQuery {
-	return (&CouponClient{config: c.config}).QueryTemplate(c)
+	return NewCouponClient(c.config).QueryTemplate(c)
 }
 
 // QueryOrder queries the "order" edge of the Coupon entity.
 func (c *Coupon) QueryOrder() *OrderQuery {
-	return (&CouponClient{config: c.config}).QueryOrder(c)
+	return NewCouponClient(c.config).QueryOrder(c)
 }
 
 // Update returns a builder for updating this Coupon.
 // Note that you need to call Coupon.Unwrap() before calling this method if this Coupon
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (c *Coupon) Update() *CouponUpdateOne {
-	return (&CouponClient{config: c.config}).UpdateOne(c)
+	return NewCouponClient(c.config).UpdateOne(c)
 }
 
 // Unwrap unwraps the Coupon entity that was returned from a transaction after it was closed,

@@ -215,24 +215,24 @@ func (c *City) assignValues(columns []string, values []any) error {
 
 // QueryParent queries the "parent" edge of the City entity.
 func (c *City) QueryParent() *CityQuery {
-	return (&CityClient{config: c.config}).QueryParent(c)
+	return NewCityClient(c.config).QueryParent(c)
 }
 
 // QueryChildren queries the "children" edge of the City entity.
 func (c *City) QueryChildren() *CityQuery {
-	return (&CityClient{config: c.config}).QueryChildren(c)
+	return NewCityClient(c.config).QueryChildren(c)
 }
 
 // QueryPlans queries the "plans" edge of the City entity.
 func (c *City) QueryPlans() *PlanQuery {
-	return (&CityClient{config: c.config}).QueryPlans(c)
+	return NewCityClient(c.config).QueryPlans(c)
 }
 
 // Update returns a builder for updating this City.
 // Note that you need to call City.Unwrap() before calling this method if this City
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (c *City) Update() *CityUpdateOne {
-	return (&CityClient{config: c.config}).UpdateOne(c)
+	return NewCityClient(c.config).UpdateOne(c)
 }
 
 // Unwrap unwraps the City entity that was returned from a transaction after it was closed,

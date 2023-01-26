@@ -477,39 +477,39 @@ func (a *Assistance) assignValues(columns []string, values []any) error {
 
 // QueryStore queries the "store" edge of the Assistance entity.
 func (a *Assistance) QueryStore() *StoreQuery {
-	return (&AssistanceClient{config: a.config}).QueryStore(a)
+	return NewAssistanceClient(a.config).QueryStore(a)
 }
 
 // QueryRider queries the "rider" edge of the Assistance entity.
 func (a *Assistance) QueryRider() *RiderQuery {
-	return (&AssistanceClient{config: a.config}).QueryRider(a)
+	return NewAssistanceClient(a.config).QueryRider(a)
 }
 
 // QuerySubscribe queries the "subscribe" edge of the Assistance entity.
 func (a *Assistance) QuerySubscribe() *SubscribeQuery {
-	return (&AssistanceClient{config: a.config}).QuerySubscribe(a)
+	return NewAssistanceClient(a.config).QuerySubscribe(a)
 }
 
 // QueryCity queries the "city" edge of the Assistance entity.
 func (a *Assistance) QueryCity() *CityQuery {
-	return (&AssistanceClient{config: a.config}).QueryCity(a)
+	return NewAssistanceClient(a.config).QueryCity(a)
 }
 
 // QueryOrder queries the "order" edge of the Assistance entity.
 func (a *Assistance) QueryOrder() *OrderQuery {
-	return (&AssistanceClient{config: a.config}).QueryOrder(a)
+	return NewAssistanceClient(a.config).QueryOrder(a)
 }
 
 // QueryEmployee queries the "employee" edge of the Assistance entity.
 func (a *Assistance) QueryEmployee() *EmployeeQuery {
-	return (&AssistanceClient{config: a.config}).QueryEmployee(a)
+	return NewAssistanceClient(a.config).QueryEmployee(a)
 }
 
 // Update returns a builder for updating this Assistance.
 // Note that you need to call Assistance.Unwrap() before calling this method if this Assistance
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (a *Assistance) Update() *AssistanceUpdateOne {
-	return (&AssistanceClient{config: a.config}).UpdateOne(a)
+	return NewAssistanceClient(a.config).UpdateOne(a)
 }
 
 // Unwrap unwraps the Assistance entity that was returned from a transaction after it was closed,

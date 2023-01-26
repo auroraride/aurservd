@@ -319,39 +319,39 @@ func (eb *EnterpriseBill) assignValues(columns []string, values []any) error {
 
 // QueryRider queries the "rider" edge of the EnterpriseBill entity.
 func (eb *EnterpriseBill) QueryRider() *RiderQuery {
-	return (&EnterpriseBillClient{config: eb.config}).QueryRider(eb)
+	return NewEnterpriseBillClient(eb.config).QueryRider(eb)
 }
 
 // QueryCity queries the "city" edge of the EnterpriseBill entity.
 func (eb *EnterpriseBill) QueryCity() *CityQuery {
-	return (&EnterpriseBillClient{config: eb.config}).QueryCity(eb)
+	return NewEnterpriseBillClient(eb.config).QueryCity(eb)
 }
 
 // QueryStation queries the "station" edge of the EnterpriseBill entity.
 func (eb *EnterpriseBill) QueryStation() *EnterpriseStationQuery {
-	return (&EnterpriseBillClient{config: eb.config}).QueryStation(eb)
+	return NewEnterpriseBillClient(eb.config).QueryStation(eb)
 }
 
 // QueryEnterprise queries the "enterprise" edge of the EnterpriseBill entity.
 func (eb *EnterpriseBill) QueryEnterprise() *EnterpriseQuery {
-	return (&EnterpriseBillClient{config: eb.config}).QueryEnterprise(eb)
+	return NewEnterpriseBillClient(eb.config).QueryEnterprise(eb)
 }
 
 // QueryStatement queries the "statement" edge of the EnterpriseBill entity.
 func (eb *EnterpriseBill) QueryStatement() *EnterpriseStatementQuery {
-	return (&EnterpriseBillClient{config: eb.config}).QueryStatement(eb)
+	return NewEnterpriseBillClient(eb.config).QueryStatement(eb)
 }
 
 // QuerySubscribe queries the "subscribe" edge of the EnterpriseBill entity.
 func (eb *EnterpriseBill) QuerySubscribe() *SubscribeQuery {
-	return (&EnterpriseBillClient{config: eb.config}).QuerySubscribe(eb)
+	return NewEnterpriseBillClient(eb.config).QuerySubscribe(eb)
 }
 
 // Update returns a builder for updating this EnterpriseBill.
 // Note that you need to call EnterpriseBill.Unwrap() before calling this method if this EnterpriseBill
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (eb *EnterpriseBill) Update() *EnterpriseBillUpdateOne {
-	return (&EnterpriseBillClient{config: eb.config}).UpdateOne(eb)
+	return NewEnterpriseBillClient(eb.config).UpdateOne(eb)
 }
 
 // Unwrap unwraps the EnterpriseBill entity that was returned from a transaction after it was closed,

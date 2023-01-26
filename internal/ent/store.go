@@ -298,39 +298,39 @@ func (s *Store) assignValues(columns []string, values []any) error {
 
 // QueryCity queries the "city" edge of the Store entity.
 func (s *Store) QueryCity() *CityQuery {
-	return (&StoreClient{config: s.config}).QueryCity(s)
+	return NewStoreClient(s.config).QueryCity(s)
 }
 
 // QueryBranch queries the "branch" edge of the Store entity.
 func (s *Store) QueryBranch() *BranchQuery {
-	return (&StoreClient{config: s.config}).QueryBranch(s)
+	return NewStoreClient(s.config).QueryBranch(s)
 }
 
 // QueryEmployee queries the "employee" edge of the Store entity.
 func (s *Store) QueryEmployee() *EmployeeQuery {
-	return (&StoreClient{config: s.config}).QueryEmployee(s)
+	return NewStoreClient(s.config).QueryEmployee(s)
 }
 
 // QueryStocks queries the "stocks" edge of the Store entity.
 func (s *Store) QueryStocks() *StockQuery {
-	return (&StoreClient{config: s.config}).QueryStocks(s)
+	return NewStoreClient(s.config).QueryStocks(s)
 }
 
 // QueryAttendances queries the "attendances" edge of the Store entity.
 func (s *Store) QueryAttendances() *AttendanceQuery {
-	return (&StoreClient{config: s.config}).QueryAttendances(s)
+	return NewStoreClient(s.config).QueryAttendances(s)
 }
 
 // QueryExceptions queries the "exceptions" edge of the Store entity.
 func (s *Store) QueryExceptions() *ExceptionQuery {
-	return (&StoreClient{config: s.config}).QueryExceptions(s)
+	return NewStoreClient(s.config).QueryExceptions(s)
 }
 
 // Update returns a builder for updating this Store.
 // Note that you need to call Store.Unwrap() before calling this method if this Store
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (s *Store) Update() *StoreUpdateOne {
-	return (&StoreClient{config: s.config}).UpdateOne(s)
+	return NewStoreClient(s.config).UpdateOne(s)
 }
 
 // Unwrap unwraps the Store entity that was returned from a transaction after it was closed,

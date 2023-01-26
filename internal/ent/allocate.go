@@ -338,49 +338,49 @@ func (a *Allocate) assignValues(columns []string, values []any) error {
 
 // QueryRider queries the "rider" edge of the Allocate entity.
 func (a *Allocate) QueryRider() *RiderQuery {
-	return (&AllocateClient{config: a.config}).QueryRider(a)
+	return NewAllocateClient(a.config).QueryRider(a)
 }
 
 // QuerySubscribe queries the "subscribe" edge of the Allocate entity.
 func (a *Allocate) QuerySubscribe() *SubscribeQuery {
-	return (&AllocateClient{config: a.config}).QuerySubscribe(a)
+	return NewAllocateClient(a.config).QuerySubscribe(a)
 }
 
 // QueryEmployee queries the "employee" edge of the Allocate entity.
 func (a *Allocate) QueryEmployee() *EmployeeQuery {
-	return (&AllocateClient{config: a.config}).QueryEmployee(a)
+	return NewAllocateClient(a.config).QueryEmployee(a)
 }
 
 // QueryCabinet queries the "cabinet" edge of the Allocate entity.
 func (a *Allocate) QueryCabinet() *CabinetQuery {
-	return (&AllocateClient{config: a.config}).QueryCabinet(a)
+	return NewAllocateClient(a.config).QueryCabinet(a)
 }
 
 // QueryStore queries the "store" edge of the Allocate entity.
 func (a *Allocate) QueryStore() *StoreQuery {
-	return (&AllocateClient{config: a.config}).QueryStore(a)
+	return NewAllocateClient(a.config).QueryStore(a)
 }
 
 // QueryEbike queries the "ebike" edge of the Allocate entity.
 func (a *Allocate) QueryEbike() *EbikeQuery {
-	return (&AllocateClient{config: a.config}).QueryEbike(a)
+	return NewAllocateClient(a.config).QueryEbike(a)
 }
 
 // QueryBrand queries the "brand" edge of the Allocate entity.
 func (a *Allocate) QueryBrand() *EbikeBrandQuery {
-	return (&AllocateClient{config: a.config}).QueryBrand(a)
+	return NewAllocateClient(a.config).QueryBrand(a)
 }
 
 // QueryContract queries the "contract" edge of the Allocate entity.
 func (a *Allocate) QueryContract() *ContractQuery {
-	return (&AllocateClient{config: a.config}).QueryContract(a)
+	return NewAllocateClient(a.config).QueryContract(a)
 }
 
 // Update returns a builder for updating this Allocate.
 // Note that you need to call Allocate.Unwrap() before calling this method if this Allocate
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (a *Allocate) Update() *AllocateUpdateOne {
-	return (&AllocateClient{config: a.config}).UpdateOne(a)
+	return NewAllocateClient(a.config).UpdateOne(a)
 }
 
 // Unwrap unwraps the Allocate entity that was returned from a transaction after it was closed,

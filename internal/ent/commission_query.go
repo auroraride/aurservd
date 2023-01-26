@@ -23,11 +23,8 @@ import (
 // CommissionQuery is the builder for querying Commission entities.
 type CommissionQuery struct {
 	config
-	limit         *int
-	offset        *int
-	unique        *bool
+	ctx           *QueryContext
 	order         []OrderFunc
-	fields        []string
 	inters        []Interceptor
 	predicates    []predicate.Commission
 	withBusiness  *BusinessQuery
@@ -50,20 +47,20 @@ func (cq *CommissionQuery) Where(ps ...predicate.Commission) *CommissionQuery {
 
 // Limit the number of records to be returned by this query.
 func (cq *CommissionQuery) Limit(limit int) *CommissionQuery {
-	cq.limit = &limit
+	cq.ctx.Limit = &limit
 	return cq
 }
 
 // Offset to start from.
 func (cq *CommissionQuery) Offset(offset int) *CommissionQuery {
-	cq.offset = &offset
+	cq.ctx.Offset = &offset
 	return cq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (cq *CommissionQuery) Unique(unique bool) *CommissionQuery {
-	cq.unique = &unique
+	cq.ctx.Unique = &unique
 	return cq
 }
 
@@ -208,7 +205,7 @@ func (cq *CommissionQuery) QueryEmployee() *EmployeeQuery {
 // First returns the first Commission entity from the query.
 // Returns a *NotFoundError when no Commission was found.
 func (cq *CommissionQuery) First(ctx context.Context) (*Commission, error) {
-	nodes, err := cq.Limit(1).All(newQueryContext(ctx, TypeCommission, "First"))
+	nodes, err := cq.Limit(1).All(setContextOp(ctx, cq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -231,7 +228,7 @@ func (cq *CommissionQuery) FirstX(ctx context.Context) *Commission {
 // Returns a *NotFoundError when no Commission ID was found.
 func (cq *CommissionQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = cq.Limit(1).IDs(newQueryContext(ctx, TypeCommission, "FirstID")); err != nil {
+	if ids, err = cq.Limit(1).IDs(setContextOp(ctx, cq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -254,7 +251,7 @@ func (cq *CommissionQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Commission entity is found.
 // Returns a *NotFoundError when no Commission entities are found.
 func (cq *CommissionQuery) Only(ctx context.Context) (*Commission, error) {
-	nodes, err := cq.Limit(2).All(newQueryContext(ctx, TypeCommission, "Only"))
+	nodes, err := cq.Limit(2).All(setContextOp(ctx, cq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -282,7 +279,7 @@ func (cq *CommissionQuery) OnlyX(ctx context.Context) *Commission {
 // Returns a *NotFoundError when no entities are found.
 func (cq *CommissionQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = cq.Limit(2).IDs(newQueryContext(ctx, TypeCommission, "OnlyID")); err != nil {
+	if ids, err = cq.Limit(2).IDs(setContextOp(ctx, cq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -307,7 +304,7 @@ func (cq *CommissionQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Commissions.
 func (cq *CommissionQuery) All(ctx context.Context) ([]*Commission, error) {
-	ctx = newQueryContext(ctx, TypeCommission, "All")
+	ctx = setContextOp(ctx, cq.ctx, "All")
 	if err := cq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -327,7 +324,7 @@ func (cq *CommissionQuery) AllX(ctx context.Context) []*Commission {
 // IDs executes the query and returns a list of Commission IDs.
 func (cq *CommissionQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
-	ctx = newQueryContext(ctx, TypeCommission, "IDs")
+	ctx = setContextOp(ctx, cq.ctx, "IDs")
 	if err := cq.Select(commission.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -345,7 +342,7 @@ func (cq *CommissionQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (cq *CommissionQuery) Count(ctx context.Context) (int, error) {
-	ctx = newQueryContext(ctx, TypeCommission, "Count")
+	ctx = setContextOp(ctx, cq.ctx, "Count")
 	if err := cq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -363,7 +360,7 @@ func (cq *CommissionQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (cq *CommissionQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = newQueryContext(ctx, TypeCommission, "Exist")
+	ctx = setContextOp(ctx, cq.ctx, "Exist")
 	switch _, err := cq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -391,9 +388,9 @@ func (cq *CommissionQuery) Clone() *CommissionQuery {
 	}
 	return &CommissionQuery{
 		config:        cq.config,
-		limit:         cq.limit,
-		offset:        cq.offset,
+		ctx:           cq.ctx.Clone(),
 		order:         append([]OrderFunc{}, cq.order...),
+		inters:        append([]Interceptor{}, cq.inters...),
 		predicates:    append([]predicate.Commission{}, cq.predicates...),
 		withBusiness:  cq.withBusiness.Clone(),
 		withSubscribe: cq.withSubscribe.Clone(),
@@ -402,9 +399,8 @@ func (cq *CommissionQuery) Clone() *CommissionQuery {
 		withOrder:     cq.withOrder.Clone(),
 		withEmployee:  cq.withEmployee.Clone(),
 		// clone intermediate query.
-		sql:    cq.sql.Clone(),
-		path:   cq.path,
-		unique: cq.unique,
+		sql:  cq.sql.Clone(),
+		path: cq.path,
 	}
 }
 
@@ -489,9 +485,9 @@ func (cq *CommissionQuery) WithEmployee(opts ...func(*EmployeeQuery)) *Commissio
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (cq *CommissionQuery) GroupBy(field string, fields ...string) *CommissionGroupBy {
-	cq.fields = append([]string{field}, fields...)
+	cq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &CommissionGroupBy{build: cq}
-	grbuild.flds = &cq.fields
+	grbuild.flds = &cq.ctx.Fields
 	grbuild.label = commission.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -510,10 +506,10 @@ func (cq *CommissionQuery) GroupBy(field string, fields ...string) *CommissionGr
 //		Select(commission.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (cq *CommissionQuery) Select(fields ...string) *CommissionSelect {
-	cq.fields = append(cq.fields, fields...)
+	cq.ctx.Fields = append(cq.ctx.Fields, fields...)
 	sbuild := &CommissionSelect{CommissionQuery: cq}
 	sbuild.label = commission.Label
-	sbuild.flds, sbuild.scan = &cq.fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &cq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
@@ -533,7 +529,7 @@ func (cq *CommissionQuery) prepareQuery(ctx context.Context) error {
 			}
 		}
 	}
-	for _, f := range cq.fields {
+	for _, f := range cq.ctx.Fields {
 		if !commission.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -634,6 +630,9 @@ func (cq *CommissionQuery) loadBusiness(ctx context.Context, query *BusinessQuer
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(business.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -662,6 +661,9 @@ func (cq *CommissionQuery) loadSubscribe(ctx context.Context, query *SubscribeQu
 			ids = append(ids, fk)
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
 	}
 	query.Where(subscribe.IDIn(ids...))
 	neighbors, err := query.All(ctx)
@@ -692,6 +694,9 @@ func (cq *CommissionQuery) loadPlan(ctx context.Context, query *PlanQuery, nodes
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(plan.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -721,6 +726,9 @@ func (cq *CommissionQuery) loadRider(ctx context.Context, query *RiderQuery, nod
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(rider.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -746,6 +754,9 @@ func (cq *CommissionQuery) loadOrder(ctx context.Context, query *OrderQuery, nod
 			ids = append(ids, fk)
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
 	}
 	query.Where(order.IDIn(ids...))
 	neighbors, err := query.All(ctx)
@@ -776,6 +787,9 @@ func (cq *CommissionQuery) loadEmployee(ctx context.Context, query *EmployeeQuer
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(employee.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -798,9 +812,9 @@ func (cq *CommissionQuery) sqlCount(ctx context.Context) (int, error) {
 	if len(cq.modifiers) > 0 {
 		_spec.Modifiers = cq.modifiers
 	}
-	_spec.Node.Columns = cq.fields
-	if len(cq.fields) > 0 {
-		_spec.Unique = cq.unique != nil && *cq.unique
+	_spec.Node.Columns = cq.ctx.Fields
+	if len(cq.ctx.Fields) > 0 {
+		_spec.Unique = cq.ctx.Unique != nil && *cq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, cq.driver, _spec)
 }
@@ -818,10 +832,10 @@ func (cq *CommissionQuery) querySpec() *sqlgraph.QuerySpec {
 		From:   cq.sql,
 		Unique: true,
 	}
-	if unique := cq.unique; unique != nil {
+	if unique := cq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
 	}
-	if fields := cq.fields; len(fields) > 0 {
+	if fields := cq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, commission.FieldID)
 		for i := range fields {
@@ -837,10 +851,10 @@ func (cq *CommissionQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := cq.limit; limit != nil {
+	if limit := cq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := cq.offset; offset != nil {
+	if offset := cq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := cq.order; len(ps) > 0 {
@@ -856,7 +870,7 @@ func (cq *CommissionQuery) querySpec() *sqlgraph.QuerySpec {
 func (cq *CommissionQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(cq.driver.Dialect())
 	t1 := builder.Table(commission.Table)
-	columns := cq.fields
+	columns := cq.ctx.Fields
 	if len(columns) == 0 {
 		columns = commission.Columns
 	}
@@ -865,7 +879,7 @@ func (cq *CommissionQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = cq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if cq.unique != nil && *cq.unique {
+	if cq.ctx.Unique != nil && *cq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, m := range cq.modifiers {
@@ -877,12 +891,12 @@ func (cq *CommissionQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range cq.order {
 		p(selector)
 	}
-	if offset := cq.offset; offset != nil {
+	if offset := cq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := cq.limit; limit != nil {
+	if limit := cq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -939,7 +953,7 @@ func (cgb *CommissionGroupBy) Aggregate(fns ...AggregateFunc) *CommissionGroupBy
 
 // Scan applies the selector query and scans the result into the given value.
 func (cgb *CommissionGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeCommission, "GroupBy")
+	ctx = setContextOp(ctx, cgb.build.ctx, "GroupBy")
 	if err := cgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -987,7 +1001,7 @@ func (cs *CommissionSelect) Aggregate(fns ...AggregateFunc) *CommissionSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (cs *CommissionSelect) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeCommission, "Select")
+	ctx = setContextOp(ctx, cs.ctx, "Select")
 	if err := cs.prepareQuery(ctx); err != nil {
 		return err
 	}

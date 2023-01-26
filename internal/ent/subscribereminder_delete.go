@@ -69,6 +69,12 @@ type SubscribeReminderDeleteOne struct {
 	srd *SubscribeReminderDelete
 }
 
+// Where appends a list predicates to the SubscribeReminderDelete builder.
+func (srdo *SubscribeReminderDeleteOne) Where(ps ...predicate.SubscribeReminder) *SubscribeReminderDeleteOne {
+	srdo.srd.mutation.Where(ps...)
+	return srdo
+}
+
 // Exec executes the deletion query.
 func (srdo *SubscribeReminderDeleteOne) Exec(ctx context.Context) error {
 	n, err := srdo.srd.Exec(ctx)
@@ -84,5 +90,7 @@ func (srdo *SubscribeReminderDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (srdo *SubscribeReminderDeleteOne) ExecX(ctx context.Context) {
-	srdo.srd.ExecX(ctx)
+	if err := srdo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

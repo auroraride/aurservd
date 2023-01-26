@@ -69,6 +69,12 @@ type AgentDeleteOne struct {
 	ad *AgentDelete
 }
 
+// Where appends a list predicates to the AgentDelete builder.
+func (ado *AgentDeleteOne) Where(ps ...predicate.Agent) *AgentDeleteOne {
+	ado.ad.mutation.Where(ps...)
+	return ado
+}
+
 // Exec executes the deletion query.
 func (ado *AgentDeleteOne) Exec(ctx context.Context) error {
 	n, err := ado.ad.Exec(ctx)
@@ -84,5 +90,7 @@ func (ado *AgentDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (ado *AgentDeleteOne) ExecX(ctx context.Context) {
-	ado.ad.ExecX(ctx)
+	if err := ado.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

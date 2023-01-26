@@ -34,11 +34,8 @@ import (
 // SubscribeQuery is the builder for querying Subscribe entities.
 type SubscribeQuery struct {
 	config
-	limit            *int
-	offset           *int
-	unique           *bool
+	ctx              *QueryContext
 	order            []OrderFunc
-	fields           []string
 	inters           []Interceptor
 	predicates       []predicate.Subscribe
 	withPlan         *PlanQuery
@@ -72,20 +69,20 @@ func (sq *SubscribeQuery) Where(ps ...predicate.Subscribe) *SubscribeQuery {
 
 // Limit the number of records to be returned by this query.
 func (sq *SubscribeQuery) Limit(limit int) *SubscribeQuery {
-	sq.limit = &limit
+	sq.ctx.Limit = &limit
 	return sq
 }
 
 // Offset to start from.
 func (sq *SubscribeQuery) Offset(offset int) *SubscribeQuery {
-	sq.offset = &offset
+	sq.ctx.Offset = &offset
 	return sq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (sq *SubscribeQuery) Unique(unique bool) *SubscribeQuery {
-	sq.unique = &unique
+	sq.ctx.Unique = &unique
 	return sq
 }
 
@@ -472,7 +469,7 @@ func (sq *SubscribeQuery) QueryBattery() *BatteryQuery {
 // First returns the first Subscribe entity from the query.
 // Returns a *NotFoundError when no Subscribe was found.
 func (sq *SubscribeQuery) First(ctx context.Context) (*Subscribe, error) {
-	nodes, err := sq.Limit(1).All(newQueryContext(ctx, TypeSubscribe, "First"))
+	nodes, err := sq.Limit(1).All(setContextOp(ctx, sq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -495,7 +492,7 @@ func (sq *SubscribeQuery) FirstX(ctx context.Context) *Subscribe {
 // Returns a *NotFoundError when no Subscribe ID was found.
 func (sq *SubscribeQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = sq.Limit(1).IDs(newQueryContext(ctx, TypeSubscribe, "FirstID")); err != nil {
+	if ids, err = sq.Limit(1).IDs(setContextOp(ctx, sq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -518,7 +515,7 @@ func (sq *SubscribeQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Subscribe entity is found.
 // Returns a *NotFoundError when no Subscribe entities are found.
 func (sq *SubscribeQuery) Only(ctx context.Context) (*Subscribe, error) {
-	nodes, err := sq.Limit(2).All(newQueryContext(ctx, TypeSubscribe, "Only"))
+	nodes, err := sq.Limit(2).All(setContextOp(ctx, sq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -546,7 +543,7 @@ func (sq *SubscribeQuery) OnlyX(ctx context.Context) *Subscribe {
 // Returns a *NotFoundError when no entities are found.
 func (sq *SubscribeQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = sq.Limit(2).IDs(newQueryContext(ctx, TypeSubscribe, "OnlyID")); err != nil {
+	if ids, err = sq.Limit(2).IDs(setContextOp(ctx, sq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -571,7 +568,7 @@ func (sq *SubscribeQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Subscribes.
 func (sq *SubscribeQuery) All(ctx context.Context) ([]*Subscribe, error) {
-	ctx = newQueryContext(ctx, TypeSubscribe, "All")
+	ctx = setContextOp(ctx, sq.ctx, "All")
 	if err := sq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -591,7 +588,7 @@ func (sq *SubscribeQuery) AllX(ctx context.Context) []*Subscribe {
 // IDs executes the query and returns a list of Subscribe IDs.
 func (sq *SubscribeQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
-	ctx = newQueryContext(ctx, TypeSubscribe, "IDs")
+	ctx = setContextOp(ctx, sq.ctx, "IDs")
 	if err := sq.Select(subscribe.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -609,7 +606,7 @@ func (sq *SubscribeQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (sq *SubscribeQuery) Count(ctx context.Context) (int, error) {
-	ctx = newQueryContext(ctx, TypeSubscribe, "Count")
+	ctx = setContextOp(ctx, sq.ctx, "Count")
 	if err := sq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -627,7 +624,7 @@ func (sq *SubscribeQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (sq *SubscribeQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = newQueryContext(ctx, TypeSubscribe, "Exist")
+	ctx = setContextOp(ctx, sq.ctx, "Exist")
 	switch _, err := sq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -655,9 +652,9 @@ func (sq *SubscribeQuery) Clone() *SubscribeQuery {
 	}
 	return &SubscribeQuery{
 		config:           sq.config,
-		limit:            sq.limit,
-		offset:           sq.offset,
+		ctx:              sq.ctx.Clone(),
 		order:            append([]OrderFunc{}, sq.order...),
+		inters:           append([]Interceptor{}, sq.inters...),
 		predicates:       append([]predicate.Subscribe{}, sq.predicates...),
 		withPlan:         sq.withPlan.Clone(),
 		withEmployee:     sq.withEmployee.Clone(),
@@ -677,9 +674,8 @@ func (sq *SubscribeQuery) Clone() *SubscribeQuery {
 		withBills:        sq.withBills.Clone(),
 		withBattery:      sq.withBattery.Clone(),
 		// clone intermediate query.
-		sql:    sq.sql.Clone(),
-		path:   sq.path,
-		unique: sq.unique,
+		sql:  sq.sql.Clone(),
+		path: sq.path,
 	}
 }
 
@@ -885,9 +881,9 @@ func (sq *SubscribeQuery) WithBattery(opts ...func(*BatteryQuery)) *SubscribeQue
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (sq *SubscribeQuery) GroupBy(field string, fields ...string) *SubscribeGroupBy {
-	sq.fields = append([]string{field}, fields...)
+	sq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &SubscribeGroupBy{build: sq}
-	grbuild.flds = &sq.fields
+	grbuild.flds = &sq.ctx.Fields
 	grbuild.label = subscribe.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -906,10 +902,10 @@ func (sq *SubscribeQuery) GroupBy(field string, fields ...string) *SubscribeGrou
 //		Select(subscribe.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (sq *SubscribeQuery) Select(fields ...string) *SubscribeSelect {
-	sq.fields = append(sq.fields, fields...)
+	sq.ctx.Fields = append(sq.ctx.Fields, fields...)
 	sbuild := &SubscribeSelect{SubscribeQuery: sq}
 	sbuild.label = subscribe.Label
-	sbuild.flds, sbuild.scan = &sq.fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &sq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
@@ -929,7 +925,7 @@ func (sq *SubscribeQuery) prepareQuery(ctx context.Context) error {
 			}
 		}
 	}
-	for _, f := range sq.fields {
+	for _, f := range sq.ctx.Fields {
 		if !subscribe.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -1112,6 +1108,9 @@ func (sq *SubscribeQuery) loadPlan(ctx context.Context, query *PlanQuery, nodes 
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(plan.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1141,6 +1140,9 @@ func (sq *SubscribeQuery) loadEmployee(ctx context.Context, query *EmployeeQuery
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(employee.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1166,6 +1168,9 @@ func (sq *SubscribeQuery) loadCity(ctx context.Context, query *CityQuery, nodes 
 			ids = append(ids, fk)
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
 	}
 	query.Where(city.IDIn(ids...))
 	neighbors, err := query.All(ctx)
@@ -1196,6 +1201,9 @@ func (sq *SubscribeQuery) loadStation(ctx context.Context, query *EnterpriseStat
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(enterprisestation.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1224,6 +1232,9 @@ func (sq *SubscribeQuery) loadStore(ctx context.Context, query *StoreQuery, node
 			ids = append(ids, fk)
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
 	}
 	query.Where(store.IDIn(ids...))
 	neighbors, err := query.All(ctx)
@@ -1254,6 +1265,9 @@ func (sq *SubscribeQuery) loadCabinet(ctx context.Context, query *CabinetQuery, 
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(cabinet.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1282,6 +1296,9 @@ func (sq *SubscribeQuery) loadBrand(ctx context.Context, query *EbikeBrandQuery,
 			ids = append(ids, fk)
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
 	}
 	query.Where(ebikebrand.IDIn(ids...))
 	neighbors, err := query.All(ctx)
@@ -1312,6 +1329,9 @@ func (sq *SubscribeQuery) loadEbike(ctx context.Context, query *EbikeQuery, node
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(ebike.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1337,6 +1357,9 @@ func (sq *SubscribeQuery) loadRider(ctx context.Context, query *RiderQuery, node
 			ids = append(ids, fk)
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
 	}
 	query.Where(rider.IDIn(ids...))
 	neighbors, err := query.All(ctx)
@@ -1366,6 +1389,9 @@ func (sq *SubscribeQuery) loadEnterprise(ctx context.Context, query *EnterpriseQ
 			ids = append(ids, fk)
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
 	}
 	query.Where(enterprise.IDIn(ids...))
 	neighbors, err := query.All(ctx)
@@ -1501,6 +1527,9 @@ func (sq *SubscribeQuery) loadInitialOrder(ctx context.Context, query *OrderQuer
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(order.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1577,9 +1606,9 @@ func (sq *SubscribeQuery) sqlCount(ctx context.Context) (int, error) {
 	if len(sq.modifiers) > 0 {
 		_spec.Modifiers = sq.modifiers
 	}
-	_spec.Node.Columns = sq.fields
-	if len(sq.fields) > 0 {
-		_spec.Unique = sq.unique != nil && *sq.unique
+	_spec.Node.Columns = sq.ctx.Fields
+	if len(sq.ctx.Fields) > 0 {
+		_spec.Unique = sq.ctx.Unique != nil && *sq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, sq.driver, _spec)
 }
@@ -1597,10 +1626,10 @@ func (sq *SubscribeQuery) querySpec() *sqlgraph.QuerySpec {
 		From:   sq.sql,
 		Unique: true,
 	}
-	if unique := sq.unique; unique != nil {
+	if unique := sq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
 	}
-	if fields := sq.fields; len(fields) > 0 {
+	if fields := sq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, subscribe.FieldID)
 		for i := range fields {
@@ -1616,10 +1645,10 @@ func (sq *SubscribeQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := sq.limit; limit != nil {
+	if limit := sq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := sq.offset; offset != nil {
+	if offset := sq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := sq.order; len(ps) > 0 {
@@ -1635,7 +1664,7 @@ func (sq *SubscribeQuery) querySpec() *sqlgraph.QuerySpec {
 func (sq *SubscribeQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(sq.driver.Dialect())
 	t1 := builder.Table(subscribe.Table)
-	columns := sq.fields
+	columns := sq.ctx.Fields
 	if len(columns) == 0 {
 		columns = subscribe.Columns
 	}
@@ -1644,7 +1673,7 @@ func (sq *SubscribeQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = sq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if sq.unique != nil && *sq.unique {
+	if sq.ctx.Unique != nil && *sq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, m := range sq.modifiers {
@@ -1656,12 +1685,12 @@ func (sq *SubscribeQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range sq.order {
 		p(selector)
 	}
-	if offset := sq.offset; offset != nil {
+	if offset := sq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := sq.limit; limit != nil {
+	if limit := sq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -1751,7 +1780,7 @@ func (sgb *SubscribeGroupBy) Aggregate(fns ...AggregateFunc) *SubscribeGroupBy {
 
 // Scan applies the selector query and scans the result into the given value.
 func (sgb *SubscribeGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeSubscribe, "GroupBy")
+	ctx = setContextOp(ctx, sgb.build.ctx, "GroupBy")
 	if err := sgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -1799,7 +1828,7 @@ func (ss *SubscribeSelect) Aggregate(fns ...AggregateFunc) *SubscribeSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (ss *SubscribeSelect) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeSubscribe, "Select")
+	ctx = setContextOp(ctx, ss.ctx, "Select")
 	if err := ss.prepareQuery(ctx); err != nil {
 		return err
 	}

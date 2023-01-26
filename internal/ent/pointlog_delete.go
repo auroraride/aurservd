@@ -69,6 +69,12 @@ type PointLogDeleteOne struct {
 	pld *PointLogDelete
 }
 
+// Where appends a list predicates to the PointLogDelete builder.
+func (pldo *PointLogDeleteOne) Where(ps ...predicate.PointLog) *PointLogDeleteOne {
+	pldo.pld.mutation.Where(ps...)
+	return pldo
+}
+
 // Exec executes the deletion query.
 func (pldo *PointLogDeleteOne) Exec(ctx context.Context) error {
 	n, err := pldo.pld.Exec(ctx)
@@ -84,5 +90,7 @@ func (pldo *PointLogDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (pldo *PointLogDeleteOne) ExecX(ctx context.Context) {
-	pldo.pld.ExecX(ctx)
+	if err := pldo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

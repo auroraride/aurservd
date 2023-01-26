@@ -191,14 +191,14 @@ func (or *OrderRefund) assignValues(columns []string, values []any) error {
 
 // QueryOrder queries the "order" edge of the OrderRefund entity.
 func (or *OrderRefund) QueryOrder() *OrderQuery {
-	return (&OrderRefundClient{config: or.config}).QueryOrder(or)
+	return NewOrderRefundClient(or.config).QueryOrder(or)
 }
 
 // Update returns a builder for updating this OrderRefund.
 // Note that you need to call OrderRefund.Unwrap() before calling this method if this OrderRefund
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (or *OrderRefund) Update() *OrderRefundUpdateOne {
-	return (&OrderRefundClient{config: or.config}).UpdateOne(or)
+	return NewOrderRefundClient(or.config).UpdateOne(or)
 }
 
 // Unwrap unwraps the OrderRefund entity that was returned from a transaction after it was closed,

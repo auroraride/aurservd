@@ -21,11 +21,8 @@ import (
 // CabinetFaultQuery is the builder for querying CabinetFault entities.
 type CabinetFaultQuery struct {
 	config
-	limit       *int
-	offset      *int
-	unique      *bool
+	ctx         *QueryContext
 	order       []OrderFunc
-	fields      []string
 	inters      []Interceptor
 	predicates  []predicate.CabinetFault
 	withCity    *CityQuery
@@ -46,20 +43,20 @@ func (cfq *CabinetFaultQuery) Where(ps ...predicate.CabinetFault) *CabinetFaultQ
 
 // Limit the number of records to be returned by this query.
 func (cfq *CabinetFaultQuery) Limit(limit int) *CabinetFaultQuery {
-	cfq.limit = &limit
+	cfq.ctx.Limit = &limit
 	return cfq
 }
 
 // Offset to start from.
 func (cfq *CabinetFaultQuery) Offset(offset int) *CabinetFaultQuery {
-	cfq.offset = &offset
+	cfq.ctx.Offset = &offset
 	return cfq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (cfq *CabinetFaultQuery) Unique(unique bool) *CabinetFaultQuery {
-	cfq.unique = &unique
+	cfq.ctx.Unique = &unique
 	return cfq
 }
 
@@ -160,7 +157,7 @@ func (cfq *CabinetFaultQuery) QueryRider() *RiderQuery {
 // First returns the first CabinetFault entity from the query.
 // Returns a *NotFoundError when no CabinetFault was found.
 func (cfq *CabinetFaultQuery) First(ctx context.Context) (*CabinetFault, error) {
-	nodes, err := cfq.Limit(1).All(newQueryContext(ctx, TypeCabinetFault, "First"))
+	nodes, err := cfq.Limit(1).All(setContextOp(ctx, cfq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -183,7 +180,7 @@ func (cfq *CabinetFaultQuery) FirstX(ctx context.Context) *CabinetFault {
 // Returns a *NotFoundError when no CabinetFault ID was found.
 func (cfq *CabinetFaultQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = cfq.Limit(1).IDs(newQueryContext(ctx, TypeCabinetFault, "FirstID")); err != nil {
+	if ids, err = cfq.Limit(1).IDs(setContextOp(ctx, cfq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -206,7 +203,7 @@ func (cfq *CabinetFaultQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one CabinetFault entity is found.
 // Returns a *NotFoundError when no CabinetFault entities are found.
 func (cfq *CabinetFaultQuery) Only(ctx context.Context) (*CabinetFault, error) {
-	nodes, err := cfq.Limit(2).All(newQueryContext(ctx, TypeCabinetFault, "Only"))
+	nodes, err := cfq.Limit(2).All(setContextOp(ctx, cfq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -234,7 +231,7 @@ func (cfq *CabinetFaultQuery) OnlyX(ctx context.Context) *CabinetFault {
 // Returns a *NotFoundError when no entities are found.
 func (cfq *CabinetFaultQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = cfq.Limit(2).IDs(newQueryContext(ctx, TypeCabinetFault, "OnlyID")); err != nil {
+	if ids, err = cfq.Limit(2).IDs(setContextOp(ctx, cfq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -259,7 +256,7 @@ func (cfq *CabinetFaultQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of CabinetFaults.
 func (cfq *CabinetFaultQuery) All(ctx context.Context) ([]*CabinetFault, error) {
-	ctx = newQueryContext(ctx, TypeCabinetFault, "All")
+	ctx = setContextOp(ctx, cfq.ctx, "All")
 	if err := cfq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -279,7 +276,7 @@ func (cfq *CabinetFaultQuery) AllX(ctx context.Context) []*CabinetFault {
 // IDs executes the query and returns a list of CabinetFault IDs.
 func (cfq *CabinetFaultQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
-	ctx = newQueryContext(ctx, TypeCabinetFault, "IDs")
+	ctx = setContextOp(ctx, cfq.ctx, "IDs")
 	if err := cfq.Select(cabinetfault.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -297,7 +294,7 @@ func (cfq *CabinetFaultQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (cfq *CabinetFaultQuery) Count(ctx context.Context) (int, error) {
-	ctx = newQueryContext(ctx, TypeCabinetFault, "Count")
+	ctx = setContextOp(ctx, cfq.ctx, "Count")
 	if err := cfq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -315,7 +312,7 @@ func (cfq *CabinetFaultQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (cfq *CabinetFaultQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = newQueryContext(ctx, TypeCabinetFault, "Exist")
+	ctx = setContextOp(ctx, cfq.ctx, "Exist")
 	switch _, err := cfq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -343,18 +340,17 @@ func (cfq *CabinetFaultQuery) Clone() *CabinetFaultQuery {
 	}
 	return &CabinetFaultQuery{
 		config:      cfq.config,
-		limit:       cfq.limit,
-		offset:      cfq.offset,
+		ctx:         cfq.ctx.Clone(),
 		order:       append([]OrderFunc{}, cfq.order...),
+		inters:      append([]Interceptor{}, cfq.inters...),
 		predicates:  append([]predicate.CabinetFault{}, cfq.predicates...),
 		withCity:    cfq.withCity.Clone(),
 		withBranch:  cfq.withBranch.Clone(),
 		withCabinet: cfq.withCabinet.Clone(),
 		withRider:   cfq.withRider.Clone(),
 		// clone intermediate query.
-		sql:    cfq.sql.Clone(),
-		path:   cfq.path,
-		unique: cfq.unique,
+		sql:  cfq.sql.Clone(),
+		path: cfq.path,
 	}
 }
 
@@ -417,9 +413,9 @@ func (cfq *CabinetFaultQuery) WithRider(opts ...func(*RiderQuery)) *CabinetFault
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (cfq *CabinetFaultQuery) GroupBy(field string, fields ...string) *CabinetFaultGroupBy {
-	cfq.fields = append([]string{field}, fields...)
+	cfq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &CabinetFaultGroupBy{build: cfq}
-	grbuild.flds = &cfq.fields
+	grbuild.flds = &cfq.ctx.Fields
 	grbuild.label = cabinetfault.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -438,10 +434,10 @@ func (cfq *CabinetFaultQuery) GroupBy(field string, fields ...string) *CabinetFa
 //		Select(cabinetfault.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (cfq *CabinetFaultQuery) Select(fields ...string) *CabinetFaultSelect {
-	cfq.fields = append(cfq.fields, fields...)
+	cfq.ctx.Fields = append(cfq.ctx.Fields, fields...)
 	sbuild := &CabinetFaultSelect{CabinetFaultQuery: cfq}
 	sbuild.label = cabinetfault.Label
-	sbuild.flds, sbuild.scan = &cfq.fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &cfq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
@@ -461,7 +457,7 @@ func (cfq *CabinetFaultQuery) prepareQuery(ctx context.Context) error {
 			}
 		}
 	}
-	for _, f := range cfq.fields {
+	for _, f := range cfq.ctx.Fields {
 		if !cabinetfault.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -545,6 +541,9 @@ func (cfq *CabinetFaultQuery) loadCity(ctx context.Context, query *CityQuery, no
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(city.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -570,6 +569,9 @@ func (cfq *CabinetFaultQuery) loadBranch(ctx context.Context, query *BranchQuery
 			ids = append(ids, fk)
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
 	}
 	query.Where(branch.IDIn(ids...))
 	neighbors, err := query.All(ctx)
@@ -597,6 +599,9 @@ func (cfq *CabinetFaultQuery) loadCabinet(ctx context.Context, query *CabinetQue
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(cabinet.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -623,6 +628,9 @@ func (cfq *CabinetFaultQuery) loadRider(ctx context.Context, query *RiderQuery, 
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(rider.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -645,9 +653,9 @@ func (cfq *CabinetFaultQuery) sqlCount(ctx context.Context) (int, error) {
 	if len(cfq.modifiers) > 0 {
 		_spec.Modifiers = cfq.modifiers
 	}
-	_spec.Node.Columns = cfq.fields
-	if len(cfq.fields) > 0 {
-		_spec.Unique = cfq.unique != nil && *cfq.unique
+	_spec.Node.Columns = cfq.ctx.Fields
+	if len(cfq.ctx.Fields) > 0 {
+		_spec.Unique = cfq.ctx.Unique != nil && *cfq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, cfq.driver, _spec)
 }
@@ -665,10 +673,10 @@ func (cfq *CabinetFaultQuery) querySpec() *sqlgraph.QuerySpec {
 		From:   cfq.sql,
 		Unique: true,
 	}
-	if unique := cfq.unique; unique != nil {
+	if unique := cfq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
 	}
-	if fields := cfq.fields; len(fields) > 0 {
+	if fields := cfq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, cabinetfault.FieldID)
 		for i := range fields {
@@ -684,10 +692,10 @@ func (cfq *CabinetFaultQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := cfq.limit; limit != nil {
+	if limit := cfq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := cfq.offset; offset != nil {
+	if offset := cfq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := cfq.order; len(ps) > 0 {
@@ -703,7 +711,7 @@ func (cfq *CabinetFaultQuery) querySpec() *sqlgraph.QuerySpec {
 func (cfq *CabinetFaultQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(cfq.driver.Dialect())
 	t1 := builder.Table(cabinetfault.Table)
-	columns := cfq.fields
+	columns := cfq.ctx.Fields
 	if len(columns) == 0 {
 		columns = cabinetfault.Columns
 	}
@@ -712,7 +720,7 @@ func (cfq *CabinetFaultQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = cfq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if cfq.unique != nil && *cfq.unique {
+	if cfq.ctx.Unique != nil && *cfq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, m := range cfq.modifiers {
@@ -724,12 +732,12 @@ func (cfq *CabinetFaultQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range cfq.order {
 		p(selector)
 	}
-	if offset := cfq.offset; offset != nil {
+	if offset := cfq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := cfq.limit; limit != nil {
+	if limit := cfq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -780,7 +788,7 @@ func (cfgb *CabinetFaultGroupBy) Aggregate(fns ...AggregateFunc) *CabinetFaultGr
 
 // Scan applies the selector query and scans the result into the given value.
 func (cfgb *CabinetFaultGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeCabinetFault, "GroupBy")
+	ctx = setContextOp(ctx, cfgb.build.ctx, "GroupBy")
 	if err := cfgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -828,7 +836,7 @@ func (cfs *CabinetFaultSelect) Aggregate(fns ...AggregateFunc) *CabinetFaultSele
 
 // Scan applies the selector query and scans the result into the given value.
 func (cfs *CabinetFaultSelect) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeCabinetFault, "Select")
+	ctx = setContextOp(ctx, cfs.ctx, "Select")
 	if err := cfs.prepareQuery(ctx); err != nil {
 		return err
 	}

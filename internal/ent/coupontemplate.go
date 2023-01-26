@@ -154,14 +154,14 @@ func (ct *CouponTemplate) assignValues(columns []string, values []any) error {
 
 // QueryCoupons queries the "coupons" edge of the CouponTemplate entity.
 func (ct *CouponTemplate) QueryCoupons() *CouponQuery {
-	return (&CouponTemplateClient{config: ct.config}).QueryCoupons(ct)
+	return NewCouponTemplateClient(ct.config).QueryCoupons(ct)
 }
 
 // Update returns a builder for updating this CouponTemplate.
 // Note that you need to call CouponTemplate.Unwrap() before calling this method if this CouponTemplate
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (ct *CouponTemplate) Update() *CouponTemplateUpdateOne {
-	return (&CouponTemplateClient{config: ct.config}).UpdateOne(ct)
+	return NewCouponTemplateClient(ct.config).UpdateOne(ct)
 }
 
 // Unwrap unwraps the CouponTemplate entity that was returned from a transaction after it was closed,

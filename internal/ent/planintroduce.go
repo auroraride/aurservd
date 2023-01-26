@@ -124,14 +124,14 @@ func (pi *PlanIntroduce) assignValues(columns []string, values []any) error {
 
 // QueryBrand queries the "brand" edge of the PlanIntroduce entity.
 func (pi *PlanIntroduce) QueryBrand() *EbikeBrandQuery {
-	return (&PlanIntroduceClient{config: pi.config}).QueryBrand(pi)
+	return NewPlanIntroduceClient(pi.config).QueryBrand(pi)
 }
 
 // Update returns a builder for updating this PlanIntroduce.
 // Note that you need to call PlanIntroduce.Unwrap() before calling this method if this PlanIntroduce
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (pi *PlanIntroduce) Update() *PlanIntroduceUpdateOne {
-	return (&PlanIntroduceClient{config: pi.config}).UpdateOne(pi)
+	return NewPlanIntroduceClient(pi.config).UpdateOne(pi)
 }
 
 // Unwrap unwraps the PlanIntroduce entity that was returned from a transaction after it was closed,

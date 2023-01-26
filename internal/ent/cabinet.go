@@ -395,44 +395,44 @@ func (c *Cabinet) assignValues(columns []string, values []any) error {
 
 // QueryCity queries the "city" edge of the Cabinet entity.
 func (c *Cabinet) QueryCity() *CityQuery {
-	return (&CabinetClient{config: c.config}).QueryCity(c)
+	return NewCabinetClient(c.config).QueryCity(c)
 }
 
 // QueryBranch queries the "branch" edge of the Cabinet entity.
 func (c *Cabinet) QueryBranch() *BranchQuery {
-	return (&CabinetClient{config: c.config}).QueryBranch(c)
+	return NewCabinetClient(c.config).QueryBranch(c)
 }
 
 // QueryModels queries the "models" edge of the Cabinet entity.
 func (c *Cabinet) QueryModels() *BatteryModelQuery {
-	return (&CabinetClient{config: c.config}).QueryModels(c)
+	return NewCabinetClient(c.config).QueryModels(c)
 }
 
 // QueryFaults queries the "faults" edge of the Cabinet entity.
 func (c *Cabinet) QueryFaults() *CabinetFaultQuery {
-	return (&CabinetClient{config: c.config}).QueryFaults(c)
+	return NewCabinetClient(c.config).QueryFaults(c)
 }
 
 // QueryExchanges queries the "exchanges" edge of the Cabinet entity.
 func (c *Cabinet) QueryExchanges() *ExchangeQuery {
-	return (&CabinetClient{config: c.config}).QueryExchanges(c)
+	return NewCabinetClient(c.config).QueryExchanges(c)
 }
 
 // QueryStocks queries the "stocks" edge of the Cabinet entity.
 func (c *Cabinet) QueryStocks() *StockQuery {
-	return (&CabinetClient{config: c.config}).QueryStocks(c)
+	return NewCabinetClient(c.config).QueryStocks(c)
 }
 
 // QueryBatteries queries the "batteries" edge of the Cabinet entity.
 func (c *Cabinet) QueryBatteries() *BatteryQuery {
-	return (&CabinetClient{config: c.config}).QueryBatteries(c)
+	return NewCabinetClient(c.config).QueryBatteries(c)
 }
 
 // Update returns a builder for updating this Cabinet.
 // Note that you need to call Cabinet.Unwrap() before calling this method if this Cabinet
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (c *Cabinet) Update() *CabinetUpdateOne {
-	return (&CabinetClient{config: c.config}).UpdateOne(c)
+	return NewCabinetClient(c.config).UpdateOne(c)
 }
 
 // Unwrap unwraps the Cabinet entity that was returned from a transaction after it was closed,

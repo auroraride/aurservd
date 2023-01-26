@@ -69,6 +69,12 @@ type ContractDeleteOne struct {
 	cd *ContractDelete
 }
 
+// Where appends a list predicates to the ContractDelete builder.
+func (cdo *ContractDeleteOne) Where(ps ...predicate.Contract) *ContractDeleteOne {
+	cdo.cd.mutation.Where(ps...)
+	return cdo
+}
+
 // Exec executes the deletion query.
 func (cdo *ContractDeleteOne) Exec(ctx context.Context) error {
 	n, err := cdo.cd.Exec(ctx)
@@ -84,5 +90,7 @@ func (cdo *ContractDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (cdo *ContractDeleteOne) ExecX(ctx context.Context) {
-	cdo.cd.ExecX(ctx)
+	if err := cdo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

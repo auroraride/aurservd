@@ -69,6 +69,12 @@ type ExceptionDeleteOne struct {
 	ed *ExceptionDelete
 }
 
+// Where appends a list predicates to the ExceptionDelete builder.
+func (edo *ExceptionDeleteOne) Where(ps ...predicate.Exception) *ExceptionDeleteOne {
+	edo.ed.mutation.Where(ps...)
+	return edo
+}
+
 // Exec executes the deletion query.
 func (edo *ExceptionDeleteOne) Exec(ctx context.Context) error {
 	n, err := edo.ed.Exec(ctx)
@@ -84,5 +90,7 @@ func (edo *ExceptionDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (edo *ExceptionDeleteOne) ExecX(ctx context.Context) {
-	edo.ed.ExecX(ctx)
+	if err := edo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

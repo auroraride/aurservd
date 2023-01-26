@@ -18,11 +18,8 @@ import (
 // OrderRefundQuery is the builder for querying OrderRefund entities.
 type OrderRefundQuery struct {
 	config
-	limit      *int
-	offset     *int
-	unique     *bool
+	ctx        *QueryContext
 	order      []OrderFunc
-	fields     []string
 	inters     []Interceptor
 	predicates []predicate.OrderRefund
 	withOrder  *OrderQuery
@@ -40,20 +37,20 @@ func (orq *OrderRefundQuery) Where(ps ...predicate.OrderRefund) *OrderRefundQuer
 
 // Limit the number of records to be returned by this query.
 func (orq *OrderRefundQuery) Limit(limit int) *OrderRefundQuery {
-	orq.limit = &limit
+	orq.ctx.Limit = &limit
 	return orq
 }
 
 // Offset to start from.
 func (orq *OrderRefundQuery) Offset(offset int) *OrderRefundQuery {
-	orq.offset = &offset
+	orq.ctx.Offset = &offset
 	return orq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (orq *OrderRefundQuery) Unique(unique bool) *OrderRefundQuery {
-	orq.unique = &unique
+	orq.ctx.Unique = &unique
 	return orq
 }
 
@@ -88,7 +85,7 @@ func (orq *OrderRefundQuery) QueryOrder() *OrderQuery {
 // First returns the first OrderRefund entity from the query.
 // Returns a *NotFoundError when no OrderRefund was found.
 func (orq *OrderRefundQuery) First(ctx context.Context) (*OrderRefund, error) {
-	nodes, err := orq.Limit(1).All(newQueryContext(ctx, TypeOrderRefund, "First"))
+	nodes, err := orq.Limit(1).All(setContextOp(ctx, orq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -111,7 +108,7 @@ func (orq *OrderRefundQuery) FirstX(ctx context.Context) *OrderRefund {
 // Returns a *NotFoundError when no OrderRefund ID was found.
 func (orq *OrderRefundQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = orq.Limit(1).IDs(newQueryContext(ctx, TypeOrderRefund, "FirstID")); err != nil {
+	if ids, err = orq.Limit(1).IDs(setContextOp(ctx, orq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -134,7 +131,7 @@ func (orq *OrderRefundQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one OrderRefund entity is found.
 // Returns a *NotFoundError when no OrderRefund entities are found.
 func (orq *OrderRefundQuery) Only(ctx context.Context) (*OrderRefund, error) {
-	nodes, err := orq.Limit(2).All(newQueryContext(ctx, TypeOrderRefund, "Only"))
+	nodes, err := orq.Limit(2).All(setContextOp(ctx, orq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -162,7 +159,7 @@ func (orq *OrderRefundQuery) OnlyX(ctx context.Context) *OrderRefund {
 // Returns a *NotFoundError when no entities are found.
 func (orq *OrderRefundQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = orq.Limit(2).IDs(newQueryContext(ctx, TypeOrderRefund, "OnlyID")); err != nil {
+	if ids, err = orq.Limit(2).IDs(setContextOp(ctx, orq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -187,7 +184,7 @@ func (orq *OrderRefundQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of OrderRefunds.
 func (orq *OrderRefundQuery) All(ctx context.Context) ([]*OrderRefund, error) {
-	ctx = newQueryContext(ctx, TypeOrderRefund, "All")
+	ctx = setContextOp(ctx, orq.ctx, "All")
 	if err := orq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -207,7 +204,7 @@ func (orq *OrderRefundQuery) AllX(ctx context.Context) []*OrderRefund {
 // IDs executes the query and returns a list of OrderRefund IDs.
 func (orq *OrderRefundQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
-	ctx = newQueryContext(ctx, TypeOrderRefund, "IDs")
+	ctx = setContextOp(ctx, orq.ctx, "IDs")
 	if err := orq.Select(orderrefund.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -225,7 +222,7 @@ func (orq *OrderRefundQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (orq *OrderRefundQuery) Count(ctx context.Context) (int, error) {
-	ctx = newQueryContext(ctx, TypeOrderRefund, "Count")
+	ctx = setContextOp(ctx, orq.ctx, "Count")
 	if err := orq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -243,7 +240,7 @@ func (orq *OrderRefundQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (orq *OrderRefundQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = newQueryContext(ctx, TypeOrderRefund, "Exist")
+	ctx = setContextOp(ctx, orq.ctx, "Exist")
 	switch _, err := orq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -271,15 +268,14 @@ func (orq *OrderRefundQuery) Clone() *OrderRefundQuery {
 	}
 	return &OrderRefundQuery{
 		config:     orq.config,
-		limit:      orq.limit,
-		offset:     orq.offset,
+		ctx:        orq.ctx.Clone(),
 		order:      append([]OrderFunc{}, orq.order...),
+		inters:     append([]Interceptor{}, orq.inters...),
 		predicates: append([]predicate.OrderRefund{}, orq.predicates...),
 		withOrder:  orq.withOrder.Clone(),
 		// clone intermediate query.
-		sql:    orq.sql.Clone(),
-		path:   orq.path,
-		unique: orq.unique,
+		sql:  orq.sql.Clone(),
+		path: orq.path,
 	}
 }
 
@@ -309,9 +305,9 @@ func (orq *OrderRefundQuery) WithOrder(opts ...func(*OrderQuery)) *OrderRefundQu
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (orq *OrderRefundQuery) GroupBy(field string, fields ...string) *OrderRefundGroupBy {
-	orq.fields = append([]string{field}, fields...)
+	orq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &OrderRefundGroupBy{build: orq}
-	grbuild.flds = &orq.fields
+	grbuild.flds = &orq.ctx.Fields
 	grbuild.label = orderrefund.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -330,10 +326,10 @@ func (orq *OrderRefundQuery) GroupBy(field string, fields ...string) *OrderRefun
 //		Select(orderrefund.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (orq *OrderRefundQuery) Select(fields ...string) *OrderRefundSelect {
-	orq.fields = append(orq.fields, fields...)
+	orq.ctx.Fields = append(orq.ctx.Fields, fields...)
 	sbuild := &OrderRefundSelect{OrderRefundQuery: orq}
 	sbuild.label = orderrefund.Label
-	sbuild.flds, sbuild.scan = &orq.fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &orq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
@@ -353,7 +349,7 @@ func (orq *OrderRefundQuery) prepareQuery(ctx context.Context) error {
 			}
 		}
 	}
-	for _, f := range orq.fields {
+	for _, f := range orq.ctx.Fields {
 		if !orderrefund.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -416,6 +412,9 @@ func (orq *OrderRefundQuery) loadOrder(ctx context.Context, query *OrderQuery, n
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(order.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -438,9 +437,9 @@ func (orq *OrderRefundQuery) sqlCount(ctx context.Context) (int, error) {
 	if len(orq.modifiers) > 0 {
 		_spec.Modifiers = orq.modifiers
 	}
-	_spec.Node.Columns = orq.fields
-	if len(orq.fields) > 0 {
-		_spec.Unique = orq.unique != nil && *orq.unique
+	_spec.Node.Columns = orq.ctx.Fields
+	if len(orq.ctx.Fields) > 0 {
+		_spec.Unique = orq.ctx.Unique != nil && *orq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, orq.driver, _spec)
 }
@@ -458,10 +457,10 @@ func (orq *OrderRefundQuery) querySpec() *sqlgraph.QuerySpec {
 		From:   orq.sql,
 		Unique: true,
 	}
-	if unique := orq.unique; unique != nil {
+	if unique := orq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
 	}
-	if fields := orq.fields; len(fields) > 0 {
+	if fields := orq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, orderrefund.FieldID)
 		for i := range fields {
@@ -477,10 +476,10 @@ func (orq *OrderRefundQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := orq.limit; limit != nil {
+	if limit := orq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := orq.offset; offset != nil {
+	if offset := orq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := orq.order; len(ps) > 0 {
@@ -496,7 +495,7 @@ func (orq *OrderRefundQuery) querySpec() *sqlgraph.QuerySpec {
 func (orq *OrderRefundQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(orq.driver.Dialect())
 	t1 := builder.Table(orderrefund.Table)
-	columns := orq.fields
+	columns := orq.ctx.Fields
 	if len(columns) == 0 {
 		columns = orderrefund.Columns
 	}
@@ -505,7 +504,7 @@ func (orq *OrderRefundQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = orq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if orq.unique != nil && *orq.unique {
+	if orq.ctx.Unique != nil && *orq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, m := range orq.modifiers {
@@ -517,12 +516,12 @@ func (orq *OrderRefundQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range orq.order {
 		p(selector)
 	}
-	if offset := orq.offset; offset != nil {
+	if offset := orq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := orq.limit; limit != nil {
+	if limit := orq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -564,7 +563,7 @@ func (orgb *OrderRefundGroupBy) Aggregate(fns ...AggregateFunc) *OrderRefundGrou
 
 // Scan applies the selector query and scans the result into the given value.
 func (orgb *OrderRefundGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeOrderRefund, "GroupBy")
+	ctx = setContextOp(ctx, orgb.build.ctx, "GroupBy")
 	if err := orgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -612,7 +611,7 @@ func (ors *OrderRefundSelect) Aggregate(fns ...AggregateFunc) *OrderRefundSelect
 
 // Scan applies the selector query and scans the result into the given value.
 func (ors *OrderRefundSelect) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeOrderRefund, "Select")
+	ctx = setContextOp(ctx, ors.ctx, "Select")
 	if err := ors.prepareQuery(ctx); err != nil {
 		return err
 	}

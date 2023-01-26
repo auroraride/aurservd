@@ -27,11 +27,8 @@ import (
 // BusinessQuery is the builder for querying Business entities.
 type BusinessQuery struct {
 	config
-	limit          *int
-	offset         *int
-	unique         *bool
+	ctx            *QueryContext
 	order          []OrderFunc
-	fields         []string
 	inters         []Interceptor
 	predicates     []predicate.Business
 	withRider      *RiderQuery
@@ -58,20 +55,20 @@ func (bq *BusinessQuery) Where(ps ...predicate.Business) *BusinessQuery {
 
 // Limit the number of records to be returned by this query.
 func (bq *BusinessQuery) Limit(limit int) *BusinessQuery {
-	bq.limit = &limit
+	bq.ctx.Limit = &limit
 	return bq
 }
 
 // Offset to start from.
 func (bq *BusinessQuery) Offset(offset int) *BusinessQuery {
-	bq.offset = &offset
+	bq.ctx.Offset = &offset
 	return bq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (bq *BusinessQuery) Unique(unique bool) *BusinessQuery {
-	bq.unique = &unique
+	bq.ctx.Unique = &unique
 	return bq
 }
 
@@ -304,7 +301,7 @@ func (bq *BusinessQuery) QueryBattery() *BatteryQuery {
 // First returns the first Business entity from the query.
 // Returns a *NotFoundError when no Business was found.
 func (bq *BusinessQuery) First(ctx context.Context) (*Business, error) {
-	nodes, err := bq.Limit(1).All(newQueryContext(ctx, TypeBusiness, "First"))
+	nodes, err := bq.Limit(1).All(setContextOp(ctx, bq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -327,7 +324,7 @@ func (bq *BusinessQuery) FirstX(ctx context.Context) *Business {
 // Returns a *NotFoundError when no Business ID was found.
 func (bq *BusinessQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = bq.Limit(1).IDs(newQueryContext(ctx, TypeBusiness, "FirstID")); err != nil {
+	if ids, err = bq.Limit(1).IDs(setContextOp(ctx, bq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -350,7 +347,7 @@ func (bq *BusinessQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Business entity is found.
 // Returns a *NotFoundError when no Business entities are found.
 func (bq *BusinessQuery) Only(ctx context.Context) (*Business, error) {
-	nodes, err := bq.Limit(2).All(newQueryContext(ctx, TypeBusiness, "Only"))
+	nodes, err := bq.Limit(2).All(setContextOp(ctx, bq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -378,7 +375,7 @@ func (bq *BusinessQuery) OnlyX(ctx context.Context) *Business {
 // Returns a *NotFoundError when no entities are found.
 func (bq *BusinessQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = bq.Limit(2).IDs(newQueryContext(ctx, TypeBusiness, "OnlyID")); err != nil {
+	if ids, err = bq.Limit(2).IDs(setContextOp(ctx, bq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -403,7 +400,7 @@ func (bq *BusinessQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Businesses.
 func (bq *BusinessQuery) All(ctx context.Context) ([]*Business, error) {
-	ctx = newQueryContext(ctx, TypeBusiness, "All")
+	ctx = setContextOp(ctx, bq.ctx, "All")
 	if err := bq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -423,7 +420,7 @@ func (bq *BusinessQuery) AllX(ctx context.Context) []*Business {
 // IDs executes the query and returns a list of Business IDs.
 func (bq *BusinessQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
-	ctx = newQueryContext(ctx, TypeBusiness, "IDs")
+	ctx = setContextOp(ctx, bq.ctx, "IDs")
 	if err := bq.Select(business.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -441,7 +438,7 @@ func (bq *BusinessQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (bq *BusinessQuery) Count(ctx context.Context) (int, error) {
-	ctx = newQueryContext(ctx, TypeBusiness, "Count")
+	ctx = setContextOp(ctx, bq.ctx, "Count")
 	if err := bq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -459,7 +456,7 @@ func (bq *BusinessQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (bq *BusinessQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = newQueryContext(ctx, TypeBusiness, "Exist")
+	ctx = setContextOp(ctx, bq.ctx, "Exist")
 	switch _, err := bq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -487,9 +484,9 @@ func (bq *BusinessQuery) Clone() *BusinessQuery {
 	}
 	return &BusinessQuery{
 		config:         bq.config,
-		limit:          bq.limit,
-		offset:         bq.offset,
+		ctx:            bq.ctx.Clone(),
 		order:          append([]OrderFunc{}, bq.order...),
+		inters:         append([]Interceptor{}, bq.inters...),
 		predicates:     append([]predicate.Business{}, bq.predicates...),
 		withRider:      bq.withRider.Clone(),
 		withCity:       bq.withCity.Clone(),
@@ -502,9 +499,8 @@ func (bq *BusinessQuery) Clone() *BusinessQuery {
 		withCabinet:    bq.withCabinet.Clone(),
 		withBattery:    bq.withBattery.Clone(),
 		// clone intermediate query.
-		sql:    bq.sql.Clone(),
-		path:   bq.path,
-		unique: bq.unique,
+		sql:  bq.sql.Clone(),
+		path: bq.path,
 	}
 }
 
@@ -633,9 +629,9 @@ func (bq *BusinessQuery) WithBattery(opts ...func(*BatteryQuery)) *BusinessQuery
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (bq *BusinessQuery) GroupBy(field string, fields ...string) *BusinessGroupBy {
-	bq.fields = append([]string{field}, fields...)
+	bq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &BusinessGroupBy{build: bq}
-	grbuild.flds = &bq.fields
+	grbuild.flds = &bq.ctx.Fields
 	grbuild.label = business.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -654,10 +650,10 @@ func (bq *BusinessQuery) GroupBy(field string, fields ...string) *BusinessGroupB
 //		Select(business.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (bq *BusinessQuery) Select(fields ...string) *BusinessSelect {
-	bq.fields = append(bq.fields, fields...)
+	bq.ctx.Fields = append(bq.ctx.Fields, fields...)
 	sbuild := &BusinessSelect{BusinessQuery: bq}
 	sbuild.label = business.Label
-	sbuild.flds, sbuild.scan = &bq.fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &bq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
@@ -677,7 +673,7 @@ func (bq *BusinessQuery) prepareQuery(ctx context.Context) error {
 			}
 		}
 	}
-	for _, f := range bq.fields {
+	for _, f := range bq.ctx.Fields {
 		if !business.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -803,6 +799,9 @@ func (bq *BusinessQuery) loadRider(ctx context.Context, query *RiderQuery, nodes
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(rider.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -829,6 +828,9 @@ func (bq *BusinessQuery) loadCity(ctx context.Context, query *CityQuery, nodes [
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(city.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -854,6 +856,9 @@ func (bq *BusinessQuery) loadSubscribe(ctx context.Context, query *SubscribeQuer
 			ids = append(ids, fk)
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
 	}
 	query.Where(subscribe.IDIn(ids...))
 	neighbors, err := query.All(ctx)
@@ -884,6 +889,9 @@ func (bq *BusinessQuery) loadEmployee(ctx context.Context, query *EmployeeQuery,
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(employee.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -912,6 +920,9 @@ func (bq *BusinessQuery) loadStore(ctx context.Context, query *StoreQuery, nodes
 			ids = append(ids, fk)
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
 	}
 	query.Where(store.IDIn(ids...))
 	neighbors, err := query.All(ctx)
@@ -942,6 +953,9 @@ func (bq *BusinessQuery) loadPlan(ctx context.Context, query *PlanQuery, nodes [
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(plan.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -970,6 +984,9 @@ func (bq *BusinessQuery) loadEnterprise(ctx context.Context, query *EnterpriseQu
 			ids = append(ids, fk)
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
 	}
 	query.Where(enterprise.IDIn(ids...))
 	neighbors, err := query.All(ctx)
@@ -1000,6 +1017,9 @@ func (bq *BusinessQuery) loadStation(ctx context.Context, query *EnterpriseStati
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(enterprisestation.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1028,6 +1048,9 @@ func (bq *BusinessQuery) loadCabinet(ctx context.Context, query *CabinetQuery, n
 			ids = append(ids, fk)
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
 	}
 	query.Where(cabinet.IDIn(ids...))
 	neighbors, err := query.All(ctx)
@@ -1058,6 +1081,9 @@ func (bq *BusinessQuery) loadBattery(ctx context.Context, query *BatteryQuery, n
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(battery.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1080,9 +1106,9 @@ func (bq *BusinessQuery) sqlCount(ctx context.Context) (int, error) {
 	if len(bq.modifiers) > 0 {
 		_spec.Modifiers = bq.modifiers
 	}
-	_spec.Node.Columns = bq.fields
-	if len(bq.fields) > 0 {
-		_spec.Unique = bq.unique != nil && *bq.unique
+	_spec.Node.Columns = bq.ctx.Fields
+	if len(bq.ctx.Fields) > 0 {
+		_spec.Unique = bq.ctx.Unique != nil && *bq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, bq.driver, _spec)
 }
@@ -1100,10 +1126,10 @@ func (bq *BusinessQuery) querySpec() *sqlgraph.QuerySpec {
 		From:   bq.sql,
 		Unique: true,
 	}
-	if unique := bq.unique; unique != nil {
+	if unique := bq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
 	}
-	if fields := bq.fields; len(fields) > 0 {
+	if fields := bq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, business.FieldID)
 		for i := range fields {
@@ -1119,10 +1145,10 @@ func (bq *BusinessQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := bq.limit; limit != nil {
+	if limit := bq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := bq.offset; offset != nil {
+	if offset := bq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := bq.order; len(ps) > 0 {
@@ -1138,7 +1164,7 @@ func (bq *BusinessQuery) querySpec() *sqlgraph.QuerySpec {
 func (bq *BusinessQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(bq.driver.Dialect())
 	t1 := builder.Table(business.Table)
-	columns := bq.fields
+	columns := bq.ctx.Fields
 	if len(columns) == 0 {
 		columns = business.Columns
 	}
@@ -1147,7 +1173,7 @@ func (bq *BusinessQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = bq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if bq.unique != nil && *bq.unique {
+	if bq.ctx.Unique != nil && *bq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, m := range bq.modifiers {
@@ -1159,12 +1185,12 @@ func (bq *BusinessQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range bq.order {
 		p(selector)
 	}
-	if offset := bq.offset; offset != nil {
+	if offset := bq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := bq.limit; limit != nil {
+	if limit := bq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -1233,7 +1259,7 @@ func (bgb *BusinessGroupBy) Aggregate(fns ...AggregateFunc) *BusinessGroupBy {
 
 // Scan applies the selector query and scans the result into the given value.
 func (bgb *BusinessGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeBusiness, "GroupBy")
+	ctx = setContextOp(ctx, bgb.build.ctx, "GroupBy")
 	if err := bgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -1281,7 +1307,7 @@ func (bs *BusinessSelect) Aggregate(fns ...AggregateFunc) *BusinessSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (bs *BusinessSelect) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeBusiness, "Select")
+	ctx = setContextOp(ctx, bs.ctx, "Select")
 	if err := bs.prepareQuery(ctx); err != nil {
 		return err
 	}

@@ -183,14 +183,14 @@ func (ca *CouponAssembly) assignValues(columns []string, values []any) error {
 
 // QueryTemplate queries the "template" edge of the CouponAssembly entity.
 func (ca *CouponAssembly) QueryTemplate() *CouponTemplateQuery {
-	return (&CouponAssemblyClient{config: ca.config}).QueryTemplate(ca)
+	return NewCouponAssemblyClient(ca.config).QueryTemplate(ca)
 }
 
 // Update returns a builder for updating this CouponAssembly.
 // Note that you need to call CouponAssembly.Unwrap() before calling this method if this CouponAssembly
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (ca *CouponAssembly) Update() *CouponAssemblyUpdateOne {
-	return (&CouponAssemblyClient{config: ca.config}).UpdateOne(ca)
+	return NewCouponAssemblyClient(ca.config).UpdateOne(ca)
 }
 
 // Unwrap unwraps the CouponAssembly entity that was returned from a transaction after it was closed,

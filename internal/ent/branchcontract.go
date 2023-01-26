@@ -264,14 +264,14 @@ func (bc *BranchContract) assignValues(columns []string, values []any) error {
 
 // QueryBranch queries the "branch" edge of the BranchContract entity.
 func (bc *BranchContract) QueryBranch() *BranchQuery {
-	return (&BranchContractClient{config: bc.config}).QueryBranch(bc)
+	return NewBranchContractClient(bc.config).QueryBranch(bc)
 }
 
 // Update returns a builder for updating this BranchContract.
 // Note that you need to call BranchContract.Unwrap() before calling this method if this BranchContract
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (bc *BranchContract) Update() *BranchContractUpdateOne {
-	return (&BranchContractClient{config: bc.config}).UpdateOne(bc)
+	return NewBranchContractClient(bc.config).UpdateOne(bc)
 }
 
 // Unwrap unwraps the BranchContract entity that was returned from a transaction after it was closed,

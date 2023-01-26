@@ -125,14 +125,14 @@ func (r *Role) assignValues(columns []string, values []any) error {
 
 // QueryManagers queries the "managers" edge of the Role entity.
 func (r *Role) QueryManagers() *ManagerQuery {
-	return (&RoleClient{config: r.config}).QueryManagers(r)
+	return NewRoleClient(r.config).QueryManagers(r)
 }
 
 // Update returns a builder for updating this Role.
 // Note that you need to call Role.Unwrap() before calling this method if this Role
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (r *Role) Update() *RoleUpdateOne {
-	return (&RoleClient{config: r.config}).UpdateOne(r)
+	return NewRoleClient(r.config).UpdateOne(r)
 }
 
 // Unwrap unwraps the Role entity that was returned from a transaction after it was closed,

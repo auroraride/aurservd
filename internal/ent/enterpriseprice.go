@@ -190,19 +190,19 @@ func (ep *EnterprisePrice) assignValues(columns []string, values []any) error {
 
 // QueryCity queries the "city" edge of the EnterprisePrice entity.
 func (ep *EnterprisePrice) QueryCity() *CityQuery {
-	return (&EnterprisePriceClient{config: ep.config}).QueryCity(ep)
+	return NewEnterprisePriceClient(ep.config).QueryCity(ep)
 }
 
 // QueryEnterprise queries the "enterprise" edge of the EnterprisePrice entity.
 func (ep *EnterprisePrice) QueryEnterprise() *EnterpriseQuery {
-	return (&EnterprisePriceClient{config: ep.config}).QueryEnterprise(ep)
+	return NewEnterprisePriceClient(ep.config).QueryEnterprise(ep)
 }
 
 // Update returns a builder for updating this EnterprisePrice.
 // Note that you need to call EnterprisePrice.Unwrap() before calling this method if this EnterprisePrice
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (ep *EnterprisePrice) Update() *EnterprisePriceUpdateOne {
-	return (&EnterprisePriceClient{config: ep.config}).UpdateOne(ep)
+	return NewEnterprisePriceClient(ep.config).UpdateOne(ep)
 }
 
 // Unwrap unwraps the EnterprisePrice entity that was returned from a transaction after it was closed,

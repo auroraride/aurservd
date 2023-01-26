@@ -69,6 +69,12 @@ type RiderDeleteOne struct {
 	rd *RiderDelete
 }
 
+// Where appends a list predicates to the RiderDelete builder.
+func (rdo *RiderDeleteOne) Where(ps ...predicate.Rider) *RiderDeleteOne {
+	rdo.rd.mutation.Where(ps...)
+	return rdo
+}
+
 // Exec executes the deletion query.
 func (rdo *RiderDeleteOne) Exec(ctx context.Context) error {
 	n, err := rdo.rd.Exec(ctx)
@@ -84,5 +90,7 @@ func (rdo *RiderDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (rdo *RiderDeleteOne) ExecX(ctx context.Context) {
-	rdo.rd.ExecX(ctx)
+	if err := rdo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

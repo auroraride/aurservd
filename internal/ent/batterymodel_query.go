@@ -19,11 +19,8 @@ import (
 // BatteryModelQuery is the builder for querying BatteryModel entities.
 type BatteryModelQuery struct {
 	config
-	limit        *int
-	offset       *int
-	unique       *bool
+	ctx          *QueryContext
 	order        []OrderFunc
-	fields       []string
 	inters       []Interceptor
 	predicates   []predicate.BatteryModel
 	withCabinets *CabinetQuery
@@ -41,20 +38,20 @@ func (bmq *BatteryModelQuery) Where(ps ...predicate.BatteryModel) *BatteryModelQ
 
 // Limit the number of records to be returned by this query.
 func (bmq *BatteryModelQuery) Limit(limit int) *BatteryModelQuery {
-	bmq.limit = &limit
+	bmq.ctx.Limit = &limit
 	return bmq
 }
 
 // Offset to start from.
 func (bmq *BatteryModelQuery) Offset(offset int) *BatteryModelQuery {
-	bmq.offset = &offset
+	bmq.ctx.Offset = &offset
 	return bmq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (bmq *BatteryModelQuery) Unique(unique bool) *BatteryModelQuery {
-	bmq.unique = &unique
+	bmq.ctx.Unique = &unique
 	return bmq
 }
 
@@ -89,7 +86,7 @@ func (bmq *BatteryModelQuery) QueryCabinets() *CabinetQuery {
 // First returns the first BatteryModel entity from the query.
 // Returns a *NotFoundError when no BatteryModel was found.
 func (bmq *BatteryModelQuery) First(ctx context.Context) (*BatteryModel, error) {
-	nodes, err := bmq.Limit(1).All(newQueryContext(ctx, TypeBatteryModel, "First"))
+	nodes, err := bmq.Limit(1).All(setContextOp(ctx, bmq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -112,7 +109,7 @@ func (bmq *BatteryModelQuery) FirstX(ctx context.Context) *BatteryModel {
 // Returns a *NotFoundError when no BatteryModel ID was found.
 func (bmq *BatteryModelQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = bmq.Limit(1).IDs(newQueryContext(ctx, TypeBatteryModel, "FirstID")); err != nil {
+	if ids, err = bmq.Limit(1).IDs(setContextOp(ctx, bmq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -135,7 +132,7 @@ func (bmq *BatteryModelQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one BatteryModel entity is found.
 // Returns a *NotFoundError when no BatteryModel entities are found.
 func (bmq *BatteryModelQuery) Only(ctx context.Context) (*BatteryModel, error) {
-	nodes, err := bmq.Limit(2).All(newQueryContext(ctx, TypeBatteryModel, "Only"))
+	nodes, err := bmq.Limit(2).All(setContextOp(ctx, bmq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -163,7 +160,7 @@ func (bmq *BatteryModelQuery) OnlyX(ctx context.Context) *BatteryModel {
 // Returns a *NotFoundError when no entities are found.
 func (bmq *BatteryModelQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = bmq.Limit(2).IDs(newQueryContext(ctx, TypeBatteryModel, "OnlyID")); err != nil {
+	if ids, err = bmq.Limit(2).IDs(setContextOp(ctx, bmq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -188,7 +185,7 @@ func (bmq *BatteryModelQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of BatteryModels.
 func (bmq *BatteryModelQuery) All(ctx context.Context) ([]*BatteryModel, error) {
-	ctx = newQueryContext(ctx, TypeBatteryModel, "All")
+	ctx = setContextOp(ctx, bmq.ctx, "All")
 	if err := bmq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -208,7 +205,7 @@ func (bmq *BatteryModelQuery) AllX(ctx context.Context) []*BatteryModel {
 // IDs executes the query and returns a list of BatteryModel IDs.
 func (bmq *BatteryModelQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
-	ctx = newQueryContext(ctx, TypeBatteryModel, "IDs")
+	ctx = setContextOp(ctx, bmq.ctx, "IDs")
 	if err := bmq.Select(batterymodel.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -226,7 +223,7 @@ func (bmq *BatteryModelQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (bmq *BatteryModelQuery) Count(ctx context.Context) (int, error) {
-	ctx = newQueryContext(ctx, TypeBatteryModel, "Count")
+	ctx = setContextOp(ctx, bmq.ctx, "Count")
 	if err := bmq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -244,7 +241,7 @@ func (bmq *BatteryModelQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (bmq *BatteryModelQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = newQueryContext(ctx, TypeBatteryModel, "Exist")
+	ctx = setContextOp(ctx, bmq.ctx, "Exist")
 	switch _, err := bmq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -272,15 +269,14 @@ func (bmq *BatteryModelQuery) Clone() *BatteryModelQuery {
 	}
 	return &BatteryModelQuery{
 		config:       bmq.config,
-		limit:        bmq.limit,
-		offset:       bmq.offset,
+		ctx:          bmq.ctx.Clone(),
 		order:        append([]OrderFunc{}, bmq.order...),
+		inters:       append([]Interceptor{}, bmq.inters...),
 		predicates:   append([]predicate.BatteryModel{}, bmq.predicates...),
 		withCabinets: bmq.withCabinets.Clone(),
 		// clone intermediate query.
-		sql:    bmq.sql.Clone(),
-		path:   bmq.path,
-		unique: bmq.unique,
+		sql:  bmq.sql.Clone(),
+		path: bmq.path,
 	}
 }
 
@@ -310,9 +306,9 @@ func (bmq *BatteryModelQuery) WithCabinets(opts ...func(*CabinetQuery)) *Battery
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (bmq *BatteryModelQuery) GroupBy(field string, fields ...string) *BatteryModelGroupBy {
-	bmq.fields = append([]string{field}, fields...)
+	bmq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &BatteryModelGroupBy{build: bmq}
-	grbuild.flds = &bmq.fields
+	grbuild.flds = &bmq.ctx.Fields
 	grbuild.label = batterymodel.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -331,10 +327,10 @@ func (bmq *BatteryModelQuery) GroupBy(field string, fields ...string) *BatteryMo
 //		Select(batterymodel.FieldModel).
 //		Scan(ctx, &v)
 func (bmq *BatteryModelQuery) Select(fields ...string) *BatteryModelSelect {
-	bmq.fields = append(bmq.fields, fields...)
+	bmq.ctx.Fields = append(bmq.ctx.Fields, fields...)
 	sbuild := &BatteryModelSelect{BatteryModelQuery: bmq}
 	sbuild.label = batterymodel.Label
-	sbuild.flds, sbuild.scan = &bmq.fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &bmq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
@@ -354,7 +350,7 @@ func (bmq *BatteryModelQuery) prepareQuery(ctx context.Context) error {
 			}
 		}
 	}
-	for _, f := range bmq.fields {
+	for _, f := range bmq.ctx.Fields {
 		if !batterymodel.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -431,27 +427,30 @@ func (bmq *BatteryModelQuery) loadCabinets(ctx context.Context, query *CabinetQu
 	if err := query.prepareQuery(ctx); err != nil {
 		return err
 	}
-	neighbors, err := query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
-		assign := spec.Assign
-		values := spec.ScanValues
-		spec.ScanValues = func(columns []string) ([]any, error) {
-			values, err := values(columns[1:])
-			if err != nil {
-				return nil, err
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullInt64)}, values...), nil
 			}
-			return append([]any{new(sql.NullInt64)}, values...), nil
-		}
-		spec.Assign = func(columns []string, values []any) error {
-			outValue := uint64(values[0].(*sql.NullInt64).Int64)
-			inValue := uint64(values[1].(*sql.NullInt64).Int64)
-			if nids[inValue] == nil {
-				nids[inValue] = map[*BatteryModel]struct{}{byID[outValue]: {}}
-				return assign(columns[1:], values[1:])
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := uint64(values[0].(*sql.NullInt64).Int64)
+				inValue := uint64(values[1].(*sql.NullInt64).Int64)
+				if nids[inValue] == nil {
+					nids[inValue] = map[*BatteryModel]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
 			}
-			nids[inValue][byID[outValue]] = struct{}{}
-			return nil
-		}
+		})
 	})
+	neighbors, err := withInterceptors[[]*Cabinet](ctx, query, qr, query.inters)
 	if err != nil {
 		return err
 	}
@@ -472,9 +471,9 @@ func (bmq *BatteryModelQuery) sqlCount(ctx context.Context) (int, error) {
 	if len(bmq.modifiers) > 0 {
 		_spec.Modifiers = bmq.modifiers
 	}
-	_spec.Node.Columns = bmq.fields
-	if len(bmq.fields) > 0 {
-		_spec.Unique = bmq.unique != nil && *bmq.unique
+	_spec.Node.Columns = bmq.ctx.Fields
+	if len(bmq.ctx.Fields) > 0 {
+		_spec.Unique = bmq.ctx.Unique != nil && *bmq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, bmq.driver, _spec)
 }
@@ -492,10 +491,10 @@ func (bmq *BatteryModelQuery) querySpec() *sqlgraph.QuerySpec {
 		From:   bmq.sql,
 		Unique: true,
 	}
-	if unique := bmq.unique; unique != nil {
+	if unique := bmq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
 	}
-	if fields := bmq.fields; len(fields) > 0 {
+	if fields := bmq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, batterymodel.FieldID)
 		for i := range fields {
@@ -511,10 +510,10 @@ func (bmq *BatteryModelQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := bmq.limit; limit != nil {
+	if limit := bmq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := bmq.offset; offset != nil {
+	if offset := bmq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := bmq.order; len(ps) > 0 {
@@ -530,7 +529,7 @@ func (bmq *BatteryModelQuery) querySpec() *sqlgraph.QuerySpec {
 func (bmq *BatteryModelQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(bmq.driver.Dialect())
 	t1 := builder.Table(batterymodel.Table)
-	columns := bmq.fields
+	columns := bmq.ctx.Fields
 	if len(columns) == 0 {
 		columns = batterymodel.Columns
 	}
@@ -539,7 +538,7 @@ func (bmq *BatteryModelQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = bmq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if bmq.unique != nil && *bmq.unique {
+	if bmq.ctx.Unique != nil && *bmq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, m := range bmq.modifiers {
@@ -551,12 +550,12 @@ func (bmq *BatteryModelQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range bmq.order {
 		p(selector)
 	}
-	if offset := bmq.offset; offset != nil {
+	if offset := bmq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := bmq.limit; limit != nil {
+	if limit := bmq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -598,7 +597,7 @@ func (bmgb *BatteryModelGroupBy) Aggregate(fns ...AggregateFunc) *BatteryModelGr
 
 // Scan applies the selector query and scans the result into the given value.
 func (bmgb *BatteryModelGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeBatteryModel, "GroupBy")
+	ctx = setContextOp(ctx, bmgb.build.ctx, "GroupBy")
 	if err := bmgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -646,7 +645,7 @@ func (bms *BatteryModelSelect) Aggregate(fns ...AggregateFunc) *BatteryModelSele
 
 // Scan applies the selector query and scans the result into the given value.
 func (bms *BatteryModelSelect) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeBatteryModel, "Select")
+	ctx = setContextOp(ctx, bms.ctx, "Select")
 	if err := bms.prepareQuery(ctx); err != nil {
 		return err
 	}

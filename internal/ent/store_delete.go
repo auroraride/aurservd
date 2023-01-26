@@ -69,6 +69,12 @@ type StoreDeleteOne struct {
 	sd *StoreDelete
 }
 
+// Where appends a list predicates to the StoreDelete builder.
+func (sdo *StoreDeleteOne) Where(ps ...predicate.Store) *StoreDeleteOne {
+	sdo.sd.mutation.Where(ps...)
+	return sdo
+}
+
 // Exec executes the deletion query.
 func (sdo *StoreDeleteOne) Exec(ctx context.Context) error {
 	n, err := sdo.sd.Exec(ctx)
@@ -84,5 +90,7 @@ func (sdo *StoreDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (sdo *StoreDeleteOne) ExecX(ctx context.Context) {
-	sdo.sd.ExecX(ctx)
+	if err := sdo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

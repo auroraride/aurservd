@@ -26,11 +26,8 @@ import (
 // AllocateQuery is the builder for querying Allocate entities.
 type AllocateQuery struct {
 	config
-	limit         *int
-	offset        *int
-	unique        *bool
+	ctx           *QueryContext
 	order         []OrderFunc
-	fields        []string
 	inters        []Interceptor
 	predicates    []predicate.Allocate
 	withRider     *RiderQuery
@@ -55,20 +52,20 @@ func (aq *AllocateQuery) Where(ps ...predicate.Allocate) *AllocateQuery {
 
 // Limit the number of records to be returned by this query.
 func (aq *AllocateQuery) Limit(limit int) *AllocateQuery {
-	aq.limit = &limit
+	aq.ctx.Limit = &limit
 	return aq
 }
 
 // Offset to start from.
 func (aq *AllocateQuery) Offset(offset int) *AllocateQuery {
-	aq.offset = &offset
+	aq.ctx.Offset = &offset
 	return aq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (aq *AllocateQuery) Unique(unique bool) *AllocateQuery {
-	aq.unique = &unique
+	aq.ctx.Unique = &unique
 	return aq
 }
 
@@ -257,7 +254,7 @@ func (aq *AllocateQuery) QueryContract() *ContractQuery {
 // First returns the first Allocate entity from the query.
 // Returns a *NotFoundError when no Allocate was found.
 func (aq *AllocateQuery) First(ctx context.Context) (*Allocate, error) {
-	nodes, err := aq.Limit(1).All(newQueryContext(ctx, TypeAllocate, "First"))
+	nodes, err := aq.Limit(1).All(setContextOp(ctx, aq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -280,7 +277,7 @@ func (aq *AllocateQuery) FirstX(ctx context.Context) *Allocate {
 // Returns a *NotFoundError when no Allocate ID was found.
 func (aq *AllocateQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = aq.Limit(1).IDs(newQueryContext(ctx, TypeAllocate, "FirstID")); err != nil {
+	if ids, err = aq.Limit(1).IDs(setContextOp(ctx, aq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -303,7 +300,7 @@ func (aq *AllocateQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Allocate entity is found.
 // Returns a *NotFoundError when no Allocate entities are found.
 func (aq *AllocateQuery) Only(ctx context.Context) (*Allocate, error) {
-	nodes, err := aq.Limit(2).All(newQueryContext(ctx, TypeAllocate, "Only"))
+	nodes, err := aq.Limit(2).All(setContextOp(ctx, aq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -331,7 +328,7 @@ func (aq *AllocateQuery) OnlyX(ctx context.Context) *Allocate {
 // Returns a *NotFoundError when no entities are found.
 func (aq *AllocateQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = aq.Limit(2).IDs(newQueryContext(ctx, TypeAllocate, "OnlyID")); err != nil {
+	if ids, err = aq.Limit(2).IDs(setContextOp(ctx, aq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -356,7 +353,7 @@ func (aq *AllocateQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Allocates.
 func (aq *AllocateQuery) All(ctx context.Context) ([]*Allocate, error) {
-	ctx = newQueryContext(ctx, TypeAllocate, "All")
+	ctx = setContextOp(ctx, aq.ctx, "All")
 	if err := aq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -376,7 +373,7 @@ func (aq *AllocateQuery) AllX(ctx context.Context) []*Allocate {
 // IDs executes the query and returns a list of Allocate IDs.
 func (aq *AllocateQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
-	ctx = newQueryContext(ctx, TypeAllocate, "IDs")
+	ctx = setContextOp(ctx, aq.ctx, "IDs")
 	if err := aq.Select(allocate.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -394,7 +391,7 @@ func (aq *AllocateQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (aq *AllocateQuery) Count(ctx context.Context) (int, error) {
-	ctx = newQueryContext(ctx, TypeAllocate, "Count")
+	ctx = setContextOp(ctx, aq.ctx, "Count")
 	if err := aq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -412,7 +409,7 @@ func (aq *AllocateQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (aq *AllocateQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = newQueryContext(ctx, TypeAllocate, "Exist")
+	ctx = setContextOp(ctx, aq.ctx, "Exist")
 	switch _, err := aq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -440,9 +437,9 @@ func (aq *AllocateQuery) Clone() *AllocateQuery {
 	}
 	return &AllocateQuery{
 		config:        aq.config,
-		limit:         aq.limit,
-		offset:        aq.offset,
+		ctx:           aq.ctx.Clone(),
 		order:         append([]OrderFunc{}, aq.order...),
+		inters:        append([]Interceptor{}, aq.inters...),
 		predicates:    append([]predicate.Allocate{}, aq.predicates...),
 		withRider:     aq.withRider.Clone(),
 		withSubscribe: aq.withSubscribe.Clone(),
@@ -453,9 +450,8 @@ func (aq *AllocateQuery) Clone() *AllocateQuery {
 		withBrand:     aq.withBrand.Clone(),
 		withContract:  aq.withContract.Clone(),
 		// clone intermediate query.
-		sql:    aq.sql.Clone(),
-		path:   aq.path,
-		unique: aq.unique,
+		sql:  aq.sql.Clone(),
+		path: aq.path,
 	}
 }
 
@@ -562,9 +558,9 @@ func (aq *AllocateQuery) WithContract(opts ...func(*ContractQuery)) *AllocateQue
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (aq *AllocateQuery) GroupBy(field string, fields ...string) *AllocateGroupBy {
-	aq.fields = append([]string{field}, fields...)
+	aq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &AllocateGroupBy{build: aq}
-	grbuild.flds = &aq.fields
+	grbuild.flds = &aq.ctx.Fields
 	grbuild.label = allocate.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -583,10 +579,10 @@ func (aq *AllocateQuery) GroupBy(field string, fields ...string) *AllocateGroupB
 //		Select(allocate.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (aq *AllocateQuery) Select(fields ...string) *AllocateSelect {
-	aq.fields = append(aq.fields, fields...)
+	aq.ctx.Fields = append(aq.ctx.Fields, fields...)
 	sbuild := &AllocateSelect{AllocateQuery: aq}
 	sbuild.label = allocate.Label
-	sbuild.flds, sbuild.scan = &aq.fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &aq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
@@ -606,7 +602,7 @@ func (aq *AllocateQuery) prepareQuery(ctx context.Context) error {
 			}
 		}
 	}
-	for _, f := range aq.fields {
+	for _, f := range aq.ctx.Fields {
 		if !allocate.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -718,6 +714,9 @@ func (aq *AllocateQuery) loadRider(ctx context.Context, query *RiderQuery, nodes
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(rider.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -743,6 +742,9 @@ func (aq *AllocateQuery) loadSubscribe(ctx context.Context, query *SubscribeQuer
 			ids = append(ids, fk)
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
 	}
 	query.Where(subscribe.IDIn(ids...))
 	neighbors, err := query.All(ctx)
@@ -773,6 +775,9 @@ func (aq *AllocateQuery) loadEmployee(ctx context.Context, query *EmployeeQuery,
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(employee.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -801,6 +806,9 @@ func (aq *AllocateQuery) loadCabinet(ctx context.Context, query *CabinetQuery, n
 			ids = append(ids, fk)
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
 	}
 	query.Where(cabinet.IDIn(ids...))
 	neighbors, err := query.All(ctx)
@@ -831,6 +839,9 @@ func (aq *AllocateQuery) loadStore(ctx context.Context, query *StoreQuery, nodes
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(store.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -860,6 +871,9 @@ func (aq *AllocateQuery) loadEbike(ctx context.Context, query *EbikeQuery, nodes
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(ebike.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -888,6 +902,9 @@ func (aq *AllocateQuery) loadBrand(ctx context.Context, query *EbikeBrandQuery, 
 			ids = append(ids, fk)
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
 	}
 	query.Where(ebikebrand.IDIn(ids...))
 	neighbors, err := query.All(ctx)
@@ -938,9 +955,9 @@ func (aq *AllocateQuery) sqlCount(ctx context.Context) (int, error) {
 	if len(aq.modifiers) > 0 {
 		_spec.Modifiers = aq.modifiers
 	}
-	_spec.Node.Columns = aq.fields
-	if len(aq.fields) > 0 {
-		_spec.Unique = aq.unique != nil && *aq.unique
+	_spec.Node.Columns = aq.ctx.Fields
+	if len(aq.ctx.Fields) > 0 {
+		_spec.Unique = aq.ctx.Unique != nil && *aq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, aq.driver, _spec)
 }
@@ -958,10 +975,10 @@ func (aq *AllocateQuery) querySpec() *sqlgraph.QuerySpec {
 		From:   aq.sql,
 		Unique: true,
 	}
-	if unique := aq.unique; unique != nil {
+	if unique := aq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
 	}
-	if fields := aq.fields; len(fields) > 0 {
+	if fields := aq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, allocate.FieldID)
 		for i := range fields {
@@ -977,10 +994,10 @@ func (aq *AllocateQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := aq.limit; limit != nil {
+	if limit := aq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := aq.offset; offset != nil {
+	if offset := aq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := aq.order; len(ps) > 0 {
@@ -996,7 +1013,7 @@ func (aq *AllocateQuery) querySpec() *sqlgraph.QuerySpec {
 func (aq *AllocateQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(aq.driver.Dialect())
 	t1 := builder.Table(allocate.Table)
-	columns := aq.fields
+	columns := aq.ctx.Fields
 	if len(columns) == 0 {
 		columns = allocate.Columns
 	}
@@ -1005,7 +1022,7 @@ func (aq *AllocateQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = aq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if aq.unique != nil && *aq.unique {
+	if aq.ctx.Unique != nil && *aq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, m := range aq.modifiers {
@@ -1017,12 +1034,12 @@ func (aq *AllocateQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range aq.order {
 		p(selector)
 	}
-	if offset := aq.offset; offset != nil {
+	if offset := aq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := aq.limit; limit != nil {
+	if limit := aq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -1085,7 +1102,7 @@ func (agb *AllocateGroupBy) Aggregate(fns ...AggregateFunc) *AllocateGroupBy {
 
 // Scan applies the selector query and scans the result into the given value.
 func (agb *AllocateGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeAllocate, "GroupBy")
+	ctx = setContextOp(ctx, agb.build.ctx, "GroupBy")
 	if err := agb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -1133,7 +1150,7 @@ func (as *AllocateSelect) Aggregate(fns ...AggregateFunc) *AllocateSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (as *AllocateSelect) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeAllocate, "Select")
+	ctx = setContextOp(ctx, as.ctx, "Select")
 	if err := as.prepareQuery(ctx); err != nil {
 		return err
 	}

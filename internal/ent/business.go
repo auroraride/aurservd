@@ -397,59 +397,59 @@ func (b *Business) assignValues(columns []string, values []any) error {
 
 // QueryRider queries the "rider" edge of the Business entity.
 func (b *Business) QueryRider() *RiderQuery {
-	return (&BusinessClient{config: b.config}).QueryRider(b)
+	return NewBusinessClient(b.config).QueryRider(b)
 }
 
 // QueryCity queries the "city" edge of the Business entity.
 func (b *Business) QueryCity() *CityQuery {
-	return (&BusinessClient{config: b.config}).QueryCity(b)
+	return NewBusinessClient(b.config).QueryCity(b)
 }
 
 // QuerySubscribe queries the "subscribe" edge of the Business entity.
 func (b *Business) QuerySubscribe() *SubscribeQuery {
-	return (&BusinessClient{config: b.config}).QuerySubscribe(b)
+	return NewBusinessClient(b.config).QuerySubscribe(b)
 }
 
 // QueryEmployee queries the "employee" edge of the Business entity.
 func (b *Business) QueryEmployee() *EmployeeQuery {
-	return (&BusinessClient{config: b.config}).QueryEmployee(b)
+	return NewBusinessClient(b.config).QueryEmployee(b)
 }
 
 // QueryStore queries the "store" edge of the Business entity.
 func (b *Business) QueryStore() *StoreQuery {
-	return (&BusinessClient{config: b.config}).QueryStore(b)
+	return NewBusinessClient(b.config).QueryStore(b)
 }
 
 // QueryPlan queries the "plan" edge of the Business entity.
 func (b *Business) QueryPlan() *PlanQuery {
-	return (&BusinessClient{config: b.config}).QueryPlan(b)
+	return NewBusinessClient(b.config).QueryPlan(b)
 }
 
 // QueryEnterprise queries the "enterprise" edge of the Business entity.
 func (b *Business) QueryEnterprise() *EnterpriseQuery {
-	return (&BusinessClient{config: b.config}).QueryEnterprise(b)
+	return NewBusinessClient(b.config).QueryEnterprise(b)
 }
 
 // QueryStation queries the "station" edge of the Business entity.
 func (b *Business) QueryStation() *EnterpriseStationQuery {
-	return (&BusinessClient{config: b.config}).QueryStation(b)
+	return NewBusinessClient(b.config).QueryStation(b)
 }
 
 // QueryCabinet queries the "cabinet" edge of the Business entity.
 func (b *Business) QueryCabinet() *CabinetQuery {
-	return (&BusinessClient{config: b.config}).QueryCabinet(b)
+	return NewBusinessClient(b.config).QueryCabinet(b)
 }
 
 // QueryBattery queries the "battery" edge of the Business entity.
 func (b *Business) QueryBattery() *BatteryQuery {
-	return (&BusinessClient{config: b.config}).QueryBattery(b)
+	return NewBusinessClient(b.config).QueryBattery(b)
 }
 
 // Update returns a builder for updating this Business.
 // Note that you need to call Business.Unwrap() before calling this method if this Business
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (b *Business) Update() *BusinessUpdateOne {
-	return (&BusinessClient{config: b.config}).UpdateOne(b)
+	return NewBusinessClient(b.config).UpdateOne(b)
 }
 
 // Unwrap unwraps the Business entity that was returned from a transaction after it was closed,

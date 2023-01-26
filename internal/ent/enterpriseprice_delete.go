@@ -69,6 +69,12 @@ type EnterprisePriceDeleteOne struct {
 	epd *EnterprisePriceDelete
 }
 
+// Where appends a list predicates to the EnterprisePriceDelete builder.
+func (epdo *EnterprisePriceDeleteOne) Where(ps ...predicate.EnterprisePrice) *EnterprisePriceDeleteOne {
+	epdo.epd.mutation.Where(ps...)
+	return epdo
+}
+
 // Exec executes the deletion query.
 func (epdo *EnterprisePriceDeleteOne) Exec(ctx context.Context) error {
 	n, err := epdo.epd.Exec(ctx)
@@ -84,5 +90,7 @@ func (epdo *EnterprisePriceDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (epdo *EnterprisePriceDeleteOne) ExecX(ctx context.Context) {
-	epdo.epd.ExecX(ctx)
+	if err := epdo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

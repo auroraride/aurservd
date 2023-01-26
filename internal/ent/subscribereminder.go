@@ -231,24 +231,24 @@ func (sr *SubscribeReminder) assignValues(columns []string, values []any) error 
 
 // QuerySubscribe queries the "subscribe" edge of the SubscribeReminder entity.
 func (sr *SubscribeReminder) QuerySubscribe() *SubscribeQuery {
-	return (&SubscribeReminderClient{config: sr.config}).QuerySubscribe(sr)
+	return NewSubscribeReminderClient(sr.config).QuerySubscribe(sr)
 }
 
 // QueryPlan queries the "plan" edge of the SubscribeReminder entity.
 func (sr *SubscribeReminder) QueryPlan() *PlanQuery {
-	return (&SubscribeReminderClient{config: sr.config}).QueryPlan(sr)
+	return NewSubscribeReminderClient(sr.config).QueryPlan(sr)
 }
 
 // QueryRider queries the "rider" edge of the SubscribeReminder entity.
 func (sr *SubscribeReminder) QueryRider() *RiderQuery {
-	return (&SubscribeReminderClient{config: sr.config}).QueryRider(sr)
+	return NewSubscribeReminderClient(sr.config).QueryRider(sr)
 }
 
 // Update returns a builder for updating this SubscribeReminder.
 // Note that you need to call SubscribeReminder.Unwrap() before calling this method if this SubscribeReminder
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (sr *SubscribeReminder) Update() *SubscribeReminderUpdateOne {
-	return (&SubscribeReminderClient{config: sr.config}).UpdateOne(sr)
+	return NewSubscribeReminderClient(sr.config).UpdateOne(sr)
 }
 
 // Unwrap unwraps the SubscribeReminder entity that was returned from a transaction after it was closed,

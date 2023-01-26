@@ -29,11 +29,8 @@ import (
 // RiderQuery is the builder for querying Rider entities.
 type RiderQuery struct {
 	config
-	limit          *int
-	offset         *int
-	unique         *bool
+	ctx            *QueryContext
 	order          []OrderFunc
-	fields         []string
 	inters         []Interceptor
 	predicates     []predicate.Rider
 	withStation    *EnterpriseStationQuery
@@ -61,20 +58,20 @@ func (rq *RiderQuery) Where(ps ...predicate.Rider) *RiderQuery {
 
 // Limit the number of records to be returned by this query.
 func (rq *RiderQuery) Limit(limit int) *RiderQuery {
-	rq.limit = &limit
+	rq.ctx.Limit = &limit
 	return rq
 }
 
 // Offset to start from.
 func (rq *RiderQuery) Offset(offset int) *RiderQuery {
-	rq.offset = &offset
+	rq.ctx.Offset = &offset
 	return rq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (rq *RiderQuery) Unique(unique bool) *RiderQuery {
-	rq.unique = &unique
+	rq.ctx.Unique = &unique
 	return rq
 }
 
@@ -329,7 +326,7 @@ func (rq *RiderQuery) QueryBattery() *BatteryQuery {
 // First returns the first Rider entity from the query.
 // Returns a *NotFoundError when no Rider was found.
 func (rq *RiderQuery) First(ctx context.Context) (*Rider, error) {
-	nodes, err := rq.Limit(1).All(newQueryContext(ctx, TypeRider, "First"))
+	nodes, err := rq.Limit(1).All(setContextOp(ctx, rq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -352,7 +349,7 @@ func (rq *RiderQuery) FirstX(ctx context.Context) *Rider {
 // Returns a *NotFoundError when no Rider ID was found.
 func (rq *RiderQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = rq.Limit(1).IDs(newQueryContext(ctx, TypeRider, "FirstID")); err != nil {
+	if ids, err = rq.Limit(1).IDs(setContextOp(ctx, rq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -375,7 +372,7 @@ func (rq *RiderQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Rider entity is found.
 // Returns a *NotFoundError when no Rider entities are found.
 func (rq *RiderQuery) Only(ctx context.Context) (*Rider, error) {
-	nodes, err := rq.Limit(2).All(newQueryContext(ctx, TypeRider, "Only"))
+	nodes, err := rq.Limit(2).All(setContextOp(ctx, rq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -403,7 +400,7 @@ func (rq *RiderQuery) OnlyX(ctx context.Context) *Rider {
 // Returns a *NotFoundError when no entities are found.
 func (rq *RiderQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = rq.Limit(2).IDs(newQueryContext(ctx, TypeRider, "OnlyID")); err != nil {
+	if ids, err = rq.Limit(2).IDs(setContextOp(ctx, rq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -428,7 +425,7 @@ func (rq *RiderQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Riders.
 func (rq *RiderQuery) All(ctx context.Context) ([]*Rider, error) {
-	ctx = newQueryContext(ctx, TypeRider, "All")
+	ctx = setContextOp(ctx, rq.ctx, "All")
 	if err := rq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -448,7 +445,7 @@ func (rq *RiderQuery) AllX(ctx context.Context) []*Rider {
 // IDs executes the query and returns a list of Rider IDs.
 func (rq *RiderQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
-	ctx = newQueryContext(ctx, TypeRider, "IDs")
+	ctx = setContextOp(ctx, rq.ctx, "IDs")
 	if err := rq.Select(rider.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -466,7 +463,7 @@ func (rq *RiderQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (rq *RiderQuery) Count(ctx context.Context) (int, error) {
-	ctx = newQueryContext(ctx, TypeRider, "Count")
+	ctx = setContextOp(ctx, rq.ctx, "Count")
 	if err := rq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -484,7 +481,7 @@ func (rq *RiderQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (rq *RiderQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = newQueryContext(ctx, TypeRider, "Exist")
+	ctx = setContextOp(ctx, rq.ctx, "Exist")
 	switch _, err := rq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -512,9 +509,9 @@ func (rq *RiderQuery) Clone() *RiderQuery {
 	}
 	return &RiderQuery{
 		config:         rq.config,
-		limit:          rq.limit,
-		offset:         rq.offset,
+		ctx:            rq.ctx.Clone(),
 		order:          append([]OrderFunc{}, rq.order...),
+		inters:         append([]Interceptor{}, rq.inters...),
 		predicates:     append([]predicate.Rider{}, rq.predicates...),
 		withStation:    rq.withStation.Clone(),
 		withPerson:     rq.withPerson.Clone(),
@@ -528,9 +525,8 @@ func (rq *RiderQuery) Clone() *RiderQuery {
 		withFollowups:  rq.withFollowups.Clone(),
 		withBattery:    rq.withBattery.Clone(),
 		// clone intermediate query.
-		sql:    rq.sql.Clone(),
-		path:   rq.path,
-		unique: rq.unique,
+		sql:  rq.sql.Clone(),
+		path: rq.path,
 	}
 }
 
@@ -670,9 +666,9 @@ func (rq *RiderQuery) WithBattery(opts ...func(*BatteryQuery)) *RiderQuery {
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (rq *RiderQuery) GroupBy(field string, fields ...string) *RiderGroupBy {
-	rq.fields = append([]string{field}, fields...)
+	rq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &RiderGroupBy{build: rq}
-	grbuild.flds = &rq.fields
+	grbuild.flds = &rq.ctx.Fields
 	grbuild.label = rider.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -691,10 +687,10 @@ func (rq *RiderQuery) GroupBy(field string, fields ...string) *RiderGroupBy {
 //		Select(rider.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (rq *RiderQuery) Select(fields ...string) *RiderSelect {
-	rq.fields = append(rq.fields, fields...)
+	rq.ctx.Fields = append(rq.ctx.Fields, fields...)
 	sbuild := &RiderSelect{RiderQuery: rq}
 	sbuild.label = rider.Label
-	sbuild.flds, sbuild.scan = &rq.fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &rq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
@@ -714,7 +710,7 @@ func (rq *RiderQuery) prepareQuery(ctx context.Context) error {
 			}
 		}
 	}
-	for _, f := range rq.fields {
+	for _, f := range rq.ctx.Fields {
 		if !rider.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -857,6 +853,9 @@ func (rq *RiderQuery) loadStation(ctx context.Context, query *EnterpriseStationQ
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(enterprisestation.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -886,6 +885,9 @@ func (rq *RiderQuery) loadPerson(ctx context.Context, query *PersonQuery, nodes 
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(person.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -914,6 +916,9 @@ func (rq *RiderQuery) loadEnterprise(ctx context.Context, query *EnterpriseQuery
 			ids = append(ids, fk)
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
 	}
 	query.Where(enterprise.IDIn(ids...))
 	neighbors, err := query.All(ctx)
@@ -1157,9 +1162,9 @@ func (rq *RiderQuery) sqlCount(ctx context.Context) (int, error) {
 	if len(rq.modifiers) > 0 {
 		_spec.Modifiers = rq.modifiers
 	}
-	_spec.Node.Columns = rq.fields
-	if len(rq.fields) > 0 {
-		_spec.Unique = rq.unique != nil && *rq.unique
+	_spec.Node.Columns = rq.ctx.Fields
+	if len(rq.ctx.Fields) > 0 {
+		_spec.Unique = rq.ctx.Unique != nil && *rq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, rq.driver, _spec)
 }
@@ -1177,10 +1182,10 @@ func (rq *RiderQuery) querySpec() *sqlgraph.QuerySpec {
 		From:   rq.sql,
 		Unique: true,
 	}
-	if unique := rq.unique; unique != nil {
+	if unique := rq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
 	}
-	if fields := rq.fields; len(fields) > 0 {
+	if fields := rq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, rider.FieldID)
 		for i := range fields {
@@ -1196,10 +1201,10 @@ func (rq *RiderQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := rq.limit; limit != nil {
+	if limit := rq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := rq.offset; offset != nil {
+	if offset := rq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := rq.order; len(ps) > 0 {
@@ -1215,7 +1220,7 @@ func (rq *RiderQuery) querySpec() *sqlgraph.QuerySpec {
 func (rq *RiderQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(rq.driver.Dialect())
 	t1 := builder.Table(rider.Table)
-	columns := rq.fields
+	columns := rq.ctx.Fields
 	if len(columns) == 0 {
 		columns = rider.Columns
 	}
@@ -1224,7 +1229,7 @@ func (rq *RiderQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = rq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if rq.unique != nil && *rq.unique {
+	if rq.ctx.Unique != nil && *rq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, m := range rq.modifiers {
@@ -1236,12 +1241,12 @@ func (rq *RiderQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range rq.order {
 		p(selector)
 	}
-	if offset := rq.offset; offset != nil {
+	if offset := rq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := rq.limit; limit != nil {
+	if limit := rq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -1313,7 +1318,7 @@ func (rgb *RiderGroupBy) Aggregate(fns ...AggregateFunc) *RiderGroupBy {
 
 // Scan applies the selector query and scans the result into the given value.
 func (rgb *RiderGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeRider, "GroupBy")
+	ctx = setContextOp(ctx, rgb.build.ctx, "GroupBy")
 	if err := rgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -1361,7 +1366,7 @@ func (rs *RiderSelect) Aggregate(fns ...AggregateFunc) *RiderSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (rs *RiderSelect) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeRider, "Select")
+	ctx = setContextOp(ctx, rs.ctx, "Select")
 	if err := rs.prepareQuery(ctx); err != nil {
 		return err
 	}

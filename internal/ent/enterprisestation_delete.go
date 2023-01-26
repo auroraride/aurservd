@@ -69,6 +69,12 @@ type EnterpriseStationDeleteOne struct {
 	esd *EnterpriseStationDelete
 }
 
+// Where appends a list predicates to the EnterpriseStationDelete builder.
+func (esdo *EnterpriseStationDeleteOne) Where(ps ...predicate.EnterpriseStation) *EnterpriseStationDeleteOne {
+	esdo.esd.mutation.Where(ps...)
+	return esdo
+}
+
 // Exec executes the deletion query.
 func (esdo *EnterpriseStationDeleteOne) Exec(ctx context.Context) error {
 	n, err := esdo.esd.Exec(ctx)
@@ -84,5 +90,7 @@ func (esdo *EnterpriseStationDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (esdo *EnterpriseStationDeleteOne) ExecX(ctx context.Context) {
-	esdo.esd.ExecX(ctx)
+	if err := esdo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

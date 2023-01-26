@@ -69,6 +69,12 @@ type EnterpriseDeleteOne struct {
 	ed *EnterpriseDelete
 }
 
+// Where appends a list predicates to the EnterpriseDelete builder.
+func (edo *EnterpriseDeleteOne) Where(ps ...predicate.Enterprise) *EnterpriseDeleteOne {
+	edo.ed.mutation.Where(ps...)
+	return edo
+}
+
 // Exec executes the deletion query.
 func (edo *EnterpriseDeleteOne) Exec(ctx context.Context) error {
 	n, err := edo.ed.Exec(ctx)
@@ -84,5 +90,7 @@ func (edo *EnterpriseDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (edo *EnterpriseDeleteOne) ExecX(ctx context.Context) {
-	edo.ed.ExecX(ctx)
+	if err := edo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

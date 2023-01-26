@@ -458,69 +458,69 @@ func (s *Stock) assignValues(columns []string, values []any) error {
 
 // QueryCity queries the "city" edge of the Stock entity.
 func (s *Stock) QueryCity() *CityQuery {
-	return (&StockClient{config: s.config}).QueryCity(s)
+	return NewStockClient(s.config).QueryCity(s)
 }
 
 // QuerySubscribe queries the "subscribe" edge of the Stock entity.
 func (s *Stock) QuerySubscribe() *SubscribeQuery {
-	return (&StockClient{config: s.config}).QuerySubscribe(s)
+	return NewStockClient(s.config).QuerySubscribe(s)
 }
 
 // QueryEbike queries the "ebike" edge of the Stock entity.
 func (s *Stock) QueryEbike() *EbikeQuery {
-	return (&StockClient{config: s.config}).QueryEbike(s)
+	return NewStockClient(s.config).QueryEbike(s)
 }
 
 // QueryBrand queries the "brand" edge of the Stock entity.
 func (s *Stock) QueryBrand() *EbikeBrandQuery {
-	return (&StockClient{config: s.config}).QueryBrand(s)
+	return NewStockClient(s.config).QueryBrand(s)
 }
 
 // QueryBattery queries the "battery" edge of the Stock entity.
 func (s *Stock) QueryBattery() *BatteryQuery {
-	return (&StockClient{config: s.config}).QueryBattery(s)
+	return NewStockClient(s.config).QueryBattery(s)
 }
 
 // QueryStore queries the "store" edge of the Stock entity.
 func (s *Stock) QueryStore() *StoreQuery {
-	return (&StockClient{config: s.config}).QueryStore(s)
+	return NewStockClient(s.config).QueryStore(s)
 }
 
 // QueryCabinet queries the "cabinet" edge of the Stock entity.
 func (s *Stock) QueryCabinet() *CabinetQuery {
-	return (&StockClient{config: s.config}).QueryCabinet(s)
+	return NewStockClient(s.config).QueryCabinet(s)
 }
 
 // QueryRider queries the "rider" edge of the Stock entity.
 func (s *Stock) QueryRider() *RiderQuery {
-	return (&StockClient{config: s.config}).QueryRider(s)
+	return NewStockClient(s.config).QueryRider(s)
 }
 
 // QueryEmployee queries the "employee" edge of the Stock entity.
 func (s *Stock) QueryEmployee() *EmployeeQuery {
-	return (&StockClient{config: s.config}).QueryEmployee(s)
+	return NewStockClient(s.config).QueryEmployee(s)
 }
 
 // QuerySpouse queries the "spouse" edge of the Stock entity.
 func (s *Stock) QuerySpouse() *StockQuery {
-	return (&StockClient{config: s.config}).QuerySpouse(s)
+	return NewStockClient(s.config).QuerySpouse(s)
 }
 
 // QueryParent queries the "parent" edge of the Stock entity.
 func (s *Stock) QueryParent() *StockQuery {
-	return (&StockClient{config: s.config}).QueryParent(s)
+	return NewStockClient(s.config).QueryParent(s)
 }
 
 // QueryChildren queries the "children" edge of the Stock entity.
 func (s *Stock) QueryChildren() *StockQuery {
-	return (&StockClient{config: s.config}).QueryChildren(s)
+	return NewStockClient(s.config).QueryChildren(s)
 }
 
 // Update returns a builder for updating this Stock.
 // Note that you need to call Stock.Unwrap() before calling this method if this Stock
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (s *Stock) Update() *StockUpdateOne {
-	return (&StockClient{config: s.config}).UpdateOne(s)
+	return NewStockClient(s.config).UpdateOne(s)
 }
 
 // Unwrap unwraps the Stock entity that was returned from a transaction after it was closed,

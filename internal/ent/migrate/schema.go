@@ -21,7 +21,7 @@ var (
 		{Name: "name", Type: field.TypeString},
 		{Name: "phone", Type: field.TypeString, Unique: true},
 		{Name: "password", Type: field.TypeString},
-		{Name: "enterprise_id", Type: field.TypeUint64},
+		{Name: "enterprise_id", Type: field.TypeUint64, Comment: "企业ID"},
 	}
 	// AgentTable holds the schema information for the "agent" table.
 	AgentTable = &schema.Table{
@@ -71,11 +71,11 @@ var (
 		{Name: "status", Type: field.TypeUint8, Comment: "分配状态"},
 		{Name: "time", Type: field.TypeTime, Comment: "分配时间"},
 		{Name: "model", Type: field.TypeString, Comment: "电池型号"},
-		{Name: "rider_id", Type: field.TypeUint64},
+		{Name: "rider_id", Type: field.TypeUint64, Comment: "骑手ID"},
 		{Name: "subscribe_id", Type: field.TypeUint64},
-		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "store_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "employee_id", Type: field.TypeUint64, Nullable: true, Comment: "店员ID"},
+		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true, Comment: "电柜ID"},
+		{Name: "store_id", Type: field.TypeUint64, Nullable: true, Comment: "门店ID"},
 		{Name: "ebike_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "brand_id", Type: field.TypeUint64, Nullable: true},
 	}
@@ -204,12 +204,12 @@ var (
 		{Name: "price", Type: field.TypeFloat64, Nullable: true, Comment: "救援费用单价 元/公里"},
 		{Name: "navi_duration", Type: field.TypeInt, Nullable: true, Comment: "路径导航规划时间 (s)"},
 		{Name: "navi_polylines", Type: field.TypeJSON, Nullable: true, Comment: "路径导航规划坐标组"},
-		{Name: "store_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "rider_id", Type: field.TypeUint64},
+		{Name: "store_id", Type: field.TypeUint64, Nullable: true, Comment: "门店ID"},
+		{Name: "rider_id", Type: field.TypeUint64, Comment: "骑手ID"},
 		{Name: "subscribe_id", Type: field.TypeUint64},
-		{Name: "city_id", Type: field.TypeUint64},
-		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "order_id", Type: field.TypeUint64, Unique: true, Nullable: true},
+		{Name: "city_id", Type: field.TypeUint64, Comment: "城市ID"},
+		{Name: "employee_id", Type: field.TypeUint64, Nullable: true, Comment: "店员ID"},
+		{Name: "order_id", Type: field.TypeUint64, Unique: true, Nullable: true, Comment: "支付订单"},
 	}
 	// AssistanceTable holds the schema information for the "assistance" table.
 	AssistanceTable = &schema.Table{
@@ -319,8 +319,8 @@ var (
 		{Name: "lat", Type: field.TypeFloat64, Nullable: true, Comment: "纬度"},
 		{Name: "address", Type: field.TypeString, Nullable: true, Comment: "详细地址"},
 		{Name: "distance", Type: field.TypeFloat64, Nullable: true, Comment: "打卡距离"},
-		{Name: "employee_id", Type: field.TypeUint64},
-		{Name: "store_id", Type: field.TypeUint64},
+		{Name: "employee_id", Type: field.TypeUint64, Comment: "店员ID"},
+		{Name: "store_id", Type: field.TypeUint64, Comment: "门店ID"},
 	}
 	// AttendanceTable holds the schema information for the "attendance" table.
 	AttendanceTable = &schema.Table{
@@ -382,10 +382,10 @@ var (
 		{Name: "enable", Type: field.TypeBool, Comment: "是否启用", Default: true},
 		{Name: "model", Type: field.TypeString, Comment: "电池型号"},
 		{Name: "ordinal", Type: field.TypeInt, Nullable: true, Comment: "所在智能柜仓位序号"},
-		{Name: "city_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "rider_id", Type: field.TypeUint64, Unique: true, Nullable: true},
-		{Name: "subscribe_id", Type: field.TypeUint64, Unique: true, Nullable: true},
+		{Name: "city_id", Type: field.TypeUint64, Nullable: true, Comment: "城市ID"},
+		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true, Comment: "电柜ID"},
+		{Name: "rider_id", Type: field.TypeUint64, Unique: true, Nullable: true, Comment: "骑手ID"},
+		{Name: "subscribe_id", Type: field.TypeUint64, Unique: true, Nullable: true, Comment: "订阅ID"},
 	}
 	// BatteryTable holds the schema information for the "battery" table.
 	BatteryTable = &schema.Table{
@@ -502,7 +502,7 @@ var (
 		{Name: "address", Type: field.TypeString, Comment: "详细地址"},
 		{Name: "photos", Type: field.TypeJSON, Comment: "网点照片"},
 		{Name: "geom", Type: field.TypeOther, Unique: true, Comment: "坐标", SchemaType: map[string]string{"postgres": "geometry"}},
-		{Name: "city_id", Type: field.TypeUint64},
+		{Name: "city_id", Type: field.TypeUint64, Comment: "城市ID"},
 	}
 	// BranchTable holds the schema information for the "branch" table.
 	BranchTable = &schema.Table{
@@ -584,7 +584,7 @@ var (
 		{Name: "end_time", Type: field.TypeTime, Comment: "租期结束时间"},
 		{Name: "file", Type: field.TypeString, Comment: "合同文件"},
 		{Name: "sheets", Type: field.TypeJSON, Comment: "底单"},
-		{Name: "branch_id", Type: field.TypeUint64},
+		{Name: "branch_id", Type: field.TypeUint64, Comment: "网点ID"},
 	}
 	// BranchContractTable holds the schema information for the "branch_contract" table.
 	BranchContractTable = &schema.Table{
@@ -629,15 +629,15 @@ var (
 		{Name: "type", Type: field.TypeEnum, Comment: "业务类型", Enums: []string{"active", "pause", "continue", "unsubscribe"}},
 		{Name: "bin_info", Type: field.TypeJSON, Nullable: true, Comment: "仓位信息"},
 		{Name: "stock_sn", Type: field.TypeString, Nullable: true, Comment: "出入库编码"},
-		{Name: "rider_id", Type: field.TypeUint64},
-		{Name: "city_id", Type: field.TypeUint64},
+		{Name: "rider_id", Type: field.TypeUint64, Comment: "骑手ID"},
+		{Name: "city_id", Type: field.TypeUint64, Comment: "城市ID"},
 		{Name: "subscribe_id", Type: field.TypeUint64},
-		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "store_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "employee_id", Type: field.TypeUint64, Nullable: true, Comment: "店员ID"},
+		{Name: "store_id", Type: field.TypeUint64, Nullable: true, Comment: "门店ID"},
 		{Name: "plan_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "station_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true, Comment: "企业ID"},
+		{Name: "station_id", Type: field.TypeUint64, Nullable: true, Comment: "站点ID"},
+		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true, Comment: "电柜ID"},
 		{Name: "battery_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// BusinessTable holds the schema information for the "business" table.
@@ -809,8 +809,8 @@ var (
 		{Name: "battery_charging_num", Type: field.TypeInt, Comment: "充电总数", Default: 0},
 		{Name: "empty_bin_num", Type: field.TypeInt, Comment: "空仓数量", Default: 0},
 		{Name: "locked_bin_num", Type: field.TypeInt, Comment: "锁仓数量", Default: 0},
-		{Name: "branch_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "city_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "branch_id", Type: field.TypeUint64, Nullable: true, Comment: "网点"},
+		{Name: "city_id", Type: field.TypeUint64, Nullable: true, Comment: "城市ID"},
 	}
 	// CabinetTable holds the schema information for the "cabinet" table.
 	CabinetTable = &schema.Table{
@@ -910,10 +910,10 @@ var (
 		{Name: "fault", Type: field.TypeString, Nullable: true, Comment: "故障内容"},
 		{Name: "attachments", Type: field.TypeJSON, Nullable: true, Comment: "附件"},
 		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "故障留言"},
-		{Name: "branch_id", Type: field.TypeUint64},
-		{Name: "cabinet_id", Type: field.TypeUint64},
-		{Name: "city_id", Type: field.TypeUint64},
-		{Name: "rider_id", Type: field.TypeUint64},
+		{Name: "branch_id", Type: field.TypeUint64, Comment: "网点ID"},
+		{Name: "cabinet_id", Type: field.TypeUint64, Comment: "电柜ID"},
+		{Name: "city_id", Type: field.TypeUint64, Comment: "城市ID"},
+		{Name: "rider_id", Type: field.TypeUint64, Comment: "骑手ID"},
 	}
 	// CabinetFaultTable holds the schema information for the "cabinet_fault" table.
 	CabinetFaultTable = &schema.Table{
@@ -988,7 +988,7 @@ var (
 		{Name: "code", Type: field.TypeString, Size: 10, Comment: "城市编号"},
 		{Name: "lng", Type: field.TypeFloat64, Nullable: true, Comment: "经度"},
 		{Name: "lat", Type: field.TypeFloat64, Nullable: true, Comment: "纬度"},
-		{Name: "parent_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "parent_id", Type: field.TypeUint64, Nullable: true, Comment: "父级"},
 	}
 	// CityTable holds the schema information for the "city" table.
 	CityTable = &schema.Table{
@@ -1040,9 +1040,9 @@ var (
 		{Name: "business_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "subscribe_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "plan_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "rider_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "order_id", Type: field.TypeUint64, Unique: true},
+		{Name: "rider_id", Type: field.TypeUint64, Nullable: true, Comment: "骑手ID"},
+		{Name: "employee_id", Type: field.TypeUint64, Nullable: true, Comment: "员工ID"},
+		{Name: "order_id", Type: field.TypeUint64, Unique: true, Comment: "订单ID"},
 	}
 	// CommissionTable holds the schema information for the "commission" table.
 	CommissionTable = &schema.Table{
@@ -1153,10 +1153,10 @@ var (
 		{Name: "link", Type: field.TypeString, Nullable: true, Comment: "跳转URL"},
 		{Name: "expires_at", Type: field.TypeTime, Nullable: true, Comment: "合同过期时间"},
 		{Name: "signed_at", Type: field.TypeTime, Nullable: true, Comment: "签约时间"},
-		{Name: "allocate_id", Type: field.TypeUint64, Unique: true, Nullable: true},
+		{Name: "allocate_id", Type: field.TypeUint64, Unique: true, Nullable: true, Comment: "电车分配ID"},
 		{Name: "subscribe_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "rider_id", Type: field.TypeUint64},
+		{Name: "employee_id", Type: field.TypeUint64, Nullable: true, Comment: "店员ID"},
+		{Name: "rider_id", Type: field.TypeUint64, Comment: "骑手"},
 	}
 	// ContractTable holds the schema information for the "contract" table.
 	ContractTable = &schema.Table{
@@ -1240,11 +1240,11 @@ var (
 		{Name: "duration", Type: field.TypeJSON, Comment: "有效期规则"},
 		{Name: "plans", Type: field.TypeJSON, Nullable: true, Comment: "可用骑士卡"},
 		{Name: "cities", Type: field.TypeJSON, Nullable: true, Comment: "可用城市"},
-		{Name: "rider_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "rider_id", Type: field.TypeUint64, Nullable: true, Comment: "骑手ID"},
 		{Name: "assembly_id", Type: field.TypeUint64},
-		{Name: "plan_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "plan_id", Type: field.TypeUint64, Nullable: true, Comment: "实际使用骑士卡"},
 		{Name: "template_id", Type: field.TypeUint64},
-		{Name: "order_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "order_id", Type: field.TypeUint64, Nullable: true, Comment: "订单ID"},
 	}
 	// CouponTable holds the schema information for the "coupon" table.
 	CouponTable = &schema.Table{
@@ -1425,8 +1425,8 @@ var (
 		{Name: "color", Type: field.TypeString, Comment: "颜色", Default: "橘黄"},
 		{Name: "ex_factory", Type: field.TypeString, Comment: "生产批次(出厂日期)"},
 		{Name: "brand_id", Type: field.TypeUint64},
-		{Name: "rider_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "store_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "rider_id", Type: field.TypeUint64, Nullable: true, Comment: "骑手ID"},
+		{Name: "store_id", Type: field.TypeUint64, Nullable: true, Comment: "门店ID"},
 	}
 	// EbikeTable holds the schema information for the "ebike" table.
 	EbikeTable = &schema.Table{
@@ -1529,7 +1529,7 @@ var (
 		{Name: "name", Type: field.TypeString, Comment: "姓名"},
 		{Name: "phone", Type: field.TypeString, Comment: "电话"},
 		{Name: "enable", Type: field.TypeBool, Comment: "启用状态", Default: true},
-		{Name: "city_id", Type: field.TypeUint64},
+		{Name: "city_id", Type: field.TypeUint64, Comment: "城市ID"},
 	}
 	// EmployeeTable holds the schema information for the "employee" table.
 	EmployeeTable = &schema.Table{
@@ -1613,7 +1613,7 @@ var (
 		{Name: "agent", Type: field.TypeBool, Comment: "代理商模式", Default: false},
 		{Name: "use_store", Type: field.TypeBool, Nullable: true, Comment: "是否可以使用门店, 只有代理商模式生效", Default: true},
 		{Name: "days", Type: field.TypeJSON, Nullable: true, Comment: "代理商时间选项"},
-		{Name: "city_id", Type: field.TypeUint64},
+		{Name: "city_id", Type: field.TypeUint64, Comment: "城市ID"},
 	}
 	// EnterpriseTable holds the schema information for the "enterprise" table.
 	EnterpriseTable = &schema.Table{
@@ -1715,12 +1715,12 @@ var (
 		{Name: "price", Type: field.TypeFloat64, Comment: "账单单价"},
 		{Name: "cost", Type: field.TypeFloat64, Comment: "账单金额"},
 		{Name: "model", Type: field.TypeString, Comment: "电池型号"},
-		{Name: "enterprise_id", Type: field.TypeUint64},
-		{Name: "rider_id", Type: field.TypeUint64},
-		{Name: "city_id", Type: field.TypeUint64},
-		{Name: "station_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "statement_id", Type: field.TypeUint64},
-		{Name: "subscribe_id", Type: field.TypeUint64},
+		{Name: "enterprise_id", Type: field.TypeUint64, Comment: "企业ID"},
+		{Name: "rider_id", Type: field.TypeUint64, Comment: "骑手ID"},
+		{Name: "city_id", Type: field.TypeUint64, Comment: "城市ID"},
+		{Name: "station_id", Type: field.TypeUint64, Nullable: true, Comment: "站点ID"},
+		{Name: "statement_id", Type: field.TypeUint64, Comment: "账单ID"},
+		{Name: "subscribe_id", Type: field.TypeUint64, Comment: "订阅ID"},
 	}
 	// EnterpriseBillTable holds the schema information for the "enterprise_bill" table.
 	EnterpriseBillTable = &schema.Table{
@@ -1878,7 +1878,7 @@ var (
 		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
 		{Name: "amount", Type: field.TypeFloat64, Comment: "预付金额"},
-		{Name: "enterprise_id", Type: field.TypeUint64},
+		{Name: "enterprise_id", Type: field.TypeUint64, Comment: "企业ID"},
 	}
 	// EnterprisePrepaymentTable holds the schema information for the "enterprise_prepayment" table.
 	EnterprisePrepaymentTable = &schema.Table{
@@ -1923,7 +1923,7 @@ var (
 		{Name: "price", Type: field.TypeFloat64, Comment: "单价 元/天"},
 		{Name: "model", Type: field.TypeString, Comment: "可用电池型号"},
 		{Name: "enterprise_id", Type: field.TypeUint64},
-		{Name: "city_id", Type: field.TypeUint64},
+		{Name: "city_id", Type: field.TypeUint64, Comment: "城市ID"},
 	}
 	// EnterprisePriceTable holds the schema information for the "enterprise_price" table.
 	EnterprisePriceTable = &schema.Table{
@@ -1988,7 +1988,7 @@ var (
 		{Name: "date", Type: field.TypeTime, Nullable: true, Comment: "对账单计算日期(包含当日)"},
 		{Name: "start", Type: field.TypeTime, Comment: "账单开始日期"},
 		{Name: "end", Type: field.TypeTime, Nullable: true, Comment: "账单结束日期"},
-		{Name: "enterprise_id", Type: field.TypeUint64},
+		{Name: "enterprise_id", Type: field.TypeUint64, Comment: "企业ID"},
 	}
 	// EnterpriseStatementTable holds the schema information for the "enterprise_statement" table.
 	EnterpriseStatementTable = &schema.Table{
@@ -2041,7 +2041,7 @@ var (
 		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
 		{Name: "name", Type: field.TypeString, Comment: "站点名称"},
-		{Name: "enterprise_id", Type: field.TypeUint64},
+		{Name: "enterprise_id", Type: field.TypeUint64, Comment: "企业ID"},
 	}
 	// EnterpriseStationTable holds the schema information for the "enterprise_station" table.
 	EnterpriseStationTable = &schema.Table{
@@ -2090,9 +2090,9 @@ var (
 		{Name: "reason", Type: field.TypeString, Comment: "异常原因"},
 		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "异常描述"},
 		{Name: "attachments", Type: field.TypeJSON, Nullable: true, Comment: "附件"},
-		{Name: "city_id", Type: field.TypeUint64},
-		{Name: "employee_id", Type: field.TypeUint64},
-		{Name: "store_id", Type: field.TypeUint64},
+		{Name: "city_id", Type: field.TypeUint64, Comment: "城市ID"},
+		{Name: "employee_id", Type: field.TypeUint64, Comment: "店员ID"},
+		{Name: "store_id", Type: field.TypeUint64, Comment: "门店ID"},
 	}
 	// ExceptionTable holds the schema information for the "exception" table.
 	ExceptionTable = &schema.Table{
@@ -2183,14 +2183,14 @@ var (
 		{Name: "rider_battery", Type: field.TypeString, Nullable: true, Comment: "骑手当前电池编号"},
 		{Name: "putin_battery", Type: field.TypeString, Nullable: true, Comment: "放入电池编号"},
 		{Name: "putout_battery", Type: field.TypeString, Nullable: true, Comment: "取出电池编号"},
-		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true, Comment: "电柜ID"},
+		{Name: "employee_id", Type: field.TypeUint64, Nullable: true, Comment: "店员ID"},
 		{Name: "subscribe_id", Type: field.TypeUint64},
-		{Name: "city_id", Type: field.TypeUint64},
-		{Name: "store_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "station_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "rider_id", Type: field.TypeUint64},
+		{Name: "city_id", Type: field.TypeUint64, Comment: "城市ID"},
+		{Name: "store_id", Type: field.TypeUint64, Nullable: true, Comment: "门店ID"},
+		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true, Comment: "企业ID"},
+		{Name: "station_id", Type: field.TypeUint64, Nullable: true, Comment: "站点ID"},
+		{Name: "rider_id", Type: field.TypeUint64, Comment: "骑手ID"},
 	}
 	// ExchangeTable holds the schema information for the "exchange" table.
 	ExchangeTable = &schema.Table{
@@ -2341,7 +2341,7 @@ var (
 		{Name: "condition", Type: field.TypeJSON, Comment: "筛选条件"},
 		{Name: "info", Type: field.TypeJSON, Nullable: true, Comment: "详细信息"},
 		{Name: "remark", Type: field.TypeString, Comment: "备注信息"},
-		{Name: "manager_id", Type: field.TypeUint64},
+		{Name: "manager_id", Type: field.TypeUint64, Comment: "管理人ID"},
 	}
 	// ExportTable holds the schema information for the "export" table.
 	ExportTable = &schema.Table{
@@ -2444,7 +2444,7 @@ var (
 		{Name: "name", Type: field.TypeString, Size: 30, Comment: "姓名"},
 		{Name: "password", Type: field.TypeString, Comment: "密码"},
 		{Name: "last_signin_at", Type: field.TypeTime, Nullable: true, Comment: "最后登录时间"},
-		{Name: "role_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "role_id", Type: field.TypeUint64, Nullable: true, Comment: "角色ID"},
 	}
 	// ManagerTable holds the schema information for the "manager" table.
 	ManagerTable = &schema.Table{
@@ -2523,12 +2523,12 @@ var (
 		{Name: "coupon_amount", Type: field.TypeFloat64, Comment: "优惠券金额", Default: 0},
 		{Name: "discount_newly", Type: field.TypeFloat64, Comment: "新签优惠", Default: 0},
 		{Name: "plan_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "city_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "city_id", Type: field.TypeUint64, Nullable: true, Comment: "城市ID"},
 		{Name: "brand_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "ebike_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "parent_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "rider_id", Type: field.TypeUint64},
-		{Name: "subscribe_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "parent_id", Type: field.TypeUint64, Nullable: true, Comment: "父订单ID"},
+		{Name: "rider_id", Type: field.TypeUint64, Comment: "骑手ID"},
+		{Name: "subscribe_id", Type: field.TypeUint64, Nullable: true, Comment: "所属订阅ID"},
 	}
 	// OrderTable holds the schema information for the "order" table.
 	OrderTable = &schema.Table{
@@ -2656,7 +2656,7 @@ var (
 		{Name: "out_refund_no", Type: field.TypeString, Unique: true, Comment: "退款订单编号"},
 		{Name: "reason", Type: field.TypeString, Comment: "退款理由"},
 		{Name: "refund_at", Type: field.TypeTime, Nullable: true, Comment: "退款成功时间"},
-		{Name: "order_id", Type: field.TypeUint64, Unique: true},
+		{Name: "order_id", Type: field.TypeUint64, Unique: true, Comment: "订单ID"},
 	}
 	// OrderRefundTable holds the schema information for the "order_refund" table.
 	OrderRefundTable = &schema.Table{
@@ -2780,7 +2780,7 @@ var (
 		{Name: "notes", Type: field.TypeJSON, Nullable: true, Comment: "购买须知"},
 		{Name: "intelligent", Type: field.TypeBool, Comment: "是否智能柜套餐", Default: false},
 		{Name: "brand_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "parent_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "parent_id", Type: field.TypeUint64, Nullable: true, Comment: "父级"},
 	}
 	// PlanTable holds the schema information for the "plan" table.
 	PlanTable = &schema.Table{
@@ -2902,7 +2902,7 @@ var (
 		{Name: "after", Type: field.TypeInt64, Comment: "变动结果"},
 		{Name: "reason", Type: field.TypeString, Nullable: true, Comment: "原因"},
 		{Name: "attach", Type: field.TypeJSON, Nullable: true, Comment: "其他信息"},
-		{Name: "rider_id", Type: field.TypeUint64},
+		{Name: "rider_id", Type: field.TypeUint64, Comment: "骑手ID"},
 		{Name: "order_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// PointLogTable holds the schema information for the "point_log" table.
@@ -2958,9 +2958,9 @@ var (
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
 		{Name: "status", Type: field.TypeUint8, Comment: "预约状态", Default: 0},
 		{Name: "type", Type: field.TypeString, Comment: "业务类型"},
-		{Name: "cabinet_id", Type: field.TypeUint64},
-		{Name: "rider_id", Type: field.TypeUint64},
-		{Name: "city_id", Type: field.TypeUint64},
+		{Name: "cabinet_id", Type: field.TypeUint64, Comment: "电柜ID"},
+		{Name: "rider_id", Type: field.TypeUint64, Comment: "骑手ID"},
+		{Name: "city_id", Type: field.TypeUint64, Comment: "城市ID"},
 		{Name: "business_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// ReserveTable holds the schema information for the "reserve" table.
@@ -3058,9 +3058,9 @@ var (
 		{Name: "last_signin_at", Type: field.TypeTime, Nullable: true, Comment: "最后登录时间"},
 		{Name: "blocked", Type: field.TypeBool, Comment: "是否封禁骑手账号", Default: false},
 		{Name: "points", Type: field.TypeInt64, Comment: "骑手积分", Default: 0},
-		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "person_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "station_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true, Comment: "所属企业"},
+		{Name: "person_id", Type: field.TypeUint64, Nullable: true, Comment: "身份"},
+		{Name: "station_id", Type: field.TypeUint64, Nullable: true, Comment: "站点ID"},
 	}
 	// RiderTable holds the schema information for the "rider" table.
 	RiderTable = &schema.Table{
@@ -3161,8 +3161,8 @@ var (
 		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
 		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
-		{Name: "rider_id", Type: field.TypeUint64},
-		{Name: "manager_id", Type: field.TypeUint64},
+		{Name: "rider_id", Type: field.TypeUint64, Comment: "骑手ID"},
+		{Name: "manager_id", Type: field.TypeUint64, Comment: "管理人ID"},
 	}
 	// RiderFollowUpTable holds the schema information for the "rider_follow_up" table.
 	RiderFollowUpTable = &schema.Table{
@@ -3273,17 +3273,17 @@ var (
 		{Name: "model", Type: field.TypeString, Nullable: true, Comment: "电池型号"},
 		{Name: "num", Type: field.TypeInt, Comment: "物资数量: 正值调入 / 负值调出"},
 		{Name: "material", Type: field.TypeEnum, Comment: "物资种类", Enums: []string{"battery", "ebike", "others"}},
-		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "rider_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "city_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true, Comment: "入库至 或 出库自 电柜ID"},
+		{Name: "employee_id", Type: field.TypeUint64, Nullable: true, Comment: "操作店员ID"},
+		{Name: "rider_id", Type: field.TypeUint64, Nullable: true, Comment: "对应骑手ID"},
+		{Name: "city_id", Type: field.TypeUint64, Nullable: true, Comment: "城市ID"},
 		{Name: "subscribe_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "ebike_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "brand_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "battery_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "stock_spouse", Type: field.TypeUint64, Unique: true, Nullable: true},
-		{Name: "parent_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "store_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "parent_id", Type: field.TypeUint64, Nullable: true, Comment: "父级"},
+		{Name: "store_id", Type: field.TypeUint64, Nullable: true, Comment: "入库至 或 出库自 门店ID"},
 	}
 	// StockTable holds the schema information for the "stock" table.
 	StockTable = &schema.Table{
@@ -3469,9 +3469,9 @@ var (
 		{Name: "address", Type: field.TypeString, Comment: "详细地址"},
 		{Name: "ebike_obtain", Type: field.TypeBool, Comment: "是否可以领取车辆", Default: false},
 		{Name: "ebike_repair", Type: field.TypeBool, Comment: "是否可以维修车辆", Default: false},
-		{Name: "branch_id", Type: field.TypeUint64},
-		{Name: "employee_id", Type: field.TypeUint64, Unique: true, Nullable: true},
-		{Name: "city_id", Type: field.TypeUint64},
+		{Name: "branch_id", Type: field.TypeUint64, Comment: "网点ID"},
+		{Name: "employee_id", Type: field.TypeUint64, Unique: true, Nullable: true, Comment: "上班员工ID"},
+		{Name: "city_id", Type: field.TypeUint64, Comment: "城市ID"},
 	}
 	// StoreTable holds the schema information for the "store" table.
 	StoreTable = &schema.Table{
@@ -3573,17 +3573,17 @@ var (
 		{Name: "formula", Type: field.TypeString, Nullable: true, Comment: "计算公式"},
 		{Name: "need_contract", Type: field.TypeBool, Comment: "是否需要签约", Default: false},
 		{Name: "intelligent", Type: field.TypeBool, Comment: "是否智能柜套餐", Default: false},
-		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "rider_id", Type: field.TypeUint64},
+		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true, Comment: "企业ID"},
+		{Name: "rider_id", Type: field.TypeUint64, Comment: "骑手ID"},
 		{Name: "plan_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "city_id", Type: field.TypeUint64},
-		{Name: "station_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "store_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "employee_id", Type: field.TypeUint64, Nullable: true, Comment: "店员ID"},
+		{Name: "city_id", Type: field.TypeUint64, Comment: "城市ID"},
+		{Name: "station_id", Type: field.TypeUint64, Nullable: true, Comment: "站点ID"},
+		{Name: "store_id", Type: field.TypeUint64, Nullable: true, Comment: "门店ID"},
+		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true, Comment: "电柜ID"},
 		{Name: "brand_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "ebike_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "initial_order_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "initial_order_id", Type: field.TypeUint64, Nullable: true, Comment: "初始订单ID(开通订阅的初始订单), 团签用户无此字段"},
 	}
 	// SubscribeTable holds the schema information for the "subscribe" table.
 	SubscribeTable = &schema.Table{
@@ -3746,10 +3746,10 @@ var (
 		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
 		{Name: "days", Type: field.TypeInt, Comment: "更改天数"},
-		{Name: "subscribe_id", Type: field.TypeUint64},
-		{Name: "rider_id", Type: field.TypeUint64},
-		{Name: "manager_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "subscribe_id", Type: field.TypeUint64, Comment: "订阅ID"},
+		{Name: "rider_id", Type: field.TypeUint64, Comment: "骑手ID"},
+		{Name: "manager_id", Type: field.TypeUint64, Nullable: true, Comment: "管理人ID"},
+		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true, Comment: "企业ID"},
 		{Name: "agent_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// SubscribeAlterTable holds the schema information for the "subscribe_alter" table.
@@ -3843,15 +3843,15 @@ var (
 		{Name: "end_modifier", Type: field.TypeJSON, Nullable: true, Comment: "结束寄存管理员信息"},
 		{Name: "pause_overdue", Type: field.TypeBool, Comment: "是否超期退租", Default: false},
 		{Name: "suspend_days", Type: field.TypeInt, Comment: "重复天数, 寄存过程中暂停扣费天数", Default: 0},
-		{Name: "subscribe_id", Type: field.TypeUint64},
-		{Name: "rider_id", Type: field.TypeUint64},
-		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "city_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "store_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "end_store_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "end_cabinet_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "end_employee_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "subscribe_id", Type: field.TypeUint64, Comment: "订阅ID"},
+		{Name: "rider_id", Type: field.TypeUint64, Comment: "骑手ID"},
+		{Name: "employee_id", Type: field.TypeUint64, Nullable: true, Comment: "店员ID"},
+		{Name: "city_id", Type: field.TypeUint64, Nullable: true, Comment: "城市ID"},
+		{Name: "store_id", Type: field.TypeUint64, Nullable: true, Comment: "门店ID"},
+		{Name: "end_store_id", Type: field.TypeUint64, Nullable: true, Comment: "门店ID"},
+		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true, Comment: "电柜ID"},
+		{Name: "end_cabinet_id", Type: field.TypeUint64, Nullable: true, Comment: "电柜ID"},
+		{Name: "end_employee_id", Type: field.TypeUint64, Nullable: true, Comment: "结束寄存店员ID"},
 	}
 	// SubscribePauseTable holds the schema information for the "subscribe_pause" table.
 	SubscribePauseTable = &schema.Table{
@@ -4003,7 +4003,7 @@ var (
 		{Name: "fee_formula", Type: field.TypeString, Nullable: true, Comment: "逾期费用计算公式"},
 		{Name: "subscribe_id", Type: field.TypeUint64},
 		{Name: "plan_id", Type: field.TypeUint64},
-		{Name: "rider_id", Type: field.TypeUint64},
+		{Name: "rider_id", Type: field.TypeUint64, Comment: "骑手ID"},
 	}
 	// SubscribeReminderTable holds the schema information for the "subscribe_reminder" table.
 	SubscribeReminderTable = &schema.Table{
@@ -4091,10 +4091,10 @@ var (
 		{Name: "end_at", Type: field.TypeTime, Nullable: true, Comment: "结束时间"},
 		{Name: "end_reason", Type: field.TypeString, Nullable: true, Comment: "结束理由"},
 		{Name: "end_modifier", Type: field.TypeJSON, Nullable: true, Comment: "继续计费管理员信息"},
-		{Name: "subscribe_id", Type: field.TypeUint64},
-		{Name: "pause_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "city_id", Type: field.TypeUint64},
-		{Name: "rider_id", Type: field.TypeUint64},
+		{Name: "subscribe_id", Type: field.TypeUint64, Comment: "订阅ID"},
+		{Name: "pause_id", Type: field.TypeUint64, Nullable: true, Comment: "寄存ID"},
+		{Name: "city_id", Type: field.TypeUint64, Comment: "城市ID"},
+		{Name: "rider_id", Type: field.TypeUint64, Comment: "骑手ID"},
 	}
 	// SubscribeSuspendTable holds the schema information for the "subscribe_suspend" table.
 	SubscribeSuspendTable = &schema.Table{

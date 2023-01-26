@@ -255,34 +255,34 @@ func (sa *SubscribeAlter) assignValues(columns []string, values []any) error {
 
 // QueryRider queries the "rider" edge of the SubscribeAlter entity.
 func (sa *SubscribeAlter) QueryRider() *RiderQuery {
-	return (&SubscribeAlterClient{config: sa.config}).QueryRider(sa)
+	return NewSubscribeAlterClient(sa.config).QueryRider(sa)
 }
 
 // QueryManager queries the "manager" edge of the SubscribeAlter entity.
 func (sa *SubscribeAlter) QueryManager() *ManagerQuery {
-	return (&SubscribeAlterClient{config: sa.config}).QueryManager(sa)
+	return NewSubscribeAlterClient(sa.config).QueryManager(sa)
 }
 
 // QueryEnterprise queries the "enterprise" edge of the SubscribeAlter entity.
 func (sa *SubscribeAlter) QueryEnterprise() *EnterpriseQuery {
-	return (&SubscribeAlterClient{config: sa.config}).QueryEnterprise(sa)
+	return NewSubscribeAlterClient(sa.config).QueryEnterprise(sa)
 }
 
 // QueryAgent queries the "agent" edge of the SubscribeAlter entity.
 func (sa *SubscribeAlter) QueryAgent() *AgentQuery {
-	return (&SubscribeAlterClient{config: sa.config}).QueryAgent(sa)
+	return NewSubscribeAlterClient(sa.config).QueryAgent(sa)
 }
 
 // QuerySubscribe queries the "subscribe" edge of the SubscribeAlter entity.
 func (sa *SubscribeAlter) QuerySubscribe() *SubscribeQuery {
-	return (&SubscribeAlterClient{config: sa.config}).QuerySubscribe(sa)
+	return NewSubscribeAlterClient(sa.config).QuerySubscribe(sa)
 }
 
 // Update returns a builder for updating this SubscribeAlter.
 // Note that you need to call SubscribeAlter.Unwrap() before calling this method if this SubscribeAlter
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (sa *SubscribeAlter) Update() *SubscribeAlterUpdateOne {
-	return (&SubscribeAlterClient{config: sa.config}).UpdateOne(sa)
+	return NewSubscribeAlterClient(sa.config).UpdateOne(sa)
 }
 
 // Unwrap unwraps the SubscribeAlter entity that was returned from a transaction after it was closed,

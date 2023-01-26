@@ -23,11 +23,8 @@ import (
 // AssistanceQuery is the builder for querying Assistance entities.
 type AssistanceQuery struct {
 	config
-	limit         *int
-	offset        *int
-	unique        *bool
+	ctx           *QueryContext
 	order         []OrderFunc
-	fields        []string
 	inters        []Interceptor
 	predicates    []predicate.Assistance
 	withStore     *StoreQuery
@@ -50,20 +47,20 @@ func (aq *AssistanceQuery) Where(ps ...predicate.Assistance) *AssistanceQuery {
 
 // Limit the number of records to be returned by this query.
 func (aq *AssistanceQuery) Limit(limit int) *AssistanceQuery {
-	aq.limit = &limit
+	aq.ctx.Limit = &limit
 	return aq
 }
 
 // Offset to start from.
 func (aq *AssistanceQuery) Offset(offset int) *AssistanceQuery {
-	aq.offset = &offset
+	aq.ctx.Offset = &offset
 	return aq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (aq *AssistanceQuery) Unique(unique bool) *AssistanceQuery {
-	aq.unique = &unique
+	aq.ctx.Unique = &unique
 	return aq
 }
 
@@ -208,7 +205,7 @@ func (aq *AssistanceQuery) QueryEmployee() *EmployeeQuery {
 // First returns the first Assistance entity from the query.
 // Returns a *NotFoundError when no Assistance was found.
 func (aq *AssistanceQuery) First(ctx context.Context) (*Assistance, error) {
-	nodes, err := aq.Limit(1).All(newQueryContext(ctx, TypeAssistance, "First"))
+	nodes, err := aq.Limit(1).All(setContextOp(ctx, aq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -231,7 +228,7 @@ func (aq *AssistanceQuery) FirstX(ctx context.Context) *Assistance {
 // Returns a *NotFoundError when no Assistance ID was found.
 func (aq *AssistanceQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = aq.Limit(1).IDs(newQueryContext(ctx, TypeAssistance, "FirstID")); err != nil {
+	if ids, err = aq.Limit(1).IDs(setContextOp(ctx, aq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -254,7 +251,7 @@ func (aq *AssistanceQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Assistance entity is found.
 // Returns a *NotFoundError when no Assistance entities are found.
 func (aq *AssistanceQuery) Only(ctx context.Context) (*Assistance, error) {
-	nodes, err := aq.Limit(2).All(newQueryContext(ctx, TypeAssistance, "Only"))
+	nodes, err := aq.Limit(2).All(setContextOp(ctx, aq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -282,7 +279,7 @@ func (aq *AssistanceQuery) OnlyX(ctx context.Context) *Assistance {
 // Returns a *NotFoundError when no entities are found.
 func (aq *AssistanceQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = aq.Limit(2).IDs(newQueryContext(ctx, TypeAssistance, "OnlyID")); err != nil {
+	if ids, err = aq.Limit(2).IDs(setContextOp(ctx, aq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -307,7 +304,7 @@ func (aq *AssistanceQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Assistances.
 func (aq *AssistanceQuery) All(ctx context.Context) ([]*Assistance, error) {
-	ctx = newQueryContext(ctx, TypeAssistance, "All")
+	ctx = setContextOp(ctx, aq.ctx, "All")
 	if err := aq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -327,7 +324,7 @@ func (aq *AssistanceQuery) AllX(ctx context.Context) []*Assistance {
 // IDs executes the query and returns a list of Assistance IDs.
 func (aq *AssistanceQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
-	ctx = newQueryContext(ctx, TypeAssistance, "IDs")
+	ctx = setContextOp(ctx, aq.ctx, "IDs")
 	if err := aq.Select(assistance.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -345,7 +342,7 @@ func (aq *AssistanceQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (aq *AssistanceQuery) Count(ctx context.Context) (int, error) {
-	ctx = newQueryContext(ctx, TypeAssistance, "Count")
+	ctx = setContextOp(ctx, aq.ctx, "Count")
 	if err := aq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -363,7 +360,7 @@ func (aq *AssistanceQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (aq *AssistanceQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = newQueryContext(ctx, TypeAssistance, "Exist")
+	ctx = setContextOp(ctx, aq.ctx, "Exist")
 	switch _, err := aq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -391,9 +388,9 @@ func (aq *AssistanceQuery) Clone() *AssistanceQuery {
 	}
 	return &AssistanceQuery{
 		config:        aq.config,
-		limit:         aq.limit,
-		offset:        aq.offset,
+		ctx:           aq.ctx.Clone(),
 		order:         append([]OrderFunc{}, aq.order...),
+		inters:        append([]Interceptor{}, aq.inters...),
 		predicates:    append([]predicate.Assistance{}, aq.predicates...),
 		withStore:     aq.withStore.Clone(),
 		withRider:     aq.withRider.Clone(),
@@ -402,9 +399,8 @@ func (aq *AssistanceQuery) Clone() *AssistanceQuery {
 		withOrder:     aq.withOrder.Clone(),
 		withEmployee:  aq.withEmployee.Clone(),
 		// clone intermediate query.
-		sql:    aq.sql.Clone(),
-		path:   aq.path,
-		unique: aq.unique,
+		sql:  aq.sql.Clone(),
+		path: aq.path,
 	}
 }
 
@@ -489,9 +485,9 @@ func (aq *AssistanceQuery) WithEmployee(opts ...func(*EmployeeQuery)) *Assistanc
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (aq *AssistanceQuery) GroupBy(field string, fields ...string) *AssistanceGroupBy {
-	aq.fields = append([]string{field}, fields...)
+	aq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &AssistanceGroupBy{build: aq}
-	grbuild.flds = &aq.fields
+	grbuild.flds = &aq.ctx.Fields
 	grbuild.label = assistance.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -510,10 +506,10 @@ func (aq *AssistanceQuery) GroupBy(field string, fields ...string) *AssistanceGr
 //		Select(assistance.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (aq *AssistanceQuery) Select(fields ...string) *AssistanceSelect {
-	aq.fields = append(aq.fields, fields...)
+	aq.ctx.Fields = append(aq.ctx.Fields, fields...)
 	sbuild := &AssistanceSelect{AssistanceQuery: aq}
 	sbuild.label = assistance.Label
-	sbuild.flds, sbuild.scan = &aq.fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &aq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
@@ -533,7 +529,7 @@ func (aq *AssistanceQuery) prepareQuery(ctx context.Context) error {
 			}
 		}
 	}
-	for _, f := range aq.fields {
+	for _, f := range aq.ctx.Fields {
 		if !assistance.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -634,6 +630,9 @@ func (aq *AssistanceQuery) loadStore(ctx context.Context, query *StoreQuery, nod
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(store.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -659,6 +658,9 @@ func (aq *AssistanceQuery) loadRider(ctx context.Context, query *RiderQuery, nod
 			ids = append(ids, fk)
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
 	}
 	query.Where(rider.IDIn(ids...))
 	neighbors, err := query.All(ctx)
@@ -686,6 +688,9 @@ func (aq *AssistanceQuery) loadSubscribe(ctx context.Context, query *SubscribeQu
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(subscribe.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -711,6 +716,9 @@ func (aq *AssistanceQuery) loadCity(ctx context.Context, query *CityQuery, nodes
 			ids = append(ids, fk)
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
 	}
 	query.Where(city.IDIn(ids...))
 	neighbors, err := query.All(ctx)
@@ -741,6 +749,9 @@ func (aq *AssistanceQuery) loadOrder(ctx context.Context, query *OrderQuery, nod
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(order.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -770,6 +781,9 @@ func (aq *AssistanceQuery) loadEmployee(ctx context.Context, query *EmployeeQuer
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(employee.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -792,9 +806,9 @@ func (aq *AssistanceQuery) sqlCount(ctx context.Context) (int, error) {
 	if len(aq.modifiers) > 0 {
 		_spec.Modifiers = aq.modifiers
 	}
-	_spec.Node.Columns = aq.fields
-	if len(aq.fields) > 0 {
-		_spec.Unique = aq.unique != nil && *aq.unique
+	_spec.Node.Columns = aq.ctx.Fields
+	if len(aq.ctx.Fields) > 0 {
+		_spec.Unique = aq.ctx.Unique != nil && *aq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, aq.driver, _spec)
 }
@@ -812,10 +826,10 @@ func (aq *AssistanceQuery) querySpec() *sqlgraph.QuerySpec {
 		From:   aq.sql,
 		Unique: true,
 	}
-	if unique := aq.unique; unique != nil {
+	if unique := aq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
 	}
-	if fields := aq.fields; len(fields) > 0 {
+	if fields := aq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, assistance.FieldID)
 		for i := range fields {
@@ -831,10 +845,10 @@ func (aq *AssistanceQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := aq.limit; limit != nil {
+	if limit := aq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := aq.offset; offset != nil {
+	if offset := aq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := aq.order; len(ps) > 0 {
@@ -850,7 +864,7 @@ func (aq *AssistanceQuery) querySpec() *sqlgraph.QuerySpec {
 func (aq *AssistanceQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(aq.driver.Dialect())
 	t1 := builder.Table(assistance.Table)
-	columns := aq.fields
+	columns := aq.ctx.Fields
 	if len(columns) == 0 {
 		columns = assistance.Columns
 	}
@@ -859,7 +873,7 @@ func (aq *AssistanceQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = aq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if aq.unique != nil && *aq.unique {
+	if aq.ctx.Unique != nil && *aq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, m := range aq.modifiers {
@@ -871,12 +885,12 @@ func (aq *AssistanceQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range aq.order {
 		p(selector)
 	}
-	if offset := aq.offset; offset != nil {
+	if offset := aq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := aq.limit; limit != nil {
+	if limit := aq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -933,7 +947,7 @@ func (agb *AssistanceGroupBy) Aggregate(fns ...AggregateFunc) *AssistanceGroupBy
 
 // Scan applies the selector query and scans the result into the given value.
 func (agb *AssistanceGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeAssistance, "GroupBy")
+	ctx = setContextOp(ctx, agb.build.ctx, "GroupBy")
 	if err := agb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -981,7 +995,7 @@ func (as *AssistanceSelect) Aggregate(fns ...AggregateFunc) *AssistanceSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (as *AssistanceSelect) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeAssistance, "Select")
+	ctx = setContextOp(ctx, as.ctx, "Select")
 	if err := as.prepareQuery(ctx); err != nil {
 		return err
 	}

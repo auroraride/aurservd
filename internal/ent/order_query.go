@@ -28,11 +28,8 @@ import (
 // OrderQuery is the builder for querying Order entities.
 type OrderQuery struct {
 	config
-	limit          *int
-	offset         *int
-	unique         *bool
+	ctx            *QueryContext
 	order          []OrderFunc
-	fields         []string
 	inters         []Interceptor
 	predicates     []predicate.Order
 	withPlan       *PlanQuery
@@ -61,20 +58,20 @@ func (oq *OrderQuery) Where(ps ...predicate.Order) *OrderQuery {
 
 // Limit the number of records to be returned by this query.
 func (oq *OrderQuery) Limit(limit int) *OrderQuery {
-	oq.limit = &limit
+	oq.ctx.Limit = &limit
 	return oq
 }
 
 // Offset to start from.
 func (oq *OrderQuery) Offset(offset int) *OrderQuery {
-	oq.offset = &offset
+	oq.ctx.Offset = &offset
 	return oq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (oq *OrderQuery) Unique(unique bool) *OrderQuery {
-	oq.unique = &unique
+	oq.ctx.Unique = &unique
 	return oq
 }
 
@@ -351,7 +348,7 @@ func (oq *OrderQuery) QueryCoupons() *CouponQuery {
 // First returns the first Order entity from the query.
 // Returns a *NotFoundError when no Order was found.
 func (oq *OrderQuery) First(ctx context.Context) (*Order, error) {
-	nodes, err := oq.Limit(1).All(newQueryContext(ctx, TypeOrder, "First"))
+	nodes, err := oq.Limit(1).All(setContextOp(ctx, oq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -374,7 +371,7 @@ func (oq *OrderQuery) FirstX(ctx context.Context) *Order {
 // Returns a *NotFoundError when no Order ID was found.
 func (oq *OrderQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = oq.Limit(1).IDs(newQueryContext(ctx, TypeOrder, "FirstID")); err != nil {
+	if ids, err = oq.Limit(1).IDs(setContextOp(ctx, oq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -397,7 +394,7 @@ func (oq *OrderQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Order entity is found.
 // Returns a *NotFoundError when no Order entities are found.
 func (oq *OrderQuery) Only(ctx context.Context) (*Order, error) {
-	nodes, err := oq.Limit(2).All(newQueryContext(ctx, TypeOrder, "Only"))
+	nodes, err := oq.Limit(2).All(setContextOp(ctx, oq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -425,7 +422,7 @@ func (oq *OrderQuery) OnlyX(ctx context.Context) *Order {
 // Returns a *NotFoundError when no entities are found.
 func (oq *OrderQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = oq.Limit(2).IDs(newQueryContext(ctx, TypeOrder, "OnlyID")); err != nil {
+	if ids, err = oq.Limit(2).IDs(setContextOp(ctx, oq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -450,7 +447,7 @@ func (oq *OrderQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Orders.
 func (oq *OrderQuery) All(ctx context.Context) ([]*Order, error) {
-	ctx = newQueryContext(ctx, TypeOrder, "All")
+	ctx = setContextOp(ctx, oq.ctx, "All")
 	if err := oq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -470,7 +467,7 @@ func (oq *OrderQuery) AllX(ctx context.Context) []*Order {
 // IDs executes the query and returns a list of Order IDs.
 func (oq *OrderQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
-	ctx = newQueryContext(ctx, TypeOrder, "IDs")
+	ctx = setContextOp(ctx, oq.ctx, "IDs")
 	if err := oq.Select(order.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -488,7 +485,7 @@ func (oq *OrderQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (oq *OrderQuery) Count(ctx context.Context) (int, error) {
-	ctx = newQueryContext(ctx, TypeOrder, "Count")
+	ctx = setContextOp(ctx, oq.ctx, "Count")
 	if err := oq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -506,7 +503,7 @@ func (oq *OrderQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (oq *OrderQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = newQueryContext(ctx, TypeOrder, "Exist")
+	ctx = setContextOp(ctx, oq.ctx, "Exist")
 	switch _, err := oq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -534,9 +531,9 @@ func (oq *OrderQuery) Clone() *OrderQuery {
 	}
 	return &OrderQuery{
 		config:         oq.config,
-		limit:          oq.limit,
-		offset:         oq.offset,
+		ctx:            oq.ctx.Clone(),
 		order:          append([]OrderFunc{}, oq.order...),
+		inters:         append([]Interceptor{}, oq.inters...),
 		predicates:     append([]predicate.Order{}, oq.predicates...),
 		withPlan:       oq.withPlan.Clone(),
 		withCity:       oq.withCity.Clone(),
@@ -551,9 +548,8 @@ func (oq *OrderQuery) Clone() *OrderQuery {
 		withAssistance: oq.withAssistance.Clone(),
 		withCoupons:    oq.withCoupons.Clone(),
 		// clone intermediate query.
-		sql:    oq.sql.Clone(),
-		path:   oq.path,
-		unique: oq.unique,
+		sql:  oq.sql.Clone(),
+		path: oq.path,
 	}
 }
 
@@ -704,9 +700,9 @@ func (oq *OrderQuery) WithCoupons(opts ...func(*CouponQuery)) *OrderQuery {
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (oq *OrderQuery) GroupBy(field string, fields ...string) *OrderGroupBy {
-	oq.fields = append([]string{field}, fields...)
+	oq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &OrderGroupBy{build: oq}
-	grbuild.flds = &oq.fields
+	grbuild.flds = &oq.ctx.Fields
 	grbuild.label = order.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -725,10 +721,10 @@ func (oq *OrderQuery) GroupBy(field string, fields ...string) *OrderGroupBy {
 //		Select(order.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (oq *OrderQuery) Select(fields ...string) *OrderSelect {
-	oq.fields = append(oq.fields, fields...)
+	oq.ctx.Fields = append(oq.ctx.Fields, fields...)
 	sbuild := &OrderSelect{OrderQuery: oq}
 	sbuild.label = order.Label
-	sbuild.flds, sbuild.scan = &oq.fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &oq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
@@ -748,7 +744,7 @@ func (oq *OrderQuery) prepareQuery(ctx context.Context) error {
 			}
 		}
 	}
-	for _, f := range oq.fields {
+	for _, f := range oq.ctx.Fields {
 		if !order.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -893,6 +889,9 @@ func (oq *OrderQuery) loadPlan(ctx context.Context, query *PlanQuery, nodes []*O
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(plan.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -921,6 +920,9 @@ func (oq *OrderQuery) loadCity(ctx context.Context, query *CityQuery, nodes []*O
 			ids = append(ids, fk)
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
 	}
 	query.Where(city.IDIn(ids...))
 	neighbors, err := query.All(ctx)
@@ -951,6 +953,9 @@ func (oq *OrderQuery) loadBrand(ctx context.Context, query *EbikeBrandQuery, nod
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(ebikebrand.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -980,6 +985,9 @@ func (oq *OrderQuery) loadEbike(ctx context.Context, query *EbikeQuery, nodes []
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(ebike.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1006,6 +1014,9 @@ func (oq *OrderQuery) loadRider(ctx context.Context, query *RiderQuery, nodes []
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(rider.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1031,6 +1042,9 @@ func (oq *OrderQuery) loadSubscribe(ctx context.Context, query *SubscribeQuery, 
 			ids = append(ids, fk)
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
 	}
 	query.Where(subscribe.IDIn(ids...))
 	neighbors, err := query.All(ctx)
@@ -1081,6 +1095,9 @@ func (oq *OrderQuery) loadParent(ctx context.Context, query *OrderQuery, nodes [
 			ids = append(ids, fk)
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
 	}
 	query.Where(order.IDIn(ids...))
 	neighbors, err := query.All(ctx)
@@ -1212,9 +1229,9 @@ func (oq *OrderQuery) sqlCount(ctx context.Context) (int, error) {
 	if len(oq.modifiers) > 0 {
 		_spec.Modifiers = oq.modifiers
 	}
-	_spec.Node.Columns = oq.fields
-	if len(oq.fields) > 0 {
-		_spec.Unique = oq.unique != nil && *oq.unique
+	_spec.Node.Columns = oq.ctx.Fields
+	if len(oq.ctx.Fields) > 0 {
+		_spec.Unique = oq.ctx.Unique != nil && *oq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, oq.driver, _spec)
 }
@@ -1232,10 +1249,10 @@ func (oq *OrderQuery) querySpec() *sqlgraph.QuerySpec {
 		From:   oq.sql,
 		Unique: true,
 	}
-	if unique := oq.unique; unique != nil {
+	if unique := oq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
 	}
-	if fields := oq.fields; len(fields) > 0 {
+	if fields := oq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, order.FieldID)
 		for i := range fields {
@@ -1251,10 +1268,10 @@ func (oq *OrderQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := oq.limit; limit != nil {
+	if limit := oq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := oq.offset; offset != nil {
+	if offset := oq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := oq.order; len(ps) > 0 {
@@ -1270,7 +1287,7 @@ func (oq *OrderQuery) querySpec() *sqlgraph.QuerySpec {
 func (oq *OrderQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(oq.driver.Dialect())
 	t1 := builder.Table(order.Table)
-	columns := oq.fields
+	columns := oq.ctx.Fields
 	if len(columns) == 0 {
 		columns = order.Columns
 	}
@@ -1279,7 +1296,7 @@ func (oq *OrderQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = oq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if oq.unique != nil && *oq.unique {
+	if oq.ctx.Unique != nil && *oq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, m := range oq.modifiers {
@@ -1291,12 +1308,12 @@ func (oq *OrderQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range oq.order {
 		p(selector)
 	}
-	if offset := oq.offset; offset != nil {
+	if offset := oq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := oq.limit; limit != nil {
+	if limit := oq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -1371,7 +1388,7 @@ func (ogb *OrderGroupBy) Aggregate(fns ...AggregateFunc) *OrderGroupBy {
 
 // Scan applies the selector query and scans the result into the given value.
 func (ogb *OrderGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeOrder, "GroupBy")
+	ctx = setContextOp(ctx, ogb.build.ctx, "GroupBy")
 	if err := ogb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -1419,7 +1436,7 @@ func (os *OrderSelect) Aggregate(fns ...AggregateFunc) *OrderSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (os *OrderSelect) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeOrder, "Select")
+	ctx = setContextOp(ctx, os.ctx, "Select")
 	if err := os.prepareQuery(ctx); err != nil {
 		return err
 	}

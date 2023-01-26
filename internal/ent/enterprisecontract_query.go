@@ -18,11 +18,8 @@ import (
 // EnterpriseContractQuery is the builder for querying EnterpriseContract entities.
 type EnterpriseContractQuery struct {
 	config
-	limit          *int
-	offset         *int
-	unique         *bool
+	ctx            *QueryContext
 	order          []OrderFunc
-	fields         []string
 	inters         []Interceptor
 	predicates     []predicate.EnterpriseContract
 	withEnterprise *EnterpriseQuery
@@ -40,20 +37,20 @@ func (ecq *EnterpriseContractQuery) Where(ps ...predicate.EnterpriseContract) *E
 
 // Limit the number of records to be returned by this query.
 func (ecq *EnterpriseContractQuery) Limit(limit int) *EnterpriseContractQuery {
-	ecq.limit = &limit
+	ecq.ctx.Limit = &limit
 	return ecq
 }
 
 // Offset to start from.
 func (ecq *EnterpriseContractQuery) Offset(offset int) *EnterpriseContractQuery {
-	ecq.offset = &offset
+	ecq.ctx.Offset = &offset
 	return ecq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (ecq *EnterpriseContractQuery) Unique(unique bool) *EnterpriseContractQuery {
-	ecq.unique = &unique
+	ecq.ctx.Unique = &unique
 	return ecq
 }
 
@@ -88,7 +85,7 @@ func (ecq *EnterpriseContractQuery) QueryEnterprise() *EnterpriseQuery {
 // First returns the first EnterpriseContract entity from the query.
 // Returns a *NotFoundError when no EnterpriseContract was found.
 func (ecq *EnterpriseContractQuery) First(ctx context.Context) (*EnterpriseContract, error) {
-	nodes, err := ecq.Limit(1).All(newQueryContext(ctx, TypeEnterpriseContract, "First"))
+	nodes, err := ecq.Limit(1).All(setContextOp(ctx, ecq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -111,7 +108,7 @@ func (ecq *EnterpriseContractQuery) FirstX(ctx context.Context) *EnterpriseContr
 // Returns a *NotFoundError when no EnterpriseContract ID was found.
 func (ecq *EnterpriseContractQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = ecq.Limit(1).IDs(newQueryContext(ctx, TypeEnterpriseContract, "FirstID")); err != nil {
+	if ids, err = ecq.Limit(1).IDs(setContextOp(ctx, ecq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -134,7 +131,7 @@ func (ecq *EnterpriseContractQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one EnterpriseContract entity is found.
 // Returns a *NotFoundError when no EnterpriseContract entities are found.
 func (ecq *EnterpriseContractQuery) Only(ctx context.Context) (*EnterpriseContract, error) {
-	nodes, err := ecq.Limit(2).All(newQueryContext(ctx, TypeEnterpriseContract, "Only"))
+	nodes, err := ecq.Limit(2).All(setContextOp(ctx, ecq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -162,7 +159,7 @@ func (ecq *EnterpriseContractQuery) OnlyX(ctx context.Context) *EnterpriseContra
 // Returns a *NotFoundError when no entities are found.
 func (ecq *EnterpriseContractQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = ecq.Limit(2).IDs(newQueryContext(ctx, TypeEnterpriseContract, "OnlyID")); err != nil {
+	if ids, err = ecq.Limit(2).IDs(setContextOp(ctx, ecq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -187,7 +184,7 @@ func (ecq *EnterpriseContractQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of EnterpriseContracts.
 func (ecq *EnterpriseContractQuery) All(ctx context.Context) ([]*EnterpriseContract, error) {
-	ctx = newQueryContext(ctx, TypeEnterpriseContract, "All")
+	ctx = setContextOp(ctx, ecq.ctx, "All")
 	if err := ecq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -207,7 +204,7 @@ func (ecq *EnterpriseContractQuery) AllX(ctx context.Context) []*EnterpriseContr
 // IDs executes the query and returns a list of EnterpriseContract IDs.
 func (ecq *EnterpriseContractQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
-	ctx = newQueryContext(ctx, TypeEnterpriseContract, "IDs")
+	ctx = setContextOp(ctx, ecq.ctx, "IDs")
 	if err := ecq.Select(enterprisecontract.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -225,7 +222,7 @@ func (ecq *EnterpriseContractQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (ecq *EnterpriseContractQuery) Count(ctx context.Context) (int, error) {
-	ctx = newQueryContext(ctx, TypeEnterpriseContract, "Count")
+	ctx = setContextOp(ctx, ecq.ctx, "Count")
 	if err := ecq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -243,7 +240,7 @@ func (ecq *EnterpriseContractQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (ecq *EnterpriseContractQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = newQueryContext(ctx, TypeEnterpriseContract, "Exist")
+	ctx = setContextOp(ctx, ecq.ctx, "Exist")
 	switch _, err := ecq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -271,15 +268,14 @@ func (ecq *EnterpriseContractQuery) Clone() *EnterpriseContractQuery {
 	}
 	return &EnterpriseContractQuery{
 		config:         ecq.config,
-		limit:          ecq.limit,
-		offset:         ecq.offset,
+		ctx:            ecq.ctx.Clone(),
 		order:          append([]OrderFunc{}, ecq.order...),
+		inters:         append([]Interceptor{}, ecq.inters...),
 		predicates:     append([]predicate.EnterpriseContract{}, ecq.predicates...),
 		withEnterprise: ecq.withEnterprise.Clone(),
 		// clone intermediate query.
-		sql:    ecq.sql.Clone(),
-		path:   ecq.path,
-		unique: ecq.unique,
+		sql:  ecq.sql.Clone(),
+		path: ecq.path,
 	}
 }
 
@@ -309,9 +305,9 @@ func (ecq *EnterpriseContractQuery) WithEnterprise(opts ...func(*EnterpriseQuery
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (ecq *EnterpriseContractQuery) GroupBy(field string, fields ...string) *EnterpriseContractGroupBy {
-	ecq.fields = append([]string{field}, fields...)
+	ecq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &EnterpriseContractGroupBy{build: ecq}
-	grbuild.flds = &ecq.fields
+	grbuild.flds = &ecq.ctx.Fields
 	grbuild.label = enterprisecontract.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -330,10 +326,10 @@ func (ecq *EnterpriseContractQuery) GroupBy(field string, fields ...string) *Ent
 //		Select(enterprisecontract.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (ecq *EnterpriseContractQuery) Select(fields ...string) *EnterpriseContractSelect {
-	ecq.fields = append(ecq.fields, fields...)
+	ecq.ctx.Fields = append(ecq.ctx.Fields, fields...)
 	sbuild := &EnterpriseContractSelect{EnterpriseContractQuery: ecq}
 	sbuild.label = enterprisecontract.Label
-	sbuild.flds, sbuild.scan = &ecq.fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &ecq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
@@ -353,7 +349,7 @@ func (ecq *EnterpriseContractQuery) prepareQuery(ctx context.Context) error {
 			}
 		}
 	}
-	for _, f := range ecq.fields {
+	for _, f := range ecq.ctx.Fields {
 		if !enterprisecontract.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -416,6 +412,9 @@ func (ecq *EnterpriseContractQuery) loadEnterprise(ctx context.Context, query *E
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(enterprise.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -438,9 +437,9 @@ func (ecq *EnterpriseContractQuery) sqlCount(ctx context.Context) (int, error) {
 	if len(ecq.modifiers) > 0 {
 		_spec.Modifiers = ecq.modifiers
 	}
-	_spec.Node.Columns = ecq.fields
-	if len(ecq.fields) > 0 {
-		_spec.Unique = ecq.unique != nil && *ecq.unique
+	_spec.Node.Columns = ecq.ctx.Fields
+	if len(ecq.ctx.Fields) > 0 {
+		_spec.Unique = ecq.ctx.Unique != nil && *ecq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, ecq.driver, _spec)
 }
@@ -458,10 +457,10 @@ func (ecq *EnterpriseContractQuery) querySpec() *sqlgraph.QuerySpec {
 		From:   ecq.sql,
 		Unique: true,
 	}
-	if unique := ecq.unique; unique != nil {
+	if unique := ecq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
 	}
-	if fields := ecq.fields; len(fields) > 0 {
+	if fields := ecq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, enterprisecontract.FieldID)
 		for i := range fields {
@@ -477,10 +476,10 @@ func (ecq *EnterpriseContractQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := ecq.limit; limit != nil {
+	if limit := ecq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := ecq.offset; offset != nil {
+	if offset := ecq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := ecq.order; len(ps) > 0 {
@@ -496,7 +495,7 @@ func (ecq *EnterpriseContractQuery) querySpec() *sqlgraph.QuerySpec {
 func (ecq *EnterpriseContractQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(ecq.driver.Dialect())
 	t1 := builder.Table(enterprisecontract.Table)
-	columns := ecq.fields
+	columns := ecq.ctx.Fields
 	if len(columns) == 0 {
 		columns = enterprisecontract.Columns
 	}
@@ -505,7 +504,7 @@ func (ecq *EnterpriseContractQuery) sqlQuery(ctx context.Context) *sql.Selector 
 		selector = ecq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if ecq.unique != nil && *ecq.unique {
+	if ecq.ctx.Unique != nil && *ecq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, m := range ecq.modifiers {
@@ -517,12 +516,12 @@ func (ecq *EnterpriseContractQuery) sqlQuery(ctx context.Context) *sql.Selector 
 	for _, p := range ecq.order {
 		p(selector)
 	}
-	if offset := ecq.offset; offset != nil {
+	if offset := ecq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := ecq.limit; limit != nil {
+	if limit := ecq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -564,7 +563,7 @@ func (ecgb *EnterpriseContractGroupBy) Aggregate(fns ...AggregateFunc) *Enterpri
 
 // Scan applies the selector query and scans the result into the given value.
 func (ecgb *EnterpriseContractGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeEnterpriseContract, "GroupBy")
+	ctx = setContextOp(ctx, ecgb.build.ctx, "GroupBy")
 	if err := ecgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -612,7 +611,7 @@ func (ecs *EnterpriseContractSelect) Aggregate(fns ...AggregateFunc) *Enterprise
 
 // Scan applies the selector query and scans the result into the given value.
 func (ecs *EnterpriseContractSelect) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeEnterpriseContract, "Select")
+	ctx = setContextOp(ctx, ecs.ctx, "Select")
 	if err := ecs.prepareQuery(ctx); err != nil {
 		return err
 	}

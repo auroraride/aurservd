@@ -172,19 +172,19 @@ func (rfu *RiderFollowUp) assignValues(columns []string, values []any) error {
 
 // QueryManager queries the "manager" edge of the RiderFollowUp entity.
 func (rfu *RiderFollowUp) QueryManager() *ManagerQuery {
-	return (&RiderFollowUpClient{config: rfu.config}).QueryManager(rfu)
+	return NewRiderFollowUpClient(rfu.config).QueryManager(rfu)
 }
 
 // QueryRider queries the "rider" edge of the RiderFollowUp entity.
 func (rfu *RiderFollowUp) QueryRider() *RiderQuery {
-	return (&RiderFollowUpClient{config: rfu.config}).QueryRider(rfu)
+	return NewRiderFollowUpClient(rfu.config).QueryRider(rfu)
 }
 
 // Update returns a builder for updating this RiderFollowUp.
 // Note that you need to call RiderFollowUp.Unwrap() before calling this method if this RiderFollowUp
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (rfu *RiderFollowUp) Update() *RiderFollowUpUpdateOne {
-	return (&RiderFollowUpClient{config: rfu.config}).UpdateOne(rfu)
+	return NewRiderFollowUpClient(rfu.config).UpdateOne(rfu)
 }
 
 // Unwrap unwraps the RiderFollowUp entity that was returned from a transaction after it was closed,

@@ -69,6 +69,12 @@ type EbikeBrandDeleteOne struct {
 	ebd *EbikeBrandDelete
 }
 
+// Where appends a list predicates to the EbikeBrandDelete builder.
+func (ebdo *EbikeBrandDeleteOne) Where(ps ...predicate.EbikeBrand) *EbikeBrandDeleteOne {
+	ebdo.ebd.mutation.Where(ps...)
+	return ebdo
+}
+
 // Exec executes the deletion query.
 func (ebdo *EbikeBrandDeleteOne) Exec(ctx context.Context) error {
 	n, err := ebdo.ebd.Exec(ctx)
@@ -84,5 +90,7 @@ func (ebdo *EbikeBrandDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (ebdo *EbikeBrandDeleteOne) ExecX(ctx context.Context) {
-	ebdo.ebd.ExecX(ctx)
+	if err := ebdo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

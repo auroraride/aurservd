@@ -172,14 +172,14 @@ func (a *Agent) assignValues(columns []string, values []any) error {
 
 // QueryEnterprise queries the "enterprise" edge of the Agent entity.
 func (a *Agent) QueryEnterprise() *EnterpriseQuery {
-	return (&AgentClient{config: a.config}).QueryEnterprise(a)
+	return NewAgentClient(a.config).QueryEnterprise(a)
 }
 
 // Update returns a builder for updating this Agent.
 // Note that you need to call Agent.Unwrap() before calling this method if this Agent
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (a *Agent) Update() *AgentUpdateOne {
-	return (&AgentClient{config: a.config}).UpdateOne(a)
+	return NewAgentClient(a.config).UpdateOne(a)
 }
 
 // Unwrap unwraps the Agent entity that was returned from a transaction after it was closed,

@@ -18,11 +18,8 @@ import (
 // ManagerQuery is the builder for querying Manager entities.
 type ManagerQuery struct {
 	config
-	limit      *int
-	offset     *int
-	unique     *bool
+	ctx        *QueryContext
 	order      []OrderFunc
-	fields     []string
 	inters     []Interceptor
 	predicates []predicate.Manager
 	withRole   *RoleQuery
@@ -40,20 +37,20 @@ func (mq *ManagerQuery) Where(ps ...predicate.Manager) *ManagerQuery {
 
 // Limit the number of records to be returned by this query.
 func (mq *ManagerQuery) Limit(limit int) *ManagerQuery {
-	mq.limit = &limit
+	mq.ctx.Limit = &limit
 	return mq
 }
 
 // Offset to start from.
 func (mq *ManagerQuery) Offset(offset int) *ManagerQuery {
-	mq.offset = &offset
+	mq.ctx.Offset = &offset
 	return mq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (mq *ManagerQuery) Unique(unique bool) *ManagerQuery {
-	mq.unique = &unique
+	mq.ctx.Unique = &unique
 	return mq
 }
 
@@ -88,7 +85,7 @@ func (mq *ManagerQuery) QueryRole() *RoleQuery {
 // First returns the first Manager entity from the query.
 // Returns a *NotFoundError when no Manager was found.
 func (mq *ManagerQuery) First(ctx context.Context) (*Manager, error) {
-	nodes, err := mq.Limit(1).All(newQueryContext(ctx, TypeManager, "First"))
+	nodes, err := mq.Limit(1).All(setContextOp(ctx, mq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -111,7 +108,7 @@ func (mq *ManagerQuery) FirstX(ctx context.Context) *Manager {
 // Returns a *NotFoundError when no Manager ID was found.
 func (mq *ManagerQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = mq.Limit(1).IDs(newQueryContext(ctx, TypeManager, "FirstID")); err != nil {
+	if ids, err = mq.Limit(1).IDs(setContextOp(ctx, mq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -134,7 +131,7 @@ func (mq *ManagerQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Manager entity is found.
 // Returns a *NotFoundError when no Manager entities are found.
 func (mq *ManagerQuery) Only(ctx context.Context) (*Manager, error) {
-	nodes, err := mq.Limit(2).All(newQueryContext(ctx, TypeManager, "Only"))
+	nodes, err := mq.Limit(2).All(setContextOp(ctx, mq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -162,7 +159,7 @@ func (mq *ManagerQuery) OnlyX(ctx context.Context) *Manager {
 // Returns a *NotFoundError when no entities are found.
 func (mq *ManagerQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = mq.Limit(2).IDs(newQueryContext(ctx, TypeManager, "OnlyID")); err != nil {
+	if ids, err = mq.Limit(2).IDs(setContextOp(ctx, mq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -187,7 +184,7 @@ func (mq *ManagerQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Managers.
 func (mq *ManagerQuery) All(ctx context.Context) ([]*Manager, error) {
-	ctx = newQueryContext(ctx, TypeManager, "All")
+	ctx = setContextOp(ctx, mq.ctx, "All")
 	if err := mq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -207,7 +204,7 @@ func (mq *ManagerQuery) AllX(ctx context.Context) []*Manager {
 // IDs executes the query and returns a list of Manager IDs.
 func (mq *ManagerQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
-	ctx = newQueryContext(ctx, TypeManager, "IDs")
+	ctx = setContextOp(ctx, mq.ctx, "IDs")
 	if err := mq.Select(manager.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -225,7 +222,7 @@ func (mq *ManagerQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (mq *ManagerQuery) Count(ctx context.Context) (int, error) {
-	ctx = newQueryContext(ctx, TypeManager, "Count")
+	ctx = setContextOp(ctx, mq.ctx, "Count")
 	if err := mq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -243,7 +240,7 @@ func (mq *ManagerQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (mq *ManagerQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = newQueryContext(ctx, TypeManager, "Exist")
+	ctx = setContextOp(ctx, mq.ctx, "Exist")
 	switch _, err := mq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -271,15 +268,14 @@ func (mq *ManagerQuery) Clone() *ManagerQuery {
 	}
 	return &ManagerQuery{
 		config:     mq.config,
-		limit:      mq.limit,
-		offset:     mq.offset,
+		ctx:        mq.ctx.Clone(),
 		order:      append([]OrderFunc{}, mq.order...),
+		inters:     append([]Interceptor{}, mq.inters...),
 		predicates: append([]predicate.Manager{}, mq.predicates...),
 		withRole:   mq.withRole.Clone(),
 		// clone intermediate query.
-		sql:    mq.sql.Clone(),
-		path:   mq.path,
-		unique: mq.unique,
+		sql:  mq.sql.Clone(),
+		path: mq.path,
 	}
 }
 
@@ -309,9 +305,9 @@ func (mq *ManagerQuery) WithRole(opts ...func(*RoleQuery)) *ManagerQuery {
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (mq *ManagerQuery) GroupBy(field string, fields ...string) *ManagerGroupBy {
-	mq.fields = append([]string{field}, fields...)
+	mq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &ManagerGroupBy{build: mq}
-	grbuild.flds = &mq.fields
+	grbuild.flds = &mq.ctx.Fields
 	grbuild.label = manager.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -330,10 +326,10 @@ func (mq *ManagerQuery) GroupBy(field string, fields ...string) *ManagerGroupBy 
 //		Select(manager.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (mq *ManagerQuery) Select(fields ...string) *ManagerSelect {
-	mq.fields = append(mq.fields, fields...)
+	mq.ctx.Fields = append(mq.ctx.Fields, fields...)
 	sbuild := &ManagerSelect{ManagerQuery: mq}
 	sbuild.label = manager.Label
-	sbuild.flds, sbuild.scan = &mq.fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &mq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
@@ -353,7 +349,7 @@ func (mq *ManagerQuery) prepareQuery(ctx context.Context) error {
 			}
 		}
 	}
-	for _, f := range mq.fields {
+	for _, f := range mq.ctx.Fields {
 		if !manager.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -419,6 +415,9 @@ func (mq *ManagerQuery) loadRole(ctx context.Context, query *RoleQuery, nodes []
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(role.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -441,9 +440,9 @@ func (mq *ManagerQuery) sqlCount(ctx context.Context) (int, error) {
 	if len(mq.modifiers) > 0 {
 		_spec.Modifiers = mq.modifiers
 	}
-	_spec.Node.Columns = mq.fields
-	if len(mq.fields) > 0 {
-		_spec.Unique = mq.unique != nil && *mq.unique
+	_spec.Node.Columns = mq.ctx.Fields
+	if len(mq.ctx.Fields) > 0 {
+		_spec.Unique = mq.ctx.Unique != nil && *mq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, mq.driver, _spec)
 }
@@ -461,10 +460,10 @@ func (mq *ManagerQuery) querySpec() *sqlgraph.QuerySpec {
 		From:   mq.sql,
 		Unique: true,
 	}
-	if unique := mq.unique; unique != nil {
+	if unique := mq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
 	}
-	if fields := mq.fields; len(fields) > 0 {
+	if fields := mq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, manager.FieldID)
 		for i := range fields {
@@ -480,10 +479,10 @@ func (mq *ManagerQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := mq.limit; limit != nil {
+	if limit := mq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := mq.offset; offset != nil {
+	if offset := mq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := mq.order; len(ps) > 0 {
@@ -499,7 +498,7 @@ func (mq *ManagerQuery) querySpec() *sqlgraph.QuerySpec {
 func (mq *ManagerQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(mq.driver.Dialect())
 	t1 := builder.Table(manager.Table)
-	columns := mq.fields
+	columns := mq.ctx.Fields
 	if len(columns) == 0 {
 		columns = manager.Columns
 	}
@@ -508,7 +507,7 @@ func (mq *ManagerQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = mq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if mq.unique != nil && *mq.unique {
+	if mq.ctx.Unique != nil && *mq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, m := range mq.modifiers {
@@ -520,12 +519,12 @@ func (mq *ManagerQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range mq.order {
 		p(selector)
 	}
-	if offset := mq.offset; offset != nil {
+	if offset := mq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := mq.limit; limit != nil {
+	if limit := mq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -567,7 +566,7 @@ func (mgb *ManagerGroupBy) Aggregate(fns ...AggregateFunc) *ManagerGroupBy {
 
 // Scan applies the selector query and scans the result into the given value.
 func (mgb *ManagerGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeManager, "GroupBy")
+	ctx = setContextOp(ctx, mgb.build.ctx, "GroupBy")
 	if err := mgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -615,7 +614,7 @@ func (ms *ManagerSelect) Aggregate(fns ...AggregateFunc) *ManagerSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (ms *ManagerSelect) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeManager, "Select")
+	ctx = setContextOp(ctx, ms.ctx, "Select")
 	if err := ms.prepareQuery(ctx); err != nil {
 		return err
 	}

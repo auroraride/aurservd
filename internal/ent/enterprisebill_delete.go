@@ -69,6 +69,12 @@ type EnterpriseBillDeleteOne struct {
 	ebd *EnterpriseBillDelete
 }
 
+// Where appends a list predicates to the EnterpriseBillDelete builder.
+func (ebdo *EnterpriseBillDeleteOne) Where(ps ...predicate.EnterpriseBill) *EnterpriseBillDeleteOne {
+	ebdo.ebd.mutation.Where(ps...)
+	return ebdo
+}
+
 // Exec executes the deletion query.
 func (ebdo *EnterpriseBillDeleteOne) Exec(ctx context.Context) error {
 	n, err := ebdo.ebd.Exec(ctx)
@@ -84,5 +90,7 @@ func (ebdo *EnterpriseBillDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (ebdo *EnterpriseBillDeleteOne) ExecX(ctx context.Context) {
-	ebdo.ebd.ExecX(ctx)
+	if err := ebdo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

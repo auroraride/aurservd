@@ -69,6 +69,12 @@ type SubscribeSuspendDeleteOne struct {
 	ssd *SubscribeSuspendDelete
 }
 
+// Where appends a list predicates to the SubscribeSuspendDelete builder.
+func (ssdo *SubscribeSuspendDeleteOne) Where(ps ...predicate.SubscribeSuspend) *SubscribeSuspendDeleteOne {
+	ssdo.ssd.mutation.Where(ps...)
+	return ssdo
+}
+
 // Exec executes the deletion query.
 func (ssdo *SubscribeSuspendDeleteOne) Exec(ctx context.Context) error {
 	n, err := ssdo.ssd.Exec(ctx)
@@ -84,5 +90,7 @@ func (ssdo *SubscribeSuspendDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (ssdo *SubscribeSuspendDeleteOne) ExecX(ctx context.Context) {
-	ssdo.ssd.ExecX(ctx)
+	if err := ssdo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

@@ -18,11 +18,8 @@ import (
 // AgentQuery is the builder for querying Agent entities.
 type AgentQuery struct {
 	config
-	limit          *int
-	offset         *int
-	unique         *bool
+	ctx            *QueryContext
 	order          []OrderFunc
-	fields         []string
 	inters         []Interceptor
 	predicates     []predicate.Agent
 	withEnterprise *EnterpriseQuery
@@ -40,20 +37,20 @@ func (aq *AgentQuery) Where(ps ...predicate.Agent) *AgentQuery {
 
 // Limit the number of records to be returned by this query.
 func (aq *AgentQuery) Limit(limit int) *AgentQuery {
-	aq.limit = &limit
+	aq.ctx.Limit = &limit
 	return aq
 }
 
 // Offset to start from.
 func (aq *AgentQuery) Offset(offset int) *AgentQuery {
-	aq.offset = &offset
+	aq.ctx.Offset = &offset
 	return aq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (aq *AgentQuery) Unique(unique bool) *AgentQuery {
-	aq.unique = &unique
+	aq.ctx.Unique = &unique
 	return aq
 }
 
@@ -88,7 +85,7 @@ func (aq *AgentQuery) QueryEnterprise() *EnterpriseQuery {
 // First returns the first Agent entity from the query.
 // Returns a *NotFoundError when no Agent was found.
 func (aq *AgentQuery) First(ctx context.Context) (*Agent, error) {
-	nodes, err := aq.Limit(1).All(newQueryContext(ctx, TypeAgent, "First"))
+	nodes, err := aq.Limit(1).All(setContextOp(ctx, aq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -111,7 +108,7 @@ func (aq *AgentQuery) FirstX(ctx context.Context) *Agent {
 // Returns a *NotFoundError when no Agent ID was found.
 func (aq *AgentQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = aq.Limit(1).IDs(newQueryContext(ctx, TypeAgent, "FirstID")); err != nil {
+	if ids, err = aq.Limit(1).IDs(setContextOp(ctx, aq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -134,7 +131,7 @@ func (aq *AgentQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one Agent entity is found.
 // Returns a *NotFoundError when no Agent entities are found.
 func (aq *AgentQuery) Only(ctx context.Context) (*Agent, error) {
-	nodes, err := aq.Limit(2).All(newQueryContext(ctx, TypeAgent, "Only"))
+	nodes, err := aq.Limit(2).All(setContextOp(ctx, aq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -162,7 +159,7 @@ func (aq *AgentQuery) OnlyX(ctx context.Context) *Agent {
 // Returns a *NotFoundError when no entities are found.
 func (aq *AgentQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = aq.Limit(2).IDs(newQueryContext(ctx, TypeAgent, "OnlyID")); err != nil {
+	if ids, err = aq.Limit(2).IDs(setContextOp(ctx, aq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -187,7 +184,7 @@ func (aq *AgentQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of Agents.
 func (aq *AgentQuery) All(ctx context.Context) ([]*Agent, error) {
-	ctx = newQueryContext(ctx, TypeAgent, "All")
+	ctx = setContextOp(ctx, aq.ctx, "All")
 	if err := aq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -207,7 +204,7 @@ func (aq *AgentQuery) AllX(ctx context.Context) []*Agent {
 // IDs executes the query and returns a list of Agent IDs.
 func (aq *AgentQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
-	ctx = newQueryContext(ctx, TypeAgent, "IDs")
+	ctx = setContextOp(ctx, aq.ctx, "IDs")
 	if err := aq.Select(agent.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -225,7 +222,7 @@ func (aq *AgentQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (aq *AgentQuery) Count(ctx context.Context) (int, error) {
-	ctx = newQueryContext(ctx, TypeAgent, "Count")
+	ctx = setContextOp(ctx, aq.ctx, "Count")
 	if err := aq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -243,7 +240,7 @@ func (aq *AgentQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (aq *AgentQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = newQueryContext(ctx, TypeAgent, "Exist")
+	ctx = setContextOp(ctx, aq.ctx, "Exist")
 	switch _, err := aq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -271,15 +268,14 @@ func (aq *AgentQuery) Clone() *AgentQuery {
 	}
 	return &AgentQuery{
 		config:         aq.config,
-		limit:          aq.limit,
-		offset:         aq.offset,
+		ctx:            aq.ctx.Clone(),
 		order:          append([]OrderFunc{}, aq.order...),
+		inters:         append([]Interceptor{}, aq.inters...),
 		predicates:     append([]predicate.Agent{}, aq.predicates...),
 		withEnterprise: aq.withEnterprise.Clone(),
 		// clone intermediate query.
-		sql:    aq.sql.Clone(),
-		path:   aq.path,
-		unique: aq.unique,
+		sql:  aq.sql.Clone(),
+		path: aq.path,
 	}
 }
 
@@ -309,9 +305,9 @@ func (aq *AgentQuery) WithEnterprise(opts ...func(*EnterpriseQuery)) *AgentQuery
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (aq *AgentQuery) GroupBy(field string, fields ...string) *AgentGroupBy {
-	aq.fields = append([]string{field}, fields...)
+	aq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &AgentGroupBy{build: aq}
-	grbuild.flds = &aq.fields
+	grbuild.flds = &aq.ctx.Fields
 	grbuild.label = agent.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -330,10 +326,10 @@ func (aq *AgentQuery) GroupBy(field string, fields ...string) *AgentGroupBy {
 //		Select(agent.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (aq *AgentQuery) Select(fields ...string) *AgentSelect {
-	aq.fields = append(aq.fields, fields...)
+	aq.ctx.Fields = append(aq.ctx.Fields, fields...)
 	sbuild := &AgentSelect{AgentQuery: aq}
 	sbuild.label = agent.Label
-	sbuild.flds, sbuild.scan = &aq.fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &aq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
@@ -353,7 +349,7 @@ func (aq *AgentQuery) prepareQuery(ctx context.Context) error {
 			}
 		}
 	}
-	for _, f := range aq.fields {
+	for _, f := range aq.ctx.Fields {
 		if !agent.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -416,6 +412,9 @@ func (aq *AgentQuery) loadEnterprise(ctx context.Context, query *EnterpriseQuery
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(enterprise.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -438,9 +437,9 @@ func (aq *AgentQuery) sqlCount(ctx context.Context) (int, error) {
 	if len(aq.modifiers) > 0 {
 		_spec.Modifiers = aq.modifiers
 	}
-	_spec.Node.Columns = aq.fields
-	if len(aq.fields) > 0 {
-		_spec.Unique = aq.unique != nil && *aq.unique
+	_spec.Node.Columns = aq.ctx.Fields
+	if len(aq.ctx.Fields) > 0 {
+		_spec.Unique = aq.ctx.Unique != nil && *aq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, aq.driver, _spec)
 }
@@ -458,10 +457,10 @@ func (aq *AgentQuery) querySpec() *sqlgraph.QuerySpec {
 		From:   aq.sql,
 		Unique: true,
 	}
-	if unique := aq.unique; unique != nil {
+	if unique := aq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
 	}
-	if fields := aq.fields; len(fields) > 0 {
+	if fields := aq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, agent.FieldID)
 		for i := range fields {
@@ -477,10 +476,10 @@ func (aq *AgentQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := aq.limit; limit != nil {
+	if limit := aq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := aq.offset; offset != nil {
+	if offset := aq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := aq.order; len(ps) > 0 {
@@ -496,7 +495,7 @@ func (aq *AgentQuery) querySpec() *sqlgraph.QuerySpec {
 func (aq *AgentQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(aq.driver.Dialect())
 	t1 := builder.Table(agent.Table)
-	columns := aq.fields
+	columns := aq.ctx.Fields
 	if len(columns) == 0 {
 		columns = agent.Columns
 	}
@@ -505,7 +504,7 @@ func (aq *AgentQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = aq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if aq.unique != nil && *aq.unique {
+	if aq.ctx.Unique != nil && *aq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, m := range aq.modifiers {
@@ -517,12 +516,12 @@ func (aq *AgentQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range aq.order {
 		p(selector)
 	}
-	if offset := aq.offset; offset != nil {
+	if offset := aq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := aq.limit; limit != nil {
+	if limit := aq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -564,7 +563,7 @@ func (agb *AgentGroupBy) Aggregate(fns ...AggregateFunc) *AgentGroupBy {
 
 // Scan applies the selector query and scans the result into the given value.
 func (agb *AgentGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeAgent, "GroupBy")
+	ctx = setContextOp(ctx, agb.build.ctx, "GroupBy")
 	if err := agb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -612,7 +611,7 @@ func (as *AgentSelect) Aggregate(fns ...AggregateFunc) *AgentSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (as *AgentSelect) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeAgent, "Select")
+	ctx = setContextOp(ctx, as.ctx, "Select")
 	if err := as.prepareQuery(ctx); err != nil {
 		return err
 	}

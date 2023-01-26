@@ -653,94 +653,94 @@ func (s *Subscribe) assignValues(columns []string, values []any) error {
 
 // QueryPlan queries the "plan" edge of the Subscribe entity.
 func (s *Subscribe) QueryPlan() *PlanQuery {
-	return (&SubscribeClient{config: s.config}).QueryPlan(s)
+	return NewSubscribeClient(s.config).QueryPlan(s)
 }
 
 // QueryEmployee queries the "employee" edge of the Subscribe entity.
 func (s *Subscribe) QueryEmployee() *EmployeeQuery {
-	return (&SubscribeClient{config: s.config}).QueryEmployee(s)
+	return NewSubscribeClient(s.config).QueryEmployee(s)
 }
 
 // QueryCity queries the "city" edge of the Subscribe entity.
 func (s *Subscribe) QueryCity() *CityQuery {
-	return (&SubscribeClient{config: s.config}).QueryCity(s)
+	return NewSubscribeClient(s.config).QueryCity(s)
 }
 
 // QueryStation queries the "station" edge of the Subscribe entity.
 func (s *Subscribe) QueryStation() *EnterpriseStationQuery {
-	return (&SubscribeClient{config: s.config}).QueryStation(s)
+	return NewSubscribeClient(s.config).QueryStation(s)
 }
 
 // QueryStore queries the "store" edge of the Subscribe entity.
 func (s *Subscribe) QueryStore() *StoreQuery {
-	return (&SubscribeClient{config: s.config}).QueryStore(s)
+	return NewSubscribeClient(s.config).QueryStore(s)
 }
 
 // QueryCabinet queries the "cabinet" edge of the Subscribe entity.
 func (s *Subscribe) QueryCabinet() *CabinetQuery {
-	return (&SubscribeClient{config: s.config}).QueryCabinet(s)
+	return NewSubscribeClient(s.config).QueryCabinet(s)
 }
 
 // QueryBrand queries the "brand" edge of the Subscribe entity.
 func (s *Subscribe) QueryBrand() *EbikeBrandQuery {
-	return (&SubscribeClient{config: s.config}).QueryBrand(s)
+	return NewSubscribeClient(s.config).QueryBrand(s)
 }
 
 // QueryEbike queries the "ebike" edge of the Subscribe entity.
 func (s *Subscribe) QueryEbike() *EbikeQuery {
-	return (&SubscribeClient{config: s.config}).QueryEbike(s)
+	return NewSubscribeClient(s.config).QueryEbike(s)
 }
 
 // QueryRider queries the "rider" edge of the Subscribe entity.
 func (s *Subscribe) QueryRider() *RiderQuery {
-	return (&SubscribeClient{config: s.config}).QueryRider(s)
+	return NewSubscribeClient(s.config).QueryRider(s)
 }
 
 // QueryEnterprise queries the "enterprise" edge of the Subscribe entity.
 func (s *Subscribe) QueryEnterprise() *EnterpriseQuery {
-	return (&SubscribeClient{config: s.config}).QueryEnterprise(s)
+	return NewSubscribeClient(s.config).QueryEnterprise(s)
 }
 
 // QueryPauses queries the "pauses" edge of the Subscribe entity.
 func (s *Subscribe) QueryPauses() *SubscribePauseQuery {
-	return (&SubscribeClient{config: s.config}).QueryPauses(s)
+	return NewSubscribeClient(s.config).QueryPauses(s)
 }
 
 // QuerySuspends queries the "suspends" edge of the Subscribe entity.
 func (s *Subscribe) QuerySuspends() *SubscribeSuspendQuery {
-	return (&SubscribeClient{config: s.config}).QuerySuspends(s)
+	return NewSubscribeClient(s.config).QuerySuspends(s)
 }
 
 // QueryAlters queries the "alters" edge of the Subscribe entity.
 func (s *Subscribe) QueryAlters() *SubscribeAlterQuery {
-	return (&SubscribeClient{config: s.config}).QueryAlters(s)
+	return NewSubscribeClient(s.config).QueryAlters(s)
 }
 
 // QueryOrders queries the "orders" edge of the Subscribe entity.
 func (s *Subscribe) QueryOrders() *OrderQuery {
-	return (&SubscribeClient{config: s.config}).QueryOrders(s)
+	return NewSubscribeClient(s.config).QueryOrders(s)
 }
 
 // QueryInitialOrder queries the "initial_order" edge of the Subscribe entity.
 func (s *Subscribe) QueryInitialOrder() *OrderQuery {
-	return (&SubscribeClient{config: s.config}).QueryInitialOrder(s)
+	return NewSubscribeClient(s.config).QueryInitialOrder(s)
 }
 
 // QueryBills queries the "bills" edge of the Subscribe entity.
 func (s *Subscribe) QueryBills() *EnterpriseBillQuery {
-	return (&SubscribeClient{config: s.config}).QueryBills(s)
+	return NewSubscribeClient(s.config).QueryBills(s)
 }
 
 // QueryBattery queries the "battery" edge of the Subscribe entity.
 func (s *Subscribe) QueryBattery() *BatteryQuery {
-	return (&SubscribeClient{config: s.config}).QueryBattery(s)
+	return NewSubscribeClient(s.config).QueryBattery(s)
 }
 
 // Update returns a builder for updating this Subscribe.
 // Note that you need to call Subscribe.Unwrap() before calling this method if this Subscribe
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (s *Subscribe) Update() *SubscribeUpdateOne {
-	return (&SubscribeClient{config: s.config}).UpdateOne(s)
+	return NewSubscribeClient(s.config).UpdateOne(s)
 }
 
 // Unwrap unwraps the Subscribe entity that was returned from a transaction after it was closed,

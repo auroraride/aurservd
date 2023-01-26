@@ -150,7 +150,7 @@ func (i *Inventory) assignValues(columns []string, values []any) error {
 // Note that you need to call Inventory.Unwrap() before calling this method if this Inventory
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (i *Inventory) Update() *InventoryUpdateOne {
-	return (&InventoryClient{config: i.config}).UpdateOne(i)
+	return NewInventoryClient(i.config).UpdateOne(i)
 }
 
 // Unwrap unwraps the Inventory entity that was returned from a transaction after it was closed,

@@ -260,24 +260,24 @@ func (e *Ebike) assignValues(columns []string, values []any) error {
 
 // QueryBrand queries the "brand" edge of the Ebike entity.
 func (e *Ebike) QueryBrand() *EbikeBrandQuery {
-	return (&EbikeClient{config: e.config}).QueryBrand(e)
+	return NewEbikeClient(e.config).QueryBrand(e)
 }
 
 // QueryRider queries the "rider" edge of the Ebike entity.
 func (e *Ebike) QueryRider() *RiderQuery {
-	return (&EbikeClient{config: e.config}).QueryRider(e)
+	return NewEbikeClient(e.config).QueryRider(e)
 }
 
 // QueryStore queries the "store" edge of the Ebike entity.
 func (e *Ebike) QueryStore() *StoreQuery {
-	return (&EbikeClient{config: e.config}).QueryStore(e)
+	return NewEbikeClient(e.config).QueryStore(e)
 }
 
 // Update returns a builder for updating this Ebike.
 // Note that you need to call Ebike.Unwrap() before calling this method if this Ebike
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (e *Ebike) Update() *EbikeUpdateOne {
-	return (&EbikeClient{config: e.config}).UpdateOne(e)
+	return NewEbikeClient(e.config).UpdateOne(e)
 }
 
 // Unwrap unwraps the Ebike entity that was returned from a transaction after it was closed,

@@ -69,6 +69,12 @@ type PersonDeleteOne struct {
 	pd *PersonDelete
 }
 
+// Where appends a list predicates to the PersonDelete builder.
+func (pdo *PersonDeleteOne) Where(ps ...predicate.Person) *PersonDeleteOne {
+	pdo.pd.mutation.Where(ps...)
+	return pdo
+}
+
 // Exec executes the deletion query.
 func (pdo *PersonDeleteOne) Exec(ctx context.Context) error {
 	n, err := pdo.pd.Exec(ctx)
@@ -84,5 +90,7 @@ func (pdo *PersonDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (pdo *PersonDeleteOne) ExecX(ctx context.Context) {
-	pdo.pd.ExecX(ctx)
+	if err := pdo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

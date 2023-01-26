@@ -254,29 +254,29 @@ func (cf *CabinetFault) assignValues(columns []string, values []any) error {
 
 // QueryCity queries the "city" edge of the CabinetFault entity.
 func (cf *CabinetFault) QueryCity() *CityQuery {
-	return (&CabinetFaultClient{config: cf.config}).QueryCity(cf)
+	return NewCabinetFaultClient(cf.config).QueryCity(cf)
 }
 
 // QueryBranch queries the "branch" edge of the CabinetFault entity.
 func (cf *CabinetFault) QueryBranch() *BranchQuery {
-	return (&CabinetFaultClient{config: cf.config}).QueryBranch(cf)
+	return NewCabinetFaultClient(cf.config).QueryBranch(cf)
 }
 
 // QueryCabinet queries the "cabinet" edge of the CabinetFault entity.
 func (cf *CabinetFault) QueryCabinet() *CabinetQuery {
-	return (&CabinetFaultClient{config: cf.config}).QueryCabinet(cf)
+	return NewCabinetFaultClient(cf.config).QueryCabinet(cf)
 }
 
 // QueryRider queries the "rider" edge of the CabinetFault entity.
 func (cf *CabinetFault) QueryRider() *RiderQuery {
-	return (&CabinetFaultClient{config: cf.config}).QueryRider(cf)
+	return NewCabinetFaultClient(cf.config).QueryRider(cf)
 }
 
 // Update returns a builder for updating this CabinetFault.
 // Note that you need to call CabinetFault.Unwrap() before calling this method if this CabinetFault
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (cf *CabinetFault) Update() *CabinetFaultUpdateOne {
-	return (&CabinetFaultClient{config: cf.config}).UpdateOne(cf)
+	return NewCabinetFaultClient(cf.config).UpdateOne(cf)
 }
 
 // Unwrap unwraps the CabinetFault entity that was returned from a transaction after it was closed,

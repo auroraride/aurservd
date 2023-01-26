@@ -237,29 +237,29 @@ func (r *Reserve) assignValues(columns []string, values []any) error {
 
 // QueryCabinet queries the "cabinet" edge of the Reserve entity.
 func (r *Reserve) QueryCabinet() *CabinetQuery {
-	return (&ReserveClient{config: r.config}).QueryCabinet(r)
+	return NewReserveClient(r.config).QueryCabinet(r)
 }
 
 // QueryRider queries the "rider" edge of the Reserve entity.
 func (r *Reserve) QueryRider() *RiderQuery {
-	return (&ReserveClient{config: r.config}).QueryRider(r)
+	return NewReserveClient(r.config).QueryRider(r)
 }
 
 // QueryCity queries the "city" edge of the Reserve entity.
 func (r *Reserve) QueryCity() *CityQuery {
-	return (&ReserveClient{config: r.config}).QueryCity(r)
+	return NewReserveClient(r.config).QueryCity(r)
 }
 
 // QueryBusiness queries the "business" edge of the Reserve entity.
 func (r *Reserve) QueryBusiness() *BusinessQuery {
-	return (&ReserveClient{config: r.config}).QueryBusiness(r)
+	return NewReserveClient(r.config).QueryBusiness(r)
 }
 
 // Update returns a builder for updating this Reserve.
 // Note that you need to call Reserve.Unwrap() before calling this method if this Reserve
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (r *Reserve) Update() *ReserveUpdateOne {
-	return (&ReserveClient{config: r.config}).UpdateOne(r)
+	return NewReserveClient(r.config).UpdateOne(r)
 }
 
 // Unwrap unwraps the Reserve entity that was returned from a transaction after it was closed,

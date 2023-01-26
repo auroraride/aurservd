@@ -19,11 +19,8 @@ import (
 // EnterprisePriceQuery is the builder for querying EnterprisePrice entities.
 type EnterprisePriceQuery struct {
 	config
-	limit          *int
-	offset         *int
-	unique         *bool
+	ctx            *QueryContext
 	order          []OrderFunc
-	fields         []string
 	inters         []Interceptor
 	predicates     []predicate.EnterprisePrice
 	withCity       *CityQuery
@@ -42,20 +39,20 @@ func (epq *EnterprisePriceQuery) Where(ps ...predicate.EnterprisePrice) *Enterpr
 
 // Limit the number of records to be returned by this query.
 func (epq *EnterprisePriceQuery) Limit(limit int) *EnterprisePriceQuery {
-	epq.limit = &limit
+	epq.ctx.Limit = &limit
 	return epq
 }
 
 // Offset to start from.
 func (epq *EnterprisePriceQuery) Offset(offset int) *EnterprisePriceQuery {
-	epq.offset = &offset
+	epq.ctx.Offset = &offset
 	return epq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (epq *EnterprisePriceQuery) Unique(unique bool) *EnterprisePriceQuery {
-	epq.unique = &unique
+	epq.ctx.Unique = &unique
 	return epq
 }
 
@@ -112,7 +109,7 @@ func (epq *EnterprisePriceQuery) QueryEnterprise() *EnterpriseQuery {
 // First returns the first EnterprisePrice entity from the query.
 // Returns a *NotFoundError when no EnterprisePrice was found.
 func (epq *EnterprisePriceQuery) First(ctx context.Context) (*EnterprisePrice, error) {
-	nodes, err := epq.Limit(1).All(newQueryContext(ctx, TypeEnterprisePrice, "First"))
+	nodes, err := epq.Limit(1).All(setContextOp(ctx, epq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -135,7 +132,7 @@ func (epq *EnterprisePriceQuery) FirstX(ctx context.Context) *EnterprisePrice {
 // Returns a *NotFoundError when no EnterprisePrice ID was found.
 func (epq *EnterprisePriceQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = epq.Limit(1).IDs(newQueryContext(ctx, TypeEnterprisePrice, "FirstID")); err != nil {
+	if ids, err = epq.Limit(1).IDs(setContextOp(ctx, epq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -158,7 +155,7 @@ func (epq *EnterprisePriceQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one EnterprisePrice entity is found.
 // Returns a *NotFoundError when no EnterprisePrice entities are found.
 func (epq *EnterprisePriceQuery) Only(ctx context.Context) (*EnterprisePrice, error) {
-	nodes, err := epq.Limit(2).All(newQueryContext(ctx, TypeEnterprisePrice, "Only"))
+	nodes, err := epq.Limit(2).All(setContextOp(ctx, epq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -186,7 +183,7 @@ func (epq *EnterprisePriceQuery) OnlyX(ctx context.Context) *EnterprisePrice {
 // Returns a *NotFoundError when no entities are found.
 func (epq *EnterprisePriceQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = epq.Limit(2).IDs(newQueryContext(ctx, TypeEnterprisePrice, "OnlyID")); err != nil {
+	if ids, err = epq.Limit(2).IDs(setContextOp(ctx, epq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -211,7 +208,7 @@ func (epq *EnterprisePriceQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of EnterprisePrices.
 func (epq *EnterprisePriceQuery) All(ctx context.Context) ([]*EnterprisePrice, error) {
-	ctx = newQueryContext(ctx, TypeEnterprisePrice, "All")
+	ctx = setContextOp(ctx, epq.ctx, "All")
 	if err := epq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -231,7 +228,7 @@ func (epq *EnterprisePriceQuery) AllX(ctx context.Context) []*EnterprisePrice {
 // IDs executes the query and returns a list of EnterprisePrice IDs.
 func (epq *EnterprisePriceQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
-	ctx = newQueryContext(ctx, TypeEnterprisePrice, "IDs")
+	ctx = setContextOp(ctx, epq.ctx, "IDs")
 	if err := epq.Select(enterpriseprice.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -249,7 +246,7 @@ func (epq *EnterprisePriceQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (epq *EnterprisePriceQuery) Count(ctx context.Context) (int, error) {
-	ctx = newQueryContext(ctx, TypeEnterprisePrice, "Count")
+	ctx = setContextOp(ctx, epq.ctx, "Count")
 	if err := epq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -267,7 +264,7 @@ func (epq *EnterprisePriceQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (epq *EnterprisePriceQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = newQueryContext(ctx, TypeEnterprisePrice, "Exist")
+	ctx = setContextOp(ctx, epq.ctx, "Exist")
 	switch _, err := epq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -295,16 +292,15 @@ func (epq *EnterprisePriceQuery) Clone() *EnterprisePriceQuery {
 	}
 	return &EnterprisePriceQuery{
 		config:         epq.config,
-		limit:          epq.limit,
-		offset:         epq.offset,
+		ctx:            epq.ctx.Clone(),
 		order:          append([]OrderFunc{}, epq.order...),
+		inters:         append([]Interceptor{}, epq.inters...),
 		predicates:     append([]predicate.EnterprisePrice{}, epq.predicates...),
 		withCity:       epq.withCity.Clone(),
 		withEnterprise: epq.withEnterprise.Clone(),
 		// clone intermediate query.
-		sql:    epq.sql.Clone(),
-		path:   epq.path,
-		unique: epq.unique,
+		sql:  epq.sql.Clone(),
+		path: epq.path,
 	}
 }
 
@@ -345,9 +341,9 @@ func (epq *EnterprisePriceQuery) WithEnterprise(opts ...func(*EnterpriseQuery)) 
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (epq *EnterprisePriceQuery) GroupBy(field string, fields ...string) *EnterprisePriceGroupBy {
-	epq.fields = append([]string{field}, fields...)
+	epq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &EnterprisePriceGroupBy{build: epq}
-	grbuild.flds = &epq.fields
+	grbuild.flds = &epq.ctx.Fields
 	grbuild.label = enterpriseprice.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -366,10 +362,10 @@ func (epq *EnterprisePriceQuery) GroupBy(field string, fields ...string) *Enterp
 //		Select(enterpriseprice.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (epq *EnterprisePriceQuery) Select(fields ...string) *EnterprisePriceSelect {
-	epq.fields = append(epq.fields, fields...)
+	epq.ctx.Fields = append(epq.ctx.Fields, fields...)
 	sbuild := &EnterprisePriceSelect{EnterprisePriceQuery: epq}
 	sbuild.label = enterpriseprice.Label
-	sbuild.flds, sbuild.scan = &epq.fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &epq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
@@ -389,7 +385,7 @@ func (epq *EnterprisePriceQuery) prepareQuery(ctx context.Context) error {
 			}
 		}
 	}
-	for _, f := range epq.fields {
+	for _, f := range epq.ctx.Fields {
 		if !enterpriseprice.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -459,6 +455,9 @@ func (epq *EnterprisePriceQuery) loadCity(ctx context.Context, query *CityQuery,
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(city.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -485,6 +484,9 @@ func (epq *EnterprisePriceQuery) loadEnterprise(ctx context.Context, query *Ente
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(enterprise.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -507,9 +509,9 @@ func (epq *EnterprisePriceQuery) sqlCount(ctx context.Context) (int, error) {
 	if len(epq.modifiers) > 0 {
 		_spec.Modifiers = epq.modifiers
 	}
-	_spec.Node.Columns = epq.fields
-	if len(epq.fields) > 0 {
-		_spec.Unique = epq.unique != nil && *epq.unique
+	_spec.Node.Columns = epq.ctx.Fields
+	if len(epq.ctx.Fields) > 0 {
+		_spec.Unique = epq.ctx.Unique != nil && *epq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, epq.driver, _spec)
 }
@@ -527,10 +529,10 @@ func (epq *EnterprisePriceQuery) querySpec() *sqlgraph.QuerySpec {
 		From:   epq.sql,
 		Unique: true,
 	}
-	if unique := epq.unique; unique != nil {
+	if unique := epq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
 	}
-	if fields := epq.fields; len(fields) > 0 {
+	if fields := epq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, enterpriseprice.FieldID)
 		for i := range fields {
@@ -546,10 +548,10 @@ func (epq *EnterprisePriceQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := epq.limit; limit != nil {
+	if limit := epq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := epq.offset; offset != nil {
+	if offset := epq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := epq.order; len(ps) > 0 {
@@ -565,7 +567,7 @@ func (epq *EnterprisePriceQuery) querySpec() *sqlgraph.QuerySpec {
 func (epq *EnterprisePriceQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(epq.driver.Dialect())
 	t1 := builder.Table(enterpriseprice.Table)
-	columns := epq.fields
+	columns := epq.ctx.Fields
 	if len(columns) == 0 {
 		columns = enterpriseprice.Columns
 	}
@@ -574,7 +576,7 @@ func (epq *EnterprisePriceQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = epq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if epq.unique != nil && *epq.unique {
+	if epq.ctx.Unique != nil && *epq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, m := range epq.modifiers {
@@ -586,12 +588,12 @@ func (epq *EnterprisePriceQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range epq.order {
 		p(selector)
 	}
-	if offset := epq.offset; offset != nil {
+	if offset := epq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := epq.limit; limit != nil {
+	if limit := epq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -636,7 +638,7 @@ func (epgb *EnterprisePriceGroupBy) Aggregate(fns ...AggregateFunc) *EnterpriseP
 
 // Scan applies the selector query and scans the result into the given value.
 func (epgb *EnterprisePriceGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeEnterprisePrice, "GroupBy")
+	ctx = setContextOp(ctx, epgb.build.ctx, "GroupBy")
 	if err := epgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -684,7 +686,7 @@ func (eps *EnterprisePriceSelect) Aggregate(fns ...AggregateFunc) *EnterprisePri
 
 // Scan applies the selector query and scans the result into the given value.
 func (eps *EnterprisePriceSelect) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeEnterprisePrice, "Select")
+	ctx = setContextOp(ctx, eps.ctx, "Select")
 	if err := eps.prepareQuery(ctx); err != nil {
 		return err
 	}

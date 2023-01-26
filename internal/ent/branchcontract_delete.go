@@ -69,6 +69,12 @@ type BranchContractDeleteOne struct {
 	bcd *BranchContractDelete
 }
 
+// Where appends a list predicates to the BranchContractDelete builder.
+func (bcdo *BranchContractDeleteOne) Where(ps ...predicate.BranchContract) *BranchContractDeleteOne {
+	bcdo.bcd.mutation.Where(ps...)
+	return bcdo
+}
+
 // Exec executes the deletion query.
 func (bcdo *BranchContractDeleteOne) Exec(ctx context.Context) error {
 	n, err := bcdo.bcd.Exec(ctx)
@@ -84,5 +90,7 @@ func (bcdo *BranchContractDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (bcdo *BranchContractDeleteOne) ExecX(ctx context.Context) {
-	bcdo.bcd.ExecX(ctx)
+	if err := bcdo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

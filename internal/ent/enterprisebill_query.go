@@ -23,11 +23,8 @@ import (
 // EnterpriseBillQuery is the builder for querying EnterpriseBill entities.
 type EnterpriseBillQuery struct {
 	config
-	limit          *int
-	offset         *int
-	unique         *bool
+	ctx            *QueryContext
 	order          []OrderFunc
-	fields         []string
 	inters         []Interceptor
 	predicates     []predicate.EnterpriseBill
 	withRider      *RiderQuery
@@ -50,20 +47,20 @@ func (ebq *EnterpriseBillQuery) Where(ps ...predicate.EnterpriseBill) *Enterpris
 
 // Limit the number of records to be returned by this query.
 func (ebq *EnterpriseBillQuery) Limit(limit int) *EnterpriseBillQuery {
-	ebq.limit = &limit
+	ebq.ctx.Limit = &limit
 	return ebq
 }
 
 // Offset to start from.
 func (ebq *EnterpriseBillQuery) Offset(offset int) *EnterpriseBillQuery {
-	ebq.offset = &offset
+	ebq.ctx.Offset = &offset
 	return ebq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (ebq *EnterpriseBillQuery) Unique(unique bool) *EnterpriseBillQuery {
-	ebq.unique = &unique
+	ebq.ctx.Unique = &unique
 	return ebq
 }
 
@@ -208,7 +205,7 @@ func (ebq *EnterpriseBillQuery) QuerySubscribe() *SubscribeQuery {
 // First returns the first EnterpriseBill entity from the query.
 // Returns a *NotFoundError when no EnterpriseBill was found.
 func (ebq *EnterpriseBillQuery) First(ctx context.Context) (*EnterpriseBill, error) {
-	nodes, err := ebq.Limit(1).All(newQueryContext(ctx, TypeEnterpriseBill, "First"))
+	nodes, err := ebq.Limit(1).All(setContextOp(ctx, ebq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -231,7 +228,7 @@ func (ebq *EnterpriseBillQuery) FirstX(ctx context.Context) *EnterpriseBill {
 // Returns a *NotFoundError when no EnterpriseBill ID was found.
 func (ebq *EnterpriseBillQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = ebq.Limit(1).IDs(newQueryContext(ctx, TypeEnterpriseBill, "FirstID")); err != nil {
+	if ids, err = ebq.Limit(1).IDs(setContextOp(ctx, ebq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -254,7 +251,7 @@ func (ebq *EnterpriseBillQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one EnterpriseBill entity is found.
 // Returns a *NotFoundError when no EnterpriseBill entities are found.
 func (ebq *EnterpriseBillQuery) Only(ctx context.Context) (*EnterpriseBill, error) {
-	nodes, err := ebq.Limit(2).All(newQueryContext(ctx, TypeEnterpriseBill, "Only"))
+	nodes, err := ebq.Limit(2).All(setContextOp(ctx, ebq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -282,7 +279,7 @@ func (ebq *EnterpriseBillQuery) OnlyX(ctx context.Context) *EnterpriseBill {
 // Returns a *NotFoundError when no entities are found.
 func (ebq *EnterpriseBillQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = ebq.Limit(2).IDs(newQueryContext(ctx, TypeEnterpriseBill, "OnlyID")); err != nil {
+	if ids, err = ebq.Limit(2).IDs(setContextOp(ctx, ebq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -307,7 +304,7 @@ func (ebq *EnterpriseBillQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of EnterpriseBills.
 func (ebq *EnterpriseBillQuery) All(ctx context.Context) ([]*EnterpriseBill, error) {
-	ctx = newQueryContext(ctx, TypeEnterpriseBill, "All")
+	ctx = setContextOp(ctx, ebq.ctx, "All")
 	if err := ebq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -327,7 +324,7 @@ func (ebq *EnterpriseBillQuery) AllX(ctx context.Context) []*EnterpriseBill {
 // IDs executes the query and returns a list of EnterpriseBill IDs.
 func (ebq *EnterpriseBillQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
-	ctx = newQueryContext(ctx, TypeEnterpriseBill, "IDs")
+	ctx = setContextOp(ctx, ebq.ctx, "IDs")
 	if err := ebq.Select(enterprisebill.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -345,7 +342,7 @@ func (ebq *EnterpriseBillQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (ebq *EnterpriseBillQuery) Count(ctx context.Context) (int, error) {
-	ctx = newQueryContext(ctx, TypeEnterpriseBill, "Count")
+	ctx = setContextOp(ctx, ebq.ctx, "Count")
 	if err := ebq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -363,7 +360,7 @@ func (ebq *EnterpriseBillQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (ebq *EnterpriseBillQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = newQueryContext(ctx, TypeEnterpriseBill, "Exist")
+	ctx = setContextOp(ctx, ebq.ctx, "Exist")
 	switch _, err := ebq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -391,9 +388,9 @@ func (ebq *EnterpriseBillQuery) Clone() *EnterpriseBillQuery {
 	}
 	return &EnterpriseBillQuery{
 		config:         ebq.config,
-		limit:          ebq.limit,
-		offset:         ebq.offset,
+		ctx:            ebq.ctx.Clone(),
 		order:          append([]OrderFunc{}, ebq.order...),
+		inters:         append([]Interceptor{}, ebq.inters...),
 		predicates:     append([]predicate.EnterpriseBill{}, ebq.predicates...),
 		withRider:      ebq.withRider.Clone(),
 		withCity:       ebq.withCity.Clone(),
@@ -402,9 +399,8 @@ func (ebq *EnterpriseBillQuery) Clone() *EnterpriseBillQuery {
 		withStatement:  ebq.withStatement.Clone(),
 		withSubscribe:  ebq.withSubscribe.Clone(),
 		// clone intermediate query.
-		sql:    ebq.sql.Clone(),
-		path:   ebq.path,
-		unique: ebq.unique,
+		sql:  ebq.sql.Clone(),
+		path: ebq.path,
 	}
 }
 
@@ -489,9 +485,9 @@ func (ebq *EnterpriseBillQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *En
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (ebq *EnterpriseBillQuery) GroupBy(field string, fields ...string) *EnterpriseBillGroupBy {
-	ebq.fields = append([]string{field}, fields...)
+	ebq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &EnterpriseBillGroupBy{build: ebq}
-	grbuild.flds = &ebq.fields
+	grbuild.flds = &ebq.ctx.Fields
 	grbuild.label = enterprisebill.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -510,10 +506,10 @@ func (ebq *EnterpriseBillQuery) GroupBy(field string, fields ...string) *Enterpr
 //		Select(enterprisebill.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (ebq *EnterpriseBillQuery) Select(fields ...string) *EnterpriseBillSelect {
-	ebq.fields = append(ebq.fields, fields...)
+	ebq.ctx.Fields = append(ebq.ctx.Fields, fields...)
 	sbuild := &EnterpriseBillSelect{EnterpriseBillQuery: ebq}
 	sbuild.label = enterprisebill.Label
-	sbuild.flds, sbuild.scan = &ebq.fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &ebq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
@@ -533,7 +529,7 @@ func (ebq *EnterpriseBillQuery) prepareQuery(ctx context.Context) error {
 			}
 		}
 	}
-	for _, f := range ebq.fields {
+	for _, f := range ebq.ctx.Fields {
 		if !enterprisebill.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -631,6 +627,9 @@ func (ebq *EnterpriseBillQuery) loadRider(ctx context.Context, query *RiderQuery
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(rider.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -656,6 +655,9 @@ func (ebq *EnterpriseBillQuery) loadCity(ctx context.Context, query *CityQuery, 
 			ids = append(ids, fk)
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
 	}
 	query.Where(city.IDIn(ids...))
 	neighbors, err := query.All(ctx)
@@ -686,6 +688,9 @@ func (ebq *EnterpriseBillQuery) loadStation(ctx context.Context, query *Enterpri
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(enterprisestation.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -711,6 +716,9 @@ func (ebq *EnterpriseBillQuery) loadEnterprise(ctx context.Context, query *Enter
 			ids = append(ids, fk)
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
 	}
 	query.Where(enterprise.IDIn(ids...))
 	neighbors, err := query.All(ctx)
@@ -738,6 +746,9 @@ func (ebq *EnterpriseBillQuery) loadStatement(ctx context.Context, query *Enterp
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(enterprisestatement.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -764,6 +775,9 @@ func (ebq *EnterpriseBillQuery) loadSubscribe(ctx context.Context, query *Subscr
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(subscribe.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -786,9 +800,9 @@ func (ebq *EnterpriseBillQuery) sqlCount(ctx context.Context) (int, error) {
 	if len(ebq.modifiers) > 0 {
 		_spec.Modifiers = ebq.modifiers
 	}
-	_spec.Node.Columns = ebq.fields
-	if len(ebq.fields) > 0 {
-		_spec.Unique = ebq.unique != nil && *ebq.unique
+	_spec.Node.Columns = ebq.ctx.Fields
+	if len(ebq.ctx.Fields) > 0 {
+		_spec.Unique = ebq.ctx.Unique != nil && *ebq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, ebq.driver, _spec)
 }
@@ -806,10 +820,10 @@ func (ebq *EnterpriseBillQuery) querySpec() *sqlgraph.QuerySpec {
 		From:   ebq.sql,
 		Unique: true,
 	}
-	if unique := ebq.unique; unique != nil {
+	if unique := ebq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
 	}
-	if fields := ebq.fields; len(fields) > 0 {
+	if fields := ebq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, enterprisebill.FieldID)
 		for i := range fields {
@@ -825,10 +839,10 @@ func (ebq *EnterpriseBillQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := ebq.limit; limit != nil {
+	if limit := ebq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := ebq.offset; offset != nil {
+	if offset := ebq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := ebq.order; len(ps) > 0 {
@@ -844,7 +858,7 @@ func (ebq *EnterpriseBillQuery) querySpec() *sqlgraph.QuerySpec {
 func (ebq *EnterpriseBillQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(ebq.driver.Dialect())
 	t1 := builder.Table(enterprisebill.Table)
-	columns := ebq.fields
+	columns := ebq.ctx.Fields
 	if len(columns) == 0 {
 		columns = enterprisebill.Columns
 	}
@@ -853,7 +867,7 @@ func (ebq *EnterpriseBillQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = ebq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if ebq.unique != nil && *ebq.unique {
+	if ebq.ctx.Unique != nil && *ebq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, m := range ebq.modifiers {
@@ -865,12 +879,12 @@ func (ebq *EnterpriseBillQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range ebq.order {
 		p(selector)
 	}
-	if offset := ebq.offset; offset != nil {
+	if offset := ebq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := ebq.limit; limit != nil {
+	if limit := ebq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -927,7 +941,7 @@ func (ebgb *EnterpriseBillGroupBy) Aggregate(fns ...AggregateFunc) *EnterpriseBi
 
 // Scan applies the selector query and scans the result into the given value.
 func (ebgb *EnterpriseBillGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeEnterpriseBill, "GroupBy")
+	ctx = setContextOp(ctx, ebgb.build.ctx, "GroupBy")
 	if err := ebgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -975,7 +989,7 @@ func (ebs *EnterpriseBillSelect) Aggregate(fns ...AggregateFunc) *EnterpriseBill
 
 // Scan applies the selector query and scans the result into the given value.
 func (ebs *EnterpriseBillSelect) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeEnterpriseBill, "Select")
+	ctx = setContextOp(ctx, ebs.ctx, "Select")
 	if err := ebs.prepareQuery(ctx); err != nil {
 		return err
 	}

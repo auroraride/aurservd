@@ -237,29 +237,29 @@ func (ss *SubscribeSuspend) assignValues(columns []string, values []any) error {
 
 // QueryCity queries the "city" edge of the SubscribeSuspend entity.
 func (ss *SubscribeSuspend) QueryCity() *CityQuery {
-	return (&SubscribeSuspendClient{config: ss.config}).QueryCity(ss)
+	return NewSubscribeSuspendClient(ss.config).QueryCity(ss)
 }
 
 // QueryRider queries the "rider" edge of the SubscribeSuspend entity.
 func (ss *SubscribeSuspend) QueryRider() *RiderQuery {
-	return (&SubscribeSuspendClient{config: ss.config}).QueryRider(ss)
+	return NewSubscribeSuspendClient(ss.config).QueryRider(ss)
 }
 
 // QuerySubscribe queries the "subscribe" edge of the SubscribeSuspend entity.
 func (ss *SubscribeSuspend) QuerySubscribe() *SubscribeQuery {
-	return (&SubscribeSuspendClient{config: ss.config}).QuerySubscribe(ss)
+	return NewSubscribeSuspendClient(ss.config).QuerySubscribe(ss)
 }
 
 // QueryPause queries the "pause" edge of the SubscribeSuspend entity.
 func (ss *SubscribeSuspend) QueryPause() *SubscribePauseQuery {
-	return (&SubscribeSuspendClient{config: ss.config}).QueryPause(ss)
+	return NewSubscribeSuspendClient(ss.config).QueryPause(ss)
 }
 
 // Update returns a builder for updating this SubscribeSuspend.
 // Note that you need to call SubscribeSuspend.Unwrap() before calling this method if this SubscribeSuspend
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (ss *SubscribeSuspend) Update() *SubscribeSuspendUpdateOne {
-	return (&SubscribeSuspendClient{config: ss.config}).UpdateOne(ss)
+	return NewSubscribeSuspendClient(ss.config).UpdateOne(ss)
 }
 
 // Unwrap unwraps the SubscribeSuspend entity that was returned from a transaction after it was closed,

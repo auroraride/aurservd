@@ -18,11 +18,8 @@ import (
 // PlanIntroduceQuery is the builder for querying PlanIntroduce entities.
 type PlanIntroduceQuery struct {
 	config
-	limit      *int
-	offset     *int
-	unique     *bool
+	ctx        *QueryContext
 	order      []OrderFunc
-	fields     []string
 	inters     []Interceptor
 	predicates []predicate.PlanIntroduce
 	withBrand  *EbikeBrandQuery
@@ -40,20 +37,20 @@ func (piq *PlanIntroduceQuery) Where(ps ...predicate.PlanIntroduce) *PlanIntrodu
 
 // Limit the number of records to be returned by this query.
 func (piq *PlanIntroduceQuery) Limit(limit int) *PlanIntroduceQuery {
-	piq.limit = &limit
+	piq.ctx.Limit = &limit
 	return piq
 }
 
 // Offset to start from.
 func (piq *PlanIntroduceQuery) Offset(offset int) *PlanIntroduceQuery {
-	piq.offset = &offset
+	piq.ctx.Offset = &offset
 	return piq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (piq *PlanIntroduceQuery) Unique(unique bool) *PlanIntroduceQuery {
-	piq.unique = &unique
+	piq.ctx.Unique = &unique
 	return piq
 }
 
@@ -88,7 +85,7 @@ func (piq *PlanIntroduceQuery) QueryBrand() *EbikeBrandQuery {
 // First returns the first PlanIntroduce entity from the query.
 // Returns a *NotFoundError when no PlanIntroduce was found.
 func (piq *PlanIntroduceQuery) First(ctx context.Context) (*PlanIntroduce, error) {
-	nodes, err := piq.Limit(1).All(newQueryContext(ctx, TypePlanIntroduce, "First"))
+	nodes, err := piq.Limit(1).All(setContextOp(ctx, piq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -111,7 +108,7 @@ func (piq *PlanIntroduceQuery) FirstX(ctx context.Context) *PlanIntroduce {
 // Returns a *NotFoundError when no PlanIntroduce ID was found.
 func (piq *PlanIntroduceQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = piq.Limit(1).IDs(newQueryContext(ctx, TypePlanIntroduce, "FirstID")); err != nil {
+	if ids, err = piq.Limit(1).IDs(setContextOp(ctx, piq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -134,7 +131,7 @@ func (piq *PlanIntroduceQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one PlanIntroduce entity is found.
 // Returns a *NotFoundError when no PlanIntroduce entities are found.
 func (piq *PlanIntroduceQuery) Only(ctx context.Context) (*PlanIntroduce, error) {
-	nodes, err := piq.Limit(2).All(newQueryContext(ctx, TypePlanIntroduce, "Only"))
+	nodes, err := piq.Limit(2).All(setContextOp(ctx, piq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -162,7 +159,7 @@ func (piq *PlanIntroduceQuery) OnlyX(ctx context.Context) *PlanIntroduce {
 // Returns a *NotFoundError when no entities are found.
 func (piq *PlanIntroduceQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = piq.Limit(2).IDs(newQueryContext(ctx, TypePlanIntroduce, "OnlyID")); err != nil {
+	if ids, err = piq.Limit(2).IDs(setContextOp(ctx, piq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -187,7 +184,7 @@ func (piq *PlanIntroduceQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of PlanIntroduces.
 func (piq *PlanIntroduceQuery) All(ctx context.Context) ([]*PlanIntroduce, error) {
-	ctx = newQueryContext(ctx, TypePlanIntroduce, "All")
+	ctx = setContextOp(ctx, piq.ctx, "All")
 	if err := piq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -207,7 +204,7 @@ func (piq *PlanIntroduceQuery) AllX(ctx context.Context) []*PlanIntroduce {
 // IDs executes the query and returns a list of PlanIntroduce IDs.
 func (piq *PlanIntroduceQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
-	ctx = newQueryContext(ctx, TypePlanIntroduce, "IDs")
+	ctx = setContextOp(ctx, piq.ctx, "IDs")
 	if err := piq.Select(planintroduce.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -225,7 +222,7 @@ func (piq *PlanIntroduceQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (piq *PlanIntroduceQuery) Count(ctx context.Context) (int, error) {
-	ctx = newQueryContext(ctx, TypePlanIntroduce, "Count")
+	ctx = setContextOp(ctx, piq.ctx, "Count")
 	if err := piq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -243,7 +240,7 @@ func (piq *PlanIntroduceQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (piq *PlanIntroduceQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = newQueryContext(ctx, TypePlanIntroduce, "Exist")
+	ctx = setContextOp(ctx, piq.ctx, "Exist")
 	switch _, err := piq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -271,15 +268,14 @@ func (piq *PlanIntroduceQuery) Clone() *PlanIntroduceQuery {
 	}
 	return &PlanIntroduceQuery{
 		config:     piq.config,
-		limit:      piq.limit,
-		offset:     piq.offset,
+		ctx:        piq.ctx.Clone(),
 		order:      append([]OrderFunc{}, piq.order...),
+		inters:     append([]Interceptor{}, piq.inters...),
 		predicates: append([]predicate.PlanIntroduce{}, piq.predicates...),
 		withBrand:  piq.withBrand.Clone(),
 		// clone intermediate query.
-		sql:    piq.sql.Clone(),
-		path:   piq.path,
-		unique: piq.unique,
+		sql:  piq.sql.Clone(),
+		path: piq.path,
 	}
 }
 
@@ -309,9 +305,9 @@ func (piq *PlanIntroduceQuery) WithBrand(opts ...func(*EbikeBrandQuery)) *PlanIn
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (piq *PlanIntroduceQuery) GroupBy(field string, fields ...string) *PlanIntroduceGroupBy {
-	piq.fields = append([]string{field}, fields...)
+	piq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &PlanIntroduceGroupBy{build: piq}
-	grbuild.flds = &piq.fields
+	grbuild.flds = &piq.ctx.Fields
 	grbuild.label = planintroduce.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -330,10 +326,10 @@ func (piq *PlanIntroduceQuery) GroupBy(field string, fields ...string) *PlanIntr
 //		Select(planintroduce.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (piq *PlanIntroduceQuery) Select(fields ...string) *PlanIntroduceSelect {
-	piq.fields = append(piq.fields, fields...)
+	piq.ctx.Fields = append(piq.ctx.Fields, fields...)
 	sbuild := &PlanIntroduceSelect{PlanIntroduceQuery: piq}
 	sbuild.label = planintroduce.Label
-	sbuild.flds, sbuild.scan = &piq.fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &piq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
@@ -353,7 +349,7 @@ func (piq *PlanIntroduceQuery) prepareQuery(ctx context.Context) error {
 			}
 		}
 	}
-	for _, f := range piq.fields {
+	for _, f := range piq.ctx.Fields {
 		if !planintroduce.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -419,6 +415,9 @@ func (piq *PlanIntroduceQuery) loadBrand(ctx context.Context, query *EbikeBrandQ
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(ebikebrand.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -441,9 +440,9 @@ func (piq *PlanIntroduceQuery) sqlCount(ctx context.Context) (int, error) {
 	if len(piq.modifiers) > 0 {
 		_spec.Modifiers = piq.modifiers
 	}
-	_spec.Node.Columns = piq.fields
-	if len(piq.fields) > 0 {
-		_spec.Unique = piq.unique != nil && *piq.unique
+	_spec.Node.Columns = piq.ctx.Fields
+	if len(piq.ctx.Fields) > 0 {
+		_spec.Unique = piq.ctx.Unique != nil && *piq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, piq.driver, _spec)
 }
@@ -461,10 +460,10 @@ func (piq *PlanIntroduceQuery) querySpec() *sqlgraph.QuerySpec {
 		From:   piq.sql,
 		Unique: true,
 	}
-	if unique := piq.unique; unique != nil {
+	if unique := piq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
 	}
-	if fields := piq.fields; len(fields) > 0 {
+	if fields := piq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, planintroduce.FieldID)
 		for i := range fields {
@@ -480,10 +479,10 @@ func (piq *PlanIntroduceQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := piq.limit; limit != nil {
+	if limit := piq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := piq.offset; offset != nil {
+	if offset := piq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := piq.order; len(ps) > 0 {
@@ -499,7 +498,7 @@ func (piq *PlanIntroduceQuery) querySpec() *sqlgraph.QuerySpec {
 func (piq *PlanIntroduceQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(piq.driver.Dialect())
 	t1 := builder.Table(planintroduce.Table)
-	columns := piq.fields
+	columns := piq.ctx.Fields
 	if len(columns) == 0 {
 		columns = planintroduce.Columns
 	}
@@ -508,7 +507,7 @@ func (piq *PlanIntroduceQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = piq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if piq.unique != nil && *piq.unique {
+	if piq.ctx.Unique != nil && *piq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, m := range piq.modifiers {
@@ -520,12 +519,12 @@ func (piq *PlanIntroduceQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range piq.order {
 		p(selector)
 	}
-	if offset := piq.offset; offset != nil {
+	if offset := piq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := piq.limit; limit != nil {
+	if limit := piq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -567,7 +566,7 @@ func (pigb *PlanIntroduceGroupBy) Aggregate(fns ...AggregateFunc) *PlanIntroduce
 
 // Scan applies the selector query and scans the result into the given value.
 func (pigb *PlanIntroduceGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypePlanIntroduce, "GroupBy")
+	ctx = setContextOp(ctx, pigb.build.ctx, "GroupBy")
 	if err := pigb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -615,7 +614,7 @@ func (pis *PlanIntroduceSelect) Aggregate(fns ...AggregateFunc) *PlanIntroduceSe
 
 // Scan applies the selector query and scans the result into the given value.
 func (pis *PlanIntroduceSelect) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypePlanIntroduce, "Select")
+	ctx = setContextOp(ctx, pis.ctx, "Select")
 	if err := pis.prepareQuery(ctx); err != nil {
 		return err
 	}

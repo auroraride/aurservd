@@ -204,14 +204,14 @@ func (e *Export) assignValues(columns []string, values []any) error {
 
 // QueryManager queries the "manager" edge of the Export entity.
 func (e *Export) QueryManager() *ManagerQuery {
-	return (&ExportClient{config: e.config}).QueryManager(e)
+	return NewExportClient(e.config).QueryManager(e)
 }
 
 // Update returns a builder for updating this Export.
 // Note that you need to call Export.Unwrap() before calling this method if this Export
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (e *Export) Update() *ExportUpdateOne {
-	return (&ExportClient{config: e.config}).UpdateOne(e)
+	return NewExportClient(e.config).UpdateOne(e)
 }
 
 // Unwrap unwraps the Export entity that was returned from a transaction after it was closed,

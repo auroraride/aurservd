@@ -220,19 +220,19 @@ func (es *EnterpriseStatement) assignValues(columns []string, values []any) erro
 
 // QueryEnterprise queries the "enterprise" edge of the EnterpriseStatement entity.
 func (es *EnterpriseStatement) QueryEnterprise() *EnterpriseQuery {
-	return (&EnterpriseStatementClient{config: es.config}).QueryEnterprise(es)
+	return NewEnterpriseStatementClient(es.config).QueryEnterprise(es)
 }
 
 // QueryBills queries the "bills" edge of the EnterpriseStatement entity.
 func (es *EnterpriseStatement) QueryBills() *EnterpriseBillQuery {
-	return (&EnterpriseStatementClient{config: es.config}).QueryBills(es)
+	return NewEnterpriseStatementClient(es.config).QueryBills(es)
 }
 
 // Update returns a builder for updating this EnterpriseStatement.
 // Note that you need to call EnterpriseStatement.Unwrap() before calling this method if this EnterpriseStatement
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (es *EnterpriseStatement) Update() *EnterpriseStatementUpdateOne {
-	return (&EnterpriseStatementClient{config: es.config}).UpdateOne(es)
+	return NewEnterpriseStatementClient(es.config).UpdateOne(es)
 }
 
 // Unwrap unwraps the EnterpriseStatement entity that was returned from a transaction after it was closed,

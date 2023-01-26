@@ -25,11 +25,8 @@ import (
 // SubscribePauseQuery is the builder for querying SubscribePause entities.
 type SubscribePauseQuery struct {
 	config
-	limit           *int
-	offset          *int
-	unique          *bool
+	ctx             *QueryContext
 	order           []OrderFunc
-	fields          []string
 	inters          []Interceptor
 	predicates      []predicate.SubscribePause
 	withRider       *RiderQuery
@@ -56,20 +53,20 @@ func (spq *SubscribePauseQuery) Where(ps ...predicate.SubscribePause) *Subscribe
 
 // Limit the number of records to be returned by this query.
 func (spq *SubscribePauseQuery) Limit(limit int) *SubscribePauseQuery {
-	spq.limit = &limit
+	spq.ctx.Limit = &limit
 	return spq
 }
 
 // Offset to start from.
 func (spq *SubscribePauseQuery) Offset(offset int) *SubscribePauseQuery {
-	spq.offset = &offset
+	spq.ctx.Offset = &offset
 	return spq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (spq *SubscribePauseQuery) Unique(unique bool) *SubscribePauseQuery {
-	spq.unique = &unique
+	spq.ctx.Unique = &unique
 	return spq
 }
 
@@ -302,7 +299,7 @@ func (spq *SubscribePauseQuery) QuerySuspends() *SubscribeSuspendQuery {
 // First returns the first SubscribePause entity from the query.
 // Returns a *NotFoundError when no SubscribePause was found.
 func (spq *SubscribePauseQuery) First(ctx context.Context) (*SubscribePause, error) {
-	nodes, err := spq.Limit(1).All(newQueryContext(ctx, TypeSubscribePause, "First"))
+	nodes, err := spq.Limit(1).All(setContextOp(ctx, spq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -325,7 +322,7 @@ func (spq *SubscribePauseQuery) FirstX(ctx context.Context) *SubscribePause {
 // Returns a *NotFoundError when no SubscribePause ID was found.
 func (spq *SubscribePauseQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = spq.Limit(1).IDs(newQueryContext(ctx, TypeSubscribePause, "FirstID")); err != nil {
+	if ids, err = spq.Limit(1).IDs(setContextOp(ctx, spq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -348,7 +345,7 @@ func (spq *SubscribePauseQuery) FirstIDX(ctx context.Context) uint64 {
 // Returns a *NotSingularError when more than one SubscribePause entity is found.
 // Returns a *NotFoundError when no SubscribePause entities are found.
 func (spq *SubscribePauseQuery) Only(ctx context.Context) (*SubscribePause, error) {
-	nodes, err := spq.Limit(2).All(newQueryContext(ctx, TypeSubscribePause, "Only"))
+	nodes, err := spq.Limit(2).All(setContextOp(ctx, spq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -376,7 +373,7 @@ func (spq *SubscribePauseQuery) OnlyX(ctx context.Context) *SubscribePause {
 // Returns a *NotFoundError when no entities are found.
 func (spq *SubscribePauseQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
-	if ids, err = spq.Limit(2).IDs(newQueryContext(ctx, TypeSubscribePause, "OnlyID")); err != nil {
+	if ids, err = spq.Limit(2).IDs(setContextOp(ctx, spq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -401,7 +398,7 @@ func (spq *SubscribePauseQuery) OnlyIDX(ctx context.Context) uint64 {
 
 // All executes the query and returns a list of SubscribePauses.
 func (spq *SubscribePauseQuery) All(ctx context.Context) ([]*SubscribePause, error) {
-	ctx = newQueryContext(ctx, TypeSubscribePause, "All")
+	ctx = setContextOp(ctx, spq.ctx, "All")
 	if err := spq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -421,7 +418,7 @@ func (spq *SubscribePauseQuery) AllX(ctx context.Context) []*SubscribePause {
 // IDs executes the query and returns a list of SubscribePause IDs.
 func (spq *SubscribePauseQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
-	ctx = newQueryContext(ctx, TypeSubscribePause, "IDs")
+	ctx = setContextOp(ctx, spq.ctx, "IDs")
 	if err := spq.Select(subscribepause.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -439,7 +436,7 @@ func (spq *SubscribePauseQuery) IDsX(ctx context.Context) []uint64 {
 
 // Count returns the count of the given query.
 func (spq *SubscribePauseQuery) Count(ctx context.Context) (int, error) {
-	ctx = newQueryContext(ctx, TypeSubscribePause, "Count")
+	ctx = setContextOp(ctx, spq.ctx, "Count")
 	if err := spq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -457,7 +454,7 @@ func (spq *SubscribePauseQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (spq *SubscribePauseQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = newQueryContext(ctx, TypeSubscribePause, "Exist")
+	ctx = setContextOp(ctx, spq.ctx, "Exist")
 	switch _, err := spq.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
@@ -485,9 +482,9 @@ func (spq *SubscribePauseQuery) Clone() *SubscribePauseQuery {
 	}
 	return &SubscribePauseQuery{
 		config:          spq.config,
-		limit:           spq.limit,
-		offset:          spq.offset,
+		ctx:             spq.ctx.Clone(),
 		order:           append([]OrderFunc{}, spq.order...),
+		inters:          append([]Interceptor{}, spq.inters...),
 		predicates:      append([]predicate.SubscribePause{}, spq.predicates...),
 		withRider:       spq.withRider.Clone(),
 		withEmployee:    spq.withEmployee.Clone(),
@@ -500,9 +497,8 @@ func (spq *SubscribePauseQuery) Clone() *SubscribePauseQuery {
 		withEndEmployee: spq.withEndEmployee.Clone(),
 		withSuspends:    spq.withSuspends.Clone(),
 		// clone intermediate query.
-		sql:    spq.sql.Clone(),
-		path:   spq.path,
-		unique: spq.unique,
+		sql:  spq.sql.Clone(),
+		path: spq.path,
 	}
 }
 
@@ -631,9 +627,9 @@ func (spq *SubscribePauseQuery) WithSuspends(opts ...func(*SubscribeSuspendQuery
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (spq *SubscribePauseQuery) GroupBy(field string, fields ...string) *SubscribePauseGroupBy {
-	spq.fields = append([]string{field}, fields...)
+	spq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &SubscribePauseGroupBy{build: spq}
-	grbuild.flds = &spq.fields
+	grbuild.flds = &spq.ctx.Fields
 	grbuild.label = subscribepause.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -652,10 +648,10 @@ func (spq *SubscribePauseQuery) GroupBy(field string, fields ...string) *Subscri
 //		Select(subscribepause.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (spq *SubscribePauseQuery) Select(fields ...string) *SubscribePauseSelect {
-	spq.fields = append(spq.fields, fields...)
+	spq.ctx.Fields = append(spq.ctx.Fields, fields...)
 	sbuild := &SubscribePauseSelect{SubscribePauseQuery: spq}
 	sbuild.label = subscribepause.Label
-	sbuild.flds, sbuild.scan = &spq.fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &spq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
@@ -675,7 +671,7 @@ func (spq *SubscribePauseQuery) prepareQuery(ctx context.Context) error {
 			}
 		}
 	}
-	for _, f := range spq.fields {
+	for _, f := range spq.ctx.Fields {
 		if !subscribepause.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -802,6 +798,9 @@ func (spq *SubscribePauseQuery) loadRider(ctx context.Context, query *RiderQuery
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(rider.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -830,6 +829,9 @@ func (spq *SubscribePauseQuery) loadEmployee(ctx context.Context, query *Employe
 			ids = append(ids, fk)
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
 	}
 	query.Where(employee.IDIn(ids...))
 	neighbors, err := query.All(ctx)
@@ -860,6 +862,9 @@ func (spq *SubscribePauseQuery) loadCity(ctx context.Context, query *CityQuery, 
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(city.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -888,6 +893,9 @@ func (spq *SubscribePauseQuery) loadStore(ctx context.Context, query *StoreQuery
 			ids = append(ids, fk)
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
 	}
 	query.Where(store.IDIn(ids...))
 	neighbors, err := query.All(ctx)
@@ -918,6 +926,9 @@ func (spq *SubscribePauseQuery) loadEndStore(ctx context.Context, query *StoreQu
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(store.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -946,6 +957,9 @@ func (spq *SubscribePauseQuery) loadCabinet(ctx context.Context, query *CabinetQ
 			ids = append(ids, fk)
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
 	}
 	query.Where(cabinet.IDIn(ids...))
 	neighbors, err := query.All(ctx)
@@ -976,6 +990,9 @@ func (spq *SubscribePauseQuery) loadEndCabinet(ctx context.Context, query *Cabin
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(cabinet.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1001,6 +1018,9 @@ func (spq *SubscribePauseQuery) loadSubscribe(ctx context.Context, query *Subscr
 			ids = append(ids, fk)
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
 	}
 	query.Where(subscribe.IDIn(ids...))
 	neighbors, err := query.All(ctx)
@@ -1030,6 +1050,9 @@ func (spq *SubscribePauseQuery) loadEndEmployee(ctx context.Context, query *Empl
 			ids = append(ids, fk)
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
 	}
 	query.Where(employee.IDIn(ids...))
 	neighbors, err := query.All(ctx)
@@ -1080,9 +1103,9 @@ func (spq *SubscribePauseQuery) sqlCount(ctx context.Context) (int, error) {
 	if len(spq.modifiers) > 0 {
 		_spec.Modifiers = spq.modifiers
 	}
-	_spec.Node.Columns = spq.fields
-	if len(spq.fields) > 0 {
-		_spec.Unique = spq.unique != nil && *spq.unique
+	_spec.Node.Columns = spq.ctx.Fields
+	if len(spq.ctx.Fields) > 0 {
+		_spec.Unique = spq.ctx.Unique != nil && *spq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, spq.driver, _spec)
 }
@@ -1100,10 +1123,10 @@ func (spq *SubscribePauseQuery) querySpec() *sqlgraph.QuerySpec {
 		From:   spq.sql,
 		Unique: true,
 	}
-	if unique := spq.unique; unique != nil {
+	if unique := spq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
 	}
-	if fields := spq.fields; len(fields) > 0 {
+	if fields := spq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, subscribepause.FieldID)
 		for i := range fields {
@@ -1119,10 +1142,10 @@ func (spq *SubscribePauseQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := spq.limit; limit != nil {
+	if limit := spq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := spq.offset; offset != nil {
+	if offset := spq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := spq.order; len(ps) > 0 {
@@ -1138,7 +1161,7 @@ func (spq *SubscribePauseQuery) querySpec() *sqlgraph.QuerySpec {
 func (spq *SubscribePauseQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(spq.driver.Dialect())
 	t1 := builder.Table(subscribepause.Table)
-	columns := spq.fields
+	columns := spq.ctx.Fields
 	if len(columns) == 0 {
 		columns = subscribepause.Columns
 	}
@@ -1147,7 +1170,7 @@ func (spq *SubscribePauseQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = spq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if spq.unique != nil && *spq.unique {
+	if spq.ctx.Unique != nil && *spq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, m := range spq.modifiers {
@@ -1159,12 +1182,12 @@ func (spq *SubscribePauseQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range spq.order {
 		p(selector)
 	}
-	if offset := spq.offset; offset != nil {
+	if offset := spq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := spq.limit; limit != nil {
+	if limit := spq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -1233,7 +1256,7 @@ func (spgb *SubscribePauseGroupBy) Aggregate(fns ...AggregateFunc) *SubscribePau
 
 // Scan applies the selector query and scans the result into the given value.
 func (spgb *SubscribePauseGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeSubscribePause, "GroupBy")
+	ctx = setContextOp(ctx, spgb.build.ctx, "GroupBy")
 	if err := spgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -1281,7 +1304,7 @@ func (sps *SubscribePauseSelect) Aggregate(fns ...AggregateFunc) *SubscribePause
 
 // Scan applies the selector query and scans the result into the given value.
 func (sps *SubscribePauseSelect) Scan(ctx context.Context, v any) error {
-	ctx = newQueryContext(ctx, TypeSubscribePause, "Select")
+	ctx = setContextOp(ctx, sps.ctx, "Select")
 	if err := sps.prepareQuery(ctx); err != nil {
 		return err
 	}

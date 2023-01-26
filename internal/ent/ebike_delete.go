@@ -69,6 +69,12 @@ type EbikeDeleteOne struct {
 	ed *EbikeDelete
 }
 
+// Where appends a list predicates to the EbikeDelete builder.
+func (edo *EbikeDeleteOne) Where(ps ...predicate.Ebike) *EbikeDeleteOne {
+	edo.ed.mutation.Where(ps...)
+	return edo
+}
+
 // Exec executes the deletion query.
 func (edo *EbikeDeleteOne) Exec(ctx context.Context) error {
 	n, err := edo.ed.Exec(ctx)
@@ -84,5 +90,7 @@ func (edo *EbikeDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (edo *EbikeDeleteOne) ExecX(ctx context.Context) {
-	edo.ed.ExecX(ctx)
+	if err := edo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

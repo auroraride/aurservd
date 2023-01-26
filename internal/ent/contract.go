@@ -304,29 +304,29 @@ func (c *Contract) assignValues(columns []string, values []any) error {
 
 // QuerySubscribe queries the "subscribe" edge of the Contract entity.
 func (c *Contract) QuerySubscribe() *SubscribeQuery {
-	return (&ContractClient{config: c.config}).QuerySubscribe(c)
+	return NewContractClient(c.config).QuerySubscribe(c)
 }
 
 // QueryEmployee queries the "employee" edge of the Contract entity.
 func (c *Contract) QueryEmployee() *EmployeeQuery {
-	return (&ContractClient{config: c.config}).QueryEmployee(c)
+	return NewContractClient(c.config).QueryEmployee(c)
 }
 
 // QueryRider queries the "rider" edge of the Contract entity.
 func (c *Contract) QueryRider() *RiderQuery {
-	return (&ContractClient{config: c.config}).QueryRider(c)
+	return NewContractClient(c.config).QueryRider(c)
 }
 
 // QueryAllocate queries the "allocate" edge of the Contract entity.
 func (c *Contract) QueryAllocate() *AllocateQuery {
-	return (&ContractClient{config: c.config}).QueryAllocate(c)
+	return NewContractClient(c.config).QueryAllocate(c)
 }
 
 // Update returns a builder for updating this Contract.
 // Note that you need to call Contract.Unwrap() before calling this method if this Contract
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (c *Contract) Update() *ContractUpdateOne {
-	return (&ContractClient{config: c.config}).UpdateOne(c)
+	return NewContractClient(c.config).UpdateOne(c)
 }
 
 // Unwrap unwraps the Contract entity that was returned from a transaction after it was closed,

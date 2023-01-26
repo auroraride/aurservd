@@ -69,6 +69,12 @@ type PlanIntroduceDeleteOne struct {
 	pid *PlanIntroduceDelete
 }
 
+// Where appends a list predicates to the PlanIntroduceDelete builder.
+func (pido *PlanIntroduceDeleteOne) Where(ps ...predicate.PlanIntroduce) *PlanIntroduceDeleteOne {
+	pido.pid.mutation.Where(ps...)
+	return pido
+}
+
 // Exec executes the deletion query.
 func (pido *PlanIntroduceDeleteOne) Exec(ctx context.Context) error {
 	n, err := pido.pid.Exec(ctx)
@@ -84,5 +90,7 @@ func (pido *PlanIntroduceDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (pido *PlanIntroduceDeleteOne) ExecX(ctx context.Context) {
-	pido.pid.ExecX(ctx)
+	if err := pido.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

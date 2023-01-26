@@ -291,39 +291,39 @@ func (c *Commission) assignValues(columns []string, values []any) error {
 
 // QueryBusiness queries the "business" edge of the Commission entity.
 func (c *Commission) QueryBusiness() *BusinessQuery {
-	return (&CommissionClient{config: c.config}).QueryBusiness(c)
+	return NewCommissionClient(c.config).QueryBusiness(c)
 }
 
 // QuerySubscribe queries the "subscribe" edge of the Commission entity.
 func (c *Commission) QuerySubscribe() *SubscribeQuery {
-	return (&CommissionClient{config: c.config}).QuerySubscribe(c)
+	return NewCommissionClient(c.config).QuerySubscribe(c)
 }
 
 // QueryPlan queries the "plan" edge of the Commission entity.
 func (c *Commission) QueryPlan() *PlanQuery {
-	return (&CommissionClient{config: c.config}).QueryPlan(c)
+	return NewCommissionClient(c.config).QueryPlan(c)
 }
 
 // QueryRider queries the "rider" edge of the Commission entity.
 func (c *Commission) QueryRider() *RiderQuery {
-	return (&CommissionClient{config: c.config}).QueryRider(c)
+	return NewCommissionClient(c.config).QueryRider(c)
 }
 
 // QueryOrder queries the "order" edge of the Commission entity.
 func (c *Commission) QueryOrder() *OrderQuery {
-	return (&CommissionClient{config: c.config}).QueryOrder(c)
+	return NewCommissionClient(c.config).QueryOrder(c)
 }
 
 // QueryEmployee queries the "employee" edge of the Commission entity.
 func (c *Commission) QueryEmployee() *EmployeeQuery {
-	return (&CommissionClient{config: c.config}).QueryEmployee(c)
+	return NewCommissionClient(c.config).QueryEmployee(c)
 }
 
 // Update returns a builder for updating this Commission.
 // Note that you need to call Commission.Unwrap() before calling this method if this Commission
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (c *Commission) Update() *CommissionUpdateOne {
-	return (&CommissionClient{config: c.config}).UpdateOne(c)
+	return NewCommissionClient(c.config).UpdateOne(c)
 }
 
 // Unwrap unwraps the Commission entity that was returned from a transaction after it was closed,
