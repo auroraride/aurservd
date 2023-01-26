@@ -27,7 +27,7 @@ var Permission = new(permission)
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Success      200  {object}  []perm.Group  "请求成功"
+// @Success      200  {object}  []permission.Group  "请求成功"
 func (*permission) List(c echo.Context) (err error) {
     ctx := app.Context(c)
     items := make([]*perm.Group, 0)
