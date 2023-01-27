@@ -21,6 +21,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/batterymodel"
     "github.com/auroraride/aurservd/internal/ent/branch"
     "github.com/auroraride/aurservd/internal/ent/cabinet"
+    "github.com/auroraride/aurservd/internal/ent/hook"
     "github.com/auroraride/aurservd/internal/ent/stock"
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/silk"
@@ -769,6 +770,23 @@ func (s *cabinetService) Sync(data *cabdef.CabinetMessage) {
             SetLockedBinNum(bl).
             SetBin(bins)
     }
+}
+
+func (s *cabinetService) EntHook(next ent.Mutator) ent.Mutator {
+    return hook.CabinetFunc(func(ctx context.Context, m *ent.CabinetMutation) (ent.Value, error) {
+        name, ne := m.Name()
+        if ne {
+            serial, se := m.Serial()
+            id, ie := m.ID()
+            if !se && ie {
+                item, _ := m.Client().Cabinet.Get(ctx, id)
+                serial = item.Serial
+            }
+            cache.HSet(ctx, cache.CabinetNameCacheKey, serial, name)
+        }
+
+        return next.Mutate(ctx, m)
+    })
 }
 
 func (s *cabinetService) CacheAll() {

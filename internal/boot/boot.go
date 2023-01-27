@@ -8,6 +8,7 @@ package boot
 import (
     "github.com/auroraride/adapter/zlog"
     "github.com/auroraride/aurservd/app/logging"
+    "github.com/auroraride/aurservd/app/service"
     "github.com/auroraride/aurservd/assets"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
@@ -55,6 +56,9 @@ func Bootstrap() {
 
     // 加载数据库
     ent.Database = ent.OpenDatabase(ar.Config.Database.Postgres.Dsn, ar.Config.App.SQL)
+    ent.Database.Cabinet.Use(service.NewCabinet().EntHook)
+
+    // 加载MongoDB
     mgo.Connect(ar.Config.Database.Mongo.Url, ar.Config.Database.Mongo.DB)
 
     // 加载其他数据

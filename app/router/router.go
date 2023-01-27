@@ -126,6 +126,7 @@ func Run() {
     loadAgentRoutes()    // 代理端路由
     loadToolRoutes()
     loadMaintainRoutes()
+    loadKitRoutes()
 
     log.Fatal(e.Start(cfg.Address))
 }

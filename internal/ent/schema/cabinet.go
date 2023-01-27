@@ -1,9 +1,11 @@
 package schema
 
 import (
+    "context"
     "entgo.io/ent"
     "entgo.io/ent/dialect"
     "entgo.io/ent/dialect/entsql"
+    "entgo.io/ent/entc/integration/ent/hook"
     "entgo.io/ent/schema"
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
@@ -12,6 +14,7 @@ import (
     "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent/internal"
+    "github.com/auroraride/aurservd/pkg/cache"
 )
 
 type CabinetMixin struct {
@@ -149,5 +152,28 @@ func (Cabinet) Indexes() []ent.Index {
             entsql.OpClass("jsonb_ops"), // jsonb_path_ops只支持@>操作符
         ),
         index.Fields("sim_date"),
+    }
+}
+
+type cabinetNameHook interface {
+    Serial() (r string, exists bool)
+    Name() (r string, exists bool)
+}
+
+func (Cabinet) Hooks() []ent.Hook {
+    return []ent.Hook{
+        hook.On(func(next ent.Mutator) ent.Mutator {
+            return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+                switch cm := m.(type) {
+                case cabinetNameHook:
+                    serial, ce := cm.Serial()
+                    name, ne := cm.Name()
+                    if ce && ne {
+                        cache.HSet(ctx, cache.CabinetNameCacheKey, serial, name)
+                    }
+                }
+                return next.Mutate(ctx, m)
+            })
+        }, ent.OpCreate|ent.OpUpdateOne|ent.OpUpdate),
     }
 }

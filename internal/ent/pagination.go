@@ -24,9 +24,8 @@ func (aq *AgentQuery) PaginationItemsX(req model.PaginationReq) any {
 func (aq *AgentQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := aq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -56,9 +55,8 @@ func (aq *AllocateQuery) PaginationItemsX(req model.PaginationReq) any {
 func (aq *AllocateQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := aq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -88,9 +86,8 @@ func (aq *AssistanceQuery) PaginationItemsX(req model.PaginationReq) any {
 func (aq *AssistanceQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := aq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -120,9 +117,8 @@ func (aq *AttendanceQuery) PaginationItemsX(req model.PaginationReq) any {
 func (aq *AttendanceQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := aq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -152,9 +148,8 @@ func (bq *BatteryQuery) PaginationItemsX(req model.PaginationReq) any {
 func (bq *BatteryQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := bq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -184,9 +179,8 @@ func (bmq *BatteryModelQuery) PaginationItemsX(req model.PaginationReq) any {
 func (bmq *BatteryModelQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := bmq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -216,9 +210,8 @@ func (bq *BranchQuery) PaginationItemsX(req model.PaginationReq) any {
 func (bq *BranchQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := bq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -248,9 +241,8 @@ func (bcq *BranchContractQuery) PaginationItemsX(req model.PaginationReq) any {
 func (bcq *BranchContractQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := bcq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -280,9 +272,8 @@ func (bq *BusinessQuery) PaginationItemsX(req model.PaginationReq) any {
 func (bq *BusinessQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := bq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -312,9 +303,8 @@ func (cq *CabinetQuery) PaginationItemsX(req model.PaginationReq) any {
 func (cq *CabinetQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := cq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -344,9 +334,8 @@ func (cfq *CabinetFaultQuery) PaginationItemsX(req model.PaginationReq) any {
 func (cfq *CabinetFaultQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := cfq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -376,9 +365,8 @@ func (cq *CityQuery) PaginationItemsX(req model.PaginationReq) any {
 func (cq *CityQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := cq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -408,9 +396,8 @@ func (cq *CommissionQuery) PaginationItemsX(req model.PaginationReq) any {
 func (cq *CommissionQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := cq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -440,9 +427,8 @@ func (cq *ContractQuery) PaginationItemsX(req model.PaginationReq) any {
 func (cq *ContractQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := cq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -472,9 +458,8 @@ func (cq *CouponQuery) PaginationItemsX(req model.PaginationReq) any {
 func (cq *CouponQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := cq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -504,9 +489,8 @@ func (caq *CouponAssemblyQuery) PaginationItemsX(req model.PaginationReq) any {
 func (caq *CouponAssemblyQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := caq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -536,9 +520,8 @@ func (ctq *CouponTemplateQuery) PaginationItemsX(req model.PaginationReq) any {
 func (ctq *CouponTemplateQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := ctq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -568,9 +551,8 @@ func (eq *EbikeQuery) PaginationItemsX(req model.PaginationReq) any {
 func (eq *EbikeQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := eq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -600,9 +582,8 @@ func (ebq *EbikeBrandQuery) PaginationItemsX(req model.PaginationReq) any {
 func (ebq *EbikeBrandQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := ebq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -632,9 +613,8 @@ func (eq *EmployeeQuery) PaginationItemsX(req model.PaginationReq) any {
 func (eq *EmployeeQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := eq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -664,9 +644,8 @@ func (eq *EnterpriseQuery) PaginationItemsX(req model.PaginationReq) any {
 func (eq *EnterpriseQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := eq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -696,9 +675,8 @@ func (ebq *EnterpriseBillQuery) PaginationItemsX(req model.PaginationReq) any {
 func (ebq *EnterpriseBillQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := ebq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -728,9 +706,8 @@ func (ecq *EnterpriseContractQuery) PaginationItemsX(req model.PaginationReq) an
 func (ecq *EnterpriseContractQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := ecq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -760,9 +737,8 @@ func (epq *EnterprisePrepaymentQuery) PaginationItemsX(req model.PaginationReq) 
 func (epq *EnterprisePrepaymentQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := epq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -792,9 +768,8 @@ func (epq *EnterprisePriceQuery) PaginationItemsX(req model.PaginationReq) any {
 func (epq *EnterprisePriceQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := epq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -824,9 +799,8 @@ func (esq *EnterpriseStatementQuery) PaginationItemsX(req model.PaginationReq) a
 func (esq *EnterpriseStatementQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := esq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -856,9 +830,8 @@ func (esq *EnterpriseStationQuery) PaginationItemsX(req model.PaginationReq) any
 func (esq *EnterpriseStationQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := esq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -888,9 +861,8 @@ func (eq *ExceptionQuery) PaginationItemsX(req model.PaginationReq) any {
 func (eq *ExceptionQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := eq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -920,9 +892,8 @@ func (eq *ExchangeQuery) PaginationItemsX(req model.PaginationReq) any {
 func (eq *ExchangeQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := eq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -952,9 +923,8 @@ func (eq *ExportQuery) PaginationItemsX(req model.PaginationReq) any {
 func (eq *ExportQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := eq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -984,9 +954,8 @@ func (iq *InventoryQuery) PaginationItemsX(req model.PaginationReq) any {
 func (iq *InventoryQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := iq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -1016,9 +985,8 @@ func (mq *ManagerQuery) PaginationItemsX(req model.PaginationReq) any {
 func (mq *ManagerQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := mq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -1048,9 +1016,8 @@ func (oq *OrderQuery) PaginationItemsX(req model.PaginationReq) any {
 func (oq *OrderQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := oq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -1080,9 +1047,8 @@ func (orq *OrderRefundQuery) PaginationItemsX(req model.PaginationReq) any {
 func (orq *OrderRefundQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := orq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -1112,9 +1078,8 @@ func (pq *PersonQuery) PaginationItemsX(req model.PaginationReq) any {
 func (pq *PersonQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := pq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -1144,9 +1109,8 @@ func (pq *PlanQuery) PaginationItemsX(req model.PaginationReq) any {
 func (pq *PlanQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := pq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -1176,9 +1140,8 @@ func (piq *PlanIntroduceQuery) PaginationItemsX(req model.PaginationReq) any {
 func (piq *PlanIntroduceQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := piq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -1208,9 +1171,8 @@ func (plq *PointLogQuery) PaginationItemsX(req model.PaginationReq) any {
 func (plq *PointLogQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := plq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -1240,9 +1202,8 @@ func (rq *ReserveQuery) PaginationItemsX(req model.PaginationReq) any {
 func (rq *ReserveQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := rq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -1272,9 +1233,8 @@ func (rq *RiderQuery) PaginationItemsX(req model.PaginationReq) any {
 func (rq *RiderQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := rq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -1304,9 +1264,8 @@ func (rfuq *RiderFollowUpQuery) PaginationItemsX(req model.PaginationReq) any {
 func (rfuq *RiderFollowUpQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := rfuq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -1336,9 +1295,8 @@ func (rq *RoleQuery) PaginationItemsX(req model.PaginationReq) any {
 func (rq *RoleQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := rq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -1368,9 +1326,8 @@ func (sq *SettingQuery) PaginationItemsX(req model.PaginationReq) any {
 func (sq *SettingQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := sq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -1400,9 +1357,8 @@ func (sq *StockQuery) PaginationItemsX(req model.PaginationReq) any {
 func (sq *StockQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := sq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -1432,9 +1388,8 @@ func (sq *StoreQuery) PaginationItemsX(req model.PaginationReq) any {
 func (sq *StoreQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := sq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -1464,9 +1419,8 @@ func (sq *SubscribeQuery) PaginationItemsX(req model.PaginationReq) any {
 func (sq *SubscribeQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := sq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -1496,9 +1450,8 @@ func (saq *SubscribeAlterQuery) PaginationItemsX(req model.PaginationReq) any {
 func (saq *SubscribeAlterQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := saq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -1528,9 +1481,8 @@ func (spq *SubscribePauseQuery) PaginationItemsX(req model.PaginationReq) any {
 func (spq *SubscribePauseQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := spq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -1560,9 +1512,8 @@ func (srq *SubscribeReminderQuery) PaginationItemsX(req model.PaginationReq) any
 func (srq *SubscribeReminderQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := srq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
@@ -1592,9 +1543,8 @@ func (ssq *SubscribeSuspendQuery) PaginationItemsX(req model.PaginationReq) any 
 func (ssq *SubscribeSuspendQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := ssq.Clone()
 	query.order = nil
-	query.order = nil
-	query.limit = nil
-	query.offset = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
 	var result []struct {
 		Count int `json:"count"`
 	}
