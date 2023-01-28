@@ -10,7 +10,7 @@ require (
 	github.com/alibabacloud-go/dysmsapi-20170525/v2 v2.0.18
 	github.com/alibabacloud-go/dyvmsapi-20170525/v2 v2.1.4
 	github.com/alibabacloud-go/tea v1.1.20
-	github.com/aliyun/alibaba-cloud-sdk-go v1.62.138
+	github.com/aliyun/alibaba-cloud-sdk-go v1.62.139
 	github.com/aliyun/aliyun-log-go-sdk v0.1.43
 	github.com/aliyun/aliyun-oss-go-sdk v2.2.6+incompatible
 	github.com/auroraride/adapter v0.0.0
@@ -55,7 +55,7 @@ require (
 	github.com/xuri/excelize/v2 v2.7.0
 	go.mongodb.org/mongo-driver v1.11.1
 	golang.org/x/crypto v0.5.0
-	golang.org/x/exp v0.0.0-20230125214544-b3c2aaf6208d
+	golang.org/x/exp v0.0.0-20230127193734-31bee513bff7
 	golang.org/x/time v0.3.0
 	golang.org/x/tools v0.5.0
 	gopkg.in/yaml.v3 v3.0.1
@@ -124,7 +124,7 @@ require (
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
 	github.com/montanaflynn/stats v0.7.0 // indirect
 	github.com/opentracing/opentracing-go v1.2.1-0.20220228012449-10b1cf09e00b // indirect
-	github.com/panjf2000/gnet/v2 v2.2.4 // indirect
+	github.com/panjf2000/gnet/v2 v2.2.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.6 // indirect
 	github.com/perimeterx/marshmallow v1.1.4 // indirect
 	github.com/pierrec/lz4 v2.6.1+incompatible // indirect

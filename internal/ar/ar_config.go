@@ -28,14 +28,14 @@ type Version struct {
 
 type AppVersion struct {
     Android Version `json:"android"`
-    IOS     Version `json:"ios" mapstructure:"ios"`
+    IOS     Version `json:"ios" koanf:"ios"`
 }
 
 type EsignConfig struct {
     Appid    string
     BaseUrl  string
     Secret   string
-    RSA      string `mapstructure:"rsa"`
+    RSA      string `koanf:"rsa"`
     Log      bool
     Callback string
     Redirect string
@@ -107,7 +107,7 @@ type config struct {
         }
         Mongo struct {
             Url string
-            DB  string `mapstructure:"db"`
+            DB  string `koanf:"db"`
         }
     }
 
@@ -121,7 +121,7 @@ type config struct {
             Url string
             Key string
         }
-    } `mapstructure:"third_party"`
+    } `koanf:"third_party"`
 
     Logging struct {
         Color    bool   // 是否启用日志颜色
@@ -239,9 +239,9 @@ type config struct {
     RiderApp    AppVersion
     EmployeeApp AppVersion
     WxWork      struct {
-        AgentID    int64  `mapstructure:"agentID"`
-        CorpID     string `mapstructure:"corpID"`
-        CorpSecret string `mapstructure:"corpSecret"`
+        AgentID    int64  `koanf:"agentID"`
+        CorpID     string `koanf:"corpID"`
+        CorpSecret string `koanf:"corpSecret"`
     }
 }
 
