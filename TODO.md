@@ -51,6 +51,14 @@
 - [ ] 绑定电池时, 需要进行城市限定, 并且, 在电柜中的电池无法直接从后台绑定
 - [ ] 远程请求最新电柜数据
 - [ ] 仓控或其他电柜数据请求时, 直接请求新的智能柜系统, 抛弃老的电柜系统. 例如: 电柜列表中不显示智能柜, 智能柜列表管理使用新的系统
+- [ ] 为啥有两条寄存信息 `subscribe_id = 115964117567`
+
+```sql
+INSERT INTO "public"."subscribe_pause"("id","created_at","updated_at","deleted_at","creator","last_modifier","remark","start_at","end_at","days","subscribe_id","rider_id","employee_id","end_employee_id","end_modifier","city_id","store_id","end_store_id","cabinet_id","end_cabinet_id","overdue_days","pause_overdue","suspend_days")
+VALUES
+(124554054387,E'2023-01-10 21:27:37.30464+08',E'2023-01-10 21:27:37.304641+08',NULL,NULL,NULL,NULL,E'2023-01-10 21:27:37.304638+08',NULL,NULL,115964117567,98784248510,NULL,NULL,NULL,410100,NULL,NULL,17179869463,NULL,0,FALSE,0),
+(124554054386,E'2023-01-10 21:27:37.195824+08',E'2023-01-28 11:53:57.767333+08',NULL,NULL,NULL,NULL,E'2023-01-10 21:27:37.195822+08',NULL,17,115964117567,98784248510,NULL,NULL,NULL,410100,NULL,NULL,17179869463,NULL,0,FALSE,0); 
+```
 
 ## 注意
 

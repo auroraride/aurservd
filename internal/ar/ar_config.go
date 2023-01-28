@@ -258,5 +258,5 @@ func LoadConfig() {
 }
 
 func (c *config) setKeys() {
-    CabinetNameCacheKey = c.GetCacheKey("CABINET:NAMES")
+    CabinetNameCacheKey = c.GetCacheKey("CABINET_NAME")
 }
