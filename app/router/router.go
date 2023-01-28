@@ -71,7 +71,7 @@ func Run() {
     }
 
     // e.Logger.SetHeader(`[time] ${time_rfc3339_nano}` + "\n")
-    cfg := ar.Config.App
+    cfg := ar.Config.Api
     corsConfig := mw.DefaultCORSConfig
     corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, []string{
         app.HeaderContentType,
@@ -105,14 +105,20 @@ func Run() {
         // }),
         // mw.Recover(),
         middleware.Recover(),
-        mw.BodyLimit(cfg.BodyLimit),
         mw.CORSWithConfig(corsConfig),
         mw.GzipWithConfig(mw.GzipConfig{
             Level: 5,
         }),
         mw.RequestID(),
-        mw.RateLimiter(mw.NewRateLimiterMemoryStore(rate.Limit(cfg.RateLimit))),
     )
+
+    if cfg.BodyLimit != "" {
+        root.Use(mw.BodyLimit(cfg.BodyLimit))
+    }
+
+    if cfg.RateLimit > 0 {
+        root.Use(mw.RateLimiter(mw.NewRateLimiterMemoryStore(rate.Limit(cfg.RateLimit))))
+    }
 
     // 载入路由
     root.GET("app/version", controller.Version.Get)
@@ -128,5 +134,5 @@ func Run() {
     loadMaintainRoutes()
     loadKitRoutes()
 
-    log.Fatal(e.Start(cfg.Address))
+    log.Fatal(e.Start(cfg.Bind))
 }

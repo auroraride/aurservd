@@ -36,9 +36,9 @@ func Bootstrap() {
 
     // 创建redis客户端
     ar.Redis = redis.NewClient(&redis.Options{
-        Addr:     ar.Config.Database.Redis.Addr,
-        Password: ar.Config.Database.Redis.Password,
-        DB:       ar.Config.Database.Redis.DB,
+        Addr:     ar.Config.Redis.Address,
+        Password: ar.Config.Redis.Password,
+        DB:       ar.Config.Redis.DB,
     })
 
     // 配置elk+zap

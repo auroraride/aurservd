@@ -8,11 +8,7 @@ package ar
 import (
     _ "embed"
     "github.com/auroraride/adapter"
-    "github.com/auroraride/aurservd/pkg/utils"
-    "github.com/fsnotify/fsnotify"
     log "github.com/sirupsen/logrus"
-    "github.com/spf13/viper"
-    "os"
 )
 
 const (
@@ -21,12 +17,7 @@ const (
 
 var (
     Config *config
-    suffix string
 )
-
-// defaultConfigStr 默认配置
-//go:embed default_config.yml
-var defaultConfigStr string
 
 type Version struct {
     Version     string `json:"version"`
@@ -58,22 +49,21 @@ type EsignConfig struct {
     }
 }
 
-type config struct {
-    Debug       bool
-    Application string
-    Adapter     struct {
-        Kaixin struct {
-            TcpBind string
-            Api     string
-        }
+type SyncConfig struct {
+    Api  string
+    Bind struct {
+        Tcp string
     }
+}
+
+type config struct {
+    Debug bool
+    adapter.Configure
+
     App struct {
-        Address      string
         Host         string
         Mode         string
         SQL          bool
-        BodyLimit    string
-        RateLimit    float64
         CabinetDebug bool
         Debug        struct {
             Phone map[string]bool
@@ -82,6 +72,12 @@ type config struct {
             Names map[string]string
         }
     }
+
+    Sync struct {
+        Kxcab SyncConfig
+        Xcbms SyncConfig
+    }
+
     Task struct {
         Branch     bool // 网点合同到期提醒
         Enterprise bool // 团签账单
@@ -91,30 +87,30 @@ type config struct {
         Reminder   bool // 个签到期提醒
         Cabinet    bool // 电柜任务失效
     }
+
     Cabinet struct {
         Debug    bool
         Provider bool
     }
+
     Nsq struct {
         Url string
     }
+
     Amap struct {
         Key string
     }
+
     Database struct {
         Postgres struct {
             Dsn string
-        }
-        Redis struct {
-            Addr     string
-            Password string
-            DB       int `mapstructure:"db"`
         }
         Mongo struct {
             Url string
             DB  string `mapstructure:"db"`
         }
     }
+
     ThirdParty struct {
         Yundong struct {
             Appid  string
@@ -126,6 +122,7 @@ type config struct {
             Key string
         }
     } `mapstructure:"third_party"`
+
     Logging struct {
         Color    bool   // 是否启用日志颜色
         Level    string // 日志等级
@@ -133,6 +130,7 @@ type config struct {
         Json     bool   // 日志以json格式保存
         RootPath string // 移除根目录
     }
+
     Aliyun struct {
         Oss struct {
             AccessKeyId     string
@@ -187,6 +185,7 @@ type config struct {
             BatteryLog      string // 电柜电池变化日志logstore
         }
     }
+
     Baidu struct {
         Face struct {
             ApiKey     string
@@ -201,11 +200,13 @@ type config struct {
             Sk     string
         }
     }
+
     Esign struct {
         Target  string
         Sandbox EsignConfig
         Online  EsignConfig
     }
+
     Mob struct {
         Push struct {
             Env       string
@@ -213,7 +214,9 @@ type config struct {
             AppSecret string
         }
     }
-    Trans   map[string]string
+
+    Trans map[string]string
+
     Payment struct {
         Wechat struct {
             PrivateKeyPath             string
@@ -242,50 +245,18 @@ type config struct {
     }
 }
 
-func readConfig() error {
-    viper.SetConfigFile(configFile)
-    viper.AutomaticEnv()
-    // 读取配置
-    err := viper.ReadInConfig()
-    if err != nil {
-        return err
-    }
-    Config = new(config)
-    err = viper.Unmarshal(Config)
-    return err
-}
-
 func LoadConfig() {
-    // 判断配置是否存在
-    f := utils.NewFile(configFile)
-    if !f.IsExist() {
-        err := f.CreateDirectoryIfNotExist()
-        if err != nil {
-            log.Fatalf("配置目录创建失败: %v", err)
-            return
-        }
-        err = os.WriteFile(configFile, []byte(defaultConfigStr), 0644)
-        if err != nil {
-            log.Fatalf("默认配置保存失败: %v", err)
-            return
-        }
-    }
+    var err error
 
-    err := readConfig()
+    Config = new(config)
+    err = adapter.LoadConfigure(Config, configFile, nil)
     if err != nil {
-        log.Fatalf("配置读取失败: %v", err)
+        log.Fatal(err)
     }
-
-    suffix = adapter.ApplicationKey(Config.Application, Config.App.Address)
 
     Config.setKeys()
-
-    viper.OnConfigChange(func(e fsnotify.Event) {
-        log.Infof("配置已改动: %s, 重载配置: %v", e.Name, readConfig())
-    })
-    viper.WatchConfig()
 }
 
 func (c *config) setKeys() {
-    CabinetNameCacheKey = "CABINET:NAMES:" + suffix
+    CabinetNameCacheKey = c.GetCacheKey("CABINET:NAMES")
 }

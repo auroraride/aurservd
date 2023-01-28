@@ -176,7 +176,7 @@ func (s *BaseService) GetXlsxRows(c echo.Context, start, columnsNumber int, pkIn
 func (s *BaseService) GetCabinetAdapterUrl(br model.CabinetBrand, apiurl string) (url string, err error) {
     switch br {
     case model.CabinetBrandKaixin:
-        url = ar.Config.Adapter.Kaixin.Api
+        url = ar.Config.Sync.Kxcab.Api
     default:
         return "", adapter.ErrorCabinetBrand
     }

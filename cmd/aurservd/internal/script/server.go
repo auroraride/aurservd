@@ -8,10 +8,10 @@ package script
 import (
     "context"
     "github.com/auroraride/aurservd/app/ec"
-    "github.com/auroraride/aurservd/app/notice"
     pvd "github.com/auroraride/aurservd/app/provider"
     "github.com/auroraride/aurservd/app/router"
     "github.com/auroraride/aurservd/app/service"
+    "github.com/auroraride/aurservd/app/sync"
     "github.com/auroraride/aurservd/app/task"
     "github.com/auroraride/aurservd/app/task/reminder"
     "github.com/auroraride/aurservd/internal/ar"
@@ -59,7 +59,7 @@ func serverCommand() *cobra.Command {
             compensate()
 
             // 启动bridge
-            go notice.Run()
+            go sync.Run()
 
             // 启动服务器
             go router.Run()

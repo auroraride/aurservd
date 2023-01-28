@@ -3,7 +3,7 @@
 // Created at 2022-12-25
 // Based on aurservd by liasica, magicrolan@qq.com.
 
-package notice
+package sync
 
 import (
     "github.com/auroraride/adapter/codec"
@@ -16,8 +16,8 @@ import (
     log "github.com/sirupsen/logrus"
 )
 
-func kaixin() {
-    s := tcp.NewServer(ar.Config.Adapter.Kaixin.TcpBind, zlog.StandardLogger(), &codec.HeaderLength{}, func(b []byte) {
+func kxcab() {
+    s := tcp.NewServer(ar.Config.Sync.Kxcab.Bind.Tcp, zlog.StandardLogger(), &codec.HeaderLength{}, func(b []byte) {
         // log.Infof("[SYNC] %s", string(b))
 
         t, msg, err := message.Unpack(b)
