@@ -11,10 +11,6 @@ import (
     "time"
 )
 
-const (
-    CabinetNameCacheKey = "__CABINET_NAMES__"
-)
-
 type SetFunc func(ctx context.Context, key string, value interface{}, expiration time.Duration) *redis.StatusCmd
 
 var (

@@ -782,7 +782,7 @@ func (s *cabinetService) EntHook(next ent.Mutator) ent.Mutator {
                 item, _ := m.Client().Cabinet.Get(ctx, id)
                 serial = item.Serial
             }
-            cache.HSet(ctx, cache.CabinetNameCacheKey, serial, name)
+            cache.HSet(ctx, ar.CabinetNameCacheKey, serial, name)
         }
 
         return next.Mutate(ctx, m)
@@ -792,6 +792,6 @@ func (s *cabinetService) EntHook(next ent.Mutator) ent.Mutator {
 func (s *cabinetService) CacheAll() {
     items, _ := s.orm.Query().All(s.ctx)
     for _, item := range items {
-        cache.HSet(s.ctx, cache.CabinetNameCacheKey, item.Serial, item.Name)
+        cache.HSet(s.ctx, ar.CabinetNameCacheKey, item.Serial, item.Name)
     }
 }

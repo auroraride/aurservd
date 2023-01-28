@@ -13,6 +13,7 @@ import (
     "entgo.io/ent/schema/mixin"
     "fmt"
     "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent/internal"
     "github.com/auroraride/aurservd/pkg/cache"
 )
@@ -169,7 +170,7 @@ func (Cabinet) Hooks() []ent.Hook {
                     serial, ce := cm.Serial()
                     name, ne := cm.Name()
                     if ce && ne {
-                        cache.HSet(ctx, cache.CabinetNameCacheKey, serial, name)
+                        cache.HSet(ctx, ar.CabinetNameCacheKey, serial, name)
                     }
                 }
                 return next.Mutate(ctx, m)

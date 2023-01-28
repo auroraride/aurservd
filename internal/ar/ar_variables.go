@@ -8,8 +8,9 @@ package ar
 import "github.com/go-redis/redis/v9"
 
 var (
-    Quit  chan bool
-    Redis *redis.Client
+    Quit                chan bool
+    Redis               *redis.Client
+    CabinetNameCacheKey string
 )
 
 func init() {

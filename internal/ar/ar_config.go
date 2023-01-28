@@ -7,6 +7,7 @@ package ar
 
 import (
     _ "embed"
+    "github.com/auroraride/adapter"
     "github.com/auroraride/aurservd/pkg/utils"
     "github.com/fsnotify/fsnotify"
     log "github.com/sirupsen/logrus"
@@ -18,7 +19,10 @@ const (
     configFile = "./config/config.yaml"
 )
 
-var Config *config
+var (
+    Config *config
+    suffix string
+)
 
 // defaultConfigStr 默认配置
 //go:embed default_config.yml
@@ -272,8 +276,16 @@ func LoadConfig() {
         log.Fatalf("配置读取失败: %v", err)
     }
 
+    suffix = adapter.ApplicationKey(Config.Application, Config.App.Address)
+
+    Config.setKeys()
+
     viper.OnConfigChange(func(e fsnotify.Event) {
         log.Infof("配置已改动: %s, 重载配置: %v", e.Name, readConfig())
     })
     viper.WatchConfig()
+}
+
+func (c *config) setKeys() {
+    CabinetNameCacheKey = "CABINET:NAMES:" + suffix
 }
