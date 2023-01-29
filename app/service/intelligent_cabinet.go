@@ -13,6 +13,7 @@ import (
     "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/silk"
@@ -266,7 +267,7 @@ func (s *intelligentCabinetService) ExchangeResult(uid string) (res *model.Rider
         s.exchangeStepResultFromCache(index, c, res)
 
         if !res.Stop {
-            ttl, _ := cache.TTL(s.ctx, key).Result()
+            ttl, _ := ar.Redis.TTL(s.ctx, key).Result()
             c.Index += 1
             cache.Set(s.ctx, key, c, ttl)
         }

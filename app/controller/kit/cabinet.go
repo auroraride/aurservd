@@ -9,7 +9,6 @@ import (
     "context"
     "github.com/auroraride/aurservd/app"
     "github.com/auroraride/aurservd/internal/ar"
-    "github.com/auroraride/aurservd/pkg/cache"
     "github.com/labstack/echo/v4"
 )
 
@@ -20,7 +19,7 @@ var Cabinet = new(cabinet)
 func (*cabinet) Name(c echo.Context) (err error) {
     ctx := app.Context(c)
     serial := c.Param("serial")
-    name, _ := cache.HGet(context.Background(), ar.CabinetNameCacheKey, serial).Result()
+    name, _ := ar.Redis.HGet(context.Background(), ar.CabinetNameCacheKey, serial).Result()
 
     return ctx.SendResponse(map[string]string{"name": name})
 }

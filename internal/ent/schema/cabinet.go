@@ -15,7 +15,6 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent/internal"
-    "github.com/auroraride/aurservd/pkg/cache"
 )
 
 type CabinetMixin struct {
@@ -170,7 +169,7 @@ func (Cabinet) Hooks() []ent.Hook {
                     serial, ce := cm.Serial()
                     name, ne := cm.Name()
                     if ce && ne {
-                        cache.HSet(ctx, ar.CabinetNameCacheKey, serial, name)
+                        ar.Redis.HSet(ctx, ar.CabinetNameCacheKey, serial, name)
                     }
                 }
                 return next.Mutate(ctx, m)
