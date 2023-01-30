@@ -52,6 +52,7 @@
 - [ ] 远程请求最新电柜数据
 - [ ] 仓控或其他电柜数据请求时, 直接请求新的智能柜系统, 抛弃老的电柜系统. 例如: 电柜列表中不显示智能柜, 智能柜列表管理使用新的系统
 - [ ] 为啥有两条寄存信息 `subscribe_id = 115964117567`
+- [ ] 可配置：按城市自然日（或小时）配置用户一定时间段内（动态）换电次数若大于等于某个阈值，则使用不同的换电间隔, 可给某个用户单独配置换电间隔阶梯
 
 ```sql
 INSERT INTO "public"."subscribe_pause"("id","created_at","updated_at","deleted_at","creator","last_modifier","remark","start_at","end_at","days","subscribe_id","rider_id","employee_id","end_employee_id","end_modifier","city_id","store_id","end_store_id","cabinet_id","end_cabinet_id","overdue_days","pause_overdue","suspend_days")
