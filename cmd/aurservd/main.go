@@ -16,6 +16,7 @@ import (
 )
 
 func main() {
+
     snag.WithPanicStack(func() {
         boot.Bootstrap()
 
