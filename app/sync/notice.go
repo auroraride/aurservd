@@ -6,5 +6,5 @@
 package sync
 
 func Run() {
-    go kxcab()
+    go runKxcab()
 }

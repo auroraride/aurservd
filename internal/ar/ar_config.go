@@ -49,13 +49,6 @@ type EsignConfig struct {
     }
 }
 
-type SyncConfig struct {
-    Api  string
-    Bind struct {
-        Tcp string
-    }
-}
-
 type config struct {
     Debug bool
     adapter.Configure
@@ -74,8 +67,12 @@ type config struct {
     }
 
     Sync struct {
-        Kxcab SyncConfig
-        Xcbms SyncConfig
+        Kxcab struct {
+            Api string
+        }
+        Xcbms struct {
+            Api string
+        }
     }
 
     Task struct {

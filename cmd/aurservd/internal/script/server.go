@@ -58,7 +58,7 @@ func serverCommand() *cobra.Command {
             // 启动 任务补偿
             compensate()
 
-            // 启动bridge
+            // 启动sync
             go sync.Run()
 
             // 启动服务器
