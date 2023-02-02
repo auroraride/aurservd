@@ -844,7 +844,9 @@ func init() {
 	orderrefund.UpdateDefaultUpdatedAt = orderrefundDescUpdatedAt.UpdateDefault.(func() time.Time)
 	personMixin := schema.Person{}.Mixin()
 	personMixinHooks2 := personMixin[2].Hooks()
+	personHooks := schema.Person{}.Hooks()
 	person.Hooks[0] = personMixinHooks2[0]
+	person.Hooks[1] = personHooks[0]
 	personMixinFields0 := personMixin[0].Fields()
 	_ = personMixinFields0
 	personFields := schema.Person{}.Fields()

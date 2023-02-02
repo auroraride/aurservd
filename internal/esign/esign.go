@@ -59,7 +59,7 @@ const (
     documentUrl = `/v1/signflows/%s/documents`
 
     // 修改个人签署账号
-    modifyAccountUrl = `/v1/accounts/%s`
+    accountUrl = `/v1/accounts/%s`
 )
 
 type Esign struct {

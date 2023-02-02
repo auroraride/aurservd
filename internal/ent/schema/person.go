@@ -1,9 +1,11 @@
 package schema
 
 import (
+    "context"
     "entgo.io/ent"
     "entgo.io/ent/dialect"
     "entgo.io/ent/dialect/entsql"
+    "entgo.io/ent/entc/integration/ent/hook"
     "entgo.io/ent/schema"
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
@@ -67,6 +69,36 @@ func (Person) Indexes() []ent.Index {
                 dialect.Postgres: "GIN",
             }),
             entsql.OpClass("gin_trgm_ops"),
+        ),
+    }
+}
+
+func (Person) Hooks() []ent.Hook {
+    type person interface {
+        Name() (r string, exists bool)
+        IDCardNumber() (r string, exists bool)
+        ClearEsignAccountID()
+    }
+    return []ent.Hook{
+        hook.On(
+            func(next ent.Mutator) ent.Mutator {
+                return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+                    if p, ok := m.(person); ok {
+                        do := false
+                        if _, exists := p.Name(); exists {
+                            do = true
+                        }
+                        if _, exists := p.IDCardNumber(); exists {
+                            do = true
+                        }
+                        if do {
+                            p.ClearEsignAccountID()
+                        }
+                    }
+                    return next.Mutate(ctx, m)
+                })
+            },
+            ent.OpUpdate|ent.OpUpdateOne,
         ),
     }
 }

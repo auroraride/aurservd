@@ -38,10 +38,17 @@ func (e *Esign) CreatePersonAccount(req PersonAccountReq) string {
     return res.AccountId
 }
 
+// ModifyAccount 修改个人信息
 func (e *Esign) ModifyAccount(id string, req PersonAccountReq) string {
     res := new(CreatePersonAccountRes)
-    e.request(fmt.Sprintf(modifyAccountUrl, id), "PUT", req, res)
+    e.request(fmt.Sprintf(accountUrl, id), "PUT", req, res)
     b, _ := jsoniter.Marshal(res)
     fmt.Printf("修改骑手信息: %s\n", b)
     return res.AccountId
+}
+
+func (e *Esign) QueryAccount(accountId string) {
+    res := new(CreatePersonAccountRes)
+    e.request(fmt.Sprintf(accountUrl, accountId), "GET", map[string]string{"accountId": accountId}, res)
+    fmt.Printf("%#v\n", res)
 }

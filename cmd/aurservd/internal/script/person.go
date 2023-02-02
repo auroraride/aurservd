@@ -16,7 +16,19 @@ func personCommand() *cobra.Command {
         Short: "骑手信息工具",
     }
     cmd.AddCommand(
+        esignCommand(),
+    )
+    return cmd
+}
+
+func esignCommand() *cobra.Command {
+    cmd := &cobra.Command{
+        Use:   "esign",
+        Short: "E签宝服务",
+    }
+    cmd.AddCommand(
         modifyPersonCommand(),
+        queryPersonCommand(),
     )
     return cmd
 }
@@ -28,7 +40,7 @@ func modifyPersonCommand() *cobra.Command {
     )
 
     cmd := &cobra.Command{
-        Use:   "esign",
+        Use:   "modify",
         Short: "修改骑手E签宝信息",
         Run: func(_ *cobra.Command, _ []string) {
             esign.New().ModifyAccount(accountID, esign.PersonAccountReq{Name: name})
@@ -40,6 +52,26 @@ func modifyPersonCommand() *cobra.Command {
 
     _ = cmd.MarkFlagRequired("account")
     _ = cmd.MarkFlagRequired("name")
+
+    return cmd
+}
+
+func queryPersonCommand() *cobra.Command {
+    var (
+        accountID string
+    )
+
+    cmd := &cobra.Command{
+        Use:   "query",
+        Short: "查询骑手E签宝信息",
+        Run: func(_ *cobra.Command, _ []string) {
+            esign.New().QueryAccount(accountID)
+        },
+    }
+
+    cmd.Flags().StringVar(&accountID, "account", "", "E签宝accountID")
+
+    _ = cmd.MarkFlagRequired("account")
 
     return cmd
 }
