@@ -461,6 +461,11 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq) (i
                 }
             }
 
+            // TODO 最多显示电池数量
+            if fa.Num >= 19 {
+                fa.Num = 19
+            }
+
             bms := c.Edges.Models
             if len(bms) < 1 {
                 continue

@@ -6,7 +6,7 @@
 package boot
 
 import (
-    "github.com/auroraride/adapter/zlog"
+    "github.com/auroraride/adapter/log"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/service"
     "github.com/auroraride/aurservd/assets"
@@ -17,6 +17,7 @@ import (
     "github.com/auroraride/aurservd/pkg/logger"
     "github.com/go-redis/redis/v9"
     "github.com/golang-module/carbon/v2"
+    "io"
     "os"
     "time"
 
@@ -42,7 +43,14 @@ func Bootstrap() {
     })
 
     // 配置elk+zap
-    zlog.New(ar.Config.Application, zlog.NewRedisWriter(ar.Redis), ar.Config.Debug)
+    log.Initialize(&log.Config{
+        FormatJson:  true,
+        Stdout:      ar.Config.Debug,
+        Application: ar.Config.Application,
+        Writers: []io.Writer{
+            log.NewRedisWriter(redis.NewClient(&redis.Options{})),
+        },
+    })
 
     // 配置日志
     l := ar.Config.Logging
