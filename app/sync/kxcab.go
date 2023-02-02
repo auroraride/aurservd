@@ -8,16 +8,12 @@ package sync
 import (
     "github.com/auroraride/adapter/defs/cabdef"
     "github.com/auroraride/adapter/sync"
-    "github.com/auroraride/adapter/zlog"
     "github.com/auroraride/aurservd/app/service"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/go-redis/redis/v9"
-    "go.uber.org/zap"
 )
 
 func runKxcab() {
-    logger := zlog.StandardLogger().GetLogger().WithOptions(zap.AddCallerSkip(-2))
-
     // TODO 后面更换成默认DB
     rdb := redis.NewClient(&redis.Options{
         Addr: ar.Config.Redis.Address,
@@ -32,7 +28,6 @@ func runKxcab() {
             func(data *cabdef.CabinetMessage) {
                 service.NewCabinet().Sync(data)
             },
-            logger,
         ).Run()
     }()
 
@@ -45,7 +40,6 @@ func runKxcab() {
             func(data *cabdef.ExchangeStepMessage) {
                 service.NewIntelligentCabinet().ExchangeStepSync(data)
             },
-            logger,
         ).Run()
     }()
 
