@@ -8,7 +8,7 @@ fi
 
 echo "同步数据库: $TARGET"
 
-ssh root@39.106.77.239 "export PGPASSWORD='$PASSWORD'; pg_dump -U postgres -d $TARGET -f /root/auroraride.sql; rm -rf auroraride.sql.zip; zip auroraride.sql.zip auroraride.sql"
+ssh root@39.106.77.239 "export PGPASSWORD='$PASSWORD'; pg_dump -U postgres -d $TARGET --exclude-table exchange -f /root/auroraride.sql; rm -rf auroraride.sql.zip; zip auroraride.sql.zip auroraride.sql"
 scp root@39.106.77.239:/root/auroraride.sql.zip ~/Downloads/_sql/
 cd ~/Downloads/_sql/ || return
 rm -rf auroraride.sql
@@ -18,5 +18,5 @@ dropdb -U liasica auroraride
 createdb auroraride
 psql -d auroraride -U liasica -c "SET timezone = 'Asia/Shanghai'; CREATE EXTENSION postgis; CREATE EXTENSION pg_trgm; CREATE EXTENSION btree_gin;"
 psql -d auroraride -U liasica -f auroraride.sql
-ssh root@39.106.77.239 "rm -rf auroraride.sql.zip"
+ssh root@39.106.77.239 "rm -rf auroraride.sql.zip && rm -rf auroraride.sql"
 #rm -rf ~/Downloads/_sql/auroraride.sql
