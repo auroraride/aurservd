@@ -46,7 +46,10 @@ func NewPointWithModifier(m *model.Modifier) *pointService {
 func (s *pointService) Modify(req *model.PointModifyReq) error {
     r := NewRider().Query(req.RiderID)
     modify := req.Points
-    if req.Type == model.PointLogTypeConsume {
+    if req.Type == model.PointLogTypeConsume && modify > 0 {
+        modify = -modify
+    }
+    if req.Type == model.PointLogTypeAward && modify < 0 {
         modify = -modify
     }
     after := r.Points + modify
