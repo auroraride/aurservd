@@ -45,7 +45,11 @@ func NewPointWithModifier(m *model.Modifier) *pointService {
 // Modify 修改积分
 func (s *pointService) Modify(req *model.PointModifyReq) error {
     r := NewRider().Query(req.RiderID)
-    after := r.Points + req.Points
+    modify := req.Points
+    if req.Type == model.PointLogTypeConsume {
+        modify = -modify
+    }
+    after := r.Points + modify
     if after < 0 {
         return errors.New("积分余额不能小于0")
     }
@@ -54,7 +58,7 @@ func (s *pointService) Modify(req *model.PointModifyReq) error {
         if err != nil {
             return
         }
-        return tx.PointLog.Create().SetRiderID(req.RiderID).SetPoints(req.Points).SetReason(req.Reason).SetType(req.Type.Value()).SetAfter(after).Exec(s.ctx)
+        return tx.PointLog.Create().SetRiderID(req.RiderID).SetPoints(modify).SetReason(req.Reason).SetType(req.Type.Value()).SetAfter(after).Exec(s.ctx)
     })
 }
 
