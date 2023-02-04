@@ -30,7 +30,7 @@ import (
     "github.com/golang-module/carbon/v2"
     "github.com/jinzhu/copier"
     "github.com/lithammer/shortuuid/v4"
-    log "github.com/sirupsen/logrus"
+    "go.uber.org/zap"
     "golang.org/x/exp/slices"
     "regexp"
     "sort"
@@ -428,7 +428,6 @@ func (s *cabinetService) DoorOperate(req *model.CabinetDoorOperateReq, operator 
     if state {
         // 更新一次电柜状态
         err = provider.NewUpdater(item).DoUpdate()
-        log.Infof("%s操作成功[%s %s], Update: %v", item.Serial, req.Operation.String(), req.Remark, err)
         // 如果是锁仓, 需要更新仓位备注
         if *req.Operation == model.CabinetDoorOperateLock {
             item.Bin[*req.Index].Remark = req.Remark
@@ -660,13 +659,12 @@ func (s *cabinetService) Transfer(req *model.CabinetTransferReq) {
 // Sync 电柜同步
 func (s *cabinetService) Sync(data *cabdef.CabinetMessage) {
     if data.Serial == "" {
-        log.Error("[SYNC] 缺少参数 serial")
         return
     }
 
     cab, _ := s.orm.QueryNotDeleted().Where(cabinet.Serial(data.Serial)).WithModels().First(s.ctx)
     if cab == nil {
-        log.Errorf("[SYNC] 未找到电柜信息, 请先添加电柜: %s", data.Serial)
+        zap.L().Error("未找到电柜信息, 请先添加电柜" + data.Serial)
         return
     }
 

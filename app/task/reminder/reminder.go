@@ -17,7 +17,7 @@ import (
     "github.com/auroraride/aurservd/pkg/silk"
     "github.com/golang-module/carbon/v2"
     jsoniter "github.com/json-iterator/go"
-    log "github.com/sirupsen/logrus"
+    "go.uber.org/zap"
     "sync"
     "time"
 )
@@ -158,7 +158,7 @@ func Subscribe(sub *ent.Subscribe) {
 
 func (r *reminderTask) run() {
     if !r.running {
-        log.Info("催费任务未启动")
+        zap.L().Info("催费任务未启动")
     }
     for {
         select {
@@ -234,7 +234,7 @@ func (r *reminderTask) sendvms(task *Task) {
 func (r *reminderTask) sendsms(task *Task) {
     client, err := ali.NewSms()
     if err != nil {
-        log.Error(err)
+        zap.L().Error("短信发送失败", zap.Error(err))
     }
     data := map[string]string{
         "name":    task.Name,

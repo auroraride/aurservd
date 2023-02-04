@@ -9,15 +9,15 @@ import (
     "context"
     "errors"
     "fmt"
+    "github.com/auroraride/adapter/log"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
-    jsoniter "github.com/json-iterator/go"
-    log "github.com/sirupsen/logrus"
     "github.com/smartwalle/alipay/v3"
+    "go.uber.org/zap"
     "net/http"
     "time"
 )
@@ -137,8 +137,7 @@ func (c *alipayClient) Refund(req *model.PaymentRefund) {
         RefundAmount: fmt.Sprintf("%.2f", req.RefundAmount),
         RefundReason: req.Reason,
     })
-    b, _ := jsoniter.MarshalIndent(result, "", "  ")
-    log.Infof("[%s]支付宝退款反馈\n%s, err: %v", req.TradeNo, b, err)
+    zap.L().Info(req.TradeNo+": 支付宝退款反馈", log.JsonData(result), zap.Error(err))
 
     if err != nil {
         snag.Panic("退款处理失败")
@@ -160,10 +159,8 @@ func (c *alipayClient) Refund(req *model.PaymentRefund) {
 // Notification 支付宝回调
 func (c *alipayClient) Notification(req *http.Request) *model.PaymentCache {
     result, err := c.Client.GetTradeNotification(req)
-    b, _ := jsoniter.MarshalIndent(result, "", "  ")
-    log.Infof("支付宝反馈\n%s", b)
+    zap.L().Info("支付宝回调", log.JsonData(result), zap.Error(err))
     if err != nil {
-        log.Error(err)
         return nil
     }
 
@@ -172,12 +169,9 @@ func (c *alipayClient) Notification(req *http.Request) *model.PaymentCache {
     out := result.OutTradeNo
     err = cache.Get(context.Background(), out).Scan(pc)
     if err != nil {
-        log.Errorf("从缓存获取订单信息失败: %v", err)
+        zap.L().Error("从缓存获取订单信息失败", zap.Error(err))
         return nil
     }
-
-    b, _ = jsoniter.MarshalIndent(pc, "", "  ")
-    log.Infof("获取到支付宝支付缓存: %s", b)
 
     switch pc.CacheType {
     case model.PaymentCacheTypePlan:

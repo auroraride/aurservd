@@ -19,8 +19,8 @@ import (
     "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/golang-module/carbon/v2"
-    log "github.com/sirupsen/logrus"
     "go.mongodb.org/mongo-driver/bson/primitive"
+    "go.uber.org/zap"
     "time"
 )
 
@@ -395,7 +395,7 @@ func (s *riderBusinessService) Continue(req *model.BusinessCabinetReq) model.Bus
         })
 
         if err != nil {
-            log.Error(err)
+            zap.L().Error("骑手取消寄存业务更新失败", zap.Error(err))
         }
     }()
     // ↑ 2023-01-02 添加了异步操作
@@ -423,7 +423,7 @@ func (s *riderBusinessService) Unsubscribe(req *model.BusinessCabinetReq) model.
         })
 
         if err != nil {
-            log.Error(err)
+            zap.L().Error("骑手取退租业务更新失败", zap.Error(err))
         }
     }()
 
@@ -449,7 +449,7 @@ func (s *riderBusinessService) Pause(req *model.BusinessCabinetReq) model.Busine
                 Pause(req.ID)
         })
         if err != nil {
-            log.Error(err)
+            zap.L().Error("骑手取寄存业务更新失败", zap.Error(err))
         }
     }()
 

@@ -8,9 +8,10 @@ package amap
 import (
     "errors"
     "fmt"
+    "github.com/auroraride/adapter/log"
     "github.com/go-resty/resty/v2"
     jsoniter "github.com/json-iterator/go"
-    log "github.com/sirupsen/logrus"
+    "go.uber.org/zap"
 )
 
 type Geocode struct {
@@ -48,7 +49,7 @@ func (a *amap) Geo(name string) (*Geocode, error) {
     res := new(GeoRes)
     _, err := resty.New().R().SetResult(res).Get(fmt.Sprintf("https://restapi.amap.com/v3/geocode/geo?key=%s&address=%s", a.Key, name))
     if err != nil {
-        log.Error(err)
+        zap.L().Error("Geo请求失败", zap.Error(err))
         return nil, err
     }
     out := res.Geocodes[0]
@@ -80,13 +81,13 @@ func (r *ReGeoRes) String() string {
 
 func (a *amap) ReGeo(lng, lat float64) (*Regeocode, error) {
     res := new(ReGeoRes)
-    _, err := resty.New().R().SetResult(res).Get(fmt.Sprintf("https://restapi.amap.com/v3/geocode/regeo?key=%s&location=%f,%f&poitype=&radius=&extensions=base&batch=false&roadlevel=0", a.Key, lng, lat))
+    r, err := resty.New().R().SetResult(res).Get(fmt.Sprintf("https://restapi.amap.com/v3/geocode/regeo?key=%s&location=%f,%f&poitype=&radius=&extensions=base&batch=false&roadlevel=0", a.Key, lng, lat))
     if err != nil {
-        log.Error(err)
+        zap.L().Error("ReGeo请求失败", zap.Error(err))
         return nil, err
     }
     if res.Infocode != "10000" {
-        log.Error(res)
+        zap.L().Error("ReGeo请求失败", log.ResponseBody(r.Body()))
         return nil, errors.New(res.Info)
     }
     out := res.Regeocode

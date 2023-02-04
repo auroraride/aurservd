@@ -25,7 +25,6 @@ import (
     "github.com/golang-module/carbon/v2"
     "github.com/google/uuid"
     "github.com/rs/xid"
-    log "github.com/sirupsen/logrus"
     "time"
 )
 
@@ -104,14 +103,12 @@ func (s *employeeService) Create(req *model.EmployeeCreateReq) *ent.Employee {
     if em != nil {
         snag.Panic("店员已存在")
     }
-    var err error
-    em, err = s.orm.Create().
+    em, _ = s.orm.Create().
         SetPhone(req.Phone).
         SetName(req.Name).
         SetCityID(req.CityID).
         Save(s.ctx)
     if em == nil {
-        log.Error(err)
         snag.Panic("店员添加失败")
     }
     return em
@@ -122,7 +119,6 @@ func (s *employeeService) Modify(req *model.EmployeeModifyReq) {
     _, err := s.orm.ModifyOne(s.QueryX(*req.ID), req).Save(s.ctx)
     if err != nil {
         snag.Panic("保存失败")
-        log.Error(err)
     }
 }
 
@@ -367,7 +363,6 @@ func (s *employeeService) Delete(req *model.EmployeeDeleteReq) {
     item := s.QueryX(req.ID)
     _, err := s.orm.SoftDeleteOne(item).Save(s.ctx)
     if err != nil {
-        log.Error(err)
         snag.Panic("店员删除失败")
     }
 }
@@ -487,7 +482,6 @@ func (s *employeeService) OffWork(req *model.IDPostReq) {
 
     err := sto.Update().ClearEmployeeID().Exec(s.ctx)
     if err != nil {
-        log.Error(err)
         snag.Panic("强制下班失败")
     }
 

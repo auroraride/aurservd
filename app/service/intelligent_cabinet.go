@@ -10,6 +10,7 @@ import (
     "fmt"
     "github.com/auroraride/adapter"
     "github.com/auroraride/adapter/defs/cabdef"
+    "github.com/auroraride/adapter/log"
     "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
@@ -22,7 +23,7 @@ import (
     "github.com/golang-module/carbon/v2"
     "github.com/google/uuid"
     "github.com/lithammer/shortuuid/v4"
-    log "github.com/sirupsen/logrus"
+    "go.uber.org/zap"
     "golang.org/x/exp/slices"
     "time"
 )
@@ -141,11 +142,11 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 
     var v cabdef.ExchangeResponse
     v, err = adapter.Post[cabdef.ExchangeResponse](s.GetCabinetAdapterUrlX(model.CabinetBrand(cab.Brand), "/exchange/do"), s.GetAdapterUserX(), playload, func(r *resty.Response) {
-        log.Infof("换电请求完成: %s", string(r.Body()))
+        zap.L().Info("换电请求完成", log.ResponseBody(r.Body()))
     })
 
     if err != nil {
-        log.Errorf("换电请求失败: %v", err)
+        zap.L().Error("换电请求失败", zap.Error(err))
         return
     }
 
@@ -219,7 +220,6 @@ func (s *intelligentCabinetService) ExchangeStepSync(req *cabdef.ExchangeStepMes
 
     err := cache.Set(s.ctx, key, c, 10*time.Minute).Err()
     if err != nil {
-        log.Error(err)
         return
     }
 }
@@ -414,7 +414,7 @@ func (s *intelligentCabinetService) DoBusiness(br model.CabinetBrand, uidstr str
     var bat *ent.Battery
     bat, err = NewBattery().LoadOrCreate(sn)
     if err != nil {
-        log.Errorf("业务记录失败: %v", err)
+        zap.L().Error("业务记录失败", zap.Error(err))
         return
     }
 

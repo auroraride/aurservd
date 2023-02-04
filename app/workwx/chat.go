@@ -9,7 +9,6 @@ import (
     "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/golang-module/carbon/v2"
-    log "github.com/sirupsen/logrus"
     "strings"
     "time"
 )
@@ -39,16 +38,13 @@ type ChatMarkdown struct {
 
 func (w *Client) SendMarkdown(chatid string, content string) {
     var res baseResponse
-    err := w.RequestPost("/appchat/send", ChatMarkdown{
+    _ = w.RequestPost("/appchat/send", ChatMarkdown{
         ChatMessage: ChatMessage{
             Chatid:  chatid,
             Msgtype: "markdown",
         },
         Markdown: ChatContent{Content: content},
     }, &res)
-    if err != nil {
-        log.Errorf("[%s]消息发送失败: %s, %s", chatid, err, content)
-    }
 }
 
 // SendCabinetOffline 电柜离线警告

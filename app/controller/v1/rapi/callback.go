@@ -6,12 +6,12 @@
 package rapi
 
 import (
+    "github.com/auroraride/adapter/log"
     "github.com/auroraride/aurservd/app/service"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/payment"
-    jsoniter "github.com/json-iterator/go"
     "github.com/labstack/echo/v4"
-    log "github.com/sirupsen/logrus"
+    "go.uber.org/zap"
     "io"
     "net/http"
 )
@@ -37,7 +37,7 @@ func (*callback) ESignCallback(c echo.Context) (err error) {
     var b []byte
     b, err = io.ReadAll(c.Request().Body)
     if err != nil {
-        log.Errorf("合同回调内容读取失败: %v", err)
+        zap.L().Error("合同回调内容读取失败", zap.Error(err))
         return
     }
 
@@ -49,8 +49,7 @@ func (*callback) ESignCallback(c echo.Context) (err error) {
 func (*callback) AlipayCallback(c echo.Context) (err error) {
     res := payment.NewAlipay().Notification(c.Request())
 
-    b, _ := jsoniter.MarshalIndent(res, "", "  ")
-    log.Infof("支付宝支付缓存更新: %s", b)
+    zap.L().Info("支付宝支付缓存更新", log.JsonData(res))
 
     service.NewOrder().DoPayment(res)
     return c.String(http.StatusOK, "success")

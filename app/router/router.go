@@ -17,7 +17,7 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/labstack/echo/v4"
     mw "github.com/labstack/echo/v4/middleware"
-    log "github.com/sirupsen/logrus"
+    "go.uber.org/zap"
     "golang.org/x/time/rate"
     "net/http"
 )
@@ -134,5 +134,5 @@ func Run() {
     loadMaintainRoutes()
     loadKitRoutes()
 
-    log.Fatal(e.Start(cfg.Bind))
+    zap.L().Fatal("路由启动失败", zap.Error(e.Start(cfg.Bind)))
 }

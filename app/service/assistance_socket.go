@@ -14,7 +14,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/employee"
     "github.com/auroraride/aurservd/internal/ent/store"
     "github.com/auroraride/aurservd/pkg/silk"
-    log "github.com/sirupsen/logrus"
+    "go.uber.org/zap"
     "time"
 )
 
@@ -89,7 +89,7 @@ func (s *assistanceSocketService) Detail(ass *ent.Assistance) (message *model.As
 func (s *assistanceSocketService) SendRider(riderID uint64, ass *ent.Assistance) {
     message, err := s.Detail(ass)
     if err != nil {
-        log.Error(err)
+        zap.L().Error("发送消息给骑手失败", zap.Error(err))
         return
     }
 

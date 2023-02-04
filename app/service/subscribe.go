@@ -23,8 +23,9 @@ import (
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
     "github.com/shopspring/decimal"
-    log "github.com/sirupsen/logrus"
+    "go.uber.org/zap"
     "math"
+    "strconv"
     "time"
 )
 
@@ -354,11 +355,11 @@ func (s *subscribeService) UpdateStatus(item *ent.Subscribe, notice bool) error 
 
                 pup.SetEndAt(time.Now()).SetRemark(reason).SetPauseOverdue(true)
                 up.SetPauseOverdue(true).ClearPausedAt().SetUnsubscribeReason(reason).SetEndAt(time.Now())
-                log.Infof("[SUBSCRIBE TASK PAUSE] %d 寄存超期自动退租", item.ID)
+                zap.L().Info("寄存超期自动退租: " + strconv.FormatUint(item.ID, 10))
             }
             _, err := pup.Save(s.ctx)
             if err != nil {
-                log.Errorf("[SUBSCRIBE TASK PAUSE] %d 更新失败: %v", pr.Current.ID, err)
+                zap.L().Error("寄存更新失败: "+strconv.FormatUint(pr.Current.ID, 10), zap.Error(err))
                 return err
             }
         }
@@ -366,7 +367,7 @@ func (s *subscribeService) UpdateStatus(item *ent.Subscribe, notice bool) error 
         if sr.Current != nil {
             _, err := tx.SubscribeSuspend.UpdateOne(sr.Current).SetDays(sr.CurrentDays).Save(s.ctx)
             if err != nil {
-                log.Errorf("[SUBSCRIBE TASK SUSPEND] %d 更新失败: %v", sr.Current.ID, err)
+                zap.L().Error("暂停更新失败: "+strconv.FormatUint(sr.Current.ID, 10), zap.Error(err))
                 return err
             }
         }
@@ -374,13 +375,15 @@ func (s *subscribeService) UpdateStatus(item *ent.Subscribe, notice bool) error 
         // 更新
         sub, err := up.SetStatus(status).Save(context.Background())
         if err != nil {
-            log.Errorf("[SUBSCRIBE TASK] %d 更新失败: %v", item.ID, err)
+            zap.L().Error("订阅更新失败: "+strconv.FormatUint(sub.ID, 10), zap.Error(err))
             return err
         }
         sub.Edges = item.Edges
 
         *item = *sub
-        log.Infof("[SUBSCRIBE TASK] %d 更新成功, 状态: %d, 剩余天数: %d", item.ID, status, remaining)
+        zap.L().Info("订阅更新成功: " + strconv.FormatUint(sub.ID, 10) +
+            ", 状态: " + model.SubscribeStatusText(status) +
+            ", 剩余天数: " + strconv.Itoa(remaining))
 
         if unsub {
             // 标记需要签约
@@ -452,7 +455,6 @@ func (s *subscribeService) AlterDays(req *model.SubscribeAlter) (res model.Rider
         }
         _, err = tsa.Save(s.ctx)
         if err != nil {
-            log.Error(err)
             snag.Panic("时间修改失败")
         }
 
@@ -476,7 +478,6 @@ func (s *subscribeService) AlterDays(req *model.SubscribeAlter) (res model.Rider
         }
         sub, err = ts.Save(s.ctx)
         if err != nil {
-            log.Error(err)
             snag.Panic("时间修改失败")
         }
         return

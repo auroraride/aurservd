@@ -12,7 +12,6 @@ import (
     "github.com/auroraride/aurservd/pkg/utils"
     "github.com/go-resty/resty/v2"
     jsoniter "github.com/json-iterator/go"
-    log "github.com/sirupsen/logrus"
     "strconv"
     "time"
 )
@@ -145,7 +144,7 @@ func (e *Esign) request(api, method string, body interface{}, data interface{}) 
         bodyString, _ = e.serialization.Froze().MarshalToString(body)
         md5 = utils.Md5Base64String(bodyString)
     }
-    singnature, raw := e.getSign(api, method, md5)
+    singnature, _ := e.getSign(api, method, md5)
     req := resty.New().
         R().
         SetResult(res).
@@ -170,23 +169,23 @@ func (e *Esign) request(api, method string, body interface{}, data interface{}) 
     if err != nil {
         snag.Panic(err)
     }
-    // 记录请求日志
-    if e.Config.Log {
-        logdata := reqLog{
-            Api:      api,
-            Method:   method,
-            Body:     bodyString,
-            Res:      res,
-            MD5:      md5,
-            Secret:   e.Config.Secret,
-            Sign:     singnature,
-            Raw:      raw,
-            Response: string(r.Body()),
-        }
-
-        logstr, _ := e.serialization.Froze().MarshalToString(logdata)
-        log.Info(logstr)
-    }
+    // TODO 记录请求日志
+    // if e.Config.Log {
+    //     logdata := reqLog{
+    //         Api:      api,
+    //         Method:   method,
+    //         Body:     bodyString,
+    //         Res:      res,
+    //         MD5:      md5,
+    //         Secret:   e.Config.Secret,
+    //         Sign:     singnature,
+    //         Raw:      raw,
+    //         Response: string(r.Body()),
+    //     }
+    //
+    //     logstr, _ := e.serialization.Froze().MarshalToString(logdata)
+    //     log.Info(logstr)
+    // }
     e.isResSuccess(r, res)
     return res.Data
 }

@@ -8,8 +8,8 @@ package script
 import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/service"
-    log "github.com/sirupsen/logrus"
     "github.com/spf13/cobra"
+    "log"
 )
 
 var managerCmd = &cobra.Command{
@@ -34,7 +34,7 @@ func managerAddCmd() *cobra.Command {
             req.Password = password
             err := service.NewManager().Create(req)
             if err != nil {
-                log.Errorf("添加管理员: %s %s 失败: %v", name, phone, err)
+                log.Printf("添加管理员: %s %s 失败: %v", name, phone, err)
                 return
             }
             log.Printf("添加管理员: %s %s 成功", name, phone)

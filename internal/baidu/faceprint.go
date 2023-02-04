@@ -7,11 +7,12 @@ package baidu
 
 import (
     "fmt"
+    "github.com/auroraride/adapter/log"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/utils"
     "github.com/go-resty/resty/v2"
-    log "github.com/sirupsen/logrus"
+    "go.uber.org/zap"
 )
 
 const (
@@ -119,7 +120,7 @@ func (b *faceClient) getFaceprintUrl(typ string) (url string, token string) {
     if err != nil {
         snag.Panic(err)
     }
-    log.Infof("获取人脸核验URL: %s", r.Body())
+    zap.L().Info("获取人脸核验URL", log.ResponseBody(r.Body()))
     if !res.Success {
         snag.Panic("实名认证请求失败")
     }
@@ -150,7 +151,7 @@ func (b *faceClient) GetFaceUrl(name, icNum string) (uri string, token string) {
     if err != nil {
         snag.Panic(err)
     }
-    log.Infof("获取人脸校验URL: %s", r.Body())
+    zap.L().Info("获取人脸校验URL", log.ResponseBody(r.Body()))
     return
 }
 
@@ -170,7 +171,7 @@ func (b *faceClient) FaceResult(token string) (res *faceprintFaceResp, err error
     if err != nil {
         return
     }
-    log.Infof("获取人脸照片结果: %s", r.Body())
+    zap.L().Info("获取人脸照片结果", log.ResponseBody(r.Body()))
     return
 }
 
@@ -191,7 +192,7 @@ func (b *faceClient) AuthenticatorResult(token string) (res *faceprintDetailResp
     if err != nil {
         return
     }
-    log.Infof("获取实名认证结果: %s", r.Body())
+    zap.L().Info("获取实名认证结果", log.ResponseBody(r.Body()))
     res.Result.FaceImg = simple.Result.Image
     return
 }

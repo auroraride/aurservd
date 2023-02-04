@@ -8,7 +8,7 @@ package ar
 import (
     _ "embed"
     "github.com/auroraride/adapter"
-    log "github.com/sirupsen/logrus"
+    "log"
 )
 
 const (
@@ -119,14 +119,6 @@ type config struct {
             Key string
         }
     } `koanf:"third_party"`
-
-    Logging struct {
-        Color    bool   // 是否启用日志颜色
-        Level    string // 日志等级
-        Age      int    // 日志保存时间（小时）
-        Json     bool   // 日志以json格式保存
-        RootPath string // 移除根目录
-    }
 
     Aliyun struct {
         Oss struct {

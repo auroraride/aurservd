@@ -9,7 +9,7 @@ import (
     "github.com/auroraride/aurservd/app/service"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/robfig/cron/v3"
-    log "github.com/sirupsen/logrus"
+    "go.uber.org/zap"
 )
 
 type enterpriseTask struct {
@@ -27,16 +27,15 @@ func (t *enterpriseTask) Start() {
     go t.Do()
 
     c := cron.New()
-    entryID, err := c.AddFunc("@daily", func() {
-        log.Info("开始执行 @daily[enterprise] 定时任务")
+    _, err := c.AddFunc("@daily", func() {
+        zap.L().Info("开始执行 @daily[enterprise] 定时任务")
         go t.Do()
     })
     if err != nil {
-        log.Fatal(err)
+        zap.L().Fatal("@daily[enterprise] 定时任务执行失败", zap.Error(err))
         return
     }
     c.Start()
-    log.Infof("[ENTERPRISE TASK] started: %d", entryID)
 }
 
 // Do 更新企业订单

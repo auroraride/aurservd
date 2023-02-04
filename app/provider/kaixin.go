@@ -8,6 +8,7 @@ package provider
 import (
     "context"
     "fmt"
+    "github.com/auroraride/adapter/log"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
@@ -15,7 +16,7 @@ import (
     "github.com/auroraride/aurservd/pkg/utils"
     "github.com/go-resty/resty/v2"
     jsoniter "github.com/json-iterator/go"
-    log "github.com/sirupsen/logrus"
+    "go.uber.org/zap"
     "regexp"
     "strconv"
     "strings"
@@ -262,19 +263,24 @@ func (p *kaixin) doDoorOperate(code, serial, operation string, door int, battery
     if battery != "" {
         data["battery"] = battery
     }
-    client := resty.New().R().
-        SetFormData(data)
+
+    client := resty.New().R().SetFormData(data)
+
     r, err := client.Post(url)
-    log.Info(string(r.Body()))
+    var b []byte
+    if r != nil {
+        b = r.Body()
+    }
+
+    zap.L().Info("发送仓门指令", log.Payload(data), zap.ByteString("response", b), zap.Error(err))
 
     if err != nil {
-        log.Error(err)
         return
     }
 
-    err = jsoniter.Unmarshal(r.Body(), res)
+    err = jsoniter.Unmarshal(b, res)
     if err != nil {
-        log.Error(err)
+        // log.Error(err)
         return
     }
 

@@ -16,10 +16,8 @@ import (
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
     jsoniter "github.com/json-iterator/go"
-    log "github.com/sirupsen/logrus"
     "net/url"
     "path/filepath"
-    "runtime/debug"
     "time"
 )
 
@@ -58,7 +56,6 @@ func (s *exportService) Start(taxonomy string, con any, data map[string]interfac
             SetManagerID(s.modifier.ID).
             Save(s.ctx)
         if err != nil {
-            log.Error(err)
             return
         }
 
@@ -71,7 +68,6 @@ func (s *exportService) Start(taxonomy string, con any, data map[string]interfac
             }
 
             if r := recover(); r != nil {
-                log.Errorf("%v\n%s", r, debug.Stack())
                 message = fmt.Sprintf("%v", r)
                 status = model.ExportStatusFail
             }

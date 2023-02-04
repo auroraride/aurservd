@@ -8,6 +8,7 @@ package service
 import (
     "fmt"
     "github.com/auroraride/adapter"
+    "github.com/auroraride/adapter/log"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
@@ -18,7 +19,7 @@ import (
     "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/labstack/echo/v4"
-    log "github.com/sirupsen/logrus"
+    "go.uber.org/zap"
     "strconv"
     "strings"
 )
@@ -94,7 +95,7 @@ func (s *batteryService) LoadOrCreate(sn string, params ...any) (bat *ent.Batter
     // 解析电池型号
     ab := adapter.ParseBatterySN(sn)
     if ab.Model == "" || ab.SN == "" {
-        log.Errorf("型号错误: %s -> %#v", sn, *ab)
+        zap.L().Error("型号错误: "+sn, log.Payload(ab))
         return nil, adapter.ErrorBatterySN
     }
 

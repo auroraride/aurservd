@@ -27,7 +27,7 @@ import (
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
     "github.com/jinzhu/copier"
-    log "github.com/sirupsen/logrus"
+    "go.uber.org/zap"
     "math"
     "strconv"
     "strings"
@@ -358,6 +358,10 @@ func (s *assistanceService) Nearby(req *model.IDQueryReq) (items []model.Assista
         ).
         Scan(s.ctx, &temps)
 
+    if err != nil {
+        zap.L().Error("门店查询失败", zap.Error(err))
+    }
+
     // 查找执行中的救援员工ID
     ids, _ := s.orm.QueryNotDeleted().
         Where(assistance.Status(model.AssistanceStatusAllocated), assistance.EmployeeIDNotNil()).
@@ -366,10 +370,6 @@ func (s *assistanceService) Nearby(req *model.IDQueryReq) (items []model.Assista
     idsm := make(map[uint64]bool)
     for _, id := range ids {
         idsm[uint64(id)] = true
-    }
-
-    if err != nil {
-        log.Error(err)
     }
 
     items = make([]model.AssistanceNearbyRes, 0)
@@ -543,8 +543,7 @@ func (s *assistanceService) Cancel(req *model.AssistanceCancelReq) {
         ClearCost().
         Save(s.ctx)
     if err != nil {
-        log.Error(err)
-        snag.Panic("取消失败")
+        snag.Panic("取消失败:" + err.Error())
     }
 }
 
@@ -791,13 +790,13 @@ func (s *assistanceService) Paid(trade *model.PaymentAssistance) {
             SetRiderID(ass.RiderID).
             Save(s.ctx)
         if err != nil {
-            log.Errorf("[ASSISTANCE PAID %s ERROR]: %s", trade.OutTradeNo, err.Error())
+            zap.L().Error("救援订单支付失败: "+trade.OutTradeNo, zap.Error(err))
             return err
         }
 
         _, err = tx.Assistance.UpdateOne(ass).SetStatus(model.AssistanceStatusSuccess).SetPayAt(time.Now()).SetOrderID(o.ID).Save(s.ctx)
         if err != nil {
-            log.Errorf("[ASSISTANCE PAID %s ERROR UPDATE %d]: %s", trade.OutTradeNo, ass.ID, err.Error())
+            zap.L().Error("救援订单更新失败: "+trade.OutTradeNo+" -> "+strconv.FormatUint(ass.ID, 10), zap.Error(err))
             return err
         }
         return nil

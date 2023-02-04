@@ -15,7 +15,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/city"
     "github.com/auroraride/aurservd/pkg/snag"
-    log "github.com/sirupsen/logrus"
+    "go.uber.org/zap"
     "time"
 )
 
@@ -77,7 +77,7 @@ func dooLoop(times int, start time.Time, provider Provider) {
 
         items, err := provider.Cabinets()
         if err != nil {
-            log.Errorf("%s电柜获取失败: %#v", provider.Brand(), err)
+            zap.L().Error(provider.Brand()+"电柜获取失败", zap.Error(err))
             return
         }
 
@@ -99,7 +99,7 @@ func dooLoop(times int, start time.Time, provider Provider) {
                         if lg != nil {
                             err = ali.NewSls().PutLogs(slsCfg.Project, slsCfg.CabinetLog, lg)
                             if err != nil {
-                                log.Errorf("阿里云SLS提交失败: %#v", err)
+                                zap.L().Error("阿里云SLS提交失败", zap.Error(err))
                             }
                         }
                     }()

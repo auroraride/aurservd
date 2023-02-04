@@ -9,7 +9,7 @@ import (
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/pkg/utils"
     "github.com/go-resty/resty/v2"
-    log "github.com/sirupsen/logrus"
+    jsoniter "github.com/json-iterator/go"
 )
 
 const (
@@ -131,7 +131,7 @@ func (m *mobPush) SendMessage(req Req) {
     // 生成sign
     sign := utils.Md5String(s + m.appSecret)
 
-    res, err := resty.New().R().
+    _, _ = resty.New().R().
         SetHeaders(map[string]string{
             "Content-Type": "application/json",
             "key":          m.appKey,
@@ -139,9 +139,4 @@ func (m *mobPush) SendMessage(req Req) {
         }).
         SetBody(s).
         Post(pushUrl)
-    if err != nil {
-        log.Errorf("推送消息失败: %v, sign: %s, %s", err, sign, s)
-        return
-    }
-    log.Println(string(res.Body()))
 }

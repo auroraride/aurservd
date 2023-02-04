@@ -11,7 +11,7 @@ import (
     "github.com/auroraride/aurservd/internal/ali"
     "github.com/auroraride/aurservd/internal/ar"
     jsoniter "github.com/json-iterator/go"
-    log "github.com/sirupsen/logrus"
+    "go.uber.org/zap"
     "reflect"
     "strconv"
     "time"
@@ -53,7 +53,7 @@ func bootLogStore(project, logstore string, typ any) {
                 ShardCount: 2,
             })
             if err != nil {
-                log.Fatal(err)
+                zap.L().Fatal("创建logstore失败", zap.Error(err))
             }
 
             // 创建index
@@ -105,7 +105,7 @@ func bootLogStore(project, logstore string, typ any) {
                 Keys: ikm,
             })
             if err != nil {
-                log.Fatal(err)
+                zap.L().Fatal("创建logstore失败", zap.Error(err))
             }
         }
     }
@@ -121,7 +121,7 @@ func PutLog(ptr Logger) {
             }},
         })
         if err != nil {
-            log.Error(err)
+            zap.L().Error("日志提交失败", zap.Error(err))
             return
         }
     }()
@@ -139,7 +139,7 @@ func GetCount(logstore string, query string, from time.Time) (total int) {
         Query:   query + " | SELECT COUNT(*) as count",
     })
     if err != nil {
-        log.Error(err)
+        zap.L().Error("日志count失败", zap.Error(err))
         return
     }
     var b []byte

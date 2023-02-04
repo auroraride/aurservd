@@ -19,9 +19,9 @@ import (
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
-    "github.com/auroraride/aurservd/pkg/tools"
-    log "github.com/sirupsen/logrus"
+    jsoniter "github.com/json-iterator/go"
     "go.mongodb.org/mongo-driver/bson/primitive"
+    "go.uber.org/zap"
     "time"
 )
 
@@ -83,7 +83,6 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
         // 更新一次电柜状态
         err := cs.UpdateStatus(cab)
         if err != nil {
-            log.Error(err)
             snag.Panic("电柜状态获取失败")
         }
 
@@ -158,7 +157,8 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
         cache.Set(s.ctx, uid, res, 10*time.Minute)
     }
 
-    tools.NewLog().Infof("[换电信息:%s]\n%s\n", uid, res)
+    b, _ := jsoniter.Marshal(res)
+    zap.L().Info("换电信息: uuid=" + uid + ", data=" + adapter.ConvertBytes2String(b))
 
     return res
 }
@@ -242,7 +242,6 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
         // 更新一次电柜状态
         err = NewCabinet().UpdateStatus(cab)
         if err != nil {
-            log.Error(err)
             snag.Panic("电柜状态获取失败")
         }
 
@@ -328,7 +327,10 @@ func (s *riderExchangeService) ProcessStepEnd() {
     }
 
     if r := recover(); r != nil {
-        log.Errorf("换电异常结束 -> [%s: %s] %s: %v", s.task.ID.Hex(), s.cabinet.Serial, s.task.Exchange.CurrentStep(), r)
+        zap.L().Error("换电异常结束 -> ["+s.task.ID.Hex()+
+            ": "+s.cabinet.Serial+
+            "] "+s.task.Exchange.CurrentStep().String()+
+            "", zap.Error(fmt.Errorf("%v", r)))
         s.task.Message = fmt.Sprintf("%v", r)
         status = ec.TaskStatusFail
     }
@@ -407,16 +409,14 @@ func (s *riderExchangeService) ProcessDoorBatteryStatus() (ds ec.DoorStatus) {
     pe := cbin.Electricity
     pv := cbin.Voltage
 
-    log.Infof(`[电柜操作 - 仓门检测]: [ %s ] %s, 用户电话: %s, 仓位: %d号仓, 仓门状态: %s, 是否有电池: %t, 电池信息: %.2f%%[%.2fV]`,
-        s.cabinet.Serial,
-        step,
-        s.rider.Phone,
-        bin.Index+1,
-        ds,
-        cbin.Battery,
-        pe,
-        pv,
-    )
+    // zap.L().Info("[电柜操作 - 仓门检测]: [ " + s.cabinet.Serial +
+    //     " ] " + step.String() +
+    //     ", 用户电话: " + s.rider.Phone +
+    //     ", 仓位: " + strconv.Itoa(bin.Index+1) +
+    //     "号仓, 仓门状态: " + ds.String() +
+    //     ", 是否有电池: " + adapter.Or(cbin.Battery, "是", "否") +
+    //     ", 电池信息: " + fmt.Sprintf("%.2f%%[%.2fV]", pe, pv),
+    // )
 
     // 当仓门未关闭时跳过
     if ds != ec.DoorStatusClose {
@@ -549,7 +549,7 @@ func (s *riderExchangeService) ProcessOpenBin() *riderExchangeService {
         Operation: &operation,
     }, operator)
     if err != nil {
-        log.Error(err)
+        zap.L().Error("仓门开启失败", zap.Error(err))
     }
 
     s.task.Update(func(t *ec.Task) {
@@ -563,13 +563,13 @@ func (s *riderExchangeService) ProcessOpenBin() *riderExchangeService {
         }
     })
 
-    log.Infof(`[电柜操作 - 开启仓门]: [ %s ] %s, 用户电话: %s, 仓位: %d号仓, 操作反馈: %t`,
-        s.cabinet.Serial,
-        step,
-        s.rider.Phone,
-        bin.Index+1,
-        status,
-    )
+    // log.Infof(`[电柜操作 - 开启仓门]: [ %s ] %s, 用户电话: %s, 仓位: %d号仓, 操作反馈: %t`,
+    //     s.cabinet.Serial,
+    //     step,
+    //     s.rider.Phone,
+    //     bin.Index+1,
+    //     status,
+    // )
 
     provider.AutoBinFault(operator, s.cabinet, bin.Index, status, func() {
         _, _ = NewCabinet().DoorOperate(&model.CabinetDoorOperateReq{
@@ -586,14 +586,14 @@ func (s *riderExchangeService) ProcessOpenBin() *riderExchangeService {
 // ProcessLog 处理步骤日志
 func (s *riderExchangeService) ProcessLog() bool {
     ex := s.task.Exchange
-    log.Printf(`[电柜操作 - 步骤结果]: [ %s ] %s, 用户电话: %s, 状态: %s, 终止: %t %s`,
-        s.cabinet.Serial,
-        s.task.Exchange.CurrentStep(),
-        s.rider.Phone,
-        ex.CurrentStep().Status,
-        ex.IsLastStep() || s.task.StopAt != nil,
-        s.task.Message,
-    )
+    // log.Printf(`[电柜操作 - 步骤结果]: [ %s ] %s, 用户电话: %s, 状态: %s, 终止: %t %s`,
+    //     s.cabinet.Serial,
+    //     s.task.Exchange.CurrentStep(),
+    //     s.rider.Phone,
+    //     ex.CurrentStep().Status,
+    //     ex.IsLastStep() || s.task.StopAt != nil,
+    //     s.task.Message,
+    // )
 
     step := ex.CurrentStep()
 

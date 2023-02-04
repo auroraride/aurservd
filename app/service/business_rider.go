@@ -23,7 +23,7 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
-    log "github.com/sirupsen/logrus"
+    "go.uber.org/zap"
     "time"
 )
 
@@ -438,7 +438,7 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
             )
 
             if err != nil {
-                log.Errorf("骑手业务出入库失败: %v", err)
+                zap.L().Error("骑手业务出入库失败: "+bt.String(), zap.Error(err))
             }
 
             return err
@@ -448,7 +448,7 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
         if s.task != nil && (bt == business.TypeActive || bt == business.TypeContinue) {
             bin, bat, err = s.doTask()
             if err != nil {
-                log.Error(err)
+                zap.L().Error("骑手业务取出电池后任务执行失败: "+bt.String(), zap.Error(err))
             }
             if bat != nil && s.cabinet.Intelligent {
                 _ = sk.Update().SetBatteryID(bat.ID).Exec(s.ctx)
@@ -675,7 +675,7 @@ func (s *businessRiderService) Continue(subscribeID uint64) {
     // 更新订阅信息
     err := NewSubscribe().UpdateStatus(s.subscribe, false)
     if err != nil {
-        log.Error(err)
+        zap.L().Error("骑士卡更新失败", zap.Error(err))
         snag.Panic("骑士卡更新失败")
     }
 

@@ -8,13 +8,13 @@ package payment
 import (
     "context"
     "errors"
+    "github.com/auroraride/adapter/log"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     jsoniter "github.com/json-iterator/go"
-    log "github.com/sirupsen/logrus"
     "github.com/wechatpay-apiv3/wechatpay-go/core"
     "github.com/wechatpay-apiv3/wechatpay-go/core/auth/verifiers"
     "github.com/wechatpay-apiv3/wechatpay-go/core/downloader"
@@ -25,7 +25,8 @@ import (
     "github.com/wechatpay-apiv3/wechatpay-go/services/payments/native"
     "github.com/wechatpay-apiv3/wechatpay-go/services/refunddomestic"
     "github.com/wechatpay-apiv3/wechatpay-go/utils"
-    "io/ioutil"
+    "go.uber.org/zap"
+    "io"
     "math"
     "net/http"
     "time"
@@ -47,7 +48,7 @@ func newWechatClient() *wechatClient {
     cfg := ar.Config.Payment.Wechat
     mchPrivateKey, err := utils.LoadPrivateKeyWithPath(cfg.PrivateKeyPath)
     if err != nil {
-        log.Fatal(err)
+        zap.L().Fatal(err.Error())
     }
 
     ctx := context.Background()
@@ -56,7 +57,7 @@ func newWechatClient() *wechatClient {
     }
     client, err := core.NewClient(ctx, opts...)
     if err != nil {
-        log.Fatal(err)
+        zap.L().Fatal(err.Error())
     }
 
     // 获取商户号对应的微信支付平台证书访问器
@@ -95,8 +96,8 @@ func (c *wechatClient) AppPayDemo() (string, string, error) {
     })
 
     if err != nil {
-        b, _ := ioutil.ReadAll(result.Response.Body)
-        log.Errorf("微信支付调用失败: %#v, %s", err, string(b))
+        b, _ := io.ReadAll(result.Response.Body)
+        zap.L().Error("微信支付调用失败", log.ResponseBody(b), zap.Error(err))
         return "", "", err
     }
 
@@ -136,8 +137,8 @@ func (c *wechatClient) AppPay(pc *model.PaymentCache) (string, error) {
     })
 
     if err != nil {
-        b, _ := ioutil.ReadAll(result.Response.Body)
-        log.Errorf("微信支付调用失败: %#v, %s", err, string(b))
+        b, _ := io.ReadAll(result.Response.Body)
+        zap.L().Error("微信App支付调用失败", log.ResponseBody(b), zap.Error(err))
         return "", err
     }
 
@@ -173,8 +174,8 @@ func (c *wechatClient) Native(pc *model.PaymentCache) (string, error) {
     })
 
     if err != nil {
-        b, _ := ioutil.ReadAll(result.Response.Body)
-        log.Errorf("微信支付调用失败: %#v, %s", err, string(b))
+        b, _ := io.ReadAll(result.Response.Body)
+        zap.L().Error("微信Native支付调用失败", log.ResponseBody(b), zap.Error(err))
         return "", err
     }
 
@@ -208,8 +209,8 @@ func (c *wechatClient) Refund(req *model.PaymentRefund) {
         },
     )
     if err != nil {
-        b, _ := ioutil.ReadAll(result.Response.Body)
-        log.Errorf("微信退款调用失败: %#v, %s", err, string(b))
+        b, _ := io.ReadAll(result.Response.Body)
+        zap.L().Error("微信退款调用失败", log.ResponseBody(b), zap.Error(err))
         snag.Panic("退款处理失败")
     }
 
@@ -228,25 +229,25 @@ func (c *wechatClient) Notification(req *http.Request) *model.PaymentCache {
     transaction := new(payments.Transaction)
     nq, err := c.notifyClient.ParseNotifyRequest(context.Background(), req, transaction)
     if err != nil {
-        log.Error(err)
+        zap.L().Error("微信回调解析失败", zap.Error(err))
         return nil
     }
 
-    b, _ := jsoniter.MarshalIndent(transaction, "", "  ")
-    nb, _ := jsoniter.MarshalIndent(nq, "", "  ")
-    log.Infof("微信支付回调反馈\n%s\n%s", b, nb)
+    b, _ := jsoniter.Marshal(transaction)
+    nb, _ := jsoniter.Marshal(nq)
+    zap.L().Info("微信支付回调反馈", zap.ByteString("transaction", b), zap.ByteString("notifiy", nb))
 
     pc := new(model.PaymentCache)
     // 从缓存中获取订单数据
     out := transaction.OutTradeNo
     err = cache.Get(context.Background(), *out).Scan(pc)
     if err != nil {
-        log.Errorf("从缓存获取订单信息失败: %v", err)
+        zap.L().Error("从缓存获取订单信息失败", zap.Error(err))
         return nil
     }
 
-    b, _ = jsoniter.MarshalIndent(pc, "", "  ")
-    log.Infof("获取到微信支付回调缓存: %s", b)
+    b, _ = jsoniter.Marshal(pc)
+    zap.L().Info("获取到微信支付回调缓存", zap.ByteString("transaction", b))
 
     state := transaction.TradeState
     if *state != "SUCCESS" {
@@ -267,8 +268,8 @@ func (c *wechatClient) Notification(req *http.Request) *model.PaymentCache {
         return nil
     }
 
-    b, _ = jsoniter.MarshalIndent(pc, "", "  ")
-    log.Infof("微信支付缓存更新: %s", b)
+    b, _ = jsoniter.Marshal(pc)
+    zap.L().Info("微信支付缓存更新", zap.ByteString("transaction", b))
 
     return pc
 }
@@ -295,25 +296,25 @@ func (c *wechatClient) RefundNotification(req *http.Request) *model.PaymentCache
     transaction := new(WechatRefundTransaction)
     nq, err := c.notifyClient.ParseNotifyRequest(context.Background(), req, transaction)
     if err != nil {
-        log.Error(err)
+        zap.L().Error("微信退款回调解析失败", zap.Error(err))
         return nil
     }
 
-    b, _ := jsoniter.MarshalIndent(transaction, "", "  ")
-    nb, _ := jsoniter.MarshalIndent(nq, "", "  ")
-    log.Infof("微信退款回调反馈\n%s\n%s", b, nb)
+    b, _ := jsoniter.Marshal(transaction)
+    nb, _ := jsoniter.Marshal(nq)
+    zap.L().Info("微信支付回调反馈", zap.ByteString("transaction", b), zap.ByteString("notifiy", nb))
 
     pc := new(model.PaymentCache)
 
     // 从缓存中获取订单数据
     err = cache.Get(context.Background(), transaction.OutTradeNo).Scan(pc)
     if err != nil {
-        log.Errorf("从缓存获取订单信息失败: %v", err)
+        zap.L().Error("从缓存获取订单信息失败", zap.Error(err))
         return nil
     }
 
-    b, _ = jsoniter.MarshalIndent(pc, "", "  ")
-    log.Infof("获取到微信退款回调缓存: %s", b)
+    b, _ = jsoniter.Marshal(pc)
+    zap.L().Info("获取到微信退款回调缓存", zap.ByteString("transaction", b))
 
     if transaction.RefundStatus != "SUCCESS" {
         return nil
@@ -323,8 +324,8 @@ func (c *wechatClient) RefundNotification(req *http.Request) *model.PaymentCache
     pc.Refund.Request = true
     pc.Refund.Time = transaction.SuccessTime
 
-    b, _ = jsoniter.MarshalIndent(pc, "", "  ")
-    log.Infof("微信退款缓存更新: %s", b)
+    b, _ = jsoniter.Marshal(pc)
+    zap.L().Info("微信支付缓存更新", zap.ByteString("transaction", b))
 
     return pc
 }

@@ -8,7 +8,6 @@ package tools
 import (
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/golang-module/carbon/v2"
-    log "github.com/sirupsen/logrus"
     "time"
 )
 
@@ -85,7 +84,6 @@ func (*timeTool) ParseDateString(str string) (time.Time, error) {
 func (t *timeTool) ParseDateStringX(str string) time.Time {
     res, err := t.ParseDateString(str)
     if err != nil {
-        log.Error(err)
         snag.Panic("日期格式错误")
     }
     return res
@@ -103,7 +101,6 @@ func (t *timeTool) ParseNextDateString(str string) (time.Time, error) {
 func (t *timeTool) ParseNextDateStringX(str string) time.Time {
     res, err := t.ParseNextDateString(str)
     if err != nil {
-        log.Error(err)
         snag.Panic("日期格式错误")
     }
     return res

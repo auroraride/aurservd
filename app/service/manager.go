@@ -18,7 +18,6 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/utils"
     "github.com/rs/xid"
-    log "github.com/sirupsen/logrus"
     "time"
 )
 
@@ -83,7 +82,6 @@ func (s *managerService) Signin(req *model.ManagerSigninReq) (res *model.Manager
     var u *ent.Manager
     u, err = s.orm.QueryNotDeleted().Where(manager.Phone(req.Phone)).WithRole().Only(s.ctx)
     if err != nil {
-        log.Errorf("[M] 管理员查询失败: %v", err)
         return nil, errors.New(ar.UserNotFound)
     }
 

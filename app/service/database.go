@@ -14,7 +14,6 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/utils"
     jsoniter "github.com/json-iterator/go"
-    log "github.com/sirupsen/logrus"
 )
 
 func DatabaseInitial() {
@@ -68,7 +67,6 @@ func cityInitial() {
     }
 
     // 导入城市
-    log.Println("导入城市")
     var items []R
     err := jsoniter.Unmarshal(assets.City, &items)
     if err == nil {

@@ -10,8 +10,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/labstack/echo/v4"
-    log "github.com/sirupsen/logrus"
-    "runtime/debug"
+    "go.uber.org/zap"
 )
 
 func Recover() echo.MiddlewareFunc {
@@ -19,23 +18,23 @@ func Recover() echo.MiddlewareFunc {
         return func(c echo.Context) error {
             defer func() {
                 if r := recover(); r != nil {
-                    stack := fmt.Sprintf("%v\n%s", r, debug.Stack())
-                    switch r.(type) {
+                    switch v := r.(type) {
                     case *snag.Error:
                         c.Error(r.(*snag.Error))
                         break
                     case *ent.ValidationError:
-                        log.Error(stack)
+                        zap.L().Error("捕获错误: ent.ValidationError", zap.Error(v), zap.Stack("stack"))
                         c.Error(r.(*ent.ValidationError).Unwrap())
                         break
                     case error:
-                        log.Error(stack)
+                        zap.L().Error("捕获错误", zap.Error(v), zap.Stack("stack"))
                         c.Error(r.(error))
                         break
                     default:
-                        log.Error(stack)
+                        x := fmt.Errorf("%v", r)
+                        zap.L().Error("捕获错误: 其他", zap.Error(x), zap.Stack("stack"))
                         // _ = mw.Recover()(next)(c)
-                        c.Error(fmt.Errorf("%v", r))
+                        c.Error(x)
                         break
                     }
                 }

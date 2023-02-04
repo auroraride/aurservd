@@ -15,7 +15,6 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/h2non/filetype"
     "github.com/h2non/filetype/matchers"
-    log "github.com/sirupsen/logrus"
     "github.com/xuri/excelize/v2"
     "mime/multipart"
 )
@@ -44,11 +43,10 @@ func (*cscService) BatchReminder(source *multipart.FileHeader) []*model.Shiguang
 
     kind, err := filetype.MatchReader(f)
     if err != nil {
-        log.Errorf("文件格式获取失败：%v", err)
-        snag.Panic(err)
+        snag.Panic("文件格式获取失败" + err.Error())
     }
     if kind != matchers.TypeXlsx {
-        snag.Panic(fmt.Sprintf("文件格式错误，必须为标准xlsx格式，当前为：%s", kind.Extension))
+        snag.Panic("文件格式错误，必须为标准xlsx格式，当前为" + kind.Extension)
     }
 
     _, _ = f.Seek(0, 0)

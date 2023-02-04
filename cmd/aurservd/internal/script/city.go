@@ -13,9 +13,9 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/city"
     jsoniter "github.com/json-iterator/go"
-    log "github.com/sirupsen/logrus"
     "github.com/spf13/cobra"
     "io/ioutil"
+    "log"
     "strconv"
     "strings"
 )

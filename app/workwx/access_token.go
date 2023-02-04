@@ -11,7 +11,6 @@ import (
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/go-resty/resty/v2"
-    log "github.com/sirupsen/logrus"
     "time"
 )
 
@@ -40,7 +39,6 @@ func (w *Client) getAccessToken(params ...bool) string {
         SetResult(&res).
         Get(fmt.Sprintf(`%s/gettoken?corpid=%s&corpsecret=%s`, baseURL, w.corpID, w.corpSecret))
     if err != nil {
-        log.Error(err)
         snag.Panic(err)
         return ""
     }

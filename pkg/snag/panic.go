@@ -7,8 +7,7 @@ package snag
 
 import (
     "fmt"
-    log "github.com/sirupsen/logrus"
-    "runtime/debug"
+    "go.uber.org/zap"
 )
 
 func Panic(params ...any) {
@@ -54,7 +53,7 @@ func WithPanicStack(cb func()) {
 
     defer func() {
         if v := recover(); v != nil {
-            log.Errorf("捕获未处理崩溃: %v\n%s", v, debug.Stack())
+            zap.L().Error("[WithPanicStack] 捕获未处理崩溃: %v\n%s", zap.Error(fmt.Errorf("%v", v)), zap.Stack("stack"))
         }
     }()
 

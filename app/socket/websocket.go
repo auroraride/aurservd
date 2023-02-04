@@ -11,7 +11,6 @@ import (
     "github.com/gorilla/websocket"
     "github.com/labstack/echo/v4"
     "github.com/lithammer/shortuuid/v4"
-    log "github.com/sirupsen/logrus"
     "net/http"
     "sync"
 )
@@ -43,7 +42,6 @@ func (hub *WebsocketHub) SendMessage(message model.SocketBinaryMessage) {
         return
     }
     b := message.Bytes()
-    log.Infof("[WS] sending message to %s: %s", hub.ClientID, string(b))
     _ = hub.WriteMessage(websocket.TextMessage, b)
 }
 
@@ -81,7 +79,6 @@ func Wrap(c echo.Context, ws Websocket) error {
     conn, err := upgrader.Upgrade(c.Response(), c.Request(), nil)
 
     if err != nil {
-        log.Error(err)
         return err
     }
 
@@ -90,8 +87,6 @@ func Wrap(c echo.Context, ws Websocket) error {
     hub := &WebsocketHub{Conn: conn, ClientID: clientID}
 
     defer func(conn *websocket.Conn) {
-        log.Infof("%s disconnect", clientID)
-
         hub.DisConnect()
         _ = conn.Close()
     }(conn)
@@ -105,7 +100,6 @@ func Wrap(c echo.Context, ws Websocket) error {
     }
 
     key := GetKey(ws, id)
-    log.Infof("%s Socket connected", key)
 
     // 断开已有的
     client := GetClient(key)

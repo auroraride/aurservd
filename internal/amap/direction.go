@@ -7,8 +7,9 @@ package amap
 
 import (
     "fmt"
+    "github.com/auroraride/adapter/log"
     "github.com/go-resty/resty/v2"
-    log "github.com/sirupsen/logrus"
+    "go.uber.org/zap"
     "strconv"
     "strings"
 )
@@ -47,9 +48,8 @@ func (a *amap) DirectionRiding(origin, destination string) (res *DirectionRiding
         destination,
     ))
     if err != nil {
-        log.Error(err)
+        zap.L().Error("DirectionRiding 请求失败", zap.Error(err), log.ResponseBody(r.Body()))
     }
-    log.Info(string(r.Body()))
     return
 }
 

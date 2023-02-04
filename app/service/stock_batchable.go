@@ -11,7 +11,6 @@ import (
     "github.com/auroraride/aurservd/internal/ent/predicate"
     "github.com/auroraride/aurservd/internal/ent/stock"
     "github.com/auroraride/aurservd/pkg/snag"
-    log "github.com/sirupsen/logrus"
 )
 
 type stockBatchableService struct {
@@ -49,7 +48,6 @@ func (s *stockBatchableService) Fetch(target uint8, id uint64, name string) int 
         Aggregate(ent.Sum(stock.FieldNum))
     err := q.Scan(s.ctx, &result)
     if err != nil {
-        log.Error(err)
         snag.Panic("物资数量获取失败")
     }
 

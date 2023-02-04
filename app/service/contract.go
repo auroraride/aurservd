@@ -9,6 +9,7 @@ import (
     "context"
     "errors"
     "fmt"
+    "github.com/auroraride/adapter/log"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/socket"
     "github.com/auroraride/aurservd/internal/ar"
@@ -21,8 +22,9 @@ import (
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
     jsoniter "github.com/json-iterator/go"
-    log "github.com/sirupsen/logrus"
+    "go.uber.org/zap"
     "math"
+    "strconv"
     "strings"
     "time"
 )
@@ -410,11 +412,7 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
         // 存储合同信息
         ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
             // 删除原有合同
-            _, err = tx.Contract.Delete().Where(contract.AllocateID(allo.ID)).Exec(s.ctx)
-            if err != nil {
-                log.Errorf("[allocateID = %d]合同强制删除失败, %v", allo.ID, err)
-            }
-
+            _, _ = tx.Contract.Delete().Where(contract.AllocateID(allo.ID)).Exec(s.ctx)
             err = tx.Contract.Create().
                 SetFlowID(flowId).
                 SetRiderID(u.ID).
@@ -478,7 +476,7 @@ func (s *contractService) checkResult(flowID string) {
 func (s *contractService) doResult(flowID string) {
     defer func() {
         if v := recover(); v != nil {
-            log.Errorf("合同查询失败: %v", v)
+            zap.L().Error("合同查询失败", zap.Error(fmt.Errorf("%v", v)))
             return
         }
     }()
@@ -525,11 +523,13 @@ func (s *contractService) doResult(flowID string) {
         }
     }
 
+    idstr := strconv.FormatUint(c.ID, 10)
+
     // 流程是否终止
     if result.IsFinished() {
         err := updater.Exec(context.Background())
         if err != nil {
-            log.Errorf("合同更新失败 [id = %d]: %v", c.ID, err)
+            zap.L().Error("合同更新失败: "+idstr, zap.Error(err))
             return
         }
     }
@@ -538,7 +538,7 @@ func (s *contractService) doResult(flowID string) {
     if result.IsSuccessed() {
         err := s.update(c)
         if err != nil {
-            log.Errorf("已成功签署合同, 但更新失败 [id = %d] %v", c.ID, err)
+            zap.L().Error("已成功签署合同, 但合同更新失败: "+idstr, zap.Error(err))
         }
 
         // 如有必要, 通知店员合同签署完成
@@ -633,7 +633,7 @@ func (s *contractService) Notice(b []byte) {
     var result esign.Notice
     err := jsoniter.Unmarshal(b, &result)
     if err != nil {
-        log.Errorf("签约回调解析失败: %v", err)
+        zap.L().Error("签约回调解析失败", zap.Error(err), log.ResponseBody(b))
         return
     }
 
@@ -694,7 +694,7 @@ func (s *contractService) List(req *model.ContractListReq) *model.PaginationRes 
 func (s *contractService) downloadFile(id uint64, flowID string, r *model.ContractRider) {
     err := s.orm.UpdateOneID(id).SetFiles(s.esign.DownloadDocument(fmt.Sprintf("%s-%s/contracts/", r.Name, r.IDCardNumber), flowID)).Exec(s.ctx)
     if err != nil {
-        log.Errorf("[%d / %s] 合同下载失败: %v", id, flowID, err)
+        zap.L().Error("合同下载失败, id="+strconv.FormatUint(id, 10)+", flowID="+flowID, zap.Error(err))
         return
     }
 }

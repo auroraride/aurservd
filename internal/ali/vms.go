@@ -11,7 +11,7 @@ import (
     "github.com/alibabacloud-go/tea/tea"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/pkg/snag"
-    log "github.com/sirupsen/logrus"
+    "go.uber.org/zap"
 )
 
 type vms struct {
@@ -32,7 +32,7 @@ func NewVms() *vms {
     return &vms{client}
 }
 
-func (v *vms) log(phone, param *string, res any, err error) {
+func (v *vms) log(phone, param *string, res *dyvmsapi20170525.SingleCallByTtsResponse, err error) {
     p := "<nil>"
     pa := "<nil>"
     if phone != nil {
@@ -41,11 +41,8 @@ func (v *vms) log(phone, param *string, res any, err error) {
     if param != nil {
         pa = *param
     }
-    if err == nil {
-        log.Infof("%s, %s 发送语音通知结果: %v", p, pa, res)
-        return
-    }
-    log.Errorf("%s, %s 发送语音通知结果: %v, 错误信息: %v", p, pa, res, err)
+    zap.L().Info(p+", "+pa+" -> 语音发送结果: "+res.String(), zap.Error(err))
+    return
 }
 
 // SendVoiceMessageByTts 发送语音通知

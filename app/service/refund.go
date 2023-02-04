@@ -15,7 +15,6 @@ import (
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
-    log "github.com/sirupsen/logrus"
     "time"
 )
 
@@ -115,7 +114,6 @@ func (s *refundService) Refund(riderID uint64, req *model.RefundReq) (res model.
 
         _, err = orc.Save(s.ctx)
         if err != nil {
-            log.Error(err)
             snag.Panic("退款申请失败")
         }
 
@@ -171,7 +169,6 @@ func (s *refundService) RefundAudit(req *model.RefundAuditReq) {
         // 订单缓存 (原始订单号key)
         err := cache.Set(s.ctx, o.OutTradeNo, prepay, 20*time.Minute).Err()
         if err != nil {
-            log.Error(err)
             snag.Panic("退款处理失败")
         }
 

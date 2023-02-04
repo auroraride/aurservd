@@ -9,7 +9,7 @@ import (
     "context"
     "github.com/qiniu/qmgo"
     "github.com/qiniu/qmgo/options"
-    log "github.com/sirupsen/logrus"
+    "log"
 )
 
 var (
@@ -24,7 +24,7 @@ func Connect(url, db string) {
     var err error
     Client, err = qmgo.NewClient(ctx, &qmgo.Config{Uri: url})
     if err != nil {
-        log.Fatalln(err)
+        log.Fatal(err)
     }
     DB = Client.Database(db)
 

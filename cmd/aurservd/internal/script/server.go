@@ -17,8 +17,8 @@ import (
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/exchange"
-    log "github.com/sirupsen/logrus"
     "github.com/spf13/cobra"
+    "log"
     "time"
 )
 
@@ -82,7 +82,7 @@ func compensate() {
     now := time.Now()
     msg := "程序异常"
     tasks := ec.GetAllProcessing()
-    log.Infof("共获取到%d个进行中的任务日志", len(tasks))
+    log.Printf("共获取到%d个进行中的任务日志", len(tasks))
     m := make(map[string]*ec.Task)
     for _, t := range tasks {
         t.Message = msg
@@ -97,7 +97,7 @@ func compensate() {
     orm := ent.Database.Exchange
     ctx := context.Background()
     items, _ := orm.QueryNotDeleted().Where(exchange.Success(false), exchange.FinishAtIsNil(), exchange.CabinetIDNotNil(), exchange.StartAtNotNil()).All(ctx)
-    log.Infof("共获取到%d个进行中的换电", len(items))
+    log.Printf("共获取到%d个进行中的换电", len(items))
     for _, item := range items {
         u := item.Update().
             SetSuccess(false).

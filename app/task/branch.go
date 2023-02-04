@@ -14,7 +14,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/branchcontract"
     "github.com/golang-module/carbon/v2"
     "github.com/robfig/cron/v3"
-    log "github.com/sirupsen/logrus"
+    "go.uber.org/zap"
 )
 
 type branchTask struct {
@@ -30,16 +30,15 @@ func (t *branchTask) Start() {
     }
 
     c := cron.New()
-    entryID, err := c.AddFunc("0 9 * * *", func() {
-        log.Info("开始执行 @daily[branch] 定时任务")
+    _, err := c.AddFunc("0 9 * * *", func() {
+        zap.L().Info("开始执行 @daily[branch] 定时任务")
         t.Do()
     })
     if err != nil {
-        log.Fatal(err)
+        zap.L().Fatal("@daily[branch] 定时任务执行失败", zap.Error(err))
         return
     }
     c.Start()
-    log.Infof("[BRANCH TASK] started: %d", entryID)
 }
 
 func (*branchTask) Do() {

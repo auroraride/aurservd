@@ -21,7 +21,6 @@ import (
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
     "github.com/google/uuid"
-    log "github.com/sirupsen/logrus"
     "math"
     "time"
 )
@@ -60,7 +59,6 @@ func (s *enterpriseStatementService) Current(e *ent.Enterprise) *ent.EnterpriseS
     ).First(s.ctx)
 
     if res == nil {
-        log.Infof("%d 未找到账单, 创建新账单", e.ID)
         res, _ = s.orm.Create().
             SetEnterpriseID(e.ID).
             SetStart(carbon.Time2Carbon(e.CreatedAt).StartOfDay().Carbon2Time()).
@@ -155,7 +153,6 @@ func (s *enterpriseStatementService) Bill(req *model.StatementClearBillReq) {
     br := new(model.StatementBillRes)
     err := cache.Get(s.ctx, req.UUID).Scan(br)
     if err != nil {
-        log.Error(err)
         snag.Panic("未找到账单信息")
         return
     }

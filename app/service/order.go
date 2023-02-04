@@ -8,6 +8,7 @@ package service
 import (
     "context"
     "fmt"
+    "github.com/auroraride/adapter/log"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
@@ -25,8 +26,8 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
-    jsoniter "github.com/json-iterator/go"
-    log "github.com/sirupsen/logrus"
+    "go.uber.org/zap"
+    "strconv"
     "time"
 )
 
@@ -378,7 +379,6 @@ func (s *orderService) Prepay(payway uint8, no string, prepay *model.PaymentCach
     // 订单缓存
     err := cache.Set(s.ctx, no, prepay, 20*time.Minute).Err()
     if err != nil {
-        log.Error(err)
         snag.Panic("订单创建失败")
     }
     var str string
@@ -387,7 +387,6 @@ func (s *orderService) Prepay(payway uint8, no string, prepay *model.PaymentCach
         // 使用支付宝支付
         str, err = payment.NewAlipay().AppPay(prepay)
         if err != nil {
-            log.Error(err)
             snag.Panic("支付宝支付请求失败")
         }
         result.Prepay = str
@@ -396,7 +395,6 @@ func (s *orderService) Prepay(payway uint8, no string, prepay *model.PaymentCach
         // 使用微信支付
         str, err = payment.NewWechat().AppPay(prepay)
         if err != nil {
-            log.Error(err)
             snag.Panic("微信支付请求失败")
         }
         result.Prepay = str
@@ -436,9 +434,6 @@ func (s *orderService) FeePaid(trade *model.PaymentOverdueFee) {
         return
     }
 
-    j, _ := jsoniter.MarshalIndent(trade, "", "  ")
-    log.Infof("[FEE PAID %s] %s", trade.OutTradeNo, j)
-
     ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
         _, err = tx.Order.Create().
             SetPayway(trade.Payway).
@@ -455,7 +450,7 @@ func (s *orderService) FeePaid(trade *model.PaymentOverdueFee) {
             SetRiderID(trade.RiderID).
             Save(s.ctx)
         if err != nil {
-            log.Errorf("[FEE PAID %s ERROR]: %s", trade.OutTradeNo, err.Error())
+            zap.L().Error("滞纳金已支付, 但订单创建失败"+trade.OutTradeNo, zap.Error(err))
             return
         }
 
@@ -467,7 +462,7 @@ func (s *orderService) FeePaid(trade *model.PaymentOverdueFee) {
             AddOverdueDays(trade.Days).
             Save(s.ctx)
         if err != nil {
-            log.Errorf("[FEE PAID %s SUBSCRIBE(%d) ERROR]: %s", trade.OutTradeNo, trade.SubscribeID, err.Error())
+            zap.L().Error("滞纳金已支付, 但订阅更新失败"+trade.OutTradeNo+", SUBID="+strconv.FormatUint(trade.SubscribeID, 10), zap.Error(err))
         }
         return
     })
@@ -483,8 +478,7 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
         return
     }
 
-    j, _ := jsoniter.MarshalIndent(trade, "", "  ")
-    log.Infof("[ORDER PAID %s] %s", trade.OutTradeNo, j)
+    zap.L().Info("订单支付回调: "+trade.OutTradeNo, log.JsonData(trade))
 
     var sub *ent.Subscribe
     ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
@@ -516,13 +510,13 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
             for _, couponID := range trade.Coupons {
                 err = tx.Coupon.UpdateOneID(couponID).SetPlanID(trade.Plan.ID).SetUsedAt(time.Now()).Exec(s.ctx)
                 if err != nil {
-                    log.Errorf("[ORDER PAID %s COUPON id = %d ERROR]: %s", trade.OutTradeNo, couponID, err.Error())
+                    zap.L().Error("订单已支付, 但优惠券更新失败: "+trade.OutTradeNo+", couponID="+strconv.FormatUint(couponID, 10), zap.Error(err))
                 }
             }
         }
         o, err = oc.Save(s.ctx)
         if err != nil {
-            log.Errorf("[ORDER PAID %s ERROR]: %s", trade.OutTradeNo, err.Error())
+            zap.L().Error("订单已支付, 但订单创建失败: "+trade.OutTradeNo, zap.Error(err))
             return
         }
 
@@ -535,7 +529,7 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
             r, err = tx.Rider.UpdateOneID(trade.RiderID).AddPoints(-trade.Points + gift).Save(s.ctx)
             before := r.Points
             if err != nil {
-                log.Errorf("[ORDER PAID POINT UPDATE %s ERROR]: %s", trade.OutTradeNo, err.Error())
+                zap.L().Error("订单已支付, 但积分更新失败: "+trade.OutTradeNo, zap.Error(err))
                 return
             }
 
@@ -549,7 +543,7 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
                 SetOrder(o).
                 Exec(s.ctx)
             if err != nil {
-                log.Errorf("[ORDER PAID POINT LOG %s ERROR]: %s", trade.OutTradeNo, err.Error())
+                zap.L().Error("订单已支付, 但积分消费记录创建失败: "+trade.OutTradeNo, zap.Error(err))
             }
 
             NewPoint().RemovePreConsume(r, trade.Points)
@@ -568,7 +562,7 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
                 SetOrder(o).
                 Exec(s.ctx)
             if err != nil {
-                log.Errorf("[ORDER PAID POINT GIFT %s ERROR]: %s", trade.OutTradeNo, err.Error())
+                zap.L().Error("订单已支付, 但积分赠送记录创建失败: "+trade.OutTradeNo, zap.Error(err))
             }
         }
 
@@ -588,7 +582,7 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
                 SetParentID(o.ID).
                 Save(s.ctx)
             if err != nil {
-                log.Errorf("[ORDER PAID %s DEPOSIT ERROR]: %s", trade.OutTradeNo, err.Error())
+                zap.L().Error("订单已支付, 但押金订单创建失败: "+trade.OutTradeNo, zap.Error(err))
                 return
             }
         }
@@ -616,7 +610,7 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
             }
             sub, err = sq.Save(s.ctx)
             if err != nil {
-                log.Errorf("[ORDER PAID %s SUBSCRIBE(%d) ERROR]: %s", trade.OutTradeNo, o.ID, err.Error())
+                zap.L().Error("订单已支付, 但新签或重签订阅创建失败: "+trade.OutTradeNo, zap.Error(err))
                 return
             }
         }
@@ -636,7 +630,7 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
                 SetStatus(status).
                 Save(s.ctx)
             if err != nil {
-                log.Errorf("[ORDER PAID %s SUBSCRIBE(%d) ERROR]: %s", trade.OutTradeNo, o.ID, err.Error())
+                zap.L().Error("订单已支付, 但续签订阅更新失败: "+trade.OutTradeNo, zap.Error(err))
                 return
             }
         }
@@ -646,7 +640,7 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
             // 创建提成
             _, err = tx.Commission.Create().SetOrderID(o.ID).SetPlanID(trade.Plan.ID).SetAmount(trade.Commission).SetStatus(model.CommissionStatusPending).SetRiderID(sub.RiderID).SetSubscribe(sub).Save(s.ctx)
             if err != nil {
-                log.Errorf("[ORDER PAID %s COMMISSION(%d) ERROR]: %s", trade.OutTradeNo, o.ID, err.Error())
+                zap.L().Error("订单已支付, 但提成创建失败: "+trade.OutTradeNo, zap.Error(err))
                 return
             }
         }
@@ -670,42 +664,28 @@ func (s *orderService) RefundSuccess(req *model.PaymentRefund) {
     // 删除缓存
     cache.Del(ctx, req.OutRefundNo)
 
-    log.Infof("%s(OrderID:%d) [退款]退款完成, 实际退款时间: %s", req.OutRefundNo, req.OrderID, req.Time)
+    zap.L().Info("订单: " + strconv.FormatUint(req.OrderID, 10) +
+        ", 退款完成: " + req.OutRefundNo +
+        ", 实际退款时间: " + req.Time.Format(carbon.DateTimeLayout))
 
     // 更新订单
-    _, err := ent.Database.Order.UpdateOneID(req.OrderID).
+    _, _ = ent.Database.Order.UpdateOneID(req.OrderID).
         SetStatus(model.OrderStatusRefundSuccess).
         SetRefundAt(req.Time).
         Save(ctx)
-    if err != nil {
-        log.Error(err)
-    }
-    log.Infof("%s(OrderID:%d) [退款]原订单更新完成", req.OutRefundNo, req.OrderID)
 
     // 更新退款订单
-    _, err = ent.Database.OrderRefund.Update().
+    _, _ = ent.Database.OrderRefund.Update().
         Where(orderrefund.OutRefundNo(req.OutRefundNo)).
         SetStatus(model.RefundStatusSuccess).
         SetRefundAt(req.Time).
         Save(ctx)
-    if err != nil {
-        log.Error(err)
-    }
-    log.Infof("%s(OrderID:%d) [退款]退款订单更新完成", req.OutRefundNo, req.OrderID)
 
     // 更新骑士卡
-    _, err = ent.Database.Subscribe.Update().Where(subscribe.InitialOrderID(req.OrderID)).SetRefundAt(req.Time).SetStatus(model.SubscribeStatusCanceled).Save(ctx)
-    if err != nil {
-        log.Error(err)
-    }
-    log.Infof("%s(OrderID:%d) [退款]骑士卡更新完成", req.OutRefundNo, req.OrderID)
+    _, _ = ent.Database.Subscribe.Update().Where(subscribe.InitialOrderID(req.OrderID)).SetRefundAt(req.Time).SetStatus(model.SubscribeStatusCanceled).Save(ctx)
 
     // 删除提成订单
-    err = ent.Database.Commission.SoftDelete().Where(commission.OrderID(req.OrderID)).SetRemark("用户已退款").Exec(ctx)
-    if err != nil {
-        log.Error(err)
-    }
-    log.Infof("%s(OrderID:%d) [退款]提成订单更新完成", req.OutRefundNo, req.OrderID)
+    _ = ent.Database.Commission.SoftDelete().Where(commission.OrderID(req.OrderID)).SetRemark("用户已退款").Exec(ctx)
 }
 
 func (s *orderService) listFilter(req model.OrderListFilter) (*ent.OrderQuery, ar.Map) {

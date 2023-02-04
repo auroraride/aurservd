@@ -11,7 +11,7 @@ import (
     dysmsapi "github.com/alibabacloud-go/dysmsapi-20170525/v2/client"
     "github.com/auroraride/aurservd/internal/ar"
     jsoniter "github.com/json-iterator/go"
-    log "github.com/sirupsen/logrus"
+    "go.uber.org/zap"
     "strings"
 )
 
@@ -34,7 +34,7 @@ func NewSms() (c *smsClient, err error) {
     var client *dysmsapi.Client
     client, err = dysmsapi.NewClient(config)
     if err != nil {
-        log.Errorf("阿里云sms初始化失败: %v", err)
+        zap.L().Error("阿里云sms初始化失败", zap.Error(err))
         return
     }
     c = &smsClient{
@@ -66,7 +66,7 @@ func (c *smsClient) SendCode(phone string) (id string, err error) {
         TemplateParam: &c.data,
     }
     res, err := c.SendSms(req)
-    log.Infof("[%s] 短信发送结果: %s", phone, res)
+    zap.L().Info(phone + " -> 短信发送结果: " + res.String())
     if err != nil {
         return
     }

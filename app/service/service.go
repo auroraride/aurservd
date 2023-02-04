@@ -17,7 +17,6 @@ import (
     "github.com/h2non/filetype/matchers"
     "github.com/h2non/filetype/types"
     "github.com/labstack/echo/v4"
-    log "github.com/sirupsen/logrus"
     "github.com/xuri/excelize/v2"
     "mime/multipart"
     "strings"
@@ -93,7 +92,6 @@ func (s *BaseService) GetXlsxRows(c echo.Context, start, columnsNumber int, pkIn
     failed = make([]string, 0)
     source, err := c.FormFile("file")
     if err != nil {
-        log.Errorf("GetXlsxDataX error: %s", err)
         snag.Panic("未获取到上传的文件: " + err.Error())
         return
     }
@@ -110,7 +108,6 @@ func (s *BaseService) GetXlsxRows(c echo.Context, start, columnsNumber int, pkIn
     var kind types.Type
     kind, err = filetype.MatchReader(f)
     if err != nil {
-        log.Errorf("文件格式获取失败：%v", err)
         snag.Panic(err)
     }
     if kind != matchers.TypeXlsx {

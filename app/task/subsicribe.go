@@ -10,7 +10,7 @@ import (
     "github.com/auroraride/aurservd/app/task/reminder"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/robfig/cron/v3"
-    log "github.com/sirupsen/logrus"
+    "go.uber.org/zap"
 )
 
 type subscribeTask struct {
@@ -28,16 +28,15 @@ func (t *subscribeTask) Start() {
     go t.Do()
 
     c := cron.New()
-    entryID, err := c.AddFunc("@daily", func() {
-        log.Info("开始执行 @daily[subscribe] 定时任务")
+    _, err := c.AddFunc("@daily", func() {
+        zap.L().Info("开始执行 @daily[subscribe] 定时任务")
         go t.Do()
     })
     if err != nil {
-        log.Fatal(err)
+        zap.L().Fatal("@daily[subscribe] 定时任务执行失败", zap.Error(err))
         return
     }
     c.Start()
-    log.Infof("[SUBSCRIBE TASK] started: %d", entryID)
 }
 
 // Do 检查逾期状态

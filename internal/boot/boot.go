@@ -14,7 +14,6 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/mgo"
     "github.com/auroraride/aurservd/internal/payment"
-    "github.com/auroraride/aurservd/pkg/logger"
     "github.com/go-redis/redis/v9"
     "github.com/golang-module/carbon/v2"
     "io"
@@ -50,16 +49,6 @@ func Bootstrap() {
         Writers: []io.Writer{
             log.NewRedisWriter(redis.NewClient(&redis.Options{})),
         },
-    })
-
-    // 配置日志
-    l := ar.Config.Logging
-    logger.LoadWithConfig(logger.Config{
-        Color:    l.Color,
-        Level:    l.Level,
-        Age:      l.Age,
-        Json:     l.Json,
-        RootPath: l.RootPath,
     })
 
     // 加载数据库

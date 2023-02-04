@@ -18,7 +18,6 @@ import (
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
     jsoniter "github.com/json-iterator/go"
-    log "github.com/sirupsen/logrus"
     "golang.org/x/exp/slices"
     "sort"
     "strings"
@@ -75,7 +74,6 @@ func (s *planService) QueryEffectiveWithID(id uint64) *ent.Plan {
         WithBrand().
         Only(s.ctx)
     if err != nil || item == nil {
-        log.Error(err)
         snag.Panic("未找到有效的骑士卡")
     }
     return item

@@ -28,7 +28,6 @@ import (
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
     jsoniter "github.com/json-iterator/go"
-    log "github.com/sirupsen/logrus"
     "math"
     "sort"
     "strings"
@@ -289,7 +288,6 @@ func (s *stockService) BatteryOverview(req *model.StockOverviewReq) (items []mod
     rows, err := ent.Database.QueryContext(s.ctx, query)
 
     if err != nil {
-        log.Error(err)
         snag.Panic("请求失败")
     }
 
@@ -301,7 +299,6 @@ func (s *stockService) BatteryOverview(req *model.StockOverviewReq) (items []mod
         var b []byte
         err = rows.Scan(&b)
         if err != nil {
-            log.Error(err)
             break
         }
         var item model.StockBatteryOverviewRes
@@ -826,7 +823,7 @@ func (s *stockService) Detail(req *model.StockDetailReq) *model.PaginationRes {
 // StoreCurrent 列出当前门店所有库存物资
 func (s *stockService) StoreCurrent(id uint64) []model.InventoryNum {
     ins := make([]model.InventoryNum, 0)
-    err := s.orm.QueryNotDeleted().
+    _ = s.orm.QueryNotDeleted().
         Where(stock.StoreID(id)).
         Modify(func(sel *sql.Selector) {
             sel.GroupBy(stock.FieldName, stock.FieldModel).
@@ -835,10 +832,6 @@ func (s *stockService) StoreCurrent(id uint64) []model.InventoryNum {
                 AppendSelectExprAs(sql.Raw(fmt.Sprintf("SUM(%s)", stock.FieldNum)), "num")
         }).
         Scan(s.ctx, &ins)
-
-    if err != nil {
-        log.Error(err)
-    }
 
     return ins
 }
@@ -1122,7 +1115,6 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
                 SetNillableBrandID(l.BrandID).
                 Save(s.ctx)
             if err != nil {
-                log.Error(err)
                 if batchable {
                     return
                 }
@@ -1138,7 +1130,6 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
                 SetNillableEbikeID(l.EbikeID).
                 Save(s.ctx)
             if err != nil {
-                log.Error(err)
                 if batchable {
                     return
                 }

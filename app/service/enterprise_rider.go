@@ -17,7 +17,6 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
-    log "github.com/sirupsen/logrus"
     "time"
 )
 
@@ -337,7 +336,6 @@ func (s *enterpriseRiderService) ChooseBatteryModel(req *model.EnterpriseRiderSu
     }
 
     if err != nil {
-        log.Error(err)
         snag.Panic("型号选择失败")
     }
 

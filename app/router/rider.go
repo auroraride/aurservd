@@ -6,37 +6,67 @@
 package router
 
 import (
+    "github.com/auroraride/adapter/app"
+    inapp "github.com/auroraride/aurservd/app"
     "github.com/auroraride/aurservd/app/controller/v1/rapi"
     "github.com/auroraride/aurservd/app/middleware"
+    "github.com/labstack/echo/v4"
 )
 
 // rideRoutes 骑手路由
 func loadRideRoutes() {
+
     g := root.Group("rider/v1")
 
     // socket
     g.Any("/socket", rapi.Socket.Rider)
 
-    g.Any("/callback", rapi.Callback.RiderCallback, middleware.BodyDump())                            // 骑手api回调中心
-    g.Any("/callback/esign", rapi.Callback.ESignCallback, middleware.BodyDumpRaw())                   // esign回调中心
-    g.Any("/callback/alipay", rapi.Callback.AlipayCallback, middleware.BodyDumpRaw())                 // 骑手支付宝回调中心
-    g.Any("/callback/wechatpay", rapi.Callback.WechatPayCallback, middleware.BodyDumpRaw())           // 骑手微信支付回调中心
-    g.Any("/callback/wechatpay/refund", rapi.Callback.WechatRefundCallback, middleware.BodyDumpRaw()) // 骑手微信退款回调中心
+    rawDump := app.NewDumpLoggerMiddleware().WithConfig(&app.DumpConfig{
+        RequestHeader:  true,
+        ResponseHeader: true,
+    })
+    g.Any("/callback", rapi.Callback.RiderCallback, rawDump)                         // 骑手api回调中心
+    g.Any("/callback/esign", rapi.Callback.ESignCallback, rawDump)                   // esign回调中心
+    g.Any("/callback/alipay", rapi.Callback.AlipayCallback, rawDump)                 // 骑手支付宝回调中心
+    g.Any("/callback/wechatpay", rapi.Callback.WechatPayCallback, rawDump)           // 骑手微信支付回调中心
+    g.Any("/callback/wechatpay/refund", rapi.Callback.WechatRefundCallback, rawDump) // 骑手微信退款回调中心
 
     // 引入骑手api需要的中间件
+    dumpSkipPaths := map[string]bool{
+        "/rider/v1/city":                   true,
+        "/rider/v1/socket":                 true,
+        "/rider/callback":                  true,
+        "/rider/callback/esign":            true,
+        "/rider/callback/alipay":           true,
+        "/rider/callback/wechatpay":        true,
+        "/rider/callback/wechatpay/refund": true,
+        "/rider/v1/branch":                 true,
+    }
+    dumpReqHeaders := map[string]struct{}{
+        inapp.HeaderCaptchaID:     {},
+        inapp.HeaderDeviceSerial:  {},
+        inapp.HeaderDeviceType:    {},
+        inapp.HeaderPushId:        {},
+        inapp.HeaderRiderToken:    {},
+        inapp.HeaderManagerToken:  {},
+        inapp.HeaderEmployeeToken: {},
+        inapp.HeaderAgentToken:    {},
+    }
+    dump := app.NewDumpLoggerMiddleware().WithConfig(&app.DumpConfig{
+        Skipper: func(c echo.Context) bool {
+            return dumpSkipPaths[c.Path()]
+        },
+        RequestHeader: true,
+        RequestHeaderSkipper: func(s string) bool {
+            _, ok := dumpReqHeaders[s]
+            return !ok
+        },
+    })
+
     g.Use(
         middleware.DeviceMiddleware(),
         middleware.RiderMiddleware(),
-        middleware.BodyDumpRawWithInterval(map[string]bool{
-            "/rider/v1/city":                   true,
-            "/rider/v1/socket":                 true,
-            "/rider/callback":                  true,
-            "/rider/callback/esign":            true,
-            "/rider/callback/alipay":           true,
-            "/rider/callback/wechatpay":        true,
-            "/rider/callback/wechatpay/refund": true,
-            "/rider/v1/branch":                 true,
-        }),
+        dump,
     )
 
     g.POST("/signin", rapi.Rider.Signin)                  // 登录

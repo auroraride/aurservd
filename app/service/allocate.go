@@ -15,7 +15,7 @@ import (
     "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/golang-module/carbon/v2"
-    log "github.com/sirupsen/logrus"
+    "go.uber.org/zap"
     "time"
 )
 
@@ -241,7 +241,7 @@ func (s *allocateService) Create(req *model.AllocateCreateReq) model.AllocateCre
         Save(s.ctx)
 
     if err != nil {
-        log.Errorf("分配失败: %v", err)
+        zap.L().Error("分配失败", zap.Error(err))
         snag.Panic("分配失败")
     }
 
@@ -354,6 +354,6 @@ func (s *allocateService) LoopStatus(riderID, subscribeID uint64) (res model.All
 func (s *allocateService) SubscribeDeleteIfExists(subscribeID uint64) {
     _, err := s.orm.Delete().Where(allocate.SubscribeID(subscribeID)).Exec(s.ctx)
     if err != nil {
-        log.Errorf("分配信息强制删除失败: %v", err)
+        zap.L().Error("分配信息强制删除失败", zap.Error(err))
     }
 }

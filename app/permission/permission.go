@@ -8,8 +8,8 @@ package permission
 import (
     "github.com/auroraride/aurservd/pkg/utils"
     "github.com/fsnotify/fsnotify"
-    log "github.com/sirupsen/logrus"
     "github.com/spf13/viper"
+    "go.uber.org/zap"
     "golang.org/x/exp/slices"
     "gopkg.in/yaml.v3"
     "os"
@@ -46,7 +46,7 @@ func init() {
     load()
 
     v.OnConfigChange(func(e fsnotify.Event) {
-        log.Infof("权限文件已改动: %s, 重载权限: %v", e.Name, read())
+        _ = read()
     })
 
     v.WatchConfig()
@@ -92,26 +92,26 @@ func load() {
     if !f.IsExist() {
         err := f.CreateDirectoryIfNotExist()
         if err != nil {
-            log.Fatalf("权限目录创建失败: %v", err)
+            zap.L().Fatal("权限目录创建失败", zap.Error(err))
             return
         }
         err = os.WriteFile(PermFile, []byte(""), 0644)
         if err != nil {
-            log.Fatalf("默认权限保存失败: %v", err)
+            zap.L().Fatal("默认权限保存失败", zap.Error(err))
             return
         }
     }
 
     err := read()
     if err != nil {
-        log.Fatalf("权限读取失败: %v", err)
+        zap.L().Fatal("权限读取失败: %v", zap.Error(err))
     }
 }
 
 func Save(m map[string]*Group) {
     b, err := yaml.Marshal(m)
     if err != nil {
-        log.Fatalf("权限配置保存失败: %#v", err)
+        zap.L().Fatal("权限配置保存失败: %#v", zap.Error(err))
     }
     _ = os.WriteFile(PermFile, b, 0644)
 }

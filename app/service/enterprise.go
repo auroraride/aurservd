@@ -25,8 +25,9 @@ import (
     "github.com/jinzhu/copier"
     "github.com/r3labs/diff/v3"
     "github.com/shopspring/decimal"
-    log "github.com/sirupsen/logrus"
+    "go.uber.org/zap"
     "reflect"
+    "strconv"
     "time"
 )
 
@@ -396,10 +397,7 @@ func (s *enterpriseService) CalculateStatement(e *ent.Enterprise, end time.Time)
 
         // 按城市/型号计算金额
         k := s.PriceKey(sub.CityID, sub.Model)
-        p, ok := prices[k]
-        if !ok {
-            log.Errorf("%d [%d] 获取价格失败", sub.ID, sub.CityID)
-        }
+        p, _ := prices[k]
 
         cost, _ := decimal.NewFromFloat(p).Mul(decimal.NewFromInt(int64(used))).Float64()
 
@@ -457,7 +455,7 @@ func (s *enterpriseService) UpdateStatement(e *ent.Enterprise) {
 
     _, err := e.Update().SetBalance(balance).Save(s.ctx)
     if err != nil {
-        log.Errorf("[ENTERPRISE TASK] %d 更新失败: %v", e.ID, err)
+        zap.L().Error("企业更新失败: "+strconv.FormatUint(e.ID, 10), zap.Error(err))
     }
 
     now := carbon.Now().StartOfDay().Carbon2Time()
@@ -469,17 +467,15 @@ func (s *enterpriseService) UpdateStatement(e *ent.Enterprise) {
         Save(s.ctx)
 
     if err != nil {
-        log.Errorf("[ENTERPRISE TASK] %d 更新失败: %v", e.ID, err)
+        zap.L().Error("企业更新失败: "+strconv.FormatUint(e.ID, 10), zap.Error(err))
     }
 
-    log.Infof("[ENTERPRISE TASK] EntperirseID:[%d] 更新成功, 总使用人数: %d, 账期使用总天数: %d, 总费用: %.2f, 余额: %.2f, 出账日期: %s",
-        e.ID,
-        len(bills),
-        days,
-        cost,
-        balance,
-        now.Format(carbon.DateLayout),
-    )
+    zap.L().Info("企业更新成功: " + strconv.FormatUint(e.ID, 10) +
+        ", 总使用人数: " + strconv.Itoa(len(bills)) +
+        ", 账期使用总天数: " + strconv.Itoa(days) +
+        ", 总费用: " + strconv.FormatFloat(cost, 'f', 2, 64) +
+        ", 余额: " + strconv.FormatFloat(balance, 'f', 2, 64) +
+        ", 出账日期: %s" + now.Format(carbon.DateLayout))
 }
 
 // Prepayment 预付费

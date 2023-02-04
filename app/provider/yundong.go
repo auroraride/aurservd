@@ -8,6 +8,7 @@ package provider
 import (
     "context"
     "fmt"
+    "github.com/auroraride/adapter/log"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
@@ -17,7 +18,7 @@ import (
     "github.com/auroraride/aurservd/pkg/utils"
     "github.com/go-resty/resty/v2"
     "github.com/golang-module/carbon/v2"
-    log "github.com/sirupsen/logrus"
+    "go.uber.org/zap"
     "net/url"
     "strconv"
     "time"
@@ -101,7 +102,7 @@ func (p *yundong) FetchToken(tokenRequest bool) (token string) {
         res := new(YDTokenRes)
         r, err := client.SetResult(res).Post(p.GetUrl(yundongTokenUrl))
 
-        log.Info(string(r.Body()))
+        zap.L().Info("云动token获取", log.ResponseBody(r.Body()))
         if err != nil || res.Code != 0 {
             p.tokenRetryTimes += 1
             if p.tokenRetryTimes < 2 {
@@ -258,19 +259,23 @@ func (p *yundong) DoorOperate(code, serial, operation string, door int) (state b
             Action:     operation,
         }).
         Post(p.GetUrl(yundongControlUrl))
+
     if t, err := time.Parse(time.RFC1123, r.Header().Get("Date")); err == nil {
         now = t.Add(8 * time.Hour)
     }
-    log.Info(string(r.Body()))
+
+    zap.L().Info("云动柜门操作", log.ResponseBody(r.Body()), zap.Error(err))
+
     // token 请求失败, 重新请求token后重试
     if res.Code == 1000 && p.retryTimes < 1 {
         p.retryTimes += 1
         return p.DoorOperate(code, serial, operation, door)
     }
+
     if err != nil {
-        log.Error(err)
         return
     }
+
     start := now.Add(-10 * time.Second).Format(carbon.DateTimeLayout)
     end := now.Add(10 * time.Second).Format(carbon.DateTimeLayout)
 
@@ -293,14 +298,16 @@ func (p *yundong) Reboot(code string, serial string) (state bool) {
             Action:     "rebootCabinet",
         }).
         Post(p.GetUrl(yundongOperatedUrl))
-    log.Info(string(r.Body()))
+
+    zap.L().Info("云动重启操作", log.ResponseBody(r.Body()), zap.Error(err))
+
     // token 请求失败, 重新请求token后重试
     if res.Code == 1000 && p.retryTimes < 1 {
         p.retryTimes += 1
         return p.Reboot(code, serial)
     }
+
     if err != nil {
-        log.Error(err)
         return
     }
     return res.Code == 0
@@ -329,14 +336,15 @@ func (p *yundong) GetOperateState(opId, serial, start, end string) (state bool) 
     r, err := p.RequestClient(false).
         SetResult(res).
         Get(fmt.Sprintf("%s?cabinetSN=%s&starttime=%s&endtime=%s&pageNo=0&pageNum=50", p.GetUrl(yundongOperatorlog), url.QueryEscape(serial), url.QueryEscape(start), url.QueryEscape(end)))
-    log.Info(string(r.Body()))
+
+    zap.L().Info("云动获取操作日志", log.ResponseBody(r.Body()), zap.Error(err))
+
     // token 请求失败, 重新请求token后重试
     if res.Code == 1000 && p.retryTimes < 1 {
         p.retryTimes += 1
         return p.GetOperateState(opId, serial, start, end)
     }
     if err != nil {
-        log.Error(err)
         return
     }
     for _, d := range res.Data {
@@ -379,7 +387,7 @@ func (p *yundong) UpdateBasicInfo(req model.YundongDeployInfo) {
         SetBody(data).
         Post(p.GetUrl(yundongBasicinfo))
 
-    log.Info(string(r.Body()))
+    zap.L().Info("云动投产电柜", log.ResponseBody(r.Body()), zap.Error(err))
 
     if err != nil {
         snag.Panic(err)

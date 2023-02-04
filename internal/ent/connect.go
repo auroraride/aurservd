@@ -15,7 +15,7 @@ import (
     _ "github.com/auroraride/aurservd/internal/ent/runtime"
     "github.com/auroraride/aurservd/pkg/snag"
     _ "github.com/jackc/pgx/v4/stdlib"
-    log "github.com/sirupsen/logrus"
+    "log"
 )
 
 var Database *Client

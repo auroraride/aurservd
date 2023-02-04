@@ -13,9 +13,9 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
     jsoniter "github.com/json-iterator/go"
     "github.com/qiniu/qmgo/operator"
-    log "github.com/sirupsen/logrus"
     "go.mongodb.org/mongo-driver/bson"
     "go.mongodb.org/mongo-driver/bson/primitive"
+    "go.uber.org/zap"
     "time"
 )
 
@@ -161,7 +161,7 @@ func (t *Task) Create() (primitive.ObjectID, error) {
 func (t *Task) CreateX() *Task {
     id, err := t.Create()
     if err != nil {
-        log.Error(err)
+        zap.L().Error("任务存储失败", zap.Error(err))
         snag.Panic("任务存储失败")
     }
     t.ID = id

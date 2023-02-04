@@ -24,7 +24,6 @@ import (
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/auroraride/aurservd/pkg/utils"
     "github.com/golang-module/carbon/v2"
-    log "github.com/sirupsen/logrus"
     "github.com/xuri/excelize/v2"
     "path/filepath"
     "strconv"
@@ -106,7 +105,6 @@ func (s *importRiderService) BatchFile(path string) (err error) {
         _ = xlsx.SetCellValue("Sheet1", fmt.Sprintf("H%d", i+1), item.End)
 
         if err != nil {
-            log.Errorf("[%s] 添加失败: %s", item, err)
             // 设置错误
             _ = xlsx.SetCellValue("Sheet1", fmt.Sprintf("I%d", i+1), err.Error())
             _ = xlsx.SetCellStyle("Sheet1", fmt.Sprintf("A%d", i+1), fmt.Sprintf("I%d", i+1), styleID)

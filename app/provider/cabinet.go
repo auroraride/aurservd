@@ -12,7 +12,7 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/workwx"
     "github.com/auroraride/aurservd/internal/ent"
-    log "github.com/sirupsen/logrus"
+    "go.uber.org/zap"
     "math"
 )
 
@@ -113,7 +113,7 @@ func (s *updater) DoUpdate() (crr error) {
     var item *ent.Cabinet
     item, err = up.SetHealth(health).Save(s.ctx)
     if err != nil {
-        log.Errorf("%s更新写入失败: %v", s.cab.Serial, err)
+        zap.L().Error(s.cab.Serial+": 更新写入失败", zap.Error(err))
         return
     }
 

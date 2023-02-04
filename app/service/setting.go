@@ -14,7 +14,7 @@ import (
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
     jsoniter "github.com/json-iterator/go"
-    log "github.com/sirupsen/logrus"
+    "go.uber.org/zap"
     "strconv"
     "strings"
 )
@@ -76,7 +76,7 @@ func (s *settingService) Initialize() {
                 SetContent(string(b)).
                 Save(s.ctx)
             if err != nil {
-                log.Fatal(err)
+                zap.L().Fatal("设置初始化失败", zap.Error(err))
             }
         }
         s.CacheSettings(sm)
@@ -128,7 +128,6 @@ func (s *settingService) GetSetting(key string) (v any) {
 
     set, err := s.orm.Query().Where(setting.Key(key)).First(s.ctx)
     if err != nil {
-        log.Error(err)
         snag.Panic("未找到设置")
     }
 
@@ -137,9 +136,6 @@ func (s *settingService) GetSetting(key string) (v any) {
     }
 
     err = jsoniter.Unmarshal([]byte(set.Content), &d.Default)
-    if err != nil {
-        log.Error(err)
-    }
 
     return d.Default
 }
