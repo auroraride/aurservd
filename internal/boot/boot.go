@@ -43,7 +43,7 @@ func Bootstrap() {
     })
 
     // 配置elk+zap
-    log.Initialize(&log.Config{
+    log.New(&log.Config{
         FormatJson:  true,
         Stdout:      ar.Config.Debug,
         Application: ar.Config.Application,

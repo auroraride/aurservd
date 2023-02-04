@@ -461,11 +461,6 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq) (i
                 }
             }
 
-            // TODO 最多显示电池数量
-            if fa.Num >= 19 {
-                fa.Num = 19
-            }
-
             bms := c.Edges.Models
             if len(bms) < 1 {
                 continue
@@ -485,6 +480,10 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq) (i
 
     for _, m := range itemsMap {
         for _, fa := range m.FacilityMap {
+            // TODO 最多显示电池数量
+            if fa.Num >= 19 {
+                fa.Num = 19
+            }
             m.Facility = append(m.Facility, fa)
         }
         if len(m.Facility) > 0 {
