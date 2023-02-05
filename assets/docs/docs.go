@@ -15209,6 +15209,10 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "charge": {
+                    "description": "充电是否开启",
+                    "type": "boolean"
+                },
                 "city": {
                     "description": "城市",
                     "allOf": [
@@ -15217,9 +15221,20 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "disCharge": {
+                    "description": "放电是否开启",
+                    "type": "boolean"
+                },
                 "enable": {
                     "description": "是否启用",
                     "type": "boolean"
+                },
+                "faults": {
+                    "description": "故障列表, 0:总压低, 1:总压高, 2:单体低, 3:单体高, 6:放电过流, 7:充电过流, 8:SOC低, 11:充电高温, 12:充电低温, 13:放电高温, 14:放电低温, 15:短路, 16:MOS高温",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "id": {
                     "type": "integer"
@@ -15239,6 +15254,18 @@ const docTemplate = `{
                 "sn": {
                     "description": "编号",
                     "type": "string"
+                },
+                "soc": {
+                    "description": "电量, 单位1%",
+                    "type": "integer"
+                },
+                "status": {
+                    "description": "状态, 0:静置 1:充电 2:放电 3:异常(此时faults字段存在)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.BatteryStatus"
+                        }
+                    ]
                 }
             }
         },
@@ -15275,6 +15302,27 @@ const docTemplate = `{
                     "type": "boolean"
                 }
             }
+        },
+        "model.BatteryStatus": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "x-enum-comments": {
+                "BatteryStatusCharging": "充电中",
+                "BatteryStatusDisCharging": "放电中",
+                "BatteryStatusFault": "异常",
+                "BatteryStatusIdle": "充电中"
+            },
+            "x-enum-varnames": [
+                "BatteryStatusIdle",
+                "BatteryStatusCharging",
+                "BatteryStatusDisCharging",
+                "BatteryStatusFault"
+            ]
         },
         "model.BatteryUnbindRequest": {
             "type": "object",
