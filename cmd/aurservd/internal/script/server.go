@@ -10,6 +10,7 @@ import (
     "github.com/auroraride/aurservd/app/ec"
     pvd "github.com/auroraride/aurservd/app/provider"
     "github.com/auroraride/aurservd/app/router"
+    "github.com/auroraride/aurservd/app/rpc"
     "github.com/auroraride/aurservd/app/service"
     "github.com/auroraride/aurservd/app/sync"
     "github.com/auroraride/aurservd/app/task"
@@ -60,6 +61,12 @@ func serverCommand() *cobra.Command {
 
             // 启动sync
             go sync.Run()
+
+            // 创建rpc客户端
+            go rpc.CreateClients()
+
+            // 启动rpc服务端
+            go rpc.Run()
 
             // 启动服务器
             go router.Run()

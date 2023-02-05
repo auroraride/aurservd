@@ -8,9 +8,11 @@ package service
 import (
     "fmt"
     "github.com/auroraride/adapter"
+    "github.com/auroraride/adapter/defs/xcdef/proto"
     "github.com/auroraride/adapter/log"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/app/rpc"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/battery"
@@ -226,7 +228,7 @@ func (s *batteryService) Modify(req *model.BatteryModifyReq) {
 }
 
 func (s *batteryService) listFilter(req model.BatteryFilter) (q *ent.BatteryQuery, info ar.Map) {
-    q = s.orm.Query().WithRider().WithCity().WithCabinet()
+    q = s.orm.Query().WithRider().WithCity().WithCabinet().Order(ent.Desc(battery.FieldCreatedAt))
     info = make(ar.Map)
 
     var (
@@ -269,10 +271,12 @@ func (s *batteryService) listFilter(req model.BatteryFilter) (q *ent.BatteryQuer
     return
 }
 
-func (s *batteryService) List(req *model.BatteryListReq) *model.PaginationRes {
+func (s *batteryService) List(req *model.BatteryListReq) (res *model.PaginationRes) {
     q, _ := s.listFilter(req.BatteryFilter)
-    return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Battery) (res model.BatteryListRes) {
-        res = model.BatteryListRes{
+    var sn []string
+    res = model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Battery) (res *model.BatteryListRes) {
+        sn = append(sn, item.Sn)
+        res = &model.BatteryListRes{
             ID:     item.ID,
             Model:  item.Model,
             Enable: item.Enable,
@@ -307,6 +311,19 @@ func (s *batteryService) List(req *model.BatteryListReq) *model.PaginationRes {
         }
         return
     })
+
+    // 请求xcbms rpc
+    r, _ := rpc.XcbmsClient.GetBatterySample(s.ctx, &proto.BatteryBatchQueryRequest{Sn: sn})
+
+    for _, hb := range r.Items {
+        for _, data := range res.Items.([]*model.BatteryListRes) {
+            if data.SN == hb.Sn {
+                data.XcBmsBattery = model.NewXcBmsBattery(hb)
+            }
+        }
+    }
+
+    return
 }
 
 // RiderBusiness 骑手业务操作电池

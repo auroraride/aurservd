@@ -75,6 +75,12 @@ type config struct {
         }
     }
 
+    Rpc struct {
+        Xcbms struct {
+            Server string
+        }
+    }
+
     Task struct {
         Branch     bool // 网点合同到期提醒
         Enterprise bool // 团签账单

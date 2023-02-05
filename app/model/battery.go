@@ -30,6 +30,15 @@ type BatteryListReq struct {
     BatteryFilter
 }
 
+type BatteryStatus uint8
+
+const (
+    BatteryStatusIdle        BatteryStatus = iota // 充电中
+    BatteryStatusCharging                         // 充电中
+    BatteryStatusDisCharging                      // 放电中
+    BatteryStatusFault                            // 异常
+)
+
 type BatteryListRes struct {
     ID      uint64            `json:"id"`
     City    *City             `json:"city,omitempty"`    // 城市
@@ -38,6 +47,7 @@ type BatteryListRes struct {
     SN      string            `json:"sn"`                // 编号
     Rider   *Rider            `json:"rider,omitempty"`   // 骑手
     Cabinet *CabinetBasicInfo `json:"cabinet,omitempty"` // 电柜
+    *XcBmsBattery
 }
 
 type Battery struct {
@@ -70,4 +80,12 @@ type BatteryInCabinet struct {
 
 type BatteryUnbindRequest struct {
     RiderID uint64 `json:"riderId" validate:"required"` // 骑手ID
+}
+
+type BatteryBatchQueryRequest struct {
+    IDs []uint64 `json:"ids" validate:"required,min=1"`
+}
+
+type BatteryQueryRequest struct {
+    ID uint64 `json:"id" validate:"required"`
 }
