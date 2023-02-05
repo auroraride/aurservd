@@ -315,6 +315,10 @@ func (s *batteryService) List(req *model.BatteryListReq) (res *model.PaginationR
     // 请求xcbms rpc
     r, _ := rpc.XcbmsClient.GetBatterySample(s.ctx, &proto.BatteryBatchQueryRequest{Sn: sn})
 
+    if r == nil {
+        return
+    }
+
     for _, hb := range r.Items {
         for _, data := range res.Items.([]*model.BatteryListRes) {
             if data.SN == hb.Sn {
