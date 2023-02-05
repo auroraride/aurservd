@@ -53,7 +53,7 @@ func loadRideRoutes() {
         inapp.HeaderAgentToken:    {},
     }
     dump := app.NewDumpLoggerMiddleware().WithConfig(&app.DumpConfig{
-        Skipper: func(c echo.Context) bool {
+        ResponseBodySkipper: func(c echo.Context) bool {
             return dumpSkipPaths[c.Path()]
         },
         RequestHeader: true,
