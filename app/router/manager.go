@@ -61,7 +61,7 @@ func loadManagerRoutes() {
     g.POST("/battery/batch", mapi.Battery.BatchCreate)
     g.POST("/battery/bind", mapi.Battery.Bind)
     g.POST("/battery/unbind", mapi.Battery.Unbind)
-    g.GET("/battery/:sn", mapi.Battery.Detail)
+    g.GET("/battery/xc/:sn", mapi.Battery.Detail)
 
     // 电柜
     g.POST("/cabinet", mapi.Cabinet.Create)

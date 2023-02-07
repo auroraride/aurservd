@@ -331,7 +331,9 @@ func (s *batteryService) List(req *model.BatteryListReq) (res *model.PaginationR
 
     for _, data := range res.Items.([]*model.BatteryListRes) {
         if rb, ok := r.Items[data.SN]; ok {
-            data.XcBmsBattery = model.NewXcBmsBattery(rb.Heartbeats)
+            if len(rb.Heartbeats) > 0 {
+                data.XcBmsBattery = model.NewXcBmsBattery(rb.Heartbeats[0])
+            }
         }
     }
 

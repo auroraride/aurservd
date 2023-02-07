@@ -8848,32 +8848,6 @@ paths:
       summary: M4007 修改电池
       tags:
       - '[M]管理接口'
-  /manager/v1/battery/{sn}:
-    get:
-      consumes:
-      - application/json
-      operationId: ManagerBatteryDetail
-      parameters:
-      - description: 管理员校验token
-        in: header
-        name: X-Manager-Token
-        required: true
-        type: string
-      - description: 电池编号
-        in: path
-        name: sn
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.XcBatteryDetail'
-      summary: M4010 电池详情
-      tags:
-      - '[M]管理接口'
   /manager/v1/battery/batch:
     post:
       consumes:
@@ -9038,6 +9012,32 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M4009 解绑骑手
+      tags:
+      - '[M]管理接口'
+  /manager/v1/battery/xc/{sn}:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerBatteryDetail
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 电池编号
+        in: path
+        name: sn
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.XcBatteryDetail'
+      summary: M4010 电池详情
       tags:
       - '[M]管理接口'
   /manager/v1/branch:

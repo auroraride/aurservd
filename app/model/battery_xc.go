@@ -14,19 +14,14 @@ import (
 
 type XcBmsBattery struct {
     Status BatteryStatus `json:"status"` // 状态, 0:静置 1:充电 2:放电 3:异常(此时faults字段存在)
-    Soc    uint32        `json:"soc"`    // 电量, 单位1%
+    Soc    uint32        `json:"soc"`    // 剩余容量, 单位1%
 
     Charge    *bool         `json:"charge"`           // 充电是否开启
     DisCharge *bool         `json:"disCharge"`        // 放电是否开启
     Faults    *xcdef.Faults `json:"faults,omitempty"` // 故障列表, 0:总压低, 1:总压高, 2:单体低, 3:单体高, 6:放电过流, 7:充电过流, 8:SOC低, 11:充电高温, 12:充电低温, 13:放电高温, 14:放电低温, 15:短路, 16:MOS高温
 }
 
-func NewXcBmsBattery(hbs []*xcpb.Heartbeat) (item *XcBmsBattery) {
-    if len(hbs) == 0 {
-        return
-    }
-    hb := hbs[0]
-
+func NewXcBmsBattery(hb *xcpb.Heartbeat) (item *XcBmsBattery) {
     item = new(XcBmsBattery)
 
     item.Soc = hb.Soc
@@ -62,6 +57,7 @@ type XcBatteryDetailRequest struct {
 }
 
 type XcBatteryDetail struct {
+    *XcBmsBattery
     // 电池编号
     Sn string `json:"sn,omitempty"`
     // 入库时间
@@ -72,8 +68,6 @@ type XcBatteryDetail struct {
     Voltage float64 `json:"voltage,omitempty"`
     // 电流 (A, 充电为正, 放电为负)
     Current float64 `json:"current,omitempty"`
-    // 剩余容量 单位1%
-    Soc uint8 `json:"soc,omitempty"`
     // 健康度 单位1%
     Soh uint8 `json:"soh,omitempty"`
     // 是否在电柜
@@ -92,8 +86,6 @@ type XcBatteryDetail struct {
     MaxTemp uint16 `json:"maxTemp,omitempty"`
     // 最小温度 (单位1℃)
     MinTemp uint16 `json:"minTemp,omitempty"`
-    // 故障列表
-    Faults *xcdef.Faults `json:"faults,omitempty"`
     // MOS状态 (Bit0表示充电, Bit1表示放电, 此字段无法判定电池是否充放电状态)
     MosStatus *xcdef.MosStatus `json:"mosStatus,omitempty"`
     // 单体电压 (24个单体电压, 单位mV)
@@ -124,4 +116,6 @@ type XcBatteryDetail struct {
     TotalDisChargingTime uint32 `json:"totalDisChargingTime,omitempty"`
     // 总使用时长
     TotalUsingTime uint32 `json:"totalUsingTime,omitempty"`
+    // 当前位置
+    BelongsTo string `json:"belongsTo,omitempty"`
 }
