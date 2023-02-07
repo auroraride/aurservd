@@ -67,11 +67,9 @@ type BatteryEdges struct {
 	Subscribe *Subscribe `json:"subscribe,omitempty"`
 	// 流转记录
 	Flows []*BatteryFlow `json:"flows,omitempty"`
-	// 故障列表
-	Faults []*BatteryFault `json:"faults,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [6]bool
+	loadedTypes [5]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -133,15 +131,6 @@ func (e BatteryEdges) FlowsOrErr() ([]*BatteryFlow, error) {
 		return e.Flows, nil
 	}
 	return nil, &NotLoadedError{edge: "flows"}
-}
-
-// FaultsOrErr returns the Faults value or an error if the edge
-// was not loaded in eager-loading.
-func (e BatteryEdges) FaultsOrErr() ([]*BatteryFault, error) {
-	if e.loadedTypes[5] {
-		return e.Faults, nil
-	}
-	return nil, &NotLoadedError{edge: "faults"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -302,11 +291,6 @@ func (b *Battery) QuerySubscribe() *SubscribeQuery {
 // QueryFlows queries the "flows" edge of the Battery entity.
 func (b *Battery) QueryFlows() *BatteryFlowQuery {
 	return NewBatteryClient(b.config).QueryFlows(b)
-}
-
-// QueryFaults queries the "faults" edge of the Battery entity.
-func (b *Battery) QueryFaults() *BatteryFaultQuery {
-	return NewBatteryClient(b.config).QueryFaults(b)
 }
 
 // Update returns a builder for updating this Battery.

@@ -86,13 +86,6 @@ func (c *BatteryClient) ModifyOne(old *Battery, data any) *BatteryUpdateOne {
 	return EntitySetAttributes[BatteryUpdateOne, Battery](up, old, data)
 }
 
-// ModifyOne returns an update with pointer struct builder for BatteryFault.
-func (c *BatteryFaultClient) ModifyOne(old *BatteryFault, data any) *BatteryFaultUpdateOne {
-	mutation := newBatteryFaultMutation(c.config, OpUpdateOne, withBatteryFault(old))
-	up := &BatteryFaultUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-	return EntitySetAttributes[BatteryFaultUpdateOne, BatteryFault](up, old, data)
-}
-
 // ModifyOne returns an update with pointer struct builder for BatteryFlow.
 func (c *BatteryFlowClient) ModifyOne(old *BatteryFlow, data any) *BatteryFlowUpdateOne {
 	mutation := newBatteryFlowMutation(c.config, OpUpdateOne, withBatteryFlow(old))

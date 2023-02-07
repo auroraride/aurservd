@@ -36,7 +36,6 @@ type (
 		Assistance           []ent.Hook
 		Attendance           []ent.Hook
 		Battery              []ent.Hook
-		BatteryFault         []ent.Hook
 		BatteryFlow          []ent.Hook
 		BatteryModel         []ent.Hook
 		Branch               []ent.Hook
@@ -90,7 +89,6 @@ type (
 		Assistance           []ent.Interceptor
 		Attendance           []ent.Interceptor
 		Battery              []ent.Interceptor
-		BatteryFault         []ent.Interceptor
 		BatteryFlow          []ent.Interceptor
 		BatteryModel         []ent.Interceptor
 		Branch               []ent.Interceptor

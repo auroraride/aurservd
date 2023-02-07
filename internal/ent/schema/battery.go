@@ -79,10 +79,6 @@ func (Battery) Edges() []ent.Edge {
         edge.To("flows", BatteryFlow.Type).Annotations(
             entsql.WithComments(true),
         ).Comment("流转记录"),
-
-        edge.To("faults", BatteryFault.Type).Annotations(
-            entsql.WithComments(true),
-        ).Comment("故障列表"),
     }
 }
 

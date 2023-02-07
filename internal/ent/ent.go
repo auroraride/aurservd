@@ -16,7 +16,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/attendance"
 	"github.com/auroraride/aurservd/internal/ent/battery"
-	"github.com/auroraride/aurservd/internal/ent/batteryfault"
 	"github.com/auroraride/aurservd/internal/ent/batteryflow"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/branch"
@@ -95,7 +94,6 @@ func columnChecker(table string) func(string) error {
 		assistance.Table:           assistance.ValidColumn,
 		attendance.Table:           attendance.ValidColumn,
 		battery.Table:              battery.ValidColumn,
-		batteryfault.Table:         batteryfault.ValidColumn,
 		batteryflow.Table:          batteryflow.ValidColumn,
 		batterymodel.Table:         batterymodel.ValidColumn,
 		branch.Table:               branch.ValidColumn,

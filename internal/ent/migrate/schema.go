@@ -462,69 +462,6 @@ var (
 			},
 		},
 	}
-	// BatteryFaultColumns holds the columns for the "battery_fault" table.
-	BatteryFaultColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUint64, Increment: true},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "sn", Type: field.TypeString, Comment: "电池编号"},
-		{Name: "fault", Type: field.TypeEnum, Comment: "故障", Enums: []string{"TVL", "TVH", "MVL", "MVH", "DOC", "COC", "SCL", "CTH", "CTL", "DTH", "DTL", "SCT", "MTH"}},
-		{Name: "begin_at", Type: field.TypeTime, Comment: "开始时间"},
-		{Name: "end_at", Type: field.TypeTime, Nullable: true, Comment: "结束时间"},
-		{Name: "battery_id", Type: field.TypeUint64, Comment: "电池ID"},
-	}
-	// BatteryFaultTable holds the schema information for the "battery_fault" table.
-	BatteryFaultTable = &schema.Table{
-		Name:       "battery_fault",
-		Columns:    BatteryFaultColumns,
-		PrimaryKey: []*schema.Column{BatteryFaultColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "battery_fault_battery_faults",
-				Columns:    []*schema.Column{BatteryFaultColumns[7]},
-				RefColumns: []*schema.Column{BatteryColumns[0]},
-				OnDelete:   schema.NoAction,
-			},
-		},
-		Indexes: []*schema.Index{
-			{
-				Name:    "batteryfault_created_at",
-				Unique:  false,
-				Columns: []*schema.Column{BatteryFaultColumns[1]},
-			},
-			{
-				Name:    "batteryfault_begin_at",
-				Unique:  false,
-				Columns: []*schema.Column{BatteryFaultColumns[5]},
-			},
-			{
-				Name:    "batteryfault_end_at",
-				Unique:  false,
-				Columns: []*schema.Column{BatteryFaultColumns[6]},
-			},
-			{
-				Name:    "batteryfault_battery_id",
-				Unique:  false,
-				Columns: []*schema.Column{BatteryFaultColumns[7]},
-			},
-			{
-				Name:    "batteryfault_sn",
-				Unique:  false,
-				Columns: []*schema.Column{BatteryFaultColumns[3]},
-				Annotation: &entsql.IndexAnnotation{
-					OpClass: "gin_trgm_ops",
-					Types: map[string]string{
-						"postgres": "GIN",
-					},
-				},
-			},
-			{
-				Name:    "batteryfault_fault",
-				Unique:  false,
-				Columns: []*schema.Column{BatteryFaultColumns[4]},
-			},
-		},
-	}
 	// BatteryFlowColumns holds the columns for the "battery_flow" table.
 	BatteryFlowColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -4330,7 +4267,6 @@ var (
 		AssistanceTable,
 		AttendanceTable,
 		BatteryTable,
-		BatteryFaultTable,
 		BatteryFlowTable,
 		BatteryModelTable,
 		BranchTable,
@@ -4417,10 +4353,6 @@ func init() {
 	BatteryTable.ForeignKeys[3].RefTable = SubscribeTable
 	BatteryTable.Annotation = &entsql.Annotation{
 		Table: "battery",
-	}
-	BatteryFaultTable.ForeignKeys[0].RefTable = BatteryTable
-	BatteryFaultTable.Annotation = &entsql.Annotation{
-		Table: "battery_fault",
 	}
 	BatteryFlowTable.ForeignKeys[0].RefTable = BatteryTable
 	BatteryFlowTable.ForeignKeys[1].RefTable = SubscribeTable
