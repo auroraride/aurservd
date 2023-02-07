@@ -758,6 +758,60 @@ func HasSubscribeWith(preds ...predicate.Subscribe) predicate.Battery {
 	})
 }
 
+// HasFlows applies the HasEdge predicate on the "flows" edge.
+func HasFlows() predicate.Battery {
+	return predicate.Battery(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, FlowsTable, FlowsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasFlowsWith applies the HasEdge predicate on the "flows" edge with a given conditions (other predicates).
+func HasFlowsWith(preds ...predicate.BatteryFlow) predicate.Battery {
+	return predicate.Battery(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(FlowsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, FlowsTable, FlowsColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasFaults applies the HasEdge predicate on the "faults" edge.
+func HasFaults() predicate.Battery {
+	return predicate.Battery(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, FaultsTable, FaultsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasFaultsWith applies the HasEdge predicate on the "faults" edge with a given conditions (other predicates).
+func HasFaultsWith(preds ...predicate.BatteryFault) predicate.Battery {
+	return predicate.Battery(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(FaultsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, FaultsTable, FaultsColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Battery) predicate.Battery {
 	return predicate.Battery(func(s *sql.Selector) {

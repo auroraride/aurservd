@@ -1,5 +1,12 @@
 basePath: /
 definitions:
+  adapter.Geometry:
+    properties:
+      lat:
+        type: number
+      lng:
+        type: number
+    type: object
   controller.CrmCustomerWithID:
     properties:
       address:
@@ -6807,6 +6814,112 @@ definitions:
         description: 积分数量
         type: integer
     type: object
+  model.XcBatteryDetail:
+    properties:
+      capacity:
+        description: 剩余容量 (单位AH)
+        type: number
+      chargingTime:
+        description: 本次充电时长
+        type: integer
+      createdAt:
+        description: 入库时间
+        type: string
+      current:
+        description: 电流 (A, 充电为正, 放电为负)
+        type: number
+      cycles:
+        description: 电池包循环次数 (80%累加一次)
+        type: integer
+      disChargingTime:
+        description: 本次放电时长
+        type: integer
+      envTemp:
+        description: 环境温度 (1个环境温度传感器, 单位1℃)
+        type: integer
+      faults:
+        description: 故障列表
+        items:
+          type: integer
+        type: array
+      geom:
+        allOf:
+        - $ref: '#/definitions/adapter.Geometry'
+        description: 坐标
+      gps:
+        allOf:
+        - $ref: '#/definitions/xcdef.GPSStatus'
+        description: GPS定位状态 (0=未定位 1=GPS定位 4=LBS定位)
+      inCabinet:
+        description: 是否在电柜
+        type: boolean
+      maxTemp:
+        description: 最大温度 (单位1℃)
+        type: integer
+      minTemp:
+        description: 最小温度 (单位1℃)
+        type: integer
+      monMaxVoltage:
+        description: 最大单体电压 (mV)
+        type: integer
+      monMaxVoltagePos:
+        description: 最大单体电压位置 (第x串)
+        type: integer
+      monMinVoltage:
+        description: 最小单体电压 (mV)
+        type: integer
+      monMinVoltagePos:
+        description: 最小单体电压位置 (第x串)
+        type: integer
+      monVoltage:
+        description: 单体电压 (24个单体电压, 单位mV)
+        items:
+          type: integer
+        type: array
+      mosStatus:
+        description: MOS状态 (Bit0表示充电, Bit1表示放电, 此字段无法判定电池是否充放电状态)
+        items:
+          type: integer
+        type: array
+      mosTemp:
+        description: MOS温度 (1个MOS温度传感器, 单位1℃)
+        type: integer
+      sn:
+        description: 电池编号
+        type: string
+      soc:
+        description: 剩余容量 单位1%
+        type: integer
+      soh:
+        description: 健康度 单位1%
+        type: integer
+      strength:
+        description: 4G通讯信号强度 (0-100 百分比形式)
+        type: integer
+      temp:
+        description: 电池温度 (4个电池温度传感器, 单位1℃)
+        items:
+          type: integer
+        type: array
+      totalChargingTime:
+        description: 总充电时长
+        type: integer
+      totalDisChargingTime:
+        description: 总放电时长
+        type: integer
+      totalUsingTime:
+        description: 总使用时长
+        type: integer
+      updatedAt:
+        description: 最后通讯时间
+        type: string
+      usingTime:
+        description: 本次使用时长
+        type: integer
+      voltage:
+        description: 电池总压 (V)
+        type: number
+    type: object
   permission.Group:
     properties:
       desc:
@@ -6839,6 +6952,16 @@ definitions:
         description: 接口编号
         type: string
     type: object
+  xcdef.GPSStatus:
+    enum:
+    - 0
+    - 1
+    - 4
+    type: integer
+    x-enum-varnames:
+    - GPSStatusNone
+    - GPSStatusRaw
+    - GPSStatusLBS
 info:
   contact: {}
   description: |-
@@ -8723,6 +8846,32 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M4007 修改电池
+      tags:
+      - '[M]管理接口'
+  /manager/v1/battery/{sn}:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerBatteryDetail
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 电池编号
+        in: path
+        name: sn
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.XcBatteryDetail'
+      summary: M4010 电池详情
       tags:
       - '[M]管理接口'
   /manager/v1/battery/batch:

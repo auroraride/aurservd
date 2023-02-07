@@ -13,6 +13,8 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/battery"
+	"github.com/auroraride/aurservd/internal/ent/batteryfault"
+	"github.com/auroraride/aurservd/internal/ent/batteryflow"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -245,6 +247,36 @@ func (bu *BatteryUpdate) SetSubscribe(s *Subscribe) *BatteryUpdate {
 	return bu.SetSubscribeID(s.ID)
 }
 
+// AddFlowIDs adds the "flows" edge to the BatteryFlow entity by IDs.
+func (bu *BatteryUpdate) AddFlowIDs(ids ...uint64) *BatteryUpdate {
+	bu.mutation.AddFlowIDs(ids...)
+	return bu
+}
+
+// AddFlows adds the "flows" edges to the BatteryFlow entity.
+func (bu *BatteryUpdate) AddFlows(b ...*BatteryFlow) *BatteryUpdate {
+	ids := make([]uint64, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return bu.AddFlowIDs(ids...)
+}
+
+// AddFaultIDs adds the "faults" edge to the BatteryFault entity by IDs.
+func (bu *BatteryUpdate) AddFaultIDs(ids ...uint64) *BatteryUpdate {
+	bu.mutation.AddFaultIDs(ids...)
+	return bu
+}
+
+// AddFaults adds the "faults" edges to the BatteryFault entity.
+func (bu *BatteryUpdate) AddFaults(b ...*BatteryFault) *BatteryUpdate {
+	ids := make([]uint64, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return bu.AddFaultIDs(ids...)
+}
+
 // Mutation returns the BatteryMutation object of the builder.
 func (bu *BatteryUpdate) Mutation() *BatteryMutation {
 	return bu.mutation
@@ -272,6 +304,48 @@ func (bu *BatteryUpdate) ClearCabinet() *BatteryUpdate {
 func (bu *BatteryUpdate) ClearSubscribe() *BatteryUpdate {
 	bu.mutation.ClearSubscribe()
 	return bu
+}
+
+// ClearFlows clears all "flows" edges to the BatteryFlow entity.
+func (bu *BatteryUpdate) ClearFlows() *BatteryUpdate {
+	bu.mutation.ClearFlows()
+	return bu
+}
+
+// RemoveFlowIDs removes the "flows" edge to BatteryFlow entities by IDs.
+func (bu *BatteryUpdate) RemoveFlowIDs(ids ...uint64) *BatteryUpdate {
+	bu.mutation.RemoveFlowIDs(ids...)
+	return bu
+}
+
+// RemoveFlows removes "flows" edges to BatteryFlow entities.
+func (bu *BatteryUpdate) RemoveFlows(b ...*BatteryFlow) *BatteryUpdate {
+	ids := make([]uint64, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return bu.RemoveFlowIDs(ids...)
+}
+
+// ClearFaults clears all "faults" edges to the BatteryFault entity.
+func (bu *BatteryUpdate) ClearFaults() *BatteryUpdate {
+	bu.mutation.ClearFaults()
+	return bu
+}
+
+// RemoveFaultIDs removes the "faults" edge to BatteryFault entities by IDs.
+func (bu *BatteryUpdate) RemoveFaultIDs(ids ...uint64) *BatteryUpdate {
+	bu.mutation.RemoveFaultIDs(ids...)
+	return bu
+}
+
+// RemoveFaults removes "faults" edges to BatteryFault entities.
+func (bu *BatteryUpdate) RemoveFaults(b ...*BatteryFault) *BatteryUpdate {
+	ids := make([]uint64, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return bu.RemoveFaultIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -522,6 +596,114 @@ func (bu *BatteryUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if bu.mutation.FlowsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   battery.FlowsTable,
+			Columns: []string{battery.FlowsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: batteryflow.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.RemovedFlowsIDs(); len(nodes) > 0 && !bu.mutation.FlowsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   battery.FlowsTable,
+			Columns: []string{battery.FlowsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: batteryflow.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.FlowsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   battery.FlowsTable,
+			Columns: []string{battery.FlowsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: batteryflow.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if bu.mutation.FaultsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   battery.FaultsTable,
+			Columns: []string{battery.FaultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: batteryfault.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.RemovedFaultsIDs(); len(nodes) > 0 && !bu.mutation.FaultsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   battery.FaultsTable,
+			Columns: []string{battery.FaultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: batteryfault.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.FaultsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   battery.FaultsTable,
+			Columns: []string{battery.FaultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: batteryfault.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(bu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, bu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -755,6 +937,36 @@ func (buo *BatteryUpdateOne) SetSubscribe(s *Subscribe) *BatteryUpdateOne {
 	return buo.SetSubscribeID(s.ID)
 }
 
+// AddFlowIDs adds the "flows" edge to the BatteryFlow entity by IDs.
+func (buo *BatteryUpdateOne) AddFlowIDs(ids ...uint64) *BatteryUpdateOne {
+	buo.mutation.AddFlowIDs(ids...)
+	return buo
+}
+
+// AddFlows adds the "flows" edges to the BatteryFlow entity.
+func (buo *BatteryUpdateOne) AddFlows(b ...*BatteryFlow) *BatteryUpdateOne {
+	ids := make([]uint64, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return buo.AddFlowIDs(ids...)
+}
+
+// AddFaultIDs adds the "faults" edge to the BatteryFault entity by IDs.
+func (buo *BatteryUpdateOne) AddFaultIDs(ids ...uint64) *BatteryUpdateOne {
+	buo.mutation.AddFaultIDs(ids...)
+	return buo
+}
+
+// AddFaults adds the "faults" edges to the BatteryFault entity.
+func (buo *BatteryUpdateOne) AddFaults(b ...*BatteryFault) *BatteryUpdateOne {
+	ids := make([]uint64, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return buo.AddFaultIDs(ids...)
+}
+
 // Mutation returns the BatteryMutation object of the builder.
 func (buo *BatteryUpdateOne) Mutation() *BatteryMutation {
 	return buo.mutation
@@ -782,6 +994,48 @@ func (buo *BatteryUpdateOne) ClearCabinet() *BatteryUpdateOne {
 func (buo *BatteryUpdateOne) ClearSubscribe() *BatteryUpdateOne {
 	buo.mutation.ClearSubscribe()
 	return buo
+}
+
+// ClearFlows clears all "flows" edges to the BatteryFlow entity.
+func (buo *BatteryUpdateOne) ClearFlows() *BatteryUpdateOne {
+	buo.mutation.ClearFlows()
+	return buo
+}
+
+// RemoveFlowIDs removes the "flows" edge to BatteryFlow entities by IDs.
+func (buo *BatteryUpdateOne) RemoveFlowIDs(ids ...uint64) *BatteryUpdateOne {
+	buo.mutation.RemoveFlowIDs(ids...)
+	return buo
+}
+
+// RemoveFlows removes "flows" edges to BatteryFlow entities.
+func (buo *BatteryUpdateOne) RemoveFlows(b ...*BatteryFlow) *BatteryUpdateOne {
+	ids := make([]uint64, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return buo.RemoveFlowIDs(ids...)
+}
+
+// ClearFaults clears all "faults" edges to the BatteryFault entity.
+func (buo *BatteryUpdateOne) ClearFaults() *BatteryUpdateOne {
+	buo.mutation.ClearFaults()
+	return buo
+}
+
+// RemoveFaultIDs removes the "faults" edge to BatteryFault entities by IDs.
+func (buo *BatteryUpdateOne) RemoveFaultIDs(ids ...uint64) *BatteryUpdateOne {
+	buo.mutation.RemoveFaultIDs(ids...)
+	return buo
+}
+
+// RemoveFaults removes "faults" edges to BatteryFault entities.
+func (buo *BatteryUpdateOne) RemoveFaults(b ...*BatteryFault) *BatteryUpdateOne {
+	ids := make([]uint64, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return buo.RemoveFaultIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1048,6 +1302,114 @@ func (buo *BatteryUpdateOne) sqlSave(ctx context.Context) (_node *Battery, err e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: subscribe.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if buo.mutation.FlowsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   battery.FlowsTable,
+			Columns: []string{battery.FlowsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: batteryflow.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.RemovedFlowsIDs(); len(nodes) > 0 && !buo.mutation.FlowsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   battery.FlowsTable,
+			Columns: []string{battery.FlowsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: batteryflow.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.FlowsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   battery.FlowsTable,
+			Columns: []string{battery.FlowsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: batteryflow.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if buo.mutation.FaultsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   battery.FaultsTable,
+			Columns: []string{battery.FaultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: batteryfault.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.RemovedFaultsIDs(); len(nodes) > 0 && !buo.mutation.FaultsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   battery.FaultsTable,
+			Columns: []string{battery.FaultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: batteryfault.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.FaultsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   battery.FaultsTable,
+			Columns: []string{battery.FaultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: batteryfault.FieldID,
 				},
 			},
 		}

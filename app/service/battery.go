@@ -8,8 +8,8 @@ package service
 import (
     "fmt"
     "github.com/auroraride/adapter"
-    "github.com/auroraride/adapter/defs/xcdef/proto"
     "github.com/auroraride/adapter/log"
+    "github.com/auroraride/adapter/rpc/pb"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/rpc"
@@ -20,6 +20,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
+    "github.com/jackc/pgconn"
     "github.com/labstack/echo/v4"
     "go.uber.org/zap"
     "strconv"
@@ -110,7 +111,7 @@ func (s *batteryService) SyncPutout(cabinetID uint64, ordinal int) {
 }
 
 // SyncPutin 同步消息 - 放入电柜中
-func (s *batteryService) SyncPutin(sn string, cabinetID uint64, ordinal int) (bat *ent.Battery, err error) {
+func (s *batteryService) SyncPutin(sn, serial string, cabinetID uint64, ordinal int) (bat *ent.Battery, err error) {
     bat, err = s.LoadOrCreate(sn, &model.BatteryInCabinet{
         CabinetID: cabinetID,
         Ordinal:   ordinal,
@@ -124,6 +125,15 @@ func (s *batteryService) SyncPutin(sn string, cabinetID uint64, ordinal int) (ba
 
     // 更新电池电柜信息
     bat, err = bat.Update().SetCabinetID(cabinetID).SetOrdinal(ordinal).ClearRiderID().ClearSubscribeID().Save(s.ctx)
+
+    // 更新电池流转
+    go NewBatteryFlow().Create(model.BatteryFlowCreateReq{
+        SN:        bat.Sn,
+        BatteryID: bat.ID,
+        CabinetID: silk.Pointer(cabinetID),
+        Ordinal:   silk.Pointer(ordinal),
+        Serial:    silk.Pointer(serial),
+    })
     return
 }
 
@@ -313,17 +323,15 @@ func (s *batteryService) List(req *model.BatteryListReq) (res *model.PaginationR
     })
 
     // 请求xcbms rpc
-    r, _ := rpc.XcbmsClient.GetBatterySample(s.ctx, &proto.BatteryBatchQueryRequest{Sn: sn})
+    r, _ := rpc.XcBmsClient.Batch(s.ctx, &pb.BatteryBatchRequest{Sn: sn})
 
     if r == nil {
         return
     }
 
-    for _, hb := range r.Items {
-        for _, data := range res.Items.([]*model.BatteryListRes) {
-            if data.SN == hb.Sn {
-                data.XcBmsBattery = model.NewXcBmsBattery(hb)
-            }
+    for _, data := range res.Items.([]*model.BatteryListRes) {
+        if rb, ok := r.Items[data.SN]; ok {
+            data.XcBmsBattery = model.NewXcBmsBattery(rb.Heartbeats)
         }
     }
 
@@ -366,20 +374,6 @@ func (s *batteryService) RiderDetail(riderID uint64) (res model.BatteryDetail) {
     return
 }
 
-func (s *batteryService) Bind(bat *ent.Battery, sub *ent.Subscribe, rd *ent.Rider) {
-    err := bat.Update().Allocate(sub)
-    if err != nil {
-        snag.Panic(err)
-    }
-
-    go logging.NewOperateLog().
-        SetOperate(model.OperateBindBattery).
-        SetRef(rd).
-        SetDiff("", "新电池: "+bat.Sn).
-        SetModifier(s.modifier).
-        Send()
-}
-
 // BindRequest 绑定骑手
 func (s *batteryService) BindRequest(req *model.BatteryBind) {
     // 查找订阅
@@ -399,8 +393,22 @@ func (s *batteryService) BindRequest(req *model.BatteryBind) {
     s.Bind(bat, sub, sub.Edges.Rider)
 }
 
+func (s *batteryService) Bind(bat *ent.Battery, sub *ent.Subscribe, rd *ent.Rider) {
+    err := s.Allocate(bat.Update(), bat, sub, false)
+    if err != nil {
+        snag.Panic(err)
+    }
+
+    go logging.NewOperateLog().
+        SetOperate(model.OperateBindBattery).
+        SetRef(rd).
+        SetDiff("", "新电池: "+bat.Sn).
+        SetModifier(s.modifier).
+        Send()
+}
+
 func (s *batteryService) Unbind(bat *ent.Battery, rd *ent.Rider) {
-    err := bat.Update().Unallocate()
+    err := s.Unallocate(bat)
     if err != nil {
         snag.Panic(err)
     }
@@ -423,4 +431,38 @@ func (s *batteryService) UnbindRequest(req *model.BatteryUnbindRequest) {
     }
 
     s.Unbind(bat, sub.Edges.Rider)
+}
+
+// Allocate 将电池分配给骑手
+func (s *batteryService) Allocate(buo *ent.BatteryUpdateOne, bat *ent.Battery, sub *ent.Subscribe, ignoreError bool) (err error) {
+    err = buo.SetSubscribeID(sub.ID).SetRiderID(sub.RiderID).Exec(s.ctx)
+    if err != nil && ent.IsConstraintError(err) {
+        switch v := err.(*ent.ConstraintError).Unwrap().(type) {
+        case *pgconn.PgError:
+            if v.ConstraintName == "battery_subscribe_id_key" || v.ConstraintName == "battery_rider_id_key" {
+                // 删除原有信息
+                err = s.orm.Update().Where(battery.SubscribeID(sub.ID)).ClearRiderID().ClearSubscribeID().Exec(s.ctx)
+                if err != nil {
+                    return
+                }
+                err = buo.SetSubscribeID(sub.ID).SetRiderID(sub.RiderID).Exec(s.ctx)
+            }
+        }
+    }
+
+    // 更新流转
+    if ignoreError || err == nil {
+        go NewBatteryFlow().Create(model.BatteryFlowCreateReq{
+            SN:          bat.Sn,
+            BatteryID:   bat.ID,
+            RiderID:     silk.Pointer(sub.RiderID),
+            SubscribeID: silk.Pointer(sub.ID),
+        })
+    }
+    return
+}
+
+// Unallocate 清除骑手信息
+func (s *batteryService) Unallocate(bat *ent.Battery) (err error) {
+    return bat.Update().ClearSubscribeID().ClearRiderID().Exec(s.ctx)
 }

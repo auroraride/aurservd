@@ -15,6 +15,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/attendance"
 	"github.com/auroraride/aurservd/internal/ent/battery"
+	"github.com/auroraride/aurservd/internal/ent/batteryfault"
+	"github.com/auroraride/aurservd/internal/ent/batteryflow"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
@@ -81,6 +83,10 @@ type Client struct {
 	Attendance *AttendanceClient
 	// Battery is the client for interacting with the Battery builders.
 	Battery *BatteryClient
+	// BatteryFault is the client for interacting with the BatteryFault builders.
+	BatteryFault *BatteryFaultClient
+	// BatteryFlow is the client for interacting with the BatteryFlow builders.
+	BatteryFlow *BatteryFlowClient
 	// BatteryModel is the client for interacting with the BatteryModel builders.
 	BatteryModel *BatteryModelClient
 	// Branch is the client for interacting with the Branch builders.
@@ -189,6 +195,8 @@ func (c *Client) init() {
 	c.Assistance = NewAssistanceClient(c.config)
 	c.Attendance = NewAttendanceClient(c.config)
 	c.Battery = NewBatteryClient(c.config)
+	c.BatteryFault = NewBatteryFaultClient(c.config)
+	c.BatteryFlow = NewBatteryFlowClient(c.config)
 	c.BatteryModel = NewBatteryModelClient(c.config)
 	c.Branch = NewBranchClient(c.config)
 	c.BranchContract = NewBranchContractClient(c.config)
@@ -272,6 +280,8 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Assistance:           NewAssistanceClient(cfg),
 		Attendance:           NewAttendanceClient(cfg),
 		Battery:              NewBatteryClient(cfg),
+		BatteryFault:         NewBatteryFaultClient(cfg),
+		BatteryFlow:          NewBatteryFlowClient(cfg),
 		BatteryModel:         NewBatteryModelClient(cfg),
 		Branch:               NewBranchClient(cfg),
 		BranchContract:       NewBranchContractClient(cfg),
@@ -341,6 +351,8 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Assistance:           NewAssistanceClient(cfg),
 		Attendance:           NewAttendanceClient(cfg),
 		Battery:              NewBatteryClient(cfg),
+		BatteryFault:         NewBatteryFaultClient(cfg),
+		BatteryFlow:          NewBatteryFlowClient(cfg),
 		BatteryModel:         NewBatteryModelClient(cfg),
 		Branch:               NewBranchClient(cfg),
 		BranchContract:       NewBranchContractClient(cfg),
@@ -419,6 +431,8 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Assistance.Use(hooks...)
 	c.Attendance.Use(hooks...)
 	c.Battery.Use(hooks...)
+	c.BatteryFault.Use(hooks...)
+	c.BatteryFlow.Use(hooks...)
 	c.BatteryModel.Use(hooks...)
 	c.Branch.Use(hooks...)
 	c.BranchContract.Use(hooks...)
@@ -474,6 +488,8 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 	c.Assistance.Intercept(interceptors...)
 	c.Attendance.Intercept(interceptors...)
 	c.Battery.Intercept(interceptors...)
+	c.BatteryFault.Intercept(interceptors...)
+	c.BatteryFlow.Intercept(interceptors...)
 	c.BatteryModel.Intercept(interceptors...)
 	c.Branch.Intercept(interceptors...)
 	c.BranchContract.Intercept(interceptors...)
@@ -534,6 +550,10 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Attendance.mutate(ctx, m)
 	case *BatteryMutation:
 		return c.Battery.mutate(ctx, m)
+	case *BatteryFaultMutation:
+		return c.BatteryFault.mutate(ctx, m)
+	case *BatteryFlowMutation:
+		return c.BatteryFlow.mutate(ctx, m)
 	case *BatteryModelMutation:
 		return c.BatteryModel.mutate(ctx, m)
 	case *BranchMutation:
@@ -1534,6 +1554,38 @@ func (c *BatteryClient) QuerySubscribe(b *Battery) *SubscribeQuery {
 	return query
 }
 
+// QueryFlows queries the flows edge of a Battery.
+func (c *BatteryClient) QueryFlows(b *Battery) *BatteryFlowQuery {
+	query := (&BatteryFlowClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(battery.Table, battery.FieldID, id),
+			sqlgraph.To(batteryflow.Table, batteryflow.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, battery.FlowsTable, battery.FlowsColumn),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryFaults queries the faults edge of a Battery.
+func (c *BatteryClient) QueryFaults(b *Battery) *BatteryFaultQuery {
+	query := (&BatteryFaultClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(battery.Table, battery.FieldID, id),
+			sqlgraph.To(batteryfault.Table, batteryfault.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, battery.FaultsTable, battery.FaultsColumn),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *BatteryClient) Hooks() []Hook {
 	hooks := c.hooks.Battery
@@ -1557,6 +1609,322 @@ func (c *BatteryClient) mutate(ctx context.Context, m *BatteryMutation) (Value, 
 		return (&BatteryDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Battery mutation op: %q", m.Op())
+	}
+}
+
+// BatteryFaultClient is a client for the BatteryFault schema.
+type BatteryFaultClient struct {
+	config
+}
+
+// NewBatteryFaultClient returns a client for the BatteryFault from the given config.
+func NewBatteryFaultClient(c config) *BatteryFaultClient {
+	return &BatteryFaultClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `batteryfault.Hooks(f(g(h())))`.
+func (c *BatteryFaultClient) Use(hooks ...Hook) {
+	c.hooks.BatteryFault = append(c.hooks.BatteryFault, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `batteryfault.Intercept(f(g(h())))`.
+func (c *BatteryFaultClient) Intercept(interceptors ...Interceptor) {
+	c.inters.BatteryFault = append(c.inters.BatteryFault, interceptors...)
+}
+
+// Create returns a builder for creating a BatteryFault entity.
+func (c *BatteryFaultClient) Create() *BatteryFaultCreate {
+	mutation := newBatteryFaultMutation(c.config, OpCreate)
+	return &BatteryFaultCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of BatteryFault entities.
+func (c *BatteryFaultClient) CreateBulk(builders ...*BatteryFaultCreate) *BatteryFaultCreateBulk {
+	return &BatteryFaultCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for BatteryFault.
+func (c *BatteryFaultClient) Update() *BatteryFaultUpdate {
+	mutation := newBatteryFaultMutation(c.config, OpUpdate)
+	return &BatteryFaultUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *BatteryFaultClient) UpdateOne(bf *BatteryFault) *BatteryFaultUpdateOne {
+	mutation := newBatteryFaultMutation(c.config, OpUpdateOne, withBatteryFault(bf))
+	return &BatteryFaultUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *BatteryFaultClient) UpdateOneID(id uint64) *BatteryFaultUpdateOne {
+	mutation := newBatteryFaultMutation(c.config, OpUpdateOne, withBatteryFaultID(id))
+	return &BatteryFaultUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for BatteryFault.
+func (c *BatteryFaultClient) Delete() *BatteryFaultDelete {
+	mutation := newBatteryFaultMutation(c.config, OpDelete)
+	return &BatteryFaultDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *BatteryFaultClient) DeleteOne(bf *BatteryFault) *BatteryFaultDeleteOne {
+	return c.DeleteOneID(bf.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *BatteryFaultClient) DeleteOneID(id uint64) *BatteryFaultDeleteOne {
+	builder := c.Delete().Where(batteryfault.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &BatteryFaultDeleteOne{builder}
+}
+
+// Query returns a query builder for BatteryFault.
+func (c *BatteryFaultClient) Query() *BatteryFaultQuery {
+	return &BatteryFaultQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeBatteryFault},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a BatteryFault entity by its id.
+func (c *BatteryFaultClient) Get(ctx context.Context, id uint64) (*BatteryFault, error) {
+	return c.Query().Where(batteryfault.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *BatteryFaultClient) GetX(ctx context.Context, id uint64) *BatteryFault {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryBattery queries the battery edge of a BatteryFault.
+func (c *BatteryFaultClient) QueryBattery(bf *BatteryFault) *BatteryQuery {
+	query := (&BatteryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := bf.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(batteryfault.Table, batteryfault.FieldID, id),
+			sqlgraph.To(battery.Table, battery.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, batteryfault.BatteryTable, batteryfault.BatteryColumn),
+		)
+		fromV = sqlgraph.Neighbors(bf.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *BatteryFaultClient) Hooks() []Hook {
+	return c.hooks.BatteryFault
+}
+
+// Interceptors returns the client interceptors.
+func (c *BatteryFaultClient) Interceptors() []Interceptor {
+	return c.inters.BatteryFault
+}
+
+func (c *BatteryFaultClient) mutate(ctx context.Context, m *BatteryFaultMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&BatteryFaultCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&BatteryFaultUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&BatteryFaultUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&BatteryFaultDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown BatteryFault mutation op: %q", m.Op())
+	}
+}
+
+// BatteryFlowClient is a client for the BatteryFlow schema.
+type BatteryFlowClient struct {
+	config
+}
+
+// NewBatteryFlowClient returns a client for the BatteryFlow from the given config.
+func NewBatteryFlowClient(c config) *BatteryFlowClient {
+	return &BatteryFlowClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `batteryflow.Hooks(f(g(h())))`.
+func (c *BatteryFlowClient) Use(hooks ...Hook) {
+	c.hooks.BatteryFlow = append(c.hooks.BatteryFlow, hooks...)
+}
+
+// Use adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `batteryflow.Intercept(f(g(h())))`.
+func (c *BatteryFlowClient) Intercept(interceptors ...Interceptor) {
+	c.inters.BatteryFlow = append(c.inters.BatteryFlow, interceptors...)
+}
+
+// Create returns a builder for creating a BatteryFlow entity.
+func (c *BatteryFlowClient) Create() *BatteryFlowCreate {
+	mutation := newBatteryFlowMutation(c.config, OpCreate)
+	return &BatteryFlowCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of BatteryFlow entities.
+func (c *BatteryFlowClient) CreateBulk(builders ...*BatteryFlowCreate) *BatteryFlowCreateBulk {
+	return &BatteryFlowCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for BatteryFlow.
+func (c *BatteryFlowClient) Update() *BatteryFlowUpdate {
+	mutation := newBatteryFlowMutation(c.config, OpUpdate)
+	return &BatteryFlowUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *BatteryFlowClient) UpdateOne(bf *BatteryFlow) *BatteryFlowUpdateOne {
+	mutation := newBatteryFlowMutation(c.config, OpUpdateOne, withBatteryFlow(bf))
+	return &BatteryFlowUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *BatteryFlowClient) UpdateOneID(id uint64) *BatteryFlowUpdateOne {
+	mutation := newBatteryFlowMutation(c.config, OpUpdateOne, withBatteryFlowID(id))
+	return &BatteryFlowUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for BatteryFlow.
+func (c *BatteryFlowClient) Delete() *BatteryFlowDelete {
+	mutation := newBatteryFlowMutation(c.config, OpDelete)
+	return &BatteryFlowDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *BatteryFlowClient) DeleteOne(bf *BatteryFlow) *BatteryFlowDeleteOne {
+	return c.DeleteOneID(bf.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *BatteryFlowClient) DeleteOneID(id uint64) *BatteryFlowDeleteOne {
+	builder := c.Delete().Where(batteryflow.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &BatteryFlowDeleteOne{builder}
+}
+
+// Query returns a query builder for BatteryFlow.
+func (c *BatteryFlowClient) Query() *BatteryFlowQuery {
+	return &BatteryFlowQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeBatteryFlow},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a BatteryFlow entity by its id.
+func (c *BatteryFlowClient) Get(ctx context.Context, id uint64) (*BatteryFlow, error) {
+	return c.Query().Where(batteryflow.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *BatteryFlowClient) GetX(ctx context.Context, id uint64) *BatteryFlow {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QuerySubscribe queries the subscribe edge of a BatteryFlow.
+func (c *BatteryFlowClient) QuerySubscribe(bf *BatteryFlow) *SubscribeQuery {
+	query := (&SubscribeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := bf.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(batteryflow.Table, batteryflow.FieldID, id),
+			sqlgraph.To(subscribe.Table, subscribe.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, batteryflow.SubscribeTable, batteryflow.SubscribeColumn),
+		)
+		fromV = sqlgraph.Neighbors(bf.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryBattery queries the battery edge of a BatteryFlow.
+func (c *BatteryFlowClient) QueryBattery(bf *BatteryFlow) *BatteryQuery {
+	query := (&BatteryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := bf.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(batteryflow.Table, batteryflow.FieldID, id),
+			sqlgraph.To(battery.Table, battery.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, batteryflow.BatteryTable, batteryflow.BatteryColumn),
+		)
+		fromV = sqlgraph.Neighbors(bf.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCabinet queries the cabinet edge of a BatteryFlow.
+func (c *BatteryFlowClient) QueryCabinet(bf *BatteryFlow) *CabinetQuery {
+	query := (&CabinetClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := bf.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(batteryflow.Table, batteryflow.FieldID, id),
+			sqlgraph.To(cabinet.Table, cabinet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, batteryflow.CabinetTable, batteryflow.CabinetColumn),
+		)
+		fromV = sqlgraph.Neighbors(bf.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRider queries the rider edge of a BatteryFlow.
+func (c *BatteryFlowClient) QueryRider(bf *BatteryFlow) *RiderQuery {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := bf.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(batteryflow.Table, batteryflow.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, batteryflow.RiderTable, batteryflow.RiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(bf.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *BatteryFlowClient) Hooks() []Hook {
+	return c.hooks.BatteryFlow
+}
+
+// Interceptors returns the client interceptors.
+func (c *BatteryFlowClient) Interceptors() []Interceptor {
+	return c.inters.BatteryFlow
+}
+
+func (c *BatteryFlowClient) mutate(ctx context.Context, m *BatteryFlowMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&BatteryFlowCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&BatteryFlowUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&BatteryFlowUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&BatteryFlowDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown BatteryFlow mutation op: %q", m.Op())
 	}
 }
 
@@ -2505,6 +2873,22 @@ func (c *CabinetClient) QueryBatteries(ca *Cabinet) *BatteryQuery {
 			sqlgraph.From(cabinet.Table, cabinet.FieldID, id),
 			sqlgraph.To(battery.Table, battery.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, cabinet.BatteriesTable, cabinet.BatteriesColumn),
+		)
+		fromV = sqlgraph.Neighbors(ca.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryBatteryFlows queries the battery_flows edge of a Cabinet.
+func (c *CabinetClient) QueryBatteryFlows(ca *Cabinet) *BatteryFlowQuery {
+	query := (&BatteryFlowClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ca.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cabinet.Table, cabinet.FieldID, id),
+			sqlgraph.To(batteryflow.Table, batteryflow.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, cabinet.BatteryFlowsTable, cabinet.BatteryFlowsColumn),
 		)
 		fromV = sqlgraph.Neighbors(ca.driver.Dialect(), step)
 		return fromV, nil
@@ -7737,6 +8121,22 @@ func (c *RiderClient) QueryBattery(r *Rider) *BatteryQuery {
 			sqlgraph.From(rider.Table, rider.FieldID, id),
 			sqlgraph.To(battery.Table, battery.FieldID),
 			sqlgraph.Edge(sqlgraph.O2O, false, rider.BatteryTable, rider.BatteryColumn),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryBatteryFlows queries the battery_flows edge of a Rider.
+func (c *RiderClient) QueryBatteryFlows(r *Rider) *BatteryFlowQuery {
+	query := (&BatteryFlowClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(rider.Table, rider.FieldID, id),
+			sqlgraph.To(batteryflow.Table, batteryflow.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, rider.BatteryFlowsTable, rider.BatteryFlowsColumn),
 		)
 		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
 		return fromV, nil

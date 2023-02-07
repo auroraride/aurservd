@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/battery"
+	"github.com/auroraride/aurservd/internal/ent/batteryflow"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
@@ -435,6 +436,21 @@ func (cc *CabinetCreate) AddBatteries(b ...*Battery) *CabinetCreate {
 	return cc.AddBatteryIDs(ids...)
 }
 
+// AddBatteryFlowIDs adds the "battery_flows" edge to the BatteryFlow entity by IDs.
+func (cc *CabinetCreate) AddBatteryFlowIDs(ids ...uint64) *CabinetCreate {
+	cc.mutation.AddBatteryFlowIDs(ids...)
+	return cc
+}
+
+// AddBatteryFlows adds the "battery_flows" edges to the BatteryFlow entity.
+func (cc *CabinetCreate) AddBatteryFlows(b ...*BatteryFlow) *CabinetCreate {
+	ids := make([]uint64, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return cc.AddBatteryFlowIDs(ids...)
+}
+
 // Mutation returns the CabinetMutation object of the builder.
 func (cc *CabinetCreate) Mutation() *CabinetMutation {
 	return cc.mutation
@@ -835,6 +851,25 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: battery.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := cc.mutation.BatteryFlowsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   cabinet.BatteryFlowsTable,
+			Columns: []string{cabinet.BatteryFlowsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: batteryflow.FieldID,
 				},
 			},
 		}

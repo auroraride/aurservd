@@ -97,9 +97,11 @@ type CabinetEdges struct {
 	Stocks []*Stock `json:"stocks,omitempty"`
 	// Batteries holds the value of the batteries edge.
 	Batteries []*Battery `json:"batteries,omitempty"`
+	// BatteryFlows holds the value of the battery_flows edge.
+	BatteryFlows []*BatteryFlow `json:"battery_flows,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [7]bool
+	loadedTypes [8]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -171,6 +173,15 @@ func (e CabinetEdges) BatteriesOrErr() ([]*Battery, error) {
 		return e.Batteries, nil
 	}
 	return nil, &NotLoadedError{edge: "batteries"}
+}
+
+// BatteryFlowsOrErr returns the BatteryFlows value or an error if the edge
+// was not loaded in eager-loading.
+func (e CabinetEdges) BatteryFlowsOrErr() ([]*BatteryFlow, error) {
+	if e.loadedTypes[7] {
+		return e.BatteryFlows, nil
+	}
+	return nil, &NotLoadedError{edge: "battery_flows"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -426,6 +437,11 @@ func (c *Cabinet) QueryStocks() *StockQuery {
 // QueryBatteries queries the "batteries" edge of the Cabinet entity.
 func (c *Cabinet) QueryBatteries() *BatteryQuery {
 	return NewCabinetClient(c.config).QueryBatteries(c)
+}
+
+// QueryBatteryFlows queries the "battery_flows" edge of the Cabinet entity.
+func (c *Cabinet) QueryBatteryFlows() *BatteryFlowQuery {
+	return NewCabinetClient(c.config).QueryBatteryFlows(c)
 }
 
 // Update returns a builder for updating this Cabinet.

@@ -151,6 +151,8 @@ type CabinetDeleteReq struct {
     ID uint64 `json:"id" param:"id"`
 }
 
+type CabinetBinsMap map[int]*CabinetBin
+
 type CabinetBins []*CabinetBin
 
 // Sort 仓位根据使用条件排序

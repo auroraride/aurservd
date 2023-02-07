@@ -56,6 +56,26 @@ func (b *Battery) GetID() uint64 {
 	return b.ID
 }
 
+// GetTableName returns table name for BatteryFault.
+func (bf *BatteryFault) GetTableName() string {
+	return "battery_fault"
+}
+
+// GetID returns id for BatteryFault.
+func (bf *BatteryFault) GetID() uint64 {
+	return bf.ID
+}
+
+// GetTableName returns table name for BatteryFlow.
+func (bf *BatteryFlow) GetTableName() string {
+	return "battery_flow"
+}
+
+// GetID returns id for BatteryFlow.
+func (bf *BatteryFlow) GetID() uint64 {
+	return bf.ID
+}
+
 // GetTableName returns table name for BatteryModel.
 func (bm *BatteryModel) GetTableName() string {
 	return "battery_model"

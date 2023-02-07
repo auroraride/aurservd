@@ -692,11 +692,27 @@ func (s *cabinetService) Sync(data *cabdef.CabinetMessage) {
         bins = cab.Bin
     }
 
+    // // var bm model.CabinetBinsMap
+    // bm := adapter.ConvertSliceToMap[*model.CabinetBin, int](cab.Bin, func(b *model.CabinetBin) (int, *model.CabinetBin, bool) {
+    //     return b.Index, &model.CabinetBin{
+    //         Index:       b.Index,
+    //         BatterySN:   b.BatterySN,
+    //         Electricity: b.Electricity,
+    //         Current:     b.Current,
+    //         Voltage:     b.Voltage,
+    //     }, true
+    // })
+
     if len(data.Bins) > 0 {
         var (
             bn, bf, bc, be, bl int
+
+            // fs = NewBatteryFlow()
         )
         for _, b := range data.Bins {
+            // 更新流转信息
+            // go fs.Sync(cab, bm, b)
+
             hasBattery := b.BatteryExists && b.BatterySn != ""
             var (
                 isFull bool
@@ -708,7 +724,7 @@ func (s *cabinetService) Sync(data *cabdef.CabinetMessage) {
             // 电池数
             if hasBattery {
                 // 如果该仓位有电池
-                _, _ = NewBattery().SyncPutin(b.BatterySn, cab.ID, b.Ordinal)
+                _, _ = NewBattery().SyncPutin(b.BatterySn, cab.Serial, cab.ID, b.Ordinal)
                 bn += 1
                 if b.Soc >= model.IntelligentBatteryFullSoc {
                     // 满电
@@ -729,7 +745,8 @@ func (s *cabinetService) Sync(data *cabdef.CabinetMessage) {
                 bl += 1
             }
 
-            cb := &model.CabinetBin{
+            // 新仓位信息
+            nb := &model.CabinetBin{
                 Index:       b.Ordinal - 1,
                 Name:        b.Name,
                 BatterySN:   b.BatterySn,
@@ -744,13 +761,13 @@ func (s *cabinetService) Sync(data *cabdef.CabinetMessage) {
             }
 
             if data.Full || len(cab.Bin) < len(data.Bins) {
-                bins = append(bins, cb)
+                bins = append(bins, nb)
             }
 
             if !data.Full {
                 for i, xb := range bins {
                     if xb.Index+1 == b.Ordinal {
-                        bins[i] = cb
+                        bins[i] = nb
                     }
                 }
             }
@@ -770,21 +787,25 @@ func (s *cabinetService) Sync(data *cabdef.CabinetMessage) {
     }
 }
 
-func (s *cabinetService) EntHook(next ent.Mutator) ent.Mutator {
-    return hook.CabinetFunc(func(ctx context.Context, m *ent.CabinetMutation) (ent.Value, error) {
-        name, ne := m.Name()
-        if ne {
-            serial, se := m.Serial()
-            id, ie := m.ID()
-            if !se && ie {
-                item, _ := m.Client().Cabinet.Get(ctx, id)
-                serial = item.Serial
-            }
-            ar.Redis.HSet(ctx, ar.CabinetNameCacheKey, serial, name)
-        }
+func (s *cabinetService) EntHooks() []ent.Hook {
+    return []ent.Hook{
+        func(next ent.Mutator) ent.Mutator {
+            return hook.CabinetFunc(func(ctx context.Context, m *ent.CabinetMutation) (ent.Value, error) {
+                name, ne := m.Name()
+                if ne {
+                    serial, se := m.Serial()
+                    id, ie := m.ID()
+                    if !se && ie {
+                        item, _ := m.Client().Cabinet.Get(ctx, id)
+                        serial = item.Serial
+                    }
+                    ar.Redis.HSet(ctx, ar.CabinetNameCacheKey, serial, name)
+                }
 
-        return next.Mutate(ctx, m)
-    })
+                return next.Mutate(ctx, m)
+            })
+        },
+    }
 }
 
 func (s *cabinetService) CacheAll() {

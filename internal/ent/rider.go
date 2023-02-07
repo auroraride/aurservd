@@ -93,9 +93,11 @@ type RiderEdges struct {
 	Followups []*RiderFollowUp `json:"followups,omitempty"`
 	// Battery holds the value of the battery edge.
 	Battery *Battery `json:"battery,omitempty"`
+	// BatteryFlows holds the value of the battery_flows edge.
+	BatteryFlows []*BatteryFlow `json:"battery_flows,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [11]bool
+	loadedTypes [12]bool
 }
 
 // StationOrErr returns the Station value or an error if the edge
@@ -211,6 +213,15 @@ func (e RiderEdges) BatteryOrErr() (*Battery, error) {
 		return e.Battery, nil
 	}
 	return nil, &NotLoadedError{edge: "battery"}
+}
+
+// BatteryFlowsOrErr returns the BatteryFlows value or an error if the edge
+// was not loaded in eager-loading.
+func (e RiderEdges) BatteryFlowsOrErr() ([]*BatteryFlow, error) {
+	if e.loadedTypes[11] {
+		return e.BatteryFlows, nil
+	}
+	return nil, &NotLoadedError{edge: "battery_flows"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -445,6 +456,11 @@ func (r *Rider) QueryFollowups() *RiderFollowUpQuery {
 // QueryBattery queries the "battery" edge of the Rider entity.
 func (r *Rider) QueryBattery() *BatteryQuery {
 	return NewRiderClient(r.config).QueryBattery(r)
+}
+
+// QueryBatteryFlows queries the "battery_flows" edge of the Rider entity.
+func (r *Rider) QueryBatteryFlows() *BatteryFlowQuery {
+	return NewRiderClient(r.config).QueryBatteryFlows(r)
 }
 
 // Update returns a builder for updating this Rider.

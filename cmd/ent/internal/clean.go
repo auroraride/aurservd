@@ -34,7 +34,6 @@ var (
         "stock_attached.go":     FileInfoTypeFile,
         "subscribe_attached.go": FileInfoTypeFile,
         "allocate_attached.go":  FileInfoTypeFile,
-        "battery_attached.go":   FileInfoTypeFile,
         "internal":              FileInfoTypeDir,
         "schema":                FileInfoTypeDir,
     }

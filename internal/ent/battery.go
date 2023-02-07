@@ -65,9 +65,13 @@ type BatteryEdges struct {
 	Cabinet *Cabinet `json:"cabinet,omitempty"`
 	// 所属订阅
 	Subscribe *Subscribe `json:"subscribe,omitempty"`
+	// 流转记录
+	Flows []*BatteryFlow `json:"flows,omitempty"`
+	// 故障列表
+	Faults []*BatteryFault `json:"faults,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [6]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -120,6 +124,24 @@ func (e BatteryEdges) SubscribeOrErr() (*Subscribe, error) {
 		return e.Subscribe, nil
 	}
 	return nil, &NotLoadedError{edge: "subscribe"}
+}
+
+// FlowsOrErr returns the Flows value or an error if the edge
+// was not loaded in eager-loading.
+func (e BatteryEdges) FlowsOrErr() ([]*BatteryFlow, error) {
+	if e.loadedTypes[4] {
+		return e.Flows, nil
+	}
+	return nil, &NotLoadedError{edge: "flows"}
+}
+
+// FaultsOrErr returns the Faults value or an error if the edge
+// was not loaded in eager-loading.
+func (e BatteryEdges) FaultsOrErr() ([]*BatteryFault, error) {
+	if e.loadedTypes[5] {
+		return e.Faults, nil
+	}
+	return nil, &NotLoadedError{edge: "faults"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -275,6 +297,16 @@ func (b *Battery) QueryCabinet() *CabinetQuery {
 // QuerySubscribe queries the "subscribe" edge of the Battery entity.
 func (b *Battery) QuerySubscribe() *SubscribeQuery {
 	return NewBatteryClient(b.config).QuerySubscribe(b)
+}
+
+// QueryFlows queries the "flows" edge of the Battery entity.
+func (b *Battery) QueryFlows() *BatteryFlowQuery {
+	return NewBatteryClient(b.config).QueryFlows(b)
+}
+
+// QueryFaults queries the "faults" edge of the Battery entity.
+func (b *Battery) QueryFaults() *BatteryFaultQuery {
+	return NewBatteryClient(b.config).QueryFaults(b)
 }
 
 // Update returns a builder for updating this Battery.

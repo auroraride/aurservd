@@ -6,20 +6,20 @@
 package rpc
 
 import (
-    "github.com/auroraride/adapter/defs/xcdef/proto"
     "github.com/auroraride/adapter/rpc"
+    "github.com/auroraride/adapter/rpc/pb"
     "github.com/auroraride/aurservd/internal/ar"
     "go.uber.org/zap"
     "google.golang.org/grpc"
 )
 
 var (
-    XcbmsClient proto.BatteryClient
+    XcBmsClient pb.BatteryClient
 )
 
 func createXcClient() {
     err := rpc.NewClient(ar.Config.Rpc.Xcbms.Server, func(conn *grpc.ClientConn) {
-        XcbmsClient = proto.NewBatteryClient(conn)
+        XcBmsClient = pb.NewBatteryClient(conn)
     })
     if err != nil {
         zap.L().Error("xcbms rpc连接失败", zap.Error(err))

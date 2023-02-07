@@ -90,7 +90,7 @@ func (*transfer) Subscribe(c echo.Context) (err error) {
 
             // 更新电池信息
             if intelligent && bat != nil {
-                err = tx.Battery.UpdateOneID(bat.ID).Allocate(sub)
+                err = service.NewBattery().Allocate(tx.Battery.UpdateOne(bat), bat, sub, false)
             }
 
             return

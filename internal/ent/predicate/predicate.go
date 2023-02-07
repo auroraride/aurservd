@@ -21,6 +21,12 @@ type Attendance func(*sql.Selector)
 // Battery is the predicate function for battery builders.
 type Battery func(*sql.Selector)
 
+// BatteryFault is the predicate function for batteryfault builders.
+type BatteryFault func(*sql.Selector)
+
+// BatteryFlow is the predicate function for batteryflow builders.
+type BatteryFlow func(*sql.Selector)
+
 // BatteryModel is the predicate function for batterymodel builders.
 type BatteryModel func(*sql.Selector)
 

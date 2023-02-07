@@ -24,6 +24,10 @@ type Tx struct {
 	Attendance *AttendanceClient
 	// Battery is the client for interacting with the Battery builders.
 	Battery *BatteryClient
+	// BatteryFault is the client for interacting with the BatteryFault builders.
+	BatteryFault *BatteryFaultClient
+	// BatteryFlow is the client for interacting with the BatteryFlow builders.
+	BatteryFlow *BatteryFlowClient
 	// BatteryModel is the client for interacting with the BatteryModel builders.
 	BatteryModel *BatteryModelClient
 	// Branch is the client for interacting with the Branch builders.
@@ -250,6 +254,8 @@ func (tx *Tx) init() {
 	tx.Assistance = NewAssistanceClient(tx.config)
 	tx.Attendance = NewAttendanceClient(tx.config)
 	tx.Battery = NewBatteryClient(tx.config)
+	tx.BatteryFault = NewBatteryFaultClient(tx.config)
+	tx.BatteryFlow = NewBatteryFlowClient(tx.config)
 	tx.BatteryModel = NewBatteryModelClient(tx.config)
 	tx.Branch = NewBranchClient(tx.config)
 	tx.BranchContract = NewBranchContractClient(tx.config)

@@ -116,6 +116,7 @@ func (Cabinet) Edges() []ent.Edge {
         edge.To("exchanges", Exchange.Type),
         edge.To("stocks", Stock.Type),
         edge.To("batteries", Battery.Type),
+        edge.To("battery_flows", BatteryFlow.Type),
     }
 }
 

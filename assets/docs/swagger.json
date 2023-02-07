@@ -2979,6 +2979,45 @@
                 }
             }
         },
+        "/manager/v1/battery/{sn}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M4010 电池详情",
+                "operationId": "ManagerBatteryDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "电池编号",
+                        "name": "sn",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.XcBatteryDetail"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/branch": {
             "get": {
                 "consumes": [
@@ -13508,6 +13547,17 @@
         }
     },
     "definitions": {
+        "adapter.Geometry": {
+            "type": "object",
+            "properties": {
+                "lat": {
+                    "type": "number"
+                },
+                "lng": {
+                    "type": "number"
+                }
+            }
+        },
         "controller.CrmCustomerWithID": {
             "type": "object",
             "required": [
@@ -23271,6 +23321,155 @@
                 }
             }
         },
+        "model.XcBatteryDetail": {
+            "type": "object",
+            "properties": {
+                "capacity": {
+                    "description": "剩余容量 (单位AH)",
+                    "type": "number"
+                },
+                "chargingTime": {
+                    "description": "本次充电时长",
+                    "type": "integer"
+                },
+                "createdAt": {
+                    "description": "入库时间",
+                    "type": "string"
+                },
+                "current": {
+                    "description": "电流 (A, 充电为正, 放电为负)",
+                    "type": "number"
+                },
+                "cycles": {
+                    "description": "电池包循环次数 (80%累加一次)",
+                    "type": "integer"
+                },
+                "disChargingTime": {
+                    "description": "本次放电时长",
+                    "type": "integer"
+                },
+                "envTemp": {
+                    "description": "环境温度 (1个环境温度传感器, 单位1℃)",
+                    "type": "integer"
+                },
+                "faults": {
+                    "description": "故障列表",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "geom": {
+                    "description": "坐标",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/adapter.Geometry"
+                        }
+                    ]
+                },
+                "gps": {
+                    "description": "GPS定位状态 (0=未定位 1=GPS定位 4=LBS定位)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/xcdef.GPSStatus"
+                        }
+                    ]
+                },
+                "inCabinet": {
+                    "description": "是否在电柜",
+                    "type": "boolean"
+                },
+                "maxTemp": {
+                    "description": "最大温度 (单位1℃)",
+                    "type": "integer"
+                },
+                "minTemp": {
+                    "description": "最小温度 (单位1℃)",
+                    "type": "integer"
+                },
+                "monMaxVoltage": {
+                    "description": "最大单体电压 (mV)",
+                    "type": "integer"
+                },
+                "monMaxVoltagePos": {
+                    "description": "最大单体电压位置 (第x串)",
+                    "type": "integer"
+                },
+                "monMinVoltage": {
+                    "description": "最小单体电压 (mV)",
+                    "type": "integer"
+                },
+                "monMinVoltagePos": {
+                    "description": "最小单体电压位置 (第x串)",
+                    "type": "integer"
+                },
+                "monVoltage": {
+                    "description": "单体电压 (24个单体电压, 单位mV)",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "mosStatus": {
+                    "description": "MOS状态 (Bit0表示充电, Bit1表示放电, 此字段无法判定电池是否充放电状态)",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "mosTemp": {
+                    "description": "MOS温度 (1个MOS温度传感器, 单位1℃)",
+                    "type": "integer"
+                },
+                "sn": {
+                    "description": "电池编号",
+                    "type": "string"
+                },
+                "soc": {
+                    "description": "剩余容量 单位1%",
+                    "type": "integer"
+                },
+                "soh": {
+                    "description": "健康度 单位1%",
+                    "type": "integer"
+                },
+                "strength": {
+                    "description": "4G通讯信号强度 (0-100 百分比形式)",
+                    "type": "integer"
+                },
+                "temp": {
+                    "description": "电池温度 (4个电池温度传感器, 单位1℃)",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "totalChargingTime": {
+                    "description": "总充电时长",
+                    "type": "integer"
+                },
+                "totalDisChargingTime": {
+                    "description": "总放电时长",
+                    "type": "integer"
+                },
+                "totalUsingTime": {
+                    "description": "总使用时长",
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "description": "最后通讯时间",
+                    "type": "string"
+                },
+                "usingTime": {
+                    "description": "本次使用时长",
+                    "type": "integer"
+                },
+                "voltage": {
+                    "description": "电池总压 (V)",
+                    "type": "number"
+                }
+            }
+        },
         "permission.Group": {
             "type": "object",
             "properties": {
@@ -23315,6 +23514,19 @@
                     "type": "string"
                 }
             }
+        },
+        "xcdef.GPSStatus": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                4
+            ],
+            "x-enum-varnames": [
+                "GPSStatusNone",
+                "GPSStatusRaw",
+                "GPSStatusLBS"
+            ]
         }
     }
 }

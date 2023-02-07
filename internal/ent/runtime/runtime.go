@@ -11,6 +11,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/attendance"
 	"github.com/auroraride/aurservd/internal/ent/battery"
+	"github.com/auroraride/aurservd/internal/ent/batteryfault"
+	"github.com/auroraride/aurservd/internal/ent/batteryflow"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
@@ -164,6 +166,44 @@ func init() {
 	batteryDescEnable := batteryFields[4].Descriptor()
 	// battery.DefaultEnable holds the default value on creation for the enable field.
 	battery.DefaultEnable = batteryDescEnable.Default.(bool)
+	batteryfaultMixin := schema.BatteryFault{}.Mixin()
+	batteryfaultMixinFields0 := batteryfaultMixin[0].Fields()
+	_ = batteryfaultMixinFields0
+	batteryfaultFields := schema.BatteryFault{}.Fields()
+	_ = batteryfaultFields
+	// batteryfaultDescCreatedAt is the schema descriptor for created_at field.
+	batteryfaultDescCreatedAt := batteryfaultMixinFields0[0].Descriptor()
+	// batteryfault.DefaultCreatedAt holds the default value on creation for the created_at field.
+	batteryfault.DefaultCreatedAt = batteryfaultDescCreatedAt.Default.(func() time.Time)
+	// batteryfaultDescUpdatedAt is the schema descriptor for updated_at field.
+	batteryfaultDescUpdatedAt := batteryfaultMixinFields0[1].Descriptor()
+	// batteryfault.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	batteryfault.DefaultUpdatedAt = batteryfaultDescUpdatedAt.Default.(func() time.Time)
+	// batteryfault.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	batteryfault.UpdateDefaultUpdatedAt = batteryfaultDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// batteryfaultDescBeginAt is the schema descriptor for begin_at field.
+	batteryfaultDescBeginAt := batteryfaultFields[3].Descriptor()
+	// batteryfault.DefaultBeginAt holds the default value on creation for the begin_at field.
+	batteryfault.DefaultBeginAt = batteryfaultDescBeginAt.Default.(func() time.Time)
+	batteryflowMixin := schema.BatteryFlow{}.Mixin()
+	batteryflowMixinFields0 := batteryflowMixin[0].Fields()
+	_ = batteryflowMixinFields0
+	batteryflowFields := schema.BatteryFlow{}.Fields()
+	_ = batteryflowFields
+	// batteryflowDescCreatedAt is the schema descriptor for created_at field.
+	batteryflowDescCreatedAt := batteryflowMixinFields0[0].Descriptor()
+	// batteryflow.DefaultCreatedAt holds the default value on creation for the created_at field.
+	batteryflow.DefaultCreatedAt = batteryflowDescCreatedAt.Default.(func() time.Time)
+	// batteryflowDescUpdatedAt is the schema descriptor for updated_at field.
+	batteryflowDescUpdatedAt := batteryflowMixinFields0[1].Descriptor()
+	// batteryflow.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	batteryflow.DefaultUpdatedAt = batteryflowDescUpdatedAt.Default.(func() time.Time)
+	// batteryflow.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	batteryflow.UpdateDefaultUpdatedAt = batteryflowDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// batteryflowDescSoc is the schema descriptor for soc field.
+	batteryflowDescSoc := batteryflowFields[2].Descriptor()
+	// batteryflow.DefaultSoc holds the default value on creation for the soc field.
+	batteryflow.DefaultSoc = batteryflowDescSoc.Default.(float64)
 	batterymodelFields := schema.BatteryModel{}.Fields()
 	_ = batterymodelFields
 	// batterymodelDescCreatedAt is the schema descriptor for created_at field.

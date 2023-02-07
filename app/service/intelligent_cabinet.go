@@ -169,7 +169,7 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
                 }
 
                 // 清除旧电池分配信息
-                _ = old.Update().Unallocate()
+                _ = NewBattery().Unallocate(old)
 
                 go bs.RiderBusiness(true, putin, s.rider, cab, after.Ordinal)
             }
@@ -183,7 +183,7 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
                 // 更新新电池信息
                 bat, _ := bs.LoadOrCreate(putout)
                 if bat != nil {
-                    _ = bat.Update().Allocate(sub)
+                    _ = NewBattery().Allocate(bat.Update(), bat, sub, true)
                 }
             }
         }
@@ -432,7 +432,7 @@ func (s *intelligentCabinetService) DoBusiness(br model.CabinetBrand, uidstr str
 
     // 取走电池
     if !putin {
-        _ = bat.Update().Allocate(sub)
+        _ = NewBattery().Allocate(bat.Update(), bat, sub, true)
     }
 
     return

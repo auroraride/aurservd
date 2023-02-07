@@ -9,6 +9,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/auroraride/adapter"
 	"github.com/auroraride/aurservd/app/ec"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/agent"
@@ -16,6 +17,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/attendance"
 	"github.com/auroraride/aurservd/internal/ent/battery"
+	"github.com/auroraride/aurservd/internal/ent/batteryfault"
+	"github.com/auroraride/aurservd/internal/ent/batteryflow"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
@@ -83,6 +86,8 @@ const (
 	TypeAssistance           = "Assistance"
 	TypeAttendance           = "Attendance"
 	TypeBattery              = "Battery"
+	TypeBatteryFault         = "BatteryFault"
+	TypeBatteryFlow          = "BatteryFlow"
 	TypeBatteryModel         = "BatteryModel"
 	TypeBranch               = "Branch"
 	TypeBranchContract       = "BranchContract"
@@ -7656,6 +7661,12 @@ type BatteryMutation struct {
 	clearedcabinet   bool
 	subscribe        *uint64
 	clearedsubscribe bool
+	flows            map[uint64]struct{}
+	removedflows     map[uint64]struct{}
+	clearedflows     bool
+	faults           map[uint64]struct{}
+	removedfaults    map[uint64]struct{}
+	clearedfaults    bool
 	done             bool
 	oldValue         func(context.Context) (*Battery, error)
 	predicates       []predicate.Battery
@@ -8505,6 +8516,114 @@ func (m *BatteryMutation) ResetSubscribe() {
 	m.clearedsubscribe = false
 }
 
+// AddFlowIDs adds the "flows" edge to the BatteryFlow entity by ids.
+func (m *BatteryMutation) AddFlowIDs(ids ...uint64) {
+	if m.flows == nil {
+		m.flows = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.flows[ids[i]] = struct{}{}
+	}
+}
+
+// ClearFlows clears the "flows" edge to the BatteryFlow entity.
+func (m *BatteryMutation) ClearFlows() {
+	m.clearedflows = true
+}
+
+// FlowsCleared reports if the "flows" edge to the BatteryFlow entity was cleared.
+func (m *BatteryMutation) FlowsCleared() bool {
+	return m.clearedflows
+}
+
+// RemoveFlowIDs removes the "flows" edge to the BatteryFlow entity by IDs.
+func (m *BatteryMutation) RemoveFlowIDs(ids ...uint64) {
+	if m.removedflows == nil {
+		m.removedflows = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.flows, ids[i])
+		m.removedflows[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedFlows returns the removed IDs of the "flows" edge to the BatteryFlow entity.
+func (m *BatteryMutation) RemovedFlowsIDs() (ids []uint64) {
+	for id := range m.removedflows {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// FlowsIDs returns the "flows" edge IDs in the mutation.
+func (m *BatteryMutation) FlowsIDs() (ids []uint64) {
+	for id := range m.flows {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetFlows resets all changes to the "flows" edge.
+func (m *BatteryMutation) ResetFlows() {
+	m.flows = nil
+	m.clearedflows = false
+	m.removedflows = nil
+}
+
+// AddFaultIDs adds the "faults" edge to the BatteryFault entity by ids.
+func (m *BatteryMutation) AddFaultIDs(ids ...uint64) {
+	if m.faults == nil {
+		m.faults = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.faults[ids[i]] = struct{}{}
+	}
+}
+
+// ClearFaults clears the "faults" edge to the BatteryFault entity.
+func (m *BatteryMutation) ClearFaults() {
+	m.clearedfaults = true
+}
+
+// FaultsCleared reports if the "faults" edge to the BatteryFault entity was cleared.
+func (m *BatteryMutation) FaultsCleared() bool {
+	return m.clearedfaults
+}
+
+// RemoveFaultIDs removes the "faults" edge to the BatteryFault entity by IDs.
+func (m *BatteryMutation) RemoveFaultIDs(ids ...uint64) {
+	if m.removedfaults == nil {
+		m.removedfaults = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.faults, ids[i])
+		m.removedfaults[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedFaults returns the removed IDs of the "faults" edge to the BatteryFault entity.
+func (m *BatteryMutation) RemovedFaultsIDs() (ids []uint64) {
+	for id := range m.removedfaults {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// FaultsIDs returns the "faults" edge IDs in the mutation.
+func (m *BatteryMutation) FaultsIDs() (ids []uint64) {
+	for id := range m.faults {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetFaults resets all changes to the "faults" edge.
+func (m *BatteryMutation) ResetFaults() {
+	m.faults = nil
+	m.clearedfaults = false
+	m.removedfaults = nil
+}
+
 // Where appends a list predicates to the BatteryMutation builder.
 func (m *BatteryMutation) Where(ps ...predicate.Battery) {
 	m.predicates = append(m.predicates, ps...)
@@ -8931,7 +9050,7 @@ func (m *BatteryMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *BatteryMutation) AddedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 6)
 	if m.city != nil {
 		edges = append(edges, battery.EdgeCity)
 	}
@@ -8943,6 +9062,12 @@ func (m *BatteryMutation) AddedEdges() []string {
 	}
 	if m.subscribe != nil {
 		edges = append(edges, battery.EdgeSubscribe)
+	}
+	if m.flows != nil {
+		edges = append(edges, battery.EdgeFlows)
+	}
+	if m.faults != nil {
+		edges = append(edges, battery.EdgeFaults)
 	}
 	return edges
 }
@@ -8967,25 +9092,57 @@ func (m *BatteryMutation) AddedIDs(name string) []ent.Value {
 		if id := m.subscribe; id != nil {
 			return []ent.Value{*id}
 		}
+	case battery.EdgeFlows:
+		ids := make([]ent.Value, 0, len(m.flows))
+		for id := range m.flows {
+			ids = append(ids, id)
+		}
+		return ids
+	case battery.EdgeFaults:
+		ids := make([]ent.Value, 0, len(m.faults))
+		for id := range m.faults {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *BatteryMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 6)
+	if m.removedflows != nil {
+		edges = append(edges, battery.EdgeFlows)
+	}
+	if m.removedfaults != nil {
+		edges = append(edges, battery.EdgeFaults)
+	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *BatteryMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case battery.EdgeFlows:
+		ids := make([]ent.Value, 0, len(m.removedflows))
+		for id := range m.removedflows {
+			ids = append(ids, id)
+		}
+		return ids
+	case battery.EdgeFaults:
+		ids := make([]ent.Value, 0, len(m.removedfaults))
+		for id := range m.removedfaults {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *BatteryMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 6)
 	if m.clearedcity {
 		edges = append(edges, battery.EdgeCity)
 	}
@@ -8997,6 +9154,12 @@ func (m *BatteryMutation) ClearedEdges() []string {
 	}
 	if m.clearedsubscribe {
 		edges = append(edges, battery.EdgeSubscribe)
+	}
+	if m.clearedflows {
+		edges = append(edges, battery.EdgeFlows)
+	}
+	if m.clearedfaults {
+		edges = append(edges, battery.EdgeFaults)
 	}
 	return edges
 }
@@ -9013,6 +9176,10 @@ func (m *BatteryMutation) EdgeCleared(name string) bool {
 		return m.clearedcabinet
 	case battery.EdgeSubscribe:
 		return m.clearedsubscribe
+	case battery.EdgeFlows:
+		return m.clearedflows
+	case battery.EdgeFaults:
+		return m.clearedfaults
 	}
 	return false
 }
@@ -9053,8 +9220,2037 @@ func (m *BatteryMutation) ResetEdge(name string) error {
 	case battery.EdgeSubscribe:
 		m.ResetSubscribe()
 		return nil
+	case battery.EdgeFlows:
+		m.ResetFlows()
+		return nil
+	case battery.EdgeFaults:
+		m.ResetFaults()
+		return nil
 	}
 	return fmt.Errorf("unknown Battery edge %s", name)
+}
+
+// BatteryFaultMutation represents an operation that mutates the BatteryFault nodes in the graph.
+type BatteryFaultMutation struct {
+	config
+	op             Op
+	typ            string
+	id             *uint64
+	created_at     *time.Time
+	updated_at     *time.Time
+	sn             *string
+	fault          *model.BatteryFault
+	begin_at       *time.Time
+	end_at         *time.Time
+	clearedFields  map[string]struct{}
+	battery        *uint64
+	clearedbattery bool
+	done           bool
+	oldValue       func(context.Context) (*BatteryFault, error)
+	predicates     []predicate.BatteryFault
+}
+
+var _ ent.Mutation = (*BatteryFaultMutation)(nil)
+
+// batteryfaultOption allows management of the mutation configuration using functional options.
+type batteryfaultOption func(*BatteryFaultMutation)
+
+// newBatteryFaultMutation creates new mutation for the BatteryFault entity.
+func newBatteryFaultMutation(c config, op Op, opts ...batteryfaultOption) *BatteryFaultMutation {
+	m := &BatteryFaultMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeBatteryFault,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withBatteryFaultID sets the ID field of the mutation.
+func withBatteryFaultID(id uint64) batteryfaultOption {
+	return func(m *BatteryFaultMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *BatteryFault
+		)
+		m.oldValue = func(ctx context.Context) (*BatteryFault, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().BatteryFault.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withBatteryFault sets the old BatteryFault of the mutation.
+func withBatteryFault(node *BatteryFault) batteryfaultOption {
+	return func(m *BatteryFaultMutation) {
+		m.oldValue = func(context.Context) (*BatteryFault, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m BatteryFaultMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m BatteryFaultMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *BatteryFaultMutation) ID() (id uint64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *BatteryFaultMutation) IDs(ctx context.Context) ([]uint64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uint64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().BatteryFault.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *BatteryFaultMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *BatteryFaultMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the BatteryFault entity.
+// If the BatteryFault object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BatteryFaultMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *BatteryFaultMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *BatteryFaultMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *BatteryFaultMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the BatteryFault entity.
+// If the BatteryFault object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BatteryFaultMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *BatteryFaultMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetSn sets the "sn" field.
+func (m *BatteryFaultMutation) SetSn(s string) {
+	m.sn = &s
+}
+
+// Sn returns the value of the "sn" field in the mutation.
+func (m *BatteryFaultMutation) Sn() (r string, exists bool) {
+	v := m.sn
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSn returns the old "sn" field's value of the BatteryFault entity.
+// If the BatteryFault object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BatteryFaultMutation) OldSn(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSn is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSn requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSn: %w", err)
+	}
+	return oldValue.Sn, nil
+}
+
+// ResetSn resets all changes to the "sn" field.
+func (m *BatteryFaultMutation) ResetSn() {
+	m.sn = nil
+}
+
+// SetBatteryID sets the "battery_id" field.
+func (m *BatteryFaultMutation) SetBatteryID(u uint64) {
+	m.battery = &u
+}
+
+// BatteryID returns the value of the "battery_id" field in the mutation.
+func (m *BatteryFaultMutation) BatteryID() (r uint64, exists bool) {
+	v := m.battery
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBatteryID returns the old "battery_id" field's value of the BatteryFault entity.
+// If the BatteryFault object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BatteryFaultMutation) OldBatteryID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBatteryID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBatteryID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBatteryID: %w", err)
+	}
+	return oldValue.BatteryID, nil
+}
+
+// ResetBatteryID resets all changes to the "battery_id" field.
+func (m *BatteryFaultMutation) ResetBatteryID() {
+	m.battery = nil
+}
+
+// SetFault sets the "fault" field.
+func (m *BatteryFaultMutation) SetFault(mf model.BatteryFault) {
+	m.fault = &mf
+}
+
+// Fault returns the value of the "fault" field in the mutation.
+func (m *BatteryFaultMutation) Fault() (r model.BatteryFault, exists bool) {
+	v := m.fault
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFault returns the old "fault" field's value of the BatteryFault entity.
+// If the BatteryFault object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BatteryFaultMutation) OldFault(ctx context.Context) (v model.BatteryFault, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFault is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFault requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFault: %w", err)
+	}
+	return oldValue.Fault, nil
+}
+
+// ResetFault resets all changes to the "fault" field.
+func (m *BatteryFaultMutation) ResetFault() {
+	m.fault = nil
+}
+
+// SetBeginAt sets the "begin_at" field.
+func (m *BatteryFaultMutation) SetBeginAt(t time.Time) {
+	m.begin_at = &t
+}
+
+// BeginAt returns the value of the "begin_at" field in the mutation.
+func (m *BatteryFaultMutation) BeginAt() (r time.Time, exists bool) {
+	v := m.begin_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBeginAt returns the old "begin_at" field's value of the BatteryFault entity.
+// If the BatteryFault object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BatteryFaultMutation) OldBeginAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBeginAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBeginAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBeginAt: %w", err)
+	}
+	return oldValue.BeginAt, nil
+}
+
+// ResetBeginAt resets all changes to the "begin_at" field.
+func (m *BatteryFaultMutation) ResetBeginAt() {
+	m.begin_at = nil
+}
+
+// SetEndAt sets the "end_at" field.
+func (m *BatteryFaultMutation) SetEndAt(t time.Time) {
+	m.end_at = &t
+}
+
+// EndAt returns the value of the "end_at" field in the mutation.
+func (m *BatteryFaultMutation) EndAt() (r time.Time, exists bool) {
+	v := m.end_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEndAt returns the old "end_at" field's value of the BatteryFault entity.
+// If the BatteryFault object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BatteryFaultMutation) OldEndAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEndAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEndAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEndAt: %w", err)
+	}
+	return oldValue.EndAt, nil
+}
+
+// ClearEndAt clears the value of the "end_at" field.
+func (m *BatteryFaultMutation) ClearEndAt() {
+	m.end_at = nil
+	m.clearedFields[batteryfault.FieldEndAt] = struct{}{}
+}
+
+// EndAtCleared returns if the "end_at" field was cleared in this mutation.
+func (m *BatteryFaultMutation) EndAtCleared() bool {
+	_, ok := m.clearedFields[batteryfault.FieldEndAt]
+	return ok
+}
+
+// ResetEndAt resets all changes to the "end_at" field.
+func (m *BatteryFaultMutation) ResetEndAt() {
+	m.end_at = nil
+	delete(m.clearedFields, batteryfault.FieldEndAt)
+}
+
+// ClearBattery clears the "battery" edge to the Battery entity.
+func (m *BatteryFaultMutation) ClearBattery() {
+	m.clearedbattery = true
+}
+
+// BatteryCleared reports if the "battery" edge to the Battery entity was cleared.
+func (m *BatteryFaultMutation) BatteryCleared() bool {
+	return m.clearedbattery
+}
+
+// BatteryIDs returns the "battery" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// BatteryID instead. It exists only for internal usage by the builders.
+func (m *BatteryFaultMutation) BatteryIDs() (ids []uint64) {
+	if id := m.battery; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetBattery resets all changes to the "battery" edge.
+func (m *BatteryFaultMutation) ResetBattery() {
+	m.battery = nil
+	m.clearedbattery = false
+}
+
+// Where appends a list predicates to the BatteryFaultMutation builder.
+func (m *BatteryFaultMutation) Where(ps ...predicate.BatteryFault) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the BatteryFaultMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *BatteryFaultMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.BatteryFault, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *BatteryFaultMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *BatteryFaultMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (BatteryFault).
+func (m *BatteryFaultMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *BatteryFaultMutation) Fields() []string {
+	fields := make([]string, 0, 7)
+	if m.created_at != nil {
+		fields = append(fields, batteryfault.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, batteryfault.FieldUpdatedAt)
+	}
+	if m.sn != nil {
+		fields = append(fields, batteryfault.FieldSn)
+	}
+	if m.battery != nil {
+		fields = append(fields, batteryfault.FieldBatteryID)
+	}
+	if m.fault != nil {
+		fields = append(fields, batteryfault.FieldFault)
+	}
+	if m.begin_at != nil {
+		fields = append(fields, batteryfault.FieldBeginAt)
+	}
+	if m.end_at != nil {
+		fields = append(fields, batteryfault.FieldEndAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *BatteryFaultMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case batteryfault.FieldCreatedAt:
+		return m.CreatedAt()
+	case batteryfault.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case batteryfault.FieldSn:
+		return m.Sn()
+	case batteryfault.FieldBatteryID:
+		return m.BatteryID()
+	case batteryfault.FieldFault:
+		return m.Fault()
+	case batteryfault.FieldBeginAt:
+		return m.BeginAt()
+	case batteryfault.FieldEndAt:
+		return m.EndAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *BatteryFaultMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case batteryfault.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case batteryfault.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case batteryfault.FieldSn:
+		return m.OldSn(ctx)
+	case batteryfault.FieldBatteryID:
+		return m.OldBatteryID(ctx)
+	case batteryfault.FieldFault:
+		return m.OldFault(ctx)
+	case batteryfault.FieldBeginAt:
+		return m.OldBeginAt(ctx)
+	case batteryfault.FieldEndAt:
+		return m.OldEndAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown BatteryFault field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *BatteryFaultMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case batteryfault.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case batteryfault.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case batteryfault.FieldSn:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSn(v)
+		return nil
+	case batteryfault.FieldBatteryID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBatteryID(v)
+		return nil
+	case batteryfault.FieldFault:
+		v, ok := value.(model.BatteryFault)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFault(v)
+		return nil
+	case batteryfault.FieldBeginAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBeginAt(v)
+		return nil
+	case batteryfault.FieldEndAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEndAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown BatteryFault field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *BatteryFaultMutation) AddedFields() []string {
+	var fields []string
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *BatteryFaultMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *BatteryFaultMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown BatteryFault numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *BatteryFaultMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(batteryfault.FieldEndAt) {
+		fields = append(fields, batteryfault.FieldEndAt)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *BatteryFaultMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *BatteryFaultMutation) ClearField(name string) error {
+	switch name {
+	case batteryfault.FieldEndAt:
+		m.ClearEndAt()
+		return nil
+	}
+	return fmt.Errorf("unknown BatteryFault nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *BatteryFaultMutation) ResetField(name string) error {
+	switch name {
+	case batteryfault.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case batteryfault.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case batteryfault.FieldSn:
+		m.ResetSn()
+		return nil
+	case batteryfault.FieldBatteryID:
+		m.ResetBatteryID()
+		return nil
+	case batteryfault.FieldFault:
+		m.ResetFault()
+		return nil
+	case batteryfault.FieldBeginAt:
+		m.ResetBeginAt()
+		return nil
+	case batteryfault.FieldEndAt:
+		m.ResetEndAt()
+		return nil
+	}
+	return fmt.Errorf("unknown BatteryFault field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *BatteryFaultMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.battery != nil {
+		edges = append(edges, batteryfault.EdgeBattery)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *BatteryFaultMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case batteryfault.EdgeBattery:
+		if id := m.battery; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *BatteryFaultMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *BatteryFaultMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *BatteryFaultMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedbattery {
+		edges = append(edges, batteryfault.EdgeBattery)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *BatteryFaultMutation) EdgeCleared(name string) bool {
+	switch name {
+	case batteryfault.EdgeBattery:
+		return m.clearedbattery
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *BatteryFaultMutation) ClearEdge(name string) error {
+	switch name {
+	case batteryfault.EdgeBattery:
+		m.ClearBattery()
+		return nil
+	}
+	return fmt.Errorf("unknown BatteryFault unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *BatteryFaultMutation) ResetEdge(name string) error {
+	switch name {
+	case batteryfault.EdgeBattery:
+		m.ResetBattery()
+		return nil
+	}
+	return fmt.Errorf("unknown BatteryFault edge %s", name)
+}
+
+// BatteryFlowMutation represents an operation that mutates the BatteryFlow nodes in the graph.
+type BatteryFlowMutation struct {
+	config
+	op               Op
+	typ              string
+	id               *uint64
+	created_at       *time.Time
+	updated_at       *time.Time
+	sn               *string
+	soc              *float64
+	addsoc           *float64
+	serial           *string
+	ordinal          *int
+	addordinal       *int
+	geom             **adapter.Geometry
+	remark           *string
+	clearedFields    map[string]struct{}
+	subscribe        *uint64
+	clearedsubscribe bool
+	battery          *uint64
+	clearedbattery   bool
+	cabinet          *uint64
+	clearedcabinet   bool
+	rider            *uint64
+	clearedrider     bool
+	done             bool
+	oldValue         func(context.Context) (*BatteryFlow, error)
+	predicates       []predicate.BatteryFlow
+}
+
+var _ ent.Mutation = (*BatteryFlowMutation)(nil)
+
+// batteryflowOption allows management of the mutation configuration using functional options.
+type batteryflowOption func(*BatteryFlowMutation)
+
+// newBatteryFlowMutation creates new mutation for the BatteryFlow entity.
+func newBatteryFlowMutation(c config, op Op, opts ...batteryflowOption) *BatteryFlowMutation {
+	m := &BatteryFlowMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeBatteryFlow,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withBatteryFlowID sets the ID field of the mutation.
+func withBatteryFlowID(id uint64) batteryflowOption {
+	return func(m *BatteryFlowMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *BatteryFlow
+		)
+		m.oldValue = func(ctx context.Context) (*BatteryFlow, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().BatteryFlow.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withBatteryFlow sets the old BatteryFlow of the mutation.
+func withBatteryFlow(node *BatteryFlow) batteryflowOption {
+	return func(m *BatteryFlowMutation) {
+		m.oldValue = func(context.Context) (*BatteryFlow, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m BatteryFlowMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m BatteryFlowMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *BatteryFlowMutation) ID() (id uint64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *BatteryFlowMutation) IDs(ctx context.Context) ([]uint64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uint64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().BatteryFlow.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *BatteryFlowMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *BatteryFlowMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the BatteryFlow entity.
+// If the BatteryFlow object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BatteryFlowMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *BatteryFlowMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *BatteryFlowMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *BatteryFlowMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the BatteryFlow entity.
+// If the BatteryFlow object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BatteryFlowMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *BatteryFlowMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (m *BatteryFlowMutation) SetSubscribeID(u uint64) {
+	m.subscribe = &u
+}
+
+// SubscribeID returns the value of the "subscribe_id" field in the mutation.
+func (m *BatteryFlowMutation) SubscribeID() (r uint64, exists bool) {
+	v := m.subscribe
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSubscribeID returns the old "subscribe_id" field's value of the BatteryFlow entity.
+// If the BatteryFlow object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BatteryFlowMutation) OldSubscribeID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSubscribeID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSubscribeID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSubscribeID: %w", err)
+	}
+	return oldValue.SubscribeID, nil
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (m *BatteryFlowMutation) ClearSubscribeID() {
+	m.subscribe = nil
+	m.clearedFields[batteryflow.FieldSubscribeID] = struct{}{}
+}
+
+// SubscribeIDCleared returns if the "subscribe_id" field was cleared in this mutation.
+func (m *BatteryFlowMutation) SubscribeIDCleared() bool {
+	_, ok := m.clearedFields[batteryflow.FieldSubscribeID]
+	return ok
+}
+
+// ResetSubscribeID resets all changes to the "subscribe_id" field.
+func (m *BatteryFlowMutation) ResetSubscribeID() {
+	m.subscribe = nil
+	delete(m.clearedFields, batteryflow.FieldSubscribeID)
+}
+
+// SetBatteryID sets the "battery_id" field.
+func (m *BatteryFlowMutation) SetBatteryID(u uint64) {
+	m.battery = &u
+}
+
+// BatteryID returns the value of the "battery_id" field in the mutation.
+func (m *BatteryFlowMutation) BatteryID() (r uint64, exists bool) {
+	v := m.battery
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBatteryID returns the old "battery_id" field's value of the BatteryFlow entity.
+// If the BatteryFlow object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BatteryFlowMutation) OldBatteryID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBatteryID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBatteryID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBatteryID: %w", err)
+	}
+	return oldValue.BatteryID, nil
+}
+
+// ResetBatteryID resets all changes to the "battery_id" field.
+func (m *BatteryFlowMutation) ResetBatteryID() {
+	m.battery = nil
+}
+
+// SetSn sets the "sn" field.
+func (m *BatteryFlowMutation) SetSn(s string) {
+	m.sn = &s
+}
+
+// Sn returns the value of the "sn" field in the mutation.
+func (m *BatteryFlowMutation) Sn() (r string, exists bool) {
+	v := m.sn
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSn returns the old "sn" field's value of the BatteryFlow entity.
+// If the BatteryFlow object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BatteryFlowMutation) OldSn(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSn is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSn requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSn: %w", err)
+	}
+	return oldValue.Sn, nil
+}
+
+// ResetSn resets all changes to the "sn" field.
+func (m *BatteryFlowMutation) ResetSn() {
+	m.sn = nil
+}
+
+// SetSoc sets the "soc" field.
+func (m *BatteryFlowMutation) SetSoc(f float64) {
+	m.soc = &f
+	m.addsoc = nil
+}
+
+// Soc returns the value of the "soc" field in the mutation.
+func (m *BatteryFlowMutation) Soc() (r float64, exists bool) {
+	v := m.soc
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSoc returns the old "soc" field's value of the BatteryFlow entity.
+// If the BatteryFlow object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BatteryFlowMutation) OldSoc(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSoc is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSoc requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSoc: %w", err)
+	}
+	return oldValue.Soc, nil
+}
+
+// AddSoc adds f to the "soc" field.
+func (m *BatteryFlowMutation) AddSoc(f float64) {
+	if m.addsoc != nil {
+		*m.addsoc += f
+	} else {
+		m.addsoc = &f
+	}
+}
+
+// AddedSoc returns the value that was added to the "soc" field in this mutation.
+func (m *BatteryFlowMutation) AddedSoc() (r float64, exists bool) {
+	v := m.addsoc
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetSoc resets all changes to the "soc" field.
+func (m *BatteryFlowMutation) ResetSoc() {
+	m.soc = nil
+	m.addsoc = nil
+}
+
+// SetRiderID sets the "rider_id" field.
+func (m *BatteryFlowMutation) SetRiderID(u uint64) {
+	m.rider = &u
+}
+
+// RiderID returns the value of the "rider_id" field in the mutation.
+func (m *BatteryFlowMutation) RiderID() (r uint64, exists bool) {
+	v := m.rider
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRiderID returns the old "rider_id" field's value of the BatteryFlow entity.
+// If the BatteryFlow object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BatteryFlowMutation) OldRiderID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRiderID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRiderID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRiderID: %w", err)
+	}
+	return oldValue.RiderID, nil
+}
+
+// ClearRiderID clears the value of the "rider_id" field.
+func (m *BatteryFlowMutation) ClearRiderID() {
+	m.rider = nil
+	m.clearedFields[batteryflow.FieldRiderID] = struct{}{}
+}
+
+// RiderIDCleared returns if the "rider_id" field was cleared in this mutation.
+func (m *BatteryFlowMutation) RiderIDCleared() bool {
+	_, ok := m.clearedFields[batteryflow.FieldRiderID]
+	return ok
+}
+
+// ResetRiderID resets all changes to the "rider_id" field.
+func (m *BatteryFlowMutation) ResetRiderID() {
+	m.rider = nil
+	delete(m.clearedFields, batteryflow.FieldRiderID)
+}
+
+// SetCabinetID sets the "cabinet_id" field.
+func (m *BatteryFlowMutation) SetCabinetID(u uint64) {
+	m.cabinet = &u
+}
+
+// CabinetID returns the value of the "cabinet_id" field in the mutation.
+func (m *BatteryFlowMutation) CabinetID() (r uint64, exists bool) {
+	v := m.cabinet
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCabinetID returns the old "cabinet_id" field's value of the BatteryFlow entity.
+// If the BatteryFlow object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BatteryFlowMutation) OldCabinetID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCabinetID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCabinetID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCabinetID: %w", err)
+	}
+	return oldValue.CabinetID, nil
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (m *BatteryFlowMutation) ClearCabinetID() {
+	m.cabinet = nil
+	m.clearedFields[batteryflow.FieldCabinetID] = struct{}{}
+}
+
+// CabinetIDCleared returns if the "cabinet_id" field was cleared in this mutation.
+func (m *BatteryFlowMutation) CabinetIDCleared() bool {
+	_, ok := m.clearedFields[batteryflow.FieldCabinetID]
+	return ok
+}
+
+// ResetCabinetID resets all changes to the "cabinet_id" field.
+func (m *BatteryFlowMutation) ResetCabinetID() {
+	m.cabinet = nil
+	delete(m.clearedFields, batteryflow.FieldCabinetID)
+}
+
+// SetSerial sets the "serial" field.
+func (m *BatteryFlowMutation) SetSerial(s string) {
+	m.serial = &s
+}
+
+// Serial returns the value of the "serial" field in the mutation.
+func (m *BatteryFlowMutation) Serial() (r string, exists bool) {
+	v := m.serial
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSerial returns the old "serial" field's value of the BatteryFlow entity.
+// If the BatteryFlow object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BatteryFlowMutation) OldSerial(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSerial is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSerial requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSerial: %w", err)
+	}
+	return oldValue.Serial, nil
+}
+
+// ClearSerial clears the value of the "serial" field.
+func (m *BatteryFlowMutation) ClearSerial() {
+	m.serial = nil
+	m.clearedFields[batteryflow.FieldSerial] = struct{}{}
+}
+
+// SerialCleared returns if the "serial" field was cleared in this mutation.
+func (m *BatteryFlowMutation) SerialCleared() bool {
+	_, ok := m.clearedFields[batteryflow.FieldSerial]
+	return ok
+}
+
+// ResetSerial resets all changes to the "serial" field.
+func (m *BatteryFlowMutation) ResetSerial() {
+	m.serial = nil
+	delete(m.clearedFields, batteryflow.FieldSerial)
+}
+
+// SetOrdinal sets the "ordinal" field.
+func (m *BatteryFlowMutation) SetOrdinal(i int) {
+	m.ordinal = &i
+	m.addordinal = nil
+}
+
+// Ordinal returns the value of the "ordinal" field in the mutation.
+func (m *BatteryFlowMutation) Ordinal() (r int, exists bool) {
+	v := m.ordinal
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOrdinal returns the old "ordinal" field's value of the BatteryFlow entity.
+// If the BatteryFlow object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BatteryFlowMutation) OldOrdinal(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOrdinal is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOrdinal requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOrdinal: %w", err)
+	}
+	return oldValue.Ordinal, nil
+}
+
+// AddOrdinal adds i to the "ordinal" field.
+func (m *BatteryFlowMutation) AddOrdinal(i int) {
+	if m.addordinal != nil {
+		*m.addordinal += i
+	} else {
+		m.addordinal = &i
+	}
+}
+
+// AddedOrdinal returns the value that was added to the "ordinal" field in this mutation.
+func (m *BatteryFlowMutation) AddedOrdinal() (r int, exists bool) {
+	v := m.addordinal
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearOrdinal clears the value of the "ordinal" field.
+func (m *BatteryFlowMutation) ClearOrdinal() {
+	m.ordinal = nil
+	m.addordinal = nil
+	m.clearedFields[batteryflow.FieldOrdinal] = struct{}{}
+}
+
+// OrdinalCleared returns if the "ordinal" field was cleared in this mutation.
+func (m *BatteryFlowMutation) OrdinalCleared() bool {
+	_, ok := m.clearedFields[batteryflow.FieldOrdinal]
+	return ok
+}
+
+// ResetOrdinal resets all changes to the "ordinal" field.
+func (m *BatteryFlowMutation) ResetOrdinal() {
+	m.ordinal = nil
+	m.addordinal = nil
+	delete(m.clearedFields, batteryflow.FieldOrdinal)
+}
+
+// SetGeom sets the "geom" field.
+func (m *BatteryFlowMutation) SetGeom(a *adapter.Geometry) {
+	m.geom = &a
+}
+
+// Geom returns the value of the "geom" field in the mutation.
+func (m *BatteryFlowMutation) Geom() (r *adapter.Geometry, exists bool) {
+	v := m.geom
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldGeom returns the old "geom" field's value of the BatteryFlow entity.
+// If the BatteryFlow object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BatteryFlowMutation) OldGeom(ctx context.Context) (v *adapter.Geometry, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldGeom is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldGeom requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldGeom: %w", err)
+	}
+	return oldValue.Geom, nil
+}
+
+// ResetGeom resets all changes to the "geom" field.
+func (m *BatteryFlowMutation) ResetGeom() {
+	m.geom = nil
+}
+
+// SetRemark sets the "remark" field.
+func (m *BatteryFlowMutation) SetRemark(s string) {
+	m.remark = &s
+}
+
+// Remark returns the value of the "remark" field in the mutation.
+func (m *BatteryFlowMutation) Remark() (r string, exists bool) {
+	v := m.remark
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRemark returns the old "remark" field's value of the BatteryFlow entity.
+// If the BatteryFlow object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BatteryFlowMutation) OldRemark(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRemark is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRemark requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRemark: %w", err)
+	}
+	return oldValue.Remark, nil
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (m *BatteryFlowMutation) ClearRemark() {
+	m.remark = nil
+	m.clearedFields[batteryflow.FieldRemark] = struct{}{}
+}
+
+// RemarkCleared returns if the "remark" field was cleared in this mutation.
+func (m *BatteryFlowMutation) RemarkCleared() bool {
+	_, ok := m.clearedFields[batteryflow.FieldRemark]
+	return ok
+}
+
+// ResetRemark resets all changes to the "remark" field.
+func (m *BatteryFlowMutation) ResetRemark() {
+	m.remark = nil
+	delete(m.clearedFields, batteryflow.FieldRemark)
+}
+
+// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
+func (m *BatteryFlowMutation) ClearSubscribe() {
+	m.clearedsubscribe = true
+}
+
+// SubscribeCleared reports if the "subscribe" edge to the Subscribe entity was cleared.
+func (m *BatteryFlowMutation) SubscribeCleared() bool {
+	return m.SubscribeIDCleared() || m.clearedsubscribe
+}
+
+// SubscribeIDs returns the "subscribe" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// SubscribeID instead. It exists only for internal usage by the builders.
+func (m *BatteryFlowMutation) SubscribeIDs() (ids []uint64) {
+	if id := m.subscribe; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetSubscribe resets all changes to the "subscribe" edge.
+func (m *BatteryFlowMutation) ResetSubscribe() {
+	m.subscribe = nil
+	m.clearedsubscribe = false
+}
+
+// ClearBattery clears the "battery" edge to the Battery entity.
+func (m *BatteryFlowMutation) ClearBattery() {
+	m.clearedbattery = true
+}
+
+// BatteryCleared reports if the "battery" edge to the Battery entity was cleared.
+func (m *BatteryFlowMutation) BatteryCleared() bool {
+	return m.clearedbattery
+}
+
+// BatteryIDs returns the "battery" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// BatteryID instead. It exists only for internal usage by the builders.
+func (m *BatteryFlowMutation) BatteryIDs() (ids []uint64) {
+	if id := m.battery; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetBattery resets all changes to the "battery" edge.
+func (m *BatteryFlowMutation) ResetBattery() {
+	m.battery = nil
+	m.clearedbattery = false
+}
+
+// ClearCabinet clears the "cabinet" edge to the Cabinet entity.
+func (m *BatteryFlowMutation) ClearCabinet() {
+	m.clearedcabinet = true
+}
+
+// CabinetCleared reports if the "cabinet" edge to the Cabinet entity was cleared.
+func (m *BatteryFlowMutation) CabinetCleared() bool {
+	return m.CabinetIDCleared() || m.clearedcabinet
+}
+
+// CabinetIDs returns the "cabinet" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CabinetID instead. It exists only for internal usage by the builders.
+func (m *BatteryFlowMutation) CabinetIDs() (ids []uint64) {
+	if id := m.cabinet; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCabinet resets all changes to the "cabinet" edge.
+func (m *BatteryFlowMutation) ResetCabinet() {
+	m.cabinet = nil
+	m.clearedcabinet = false
+}
+
+// ClearRider clears the "rider" edge to the Rider entity.
+func (m *BatteryFlowMutation) ClearRider() {
+	m.clearedrider = true
+}
+
+// RiderCleared reports if the "rider" edge to the Rider entity was cleared.
+func (m *BatteryFlowMutation) RiderCleared() bool {
+	return m.RiderIDCleared() || m.clearedrider
+}
+
+// RiderIDs returns the "rider" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// RiderID instead. It exists only for internal usage by the builders.
+func (m *BatteryFlowMutation) RiderIDs() (ids []uint64) {
+	if id := m.rider; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetRider resets all changes to the "rider" edge.
+func (m *BatteryFlowMutation) ResetRider() {
+	m.rider = nil
+	m.clearedrider = false
+}
+
+// Where appends a list predicates to the BatteryFlowMutation builder.
+func (m *BatteryFlowMutation) Where(ps ...predicate.BatteryFlow) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the BatteryFlowMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *BatteryFlowMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.BatteryFlow, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *BatteryFlowMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *BatteryFlowMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (BatteryFlow).
+func (m *BatteryFlowMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *BatteryFlowMutation) Fields() []string {
+	fields := make([]string, 0, 12)
+	if m.created_at != nil {
+		fields = append(fields, batteryflow.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, batteryflow.FieldUpdatedAt)
+	}
+	if m.subscribe != nil {
+		fields = append(fields, batteryflow.FieldSubscribeID)
+	}
+	if m.battery != nil {
+		fields = append(fields, batteryflow.FieldBatteryID)
+	}
+	if m.sn != nil {
+		fields = append(fields, batteryflow.FieldSn)
+	}
+	if m.soc != nil {
+		fields = append(fields, batteryflow.FieldSoc)
+	}
+	if m.rider != nil {
+		fields = append(fields, batteryflow.FieldRiderID)
+	}
+	if m.cabinet != nil {
+		fields = append(fields, batteryflow.FieldCabinetID)
+	}
+	if m.serial != nil {
+		fields = append(fields, batteryflow.FieldSerial)
+	}
+	if m.ordinal != nil {
+		fields = append(fields, batteryflow.FieldOrdinal)
+	}
+	if m.geom != nil {
+		fields = append(fields, batteryflow.FieldGeom)
+	}
+	if m.remark != nil {
+		fields = append(fields, batteryflow.FieldRemark)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *BatteryFlowMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case batteryflow.FieldCreatedAt:
+		return m.CreatedAt()
+	case batteryflow.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case batteryflow.FieldSubscribeID:
+		return m.SubscribeID()
+	case batteryflow.FieldBatteryID:
+		return m.BatteryID()
+	case batteryflow.FieldSn:
+		return m.Sn()
+	case batteryflow.FieldSoc:
+		return m.Soc()
+	case batteryflow.FieldRiderID:
+		return m.RiderID()
+	case batteryflow.FieldCabinetID:
+		return m.CabinetID()
+	case batteryflow.FieldSerial:
+		return m.Serial()
+	case batteryflow.FieldOrdinal:
+		return m.Ordinal()
+	case batteryflow.FieldGeom:
+		return m.Geom()
+	case batteryflow.FieldRemark:
+		return m.Remark()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *BatteryFlowMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case batteryflow.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case batteryflow.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case batteryflow.FieldSubscribeID:
+		return m.OldSubscribeID(ctx)
+	case batteryflow.FieldBatteryID:
+		return m.OldBatteryID(ctx)
+	case batteryflow.FieldSn:
+		return m.OldSn(ctx)
+	case batteryflow.FieldSoc:
+		return m.OldSoc(ctx)
+	case batteryflow.FieldRiderID:
+		return m.OldRiderID(ctx)
+	case batteryflow.FieldCabinetID:
+		return m.OldCabinetID(ctx)
+	case batteryflow.FieldSerial:
+		return m.OldSerial(ctx)
+	case batteryflow.FieldOrdinal:
+		return m.OldOrdinal(ctx)
+	case batteryflow.FieldGeom:
+		return m.OldGeom(ctx)
+	case batteryflow.FieldRemark:
+		return m.OldRemark(ctx)
+	}
+	return nil, fmt.Errorf("unknown BatteryFlow field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *BatteryFlowMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case batteryflow.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case batteryflow.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case batteryflow.FieldSubscribeID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSubscribeID(v)
+		return nil
+	case batteryflow.FieldBatteryID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBatteryID(v)
+		return nil
+	case batteryflow.FieldSn:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSn(v)
+		return nil
+	case batteryflow.FieldSoc:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSoc(v)
+		return nil
+	case batteryflow.FieldRiderID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRiderID(v)
+		return nil
+	case batteryflow.FieldCabinetID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCabinetID(v)
+		return nil
+	case batteryflow.FieldSerial:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSerial(v)
+		return nil
+	case batteryflow.FieldOrdinal:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOrdinal(v)
+		return nil
+	case batteryflow.FieldGeom:
+		v, ok := value.(*adapter.Geometry)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetGeom(v)
+		return nil
+	case batteryflow.FieldRemark:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRemark(v)
+		return nil
+	}
+	return fmt.Errorf("unknown BatteryFlow field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *BatteryFlowMutation) AddedFields() []string {
+	var fields []string
+	if m.addsoc != nil {
+		fields = append(fields, batteryflow.FieldSoc)
+	}
+	if m.addordinal != nil {
+		fields = append(fields, batteryflow.FieldOrdinal)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *BatteryFlowMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case batteryflow.FieldSoc:
+		return m.AddedSoc()
+	case batteryflow.FieldOrdinal:
+		return m.AddedOrdinal()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *BatteryFlowMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case batteryflow.FieldSoc:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddSoc(v)
+		return nil
+	case batteryflow.FieldOrdinal:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddOrdinal(v)
+		return nil
+	}
+	return fmt.Errorf("unknown BatteryFlow numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *BatteryFlowMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(batteryflow.FieldSubscribeID) {
+		fields = append(fields, batteryflow.FieldSubscribeID)
+	}
+	if m.FieldCleared(batteryflow.FieldRiderID) {
+		fields = append(fields, batteryflow.FieldRiderID)
+	}
+	if m.FieldCleared(batteryflow.FieldCabinetID) {
+		fields = append(fields, batteryflow.FieldCabinetID)
+	}
+	if m.FieldCleared(batteryflow.FieldSerial) {
+		fields = append(fields, batteryflow.FieldSerial)
+	}
+	if m.FieldCleared(batteryflow.FieldOrdinal) {
+		fields = append(fields, batteryflow.FieldOrdinal)
+	}
+	if m.FieldCleared(batteryflow.FieldRemark) {
+		fields = append(fields, batteryflow.FieldRemark)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *BatteryFlowMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *BatteryFlowMutation) ClearField(name string) error {
+	switch name {
+	case batteryflow.FieldSubscribeID:
+		m.ClearSubscribeID()
+		return nil
+	case batteryflow.FieldRiderID:
+		m.ClearRiderID()
+		return nil
+	case batteryflow.FieldCabinetID:
+		m.ClearCabinetID()
+		return nil
+	case batteryflow.FieldSerial:
+		m.ClearSerial()
+		return nil
+	case batteryflow.FieldOrdinal:
+		m.ClearOrdinal()
+		return nil
+	case batteryflow.FieldRemark:
+		m.ClearRemark()
+		return nil
+	}
+	return fmt.Errorf("unknown BatteryFlow nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *BatteryFlowMutation) ResetField(name string) error {
+	switch name {
+	case batteryflow.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case batteryflow.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case batteryflow.FieldSubscribeID:
+		m.ResetSubscribeID()
+		return nil
+	case batteryflow.FieldBatteryID:
+		m.ResetBatteryID()
+		return nil
+	case batteryflow.FieldSn:
+		m.ResetSn()
+		return nil
+	case batteryflow.FieldSoc:
+		m.ResetSoc()
+		return nil
+	case batteryflow.FieldRiderID:
+		m.ResetRiderID()
+		return nil
+	case batteryflow.FieldCabinetID:
+		m.ResetCabinetID()
+		return nil
+	case batteryflow.FieldSerial:
+		m.ResetSerial()
+		return nil
+	case batteryflow.FieldOrdinal:
+		m.ResetOrdinal()
+		return nil
+	case batteryflow.FieldGeom:
+		m.ResetGeom()
+		return nil
+	case batteryflow.FieldRemark:
+		m.ResetRemark()
+		return nil
+	}
+	return fmt.Errorf("unknown BatteryFlow field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *BatteryFlowMutation) AddedEdges() []string {
+	edges := make([]string, 0, 4)
+	if m.subscribe != nil {
+		edges = append(edges, batteryflow.EdgeSubscribe)
+	}
+	if m.battery != nil {
+		edges = append(edges, batteryflow.EdgeBattery)
+	}
+	if m.cabinet != nil {
+		edges = append(edges, batteryflow.EdgeCabinet)
+	}
+	if m.rider != nil {
+		edges = append(edges, batteryflow.EdgeRider)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *BatteryFlowMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case batteryflow.EdgeSubscribe:
+		if id := m.subscribe; id != nil {
+			return []ent.Value{*id}
+		}
+	case batteryflow.EdgeBattery:
+		if id := m.battery; id != nil {
+			return []ent.Value{*id}
+		}
+	case batteryflow.EdgeCabinet:
+		if id := m.cabinet; id != nil {
+			return []ent.Value{*id}
+		}
+	case batteryflow.EdgeRider:
+		if id := m.rider; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *BatteryFlowMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 4)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *BatteryFlowMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *BatteryFlowMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 4)
+	if m.clearedsubscribe {
+		edges = append(edges, batteryflow.EdgeSubscribe)
+	}
+	if m.clearedbattery {
+		edges = append(edges, batteryflow.EdgeBattery)
+	}
+	if m.clearedcabinet {
+		edges = append(edges, batteryflow.EdgeCabinet)
+	}
+	if m.clearedrider {
+		edges = append(edges, batteryflow.EdgeRider)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *BatteryFlowMutation) EdgeCleared(name string) bool {
+	switch name {
+	case batteryflow.EdgeSubscribe:
+		return m.clearedsubscribe
+	case batteryflow.EdgeBattery:
+		return m.clearedbattery
+	case batteryflow.EdgeCabinet:
+		return m.clearedcabinet
+	case batteryflow.EdgeRider:
+		return m.clearedrider
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *BatteryFlowMutation) ClearEdge(name string) error {
+	switch name {
+	case batteryflow.EdgeSubscribe:
+		m.ClearSubscribe()
+		return nil
+	case batteryflow.EdgeBattery:
+		m.ClearBattery()
+		return nil
+	case batteryflow.EdgeCabinet:
+		m.ClearCabinet()
+		return nil
+	case batteryflow.EdgeRider:
+		m.ClearRider()
+		return nil
+	}
+	return fmt.Errorf("unknown BatteryFlow unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *BatteryFlowMutation) ResetEdge(name string) error {
+	switch name {
+	case batteryflow.EdgeSubscribe:
+		m.ResetSubscribe()
+		return nil
+	case batteryflow.EdgeBattery:
+		m.ResetBattery()
+		return nil
+	case batteryflow.EdgeCabinet:
+		m.ResetCabinet()
+		return nil
+	case batteryflow.EdgeRider:
+		m.ResetRider()
+		return nil
+	}
+	return fmt.Errorf("unknown BatteryFlow edge %s", name)
 }
 
 // BatteryModelMutation represents an operation that mutates the BatteryModel nodes in the graph.
@@ -14849,6 +17045,9 @@ type CabinetMutation struct {
 	batteries               map[uint64]struct{}
 	removedbatteries        map[uint64]struct{}
 	clearedbatteries        bool
+	battery_flows           map[uint64]struct{}
+	removedbattery_flows    map[uint64]struct{}
+	clearedbattery_flows    bool
 	done                    bool
 	oldValue                func(context.Context) (*Cabinet, error)
 	predicates              []predicate.Cabinet
@@ -16656,6 +18855,60 @@ func (m *CabinetMutation) ResetBatteries() {
 	m.removedbatteries = nil
 }
 
+// AddBatteryFlowIDs adds the "battery_flows" edge to the BatteryFlow entity by ids.
+func (m *CabinetMutation) AddBatteryFlowIDs(ids ...uint64) {
+	if m.battery_flows == nil {
+		m.battery_flows = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.battery_flows[ids[i]] = struct{}{}
+	}
+}
+
+// ClearBatteryFlows clears the "battery_flows" edge to the BatteryFlow entity.
+func (m *CabinetMutation) ClearBatteryFlows() {
+	m.clearedbattery_flows = true
+}
+
+// BatteryFlowsCleared reports if the "battery_flows" edge to the BatteryFlow entity was cleared.
+func (m *CabinetMutation) BatteryFlowsCleared() bool {
+	return m.clearedbattery_flows
+}
+
+// RemoveBatteryFlowIDs removes the "battery_flows" edge to the BatteryFlow entity by IDs.
+func (m *CabinetMutation) RemoveBatteryFlowIDs(ids ...uint64) {
+	if m.removedbattery_flows == nil {
+		m.removedbattery_flows = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.battery_flows, ids[i])
+		m.removedbattery_flows[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedBatteryFlows returns the removed IDs of the "battery_flows" edge to the BatteryFlow entity.
+func (m *CabinetMutation) RemovedBatteryFlowsIDs() (ids []uint64) {
+	for id := range m.removedbattery_flows {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// BatteryFlowsIDs returns the "battery_flows" edge IDs in the mutation.
+func (m *CabinetMutation) BatteryFlowsIDs() (ids []uint64) {
+	for id := range m.battery_flows {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetBatteryFlows resets all changes to the "battery_flows" edge.
+func (m *CabinetMutation) ResetBatteryFlows() {
+	m.battery_flows = nil
+	m.clearedbattery_flows = false
+	m.removedbattery_flows = nil
+}
+
 // Where appends a list predicates to the CabinetMutation builder.
 func (m *CabinetMutation) Where(ps ...predicate.Cabinet) {
 	m.predicates = append(m.predicates, ps...)
@@ -17446,7 +19699,7 @@ func (m *CabinetMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *CabinetMutation) AddedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 8)
 	if m.city != nil {
 		edges = append(edges, cabinet.EdgeCity)
 	}
@@ -17467,6 +19720,9 @@ func (m *CabinetMutation) AddedEdges() []string {
 	}
 	if m.batteries != nil {
 		edges = append(edges, cabinet.EdgeBatteries)
+	}
+	if m.battery_flows != nil {
+		edges = append(edges, cabinet.EdgeBatteryFlows)
 	}
 	return edges
 }
@@ -17513,13 +19769,19 @@ func (m *CabinetMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case cabinet.EdgeBatteryFlows:
+		ids := make([]ent.Value, 0, len(m.battery_flows))
+		for id := range m.battery_flows {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *CabinetMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 8)
 	if m.removedmodels != nil {
 		edges = append(edges, cabinet.EdgeModels)
 	}
@@ -17534,6 +19796,9 @@ func (m *CabinetMutation) RemovedEdges() []string {
 	}
 	if m.removedbatteries != nil {
 		edges = append(edges, cabinet.EdgeBatteries)
+	}
+	if m.removedbattery_flows != nil {
+		edges = append(edges, cabinet.EdgeBatteryFlows)
 	}
 	return edges
 }
@@ -17572,13 +19837,19 @@ func (m *CabinetMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case cabinet.EdgeBatteryFlows:
+		ids := make([]ent.Value, 0, len(m.removedbattery_flows))
+		for id := range m.removedbattery_flows {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *CabinetMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 8)
 	if m.clearedcity {
 		edges = append(edges, cabinet.EdgeCity)
 	}
@@ -17599,6 +19870,9 @@ func (m *CabinetMutation) ClearedEdges() []string {
 	}
 	if m.clearedbatteries {
 		edges = append(edges, cabinet.EdgeBatteries)
+	}
+	if m.clearedbattery_flows {
+		edges = append(edges, cabinet.EdgeBatteryFlows)
 	}
 	return edges
 }
@@ -17621,6 +19895,8 @@ func (m *CabinetMutation) EdgeCleared(name string) bool {
 		return m.clearedstocks
 	case cabinet.EdgeBatteries:
 		return m.clearedbatteries
+	case cabinet.EdgeBatteryFlows:
+		return m.clearedbattery_flows
 	}
 	return false
 }
@@ -17663,6 +19939,9 @@ func (m *CabinetMutation) ResetEdge(name string) error {
 		return nil
 	case cabinet.EdgeBatteries:
 		m.ResetBatteries()
+		return nil
+	case cabinet.EdgeBatteryFlows:
+		m.ResetBatteryFlows()
 		return nil
 	}
 	return fmt.Errorf("unknown Cabinet edge %s", name)
@@ -58717,62 +60996,65 @@ func (m *ReserveMutation) ResetEdge(name string) error {
 // RiderMutation represents an operation that mutates the Rider nodes in the graph.
 type RiderMutation struct {
 	config
-	op                Op
-	typ               string
-	id                *uint64
-	created_at        *time.Time
-	updated_at        *time.Time
-	deleted_at        *time.Time
-	creator           **model.Modifier
-	last_modifier     **model.Modifier
-	remark            *string
-	name              *string
-	id_card_number    *string
-	phone             *string
-	contact           **model.RiderContact
-	device_type       *uint8
-	adddevice_type    *int8
-	last_device       *string
-	is_new_device     *bool
-	last_face         *string
-	push_id           *string
-	last_signin_at    *time.Time
-	blocked           *bool
-	points            *int64
-	addpoints         *int64
-	clearedFields     map[string]struct{}
-	station           *uint64
-	clearedstation    bool
-	person            *uint64
-	clearedperson     bool
-	enterprise        *uint64
-	clearedenterprise bool
-	contracts         map[uint64]struct{}
-	removedcontracts  map[uint64]struct{}
-	clearedcontracts  bool
-	faults            map[uint64]struct{}
-	removedfaults     map[uint64]struct{}
-	clearedfaults     bool
-	orders            map[uint64]struct{}
-	removedorders     map[uint64]struct{}
-	clearedorders     bool
-	exchanges         map[uint64]struct{}
-	removedexchanges  map[uint64]struct{}
-	clearedexchanges  bool
-	subscribes        map[uint64]struct{}
-	removedsubscribes map[uint64]struct{}
-	clearedsubscribes bool
-	stocks            map[uint64]struct{}
-	removedstocks     map[uint64]struct{}
-	clearedstocks     bool
-	followups         map[uint64]struct{}
-	removedfollowups  map[uint64]struct{}
-	clearedfollowups  bool
-	battery           *uint64
-	clearedbattery    bool
-	done              bool
-	oldValue          func(context.Context) (*Rider, error)
-	predicates        []predicate.Rider
+	op                   Op
+	typ                  string
+	id                   *uint64
+	created_at           *time.Time
+	updated_at           *time.Time
+	deleted_at           *time.Time
+	creator              **model.Modifier
+	last_modifier        **model.Modifier
+	remark               *string
+	name                 *string
+	id_card_number       *string
+	phone                *string
+	contact              **model.RiderContact
+	device_type          *uint8
+	adddevice_type       *int8
+	last_device          *string
+	is_new_device        *bool
+	last_face            *string
+	push_id              *string
+	last_signin_at       *time.Time
+	blocked              *bool
+	points               *int64
+	addpoints            *int64
+	clearedFields        map[string]struct{}
+	station              *uint64
+	clearedstation       bool
+	person               *uint64
+	clearedperson        bool
+	enterprise           *uint64
+	clearedenterprise    bool
+	contracts            map[uint64]struct{}
+	removedcontracts     map[uint64]struct{}
+	clearedcontracts     bool
+	faults               map[uint64]struct{}
+	removedfaults        map[uint64]struct{}
+	clearedfaults        bool
+	orders               map[uint64]struct{}
+	removedorders        map[uint64]struct{}
+	clearedorders        bool
+	exchanges            map[uint64]struct{}
+	removedexchanges     map[uint64]struct{}
+	clearedexchanges     bool
+	subscribes           map[uint64]struct{}
+	removedsubscribes    map[uint64]struct{}
+	clearedsubscribes    bool
+	stocks               map[uint64]struct{}
+	removedstocks        map[uint64]struct{}
+	clearedstocks        bool
+	followups            map[uint64]struct{}
+	removedfollowups     map[uint64]struct{}
+	clearedfollowups     bool
+	battery              *uint64
+	clearedbattery       bool
+	battery_flows        map[uint64]struct{}
+	removedbattery_flows map[uint64]struct{}
+	clearedbattery_flows bool
+	done                 bool
+	oldValue             func(context.Context) (*Rider, error)
+	predicates           []predicate.Rider
 }
 
 var _ ent.Mutation = (*RiderMutation)(nil)
@@ -60360,6 +62642,60 @@ func (m *RiderMutation) ResetBattery() {
 	m.clearedbattery = false
 }
 
+// AddBatteryFlowIDs adds the "battery_flows" edge to the BatteryFlow entity by ids.
+func (m *RiderMutation) AddBatteryFlowIDs(ids ...uint64) {
+	if m.battery_flows == nil {
+		m.battery_flows = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.battery_flows[ids[i]] = struct{}{}
+	}
+}
+
+// ClearBatteryFlows clears the "battery_flows" edge to the BatteryFlow entity.
+func (m *RiderMutation) ClearBatteryFlows() {
+	m.clearedbattery_flows = true
+}
+
+// BatteryFlowsCleared reports if the "battery_flows" edge to the BatteryFlow entity was cleared.
+func (m *RiderMutation) BatteryFlowsCleared() bool {
+	return m.clearedbattery_flows
+}
+
+// RemoveBatteryFlowIDs removes the "battery_flows" edge to the BatteryFlow entity by IDs.
+func (m *RiderMutation) RemoveBatteryFlowIDs(ids ...uint64) {
+	if m.removedbattery_flows == nil {
+		m.removedbattery_flows = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.battery_flows, ids[i])
+		m.removedbattery_flows[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedBatteryFlows returns the removed IDs of the "battery_flows" edge to the BatteryFlow entity.
+func (m *RiderMutation) RemovedBatteryFlowsIDs() (ids []uint64) {
+	for id := range m.removedbattery_flows {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// BatteryFlowsIDs returns the "battery_flows" edge IDs in the mutation.
+func (m *RiderMutation) BatteryFlowsIDs() (ids []uint64) {
+	for id := range m.battery_flows {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetBatteryFlows resets all changes to the "battery_flows" edge.
+func (m *RiderMutation) ResetBatteryFlows() {
+	m.battery_flows = nil
+	m.clearedbattery_flows = false
+	m.removedbattery_flows = nil
+}
+
 // Where appends a list predicates to the RiderMutation builder.
 func (m *RiderMutation) Where(ps ...predicate.Rider) {
 	m.predicates = append(m.predicates, ps...)
@@ -60953,7 +63289,7 @@ func (m *RiderMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *RiderMutation) AddedEdges() []string {
-	edges := make([]string, 0, 11)
+	edges := make([]string, 0, 12)
 	if m.station != nil {
 		edges = append(edges, rider.EdgeStation)
 	}
@@ -60986,6 +63322,9 @@ func (m *RiderMutation) AddedEdges() []string {
 	}
 	if m.battery != nil {
 		edges = append(edges, rider.EdgeBattery)
+	}
+	if m.battery_flows != nil {
+		edges = append(edges, rider.EdgeBatteryFlows)
 	}
 	return edges
 }
@@ -61052,13 +63391,19 @@ func (m *RiderMutation) AddedIDs(name string) []ent.Value {
 		if id := m.battery; id != nil {
 			return []ent.Value{*id}
 		}
+	case rider.EdgeBatteryFlows:
+		ids := make([]ent.Value, 0, len(m.battery_flows))
+		for id := range m.battery_flows {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *RiderMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 11)
+	edges := make([]string, 0, 12)
 	if m.removedcontracts != nil {
 		edges = append(edges, rider.EdgeContracts)
 	}
@@ -61079,6 +63424,9 @@ func (m *RiderMutation) RemovedEdges() []string {
 	}
 	if m.removedfollowups != nil {
 		edges = append(edges, rider.EdgeFollowups)
+	}
+	if m.removedbattery_flows != nil {
+		edges = append(edges, rider.EdgeBatteryFlows)
 	}
 	return edges
 }
@@ -61129,13 +63477,19 @@ func (m *RiderMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case rider.EdgeBatteryFlows:
+		ids := make([]ent.Value, 0, len(m.removedbattery_flows))
+		for id := range m.removedbattery_flows {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *RiderMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 11)
+	edges := make([]string, 0, 12)
 	if m.clearedstation {
 		edges = append(edges, rider.EdgeStation)
 	}
@@ -61169,6 +63523,9 @@ func (m *RiderMutation) ClearedEdges() []string {
 	if m.clearedbattery {
 		edges = append(edges, rider.EdgeBattery)
 	}
+	if m.clearedbattery_flows {
+		edges = append(edges, rider.EdgeBatteryFlows)
+	}
 	return edges
 }
 
@@ -61198,6 +63555,8 @@ func (m *RiderMutation) EdgeCleared(name string) bool {
 		return m.clearedfollowups
 	case rider.EdgeBattery:
 		return m.clearedbattery
+	case rider.EdgeBatteryFlows:
+		return m.clearedbattery_flows
 	}
 	return false
 }
@@ -61258,6 +63617,9 @@ func (m *RiderMutation) ResetEdge(name string) error {
 		return nil
 	case rider.EdgeBattery:
 		m.ResetBattery()
+		return nil
+	case rider.EdgeBatteryFlows:
+		m.ResetBatteryFlows()
 		return nil
 	}
 	return fmt.Errorf("unknown Rider edge %s", name)

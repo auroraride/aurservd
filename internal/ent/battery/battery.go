@@ -49,6 +49,10 @@ const (
 	EdgeCabinet = "cabinet"
 	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
 	EdgeSubscribe = "subscribe"
+	// EdgeFlows holds the string denoting the flows edge name in mutations.
+	EdgeFlows = "flows"
+	// EdgeFaults holds the string denoting the faults edge name in mutations.
+	EdgeFaults = "faults"
 	// Table holds the table name of the battery in the database.
 	Table = "battery"
 	// CityTable is the table that holds the city relation/edge.
@@ -79,6 +83,20 @@ const (
 	SubscribeInverseTable = "subscribe"
 	// SubscribeColumn is the table column denoting the subscribe relation/edge.
 	SubscribeColumn = "subscribe_id"
+	// FlowsTable is the table that holds the flows relation/edge.
+	FlowsTable = "battery_flow"
+	// FlowsInverseTable is the table name for the BatteryFlow entity.
+	// It exists in this package in order to avoid circular dependency with the "batteryflow" package.
+	FlowsInverseTable = "battery_flow"
+	// FlowsColumn is the table column denoting the flows relation/edge.
+	FlowsColumn = "battery_id"
+	// FaultsTable is the table that holds the faults relation/edge.
+	FaultsTable = "battery_fault"
+	// FaultsInverseTable is the table name for the BatteryFault entity.
+	// It exists in this package in order to avoid circular dependency with the "batteryfault" package.
+	FaultsInverseTable = "battery_fault"
+	// FaultsColumn is the table column denoting the faults relation/edge.
+	FaultsColumn = "battery_id"
 )
 
 // Columns holds all SQL columns for battery fields.

@@ -77,6 +77,8 @@ const (
 	EdgeFollowups = "followups"
 	// EdgeBattery holds the string denoting the battery edge name in mutations.
 	EdgeBattery = "battery"
+	// EdgeBatteryFlows holds the string denoting the battery_flows edge name in mutations.
+	EdgeBatteryFlows = "battery_flows"
 	// Table holds the table name of the rider in the database.
 	Table = "rider"
 	// StationTable is the table that holds the station relation/edge.
@@ -156,6 +158,13 @@ const (
 	BatteryInverseTable = "battery"
 	// BatteryColumn is the table column denoting the battery relation/edge.
 	BatteryColumn = "rider_id"
+	// BatteryFlowsTable is the table that holds the battery_flows relation/edge.
+	BatteryFlowsTable = "battery_flow"
+	// BatteryFlowsInverseTable is the table name for the BatteryFlow entity.
+	// It exists in this package in order to avoid circular dependency with the "batteryflow" package.
+	BatteryFlowsInverseTable = "battery_flow"
+	// BatteryFlowsColumn is the table column denoting the battery_flows relation/edge.
+	BatteryFlowsColumn = "rider_id"
 )
 
 // Columns holds all SQL columns for rider fields.

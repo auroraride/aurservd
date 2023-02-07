@@ -83,6 +83,8 @@ const (
 	EdgeStocks = "stocks"
 	// EdgeBatteries holds the string denoting the batteries edge name in mutations.
 	EdgeBatteries = "batteries"
+	// EdgeBatteryFlows holds the string denoting the battery_flows edge name in mutations.
+	EdgeBatteryFlows = "battery_flows"
 	// Table holds the table name of the cabinet in the database.
 	Table = "cabinet"
 	// CityTable is the table that holds the city relation/edge.
@@ -132,6 +134,13 @@ const (
 	BatteriesInverseTable = "battery"
 	// BatteriesColumn is the table column denoting the batteries relation/edge.
 	BatteriesColumn = "cabinet_id"
+	// BatteryFlowsTable is the table that holds the battery_flows relation/edge.
+	BatteryFlowsTable = "battery_flow"
+	// BatteryFlowsInverseTable is the table name for the BatteryFlow entity.
+	// It exists in this package in order to avoid circular dependency with the "batteryflow" package.
+	BatteryFlowsInverseTable = "battery_flow"
+	// BatteryFlowsColumn is the table column denoting the battery_flows relation/edge.
+	BatteryFlowsColumn = "cabinet_id"
 )
 
 // Columns holds all SQL columns for cabinet fields.

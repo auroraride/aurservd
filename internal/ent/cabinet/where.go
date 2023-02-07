@@ -1564,6 +1564,33 @@ func HasBatteriesWith(preds ...predicate.Battery) predicate.Cabinet {
 	})
 }
 
+// HasBatteryFlows applies the HasEdge predicate on the "battery_flows" edge.
+func HasBatteryFlows() predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, BatteryFlowsTable, BatteryFlowsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasBatteryFlowsWith applies the HasEdge predicate on the "battery_flows" edge with a given conditions (other predicates).
+func HasBatteryFlowsWith(preds ...predicate.BatteryFlow) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(BatteryFlowsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, BatteryFlowsTable, BatteryFlowsColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Cabinet) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
