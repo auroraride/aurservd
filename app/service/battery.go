@@ -323,7 +323,7 @@ func (s *batteryService) List(req *model.BatteryListReq) (res *model.PaginationR
     })
 
     // 请求xcbms rpc
-    r, _ := rpc.XcBmsClient.Batch(s.ctx, &pb.BatteryBatchRequest{Sn: sn})
+    r, _ := rpc.XcBmsBatch(s.ctx, &pb.BatteryBatchRequest{Sn: sn})
 
     if r == nil {
         return

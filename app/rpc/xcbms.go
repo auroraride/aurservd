@@ -6,6 +6,7 @@
 package rpc
 
 import (
+    "context"
     "github.com/auroraride/adapter/rpc"
     "github.com/auroraride/adapter/rpc/pb"
     "github.com/auroraride/aurservd/internal/ar"
@@ -14,14 +15,35 @@ import (
 )
 
 var (
-    XcBmsClient pb.BatteryClient
+    xcBmsClient pb.BatteryClient
 )
 
 func createXcClient() {
     err := rpc.NewClient(ar.Config.Rpc.Xcbms.Server, func(conn *grpc.ClientConn) {
-        XcBmsClient = pb.NewBatteryClient(conn)
+        xcBmsClient = pb.NewBatteryClient(conn)
     })
     if err != nil {
         zap.L().Error("xcbms rpc连接失败", zap.Error(err))
     }
+}
+
+func XcBmsBatch(ctx context.Context, req *pb.BatteryBatchRequest) (res *pb.BatteryBatchResponse, err error) {
+    if xcBmsClient == nil {
+        return
+    }
+    return xcBmsClient.Batch(ctx, req)
+}
+
+func XcBmsSample(ctx context.Context, req *pb.BatterySnRequest) (res *pb.BatterySampleResponse, err error) {
+    if xcBmsClient == nil {
+        return
+    }
+    return xcBmsClient.Sample(ctx, req)
+}
+
+func XcBmsFaultList(ctx context.Context, req *pb.BatteryFaultListRequest) (res *pb.BatteryFaultListResponse, err error) {
+    if xcBmsClient == nil {
+        return
+    }
+    return xcBmsClient.FaultList(ctx, req)
 }

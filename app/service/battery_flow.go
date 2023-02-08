@@ -27,10 +27,6 @@ func NewBatteryFlow(params ...any) *batteryFlowService {
     }
 }
 
-func (s *batteryFlowService) GetSampleInfo(sn string) (*pb.BatterySampleResponse, error) {
-    return rpc.XcBmsClient.Sample(s.ctx, &pb.BatterySnRequest{Sn: sn})
-}
-
 func (s *batteryFlowService) Create(req model.BatteryFlowCreateReq) {
     updater := s.orm.Create().
         SetSn(req.SN).
@@ -40,7 +36,7 @@ func (s *batteryFlowService) Create(req model.BatteryFlowCreateReq) {
         SetNillableCabinetID(req.CabinetID).
         SetNillableOrdinal(req.Ordinal).
         SetNillableSerial(req.Serial)
-    sr, _ := s.GetSampleInfo(req.SN)
+    sr, _ := rpc.XcBmsSample(s.ctx, &pb.BatterySnRequest{Sn: req.SN})
     if sr != nil {
         updater.SetSoc(float64(sr.Soc)).SetGeom(adapter.NewGeometry(sr.Geom))
     }

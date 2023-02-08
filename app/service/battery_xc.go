@@ -28,7 +28,7 @@ func NewBatteryXc(params ...any) *batteryXcService {
 
 func (s *batteryXcService) Detail(req *model.XcBatteryDetailRequest) (detail *model.XcBatteryDetail) {
     // 请求xcbms rpc
-    r, _ := rpc.XcBmsClient.Batch(s.ctx, &pb.BatteryBatchRequest{Sn: []string{req.SN}})
+    r, _ := rpc.XcBmsBatch(s.ctx, &pb.BatteryBatchRequest{Sn: []string{req.SN}})
     if r == nil {
         snag.Panic("电池信息查询失败")
     }
