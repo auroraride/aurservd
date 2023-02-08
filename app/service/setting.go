@@ -8,6 +8,7 @@ package service
 import (
     "context"
     "errors"
+    "github.com/auroraride/adapter"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/setting"
@@ -47,19 +48,20 @@ func (s *settingService) ParseKey(key string) string {
 // CacheSettings 缓存设置
 func (s *settingService) CacheSettings(sm *ent.Setting) {
     switch sm.Key {
-    case model.SettingBatteryFull,
-        model.SettingDeposit,
-        model.SettingRenewal,
-        model.SettingPauseMaxDays,
-        model.SettingExchangeInterval,
-        model.SettingRescueFee,
-        model.SettingReserveDuration,
-        model.SettingExchangeMinBattery:
+    case model.SettingBatteryFullKey,
+        model.SettingDepositKey,
+        model.SettingRenewalKey,
+        model.SettingPauseMaxDaysKey,
+        model.SettingExchangeIntervalKey,
+        model.SettingRescueFeeKey,
+        model.SettingReserveDurationKey,
+        model.SettingExchangeMinBatteryKey:
         f, err := strconv.ParseFloat(strings.ReplaceAll(sm.Content, `"`, ""), 10)
         if err == nil {
             cache.Set(s.ctx, sm.Key, f, 0)
         }
-        break
+    case model.SettingExchangeLimitKey:
+        cache.Set(s.ctx, sm.Key, adapter.ConvertString2Bytes(sm.Content), -1)
     }
 }
 
@@ -142,7 +144,7 @@ func (s *settingService) GetSetting(key string) (v any) {
 
 // SystemMaintain 检查是否维护中
 func (s *settingService) SystemMaintain() bool {
-    sm, _ := s.GetSetting(model.SettingMaintain).(bool)
+    sm, _ := s.GetSetting(model.SettingMaintainKey).(bool)
     return sm
 }
 
@@ -154,7 +156,7 @@ func (s *settingService) SystemMaintainX() {
 }
 
 func (s *settingService) Question() (v []interface{}) {
-    v, _ = s.GetSetting(model.SettingQuestions).([]interface{})
+    v, _ = s.GetSetting(model.SettingQuestionKey).([]interface{})
     if len(v) == 0 {
         v = make([]interface{}, 0)
     }

@@ -15,7 +15,6 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/provider"
     "github.com/auroraride/aurservd/internal/ent"
-    "github.com/auroraride/aurservd/internal/ent/exchange"
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
@@ -51,13 +50,13 @@ func NewRiderExchange(r *ent.Rider) *riderExchangeService {
 func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq) (res *model.RiderExchangeInfo) {
     NewSetting().SystemMaintainX()
 
-    NewExchange().RiderInterval(s.rider.ID)
-
     // 是否有生效中套餐
     sub := NewSubscribe().RecentX(s.rider.ID)
 
     // 检查用户是否可以办理业务
     NewRiderPermissionWithRider(s.rider).BusinessX().SubscribeX(model.RiderPermissionTypeExchange, sub)
+
+    NewExchange().RiderInterval(s.rider, sub.CityID)
 
     // 查询电柜
     cs := NewCabinet()
@@ -176,15 +175,8 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
     // 检查是否维护中
     NewSetting().SystemMaintainX()
 
-    // 校验换电信息
-    iv := cache.Int(model.SettingExchangeInterval)
-    if exist, _ := ent.Database.Exchange.QueryNotDeleted().Where(
-        exchange.RiderID(s.rider.ID),
-        exchange.Success(true),
-        exchange.CreatedAtGTE(time.Now().Add(-time.Duration(cache.Int(model.SettingExchangeInterval))*time.Minute)),
-    ).Exist(s.ctx); exist {
-        snag.Panic(fmt.Sprintf("换电过于频繁, %d分钟可再次换电", iv))
-    }
+    // 校验换电间隔
+    NewExchange().RiderInterval(s.rider, sub.CityID)
 
     var (
         cab   *ent.Cabinet

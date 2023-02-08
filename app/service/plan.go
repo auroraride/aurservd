@@ -536,15 +536,15 @@ func (s *planService) RiderListNewly(req *model.PlanListRiderReq) model.PlanNewl
         Configure: NewPayment(s.rider).Configure(),
     }
 
-    settings, _ := ent.Database.Setting.Query().Where(setting.KeyIn(model.SettingPlanBatteryDescription, model.SettingPlanEbikeDescription)).All(context.Background())
+    settings, _ := ent.Database.Setting.Query().Where(setting.KeyIn(model.SettingPlanBatteryDescriptionKey, model.SettingPlanEbikeDescriptionKey)).All(context.Background())
     for _, sm := range settings {
         var v model.SettingPlanDescription
         err := jsoniter.Unmarshal([]byte(sm.Content), &v)
         if err == nil {
             switch sm.Key {
-            case model.SettingPlanBatteryDescription:
+            case model.SettingPlanBatteryDescriptionKey:
                 res.BatteryDescription = v
-            case model.SettingPlanEbikeDescription:
+            case model.SettingPlanEbikeDescriptionKey:
                 res.EbikeDescription = v
             }
         }

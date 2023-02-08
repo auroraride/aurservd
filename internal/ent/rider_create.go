@@ -297,6 +297,12 @@ func (rc *RiderCreate) SetNillablePoints(i *int64) *RiderCreate {
 	return rc
 }
 
+// SetExchangeLimit sets the "exchange_limit" field.
+func (rc *RiderCreate) SetExchangeLimit(mel model.RiderExchangeLimit) *RiderCreate {
+	rc.mutation.SetExchangeLimit(mel)
+	return rc
+}
+
 // SetStation sets the "station" edge to the EnterpriseStation entity.
 func (rc *RiderCreate) SetStation(e *EnterpriseStation) *RiderCreate {
 	return rc.SetStationID(e.ID)
@@ -656,6 +662,10 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 	if value, ok := rc.mutation.Points(); ok {
 		_spec.SetField(rider.FieldPoints, field.TypeInt64, value)
 		_node.Points = value
+	}
+	if value, ok := rc.mutation.ExchangeLimit(); ok {
+		_spec.SetField(rider.FieldExchangeLimit, field.TypeJSON, value)
+		_node.ExchangeLimit = value
 	}
 	if nodes := rc.mutation.StationIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1264,6 +1274,24 @@ func (u *RiderUpsert) AddPoints(v int64) *RiderUpsert {
 	return u
 }
 
+// SetExchangeLimit sets the "exchange_limit" field.
+func (u *RiderUpsert) SetExchangeLimit(v model.RiderExchangeLimit) *RiderUpsert {
+	u.Set(rider.FieldExchangeLimit, v)
+	return u
+}
+
+// UpdateExchangeLimit sets the "exchange_limit" field to the value that was provided on create.
+func (u *RiderUpsert) UpdateExchangeLimit() *RiderUpsert {
+	u.SetExcluded(rider.FieldExchangeLimit)
+	return u
+}
+
+// ClearExchangeLimit clears the value of the "exchange_limit" field.
+func (u *RiderUpsert) ClearExchangeLimit() *RiderUpsert {
+	u.SetNull(rider.FieldExchangeLimit)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1687,6 +1715,27 @@ func (u *RiderUpsertOne) AddPoints(v int64) *RiderUpsertOne {
 func (u *RiderUpsertOne) UpdatePoints() *RiderUpsertOne {
 	return u.Update(func(s *RiderUpsert) {
 		s.UpdatePoints()
+	})
+}
+
+// SetExchangeLimit sets the "exchange_limit" field.
+func (u *RiderUpsertOne) SetExchangeLimit(v model.RiderExchangeLimit) *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetExchangeLimit(v)
+	})
+}
+
+// UpdateExchangeLimit sets the "exchange_limit" field to the value that was provided on create.
+func (u *RiderUpsertOne) UpdateExchangeLimit() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateExchangeLimit()
+	})
+}
+
+// ClearExchangeLimit clears the value of the "exchange_limit" field.
+func (u *RiderUpsertOne) ClearExchangeLimit() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearExchangeLimit()
 	})
 }
 
@@ -2275,6 +2324,27 @@ func (u *RiderUpsertBulk) AddPoints(v int64) *RiderUpsertBulk {
 func (u *RiderUpsertBulk) UpdatePoints() *RiderUpsertBulk {
 	return u.Update(func(s *RiderUpsert) {
 		s.UpdatePoints()
+	})
+}
+
+// SetExchangeLimit sets the "exchange_limit" field.
+func (u *RiderUpsertBulk) SetExchangeLimit(v model.RiderExchangeLimit) *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetExchangeLimit(v)
+	})
+}
+
+// UpdateExchangeLimit sets the "exchange_limit" field to the value that was provided on create.
+func (u *RiderUpsertBulk) UpdateExchangeLimit() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateExchangeLimit()
+	})
+}
+
+// ClearExchangeLimit clears the value of the "exchange_limit" field.
+func (u *RiderUpsertBulk) ClearExchangeLimit() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearExchangeLimit()
 	})
 }
 

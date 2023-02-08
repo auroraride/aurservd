@@ -57,7 +57,7 @@ func NewExceptionWithEmployee(e *ent.Employee) *exceptionService {
 }
 
 func (s *exceptionService) Setting() model.ExceptionEmployeeSetting {
-    set := NewSetting().GetSetting(model.SettingException)
+    set := NewSetting().GetSetting(model.SettingExceptionKey)
     return model.ExceptionEmployeeSetting{
         Items: NewInventory().ListInventory(model.InventoryListReq{
             Count:    true,

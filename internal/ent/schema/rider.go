@@ -72,6 +72,7 @@ func (Rider) Fields() []ent.Field {
         field.Time("last_signin_at").Nillable().Optional().Comment("最后登录时间"),
         field.Bool("blocked").Default(false).Comment("是否封禁骑手账号"),
         field.Int64("points").Default(0).Comment("骑手积分"),
+        field.JSON("exchange_limit", model.RiderExchangeLimit{}).Optional().Comment("换电间隔配置"),
     }
 }
 

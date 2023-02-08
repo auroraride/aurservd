@@ -19,7 +19,7 @@ type reserveTask struct {
 
 func NewReserve() *reserveTask {
     return &reserveTask{
-        max: time.Duration(cache.Int(model.SettingReserveDuration)),
+        max: time.Duration(cache.Int(model.SettingReserveDurationKey)),
     }
 }
 

@@ -25,7 +25,7 @@ func NewMaintain(params ...any) *maintainService {
 }
 
 func (s *maintainService) SetMaintain(state bool) {
-    _ = ent.Database.Setting.Update().Where(setting.Key(model.SettingMaintain)).SetContent(fmt.Sprintf("%v", state)).Exec(s.ctx)
+    _ = ent.Database.Setting.Update().Where(setting.Key(model.SettingMaintainKey)).SetContent(fmt.Sprintf("%v", state)).Exec(s.ctx)
 }
 
 func (s *maintainService) UpdateMaintain() {

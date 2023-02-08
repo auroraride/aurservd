@@ -42,7 +42,7 @@ func NewIntelligentCabinet(params ...any) *intelligentCabinetService {
 func (s *intelligentCabinetService) ExchangeUsable(bm, serial string, br model.CabinetBrand) (uid string, info *model.RiderCabinetOperateProcess) {
     playload := &cabdef.ExchangeUsableRequest{
         Serial: serial,
-        Minsoc: cache.Float64(model.SettingExchangeMinBattery),
+        Minsoc: cache.Float64(model.SettingExchangeMinBatteryKey),
         Lock:   10,
         Model:  bm,
     }
@@ -137,7 +137,7 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
         Battery: old.Sn,
         Expires: model.IntelligentBusinessScanExpires,
         Timeout: model.IntelligentBusinessStepTimeout,
-        Minsoc:  cache.Float64(model.SettingExchangeMinBattery),
+        Minsoc:  cache.Float64(model.SettingExchangeMinBatteryKey),
     }
 
     var v cabdef.ExchangeResponse
@@ -327,7 +327,7 @@ func (s *intelligentCabinetService) BusinessCensorX(bus adapter.Business, sub *e
 // BusinessUsable 获取可用的业务仓位信息
 func (s *intelligentCabinetService) BusinessUsable(br model.CabinetBrand, bus adapter.Business, serial, bm string) (uid string, index int, err error) {
     playload := &cabdef.BusinuessUsableRequest{
-        Minsoc:   cache.Float64(model.SettingExchangeMinBattery),
+        Minsoc:   cache.Float64(model.SettingExchangeMinBatteryKey),
         Business: bus,
         Serial:   serial,
         Model:    bm,

@@ -5,6 +5,8 @@
 
 package model
 
+import jsoniter "github.com/json-iterator/go"
+
 const (
     IntelligentBatteryFullSoc      float64 = 95.0 // 智能电池定义满电soc TODO: 具体数值待定义
     IntelligentBusinessScanExpires int64   = 30   // 智能电柜业务 - 扫码有效期(s)
@@ -12,24 +14,25 @@ const (
 )
 
 const (
-    SettingDeposit                = "DEPOSIT"                  // 押金
-    SettingRenewal                = "RENEWAL"                  // 退订多久后重签计算佣金
-    SettingCabinetFault           = "CABINET_FAULT"            // 电柜故障
-    SettingRescueReason           = "RESCUE_REASON"            // 救援原因
-    SettingRescueFee              = "RESCUE_FEE"               // 救援费用
-    SettingReminder               = "REMINDER"                 // 催费通知
-    SettingBatteryFull            = "BATTERY_FULL"             // 满电电量
-    SettingException              = "EXCEPTION"                // 物资异常
-    SettingPauseMaxDays           = "PAUSE_MAX_DAYS"           // 最大寄存时间
-    SettingExchangeInterval       = "EXCHANGE_INTERVAL"        // 限制换电间隔
-    SettingMaintain               = "MAINTAIN"                 // 维护中
-    SettingReserveDuration        = "RESERVE_MAX_DURATION"     // 最长预约时间
-    SettingExchangeMinBattery     = "EXCHANGE_MIN_BATTERY"     // 换电最低电量
-    SettingPlanBatteryDescription = "PLAN_BATTERY_DESCRIPTION" // 单电订阅介绍
-    SettingPlanEbikeDescription   = "PLAN_EBIKE_DESCRIPTION"   // 车电订阅介绍
-    SettingQuestions              = "QUESTION"                 // 常见问题
-    SettingAppVersion             = "APP_VERSION"              // App版本
-    SettingConsumePoints          = "CONSUME_POINTS"           // 消费赠送积分
+    SettingDepositKey                = "DEPOSIT"                  // 押金
+    SettingRenewalKey                = "RENEWAL"                  // 退订多久后重签计算佣金
+    SettingCabinetFaultKey           = "CABINET_FAULT"            // 电柜故障
+    SettingRescueReasonKey           = "RESCUE_REASON"            // 救援原因
+    SettingRescueFeeKey              = "RESCUE_FEE"               // 救援费用
+    SettingReminderKey               = "REMINDER"                 // 催费通知
+    SettingBatteryFullKey            = "BATTERY_FULL"             // 满电电量
+    SettingExceptionKey              = "EXCEPTION"                // 物资异常
+    SettingPauseMaxDaysKey           = "PAUSE_MAX_DAYS"           // 最大寄存时间
+    SettingExchangeIntervalKey       = "EXCHANGE_INTERVAL"        // 限制换电间隔
+    SettingExchangeLimitKey          = "EXCHANGE_LIMIT"           // 换电限制
+    SettingMaintainKey               = "MAINTAIN"                 // 维护中
+    SettingReserveDurationKey        = "RESERVE_MAX_DURATION"     // 最长预约时间
+    SettingExchangeMinBatteryKey     = "EXCHANGE_MIN_BATTERY"     // 换电最低电量
+    SettingPlanBatteryDescriptionKey = "PLAN_BATTERY_DESCRIPTION" // 单电订阅介绍
+    SettingPlanEbikeDescriptionKey   = "PLAN_EBIKE_DESCRIPTION"   // 车电订阅介绍
+    SettingQuestionKey               = "QUESTION"                 // 常见问题
+    SettingAppVersionKey             = "APP_VERSION"              // App版本
+    SettingConsumePointKey           = "CONSUME_POINTS"           // 消费赠送积分
 )
 
 type SettingValueConvert func(content string) any
@@ -86,31 +89,31 @@ type SettingConsumePoint struct {
 }
 
 var Settings = map[string]SettingItem{
-    SettingDeposit: {
+    SettingDepositKey: {
         Desc:    "平台押金",
         Default: "99",
     },
-    SettingRenewal: {
+    SettingRenewalKey: {
         Desc:    "重签判定时间",
         Default: "7",
     },
-    SettingCabinetFault: {
+    SettingCabinetFaultKey: {
         Desc:    "电柜故障",
         Default: []string{},
     },
-    SettingException: {
+    SettingExceptionKey: {
         Desc:    "物资异常",
         Default: []string{"丢失", "故障"},
     },
-    SettingRescueReason: {
+    SettingRescueReasonKey: {
         Desc:    "救援原因",
         Default: []string{},
     },
-    SettingRescueFee: {
+    SettingRescueFeeKey: {
         Desc:    "救援费用(元/公里)",
         Default: "0",
     },
-    SettingReminder: {
+    SettingReminderKey: {
         Desc: "催费通知",
         Default: SettingReminderNotice{
             App: []int{5},
@@ -118,48 +121,62 @@ var Settings = map[string]SettingItem{
             Vms: []int{1, -3},
         },
     },
-    SettingBatteryFull: {
+    SettingBatteryFullKey: {
         Desc:    "满电电量百分比",
         Default: "80",
     },
-    // SettingPauseMaxDays: {
+    // SettingPauseMaxDaysKey: {
     //     Desc:    "最大寄存时间",
     //     Default: "31",
     // },
-    SettingExchangeInterval: {
+    SettingExchangeIntervalKey: {
         Desc:    "限制换电间隔",
         Default: "20",
     },
-    SettingMaintain: {
+    SettingExchangeLimitKey: {
+        Desc:    "城市换电间隔",
+        Default: make(SettingExchangeLimits),
+    },
+    SettingMaintainKey: {
         Desc:    "是否维护中",
         Default: false,
     },
-    SettingReserveDuration: {
+    SettingReserveDurationKey: {
         Desc:    "最长预约时间",
         Default: "60",
     },
-    SettingExchangeMinBattery: {
+    SettingExchangeMinBatteryKey: {
         Desc:    "换电最低电量(%)",
         Default: "50",
     },
-    SettingPlanBatteryDescription: {
+    SettingPlanBatteryDescriptionKey: {
         Desc:    "单电订阅介绍",
         Default: SettingPlanDescription{},
     },
-    SettingPlanEbikeDescription: {
+    SettingPlanEbikeDescriptionKey: {
         Desc:    "车电订阅介绍",
         Default: SettingPlanDescription{},
     },
-    SettingQuestions: {
+    SettingQuestionKey: {
         Desc:    "常见问题",
         Default: []SettingQuestion{},
     },
-    SettingAppVersion: {
+    SettingAppVersionKey: {
         Desc:    "App版本",
         Default: map[string]SettingAppVersionValue{},
     },
-    SettingConsumePoints: {
+    SettingConsumePointKey: {
         Desc:    "消费赠送积分",
         Default: []SettingConsumePoint{},
     },
+}
+
+type SettingExchangeLimits map[uint64][]ExchangeLimit
+
+func (s *SettingExchangeLimits) MarshalBinary() ([]byte, error) {
+    return jsoniter.Marshal(s)
+}
+
+func (s *SettingExchangeLimits) UnmarshalBinary(data []byte) error {
+    return jsoniter.Unmarshal(data, s)
 }

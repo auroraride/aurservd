@@ -8,6 +8,8 @@ package model
 import (
     "errors"
     "fmt"
+    "github.com/auroraride/adapter"
+    "strconv"
 )
 
 // RiderTokenPermission 骑手token权限, 以此判定登陆后动作
@@ -148,6 +150,8 @@ type RiderItem struct {
     City *City `json:"city,omitempty"`
     // 当前电池, 有可能不存在
     Battery *Battery `json:"battery,omitempty"`
+    // 换电限制, 有可能不存在
+    ExchangeLimit RiderExchangeLimit `json:"exchangeLimit,omitempty"`
 }
 
 // RiderBlockReq 封禁或解封骑手账号
@@ -251,5 +255,26 @@ type RiderAgentList struct {
     Keyword string `json:"keyword"` // 筛选关键词
     Status  uint8  `json:"status"`  // 状态 0:全部 1:未激活 2:计费中 3:已超期 4:已退租
     CityID  uint64 `json:"cityId"`  // 城市筛选
+}
 
+type RiderExchangeLimit []ExchangeLimit
+
+type RiderExchangeLimitReq struct {
+    IDPostReq
+    ExchangeLimit RiderExchangeLimit `json:"exchangeLimit"`
+}
+
+func (el RiderExchangeLimit) String() string {
+    buf := adapter.NewBuffer()
+    defer adapter.ReleaseBuffer(buf)
+
+    for i, limit := range el {
+        buf.WriteString(strconv.Itoa(limit.Hours) + "小时: ")
+        buf.WriteString(strconv.Itoa(limit.Times) + "次")
+        if i < len(el)-1 {
+            buf.WriteString(", ")
+        }
+    }
+
+    return buf.String()
 }

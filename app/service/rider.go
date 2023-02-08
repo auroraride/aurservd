@@ -601,13 +601,14 @@ func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
 func (s *riderService) detailRiderItem(item *ent.Rider) model.RiderItem {
     p := item.Edges.Person
     ri := model.RiderItem{
-        ID:         item.ID,
-        Phone:      item.Phone,
-        Status:     model.RiderStatusNormal,
-        AuthStatus: model.PersonUnauthenticated,
-        Contact:    item.Contact,
-        Points:     item.Points,
-        Balance:    0,
+        ID:            item.ID,
+        Phone:         item.Phone,
+        Status:        model.RiderStatusNormal,
+        AuthStatus:    model.PersonUnauthenticated,
+        Contact:       item.Contact,
+        Points:        item.Points,
+        Balance:       0,
+        ExchangeLimit: item.ExchangeLimit,
     }
     e := item.Edges.Enterprise
     if e != nil {
@@ -888,7 +889,7 @@ func (s *riderService) Deposit(riderID uint64) float64 {
     if o != nil {
         return 0
     }
-    f, _ := cache.Get(s.ctx, model.SettingDeposit).Float64()
+    f, _ := cache.Get(s.ctx, model.SettingDepositKey).Float64()
     return f
 }
 
@@ -1047,4 +1048,27 @@ func (s *riderService) QueryPhoneX(phone string) (rd *ent.Rider) {
         snag.Panic("未找到有效骑手")
     }
     return
+}
+
+// ExchangeLimit 设置骑手换电限制
+func (s *riderService) ExchangeLimit(req *model.RiderExchangeLimitReq) {
+    r := s.Query(req.ID)
+    updater := r.Update()
+    if len(req.ExchangeLimit) == 0 {
+        updater.ClearExchangeLimit()
+    } else {
+        slices.SortFunc(req.ExchangeLimit, func(a, b model.ExchangeLimit) bool {
+            return a.Hours < b.Hours
+        })
+        updater.SetExchangeLimit(req.ExchangeLimit)
+    }
+    _ = updater.Exec(s.ctx)
+
+    // 记录日志
+    go logging.NewOperateLog().
+        SetRef(r).
+        SetModifier(s.modifier).
+        SetOperate(model.OperateExchangeLimit).
+        SetDiff(r.ExchangeLimit.String(), req.ExchangeLimit.String()).
+        Send()
 }

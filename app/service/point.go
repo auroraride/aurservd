@@ -183,7 +183,7 @@ func (s *pointService) Detail(r *ent.Rider) model.PointRes {
 
 // CalculateGift 计算赠送积分
 func (s *pointService) CalculateGift(amount float64, cityID uint64) (points int64, proportion float64) {
-    arr, err := GetSetting[[]model.SettingConsumePoint](model.SettingConsumePoints)
+    arr, err := GetSetting[[]model.SettingConsumePoint](model.SettingConsumePointKey)
     if err != nil {
         return
     }

@@ -483,7 +483,7 @@ func (s *cabinetService) Usable(cab *ent.Cabinet) (op *model.RiderCabinetOperate
     max, empty := cab.Bin.MaxEmpty()
     op = &model.RiderCabinetOperateProcess{}
 
-    min := cache.Float64(model.SettingExchangeMinBattery)
+    min := cache.Float64(model.SettingExchangeMinBatteryKey)
     if max.Electricity.Value() < min {
         snag.Panic("当前无可用电池")
     }

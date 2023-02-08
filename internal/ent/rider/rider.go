@@ -55,6 +55,8 @@ const (
 	FieldBlocked = "blocked"
 	// FieldPoints holds the string denoting the points field in the database.
 	FieldPoints = "points"
+	// FieldExchangeLimit holds the string denoting the exchange_limit field in the database.
+	FieldExchangeLimit = "exchange_limit"
 	// EdgeStation holds the string denoting the station edge name in mutations.
 	EdgeStation = "station"
 	// EdgePerson holds the string denoting the person edge name in mutations.
@@ -191,6 +193,7 @@ var Columns = []string{
 	FieldLastSigninAt,
 	FieldBlocked,
 	FieldPoints,
+	FieldExchangeLimit,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

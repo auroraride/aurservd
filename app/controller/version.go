@@ -26,7 +26,7 @@ func (*version) Get(c echo.Context) (err error) {
         app = "rider"
     }
     key := fmt.Sprintf("%s-%s", strings.ToLower(app), strings.ToLower(plaform))
-    set := service.NewSetting().GetSetting(model.SettingAppVersion).(map[string]interface{})
+    set := service.NewSetting().GetSetting(model.SettingAppVersionKey).(map[string]interface{})
     v, ok := set[key]
     if !ok {
         v = model.SettingAppVersionValue{}

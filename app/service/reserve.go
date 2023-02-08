@@ -31,7 +31,7 @@ type reserveService struct {
 }
 
 func NewReserve() *reserveService {
-    max := time.Duration(cache.Int(model.SettingReserveDuration))
+    max := time.Duration(cache.Int(model.SettingReserveDurationKey))
     return &reserveService{
         ctx: context.Background(),
         orm: ent.Database.Reserve,

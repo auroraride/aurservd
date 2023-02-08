@@ -93,5 +93,5 @@ func (*cabinet) Report(c echo.Context) (err error) {
 // @Success      200 {object}  []string  "请求成功"
 func (*cabinet) Fault(c echo.Context) (err error) {
     ctx := app.ContextX[app.RiderContext](c)
-    return ctx.SendResponse(service.NewSetting().GetSetting(model.SettingCabinetFault))
+    return ctx.SendResponse(service.NewSetting().GetSetting(model.SettingCabinetFaultKey))
 }

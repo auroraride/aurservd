@@ -18,7 +18,7 @@ func NewRecentSubscribePastDays(days int) RecentSubscribePastDays {
 
 // Commission 是否需要计算佣金
 func (rspd RecentSubscribePastDays) Commission() bool {
-    return rspd >= RecentSubscribePastDays(cache.Float64(SettingRenewal))
+    return rspd >= RecentSubscribePastDays(cache.Float64(SettingRenewalKey))
 }
 
 func (rspd RecentSubscribePastDays) Value() int {

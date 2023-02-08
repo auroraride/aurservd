@@ -60206,6 +60206,8 @@ type RiderMutation struct {
 	blocked              *bool
 	points               *int64
 	addpoints            *int64
+	exchange_limit       *model.RiderExchangeLimit
+	appendexchange_limit model.RiderExchangeLimit
 	clearedFields        map[string]struct{}
 	station              *uint64
 	clearedstation       bool
@@ -61334,6 +61336,71 @@ func (m *RiderMutation) ResetPoints() {
 	m.addpoints = nil
 }
 
+// SetExchangeLimit sets the "exchange_limit" field.
+func (m *RiderMutation) SetExchangeLimit(mel model.RiderExchangeLimit) {
+	m.exchange_limit = &mel
+	m.appendexchange_limit = nil
+}
+
+// ExchangeLimit returns the value of the "exchange_limit" field in the mutation.
+func (m *RiderMutation) ExchangeLimit() (r model.RiderExchangeLimit, exists bool) {
+	v := m.exchange_limit
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldExchangeLimit returns the old "exchange_limit" field's value of the Rider entity.
+// If the Rider object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RiderMutation) OldExchangeLimit(ctx context.Context) (v model.RiderExchangeLimit, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldExchangeLimit is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldExchangeLimit requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldExchangeLimit: %w", err)
+	}
+	return oldValue.ExchangeLimit, nil
+}
+
+// AppendExchangeLimit adds mel to the "exchange_limit" field.
+func (m *RiderMutation) AppendExchangeLimit(mel model.RiderExchangeLimit) {
+	m.appendexchange_limit = append(m.appendexchange_limit, mel...)
+}
+
+// AppendedExchangeLimit returns the list of values that were appended to the "exchange_limit" field in this mutation.
+func (m *RiderMutation) AppendedExchangeLimit() (model.RiderExchangeLimit, bool) {
+	if len(m.appendexchange_limit) == 0 {
+		return nil, false
+	}
+	return m.appendexchange_limit, true
+}
+
+// ClearExchangeLimit clears the value of the "exchange_limit" field.
+func (m *RiderMutation) ClearExchangeLimit() {
+	m.exchange_limit = nil
+	m.appendexchange_limit = nil
+	m.clearedFields[rider.FieldExchangeLimit] = struct{}{}
+}
+
+// ExchangeLimitCleared returns if the "exchange_limit" field was cleared in this mutation.
+func (m *RiderMutation) ExchangeLimitCleared() bool {
+	_, ok := m.clearedFields[rider.FieldExchangeLimit]
+	return ok
+}
+
+// ResetExchangeLimit resets all changes to the "exchange_limit" field.
+func (m *RiderMutation) ResetExchangeLimit() {
+	m.exchange_limit = nil
+	m.appendexchange_limit = nil
+	delete(m.clearedFields, rider.FieldExchangeLimit)
+}
+
 // ClearStation clears the "station" edge to the EnterpriseStation entity.
 func (m *RiderMutation) ClearStation() {
 	m.clearedstation = true
@@ -61917,7 +61984,7 @@ func (m *RiderMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RiderMutation) Fields() []string {
-	fields := make([]string, 0, 21)
+	fields := make([]string, 0, 22)
 	if m.created_at != nil {
 		fields = append(fields, rider.FieldCreatedAt)
 	}
@@ -61981,6 +62048,9 @@ func (m *RiderMutation) Fields() []string {
 	if m.points != nil {
 		fields = append(fields, rider.FieldPoints)
 	}
+	if m.exchange_limit != nil {
+		fields = append(fields, rider.FieldExchangeLimit)
+	}
 	return fields
 }
 
@@ -62031,6 +62101,8 @@ func (m *RiderMutation) Field(name string) (ent.Value, bool) {
 		return m.Blocked()
 	case rider.FieldPoints:
 		return m.Points()
+	case rider.FieldExchangeLimit:
+		return m.ExchangeLimit()
 	}
 	return nil, false
 }
@@ -62082,6 +62154,8 @@ func (m *RiderMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldBlocked(ctx)
 	case rider.FieldPoints:
 		return m.OldPoints(ctx)
+	case rider.FieldExchangeLimit:
+		return m.OldExchangeLimit(ctx)
 	}
 	return nil, fmt.Errorf("unknown Rider field %s", name)
 }
@@ -62238,6 +62312,13 @@ func (m *RiderMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetPoints(v)
 		return nil
+	case rider.FieldExchangeLimit:
+		v, ok := value.(model.RiderExchangeLimit)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetExchangeLimit(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Rider field %s", name)
 }
@@ -62340,6 +62421,9 @@ func (m *RiderMutation) ClearedFields() []string {
 	if m.FieldCleared(rider.FieldLastSigninAt) {
 		fields = append(fields, rider.FieldLastSigninAt)
 	}
+	if m.FieldCleared(rider.FieldExchangeLimit) {
+		fields = append(fields, rider.FieldExchangeLimit)
+	}
 	return fields
 }
 
@@ -62398,6 +62482,9 @@ func (m *RiderMutation) ClearField(name string) error {
 		return nil
 	case rider.FieldLastSigninAt:
 		m.ClearLastSigninAt()
+		return nil
+	case rider.FieldExchangeLimit:
+		m.ClearExchangeLimit()
 		return nil
 	}
 	return fmt.Errorf("unknown Rider nullable field %s", name)
@@ -62469,6 +62556,9 @@ func (m *RiderMutation) ResetField(name string) error {
 		return nil
 	case rider.FieldPoints:
 		m.ResetPoints()
+		return nil
+	case rider.FieldExchangeLimit:
+		m.ResetExchangeLimit()
 		return nil
 	}
 	return fmt.Errorf("unknown Rider field %s", name)

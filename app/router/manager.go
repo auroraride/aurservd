@@ -98,6 +98,7 @@ func loadManagerRoutes() {
     g.DELETE("/rider/:id", mapi.Rider.Delete)
     g.POST("/rider/followup", mapi.Rider.FollowUpCreate)
     g.GET("/rider/followup", mapi.Rider.FollowUpList)
+    g.POST("/rider/exchange-limit", mapi.Rider.ExchangeLimit)
 
     // 订阅
     g.POST("/subscribe/alter", mapi.Subscribe.Alter)

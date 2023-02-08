@@ -64,6 +64,8 @@ type Rider struct {
 	Blocked bool `json:"blocked,omitempty"`
 	// 骑手积分
 	Points int64 `json:"points,omitempty"`
+	// 换电间隔配置
+	ExchangeLimit model.RiderExchangeLimit `json:"exchange_limit,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the RiderQuery when eager-loading is set.
 	Edges RiderEdges `json:"edges"`
@@ -229,7 +231,7 @@ func (*Rider) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case rider.FieldCreator, rider.FieldLastModifier, rider.FieldContact:
+		case rider.FieldCreator, rider.FieldLastModifier, rider.FieldContact, rider.FieldExchangeLimit:
 			values[i] = new([]byte)
 		case rider.FieldIsNewDevice, rider.FieldBlocked:
 			values[i] = new(sql.NullBool)
@@ -398,6 +400,14 @@ func (r *Rider) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				r.Points = value.Int64
 			}
+		case rider.FieldExchangeLimit:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field exchange_limit", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &r.ExchangeLimit); err != nil {
+					return fmt.Errorf("unmarshal field exchange_limit: %w", err)
+				}
+			}
 		}
 	}
 	return nil
@@ -560,6 +570,9 @@ func (r *Rider) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("points=")
 	builder.WriteString(fmt.Sprintf("%v", r.Points))
+	builder.WriteString(", ")
+	builder.WriteString("exchange_limit=")
+	builder.WriteString(fmt.Sprintf("%v", r.ExchangeLimit))
 	builder.WriteByte(')')
 	return builder.String()
 }

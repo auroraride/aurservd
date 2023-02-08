@@ -9073,6 +9073,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/rider/exchange-limit": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M7022 设置骑手换电限制",
+                "operationId": "ManagerRiderExchangeLimit",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "配置项",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.RiderExchangeLimitReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/rider/followup": {
             "get": {
                 "consumes": [
@@ -15306,7 +15347,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "soc": {
-                    "description": "电量, 单位1%",
+                    "description": "剩余容量, 单位1%",
                     "type": "integer"
                 },
                 "status": {
@@ -18997,6 +19038,19 @@ const docTemplate = `{
                 }
             }
         },
+        "model.ExchangeLimit": {
+            "type": "object",
+            "properties": {
+                "hours": {
+                    "description": "时长",
+                    "type": "integer"
+                },
+                "times": {
+                    "description": "时长内允许次数",
+                    "type": "integer"
+                }
+            }
+        },
         "model.ExchangeListExport": {
             "type": "object",
             "required": [
@@ -21069,6 +21123,23 @@ const docTemplate = `{
                 }
             }
         },
+        "model.RiderExchangeLimitReq": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "exchangeLimit": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.ExchangeLimit"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
         "model.RiderExchangeProcessReq": {
             "type": "object",
             "required": [
@@ -21209,6 +21280,13 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.Enterprise"
                         }
                     ]
+                },
+                "exchangeLimit": {
+                    "description": "换电限制, 有可能不存在",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.ExchangeLimit"
+                    }
                 },
                 "id": {
                     "type": "integer"
@@ -23331,9 +23409,17 @@ const docTemplate = `{
         "model.XcBatteryDetail": {
             "type": "object",
             "properties": {
+                "belongsTo": {
+                    "description": "当前位置",
+                    "type": "string"
+                },
                 "capacity": {
                     "description": "剩余容量 (单位AH)",
                     "type": "number"
+                },
+                "charge": {
+                    "description": "充电是否开启",
+                    "type": "boolean"
                 },
                 "chargingTime": {
                     "description": "本次充电时长",
@@ -23351,6 +23437,10 @@ const docTemplate = `{
                     "description": "电池包循环次数 (80%累加一次)",
                     "type": "integer"
                 },
+                "disCharge": {
+                    "description": "放电是否开启",
+                    "type": "boolean"
+                },
                 "disChargingTime": {
                     "description": "本次放电时长",
                     "type": "integer"
@@ -23360,7 +23450,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "faults": {
-                    "description": "故障列表",
+                    "description": "故障列表, 0:总压低, 1:总压高, 2:单体低, 3:单体高, 6:放电过流, 7:充电过流, 8:SOC低, 11:充电高温, 12:充电低温, 13:放电高温, 14:放电低温, 15:短路, 16:MOS高温",
                     "type": "array",
                     "items": {
                         "type": "integer"
@@ -23433,12 +23523,20 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "soc": {
-                    "description": "剩余容量 单位1%",
+                    "description": "剩余容量, 单位1%",
                     "type": "integer"
                 },
                 "soh": {
                     "description": "健康度 单位1%",
                     "type": "integer"
+                },
+                "status": {
+                    "description": "状态, 0:静置 1:充电 2:放电 3:异常(此时faults字段存在)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.BatteryStatus"
+                        }
+                    ]
                 },
                 "strength": {
                     "description": "4G通讯信号强度 (0-100 百分比形式)",

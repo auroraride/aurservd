@@ -79,7 +79,7 @@ func newReminder() {
     }
 
     notice := new(model.SettingReminderNotice)
-    sm, _ := ent.Database.Setting.Query().Where(setting.Key(model.SettingReminder)).First(context.Background())
+    sm, _ := ent.Database.Setting.Query().Where(setting.Key(model.SettingReminderKey)).First(context.Background())
     if sm != nil {
         err := jsoniter.Unmarshal([]byte(sm.Content), notice)
         if err == nil {

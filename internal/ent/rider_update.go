@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/battery"
@@ -371,6 +372,24 @@ func (ru *RiderUpdate) SetNillablePoints(i *int64) *RiderUpdate {
 // AddPoints adds i to the "points" field.
 func (ru *RiderUpdate) AddPoints(i int64) *RiderUpdate {
 	ru.mutation.AddPoints(i)
+	return ru
+}
+
+// SetExchangeLimit sets the "exchange_limit" field.
+func (ru *RiderUpdate) SetExchangeLimit(mel model.RiderExchangeLimit) *RiderUpdate {
+	ru.mutation.SetExchangeLimit(mel)
+	return ru
+}
+
+// AppendExchangeLimit appends mel to the "exchange_limit" field.
+func (ru *RiderUpdate) AppendExchangeLimit(mel model.RiderExchangeLimit) *RiderUpdate {
+	ru.mutation.AppendExchangeLimit(mel)
+	return ru
+}
+
+// ClearExchangeLimit clears the value of the "exchange_limit" field.
+func (ru *RiderUpdate) ClearExchangeLimit() *RiderUpdate {
+	ru.mutation.ClearExchangeLimit()
 	return ru
 }
 
@@ -903,6 +922,17 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := ru.mutation.AddedPoints(); ok {
 		_spec.AddField(rider.FieldPoints, field.TypeInt64, value)
+	}
+	if value, ok := ru.mutation.ExchangeLimit(); ok {
+		_spec.SetField(rider.FieldExchangeLimit, field.TypeJSON, value)
+	}
+	if value, ok := ru.mutation.AppendedExchangeLimit(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, rider.FieldExchangeLimit, value)
+		})
+	}
+	if ru.mutation.ExchangeLimitCleared() {
+		_spec.ClearField(rider.FieldExchangeLimit, field.TypeJSON)
 	}
 	if ru.mutation.StationCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1830,6 +1860,24 @@ func (ruo *RiderUpdateOne) AddPoints(i int64) *RiderUpdateOne {
 	return ruo
 }
 
+// SetExchangeLimit sets the "exchange_limit" field.
+func (ruo *RiderUpdateOne) SetExchangeLimit(mel model.RiderExchangeLimit) *RiderUpdateOne {
+	ruo.mutation.SetExchangeLimit(mel)
+	return ruo
+}
+
+// AppendExchangeLimit appends mel to the "exchange_limit" field.
+func (ruo *RiderUpdateOne) AppendExchangeLimit(mel model.RiderExchangeLimit) *RiderUpdateOne {
+	ruo.mutation.AppendExchangeLimit(mel)
+	return ruo
+}
+
+// ClearExchangeLimit clears the value of the "exchange_limit" field.
+func (ruo *RiderUpdateOne) ClearExchangeLimit() *RiderUpdateOne {
+	ruo.mutation.ClearExchangeLimit()
+	return ruo
+}
+
 // SetStation sets the "station" edge to the EnterpriseStation entity.
 func (ruo *RiderUpdateOne) SetStation(e *EnterpriseStation) *RiderUpdateOne {
 	return ruo.SetStationID(e.ID)
@@ -2383,6 +2431,17 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 	}
 	if value, ok := ruo.mutation.AddedPoints(); ok {
 		_spec.AddField(rider.FieldPoints, field.TypeInt64, value)
+	}
+	if value, ok := ruo.mutation.ExchangeLimit(); ok {
+		_spec.SetField(rider.FieldExchangeLimit, field.TypeJSON, value)
+	}
+	if value, ok := ruo.mutation.AppendedExchangeLimit(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, rider.FieldExchangeLimit, value)
+		})
+	}
+	if ruo.mutation.ExchangeLimitCleared() {
+		_spec.ClearField(rider.FieldExchangeLimit, field.TypeJSON)
 	}
 	if ruo.mutation.StationCleared() {
 		edge := &sqlgraph.EdgeSpec{

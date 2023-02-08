@@ -24,7 +24,9 @@ import (
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
     "github.com/lithammer/shortuuid/v4"
+    "golang.org/x/exp/slices"
     "math"
+    "strconv"
     "strings"
     "time"
 )
@@ -73,17 +75,79 @@ func NewExchangeWithEmployee(e *ent.Employee) *exchangeService {
     return s
 }
 
+// RiderLimit 检查单独配置的骑手换电间隔
+func (s *exchangeService) RiderLimit(r *ent.Rider, list []model.ExchangeLimit) (n int) {
+    if len(list) == 0 {
+        return
+    }
+    slices.SortFunc(list, func(a, b model.ExchangeLimit) bool {
+        return a.Hours < b.Hours
+    })
+    // 查询骑手最大时间段内换电情况
+    now := time.Now()
+    max := list[len(list)-1].Hours
+    items, _ := r.QueryExchanges().
+        Where(
+            exchange.FinishAtGTE(now.Add(-time.Duration(max)*time.Hour)),
+            exchange.Success(true),
+        ).
+        Select(exchange.FieldFinishAt).
+        Order(ent.Desc(exchange.FieldFinishAt)).
+        All(s.ctx)
+
+    // 按小时封装限制数量
+    lm := make(map[int]int)
+
+    index := 1
+    for _, l := range list {
+        for ; index <= l.Hours; index++ {
+            lm[index] = l.Times
+        }
+    }
+
+    tm := make(map[int]int)
+    for _, item := range items {
+        h := int(math.Ceil(now.Sub(item.FinishAt).Hours()))
+        tm[h] += 1
+        if t, ok := lm[h]; ok && t <= tm[h] {
+            return 60 - now.Minute()
+        }
+    }
+
+    return
+}
+
 // RiderInterval 检查用户换电间隔
-func (s *exchangeService) RiderInterval(riderID uint64) {
+func (s *exchangeService) RiderInterval(r *ent.Rider, cityID uint64) {
+    var list []model.ExchangeLimit
+
+    // 获取骑手换电间隔配置
+    if len(r.ExchangeLimit) > 0 {
+        list = r.ExchangeLimit
+    } else {
+        // 获取城市换电配置
+        data := make(model.SettingExchangeLimits)
+        _ = cache.Get(s.ctx, model.SettingExchangeLimitKey).Scan(&data)
+        if cm, ok := data[cityID]; ok {
+            list = cm
+        }
+    }
+
+    n := s.RiderLimit(r, list)
+    if n > 0 {
+        snag.Panic("换电过于频繁, " + strconv.Itoa(n) + "分钟可再次换电")
+    }
+
     // 检查用户换电间隔
-    iv := cache.Int(model.SettingExchangeInterval)
+    iv := cache.Int(model.SettingExchangeIntervalKey)
     if exist, _ := ent.Database.Exchange.QueryNotDeleted().Where(
-        exchange.RiderID(riderID),
+        exchange.RiderID(r.ID),
         exchange.Success(true),
-    ).First(s.ctx); exist != nil {
+    ).Order(ent.Desc(exchange.FieldCreatedAt)).First(s.ctx); exist != nil {
         m := int(math.Ceil(time.Now().Sub(exist.FinishAt).Minutes()))
-        if iv-m > 0 {
-            snag.Panic(fmt.Sprintf("换电过于频繁, %d分钟可再次换电", iv-m))
+        n = iv - m
+        if n > 0 {
+            snag.Panic("换电过于频繁, " + strconv.Itoa(n) + "分钟可再次换电")
         }
     }
 }
@@ -91,14 +155,14 @@ func (s *exchangeService) RiderInterval(riderID uint64) {
 // Store 扫门店二维码换电
 // 换电操作有出库和入库, 所以不记录
 func (s *exchangeService) Store(req *model.ExchangeStoreReq) *model.ExchangeStoreRes {
-    s.RiderInterval(s.rider.ID)
-
     qr := strings.ReplaceAll(req.Code, "STORE:", "")
     item := NewStore().QuerySn(qr)
     // 门店状态
     if item.Status != model.StoreStatusOpen {
         snag.Panic("门店未营业")
     }
+
+    s.RiderInterval(s.rider, item.CityID)
 
     ee := item.Edges.Employee
     if ee == nil {

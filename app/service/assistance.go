@@ -79,7 +79,7 @@ func NewAssistanceWithEmployee(e *ent.Employee) *assistanceService {
 }
 
 func (s *assistanceService) Breakdown() any {
-    return NewSetting().GetSetting(model.SettingRescueReason)
+    return NewSetting().GetSetting(model.SettingRescueReasonKey)
 }
 
 // Unpaid 是否有未支付的救援订单
@@ -633,7 +633,7 @@ func (s *assistanceService) Process(req *model.AssistanceProcessReq) (res model.
         var cost, price float64
 
         if req.Pay {
-            price = cache.Float64(model.SettingRescueFee)
+            price = cache.Float64(model.SettingRescueFeeKey)
             cost = tools.NewDecimal().Mul(price, ass.Distance/1000.0)
         }
 

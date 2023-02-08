@@ -1070,6 +1070,16 @@ func PointsLTE(v int64) predicate.Rider {
 	return predicate.Rider(sql.FieldLTE(FieldPoints, v))
 }
 
+// ExchangeLimitIsNil applies the IsNil predicate on the "exchange_limit" field.
+func ExchangeLimitIsNil() predicate.Rider {
+	return predicate.Rider(sql.FieldIsNull(FieldExchangeLimit))
+}
+
+// ExchangeLimitNotNil applies the NotNil predicate on the "exchange_limit" field.
+func ExchangeLimitNotNil() predicate.Rider {
+	return predicate.Rider(sql.FieldNotNull(FieldExchangeLimit))
+}
+
 // HasStation applies the HasEdge predicate on the "station" edge.
 func HasStation() predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
