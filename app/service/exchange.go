@@ -138,16 +138,19 @@ func (s *exchangeService) RiderInterval(r *ent.Rider, cityID uint64) {
         snag.Panic("换电过于频繁, " + strconv.Itoa(n) + "分钟可再次换电")
     }
 
-    // 检查用户换电间隔
-    iv := cache.Int(model.SettingExchangeIntervalKey)
-    if exist, _ := ent.Database.Exchange.QueryNotDeleted().Where(
-        exchange.RiderID(r.ID),
-        exchange.Success(true),
-    ).Order(ent.Desc(exchange.FieldCreatedAt)).First(s.ctx); exist != nil {
-        m := int(math.Ceil(time.Now().Sub(exist.FinishAt).Minutes()))
-        n = iv - m
-        if n > 0 {
-            snag.Panic("换电过于频繁, " + strconv.Itoa(n) + "分钟可再次换电")
+    if len(list) == 0 {
+
+        // 检查用户换电间隔
+        iv := cache.Int(model.SettingExchangeIntervalKey)
+        if exist, _ := ent.Database.Exchange.QueryNotDeleted().Where(
+            exchange.RiderID(r.ID),
+            exchange.Success(true),
+        ).Order(ent.Desc(exchange.FieldCreatedAt)).First(s.ctx); exist != nil {
+            m := int(math.Ceil(time.Now().Sub(exist.FinishAt).Minutes()))
+            n = iv - m
+            if n > 0 {
+                snag.Panic("换电过于频繁, " + strconv.Itoa(n) + "分钟可再次换电")
+            }
         }
     }
 }
