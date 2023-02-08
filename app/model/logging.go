@@ -47,6 +47,7 @@ const (
     OperateRiderPutin                          // 骑手放入电池
     OperateRiderPutout                         // 骑手取出电池
     OperateExchangeLimit                       // 设置换电限制
+    OperateExchangeFrequency                   // 设置换电频次
 )
 
 func (o Operate) String() string {
@@ -103,6 +104,8 @@ func (o Operate) String() string {
         return "骑手取出电池"
     case OperateExchangeLimit:
         return "设置换电限制"
+    case OperateExchangeFrequency:
+        return "设置换电频次"
     default:
         return "未知操作"
     }

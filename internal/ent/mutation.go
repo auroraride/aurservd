@@ -60183,67 +60183,69 @@ func (m *ReserveMutation) ResetEdge(name string) error {
 // RiderMutation represents an operation that mutates the Rider nodes in the graph.
 type RiderMutation struct {
 	config
-	op                   Op
-	typ                  string
-	id                   *uint64
-	created_at           *time.Time
-	updated_at           *time.Time
-	deleted_at           *time.Time
-	creator              **model.Modifier
-	last_modifier        **model.Modifier
-	remark               *string
-	name                 *string
-	id_card_number       *string
-	phone                *string
-	contact              **model.RiderContact
-	device_type          *uint8
-	adddevice_type       *int8
-	last_device          *string
-	is_new_device        *bool
-	last_face            *string
-	push_id              *string
-	last_signin_at       *time.Time
-	blocked              *bool
-	points               *int64
-	addpoints            *int64
-	exchange_limit       *model.RiderExchangeLimit
-	appendexchange_limit model.RiderExchangeLimit
-	clearedFields        map[string]struct{}
-	station              *uint64
-	clearedstation       bool
-	person               *uint64
-	clearedperson        bool
-	enterprise           *uint64
-	clearedenterprise    bool
-	contracts            map[uint64]struct{}
-	removedcontracts     map[uint64]struct{}
-	clearedcontracts     bool
-	faults               map[uint64]struct{}
-	removedfaults        map[uint64]struct{}
-	clearedfaults        bool
-	orders               map[uint64]struct{}
-	removedorders        map[uint64]struct{}
-	clearedorders        bool
-	exchanges            map[uint64]struct{}
-	removedexchanges     map[uint64]struct{}
-	clearedexchanges     bool
-	subscribes           map[uint64]struct{}
-	removedsubscribes    map[uint64]struct{}
-	clearedsubscribes    bool
-	stocks               map[uint64]struct{}
-	removedstocks        map[uint64]struct{}
-	clearedstocks        bool
-	followups            map[uint64]struct{}
-	removedfollowups     map[uint64]struct{}
-	clearedfollowups     bool
-	battery              *uint64
-	clearedbattery       bool
-	battery_flows        map[uint64]struct{}
-	removedbattery_flows map[uint64]struct{}
-	clearedbattery_flows bool
-	done                 bool
-	oldValue             func(context.Context) (*Rider, error)
-	predicates           []predicate.Rider
+	op                       Op
+	typ                      string
+	id                       *uint64
+	created_at               *time.Time
+	updated_at               *time.Time
+	deleted_at               *time.Time
+	creator                  **model.Modifier
+	last_modifier            **model.Modifier
+	remark                   *string
+	name                     *string
+	id_card_number           *string
+	phone                    *string
+	contact                  **model.RiderContact
+	device_type              *uint8
+	adddevice_type           *int8
+	last_device              *string
+	is_new_device            *bool
+	last_face                *string
+	push_id                  *string
+	last_signin_at           *time.Time
+	blocked                  *bool
+	points                   *int64
+	addpoints                *int64
+	exchange_limit           *model.RiderExchangeLimit
+	appendexchange_limit     model.RiderExchangeLimit
+	exchange_frequency       *model.RiderExchangeFrequency
+	appendexchange_frequency model.RiderExchangeFrequency
+	clearedFields            map[string]struct{}
+	station                  *uint64
+	clearedstation           bool
+	person                   *uint64
+	clearedperson            bool
+	enterprise               *uint64
+	clearedenterprise        bool
+	contracts                map[uint64]struct{}
+	removedcontracts         map[uint64]struct{}
+	clearedcontracts         bool
+	faults                   map[uint64]struct{}
+	removedfaults            map[uint64]struct{}
+	clearedfaults            bool
+	orders                   map[uint64]struct{}
+	removedorders            map[uint64]struct{}
+	clearedorders            bool
+	exchanges                map[uint64]struct{}
+	removedexchanges         map[uint64]struct{}
+	clearedexchanges         bool
+	subscribes               map[uint64]struct{}
+	removedsubscribes        map[uint64]struct{}
+	clearedsubscribes        bool
+	stocks                   map[uint64]struct{}
+	removedstocks            map[uint64]struct{}
+	clearedstocks            bool
+	followups                map[uint64]struct{}
+	removedfollowups         map[uint64]struct{}
+	clearedfollowups         bool
+	battery                  *uint64
+	clearedbattery           bool
+	battery_flows            map[uint64]struct{}
+	removedbattery_flows     map[uint64]struct{}
+	clearedbattery_flows     bool
+	done                     bool
+	oldValue                 func(context.Context) (*Rider, error)
+	predicates               []predicate.Rider
 }
 
 var _ ent.Mutation = (*RiderMutation)(nil)
@@ -61401,6 +61403,71 @@ func (m *RiderMutation) ResetExchangeLimit() {
 	delete(m.clearedFields, rider.FieldExchangeLimit)
 }
 
+// SetExchangeFrequency sets the "exchange_frequency" field.
+func (m *RiderMutation) SetExchangeFrequency(mef model.RiderExchangeFrequency) {
+	m.exchange_frequency = &mef
+	m.appendexchange_frequency = nil
+}
+
+// ExchangeFrequency returns the value of the "exchange_frequency" field in the mutation.
+func (m *RiderMutation) ExchangeFrequency() (r model.RiderExchangeFrequency, exists bool) {
+	v := m.exchange_frequency
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldExchangeFrequency returns the old "exchange_frequency" field's value of the Rider entity.
+// If the Rider object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RiderMutation) OldExchangeFrequency(ctx context.Context) (v model.RiderExchangeFrequency, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldExchangeFrequency is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldExchangeFrequency requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldExchangeFrequency: %w", err)
+	}
+	return oldValue.ExchangeFrequency, nil
+}
+
+// AppendExchangeFrequency adds mef to the "exchange_frequency" field.
+func (m *RiderMutation) AppendExchangeFrequency(mef model.RiderExchangeFrequency) {
+	m.appendexchange_frequency = append(m.appendexchange_frequency, mef...)
+}
+
+// AppendedExchangeFrequency returns the list of values that were appended to the "exchange_frequency" field in this mutation.
+func (m *RiderMutation) AppendedExchangeFrequency() (model.RiderExchangeFrequency, bool) {
+	if len(m.appendexchange_frequency) == 0 {
+		return nil, false
+	}
+	return m.appendexchange_frequency, true
+}
+
+// ClearExchangeFrequency clears the value of the "exchange_frequency" field.
+func (m *RiderMutation) ClearExchangeFrequency() {
+	m.exchange_frequency = nil
+	m.appendexchange_frequency = nil
+	m.clearedFields[rider.FieldExchangeFrequency] = struct{}{}
+}
+
+// ExchangeFrequencyCleared returns if the "exchange_frequency" field was cleared in this mutation.
+func (m *RiderMutation) ExchangeFrequencyCleared() bool {
+	_, ok := m.clearedFields[rider.FieldExchangeFrequency]
+	return ok
+}
+
+// ResetExchangeFrequency resets all changes to the "exchange_frequency" field.
+func (m *RiderMutation) ResetExchangeFrequency() {
+	m.exchange_frequency = nil
+	m.appendexchange_frequency = nil
+	delete(m.clearedFields, rider.FieldExchangeFrequency)
+}
+
 // ClearStation clears the "station" edge to the EnterpriseStation entity.
 func (m *RiderMutation) ClearStation() {
 	m.clearedstation = true
@@ -61984,7 +62051,7 @@ func (m *RiderMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RiderMutation) Fields() []string {
-	fields := make([]string, 0, 22)
+	fields := make([]string, 0, 23)
 	if m.created_at != nil {
 		fields = append(fields, rider.FieldCreatedAt)
 	}
@@ -62051,6 +62118,9 @@ func (m *RiderMutation) Fields() []string {
 	if m.exchange_limit != nil {
 		fields = append(fields, rider.FieldExchangeLimit)
 	}
+	if m.exchange_frequency != nil {
+		fields = append(fields, rider.FieldExchangeFrequency)
+	}
 	return fields
 }
 
@@ -62103,6 +62173,8 @@ func (m *RiderMutation) Field(name string) (ent.Value, bool) {
 		return m.Points()
 	case rider.FieldExchangeLimit:
 		return m.ExchangeLimit()
+	case rider.FieldExchangeFrequency:
+		return m.ExchangeFrequency()
 	}
 	return nil, false
 }
@@ -62156,6 +62228,8 @@ func (m *RiderMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldPoints(ctx)
 	case rider.FieldExchangeLimit:
 		return m.OldExchangeLimit(ctx)
+	case rider.FieldExchangeFrequency:
+		return m.OldExchangeFrequency(ctx)
 	}
 	return nil, fmt.Errorf("unknown Rider field %s", name)
 }
@@ -62319,6 +62393,13 @@ func (m *RiderMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetExchangeLimit(v)
 		return nil
+	case rider.FieldExchangeFrequency:
+		v, ok := value.(model.RiderExchangeFrequency)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetExchangeFrequency(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Rider field %s", name)
 }
@@ -62424,6 +62505,9 @@ func (m *RiderMutation) ClearedFields() []string {
 	if m.FieldCleared(rider.FieldExchangeLimit) {
 		fields = append(fields, rider.FieldExchangeLimit)
 	}
+	if m.FieldCleared(rider.FieldExchangeFrequency) {
+		fields = append(fields, rider.FieldExchangeFrequency)
+	}
 	return fields
 }
 
@@ -62485,6 +62569,9 @@ func (m *RiderMutation) ClearField(name string) error {
 		return nil
 	case rider.FieldExchangeLimit:
 		m.ClearExchangeLimit()
+		return nil
+	case rider.FieldExchangeFrequency:
+		m.ClearExchangeFrequency()
 		return nil
 	}
 	return fmt.Errorf("unknown Rider nullable field %s", name)
@@ -62559,6 +62646,9 @@ func (m *RiderMutation) ResetField(name string) error {
 		return nil
 	case rider.FieldExchangeLimit:
 		m.ResetExchangeLimit()
+		return nil
+	case rider.FieldExchangeFrequency:
+		m.ResetExchangeFrequency()
 		return nil
 	}
 	return fmt.Errorf("unknown Rider field %s", name)

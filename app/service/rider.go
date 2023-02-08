@@ -1057,9 +1057,10 @@ func (s *riderService) ExchangeLimit(req *model.RiderExchangeLimitReq) {
     if len(req.ExchangeLimit) == 0 {
         updater.ClearExchangeLimit()
     } else {
-        slices.SortFunc(req.ExchangeLimit, func(a, b model.ExchangeLimit) bool {
-            return a.Hours < b.Hours
-        })
+        if req.ExchangeLimit.Duplicate() {
+            snag.Panic("设定重复")
+        }
+        req.ExchangeLimit.Sort()
         updater.SetExchangeLimit(req.ExchangeLimit)
     }
     _ = updater.Exec(s.ctx)
@@ -1070,5 +1071,29 @@ func (s *riderService) ExchangeLimit(req *model.RiderExchangeLimitReq) {
         SetModifier(s.modifier).
         SetOperate(model.OperateExchangeLimit).
         SetDiff(r.ExchangeLimit.String(), req.ExchangeLimit.String()).
+        Send()
+}
+
+// ExchangeFrequency 设置骑手换电频次
+func (s *riderService) ExchangeFrequency(req *model.RiderExchangeFrequencyReq) {
+    r := s.Query(req.ID)
+    updater := r.Update()
+    if len(req.ExchangeFrequency) == 0 {
+        updater.ClearExchangeLimit()
+    } else {
+        if req.ExchangeFrequency.Duplicate() {
+            snag.Panic("设定重复")
+        }
+        req.ExchangeFrequency.Sort()
+        updater.SetExchangeFrequency(req.ExchangeFrequency)
+    }
+    _ = updater.Exec(s.ctx)
+
+    // 记录日志
+    go logging.NewOperateLog().
+        SetRef(r).
+        SetModifier(s.modifier).
+        SetOperate(model.OperateExchangeFrequency).
+        SetDiff(r.ExchangeFrequency.String(), req.ExchangeFrequency.String()).
         Send()
 }

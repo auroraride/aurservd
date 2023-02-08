@@ -1080,6 +1080,16 @@ func ExchangeLimitNotNil() predicate.Rider {
 	return predicate.Rider(sql.FieldNotNull(FieldExchangeLimit))
 }
 
+// ExchangeFrequencyIsNil applies the IsNil predicate on the "exchange_frequency" field.
+func ExchangeFrequencyIsNil() predicate.Rider {
+	return predicate.Rider(sql.FieldIsNull(FieldExchangeFrequency))
+}
+
+// ExchangeFrequencyNotNil applies the NotNil predicate on the "exchange_frequency" field.
+func ExchangeFrequencyNotNil() predicate.Rider {
+	return predicate.Rider(sql.FieldNotNull(FieldExchangeFrequency))
+}
+
 // HasStation applies the HasEdge predicate on the "station" edge.
 func HasStation() predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {

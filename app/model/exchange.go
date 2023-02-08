@@ -126,8 +126,3 @@ func (r *ExchangeStepResultCache) MarshalBinary() ([]byte, error) {
 func (r *ExchangeStepResultCache) UnmarshalBinary(data []byte) error {
     return jsoniter.Unmarshal(data, r)
 }
-
-type ExchangeLimit struct {
-    Hours int `json:"hours"` // 时长
-    Times int `json:"times"` // 时长内允许次数
-}

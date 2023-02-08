@@ -57,6 +57,8 @@ const (
 	FieldPoints = "points"
 	// FieldExchangeLimit holds the string denoting the exchange_limit field in the database.
 	FieldExchangeLimit = "exchange_limit"
+	// FieldExchangeFrequency holds the string denoting the exchange_frequency field in the database.
+	FieldExchangeFrequency = "exchange_frequency"
 	// EdgeStation holds the string denoting the station edge name in mutations.
 	EdgeStation = "station"
 	// EdgePerson holds the string denoting the person edge name in mutations.
@@ -194,6 +196,7 @@ var Columns = []string{
 	FieldBlocked,
 	FieldPoints,
 	FieldExchangeLimit,
+	FieldExchangeFrequency,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

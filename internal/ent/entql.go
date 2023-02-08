@@ -1191,28 +1191,29 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Rider",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			rider.FieldCreatedAt:     {Type: field.TypeTime, Column: rider.FieldCreatedAt},
-			rider.FieldUpdatedAt:     {Type: field.TypeTime, Column: rider.FieldUpdatedAt},
-			rider.FieldDeletedAt:     {Type: field.TypeTime, Column: rider.FieldDeletedAt},
-			rider.FieldCreator:       {Type: field.TypeJSON, Column: rider.FieldCreator},
-			rider.FieldLastModifier:  {Type: field.TypeJSON, Column: rider.FieldLastModifier},
-			rider.FieldRemark:        {Type: field.TypeString, Column: rider.FieldRemark},
-			rider.FieldStationID:     {Type: field.TypeUint64, Column: rider.FieldStationID},
-			rider.FieldPersonID:      {Type: field.TypeUint64, Column: rider.FieldPersonID},
-			rider.FieldName:          {Type: field.TypeString, Column: rider.FieldName},
-			rider.FieldIDCardNumber:  {Type: field.TypeString, Column: rider.FieldIDCardNumber},
-			rider.FieldEnterpriseID:  {Type: field.TypeUint64, Column: rider.FieldEnterpriseID},
-			rider.FieldPhone:         {Type: field.TypeString, Column: rider.FieldPhone},
-			rider.FieldContact:       {Type: field.TypeJSON, Column: rider.FieldContact},
-			rider.FieldDeviceType:    {Type: field.TypeUint8, Column: rider.FieldDeviceType},
-			rider.FieldLastDevice:    {Type: field.TypeString, Column: rider.FieldLastDevice},
-			rider.FieldIsNewDevice:   {Type: field.TypeBool, Column: rider.FieldIsNewDevice},
-			rider.FieldLastFace:      {Type: field.TypeString, Column: rider.FieldLastFace},
-			rider.FieldPushID:        {Type: field.TypeString, Column: rider.FieldPushID},
-			rider.FieldLastSigninAt:  {Type: field.TypeTime, Column: rider.FieldLastSigninAt},
-			rider.FieldBlocked:       {Type: field.TypeBool, Column: rider.FieldBlocked},
-			rider.FieldPoints:        {Type: field.TypeInt64, Column: rider.FieldPoints},
-			rider.FieldExchangeLimit: {Type: field.TypeJSON, Column: rider.FieldExchangeLimit},
+			rider.FieldCreatedAt:         {Type: field.TypeTime, Column: rider.FieldCreatedAt},
+			rider.FieldUpdatedAt:         {Type: field.TypeTime, Column: rider.FieldUpdatedAt},
+			rider.FieldDeletedAt:         {Type: field.TypeTime, Column: rider.FieldDeletedAt},
+			rider.FieldCreator:           {Type: field.TypeJSON, Column: rider.FieldCreator},
+			rider.FieldLastModifier:      {Type: field.TypeJSON, Column: rider.FieldLastModifier},
+			rider.FieldRemark:            {Type: field.TypeString, Column: rider.FieldRemark},
+			rider.FieldStationID:         {Type: field.TypeUint64, Column: rider.FieldStationID},
+			rider.FieldPersonID:          {Type: field.TypeUint64, Column: rider.FieldPersonID},
+			rider.FieldName:              {Type: field.TypeString, Column: rider.FieldName},
+			rider.FieldIDCardNumber:      {Type: field.TypeString, Column: rider.FieldIDCardNumber},
+			rider.FieldEnterpriseID:      {Type: field.TypeUint64, Column: rider.FieldEnterpriseID},
+			rider.FieldPhone:             {Type: field.TypeString, Column: rider.FieldPhone},
+			rider.FieldContact:           {Type: field.TypeJSON, Column: rider.FieldContact},
+			rider.FieldDeviceType:        {Type: field.TypeUint8, Column: rider.FieldDeviceType},
+			rider.FieldLastDevice:        {Type: field.TypeString, Column: rider.FieldLastDevice},
+			rider.FieldIsNewDevice:       {Type: field.TypeBool, Column: rider.FieldIsNewDevice},
+			rider.FieldLastFace:          {Type: field.TypeString, Column: rider.FieldLastFace},
+			rider.FieldPushID:            {Type: field.TypeString, Column: rider.FieldPushID},
+			rider.FieldLastSigninAt:      {Type: field.TypeTime, Column: rider.FieldLastSigninAt},
+			rider.FieldBlocked:           {Type: field.TypeBool, Column: rider.FieldBlocked},
+			rider.FieldPoints:            {Type: field.TypeInt64, Column: rider.FieldPoints},
+			rider.FieldExchangeLimit:     {Type: field.TypeJSON, Column: rider.FieldExchangeLimit},
+			rider.FieldExchangeFrequency: {Type: field.TypeJSON, Column: rider.FieldExchangeFrequency},
 		},
 	}
 	graph.Nodes[41] = &sqlgraph.Node{
@@ -10844,6 +10845,11 @@ func (f *RiderFilter) WherePoints(p entql.Int64P) {
 // WhereExchangeLimit applies the entql json.RawMessage predicate on the exchange_limit field.
 func (f *RiderFilter) WhereExchangeLimit(p entql.BytesP) {
 	f.Where(p.Field(rider.FieldExchangeLimit))
+}
+
+// WhereExchangeFrequency applies the entql json.RawMessage predicate on the exchange_frequency field.
+func (f *RiderFilter) WhereExchangeFrequency(p entql.BytesP) {
+	f.Where(p.Field(rider.FieldExchangeFrequency))
 }
 
 // WhereHasStation applies a predicate to check if query has an edge station.

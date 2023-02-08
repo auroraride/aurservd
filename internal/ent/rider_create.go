@@ -303,6 +303,12 @@ func (rc *RiderCreate) SetExchangeLimit(mel model.RiderExchangeLimit) *RiderCrea
 	return rc
 }
 
+// SetExchangeFrequency sets the "exchange_frequency" field.
+func (rc *RiderCreate) SetExchangeFrequency(mef model.RiderExchangeFrequency) *RiderCreate {
+	rc.mutation.SetExchangeFrequency(mef)
+	return rc
+}
+
 // SetStation sets the "station" edge to the EnterpriseStation entity.
 func (rc *RiderCreate) SetStation(e *EnterpriseStation) *RiderCreate {
 	return rc.SetStationID(e.ID)
@@ -666,6 +672,10 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 	if value, ok := rc.mutation.ExchangeLimit(); ok {
 		_spec.SetField(rider.FieldExchangeLimit, field.TypeJSON, value)
 		_node.ExchangeLimit = value
+	}
+	if value, ok := rc.mutation.ExchangeFrequency(); ok {
+		_spec.SetField(rider.FieldExchangeFrequency, field.TypeJSON, value)
+		_node.ExchangeFrequency = value
 	}
 	if nodes := rc.mutation.StationIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1292,6 +1302,24 @@ func (u *RiderUpsert) ClearExchangeLimit() *RiderUpsert {
 	return u
 }
 
+// SetExchangeFrequency sets the "exchange_frequency" field.
+func (u *RiderUpsert) SetExchangeFrequency(v model.RiderExchangeFrequency) *RiderUpsert {
+	u.Set(rider.FieldExchangeFrequency, v)
+	return u
+}
+
+// UpdateExchangeFrequency sets the "exchange_frequency" field to the value that was provided on create.
+func (u *RiderUpsert) UpdateExchangeFrequency() *RiderUpsert {
+	u.SetExcluded(rider.FieldExchangeFrequency)
+	return u
+}
+
+// ClearExchangeFrequency clears the value of the "exchange_frequency" field.
+func (u *RiderUpsert) ClearExchangeFrequency() *RiderUpsert {
+	u.SetNull(rider.FieldExchangeFrequency)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1736,6 +1764,27 @@ func (u *RiderUpsertOne) UpdateExchangeLimit() *RiderUpsertOne {
 func (u *RiderUpsertOne) ClearExchangeLimit() *RiderUpsertOne {
 	return u.Update(func(s *RiderUpsert) {
 		s.ClearExchangeLimit()
+	})
+}
+
+// SetExchangeFrequency sets the "exchange_frequency" field.
+func (u *RiderUpsertOne) SetExchangeFrequency(v model.RiderExchangeFrequency) *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetExchangeFrequency(v)
+	})
+}
+
+// UpdateExchangeFrequency sets the "exchange_frequency" field to the value that was provided on create.
+func (u *RiderUpsertOne) UpdateExchangeFrequency() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateExchangeFrequency()
+	})
+}
+
+// ClearExchangeFrequency clears the value of the "exchange_frequency" field.
+func (u *RiderUpsertOne) ClearExchangeFrequency() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearExchangeFrequency()
 	})
 }
 
@@ -2345,6 +2394,27 @@ func (u *RiderUpsertBulk) UpdateExchangeLimit() *RiderUpsertBulk {
 func (u *RiderUpsertBulk) ClearExchangeLimit() *RiderUpsertBulk {
 	return u.Update(func(s *RiderUpsert) {
 		s.ClearExchangeLimit()
+	})
+}
+
+// SetExchangeFrequency sets the "exchange_frequency" field.
+func (u *RiderUpsertBulk) SetExchangeFrequency(v model.RiderExchangeFrequency) *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetExchangeFrequency(v)
+	})
+}
+
+// UpdateExchangeFrequency sets the "exchange_frequency" field to the value that was provided on create.
+func (u *RiderUpsertBulk) UpdateExchangeFrequency() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateExchangeFrequency()
+	})
+}
+
+// ClearExchangeFrequency clears the value of the "exchange_frequency" field.
+func (u *RiderUpsertBulk) ClearExchangeFrequency() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearExchangeFrequency()
 	})
 }
 

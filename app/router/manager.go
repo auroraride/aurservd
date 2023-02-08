@@ -99,6 +99,7 @@ func loadManagerRoutes() {
     g.POST("/rider/followup", mapi.Rider.FollowUpCreate)
     g.GET("/rider/followup", mapi.Rider.FollowUpList)
     g.POST("/rider/exchange-limit", mapi.Rider.ExchangeLimit)
+    g.POST("/rider/exchange-frequency", mapi.Rider.ExchangeFrequency)
 
     // 订阅
     g.POST("/subscribe/alter", mapi.Subscribe.Alter)

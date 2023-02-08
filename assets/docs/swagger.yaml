@@ -3818,6 +3818,18 @@ definitions:
         description: 换电时间
         type: string
     type: object
+  model.ExchangeFrequency:
+    properties:
+      hours:
+        description: 时长
+        type: integer
+      minutes:
+        description: 限制时间(分钟)
+        type: integer
+      times:
+        description: 时长内次数
+        type: integer
+    type: object
   model.ExchangeLimit:
     properties:
       hours:
@@ -5218,6 +5230,17 @@ definitions:
         description: 骑手订阅状态
         type: integer
     type: object
+  model.RiderExchangeFrequencyReq:
+    properties:
+      ExchangeFrequency:
+        items:
+          $ref: '#/definitions/model.ExchangeFrequency'
+        type: array
+      id:
+        type: integer
+    required:
+    - id
+    type: object
   model.RiderExchangeInfo:
     properties:
       alternative:
@@ -5336,6 +5359,11 @@ definitions:
     type: object
   model.RiderItem:
     properties:
+      ExchangeFrequency:
+        description: 换电频次, 有可能不存在
+        items:
+          $ref: '#/definitions/model.ExchangeFrequency'
+        type: array
       address:
         description: 户籍地址
         type: string
@@ -13054,6 +13082,33 @@ paths:
       summary: M7003 封禁/解除封禁骑手账户
       tags:
       - '[M]管理接口'
+  /manager/v1/rider/exchange-frequency:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerRiderExchangeFrequency
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 配置项
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.RiderExchangeFrequencyReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M7024 设置骑手换电频次
+      tags:
+      - '[M]管理接口'
   /manager/v1/rider/exchange-limit:
     post:
       consumes:
@@ -13078,7 +13133,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M7022 设置骑手换电限制
+      summary: M7023 设置骑手换电限制
       tags:
       - '[M]管理接口'
   /manager/v1/rider/followup:

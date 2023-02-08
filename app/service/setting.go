@@ -60,7 +60,8 @@ func (s *settingService) CacheSettings(sm *ent.Setting) {
         if err == nil {
             cache.Set(s.ctx, sm.Key, f, 0)
         }
-    case model.SettingExchangeLimitKey:
+    case model.SettingExchangeLimitKey,
+        model.SettingExchangeFrequencyKey:
         cache.Set(s.ctx, sm.Key, adapter.ConvertString2Bytes(sm.Content), -1)
     }
 }
@@ -98,6 +99,22 @@ func (s *settingService) Modify(req *model.SettingReq) {
     if sm == nil {
         snag.Panic("未找到设置项")
     }
+    var err error
+    switch *req.Key {
+    case model.SettingExchangeLimitKey, model.SettingExchangeFrequencyKey:
+        var data map[int]model.ExchangeLimiter
+        err = jsoniter.Unmarshal(adapter.ConvertString2Bytes(*req.Content), &data)
+        for key, limit := range data {
+            if limit.Duplicate() {
+                snag.Panic("设定重复")
+            }
+            data[key].Sort()
+        }
+    }
+    if err != nil {
+        snag.Panic(err)
+    }
+
     sm = s.orm.UpdateOne(sm).
         SetContent(*req.Content).
         SaveX(s.ctx)

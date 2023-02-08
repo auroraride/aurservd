@@ -160,7 +160,7 @@ func (*rider) FollowUpList(c echo.Context) (err error) {
 // ExchangeLimit
 // @ID           ManagerRiderExchangeLimit
 // @Router       /manager/v1/rider/exchange-limit [POST]
-// @Summary      M7022 设置骑手换电限制
+// @Summary      M7023 设置骑手换电限制
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -170,5 +170,21 @@ func (*rider) FollowUpList(c echo.Context) (err error) {
 func (*rider) ExchangeLimit(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.RiderExchangeLimitReq](c)
     service.NewRiderWithModifier(ctx.Modifier).ExchangeLimit(req)
+    return ctx.SendResponse()
+}
+
+// ExchangeFrequency
+// @ID           ManagerRiderExchangeFrequency
+// @Router       /manager/v1/rider/exchange-frequency [POST]
+// @Summary      M7024 设置骑手换电频次
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        body  body  model.RiderExchangeFrequencyReq  true  "配置项"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*rider) ExchangeFrequency(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.RiderExchangeFrequencyReq](c)
+    service.NewRiderWithModifier(ctx.Modifier).ExchangeFrequency(req)
     return ctx.SendResponse()
 }

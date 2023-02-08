@@ -9073,6 +9073,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/rider/exchange-frequency": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M7024 设置骑手换电频次",
+                "operationId": "ManagerRiderExchangeFrequency",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "配置项",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.RiderExchangeFrequencyReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/rider/exchange-limit": {
             "post": {
                 "consumes": [
@@ -9084,7 +9125,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M7022 设置骑手换电限制",
+                "summary": "M7023 设置骑手换电限制",
                 "operationId": "ManagerRiderExchangeLimit",
                 "parameters": [
                     {
@@ -19038,6 +19079,23 @@ const docTemplate = `{
                 }
             }
         },
+        "model.ExchangeFrequency": {
+            "type": "object",
+            "properties": {
+                "hours": {
+                    "description": "时长",
+                    "type": "integer"
+                },
+                "minutes": {
+                    "description": "限制时间(分钟)",
+                    "type": "integer"
+                },
+                "times": {
+                    "description": "时长内次数",
+                    "type": "integer"
+                }
+            }
+        },
         "model.ExchangeLimit": {
             "type": "object",
             "properties": {
@@ -21042,6 +21100,23 @@ const docTemplate = `{
                 }
             }
         },
+        "model.RiderExchangeFrequencyReq": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "ExchangeFrequency": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.ExchangeFrequency"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
         "model.RiderExchangeInfo": {
             "type": "object",
             "properties": {
@@ -21221,6 +21296,13 @@ const docTemplate = `{
         "model.RiderItem": {
             "type": "object",
             "properties": {
+                "ExchangeFrequency": {
+                    "description": "换电频次, 有可能不存在",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.ExchangeFrequency"
+                    }
+                },
                 "address": {
                     "description": "户籍地址",
                     "type": "string"

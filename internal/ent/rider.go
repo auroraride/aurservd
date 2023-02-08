@@ -66,6 +66,8 @@ type Rider struct {
 	Points int64 `json:"points,omitempty"`
 	// 换电间隔配置
 	ExchangeLimit model.RiderExchangeLimit `json:"exchange_limit,omitempty"`
+	// 换电频次配置
+	ExchangeFrequency model.RiderExchangeFrequency `json:"exchange_frequency,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the RiderQuery when eager-loading is set.
 	Edges RiderEdges `json:"edges"`
@@ -231,7 +233,7 @@ func (*Rider) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case rider.FieldCreator, rider.FieldLastModifier, rider.FieldContact, rider.FieldExchangeLimit:
+		case rider.FieldCreator, rider.FieldLastModifier, rider.FieldContact, rider.FieldExchangeLimit, rider.FieldExchangeFrequency:
 			values[i] = new([]byte)
 		case rider.FieldIsNewDevice, rider.FieldBlocked:
 			values[i] = new(sql.NullBool)
@@ -408,6 +410,14 @@ func (r *Rider) assignValues(columns []string, values []any) error {
 					return fmt.Errorf("unmarshal field exchange_limit: %w", err)
 				}
 			}
+		case rider.FieldExchangeFrequency:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field exchange_frequency", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &r.ExchangeFrequency); err != nil {
+					return fmt.Errorf("unmarshal field exchange_frequency: %w", err)
+				}
+			}
 		}
 	}
 	return nil
@@ -573,6 +583,9 @@ func (r *Rider) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("exchange_limit=")
 	builder.WriteString(fmt.Sprintf("%v", r.ExchangeLimit))
+	builder.WriteString(", ")
+	builder.WriteString("exchange_frequency=")
+	builder.WriteString(fmt.Sprintf("%v", r.ExchangeFrequency))
 	builder.WriteByte(')')
 	return builder.String()
 }

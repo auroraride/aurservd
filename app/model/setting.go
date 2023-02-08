@@ -5,8 +5,6 @@
 
 package model
 
-import jsoniter "github.com/json-iterator/go"
-
 const (
     IntelligentBatteryFullSoc      float64 = 95.0 // 智能电池定义满电soc TODO: 具体数值待定义
     IntelligentBusinessScanExpires int64   = 30   // 智能电柜业务 - 扫码有效期(s)
@@ -25,6 +23,7 @@ const (
     SettingPauseMaxDaysKey           = "PAUSE_MAX_DAYS"           // 最大寄存时间
     SettingExchangeIntervalKey       = "EXCHANGE_INTERVAL"        // 限制换电间隔
     SettingExchangeLimitKey          = "EXCHANGE_LIMIT"           // 换电限制
+    SettingExchangeFrequencyKey      = "EXCHANGE_FREQUENCY"       // 换电频次
     SettingMaintainKey               = "MAINTAIN"                 // 维护中
     SettingReserveDurationKey        = "RESERVE_MAX_DURATION"     // 最长预约时间
     SettingExchangeMinBatteryKey     = "EXCHANGE_MIN_BATTERY"     // 换电最低电量
@@ -137,6 +136,10 @@ var Settings = map[string]SettingItem{
         Desc:    "城市换电间隔",
         Default: make(SettingExchangeLimits),
     },
+    SettingExchangeFrequencyKey: {
+        Desc:    "城市换电频次",
+        Default: make(SettingExchangeFrequencies),
+    },
     SettingMaintainKey: {
         Desc:    "是否维护中",
         Default: false,
@@ -169,14 +172,4 @@ var Settings = map[string]SettingItem{
         Desc:    "消费赠送积分",
         Default: []SettingConsumePoint{},
     },
-}
-
-type SettingExchangeLimits map[uint64][]ExchangeLimit
-
-func (s *SettingExchangeLimits) MarshalBinary() ([]byte, error) {
-    return jsoniter.Marshal(s)
-}
-
-func (s *SettingExchangeLimits) UnmarshalBinary(data []byte) error {
-    return jsoniter.Unmarshal(data, s)
 }
