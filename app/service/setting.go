@@ -102,22 +102,30 @@ func (s *settingService) Modify(req *model.SettingReq) {
     var err error
     switch *req.Key {
     case model.SettingExchangeLimitKey:
-        var data map[string]model.RiderExchangeLimit
-        err = jsoniter.Unmarshal(adapter.ConvertString2Bytes(*req.Content), &data)
-        for key, limit := range data {
-            if limit.Duplicate() {
-                snag.Panic("设定重复")
+        if *req.Content == "[]" || *req.Content == "" {
+            *req.Content = "{}"
+        } else {
+            var data map[string]model.RiderExchangeLimit
+            err = jsoniter.Unmarshal(adapter.ConvertString2Bytes(*req.Content), &data)
+            for key, limit := range data {
+                if limit.Duplicate() {
+                    snag.Panic("设定重复")
+                }
+                data[key].Sort()
             }
-            data[key].Sort()
         }
     case model.SettingExchangeFrequencyKey:
-        var data map[string]model.RiderExchangeFrequency
-        err = jsoniter.Unmarshal(adapter.ConvertString2Bytes(*req.Content), &data)
-        for key, limit := range data {
-            if limit.Duplicate() {
-                snag.Panic("设定重复")
+        if *req.Content == "[]" || *req.Content == "" {
+            *req.Content = "{}"
+        } else {
+            var data map[string]model.RiderExchangeFrequency
+            err = jsoniter.Unmarshal(adapter.ConvertString2Bytes(*req.Content), &data)
+            for key, limit := range data {
+                if limit.Duplicate() {
+                    snag.Panic("设定重复")
+                }
+                data[key].Sort()
             }
-            data[key].Sort()
         }
     }
     if err != nil {

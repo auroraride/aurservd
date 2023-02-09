@@ -151,7 +151,7 @@ type RiderItem struct {
     // 换电限制, 有可能不存在
     ExchangeLimit RiderExchangeLimit `json:"exchangeLimit,omitempty"`
     // 换电频次, 有可能不存在
-    ExchangeFrequency RiderExchangeFrequency `json:"ExchangeFrequency,omitempty"`
+    ExchangeFrequency RiderExchangeFrequency `json:"exchangeFrequency,omitempty"`
 }
 
 // RiderBlockReq 封禁或解封骑手账号

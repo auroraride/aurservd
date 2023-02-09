@@ -21335,13 +21335,6 @@ const docTemplate = `{
         "model.RiderItem": {
             "type": "object",
             "properties": {
-                "ExchangeFrequency": {
-                    "description": "换电频次, 有可能不存在",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.ExchangeFrequency"
-                    }
-                },
                 "address": {
                     "description": "户籍地址",
                     "type": "string"
@@ -21401,6 +21394,13 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.Enterprise"
                         }
                     ]
+                },
+                "exchangeFrequency": {
+                    "description": "换电频次, 有可能不存在",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.ExchangeFrequency"
+                    }
                 },
                 "exchangeLimit": {
                     "description": "换电限制, 有可能不存在",

@@ -601,14 +601,15 @@ func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
 func (s *riderService) detailRiderItem(item *ent.Rider) model.RiderItem {
     p := item.Edges.Person
     ri := model.RiderItem{
-        ID:            item.ID,
-        Phone:         item.Phone,
-        Status:        model.RiderStatusNormal,
-        AuthStatus:    model.PersonUnauthenticated,
-        Contact:       item.Contact,
-        Points:        item.Points,
-        Balance:       0,
-        ExchangeLimit: item.ExchangeLimit,
+        ID:                item.ID,
+        Phone:             item.Phone,
+        Status:            model.RiderStatusNormal,
+        AuthStatus:        model.PersonUnauthenticated,
+        Contact:           item.Contact,
+        Points:            item.Points,
+        Balance:           0,
+        ExchangeLimit:     item.ExchangeLimit,
+        ExchangeFrequency: item.ExchangeFrequency,
     }
     e := item.Edges.Enterprise
     if e != nil {

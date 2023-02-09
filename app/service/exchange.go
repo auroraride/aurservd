@@ -91,7 +91,7 @@ func (s *exchangeService) queryTimesInHours(r *ent.Rider, hours int) (tm map[int
     for i, item := range items {
         h := int(math.Ceil(now.Sub(item.FinishAt).Hours()))
         tm[h] += 1
-        if i == len(items)-1 {
+        if i == 0 {
             last = item.FinishAt
         }
     }
@@ -171,11 +171,7 @@ func (s *exchangeService) RiderLimit(r *ent.Rider, cityID uint64) (hours int, lm
 
 // RiderInterval 检查用户换电间隔
 func (s *exchangeService) RiderInterval(r *ent.Rider, cityID uint64) {
-    timeLimit, _ := ar.Redis.HGet(s.ctx, ar.RiderExchangeTimeLimitCacheKey, r.IDCardNumber).Time()
     now := time.Now()
-    if timeLimit.After(now) {
-        snag.Panic("换电过于频繁, " + strconv.Itoa(int(math.Ceil(timeLimit.Sub(now).Minutes()))) + "分钟可再次换电")
-    }
 
     hours := 1
     lh, lm, le := s.RiderLimit(r, cityID)
@@ -189,20 +185,18 @@ func (s *exchangeService) RiderInterval(r *ent.Rider, cityID uint64) {
     }
 
     tm, last := s.queryTimesInHours(r, hours)
+
     for h, times := range tm {
         if t, ok := lm[h]; ok && t <= times {
             snag.Panic("换电过于频繁, " + strconv.Itoa(60-now.Minute()) + "分钟后可再次换电")
         }
         if f, ok := fm[h]; ok && f.Times <= times {
-            after := now.Add(time.Minute * time.Duration(f.Minutes))
+            after := last.Add(time.Minute * time.Duration(f.Minutes))
             if after.After(now) {
-                ar.Redis.HSet(s.ctx, ar.RiderExchangeTimeLimitCacheKey, r.IDCardNumber, after)
-                snag.Panic("换电过于频繁, " + strconv.Itoa(f.Minutes) + "分钟后可再次换电")
+                snag.Panic("换电过于频繁, " + strconv.Itoa(int(math.Ceil(after.Sub(now).Minutes()))) + "分钟后可再次换电")
             }
         }
     }
-
-    ar.Redis.HDel(s.ctx, ar.CabinetNameCacheKey, r.IDCardNumber)
 
     // 检查全局换电间隔
     if !le && !fe && !last.IsZero() {

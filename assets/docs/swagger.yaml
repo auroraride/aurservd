@@ -5359,11 +5359,6 @@ definitions:
     type: object
   model.RiderItem:
     properties:
-      ExchangeFrequency:
-        description: 换电频次, 有可能不存在
-        items:
-          $ref: '#/definitions/model.ExchangeFrequency'
-        type: array
       address:
         description: 户籍地址
         type: string
@@ -5399,6 +5394,11 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.Enterprise'
         description: 团签企业信息, 若无此字段则为个签用户
+      exchangeFrequency:
+        description: 换电频次, 有可能不存在
+        items:
+          $ref: '#/definitions/model.ExchangeFrequency'
+        type: array
       exchangeLimit:
         description: 换电限制, 有可能不存在
         items:
