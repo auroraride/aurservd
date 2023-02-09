@@ -30,14 +30,19 @@ func NewBatteryXc(params ...any) *batteryXcService {
     }
 }
 
-func (s *batteryXcService) Detail(req *model.XcBatteryDetailRequest) (detail *model.XcBatteryDetail) {
+func (s *batteryXcService) Detail(req *model.XcBatterySNRequest) (detail *model.XcBatteryDetail) {
     // 请求xcbms rpc
     r, _ := rpc.XcBmsBatch(s.ctx, &pb.BatteryBatchRequest{Sn: []string{req.SN}})
     if r == nil {
         snag.Panic("电池信息查询失败")
     }
+
     // 查询电池
     bat := ent.Database.Battery.Query().Where(battery.Sn(req.SN)).WithRider().WithCabinet().FirstX(s.ctx)
+    if bat == nil {
+        snag.Panic("电池未录入")
+    }
+
     var (
         hb *xcpb.Heartbeat
         rb *xcpb.Battery
@@ -46,7 +51,6 @@ func (s *batteryXcService) Detail(req *model.XcBatteryDetailRequest) (detail *mo
     if len(r.Items[req.SN].Heartbeats) > 0 {
         rb = r.Items[req.SN]
         hb = rb.Heartbeats[0]
-        return
     }
 
     detail = &model.XcBatteryDetail{}
@@ -66,12 +70,6 @@ func (s *batteryXcService) Detail(req *model.XcBatteryDetailRequest) (detail *mo
             TotalChargingTime:    hb.TotalChargingTime,
             TotalDisChargingTime: hb.TotalDisChargingTime,
             TotalUsingTime:       hb.TotalUsingTime,
-            SoftVersion:          rb.SoftVersion.Value,
-            HardVersion:          rb.HardVersion.Value,
-            Soft4gVersion:        rb.Soft_4GVersion.Value,
-            Hard4gVersion:        rb.Hard_4GVersion.Value,
-            Sn4g:                 rb.Sn_4G.Value,
-            Iccid:                rb.Iccid.Value,
             InCabinet:            hb.InCabinet,
             Capacity:             hb.Capacity,
             MonMaxVoltage:        uint16(hb.MonMaxVoltage),
@@ -92,6 +90,15 @@ func (s *batteryXcService) Detail(req *model.XcBatteryDetailRequest) (detail *mo
         }
     }
 
+    if rb != nil {
+        detail.SoftVersion = rb.SoftVersion.Value
+        detail.HardVersion = rb.HardVersion.Value
+        detail.Soft4gVersion = rb.Soft_4GVersion.Value
+        detail.Hard4gVersion = rb.Hard_4GVersion.Value
+        detail.Sn4g = rb.Sn_4G.Value
+        detail.Iccid = rb.Iccid.Value
+    }
+
     detail.Sn = req.SN
     detail.CreatedAt = bat.CreatedAt.Format("2006-01-02 15:04:05")
 
@@ -109,4 +116,24 @@ func (s *batteryXcService) Detail(req *model.XcBatteryDetailRequest) (detail *mo
     }
 
     return
+}
+
+func (s *batteryXcService) Statistics(req *model.XcBatterySNRequest) (detail *model.XcBatteryStatistics) {
+    // 请求xcbms rpc
+    r, _ := rpc.XcBmsStatistics(s.ctx, &pb.BatterySnRequest{Sn: req.SN})
+    if r == nil {
+        snag.Panic("电池数据查询失败")
+    }
+
+    return &model.XcBatteryStatistics{
+        DateHour:    r.DateHour,
+        Voltage:     r.Voltage,
+        BatTemp:     r.BatTemp,
+        MosTemp:     r.MosTemp,
+        EnvTemp:     r.EnvTemp,
+        Soc:         r.Soc,
+        Strength:    r.Strength,
+        Charging:    r.Charging,
+        DisCharging: r.DisCharging,
+    }
 }

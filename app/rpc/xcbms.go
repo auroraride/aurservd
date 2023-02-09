@@ -54,3 +54,10 @@ func XcBmsFaultOverview(ctx context.Context, req *pb.BatterySnRequest) (res *pb.
     }
     return xcBmsClient.FaultOverview(ctx, req)
 }
+
+func XcBmsStatistics(ctx context.Context, req *pb.BatterySnRequest) (res *pb.BatteryStatisticsResponse, err error) {
+    if xcBmsClient == nil {
+        return
+    }
+    return xcBmsClient.Statistics(ctx, req)
+}

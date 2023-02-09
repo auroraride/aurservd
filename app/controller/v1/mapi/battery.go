@@ -168,6 +168,21 @@ func (*battery) Unbind(c echo.Context) (err error) {
 // @Param        sn  path  string  true  "电池编号"
 // @Success      200  {object}  model.XcBatteryDetail  "请求成功"
 func (*battery) Detail(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.XcBatteryDetailRequest](c)
+    ctx, req := app.ManagerContextAndBinding[model.XcBatterySNRequest](c)
     return ctx.SendResponse(service.NewBatteryXc().Detail(req))
+}
+
+// Statistics
+// @ID           ManagerBatteryStatistics
+// @Router       /manager/v1/battery/xc/statistics/{sn} [GET]
+// @Summary      M4011 电池数据
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        sn  path  string  true  "电池编号"
+// @Success      200  {object}  model.XcBatteryStatistics  "请求成功"
+func (*battery) Statistics(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.XcBatterySNRequest](c)
+    return ctx.SendResponse(service.NewBatteryXc().Statistics(req))
 }

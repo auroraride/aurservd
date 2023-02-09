@@ -53,7 +53,7 @@ func NewXcBmsBattery(hb *xcpb.Heartbeat) (item *XcBmsBattery) {
     return
 }
 
-type XcBatteryDetailRequest struct {
+type XcBatterySNRequest struct {
     SN string `json:"sn" param:"sn" validate:"required"` // 电池编码
 }
 
@@ -137,4 +137,16 @@ type XcBatteryDetail struct {
     Online bool `json:"online"`
     // 故障统计, 参见`fault`字段, 需要将13种故障都显示出来, 若无返回则是0
     FaultsOverview []*pb.BatteryFaultOverview `json:"faultsOverview"`
+}
+
+type XcBatteryStatistics struct {
+    DateHour    []string  `json:"dateHour,omitempty"`    // 整点
+    Voltage     []float64 `json:"voltage,omitempty"`     // 电压(V)
+    BatTemp     []float64 `json:"batTemp,omitempty"`     // 电池温度(℃)
+    MosTemp     []float64 `json:"mosTemp,omitempty"`     // Mos温度(℃)
+    EnvTemp     []float64 `json:"envTemp,omitempty"`     // 环境温度(℃)
+    Soc         []float64 `json:"soc,omitempty"`         // 剩余容量(%)
+    Strength    []float64 `json:"strength,omitempty"`    // 信号强度(%)
+    Charging    []float64 `json:"charging,omitempty"`    // 充电电流(A)
+    DisCharging []float64 `json:"disCharging,omitempty"` // 放电电流(A)
 }
