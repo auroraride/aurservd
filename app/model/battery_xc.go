@@ -118,4 +118,20 @@ type XcBatteryDetail struct {
     TotalUsingTime uint32 `json:"totalUsingTime,omitempty"`
     // 当前位置
     BelongsTo string `json:"belongsTo,omitempty"`
+    // 功率 (Kw)
+    Power float64 `json:"power,omitempty"`
+    // BMS软件版本
+    SoftVersion uint32 `json:"softVersion,omitempty"`
+    // BMS硬件版本
+    HardVersion uint32 `json:"hardVersion,omitempty"`
+    // 4G软件版本
+    Soft4gVersion uint32 `json:"soft4GVersion,omitempty"`
+    // 4G硬件版本
+    Hard4gVersion uint32 `json:"hard4GVersion,omitempty"`
+    // 4G板SN
+    Sn4g uint64 `json:"sn4G,omitempty"`
+    // SIM卡ICCID
+    Iccid string `json:"iccid,omitempty"`
+    // 电池是否在线
+    Online bool `json:"online"`
 }

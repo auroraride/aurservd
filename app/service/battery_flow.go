@@ -38,7 +38,7 @@ func (s *batteryFlowService) Create(req model.BatteryFlowCreateReq) {
         SetNillableSerial(req.Serial)
     sr, _ := rpc.XcBmsSample(s.ctx, &pb.BatterySnRequest{Sn: req.SN})
     if sr != nil {
-        updater.SetSoc(float64(sr.Soc)).SetGeom(adapter.NewGeometry(sr.Geom))
+        updater.SetSoc(float64(sr.Soc)).SetGeom(adapter.NewGeometry(sr.Geom).WGS84toGCJ02())
     }
     _ = updater.Exec(s.ctx)
 }

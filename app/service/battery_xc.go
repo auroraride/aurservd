@@ -6,6 +6,8 @@
 package service
 
 import (
+    "github.com/auroraride/adapter"
+    "github.com/auroraride/adapter/defs/xcdef"
     "github.com/auroraride/adapter/rpc/pb"
     "github.com/auroraride/adapter/rpc/pb/xcpb"
     "github.com/auroraride/aurservd/app/model"
@@ -13,7 +15,9 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/battery"
     "github.com/auroraride/aurservd/pkg/snag"
+    "math"
     "strconv"
+    "time"
 )
 
 type batteryXcService struct {
@@ -34,21 +38,56 @@ func (s *batteryXcService) Detail(req *model.XcBatteryDetailRequest) (detail *mo
     }
     // 查询电池
     bat := ent.Database.Battery.Query().Where(battery.Sn(req.SN)).WithRider().WithCabinet().FirstX(s.ctx)
-    var hb *xcpb.Heartbeat
+    var (
+        hb *xcpb.Heartbeat
+        rb *xcpb.Battery
+    )
+
     if len(r.Items[req.SN].Heartbeats) > 0 {
-        hb = r.Items[req.SN].Heartbeats[0]
+        rb = r.Items[req.SN]
+        hb = rb.Heartbeats[0]
         return
     }
 
     detail = &model.XcBatteryDetail{}
     if hb != nil {
         detail = &model.XcBatteryDetail{
-            UpdatedAt:       hb.CreatedAt.AsTime().Format("2006-01-02 15:04:05"),
-            DisChargingTime: hb.DisChargingTime,
-            XcBmsBattery:    model.NewXcBmsBattery(hb),
-            Current:         hb.Current,
-            Soh:             uint8(hb.Soh),
-            Cycles:          uint16(hb.Cycles),
+            UpdatedAt:            hb.CreatedAt.AsTime().Format("2006-01-02 15:04:05"),
+            XcBmsBattery:         model.NewXcBmsBattery(hb),
+            Current:              hb.Current,
+            Soh:                  uint8(hb.Soh),
+            Cycles:               uint16(hb.Cycles),
+            Geom:                 adapter.NewGeometry(hb.Geom).WGS84toGCJ02(),
+            Voltage:              hb.Voltage,
+            Power:                math.Round(math.Abs(hb.Current)*hb.Voltage/1000/100) * 100,
+            ChargingTime:         hb.ChargingTime,
+            DisChargingTime:      hb.DisChargingTime,
+            UsingTime:            hb.UsingTime,
+            TotalChargingTime:    hb.TotalChargingTime,
+            TotalDisChargingTime: hb.TotalDisChargingTime,
+            TotalUsingTime:       hb.TotalUsingTime,
+            SoftVersion:          rb.SoftVersion.Value,
+            HardVersion:          rb.HardVersion.Value,
+            Soft4gVersion:        rb.Soft_4GVersion.Value,
+            Hard4gVersion:        rb.Hard_4GVersion.Value,
+            Sn4g:                 rb.Sn_4G.Value,
+            Iccid:                rb.Iccid.Value,
+            InCabinet:            hb.InCabinet,
+            Capacity:             hb.Capacity,
+            MonMaxVoltage:        uint16(hb.MonMaxVoltage),
+            MonMaxVoltagePos:     uint8(hb.MonMaxVoltagePos),
+            MonMinVoltage:        uint16(hb.MonMinVoltage),
+            MonMinVoltagePos:     uint8(hb.MonMinVoltagePos),
+            MaxTemp:              uint16(hb.MaxTemp),
+            MinTemp:              uint16(hb.MinTemp),
+            MosStatus:            xcdef.NewMosStatus(hb.MosStatus),
+            MonVoltage:           xcdef.NewMonVoltage(hb.MonVoltage),
+            Temp:                 xcdef.NewTemperature(hb.Temp),
+            MosTemp:              uint16(hb.MosTemp),
+            EnvTemp:              uint16(hb.EnvTemp),
+            Strength:             uint8(hb.Strength),
+            Gps:                  xcdef.GPSStatus(hb.Gps),
+            Online:               time.Now().Sub(hb.CreatedAt.AsTime()).Minutes() < 35,
         }
     }
 

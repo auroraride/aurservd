@@ -717,6 +717,8 @@ github.com/prometheus/procfs v0.0.2/go.mod h1:TjEm7ze935MbeOT/UhFTIMYKhuLP4wbCsT
 github.com/prometheus/procfs v0.0.8/go.mod h1:7Qr8sr6344vo1JqZ6HhLceV9o3AJ1Ff+GxbHq6oeK9A=
 github.com/prometheus/procfs v0.1.3/go.mod h1:lV6e/gmhEcM9IjHGsFOCxxuZ+z1YqCvr4OA4YeYWdaU=
 github.com/prometheus/procfs v0.6.0/go.mod h1:cz+aTbrPOrUb4q7XlbU9ygM+/jj0fzG6c1xBZuNvfVA=
+github.com/qichengzx/coordtransform v0.0.0-20220708113031-010878418826 h1:xRzV3Mycb7VUY9QSs03UZbmgf7Og7RHEwF2zaHGyTXg=
+github.com/qichengzx/coordtransform v0.0.0-20220708113031-010878418826/go.mod h1:hrRiFtqNSi8E6C+3JsbPGjtCfyS9QFz90IORo3H6mts=
 github.com/qiniu/qmgo v1.1.5 h1:oJgNTvnopDH1lOmBuoyoWjw//HVUN1iLkvOKleFZbes=
 github.com/qiniu/qmgo v1.1.5/go.mod h1:gTj5P+fOyGwtTkumPa8YTFspsf0Ndpw+MtRPwU1FHL4=
 github.com/r3labs/diff/v3 v3.0.1 h1:CBKqf3XmNRHXKmdU7mZP1w7TV0pDyVCis1AUHtA4Xtg=

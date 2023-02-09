@@ -23554,6 +23554,18 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "hard4GVersion": {
+                    "description": "4G硬件版本",
+                    "type": "integer"
+                },
+                "hardVersion": {
+                    "description": "BMS硬件版本",
+                    "type": "integer"
+                },
+                "iccid": {
+                    "description": "SIM卡ICCID",
+                    "type": "string"
+                },
                 "inCabinet": {
                     "description": "是否在电柜",
                     "type": "boolean"
@@ -23600,12 +23612,32 @@ const docTemplate = `{
                     "description": "MOS温度 (1个MOS温度传感器, 单位1℃)",
                     "type": "integer"
                 },
+                "online": {
+                    "description": "电池是否在线",
+                    "type": "boolean"
+                },
+                "power": {
+                    "description": "功率 (Kw)",
+                    "type": "number"
+                },
                 "sn": {
                     "description": "电池编号",
                     "type": "string"
                 },
+                "sn4G": {
+                    "description": "4G板SN",
+                    "type": "integer"
+                },
                 "soc": {
                     "description": "剩余容量, 单位1%",
+                    "type": "integer"
+                },
+                "soft4GVersion": {
+                    "description": "4G软件版本",
+                    "type": "integer"
+                },
+                "softVersion": {
+                    "description": "BMS软件版本",
                     "type": "integer"
                 },
                 "soh": {
