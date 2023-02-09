@@ -12,12 +12,7 @@ import (
     "strconv"
 )
 
-type ExchangeLimiter interface {
-    Duplicate() bool
-    Sort()
-}
-
-type SettingExchangeLimits map[uint64]RiderExchangeLimit
+type SettingExchangeLimits map[string]RiderExchangeLimit
 
 func (s *SettingExchangeLimits) MarshalBinary() ([]byte, error) {
     return jsoniter.Marshal(s)
@@ -71,7 +66,7 @@ func (el RiderExchangeLimit) Sort() {
     })
 }
 
-type SettingExchangeFrequencies map[uint64]RiderExchangeFrequency
+type SettingExchangeFrequencies map[string]RiderExchangeFrequency
 
 func (s *SettingExchangeFrequencies) MarshalBinary() ([]byte, error) {
     return jsoniter.Marshal(s)

@@ -110,7 +110,7 @@ func (s *exchangeService) RiderFrequency(r *ent.Rider, cityID uint64) (hours int
         // 获取城市换电配置
         data := make(model.SettingExchangeFrequencies)
         _ = cache.Get(s.ctx, model.SettingExchangeFrequencyKey).Scan(&data)
-        if cm, ok := data[cityID]; ok {
+        if cm, ok := data[strconv.FormatUint(cityID, 10)]; ok {
             list = cm
         }
     }
@@ -145,7 +145,7 @@ func (s *exchangeService) RiderLimit(r *ent.Rider, cityID uint64) (hours int, lm
         // 获取城市换电配置
         data := make(model.SettingExchangeLimits)
         _ = cache.Get(s.ctx, model.SettingExchangeLimitKey).Scan(&data)
-        if cm, ok := data[cityID]; ok {
+        if cm, ok := data[strconv.FormatUint(cityID, 10)]; ok {
             list = cm
         }
     }
