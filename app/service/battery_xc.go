@@ -88,6 +88,7 @@ func (s *batteryXcService) Detail(req *model.XcBatteryDetailRequest) (detail *mo
             Strength:             uint8(hb.Strength),
             Gps:                  xcdef.GPSStatus(hb.Gps),
             Online:               time.Now().Sub(hb.CreatedAt.AsTime()).Minutes() < 35,
+            FaultsOverview:       make([]*pb.BatteryFaultOverview, 0),
         }
     }
 
@@ -100,6 +101,11 @@ func (s *batteryXcService) Detail(req *model.XcBatteryDetailRequest) (detail *mo
 
     if bat.Edges.Rider != nil {
         detail.BelongsTo = bat.Edges.Rider.Name + "-" + bat.Edges.Rider.Phone
+    }
+
+    fr, _ := rpc.XcBmsFaultOverview(s.ctx, &pb.BatterySnRequest{Sn: req.SN})
+    if fr != nil {
+        detail.FaultsOverview = fr.Items
     }
 
     return

@@ -23538,6 +23538,13 @@ const docTemplate = `{
                         "type": "integer"
                     }
                 },
+                "faultsOverview": {
+                    "description": "故障统计, 参见` + "`" + `fault` + "`" + `字段, 需要将13种故障都显示出来, 若无返回则是0",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/pb.BatteryFaultOverview"
+                    }
+                },
                 "geom": {
                     "description": "坐标",
                     "allOf": [
@@ -23688,6 +23695,65 @@ const docTemplate = `{
                     "type": "number"
                 }
             }
+        },
+        "pb.BatteryFaultOverview": {
+            "type": "object",
+            "properties": {
+                "fault": {
+                    "$ref": "#/definitions/pb.BatteryFaultType"
+                },
+                "times": {
+                    "type": "integer"
+                }
+            }
+        },
+        "pb.BatteryFaultType": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2,
+                3,
+                6,
+                7,
+                8,
+                11,
+                12,
+                13,
+                14,
+                15,
+                16
+            ],
+            "x-enum-comments": {
+                "BatteryFaultType_BatteryFaultChargeOvercurrent": "充电过流",
+                "BatteryFaultType_BatteryFaultChargingTemperatureHigh": "充电高温",
+                "BatteryFaultType_BatteryFaultChargingTemperatureLow": "充电低温",
+                "BatteryFaultType_BatteryFaultDisChargingTemperatureHigh": "放电高温",
+                "BatteryFaultType_BatteryFaultDisChargingTemperatureLow": "放电低温",
+                "BatteryFaultType_BatteryFaultDischargeOvercurrent": "放电过流",
+                "BatteryFaultType_BatteryFaultMonVoltageHigh": "单体高",
+                "BatteryFaultType_BatteryFaultMonVoltageLow": "单体低",
+                "BatteryFaultType_BatteryFaultMosTemperatureHigh": "MOS高温",
+                "BatteryFaultType_BatteryFaultShortCircuit": "短路",
+                "BatteryFaultType_BatteryFaultSocLow": "SOC低",
+                "BatteryFaultType_BatteryFaultVoltageHigh": "总压高",
+                "BatteryFaultType_BatteryFaultVoltageLow": "总压低"
+            },
+            "x-enum-varnames": [
+                "BatteryFaultType_BatteryFaultVoltageLow",
+                "BatteryFaultType_BatteryFaultVoltageHigh",
+                "BatteryFaultType_BatteryFaultMonVoltageLow",
+                "BatteryFaultType_BatteryFaultMonVoltageHigh",
+                "BatteryFaultType_BatteryFaultDischargeOvercurrent",
+                "BatteryFaultType_BatteryFaultChargeOvercurrent",
+                "BatteryFaultType_BatteryFaultSocLow",
+                "BatteryFaultType_BatteryFaultChargingTemperatureHigh",
+                "BatteryFaultType_BatteryFaultChargingTemperatureLow",
+                "BatteryFaultType_BatteryFaultDisChargingTemperatureHigh",
+                "BatteryFaultType_BatteryFaultDisChargingTemperatureLow",
+                "BatteryFaultType_BatteryFaultShortCircuit",
+                "BatteryFaultType_BatteryFaultMosTemperatureHigh"
+            ]
         },
         "permission.Group": {
             "type": "object",

@@ -8,6 +8,7 @@ package model
 import (
     "github.com/auroraride/adapter"
     "github.com/auroraride/adapter/defs/xcdef"
+    "github.com/auroraride/adapter/rpc/pb"
     "github.com/auroraride/adapter/rpc/pb/xcpb"
     "github.com/auroraride/aurservd/pkg/silk"
 )
@@ -134,4 +135,6 @@ type XcBatteryDetail struct {
     Iccid string `json:"iccid,omitempty"`
     // 电池是否在线
     Online bool `json:"online"`
+    // 故障统计, 参见`fault`字段, 需要将13种故障都显示出来, 若无返回则是0
+    FaultsOverview []*pb.BatteryFaultOverview `json:"faultsOverview"`
 }

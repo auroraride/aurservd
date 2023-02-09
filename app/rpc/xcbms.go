@@ -47,3 +47,10 @@ func XcBmsFaultList(ctx context.Context, req *pb.BatteryFaultListRequest) (res *
     }
     return xcBmsClient.FaultList(ctx, req)
 }
+
+func XcBmsFaultOverview(ctx context.Context, req *pb.BatterySnRequest) (res *pb.BatteryFaultOverviewResponse, err error) {
+    if xcBmsClient == nil {
+        return
+    }
+    return xcBmsClient.FaultOverview(ctx, req)
+}
