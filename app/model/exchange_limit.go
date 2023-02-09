@@ -91,7 +91,7 @@ type RiderExchangeFrequency []*ExchangeFrequency
 
 type RiderExchangeFrequencyReq struct {
     IDPostReq
-    ExchangeFrequency RiderExchangeFrequency `json:"ExchangeFrequency"`
+    ExchangeFrequency RiderExchangeFrequency `json:"exchangeFrequency"`
 }
 
 func (el RiderExchangeFrequency) String() string {

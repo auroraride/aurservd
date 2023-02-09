@@ -21106,7 +21106,7 @@ const docTemplate = `{
                 "id"
             ],
             "properties": {
-                "ExchangeFrequency": {
+                "exchangeFrequency": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.ExchangeFrequency"
