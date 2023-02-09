@@ -59,7 +59,7 @@ func (s *batteryXcService) Detail(req *model.XcBatteryDetailRequest) (detail *mo
             Cycles:               uint16(hb.Cycles),
             Geom:                 adapter.NewGeometry(hb.Geom).WGS84toGCJ02(),
             Voltage:              hb.Voltage,
-            Power:                math.Round(math.Abs(hb.Current)*hb.Voltage/1000/100) * 100,
+            Power:                math.Round(math.Abs(hb.Current)*hb.Voltage/1000*100) / 100,
             ChargingTime:         hb.ChargingTime,
             DisChargingTime:      hb.DisChargingTime,
             UsingTime:            hb.UsingTime,

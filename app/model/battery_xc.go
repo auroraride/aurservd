@@ -54,7 +54,7 @@ func NewXcBmsBattery(hb *xcpb.Heartbeat) (item *XcBmsBattery) {
 }
 
 type XcBatteryDetailRequest struct {
-    SN string `json:"sn" validate:"required"` // 电池编码
+    SN string `json:"sn" param:"sn" validate:"required"` // 电池编码
 }
 
 type XcBatteryDetail struct {
