@@ -10,7 +10,9 @@ import (
     inapp "github.com/auroraride/aurservd/app"
     "github.com/auroraride/aurservd/app/controller/v1/rapi"
     "github.com/auroraride/aurservd/app/middleware"
+    "github.com/auroraride/aurservd/internal/ar"
     "github.com/labstack/echo/v4"
+    "strings"
 )
 
 // rideRoutes 骑手路由
@@ -21,7 +23,7 @@ func loadRideRoutes() {
     // socket
     g.Any("/socket", rapi.Socket.Rider)
 
-    rawDump := app.NewDumpLoggerMiddleware().WithConfig(&app.DumpConfig{
+    rawDump := app.NewDumpLoggerMiddleware(strings.ToLower(ar.Config.Application)).WithConfig(&app.DumpConfig{
         RequestHeader:  true,
         ResponseHeader: true,
     })
@@ -52,7 +54,7 @@ func loadRideRoutes() {
         inapp.HeaderEmployeeToken: {},
         inapp.HeaderAgentToken:    {},
     }
-    dump := app.NewDumpLoggerMiddleware().WithConfig(&app.DumpConfig{
+    dump := app.NewDumpLoggerMiddleware(strings.ToLower(ar.Config.Application)).WithConfig(&app.DumpConfig{
         ResponseBodySkipper: func(c echo.Context) bool {
             return dumpSkipPaths[c.Path()]
         },
