@@ -69,9 +69,9 @@ func (e *ExchangeLog) SetStep(step ec.ExchangeStep) *ExchangeLog {
     return e
 }
 
-func (e *ExchangeLog) SetStatus(status ec.TaskStatus) *ExchangeLog {
+func (e *ExchangeLog) SetStatus(status model.TaskStatus) *ExchangeLog {
     e.Status = uint8(status)
-    if status == ec.TaskStatusSuccess {
+    if status == model.TaskStatusSuccess {
         e.Result = "成功"
     } else {
         e.Result = "失败"

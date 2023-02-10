@@ -8,6 +8,7 @@ package script
 import (
     "context"
     "github.com/auroraride/aurservd/app/ec"
+    "github.com/auroraride/aurservd/app/model"
     pvd "github.com/auroraride/aurservd/app/provider"
     "github.com/auroraride/aurservd/app/router"
     "github.com/auroraride/aurservd/app/rpc"
@@ -93,11 +94,11 @@ func compensate() {
     m := make(map[string]*ec.Task)
     for _, t := range tasks {
         t.Message = msg
-        if t.Job == ec.JobExchange {
+        if t.Job == model.JobExchange {
             t.Exchange.CurrentStep().Time = now
-            t.Exchange.CurrentStep().Status = ec.TaskStatusFail
+            t.Exchange.CurrentStep().Status = model.TaskStatusFail
         }
-        t.Stop(ec.TaskStatusFail)
+        t.Stop(model.TaskStatusFail)
         m[t.ID.Hex()] = t
     }
 

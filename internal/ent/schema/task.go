@@ -57,7 +57,10 @@ func (Task) Annotations() []schema.Annotation {
 
 // Fields of the Task.
 func (Task) Fields() []ent.Field {
-    return []ent.Field{}
+    return []ent.Field{
+        field.String("serial"),
+        // field.Enum("job").GoType(),
+    }
 }
 
 // Edges of the Task.
@@ -76,5 +79,7 @@ func (Task) Mixin() []ent.Mixin {
 }
 
 func (Task) Indexes() []ent.Index {
-    return []ent.Index{}
+    return []ent.Index{
+        index.Fields("serial"),
+    }
 }

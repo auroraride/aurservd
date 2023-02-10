@@ -113,7 +113,7 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
         t := &ec.Task{
             Serial:    cab.Serial,
             CabinetID: cab.ID,
-            Job:       ec.JobExchange,
+            Job:       model.JobExchange,
             Rider: &ec.Rider{
                 ID:    s.rider.ID,
                 Name:  s.rider.Name,
@@ -221,7 +221,7 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
         t = ec.QueryID(uid)
 
         // 判断任务是否存在, 并且比对存储骑手信息是否相符
-        if t == nil || t.Status > 0 || t.StartAt != nil || t.Job != ec.JobExchange || t.Exchange == nil || t.IsDeactived() || t.Rider == nil || t.Rider.ID != s.rider.ID {
+        if t == nil || t.Status > 0 || t.StartAt != nil || t.Job != model.JobExchange || t.Exchange == nil || t.IsDeactived() || t.Rider == nil || t.Rider.ID != s.rider.ID {
             snag.Panic("未找到信息, 请重新扫码")
         }
 
@@ -313,9 +313,9 @@ func (s *riderExchangeService) ProcessNextStep() *riderExchangeService {
 
 // ProcessStepEnd 结束换电流程
 func (s *riderExchangeService) ProcessStepEnd() {
-    status := ec.TaskStatusFail
+    status := model.TaskStatusFail
     if s.task.Exchange.IsSuccess() {
-        status = ec.TaskStatusSuccess
+        status = model.TaskStatusSuccess
     }
 
     if r := recover(); r != nil {
@@ -324,7 +324,7 @@ func (s *riderExchangeService) ProcessStepEnd() {
             "] "+s.task.Exchange.CurrentStep().String()+
             "", zap.Error(fmt.Errorf("%v", r)))
         s.task.Message = fmt.Sprintf("%v", r)
-        status = ec.TaskStatusFail
+        status = model.TaskStatusFail
     }
 
     s.task.Update(func(task *ec.Task) {
@@ -344,7 +344,7 @@ func (s *riderExchangeService) ProcessStepEnd() {
         }).
         SetUUID(s.task.ID.Hex()).
         SetCabinetID(s.cabinet.ID).
-        SetSuccess(status == ec.TaskStatusSuccess).
+        SetSuccess(status == model.TaskStatusSuccess).
         SetModel(s.subscribe.Model).
         SetNillableEnterpriseID(s.subscribe.EnterpriseID).
         SetNillableStationID(s.subscribe.StationID).
@@ -482,27 +482,27 @@ func (s *riderExchangeService) ProcessDoorStatus() *riderExchangeService {
 
         switch ds {
         case ec.DoorStatusClose:
-            step.Status = ec.TaskStatusSuccess
+            step.Status = model.TaskStatusSuccess
             break
         case ec.DoorStatusOpen:
             break
         default:
             message = ec.DoorError[ds]
-            step.Status = ec.TaskStatusFail
+            step.Status = model.TaskStatusFail
             break
         }
 
         // 超时标记为任务失败
         if time.Now().Sub(start).Seconds() > s.maxTime.Seconds() && message == "" {
             message = "超时"
-            step.Status = ec.TaskStatusFail
+            step.Status = model.TaskStatusFail
             step.Time = time.Now()
         }
 
-        if step.Status != ec.TaskStatusProcessing {
+        if step.Status != model.TaskStatusProcessing {
             if !step.IsSuccess() {
                 s.task.Message = message
-                s.task.Stop(ec.TaskStatusFail)
+                s.task.Stop(model.TaskStatusFail)
             }
             return s
         }
@@ -547,11 +547,11 @@ func (s *riderExchangeService) ProcessOpenBin() *riderExchangeService {
     s.task.Update(func(t *ec.Task) {
         step.Time = time.Now()
         if status {
-            step.Status = ec.TaskStatusSuccess
+            step.Status = model.TaskStatusSuccess
         } else {
-            step.Status = ec.TaskStatusFail
+            step.Status = model.TaskStatusFail
             t.Message = err.Error()
-            t.Stop(ec.TaskStatusFail)
+            t.Stop(model.TaskStatusFail)
         }
     })
 

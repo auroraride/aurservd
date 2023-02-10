@@ -8,6 +8,7 @@ package task
 import (
     "context"
     "github.com/auroraride/aurservd/app/ec"
+    "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/mgo"
     "github.com/qiniu/qmgo/operator"
@@ -39,7 +40,7 @@ func (t *cabinetTask) Start() {
                     "createAt": bson.M{
                         operator.Lt: ts,
                     },
-                    "status":      ec.TaskStatusNotStart,
+                    "status":      model.TaskStatusNotStart,
                     "deactivated": false,
                 }, bson.M{
                     operator.Set: bson.M{"deactivated": true},

@@ -25,75 +25,6 @@ const (
 
 type Updater func(task *Task)
 
-// Job 电柜任务
-type Job string
-
-const (
-    JobExchange         Job = "RDR_EXCHANGE"    // 骑手-换电
-    JobRiderActive      Job = "RDR_ACTIVE"      // 骑手-激活
-    JobRiderUnSubscribe Job = "RDR_UNSUBSCRIBE" // 骑手-退租
-    JobPause            Job = "RDR_PAUSE"       // 骑手-寄存
-    JobContinue         Job = "RDR_CONTINUE"    // 骑手-继续
-    JobManagerOpen      Job = "MGR_OPEN"        // 管理-开门
-    JobManagerLock      Job = "MGR_LOCK"        // 管理-锁仓
-    JobManagerUnLock    Job = "MGR_UNLOCK"      // 管理-解锁
-    JobManagerReboot    Job = "MGR_REBOOT"      // 管理-重启
-    JobManagerExchange  Job = "MGR_EXCHANGE"    // 管理-换电
-)
-
-func (j Job) Label() string {
-    switch j {
-    case JobExchange:
-        return "骑手换电"
-    case JobRiderActive:
-        return "骑手激活"
-    case JobRiderUnSubscribe:
-        return "骑手退租"
-    case JobPause:
-        return "骑手寄存"
-    case JobContinue:
-        return "骑手继续"
-    case JobManagerOpen:
-        return "管理开门"
-    case JobManagerLock:
-        return "管理锁仓"
-    case JobManagerUnLock:
-        return "管理解锁"
-    case JobManagerReboot:
-        return "管理重启"
-    case JobManagerExchange:
-        return "管理换电"
-    }
-    return "未知任务"
-}
-
-type TaskStatus uint8
-
-const (
-    TaskStatusNotStart   TaskStatus = iota // 未开始
-    TaskStatusProcessing                   // 处理中
-    TaskStatusSuccess                      // 成功
-    TaskStatusFail                         // 失败
-)
-
-func (ts TaskStatus) String() string {
-    switch ts {
-    case TaskStatusNotStart:
-        return "未开始"
-    case TaskStatusSuccess:
-        return "成功"
-    case TaskStatusFail:
-        return "失败"
-    default:
-        return "处理中"
-    }
-}
-
-// IsSuccess 是否成功
-func (ts TaskStatus) IsSuccess() bool {
-    return ts == TaskStatusSuccess
-}
-
 // Task 电柜任务详情
 // TODO 存储开仓信息, 业务信息, 管理员信息
 type Task struct {
@@ -101,14 +32,14 @@ type Task struct {
     CreateAt time.Time          `bson:"createAt"`
     UpdateAt time.Time          `bson:"updateAt"`
 
-    CabinetID   uint64     `json:"cabinetId" bson:"cabinetId"`                 // 电柜ID
-    Serial      string     `json:"serial" bson:"serial"`                       // 电柜编码
-    Deactivated bool       `json:"deactivated" bson:"deactivated"`             // 是否已失效
-    Job         Job        `json:"job" bson:"job"`                             // 任务类别
-    Status      TaskStatus `json:"status" bson:"status"`                       // 任务状态
-    StartAt     *time.Time `json:"startAt,omitempty" bson:"startAt,omitempty"` // 开始时间
-    StopAt      *time.Time `json:"stopAt,omitempty" bson:"stopAt,omitempty"`   // 结束时间
-    Message     string     `json:"message,omitempty" bson:"message,omitempty"` // 失败消息
+    CabinetID   uint64           `json:"cabinetId" bson:"cabinetId"`                 // 电柜ID
+    Serial      string           `json:"serial" bson:"serial"`                       // 电柜编码
+    Deactivated bool             `json:"deactivated" bson:"deactivated"`             // 是否已失效
+    Job         model.TaskJob    `json:"job" bson:"job"`                             // 任务类别
+    Status      model.TaskStatus `json:"status" bson:"status"`                       // 任务状态
+    StartAt     *time.Time       `json:"startAt,omitempty" bson:"startAt,omitempty"` // 开始时间
+    StopAt      *time.Time       `json:"stopAt,omitempty" bson:"stopAt,omitempty"`   // 结束时间
+    Message     string           `json:"message,omitempty" bson:"message,omitempty"` // 失败消息
 
     Cabinet          *Cabinet       `json:"cabinet" bson:"cabinet"`                                       // 电柜信息
     Rider            *Rider         `json:"rider" bson:"rider,omitempty"`                                 // 骑手信息
@@ -127,7 +58,7 @@ func (t *Task) UnmarshalBinary(data []byte) error {
 func (t *Task) String() string {
     // TODO 开仓信息, 业务信息, 管理员信息
     info := ""
-    if t.Job == JobExchange {
+    if t.Job == model.JobExchange {
         info += fmt.Sprintf(
             "骑手电话: %s, 名字: %s\n步骤: %s, 空: %d仓, 满: %d仓",
             t.Rider.Phone,
@@ -178,7 +109,7 @@ func (t *Task) Start(cb ...Updater) {
             cb[0](t)
         }
         t.StartAt = Pointer(time.Now())
-        t.Status = TaskStatusProcessing
+        t.Status = model.TaskStatusProcessing
     })
 
     // 更新非当前任务为失效
@@ -195,10 +126,10 @@ func (t *Task) Start(cb ...Updater) {
 }
 
 // Stop 结束任务
-func (t *Task) Stop(status TaskStatus) {
+func (t *Task) Stop(status model.TaskStatus) {
     t.Update(func(t *Task) {
-        if status != TaskStatusSuccess {
-            status = TaskStatusFail
+        if status != model.TaskStatusSuccess {
+            status = model.TaskStatusFail
         }
         t.StopAt = Pointer(time.Now())
         t.Status = status
@@ -237,17 +168,17 @@ func QueryID(id primitive.ObjectID) (t *Task) {
 }
 
 type ObtainReq struct {
-    Serial      string     `json:"serial,omitempty" bson:"serial,omitempty"`
-    Deactivated bool       `json:"deactivated" bson:"deactivated"`
-    CabinetID   uint64     `json:"cabinetId,omitempty" bson:"cabinetId,omitempty"`
-    Status      TaskStatus `json:"status" bson:"status"` // 任务状态
+    Serial      string           `json:"serial,omitempty" bson:"serial,omitempty"`
+    Deactivated bool             `json:"deactivated" bson:"deactivated"`
+    CabinetID   uint64           `json:"cabinetId,omitempty" bson:"cabinetId,omitempty"`
+    Status      model.TaskStatus `json:"status" bson:"status"` // 任务状态
 }
 
 // Obtain 获取进行中的任务信息
 func Obtain(req ObtainReq) (t *Task) {
     t = new(Task)
     if req.Status == 0 {
-        req.Status = TaskStatusProcessing
+        req.Status = model.TaskStatusProcessing
     }
     ctx := context.Background()
     _ = mgo.CabinetTask.Find(ctx, req).One(t)
@@ -288,6 +219,6 @@ func BusyFromIDX(id uint64) {
 
 // GetAllProcessing 获取所有正在进行中的任务
 func GetAllProcessing() (tasks []*Task) {
-    _ = mgo.CabinetTask.Find(context.Background(), bson.M{"status": TaskStatusProcessing}).All(&tasks)
+    _ = mgo.CabinetTask.Find(context.Background(), bson.M{"status": model.TaskStatusProcessing}).All(&tasks)
     return
 }

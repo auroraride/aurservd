@@ -229,7 +229,7 @@ func (s *intelligentCabinetService) ExchangeResult(uid string) (res *model.Rider
     key := s.exchangeCacheKey(uid)
     res = &model.RiderExchangeProcessRes{
         Step:   uint8(ec.ExchangeStepOpenEmpty),
-        Status: uint8(ec.TaskStatusProcessing),
+        Status: uint8(model.TaskStatusProcessing),
     }
 
     start := time.Now()
@@ -257,7 +257,7 @@ func (s *intelligentCabinetService) ExchangeResult(uid string) (res *model.Rider
             if res.Step < uint8(ec.ExchangeStepPutOut) {
                 res.Step += 1
             }
-            res.Status = uint8(ec.TaskStatusProcessing)
+            res.Status = uint8(model.TaskStatusProcessing)
         }
 
         if index >= n {
@@ -283,7 +283,7 @@ func (s *intelligentCabinetService) exchangeStepResultFromCache(index int, c *mo
     res.Step = uint8(data.Step)
     res.Message = data.Message
     if data.Success {
-        res.Status = uint8(ec.TaskStatusSuccess)
+        res.Status = uint8(model.TaskStatusSuccess)
     }
 
     res.Stop = data.Step == 4 || !data.Success

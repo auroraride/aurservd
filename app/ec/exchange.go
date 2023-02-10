@@ -86,13 +86,13 @@ func (e *Exchange) StartNextStep() {
     }
 
     // 标记上个步骤为成功
-    e.Steps[len(e.Steps)-1].Status = TaskStatusSuccess
+    e.Steps[len(e.Steps)-1].Status = model.TaskStatusSuccess
 
     // 判断是否最终步骤, 并加入下一个步骤信息
     if len(e.Steps) < int(ExchangeStepPutOut) {
         e.Steps = append(e.Steps, &ExchangeStepInfo{
             Step:   e.CurrentStep().Step.Next(),
-            Status: TaskStatusProcessing,
+            Status: model.TaskStatusProcessing,
         })
     }
 }
@@ -124,9 +124,9 @@ type ExchangeInfo struct {
 }
 
 type ExchangeStepInfo struct {
-    Step   ExchangeStep `json:"step" bson:"step"`     // 操作步骤 1:开空电仓 2:放旧电池 3:开满电仓 4:取新电池
-    Status TaskStatus   `json:"status" bson:"status"` // 状态 1:处理中 2:成功 3:失败
-    Time   time.Time    `json:"time" bson:"time"`     // 时间
+    Step   ExchangeStep     `json:"step" bson:"step"`     // 操作步骤 1:开空电仓 2:放旧电池 3:开满电仓 4:取新电池
+    Status model.TaskStatus `json:"status" bson:"status"` // 状态 1:处理中 2:成功 3:失败
+    Time   time.Time        `json:"time" bson:"time"`     // 时间
 }
 
 func (si *ExchangeStepInfo) String() string {
