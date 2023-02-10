@@ -30,15 +30,15 @@ type Job string
 
 const (
     JobExchange         Job = "RDR_EXCHANGE"    // 骑手-换电
-    JobRiderActive          = "RDR_ACTIVE"      // 骑手-激活
-    JobRiderUnSubscribe     = "RDR_UNSUBSCRIBE" // 骑手-退租
-    JobPause                = "RDR_PAUSE"       // 骑手-寄存
-    JobContinue             = "RDR_CONTINUE"    // 骑手-继续
-    JobManagerOpen          = "MGR_OPEN"        // 管理-开门
-    JobManagerLock          = "MGR_LOCK"        // 管理-锁仓
-    JobManagerUnLock        = "MGR_UNLOCK"      // 管理-解锁
-    JobManagerReboot        = "MGR_REBOOT"      // 管理-重启
-    JobManagerExchange      = "MGR_EXCHANGE"    // 管理-换电
+    JobRiderActive      Job = "RDR_ACTIVE"      // 骑手-激活
+    JobRiderUnSubscribe Job = "RDR_UNSUBSCRIBE" // 骑手-退租
+    JobPause            Job = "RDR_PAUSE"       // 骑手-寄存
+    JobContinue         Job = "RDR_CONTINUE"    // 骑手-继续
+    JobManagerOpen      Job = "MGR_OPEN"        // 管理-开门
+    JobManagerLock      Job = "MGR_LOCK"        // 管理-锁仓
+    JobManagerUnLock    Job = "MGR_UNLOCK"      // 管理-解锁
+    JobManagerReboot    Job = "MGR_REBOOT"      // 管理-重启
+    JobManagerExchange  Job = "MGR_EXCHANGE"    // 管理-换电
 )
 
 func (j Job) Label() string {
