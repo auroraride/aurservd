@@ -16,6 +16,7 @@ import (
     "github.com/auroraride/aurservd/app/sync"
     "github.com/auroraride/aurservd/app/task"
     "github.com/auroraride/aurservd/app/task/reminder"
+    "github.com/auroraride/aurservd/cmd/aurservd/internal"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/exchange"
@@ -77,6 +78,9 @@ func serverCommand() *cobra.Command {
 
             // 缓存所有电柜名称
             go service.NewCabinet().CacheAll()
+
+            // Demo
+            go internal.Demo()
 
             <-ar.Quit
         },

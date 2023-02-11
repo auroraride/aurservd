@@ -27,6 +27,10 @@ func createXcClient() {
     }
 }
 
+func IsXcBmsClientExists() bool {
+    return xcBmsClient != nil
+}
+
 func XcBmsBatch(ctx context.Context, req *pb.BatteryBatchRequest) (res *pb.BatteryBatchResponse, err error) {
     if xcBmsClient == nil {
         return

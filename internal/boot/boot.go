@@ -27,6 +27,7 @@ func Bootstrap() {
     tz := "Asia/Shanghai"
     _ = os.Setenv("TZ", tz)
     loc, _ := time.LoadLocation(tz)
+    ar.TimeLocation = loc
     time.Local = loc
     carbon.SetTimezone(tz)
 

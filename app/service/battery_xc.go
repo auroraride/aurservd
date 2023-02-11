@@ -12,6 +12,7 @@ import (
     "github.com/auroraride/adapter/rpc/pb/xcpb"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/rpc"
+    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/battery"
     "github.com/auroraride/aurservd/pkg/snag"
@@ -56,7 +57,7 @@ func (s *batteryXcService) Detail(req *model.XcBatterySNRequest) (detail *model.
     detail = &model.XcBatteryDetail{}
     if hb != nil {
         detail = &model.XcBatteryDetail{
-            UpdatedAt:            hb.CreatedAt.AsTime().Format("2006-01-02 15:04:05"),
+            UpdatedAt:            hb.CreatedAt.AsTime().In(ar.TimeLocation).Format("2006-01-02 15:04:05"),
             XcBmsBattery:         model.NewXcBmsBattery(hb),
             Current:              hb.Current,
             Soh:                  uint8(hb.Soh),
@@ -85,7 +86,7 @@ func (s *batteryXcService) Detail(req *model.XcBatterySNRequest) (detail *model.
             EnvTemp:              uint16(hb.EnvTemp),
             Strength:             uint8(hb.Strength),
             Gps:                  xcdef.GPSStatus(hb.Gps),
-            Online:               time.Now().Sub(hb.CreatedAt.AsTime()).Minutes() < 35,
+            Online:               time.Now().Sub(hb.CreatedAt.AsTime().In(ar.TimeLocation)).Minutes() < 35,
             FaultsOverview:       make([]*pb.BatteryFaultOverview, 0),
         }
     }
@@ -144,7 +145,15 @@ func (s *batteryXcService) Position(req *model.XcBatteryPositionReq) (res *model
         Start: nil,
         End:   nil,
     })
+    if r == nil {
+        return &model.XcBatteryPositionRes{
+            Positions:  make([]*model.XcBatteryPosition, 0),
+            Stationary: make([]*model.XcBatteryStationary, 0),
+        }
+    }
     res = &model.XcBatteryPositionRes{
+        Start:      r.Start.AsTime().In(ar.TimeLocation).Format("2006-01-02 15:04:05"),
+        End:        r.End.AsTime().In(ar.TimeLocation).Format("2006-01-02 15:04:05"),
         Positions:  make([]*model.XcBatteryPosition, len(r.Positions)),
         Stationary: make([]*model.XcBatteryStationary, len(r.Stationary)),
     }
@@ -159,22 +168,23 @@ func (s *batteryXcService) Position(req *model.XcBatteryPositionReq) (res *model
             Gsm:        p.Gsm,
         }
         if p.At != nil {
-            res.Positions[i].At = p.At.AsTime().Format("2006-01-02 15:04:05")
+            res.Positions[i].At = p.At.AsTime().In(ar.TimeLocation).Format("2006-01-02 15:04:05")
         }
     }
     for i, sa := range r.Stationary {
         res.Stationary[i] = &model.XcBatteryStationary{
-            Duration: sa.Duration,
-            StartSoc: sa.StartSoc,
-            EndSoc:   sa.EndSoc,
-            Lng:      sa.Lng,
-            Lat:      sa.Lat,
+            InCabinet: sa.InCabinet,
+            Duration:  sa.Duration,
+            StartSoc:  sa.StartSoc,
+            EndSoc:    sa.EndSoc,
+            Lng:       sa.Lng,
+            Lat:       sa.Lat,
         }
         if sa.StartAt != nil {
-            res.Stationary[i].StartAt = sa.StartAt.AsTime().Format("2006-01-02 15:04:05")
+            res.Stationary[i].StartAt = sa.StartAt.AsTime().In(ar.TimeLocation).Format("2006-01-02 15:04:05")
         }
         if sa.EndAt != nil {
-            res.Stationary[i].EndAt = sa.EndAt.AsTime().Format("2006-01-02 15:04:05")
+            res.Stationary[i].EndAt = sa.EndAt.AsTime().In(ar.TimeLocation).Format("2006-01-02 15:04:05")
         }
     }
     return

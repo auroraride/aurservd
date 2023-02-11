@@ -5,9 +5,13 @@
 
 package ar
 
-import "github.com/go-redis/redis/v9"
+import (
+    "github.com/go-redis/redis/v9"
+    "time"
+)
 
 var (
+    TimeLocation                   *time.Location
     Quit                           chan bool
     Redis                          *redis.Client
     CabinetNameCacheKey            string
