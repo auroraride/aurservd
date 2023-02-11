@@ -7,7 +7,6 @@ package main
 
 import (
     "github.com/auroraride/aurservd/app/service"
-    "github.com/auroraride/aurservd/cmd/aurservd/internal"
     "github.com/auroraride/aurservd/cmd/aurservd/internal/script"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/boot"
@@ -25,9 +24,6 @@ func main() {
 
         // 初始化系统设置
         service.NewSetting().Initialize()
-
-        // Demo
-        internal.Demo()
 
         // 启动脚本
         script.Execute()

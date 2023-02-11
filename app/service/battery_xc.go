@@ -144,7 +144,15 @@ func (s *batteryXcService) Position(req *model.XcBatteryPositionReq) (res *model
         Start: nil,
         End:   nil,
     })
+    if r == nil {
+        return &model.XcBatteryPositionRes{
+            Positions:  make([]*model.XcBatteryPosition, 0),
+            Stationary: make([]*model.XcBatteryStationary, 0),
+        }
+    }
     res = &model.XcBatteryPositionRes{
+        Start:      r.Start.AsTime().Format("2006-01-02 15:04:05"),
+        End:        r.End.AsTime().Format("2006-01-02 15:04:05"),
         Positions:  make([]*model.XcBatteryPosition, len(r.Positions)),
         Stationary: make([]*model.XcBatteryStationary, len(r.Stationary)),
     }
@@ -164,11 +172,12 @@ func (s *batteryXcService) Position(req *model.XcBatteryPositionReq) (res *model
     }
     for i, sa := range r.Stationary {
         res.Stationary[i] = &model.XcBatteryStationary{
-            Duration: sa.Duration,
-            StartSoc: sa.StartSoc,
-            EndSoc:   sa.EndSoc,
-            Lng:      sa.Lng,
-            Lat:      sa.Lat,
+            InCabinet: sa.InCabinet,
+            Duration:  sa.Duration,
+            StartSoc:  sa.StartSoc,
+            EndSoc:    sa.EndSoc,
+            Lng:       sa.Lng,
+            Lat:       sa.Lat,
         }
         if sa.StartAt != nil {
             res.Stationary[i].StartAt = sa.StartAt.AsTime().Format("2006-01-02 15:04:05")

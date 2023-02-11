@@ -23865,6 +23865,10 @@ const docTemplate = `{
                     "description": "结束电量, 可能为空",
                     "type": "integer"
                 },
+                "inCabinet": {
+                    "description": "是否在电柜中",
+                    "type": "boolean"
+                },
                 "lat": {
                     "description": "纬度",
                     "type": "number"
