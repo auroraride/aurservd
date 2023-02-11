@@ -2983,7 +2983,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.XcBatteryStatistics"
+                            "$ref": "#/definitions/model.XcBatteryPositionRes"
                         }
                     }
                 }
@@ -23783,6 +23783,103 @@ const docTemplate = `{
                 "voltage": {
                     "description": "电池总压 (V)",
                     "type": "number"
+                }
+            }
+        },
+        "model.XcBatteryPosition": {
+            "type": "object",
+            "properties": {
+                "at": {
+                    "description": "时间 (格式为: yyyy-mm-dd hh:mm:ss)",
+                    "type": "string"
+                },
+                "gsm": {
+                    "description": "GSM信号强度",
+                    "type": "integer"
+                },
+                "inCabinet": {
+                    "description": "是否在电柜中",
+                    "type": "boolean"
+                },
+                "lat": {
+                    "description": "纬度",
+                    "type": "number"
+                },
+                "lng": {
+                    "description": "经度",
+                    "type": "number"
+                },
+                "soc": {
+                    "description": "电量",
+                    "type": "integer"
+                },
+                "stationary": {
+                    "description": "是否停留",
+                    "type": "boolean"
+                },
+                "voltage": {
+                    "description": "电压",
+                    "type": "number"
+                }
+            }
+        },
+        "model.XcBatteryPositionRes": {
+            "type": "object",
+            "properties": {
+                "end": {
+                    "description": "结束时间",
+                    "type": "string"
+                },
+                "positions": {
+                    "description": "所有位置信息",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.XcBatteryPosition"
+                    }
+                },
+                "start": {
+                    "description": "开始时间",
+                    "type": "string"
+                },
+                "stationary": {
+                    "description": "静止位置信息",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.XcBatteryStationary"
+                    }
+                }
+            }
+        },
+        "model.XcBatteryStationary": {
+            "type": "object",
+            "properties": {
+                "duration": {
+                    "description": "停留时间 (秒)",
+                    "type": "integer"
+                },
+                "endAt": {
+                    "description": "结束时间 (格式为: yyyy-mm-dd hh:mm:ss)",
+                    "type": "string"
+                },
+                "endSoc": {
+                    "description": "结束电量, 可能为空",
+                    "type": "integer"
+                },
+                "lat": {
+                    "description": "纬度",
+                    "type": "number"
+                },
+                "lng": {
+                    "description": "经度",
+                    "type": "number"
+                },
+                "startAt": {
+                    "description": "开始时间 (格式为: yyyy-mm-dd hh:mm:ss)",
+                    "type": "string"
+                },
+                "startSoc": {
+                    "description": "开始电量",
+                    "type": "integer"
                 }
             }
         },

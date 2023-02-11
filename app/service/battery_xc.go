@@ -167,6 +167,8 @@ func (s *batteryXcService) Position(req *model.XcBatteryPositionReq) (res *model
             Duration: sa.Duration,
             StartSoc: sa.StartSoc,
             EndSoc:   sa.EndSoc,
+            Lng:      sa.Lng,
+            Lat:      sa.Lat,
         }
         if sa.StartAt != nil {
             res.Stationary[i].StartAt = sa.StartAt.AsTime().Format("2006-01-02 15:04:05")

@@ -170,6 +170,8 @@ type XcBatteryStationary struct {
     EndAt    string  `json:"endAt"`    // 结束时间 (格式为: yyyy-mm-dd hh:mm:ss)
     StartSoc uint32  `json:"startSoc"` // 开始电量
     EndSoc   *uint32 `json:"endSoc"`   // 结束电量, 可能为空
+    Lng      float64 `json:"lng"`      // 经度
+    Lat      float64 `json:"lat"`      // 纬度
 }
 
 type XcBatteryPosition struct {
