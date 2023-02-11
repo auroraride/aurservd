@@ -16,6 +16,7 @@ import (
     "github.com/golang-module/carbon/v2"
     "io"
     "os"
+    "strings"
     "time"
 
     _ "github.com/auroraride/aurservd/app/permission"
@@ -43,7 +44,7 @@ func Bootstrap() {
     log.New(&log.Config{
         FormatJson:  true,
         Stdout:      ar.Config.Debug,
-        Application: ar.Config.Application,
+        Application: strings.ToLower(ar.Config.Application),
         Writers: []io.Writer{
             log.NewRedisWriter(redis.NewClient(&redis.Options{})),
         },
