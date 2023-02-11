@@ -61,3 +61,10 @@ func XcBmsStatistics(ctx context.Context, req *pb.BatterySnRequest) (res *pb.Bat
     }
     return xcBmsClient.Statistics(ctx, req)
 }
+
+func XcBmsPosition(ctx context.Context, req *pb.BatteryPositionRequest) (res *pb.BatteryPositionResponse, err error) {
+    if xcBmsClient == nil {
+        return
+    }
+    return xcBmsClient.Position(ctx, req)
+}

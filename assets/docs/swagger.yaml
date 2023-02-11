@@ -9235,6 +9235,40 @@ paths:
       summary: M4010 电池详情
       tags:
       - '[M]管理接口'
+  /manager/v1/battery/xc/position/{sn}:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerBatteryPosition
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 电池编号
+        in: path
+        name: sn
+        required: true
+        type: string
+      - description: '开始时间 (精确到秒, 默认6小时前, 格式为: yyyy-mm-dd hh:mm:ss)'
+        in: query
+        name: start
+        type: string
+      - description: '结束时间 (精确到秒, 默认当前时间, 格式为: yyyy-mm-dd hh:mm:ss)'
+        in: query
+        name: end
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.XcBatteryStatistics'
+      summary: M4012 电池位置
+      tags:
+      - '[M]管理接口'
   /manager/v1/battery/xc/statistics/{sn}:
     get:
       consumes:

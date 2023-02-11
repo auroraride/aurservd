@@ -137,3 +137,43 @@ func (s *batteryXcService) Statistics(req *model.XcBatterySNRequest) (detail *mo
         DisCharging: r.DisCharging,
     }
 }
+
+func (s *batteryXcService) Position(req *model.XcBatteryPositionReq) (res *model.XcBatteryPositionRes) {
+    r, _ := rpc.XcBmsPosition(s.ctx, &pb.BatteryPositionRequest{
+        Sn:    req.SN,
+        Start: nil,
+        End:   nil,
+    })
+    res = &model.XcBatteryPositionRes{
+        Positions:  make([]*model.XcBatteryPosition, len(r.Positions)),
+        Stationary: make([]*model.XcBatteryStationary, len(r.Stationary)),
+    }
+    for i, p := range r.Positions {
+        res.Positions[i] = &model.XcBatteryPosition{
+            InCabinet:  p.InCabinet,
+            Stationary: p.Stationary,
+            Soc:        p.Soc,
+            Lng:        p.Lng,
+            Lat:        p.Lat,
+            Voltage:    p.Voltage,
+            Gsm:        p.Gsm,
+        }
+        if p.At != nil {
+            res.Positions[i].At = p.At.AsTime().Format("2006-01-02 15:04:05")
+        }
+    }
+    for i, sa := range r.Stationary {
+        res.Stationary[i] = &model.XcBatteryStationary{
+            Duration: sa.Duration,
+            StartSoc: sa.StartSoc,
+            EndSoc:   sa.EndSoc,
+        }
+        if sa.StartAt != nil {
+            res.Stationary[i].StartAt = sa.StartAt.AsTime().Format("2006-01-02 15:04:05")
+        }
+        if sa.EndAt != nil {
+            res.Stationary[i].EndAt = sa.EndAt.AsTime().Format("2006-01-02 15:04:05")
+        }
+    }
+    return
+}

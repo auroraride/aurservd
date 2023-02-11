@@ -150,3 +150,35 @@ type XcBatteryStatistics struct {
     Charging    []float64 `json:"charging,omitempty"`    // 充电电流(A)
     DisCharging []float64 `json:"disCharging,omitempty"` // 放电电流(A)
 }
+
+type XcBatteryPositionReq struct {
+    SN    string `json:"sn" param:"sn" validate:"required"` // 电池编码
+    Start string `json:"start" query:"start"`               // 开始时间 (精确到秒, 默认6小时前)
+    End   string `json:"end" query:"end"`                   // 结束时间 (精确到秒, 默认当前时间)
+}
+
+type XcBatteryPositionRes struct {
+    Start      string                 `json:"start"`      // 开始时间
+    End        string                 `json:"end"`        // 结束时间
+    Stationary []*XcBatteryStationary `json:"stationary"` // 静止位置信息
+    Positions  []*XcBatteryPosition   `json:"positions"`  // 所有位置信息
+}
+
+type XcBatteryStationary struct {
+    Duration int64   `json:"duration"` // 停留时间 (秒)
+    StartAt  string  `json:"startAt"`  // 开始时间 (格式为: yyyy-mm-dd hh:mm:ss)
+    EndAt    string  `json:"endAt"`    // 结束时间 (格式为: yyyy-mm-dd hh:mm:ss)
+    StartSoc uint32  `json:"startSoc"` // 开始电量
+    EndSoc   *uint32 `json:"endSoc"`   // 结束电量, 可能为空
+}
+
+type XcBatteryPosition struct {
+    InCabinet  bool    `json:"inCabinet"`  // 是否在电柜中
+    Stationary bool    `json:"stationary"` // 是否停留
+    Soc        uint32  `json:"soc"`        // 电量
+    Lng        float64 `json:"lng"`        // 经度
+    Lat        float64 `json:"lat"`        // 纬度
+    Voltage    float64 `json:"voltage"`    // 电压
+    Gsm        uint32  `json:"gsm"`        // GSM信号强度
+    At         string  `json:"at"`         // 时间 (格式为: yyyy-mm-dd hh:mm:ss)
+}
