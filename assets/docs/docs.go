@@ -2938,6 +2938,57 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/battery/xc/position/{sn}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M4012 电池位置",
+                "operationId": "ManagerBatteryPosition",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "电池编号",
+                        "name": "sn",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间 (精确到秒, 默认6小时前, 格式为: yyyy-mm-dd hh:mm:ss)",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间 (精确到秒, 默认当前时间, 格式为: yyyy-mm-dd hh:mm:ss)",
+                        "name": "end",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.XcBatteryStatistics"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/battery/xc/statistics/{sn}": {
             "get": {
                 "consumes": [
