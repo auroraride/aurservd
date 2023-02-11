@@ -7,7 +7,6 @@ package logging
 
 import (
     "fmt"
-    "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
 )
@@ -63,7 +62,7 @@ func (e *ExchangeLog) SetBin(index int) *ExchangeLog {
     return e
 }
 
-func (e *ExchangeLog) SetStep(step ec.ExchangeStep) *ExchangeLog {
+func (e *ExchangeLog) SetStep(step model.ExchangeStep) *ExchangeLog {
     e.Step = uint8(step)
     e.Description = step.String()
     return e

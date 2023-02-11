@@ -58,6 +58,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
 	"github.com/auroraride/aurservd/internal/ent/subscribereminder"
 	"github.com/auroraride/aurservd/internal/ent/subscribesuspend"
+	"github.com/auroraride/aurservd/internal/ent/task"
+	"github.com/rs/xid"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -1267,6 +1269,29 @@ func init() {
 	subscribesuspendDescDays := subscribesuspendFields[2].Descriptor()
 	// subscribesuspend.DefaultDays holds the default value on creation for the days field.
 	subscribesuspend.DefaultDays = subscribesuspendDescDays.Default.(int)
+	taskMixin := schema.Task{}.Mixin()
+	taskMixinFields0 := taskMixin[0].Fields()
+	_ = taskMixinFields0
+	taskFields := schema.Task{}.Fields()
+	_ = taskFields
+	// taskDescCreatedAt is the schema descriptor for created_at field.
+	taskDescCreatedAt := taskMixinFields0[0].Descriptor()
+	// task.DefaultCreatedAt holds the default value on creation for the created_at field.
+	task.DefaultCreatedAt = taskDescCreatedAt.Default.(func() time.Time)
+	// taskDescUpdatedAt is the schema descriptor for updated_at field.
+	taskDescUpdatedAt := taskMixinFields0[1].Descriptor()
+	// task.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	task.DefaultUpdatedAt = taskDescUpdatedAt.Default.(func() time.Time)
+	// task.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	task.UpdateDefaultUpdatedAt = taskDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// taskDescUUID is the schema descriptor for uuid field.
+	taskDescUUID := taskFields[0].Descriptor()
+	// task.DefaultUUID holds the default value on creation for the uuid field.
+	task.DefaultUUID = taskDescUUID.Default.(func() xid.ID)
+	// taskDescStatus is the schema descriptor for status field.
+	taskDescStatus := taskFields[5].Descriptor()
+	// task.DefaultStatus holds the default value on creation for the status field.
+	task.DefaultStatus = taskDescStatus.Default.(model.TaskStatus)
 }
 
 const (

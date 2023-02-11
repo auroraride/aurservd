@@ -4212,6 +4212,66 @@ var (
 			},
 		},
 	}
+	// TaskColumns holds the columns for the "task" table.
+	TaskColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "uuid", Type: field.TypeOther, SchemaType: map[string]string{"postgres": "varchar"}},
+		{Name: "exchange_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "serial", Type: field.TypeString, Comment: "电柜编码"},
+		{Name: "job", Type: field.TypeEnum, Comment: "任务类别", Enums: []string{"RDR_EXCHANGE", "RDR_ACTIVE", "RDR_UNSUBSCRIBE", "RDR_PAUSE", "RDR_CONTINUE", "MGR_OPEN", "MGR_LOCK", "MGR_UNLOCK", "MGR_REBOOT", "MGR_EXCHANGE"}},
+		{Name: "status", Type: field.TypeOther, Comment: "任务状态", SchemaType: map[string]string{"postgres": "smallint"}},
+		{Name: "start_at", Type: field.TypeTime, Nullable: true, Comment: "开始时间"},
+		{Name: "stop_at", Type: field.TypeTime, Nullable: true, Comment: "结束时间"},
+		{Name: "message", Type: field.TypeString, Nullable: true, Comment: "失败消息"},
+		{Name: "exchange", Type: field.TypeJSON, Nullable: true, Comment: "换电信息"},
+		{Name: "business_bin_info", Type: field.TypeJSON, Nullable: true, Comment: "仓位信息"},
+		{Name: "cabinet", Type: field.TypeJSON, Comment: "电柜信息"},
+		{Name: "rider_id", Type: field.TypeUint64, Comment: "骑手ID"},
+	}
+	// TaskTable holds the schema information for the "task" table.
+	TaskTable = &schema.Table{
+		Name:       "task",
+		Columns:    TaskColumns,
+		PrimaryKey: []*schema.Column{TaskColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "task_rider_rider",
+				Columns:    []*schema.Column{TaskColumns[15]},
+				RefColumns: []*schema.Column{RiderColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "task_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{TaskColumns[1]},
+			},
+			{
+				Name:    "task_rider_id",
+				Unique:  false,
+				Columns: []*schema.Column{TaskColumns[15]},
+			},
+			{
+				Name:    "task_serial",
+				Unique:  false,
+				Columns: []*schema.Column{TaskColumns[6]},
+			},
+			{
+				Name:    "task_status",
+				Unique:  false,
+				Columns: []*schema.Column{TaskColumns[8]},
+			},
+			{
+				Name:    "task_start_at",
+				Unique:  false,
+				Columns: []*schema.Column{TaskColumns[9]},
+			},
+		},
+	}
 	// CabinetModelsColumns holds the columns for the "cabinet_models" table.
 	CabinetModelsColumns = []*schema.Column{
 		{Name: "cabinet_id", Type: field.TypeInt},
@@ -4315,6 +4375,7 @@ var (
 		SubscribePauseTable,
 		SubscribeReminderTable,
 		SubscribeSuspendTable,
+		TaskTable,
 		CabinetModelsTable,
 		PlanCitiesTable,
 	}
@@ -4630,6 +4691,10 @@ func init() {
 	SubscribeSuspendTable.ForeignKeys[3].RefTable = RiderTable
 	SubscribeSuspendTable.Annotation = &entsql.Annotation{
 		Table: "subscribe_suspend",
+	}
+	TaskTable.ForeignKeys[0].RefTable = RiderTable
+	TaskTable.Annotation = &entsql.Annotation{
+		Table: "task",
 	}
 	CabinetModelsTable.ForeignKeys[0].RefTable = CabinetTable
 	CabinetModelsTable.ForeignKeys[1].RefTable = BatteryModelTable

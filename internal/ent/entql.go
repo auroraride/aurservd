@@ -55,6 +55,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
 	"github.com/auroraride/aurservd/internal/ent/subscribereminder"
 	"github.com/auroraride/aurservd/internal/ent/subscribesuspend"
+	"github.com/auroraride/aurservd/internal/ent/task"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -64,7 +65,7 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 51)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 52)}
 	graph.Nodes[0] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   agent.Table,
@@ -1503,6 +1504,34 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribesuspend.FieldEndAt:        {Type: field.TypeTime, Column: subscribesuspend.FieldEndAt},
 			subscribesuspend.FieldEndReason:    {Type: field.TypeString, Column: subscribesuspend.FieldEndReason},
 			subscribesuspend.FieldEndModifier:  {Type: field.TypeJSON, Column: subscribesuspend.FieldEndModifier},
+		},
+	}
+	graph.Nodes[51] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   task.Table,
+			Columns: task.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint64,
+				Column: task.FieldID,
+			},
+		},
+		Type: "Task",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			task.FieldCreatedAt:       {Type: field.TypeTime, Column: task.FieldCreatedAt},
+			task.FieldUpdatedAt:       {Type: field.TypeTime, Column: task.FieldUpdatedAt},
+			task.FieldRiderID:         {Type: field.TypeUint64, Column: task.FieldRiderID},
+			task.FieldUUID:            {Type: field.TypeOther, Column: task.FieldUUID},
+			task.FieldExchangeID:      {Type: field.TypeUint64, Column: task.FieldExchangeID},
+			task.FieldCabinetID:       {Type: field.TypeUint64, Column: task.FieldCabinetID},
+			task.FieldSerial:          {Type: field.TypeString, Column: task.FieldSerial},
+			task.FieldJob:             {Type: field.TypeEnum, Column: task.FieldJob},
+			task.FieldStatus:          {Type: field.TypeOther, Column: task.FieldStatus},
+			task.FieldStartAt:         {Type: field.TypeTime, Column: task.FieldStartAt},
+			task.FieldStopAt:          {Type: field.TypeTime, Column: task.FieldStopAt},
+			task.FieldMessage:         {Type: field.TypeString, Column: task.FieldMessage},
+			task.FieldExchange:        {Type: field.TypeJSON, Column: task.FieldExchange},
+			task.FieldBusinessBinInfo: {Type: field.TypeJSON, Column: task.FieldBusinessBinInfo},
+			task.FieldCabinet:         {Type: field.TypeJSON, Column: task.FieldCabinet},
 		},
 	}
 	graph.MustAddE(
@@ -4096,6 +4125,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"SubscribeSuspend",
 		"SubscribePause",
+	)
+	graph.MustAddE(
+		"rider",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   task.RiderTable,
+			Columns: []string{task.RiderColumn},
+			Bidi:    false,
+		},
+		"Task",
+		"Rider",
 	)
 	return graph
 }()
@@ -13049,6 +13090,135 @@ func (f *SubscribeSuspendFilter) WhereHasPause() {
 // WhereHasPauseWith applies a predicate to check if query has an edge pause with a given conditions (other predicates).
 func (f *SubscribeSuspendFilter) WhereHasPauseWith(preds ...predicate.SubscribePause) {
 	f.Where(entql.HasEdgeWith("pause", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// addPredicate implements the predicateAdder interface.
+func (tq *TaskQuery) addPredicate(pred func(s *sql.Selector)) {
+	tq.predicates = append(tq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the TaskQuery builder.
+func (tq *TaskQuery) Filter() *TaskFilter {
+	return &TaskFilter{config: tq.config, predicateAdder: tq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *TaskMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the TaskMutation builder.
+func (m *TaskMutation) Filter() *TaskFilter {
+	return &TaskFilter{config: m.config, predicateAdder: m}
+}
+
+// TaskFilter provides a generic filtering capability at runtime for TaskQuery.
+type TaskFilter struct {
+	predicateAdder
+	config
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *TaskFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[51].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *TaskFilter) WhereID(p entql.Uint64P) {
+	f.Where(p.Field(task.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *TaskFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(task.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *TaskFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(task.FieldUpdatedAt))
+}
+
+// WhereRiderID applies the entql uint64 predicate on the rider_id field.
+func (f *TaskFilter) WhereRiderID(p entql.Uint64P) {
+	f.Where(p.Field(task.FieldRiderID))
+}
+
+// WhereUUID applies the entql other predicate on the uuid field.
+func (f *TaskFilter) WhereUUID(p entql.OtherP) {
+	f.Where(p.Field(task.FieldUUID))
+}
+
+// WhereExchangeID applies the entql uint64 predicate on the exchange_id field.
+func (f *TaskFilter) WhereExchangeID(p entql.Uint64P) {
+	f.Where(p.Field(task.FieldExchangeID))
+}
+
+// WhereCabinetID applies the entql uint64 predicate on the cabinet_id field.
+func (f *TaskFilter) WhereCabinetID(p entql.Uint64P) {
+	f.Where(p.Field(task.FieldCabinetID))
+}
+
+// WhereSerial applies the entql string predicate on the serial field.
+func (f *TaskFilter) WhereSerial(p entql.StringP) {
+	f.Where(p.Field(task.FieldSerial))
+}
+
+// WhereJob applies the entql string predicate on the job field.
+func (f *TaskFilter) WhereJob(p entql.StringP) {
+	f.Where(p.Field(task.FieldJob))
+}
+
+// WhereStatus applies the entql other predicate on the status field.
+func (f *TaskFilter) WhereStatus(p entql.OtherP) {
+	f.Where(p.Field(task.FieldStatus))
+}
+
+// WhereStartAt applies the entql time.Time predicate on the start_at field.
+func (f *TaskFilter) WhereStartAt(p entql.TimeP) {
+	f.Where(p.Field(task.FieldStartAt))
+}
+
+// WhereStopAt applies the entql time.Time predicate on the stop_at field.
+func (f *TaskFilter) WhereStopAt(p entql.TimeP) {
+	f.Where(p.Field(task.FieldStopAt))
+}
+
+// WhereMessage applies the entql string predicate on the message field.
+func (f *TaskFilter) WhereMessage(p entql.StringP) {
+	f.Where(p.Field(task.FieldMessage))
+}
+
+// WhereExchange applies the entql json.RawMessage predicate on the exchange field.
+func (f *TaskFilter) WhereExchange(p entql.BytesP) {
+	f.Where(p.Field(task.FieldExchange))
+}
+
+// WhereBusinessBinInfo applies the entql json.RawMessage predicate on the business_bin_info field.
+func (f *TaskFilter) WhereBusinessBinInfo(p entql.BytesP) {
+	f.Where(p.Field(task.FieldBusinessBinInfo))
+}
+
+// WhereCabinet applies the entql json.RawMessage predicate on the cabinet field.
+func (f *TaskFilter) WhereCabinet(p entql.BytesP) {
+	f.Where(p.Field(task.FieldCabinet))
+}
+
+// WhereHasRider applies a predicate to check if query has an edge rider.
+func (f *TaskFilter) WhereHasRider() {
+	f.Where(entql.HasEdge("rider"))
+}
+
+// WhereHasRiderWith applies a predicate to check if query has an edge rider with a given conditions (other predicates).
+func (f *TaskFilter) WhereHasRiderWith(preds ...predicate.Rider) {
+	f.Where(entql.HasEdgeWith("rider", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

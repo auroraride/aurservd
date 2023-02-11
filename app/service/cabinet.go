@@ -12,7 +12,6 @@ import (
     "errors"
     "fmt"
     "github.com/auroraride/adapter/defs/cabdef"
-    "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/provider"
@@ -325,19 +324,19 @@ func (s *cabinetService) UpdateStatus(item *ent.Cabinet) (err error) {
 }
 
 // DoorOpenStatus 获取柜门状态
-func (s *cabinetService) DoorOpenStatus(item *ent.Cabinet, index int) ec.DoorStatus {
+func (s *cabinetService) DoorOpenStatus(item *ent.Cabinet, index int) model.DoorStatus {
     _ = s.UpdateStatus(item)
     if len(item.Bin) == 0 || len(item.Bin) < index {
-        return ec.DoorStatusUnknown
+        return model.DoorStatusUnknown
     }
     bin := item.Bin[index]
     if !bin.DoorHealth {
-        return ec.DoorStatusFail
+        return model.DoorStatusFail
     }
     if bin.OpenStatus {
-        return ec.DoorStatusOpen
+        return model.DoorStatusOpen
     }
-    return ec.DoorStatusClose
+    return model.DoorStatusClose
 }
 
 // DetailFromID 电柜详细信息

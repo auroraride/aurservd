@@ -23,7 +23,17 @@ const (
     MaxTime = 10.0
 )
 
+var (
+// orm = ent.Database.Task
+)
+
 type Updater func(task *Task)
+
+type Rider struct {
+    ID    uint64 `json:"id"`
+    Name  string `json:"name"`
+    Phone string `json:"phone"`
+}
 
 // Task 电柜任务详情
 // TODO 存储开仓信息, 业务信息, 管理员信息
@@ -41,10 +51,10 @@ type Task struct {
     StopAt      *time.Time       `json:"stopAt,omitempty" bson:"stopAt,omitempty"`   // 结束时间
     Message     string           `json:"message,omitempty" bson:"message,omitempty"` // 失败消息
 
-    Cabinet          *Cabinet       `json:"cabinet" bson:"cabinet"`                                       // 电柜信息
-    Rider            *Rider         `json:"rider" bson:"rider,omitempty"`                                 // 骑手信息
-    Exchange         *Exchange      `json:"exchange" bson:"exchange,omitempty"`                           // 换电信息
-    BussinessBinInfo *model.BinInfo `json:"bussinessBinInfo,omitempty" bson:"bussinessBinInfo,omitempty"` // 业务仓位
+    Cabinet          *model.ExchangeTaskCabinet `json:"cabinet" bson:"cabinet"`                                       // 电柜信息
+    Rider            *Rider                     `json:"rider" bson:"rider,omitempty"`                                 // 骑手信息
+    Exchange         *model.ExchangeTaskInfo    `json:"exchange" bson:"exchange,omitempty"`                           // 换电信息
+    BussinessBinInfo *model.BinInfo             `json:"bussinessBinInfo,omitempty" bson:"bussinessBinInfo,omitempty"` // 业务仓位
 }
 
 func (t *Task) MarshalBinary() ([]byte, error) {
@@ -58,7 +68,7 @@ func (t *Task) UnmarshalBinary(data []byte) error {
 func (t *Task) String() string {
     // TODO 开仓信息, 业务信息, 管理员信息
     info := ""
-    if t.Job == model.JobExchange {
+    if t.Job == model.TaskJobExchange {
         info += fmt.Sprintf(
             "骑手电话: %s, 名字: %s\n步骤: %s, 空: %d仓, 满: %d仓",
             t.Rider.Phone,
@@ -69,12 +79,6 @@ func (t *Task) String() string {
         )
     }
     return info
-}
-
-type Rider struct {
-    ID    uint64 `json:"id"`
-    Name  string `json:"name"`
-    Phone string `json:"phone"`
 }
 
 // Create 创建任务并存储

@@ -11,7 +11,6 @@ import (
     "github.com/auroraride/adapter"
     "github.com/auroraride/adapter/defs/cabdef"
     "github.com/auroraride/adapter/log"
-    "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
@@ -160,7 +159,7 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 
         if result.Success {
             // 记录用户放入的电池
-            if ec.ExchangeStepPutInto.EqualInt(result.Step) && after != nil {
+            if model.ExchangeStepPutInto.EqualInt(result.Step) && after != nil {
                 putin = after.BatterySN
                 empty = &model.BinInfo{
                     Index:       after.Ordinal - 1,
@@ -175,7 +174,7 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
             }
 
             // 记录用户取走的电池
-            if result.Step == ec.ExchangeStepOpenFull.Int() && before != nil {
+            if result.Step == model.ExchangeStepOpenFull.Int() && before != nil {
                 putout = before.BatterySN
 
                 go bs.RiderBusiness(false, putout, s.rider, cab, before.Ordinal)
@@ -228,7 +227,7 @@ func (s *intelligentCabinetService) ExchangeStepSync(req *cabdef.ExchangeStepMes
 func (s *intelligentCabinetService) ExchangeResult(uid string) (res *model.RiderExchangeProcessRes) {
     key := s.exchangeCacheKey(uid)
     res = &model.RiderExchangeProcessRes{
-        Step:   uint8(ec.ExchangeStepOpenEmpty),
+        Step:   uint8(model.ExchangeStepOpenEmpty),
         Status: uint8(model.TaskStatusProcessing),
     }
 
@@ -254,7 +253,7 @@ func (s *intelligentCabinetService) ExchangeResult(uid string) (res *model.Rider
         // 当前的数据
         if index == n {
             s.exchangeStepResultFromCache(index-1, c, res)
-            if res.Step < uint8(ec.ExchangeStepPutOut) {
+            if res.Step < uint8(model.ExchangeStepPutOut) {
                 res.Step += 1
             }
             res.Status = uint8(model.TaskStatusProcessing)

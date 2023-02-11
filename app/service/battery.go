@@ -125,6 +125,9 @@ func (s *batteryService) SyncPutin(sn, serial string, cabinetID uint64, ordinal 
 
     // 更新电池电柜信息
     bat, err = bat.Update().SetCabinetID(cabinetID).SetOrdinal(ordinal).ClearRiderID().ClearSubscribeID().Save(s.ctx)
+    if err != nil {
+        return
+    }
 
     // 更新电池流转
     go NewBatteryFlow().Create(model.BatteryFlowCreateReq{

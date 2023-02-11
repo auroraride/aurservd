@@ -11,7 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/auroraride/aurservd/app/ec"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -216,8 +215,8 @@ func (ec *ExchangeCreate) SetDetail(jm jsoniter.RawMessage) *ExchangeCreate {
 }
 
 // SetInfo sets the "info" field.
-func (ec *ExchangeCreate) SetInfo(ei *ec.ExchangeInfo) *ExchangeCreate {
-	ec.mutation.SetInfo(ei)
+func (ec *ExchangeCreate) SetInfo(mi *model.ExchangeInfo) *ExchangeCreate {
+	ec.mutation.SetInfo(mi)
 	return ec
 }
 
@@ -1017,7 +1016,7 @@ func (u *ExchangeUpsert) ClearDetail() *ExchangeUpsert {
 }
 
 // SetInfo sets the "info" field.
-func (u *ExchangeUpsert) SetInfo(v *ec.ExchangeInfo) *ExchangeUpsert {
+func (u *ExchangeUpsert) SetInfo(v *model.ExchangeInfo) *ExchangeUpsert {
 	u.Set(exchange.FieldInfo, v)
 	return u
 }
@@ -1494,7 +1493,7 @@ func (u *ExchangeUpsertOne) ClearDetail() *ExchangeUpsertOne {
 }
 
 // SetInfo sets the "info" field.
-func (u *ExchangeUpsertOne) SetInfo(v *ec.ExchangeInfo) *ExchangeUpsertOne {
+func (u *ExchangeUpsertOne) SetInfo(v *model.ExchangeInfo) *ExchangeUpsertOne {
 	return u.Update(func(s *ExchangeUpsert) {
 		s.SetInfo(v)
 	})
@@ -2159,7 +2158,7 @@ func (u *ExchangeUpsertBulk) ClearDetail() *ExchangeUpsertBulk {
 }
 
 // SetInfo sets the "info" field.
-func (u *ExchangeUpsertBulk) SetInfo(v *ec.ExchangeInfo) *ExchangeUpsertBulk {
+func (u *ExchangeUpsertBulk) SetInfo(v *model.ExchangeInfo) *ExchangeUpsertBulk {
 	return u.Update(func(s *ExchangeUpsert) {
 		s.SetInfo(v)
 	})

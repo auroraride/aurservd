@@ -6,13 +6,12 @@
 package ent
 
 import (
-    "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent/business"
 )
 
-func (c *Cabinet) GetTaskInfo() *ec.Cabinet {
-    return &ec.Cabinet{
+func (c *Cabinet) GetTaskInfo() *model.ExchangeTaskCabinet {
+    return &model.ExchangeTaskCabinet{
         Health:         c.Health,
         Doors:          c.Doors,
         BatteryNum:     c.BatteryNum,

@@ -94,7 +94,7 @@ func compensate() {
     m := make(map[string]*ec.Task)
     for _, t := range tasks {
         t.Message = msg
-        if t.Job == model.JobExchange {
+        if t.Job == model.TaskJobExchange {
             t.Exchange.CurrentStep().Time = now
             t.Exchange.CurrentStep().Status = model.TaskStatusFail
         }
@@ -112,7 +112,7 @@ func compensate() {
             SetFinishAt(now).
             SetDuration(int(now.Sub(item.CreatedAt).Seconds()))
         if x, ok := m[item.UUID]; ok {
-            u.SetInfo(&ec.ExchangeInfo{
+            u.SetInfo(&model.ExchangeInfo{
                 Cabinet:  x.Cabinet,
                 Exchange: x.Exchange,
                 Message:  x.Message,

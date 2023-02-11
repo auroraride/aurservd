@@ -155,10 +155,10 @@ func (s *riderBusinessService) preprocess(serial string, bt business.Type) {
         }
 
         jobs := map[business.Type]model.TaskJob{
-            business.TypeActive:      model.JobRiderActive,
-            business.TypeUnsubscribe: model.JobRiderUnSubscribe,
-            business.TypePause:       model.JobPause,
-            business.TypeContinue:    model.JobContinue,
+            business.TypeActive:      model.TaskJobRiderActive,
+            business.TypeUnsubscribe: model.TaskJobRiderUnSubscribe,
+            business.TypePause:       model.TaskJobPause,
+            business.TypeContinue:    model.TaskJobContinue,
         }
 
         task := &ec.Task{
@@ -220,20 +220,20 @@ func (s *riderBusinessService) putin() (*model.BinInfo, *model.Battery, error) {
 
     for {
         ds := s.batteryDetect()
-        if ds == ec.DoorStatusClose {
+        if ds == model.DoorStatusClose {
             // 强制睡眠两秒: 原因是有可能柜门会晃动导致似关非关, 延时来获取正确状态
             time.Sleep(2 * time.Second)
             ds = s.batteryDetect()
         }
         switch ds {
-        case ec.DoorStatusClose:
+        case model.DoorStatusClose:
             ts = model.TaskStatusSuccess
             return s.empty, nil, nil
-        case ec.DoorStatusOpen:
+        case model.DoorStatusOpen:
             ts = model.TaskStatusProcessing
             break
         default:
-            s.task.Message = ec.DoorError[ds]
+            s.task.Message = model.DoorError[ds]
             ts = model.TaskStatusFail
             break
         }
@@ -256,14 +256,14 @@ func (s *riderBusinessService) putin() (*model.BinInfo, *model.Battery, error) {
 }
 
 // 非智能电柜 - 电池检测
-func (s *riderBusinessService) batteryDetect() (ds ec.DoorStatus) {
+func (s *riderBusinessService) batteryDetect() (ds model.DoorStatus) {
     ds = NewCabinet().DoorOpenStatus(s.cabinet, s.empty.Index)
     cbin := s.cabinet.Bin[s.empty.Index]
     pe := cbin.Electricity
     pv := cbin.Voltage
 
     // 当仓门未关闭时跳过
-    if ds != ec.DoorStatusClose {
+    if ds != model.DoorStatusClose {
         return
     }
 
@@ -278,12 +278,12 @@ func (s *riderBusinessService) batteryDetect() (ds ec.DoorStatus) {
 
     // 曹博文说: 判断是否 有电池 并且 (电压大于40 或 电量大于0)
     if cbin.Battery && (pv > 45 || pe > 0) {
-        return ec.DoorStatusClose
+        return model.DoorStatusClose
     }
 
     // 仓门关闭但是检测不到电池的情况下, 继续检测30s
     if time.Now().Sub(*s.task.StartAt).Seconds() > 30 {
-        return ec.DoorStatusBatteryEmpty
+        return model.DoorStatusBatteryEmpty
     } else {
         time.Sleep(1 * time.Second)
         return s.batteryDetect()

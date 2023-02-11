@@ -595,3 +595,13 @@ func (ss *SubscribeSuspend) GetTableName() string {
 func (ss *SubscribeSuspend) GetID() uint64 {
 	return ss.ID
 }
+
+// GetTableName returns table name for Task.
+func (t *Task) GetTableName() string {
+	return "task"
+}
+
+// GetID returns id for Task.
+func (t *Task) GetID() uint64 {
+	return t.ID
+}

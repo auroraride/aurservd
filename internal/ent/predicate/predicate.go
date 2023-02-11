@@ -158,3 +158,6 @@ type SubscribeReminder func(*sql.Selector)
 
 // SubscribeSuspend is the predicate function for subscribesuspend builders.
 type SubscribeSuspend func(*sql.Selector)
+
+// Task is the predicate function for task builders.
+type Task func(*sql.Selector)

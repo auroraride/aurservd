@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/auroraride/aurservd/app/ec"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -63,7 +62,7 @@ type Exchange struct {
 	// 电柜换电信息
 	Detail jsoniter.RawMessage `json:"detail,omitempty"`
 	// 电柜换电信息
-	Info *ec.ExchangeInfo `json:"info,omitempty"`
+	Info *model.ExchangeInfo `json:"info,omitempty"`
 	// 电池型号
 	Model string `json:"model,omitempty"`
 	// 是否备用方案

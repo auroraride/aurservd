@@ -1589,3 +1589,34 @@ func (ssq *SubscribeSuspendQuery) PaginationResult(req model.PaginationReq) mode
 		Total:   total,
 	}
 }
+
+// Pagination returns pagination query builder for TaskQuery.
+func (tq *TaskQuery) Pagination(req model.PaginationReq) *TaskQuery {
+	tq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return tq
+}
+
+// PaginationItems returns pagination query builder for TaskQuery.
+func (tq *TaskQuery) PaginationItemsX(req model.PaginationReq) any {
+	return tq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for TaskQuery.
+func (tq *TaskQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := tq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}

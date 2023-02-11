@@ -82,6 +82,7 @@ type (
 		SubscribePause       []ent.Hook
 		SubscribeReminder    []ent.Hook
 		SubscribeSuspend     []ent.Hook
+		Task                 []ent.Hook
 	}
 	inters struct {
 		Agent                []ent.Interceptor
@@ -135,6 +136,7 @@ type (
 		SubscribePause       []ent.Interceptor
 		SubscribeReminder    []ent.Interceptor
 		SubscribeSuspend     []ent.Interceptor
+		Task                 []ent.Interceptor
 	}
 )
 

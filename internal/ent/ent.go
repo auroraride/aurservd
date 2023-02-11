@@ -62,6 +62,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
 	"github.com/auroraride/aurservd/internal/ent/subscribereminder"
 	"github.com/auroraride/aurservd/internal/ent/subscribesuspend"
+	"github.com/auroraride/aurservd/internal/ent/task"
 )
 
 // ent aliases to avoid import conflicts in user's code.
@@ -140,6 +141,7 @@ func columnChecker(table string) func(string) error {
 		subscribepause.Table:       subscribepause.ValidColumn,
 		subscribereminder.Table:    subscribereminder.ValidColumn,
 		subscribesuspend.Table:     subscribesuspend.ValidColumn,
+		task.Table:                 task.ValidColumn,
 	}
 	check, ok := checks[table]
 	if !ok {

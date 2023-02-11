@@ -113,14 +113,14 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
         t := &ec.Task{
             Serial:    cab.Serial,
             CabinetID: cab.ID,
-            Job:       model.JobExchange,
+            Job:       model.TaskJobExchange,
             Rider: &ec.Rider{
                 ID:    s.rider.ID,
                 Name:  s.rider.Name,
                 Phone: s.rider.Phone,
             },
             Cabinet: cab.GetTaskInfo(),
-            Exchange: &ec.Exchange{
+            Exchange: &model.ExchangeTaskInfo{
                 Model:       sub.Model,
                 Alternative: info.Alternative != nil,
                 Empty: &model.BinInfo{
@@ -181,8 +181,8 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
     var (
         cab   *ent.Cabinet
         info  model.RiderExchangeInfo
-        tcab  *ec.Cabinet
-        tex   *ec.Exchange
+        tcab  *model.ExchangeTaskCabinet
+        tex   *model.ExchangeTaskInfo
         t     *ec.Task
         bat   *ent.Battery
         batSN *string
@@ -197,7 +197,7 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
         bat = NewIntelligentCabinet(s.rider).BusinessCensorX(adapter.BusinessExchange, sub, cab)
         batSN = silk.String(bat.Sn)
 
-        tex = &ec.Exchange{
+        tex = &model.ExchangeTaskInfo{
             Model:       sub.Model,
             Alternative: info.Alternative != nil,
             Empty: &model.BinInfo{
@@ -221,7 +221,7 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
         t = ec.QueryID(uid)
 
         // 判断任务是否存在, 并且比对存储骑手信息是否相符
-        if t == nil || t.Status > 0 || t.StartAt != nil || t.Job != model.JobExchange || t.Exchange == nil || t.IsDeactived() || t.Rider == nil || t.Rider.ID != s.rider.ID {
+        if t == nil || t.Status > 0 || t.StartAt != nil || t.Job != model.TaskJobExchange || t.Exchange == nil || t.IsDeactived() || t.Rider == nil || t.Rider.ID != s.rider.ID {
             snag.Panic("未找到信息, 请重新扫码")
         }
 
@@ -263,7 +263,7 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
         Create().
         SetRiderID(s.rider.ID).
         SetCityID(*cab.CityID).
-        SetInfo(&ec.ExchangeInfo{
+        SetInfo(&model.ExchangeInfo{
             Cabinet:  tcab,
             Exchange: tex,
         }).
@@ -291,8 +291,8 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
         // 开始任务
         t.Start(func(task *ec.Task) {
             task.Exchange.ExchangeID = s.exchange.ID
-            task.Exchange.Steps = []*ec.ExchangeStepInfo{
-                {Step: ec.ExchangeStepOpenEmpty, Time: time.Now()},
+            task.Exchange.Steps = []*model.ExchangeStepInfo{
+                {Step: model.ExchangeStepOpenEmpty, Time: time.Now()},
             }
         })
 
@@ -337,7 +337,7 @@ func (s *riderExchangeService) ProcessStepEnd() {
     _, _ = s.exchange.Update().
         SetRiderID(s.rider.ID).
         SetCityID(*s.cabinet.CityID).
-        SetInfo(&ec.ExchangeInfo{
+        SetInfo(&model.ExchangeInfo{
             Cabinet:  s.task.Cabinet,
             Exchange: s.task.Exchange,
             Message:  s.task.Message,
@@ -386,7 +386,7 @@ func (s *riderExchangeService) ProcessByStep() {
 }
 
 // ProcessDoorBatteryStatus 格式化仓门状态, 电池放入取出检测
-func (s *riderExchangeService) ProcessDoorBatteryStatus() (ds ec.DoorStatus) {
+func (s *riderExchangeService) ProcessDoorBatteryStatus() (ds model.DoorStatus) {
     // 获取仓位
     bin := s.task.Exchange.CurrentBin()
 
@@ -411,7 +411,7 @@ func (s *riderExchangeService) ProcessDoorBatteryStatus() (ds ec.DoorStatus) {
     // )
 
     // 当仓门未关闭时跳过
-    if ds != ec.DoorStatusClose {
+    if ds != model.DoorStatusClose {
         return
     }
 
@@ -421,7 +421,7 @@ func (s *riderExchangeService) ProcessDoorBatteryStatus() (ds ec.DoorStatus) {
     }
 
     // 验证是否放入旧电池
-    if step.Step == ec.ExchangeStepPutInto {
+    if step.Step == model.ExchangeStepPutInto {
         // 获取骑手放入电池信息
         if s.task.Exchange.Empty.Electricity == 0 {
             s.task.Exchange.Empty.Electricity = pe
@@ -433,12 +433,12 @@ func (s *riderExchangeService) ProcessDoorBatteryStatus() (ds ec.DoorStatus) {
 
         // 曹博文说: 判断是否 有电池 并且 (电压大于40 或 电量大于0)
         if cbin.Battery && (pv > 45 || pe > 0) {
-            return ec.DoorStatusClose
+            return model.DoorStatusClose
         }
 
         // 仓门关闭但是检测不到电池的情况下, 继续检测30s
         if time.Now().Sub(step.Time).Seconds() > 30 {
-            return ec.DoorStatusBatteryEmpty
+            return model.DoorStatusBatteryEmpty
         } else {
             time.Sleep(1 * time.Second)
             return s.ProcessDoorBatteryStatus()
@@ -446,15 +446,15 @@ func (s *riderExchangeService) ProcessDoorBatteryStatus() (ds ec.DoorStatus) {
     }
 
     // 验证满电电池是否取走
-    if step.Step == ec.ExchangeStepPutOut {
+    if step.Step == model.ExchangeStepPutOut {
         // 如果已取走直接返回
         if !cbin.Battery {
-            return ec.DoorStatusClose
+            return model.DoorStatusClose
         }
 
         // 仓门关闭, 如果未取走则继续检测10s
         if time.Now().Sub(step.Time).Seconds() > 10 {
-            return ec.DoorStatusBatteryFull
+            return model.DoorStatusBatteryFull
         } else {
             time.Sleep(1 * time.Second)
             return s.ProcessDoorBatteryStatus()
@@ -472,7 +472,7 @@ func (s *riderExchangeService) ProcessDoorStatus() *riderExchangeService {
     for {
         // 检测仓门/电池
         ds := s.ProcessDoorBatteryStatus()
-        if ds == ec.DoorStatusClose {
+        if ds == model.DoorStatusClose {
             // 强制睡眠两秒: 原因是有可能柜门会晃动导致似关非关, 延时来获取正确状态
             time.Sleep(2 * time.Second)
             ds = s.ProcessDoorBatteryStatus()
@@ -481,13 +481,13 @@ func (s *riderExchangeService) ProcessDoorStatus() *riderExchangeService {
         var message string
 
         switch ds {
-        case ec.DoorStatusClose:
+        case model.DoorStatusClose:
             step.Status = model.TaskStatusSuccess
             break
-        case ec.DoorStatusOpen:
+        case model.DoorStatusOpen:
             break
         default:
-            message = ec.DoorError[ds]
+            message = model.DoorError[ds]
             step.Status = model.TaskStatusFail
             break
         }
@@ -526,7 +526,7 @@ func (s *riderExchangeService) ProcessOpenBin() *riderExchangeService {
 
     // 开始处理
     reason := model.RiderCabinetOperateReasonEmpty
-    if step.Step == ec.ExchangeStepOpenFull {
+    if step.Step == model.ExchangeStepOpenFull {
         reason = model.RiderCabinetOperateReasonFull
     }
 

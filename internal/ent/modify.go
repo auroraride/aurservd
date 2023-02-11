@@ -407,3 +407,10 @@ func (c *SubscribeSuspendClient) ModifyOne(old *SubscribeSuspend, data any) *Sub
 	up := &SubscribeSuspendUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 	return EntitySetAttributes[SubscribeSuspendUpdateOne, SubscribeSuspend](up, old, data)
 }
+
+// ModifyOne returns an update with pointer struct builder for Task.
+func (c *TaskClient) ModifyOne(old *Task, data any) *TaskUpdateOne {
+	mutation := newTaskMutation(c.config, OpUpdateOne, withTask(old))
+	up := &TaskUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[TaskUpdateOne, Task](up, old, data)
+}
