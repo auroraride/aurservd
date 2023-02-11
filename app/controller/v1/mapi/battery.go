@@ -198,7 +198,7 @@ func (*battery) Statistics(c echo.Context) (err error) {
 // @Param        sn  path  string  true  "电池编号"
 // @Param        start  query  string  false  "开始时间 (精确到秒, 默认6小时前, 格式为: yyyy-mm-dd hh:mm:ss)"
 // @Param        end  query  string  false  "结束时间 (精确到秒, 默认当前时间, 格式为: yyyy-mm-dd hh:mm:ss)"
-// @Success      200  {object}  model.XcBatteryStatistics  "请求成功"
+// @Success      200  {object}  model.XcBatteryPositionRes  "请求成功"
 func (*battery) Position(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.XcBatteryPositionReq](c)
     return ctx.SendResponse(service.NewBatteryXc().Position(req))
