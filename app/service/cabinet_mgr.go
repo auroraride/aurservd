@@ -127,7 +127,7 @@ func (s *cabinetMgrService) BinOperate(req *model.CabinetDoorOperateReq) bool {
     var err error
 
     // 创建并开始任务
-    task.CreateX().Start()
+    task.Create().Start()
 
     // 结束回调
     defer func() {
@@ -135,9 +135,9 @@ func (s *cabinetMgrService) BinOperate(req *model.CabinetDoorOperateReq) bool {
             err = fmt.Errorf("%v", v)
         }
 
-        ts := ec.TaskStatusSuccess
+        ts := model.TaskStatusSuccess
         if !status {
-            ts = ec.TaskStatusFail
+            ts = model.TaskStatusFail
             task.Message = err.Error()
         }
 
@@ -195,13 +195,13 @@ func (s *cabinetMgrService) Reboot(req *model.IDPostReq) bool {
         Cabinet:   cab.GetTaskInfo(),
     }
 
-    task.CreateX().Start()
+    task.Create().Start()
 
     // 结束回调
     defer func() {
-        ts := ec.TaskStatusSuccess
+        ts := model.TaskStatusSuccess
         if !status {
-            ts = ec.TaskStatusFail
+            ts = model.TaskStatusFail
             task.Message = "重启失败"
         }
         task.Stop(ts)

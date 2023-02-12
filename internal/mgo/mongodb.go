@@ -5,53 +5,46 @@
 
 package mgo
 
-import (
-    "context"
-    "github.com/qiniu/qmgo"
-    "github.com/qiniu/qmgo/options"
-    "log"
-)
-
-var (
-    Client      *qmgo.Client
-    DB          *qmgo.Database
-    CabinetTask *qmgo.Collection
-    Order       *qmgo.Collection
-)
-
-func Connect(url, db string) {
-    ctx := context.Background()
-    var err error
-    Client, err = qmgo.NewClient(ctx, &qmgo.Config{Uri: url})
-    if err != nil {
-        log.Fatal(err)
-    }
-    DB = Client.Database(db)
-
-    CabinetTask = DB.Collection("cabinet_task")
-    err = CabinetTask.CreateIndexes(ctx, []options.IndexModel{
-        {
-            Key: []string{
-                "serial",
-            },
-        },
-        {
-            Key: []string{
-                "job",
-            },
-        },
-        {
-            Key: []string{
-                "deactivated",
-            },
-        },
-        {
-            Key: []string{
-                "cabinetId",
-            },
-        },
-    })
-    if err != nil {
-        log.Fatalln(err)
-    }
-}
+// var (
+//     Client      *qmgo.Client
+//     DB          *qmgo.Database
+//     CabinetTask *qmgo.Collection
+//     Order       *qmgo.Collection
+// )
+//
+// func Connect(url, db string) {
+//     ctx := context.Background()
+//     var err error
+//     Client, err = qmgo.NewClient(ctx, &qmgo.Config{Uri: url})
+//     if err != nil {
+//         log.Fatal(err)
+//     }
+//     DB = Client.Database(db)
+//
+//     CabinetTask = DB.Collection("cabinet_task")
+//     err = CabinetTask.CreateIndexes(ctx, []options.IndexModel{
+//         {
+//             Key: []string{
+//                 "serial",
+//             },
+//         },
+//         {
+//             Key: []string{
+//                 "job",
+//             },
+//         },
+//         {
+//             Key: []string{
+//                 "deactivated",
+//             },
+//         },
+//         {
+//             Key: []string{
+//                 "cabinetId",
+//             },
+//         },
+//     })
+//     if err != nil {
+//         log.Fatalln(err)
+//     }
+// }

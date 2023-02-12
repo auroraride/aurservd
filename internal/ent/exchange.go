@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/auroraride/aurservd/app/ec"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -62,8 +61,6 @@ type Exchange struct {
 	Success bool `json:"success,omitempty"`
 	// 电柜换电信息
 	Detail jsoniter.RawMessage `json:"detail,omitempty"`
-	// 电柜换电信息
-	Info *ec.ExchangeInfo `json:"info,omitempty"`
 	// 电池型号
 	Model string `json:"model,omitempty"`
 	// 是否备用方案
@@ -80,6 +77,16 @@ type Exchange struct {
 	PutinBattery *string `json:"putin_battery,omitempty"`
 	// 取出电池编号
 	PutoutBattery *string `json:"putout_battery,omitempty"`
+	// 电柜信息
+	CabinetInfo *model.ExchangeCabinetInfo `json:"cabinet_info,omitempty"`
+	// 空仓信息
+	Empty *model.BinInfo `json:"empty,omitempty"`
+	// 满仓信息
+	Fully *model.BinInfo `json:"fully,omitempty"`
+	// 步骤信息
+	Steps []*model.ExchangeStepInfo `json:"steps,omitempty"`
+	// 消息
+	Message string `json:"message,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ExchangeQuery when eager-loading is set.
 	Edges ExchangeEdges `json:"edges"`
@@ -217,13 +224,13 @@ func (*Exchange) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case exchange.FieldCreator, exchange.FieldLastModifier, exchange.FieldDetail, exchange.FieldInfo:
+		case exchange.FieldCreator, exchange.FieldLastModifier, exchange.FieldDetail, exchange.FieldCabinetInfo, exchange.FieldEmpty, exchange.FieldFully, exchange.FieldSteps:
 			values[i] = new([]byte)
 		case exchange.FieldSuccess, exchange.FieldAlternative:
 			values[i] = new(sql.NullBool)
 		case exchange.FieldID, exchange.FieldSubscribeID, exchange.FieldCityID, exchange.FieldStoreID, exchange.FieldEnterpriseID, exchange.FieldStationID, exchange.FieldRiderID, exchange.FieldEmployeeID, exchange.FieldCabinetID, exchange.FieldDuration:
 			values[i] = new(sql.NullInt64)
-		case exchange.FieldRemark, exchange.FieldUUID, exchange.FieldModel, exchange.FieldRiderBattery, exchange.FieldPutinBattery, exchange.FieldPutoutBattery:
+		case exchange.FieldRemark, exchange.FieldUUID, exchange.FieldModel, exchange.FieldRiderBattery, exchange.FieldPutinBattery, exchange.FieldPutoutBattery, exchange.FieldMessage:
 			values[i] = new(sql.NullString)
 		case exchange.FieldCreatedAt, exchange.FieldUpdatedAt, exchange.FieldDeletedAt, exchange.FieldStartAt, exchange.FieldFinishAt:
 			values[i] = new(sql.NullTime)
@@ -361,14 +368,6 @@ func (e *Exchange) assignValues(columns []string, values []any) error {
 					return fmt.Errorf("unmarshal field detail: %w", err)
 				}
 			}
-		case exchange.FieldInfo:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field info", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &e.Info); err != nil {
-					return fmt.Errorf("unmarshal field info: %w", err)
-				}
-			}
 		case exchange.FieldModel:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field model", values[i])
@@ -419,6 +418,44 @@ func (e *Exchange) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				e.PutoutBattery = new(string)
 				*e.PutoutBattery = value.String
+			}
+		case exchange.FieldCabinetInfo:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field cabinet_info", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &e.CabinetInfo); err != nil {
+					return fmt.Errorf("unmarshal field cabinet_info: %w", err)
+				}
+			}
+		case exchange.FieldEmpty:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field empty", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &e.Empty); err != nil {
+					return fmt.Errorf("unmarshal field empty: %w", err)
+				}
+			}
+		case exchange.FieldFully:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field fully", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &e.Fully); err != nil {
+					return fmt.Errorf("unmarshal field fully: %w", err)
+				}
+			}
+		case exchange.FieldSteps:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field steps", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &e.Steps); err != nil {
+					return fmt.Errorf("unmarshal field steps: %w", err)
+				}
+			}
+		case exchange.FieldMessage:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field message", values[i])
+			} else if value.Valid {
+				e.Message = value.String
 			}
 		}
 	}
@@ -549,9 +586,6 @@ func (e *Exchange) String() string {
 	builder.WriteString("detail=")
 	builder.WriteString(fmt.Sprintf("%v", e.Detail))
 	builder.WriteString(", ")
-	builder.WriteString("info=")
-	builder.WriteString(fmt.Sprintf("%v", e.Info))
-	builder.WriteString(", ")
 	builder.WriteString("model=")
 	builder.WriteString(e.Model)
 	builder.WriteString(", ")
@@ -581,6 +615,21 @@ func (e *Exchange) String() string {
 		builder.WriteString("putout_battery=")
 		builder.WriteString(*v)
 	}
+	builder.WriteString(", ")
+	builder.WriteString("cabinet_info=")
+	builder.WriteString(fmt.Sprintf("%v", e.CabinetInfo))
+	builder.WriteString(", ")
+	builder.WriteString("empty=")
+	builder.WriteString(fmt.Sprintf("%v", e.Empty))
+	builder.WriteString(", ")
+	builder.WriteString("fully=")
+	builder.WriteString(fmt.Sprintf("%v", e.Fully))
+	builder.WriteString(", ")
+	builder.WriteString("steps=")
+	builder.WriteString(fmt.Sprintf("%v", e.Steps))
+	builder.WriteString(", ")
+	builder.WriteString("message=")
+	builder.WriteString(e.Message)
 	builder.WriteByte(')')
 	return builder.String()
 }

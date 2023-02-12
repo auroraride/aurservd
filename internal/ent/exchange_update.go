@@ -12,7 +12,6 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
-	"github.com/auroraride/aurservd/app/ec"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -255,18 +254,6 @@ func (eu *ExchangeUpdate) ClearDetail() *ExchangeUpdate {
 	return eu
 }
 
-// SetInfo sets the "info" field.
-func (eu *ExchangeUpdate) SetInfo(ei *ec.ExchangeInfo) *ExchangeUpdate {
-	eu.mutation.SetInfo(ei)
-	return eu
-}
-
-// ClearInfo clears the value of the "info" field.
-func (eu *ExchangeUpdate) ClearInfo() *ExchangeUpdate {
-	eu.mutation.ClearInfo()
-	return eu
-}
-
 // SetModel sets the "model" field.
 func (eu *ExchangeUpdate) SetModel(s string) *ExchangeUpdate {
 	eu.mutation.SetModel(s)
@@ -411,6 +398,74 @@ func (eu *ExchangeUpdate) SetNillablePutoutBattery(s *string) *ExchangeUpdate {
 // ClearPutoutBattery clears the value of the "putout_battery" field.
 func (eu *ExchangeUpdate) ClearPutoutBattery() *ExchangeUpdate {
 	eu.mutation.ClearPutoutBattery()
+	return eu
+}
+
+// SetCabinetInfo sets the "cabinet_info" field.
+func (eu *ExchangeUpdate) SetCabinetInfo(mci *model.ExchangeCabinetInfo) *ExchangeUpdate {
+	eu.mutation.SetCabinetInfo(mci)
+	return eu
+}
+
+// ClearCabinetInfo clears the value of the "cabinet_info" field.
+func (eu *ExchangeUpdate) ClearCabinetInfo() *ExchangeUpdate {
+	eu.mutation.ClearCabinetInfo()
+	return eu
+}
+
+// SetEmpty sets the "empty" field.
+func (eu *ExchangeUpdate) SetEmpty(mi *model.BinInfo) *ExchangeUpdate {
+	eu.mutation.SetEmpty(mi)
+	return eu
+}
+
+// ClearEmpty clears the value of the "empty" field.
+func (eu *ExchangeUpdate) ClearEmpty() *ExchangeUpdate {
+	eu.mutation.ClearEmpty()
+	return eu
+}
+
+// SetFully sets the "fully" field.
+func (eu *ExchangeUpdate) SetFully(mi *model.BinInfo) *ExchangeUpdate {
+	eu.mutation.SetFully(mi)
+	return eu
+}
+
+// ClearFully clears the value of the "fully" field.
+func (eu *ExchangeUpdate) ClearFully() *ExchangeUpdate {
+	eu.mutation.ClearFully()
+	return eu
+}
+
+// SetSteps sets the "steps" field.
+func (eu *ExchangeUpdate) SetSteps(msi []*model.ExchangeStepInfo) *ExchangeUpdate {
+	eu.mutation.SetSteps(msi)
+	return eu
+}
+
+// AppendSteps appends msi to the "steps" field.
+func (eu *ExchangeUpdate) AppendSteps(msi []*model.ExchangeStepInfo) *ExchangeUpdate {
+	eu.mutation.AppendSteps(msi)
+	return eu
+}
+
+// ClearSteps clears the value of the "steps" field.
+func (eu *ExchangeUpdate) ClearSteps() *ExchangeUpdate {
+	eu.mutation.ClearSteps()
+	return eu
+}
+
+// SetMessage sets the "message" field.
+func (eu *ExchangeUpdate) SetMessage(s string) *ExchangeUpdate {
+	eu.mutation.SetMessage(s)
+	return eu
+}
+
+// SetNillableMessage sets the "message" field if the given value is not nil.
+func (eu *ExchangeUpdate) SetNillableMessage(s *string) *ExchangeUpdate {
+	if s != nil {
+		eu.SetMessage(*s)
+	}
 	return eu
 }
 
@@ -631,12 +686,6 @@ func (eu *ExchangeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if eu.mutation.DetailCleared() {
 		_spec.ClearField(exchange.FieldDetail, field.TypeJSON)
 	}
-	if value, ok := eu.mutation.Info(); ok {
-		_spec.SetField(exchange.FieldInfo, field.TypeJSON, value)
-	}
-	if eu.mutation.InfoCleared() {
-		_spec.ClearField(exchange.FieldInfo, field.TypeJSON)
-	}
 	if value, ok := eu.mutation.Model(); ok {
 		_spec.SetField(exchange.FieldModel, field.TypeString, value)
 	}
@@ -681,6 +730,38 @@ func (eu *ExchangeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if eu.mutation.PutoutBatteryCleared() {
 		_spec.ClearField(exchange.FieldPutoutBattery, field.TypeString)
+	}
+	if value, ok := eu.mutation.CabinetInfo(); ok {
+		_spec.SetField(exchange.FieldCabinetInfo, field.TypeJSON, value)
+	}
+	if eu.mutation.CabinetInfoCleared() {
+		_spec.ClearField(exchange.FieldCabinetInfo, field.TypeJSON)
+	}
+	if value, ok := eu.mutation.Empty(); ok {
+		_spec.SetField(exchange.FieldEmpty, field.TypeJSON, value)
+	}
+	if eu.mutation.EmptyCleared() {
+		_spec.ClearField(exchange.FieldEmpty, field.TypeJSON)
+	}
+	if value, ok := eu.mutation.Fully(); ok {
+		_spec.SetField(exchange.FieldFully, field.TypeJSON, value)
+	}
+	if eu.mutation.FullyCleared() {
+		_spec.ClearField(exchange.FieldFully, field.TypeJSON)
+	}
+	if value, ok := eu.mutation.Steps(); ok {
+		_spec.SetField(exchange.FieldSteps, field.TypeJSON, value)
+	}
+	if value, ok := eu.mutation.AppendedSteps(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, exchange.FieldSteps, value)
+		})
+	}
+	if eu.mutation.StepsCleared() {
+		_spec.ClearField(exchange.FieldSteps, field.TypeJSON)
+	}
+	if value, ok := eu.mutation.Message(); ok {
+		_spec.SetField(exchange.FieldMessage, field.TypeString, value)
 	}
 	if eu.mutation.SubscribeCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1198,18 +1279,6 @@ func (euo *ExchangeUpdateOne) ClearDetail() *ExchangeUpdateOne {
 	return euo
 }
 
-// SetInfo sets the "info" field.
-func (euo *ExchangeUpdateOne) SetInfo(ei *ec.ExchangeInfo) *ExchangeUpdateOne {
-	euo.mutation.SetInfo(ei)
-	return euo
-}
-
-// ClearInfo clears the value of the "info" field.
-func (euo *ExchangeUpdateOne) ClearInfo() *ExchangeUpdateOne {
-	euo.mutation.ClearInfo()
-	return euo
-}
-
 // SetModel sets the "model" field.
 func (euo *ExchangeUpdateOne) SetModel(s string) *ExchangeUpdateOne {
 	euo.mutation.SetModel(s)
@@ -1354,6 +1423,74 @@ func (euo *ExchangeUpdateOne) SetNillablePutoutBattery(s *string) *ExchangeUpdat
 // ClearPutoutBattery clears the value of the "putout_battery" field.
 func (euo *ExchangeUpdateOne) ClearPutoutBattery() *ExchangeUpdateOne {
 	euo.mutation.ClearPutoutBattery()
+	return euo
+}
+
+// SetCabinetInfo sets the "cabinet_info" field.
+func (euo *ExchangeUpdateOne) SetCabinetInfo(mci *model.ExchangeCabinetInfo) *ExchangeUpdateOne {
+	euo.mutation.SetCabinetInfo(mci)
+	return euo
+}
+
+// ClearCabinetInfo clears the value of the "cabinet_info" field.
+func (euo *ExchangeUpdateOne) ClearCabinetInfo() *ExchangeUpdateOne {
+	euo.mutation.ClearCabinetInfo()
+	return euo
+}
+
+// SetEmpty sets the "empty" field.
+func (euo *ExchangeUpdateOne) SetEmpty(mi *model.BinInfo) *ExchangeUpdateOne {
+	euo.mutation.SetEmpty(mi)
+	return euo
+}
+
+// ClearEmpty clears the value of the "empty" field.
+func (euo *ExchangeUpdateOne) ClearEmpty() *ExchangeUpdateOne {
+	euo.mutation.ClearEmpty()
+	return euo
+}
+
+// SetFully sets the "fully" field.
+func (euo *ExchangeUpdateOne) SetFully(mi *model.BinInfo) *ExchangeUpdateOne {
+	euo.mutation.SetFully(mi)
+	return euo
+}
+
+// ClearFully clears the value of the "fully" field.
+func (euo *ExchangeUpdateOne) ClearFully() *ExchangeUpdateOne {
+	euo.mutation.ClearFully()
+	return euo
+}
+
+// SetSteps sets the "steps" field.
+func (euo *ExchangeUpdateOne) SetSteps(msi []*model.ExchangeStepInfo) *ExchangeUpdateOne {
+	euo.mutation.SetSteps(msi)
+	return euo
+}
+
+// AppendSteps appends msi to the "steps" field.
+func (euo *ExchangeUpdateOne) AppendSteps(msi []*model.ExchangeStepInfo) *ExchangeUpdateOne {
+	euo.mutation.AppendSteps(msi)
+	return euo
+}
+
+// ClearSteps clears the value of the "steps" field.
+func (euo *ExchangeUpdateOne) ClearSteps() *ExchangeUpdateOne {
+	euo.mutation.ClearSteps()
+	return euo
+}
+
+// SetMessage sets the "message" field.
+func (euo *ExchangeUpdateOne) SetMessage(s string) *ExchangeUpdateOne {
+	euo.mutation.SetMessage(s)
+	return euo
+}
+
+// SetNillableMessage sets the "message" field if the given value is not nil.
+func (euo *ExchangeUpdateOne) SetNillableMessage(s *string) *ExchangeUpdateOne {
+	if s != nil {
+		euo.SetMessage(*s)
+	}
 	return euo
 }
 
@@ -1598,12 +1735,6 @@ func (euo *ExchangeUpdateOne) sqlSave(ctx context.Context) (_node *Exchange, err
 	if euo.mutation.DetailCleared() {
 		_spec.ClearField(exchange.FieldDetail, field.TypeJSON)
 	}
-	if value, ok := euo.mutation.Info(); ok {
-		_spec.SetField(exchange.FieldInfo, field.TypeJSON, value)
-	}
-	if euo.mutation.InfoCleared() {
-		_spec.ClearField(exchange.FieldInfo, field.TypeJSON)
-	}
 	if value, ok := euo.mutation.Model(); ok {
 		_spec.SetField(exchange.FieldModel, field.TypeString, value)
 	}
@@ -1648,6 +1779,38 @@ func (euo *ExchangeUpdateOne) sqlSave(ctx context.Context) (_node *Exchange, err
 	}
 	if euo.mutation.PutoutBatteryCleared() {
 		_spec.ClearField(exchange.FieldPutoutBattery, field.TypeString)
+	}
+	if value, ok := euo.mutation.CabinetInfo(); ok {
+		_spec.SetField(exchange.FieldCabinetInfo, field.TypeJSON, value)
+	}
+	if euo.mutation.CabinetInfoCleared() {
+		_spec.ClearField(exchange.FieldCabinetInfo, field.TypeJSON)
+	}
+	if value, ok := euo.mutation.Empty(); ok {
+		_spec.SetField(exchange.FieldEmpty, field.TypeJSON, value)
+	}
+	if euo.mutation.EmptyCleared() {
+		_spec.ClearField(exchange.FieldEmpty, field.TypeJSON)
+	}
+	if value, ok := euo.mutation.Fully(); ok {
+		_spec.SetField(exchange.FieldFully, field.TypeJSON, value)
+	}
+	if euo.mutation.FullyCleared() {
+		_spec.ClearField(exchange.FieldFully, field.TypeJSON)
+	}
+	if value, ok := euo.mutation.Steps(); ok {
+		_spec.SetField(exchange.FieldSteps, field.TypeJSON, value)
+	}
+	if value, ok := euo.mutation.AppendedSteps(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, exchange.FieldSteps, value)
+		})
+	}
+	if euo.mutation.StepsCleared() {
+		_spec.ClearField(exchange.FieldSteps, field.TypeJSON)
+	}
+	if value, ok := euo.mutation.Message(); ok {
+		_spec.SetField(exchange.FieldMessage, field.TypeString, value)
 	}
 	if euo.mutation.SubscribeCleared() {
 		edge := &sqlgraph.EdgeSpec{

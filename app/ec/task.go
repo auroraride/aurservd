@@ -8,19 +8,17 @@ package ec
 import (
     "context"
     "fmt"
+    "github.com/auroraride/adapter"
     "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/internal/mgo"
+    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/pkg/snag"
     jsoniter "github.com/json-iterator/go"
-    "github.com/qiniu/qmgo/operator"
-    "go.mongodb.org/mongo-driver/bson"
-    "go.mongodb.org/mongo-driver/bson/primitive"
-    "go.uber.org/zap"
+    "github.com/rs/xid"
     "time"
 )
 
 const (
-    MaxTime = 10.0
+    DeactivateTime = 10.0 // 失效时间
 )
 
 type Updater func(task *Task)
@@ -67,53 +65,23 @@ func (j Job) Label() string {
     return "未知任务"
 }
 
-type TaskStatus uint8
-
-const (
-    TaskStatusNotStart   TaskStatus = iota // 未开始
-    TaskStatusProcessing                   // 处理中
-    TaskStatusSuccess                      // 成功
-    TaskStatusFail                         // 失败
-)
-
-func (ts TaskStatus) String() string {
-    switch ts {
-    case TaskStatusNotStart:
-        return "未开始"
-    case TaskStatusSuccess:
-        return "成功"
-    case TaskStatusFail:
-        return "失败"
-    default:
-        return "处理中"
-    }
-}
-
-// IsSuccess 是否成功
-func (ts TaskStatus) IsSuccess() bool {
-    return ts == TaskStatusSuccess
-}
-
 // Task 电柜任务详情
 // TODO 存储开仓信息, 业务信息, 管理员信息
 type Task struct {
-    ID       primitive.ObjectID `bson:"_id"`
-    CreateAt time.Time          `bson:"createAt"`
-    UpdateAt time.Time          `bson:"updateAt"`
+    ID               string           // 任务ID
+    CabinetID        uint64           // 电柜ID
+    Serial           string           // 电柜编码
+    Job              Job              // 任务类别
+    Status           model.TaskStatus // 任务状态
+    StartAt          *time.Time       // 开始时间
+    StopAt           *time.Time       // 结束时间
+    Message          string           // 失败消息
+    Cabinet          *Cabinet         // 电柜信息
+    Rider            *Rider           // 骑手信息
+    Exchange         *Exchange        // 换电信息
+    BussinessBinInfo *model.BinInfo   // 业务仓位
 
-    CabinetID   uint64     `json:"cabinetId" bson:"cabinetId"`                 // 电柜ID
-    Serial      string     `json:"serial" bson:"serial"`                       // 电柜编码
-    Deactivated bool       `json:"deactivated" bson:"deactivated"`             // 是否已失效
-    Job         Job        `json:"job" bson:"job"`                             // 任务类别
-    Status      TaskStatus `json:"status" bson:"status"`                       // 任务状态
-    StartAt     *time.Time `json:"startAt,omitempty" bson:"startAt,omitempty"` // 开始时间
-    StopAt      *time.Time `json:"stopAt,omitempty" bson:"stopAt,omitempty"`   // 结束时间
-    Message     string     `json:"message,omitempty" bson:"message,omitempty"` // 失败消息
-
-    Cabinet          *Cabinet       `json:"cabinet" bson:"cabinet"`                                       // 电柜信息
-    Rider            *Rider         `json:"rider" bson:"rider,omitempty"`                                 // 骑手信息
-    Exchange         *Exchange      `json:"exchange" bson:"exchange,omitempty"`                           // 换电信息
-    BussinessBinInfo *model.BinInfo `json:"bussinessBinInfo,omitempty" bson:"bussinessBinInfo,omitempty"` // 业务仓位
+    deactivate *time.Timer // 失效处理
 }
 
 func (t *Task) MarshalBinary() ([]byte, error) {
@@ -146,59 +114,47 @@ type Rider struct {
     Phone string `json:"phone"`
 }
 
-// Create 创建任务并存储
-func (t *Task) Create() (primitive.ObjectID, error) {
-    t.ID = primitive.NewObjectID()
-    t.UpdateAt = time.Now()
-    t.CreateAt = time.Now()
-    r, err := mgo.CabinetTask.InsertOne(context.Background(), t)
-    if err != nil {
-        return primitive.NilObjectID, err
-    }
-    return r.InsertedID.(primitive.ObjectID), nil
+func (t *Task) Save() {
+    ar.Redis.HSet(context.Background(), ar.TaskCacheKey, t.ID, t)
 }
 
-func (t *Task) CreateX() *Task {
-    id, err := t.Create()
-    if err != nil {
-        zap.L().Error("任务存储失败", zap.Error(err))
-        snag.Panic("任务存储失败")
-    }
-    t.ID = id
+func (t *Task) Delete() {
+    ar.Redis.HDel(context.Background(), ar.TaskCacheKey, t.ID)
+}
+
+func (t *Task) Create() *Task {
+    t.ID = xid.New().String()
+    t.deactivate = time.AfterFunc(DeactivateTime*time.Second, func() {
+        // TODO 标记任务失败
+        t.Delete()
+    })
+    t.Save()
     return t
 }
 
 // Start 开始任务
-func (t *Task) Start(cb ...Updater) {
-    ctx := context.Background()
-
+func (t *Task) Start(cbs ...Updater) {
     // 更新任务开始时间
     t.Update(func(t *Task) {
-        if len(cb) > 0 {
-            cb[0](t)
+        for _, cb := range cbs {
+            cb(t)
         }
         t.StartAt = Pointer(time.Now())
-        t.Status = TaskStatusProcessing
+        t.Status = model.TaskStatusProcessing
+        t.deactivate.Reset(10 * time.Minute)
     })
 
-    // 更新非当前任务为失效
-    _, _ = mgo.CabinetTask.UpdateAll(ctx, bson.M{
-        "_id": bson.M{
-            operator.Ne: t.ID,
-        },
-        "status":    0,
-        "serial":    t.Serial,
-        "deactived": false,
-    }, bson.M{
-        operator.Set: bson.M{"deactivated": true},
+    // 删除所有未开始的非当前任务
+    DeleteRange(func(x *Task) bool {
+        return x.ID != t.ID && x.Serial == t.Serial && x.Status == model.TaskStatusNotStart
     })
 }
 
 // Stop 结束任务
-func (t *Task) Stop(status TaskStatus) {
+func (t *Task) Stop(status model.TaskStatus) {
     t.Update(func(t *Task) {
-        if status != TaskStatusSuccess {
-            status = TaskStatusFail
+        if status != model.TaskStatusSuccess {
+            status = model.TaskStatusFail
         }
         t.StopAt = Pointer(time.Now())
         t.Status = status
@@ -208,57 +164,33 @@ func (t *Task) Stop(status TaskStatus) {
 // Update 更新任务
 func (t *Task) Update(cb Updater) {
     cb(t)
-    t.UpdateAt = time.Now()
-    _ = mgo.CabinetTask.UpdateId(context.Background(), t.ID, bson.M{
-        operator.Set: t,
-    })
-}
-
-// Deactive 设为失效
-func (t *Task) Deactive() {
-    _ = mgo.CabinetTask.UpdateId(context.Background(), t.ID, bson.M{"deactivated": true})
-}
-
-// IsDeactived 是否失效
-func (t *Task) IsDeactived() bool {
-    if t.StartAt == nil && time.Now().Sub(t.UpdateAt).Seconds() > MaxTime {
-        t.Deactive()
-        return true
-    }
-    return t.Deactivated
+    t.Save()
 }
 
 // QueryID 查询任务
-func QueryID(id primitive.ObjectID) (t *Task) {
+func QueryID(id xid.ID) (t *Task) {
     t = new(Task)
-    ctx := context.Background()
-    _ = mgo.CabinetTask.Find(ctx, bson.M{"_id": id}).One(t)
+    _ = ar.Redis.HGet(context.Background(), ar.TaskCacheKey, id.String()).Scan(t)
     return
 }
 
 type ObtainReq struct {
-    Serial      string     `json:"serial,omitempty" bson:"serial,omitempty"`
-    Deactivated bool       `json:"deactivated" bson:"deactivated"`
-    CabinetID   uint64     `json:"cabinetId,omitempty" bson:"cabinetId,omitempty"`
-    Status      TaskStatus `json:"status" bson:"status"` // 任务状态
+    Serial    string `json:"serial,omitempty" bson:"serial,omitempty"`
+    CabinetID uint64 `json:"cabinetId,omitempty" bson:"cabinetId,omitempty"`
 }
 
 // Obtain 获取进行中的任务信息
-func Obtain(req ObtainReq) (t *Task) {
-    t = new(Task)
-    if req.Status == 0 {
-        req.Status = TaskStatusProcessing
+func Obtain(req ObtainReq) *Task {
+    m := ar.Redis.HGetAll(context.Background(), ar.TaskCacheKey).Val()
+    for _, v := range m {
+        t := new(Task)
+        if jsoniter.Unmarshal(adapter.ConvertString2Bytes(v), t) == nil {
+            if t.Status == model.TaskStatusProcessing && (t.Serial == req.Serial || t.CabinetID == req.CabinetID) {
+                return t
+            }
+        }
     }
-    ctx := context.Background()
-    _ = mgo.CabinetTask.Find(ctx, req).One(t)
-    if t == nil {
-        return
-    }
-    // 任务未开始且超过10秒设置为超时
-    if t.IsDeactived() {
-        return nil
-    }
-    return t
+    return nil
 }
 
 // Busy 查询电柜是否繁忙
@@ -286,8 +218,20 @@ func BusyFromIDX(id uint64) {
     }
 }
 
-// GetAllProcessing 获取所有正在进行中的任务
-func GetAllProcessing() (tasks []*Task) {
-    _ = mgo.CabinetTask.Find(context.Background(), bson.M{"status": TaskStatusProcessing}).All(&tasks)
+// DeleteRange 删除所有指定条件的任务, 返回为非指定条件的任务
+func DeleteRange(delcon func(x *Task) bool) (tasks map[string]*Task) {
+    ctx := context.Background()
+    m := ar.Redis.HGetAll(ctx, ar.TaskCacheKey).Val()
+    tasks = make(map[string]*Task)
+    for _, v := range m {
+        t := new(Task)
+        if jsoniter.Unmarshal(adapter.ConvertString2Bytes(v), t) == nil {
+            if delcon(t) {
+                t.Delete()
+            } else {
+                tasks[t.ID] = t
+            }
+        }
+    }
     return
 }

@@ -254,5 +254,5 @@ func LoadConfig() {
 
 func (c *config) setKeys() {
     CabinetNameCacheKey = c.GetCacheKey("CABINET_NAME")
-    RiderExchangeTimeLimitCacheKey = c.GetCacheKey("RIDER_EXCHANGE_TIME_LIMIT")
+    TaskCacheKey = c.GetCacheKey("TASK")
 }

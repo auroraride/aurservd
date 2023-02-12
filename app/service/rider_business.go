@@ -19,7 +19,7 @@ import (
     "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/golang-module/carbon/v2"
-    "go.mongodb.org/mongo-driver/bson/primitive"
+    "github.com/rs/xid"
     "go.uber.org/zap"
     "time"
 )
@@ -172,9 +172,9 @@ func (s *riderBusinessService) preprocess(serial string, bt business.Type) {
                 Phone: s.rider.Phone,
             },
         }
-        s.task = task.CreateX()
+        s.task = task.Create()
 
-        s.response.UUID = s.task.ID.Hex()
+        s.response.UUID = s.task.ID
         s.response.Index = target.Index
     }
 }
@@ -227,24 +227,24 @@ func (s *riderBusinessService) putin() (*model.BinInfo, *model.Battery, error) {
         }
         switch ds {
         case ec.DoorStatusClose:
-            ts = ec.TaskStatusSuccess
+            ts = model.TaskStatusSuccess
             return s.empty, nil, nil
         case ec.DoorStatusOpen:
-            ts = ec.TaskStatusProcessing
+            ts = model.TaskStatusProcessing
             break
         default:
             s.task.Message = ec.DoorError[ds]
-            ts = ec.TaskStatusFail
+            ts = model.TaskStatusFail
             break
         }
 
         // 超时标记为任务失败
         if time.Now().Sub(*s.task.StartAt).Seconds() > s.maxTime.Seconds() && s.task.Message == "" {
             s.task.Message = "超时"
-            ts = ec.TaskStatusFail
+            ts = model.TaskStatusFail
         }
 
-        if ts != ec.TaskStatusProcessing {
+        if ts != model.TaskStatusProcessing {
             if s.task.Message == "" {
                 s.task.Message = "操作失败"
             }
@@ -295,9 +295,9 @@ func (s *riderBusinessService) putout() (*model.BinInfo, *model.Battery, error) 
     status, err := s.open(s.max, model.RiderCabinetOperateReasonFull)
 
     defer func() {
-        ts := ec.TaskStatusSuccess
+        ts := model.TaskStatusSuccess
         if !status {
-            ts = ec.TaskStatusFail
+            ts = model.TaskStatusFail
         }
         s.task.Stop(ts)
     }()
@@ -461,15 +461,15 @@ func (s *riderBusinessService) Status(req *model.BusinessCabinetStatusReq) (res 
     start := time.Now()
     for {
         // 通过ID类型判断是否智能柜业务
-        // 尝试解析mongodb id, 若成功解析, 则是非智能柜业务
-        taskID, err := primitive.ObjectIDFromHex(req.UUID)
+        // 尝试解析 xid, 若成功解析, 则是非智能柜业务
+        taskID, err := xid.FromString(req.UUID)
         if err == nil {
             t := ec.QueryID(taskID)
             if t == nil {
                 snag.Panic("未找到业务操作")
             }
-            if t.Status == ec.TaskStatusFail || t.Status == ec.TaskStatusSuccess {
-                res.Success = t.Status == ec.TaskStatusSuccess
+            if t.Status == model.TaskStatusFail || t.Status == model.TaskStatusSuccess {
+                res.Success = t.Status == model.TaskStatusSuccess
                 res.Stop = true
                 res.Message = t.Message
             }
