@@ -325,6 +325,44 @@ func (ec *ExchangeCreate) SetNillablePutoutBattery(s *string) *ExchangeCreate {
 	return ec
 }
 
+// SetCabinetInfo sets the "cabinet_info" field.
+func (ec *ExchangeCreate) SetCabinetInfo(mci *model.ExchangeCabinetInfo) *ExchangeCreate {
+	ec.mutation.SetCabinetInfo(mci)
+	return ec
+}
+
+// SetEmpty sets the "empty" field.
+func (ec *ExchangeCreate) SetEmpty(mi *model.BinInfo) *ExchangeCreate {
+	ec.mutation.SetEmpty(mi)
+	return ec
+}
+
+// SetFully sets the "fully" field.
+func (ec *ExchangeCreate) SetFully(mi *model.BinInfo) *ExchangeCreate {
+	ec.mutation.SetFully(mi)
+	return ec
+}
+
+// SetSteps sets the "steps" field.
+func (ec *ExchangeCreate) SetSteps(msi []*model.ExchangeStepInfo) *ExchangeCreate {
+	ec.mutation.SetSteps(msi)
+	return ec
+}
+
+// SetMessage sets the "message" field.
+func (ec *ExchangeCreate) SetMessage(s string) *ExchangeCreate {
+	ec.mutation.SetMessage(s)
+	return ec
+}
+
+// SetNillableMessage sets the "message" field if the given value is not nil.
+func (ec *ExchangeCreate) SetNillableMessage(s *string) *ExchangeCreate {
+	if s != nil {
+		ec.SetMessage(*s)
+	}
+	return ec
+}
+
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
 func (ec *ExchangeCreate) SetSubscribe(s *Subscribe) *ExchangeCreate {
 	return ec.SetSubscribeID(s.ID)
@@ -424,6 +462,10 @@ func (ec *ExchangeCreate) defaults() error {
 		v := exchange.DefaultAlternative
 		ec.mutation.SetAlternative(v)
 	}
+	if _, ok := ec.mutation.Message(); !ok {
+		v := exchange.DefaultMessage
+		ec.mutation.SetMessage(v)
+	}
 	return nil
 }
 
@@ -455,6 +497,9 @@ func (ec *ExchangeCreate) check() error {
 	}
 	if _, ok := ec.mutation.Alternative(); !ok {
 		return &ValidationError{Name: "alternative", err: errors.New(`ent: missing required field "Exchange.alternative"`)}
+	}
+	if _, ok := ec.mutation.Message(); !ok {
+		return &ValidationError{Name: "message", err: errors.New(`ent: missing required field "Exchange.message"`)}
 	}
 	if _, ok := ec.mutation.SubscribeID(); !ok {
 		return &ValidationError{Name: "subscribe", err: errors.New(`ent: missing required edge "Exchange.subscribe"`)}
@@ -569,6 +614,26 @@ func (ec *ExchangeCreate) createSpec() (*Exchange, *sqlgraph.CreateSpec) {
 	if value, ok := ec.mutation.PutoutBattery(); ok {
 		_spec.SetField(exchange.FieldPutoutBattery, field.TypeString, value)
 		_node.PutoutBattery = &value
+	}
+	if value, ok := ec.mutation.CabinetInfo(); ok {
+		_spec.SetField(exchange.FieldCabinetInfo, field.TypeJSON, value)
+		_node.CabinetInfo = value
+	}
+	if value, ok := ec.mutation.Empty(); ok {
+		_spec.SetField(exchange.FieldEmpty, field.TypeJSON, value)
+		_node.Empty = value
+	}
+	if value, ok := ec.mutation.Fully(); ok {
+		_spec.SetField(exchange.FieldFully, field.TypeJSON, value)
+		_node.Fully = value
+	}
+	if value, ok := ec.mutation.Steps(); ok {
+		_spec.SetField(exchange.FieldSteps, field.TypeJSON, value)
+		_node.Steps = value
+	}
+	if value, ok := ec.mutation.Message(); ok {
+		_spec.SetField(exchange.FieldMessage, field.TypeString, value)
+		_node.Message = value
 	}
 	if nodes := ec.mutation.SubscribeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1172,6 +1237,90 @@ func (u *ExchangeUpsert) ClearPutoutBattery() *ExchangeUpsert {
 	return u
 }
 
+// SetCabinetInfo sets the "cabinet_info" field.
+func (u *ExchangeUpsert) SetCabinetInfo(v *model.ExchangeCabinetInfo) *ExchangeUpsert {
+	u.Set(exchange.FieldCabinetInfo, v)
+	return u
+}
+
+// UpdateCabinetInfo sets the "cabinet_info" field to the value that was provided on create.
+func (u *ExchangeUpsert) UpdateCabinetInfo() *ExchangeUpsert {
+	u.SetExcluded(exchange.FieldCabinetInfo)
+	return u
+}
+
+// ClearCabinetInfo clears the value of the "cabinet_info" field.
+func (u *ExchangeUpsert) ClearCabinetInfo() *ExchangeUpsert {
+	u.SetNull(exchange.FieldCabinetInfo)
+	return u
+}
+
+// SetEmpty sets the "empty" field.
+func (u *ExchangeUpsert) SetEmpty(v *model.BinInfo) *ExchangeUpsert {
+	u.Set(exchange.FieldEmpty, v)
+	return u
+}
+
+// UpdateEmpty sets the "empty" field to the value that was provided on create.
+func (u *ExchangeUpsert) UpdateEmpty() *ExchangeUpsert {
+	u.SetExcluded(exchange.FieldEmpty)
+	return u
+}
+
+// ClearEmpty clears the value of the "empty" field.
+func (u *ExchangeUpsert) ClearEmpty() *ExchangeUpsert {
+	u.SetNull(exchange.FieldEmpty)
+	return u
+}
+
+// SetFully sets the "fully" field.
+func (u *ExchangeUpsert) SetFully(v *model.BinInfo) *ExchangeUpsert {
+	u.Set(exchange.FieldFully, v)
+	return u
+}
+
+// UpdateFully sets the "fully" field to the value that was provided on create.
+func (u *ExchangeUpsert) UpdateFully() *ExchangeUpsert {
+	u.SetExcluded(exchange.FieldFully)
+	return u
+}
+
+// ClearFully clears the value of the "fully" field.
+func (u *ExchangeUpsert) ClearFully() *ExchangeUpsert {
+	u.SetNull(exchange.FieldFully)
+	return u
+}
+
+// SetSteps sets the "steps" field.
+func (u *ExchangeUpsert) SetSteps(v []*model.ExchangeStepInfo) *ExchangeUpsert {
+	u.Set(exchange.FieldSteps, v)
+	return u
+}
+
+// UpdateSteps sets the "steps" field to the value that was provided on create.
+func (u *ExchangeUpsert) UpdateSteps() *ExchangeUpsert {
+	u.SetExcluded(exchange.FieldSteps)
+	return u
+}
+
+// ClearSteps clears the value of the "steps" field.
+func (u *ExchangeUpsert) ClearSteps() *ExchangeUpsert {
+	u.SetNull(exchange.FieldSteps)
+	return u
+}
+
+// SetMessage sets the "message" field.
+func (u *ExchangeUpsert) SetMessage(v string) *ExchangeUpsert {
+	u.Set(exchange.FieldMessage, v)
+	return u
+}
+
+// UpdateMessage sets the "message" field to the value that was provided on create.
+func (u *ExchangeUpsert) UpdateMessage() *ExchangeUpsert {
+	u.SetExcluded(exchange.FieldMessage)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1672,6 +1821,104 @@ func (u *ExchangeUpsertOne) UpdatePutoutBattery() *ExchangeUpsertOne {
 func (u *ExchangeUpsertOne) ClearPutoutBattery() *ExchangeUpsertOne {
 	return u.Update(func(s *ExchangeUpsert) {
 		s.ClearPutoutBattery()
+	})
+}
+
+// SetCabinetInfo sets the "cabinet_info" field.
+func (u *ExchangeUpsertOne) SetCabinetInfo(v *model.ExchangeCabinetInfo) *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.SetCabinetInfo(v)
+	})
+}
+
+// UpdateCabinetInfo sets the "cabinet_info" field to the value that was provided on create.
+func (u *ExchangeUpsertOne) UpdateCabinetInfo() *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.UpdateCabinetInfo()
+	})
+}
+
+// ClearCabinetInfo clears the value of the "cabinet_info" field.
+func (u *ExchangeUpsertOne) ClearCabinetInfo() *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.ClearCabinetInfo()
+	})
+}
+
+// SetEmpty sets the "empty" field.
+func (u *ExchangeUpsertOne) SetEmpty(v *model.BinInfo) *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.SetEmpty(v)
+	})
+}
+
+// UpdateEmpty sets the "empty" field to the value that was provided on create.
+func (u *ExchangeUpsertOne) UpdateEmpty() *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.UpdateEmpty()
+	})
+}
+
+// ClearEmpty clears the value of the "empty" field.
+func (u *ExchangeUpsertOne) ClearEmpty() *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.ClearEmpty()
+	})
+}
+
+// SetFully sets the "fully" field.
+func (u *ExchangeUpsertOne) SetFully(v *model.BinInfo) *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.SetFully(v)
+	})
+}
+
+// UpdateFully sets the "fully" field to the value that was provided on create.
+func (u *ExchangeUpsertOne) UpdateFully() *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.UpdateFully()
+	})
+}
+
+// ClearFully clears the value of the "fully" field.
+func (u *ExchangeUpsertOne) ClearFully() *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.ClearFully()
+	})
+}
+
+// SetSteps sets the "steps" field.
+func (u *ExchangeUpsertOne) SetSteps(v []*model.ExchangeStepInfo) *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.SetSteps(v)
+	})
+}
+
+// UpdateSteps sets the "steps" field to the value that was provided on create.
+func (u *ExchangeUpsertOne) UpdateSteps() *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.UpdateSteps()
+	})
+}
+
+// ClearSteps clears the value of the "steps" field.
+func (u *ExchangeUpsertOne) ClearSteps() *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.ClearSteps()
+	})
+}
+
+// SetMessage sets the "message" field.
+func (u *ExchangeUpsertOne) SetMessage(v string) *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.SetMessage(v)
+	})
+}
+
+// UpdateMessage sets the "message" field to the value that was provided on create.
+func (u *ExchangeUpsertOne) UpdateMessage() *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.UpdateMessage()
 	})
 }
 
@@ -2337,6 +2584,104 @@ func (u *ExchangeUpsertBulk) UpdatePutoutBattery() *ExchangeUpsertBulk {
 func (u *ExchangeUpsertBulk) ClearPutoutBattery() *ExchangeUpsertBulk {
 	return u.Update(func(s *ExchangeUpsert) {
 		s.ClearPutoutBattery()
+	})
+}
+
+// SetCabinetInfo sets the "cabinet_info" field.
+func (u *ExchangeUpsertBulk) SetCabinetInfo(v *model.ExchangeCabinetInfo) *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.SetCabinetInfo(v)
+	})
+}
+
+// UpdateCabinetInfo sets the "cabinet_info" field to the value that was provided on create.
+func (u *ExchangeUpsertBulk) UpdateCabinetInfo() *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.UpdateCabinetInfo()
+	})
+}
+
+// ClearCabinetInfo clears the value of the "cabinet_info" field.
+func (u *ExchangeUpsertBulk) ClearCabinetInfo() *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.ClearCabinetInfo()
+	})
+}
+
+// SetEmpty sets the "empty" field.
+func (u *ExchangeUpsertBulk) SetEmpty(v *model.BinInfo) *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.SetEmpty(v)
+	})
+}
+
+// UpdateEmpty sets the "empty" field to the value that was provided on create.
+func (u *ExchangeUpsertBulk) UpdateEmpty() *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.UpdateEmpty()
+	})
+}
+
+// ClearEmpty clears the value of the "empty" field.
+func (u *ExchangeUpsertBulk) ClearEmpty() *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.ClearEmpty()
+	})
+}
+
+// SetFully sets the "fully" field.
+func (u *ExchangeUpsertBulk) SetFully(v *model.BinInfo) *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.SetFully(v)
+	})
+}
+
+// UpdateFully sets the "fully" field to the value that was provided on create.
+func (u *ExchangeUpsertBulk) UpdateFully() *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.UpdateFully()
+	})
+}
+
+// ClearFully clears the value of the "fully" field.
+func (u *ExchangeUpsertBulk) ClearFully() *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.ClearFully()
+	})
+}
+
+// SetSteps sets the "steps" field.
+func (u *ExchangeUpsertBulk) SetSteps(v []*model.ExchangeStepInfo) *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.SetSteps(v)
+	})
+}
+
+// UpdateSteps sets the "steps" field to the value that was provided on create.
+func (u *ExchangeUpsertBulk) UpdateSteps() *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.UpdateSteps()
+	})
+}
+
+// ClearSteps clears the value of the "steps" field.
+func (u *ExchangeUpsertBulk) ClearSteps() *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.ClearSteps()
+	})
+}
+
+// SetMessage sets the "message" field.
+func (u *ExchangeUpsertBulk) SetMessage(v string) *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.SetMessage(v)
+	})
+}
+
+// UpdateMessage sets the "message" field to the value that was provided on create.
+func (u *ExchangeUpsertBulk) UpdateMessage() *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.UpdateMessage()
 	})
 }
 

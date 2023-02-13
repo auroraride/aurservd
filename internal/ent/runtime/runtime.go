@@ -743,6 +743,10 @@ func init() {
 	exchangeDescAlternative := exchangeFields[8].Descriptor()
 	// exchange.DefaultAlternative holds the default value on creation for the alternative field.
 	exchange.DefaultAlternative = exchangeDescAlternative.Default.(bool)
+	// exchangeDescMessage is the schema descriptor for message field.
+	exchangeDescMessage := exchangeFields[19].Descriptor()
+	// exchange.DefaultMessage holds the default value on creation for the message field.
+	exchange.DefaultMessage = exchangeDescMessage.Default.(string)
 	exportMixin := schema.Export{}.Mixin()
 	exportMixinFields0 := exportMixin[0].Fields()
 	_ = exportMixinFields0

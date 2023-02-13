@@ -165,6 +165,11 @@ func PutoutBattery(v string) predicate.Exchange {
 	return predicate.Exchange(sql.FieldEQ(FieldPutoutBattery, v))
 }
 
+// Message applies equality check predicate on the "message" field. It's identical to MessageEQ.
+func Message(v string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldEQ(FieldMessage, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Exchange {
 	return predicate.Exchange(sql.FieldEQ(FieldCreatedAt, v))
@@ -1143,6 +1148,111 @@ func PutoutBatteryEqualFold(v string) predicate.Exchange {
 // PutoutBatteryContainsFold applies the ContainsFold predicate on the "putout_battery" field.
 func PutoutBatteryContainsFold(v string) predicate.Exchange {
 	return predicate.Exchange(sql.FieldContainsFold(FieldPutoutBattery, v))
+}
+
+// CabinetInfoIsNil applies the IsNil predicate on the "cabinet_info" field.
+func CabinetInfoIsNil() predicate.Exchange {
+	return predicate.Exchange(sql.FieldIsNull(FieldCabinetInfo))
+}
+
+// CabinetInfoNotNil applies the NotNil predicate on the "cabinet_info" field.
+func CabinetInfoNotNil() predicate.Exchange {
+	return predicate.Exchange(sql.FieldNotNull(FieldCabinetInfo))
+}
+
+// EmptyIsNil applies the IsNil predicate on the "empty" field.
+func EmptyIsNil() predicate.Exchange {
+	return predicate.Exchange(sql.FieldIsNull(FieldEmpty))
+}
+
+// EmptyNotNil applies the NotNil predicate on the "empty" field.
+func EmptyNotNil() predicate.Exchange {
+	return predicate.Exchange(sql.FieldNotNull(FieldEmpty))
+}
+
+// FullyIsNil applies the IsNil predicate on the "fully" field.
+func FullyIsNil() predicate.Exchange {
+	return predicate.Exchange(sql.FieldIsNull(FieldFully))
+}
+
+// FullyNotNil applies the NotNil predicate on the "fully" field.
+func FullyNotNil() predicate.Exchange {
+	return predicate.Exchange(sql.FieldNotNull(FieldFully))
+}
+
+// StepsIsNil applies the IsNil predicate on the "steps" field.
+func StepsIsNil() predicate.Exchange {
+	return predicate.Exchange(sql.FieldIsNull(FieldSteps))
+}
+
+// StepsNotNil applies the NotNil predicate on the "steps" field.
+func StepsNotNil() predicate.Exchange {
+	return predicate.Exchange(sql.FieldNotNull(FieldSteps))
+}
+
+// MessageEQ applies the EQ predicate on the "message" field.
+func MessageEQ(v string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldEQ(FieldMessage, v))
+}
+
+// MessageNEQ applies the NEQ predicate on the "message" field.
+func MessageNEQ(v string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldNEQ(FieldMessage, v))
+}
+
+// MessageIn applies the In predicate on the "message" field.
+func MessageIn(vs ...string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldIn(FieldMessage, vs...))
+}
+
+// MessageNotIn applies the NotIn predicate on the "message" field.
+func MessageNotIn(vs ...string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldNotIn(FieldMessage, vs...))
+}
+
+// MessageGT applies the GT predicate on the "message" field.
+func MessageGT(v string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldGT(FieldMessage, v))
+}
+
+// MessageGTE applies the GTE predicate on the "message" field.
+func MessageGTE(v string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldGTE(FieldMessage, v))
+}
+
+// MessageLT applies the LT predicate on the "message" field.
+func MessageLT(v string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldLT(FieldMessage, v))
+}
+
+// MessageLTE applies the LTE predicate on the "message" field.
+func MessageLTE(v string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldLTE(FieldMessage, v))
+}
+
+// MessageContains applies the Contains predicate on the "message" field.
+func MessageContains(v string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldContains(FieldMessage, v))
+}
+
+// MessageHasPrefix applies the HasPrefix predicate on the "message" field.
+func MessageHasPrefix(v string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldHasPrefix(FieldMessage, v))
+}
+
+// MessageHasSuffix applies the HasSuffix predicate on the "message" field.
+func MessageHasSuffix(v string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldHasSuffix(FieldMessage, v))
+}
+
+// MessageEqualFold applies the EqualFold predicate on the "message" field.
+func MessageEqualFold(v string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldEqualFold(FieldMessage, v))
+}
+
+// MessageContainsFold applies the ContainsFold predicate on the "message" field.
+func MessageContainsFold(v string) predicate.Exchange {
+	return predicate.Exchange(sql.FieldContainsFold(FieldMessage, v))
 }
 
 // HasSubscribe applies the HasEdge predicate on the "subscribe" edge.

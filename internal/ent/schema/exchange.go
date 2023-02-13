@@ -8,6 +8,7 @@ import (
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
     "github.com/auroraride/aurservd/app/ec"
+    "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent/internal"
     jsoniter "github.com/json-iterator/go"
 )
@@ -43,6 +44,11 @@ func (Exchange) Fields() []ent.Field {
         field.String("rider_battery").Optional().Nillable().Comment("骑手当前电池编号"),
         field.String("putin_battery").Optional().Nillable().Comment("放入电池编号"),
         field.String("putout_battery").Optional().Nillable().Comment("取出电池编号"),
+        field.JSON("cabinet_info", &model.ExchangeCabinetInfo{}).Optional().Comment("电柜信息"),
+        field.JSON("empty", &model.BinInfo{}).Optional().Comment("空仓信息"),
+        field.JSON("fully", &model.BinInfo{}).Optional().Comment("满仓信息"),
+        field.JSON("steps", []*model.ExchangeStepInfo{}).Optional().Comment("步骤信息"),
+        field.String("message").Default("").Comment("消息"),
     }
 }
 

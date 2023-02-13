@@ -905,6 +905,11 @@ var schemaGraph = func() *sqlgraph.Schema {
 			exchange.FieldRiderBattery:  {Type: field.TypeString, Column: exchange.FieldRiderBattery},
 			exchange.FieldPutinBattery:  {Type: field.TypeString, Column: exchange.FieldPutinBattery},
 			exchange.FieldPutoutBattery: {Type: field.TypeString, Column: exchange.FieldPutoutBattery},
+			exchange.FieldCabinetInfo:   {Type: field.TypeJSON, Column: exchange.FieldCabinetInfo},
+			exchange.FieldEmpty:         {Type: field.TypeJSON, Column: exchange.FieldEmpty},
+			exchange.FieldFully:         {Type: field.TypeJSON, Column: exchange.FieldFully},
+			exchange.FieldSteps:         {Type: field.TypeJSON, Column: exchange.FieldSteps},
+			exchange.FieldMessage:       {Type: field.TypeString, Column: exchange.FieldMessage},
 		},
 	}
 	graph.Nodes[30] = &sqlgraph.Node{
@@ -9090,6 +9095,31 @@ func (f *ExchangeFilter) WherePutinBattery(p entql.StringP) {
 // WherePutoutBattery applies the entql string predicate on the putout_battery field.
 func (f *ExchangeFilter) WherePutoutBattery(p entql.StringP) {
 	f.Where(p.Field(exchange.FieldPutoutBattery))
+}
+
+// WhereCabinetInfo applies the entql json.RawMessage predicate on the cabinet_info field.
+func (f *ExchangeFilter) WhereCabinetInfo(p entql.BytesP) {
+	f.Where(p.Field(exchange.FieldCabinetInfo))
+}
+
+// WhereEmpty applies the entql json.RawMessage predicate on the empty field.
+func (f *ExchangeFilter) WhereEmpty(p entql.BytesP) {
+	f.Where(p.Field(exchange.FieldEmpty))
+}
+
+// WhereFully applies the entql json.RawMessage predicate on the fully field.
+func (f *ExchangeFilter) WhereFully(p entql.BytesP) {
+	f.Where(p.Field(exchange.FieldFully))
+}
+
+// WhereSteps applies the entql json.RawMessage predicate on the steps field.
+func (f *ExchangeFilter) WhereSteps(p entql.BytesP) {
+	f.Where(p.Field(exchange.FieldSteps))
+}
+
+// WhereMessage applies the entql string predicate on the message field.
+func (f *ExchangeFilter) WhereMessage(p entql.StringP) {
+	f.Where(p.Field(exchange.FieldMessage))
 }
 
 // WhereHasSubscribe applies a predicate to check if query has an edge subscribe.
