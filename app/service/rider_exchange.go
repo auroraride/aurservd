@@ -19,7 +19,7 @@ import (
     "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
     jsoniter "github.com/json-iterator/go"
-    "go.mongodb.org/mongo-driver/bson/primitive"
+    "github.com/rs/xid"
     "go.uber.org/zap"
     "time"
 )
@@ -113,7 +113,7 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
         t := &ec.Task{
             Serial:    cab.Serial,
             CabinetID: cab.ID,
-            Job:       ec.JobExchange,
+            Job:       model.JobExchange,
             Rider: &ec.Rider{
                 ID:    s.rider.ID,
                 Name:  s.rider.Name,
@@ -130,9 +130,9 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
             },
         }
 
-        t = t.CreateX()
+        t = t.Create()
 
-        uid = t.ID.Hex()
+        uid = t.ID
     }
 
     // TODO 修改前端返回值
@@ -212,8 +212,8 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
         }
     } else {
         // 查找任务
-        var uid primitive.ObjectID
-        uid, err = primitive.ObjectIDFromHex(req.UUID)
+        var uid xid.ID
+        uid, err = xid.FromString(req.UUID)
         if err != nil {
             snag.Panic("换电任务获取失败, 请重新扫码")
         }
@@ -221,7 +221,7 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
         t = ec.QueryID(uid)
 
         // 判断任务是否存在, 并且比对存储骑手信息是否相符
-        if t == nil || t.Status > 0 || t.StartAt != nil || t.Job != ec.JobExchange || t.Exchange == nil || t.IsDeactived() || t.Rider == nil || t.Rider.ID != s.rider.ID {
+        if t == nil || t.Status > 0 || t.StartAt != nil || t.Job != model.JobExchange || t.Exchange == nil || t.Rider == nil || t.Rider.ID != s.rider.ID {
             snag.Panic("未找到信息, 请重新扫码")
         }
 
@@ -238,14 +238,14 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
         }
 
         // 检查电柜是否繁忙
-        if x := ec.Obtain(ec.ObtainReq{Serial: cab.Serial}); x != nil && x.ID != uid {
+        if x := ec.Obtain(ec.ObtainReq{Serial: cab.Serial}); x != nil && x.ID != uid.String() {
             snag.Panic("电柜忙, 请稍后重试")
         }
 
         // 查询电柜是否可使用
         NewCabinet().BusinessableX(cab)
 
-        s.logger = logging.NewExchangeLog(s.rider.ID, t.ID.Hex(), cab.Serial, s.rider.Phone, be.IsBatteryFull())
+        s.logger = logging.NewExchangeLog(s.rider.ID, t.ID, cab.Serial, s.rider.Phone, be.IsBatteryFull())
         s.cabinet = cab
         s.task = t
 
@@ -263,10 +263,25 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
         Create().
         SetRiderID(s.rider.ID).
         SetCityID(*cab.CityID).
-        SetInfo(&ec.ExchangeInfo{
-            Cabinet:  tcab,
-            Exchange: tex,
+        // SetInfo(&model.ExchangeInfo{
+        //     Cabinet: &model.ExchangeCabinetInfo{
+        //         Health:         tcab.Health,
+        //         Doors:          tcab.Doors,
+        //         BatteryNum:     tcab.BatteryNum,
+        //         BatteryFullNum: tcab.BatteryFullNum,
+        //     },
+        //     Empty: tex.Empty,
+        //     Fully: tex.Fully,
+        //     Steps: tex.Steps,
+        // }).
+        SetCabinetInfo(&model.ExchangeCabinetInfo{
+            Health:         tcab.Health,
+            Doors:          tcab.Doors,
+            BatteryNum:     tcab.BatteryNum,
+            BatteryFullNum: tcab.BatteryFullNum,
         }).
+        SetEmpty(tex.Empty).
+        SetFully(tex.Fully).
         SetUUID(req.UUID).
         SetCabinetID(cab.ID).
         SetSuccess(false).
@@ -291,8 +306,8 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
         // 开始任务
         t.Start(func(task *ec.Task) {
             task.Exchange.ExchangeID = s.exchange.ID
-            task.Exchange.Steps = []*ec.ExchangeStepInfo{
-                {Step: ec.ExchangeStepOpenEmpty, Time: time.Now()},
+            task.Exchange.Steps = []*model.ExchangeStepInfo{
+                {Step: model.ExchangeStepOpenEmpty, Time: time.Now()},
             }
         })
 
@@ -313,18 +328,18 @@ func (s *riderExchangeService) ProcessNextStep() *riderExchangeService {
 
 // ProcessStepEnd 结束换电流程
 func (s *riderExchangeService) ProcessStepEnd() {
-    status := ec.TaskStatusFail
+    status := model.TaskStatusFail
     if s.task.Exchange.IsSuccess() {
-        status = ec.TaskStatusSuccess
+        status = model.TaskStatusSuccess
     }
 
     if r := recover(); r != nil {
-        zap.L().Error("换电异常结束 -> ["+s.task.ID.Hex()+
+        zap.L().Error("换电异常结束 -> ["+s.task.ID+
             ": "+s.cabinet.Serial+
             "] "+s.task.Exchange.CurrentStep().String()+
             "", zap.Error(fmt.Errorf("%v", r)))
         s.task.Message = fmt.Sprintf("%v", r)
-        status = ec.TaskStatusFail
+        status = model.TaskStatusFail
     }
 
     s.task.Update(func(task *ec.Task) {
@@ -337,14 +352,13 @@ func (s *riderExchangeService) ProcessStepEnd() {
     _, _ = s.exchange.Update().
         SetRiderID(s.rider.ID).
         SetCityID(*s.cabinet.CityID).
-        SetInfo(&ec.ExchangeInfo{
-            Cabinet:  s.task.Cabinet,
-            Exchange: s.task.Exchange,
-            Message:  s.task.Message,
-        }).
-        SetUUID(s.task.ID.Hex()).
+        SetFully(s.task.Exchange.Fully).
+        SetEmpty(s.task.Exchange.Empty).
+        SetSteps(s.task.Exchange.Steps).
+        SetMessage(s.task.Message).
+        SetUUID(s.task.ID).
         SetCabinetID(s.cabinet.ID).
-        SetSuccess(status == ec.TaskStatusSuccess).
+        SetSuccess(status == model.TaskStatusSuccess).
         SetModel(s.subscribe.Model).
         SetNillableEnterpriseID(s.subscribe.EnterpriseID).
         SetNillableStationID(s.subscribe.StationID).
@@ -421,7 +435,7 @@ func (s *riderExchangeService) ProcessDoorBatteryStatus() (ds ec.DoorStatus) {
     }
 
     // 验证是否放入旧电池
-    if step.Step == ec.ExchangeStepPutInto {
+    if step.Step == model.ExchangeStepPutInto {
         // 获取骑手放入电池信息
         if s.task.Exchange.Empty.Electricity == 0 {
             s.task.Exchange.Empty.Electricity = pe
@@ -446,7 +460,7 @@ func (s *riderExchangeService) ProcessDoorBatteryStatus() (ds ec.DoorStatus) {
     }
 
     // 验证满电电池是否取走
-    if step.Step == ec.ExchangeStepPutOut {
+    if step.Step == model.ExchangeStepPutOut {
         // 如果已取走直接返回
         if !cbin.Battery {
             return ec.DoorStatusClose
@@ -482,27 +496,27 @@ func (s *riderExchangeService) ProcessDoorStatus() *riderExchangeService {
 
         switch ds {
         case ec.DoorStatusClose:
-            step.Status = ec.TaskStatusSuccess
+            step.Status = model.TaskStatusSuccess
             break
         case ec.DoorStatusOpen:
             break
         default:
             message = ec.DoorError[ds]
-            step.Status = ec.TaskStatusFail
+            step.Status = model.TaskStatusFail
             break
         }
 
         // 超时标记为任务失败
         if time.Now().Sub(start).Seconds() > s.maxTime.Seconds() && message == "" {
             message = "超时"
-            step.Status = ec.TaskStatusFail
+            step.Status = model.TaskStatusFail
             step.Time = time.Now()
         }
 
-        if step.Status != ec.TaskStatusProcessing {
+        if step.Status != model.TaskStatusProcessing {
             if !step.IsSuccess() {
                 s.task.Message = message
-                s.task.Stop(ec.TaskStatusFail)
+                s.task.Stop(model.TaskStatusFail)
             }
             return s
         }
@@ -526,7 +540,7 @@ func (s *riderExchangeService) ProcessOpenBin() *riderExchangeService {
 
     // 开始处理
     reason := model.RiderCabinetOperateReasonEmpty
-    if step.Step == ec.ExchangeStepOpenFull {
+    if step.Step == model.ExchangeStepOpenFull {
         reason = model.RiderCabinetOperateReasonFull
     }
 
@@ -547,11 +561,11 @@ func (s *riderExchangeService) ProcessOpenBin() *riderExchangeService {
     s.task.Update(func(t *ec.Task) {
         step.Time = time.Now()
         if status {
-            step.Status = ec.TaskStatusSuccess
+            step.Status = model.TaskStatusSuccess
         } else {
-            step.Status = ec.TaskStatusFail
+            step.Status = model.TaskStatusFail
             t.Message = err.Error()
-            t.Stop(ec.TaskStatusFail)
+            t.Stop(model.TaskStatusFail)
         }
     })
 
@@ -578,14 +592,16 @@ func (s *riderExchangeService) ProcessOpenBin() *riderExchangeService {
 // ProcessLog 处理步骤日志
 func (s *riderExchangeService) ProcessLog() bool {
     ex := s.task.Exchange
-    // log.Printf(`[电柜操作 - 步骤结果]: [ %s ] %s, 用户电话: %s, 状态: %s, 终止: %t %s`,
-    //     s.cabinet.Serial,
-    //     s.task.Exchange.CurrentStep(),
-    //     s.rider.Phone,
-    //     ex.CurrentStep().Status,
-    //     ex.IsLastStep() || s.task.StopAt != nil,
-    //     s.task.Message,
-    // )
+    stop := "否"
+    if ex.IsLastStep() || s.task.StopAt != nil {
+        stop = "是"
+    }
+    zap.L().Info("[电柜操作 - 步骤结果]: [ " + s.cabinet.Serial +
+        " ] " + s.task.Exchange.CurrentStep().String() +
+        ", 用户电话: " + s.rider.Phone +
+        ", 状态: " + ex.CurrentStep().Status.String() +
+        ", 终止: " + stop + " ->> " + s.task.Message,
+    )
 
     step := ex.CurrentStep()
 
@@ -610,9 +626,9 @@ func (s *riderExchangeService) GetProcessStatus(req *model.RiderExchangeProcessS
     }
 
     start := time.Now()
-    var uid primitive.ObjectID
-    uid, err = primitive.ObjectIDFromHex(req.UUID)
-    if err != nil || uid.IsZero() {
+    var uid xid.ID
+    uid, err = xid.FromString(req.UUID)
+    if err != nil {
         snag.Panic("未找到换电操作")
     }
     ticker := time.NewTicker(1 * time.Second)

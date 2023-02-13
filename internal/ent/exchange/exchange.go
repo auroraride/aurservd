@@ -45,10 +45,6 @@ const (
 	FieldCabinetID = "cabinet_id"
 	// FieldSuccess holds the string denoting the success field in the database.
 	FieldSuccess = "success"
-	// FieldDetail holds the string denoting the detail field in the database.
-	FieldDetail = "detail"
-	// FieldInfo holds the string denoting the info field in the database.
-	FieldInfo = "info"
 	// FieldModel holds the string denoting the model field in the database.
 	FieldModel = "model"
 	// FieldAlternative holds the string denoting the alternative field in the database.
@@ -65,6 +61,16 @@ const (
 	FieldPutinBattery = "putin_battery"
 	// FieldPutoutBattery holds the string denoting the putout_battery field in the database.
 	FieldPutoutBattery = "putout_battery"
+	// FieldCabinetInfo holds the string denoting the cabinet_info field in the database.
+	FieldCabinetInfo = "cabinet_info"
+	// FieldEmpty holds the string denoting the empty field in the database.
+	FieldEmpty = "empty"
+	// FieldFully holds the string denoting the fully field in the database.
+	FieldFully = "fully"
+	// FieldSteps holds the string denoting the steps field in the database.
+	FieldSteps = "steps"
+	// FieldMessage holds the string denoting the message field in the database.
+	FieldMessage = "message"
 	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
 	EdgeSubscribe = "subscribe"
 	// EdgeCity holds the string denoting the city edge name in mutations.
@@ -160,8 +166,6 @@ var Columns = []string{
 	FieldUUID,
 	FieldCabinetID,
 	FieldSuccess,
-	FieldDetail,
-	FieldInfo,
 	FieldModel,
 	FieldAlternative,
 	FieldStartAt,
@@ -170,6 +174,11 @@ var Columns = []string{
 	FieldRiderBattery,
 	FieldPutinBattery,
 	FieldPutoutBattery,
+	FieldCabinetInfo,
+	FieldEmpty,
+	FieldFully,
+	FieldSteps,
+	FieldMessage,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -199,4 +208,6 @@ var (
 	DefaultSuccess bool
 	// DefaultAlternative holds the default value on creation for the "alternative" field.
 	DefaultAlternative bool
+	// DefaultMessage holds the default value on creation for the "message" field.
+	DefaultMessage string
 )

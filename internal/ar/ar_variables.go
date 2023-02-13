@@ -11,11 +11,11 @@ import (
 )
 
 var (
-    TimeLocation                   *time.Location
-    Quit                           chan bool
-    Redis                          *redis.Client
-    CabinetNameCacheKey            string
-    RiderExchangeTimeLimitCacheKey string
+    TimeLocation        *time.Location
+    Quit                chan bool
+    Redis               *redis.Client
+    CabinetNameCacheKey string
+    TaskCacheKey        string
 )
 
 func init() {

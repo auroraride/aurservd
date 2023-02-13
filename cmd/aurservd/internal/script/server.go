@@ -8,6 +8,7 @@ package script
 import (
     "context"
     "github.com/auroraride/aurservd/app/ec"
+    "github.com/auroraride/aurservd/app/model"
     pvd "github.com/auroraride/aurservd/app/provider"
     "github.com/auroraride/aurservd/app/router"
     "github.com/auroraride/aurservd/app/rpc"
@@ -54,11 +55,11 @@ func serverCommand() *cobra.Command {
             // 启动 reserve task
             go task.NewReserve().Start()
 
-            // 启动 cabinet task
-            go task.NewCabinetTask().Start()
+            // 启动电柜任务
+            go ec.Start()
 
             // 启动 任务补偿
-            compensate()
+            go compensate()
 
             // 启动sync
             go sync.Run()
@@ -92,18 +93,9 @@ func serverCommand() *cobra.Command {
 func compensate() {
     now := time.Now()
     msg := "程序异常"
-    tasks := ec.GetAllProcessing()
-    log.Printf("共获取到%d个进行中的任务日志", len(tasks))
-    m := make(map[string]*ec.Task)
-    for _, t := range tasks {
-        t.Message = msg
-        if t.Job == ec.JobExchange {
-            t.Exchange.CurrentStep().Time = now
-            t.Exchange.CurrentStep().Status = ec.TaskStatusFail
-        }
-        t.Stop(ec.TaskStatusFail)
-        m[t.ID.Hex()] = t
-    }
+    m := ec.DeleteRange(func(x *ec.Task) bool {
+        return x.Status != model.TaskStatusProcessing
+    })
 
     orm := ent.Database.Exchange
     ctx := context.Background()
@@ -113,14 +105,19 @@ func compensate() {
         u := item.Update().
             SetSuccess(false).
             SetFinishAt(now).
-            SetDuration(int(now.Sub(item.CreatedAt).Seconds()))
-        if x, ok := m[item.UUID]; ok {
-            u.SetInfo(&ec.ExchangeInfo{
-                Cabinet:  x.Cabinet,
-                Exchange: x.Exchange,
-                Message:  x.Message,
-            })
+            SetDuration(int(now.Sub(item.CreatedAt).Seconds())).
+            SetMessage(msg)
+        if len(item.Steps) > 0 {
+            last := len(item.Steps) - 1
+            item.Steps[last].Time = now
+            item.Steps[last].Status = model.TaskStatusFail
+            u.SetSteps(item.Steps)
+        }
+        if t, ok := m[item.UUID]; ok {
+            u.SetEmpty(t.Exchange.Empty).SetFully(t.Exchange.Fully)
+            t.Delete()
         }
         _, _ = u.Save(ctx)
     }
+    ec.Clear()
 }

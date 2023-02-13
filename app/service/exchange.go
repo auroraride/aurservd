@@ -9,6 +9,7 @@ import (
     "context"
     "entgo.io/ent/dialect/sql"
     "fmt"
+    "github.com/auroraride/adapter"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
@@ -305,13 +306,12 @@ func (s *exchangeService) RiderList(riderID uint64, req model.PaginationReq) *mo
             if cab != nil {
                 res.Type = "电柜"
                 res.Name = cab.Name
-                if item.Info != nil && item.Info.Exchange != nil {
-                    ex := item.Info.Exchange
-                    res.BinInfo = model.ExchangeLogBinInfo{
-                        EmptyIndex: ex.Empty.Index,
-                        FullIndex:  ex.Fully.Index,
-                    }
-                }
+            }
+            if item.Empty != nil {
+                res.BinInfo.EmptyIndex = item.Empty.Index
+            }
+            if item.Fully != nil {
+                res.BinInfo.FullIndex = item.Fully.Index
             }
             st := item.Edges.Store
             if st != nil {
@@ -565,16 +565,19 @@ func (s *exchangeService) listDetail(item *ent.Exchange) (res model.ExchangeMana
         }
     }
 
-    if item.Info != nil && item.Info.Exchange != nil {
-        ex := item.Info.Exchange
-        res.Full = fmt.Sprintf("%d号仓, %.2f%%", ex.Fully.Index+1, ex.Fully.Electricity)
-        res.Empty = fmt.Sprintf("%d号仓, %.2f%%", ex.Empty.Index+1, ex.Empty.Electricity)
-        if !item.Success && !item.FinishAt.IsZero() {
-            if len(ex.Steps) > 0 {
-                res.Error = fmt.Sprintf("%s [%s]", item.Info.Message, ex.CurrentStep().Step)
-            } else {
-                res.Error = "未找到换电信息"
-            }
+    if item.Fully != nil {
+        res.Full = fmt.Sprintf("%d号仓, %.2f%%", item.Fully.Index+1, item.Fully.Electricity)
+    }
+
+    if item.Empty != nil {
+        res.Empty = fmt.Sprintf("%d号仓, %.2f%%", item.Empty.Index+1, item.Empty.Electricity)
+    }
+
+    if !item.Success && !item.FinishAt.IsZero() {
+        if len(item.Steps) > 0 {
+            res.Error = fmt.Sprintf("%s [%s]", item.Message, item.Steps[len(item.Steps)-1].Step.String())
+        } else {
+            res.Error = adapter.Or(item.Message == "", "未找到换电信息", item.Message)
         }
     }
 

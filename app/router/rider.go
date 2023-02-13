@@ -46,14 +46,10 @@ func loadRideRoutes() {
         "/rider/v1/branch":                 true,
     }
     dumpReqHeaders := map[string]struct{}{
-        inapp.HeaderCaptchaID:     {},
-        inapp.HeaderDeviceSerial:  {},
-        inapp.HeaderDeviceType:    {},
-        inapp.HeaderPushId:        {},
-        inapp.HeaderRiderToken:    {},
-        inapp.HeaderManagerToken:  {},
-        inapp.HeaderEmployeeToken: {},
-        inapp.HeaderAgentToken:    {},
+        inapp.HeaderCaptchaID:    {},
+        inapp.HeaderDeviceSerial: {},
+        inapp.HeaderDeviceType:   {},
+        inapp.HeaderPushId:       {},
     }
     dump := app.NewDumpLoggerMiddleware().WithConfig(&app.DumpConfig{
         ResponseBodySkipper: func(c echo.Context) bool {

@@ -108,10 +108,6 @@ type config struct {
         Postgres struct {
             Dsn string
         }
-        Mongo struct {
-            Url string
-            DB  string `koanf:"db"`
-        }
     }
 
     ThirdParty struct {
@@ -254,5 +250,5 @@ func LoadConfig() {
 
 func (c *config) setKeys() {
     CabinetNameCacheKey = c.GetCacheKey("CABINET_NAME")
-    RiderExchangeTimeLimitCacheKey = c.GetCacheKey("RIDER_EXCHANGE_TIME_LIMIT")
+    TaskCacheKey = c.GetCacheKey("TASK")
 }

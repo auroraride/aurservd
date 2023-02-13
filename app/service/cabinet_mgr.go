@@ -113,13 +113,13 @@ func (s *cabinetMgrService) BinOperate(req *model.CabinetDoorOperateReq) bool {
 
     switch *req.Operation {
     case model.CabinetDoorOperateOpen:
-        task.Job = ec.JobManagerOpen
+        task.Job = model.JobManagerOpen
         break
     case model.CabinetDoorOperateLock:
-        task.Job = ec.JobManagerLock
+        task.Job = model.JobManagerLock
         break
     case model.CabinetDoorOperateUnlock:
-        task.Job = ec.JobManagerUnLock
+        task.Job = model.JobManagerUnLock
         break
     }
 
@@ -127,7 +127,7 @@ func (s *cabinetMgrService) BinOperate(req *model.CabinetDoorOperateReq) bool {
     var err error
 
     // 创建并开始任务
-    task.CreateX().Start()
+    task.Create().Start()
 
     // 结束回调
     defer func() {
@@ -135,9 +135,9 @@ func (s *cabinetMgrService) BinOperate(req *model.CabinetDoorOperateReq) bool {
             err = fmt.Errorf("%v", v)
         }
 
-        ts := ec.TaskStatusSuccess
+        ts := model.TaskStatusSuccess
         if !status {
-            ts = ec.TaskStatusFail
+            ts = model.TaskStatusFail
             task.Message = err.Error()
         }
 
@@ -191,17 +191,17 @@ func (s *cabinetMgrService) Reboot(req *model.IDPostReq) bool {
     task := &ec.Task{
         CabinetID: req.ID,
         Serial:    cab.Serial,
-        Job:       ec.JobManagerReboot,
+        Job:       model.JobManagerReboot,
         Cabinet:   cab.GetTaskInfo(),
     }
 
-    task.CreateX().Start()
+    task.Create().Start()
 
     // 结束回调
     defer func() {
-        ts := ec.TaskStatusSuccess
+        ts := model.TaskStatusSuccess
         if !status {
-            ts = ec.TaskStatusFail
+            ts = model.TaskStatusFail
             task.Message = "重启失败"
         }
         task.Stop(ts)

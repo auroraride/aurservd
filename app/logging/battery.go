@@ -53,7 +53,7 @@ func (l *BatteryLog) SetTask(task *ec.Task) *BatteryLog {
     if task == nil {
         return l
     }
-    l.UUID = task.ID.Hex()
+    l.UUID = task.ID
     l.Task = task.Job.Label()
     l.Info = task.String()
     return l

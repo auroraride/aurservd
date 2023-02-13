@@ -7,11 +7,13 @@ package esign
 
 import (
     "bytes"
+    "github.com/auroraride/adapter/log"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/utils"
     "github.com/go-resty/resty/v2"
     jsoniter "github.com/json-iterator/go"
+    "go.uber.org/zap"
     "strconv"
     "time"
 )
@@ -137,14 +139,38 @@ type reqLog struct {
 // request 请求
 // TODO 优化请求
 func (e *Esign) request(api, method string, body interface{}, data interface{}) interface{} {
-    var md5, bodyString string
+    var (
+        err        error
+        r          *resty.Response
+        md5        string
+        bodyString string
+        singnature string
+    )
     res := new(commonRes)
+
+    defer func() {
+        // 记录请求日志
+        logdata := reqLog{
+            Api:    api,
+            Method: method,
+            Body:   bodyString,
+            Res:    res,
+            MD5:    md5,
+            Secret: e.Config.Secret,
+            Sign:   singnature,
+            // Raw:      r.Body(),
+            Response: string(r.Body()),
+        }
+
+        zap.L().Info("E签宝请求结果:", log.JsonData(logdata))
+    }()
+
     res.Data = data
     if body != nil {
         bodyString, _ = e.serialization.Froze().MarshalToString(body)
         md5 = utils.Md5Base64String(bodyString)
     }
-    singnature, _ := e.getSign(api, method, md5)
+    singnature, _ = e.getSign(api, method, md5)
     req := resty.New().
         R().
         SetResult(res).
@@ -153,8 +179,7 @@ func (e *Esign) request(api, method string, body interface{}, data interface{}) 
         SetHeader("Content-MD5", md5).
         SetHeader("X-Tsign-Open-Ca-Signature", singnature).
         SetHeader("X-Tsign-Open-Ca-Timestamp", strconv.FormatInt(time.Now().UnixNano()/1e6, 10))
-    var err error
-    var r *resty.Response
+
     switch method {
     case methodPost:
         r, err = req.SetBody(body).Post(e.Config.BaseUrl + api)
@@ -169,23 +194,7 @@ func (e *Esign) request(api, method string, body interface{}, data interface{}) 
     if err != nil {
         snag.Panic(err)
     }
-    // TODO 记录请求日志
-    // if e.Config.Log {
-    //     logdata := reqLog{
-    //         Api:      api,
-    //         Method:   method,
-    //         Body:     bodyString,
-    //         Res:      res,
-    //         MD5:      md5,
-    //         Secret:   e.Config.Secret,
-    //         Sign:     singnature,
-    //         Raw:      raw,
-    //         Response: string(r.Body()),
-    //     }
-    //
-    //     logstr, _ := e.serialization.Froze().MarshalToString(logdata)
-    //     log.Info(logstr)
-    // }
+
     e.isResSuccess(r, res)
     return res.Data
 }

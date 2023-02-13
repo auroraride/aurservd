@@ -359,55 +359,48 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
         // 合同过期时间
         expiresAt := time.Now().Add(model.ContractExpiration * time.Minute)
 
-        if ar.Config.Debug {
-            // DEBUG START
-            flowId = tools.NewUnique().NewSN28()
-            link = "link"
-            // DEBUG END
-        } else {
-            // 设置个人账户ID
-            flow := esign.CreateFlowReq{
-                Scene:           scene,
-                PersonAccountId: accountId,
-            }
+        // 设置个人账户ID
+        flow := esign.CreateFlowReq{
+            Scene:           scene,
+            PersonAccountId: accountId,
+        }
 
-            // 获取模板控件
-            tmpl := s.esign.DocTemplate(templateId)
-            for _, com := range tmpl.StructComponents {
-                switch com.Key {
-                case snKey:
-                    m[snKey] = sn
-                    break
-                case aurSeal:
-                    flow.EntSignBean = esign.PosBean{
-                        PosPage: fmt.Sprintf("%v", com.Context.Pos.Page),
-                        PosX:    com.Context.Pos.X,
-                        PosY:    com.Context.Pos.Y,
-                    }
-                    break
-                case riderSeal:
-                    flow.PsnSignBean = esign.PosBean{
-                        PosPage: fmt.Sprintf("%v", com.Context.Pos.Page),
-                        PosX:    com.Context.Pos.X,
-                        PosY:    com.Context.Pos.Y,
-                    }
+        // 获取模板控件
+        tmpl := s.esign.DocTemplate(templateId)
+        for _, com := range tmpl.StructComponents {
+            switch com.Key {
+            case snKey:
+                m[snKey] = sn
+                break
+            case aurSeal:
+                flow.EntSignBean = esign.PosBean{
+                    PosPage: fmt.Sprintf("%v", com.Context.Pos.Page),
+                    PosX:    com.Context.Pos.X,
+                    PosY:    com.Context.Pos.Y,
+                }
+                break
+            case riderSeal:
+                flow.PsnSignBean = esign.PosBean{
+                    PosPage: fmt.Sprintf("%v", com.Context.Pos.Page),
+                    PosX:    com.Context.Pos.X,
+                    PosY:    com.Context.Pos.Y,
                 }
             }
-
-            // 填充内容生成PDF
-            pdf := s.esign.CreateByTemplate(esign.CreateByTemplateReq{
-                Name:             fmt.Sprintf("%s-%s.pdf", flow.Scene, sn),
-                SimpleFormFields: m,
-                TemplateId:       templateId,
-            })
-            flow.FileId = pdf.FileId
-
-            // 发起签署，获取flowId
-            flowId = s.esign.CreateFlowOneStep(flow, expiresAt)
-
-            // 获取签署链接
-            link = s.esign.ExecuteUrl(flowId, accountId)
         }
+
+        // 填充内容生成PDF
+        pdf := s.esign.CreateByTemplate(esign.CreateByTemplateReq{
+            Name:             fmt.Sprintf("%s-%s.pdf", flow.Scene, sn),
+            SimpleFormFields: m,
+            TemplateId:       templateId,
+        })
+        flow.FileId = pdf.FileId
+
+        // 发起签署，获取flowId
+        flowId = s.esign.CreateFlowOneStep(flow, expiresAt)
+
+        // 获取签署链接
+        link = s.esign.ExecuteUrl(flowId, accountId)
 
         // 存储合同信息
         ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
@@ -504,23 +497,15 @@ func (s *contractService) doResult(flowID string) {
 
     var endAt time.Time
 
-    if ar.Config.Debug {
-        // DEBUG START
-        result = model.ContractStatusSuccess
-        updater.SetStatus(model.ContractStatusSuccess.Value())
-        endAt = time.Now()
-        // DEBUG END
-    } else {
-        // 查询合同流程状态
-        var signResult *esign.SignResult
-        result, signResult = s.esign.Result(c.FlowID)
-        endAt = signResult.EndAt()
+    // 查询合同流程状态
+    var signResult *esign.SignResult
+    result, signResult = s.esign.Result(c.FlowID)
+    endAt = signResult.EndAt()
 
-        // 是否成功
-        if result.IsSuccessed() {
-            // 获取合同并上传到阿里云
-            updater.SetSignedAt(endAt).SetStatus(model.ContractStatusSuccess.Value()).SetFiles(s.esign.DownloadDocument(fmt.Sprintf("%s-%s/contracts/", r.Name, r.IDCardNumber), flowID))
-        }
+    // 是否成功
+    if result.IsSuccessed() {
+        // 获取合同并上传到阿里云
+        updater.SetSignedAt(endAt).SetStatus(model.ContractStatusSuccess.Value()).SetFiles(s.esign.DownloadDocument(fmt.Sprintf("%s-%s/contracts/", r.Name, r.IDCardNumber), flowID))
     }
 
     idstr := strconv.FormatUint(c.ID, 10)
