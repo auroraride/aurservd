@@ -87,25 +87,25 @@ func (es ExchangeStep) IsLast() bool {
 
 // ExchangeCabinetInfo 任务电柜设备信息
 type ExchangeCabinetInfo struct {
-    Health         uint8 `json:"health" bson:"health"`                 // 电柜健康状态 0离线 1正常 2故障
-    Doors          int   `json:"doors" bson:"doors"`                   // 总仓位
-    BatteryNum     int   `json:"batteryNum" bson:"batteryNum"`         // 总电池数
-    BatteryFullNum int   `json:"batteryFullNum" bson:"batteryFullNum"` // 总满电电池数
+    Health         uint8 `json:"health,omitempty"`         // 电柜健康状态 0离线 1正常 2故障
+    Doors          int   `json:"doors,omitempty"`          // 总仓位
+    BatteryNum     int   `json:"batteryNum,omitempty"`     // 总电池数
+    BatteryFullNum int   `json:"batteryFullNum,omitempty"` // 总满电电池数
 }
 
 // ExchangeInfo 换电详情
 type ExchangeInfo struct {
-    Cabinet *ExchangeCabinetInfo `json:"cabinet"`           // 电柜信息
-    Empty   *BinInfo             `json:"empty"`             // 空仓位
-    Fully   *BinInfo             `json:"fully"`             // 满电仓位
-    Steps   []*ExchangeStepInfo  `json:"steps"`             // 步骤信息
+    Cabinet *ExchangeCabinetInfo `json:"cabinet,omitempty"` // 电柜信息
+    Empty   *BinInfo             `json:"empty,omitempty"`   // 空仓位
+    Fully   *BinInfo             `json:"fully,omitempty"`   // 满电仓位
+    Steps   []*ExchangeStepInfo  `json:"steps,omitempty"`   // 步骤信息
     Message string               `json:"message,omitempty"` // 错误信息
 }
 
 type ExchangeStepInfo struct {
-    Step   ExchangeStep `json:"step" bson:"step"`     // 操作步骤 1:开空电仓 2:放旧电池 3:开满电仓 4:取新电池
-    Status TaskStatus   `json:"status" bson:"status"` // 状态 1:处理中 2:成功 3:失败
-    Time   time.Time    `json:"time" bson:"time"`     // 时间
+    Step   ExchangeStep `json:"step,omitempty"`   // 操作步骤 1:开空电仓 2:放旧电池 3:开满电仓 4:取新电池
+    Status TaskStatus   `json:"status,omitempty"` // 状态 1:处理中 2:成功 3:失败
+    Time   time.Time    `json:"time,omitempty"`   // 时间
 }
 
 func (si *ExchangeStepInfo) String() string {
