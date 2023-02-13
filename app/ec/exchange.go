@@ -7,6 +7,7 @@ package ec
 
 import (
     "github.com/auroraride/aurservd/app/model"
+    "time"
 )
 
 // Exchange 换电信息
@@ -21,6 +22,13 @@ type Exchange struct {
 
 // CurrentStep 获取当前步骤
 func (e *Exchange) CurrentStep() *model.ExchangeStepInfo {
+    if len(e.Steps) == 0 {
+        return &model.ExchangeStepInfo{
+            Step:   model.ExchangeStepOpenEmpty,
+            Status: model.TaskStatusFail,
+            Time:   time.Now(),
+        }
+    }
     return e.Steps[len(e.Steps)-1]
 }
 

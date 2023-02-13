@@ -55,8 +55,11 @@ func serverCommand() *cobra.Command {
             // 启动 reserve task
             go task.NewReserve().Start()
 
+            // 启动电柜任务
+            go ec.Start()
+
             // 启动 任务补偿
-            compensate()
+            go compensate()
 
             // 启动sync
             go sync.Run()
@@ -116,4 +119,5 @@ func compensate() {
         }
         _, _ = u.Save(ctx)
     }
+    ec.Clear()
 }

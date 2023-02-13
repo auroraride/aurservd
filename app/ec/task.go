@@ -23,55 +23,13 @@ const (
 
 type Updater func(task *Task)
 
-// Job 电柜任务
-type Job string
-
-const (
-    JobExchange         Job = "RDR_EXCHANGE"    // 骑手-换电
-    JobRiderActive      Job = "RDR_ACTIVE"      // 骑手-激活
-    JobRiderUnSubscribe Job = "RDR_UNSUBSCRIBE" // 骑手-退租
-    JobPause            Job = "RDR_PAUSE"       // 骑手-寄存
-    JobContinue         Job = "RDR_CONTINUE"    // 骑手-继续
-    JobManagerOpen      Job = "MGR_OPEN"        // 管理-开门
-    JobManagerLock      Job = "MGR_LOCK"        // 管理-锁仓
-    JobManagerUnLock    Job = "MGR_UNLOCK"      // 管理-解锁
-    JobManagerReboot    Job = "MGR_REBOOT"      // 管理-重启
-    JobManagerExchange  Job = "MGR_EXCHANGE"    // 管理-换电
-)
-
-func (j Job) Label() string {
-    switch j {
-    case JobExchange:
-        return "骑手换电"
-    case JobRiderActive:
-        return "骑手激活"
-    case JobRiderUnSubscribe:
-        return "骑手退租"
-    case JobPause:
-        return "骑手寄存"
-    case JobContinue:
-        return "骑手继续"
-    case JobManagerOpen:
-        return "管理开门"
-    case JobManagerLock:
-        return "管理锁仓"
-    case JobManagerUnLock:
-        return "管理解锁"
-    case JobManagerReboot:
-        return "管理重启"
-    case JobManagerExchange:
-        return "管理换电"
-    }
-    return "未知任务"
-}
-
 // Task 电柜任务详情
 // TODO 存储开仓信息, 业务信息, 管理员信息
 type Task struct {
     ID               string           `json:"id,omitempty"`               // 任务ID
     CabinetID        uint64           `json:"cabinetID,omitempty"`        // 电柜ID
     Serial           string           `json:"serial,omitempty"`           // 电柜编码
-    Job              Job              `json:"job,omitempty"`              // 任务类别
+    Job              model.Job        `json:"job,omitempty"`              // 任务类别
     Status           model.TaskStatus `json:"status,omitempty"`           // 任务状态
     StartAt          *time.Time       `json:"startAt,omitempty"`          // 开始时间
     StopAt           *time.Time       `json:"stopAt,omitempty"`           // 结束时间
@@ -80,8 +38,6 @@ type Task struct {
     Rider            *Rider           `json:"rider,omitempty"`            // 骑手信息
     Exchange         *Exchange        `json:"exchange,omitempty"`         // 换电信息
     BussinessBinInfo *model.BinInfo   `json:"bussinessBinInfo,omitempty"` // 业务仓位
-
-    deactivate *time.Timer // 失效处理
 }
 
 func (t *Task) MarshalBinary() ([]byte, error) {
@@ -95,7 +51,7 @@ func (t *Task) UnmarshalBinary(data []byte) error {
 func (t *Task) String() string {
     // TODO 开仓信息, 业务信息, 管理员信息
     info := ""
-    if t.Job == JobExchange {
+    if t.Job == model.JobExchange {
         info += fmt.Sprintf(
             "骑手电话: %s, 名字: %s\n步骤: %s, 空: %d仓, 满: %d仓",
             t.Rider.Phone,
@@ -124,10 +80,7 @@ func (t *Task) Delete() {
 
 func (t *Task) Create() *Task {
     t.ID = xid.New().String()
-    t.deactivate = time.AfterFunc(DeactivateTime*time.Second, func() {
-        // TODO 标记任务失败
-        t.Delete()
-    })
+    hub.setter <- t.ID
     t.Save()
     return t
 }
@@ -141,7 +94,7 @@ func (t *Task) Start(cbs ...Updater) {
         }
         t.StartAt = Pointer(time.Now())
         t.Status = model.TaskStatusProcessing
-        t.deactivate.Reset(10 * time.Minute)
+        hub.updater <- t.ID
     })
 
     // 删除所有未开始的非当前任务
@@ -170,7 +123,13 @@ func (t *Task) Update(cb Updater) {
 // QueryID 查询任务
 func QueryID(id xid.ID) (t *Task) {
     t = new(Task)
-    _ = ar.Redis.HGet(context.Background(), ar.TaskCacheKey, id.String()).Scan(t)
+    err := ar.Redis.HGet(context.Background(), ar.TaskCacheKey, id.String()).Scan(t)
+    if err != nil || t == nil {
+        if t.Job == model.JobExchange && t.Exchange == nil {
+            return nil
+        }
+        return nil
+    }
     return
 }
 
@@ -234,4 +193,8 @@ func DeleteRange(delcon func(x *Task) bool) (tasks map[string]*Task) {
         }
     }
     return
+}
+
+func Clear() {
+    ar.Redis.Del(context.Background(), ar.TaskCacheKey)
 }

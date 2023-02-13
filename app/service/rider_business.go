@@ -154,11 +154,11 @@ func (s *riderBusinessService) preprocess(serial string, bt business.Type) {
             break
         }
 
-        jobs := map[business.Type]ec.Job{
-            business.TypeActive:      ec.JobRiderActive,
-            business.TypeUnsubscribe: ec.JobRiderUnSubscribe,
-            business.TypePause:       ec.JobPause,
-            business.TypeContinue:    ec.JobContinue,
+        jobs := map[business.Type]model.Job{
+            business.TypeActive:      model.JobRiderActive,
+            business.TypeUnsubscribe: model.JobRiderUnSubscribe,
+            business.TypePause:       model.JobPause,
+            business.TypeContinue:    model.JobContinue,
         }
 
         task := &ec.Task{

@@ -113,7 +113,7 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
         t := &ec.Task{
             Serial:    cab.Serial,
             CabinetID: cab.ID,
-            Job:       ec.JobExchange,
+            Job:       model.JobExchange,
             Rider: &ec.Rider{
                 ID:    s.rider.ID,
                 Name:  s.rider.Name,
@@ -221,7 +221,7 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
         t = ec.QueryID(uid)
 
         // 判断任务是否存在, 并且比对存储骑手信息是否相符
-        if t == nil || t.Status > 0 || t.StartAt != nil || t.Job != ec.JobExchange || t.Exchange == nil || t.Rider == nil || t.Rider.ID != s.rider.ID {
+        if t == nil || t.Status > 0 || t.StartAt != nil || t.Job != model.JobExchange || t.Exchange == nil || t.Rider == nil || t.Rider.ID != s.rider.ID {
             snag.Panic("未找到信息, 请重新扫码")
         }
 
@@ -592,14 +592,16 @@ func (s *riderExchangeService) ProcessOpenBin() *riderExchangeService {
 // ProcessLog 处理步骤日志
 func (s *riderExchangeService) ProcessLog() bool {
     ex := s.task.Exchange
-    // log.Printf(`[电柜操作 - 步骤结果]: [ %s ] %s, 用户电话: %s, 状态: %s, 终止: %t %s`,
-    //     s.cabinet.Serial,
-    //     s.task.Exchange.CurrentStep(),
-    //     s.rider.Phone,
-    //     ex.CurrentStep().Status,
-    //     ex.IsLastStep() || s.task.StopAt != nil,
-    //     s.task.Message,
-    // )
+    stop := "否"
+    if ex.IsLastStep() || s.task.StopAt != nil {
+        stop = "是"
+    }
+    zap.L().Info("[电柜操作 - 步骤结果]: [ " + s.cabinet.Serial +
+        " ] " + s.task.Exchange.CurrentStep().String() +
+        ", 用户电话: " + s.rider.Phone +
+        ", 状态: " + ex.CurrentStep().Status.String() +
+        ", 终止: " + stop + " ->> " + s.task.Message,
+    )
 
     step := ex.CurrentStep()
 

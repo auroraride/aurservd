@@ -9,6 +9,7 @@ import (
     "context"
     "entgo.io/ent/dialect/sql"
     "fmt"
+    "github.com/auroraride/adapter"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
@@ -576,7 +577,7 @@ func (s *exchangeService) listDetail(item *ent.Exchange) (res model.ExchangeMana
         if len(item.Steps) > 0 {
             res.Error = fmt.Sprintf("%s [%s]", item.Message, item.Steps[len(item.Steps)-1].Step.String())
         } else {
-            res.Error = "未找到换电信息"
+            res.Error = adapter.Or(item.Message == "", "未找到换电信息", item.Message)
         }
     }
 

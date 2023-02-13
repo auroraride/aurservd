@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/auroraride/adapter"
+	"github.com/auroraride/aurservd/app/ec"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
@@ -43525,8 +43526,7 @@ type ExchangeMutation struct {
 	remark            *string
 	uuid              *string
 	success           *bool
-	detail            *jsoniter.RawMessage
-	appenddetail      jsoniter.RawMessage
+	info              **ec.ExchangeInfo
 	model             *string
 	alternative       *bool
 	start_at          *time.Time
@@ -44355,69 +44355,53 @@ func (m *ExchangeMutation) ResetSuccess() {
 	m.success = nil
 }
 
-// SetDetail sets the "detail" field.
-func (m *ExchangeMutation) SetDetail(jm jsoniter.RawMessage) {
-	m.detail = &jm
-	m.appenddetail = nil
+// SetInfo sets the "info" field.
+func (m *ExchangeMutation) SetInfo(ei *ec.ExchangeInfo) {
+	m.info = &ei
 }
 
-// Detail returns the value of the "detail" field in the mutation.
-func (m *ExchangeMutation) Detail() (r jsoniter.RawMessage, exists bool) {
-	v := m.detail
+// Info returns the value of the "info" field in the mutation.
+func (m *ExchangeMutation) Info() (r *ec.ExchangeInfo, exists bool) {
+	v := m.info
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldDetail returns the old "detail" field's value of the Exchange entity.
+// OldInfo returns the old "info" field's value of the Exchange entity.
 // If the Exchange object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ExchangeMutation) OldDetail(ctx context.Context) (v jsoniter.RawMessage, err error) {
+func (m *ExchangeMutation) OldInfo(ctx context.Context) (v *ec.ExchangeInfo, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldDetail is only allowed on UpdateOne operations")
+		return v, errors.New("OldInfo is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldDetail requires an ID field in the mutation")
+		return v, errors.New("OldInfo requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldDetail: %w", err)
+		return v, fmt.Errorf("querying old value for OldInfo: %w", err)
 	}
-	return oldValue.Detail, nil
+	return oldValue.Info, nil
 }
 
-// AppendDetail adds jm to the "detail" field.
-func (m *ExchangeMutation) AppendDetail(jm jsoniter.RawMessage) {
-	m.appenddetail = append(m.appenddetail, jm...)
+// ClearInfo clears the value of the "info" field.
+func (m *ExchangeMutation) ClearInfo() {
+	m.info = nil
+	m.clearedFields[exchange.FieldInfo] = struct{}{}
 }
 
-// AppendedDetail returns the list of values that were appended to the "detail" field in this mutation.
-func (m *ExchangeMutation) AppendedDetail() (jsoniter.RawMessage, bool) {
-	if len(m.appenddetail) == 0 {
-		return nil, false
-	}
-	return m.appenddetail, true
-}
-
-// ClearDetail clears the value of the "detail" field.
-func (m *ExchangeMutation) ClearDetail() {
-	m.detail = nil
-	m.appenddetail = nil
-	m.clearedFields[exchange.FieldDetail] = struct{}{}
-}
-
-// DetailCleared returns if the "detail" field was cleared in this mutation.
-func (m *ExchangeMutation) DetailCleared() bool {
-	_, ok := m.clearedFields[exchange.FieldDetail]
+// InfoCleared returns if the "info" field was cleared in this mutation.
+func (m *ExchangeMutation) InfoCleared() bool {
+	_, ok := m.clearedFields[exchange.FieldInfo]
 	return ok
 }
 
-// ResetDetail resets all changes to the "detail" field.
-func (m *ExchangeMutation) ResetDetail() {
-	m.detail = nil
-	m.appenddetail = nil
-	delete(m.clearedFields, exchange.FieldDetail)
+// ResetInfo resets all changes to the "info" field.
+func (m *ExchangeMutation) ResetInfo() {
+	m.info = nil
+	delete(m.clearedFields, exchange.FieldInfo)
 }
 
 // SetModel sets the "model" field.
@@ -45346,8 +45330,8 @@ func (m *ExchangeMutation) Fields() []string {
 	if m.success != nil {
 		fields = append(fields, exchange.FieldSuccess)
 	}
-	if m.detail != nil {
-		fields = append(fields, exchange.FieldDetail)
+	if m.info != nil {
+		fields = append(fields, exchange.FieldInfo)
 	}
 	if m.model != nil {
 		fields = append(fields, exchange.FieldModel)
@@ -45428,8 +45412,8 @@ func (m *ExchangeMutation) Field(name string) (ent.Value, bool) {
 		return m.CabinetID()
 	case exchange.FieldSuccess:
 		return m.Success()
-	case exchange.FieldDetail:
-		return m.Detail()
+	case exchange.FieldInfo:
+		return m.Info()
 	case exchange.FieldModel:
 		return m.Model()
 	case exchange.FieldAlternative:
@@ -45497,8 +45481,8 @@ func (m *ExchangeMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldCabinetID(ctx)
 	case exchange.FieldSuccess:
 		return m.OldSuccess(ctx)
-	case exchange.FieldDetail:
-		return m.OldDetail(ctx)
+	case exchange.FieldInfo:
+		return m.OldInfo(ctx)
 	case exchange.FieldModel:
 		return m.OldModel(ctx)
 	case exchange.FieldAlternative:
@@ -45646,12 +45630,12 @@ func (m *ExchangeMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetSuccess(v)
 		return nil
-	case exchange.FieldDetail:
-		v, ok := value.(jsoniter.RawMessage)
+	case exchange.FieldInfo:
+		v, ok := value.(*ec.ExchangeInfo)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetDetail(v)
+		m.SetInfo(v)
 		return nil
 	case exchange.FieldModel:
 		v, ok := value.(string)
@@ -45816,8 +45800,8 @@ func (m *ExchangeMutation) ClearedFields() []string {
 	if m.FieldCleared(exchange.FieldCabinetID) {
 		fields = append(fields, exchange.FieldCabinetID)
 	}
-	if m.FieldCleared(exchange.FieldDetail) {
-		fields = append(fields, exchange.FieldDetail)
+	if m.FieldCleared(exchange.FieldInfo) {
+		fields = append(fields, exchange.FieldInfo)
 	}
 	if m.FieldCleared(exchange.FieldStartAt) {
 		fields = append(fields, exchange.FieldStartAt)
@@ -45890,8 +45874,8 @@ func (m *ExchangeMutation) ClearField(name string) error {
 	case exchange.FieldCabinetID:
 		m.ClearCabinetID()
 		return nil
-	case exchange.FieldDetail:
-		m.ClearDetail()
+	case exchange.FieldInfo:
+		m.ClearInfo()
 		return nil
 	case exchange.FieldStartAt:
 		m.ClearStartAt()
@@ -45979,8 +45963,8 @@ func (m *ExchangeMutation) ResetField(name string) error {
 	case exchange.FieldSuccess:
 		m.ResetSuccess()
 		return nil
-	case exchange.FieldDetail:
-		m.ResetDetail()
+	case exchange.FieldInfo:
+		m.ResetInfo()
 		return nil
 	case exchange.FieldModel:
 		m.ResetModel()

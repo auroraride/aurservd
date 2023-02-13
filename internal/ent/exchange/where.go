@@ -680,14 +680,14 @@ func SuccessNEQ(v bool) predicate.Exchange {
 	return predicate.Exchange(sql.FieldNEQ(FieldSuccess, v))
 }
 
-// DetailIsNil applies the IsNil predicate on the "detail" field.
-func DetailIsNil() predicate.Exchange {
-	return predicate.Exchange(sql.FieldIsNull(FieldDetail))
+// InfoIsNil applies the IsNil predicate on the "info" field.
+func InfoIsNil() predicate.Exchange {
+	return predicate.Exchange(sql.FieldIsNull(FieldInfo))
 }
 
-// DetailNotNil applies the NotNil predicate on the "detail" field.
-func DetailNotNil() predicate.Exchange {
-	return predicate.Exchange(sql.FieldNotNull(FieldDetail))
+// InfoNotNil applies the NotNil predicate on the "info" field.
+func InfoNotNil() predicate.Exchange {
+	return predicate.Exchange(sql.FieldNotNull(FieldInfo))
 }
 
 // ModelEQ applies the EQ predicate on the "model" field.

@@ -2233,7 +2233,7 @@ var (
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
 		{Name: "uuid", Type: field.TypeString, Unique: true},
 		{Name: "success", Type: field.TypeBool, Comment: "是否成功", Default: true},
-		{Name: "detail", Type: field.TypeJSON, Nullable: true, Comment: "电柜换电信息"},
+		{Name: "info", Type: field.TypeJSON, Nullable: true, Comment: "电柜换电信息"},
 		{Name: "model", Type: field.TypeString, Comment: "电池型号"},
 		{Name: "alternative", Type: field.TypeBool, Comment: "是否备用方案", Default: false},
 		{Name: "start_at", Type: field.TypeTime, Nullable: true, Comment: "换电开始时间"},

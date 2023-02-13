@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/app/ec"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -21,7 +22,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
-	jsoniter "github.com/json-iterator/go"
 )
 
 // ExchangeCreate is the builder for creating a Exchange entity.
@@ -208,9 +208,9 @@ func (ec *ExchangeCreate) SetNillableSuccess(b *bool) *ExchangeCreate {
 	return ec
 }
 
-// SetDetail sets the "detail" field.
-func (ec *ExchangeCreate) SetDetail(jm jsoniter.RawMessage) *ExchangeCreate {
-	ec.mutation.SetDetail(jm)
+// SetInfo sets the "info" field.
+func (ec *ExchangeCreate) SetInfo(ei *ec.ExchangeInfo) *ExchangeCreate {
+	ec.mutation.SetInfo(ei)
 	return ec
 }
 
@@ -568,9 +568,9 @@ func (ec *ExchangeCreate) createSpec() (*Exchange, *sqlgraph.CreateSpec) {
 		_spec.SetField(exchange.FieldSuccess, field.TypeBool, value)
 		_node.Success = value
 	}
-	if value, ok := ec.mutation.Detail(); ok {
-		_spec.SetField(exchange.FieldDetail, field.TypeJSON, value)
-		_node.Detail = value
+	if value, ok := ec.mutation.Info(); ok {
+		_spec.SetField(exchange.FieldInfo, field.TypeJSON, value)
+		_node.Info = value
 	}
 	if value, ok := ec.mutation.Model(); ok {
 		_spec.SetField(exchange.FieldModel, field.TypeString, value)
@@ -1052,21 +1052,21 @@ func (u *ExchangeUpsert) UpdateSuccess() *ExchangeUpsert {
 	return u
 }
 
-// SetDetail sets the "detail" field.
-func (u *ExchangeUpsert) SetDetail(v jsoniter.RawMessage) *ExchangeUpsert {
-	u.Set(exchange.FieldDetail, v)
+// SetInfo sets the "info" field.
+func (u *ExchangeUpsert) SetInfo(v *ec.ExchangeInfo) *ExchangeUpsert {
+	u.Set(exchange.FieldInfo, v)
 	return u
 }
 
-// UpdateDetail sets the "detail" field to the value that was provided on create.
-func (u *ExchangeUpsert) UpdateDetail() *ExchangeUpsert {
-	u.SetExcluded(exchange.FieldDetail)
+// UpdateInfo sets the "info" field to the value that was provided on create.
+func (u *ExchangeUpsert) UpdateInfo() *ExchangeUpsert {
+	u.SetExcluded(exchange.FieldInfo)
 	return u
 }
 
-// ClearDetail clears the value of the "detail" field.
-func (u *ExchangeUpsert) ClearDetail() *ExchangeUpsert {
-	u.SetNull(exchange.FieldDetail)
+// ClearInfo clears the value of the "info" field.
+func (u *ExchangeUpsert) ClearInfo() *ExchangeUpsert {
+	u.SetNull(exchange.FieldInfo)
 	return u
 }
 
@@ -1592,24 +1592,24 @@ func (u *ExchangeUpsertOne) UpdateSuccess() *ExchangeUpsertOne {
 	})
 }
 
-// SetDetail sets the "detail" field.
-func (u *ExchangeUpsertOne) SetDetail(v jsoniter.RawMessage) *ExchangeUpsertOne {
+// SetInfo sets the "info" field.
+func (u *ExchangeUpsertOne) SetInfo(v *ec.ExchangeInfo) *ExchangeUpsertOne {
 	return u.Update(func(s *ExchangeUpsert) {
-		s.SetDetail(v)
+		s.SetInfo(v)
 	})
 }
 
-// UpdateDetail sets the "detail" field to the value that was provided on create.
-func (u *ExchangeUpsertOne) UpdateDetail() *ExchangeUpsertOne {
+// UpdateInfo sets the "info" field to the value that was provided on create.
+func (u *ExchangeUpsertOne) UpdateInfo() *ExchangeUpsertOne {
 	return u.Update(func(s *ExchangeUpsert) {
-		s.UpdateDetail()
+		s.UpdateInfo()
 	})
 }
 
-// ClearDetail clears the value of the "detail" field.
-func (u *ExchangeUpsertOne) ClearDetail() *ExchangeUpsertOne {
+// ClearInfo clears the value of the "info" field.
+func (u *ExchangeUpsertOne) ClearInfo() *ExchangeUpsertOne {
 	return u.Update(func(s *ExchangeUpsert) {
-		s.ClearDetail()
+		s.ClearInfo()
 	})
 }
 
@@ -2334,24 +2334,24 @@ func (u *ExchangeUpsertBulk) UpdateSuccess() *ExchangeUpsertBulk {
 	})
 }
 
-// SetDetail sets the "detail" field.
-func (u *ExchangeUpsertBulk) SetDetail(v jsoniter.RawMessage) *ExchangeUpsertBulk {
+// SetInfo sets the "info" field.
+func (u *ExchangeUpsertBulk) SetInfo(v *ec.ExchangeInfo) *ExchangeUpsertBulk {
 	return u.Update(func(s *ExchangeUpsert) {
-		s.SetDetail(v)
+		s.SetInfo(v)
 	})
 }
 
-// UpdateDetail sets the "detail" field to the value that was provided on create.
-func (u *ExchangeUpsertBulk) UpdateDetail() *ExchangeUpsertBulk {
+// UpdateInfo sets the "info" field to the value that was provided on create.
+func (u *ExchangeUpsertBulk) UpdateInfo() *ExchangeUpsertBulk {
 	return u.Update(func(s *ExchangeUpsert) {
-		s.UpdateDetail()
+		s.UpdateInfo()
 	})
 }
 
-// ClearDetail clears the value of the "detail" field.
-func (u *ExchangeUpsertBulk) ClearDetail() *ExchangeUpsertBulk {
+// ClearInfo clears the value of the "info" field.
+func (u *ExchangeUpsertBulk) ClearInfo() *ExchangeUpsertBulk {
 	return u.Update(func(s *ExchangeUpsert) {
-		s.ClearDetail()
+		s.ClearInfo()
 	})
 }
 

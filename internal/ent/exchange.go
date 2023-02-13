@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/auroraride/aurservd/app/ec"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -19,7 +20,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
-	jsoniter "github.com/json-iterator/go"
 )
 
 // Exchange is the model entity for the Exchange schema.
@@ -60,7 +60,7 @@ type Exchange struct {
 	// 是否成功
 	Success bool `json:"success,omitempty"`
 	// 电柜换电信息
-	Detail jsoniter.RawMessage `json:"detail,omitempty"`
+	Info *ec.ExchangeInfo `json:"info,omitempty"`
 	// 电池型号
 	Model string `json:"model,omitempty"`
 	// 是否备用方案
@@ -224,7 +224,7 @@ func (*Exchange) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case exchange.FieldCreator, exchange.FieldLastModifier, exchange.FieldDetail, exchange.FieldCabinetInfo, exchange.FieldEmpty, exchange.FieldFully, exchange.FieldSteps:
+		case exchange.FieldCreator, exchange.FieldLastModifier, exchange.FieldInfo, exchange.FieldCabinetInfo, exchange.FieldEmpty, exchange.FieldFully, exchange.FieldSteps:
 			values[i] = new([]byte)
 		case exchange.FieldSuccess, exchange.FieldAlternative:
 			values[i] = new(sql.NullBool)
@@ -360,12 +360,12 @@ func (e *Exchange) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				e.Success = value.Bool
 			}
-		case exchange.FieldDetail:
+		case exchange.FieldInfo:
 			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field detail", values[i])
+				return fmt.Errorf("unexpected type %T for field info", values[i])
 			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &e.Detail); err != nil {
-					return fmt.Errorf("unmarshal field detail: %w", err)
+				if err := json.Unmarshal(*value, &e.Info); err != nil {
+					return fmt.Errorf("unmarshal field info: %w", err)
 				}
 			}
 		case exchange.FieldModel:
@@ -583,8 +583,8 @@ func (e *Exchange) String() string {
 	builder.WriteString("success=")
 	builder.WriteString(fmt.Sprintf("%v", e.Success))
 	builder.WriteString(", ")
-	builder.WriteString("detail=")
-	builder.WriteString(fmt.Sprintf("%v", e.Detail))
+	builder.WriteString("info=")
+	builder.WriteString(fmt.Sprintf("%v", e.Info))
 	builder.WriteString(", ")
 	builder.WriteString("model=")
 	builder.WriteString(e.Model)

@@ -475,7 +475,7 @@ func (s *enterpriseService) UpdateStatement(e *ent.Enterprise) {
         ", 账期使用总天数: " + strconv.Itoa(days) +
         ", 总费用: " + strconv.FormatFloat(cost, 'f', 2, 64) +
         ", 余额: " + strconv.FormatFloat(balance, 'f', 2, 64) +
-        ", 出账日期: %s" + now.Format(carbon.DateLayout))
+        ", 出账日期: " + now.Format(carbon.DateLayout))
 }
 
 // Prepayment 预付费

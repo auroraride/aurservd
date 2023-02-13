@@ -113,13 +113,13 @@ func (s *cabinetMgrService) BinOperate(req *model.CabinetDoorOperateReq) bool {
 
     switch *req.Operation {
     case model.CabinetDoorOperateOpen:
-        task.Job = ec.JobManagerOpen
+        task.Job = model.JobManagerOpen
         break
     case model.CabinetDoorOperateLock:
-        task.Job = ec.JobManagerLock
+        task.Job = model.JobManagerLock
         break
     case model.CabinetDoorOperateUnlock:
-        task.Job = ec.JobManagerUnLock
+        task.Job = model.JobManagerUnLock
         break
     }
 
@@ -191,7 +191,7 @@ func (s *cabinetMgrService) Reboot(req *model.IDPostReq) bool {
     task := &ec.Task{
         CabinetID: req.ID,
         Serial:    cab.Serial,
-        Job:       ec.JobManagerReboot,
+        Job:       model.JobManagerReboot,
         Cabinet:   cab.GetTaskInfo(),
     }
 

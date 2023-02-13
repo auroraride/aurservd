@@ -45,8 +45,8 @@ const (
 	FieldCabinetID = "cabinet_id"
 	// FieldSuccess holds the string denoting the success field in the database.
 	FieldSuccess = "success"
-	// FieldDetail holds the string denoting the detail field in the database.
-	FieldDetail = "detail"
+	// FieldInfo holds the string denoting the info field in the database.
+	FieldInfo = "info"
 	// FieldModel holds the string denoting the model field in the database.
 	FieldModel = "model"
 	// FieldAlternative holds the string denoting the alternative field in the database.
@@ -168,7 +168,7 @@ var Columns = []string{
 	FieldUUID,
 	FieldCabinetID,
 	FieldSuccess,
-	FieldDetail,
+	FieldInfo,
 	FieldModel,
 	FieldAlternative,
 	FieldStartAt,

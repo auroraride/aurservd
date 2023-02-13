@@ -11,6 +11,48 @@ import (
     "time"
 )
 
+// Job 电柜任务
+type Job string
+
+const (
+    JobExchange         Job = "RDR_EXCHANGE"    // 骑手-换电
+    JobRiderActive      Job = "RDR_ACTIVE"      // 骑手-激活
+    JobRiderUnSubscribe Job = "RDR_UNSUBSCRIBE" // 骑手-退租
+    JobPause            Job = "RDR_PAUSE"       // 骑手-寄存
+    JobContinue         Job = "RDR_CONTINUE"    // 骑手-继续
+    JobManagerOpen      Job = "MGR_OPEN"        // 管理-开门
+    JobManagerLock      Job = "MGR_LOCK"        // 管理-锁仓
+    JobManagerUnLock    Job = "MGR_UNLOCK"      // 管理-解锁
+    JobManagerReboot    Job = "MGR_REBOOT"      // 管理-重启
+    JobManagerExchange  Job = "MGR_EXCHANGE"    // 管理-换电
+)
+
+func (j Job) Label() string {
+    switch j {
+    case JobExchange:
+        return "骑手换电"
+    case JobRiderActive:
+        return "骑手激活"
+    case JobRiderUnSubscribe:
+        return "骑手退租"
+    case JobPause:
+        return "骑手寄存"
+    case JobContinue:
+        return "骑手继续"
+    case JobManagerOpen:
+        return "管理开门"
+    case JobManagerLock:
+        return "管理锁仓"
+    case JobManagerUnLock:
+        return "管理解锁"
+    case JobManagerReboot:
+        return "管理重启"
+    case JobManagerExchange:
+        return "管理换电"
+    }
+    return "未知任务"
+}
+
 type TaskStatus uint8
 
 const (
