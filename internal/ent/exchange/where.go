@@ -680,16 +680,6 @@ func SuccessNEQ(v bool) predicate.Exchange {
 	return predicate.Exchange(sql.FieldNEQ(FieldSuccess, v))
 }
 
-// InfoIsNil applies the IsNil predicate on the "info" field.
-func InfoIsNil() predicate.Exchange {
-	return predicate.Exchange(sql.FieldIsNull(FieldInfo))
-}
-
-// InfoNotNil applies the NotNil predicate on the "info" field.
-func InfoNotNil() predicate.Exchange {
-	return predicate.Exchange(sql.FieldNotNull(FieldInfo))
-}
-
 // ModelEQ applies the EQ predicate on the "model" field.
 func ModelEQ(v string) predicate.Exchange {
 	return predicate.Exchange(sql.FieldEQ(FieldModel, v))

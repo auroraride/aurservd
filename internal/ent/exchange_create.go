@@ -11,7 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/auroraride/aurservd/app/ec"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -205,12 +204,6 @@ func (ec *ExchangeCreate) SetNillableSuccess(b *bool) *ExchangeCreate {
 	if b != nil {
 		ec.SetSuccess(*b)
 	}
-	return ec
-}
-
-// SetInfo sets the "info" field.
-func (ec *ExchangeCreate) SetInfo(ei *ec.ExchangeInfo) *ExchangeCreate {
-	ec.mutation.SetInfo(ei)
 	return ec
 }
 
@@ -567,10 +560,6 @@ func (ec *ExchangeCreate) createSpec() (*Exchange, *sqlgraph.CreateSpec) {
 	if value, ok := ec.mutation.Success(); ok {
 		_spec.SetField(exchange.FieldSuccess, field.TypeBool, value)
 		_node.Success = value
-	}
-	if value, ok := ec.mutation.Info(); ok {
-		_spec.SetField(exchange.FieldInfo, field.TypeJSON, value)
-		_node.Info = value
 	}
 	if value, ok := ec.mutation.Model(); ok {
 		_spec.SetField(exchange.FieldModel, field.TypeString, value)
@@ -1049,24 +1038,6 @@ func (u *ExchangeUpsert) SetSuccess(v bool) *ExchangeUpsert {
 // UpdateSuccess sets the "success" field to the value that was provided on create.
 func (u *ExchangeUpsert) UpdateSuccess() *ExchangeUpsert {
 	u.SetExcluded(exchange.FieldSuccess)
-	return u
-}
-
-// SetInfo sets the "info" field.
-func (u *ExchangeUpsert) SetInfo(v *ec.ExchangeInfo) *ExchangeUpsert {
-	u.Set(exchange.FieldInfo, v)
-	return u
-}
-
-// UpdateInfo sets the "info" field to the value that was provided on create.
-func (u *ExchangeUpsert) UpdateInfo() *ExchangeUpsert {
-	u.SetExcluded(exchange.FieldInfo)
-	return u
-}
-
-// ClearInfo clears the value of the "info" field.
-func (u *ExchangeUpsert) ClearInfo() *ExchangeUpsert {
-	u.SetNull(exchange.FieldInfo)
 	return u
 }
 
@@ -1589,27 +1560,6 @@ func (u *ExchangeUpsertOne) SetSuccess(v bool) *ExchangeUpsertOne {
 func (u *ExchangeUpsertOne) UpdateSuccess() *ExchangeUpsertOne {
 	return u.Update(func(s *ExchangeUpsert) {
 		s.UpdateSuccess()
-	})
-}
-
-// SetInfo sets the "info" field.
-func (u *ExchangeUpsertOne) SetInfo(v *ec.ExchangeInfo) *ExchangeUpsertOne {
-	return u.Update(func(s *ExchangeUpsert) {
-		s.SetInfo(v)
-	})
-}
-
-// UpdateInfo sets the "info" field to the value that was provided on create.
-func (u *ExchangeUpsertOne) UpdateInfo() *ExchangeUpsertOne {
-	return u.Update(func(s *ExchangeUpsert) {
-		s.UpdateInfo()
-	})
-}
-
-// ClearInfo clears the value of the "info" field.
-func (u *ExchangeUpsertOne) ClearInfo() *ExchangeUpsertOne {
-	return u.Update(func(s *ExchangeUpsert) {
-		s.ClearInfo()
 	})
 }
 
@@ -2331,27 +2281,6 @@ func (u *ExchangeUpsertBulk) SetSuccess(v bool) *ExchangeUpsertBulk {
 func (u *ExchangeUpsertBulk) UpdateSuccess() *ExchangeUpsertBulk {
 	return u.Update(func(s *ExchangeUpsert) {
 		s.UpdateSuccess()
-	})
-}
-
-// SetInfo sets the "info" field.
-func (u *ExchangeUpsertBulk) SetInfo(v *ec.ExchangeInfo) *ExchangeUpsertBulk {
-	return u.Update(func(s *ExchangeUpsert) {
-		s.SetInfo(v)
-	})
-}
-
-// UpdateInfo sets the "info" field to the value that was provided on create.
-func (u *ExchangeUpsertBulk) UpdateInfo() *ExchangeUpsertBulk {
-	return u.Update(func(s *ExchangeUpsert) {
-		s.UpdateInfo()
-	})
-}
-
-// ClearInfo clears the value of the "info" field.
-func (u *ExchangeUpsertBulk) ClearInfo() *ExchangeUpsertBulk {
-	return u.Update(func(s *ExchangeUpsert) {
-		s.ClearInfo()
 	})
 }
 

@@ -12,7 +12,6 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
-	"github.com/auroraride/aurservd/app/ec"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -233,18 +232,6 @@ func (eu *ExchangeUpdate) SetNillableSuccess(b *bool) *ExchangeUpdate {
 	if b != nil {
 		eu.SetSuccess(*b)
 	}
-	return eu
-}
-
-// SetInfo sets the "info" field.
-func (eu *ExchangeUpdate) SetInfo(ei *ec.ExchangeInfo) *ExchangeUpdate {
-	eu.mutation.SetInfo(ei)
-	return eu
-}
-
-// ClearInfo clears the value of the "info" field.
-func (eu *ExchangeUpdate) ClearInfo() *ExchangeUpdate {
-	eu.mutation.ClearInfo()
 	return eu
 }
 
@@ -668,12 +655,6 @@ func (eu *ExchangeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := eu.mutation.Success(); ok {
 		_spec.SetField(exchange.FieldSuccess, field.TypeBool, value)
-	}
-	if value, ok := eu.mutation.Info(); ok {
-		_spec.SetField(exchange.FieldInfo, field.TypeJSON, value)
-	}
-	if eu.mutation.InfoCleared() {
-		_spec.ClearField(exchange.FieldInfo, field.TypeJSON)
 	}
 	if value, ok := eu.mutation.Model(); ok {
 		_spec.SetField(exchange.FieldModel, field.TypeString, value)
@@ -1250,18 +1231,6 @@ func (euo *ExchangeUpdateOne) SetNillableSuccess(b *bool) *ExchangeUpdateOne {
 	return euo
 }
 
-// SetInfo sets the "info" field.
-func (euo *ExchangeUpdateOne) SetInfo(ei *ec.ExchangeInfo) *ExchangeUpdateOne {
-	euo.mutation.SetInfo(ei)
-	return euo
-}
-
-// ClearInfo clears the value of the "info" field.
-func (euo *ExchangeUpdateOne) ClearInfo() *ExchangeUpdateOne {
-	euo.mutation.ClearInfo()
-	return euo
-}
-
 // SetModel sets the "model" field.
 func (euo *ExchangeUpdateOne) SetModel(s string) *ExchangeUpdateOne {
 	euo.mutation.SetModel(s)
@@ -1706,12 +1675,6 @@ func (euo *ExchangeUpdateOne) sqlSave(ctx context.Context) (_node *Exchange, err
 	}
 	if value, ok := euo.mutation.Success(); ok {
 		_spec.SetField(exchange.FieldSuccess, field.TypeBool, value)
-	}
-	if value, ok := euo.mutation.Info(); ok {
-		_spec.SetField(exchange.FieldInfo, field.TypeJSON, value)
-	}
-	if euo.mutation.InfoCleared() {
-		_spec.ClearField(exchange.FieldInfo, field.TypeJSON)
 	}
 	if value, ok := euo.mutation.Model(); ok {
 		_spec.SetField(exchange.FieldModel, field.TypeString, value)
