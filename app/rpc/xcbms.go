@@ -27,47 +27,50 @@ func createXcClient() {
     }
 }
 
-func IsXcBmsClientExists() bool {
+func tryCreateXcClient() bool {
+    if xcBmsClient == nil {
+        createXcClient()
+    }
     return xcBmsClient != nil
 }
 
 func XcBmsBatch(ctx context.Context, req *pb.BatteryBatchRequest) (res *pb.BatteryBatchResponse, err error) {
-    if xcBmsClient == nil {
+    if !tryCreateXcClient() {
         return
     }
     return xcBmsClient.Batch(ctx, req)
 }
 
 func XcBmsSample(ctx context.Context, req *pb.BatterySnRequest) (res *pb.BatterySampleResponse, err error) {
-    if xcBmsClient == nil {
+    if !tryCreateXcClient() {
         return
     }
     return xcBmsClient.Sample(ctx, req)
 }
 
 func XcBmsFaultList(ctx context.Context, req *pb.BatteryFaultListRequest) (res *pb.BatteryFaultListResponse, err error) {
-    if xcBmsClient == nil {
+    if !tryCreateXcClient() {
         return
     }
     return xcBmsClient.FaultList(ctx, req)
 }
 
 func XcBmsFaultOverview(ctx context.Context, req *pb.BatterySnRequest) (res *pb.BatteryFaultOverviewResponse, err error) {
-    if xcBmsClient == nil {
+    if !tryCreateXcClient() {
         return
     }
     return xcBmsClient.FaultOverview(ctx, req)
 }
 
 func XcBmsStatistics(ctx context.Context, req *pb.BatterySnRequest) (res *pb.BatteryStatisticsResponse, err error) {
-    if xcBmsClient == nil {
+    if !tryCreateXcClient() {
         return
     }
     return xcBmsClient.Statistics(ctx, req)
 }
 
 func XcBmsPosition(ctx context.Context, req *pb.BatteryPositionRequest) (res *pb.BatteryPositionResponse, err error) {
-    if xcBmsClient == nil {
+    if !tryCreateXcClient() {
         return
     }
     return xcBmsClient.Position(ctx, req)
