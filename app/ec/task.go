@@ -68,18 +68,18 @@ func (j Job) Label() string {
 // Task 电柜任务详情
 // TODO 存储开仓信息, 业务信息, 管理员信息
 type Task struct {
-    ID               string           // 任务ID
-    CabinetID        uint64           // 电柜ID
-    Serial           string           // 电柜编码
-    Job              Job              // 任务类别
-    Status           model.TaskStatus // 任务状态
-    StartAt          *time.Time       // 开始时间
-    StopAt           *time.Time       // 结束时间
-    Message          string           // 失败消息
-    Cabinet          *Cabinet         // 电柜信息
-    Rider            *Rider           // 骑手信息
-    Exchange         *Exchange        // 换电信息
-    BussinessBinInfo *model.BinInfo   // 业务仓位
+    ID               string           `json:"id,omitempty"`               // 任务ID
+    CabinetID        uint64           `json:"cabinetID,omitempty"`        // 电柜ID
+    Serial           string           `json:"serial,omitempty"`           // 电柜编码
+    Job              Job              `json:"job,omitempty"`              // 任务类别
+    Status           model.TaskStatus `json:"status,omitempty"`           // 任务状态
+    StartAt          *time.Time       `json:"startAt,omitempty"`          // 开始时间
+    StopAt           *time.Time       `json:"stopAt,omitempty"`           // 结束时间
+    Message          string           `json:"message,omitempty"`          // 失败消息
+    Cabinet          *Cabinet         `json:"cabinet,omitempty"`          // 电柜信息
+    Rider            *Rider           `json:"rider,omitempty"`            // 骑手信息
+    Exchange         *Exchange        `json:"exchange,omitempty"`         // 换电信息
+    BussinessBinInfo *model.BinInfo   `json:"bussinessBinInfo,omitempty"` // 业务仓位
 
     deactivate *time.Timer // 失效处理
 }
