@@ -108,10 +108,6 @@ type config struct {
         Postgres struct {
             Dsn string
         }
-        Mongo struct {
-            Url string
-            DB  string `koanf:"db"`
-        }
     }
 
     ThirdParty struct {
