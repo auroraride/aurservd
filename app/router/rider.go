@@ -6,11 +6,14 @@
 package router
 
 import (
+    "github.com/auroraride/adapter"
     "github.com/auroraride/adapter/app"
     inapp "github.com/auroraride/aurservd/app"
     "github.com/auroraride/aurservd/app/controller/v1/rapi"
     "github.com/auroraride/aurservd/app/middleware"
+    "github.com/auroraride/aurservd/internal/ent"
     "github.com/labstack/echo/v4"
+    "strconv"
 )
 
 // rideRoutes 骑手路由
@@ -60,6 +63,24 @@ func loadRideRoutes() {
         RequestHeaderSkipper: func(s string) bool {
             _, ok := dumpReqHeaders[s]
             return !ok
+        },
+        Extra: func(c echo.Context) []byte {
+            if r, ok := c.Get("rider").(*ent.Rider); ok && r != nil {
+                buf := adapter.NewBuffer()
+                defer adapter.ReleaseBuffer(buf)
+
+                // {"id":123,"phone":"1111","name":"test"}
+                buf.WriteString(`{"id":`)
+                buf.WriteString(strconv.FormatUint(r.ID, 10))
+                buf.WriteString(`,"phone":"`)
+                buf.WriteString(r.Phone)
+                buf.WriteString(`","name":"`)
+                buf.WriteString(r.Name)
+                buf.WriteString(`"}`)
+
+                return buf.Bytes()
+            }
+            return nil
         },
     })
 

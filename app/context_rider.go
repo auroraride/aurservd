@@ -20,6 +20,7 @@ type RiderContext struct {
 
 // NewRiderContext 创建骑手上下文
 func NewRiderContext(c echo.Context, rider *ent.Rider, token string) *RiderContext {
+    c.Set("rider", rider)
     return &RiderContext{
         BaseContext: Context(c),
         Rider:       rider,
