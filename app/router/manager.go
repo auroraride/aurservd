@@ -64,6 +64,7 @@ func loadManagerRoutes() {
     g.GET("/battery/xc/:sn", mapi.Battery.Detail)
     g.GET("/battery/xc/statistics/:sn", mapi.Battery.Statistics)
     g.GET("/battery/xc/position/:sn", mapi.Battery.Position)
+    g.GET("/battery/xc/fault", mapi.Battery.Fault)
 
     // 电柜
     g.POST("/cabinet", mapi.Cabinet.Create)

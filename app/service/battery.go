@@ -96,8 +96,8 @@ func (s *batteryService) LoadOrCreate(sn string, params ...any) (bat *ent.Batter
     }
 
     // 解析电池型号
-    ab := adapter.ParseBatterySN(sn)
-    if ab.Model == "" || ab.SN == "" {
+    ab, err := adapter.ParseBatterySN(sn)
+    if err != nil || ab.Model == "" || ab.SN == "" {
         zap.L().Error("型号错误: "+sn, log.Payload(ab))
         return nil, adapter.ErrorBatterySN
     }
@@ -147,11 +147,11 @@ func (s *batteryService) Create(req *model.BatteryCreateReq) {
     }
 
     // 解析电池编号
-    ab := adapter.ParseBatterySN(req.SN)
-    if ab.Model == "" {
+    ab, err := adapter.ParseBatterySN(req.SN)
+    if err != nil || ab.Model == "" {
         snag.Panic("电池编号解析失败, 请擦亮你的双眼")
     }
-    _, err := s.orm.Create().
+    _, err = s.orm.Create().
         SetSn(req.SN).
         SetModel(ab.Model).
         SetEnable(enable).
@@ -198,8 +198,8 @@ func (s *batteryService) BatchCreate(c echo.Context) []string {
         }
 
         // 解析电池编号
-        ab := adapter.ParseBatterySN(sn)
-        if ab.Model == "" {
+        ab, err := adapter.ParseBatterySN(sn)
+        if err != nil || ab.Model == "" {
             failed = append(failed, fmt.Sprintf("电池编号%s解析失败, 请擦亮你的双眼", sn))
             continue
         }
@@ -214,7 +214,7 @@ func (s *batteryService) BatchCreate(c echo.Context) []string {
             continue
         }
 
-        _, err := creator.SetModel(ab.Model).SetSn(sn).Save(s.ctx)
+        _, err = creator.SetModel(ab.Model).SetSn(sn).Save(s.ctx)
         if err != nil {
             failed = append(failed, fmt.Sprintf("%s保存失败: %v", sn, err))
         }

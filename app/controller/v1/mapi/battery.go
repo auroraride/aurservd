@@ -203,3 +203,18 @@ func (*battery) Position(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.XcBatteryPositionReq](c)
     return ctx.SendResponse(service.NewBatteryXc().Position(req))
 }
+
+// Fault
+// @ID           ManagerBatteryFault
+// @Router       /manager/v1/battery/xc/fault [GET]
+// @Summary      M4013 电池故障列表
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        query  query  model.XcBatteryFaultReq  false  "请求参数"
+// @Success      200 {object} model.PaginationRes{items=[]model.XcBatteryFaultRes} "请求成功"
+func (*battery) Fault(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.XcBatteryFaultReq](c)
+    return ctx.SendResponse(service.NewBatteryXc().FaultList(req))
+}

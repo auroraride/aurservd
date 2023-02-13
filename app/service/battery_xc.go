@@ -16,6 +16,8 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/battery"
     "github.com/auroraride/aurservd/pkg/snag"
+    "github.com/auroraride/aurservd/pkg/tools"
+    "google.golang.org/protobuf/types/known/timestamppb"
     "math"
     "strconv"
     "time"
@@ -188,4 +190,49 @@ func (s *batteryXcService) Position(req *model.XcBatteryPositionReq) (res *model
         }
     }
     return
+}
+
+func (s *batteryXcService) FaultList(req *model.XcBatteryFaultReq) *model.PaginationRes {
+    pq := &pb.BatteryFaultListRequest{
+        Sn:    req.SN,
+        Fault: req.Fault,
+        Pagination: &pb.PaginationRequest{
+            Current:  int64(req.Current),
+            PageSize: int64(req.PageSize),
+        },
+    }
+    if req.Start != "" {
+        pq.BeginAt = timestamppb.New(tools.NewTime().ParseDateStringX(req.Start))
+    }
+    if req.End != "" {
+        pq.EndAt = timestamppb.New(tools.NewTime().ParseNextDateStringX(req.End))
+    }
+
+    r, _ := rpc.XcBmsFaultList(s.ctx, pq)
+
+    page := model.Pagination{
+        Current: req.Current,
+    }
+
+    if r != nil {
+        page.Pages = int(r.Pagination.Pages)
+        page.Total = int(r.Pagination.Total)
+    }
+
+    items := make([]*model.XcBatteryFaultRes, len(r.Items))
+    for i, item := range r.Items {
+        items[i] = &model.XcBatteryFaultRes{
+            Sn:      item.Sn,
+            Fault:   item.Fault,
+            BeginAt: item.BeginAt.AsTime().In(ar.TimeLocation).Format("2006-01-02 15:04:05"),
+        }
+        if item.EndAt != nil {
+            items[i].EndAt = item.EndAt.AsTime().In(ar.TimeLocation).Format("2006-01-02 15:04:05")
+        }
+    }
+
+    return &model.PaginationRes{
+        Pagination: page,
+        Items:      items,
+    }
 }

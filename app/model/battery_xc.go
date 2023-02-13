@@ -19,7 +19,7 @@ type XcBmsBattery struct {
 
     Charge    *bool         `json:"charge"`           // 充电是否开启
     DisCharge *bool         `json:"disCharge"`        // 放电是否开启
-    Faults    *xcdef.Faults `json:"faults,omitempty"` // 故障列表, 0:总压低, 1:总压高, 2:单体低, 3:单体高, 6:放电过流, 7:充电过流, 8:SOC低, 11:充电高温, 12:充电低温, 13:放电高温, 14:放电低温, 15:短路, 16:MOS高温
+    Faults    *xcdef.Faults `json:"faults,omitempty"` // 故障列表, `0`:总压低, `1`:总压高, `2`:单体低, `3`:单体高, `6`:放电过流, `7`:充电过流, `8`:SOC低, `11`:充电高温, `12`:充电低温, `13`:放电高温, `14`:放电低温, `15`:短路, `16`:MOS高温
 }
 
 func NewXcBmsBattery(hb *xcpb.Heartbeat) (item *XcBmsBattery) {
@@ -135,7 +135,7 @@ type XcBatteryDetail struct {
     Iccid string `json:"iccid,omitempty"`
     // 电池是否在线
     Online bool `json:"online"`
-    // 故障统计, 参见`fault`字段, 需要将13种故障都显示出来, 若无返回则是0
+    // 故障统计, 需要将13种故障都显示出来, 若无返回则数量为0 (`0`:总压低, `1`:总压高, `2`:单体低, `3`:单体高, `6`:放电过流, `7`:充电过流, `8`:SOC低, `11`:充电高温, `12`:充电低温, `13`:放电高温, `14`:放电低温, `15`:短路, `16`:MOS高温)
     FaultsOverview []*pb.BatteryFaultOverview `json:"faultsOverview"`
 }
 
@@ -184,4 +184,19 @@ type XcBatteryPosition struct {
     Voltage    float64 `json:"voltage,omitempty"`    // 电压
     Gsm        uint32  `json:"gsm,omitempty"`        // GSM信号强度
     At         string  `json:"at,omitempty"`         // 时间 (格式为: yyyy-mm-dd hh:mm:ss)
+}
+
+type XcBatteryFaultReq struct {
+    PaginationReq
+    SN    *string              `json:"sn" query:"sn"`       // 电池编号
+    Start string               `json:"start" query:"start"` // 开始日期 (格式为: yyyy-mm-dd)
+    End   string               `json:"end" query:"end"`     // 结束日期 (格式为: yyyy-mm-dd)
+    Fault *pb.BatteryFaultType `json:"fault" query:"fault"` // 选择故障, `0`:总压低, `1`:总压高, `2`:单体低, `3`:单体高, `6`:放电过流, `7`:充电过流, `8`:SOC低, `11`:充电高温, `12`:充电低温, `13`:放电高温, `14`:放电低温, `15`:短路, `16`:MOS高温
+}
+
+type XcBatteryFaultRes struct {
+    Sn      string              `json:"sn,omitempty"`
+    Fault   pb.BatteryFaultType `json:"fault,omitempty"`
+    BeginAt string              `json:"begin_at,omitempty"`
+    EndAt   string              `json:"end_at,omitempty"`
 }

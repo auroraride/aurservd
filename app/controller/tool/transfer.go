@@ -60,8 +60,8 @@ func (*transfer) Subscribe(c echo.Context) (err error) {
 
         // 如果是智能电池, 解析并查找电池信息
         if intelligent {
-            ab := adapter.ParseBatterySN(bsn)
-            if ab.Model == "" {
+            ab, err := adapter.ParseBatterySN(bsn)
+            if err != nil || ab.Model == "" {
                 message = "电池编号解析错误"
                 goto RENDER
             }

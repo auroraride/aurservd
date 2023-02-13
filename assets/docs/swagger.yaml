@@ -1201,8 +1201,8 @@ definitions:
         description: 是否启用
         type: boolean
       faults:
-        description: 故障列表, 0:总压低, 1:总压高, 2:单体低, 3:单体高, 6:放电过流, 7:充电过流, 8:SOC低, 11:充电高温,
-          12:充电低温, 13:放电高温, 14:放电低温, 15:短路, 16:MOS高温
+        description: 故障列表, `0`:总压低, `1`:总压高, `2`:单体低, `3`:单体高, `6`:放电过流, `7`:充电过流,
+          `8`:SOC低, `11`:充电高温, `12`:充电低温, `13`:放电高温, `14`:放电低温, `15`:短路, `16`:MOS高温
         items:
           type: integer
         type: array
@@ -6900,13 +6900,15 @@ definitions:
         description: 环境温度 (1个环境温度传感器, 单位1℃)
         type: integer
       faults:
-        description: 故障列表, 0:总压低, 1:总压高, 2:单体低, 3:单体高, 6:放电过流, 7:充电过流, 8:SOC低, 11:充电高温,
-          12:充电低温, 13:放电高温, 14:放电低温, 15:短路, 16:MOS高温
+        description: 故障列表, `0`:总压低, `1`:总压高, `2`:单体低, `3`:单体高, `6`:放电过流, `7`:充电过流,
+          `8`:SOC低, `11`:充电高温, `12`:充电低温, `13`:放电高温, `14`:放电低温, `15`:短路, `16`:MOS高温
         items:
           type: integer
         type: array
       faultsOverview:
-        description: 故障统计, 参见`fault`字段, 需要将13种故障都显示出来, 若无返回则是0
+        description: 故障统计, 需要将13种故障都显示出来, 若无返回则数量为0 (`0`:总压低, `1`:总压高, `2`:单体低, `3`:单体高,
+          `6`:放电过流, `7`:充电过流, `8`:SOC低, `11`:充电高温, `12`:充电低温, `13`:放电高温, `14`:放电低温,
+          `15`:短路, `16`:MOS高温)
         items:
           $ref: '#/definitions/pb.BatteryFaultOverview'
         type: array
@@ -7015,6 +7017,17 @@ definitions:
       voltage:
         description: 电池总压 (V)
         type: number
+    type: object
+  model.XcBatteryFaultRes:
+    properties:
+      begin_at:
+        type: string
+      end_at:
+        type: string
+      fault:
+        $ref: '#/definitions/pb.BatteryFaultType'
+      sn:
+        type: string
     type: object
   model.XcBatteryPosition:
     properties:
@@ -9306,6 +9319,54 @@ paths:
           schema:
             $ref: '#/definitions/model.XcBatteryDetail'
       summary: M4010 电池详情
+      tags:
+      - '[M]管理接口'
+  /manager/v1/battery/xc/fault:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerBatteryFault
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: '结束日期 (格式为: yyyy-mm-dd)'
+        in: query
+        name: end
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 电池编号
+        in: query
+        name: sn
+        type: string
+      - description: '开始日期 (格式为: yyyy-mm-dd)'
+        in: query
+        name: start
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.XcBatteryFaultRes'
+                  type: array
+              type: object
+      summary: M4013 电池故障列表
       tags:
       - '[M]管理接口'
   /manager/v1/battery/xc/position/{sn}:

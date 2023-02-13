@@ -2938,6 +2938,83 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/battery/xc/fault": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M4013 电池故障列表",
+                "operationId": "ManagerBatteryFault",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束日期 (格式为: yyyy-mm-dd)",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "电池编号",
+                        "name": "sn",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始日期 (格式为: yyyy-mm-dd)",
+                        "name": "start",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.XcBatteryFaultRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/battery/xc/position/{sn}": {
             "get": {
                 "consumes": [
@@ -15452,7 +15529,7 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "faults": {
-                    "description": "故障列表, 0:总压低, 1:总压高, 2:单体低, 3:单体高, 6:放电过流, 7:充电过流, 8:SOC低, 11:充电高温, 12:充电低温, 13:放电高温, 14:放电低温, 15:短路, 16:MOS高温",
+                    "description": "故障列表, ` + "`" + `0` + "`" + `:总压低, ` + "`" + `1` + "`" + `:总压高, ` + "`" + `2` + "`" + `:单体低, ` + "`" + `3` + "`" + `:单体高, ` + "`" + `6` + "`" + `:放电过流, ` + "`" + `7` + "`" + `:充电过流, ` + "`" + `8` + "`" + `:SOC低, ` + "`" + `11` + "`" + `:充电高温, ` + "`" + `12` + "`" + `:充电低温, ` + "`" + `13` + "`" + `:放电高温, ` + "`" + `14` + "`" + `:放电低温, ` + "`" + `15` + "`" + `:短路, ` + "`" + `16` + "`" + `:MOS高温",
                     "type": "array",
                     "items": {
                         "type": "integer"
@@ -23622,14 +23699,14 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "faults": {
-                    "description": "故障列表, 0:总压低, 1:总压高, 2:单体低, 3:单体高, 6:放电过流, 7:充电过流, 8:SOC低, 11:充电高温, 12:充电低温, 13:放电高温, 14:放电低温, 15:短路, 16:MOS高温",
+                    "description": "故障列表, ` + "`" + `0` + "`" + `:总压低, ` + "`" + `1` + "`" + `:总压高, ` + "`" + `2` + "`" + `:单体低, ` + "`" + `3` + "`" + `:单体高, ` + "`" + `6` + "`" + `:放电过流, ` + "`" + `7` + "`" + `:充电过流, ` + "`" + `8` + "`" + `:SOC低, ` + "`" + `11` + "`" + `:充电高温, ` + "`" + `12` + "`" + `:充电低温, ` + "`" + `13` + "`" + `:放电高温, ` + "`" + `14` + "`" + `:放电低温, ` + "`" + `15` + "`" + `:短路, ` + "`" + `16` + "`" + `:MOS高温",
                     "type": "array",
                     "items": {
                         "type": "integer"
                     }
                 },
                 "faultsOverview": {
-                    "description": "故障统计, 参见` + "`" + `fault` + "`" + `字段, 需要将13种故障都显示出来, 若无返回则是0",
+                    "description": "故障统计, 需要将13种故障都显示出来, 若无返回则数量为0 (` + "`" + `0` + "`" + `:总压低, ` + "`" + `1` + "`" + `:总压高, ` + "`" + `2` + "`" + `:单体低, ` + "`" + `3` + "`" + `:单体高, ` + "`" + `6` + "`" + `:放电过流, ` + "`" + `7` + "`" + `:充电过流, ` + "`" + `8` + "`" + `:SOC低, ` + "`" + `11` + "`" + `:充电高温, ` + "`" + `12` + "`" + `:充电低温, ` + "`" + `13` + "`" + `:放电高温, ` + "`" + `14` + "`" + `:放电低温, ` + "`" + `15` + "`" + `:短路, ` + "`" + `16` + "`" + `:MOS高温)",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/pb.BatteryFaultOverview"
@@ -23783,6 +23860,23 @@ const docTemplate = `{
                 "voltage": {
                     "description": "电池总压 (V)",
                     "type": "number"
+                }
+            }
+        },
+        "model.XcBatteryFaultRes": {
+            "type": "object",
+            "properties": {
+                "begin_at": {
+                    "type": "string"
+                },
+                "end_at": {
+                    "type": "string"
+                },
+                "fault": {
+                    "$ref": "#/definitions/pb.BatteryFaultType"
+                },
+                "sn": {
+                    "type": "string"
                 }
             }
         },
