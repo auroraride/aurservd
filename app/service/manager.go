@@ -80,7 +80,7 @@ func (s *managerService) Modify(req *model.ManagerModifyReq) {
 // Signin 管理员登录
 func (s *managerService) Signin(req *model.ManagerSigninReq) (res *model.ManagerSigninRes, err error) {
     var u *ent.Manager
-    u, err = s.orm.QueryNotDeleted().Where(manager.Phone(req.Phone)).WithRole().Only(s.ctx)
+    u, err = s.orm.QueryNotDeleted().Where(manager.Phone(req.Phone)).WithRole().First(s.ctx)
     if err != nil {
         return nil, errors.New(ar.UserNotFound)
     }
@@ -132,7 +132,7 @@ func (s *managerService) GetManagerById(id uint64) (u *ent.Manager, err error) {
         QueryNotDeleted().
         WithRole().
         Where(manager.ID(id)).
-        Only(context.Background())
+        First(context.Background())
 }
 
 // ExtendTokenTime 延长管理员登录有效期「24小时」

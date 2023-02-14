@@ -62,7 +62,7 @@ func NewEnterpriseWithAgent(ag *ent.Agent, en *ent.Enterprise) *enterpriseServic
 }
 
 func (s *enterpriseService) Query(id uint64) (*ent.Enterprise, error) {
-    return s.orm.QueryNotDeleted().Where(enterprise.ID(id)).Only(s.ctx)
+    return s.orm.QueryNotDeleted().Where(enterprise.ID(id)).First(s.ctx)
 }
 
 func (s *enterpriseService) QueryX(id uint64) *ent.Enterprise {

@@ -39,7 +39,7 @@ func NewCabinetFaultWithModifier(m *model.Modifier) *cabinetFaultService {
 
 // Query 查找故障
 func (s *cabinetFaultService) Query(id uint64) *ent.CabinetFault {
-    cf, err := s.orm.QueryNotDeleted().Where(cabinetfault.ID(id)).Only(s.ctx)
+    cf, err := s.orm.QueryNotDeleted().Where(cabinetfault.ID(id)).First(s.ctx)
     if err != nil || cf == nil {
         snag.Panic("未找到故障")
     }
@@ -56,7 +56,7 @@ func (s *cabinetFaultService) Report(rider *ent.Rider, req *model.CabinetFaultRe
         ).
         WithCity().
         WithBranch().
-        Only(s.ctx)
+        First(s.ctx)
     if cab == nil {
         snag.Panic("未找到运营中的电柜")
     }

@@ -342,10 +342,10 @@ func (s *cabinetService) DoorOpenStatus(item *ent.Cabinet, index int) ec.DoorSta
 
 // DetailFromID 电柜详细信息
 func (s *cabinetService) DetailFromID(id uint64) *model.CabinetDetailRes {
-    item := s.orm.QueryNotDeleted().
+    item, _ := s.orm.QueryNotDeleted().
         Where(cabinet.ID(id)).
         WithModels().
-        OnlyX(s.ctx)
+        First(s.ctx)
     if item == nil {
         snag.Panic("未找到电柜")
     }

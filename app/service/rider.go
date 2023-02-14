@@ -112,7 +112,7 @@ func (s *riderService) Signin(device *model.Device, req *model.RiderSignupReq) (
     var u *ent.Rider
     var err error
 
-    u, err = orm.QueryNotDeleted().Where(rider.Phone(req.Phone)).WithPerson().WithEnterprise().Only(ctx)
+    u, err = orm.QueryNotDeleted().Where(rider.Phone(req.Phone)).WithPerson().WithEnterprise().First(ctx)
     if err != nil {
         // 创建骑手
         u, err = orm.Create().
@@ -795,7 +795,7 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
 }
 
 func (s *riderService) Query(id uint64) *ent.Rider {
-    item, err := ent.Database.Rider.QueryNotDeleted().Where(rider.ID(id)).WithPerson().Only(s.ctx)
+    item, err := ent.Database.Rider.QueryNotDeleted().Where(rider.ID(id)).WithPerson().First(s.ctx)
     if err != nil || item == nil {
         snag.Panic("未找到骑手")
     }

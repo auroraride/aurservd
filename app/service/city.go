@@ -34,7 +34,7 @@ func NewCityWithModifier(m *model.Modifier) *cityService {
 }
 
 func (s *cityService) Query(id uint64) *ent.City {
-    item, err := s.orm.QueryNotDeleted().Where(city.ID(id)).Only(s.ctx)
+    item, err := s.orm.QueryNotDeleted().Where(city.ID(id)).First(s.ctx)
     if err != nil {
         snag.Panic("未找到城市")
     }

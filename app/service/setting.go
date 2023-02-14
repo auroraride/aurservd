@@ -69,7 +69,7 @@ func (s *settingService) CacheSettings(sm *ent.Setting) {
 // Initialize 初始化
 func (s *settingService) Initialize() {
     for k, set := range model.Settings {
-        sm, _ := s.orm.Query().Where(setting.Key(s.ParseKey(k))).Only(s.ctx)
+        sm, _ := s.orm.Query().Where(setting.Key(s.ParseKey(k))).First(s.ctx)
         if sm == nil {
             // 创建
             var err error
@@ -95,7 +95,7 @@ func (s *settingService) List() (items []model.SettingRes) {
 // Modify 修改设置
 func (s *settingService) Modify(req *model.SettingReq) {
     k := s.ParseKey(*req.Key)
-    sm := s.orm.Query().Where(setting.Key(k)).OnlyX(s.ctx)
+    sm, _ := s.orm.Query().Where(setting.Key(k)).First(s.ctx)
     if sm == nil {
         snag.Panic("未找到设置项")
     }

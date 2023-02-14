@@ -408,7 +408,7 @@ func (s *assistanceService) Allocate(req *model.AssistanceAllocateReq) {
                 )),
             ),
         ).
-        Only(s.ctx)
+        First(s.ctx)
     if st == nil {
         snag.Panic("未找到营业中的门店")
     }

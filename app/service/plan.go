@@ -54,7 +54,7 @@ func NewPlanWithModifier(m *model.Modifier) *planService {
 
 // Query 查找骑士卡
 func (s *planService) Query(id uint64) *ent.Plan {
-    item, err := s.orm.QueryNotDeleted().Where(plan.ID(id)).Only(s.ctx)
+    item, err := s.orm.QueryNotDeleted().Where(plan.ID(id)).First(s.ctx)
     if err != nil || item == nil {
         snag.Panic("未找到有效的骑士卡")
     }

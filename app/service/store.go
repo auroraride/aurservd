@@ -55,7 +55,7 @@ func NewStoreWithEmployee(e *ent.Employee) *storeService {
 }
 
 func (s *storeService) Query(id uint64) *ent.Store {
-    item, _ := s.orm.QueryNotDeleted().WithEmployee().Where(store.ID(id)).Only(s.ctx)
+    item, _ := s.orm.QueryNotDeleted().WithEmployee().Where(store.ID(id)).First(s.ctx)
     if item == nil {
         snag.Panic("未找到有效门店")
     }
@@ -66,7 +66,7 @@ func (s *storeService) QuerySn(sn string) *ent.Store {
     if strings.HasPrefix(sn, "STORE:") {
         sn = strings.ReplaceAll(sn, "STORE:", "")
     }
-    item, err := s.orm.QueryNotDeleted().WithEmployee().Where(store.Sn(sn)).Only(s.ctx)
+    item, err := s.orm.QueryNotDeleted().WithEmployee().Where(store.Sn(sn)).First(s.ctx)
     if err != nil {
         snag.Panic("未找到有效门店")
     }
@@ -133,12 +133,12 @@ func (s *storeService) Modify(req *model.StoreModifyReq) model.StoreItem {
 
 // Detail 获取门店详情
 func (s *storeService) Detail(id uint64) model.StoreItem {
-    item, err := s.orm.QueryNotDeleted().
+    item, _ := s.orm.QueryNotDeleted().
         Where(store.ID(id)).
         WithEmployee().
         WithCity().
-        Only(s.ctx)
-    if err != nil {
+        First(s.ctx)
+    if item == nil {
         snag.Panic("未找到有效门店")
     }
     city := item.Edges.City

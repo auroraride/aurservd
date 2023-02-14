@@ -57,7 +57,7 @@ func NewBranchWithRider(r *ent.Rider) *branchService {
 
 // Query 根据ID查询网点
 func (s *branchService) Query(id uint64) *ent.Branch {
-    item, err := s.orm.QueryNotDeleted().Where(branch.ID(id)).Only(s.ctx)
+    item, err := s.orm.QueryNotDeleted().Where(branch.ID(id)).First(s.ctx)
     if err != nil {
         snag.Panic("未找到有效网点")
     }
@@ -178,7 +178,7 @@ func (s *branchService) List(req *model.BranchListReq) *model.PaginationRes {
 
 // Modify 修改网点
 func (s *branchService) Modify(req *model.BranchModifyReq) {
-    b := s.orm.QueryNotDeleted().Where(branch.ID(req.ID)).OnlyX(s.ctx)
+    b, _ := s.orm.QueryNotDeleted().Where(branch.ID(req.ID)).First(s.ctx)
     if b == nil {
         snag.Panic("网点不存在")
     }

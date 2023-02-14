@@ -159,7 +159,7 @@ func NewBusinessRiderWithEmployee(e *ent.Employee) *businessRiderService {
 
 // QuerySubscribeWithRider 查询订阅信息
 func (s *businessRiderService) QuerySubscribeWithRider(subscribeID uint64) *ent.Subscribe {
-    item, _ := ent.Database.Subscribe.QueryNotDeleted().Where(subscribe.ID(subscribeID)).WithEnterprise().WithRider().Only(s.ctx)
+    item, _ := ent.Database.Subscribe.QueryNotDeleted().Where(subscribe.ID(subscribeID)).WithEnterprise().WithRider().First(s.ctx)
     if item == nil {
         snag.Panic("未找到对应订阅")
     }

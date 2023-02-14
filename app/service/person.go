@@ -36,7 +36,7 @@ func NewPersonWithModifier(m *model.Modifier) *personService {
 }
 
 func (s *personService) Query(id uint64) (*ent.Person, *ent.Rider) {
-    item, err := ent.Database.Rider.QueryNotDeleted().WithPerson().Where(rider.ID(id)).Only(s.ctx)
+    item, err := ent.Database.Rider.QueryNotDeleted().WithPerson().Where(rider.ID(id)).First(s.ctx)
     if err != nil || item == nil || item.Edges.Person == nil {
         snag.Panic("未找到骑手实名信息")
     }
