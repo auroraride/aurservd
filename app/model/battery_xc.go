@@ -153,8 +153,8 @@ type XcBatteryStatistics struct {
 
 type XcBatteryPositionReq struct {
     SN    string `json:"sn" param:"sn" validate:"required"` // 电池编码
-    Start string `json:"start" query:"start"`               // 开始时间 (精确到秒, 默认6小时前)
-    End   string `json:"end" query:"end"`                   // 结束时间 (精确到秒, 默认当前时间)
+    Start string `json:"start" query:"start"`               // 开始时间 (精确到秒, 格式为: yyyy-mm-dd hh:mm:ss, 默认6小时前)
+    End   string `json:"end" query:"end"`                   // 结束时间 (精确到秒, 格式为: yyyy-mm-dd hh:mm:ss, 默认当前时间)
 }
 
 type XcBatteryPositionRes struct {
