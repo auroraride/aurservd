@@ -7,7 +7,6 @@ import (
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
     "github.com/auroraride/aurservd/internal/ent/internal"
-    jsoniter "github.com/json-iterator/go"
 )
 
 // Export holds the schema definition for the Export entity.
@@ -33,7 +32,7 @@ func (Export) Fields() []ent.Field {
         field.String("message").Optional().Comment("失败原因"),
         field.Time("finish_at").Optional().Comment("生成时间"),
         field.Int64("duration").Optional().Comment("耗时"),
-        field.JSON("condition", jsoniter.RawMessage{}).Comment("筛选条件"),
+        field.Text("condition").Comment("筛选条件"),
         field.JSON("info", map[string]interface{}{}).Optional().Comment("详细信息"),
         field.String("remark").Comment("备注信息"),
     }

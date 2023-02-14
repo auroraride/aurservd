@@ -2401,7 +2401,7 @@ var (
 		{Name: "message", Type: field.TypeString, Nullable: true, Comment: "失败原因"},
 		{Name: "finish_at", Type: field.TypeTime, Nullable: true, Comment: "生成时间"},
 		{Name: "duration", Type: field.TypeInt64, Nullable: true, Comment: "耗时"},
-		{Name: "condition", Type: field.TypeJSON, Comment: "筛选条件"},
+		{Name: "condition", Type: field.TypeString, Size: 2147483647, Comment: "筛选条件"},
 		{Name: "info", Type: field.TypeJSON, Nullable: true, Comment: "详细信息"},
 		{Name: "remark", Type: field.TypeString, Comment: "备注信息"},
 		{Name: "manager_id", Type: field.TypeUint64, Comment: "管理人ID"},

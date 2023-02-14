@@ -11,7 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/internal/ent/export"
 	"github.com/auroraride/aurservd/internal/ent/manager"
-	jsoniter "github.com/json-iterator/go"
 )
 
 // Export is the model entity for the Export schema.
@@ -42,7 +41,7 @@ type Export struct {
 	// 耗时
 	Duration int64 `json:"duration,omitempty"`
 	// 筛选条件
-	Condition jsoniter.RawMessage `json:"condition,omitempty"`
+	Condition string `json:"condition,omitempty"`
 	// 详细信息
 	Info map[string]interface{} `json:"info,omitempty"`
 	// 备注信息
@@ -79,11 +78,11 @@ func (*Export) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case export.FieldCondition, export.FieldInfo:
+		case export.FieldInfo:
 			values[i] = new([]byte)
 		case export.FieldID, export.FieldManagerID, export.FieldStatus, export.FieldDuration:
 			values[i] = new(sql.NullInt64)
-		case export.FieldTaxonomy, export.FieldSn, export.FieldPath, export.FieldMessage, export.FieldRemark:
+		case export.FieldTaxonomy, export.FieldSn, export.FieldPath, export.FieldMessage, export.FieldCondition, export.FieldRemark:
 			values[i] = new(sql.NullString)
 		case export.FieldCreatedAt, export.FieldUpdatedAt, export.FieldDeletedAt, export.FieldFinishAt:
 			values[i] = new(sql.NullTime)
@@ -176,12 +175,10 @@ func (e *Export) assignValues(columns []string, values []any) error {
 				e.Duration = value.Int64
 			}
 		case export.FieldCondition:
-			if value, ok := values[i].(*[]byte); !ok {
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field condition", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &e.Condition); err != nil {
-					return fmt.Errorf("unmarshal field condition: %w", err)
-				}
+			} else if value.Valid {
+				e.Condition = value.String
 			}
 		case export.FieldInfo:
 			if value, ok := values[i].(*[]byte); !ok {
@@ -266,7 +263,7 @@ func (e *Export) String() string {
 	builder.WriteString(fmt.Sprintf("%v", e.Duration))
 	builder.WriteString(", ")
 	builder.WriteString("condition=")
-	builder.WriteString(fmt.Sprintf("%v", e.Condition))
+	builder.WriteString(e.Condition)
 	builder.WriteString(", ")
 	builder.WriteString("info=")
 	builder.WriteString(fmt.Sprintf("%v", e.Info))

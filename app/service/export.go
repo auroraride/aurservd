@@ -8,6 +8,7 @@ package service
 import (
     "context"
     "fmt"
+    "github.com/auroraride/adapter"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
@@ -49,7 +50,7 @@ func (s *exportService) Start(taxonomy string, con any, data map[string]interfac
         info := make(ar.Map)
 
         ex, err = s.orm.Create().
-            SetCondition(b).
+            SetCondition(adapter.ConvertBytes2String(b)).
             SetRemark(remark).
             SetTaxonomy(taxonomy).
             SetSn(sn).

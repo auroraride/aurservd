@@ -932,7 +932,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			export.FieldMessage:   {Type: field.TypeString, Column: export.FieldMessage},
 			export.FieldFinishAt:  {Type: field.TypeTime, Column: export.FieldFinishAt},
 			export.FieldDuration:  {Type: field.TypeInt64, Column: export.FieldDuration},
-			export.FieldCondition: {Type: field.TypeJSON, Column: export.FieldCondition},
+			export.FieldCondition: {Type: field.TypeString, Column: export.FieldCondition},
 			export.FieldInfo:      {Type: field.TypeJSON, Column: export.FieldInfo},
 			export.FieldRemark:    {Type: field.TypeString, Column: export.FieldRemark},
 		},
@@ -9317,8 +9317,8 @@ func (f *ExportFilter) WhereDuration(p entql.Int64P) {
 	f.Where(p.Field(export.FieldDuration))
 }
 
-// WhereCondition applies the entql json.RawMessage predicate on the condition field.
-func (f *ExportFilter) WhereCondition(p entql.BytesP) {
+// WhereCondition applies the entql string predicate on the condition field.
+func (f *ExportFilter) WhereCondition(p entql.StringP) {
 	f.Where(p.Field(export.FieldCondition))
 }
 

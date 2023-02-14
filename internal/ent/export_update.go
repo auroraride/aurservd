@@ -10,12 +10,10 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/export"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
-	jsoniter "github.com/json-iterator/go"
 )
 
 // ExportUpdate is the builder for updating Export entities.
@@ -185,14 +183,8 @@ func (eu *ExportUpdate) ClearDuration() *ExportUpdate {
 }
 
 // SetCondition sets the "condition" field.
-func (eu *ExportUpdate) SetCondition(jm jsoniter.RawMessage) *ExportUpdate {
-	eu.mutation.SetCondition(jm)
-	return eu
-}
-
-// AppendCondition appends jm to the "condition" field.
-func (eu *ExportUpdate) AppendCondition(jm jsoniter.RawMessage) *ExportUpdate {
-	eu.mutation.AppendCondition(jm)
+func (eu *ExportUpdate) SetCondition(s string) *ExportUpdate {
+	eu.mutation.SetCondition(s)
 	return eu
 }
 
@@ -350,12 +342,7 @@ func (eu *ExportUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.ClearField(export.FieldDuration, field.TypeInt64)
 	}
 	if value, ok := eu.mutation.Condition(); ok {
-		_spec.SetField(export.FieldCondition, field.TypeJSON, value)
-	}
-	if value, ok := eu.mutation.AppendedCondition(); ok {
-		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, export.FieldCondition, value)
-		})
+		_spec.SetField(export.FieldCondition, field.TypeString, value)
 	}
 	if value, ok := eu.mutation.Info(); ok {
 		_spec.SetField(export.FieldInfo, field.TypeJSON, value)
@@ -576,14 +563,8 @@ func (euo *ExportUpdateOne) ClearDuration() *ExportUpdateOne {
 }
 
 // SetCondition sets the "condition" field.
-func (euo *ExportUpdateOne) SetCondition(jm jsoniter.RawMessage) *ExportUpdateOne {
-	euo.mutation.SetCondition(jm)
-	return euo
-}
-
-// AppendCondition appends jm to the "condition" field.
-func (euo *ExportUpdateOne) AppendCondition(jm jsoniter.RawMessage) *ExportUpdateOne {
-	euo.mutation.AppendCondition(jm)
+func (euo *ExportUpdateOne) SetCondition(s string) *ExportUpdateOne {
+	euo.mutation.SetCondition(s)
 	return euo
 }
 
@@ -765,12 +746,7 @@ func (euo *ExportUpdateOne) sqlSave(ctx context.Context) (_node *Export, err err
 		_spec.ClearField(export.FieldDuration, field.TypeInt64)
 	}
 	if value, ok := euo.mutation.Condition(); ok {
-		_spec.SetField(export.FieldCondition, field.TypeJSON, value)
-	}
-	if value, ok := euo.mutation.AppendedCondition(); ok {
-		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, export.FieldCondition, value)
-		})
+		_spec.SetField(export.FieldCondition, field.TypeString, value)
 	}
 	if value, ok := euo.mutation.Info(); ok {
 		_spec.SetField(export.FieldInfo, field.TypeJSON, value)

@@ -64,7 +64,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/subscribereminder"
 	"github.com/auroraride/aurservd/internal/ent/subscribesuspend"
 	"github.com/google/uuid"
-	jsoniter "github.com/json-iterator/go"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -46138,31 +46137,30 @@ func (m *ExchangeMutation) ResetEdge(name string) error {
 // ExportMutation represents an operation that mutates the Export nodes in the graph.
 type ExportMutation struct {
 	config
-	op              Op
-	typ             string
-	id              *uint64
-	created_at      *time.Time
-	updated_at      *time.Time
-	deleted_at      *time.Time
-	taxonomy        *string
-	sn              *string
-	status          *uint8
-	addstatus       *int8
-	_path           *string
-	message         *string
-	finish_at       *time.Time
-	duration        *int64
-	addduration     *int64
-	condition       *jsoniter.RawMessage
-	appendcondition jsoniter.RawMessage
-	info            *map[string]interface{}
-	remark          *string
-	clearedFields   map[string]struct{}
-	manager         *uint64
-	clearedmanager  bool
-	done            bool
-	oldValue        func(context.Context) (*Export, error)
-	predicates      []predicate.Export
+	op             Op
+	typ            string
+	id             *uint64
+	created_at     *time.Time
+	updated_at     *time.Time
+	deleted_at     *time.Time
+	taxonomy       *string
+	sn             *string
+	status         *uint8
+	addstatus      *int8
+	_path          *string
+	message        *string
+	finish_at      *time.Time
+	duration       *int64
+	addduration    *int64
+	condition      *string
+	info           *map[string]interface{}
+	remark         *string
+	clearedFields  map[string]struct{}
+	manager        *uint64
+	clearedmanager bool
+	done           bool
+	oldValue       func(context.Context) (*Export, error)
+	predicates     []predicate.Export
 }
 
 var _ ent.Mutation = (*ExportMutation)(nil)
@@ -46766,13 +46764,12 @@ func (m *ExportMutation) ResetDuration() {
 }
 
 // SetCondition sets the "condition" field.
-func (m *ExportMutation) SetCondition(jm jsoniter.RawMessage) {
-	m.condition = &jm
-	m.appendcondition = nil
+func (m *ExportMutation) SetCondition(s string) {
+	m.condition = &s
 }
 
 // Condition returns the value of the "condition" field in the mutation.
-func (m *ExportMutation) Condition() (r jsoniter.RawMessage, exists bool) {
+func (m *ExportMutation) Condition() (r string, exists bool) {
 	v := m.condition
 	if v == nil {
 		return
@@ -46783,7 +46780,7 @@ func (m *ExportMutation) Condition() (r jsoniter.RawMessage, exists bool) {
 // OldCondition returns the old "condition" field's value of the Export entity.
 // If the Export object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ExportMutation) OldCondition(ctx context.Context) (v jsoniter.RawMessage, err error) {
+func (m *ExportMutation) OldCondition(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldCondition is only allowed on UpdateOne operations")
 	}
@@ -46797,23 +46794,9 @@ func (m *ExportMutation) OldCondition(ctx context.Context) (v jsoniter.RawMessag
 	return oldValue.Condition, nil
 }
 
-// AppendCondition adds jm to the "condition" field.
-func (m *ExportMutation) AppendCondition(jm jsoniter.RawMessage) {
-	m.appendcondition = append(m.appendcondition, jm...)
-}
-
-// AppendedCondition returns the list of values that were appended to the "condition" field in this mutation.
-func (m *ExportMutation) AppendedCondition() (jsoniter.RawMessage, bool) {
-	if len(m.appendcondition) == 0 {
-		return nil, false
-	}
-	return m.appendcondition, true
-}
-
 // ResetCondition resets all changes to the "condition" field.
 func (m *ExportMutation) ResetCondition() {
 	m.condition = nil
-	m.appendcondition = nil
 }
 
 // SetInfo sets the "info" field.
@@ -47164,7 +47147,7 @@ func (m *ExportMutation) SetField(name string, value ent.Value) error {
 		m.SetDuration(v)
 		return nil
 	case export.FieldCondition:
-		v, ok := value.(jsoniter.RawMessage)
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

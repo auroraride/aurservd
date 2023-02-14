@@ -110,6 +110,11 @@ func Duration(v int64) predicate.Export {
 	return predicate.Export(sql.FieldEQ(FieldDuration, v))
 }
 
+// Condition applies equality check predicate on the "condition" field. It's identical to ConditionEQ.
+func Condition(v string) predicate.Export {
+	return predicate.Export(sql.FieldEQ(FieldCondition, v))
+}
+
 // Remark applies equality check predicate on the "remark" field. It's identical to RemarkEQ.
 func Remark(v string) predicate.Export {
 	return predicate.Export(sql.FieldEQ(FieldRemark, v))
@@ -683,6 +688,71 @@ func DurationIsNil() predicate.Export {
 // DurationNotNil applies the NotNil predicate on the "duration" field.
 func DurationNotNil() predicate.Export {
 	return predicate.Export(sql.FieldNotNull(FieldDuration))
+}
+
+// ConditionEQ applies the EQ predicate on the "condition" field.
+func ConditionEQ(v string) predicate.Export {
+	return predicate.Export(sql.FieldEQ(FieldCondition, v))
+}
+
+// ConditionNEQ applies the NEQ predicate on the "condition" field.
+func ConditionNEQ(v string) predicate.Export {
+	return predicate.Export(sql.FieldNEQ(FieldCondition, v))
+}
+
+// ConditionIn applies the In predicate on the "condition" field.
+func ConditionIn(vs ...string) predicate.Export {
+	return predicate.Export(sql.FieldIn(FieldCondition, vs...))
+}
+
+// ConditionNotIn applies the NotIn predicate on the "condition" field.
+func ConditionNotIn(vs ...string) predicate.Export {
+	return predicate.Export(sql.FieldNotIn(FieldCondition, vs...))
+}
+
+// ConditionGT applies the GT predicate on the "condition" field.
+func ConditionGT(v string) predicate.Export {
+	return predicate.Export(sql.FieldGT(FieldCondition, v))
+}
+
+// ConditionGTE applies the GTE predicate on the "condition" field.
+func ConditionGTE(v string) predicate.Export {
+	return predicate.Export(sql.FieldGTE(FieldCondition, v))
+}
+
+// ConditionLT applies the LT predicate on the "condition" field.
+func ConditionLT(v string) predicate.Export {
+	return predicate.Export(sql.FieldLT(FieldCondition, v))
+}
+
+// ConditionLTE applies the LTE predicate on the "condition" field.
+func ConditionLTE(v string) predicate.Export {
+	return predicate.Export(sql.FieldLTE(FieldCondition, v))
+}
+
+// ConditionContains applies the Contains predicate on the "condition" field.
+func ConditionContains(v string) predicate.Export {
+	return predicate.Export(sql.FieldContains(FieldCondition, v))
+}
+
+// ConditionHasPrefix applies the HasPrefix predicate on the "condition" field.
+func ConditionHasPrefix(v string) predicate.Export {
+	return predicate.Export(sql.FieldHasPrefix(FieldCondition, v))
+}
+
+// ConditionHasSuffix applies the HasSuffix predicate on the "condition" field.
+func ConditionHasSuffix(v string) predicate.Export {
+	return predicate.Export(sql.FieldHasSuffix(FieldCondition, v))
+}
+
+// ConditionEqualFold applies the EqualFold predicate on the "condition" field.
+func ConditionEqualFold(v string) predicate.Export {
+	return predicate.Export(sql.FieldEqualFold(FieldCondition, v))
+}
+
+// ConditionContainsFold applies the ContainsFold predicate on the "condition" field.
+func ConditionContainsFold(v string) predicate.Export {
+	return predicate.Export(sql.FieldContainsFold(FieldCondition, v))
 }
 
 // InfoIsNil applies the IsNil predicate on the "info" field.
