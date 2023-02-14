@@ -214,23 +214,24 @@ func (s *batteryXcService) FaultList(req *model.XcBatteryFaultReq) *model.Pagina
         Current: req.Current,
     }
 
+    items := make([]*model.XcBatteryFaultRes, 0)
     if r != nil {
         page.Pages = int(r.Pagination.Pages)
         page.Total = int(r.Pagination.Total)
-    }
 
-    items := make([]*model.XcBatteryFaultRes, len(r.Items))
-    for i, item := range r.Items {
-        items[i] = &model.XcBatteryFaultRes{
-            Sn:      item.Sn,
-            Fault:   item.Fault,
-            BeginAt: item.BeginAt.AsTime().In(ar.TimeLocation).Format("2006-01-02 15:04:05"),
+        items = make([]*model.XcBatteryFaultRes, len(r.Items))
+        for i, item := range r.Items {
+            items[i] = &model.XcBatteryFaultRes{
+                Sn:      item.Sn,
+                Fault:   item.Fault,
+                BeginAt: item.BeginAt.AsTime().In(ar.TimeLocation).Format("2006-01-02 15:04:05"),
+            }
+            if item.EndAt != nil {
+                items[i].EndAt = item.EndAt.AsTime().In(ar.TimeLocation).Format("2006-01-02 15:04:05")
+            }
         }
-        if item.EndAt != nil {
-            items[i].EndAt = item.EndAt.AsTime().In(ar.TimeLocation).Format("2006-01-02 15:04:05")
-        }
-    }
 
+    }
     return &model.PaginationRes{
         Pagination: page,
         Items:      items,
