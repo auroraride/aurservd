@@ -22,7 +22,6 @@ import (
 type LogCallback func(data any)
 
 type Provider interface {
-    PrepareRequest()
     Cabinets() ([]*ent.Cabinet, error)
     Brand() string
     Logger() *Logger
@@ -32,10 +31,8 @@ type Provider interface {
 }
 
 func Run() {
-    yd := NewYundong()
-    kx := NewKaixin()
     if ar.Config.Cabinet.Provider {
-        StartCabinetProvider(yd, kx)
+        StartCabinetProvider(NewKaixin())
     }
 }
 
@@ -72,7 +69,6 @@ func StartCabinetProvider(providers ...Provider) {
 func dooLoop(times int, start time.Time, provider Provider) {
     snag.WithPanicStack(func() {
         slsCfg := ar.Config.Aliyun.Sls
-        provider.PrepareRequest()
         provider.Logger().Write(fmt.Sprintf("开始第%d次%s电柜状态轮询\n", times, provider.Brand()))
 
         items, err := provider.Cabinets()

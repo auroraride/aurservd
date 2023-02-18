@@ -374,33 +374,30 @@ func (s *cabinetService) DoorOperate(req *model.CabinetDoorOperateReq, operator 
             return
         }
     }
-    var prov provider.Provider
     switch brand {
     case model.CabinetBrandYundong:
-        prov = provider.NewYundong()
+        // TODO 云动 - 开启柜门
         break
     case model.CabinetBrandKaixin:
-        prov = provider.NewKaixin()
+        // 请求开启柜门
+        state = provider.NewKaixin().DoorOperate(operator.Name+"-"+opId, item.Serial, op, *req.Index)
+        // 如果成功, 重新获取状态更新数据
+        if state {
+            // 更新一次电柜状态
+            err = provider.NewUpdater(item).DoUpdate()
+            // 如果是锁仓, 需要更新仓位备注
+            if *req.Operation == model.CabinetDoorOperateLock {
+                item.Bin[*req.Index].Remark = req.Remark
+            }
+            // 如果是解锁, 需要清除仓位备注
+            if *req.Operation == model.CabinetDoorOperateUnlock {
+                item.Bin[*req.Index].Remark = ""
+            }
+            _, _ = item.Update().SetBin(item.Bin).Save(s.ctx)
+        } else {
+            err = errors.New("柜门操作失败")
+        }
         break
-    }
-    // 请求开启柜门
-    prov.PrepareRequest()
-    state = prov.DoorOperate(operator.Name+"-"+opId, item.Serial, op, *req.Index)
-    // 如果成功, 重新获取状态更新数据
-    if state {
-        // 更新一次电柜状态
-        err = provider.NewUpdater(item).DoUpdate()
-        // 如果是锁仓, 需要更新仓位备注
-        if *req.Operation == model.CabinetDoorOperateLock {
-            item.Bin[*req.Index].Remark = req.Remark
-        }
-        // 如果是解锁, 需要清除仓位备注
-        if *req.Operation == model.CabinetDoorOperateUnlock {
-            item.Bin[*req.Index].Remark = ""
-        }
-        _, _ = item.Update().SetBin(item.Bin).Save(s.ctx)
-    } else {
-        err = errors.New("柜门操作失败")
     }
     go func() {
         // 上传日志

@@ -91,8 +91,6 @@ func (p *kaixin) GetUrl(path kaixinUrl) string {
     return p.url + string(path)
 }
 
-func (p *kaixin) PrepareRequest() {}
-
 type KXRes[T any] struct {
     Cupboard string `json:"cupboard"`
     Data     T      `json:"data,omitempty"`
