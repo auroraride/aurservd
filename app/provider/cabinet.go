@@ -34,8 +34,6 @@ func NewUpdater(cab *ent.Cabinet) *updater {
     var prov Provider
     if cab.Brand == model.CabinetBrandKaixin.Value() {
         prov = NewKaixin()
-    } else {
-        prov = NewYundong()
     }
     return &updater{
         cab:      cab,

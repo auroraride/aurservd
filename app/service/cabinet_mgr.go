@@ -12,7 +12,6 @@ import (
     "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/provider"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/golang-module/carbon/v2"
@@ -184,7 +183,6 @@ func (s *cabinetMgrService) Reboot(req *model.IDPostReq) bool {
         snag.Panic("凯信电柜不支持该操作")
     }
 
-    var prov provider.Provider
     var status bool
 
     // 创建并开始任务
@@ -208,8 +206,7 @@ func (s *cabinetMgrService) Reboot(req *model.IDPostReq) bool {
     }()
 
     // 请求云动重启
-    prov = provider.NewYundong()
-    status = prov.Reboot(s.modifier.Name+"-"+opId, cab.Serial)
+    // TODO 云动 - 重启
 
     brand := model.CabinetBrand(cab.Brand)
     go func() {
