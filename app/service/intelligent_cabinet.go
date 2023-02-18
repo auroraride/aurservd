@@ -152,13 +152,14 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 
     // 查询结果
     for _, result := range v.Results {
-        after := result.After
-        before := result.Before
-
         duration += result.Duration
         stopAt = result.StopAt
 
-        if result.Success {
+        // 如果成功并且是智能柜, 记录电池编码
+        if result.Success && cab.Intelligent {
+            after := result.After
+            before := result.Before
+
             // 记录用户放入的电池
             if model.ExchangeStepPutInto.EqualInt(result.Step) && after != nil {
                 putin = after.BatterySN
