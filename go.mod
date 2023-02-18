@@ -14,6 +14,7 @@ require (
 	github.com/aliyun/aliyun-log-go-sdk v0.1.43
 	github.com/aliyun/aliyun-oss-go-sdk v2.2.6+incompatible
 	github.com/auroraride/adapter v0.0.0
+	github.com/auroraride/yundong v0.0.0
 	github.com/fsnotify/fsnotify v1.6.0
 	github.com/getkin/kin-openapi v0.114.0
 	github.com/go-playground/locales v0.14.1
@@ -172,3 +173,4 @@ replace github.com/swaggo/swag => github.com/liasica/swag v1.8.7-0.2022093001003
 //replace entgo.io/ent => github.com/liasica/ent v0.11.3-0.20220926082554-08715525d2cf
 
 replace github.com/auroraride/adapter => ../adapter
+replace github.com/auroraride/yundong => ../yundong
