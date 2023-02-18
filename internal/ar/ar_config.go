@@ -117,11 +117,6 @@ type config struct {
     }
 
     ThirdParty struct {
-        Yundong struct {
-            Appid  string
-            Appkey string
-            Url    string
-        }
         Kaixin struct {
             Url string
             Key string
