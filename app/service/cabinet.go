@@ -19,7 +19,6 @@ import (
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/batterymodel"
-    "github.com/auroraride/aurservd/internal/ent/branch"
     "github.com/auroraride/aurservd/internal/ent/cabinet"
     "github.com/auroraride/aurservd/internal/ent/hook"
     "github.com/auroraride/aurservd/internal/ent/stock"
@@ -34,7 +33,6 @@ import (
     "golang.org/x/exp/slices"
     "regexp"
     "sort"
-    "strconv"
     "strings"
     "time"
 )
@@ -120,10 +118,6 @@ func (s *cabinetService) CreateCabinet(req *model.CabinetCreateReq) (res *model.
     res = new(model.CabinetItem)
     _ = copier.Copy(res, item)
 
-    if model.CabinetStatus(item.Status) == model.CabinetStatusNormal {
-        go s.Deploy(item)
-    }
-
     return
 }
 
@@ -197,7 +191,6 @@ func (s *cabinetService) Modify(req *model.CabinetModifyReq) {
     if cab == nil {
         snag.Panic("未找到电柜")
     }
-    willDeploy := model.CabinetStatus(cab.Status) == model.CabinetStatusPending && req.Status != nil && *req.Status == model.CabinetStatusNormal
     err := ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
         q := tx.Cabinet.UpdateOne(cab)
         if req.Models != nil {
@@ -276,37 +269,6 @@ func (s *cabinetService) Modify(req *model.CabinetModifyReq) {
     if err != nil {
         snag.Panic(err)
     }
-
-    if willDeploy {
-        go s.Deploy(cab)
-    }
-}
-
-func (s *cabinetService) Deploy(c *ent.Cabinet) {
-    if model.CabinetBrand(c.Brand) != model.CabinetBrandYundong {
-        return
-    }
-
-    // 查找电柜
-    b, _ := ent.Database.Branch.QueryNotDeleted().Where(branch.ID(*c.BranchID)).WithCity().First(s.ctx)
-    if b == nil || b.Edges.City == nil {
-        snag.Panic("投产失败, 未找到网点信息, 请将电柜改为未投放并调整好网点重试")
-    }
-
-    bec := b.Edges.City
-
-    // 云动部署投产
-    provider.NewYundong().UpdateBasicInfo(model.YundongDeployInfo{
-        SN:       c.Serial,
-        AreaCode: strconv.Itoa(int(bec.ID)),
-        Address:  b.Address,
-        Lat:      b.Lat,
-        Lng:      b.Lng,
-        Name:     c.Name,
-        Phone:    "4000290929",
-        Contact:  "极光出行客服",
-        City:     c.Name,
-    })
 }
 
 // Delete 删除电柜
