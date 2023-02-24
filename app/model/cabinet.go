@@ -191,18 +191,18 @@ func (cbs CabinetBins) MaxEmpty() (max *CabinetBin, empty *CabinetBin) {
 // 1000mV = 1V
 // (锁定状态 / 备注信息) 需要携带到下次的状态更新中
 type CabinetBin struct {
-    Index         int                `json:"index"`                   // 仓位index (从0开始)
-    Name          string             `json:"name"`                    // 柜门名称
-    BatterySN     string             `json:"batterySN"`               // 电池序列号
-    Full          bool               `json:"full"`                    // 是否满电
-    Battery       bool               `json:"battery"`                 // 是否有电池
-    Electricity   BatteryElectricity `json:"electricity"`             // 当前电量
-    OpenStatus    bool               `json:"openStatus"`              // 是否开门
-    DoorHealth    bool               `json:"doorHealth"`              // 是否锁仓 (柜门是否正常)
-    Current       float64            `json:"current"`                 // 充电电流(A)
-    Voltage       float64            `json:"voltage"`                 // 电压(V)
-    ChargerErrors []string           `json:"chargerErrors,omitempty"` // 故障信息
-    Remark        string             `json:"remark,omitempty"`        // 备注
+    Index         int        `json:"index"`                   // 仓位index (从0开始)
+    Name          string     `json:"name"`                    // 柜门名称
+    BatterySN     string     `json:"batterySN"`               // 电池序列号
+    Full          bool       `json:"full"`                    // 是否满电
+    Battery       bool       `json:"battery"`                 // 是否有电池
+    Electricity   BatterySoc `json:"electricity"`             // 当前电量
+    OpenStatus    bool       `json:"openStatus"`              // 是否开门
+    DoorHealth    bool       `json:"doorHealth"`              // 是否锁仓 (柜门是否正常)
+    Current       float64    `json:"current"`                 // 充电电流(A)
+    Voltage       float64    `json:"voltage"`                 // 电压(V)
+    ChargerErrors []string   `json:"chargerErrors,omitempty"` // 故障信息
+    Remark        string     `json:"remark,omitempty"`        // 备注
 }
 
 // CabinetBinRemark 仓位备注
@@ -306,9 +306,9 @@ type CabinetDoorOperateReq struct {
 
 // BinInfo 任务电柜仓位信息
 type BinInfo struct {
-    Index       int                `json:"index" bson:"index"`             // 仓位index
-    Electricity BatteryElectricity `json:"electricity" bson:"electricity"` // 电量
-    Voltage     float64            `json:"voltage" bson:"voltage"`         // 电压(V)
+    Index       int        `json:"index" bson:"index"`             // 仓位index
+    Electricity BatterySoc `json:"electricity" bson:"electricity"` // 电量
+    Voltage     float64    `json:"voltage" bson:"voltage"`         // 电压(V)
 }
 
 func (b *BinInfo) String() string {

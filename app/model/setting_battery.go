@@ -9,20 +9,20 @@ import (
     "github.com/auroraride/aurservd/pkg/cache"
 )
 
-type BatteryElectricity float64
+type BatterySoc float64
 
-func NewBatteryElectricity(pos float64) BatteryElectricity {
+func NewBatterySoc(pos float64) BatterySoc {
     if pos < 0 {
         pos = 0
     }
-    return BatteryElectricity(pos)
+    return BatterySoc(pos)
 }
 
 // IsBatteryFull 电池是否满电
-func (be BatteryElectricity) IsBatteryFull() bool {
-    return be >= BatteryElectricity(cache.Float64(SettingBatteryFullKey))
+func (be BatterySoc) IsBatteryFull() bool {
+    return be >= BatterySoc(cache.Float64(SettingBatteryFullKey))
 }
 
-func (be BatteryElectricity) Value() float64 {
+func (be BatterySoc) Value() float64 {
     return float64(be)
 }

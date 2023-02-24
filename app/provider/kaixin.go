@@ -189,7 +189,7 @@ func (p *kaixin) FetchStatus(serial string) (online bool, bins model.CabinetBins
         doors := res.GetBins()
         bins = make(model.CabinetBins, len(doors))
         for index, ds := range doors {
-            e := model.NewBatteryElectricity(utils.NewNumber().Decimal(ds.Cpg))
+            e := model.NewBatterySoc(utils.NewNumber().Decimal(ds.Cpg))
             hasBattery := ds.Bex == 2
             current := utils.NewNumber().Decimal(ds.Bci)
             isFull := e.IsBatteryFull()

@@ -212,6 +212,6 @@ type BranchFacilityCabinetBattery struct {
 }
 
 type BranchFacilityCabinetBin struct {
-    Status      uint8               `json:"status"`                // 状态 0:空仓 1:充电 2:可用 3:锁仓
-    Electricity *BatteryElectricity `json:"electricity,omitempty"` // 当前电量 锁仓或空仓无此字段
+    Status      uint8       `json:"status"`                // 状态 0:空仓 1:充电 2:可用 3:锁仓
+    Electricity *BatterySoc `json:"electricity,omitempty"` // 当前电量 锁仓或空仓无此字段
 }

@@ -226,7 +226,7 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
         }
 
         cab = NewCabinet().QueryOneSerialX(t.Serial)
-        var be model.BatteryElectricity
+        var be model.BatterySoc
         if t.Exchange.Alternative && !req.Alternative {
             snag.Panic("非满电换电取消")
         }

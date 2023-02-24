@@ -61,7 +61,7 @@ func (s *intelligentCabinetService) ExchangeUsable(bm, serial string, br model.C
     fully := &model.BinInfo{
         Index:       v.Fully.Ordinal - 1,
         Voltage:     v.Fully.Voltage,
-        Electricity: model.BatteryElectricity(v.Fully.Soc),
+        Electricity: model.BatterySoc(v.Fully.Soc),
     }
 
     if v.Fully.Soc >= model.IntelligentBatteryFullSoc {
@@ -165,7 +165,7 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
                 putin = after.BatterySN
                 empty = &model.BinInfo{
                     Index:       after.Ordinal - 1,
-                    Electricity: model.BatteryElectricity(after.Current),
+                    Electricity: model.BatterySoc(after.Current),
                     Voltage:     after.Voltage,
                 }
 
@@ -407,7 +407,7 @@ func (s *intelligentCabinetService) DoBusiness(br model.CabinetBrand, uidstr str
     b := results[1].After
     info = &model.BinInfo{
         Index:       b.Ordinal - 1,
-        Electricity: model.BatteryElectricity(b.Soc),
+        Electricity: model.BatterySoc(b.Soc),
         Voltage:     b.Voltage,
     }
 

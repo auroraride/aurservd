@@ -651,26 +651,11 @@ func (s *cabinetService) Sync(data *cabdef.CabinetMessage) {
         bins = cab.Bin
     }
 
-    // // var bm model.CabinetBinsMap
-    // bm := adapter.ConvertSliceToMap[*model.CabinetBin, int](cab.Bin, func(b *model.CabinetBin) (int, *model.CabinetBin, bool) {
-    //     return b.Index, &model.CabinetBin{
-    //         Index:       b.Index,
-    //         BatterySN:   b.BatterySN,
-    //         Electricity: b.Electricity,
-    //         Current:     b.Current,
-    //         Voltage:     b.Voltage,
-    //     }, true
-    // })
-
     if len(data.Bins) > 0 {
         var (
             bn, bf, bc, be, bl int
-
-            // fs = NewBatteryFlow()
         )
         for _, b := range data.Bins {
-            // 更新流转信息
-            // go fs.Sync(cab, bm, b)
 
             hasBattery := b.BatteryExists && b.BatterySn != ""
             var (
@@ -711,7 +696,7 @@ func (s *cabinetService) Sync(data *cabdef.CabinetMessage) {
                 BatterySN:   b.BatterySn,
                 Full:        isFull,
                 Battery:     hasBattery,
-                Electricity: model.BatteryElectricity(b.Soc),
+                Electricity: model.NewBatterySoc(b.Soc),
                 OpenStatus:  b.Open,
                 DoorHealth:  b.Health && b.Enable,
                 Current:     b.Current,

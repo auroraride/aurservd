@@ -78,7 +78,7 @@ func (e *ExchangeLog) SetStatus(status model.TaskStatus) *ExchangeLog {
     return e
 }
 
-func (e *ExchangeLog) SetElectricity(electricity model.BatteryElectricity) *ExchangeLog {
+func (e *ExchangeLog) SetElectricity(electricity model.BatterySoc) *ExchangeLog {
     e.Electricity = float64(electricity)
     return e
 }
