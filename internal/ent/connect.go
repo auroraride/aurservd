@@ -16,6 +16,7 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
     _ "github.com/jackc/pgx/v4/stdlib"
     "log"
+    "time"
 )
 
 var Database *Client
@@ -25,6 +26,10 @@ func OpenDatabase(dsn string, debug bool) *Client {
     if err != nil {
         log.Fatalf("数据库打开失败: %v", err)
     }
+
+    pgx.SetMaxIdleConns(10)
+    pgx.SetMaxOpenConns(100)
+    pgx.SetConnMaxLifetime(time.Hour)
 
     // 从db变量中构造一个ent.Driver对象。
     drv := entsql.OpenDB(dialect.Postgres, pgx)
