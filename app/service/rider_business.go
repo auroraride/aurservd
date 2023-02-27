@@ -91,7 +91,7 @@ func (s *riderBusinessService) preprocess(serial string, bt business.Type) {
     NewCabinet().BusinessableX(cab)
 
     // 判定是否智能电柜
-    if cab.Intelligent {
+    if cab.UsingMicroService() {
         bus, _ := NewBusiness().Convert(bt)
 
         // 验证是否可以办理业务
@@ -362,7 +362,7 @@ func (s *riderBusinessService) Active(req *model.BusinessCabinetReq) model.Busin
         SetTask(func() (*model.BinInfo, *model.Battery, error) {
             // 更新分配信息
             _ = allo.Update().SetStatus(model.AllocateStatusSigned.Value()).SetCabinetID(s.cabinet.ID).Exec(s.ctx)
-            if s.cabinet.Intelligent {
+            if s.cabinet.UsingMicroService() {
                 return NewIntelligentCabinet(s.rider).DoBusiness(model.CabinetBrand(s.cabinet.Brand), s.response.UUID, adapter.BusinessActive, s.subscribe, nil, s.cabinet)
             }
             return s.putout()
@@ -385,7 +385,7 @@ func (s *riderBusinessService) Continue(req *model.BusinessCabinetReq) model.Bus
             NewBusinessRider(s.rider).
                 SetCabinet(s.cabinet).
                 SetTask(func() (*model.BinInfo, *model.Battery, error) {
-                    if s.cabinet.Intelligent {
+                    if s.cabinet.UsingMicroService() {
                         return NewIntelligentCabinet(s.rider).DoBusiness(model.CabinetBrand(s.cabinet.Brand), s.response.UUID, adapter.BusinessContinue, s.subscribe, nil, s.cabinet)
                     }
                     return s.putout()
@@ -414,7 +414,7 @@ func (s *riderBusinessService) Unsubscribe(req *model.BusinessCabinetReq) model.
             NewBusinessRider(s.rider).
                 SetCabinet(s.cabinet).
                 SetTask(func() (*model.BinInfo, *model.Battery, error) {
-                    if s.cabinet.Intelligent {
+                    if s.cabinet.UsingMicroService() {
                         return NewIntelligentCabinet(s.rider).DoBusiness(model.CabinetBrand(s.cabinet.Brand), s.response.UUID, adapter.BusinessUnsubscribe, s.subscribe, s.battery, s.cabinet)
                     }
                     return s.putin()
@@ -440,7 +440,7 @@ func (s *riderBusinessService) Pause(req *model.BusinessCabinetReq) model.Busine
         err := snag.WithPanic(func() {
             NewBusinessRider(s.rider).
                 SetTask(func() (*model.BinInfo, *model.Battery, error) {
-                    if s.cabinet.Intelligent {
+                    if s.cabinet.UsingMicroService() {
                         return NewIntelligentCabinet(s.rider).DoBusiness(model.CabinetBrand(s.cabinet.Brand), s.response.UUID, adapter.BusinessPause, s.subscribe, s.battery, s.cabinet)
                     }
                     return s.putin()

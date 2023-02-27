@@ -74,7 +74,7 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
     )
 
     // 判断设备是否智能设备
-    if cab.Intelligent {
+    if cab.UsingMicroService() {
         // 判定是否可以换电
         NewIntelligentCabinet(s.rider).BusinessCensorX(adapter.BusinessExchange, sub, cab)
         uid, info = NewIntelligentCabinet(s.rider).ExchangeUsable(sub.Model, cab.Serial, model.CabinetBrand(cab.Brand))
@@ -152,7 +152,7 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
         Brand:                      model.CabinetBrand(cab.Brand),
     }
 
-    if cab.Intelligent {
+    if cab.UsingMicroService() {
         cache.Set(s.ctx, uid, res, 10*time.Minute)
     }
 
@@ -195,7 +195,9 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
     if err == nil {
         cab = NewCabinet().QueryOneSerialX(info.Serial)
         bat = NewIntelligentCabinet(s.rider).BusinessCensorX(adapter.BusinessExchange, sub, cab)
-        batSN = silk.String(bat.Sn)
+        if bat != nil {
+            batSN = silk.String(bat.Sn)
+        }
 
         tex = &ec.Exchange{
             Model:       sub.Model,
@@ -298,7 +300,7 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
         snag.Panic("换电失败")
     }
 
-    if cab.Intelligent {
+    if cab.UsingMicroService() {
         go async.WithTask(func() {
             NewIntelligentCabinet(s.rider).Exchange(req.UUID, s.exchange, sub, bat, cab)
         })

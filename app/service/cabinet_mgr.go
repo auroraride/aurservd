@@ -89,7 +89,7 @@ func (s *cabinetMgrService) BinOperate(req *model.CabinetDoorOperateReq) bool {
         snag.Panic("非操作维护中不可操作")
     }
 
-    if cab.Intelligent {
+    if cab.UsingMicroService() {
         var op cabdef.Operate
         switch *req.Operation {
         case model.CabinetDoorOperateOpen:

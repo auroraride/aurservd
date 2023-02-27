@@ -6,6 +6,7 @@
 package ent
 
 import (
+    "github.com/auroraride/adapter"
     "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent/business"
@@ -36,4 +37,8 @@ func (c *Cabinet) ReserveAble(typ business.Type, num int) bool {
         return c.EmptyBinNum-num >= 2
     }
     return false
+}
+
+func (c *Cabinet) UsingMicroService() bool {
+    return c.Intelligent || c.Brand == adapter.CabinetYundong.String()
 }

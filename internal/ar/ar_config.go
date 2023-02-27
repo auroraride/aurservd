@@ -76,7 +76,7 @@ type config struct {
         Kxcab struct {
             Api string
         }
-        Xcbms struct {
+        Ydcab struct {
             Api string
         }
     }
