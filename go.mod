@@ -14,7 +14,6 @@ require (
 	github.com/aliyun/aliyun-log-go-sdk v0.1.43
 	github.com/aliyun/aliyun-oss-go-sdk v2.2.6+incompatible
 	github.com/auroraride/adapter v0.0.0
-	github.com/auroraride/yundong v0.0.0
 	github.com/fsnotify/fsnotify v1.6.0
 	github.com/getkin/kin-openapi v0.114.0
 	github.com/go-playground/locales v0.14.1
@@ -121,6 +120,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
 	github.com/opentracing/opentracing-go v1.2.1-0.20220228012449-10b1cf09e00b // indirect
+	github.com/panjf2000/ants/v2 v2.7.1 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.6 // indirect
 	github.com/perimeterx/marshmallow v1.1.4 // indirect
 	github.com/pierrec/lz4 v2.6.1+incompatible // indirect
@@ -173,4 +173,5 @@ replace github.com/swaggo/swag => github.com/liasica/swag v1.8.7-0.2022093001003
 //replace entgo.io/ent => github.com/liasica/ent v0.11.3-0.20220926082554-08715525d2cf
 
 replace github.com/auroraride/adapter => ../adapter
+
 replace github.com/auroraride/yundong => ../yundong

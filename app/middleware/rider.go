@@ -15,7 +15,6 @@ import (
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/labstack/echo/v4"
-    "go.uber.org/zap"
 )
 
 var (
@@ -57,9 +56,6 @@ func riderLogin(token, pushId string, needLogin bool) (u *ent.Rider) {
     id, _ := cache.Get(context.Background(), token).Uint64()
     u, err = s.GetRiderById(id)
     // 判定是否需要登录
-    if err != nil && needLogin {
-        zap.L().Error("用户查询失败", zap.Error(err))
-    }
     if needLogin && (err != nil || u == nil) {
         snag.Panic(snag.StatusUnauthorized)
     }
