@@ -274,10 +274,12 @@ func (cq *ContractQuery) AllX(ctx context.Context) []*Contract {
 }
 
 // IDs executes the query and returns a list of Contract IDs.
-func (cq *ContractQuery) IDs(ctx context.Context) ([]uint64, error) {
-	var ids []uint64
+func (cq *ContractQuery) IDs(ctx context.Context) (ids []uint64, err error) {
+	if cq.ctx.Unique == nil && cq.path != nil {
+		cq.Unique(true)
+	}
 	ctx = setContextOp(ctx, cq.ctx, "IDs")
-	if err := cq.Select(contract.FieldID).Scan(ctx, &ids); err != nil {
+	if err = cq.Select(contract.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -670,20 +672,12 @@ func (cq *ContractQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (cq *ContractQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   contract.Table,
-			Columns: contract.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: contract.FieldID,
-			},
-		},
-		From:   cq.sql,
-		Unique: true,
-	}
+	_spec := sqlgraph.NewQuerySpec(contract.Table, contract.Columns, sqlgraph.NewFieldSpec(contract.FieldID, field.TypeUint64))
+	_spec.From = cq.sql
 	if unique := cq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if cq.path != nil {
+		_spec.Unique = true
 	}
 	if fields := cq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))

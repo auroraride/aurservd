@@ -401,9 +401,3 @@ func (c *Commission) String() string {
 
 // Commissions is a parsable slice of Commission.
 type Commissions []*Commission
-
-func (c Commissions) config(cfg config) {
-	for _i := range c {
-		c[_i].config = cfg
-	}
-}

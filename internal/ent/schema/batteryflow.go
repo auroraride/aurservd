@@ -108,5 +108,12 @@ func (BatteryFlow) Mixin() []ent.Mixin {
 }
 
 func (BatteryFlow) Indexes() []ent.Index {
-    return []ent.Index{}
+    return []ent.Index{
+        index.Fields("sn").Annotations(
+            entsql.IndexTypes(map[string]string{
+                dialect.Postgres: "GIN",
+            }),
+            entsql.OpClass("gin_trgm_ops"),
+        ),
+    }
 }

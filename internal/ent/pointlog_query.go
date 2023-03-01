@@ -226,10 +226,12 @@ func (plq *PointLogQuery) AllX(ctx context.Context) []*PointLog {
 }
 
 // IDs executes the query and returns a list of PointLog IDs.
-func (plq *PointLogQuery) IDs(ctx context.Context) ([]uint64, error) {
-	var ids []uint64
+func (plq *PointLogQuery) IDs(ctx context.Context) (ids []uint64, err error) {
+	if plq.ctx.Unique == nil && plq.path != nil {
+		plq.Unique(true)
+	}
 	ctx = setContextOp(ctx, plq.ctx, "IDs")
-	if err := plq.Select(pointlog.FieldID).Scan(ctx, &ids); err != nil {
+	if err = plq.Select(pointlog.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -520,20 +522,12 @@ func (plq *PointLogQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (plq *PointLogQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   pointlog.Table,
-			Columns: pointlog.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: pointlog.FieldID,
-			},
-		},
-		From:   plq.sql,
-		Unique: true,
-	}
+	_spec := sqlgraph.NewQuerySpec(pointlog.Table, pointlog.Columns, sqlgraph.NewFieldSpec(pointlog.FieldID, field.TypeUint64))
+	_spec.From = plq.sql
 	if unique := plq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if plq.path != nil {
+		_spec.Unique = true
 	}
 	if fields := plq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))

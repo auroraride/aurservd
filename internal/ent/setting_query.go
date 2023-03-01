@@ -178,10 +178,12 @@ func (sq *SettingQuery) AllX(ctx context.Context) []*Setting {
 }
 
 // IDs executes the query and returns a list of Setting IDs.
-func (sq *SettingQuery) IDs(ctx context.Context) ([]uint64, error) {
-	var ids []uint64
+func (sq *SettingQuery) IDs(ctx context.Context) (ids []uint64, err error) {
+	if sq.ctx.Unique == nil && sq.path != nil {
+		sq.Unique(true)
+	}
 	ctx = setContextOp(ctx, sq.ctx, "IDs")
-	if err := sq.Select(setting.FieldID).Scan(ctx, &ids); err != nil {
+	if err = sq.Select(setting.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -369,20 +371,12 @@ func (sq *SettingQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (sq *SettingQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   setting.Table,
-			Columns: setting.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: setting.FieldID,
-			},
-		},
-		From:   sq.sql,
-		Unique: true,
-	}
+	_spec := sqlgraph.NewQuerySpec(setting.Table, setting.Columns, sqlgraph.NewFieldSpec(setting.FieldID, field.TypeUint64))
+	_spec.From = sq.sql
 	if unique := sq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if sq.path != nil {
+		_spec.Unique = true
 	}
 	if fields := sq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))

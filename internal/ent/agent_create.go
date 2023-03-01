@@ -222,13 +222,7 @@ func (ac *AgentCreate) sqlSave(ctx context.Context) (*Agent, error) {
 func (ac *AgentCreate) createSpec() (*Agent, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Agent{config: ac.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: agent.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: agent.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(agent.Table, sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = ac.conflict
 	if value, ok := ac.mutation.CreatedAt(); ok {

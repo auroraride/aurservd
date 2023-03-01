@@ -195,13 +195,7 @@ func (ebc *EbikeBrandCreate) sqlSave(ctx context.Context) (*EbikeBrand, error) {
 func (ebc *EbikeBrandCreate) createSpec() (*EbikeBrand, *sqlgraph.CreateSpec) {
 	var (
 		_node = &EbikeBrand{config: ebc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: ebikebrand.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: ebikebrand.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(ebikebrand.Table, sqlgraph.NewFieldSpec(ebikebrand.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = ebc.conflict
 	if value, ok := ebc.mutation.CreatedAt(); ok {

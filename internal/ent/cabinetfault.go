@@ -344,9 +344,3 @@ func (cf *CabinetFault) String() string {
 
 // CabinetFaults is a parsable slice of CabinetFault.
 type CabinetFaults []*CabinetFault
-
-func (cf CabinetFaults) config(cfg config) {
-	for _i := range cf {
-		cf[_i].config = cfg
-	}
-}

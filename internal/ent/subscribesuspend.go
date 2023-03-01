@@ -319,9 +319,3 @@ func (ss *SubscribeSuspend) String() string {
 
 // SubscribeSuspends is a parsable slice of SubscribeSuspend.
 type SubscribeSuspends []*SubscribeSuspend
-
-func (ss SubscribeSuspends) config(cfg config) {
-	for _i := range ss {
-		ss[_i].config = cfg
-	}
-}

@@ -343,9 +343,3 @@ func (a *Attendance) String() string {
 
 // Attendances is a parsable slice of Attendance.
 type Attendances []*Attendance
-
-func (a Attendances) config(cfg config) {
-	for _i := range a {
-		a[_i].config = cfg
-	}
-}

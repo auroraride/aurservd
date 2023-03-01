@@ -467,10 +467,12 @@ func (rq *RiderQuery) AllX(ctx context.Context) []*Rider {
 }
 
 // IDs executes the query and returns a list of Rider IDs.
-func (rq *RiderQuery) IDs(ctx context.Context) ([]uint64, error) {
-	var ids []uint64
+func (rq *RiderQuery) IDs(ctx context.Context) (ids []uint64, err error) {
+	if rq.ctx.Unique == nil && rq.path != nil {
+		rq.Unique(true)
+	}
 	ctx = setContextOp(ctx, rq.ctx, "IDs")
-	if err := rq.Select(rider.FieldID).Scan(ctx, &ids); err != nil {
+	if err = rq.Select(rider.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -1241,20 +1243,12 @@ func (rq *RiderQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (rq *RiderQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   rider.Table,
-			Columns: rider.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: rider.FieldID,
-			},
-		},
-		From:   rq.sql,
-		Unique: true,
-	}
+	_spec := sqlgraph.NewQuerySpec(rider.Table, rider.Columns, sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64))
+	_spec.From = rq.sql
 	if unique := rq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if rq.path != nil {
+		_spec.Unique = true
 	}
 	if fields := rq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))

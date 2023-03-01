@@ -246,16 +246,7 @@ func (plu *PointLogUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if err := plu.check(); err != nil {
 		return n, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   pointlog.Table,
-			Columns: pointlog.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: pointlog.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(pointlog.Table, pointlog.Columns, sqlgraph.NewFieldSpec(pointlog.FieldID, field.TypeUint64))
 	if ps := plu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -554,6 +545,12 @@ func (pluo *PointLogUpdateOne) ClearOrder() *PointLogUpdateOne {
 	return pluo
 }
 
+// Where appends a list predicates to the PointLogUpdate builder.
+func (pluo *PointLogUpdateOne) Where(ps ...predicate.PointLog) *PointLogUpdateOne {
+	pluo.mutation.Where(ps...)
+	return pluo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (pluo *PointLogUpdateOne) Select(field string, fields ...string) *PointLogUpdateOne {
@@ -621,16 +618,7 @@ func (pluo *PointLogUpdateOne) sqlSave(ctx context.Context) (_node *PointLog, er
 	if err := pluo.check(); err != nil {
 		return _node, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   pointlog.Table,
-			Columns: pointlog.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: pointlog.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(pointlog.Table, pointlog.Columns, sqlgraph.NewFieldSpec(pointlog.FieldID, field.TypeUint64))
 	id, ok := pluo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "PointLog.id" for update`)}

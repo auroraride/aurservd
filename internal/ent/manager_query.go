@@ -202,10 +202,12 @@ func (mq *ManagerQuery) AllX(ctx context.Context) []*Manager {
 }
 
 // IDs executes the query and returns a list of Manager IDs.
-func (mq *ManagerQuery) IDs(ctx context.Context) ([]uint64, error) {
-	var ids []uint64
+func (mq *ManagerQuery) IDs(ctx context.Context) (ids []uint64, err error) {
+	if mq.ctx.Unique == nil && mq.path != nil {
+		mq.Unique(true)
+	}
 	ctx = setContextOp(ctx, mq.ctx, "IDs")
-	if err := mq.Select(manager.FieldID).Scan(ctx, &ids); err != nil {
+	if err = mq.Select(manager.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -448,20 +450,12 @@ func (mq *ManagerQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (mq *ManagerQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   manager.Table,
-			Columns: manager.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: manager.FieldID,
-			},
-		},
-		From:   mq.sql,
-		Unique: true,
-	}
+	_spec := sqlgraph.NewQuerySpec(manager.Table, manager.Columns, sqlgraph.NewFieldSpec(manager.FieldID, field.TypeUint64))
+	_spec.From = mq.sql
 	if unique := mq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if mq.path != nil {
+		_spec.Unique = true
 	}
 	if fields := mq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))

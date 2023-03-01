@@ -337,16 +337,7 @@ func (esu *EnterpriseStatementUpdate) sqlSave(ctx context.Context) (n int, err e
 	if err := esu.check(); err != nil {
 		return n, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   enterprisestatement.Table,
-			Columns: enterprisestatement.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: enterprisestatement.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(enterprisestatement.Table, enterprisestatement.Columns, sqlgraph.NewFieldSpec(enterprisestatement.FieldID, field.TypeUint64))
 	if ps := esu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -773,6 +764,12 @@ func (esuo *EnterpriseStatementUpdateOne) RemoveBills(e ...*EnterpriseBill) *Ent
 	return esuo.RemoveBillIDs(ids...)
 }
 
+// Where appends a list predicates to the EnterpriseStatementUpdate builder.
+func (esuo *EnterpriseStatementUpdateOne) Where(ps ...predicate.EnterpriseStatement) *EnterpriseStatementUpdateOne {
+	esuo.mutation.Where(ps...)
+	return esuo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (esuo *EnterpriseStatementUpdateOne) Select(field string, fields ...string) *EnterpriseStatementUpdateOne {
@@ -840,16 +837,7 @@ func (esuo *EnterpriseStatementUpdateOne) sqlSave(ctx context.Context) (_node *E
 	if err := esuo.check(); err != nil {
 		return _node, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   enterprisestatement.Table,
-			Columns: enterprisestatement.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: enterprisestatement.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(enterprisestatement.Table, enterprisestatement.Columns, sqlgraph.NewFieldSpec(enterprisestatement.FieldID, field.TypeUint64))
 	id, ok := esuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "EnterpriseStatement.id" for update`)}

@@ -166,16 +166,7 @@ func (iu *InventoryUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Inve
 }
 
 func (iu *InventoryUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   inventory.Table,
-			Columns: inventory.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: inventory.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(inventory.Table, inventory.Columns, sqlgraph.NewFieldSpec(inventory.FieldID, field.TypeUint64))
 	if ps := iu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -328,6 +319,12 @@ func (iuo *InventoryUpdateOne) Mutation() *InventoryMutation {
 	return iuo.mutation
 }
 
+// Where appends a list predicates to the InventoryUpdate builder.
+func (iuo *InventoryUpdateOne) Where(ps ...predicate.Inventory) *InventoryUpdateOne {
+	iuo.mutation.Where(ps...)
+	return iuo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (iuo *InventoryUpdateOne) Select(field string, fields ...string) *InventoryUpdateOne {
@@ -384,16 +381,7 @@ func (iuo *InventoryUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *
 }
 
 func (iuo *InventoryUpdateOne) sqlSave(ctx context.Context) (_node *Inventory, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   inventory.Table,
-			Columns: inventory.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: inventory.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(inventory.Table, inventory.Columns, sqlgraph.NewFieldSpec(inventory.FieldID, field.TypeUint64))
 	id, ok := iuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Inventory.id" for update`)}

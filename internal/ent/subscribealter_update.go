@@ -301,16 +301,7 @@ func (sau *SubscribeAlterUpdate) sqlSave(ctx context.Context) (n int, err error)
 	if err := sau.check(); err != nil {
 		return n, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   subscribealter.Table,
-			Columns: subscribealter.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: subscribealter.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(subscribealter.Table, subscribealter.Columns, sqlgraph.NewFieldSpec(subscribealter.FieldID, field.TypeUint64))
 	if ps := sau.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -748,6 +739,12 @@ func (sauo *SubscribeAlterUpdateOne) ClearSubscribe() *SubscribeAlterUpdateOne {
 	return sauo
 }
 
+// Where appends a list predicates to the SubscribeAlterUpdate builder.
+func (sauo *SubscribeAlterUpdateOne) Where(ps ...predicate.SubscribeAlter) *SubscribeAlterUpdateOne {
+	sauo.mutation.Where(ps...)
+	return sauo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (sauo *SubscribeAlterUpdateOne) Select(field string, fields ...string) *SubscribeAlterUpdateOne {
@@ -818,16 +815,7 @@ func (sauo *SubscribeAlterUpdateOne) sqlSave(ctx context.Context) (_node *Subscr
 	if err := sauo.check(); err != nil {
 		return _node, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   subscribealter.Table,
-			Columns: subscribealter.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: subscribealter.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(subscribealter.Table, subscribealter.Columns, sqlgraph.NewFieldSpec(subscribealter.FieldID, field.TypeUint64))
 	id, ok := sauo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "SubscribeAlter.id" for update`)}

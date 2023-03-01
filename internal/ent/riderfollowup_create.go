@@ -213,13 +213,7 @@ func (rfuc *RiderFollowUpCreate) sqlSave(ctx context.Context) (*RiderFollowUp, e
 func (rfuc *RiderFollowUpCreate) createSpec() (*RiderFollowUp, *sqlgraph.CreateSpec) {
 	var (
 		_node = &RiderFollowUp{config: rfuc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: riderfollowup.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: riderfollowup.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(riderfollowup.Table, sqlgraph.NewFieldSpec(riderfollowup.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = rfuc.conflict
 	if value, ok := rfuc.mutation.CreatedAt(); ok {

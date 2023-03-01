@@ -218,13 +218,7 @@ func (ctc *CouponTemplateCreate) sqlSave(ctx context.Context) (*CouponTemplate, 
 func (ctc *CouponTemplateCreate) createSpec() (*CouponTemplate, *sqlgraph.CreateSpec) {
 	var (
 		_node = &CouponTemplate{config: ctc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: coupontemplate.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: coupontemplate.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(coupontemplate.Table, sqlgraph.NewFieldSpec(coupontemplate.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = ctc.conflict
 	if value, ok := ctc.mutation.CreatedAt(); ok {

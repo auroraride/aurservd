@@ -179,9 +179,3 @@ func (s *Setting) String() string {
 
 // Settings is a parsable slice of Setting.
 type Settings []*Setting
-
-func (s Settings) config(cfg config) {
-	for _i := range s {
-		s[_i].config = cfg
-	}
-}

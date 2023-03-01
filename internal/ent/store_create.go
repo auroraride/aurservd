@@ -389,13 +389,7 @@ func (sc *StoreCreate) sqlSave(ctx context.Context) (*Store, error) {
 func (sc *StoreCreate) createSpec() (*Store, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Store{config: sc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: store.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: store.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(store.Table, sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = sc.conflict
 	if value, ok := sc.mutation.CreatedAt(); ok {

@@ -282,13 +282,7 @@ func (sac *SubscribeAlterCreate) sqlSave(ctx context.Context) (*SubscribeAlter, 
 func (sac *SubscribeAlterCreate) createSpec() (*SubscribeAlter, *sqlgraph.CreateSpec) {
 	var (
 		_node = &SubscribeAlter{config: sac.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: subscribealter.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: subscribealter.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(subscribealter.Table, sqlgraph.NewFieldSpec(subscribealter.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = sac.conflict
 	if value, ok := sac.mutation.CreatedAt(); ok {

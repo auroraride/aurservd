@@ -915,9 +915,3 @@ func (s *Subscribe) String() string {
 
 // Subscribes is a parsable slice of Subscribe.
 type Subscribes []*Subscribe
-
-func (s Subscribes) config(cfg config) {
-	for _i := range s {
-		s[_i].config = cfg
-	}
-}

@@ -40,15 +40,7 @@ func (bcd *BranchContractDelete) ExecX(ctx context.Context) int {
 }
 
 func (bcd *BranchContractDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := &sqlgraph.DeleteSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table: branchcontract.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: branchcontract.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewDeleteSpec(branchcontract.Table, sqlgraph.NewFieldSpec(branchcontract.FieldID, field.TypeUint64))
 	if ps := bcd.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

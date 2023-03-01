@@ -252,9 +252,3 @@ func (m *Manager) String() string {
 
 // Managers is a parsable slice of Manager.
 type Managers []*Manager
-
-func (m Managers) config(cfg config) {
-	for _i := range m {
-		m[_i].config = cfg
-	}
-}

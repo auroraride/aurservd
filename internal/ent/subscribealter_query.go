@@ -298,10 +298,12 @@ func (saq *SubscribeAlterQuery) AllX(ctx context.Context) []*SubscribeAlter {
 }
 
 // IDs executes the query and returns a list of SubscribeAlter IDs.
-func (saq *SubscribeAlterQuery) IDs(ctx context.Context) ([]uint64, error) {
-	var ids []uint64
+func (saq *SubscribeAlterQuery) IDs(ctx context.Context) (ids []uint64, err error) {
+	if saq.ctx.Unique == nil && saq.path != nil {
+		saq.Unique(true)
+	}
 	ctx = setContextOp(ctx, saq.ctx, "IDs")
-	if err := saq.Select(subscribealter.FieldID).Scan(ctx, &ids); err != nil {
+	if err = saq.Select(subscribealter.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -742,20 +744,12 @@ func (saq *SubscribeAlterQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (saq *SubscribeAlterQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   subscribealter.Table,
-			Columns: subscribealter.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: subscribealter.FieldID,
-			},
-		},
-		From:   saq.sql,
-		Unique: true,
-	}
+	_spec := sqlgraph.NewQuerySpec(subscribealter.Table, subscribealter.Columns, sqlgraph.NewFieldSpec(subscribealter.FieldID, field.TypeUint64))
+	_spec.From = saq.sql
 	if unique := saq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if saq.path != nil {
+		_spec.Unique = true
 	}
 	if fields := saq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))

@@ -230,16 +230,7 @@ func (mu *ManagerUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if err := mu.check(); err != nil {
 		return n, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   manager.Table,
-			Columns: manager.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: manager.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(manager.Table, manager.Columns, sqlgraph.NewFieldSpec(manager.FieldID, field.TypeUint64))
 	if ps := mu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -475,6 +466,12 @@ func (muo *ManagerUpdateOne) ClearRole() *ManagerUpdateOne {
 	return muo
 }
 
+// Where appends a list predicates to the ManagerUpdate builder.
+func (muo *ManagerUpdateOne) Where(ps ...predicate.Manager) *ManagerUpdateOne {
+	muo.mutation.Where(ps...)
+	return muo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (muo *ManagerUpdateOne) Select(field string, fields ...string) *ManagerUpdateOne {
@@ -549,16 +546,7 @@ func (muo *ManagerUpdateOne) sqlSave(ctx context.Context) (_node *Manager, err e
 	if err := muo.check(); err != nil {
 		return _node, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   manager.Table,
-			Columns: manager.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: manager.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(manager.Table, manager.Columns, sqlgraph.NewFieldSpec(manager.FieldID, field.TypeUint64))
 	id, ok := muo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Manager.id" for update`)}

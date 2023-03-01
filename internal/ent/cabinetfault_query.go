@@ -274,10 +274,12 @@ func (cfq *CabinetFaultQuery) AllX(ctx context.Context) []*CabinetFault {
 }
 
 // IDs executes the query and returns a list of CabinetFault IDs.
-func (cfq *CabinetFaultQuery) IDs(ctx context.Context) ([]uint64, error) {
-	var ids []uint64
+func (cfq *CabinetFaultQuery) IDs(ctx context.Context) (ids []uint64, err error) {
+	if cfq.ctx.Unique == nil && cfq.path != nil {
+		cfq.Unique(true)
+	}
 	ctx = setContextOp(ctx, cfq.ctx, "IDs")
-	if err := cfq.Select(cabinetfault.FieldID).Scan(ctx, &ids); err != nil {
+	if err = cfq.Select(cabinetfault.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -661,20 +663,12 @@ func (cfq *CabinetFaultQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (cfq *CabinetFaultQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   cabinetfault.Table,
-			Columns: cabinetfault.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: cabinetfault.FieldID,
-			},
-		},
-		From:   cfq.sql,
-		Unique: true,
-	}
+	_spec := sqlgraph.NewQuerySpec(cabinetfault.Table, cabinetfault.Columns, sqlgraph.NewFieldSpec(cabinetfault.FieldID, field.TypeUint64))
+	_spec.From = cfq.sql
 	if unique := cfq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if cfq.path != nil {
+		_spec.Unique = true
 	}
 	if fields := cfq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))

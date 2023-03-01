@@ -40,15 +40,7 @@ func (ecd *EnterpriseContractDelete) ExecX(ctx context.Context) int {
 }
 
 func (ecd *EnterpriseContractDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := &sqlgraph.DeleteSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table: enterprisecontract.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: enterprisecontract.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewDeleteSpec(enterprisecontract.Table, sqlgraph.NewFieldSpec(enterprisecontract.FieldID, field.TypeUint64))
 	if ps := ecd.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

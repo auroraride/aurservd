@@ -235,9 +235,3 @@ func (a *Agent) String() string {
 
 // Agents is a parsable slice of Agent.
 type Agents []*Agent
-
-func (a Agents) config(cfg config) {
-	for _i := range a {
-		a[_i].config = cfg
-	}
-}

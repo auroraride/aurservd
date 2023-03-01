@@ -202,16 +202,7 @@ func (cau *CouponAssemblyUpdate) sqlSave(ctx context.Context) (n int, err error)
 	if err := cau.check(); err != nil {
 		return n, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   couponassembly.Table,
-			Columns: couponassembly.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: couponassembly.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(couponassembly.Table, couponassembly.Columns, sqlgraph.NewFieldSpec(couponassembly.FieldID, field.TypeUint64))
 	if ps := cau.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -429,6 +420,12 @@ func (cauo *CouponAssemblyUpdateOne) ClearTemplate() *CouponAssemblyUpdateOne {
 	return cauo
 }
 
+// Where appends a list predicates to the CouponAssemblyUpdate builder.
+func (cauo *CouponAssemblyUpdateOne) Where(ps ...predicate.CouponAssembly) *CouponAssemblyUpdateOne {
+	cauo.mutation.Where(ps...)
+	return cauo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (cauo *CouponAssemblyUpdateOne) Select(field string, fields ...string) *CouponAssemblyUpdateOne {
@@ -496,16 +493,7 @@ func (cauo *CouponAssemblyUpdateOne) sqlSave(ctx context.Context) (_node *Coupon
 	if err := cauo.check(); err != nil {
 		return _node, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   couponassembly.Table,
-			Columns: couponassembly.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: couponassembly.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(couponassembly.Table, couponassembly.Columns, sqlgraph.NewFieldSpec(couponassembly.FieldID, field.TypeUint64))
 	id, ok := cauo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "CouponAssembly.id" for update`)}

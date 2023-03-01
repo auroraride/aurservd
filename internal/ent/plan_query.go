@@ -273,10 +273,12 @@ func (pq *PlanQuery) AllX(ctx context.Context) []*Plan {
 }
 
 // IDs executes the query and returns a list of Plan IDs.
-func (pq *PlanQuery) IDs(ctx context.Context) ([]uint64, error) {
-	var ids []uint64
+func (pq *PlanQuery) IDs(ctx context.Context) (ids []uint64, err error) {
+	if pq.ctx.Unique == nil && pq.path != nil {
+		pq.Unique(true)
+	}
 	ctx = setContextOp(ctx, pq.ctx, "IDs")
-	if err := pq.Select(plan.FieldID).Scan(ctx, &ids); err != nil {
+	if err = pq.Select(plan.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -701,20 +703,12 @@ func (pq *PlanQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (pq *PlanQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   plan.Table,
-			Columns: plan.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: plan.FieldID,
-			},
-		},
-		From:   pq.sql,
-		Unique: true,
-	}
+	_spec := sqlgraph.NewQuerySpec(plan.Table, plan.Columns, sqlgraph.NewFieldSpec(plan.FieldID, field.TypeUint64))
+	_spec.From = pq.sql
 	if unique := pq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if pq.path != nil {
+		_spec.Unique = true
 	}
 	if fields := pq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))

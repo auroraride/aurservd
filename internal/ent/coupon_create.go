@@ -365,13 +365,7 @@ func (cc *CouponCreate) sqlSave(ctx context.Context) (*Coupon, error) {
 func (cc *CouponCreate) createSpec() (*Coupon, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Coupon{config: cc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: coupon.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: coupon.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(coupon.Table, sqlgraph.NewFieldSpec(coupon.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = cc.conflict
 	if value, ok := cc.mutation.CreatedAt(); ok {

@@ -202,10 +202,12 @@ func (caq *CouponAssemblyQuery) AllX(ctx context.Context) []*CouponAssembly {
 }
 
 // IDs executes the query and returns a list of CouponAssembly IDs.
-func (caq *CouponAssemblyQuery) IDs(ctx context.Context) ([]uint64, error) {
-	var ids []uint64
+func (caq *CouponAssemblyQuery) IDs(ctx context.Context) (ids []uint64, err error) {
+	if caq.ctx.Unique == nil && caq.path != nil {
+		caq.Unique(true)
+	}
 	ctx = setContextOp(ctx, caq.ctx, "IDs")
-	if err := caq.Select(couponassembly.FieldID).Scan(ctx, &ids); err != nil {
+	if err = caq.Select(couponassembly.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -445,20 +447,12 @@ func (caq *CouponAssemblyQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (caq *CouponAssemblyQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   couponassembly.Table,
-			Columns: couponassembly.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: couponassembly.FieldID,
-			},
-		},
-		From:   caq.sql,
-		Unique: true,
-	}
+	_spec := sqlgraph.NewQuerySpec(couponassembly.Table, couponassembly.Columns, sqlgraph.NewFieldSpec(couponassembly.FieldID, field.TypeUint64))
+	_spec.From = caq.sql
 	if unique := caq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if caq.path != nil {
+		_spec.Unique = true
 	}
 	if fields := caq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))

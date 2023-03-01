@@ -274,10 +274,12 @@ func (ssq *SubscribeSuspendQuery) AllX(ctx context.Context) []*SubscribeSuspend 
 }
 
 // IDs executes the query and returns a list of SubscribeSuspend IDs.
-func (ssq *SubscribeSuspendQuery) IDs(ctx context.Context) ([]uint64, error) {
-	var ids []uint64
+func (ssq *SubscribeSuspendQuery) IDs(ctx context.Context) (ids []uint64, err error) {
+	if ssq.ctx.Unique == nil && ssq.path != nil {
+		ssq.Unique(true)
+	}
 	ctx = setContextOp(ctx, ssq.ctx, "IDs")
-	if err := ssq.Select(subscribesuspend.FieldID).Scan(ctx, &ids); err != nil {
+	if err = ssq.Select(subscribesuspend.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -661,20 +663,12 @@ func (ssq *SubscribeSuspendQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (ssq *SubscribeSuspendQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   subscribesuspend.Table,
-			Columns: subscribesuspend.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: subscribesuspend.FieldID,
-			},
-		},
-		From:   ssq.sql,
-		Unique: true,
-	}
+	_spec := sqlgraph.NewQuerySpec(subscribesuspend.Table, subscribesuspend.Columns, sqlgraph.NewFieldSpec(subscribesuspend.FieldID, field.TypeUint64))
+	_spec.From = ssq.sql
 	if unique := ssq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if ssq.path != nil {
+		_spec.Unique = true
 	}
 	if fields := ssq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))

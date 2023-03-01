@@ -189,16 +189,7 @@ func (au *AgentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if err := au.check(); err != nil {
 		return n, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   agent.Table,
-			Columns: agent.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: agent.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(agent.Table, agent.Columns, sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64))
 	if ps := au.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -394,6 +385,12 @@ func (auo *AgentUpdateOne) ClearEnterprise() *AgentUpdateOne {
 	return auo
 }
 
+// Where appends a list predicates to the AgentUpdate builder.
+func (auo *AgentUpdateOne) Where(ps ...predicate.Agent) *AgentUpdateOne {
+	auo.mutation.Where(ps...)
+	return auo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (auo *AgentUpdateOne) Select(field string, fields ...string) *AgentUpdateOne {
@@ -461,16 +458,7 @@ func (auo *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error
 	if err := auo.check(); err != nil {
 		return _node, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   agent.Table,
-			Columns: agent.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: agent.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(agent.Table, agent.Columns, sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64))
 	id, ok := auo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Agent.id" for update`)}

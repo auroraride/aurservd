@@ -472,13 +472,7 @@ func (spc *SubscribePauseCreate) sqlSave(ctx context.Context) (*SubscribePause, 
 func (spc *SubscribePauseCreate) createSpec() (*SubscribePause, *sqlgraph.CreateSpec) {
 	var (
 		_node = &SubscribePause{config: spc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: subscribepause.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: subscribepause.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(subscribepause.Table, sqlgraph.NewFieldSpec(subscribepause.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = spc.conflict
 	if value, ok := spc.mutation.CreatedAt(); ok {

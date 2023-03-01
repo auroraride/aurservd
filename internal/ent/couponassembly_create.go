@@ -226,13 +226,7 @@ func (cac *CouponAssemblyCreate) sqlSave(ctx context.Context) (*CouponAssembly, 
 func (cac *CouponAssemblyCreate) createSpec() (*CouponAssembly, *sqlgraph.CreateSpec) {
 	var (
 		_node = &CouponAssembly{config: cac.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: couponassembly.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: couponassembly.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(couponassembly.Table, sqlgraph.NewFieldSpec(couponassembly.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = cac.conflict
 	if value, ok := cac.mutation.CreatedAt(); ok {

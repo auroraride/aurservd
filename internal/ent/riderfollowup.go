@@ -234,9 +234,3 @@ func (rfu *RiderFollowUp) String() string {
 
 // RiderFollowUps is a parsable slice of RiderFollowUp.
 type RiderFollowUps []*RiderFollowUp
-
-func (rfu RiderFollowUps) config(cfg config) {
-	for _i := range rfu {
-		rfu[_i].config = cfg
-	}
-}

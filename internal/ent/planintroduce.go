@@ -172,9 +172,3 @@ func (pi *PlanIntroduce) String() string {
 
 // PlanIntroduces is a parsable slice of PlanIntroduce.
 type PlanIntroduces []*PlanIntroduce
-
-func (pi PlanIntroduces) config(cfg config) {
-	for _i := range pi {
-		pi[_i].config = cfg
-	}
-}

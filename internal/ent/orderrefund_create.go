@@ -245,13 +245,7 @@ func (orc *OrderRefundCreate) sqlSave(ctx context.Context) (*OrderRefund, error)
 func (orc *OrderRefundCreate) createSpec() (*OrderRefund, *sqlgraph.CreateSpec) {
 	var (
 		_node = &OrderRefund{config: orc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: orderrefund.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: orderrefund.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(orderrefund.Table, sqlgraph.NewFieldSpec(orderrefund.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = orc.conflict
 	if value, ok := orc.mutation.CreatedAt(); ok {

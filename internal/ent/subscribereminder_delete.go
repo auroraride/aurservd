@@ -40,15 +40,7 @@ func (srd *SubscribeReminderDelete) ExecX(ctx context.Context) int {
 }
 
 func (srd *SubscribeReminderDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := &sqlgraph.DeleteSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table: subscribereminder.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: subscribereminder.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewDeleteSpec(subscribereminder.Table, sqlgraph.NewFieldSpec(subscribereminder.FieldID, field.TypeUint64))
 	if ps := srd.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

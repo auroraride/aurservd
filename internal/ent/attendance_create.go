@@ -307,13 +307,7 @@ func (ac *AttendanceCreate) sqlSave(ctx context.Context) (*Attendance, error) {
 func (ac *AttendanceCreate) createSpec() (*Attendance, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Attendance{config: ac.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: attendance.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: attendance.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(attendance.Table, sqlgraph.NewFieldSpec(attendance.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = ac.conflict
 	if value, ok := ac.mutation.CreatedAt(); ok {

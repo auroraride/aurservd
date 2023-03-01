@@ -213,9 +213,3 @@ func (es *EnterpriseStation) String() string {
 
 // EnterpriseStations is a parsable slice of EnterpriseStation.
 type EnterpriseStations []*EnterpriseStation
-
-func (es EnterpriseStations) config(cfg config) {
-	for _i := range es {
-		es[_i].config = cfg
-	}
-}

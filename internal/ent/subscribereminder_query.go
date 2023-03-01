@@ -250,10 +250,12 @@ func (srq *SubscribeReminderQuery) AllX(ctx context.Context) []*SubscribeReminde
 }
 
 // IDs executes the query and returns a list of SubscribeReminder IDs.
-func (srq *SubscribeReminderQuery) IDs(ctx context.Context) ([]uint64, error) {
-	var ids []uint64
+func (srq *SubscribeReminderQuery) IDs(ctx context.Context) (ids []uint64, err error) {
+	if srq.ctx.Unique == nil && srq.path != nil {
+		srq.Unique(true)
+	}
 	ctx = setContextOp(ctx, srq.ctx, "IDs")
-	if err := srq.Select(subscribereminder.FieldID).Scan(ctx, &ids); err != nil {
+	if err = srq.Select(subscribereminder.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -589,20 +591,12 @@ func (srq *SubscribeReminderQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (srq *SubscribeReminderQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   subscribereminder.Table,
-			Columns: subscribereminder.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: subscribereminder.FieldID,
-			},
-		},
-		From:   srq.sql,
-		Unique: true,
-	}
+	_spec := sqlgraph.NewQuerySpec(subscribereminder.Table, subscribereminder.Columns, sqlgraph.NewFieldSpec(subscribereminder.FieldID, field.TypeUint64))
+	_spec.From = srq.sql
 	if unique := srq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if srq.path != nil {
+		_spec.Unique = true
 	}
 	if fields := srq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))

@@ -416,10 +416,12 @@ func (spq *SubscribePauseQuery) AllX(ctx context.Context) []*SubscribePause {
 }
 
 // IDs executes the query and returns a list of SubscribePause IDs.
-func (spq *SubscribePauseQuery) IDs(ctx context.Context) ([]uint64, error) {
-	var ids []uint64
+func (spq *SubscribePauseQuery) IDs(ctx context.Context) (ids []uint64, err error) {
+	if spq.ctx.Unique == nil && spq.path != nil {
+		spq.Unique(true)
+	}
 	ctx = setContextOp(ctx, spq.ctx, "IDs")
-	if err := spq.Select(subscribepause.FieldID).Scan(ctx, &ids); err != nil {
+	if err = spq.Select(subscribepause.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -1111,20 +1113,12 @@ func (spq *SubscribePauseQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (spq *SubscribePauseQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   subscribepause.Table,
-			Columns: subscribepause.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: subscribepause.FieldID,
-			},
-		},
-		From:   spq.sql,
-		Unique: true,
-	}
+	_spec := sqlgraph.NewQuerySpec(subscribepause.Table, subscribepause.Columns, sqlgraph.NewFieldSpec(subscribepause.FieldID, field.TypeUint64))
+	_spec.From = spq.sql
 	if unique := spq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if spq.path != nil {
+		_spec.Unique = true
 	}
 	if fields := spq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))

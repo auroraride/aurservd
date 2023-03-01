@@ -40,15 +40,7 @@ func (cad *CouponAssemblyDelete) ExecX(ctx context.Context) int {
 }
 
 func (cad *CouponAssemblyDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := &sqlgraph.DeleteSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table: couponassembly.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: couponassembly.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewDeleteSpec(couponassembly.Table, sqlgraph.NewFieldSpec(couponassembly.FieldID, field.TypeUint64))
 	if ps := cad.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

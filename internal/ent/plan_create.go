@@ -421,13 +421,7 @@ func (pc *PlanCreate) sqlSave(ctx context.Context) (*Plan, error) {
 func (pc *PlanCreate) createSpec() (*Plan, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Plan{config: pc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: plan.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: plan.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(plan.Table, sqlgraph.NewFieldSpec(plan.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = pc.conflict
 	if value, ok := pc.mutation.CreatedAt(); ok {

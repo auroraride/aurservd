@@ -154,16 +154,7 @@ func (ebu *EbikeBrandUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Eb
 }
 
 func (ebu *EbikeBrandUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   ebikebrand.Table,
-			Columns: ebikebrand.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: ebikebrand.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(ebikebrand.Table, ebikebrand.Columns, sqlgraph.NewFieldSpec(ebikebrand.FieldID, field.TypeUint64))
 	if ps := ebu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -298,6 +289,12 @@ func (ebuo *EbikeBrandUpdateOne) Mutation() *EbikeBrandMutation {
 	return ebuo.mutation
 }
 
+// Where appends a list predicates to the EbikeBrandUpdate builder.
+func (ebuo *EbikeBrandUpdateOne) Where(ps ...predicate.EbikeBrand) *EbikeBrandUpdateOne {
+	ebuo.mutation.Where(ps...)
+	return ebuo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (ebuo *EbikeBrandUpdateOne) Select(field string, fields ...string) *EbikeBrandUpdateOne {
@@ -354,16 +351,7 @@ func (ebuo *EbikeBrandUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder))
 }
 
 func (ebuo *EbikeBrandUpdateOne) sqlSave(ctx context.Context) (_node *EbikeBrand, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   ebikebrand.Table,
-			Columns: ebikebrand.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: ebikebrand.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(ebikebrand.Table, ebikebrand.Columns, sqlgraph.NewFieldSpec(ebikebrand.FieldID, field.TypeUint64))
 	id, ok := ebuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "EbikeBrand.id" for update`)}

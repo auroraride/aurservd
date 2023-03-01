@@ -344,16 +344,7 @@ func (au *AttendanceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if err := au.check(); err != nil {
 		return n, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   attendance.Table,
-			Columns: attendance.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: attendance.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(attendance.Table, attendance.Columns, sqlgraph.NewFieldSpec(attendance.FieldID, field.TypeUint64))
 	if ps := au.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -781,6 +772,12 @@ func (auo *AttendanceUpdateOne) ClearEmployee() *AttendanceUpdateOne {
 	return auo
 }
 
+// Where appends a list predicates to the AttendanceUpdate builder.
+func (auo *AttendanceUpdateOne) Where(ps ...predicate.Attendance) *AttendanceUpdateOne {
+	auo.mutation.Where(ps...)
+	return auo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (auo *AttendanceUpdateOne) Select(field string, fields ...string) *AttendanceUpdateOne {
@@ -851,16 +848,7 @@ func (auo *AttendanceUpdateOne) sqlSave(ctx context.Context) (_node *Attendance,
 	if err := auo.check(); err != nil {
 		return _node, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   attendance.Table,
-			Columns: attendance.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: attendance.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(attendance.Table, attendance.Columns, sqlgraph.NewFieldSpec(attendance.FieldID, field.TypeUint64))
 	id, ok := auo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Attendance.id" for update`)}

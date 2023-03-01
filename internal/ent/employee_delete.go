@@ -40,15 +40,7 @@ func (ed *EmployeeDelete) ExecX(ctx context.Context) int {
 }
 
 func (ed *EmployeeDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := &sqlgraph.DeleteSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table: employee.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: employee.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewDeleteSpec(employee.Table, sqlgraph.NewFieldSpec(employee.FieldID, field.TypeUint64))
 	if ps := ed.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

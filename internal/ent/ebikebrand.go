@@ -182,9 +182,3 @@ func (eb *EbikeBrand) String() string {
 
 // EbikeBrands is a parsable slice of EbikeBrand.
 type EbikeBrands []*EbikeBrand
-
-func (eb EbikeBrands) config(cfg config) {
-	for _i := range eb {
-		eb[_i].config = cfg
-	}
-}

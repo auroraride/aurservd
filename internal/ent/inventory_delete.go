@@ -40,15 +40,7 @@ func (id *InventoryDelete) ExecX(ctx context.Context) int {
 }
 
 func (id *InventoryDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := &sqlgraph.DeleteSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table: inventory.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: inventory.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewDeleteSpec(inventory.Table, sqlgraph.NewFieldSpec(inventory.FieldID, field.TypeUint64))
 	if ps := id.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

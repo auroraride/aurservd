@@ -235,9 +235,3 @@ func (ec *EnterpriseContract) String() string {
 
 // EnterpriseContracts is a parsable slice of EnterpriseContract.
 type EnterpriseContracts []*EnterpriseContract
-
-func (ec EnterpriseContracts) config(cfg config) {
-	for _i := range ec {
-		ec[_i].config = cfg
-	}
-}

@@ -352,9 +352,3 @@ func (e *Employee) String() string {
 
 // Employees is a parsable slice of Employee.
 type Employees []*Employee
-
-func (e Employees) config(cfg config) {
-	for _i := range e {
-		e[_i].config = cfg
-	}
-}

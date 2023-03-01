@@ -253,13 +253,7 @@ func (ssc *SubscribeSuspendCreate) sqlSave(ctx context.Context) (*SubscribeSuspe
 func (ssc *SubscribeSuspendCreate) createSpec() (*SubscribeSuspend, *sqlgraph.CreateSpec) {
 	var (
 		_node = &SubscribeSuspend{config: ssc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: subscribesuspend.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: subscribesuspend.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(subscribesuspend.Table, sqlgraph.NewFieldSpec(subscribesuspend.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = ssc.conflict
 	if value, ok := ssc.mutation.Creator(); ok {

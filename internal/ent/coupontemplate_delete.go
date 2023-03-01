@@ -40,15 +40,7 @@ func (ctd *CouponTemplateDelete) ExecX(ctx context.Context) int {
 }
 
 func (ctd *CouponTemplateDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := &sqlgraph.DeleteSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table: coupontemplate.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: coupontemplate.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewDeleteSpec(coupontemplate.Table, sqlgraph.NewFieldSpec(coupontemplate.FieldID, field.TypeUint64))
 	if ps := ctd.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

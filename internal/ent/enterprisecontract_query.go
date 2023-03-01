@@ -202,10 +202,12 @@ func (ecq *EnterpriseContractQuery) AllX(ctx context.Context) []*EnterpriseContr
 }
 
 // IDs executes the query and returns a list of EnterpriseContract IDs.
-func (ecq *EnterpriseContractQuery) IDs(ctx context.Context) ([]uint64, error) {
-	var ids []uint64
+func (ecq *EnterpriseContractQuery) IDs(ctx context.Context) (ids []uint64, err error) {
+	if ecq.ctx.Unique == nil && ecq.path != nil {
+		ecq.Unique(true)
+	}
 	ctx = setContextOp(ctx, ecq.ctx, "IDs")
-	if err := ecq.Select(enterprisecontract.FieldID).Scan(ctx, &ids); err != nil {
+	if err = ecq.Select(enterprisecontract.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -445,20 +447,12 @@ func (ecq *EnterpriseContractQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (ecq *EnterpriseContractQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   enterprisecontract.Table,
-			Columns: enterprisecontract.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: enterprisecontract.FieldID,
-			},
-		},
-		From:   ecq.sql,
-		Unique: true,
-	}
+	_spec := sqlgraph.NewQuerySpec(enterprisecontract.Table, enterprisecontract.Columns, sqlgraph.NewFieldSpec(enterprisecontract.FieldID, field.TypeUint64))
+	_spec.From = ecq.sql
 	if unique := ecq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if ecq.path != nil {
+		_spec.Unique = true
 	}
 	if fields := ecq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))

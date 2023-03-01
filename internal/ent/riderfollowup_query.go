@@ -226,10 +226,12 @@ func (rfuq *RiderFollowUpQuery) AllX(ctx context.Context) []*RiderFollowUp {
 }
 
 // IDs executes the query and returns a list of RiderFollowUp IDs.
-func (rfuq *RiderFollowUpQuery) IDs(ctx context.Context) ([]uint64, error) {
-	var ids []uint64
+func (rfuq *RiderFollowUpQuery) IDs(ctx context.Context) (ids []uint64, err error) {
+	if rfuq.ctx.Unique == nil && rfuq.path != nil {
+		rfuq.Unique(true)
+	}
 	ctx = setContextOp(ctx, rfuq.ctx, "IDs")
-	if err := rfuq.Select(riderfollowup.FieldID).Scan(ctx, &ids); err != nil {
+	if err = rfuq.Select(riderfollowup.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -517,20 +519,12 @@ func (rfuq *RiderFollowUpQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (rfuq *RiderFollowUpQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   riderfollowup.Table,
-			Columns: riderfollowup.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: riderfollowup.FieldID,
-			},
-		},
-		From:   rfuq.sql,
-		Unique: true,
-	}
+	_spec := sqlgraph.NewQuerySpec(riderfollowup.Table, riderfollowup.Columns, sqlgraph.NewFieldSpec(riderfollowup.FieldID, field.TypeUint64))
+	_spec.From = rfuq.sql
 	if unique := rfuq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if rfuq.path != nil {
+		_spec.Unique = true
 	}
 	if fields := rfuq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))

@@ -344,16 +344,7 @@ func (ebu *EnterpriseBillUpdate) sqlSave(ctx context.Context) (n int, err error)
 	if err := ebu.check(); err != nil {
 		return n, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   enterprisebill.Table,
-			Columns: enterprisebill.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: enterprisebill.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(enterprisebill.Table, enterprisebill.Columns, sqlgraph.NewFieldSpec(enterprisebill.FieldID, field.TypeUint64))
 	if ps := ebu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -880,6 +871,12 @@ func (ebuo *EnterpriseBillUpdateOne) ClearSubscribe() *EnterpriseBillUpdateOne {
 	return ebuo
 }
 
+// Where appends a list predicates to the EnterpriseBillUpdate builder.
+func (ebuo *EnterpriseBillUpdateOne) Where(ps ...predicate.EnterpriseBill) *EnterpriseBillUpdateOne {
+	ebuo.mutation.Where(ps...)
+	return ebuo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (ebuo *EnterpriseBillUpdateOne) Select(field string, fields ...string) *EnterpriseBillUpdateOne {
@@ -959,16 +956,7 @@ func (ebuo *EnterpriseBillUpdateOne) sqlSave(ctx context.Context) (_node *Enterp
 	if err := ebuo.check(); err != nil {
 		return _node, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   enterprisebill.Table,
-			Columns: enterprisebill.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: enterprisebill.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(enterprisebill.Table, enterprisebill.Columns, sqlgraph.NewFieldSpec(enterprisebill.FieldID, field.TypeUint64))
 	id, ok := ebuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "EnterpriseBill.id" for update`)}

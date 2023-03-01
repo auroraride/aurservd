@@ -110,16 +110,7 @@ func (bmu *BatteryModelUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *
 }
 
 func (bmu *BatteryModelUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   batterymodel.Table,
-			Columns: batterymodel.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: batterymodel.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(batterymodel.Table, batterymodel.Columns, sqlgraph.NewFieldSpec(batterymodel.FieldID, field.TypeUint64))
 	if ps := bmu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -253,6 +244,12 @@ func (bmuo *BatteryModelUpdateOne) RemoveCabinets(c ...*Cabinet) *BatteryModelUp
 	return bmuo.RemoveCabinetIDs(ids...)
 }
 
+// Where appends a list predicates to the BatteryModelUpdate builder.
+func (bmuo *BatteryModelUpdateOne) Where(ps ...predicate.BatteryModel) *BatteryModelUpdateOne {
+	bmuo.mutation.Where(ps...)
+	return bmuo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (bmuo *BatteryModelUpdateOne) Select(field string, fields ...string) *BatteryModelUpdateOne {
@@ -294,16 +291,7 @@ func (bmuo *BatteryModelUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder
 }
 
 func (bmuo *BatteryModelUpdateOne) sqlSave(ctx context.Context) (_node *BatteryModel, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   batterymodel.Table,
-			Columns: batterymodel.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: batterymodel.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(batterymodel.Table, batterymodel.Columns, sqlgraph.NewFieldSpec(batterymodel.FieldID, field.TypeUint64))
 	id, ok := bmuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "BatteryModel.id" for update`)}

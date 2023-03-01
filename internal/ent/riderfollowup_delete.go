@@ -40,15 +40,7 @@ func (rfud *RiderFollowUpDelete) ExecX(ctx context.Context) int {
 }
 
 func (rfud *RiderFollowUpDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := &sqlgraph.DeleteSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table: riderfollowup.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: riderfollowup.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewDeleteSpec(riderfollowup.Table, sqlgraph.NewFieldSpec(riderfollowup.FieldID, field.TypeUint64))
 	if ps := rfud.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

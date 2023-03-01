@@ -359,9 +359,3 @@ func (e *Ebike) String() string {
 
 // Ebikes is a parsable slice of Ebike.
 type Ebikes []*Ebike
-
-func (e Ebikes) config(cfg config) {
-	for _i := range e {
-		e[_i].config = cfg
-	}
-}

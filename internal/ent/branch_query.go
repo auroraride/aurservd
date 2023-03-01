@@ -299,10 +299,12 @@ func (bq *BranchQuery) AllX(ctx context.Context) []*Branch {
 }
 
 // IDs executes the query and returns a list of Branch IDs.
-func (bq *BranchQuery) IDs(ctx context.Context) ([]uint64, error) {
-	var ids []uint64
+func (bq *BranchQuery) IDs(ctx context.Context) (ids []uint64, err error) {
+	if bq.ctx.Unique == nil && bq.path != nil {
+		bq.Unique(true)
+	}
 	ctx = setContextOp(ctx, bq.ctx, "IDs")
-	if err := bq.Select(branch.FieldID).Scan(ctx, &ids); err != nil {
+	if err = bq.Select(branch.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -733,20 +735,12 @@ func (bq *BranchQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (bq *BranchQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   branch.Table,
-			Columns: branch.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: branch.FieldID,
-			},
-		},
-		From:   bq.sql,
-		Unique: true,
-	}
+	_spec := sqlgraph.NewQuerySpec(branch.Table, branch.Columns, sqlgraph.NewFieldSpec(branch.FieldID, field.TypeUint64))
+	_spec.From = bq.sql
 	if unique := bq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if bq.path != nil {
+		_spec.Unique = true
 	}
 	if fields := bq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))

@@ -206,9 +206,3 @@ func (i *Inventory) String() string {
 
 // Inventories is a parsable slice of Inventory.
 type Inventories []*Inventory
-
-func (i Inventories) config(cfg config) {
-	for _i := range i {
-		i[_i].config = cfg
-	}
-}

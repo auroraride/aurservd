@@ -185,16 +185,7 @@ func (ctu *CouponTemplateUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder))
 }
 
 func (ctu *CouponTemplateUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   coupontemplate.Table,
-			Columns: coupontemplate.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: coupontemplate.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(coupontemplate.Table, coupontemplate.Columns, sqlgraph.NewFieldSpec(coupontemplate.FieldID, field.TypeUint64))
 	if ps := ctu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -410,6 +401,12 @@ func (ctuo *CouponTemplateUpdateOne) RemoveCoupons(c ...*Coupon) *CouponTemplate
 	return ctuo.RemoveCouponIDs(ids...)
 }
 
+// Where appends a list predicates to the CouponTemplateUpdate builder.
+func (ctuo *CouponTemplateUpdateOne) Where(ps ...predicate.CouponTemplate) *CouponTemplateUpdateOne {
+	ctuo.mutation.Where(ps...)
+	return ctuo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (ctuo *CouponTemplateUpdateOne) Select(field string, fields ...string) *CouponTemplateUpdateOne {
@@ -466,16 +463,7 @@ func (ctuo *CouponTemplateUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuild
 }
 
 func (ctuo *CouponTemplateUpdateOne) sqlSave(ctx context.Context) (_node *CouponTemplate, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   coupontemplate.Table,
-			Columns: coupontemplate.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: coupontemplate.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(coupontemplate.Table, coupontemplate.Columns, sqlgraph.NewFieldSpec(coupontemplate.FieldID, field.TypeUint64))
 	id, ok := ctuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "CouponTemplate.id" for update`)}

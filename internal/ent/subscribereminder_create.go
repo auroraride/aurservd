@@ -284,13 +284,7 @@ func (src *SubscribeReminderCreate) sqlSave(ctx context.Context) (*SubscribeRemi
 func (src *SubscribeReminderCreate) createSpec() (*SubscribeReminder, *sqlgraph.CreateSpec) {
 	var (
 		_node = &SubscribeReminder{config: src.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: subscribereminder.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: subscribereminder.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(subscribereminder.Table, sqlgraph.NewFieldSpec(subscribereminder.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = src.conflict
 	if value, ok := src.mutation.CreatedAt(); ok {

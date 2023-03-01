@@ -348,9 +348,3 @@ func (e *Exception) String() string {
 
 // Exceptions is a parsable slice of Exception.
 type Exceptions []*Exception
-
-func (e Exceptions) config(cfg config) {
-	for _i := range e {
-		e[_i].config = cfg
-	}
-}

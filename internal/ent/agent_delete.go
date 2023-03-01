@@ -40,15 +40,7 @@ func (ad *AgentDelete) ExecX(ctx context.Context) int {
 }
 
 func (ad *AgentDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := &sqlgraph.DeleteSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table: agent.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: agent.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewDeleteSpec(agent.Table, sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64))
 	if ps := ad.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

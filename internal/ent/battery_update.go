@@ -360,16 +360,7 @@ func (bu *BatteryUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Batter
 }
 
 func (bu *BatteryUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   battery.Table,
-			Columns: battery.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: battery.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(battery.Table, battery.Columns, sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64))
 	if ps := bu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -911,6 +902,12 @@ func (buo *BatteryUpdateOne) RemoveFlows(b ...*BatteryFlow) *BatteryUpdateOne {
 	return buo.RemoveFlowIDs(ids...)
 }
 
+// Where appends a list predicates to the BatteryUpdate builder.
+func (buo *BatteryUpdateOne) Where(ps ...predicate.Battery) *BatteryUpdateOne {
+	buo.mutation.Where(ps...)
+	return buo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (buo *BatteryUpdateOne) Select(field string, fields ...string) *BatteryUpdateOne {
@@ -967,16 +964,7 @@ func (buo *BatteryUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Ba
 }
 
 func (buo *BatteryUpdateOne) sqlSave(ctx context.Context) (_node *Battery, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   battery.Table,
-			Columns: battery.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: battery.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(battery.Table, battery.Columns, sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64))
 	id, ok := buo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Battery.id" for update`)}

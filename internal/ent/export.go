@@ -276,9 +276,3 @@ func (e *Export) String() string {
 
 // Exports is a parsable slice of Export.
 type Exports []*Export
-
-func (e Exports) config(cfg config) {
-	for _i := range e {
-		e[_i].config = cfg
-	}
-}

@@ -354,13 +354,7 @@ func (ac *AllocateCreate) sqlSave(ctx context.Context) (*Allocate, error) {
 func (ac *AllocateCreate) createSpec() (*Allocate, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Allocate{config: ac.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: allocate.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: allocate.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(allocate.Table, sqlgraph.NewFieldSpec(allocate.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = ac.conflict
 	if value, ok := ac.mutation.CreatedAt(); ok {

@@ -418,10 +418,12 @@ func (bq *BusinessQuery) AllX(ctx context.Context) []*Business {
 }
 
 // IDs executes the query and returns a list of Business IDs.
-func (bq *BusinessQuery) IDs(ctx context.Context) ([]uint64, error) {
-	var ids []uint64
+func (bq *BusinessQuery) IDs(ctx context.Context) (ids []uint64, err error) {
+	if bq.ctx.Unique == nil && bq.path != nil {
+		bq.Unique(true)
+	}
 	ctx = setContextOp(ctx, bq.ctx, "IDs")
-	if err := bq.Select(business.FieldID).Scan(ctx, &ids); err != nil {
+	if err = bq.Select(business.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -1114,20 +1116,12 @@ func (bq *BusinessQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (bq *BusinessQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   business.Table,
-			Columns: business.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: business.FieldID,
-			},
-		},
-		From:   bq.sql,
-		Unique: true,
-	}
+	_spec := sqlgraph.NewQuerySpec(business.Table, business.Columns, sqlgraph.NewFieldSpec(business.FieldID, field.TypeUint64))
+	_spec.From = bq.sql
 	if unique := bq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if bq.path != nil {
+		_spec.Unique = true
 	}
 	if fields := bq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))

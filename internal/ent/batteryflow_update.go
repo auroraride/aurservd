@@ -309,16 +309,7 @@ func (bfu *BatteryFlowUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if err := bfu.check(); err != nil {
 		return n, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   batteryflow.Table,
-			Columns: batteryflow.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: batteryflow.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(batteryflow.Table, batteryflow.Columns, sqlgraph.NewFieldSpec(batteryflow.FieldID, field.TypeUint64))
 	if ps := bfu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -745,6 +736,12 @@ func (bfuo *BatteryFlowUpdateOne) ClearRider() *BatteryFlowUpdateOne {
 	return bfuo
 }
 
+// Where appends a list predicates to the BatteryFlowUpdate builder.
+func (bfuo *BatteryFlowUpdateOne) Where(ps ...predicate.BatteryFlow) *BatteryFlowUpdateOne {
+	bfuo.mutation.Where(ps...)
+	return bfuo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (bfuo *BatteryFlowUpdateOne) Select(field string, fields ...string) *BatteryFlowUpdateOne {
@@ -806,16 +803,7 @@ func (bfuo *BatteryFlowUpdateOne) sqlSave(ctx context.Context) (_node *BatteryFl
 	if err := bfuo.check(); err != nil {
 		return _node, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   batteryflow.Table,
-			Columns: batteryflow.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: batteryflow.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(batteryflow.Table, batteryflow.Columns, sqlgraph.NewFieldSpec(batteryflow.FieldID, field.TypeUint64))
 	id, ok := bfuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "BatteryFlow.id" for update`)}

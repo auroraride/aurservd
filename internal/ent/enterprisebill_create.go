@@ -341,13 +341,7 @@ func (ebc *EnterpriseBillCreate) sqlSave(ctx context.Context) (*EnterpriseBill, 
 func (ebc *EnterpriseBillCreate) createSpec() (*EnterpriseBill, *sqlgraph.CreateSpec) {
 	var (
 		_node = &EnterpriseBill{config: ebc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: enterprisebill.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: enterprisebill.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(enterprisebill.Table, sqlgraph.NewFieldSpec(enterprisebill.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = ebc.conflict
 	if value, ok := ebc.mutation.CreatedAt(); ok {

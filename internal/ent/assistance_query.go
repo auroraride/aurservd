@@ -322,10 +322,12 @@ func (aq *AssistanceQuery) AllX(ctx context.Context) []*Assistance {
 }
 
 // IDs executes the query and returns a list of Assistance IDs.
-func (aq *AssistanceQuery) IDs(ctx context.Context) ([]uint64, error) {
-	var ids []uint64
+func (aq *AssistanceQuery) IDs(ctx context.Context) (ids []uint64, err error) {
+	if aq.ctx.Unique == nil && aq.path != nil {
+		aq.Unique(true)
+	}
 	ctx = setContextOp(ctx, aq.ctx, "IDs")
-	if err := aq.Select(assistance.FieldID).Scan(ctx, &ids); err != nil {
+	if err = aq.Select(assistance.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -814,20 +816,12 @@ func (aq *AssistanceQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (aq *AssistanceQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   assistance.Table,
-			Columns: assistance.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: assistance.FieldID,
-			},
-		},
-		From:   aq.sql,
-		Unique: true,
-	}
+	_spec := sqlgraph.NewQuerySpec(assistance.Table, assistance.Columns, sqlgraph.NewFieldSpec(assistance.FieldID, field.TypeUint64))
+	_spec.From = aq.sql
 	if unique := aq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if aq.path != nil {
+		_spec.Unique = true
 	}
 	if fields := aq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))

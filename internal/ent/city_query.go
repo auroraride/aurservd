@@ -249,10 +249,12 @@ func (cq *CityQuery) AllX(ctx context.Context) []*City {
 }
 
 // IDs executes the query and returns a list of City IDs.
-func (cq *CityQuery) IDs(ctx context.Context) ([]uint64, error) {
-	var ids []uint64
+func (cq *CityQuery) IDs(ctx context.Context) (ids []uint64, err error) {
+	if cq.ctx.Unique == nil && cq.path != nil {
+		cq.Unique(true)
+	}
 	ctx = setContextOp(ctx, cq.ctx, "IDs")
-	if err := cq.Select(city.FieldID).Scan(ctx, &ids); err != nil {
+	if err = cq.Select(city.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -626,20 +628,12 @@ func (cq *CityQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (cq *CityQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   city.Table,
-			Columns: city.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: city.FieldID,
-			},
-		},
-		From:   cq.sql,
-		Unique: true,
-	}
+	_spec := sqlgraph.NewQuerySpec(city.Table, city.Columns, sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64))
+	_spec.From = cq.sql
 	if unique := cq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if cq.path != nil {
+		_spec.Unique = true
 	}
 	if fields := cq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))

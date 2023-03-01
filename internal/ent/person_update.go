@@ -431,16 +431,7 @@ func (pu *PersonUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if err := pu.check(); err != nil {
 		return n, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   person.Table,
-			Columns: person.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: person.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(person.Table, person.Columns, sqlgraph.NewFieldSpec(person.FieldID, field.TypeUint64))
 	if ps := pu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -953,6 +944,12 @@ func (puo *PersonUpdateOne) RemoveRider(r ...*Rider) *PersonUpdateOne {
 	return puo.RemoveRiderIDs(ids...)
 }
 
+// Where appends a list predicates to the PersonUpdate builder.
+func (puo *PersonUpdateOne) Where(ps ...predicate.Person) *PersonUpdateOne {
+	puo.mutation.Where(ps...)
+	return puo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (puo *PersonUpdateOne) Select(field string, fields ...string) *PersonUpdateOne {
@@ -1027,16 +1024,7 @@ func (puo *PersonUpdateOne) sqlSave(ctx context.Context) (_node *Person, err err
 	if err := puo.check(); err != nil {
 		return _node, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   person.Table,
-			Columns: person.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: person.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(person.Table, person.Columns, sqlgraph.NewFieldSpec(person.FieldID, field.TypeUint64))
 	id, ok := puo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Person.id" for update`)}

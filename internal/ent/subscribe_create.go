@@ -872,13 +872,7 @@ func (sc *SubscribeCreate) sqlSave(ctx context.Context) (*Subscribe, error) {
 func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Subscribe{config: sc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: subscribe.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: subscribe.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(subscribe.Table, sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = sc.conflict
 	if value, ok := sc.mutation.CreatedAt(); ok {

@@ -405,13 +405,7 @@ func (bc *BusinessCreate) sqlSave(ctx context.Context) (*Business, error) {
 func (bc *BusinessCreate) createSpec() (*Business, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Business{config: bc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: business.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: business.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(business.Table, sqlgraph.NewFieldSpec(business.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = bc.conflict
 	if value, ok := bc.mutation.CreatedAt(); ok {

@@ -272,9 +272,3 @@ func (pl *PointLog) String() string {
 
 // PointLogs is a parsable slice of PointLog.
 type PointLogs []*PointLog
-
-func (pl PointLogs) config(cfg config) {
-	for _i := range pl {
-		pl[_i].config = cfg
-	}
-}

@@ -272,16 +272,7 @@ func (ru *ReserveUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if err := ru.check(); err != nil {
 		return n, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   reserve.Table,
-			Columns: reserve.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: reserve.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(reserve.Table, reserve.Columns, sqlgraph.NewFieldSpec(reserve.FieldID, field.TypeUint64))
 	if ps := ru.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -656,6 +647,12 @@ func (ruo *ReserveUpdateOne) ClearBusiness() *ReserveUpdateOne {
 	return ruo
 }
 
+// Where appends a list predicates to the ReserveUpdate builder.
+func (ruo *ReserveUpdateOne) Where(ps ...predicate.Reserve) *ReserveUpdateOne {
+	ruo.mutation.Where(ps...)
+	return ruo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (ruo *ReserveUpdateOne) Select(field string, fields ...string) *ReserveUpdateOne {
@@ -729,16 +726,7 @@ func (ruo *ReserveUpdateOne) sqlSave(ctx context.Context) (_node *Reserve, err e
 	if err := ruo.check(); err != nil {
 		return _node, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   reserve.Table,
-			Columns: reserve.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: reserve.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(reserve.Table, reserve.Columns, sqlgraph.NewFieldSpec(reserve.FieldID, field.TypeUint64))
 	id, ok := ruo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Reserve.id" for update`)}

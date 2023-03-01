@@ -612,13 +612,7 @@ func (ac *AssistanceCreate) sqlSave(ctx context.Context) (*Assistance, error) {
 func (ac *AssistanceCreate) createSpec() (*Assistance, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Assistance{config: ac.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: assistance.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: assistance.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(assistance.Table, sqlgraph.NewFieldSpec(assistance.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = ac.conflict
 	if value, ok := ac.mutation.CreatedAt(); ok {

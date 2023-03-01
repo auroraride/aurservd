@@ -592,9 +592,3 @@ func (r *Rider) String() string {
 
 // Riders is a parsable slice of Rider.
 type Riders []*Rider
-
-func (r Riders) config(cfg config) {
-	for _i := range r {
-		r[_i].config = cfg
-	}
-}

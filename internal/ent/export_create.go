@@ -278,13 +278,7 @@ func (ec *ExportCreate) sqlSave(ctx context.Context) (*Export, error) {
 func (ec *ExportCreate) createSpec() (*Export, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Export{config: ec.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: export.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: export.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(export.Table, sqlgraph.NewFieldSpec(export.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = ec.conflict
 	if value, ok := ec.mutation.CreatedAt(); ok {

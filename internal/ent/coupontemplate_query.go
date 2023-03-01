@@ -203,10 +203,12 @@ func (ctq *CouponTemplateQuery) AllX(ctx context.Context) []*CouponTemplate {
 }
 
 // IDs executes the query and returns a list of CouponTemplate IDs.
-func (ctq *CouponTemplateQuery) IDs(ctx context.Context) ([]uint64, error) {
-	var ids []uint64
+func (ctq *CouponTemplateQuery) IDs(ctx context.Context) (ids []uint64, err error) {
+	if ctq.ctx.Unique == nil && ctq.path != nil {
+		ctq.Unique(true)
+	}
 	ctx = setContextOp(ctx, ctq.ctx, "IDs")
-	if err := ctq.Select(coupontemplate.FieldID).Scan(ctx, &ids); err != nil {
+	if err = ctq.Select(coupontemplate.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -445,20 +447,12 @@ func (ctq *CouponTemplateQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (ctq *CouponTemplateQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   coupontemplate.Table,
-			Columns: coupontemplate.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: coupontemplate.FieldID,
-			},
-		},
-		From:   ctq.sql,
-		Unique: true,
-	}
+	_spec := sqlgraph.NewQuerySpec(coupontemplate.Table, coupontemplate.Columns, sqlgraph.NewFieldSpec(coupontemplate.FieldID, field.TypeUint64))
+	_spec.From = ctq.sql
 	if unique := ctq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if ctq.path != nil {
+		_spec.Unique = true
 	}
 	if fields := ctq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))

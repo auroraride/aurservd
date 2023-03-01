@@ -465,10 +465,12 @@ func (sq *StockQuery) AllX(ctx context.Context) []*Stock {
 }
 
 // IDs executes the query and returns a list of Stock IDs.
-func (sq *StockQuery) IDs(ctx context.Context) ([]uint64, error) {
-	var ids []uint64
+func (sq *StockQuery) IDs(ctx context.Context) (ids []uint64, err error) {
+	if sq.ctx.Unique == nil && sq.path != nil {
+		sq.Unique(true)
+	}
 	ctx = setContextOp(ctx, sq.ctx, "IDs")
-	if err := sq.Select(stock.FieldID).Scan(ctx, &ids); err != nil {
+	if err = sq.Select(stock.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -1279,20 +1281,12 @@ func (sq *StockQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (sq *StockQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   stock.Table,
-			Columns: stock.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: stock.FieldID,
-			},
-		},
-		From:   sq.sql,
-		Unique: true,
-	}
+	_spec := sqlgraph.NewQuerySpec(stock.Table, stock.Columns, sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64))
+	_spec.From = sq.sql
 	if unique := sq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if sq.path != nil {
+		_spec.Unique = true
 	}
 	if fields := sq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))

@@ -588,13 +588,7 @@ func (rc *RiderCreate) sqlSave(ctx context.Context) (*Rider, error) {
 func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Rider{config: rc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: rider.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: rider.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(rider.Table, sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = rc.conflict
 	if value, ok := rc.mutation.CreatedAt(); ok {

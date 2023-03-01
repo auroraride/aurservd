@@ -421,9 +421,3 @@ func (c *Contract) String() string {
 
 // Contracts is a parsable slice of Contract.
 type Contracts []*Contract
-
-func (c Contracts) config(cfg config) {
-	for _i := range c {
-		c[_i].config = cfg
-	}
-}

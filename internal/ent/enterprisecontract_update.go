@@ -189,16 +189,7 @@ func (ecu *EnterpriseContractUpdate) sqlSave(ctx context.Context) (n int, err er
 	if err := ecu.check(); err != nil {
 		return n, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   enterprisecontract.Table,
-			Columns: enterprisecontract.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: enterprisecontract.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(enterprisecontract.Table, enterprisecontract.Columns, sqlgraph.NewFieldSpec(enterprisecontract.FieldID, field.TypeUint64))
 	if ps := ecu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -394,6 +385,12 @@ func (ecuo *EnterpriseContractUpdateOne) ClearEnterprise() *EnterpriseContractUp
 	return ecuo
 }
 
+// Where appends a list predicates to the EnterpriseContractUpdate builder.
+func (ecuo *EnterpriseContractUpdateOne) Where(ps ...predicate.EnterpriseContract) *EnterpriseContractUpdateOne {
+	ecuo.mutation.Where(ps...)
+	return ecuo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (ecuo *EnterpriseContractUpdateOne) Select(field string, fields ...string) *EnterpriseContractUpdateOne {
@@ -461,16 +458,7 @@ func (ecuo *EnterpriseContractUpdateOne) sqlSave(ctx context.Context) (_node *En
 	if err := ecuo.check(); err != nil {
 		return _node, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   enterprisecontract.Table,
-			Columns: enterprisecontract.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: enterprisecontract.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(enterprisecontract.Table, enterprisecontract.Columns, sqlgraph.NewFieldSpec(enterprisecontract.FieldID, field.TypeUint64))
 	id, ok := ecuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "EnterpriseContract.id" for update`)}

@@ -409,9 +409,3 @@ func (s *Store) String() string {
 
 // Stores is a parsable slice of Store.
 type Stores []*Store
-
-func (s Stores) config(cfg config) {
-	for _i := range s {
-		s[_i].config = cfg
-	}
-}

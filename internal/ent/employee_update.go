@@ -429,16 +429,7 @@ func (eu *EmployeeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if err := eu.check(); err != nil {
 		return n, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   employee.Table,
-			Columns: employee.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: employee.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(employee.Table, employee.Columns, sqlgraph.NewFieldSpec(employee.FieldID, field.TypeUint64))
 	if ps := eu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -1178,6 +1169,12 @@ func (euo *EmployeeUpdateOne) RemoveAssistances(a ...*Assistance) *EmployeeUpdat
 	return euo.RemoveAssistanceIDs(ids...)
 }
 
+// Where appends a list predicates to the EmployeeUpdate builder.
+func (euo *EmployeeUpdateOne) Where(ps ...predicate.Employee) *EmployeeUpdateOne {
+	euo.mutation.Where(ps...)
+	return euo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (euo *EmployeeUpdateOne) Select(field string, fields ...string) *EmployeeUpdateOne {
@@ -1245,16 +1242,7 @@ func (euo *EmployeeUpdateOne) sqlSave(ctx context.Context) (_node *Employee, err
 	if err := euo.check(); err != nil {
 		return _node, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   employee.Table,
-			Columns: employee.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: employee.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(employee.Table, employee.Columns, sqlgraph.NewFieldSpec(employee.FieldID, field.TypeUint64))
 	id, ok := euo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Employee.id" for update`)}

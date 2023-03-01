@@ -634,9 +634,3 @@ func (s *Stock) String() string {
 
 // Stocks is a parsable slice of Stock.
 type Stocks []*Stock
-
-func (s Stocks) config(cfg config) {
-	for _i := range s {
-		s[_i].config = cfg
-	}
-}

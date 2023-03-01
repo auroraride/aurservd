@@ -192,16 +192,7 @@ func (rfuu *RiderFollowUpUpdate) sqlSave(ctx context.Context) (n int, err error)
 	if err := rfuu.check(); err != nil {
 		return n, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   riderfollowup.Table,
-			Columns: riderfollowup.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: riderfollowup.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(riderfollowup.Table, riderfollowup.Columns, sqlgraph.NewFieldSpec(riderfollowup.FieldID, field.TypeUint64))
 	if ps := rfuu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -422,6 +413,12 @@ func (rfuuo *RiderFollowUpUpdateOne) ClearRider() *RiderFollowUpUpdateOne {
 	return rfuuo
 }
 
+// Where appends a list predicates to the RiderFollowUpUpdate builder.
+func (rfuuo *RiderFollowUpUpdateOne) Where(ps ...predicate.RiderFollowUp) *RiderFollowUpUpdateOne {
+	rfuuo.mutation.Where(ps...)
+	return rfuuo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (rfuuo *RiderFollowUpUpdateOne) Select(field string, fields ...string) *RiderFollowUpUpdateOne {
@@ -492,16 +489,7 @@ func (rfuuo *RiderFollowUpUpdateOne) sqlSave(ctx context.Context) (_node *RiderF
 	if err := rfuuo.check(); err != nil {
 		return _node, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   riderfollowup.Table,
-			Columns: riderfollowup.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: riderfollowup.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(riderfollowup.Table, riderfollowup.Columns, sqlgraph.NewFieldSpec(riderfollowup.FieldID, field.TypeUint64))
 	id, ok := rfuuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "RiderFollowUp.id" for update`)}

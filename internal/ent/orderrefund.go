@@ -262,9 +262,3 @@ func (or *OrderRefund) String() string {
 
 // OrderRefunds is a parsable slice of OrderRefund.
 type OrderRefunds []*OrderRefund
-
-func (or OrderRefunds) config(cfg config) {
-	for _i := range or {
-		or[_i].config = cfg
-	}
-}

@@ -520,6 +520,17 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{BatteryFlowColumns[10]},
 			},
+			{
+				Name:    "batteryflow_sn",
+				Unique:  false,
+				Columns: []*schema.Column{BatteryFlowColumns[3]},
+				Annotation: &entsql.IndexAnnotation{
+					OpClass: "gin_trgm_ops",
+					Types: map[string]string{
+						"postgres": "GIN",
+					},
+				},
+			},
 		},
 	}
 	// BatteryModelColumns holds the columns for the "battery_model" table.

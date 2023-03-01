@@ -622,9 +622,3 @@ func (e *Exchange) String() string {
 
 // Exchanges is a parsable slice of Exchange.
 type Exchanges []*Exchange
-
-func (e Exchanges) config(cfg config) {
-	for _i := range e {
-		e[_i].config = cfg
-	}
-}

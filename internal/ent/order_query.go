@@ -465,10 +465,12 @@ func (oq *OrderQuery) AllX(ctx context.Context) []*Order {
 }
 
 // IDs executes the query and returns a list of Order IDs.
-func (oq *OrderQuery) IDs(ctx context.Context) ([]uint64, error) {
-	var ids []uint64
+func (oq *OrderQuery) IDs(ctx context.Context) (ids []uint64, err error) {
+	if oq.ctx.Unique == nil && oq.path != nil {
+		oq.Unique(true)
+	}
 	ctx = setContextOp(ctx, oq.ctx, "IDs")
-	if err := oq.Select(order.FieldID).Scan(ctx, &ids); err != nil {
+	if err = oq.Select(order.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -1237,20 +1239,12 @@ func (oq *OrderQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (oq *OrderQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   order.Table,
-			Columns: order.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: order.FieldID,
-			},
-		},
-		From:   oq.sql,
-		Unique: true,
-	}
+	_spec := sqlgraph.NewQuerySpec(order.Table, order.Columns, sqlgraph.NewFieldSpec(order.FieldID, field.TypeUint64))
+	_spec.From = oq.sql
 	if unique := oq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if oq.path != nil {
+		_spec.Unique = true
 	}
 	if fields := oq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))

@@ -571,16 +571,7 @@ func (spu *SubscribePauseUpdate) sqlSave(ctx context.Context) (n int, err error)
 	if err := spu.check(); err != nil {
 		return n, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   subscribepause.Table,
-			Columns: subscribepause.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: subscribepause.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(subscribepause.Table, subscribepause.Columns, sqlgraph.NewFieldSpec(subscribepause.FieldID, field.TypeUint64))
 	if ps := spu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -1513,6 +1504,12 @@ func (spuo *SubscribePauseUpdateOne) RemoveSuspends(s ...*SubscribeSuspend) *Sub
 	return spuo.RemoveSuspendIDs(ids...)
 }
 
+// Where appends a list predicates to the SubscribePauseUpdate builder.
+func (spuo *SubscribePauseUpdateOne) Where(ps ...predicate.SubscribePause) *SubscribePauseUpdateOne {
+	spuo.mutation.Where(ps...)
+	return spuo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (spuo *SubscribePauseUpdateOne) Select(field string, fields ...string) *SubscribePauseUpdateOne {
@@ -1583,16 +1580,7 @@ func (spuo *SubscribePauseUpdateOne) sqlSave(ctx context.Context) (_node *Subscr
 	if err := spuo.check(); err != nil {
 		return _node, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   subscribepause.Table,
-			Columns: subscribepause.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: subscribepause.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(subscribepause.Table, subscribepause.Columns, sqlgraph.NewFieldSpec(subscribepause.FieldID, field.TypeUint64))
 	id, ok := spuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "SubscribePause.id" for update`)}

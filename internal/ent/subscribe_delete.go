@@ -40,15 +40,7 @@ func (sd *SubscribeDelete) ExecX(ctx context.Context) int {
 }
 
 func (sd *SubscribeDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := &sqlgraph.DeleteSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table: subscribe.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: subscribe.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewDeleteSpec(subscribe.Table, sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64))
 	if ps := sd.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

@@ -247,9 +247,3 @@ func (ca *CouponAssembly) String() string {
 
 // CouponAssemblies is a parsable slice of CouponAssembly.
 type CouponAssemblies []*CouponAssembly
-
-func (ca CouponAssemblies) config(cfg config) {
-	for _i := range ca {
-		ca[_i].config = cfg
-	}
-}

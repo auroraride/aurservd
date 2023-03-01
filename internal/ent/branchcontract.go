@@ -360,9 +360,3 @@ func (bc *BranchContract) String() string {
 
 // BranchContracts is a parsable slice of BranchContract.
 type BranchContracts []*BranchContract
-
-func (bc BranchContracts) config(cfg config) {
-	for _i := range bc {
-		bc[_i].config = cfg
-	}
-}

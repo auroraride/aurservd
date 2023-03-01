@@ -131,9 +131,3 @@ func (bm *BatteryModel) String() string {
 
 // BatteryModels is a parsable slice of BatteryModel.
 type BatteryModels []*BatteryModel
-
-func (bm BatteryModels) config(cfg config) {
-	for _i := range bm {
-		bm[_i].config = cfg
-	}
-}

@@ -304,13 +304,7 @@ func (cfc *CabinetFaultCreate) sqlSave(ctx context.Context) (*CabinetFault, erro
 func (cfc *CabinetFaultCreate) createSpec() (*CabinetFault, *sqlgraph.CreateSpec) {
 	var (
 		_node = &CabinetFault{config: cfc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: cabinetfault.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: cabinetfault.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(cabinetfault.Table, sqlgraph.NewFieldSpec(cabinetfault.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = cfc.conflict
 	if value, ok := cfc.mutation.CreatedAt(); ok {

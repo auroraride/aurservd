@@ -320,9 +320,3 @@ func (bf *BatteryFlow) String() string {
 
 // BatteryFlows is a parsable slice of BatteryFlow.
 type BatteryFlows []*BatteryFlow
-
-func (bf BatteryFlows) config(cfg config) {
-	for _i := range bf {
-		bf[_i].config = cfg
-	}
-}

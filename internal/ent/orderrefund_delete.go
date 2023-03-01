@@ -40,15 +40,7 @@ func (ord *OrderRefundDelete) ExecX(ctx context.Context) int {
 }
 
 func (ord *OrderRefundDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := &sqlgraph.DeleteSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table: orderrefund.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: orderrefund.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewDeleteSpec(orderrefund.Table, sqlgraph.NewFieldSpec(orderrefund.FieldID, field.TypeUint64))
 	if ps := ord.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

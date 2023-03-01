@@ -488,9 +488,3 @@ func (e *Enterprise) String() string {
 
 // Enterprises is a parsable slice of Enterprise.
 type Enterprises []*Enterprise
-
-func (e Enterprises) config(cfg config) {
-	for _i := range e {
-		e[_i].config = cfg
-	}
-}

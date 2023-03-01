@@ -371,10 +371,12 @@ func (aq *AllocateQuery) AllX(ctx context.Context) []*Allocate {
 }
 
 // IDs executes the query and returns a list of Allocate IDs.
-func (aq *AllocateQuery) IDs(ctx context.Context) ([]uint64, error) {
-	var ids []uint64
+func (aq *AllocateQuery) IDs(ctx context.Context) (ids []uint64, err error) {
+	if aq.ctx.Unique == nil && aq.path != nil {
+		aq.Unique(true)
+	}
 	ctx = setContextOp(ctx, aq.ctx, "IDs")
-	if err := aq.Select(allocate.FieldID).Scan(ctx, &ids); err != nil {
+	if err = aq.Select(allocate.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -963,20 +965,12 @@ func (aq *AllocateQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (aq *AllocateQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   allocate.Table,
-			Columns: allocate.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: allocate.FieldID,
-			},
-		},
-		From:   aq.sql,
-		Unique: true,
-	}
+	_spec := sqlgraph.NewQuerySpec(allocate.Table, allocate.Columns, sqlgraph.NewFieldSpec(allocate.FieldID, field.TypeUint64))
+	_spec.From = aq.sql
 	if unique := aq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if aq.path != nil {
+		_spec.Unique = true
 	}
 	if fields := aq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))

@@ -659,9 +659,3 @@ func (o *Order) String() string {
 
 // Orders is a parsable slice of Order.
 type Orders []*Order
-
-func (o Orders) config(cfg config) {
-	for _i := range o {
-		o[_i].config = cfg
-	}
-}

@@ -229,16 +229,7 @@ func (oru *OrderRefundUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if err := oru.check(); err != nil {
 		return n, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   orderrefund.Table,
-			Columns: orderrefund.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: orderrefund.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(orderrefund.Table, orderrefund.Columns, sqlgraph.NewFieldSpec(orderrefund.FieldID, field.TypeUint64))
 	if ps := oru.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -489,6 +480,12 @@ func (oruo *OrderRefundUpdateOne) ClearOrder() *OrderRefundUpdateOne {
 	return oruo
 }
 
+// Where appends a list predicates to the OrderRefundUpdate builder.
+func (oruo *OrderRefundUpdateOne) Where(ps ...predicate.OrderRefund) *OrderRefundUpdateOne {
+	oruo.mutation.Where(ps...)
+	return oruo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (oruo *OrderRefundUpdateOne) Select(field string, fields ...string) *OrderRefundUpdateOne {
@@ -556,16 +553,7 @@ func (oruo *OrderRefundUpdateOne) sqlSave(ctx context.Context) (_node *OrderRefu
 	if err := oruo.check(); err != nil {
 		return _node, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   orderrefund.Table,
-			Columns: orderrefund.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: orderrefund.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(orderrefund.Table, orderrefund.Columns, sqlgraph.NewFieldSpec(orderrefund.FieldID, field.TypeUint64))
 	id, ok := oruo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "OrderRefund.id" for update`)}

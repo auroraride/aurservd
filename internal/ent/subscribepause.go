@@ -573,9 +573,3 @@ func (sp *SubscribePause) String() string {
 
 // SubscribePauses is a parsable slice of SubscribePause.
 type SubscribePauses []*SubscribePause
-
-func (sp SubscribePauses) config(cfg config) {
-	for _i := range sp {
-		sp[_i].config = cfg
-	}
-}

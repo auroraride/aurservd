@@ -313,13 +313,7 @@ func (bc *BranchCreate) sqlSave(ctx context.Context) (*Branch, error) {
 func (bc *BranchCreate) createSpec() (*Branch, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Branch{config: bc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: branch.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: branch.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(branch.Table, sqlgraph.NewFieldSpec(branch.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = bc.conflict
 	if value, ok := bc.mutation.CreatedAt(); ok {

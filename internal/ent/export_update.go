@@ -276,16 +276,7 @@ func (eu *ExportUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if err := eu.check(); err != nil {
 		return n, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   export.Table,
-			Columns: export.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: export.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(export.Table, export.Columns, sqlgraph.NewFieldSpec(export.FieldID, field.TypeUint64))
 	if ps := eu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -602,6 +593,12 @@ func (euo *ExportUpdateOne) ClearManager() *ExportUpdateOne {
 	return euo
 }
 
+// Where appends a list predicates to the ExportUpdate builder.
+func (euo *ExportUpdateOne) Where(ps ...predicate.Export) *ExportUpdateOne {
+	euo.mutation.Where(ps...)
+	return euo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (euo *ExportUpdateOne) Select(field string, fields ...string) *ExportUpdateOne {
@@ -663,16 +660,7 @@ func (euo *ExportUpdateOne) sqlSave(ctx context.Context) (_node *Export, err err
 	if err := euo.check(); err != nil {
 		return _node, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   export.Table,
-			Columns: export.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: export.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(export.Table, export.Columns, sqlgraph.NewFieldSpec(export.FieldID, field.TypeUint64))
 	id, ok := euo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Export.id" for update`)}

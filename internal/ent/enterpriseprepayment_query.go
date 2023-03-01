@@ -202,10 +202,12 @@ func (epq *EnterprisePrepaymentQuery) AllX(ctx context.Context) []*EnterprisePre
 }
 
 // IDs executes the query and returns a list of EnterprisePrepayment IDs.
-func (epq *EnterprisePrepaymentQuery) IDs(ctx context.Context) ([]uint64, error) {
-	var ids []uint64
+func (epq *EnterprisePrepaymentQuery) IDs(ctx context.Context) (ids []uint64, err error) {
+	if epq.ctx.Unique == nil && epq.path != nil {
+		epq.Unique(true)
+	}
 	ctx = setContextOp(ctx, epq.ctx, "IDs")
-	if err := epq.Select(enterpriseprepayment.FieldID).Scan(ctx, &ids); err != nil {
+	if err = epq.Select(enterpriseprepayment.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -445,20 +447,12 @@ func (epq *EnterprisePrepaymentQuery) sqlCount(ctx context.Context) (int, error)
 }
 
 func (epq *EnterprisePrepaymentQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   enterpriseprepayment.Table,
-			Columns: enterpriseprepayment.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: enterpriseprepayment.FieldID,
-			},
-		},
-		From:   epq.sql,
-		Unique: true,
-	}
+	_spec := sqlgraph.NewQuerySpec(enterpriseprepayment.Table, enterpriseprepayment.Columns, sqlgraph.NewFieldSpec(enterpriseprepayment.FieldID, field.TypeUint64))
+	_spec.From = epq.sql
 	if unique := epq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if epq.path != nil {
+		_spec.Unique = true
 	}
 	if fields := epq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))

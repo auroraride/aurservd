@@ -40,15 +40,7 @@ func (bfd *BatteryFlowDelete) ExecX(ctx context.Context) int {
 }
 
 func (bfd *BatteryFlowDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := &sqlgraph.DeleteSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table: batteryflow.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: batteryflow.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewDeleteSpec(batteryflow.Table, sqlgraph.NewFieldSpec(batteryflow.FieldID, field.TypeUint64))
 	if ps := bfd.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

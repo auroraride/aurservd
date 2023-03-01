@@ -431,9 +431,3 @@ func (pl *Plan) String() string {
 
 // Plans is a parsable slice of Plan.
 type Plans []*Plan
-
-func (pl Plans) config(cfg config) {
-	for _i := range pl {
-		pl[_i].config = cfg
-	}
-}

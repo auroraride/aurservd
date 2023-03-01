@@ -466,9 +466,3 @@ func (a *Allocate) String() string {
 
 // Allocates is a parsable slice of Allocate.
 type Allocates []*Allocate
-
-func (a Allocates) config(cfg config) {
-	for _i := range a {
-		a[_i].config = cfg
-	}
-}

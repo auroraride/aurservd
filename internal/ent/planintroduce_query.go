@@ -202,10 +202,12 @@ func (piq *PlanIntroduceQuery) AllX(ctx context.Context) []*PlanIntroduce {
 }
 
 // IDs executes the query and returns a list of PlanIntroduce IDs.
-func (piq *PlanIntroduceQuery) IDs(ctx context.Context) ([]uint64, error) {
-	var ids []uint64
+func (piq *PlanIntroduceQuery) IDs(ctx context.Context) (ids []uint64, err error) {
+	if piq.ctx.Unique == nil && piq.path != nil {
+		piq.Unique(true)
+	}
 	ctx = setContextOp(ctx, piq.ctx, "IDs")
-	if err := piq.Select(planintroduce.FieldID).Scan(ctx, &ids); err != nil {
+	if err = piq.Select(planintroduce.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -448,20 +450,12 @@ func (piq *PlanIntroduceQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (piq *PlanIntroduceQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   planintroduce.Table,
-			Columns: planintroduce.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: planintroduce.FieldID,
-			},
-		},
-		From:   piq.sql,
-		Unique: true,
-	}
+	_spec := sqlgraph.NewQuerySpec(planintroduce.Table, planintroduce.Columns, sqlgraph.NewFieldSpec(planintroduce.FieldID, field.TypeUint64))
+	_spec.From = piq.sql
 	if unique := piq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if piq.path != nil {
+		_spec.Unique = true
 	}
 	if fields := piq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))

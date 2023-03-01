@@ -618,13 +618,7 @@ func (oc *OrderCreate) sqlSave(ctx context.Context) (*Order, error) {
 func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Order{config: oc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: order.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: order.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(order.Table, sqlgraph.NewFieldSpec(order.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = oc.conflict
 	if value, ok := oc.mutation.CreatedAt(); ok {

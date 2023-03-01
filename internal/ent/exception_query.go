@@ -250,10 +250,12 @@ func (eq *ExceptionQuery) AllX(ctx context.Context) []*Exception {
 }
 
 // IDs executes the query and returns a list of Exception IDs.
-func (eq *ExceptionQuery) IDs(ctx context.Context) ([]uint64, error) {
-	var ids []uint64
+func (eq *ExceptionQuery) IDs(ctx context.Context) (ids []uint64, err error) {
+	if eq.ctx.Unique == nil && eq.path != nil {
+		eq.Unique(true)
+	}
 	ctx = setContextOp(ctx, eq.ctx, "IDs")
-	if err := eq.Select(exception.FieldID).Scan(ctx, &ids); err != nil {
+	if err = eq.Select(exception.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -589,20 +591,12 @@ func (eq *ExceptionQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (eq *ExceptionQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   exception.Table,
-			Columns: exception.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: exception.FieldID,
-			},
-		},
-		From:   eq.sql,
-		Unique: true,
-	}
+	_spec := sqlgraph.NewQuerySpec(exception.Table, exception.Columns, sqlgraph.NewFieldSpec(exception.FieldID, field.TypeUint64))
+	_spec.From = eq.sql
 	if unique := eq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if eq.path != nil {
+		_spec.Unique = true
 	}
 	if fields := eq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))

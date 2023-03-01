@@ -40,15 +40,7 @@ func (cfd *CabinetFaultDelete) ExecX(ctx context.Context) int {
 }
 
 func (cfd *CabinetFaultDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := &sqlgraph.DeleteSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table: cabinetfault.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: cabinetfault.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewDeleteSpec(cabinetfault.Table, sqlgraph.NewFieldSpec(cabinetfault.FieldID, field.TypeUint64))
 	if ps := cfd.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

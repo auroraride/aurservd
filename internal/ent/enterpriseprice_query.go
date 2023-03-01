@@ -226,10 +226,12 @@ func (epq *EnterprisePriceQuery) AllX(ctx context.Context) []*EnterprisePrice {
 }
 
 // IDs executes the query and returns a list of EnterprisePrice IDs.
-func (epq *EnterprisePriceQuery) IDs(ctx context.Context) ([]uint64, error) {
-	var ids []uint64
+func (epq *EnterprisePriceQuery) IDs(ctx context.Context) (ids []uint64, err error) {
+	if epq.ctx.Unique == nil && epq.path != nil {
+		epq.Unique(true)
+	}
 	ctx = setContextOp(ctx, epq.ctx, "IDs")
-	if err := epq.Select(enterpriseprice.FieldID).Scan(ctx, &ids); err != nil {
+	if err = epq.Select(enterpriseprice.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -517,20 +519,12 @@ func (epq *EnterprisePriceQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (epq *EnterprisePriceQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   enterpriseprice.Table,
-			Columns: enterpriseprice.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: enterpriseprice.FieldID,
-			},
-		},
-		From:   epq.sql,
-		Unique: true,
-	}
+	_spec := sqlgraph.NewQuerySpec(enterpriseprice.Table, enterpriseprice.Columns, sqlgraph.NewFieldSpec(enterpriseprice.FieldID, field.TypeUint64))
+	_spec.From = epq.sql
 	if unique := epq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if epq.path != nil {
+		_spec.Unique = true
 	}
 	if fields := epq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))

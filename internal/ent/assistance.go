@@ -665,9 +665,3 @@ func (a *Assistance) String() string {
 
 // Assistances is a parsable slice of Assistance.
 type Assistances []*Assistance
-
-func (a Assistances) config(cfg config) {
-	for _i := range a {
-		a[_i].config = cfg
-	}
-}

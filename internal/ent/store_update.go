@@ -422,16 +422,7 @@ func (su *StoreUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if err := su.check(); err != nil {
 		return n, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   store.Table,
-			Columns: store.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: store.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(store.Table, store.Columns, sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64))
 	if ps := su.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -1105,6 +1096,12 @@ func (suo *StoreUpdateOne) RemoveExceptions(e ...*Exception) *StoreUpdateOne {
 	return suo.RemoveExceptionIDs(ids...)
 }
 
+// Where appends a list predicates to the StoreUpdate builder.
+func (suo *StoreUpdateOne) Where(ps ...predicate.Store) *StoreUpdateOne {
+	suo.mutation.Where(ps...)
+	return suo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (suo *StoreUpdateOne) Select(field string, fields ...string) *StoreUpdateOne {
@@ -1175,16 +1172,7 @@ func (suo *StoreUpdateOne) sqlSave(ctx context.Context) (_node *Store, err error
 	if err := suo.check(); err != nil {
 		return _node, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   store.Table,
-			Columns: store.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: store.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(store.Table, store.Columns, sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64))
 	id, ok := suo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Store.id" for update`)}

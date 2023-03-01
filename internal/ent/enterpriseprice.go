@@ -258,9 +258,3 @@ func (ep *EnterprisePrice) String() string {
 
 // EnterprisePrices is a parsable slice of EnterprisePrice.
 type EnterprisePrices []*EnterprisePrice
-
-func (ep EnterprisePrices) config(cfg config) {
-	for _i := range ep {
-		ep[_i].config = cfg
-	}
-}

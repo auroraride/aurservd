@@ -313,13 +313,7 @@ func (ec *ExceptionCreate) sqlSave(ctx context.Context) (*Exception, error) {
 func (ec *ExceptionCreate) createSpec() (*Exception, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Exception{config: ec.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: exception.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: exception.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(exception.Table, sqlgraph.NewFieldSpec(exception.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = ec.conflict
 	if value, ok := ec.mutation.CreatedAt(); ok {

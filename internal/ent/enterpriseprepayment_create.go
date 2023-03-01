@@ -204,13 +204,7 @@ func (epc *EnterprisePrepaymentCreate) sqlSave(ctx context.Context) (*Enterprise
 func (epc *EnterprisePrepaymentCreate) createSpec() (*EnterprisePrepayment, *sqlgraph.CreateSpec) {
 	var (
 		_node = &EnterprisePrepayment{config: epc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: enterpriseprepayment.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: enterpriseprepayment.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(enterpriseprepayment.Table, sqlgraph.NewFieldSpec(enterpriseprepayment.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = epc.conflict
 	if value, ok := epc.mutation.CreatedAt(); ok {

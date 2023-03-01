@@ -448,9 +448,3 @@ func (c *Coupon) String() string {
 
 // Coupons is a parsable slice of Coupon.
 type Coupons []*Coupon
-
-func (c Coupons) config(cfg config) {
-	for _i := range c {
-		c[_i].config = cfg
-	}
-}

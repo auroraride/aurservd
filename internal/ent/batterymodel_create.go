@@ -131,13 +131,7 @@ func (bmc *BatteryModelCreate) sqlSave(ctx context.Context) (*BatteryModel, erro
 func (bmc *BatteryModelCreate) createSpec() (*BatteryModel, *sqlgraph.CreateSpec) {
 	var (
 		_node = &BatteryModel{config: bmc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: batterymodel.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: batterymodel.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(batterymodel.Table, sqlgraph.NewFieldSpec(batterymodel.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = bmc.conflict
 	if value, ok := bmc.mutation.Model(); ok {

@@ -375,9 +375,3 @@ func (b *Battery) String() string {
 
 // Batteries is a parsable slice of Battery.
 type Batteries []*Battery
-
-func (b Batteries) config(cfg config) {
-	for _i := range b {
-		b[_i].config = cfg
-	}
-}

@@ -287,13 +287,7 @@ func (bfc *BatteryFlowCreate) sqlSave(ctx context.Context) (*BatteryFlow, error)
 func (bfc *BatteryFlowCreate) createSpec() (*BatteryFlow, *sqlgraph.CreateSpec) {
 	var (
 		_node = &BatteryFlow{config: bfc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: batteryflow.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: batteryflow.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(batteryflow.Table, sqlgraph.NewFieldSpec(batteryflow.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = bfc.conflict
 	if value, ok := bfc.mutation.CreatedAt(); ok {

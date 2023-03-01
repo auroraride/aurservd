@@ -379,13 +379,7 @@ func (cc *ContractCreate) sqlSave(ctx context.Context) (*Contract, error) {
 func (cc *ContractCreate) createSpec() (*Contract, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Contract{config: cc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: contract.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: contract.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(contract.Table, sqlgraph.NewFieldSpec(contract.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = cc.conflict
 	if value, ok := cc.mutation.CreatedAt(); ok {

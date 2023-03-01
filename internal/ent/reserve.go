@@ -323,9 +323,3 @@ func (r *Reserve) String() string {
 
 // Reserves is a parsable slice of Reserve.
 type Reserves []*Reserve
-
-func (r Reserves) config(cfg config) {
-	for _i := range r {
-		r[_i].config = cfg
-	}
-}

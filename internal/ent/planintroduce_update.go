@@ -127,16 +127,7 @@ func (piu *PlanIntroduceUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) 
 }
 
 func (piu *PlanIntroduceUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   planintroduce.Table,
-			Columns: planintroduce.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: planintroduce.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(planintroduce.Table, planintroduce.Columns, sqlgraph.NewFieldSpec(planintroduce.FieldID, field.TypeUint64))
 	if ps := piu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -264,6 +255,12 @@ func (piuo *PlanIntroduceUpdateOne) ClearBrand() *PlanIntroduceUpdateOne {
 	return piuo
 }
 
+// Where appends a list predicates to the PlanIntroduceUpdate builder.
+func (piuo *PlanIntroduceUpdateOne) Where(ps ...predicate.PlanIntroduce) *PlanIntroduceUpdateOne {
+	piuo.mutation.Where(ps...)
+	return piuo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (piuo *PlanIntroduceUpdateOne) Select(field string, fields ...string) *PlanIntroduceUpdateOne {
@@ -314,16 +311,7 @@ func (piuo *PlanIntroduceUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilde
 }
 
 func (piuo *PlanIntroduceUpdateOne) sqlSave(ctx context.Context) (_node *PlanIntroduce, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   planintroduce.Table,
-			Columns: planintroduce.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: planintroduce.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(planintroduce.Table, planintroduce.Columns, sqlgraph.NewFieldSpec(planintroduce.FieldID, field.TypeUint64))
 	id, ok := piuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "PlanIntroduce.id" for update`)}

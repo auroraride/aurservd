@@ -400,16 +400,7 @@ func (au *AllocateUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if err := au.check(); err != nil {
 		return n, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   allocate.Table,
-			Columns: allocate.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: allocate.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(allocate.Table, allocate.Columns, sqlgraph.NewFieldSpec(allocate.FieldID, field.TypeUint64))
 	if ps := au.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -1052,6 +1043,12 @@ func (auo *AllocateUpdateOne) ClearContract() *AllocateUpdateOne {
 	return auo
 }
 
+// Where appends a list predicates to the AllocateUpdate builder.
+func (auo *AllocateUpdateOne) Where(ps ...predicate.Allocate) *AllocateUpdateOne {
+	auo.mutation.Where(ps...)
+	return auo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (auo *AllocateUpdateOne) Select(field string, fields ...string) *AllocateUpdateOne {
@@ -1127,16 +1124,7 @@ func (auo *AllocateUpdateOne) sqlSave(ctx context.Context) (_node *Allocate, err
 	if err := auo.check(); err != nil {
 		return _node, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   allocate.Table,
-			Columns: allocate.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: allocate.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(allocate.Table, allocate.Columns, sqlgraph.NewFieldSpec(allocate.FieldID, field.TypeUint64))
 	id, ok := auo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Allocate.id" for update`)}

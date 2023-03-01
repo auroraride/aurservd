@@ -178,10 +178,12 @@ func (iq *InventoryQuery) AllX(ctx context.Context) []*Inventory {
 }
 
 // IDs executes the query and returns a list of Inventory IDs.
-func (iq *InventoryQuery) IDs(ctx context.Context) ([]uint64, error) {
-	var ids []uint64
+func (iq *InventoryQuery) IDs(ctx context.Context) (ids []uint64, err error) {
+	if iq.ctx.Unique == nil && iq.path != nil {
+		iq.Unique(true)
+	}
 	ctx = setContextOp(ctx, iq.ctx, "IDs")
-	if err := iq.Select(inventory.FieldID).Scan(ctx, &ids); err != nil {
+	if err = iq.Select(inventory.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -369,20 +371,12 @@ func (iq *InventoryQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (iq *InventoryQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   inventory.Table,
-			Columns: inventory.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: inventory.FieldID,
-			},
-		},
-		From:   iq.sql,
-		Unique: true,
-	}
+	_spec := sqlgraph.NewQuerySpec(inventory.Table, inventory.Columns, sqlgraph.NewFieldSpec(inventory.FieldID, field.TypeUint64))
+	_spec.From = iq.sql
 	if unique := iq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if iq.path != nil {
+		_spec.Unique = true
 	}
 	if fields := iq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))

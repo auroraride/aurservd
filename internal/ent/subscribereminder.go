@@ -314,9 +314,3 @@ func (sr *SubscribeReminder) String() string {
 
 // SubscribeReminders is a parsable slice of SubscribeReminder.
 type SubscribeReminders []*SubscribeReminder
-
-func (sr SubscribeReminders) config(cfg config) {
-	for _i := range sr {
-		sr[_i].config = cfg
-	}
-}

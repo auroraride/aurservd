@@ -336,9 +336,3 @@ func (pe *Person) String() string {
 
 // Persons is a parsable slice of Person.
 type Persons []*Person
-
-func (pe Persons) config(cfg config) {
-	for _i := range pe {
-		pe[_i].config = cfg
-	}
-}

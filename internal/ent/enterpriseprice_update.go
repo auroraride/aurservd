@@ -211,16 +211,7 @@ func (epu *EnterprisePriceUpdate) sqlSave(ctx context.Context) (n int, err error
 	if err := epu.check(); err != nil {
 		return n, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   enterpriseprice.Table,
-			Columns: enterpriseprice.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: enterpriseprice.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(enterpriseprice.Table, enterpriseprice.Columns, sqlgraph.NewFieldSpec(enterpriseprice.FieldID, field.TypeUint64))
 	if ps := epu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -469,6 +460,12 @@ func (epuo *EnterprisePriceUpdateOne) ClearEnterprise() *EnterprisePriceUpdateOn
 	return epuo
 }
 
+// Where appends a list predicates to the EnterprisePriceUpdate builder.
+func (epuo *EnterprisePriceUpdateOne) Where(ps ...predicate.EnterprisePrice) *EnterprisePriceUpdateOne {
+	epuo.mutation.Where(ps...)
+	return epuo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (epuo *EnterprisePriceUpdateOne) Select(field string, fields ...string) *EnterprisePriceUpdateOne {
@@ -539,16 +536,7 @@ func (epuo *EnterprisePriceUpdateOne) sqlSave(ctx context.Context) (_node *Enter
 	if err := epuo.check(); err != nil {
 		return _node, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   enterpriseprice.Table,
-			Columns: enterpriseprice.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: enterpriseprice.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(enterpriseprice.Table, enterpriseprice.Columns, sqlgraph.NewFieldSpec(enterpriseprice.FieldID, field.TypeUint64))
 	id, ok := epuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "EnterprisePrice.id" for update`)}

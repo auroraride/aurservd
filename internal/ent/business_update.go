@@ -480,16 +480,7 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if err := bu.check(); err != nil {
 		return n, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   business.Table,
-			Columns: business.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: business.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(business.Table, business.Columns, sqlgraph.NewFieldSpec(business.FieldID, field.TypeUint64))
 	if ps := bu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -1277,6 +1268,12 @@ func (buo *BusinessUpdateOne) ClearBattery() *BusinessUpdateOne {
 	return buo
 }
 
+// Where appends a list predicates to the BusinessUpdate builder.
+func (buo *BusinessUpdateOne) Where(ps ...predicate.Business) *BusinessUpdateOne {
+	buo.mutation.Where(ps...)
+	return buo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (buo *BusinessUpdateOne) Select(field string, fields ...string) *BusinessUpdateOne {
@@ -1355,16 +1352,7 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 	if err := buo.check(); err != nil {
 		return _node, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   business.Table,
-			Columns: business.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: business.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(business.Table, business.Columns, sqlgraph.NewFieldSpec(business.FieldID, field.TypeUint64))
 	id, ok := buo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Business.id" for update`)}

@@ -202,10 +202,12 @@ func (esq *EnterpriseStationQuery) AllX(ctx context.Context) []*EnterpriseStatio
 }
 
 // IDs executes the query and returns a list of EnterpriseStation IDs.
-func (esq *EnterpriseStationQuery) IDs(ctx context.Context) ([]uint64, error) {
-	var ids []uint64
+func (esq *EnterpriseStationQuery) IDs(ctx context.Context) (ids []uint64, err error) {
+	if esq.ctx.Unique == nil && esq.path != nil {
+		esq.Unique(true)
+	}
 	ctx = setContextOp(ctx, esq.ctx, "IDs")
-	if err := esq.Select(enterprisestation.FieldID).Scan(ctx, &ids); err != nil {
+	if err = esq.Select(enterprisestation.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -445,20 +447,12 @@ func (esq *EnterpriseStationQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (esq *EnterpriseStationQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   enterprisestation.Table,
-			Columns: enterprisestation.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: enterprisestation.FieldID,
-			},
-		},
-		From:   esq.sql,
-		Unique: true,
-	}
+	_spec := sqlgraph.NewQuerySpec(enterprisestation.Table, enterprisestation.Columns, sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64))
+	_spec.From = esq.sql
 	if unique := esq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if esq.path != nil {
+		_spec.Unique = true
 	}
 	if fields := esq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))

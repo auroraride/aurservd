@@ -326,13 +326,7 @@ func (bc *BatteryCreate) sqlSave(ctx context.Context) (*Battery, error) {
 func (bc *BatteryCreate) createSpec() (*Battery, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Battery{config: bc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: battery.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: battery.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(battery.Table, sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = bc.conflict
 	if value, ok := bc.mutation.CreatedAt(); ok {

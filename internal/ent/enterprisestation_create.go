@@ -204,13 +204,7 @@ func (esc *EnterpriseStationCreate) sqlSave(ctx context.Context) (*EnterpriseSta
 func (esc *EnterpriseStationCreate) createSpec() (*EnterpriseStation, *sqlgraph.CreateSpec) {
 	var (
 		_node = &EnterpriseStation{config: esc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: enterprisestation.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: enterprisestation.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(enterprisestation.Table, sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = esc.conflict
 	if value, ok := esc.mutation.CreatedAt(); ok {

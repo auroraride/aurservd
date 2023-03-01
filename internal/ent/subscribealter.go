@@ -350,9 +350,3 @@ func (sa *SubscribeAlter) String() string {
 
 // SubscribeAlters is a parsable slice of SubscribeAlter.
 type SubscribeAlters []*SubscribeAlter
-
-func (sa SubscribeAlters) config(cfg config) {
-	for _i := range sa {
-		sa[_i].config = cfg
-	}
-}

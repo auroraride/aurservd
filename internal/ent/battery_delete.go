@@ -40,15 +40,7 @@ func (bd *BatteryDelete) ExecX(ctx context.Context) int {
 }
 
 func (bd *BatteryDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := &sqlgraph.DeleteSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table: battery.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: battery.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewDeleteSpec(battery.Table, sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64))
 	if ps := bd.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

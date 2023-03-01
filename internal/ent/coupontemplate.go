@@ -209,9 +209,3 @@ func (ct *CouponTemplate) String() string {
 
 // CouponTemplates is a parsable slice of CouponTemplate.
 type CouponTemplates []*CouponTemplate
-
-func (ct CouponTemplates) config(cfg config) {
-	for _i := range ct {
-		ct[_i].config = cfg
-	}
-}

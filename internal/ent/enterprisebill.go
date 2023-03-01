@@ -433,9 +433,3 @@ func (eb *EnterpriseBill) String() string {
 
 // EnterpriseBills is a parsable slice of EnterpriseBill.
 type EnterpriseBills []*EnterpriseBill
-
-func (eb EnterpriseBills) config(cfg config) {
-	for _i := range eb {
-		eb[_i].config = cfg
-	}
-}

@@ -281,13 +281,7 @@ func (rc *ReserveCreate) sqlSave(ctx context.Context) (*Reserve, error) {
 func (rc *ReserveCreate) createSpec() (*Reserve, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Reserve{config: rc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: reserve.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: reserve.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(reserve.Table, sqlgraph.NewFieldSpec(reserve.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = rc.conflict
 	if value, ok := rc.mutation.CreatedAt(); ok {

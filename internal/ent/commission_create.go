@@ -325,13 +325,7 @@ func (cc *CommissionCreate) sqlSave(ctx context.Context) (*Commission, error) {
 func (cc *CommissionCreate) createSpec() (*Commission, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Commission{config: cc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: commission.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: commission.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(commission.Table, sqlgraph.NewFieldSpec(commission.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = cc.conflict
 	if value, ok := cc.mutation.CreatedAt(); ok {

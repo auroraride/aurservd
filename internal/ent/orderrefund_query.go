@@ -202,10 +202,12 @@ func (orq *OrderRefundQuery) AllX(ctx context.Context) []*OrderRefund {
 }
 
 // IDs executes the query and returns a list of OrderRefund IDs.
-func (orq *OrderRefundQuery) IDs(ctx context.Context) ([]uint64, error) {
-	var ids []uint64
+func (orq *OrderRefundQuery) IDs(ctx context.Context) (ids []uint64, err error) {
+	if orq.ctx.Unique == nil && orq.path != nil {
+		orq.Unique(true)
+	}
 	ctx = setContextOp(ctx, orq.ctx, "IDs")
-	if err := orq.Select(orderrefund.FieldID).Scan(ctx, &ids); err != nil {
+	if err = orq.Select(orderrefund.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -445,20 +447,12 @@ func (orq *OrderRefundQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (orq *OrderRefundQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   orderrefund.Table,
-			Columns: orderrefund.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: orderrefund.FieldID,
-			},
-		},
-		From:   orq.sql,
-		Unique: true,
-	}
+	_spec := sqlgraph.NewQuerySpec(orderrefund.Table, orderrefund.Columns, sqlgraph.NewFieldSpec(orderrefund.FieldID, field.TypeUint64))
+	_spec.From = orq.sql
 	if unique := orq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if orq.path != nil {
+		_spec.Unique = true
 	}
 	if fields := orq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))

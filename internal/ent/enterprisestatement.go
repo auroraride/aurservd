@@ -306,9 +306,3 @@ func (es *EnterpriseStatement) String() string {
 
 // EnterpriseStatements is a parsable slice of EnterpriseStatement.
 type EnterpriseStatements []*EnterpriseStatement
-
-func (es EnterpriseStatements) config(cfg config) {
-	for _i := range es {
-		es[_i].config = cfg
-	}
-}

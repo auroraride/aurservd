@@ -215,9 +215,3 @@ func (ep *EnterprisePrepayment) String() string {
 
 // EnterprisePrepayments is a parsable slice of EnterprisePrepayment.
 type EnterprisePrepayments []*EnterprisePrepayment
-
-func (ep EnterprisePrepayments) config(cfg config) {
-	for _i := range ep {
-		ep[_i].config = cfg
-	}
-}

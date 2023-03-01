@@ -234,13 +234,7 @@ func (plc *PointLogCreate) sqlSave(ctx context.Context) (*PointLog, error) {
 func (plc *PointLogCreate) createSpec() (*PointLog, *sqlgraph.CreateSpec) {
 	var (
 		_node = &PointLog{config: plc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: pointlog.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: pointlog.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(pointlog.Table, sqlgraph.NewFieldSpec(pointlog.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = plc.conflict
 	if value, ok := plc.mutation.CreatedAt(); ok {

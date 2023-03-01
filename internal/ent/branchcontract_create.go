@@ -321,13 +321,7 @@ func (bcc *BranchContractCreate) sqlSave(ctx context.Context) (*BranchContract, 
 func (bcc *BranchContractCreate) createSpec() (*BranchContract, *sqlgraph.CreateSpec) {
 	var (
 		_node = &BranchContract{config: bcc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: branchcontract.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: branchcontract.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(branchcontract.Table, sqlgraph.NewFieldSpec(branchcontract.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = bcc.conflict
 	if value, ok := bcc.mutation.CreatedAt(); ok {

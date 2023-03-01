@@ -177,16 +177,7 @@ func (esu *EnterpriseStationUpdate) sqlSave(ctx context.Context) (n int, err err
 	if err := esu.check(); err != nil {
 		return n, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   enterprisestation.Table,
-			Columns: enterprisestation.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: enterprisestation.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(enterprisestation.Table, enterprisestation.Columns, sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64))
 	if ps := esu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -364,6 +355,12 @@ func (esuo *EnterpriseStationUpdateOne) ClearEnterprise() *EnterpriseStationUpda
 	return esuo
 }
 
+// Where appends a list predicates to the EnterpriseStationUpdate builder.
+func (esuo *EnterpriseStationUpdateOne) Where(ps ...predicate.EnterpriseStation) *EnterpriseStationUpdateOne {
+	esuo.mutation.Where(ps...)
+	return esuo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (esuo *EnterpriseStationUpdateOne) Select(field string, fields ...string) *EnterpriseStationUpdateOne {
@@ -431,16 +428,7 @@ func (esuo *EnterpriseStationUpdateOne) sqlSave(ctx context.Context) (_node *Ent
 	if err := esuo.check(); err != nil {
 		return _node, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   enterprisestation.Table,
-			Columns: enterprisestation.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: enterprisestation.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(enterprisestation.Table, enterprisestation.Columns, sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64))
 	id, ok := esuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "EnterpriseStation.id" for update`)}

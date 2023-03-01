@@ -692,16 +692,7 @@ func (ou *OrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if err := ou.check(); err != nil {
 		return n, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   order.Table,
-			Columns: order.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: order.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(order.Table, order.Columns, sqlgraph.NewFieldSpec(order.FieldID, field.TypeUint64))
 	if ps := ou.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -1859,6 +1850,12 @@ func (ouo *OrderUpdateOne) RemoveCoupons(c ...*Coupon) *OrderUpdateOne {
 	return ouo.RemoveCouponIDs(ids...)
 }
 
+// Where appends a list predicates to the OrderUpdate builder.
+func (ouo *OrderUpdateOne) Where(ps ...predicate.Order) *OrderUpdateOne {
+	ouo.mutation.Where(ps...)
+	return ouo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (ouo *OrderUpdateOne) Select(field string, fields ...string) *OrderUpdateOne {
@@ -1926,16 +1923,7 @@ func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error
 	if err := ouo.check(); err != nil {
 		return _node, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   order.Table,
-			Columns: order.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: order.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(order.Table, order.Columns, sqlgraph.NewFieldSpec(order.FieldID, field.TypeUint64))
 	id, ok := ouo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Order.id" for update`)}

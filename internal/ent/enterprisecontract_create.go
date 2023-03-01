@@ -222,13 +222,7 @@ func (ecc *EnterpriseContractCreate) sqlSave(ctx context.Context) (*EnterpriseCo
 func (ecc *EnterpriseContractCreate) createSpec() (*EnterpriseContract, *sqlgraph.CreateSpec) {
 	var (
 		_node = &EnterpriseContract{config: ecc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: enterprisecontract.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: enterprisecontract.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(enterprisecontract.Table, sqlgraph.NewFieldSpec(enterprisecontract.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = ecc.conflict
 	if value, ok := ecc.mutation.CreatedAt(); ok {

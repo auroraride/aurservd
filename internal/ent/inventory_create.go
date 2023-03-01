@@ -213,13 +213,7 @@ func (ic *InventoryCreate) sqlSave(ctx context.Context) (*Inventory, error) {
 func (ic *InventoryCreate) createSpec() (*Inventory, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Inventory{config: ic.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: inventory.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: inventory.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(inventory.Table, sqlgraph.NewFieldSpec(inventory.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = ic.conflict
 	if value, ok := ic.mutation.CreatedAt(); ok {

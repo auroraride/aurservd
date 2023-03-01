@@ -415,16 +415,7 @@ func (cu *ContractUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if err := cu.check(); err != nil {
 		return n, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   contract.Table,
-			Columns: contract.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: contract.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(contract.Table, contract.Columns, sqlgraph.NewFieldSpec(contract.FieldID, field.TypeUint64))
 	if ps := cu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -978,6 +969,12 @@ func (cuo *ContractUpdateOne) ClearAllocate() *ContractUpdateOne {
 	return cuo
 }
 
+// Where appends a list predicates to the ContractUpdate builder.
+func (cuo *ContractUpdateOne) Where(ps ...predicate.Contract) *ContractUpdateOne {
+	cuo.mutation.Where(ps...)
+	return cuo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (cuo *ContractUpdateOne) Select(field string, fields ...string) *ContractUpdateOne {
@@ -1055,16 +1052,7 @@ func (cuo *ContractUpdateOne) sqlSave(ctx context.Context) (_node *Contract, err
 	if err := cuo.check(); err != nil {
 		return _node, err
 	}
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   contract.Table,
-			Columns: contract.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: contract.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewUpdateSpec(contract.Table, contract.Columns, sqlgraph.NewFieldSpec(contract.FieldID, field.TypeUint64))
 	id, ok := cuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Contract.id" for update`)}

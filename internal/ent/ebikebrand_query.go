@@ -178,10 +178,12 @@ func (ebq *EbikeBrandQuery) AllX(ctx context.Context) []*EbikeBrand {
 }
 
 // IDs executes the query and returns a list of EbikeBrand IDs.
-func (ebq *EbikeBrandQuery) IDs(ctx context.Context) ([]uint64, error) {
-	var ids []uint64
+func (ebq *EbikeBrandQuery) IDs(ctx context.Context) (ids []uint64, err error) {
+	if ebq.ctx.Unique == nil && ebq.path != nil {
+		ebq.Unique(true)
+	}
 	ctx = setContextOp(ctx, ebq.ctx, "IDs")
-	if err := ebq.Select(ebikebrand.FieldID).Scan(ctx, &ids); err != nil {
+	if err = ebq.Select(ebikebrand.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -369,20 +371,12 @@ func (ebq *EbikeBrandQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (ebq *EbikeBrandQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   ebikebrand.Table,
-			Columns: ebikebrand.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: ebikebrand.FieldID,
-			},
-		},
-		From:   ebq.sql,
-		Unique: true,
-	}
+	_spec := sqlgraph.NewQuerySpec(ebikebrand.Table, ebikebrand.Columns, sqlgraph.NewFieldSpec(ebikebrand.FieldID, field.TypeUint64))
+	_spec.From = ebq.sql
 	if unique := ebq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if ebq.path != nil {
+		_spec.Unique = true
 	}
 	if fields := ebq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))

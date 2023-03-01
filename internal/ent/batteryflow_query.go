@@ -274,10 +274,12 @@ func (bfq *BatteryFlowQuery) AllX(ctx context.Context) []*BatteryFlow {
 }
 
 // IDs executes the query and returns a list of BatteryFlow IDs.
-func (bfq *BatteryFlowQuery) IDs(ctx context.Context) ([]uint64, error) {
-	var ids []uint64
+func (bfq *BatteryFlowQuery) IDs(ctx context.Context) (ids []uint64, err error) {
+	if bfq.ctx.Unique == nil && bfq.path != nil {
+		bfq.Unique(true)
+	}
 	ctx = setContextOp(ctx, bfq.ctx, "IDs")
-	if err := bfq.Select(batteryflow.FieldID).Scan(ctx, &ids); err != nil {
+	if err = bfq.Select(batteryflow.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -664,20 +666,12 @@ func (bfq *BatteryFlowQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (bfq *BatteryFlowQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   batteryflow.Table,
-			Columns: batteryflow.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: batteryflow.FieldID,
-			},
-		},
-		From:   bfq.sql,
-		Unique: true,
-	}
+	_spec := sqlgraph.NewQuerySpec(batteryflow.Table, batteryflow.Columns, sqlgraph.NewFieldSpec(batteryflow.FieldID, field.TypeUint64))
+	_spec.From = bfq.sql
 	if unique := bfq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if bfq.path != nil {
+		_spec.Unique = true
 	}
 	if fields := bfq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
