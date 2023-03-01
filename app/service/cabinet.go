@@ -670,7 +670,7 @@ func (s *cabinetService) Sync(data *cabdef.CabinetMessage) {
                 // 如果该仓位有电池
                 // 智能电柜操作放入电池
                 if cab.Intelligent {
-                    _, _ = NewBattery().SyncPutin(b.BatterySn, cab.Serial, cab.ID, b.Ordinal)
+                    _, _ = NewBattery().SyncPutin(b.BatterySn, cab.Serial, cab.ID, b.Ordinal, bins)
                 }
                 bn += 1
                 if b.Soc >= model.IntelligentBatteryFullSoc {

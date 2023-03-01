@@ -111,7 +111,7 @@ func (s *batteryService) SyncPutout(cabinetID uint64, ordinal int) {
 }
 
 // SyncPutin 同步消息 - 放入电柜中
-func (s *batteryService) SyncPutin(sn, serial string, cabinetID uint64, ordinal int) (bat *ent.Battery, err error) {
+func (s *batteryService) SyncPutin(sn, serial string, cabinetID uint64, ordinal int, old model.CabinetBins) (bat *ent.Battery, err error) {
     bat, err = s.LoadOrCreate(sn, &model.BatteryInCabinet{
         CabinetID: cabinetID,
         Ordinal:   ordinal,
@@ -126,14 +126,14 @@ func (s *batteryService) SyncPutin(sn, serial string, cabinetID uint64, ordinal 
     // 更新电池电柜信息
     bat, err = bat.Update().SetCabinetID(cabinetID).SetOrdinal(ordinal).ClearRiderID().ClearSubscribeID().Save(s.ctx)
 
-    // 更新电池流转
-    go NewBatteryFlow().Create(model.BatteryFlowCreateReq{
-        SN:        bat.Sn,
-        BatteryID: bat.ID,
-        CabinetID: silk.Pointer(cabinetID),
-        Ordinal:   silk.Pointer(ordinal),
-        Serial:    silk.Pointer(serial),
-    })
+    // TODO 更新电池流转
+    // go NewBatteryFlow().Create(model.BatteryFlowCreateReq{
+    //     SN:        bat.Sn,
+    //     BatteryID: bat.ID,
+    //     CabinetID: silk.Pointer(cabinetID),
+    //     Ordinal:   silk.Pointer(ordinal),
+    //     Serial:    silk.Pointer(serial),
+    // })
     return
 }
 
