@@ -10,6 +10,10 @@ import (
 
 	"github.com/auroraride/aurservd/internal/ent/migrate"
 
+	"entgo.io/ent"
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
@@ -62,9 +66,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/subscribereminder"
 	"github.com/auroraride/aurservd/internal/ent/subscribesuspend"
 
-	"entgo.io/ent/dialect"
-	"entgo.io/ent/dialect/sql"
-	"entgo.io/ent/dialect/sql/sqlgraph"
+	stdsql "database/sql"
 )
 
 // Client is the client that holds all ent builders.
@@ -238,6 +240,55 @@ func (c *Client) init() {
 	c.SubscribePause = NewSubscribePauseClient(c.config)
 	c.SubscribeReminder = NewSubscribeReminderClient(c.config)
 	c.SubscribeSuspend = NewSubscribeSuspendClient(c.config)
+}
+
+type (
+	// config is the configuration for the client and its builder.
+	config struct {
+		// driver used for executing database requests.
+		driver dialect.Driver
+		// debug enable a debug logging.
+		debug bool
+		// log used for logging on debug mode.
+		log func(...any)
+		// hooks to execute on mutations.
+		hooks *hooks
+		// interceptors to execute on queries.
+		inters *inters
+	}
+	// Option function to configure the client.
+	Option func(*config)
+)
+
+// options applies the options on the config object.
+func (c *config) options(opts ...Option) {
+	for _, opt := range opts {
+		opt(c)
+	}
+	if c.debug {
+		c.driver = dialect.Debug(c.driver, c.log)
+	}
+}
+
+// Debug enables debug logging on the ent.Driver.
+func Debug() Option {
+	return func(c *config) {
+		c.debug = true
+	}
+}
+
+// Log sets the logging function for debug mode.
+func Log(fn func(...any)) Option {
+	return func(c *config) {
+		c.log = fn
+	}
+}
+
+// Driver configures the client driver.
+func Driver(driver dialect.Driver) Option {
+	return func(c *config) {
+		c.driver = driver
+	}
 }
 
 // Open opens a database/sql.DB specified by the driver name and
@@ -420,113 +471,39 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
-	c.Agent.Use(hooks...)
-	c.Allocate.Use(hooks...)
-	c.Assistance.Use(hooks...)
-	c.Attendance.Use(hooks...)
-	c.Battery.Use(hooks...)
-	c.BatteryFlow.Use(hooks...)
-	c.BatteryModel.Use(hooks...)
-	c.Branch.Use(hooks...)
-	c.BranchContract.Use(hooks...)
-	c.Business.Use(hooks...)
-	c.Cabinet.Use(hooks...)
-	c.CabinetFault.Use(hooks...)
-	c.City.Use(hooks...)
-	c.Commission.Use(hooks...)
-	c.Contract.Use(hooks...)
-	c.Coupon.Use(hooks...)
-	c.CouponAssembly.Use(hooks...)
-	c.CouponTemplate.Use(hooks...)
-	c.Ebike.Use(hooks...)
-	c.EbikeBrand.Use(hooks...)
-	c.Employee.Use(hooks...)
-	c.Enterprise.Use(hooks...)
-	c.EnterpriseBill.Use(hooks...)
-	c.EnterpriseContract.Use(hooks...)
-	c.EnterprisePrepayment.Use(hooks...)
-	c.EnterprisePrice.Use(hooks...)
-	c.EnterpriseStatement.Use(hooks...)
-	c.EnterpriseStation.Use(hooks...)
-	c.Exception.Use(hooks...)
-	c.Exchange.Use(hooks...)
-	c.Export.Use(hooks...)
-	c.Inventory.Use(hooks...)
-	c.Manager.Use(hooks...)
-	c.Order.Use(hooks...)
-	c.OrderRefund.Use(hooks...)
-	c.Person.Use(hooks...)
-	c.Plan.Use(hooks...)
-	c.PlanIntroduce.Use(hooks...)
-	c.PointLog.Use(hooks...)
-	c.Reserve.Use(hooks...)
-	c.Rider.Use(hooks...)
-	c.RiderFollowUp.Use(hooks...)
-	c.Role.Use(hooks...)
-	c.Setting.Use(hooks...)
-	c.Stock.Use(hooks...)
-	c.Store.Use(hooks...)
-	c.Subscribe.Use(hooks...)
-	c.SubscribeAlter.Use(hooks...)
-	c.SubscribePause.Use(hooks...)
-	c.SubscribeReminder.Use(hooks...)
-	c.SubscribeSuspend.Use(hooks...)
+	for _, n := range []interface{ Use(...Hook) }{
+		c.Agent, c.Allocate, c.Assistance, c.Attendance, c.Battery, c.BatteryFlow,
+		c.BatteryModel, c.Branch, c.BranchContract, c.Business, c.Cabinet,
+		c.CabinetFault, c.City, c.Commission, c.Contract, c.Coupon, c.CouponAssembly,
+		c.CouponTemplate, c.Ebike, c.EbikeBrand, c.Employee, c.Enterprise,
+		c.EnterpriseBill, c.EnterpriseContract, c.EnterprisePrepayment,
+		c.EnterprisePrice, c.EnterpriseStatement, c.EnterpriseStation, c.Exception,
+		c.Exchange, c.Export, c.Inventory, c.Manager, c.Order, c.OrderRefund, c.Person,
+		c.Plan, c.PlanIntroduce, c.PointLog, c.Reserve, c.Rider, c.RiderFollowUp,
+		c.Role, c.Setting, c.Stock, c.Store, c.Subscribe, c.SubscribeAlter,
+		c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend,
+	} {
+		n.Use(hooks...)
+	}
 }
 
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
-	c.Agent.Intercept(interceptors...)
-	c.Allocate.Intercept(interceptors...)
-	c.Assistance.Intercept(interceptors...)
-	c.Attendance.Intercept(interceptors...)
-	c.Battery.Intercept(interceptors...)
-	c.BatteryFlow.Intercept(interceptors...)
-	c.BatteryModel.Intercept(interceptors...)
-	c.Branch.Intercept(interceptors...)
-	c.BranchContract.Intercept(interceptors...)
-	c.Business.Intercept(interceptors...)
-	c.Cabinet.Intercept(interceptors...)
-	c.CabinetFault.Intercept(interceptors...)
-	c.City.Intercept(interceptors...)
-	c.Commission.Intercept(interceptors...)
-	c.Contract.Intercept(interceptors...)
-	c.Coupon.Intercept(interceptors...)
-	c.CouponAssembly.Intercept(interceptors...)
-	c.CouponTemplate.Intercept(interceptors...)
-	c.Ebike.Intercept(interceptors...)
-	c.EbikeBrand.Intercept(interceptors...)
-	c.Employee.Intercept(interceptors...)
-	c.Enterprise.Intercept(interceptors...)
-	c.EnterpriseBill.Intercept(interceptors...)
-	c.EnterpriseContract.Intercept(interceptors...)
-	c.EnterprisePrepayment.Intercept(interceptors...)
-	c.EnterprisePrice.Intercept(interceptors...)
-	c.EnterpriseStatement.Intercept(interceptors...)
-	c.EnterpriseStation.Intercept(interceptors...)
-	c.Exception.Intercept(interceptors...)
-	c.Exchange.Intercept(interceptors...)
-	c.Export.Intercept(interceptors...)
-	c.Inventory.Intercept(interceptors...)
-	c.Manager.Intercept(interceptors...)
-	c.Order.Intercept(interceptors...)
-	c.OrderRefund.Intercept(interceptors...)
-	c.Person.Intercept(interceptors...)
-	c.Plan.Intercept(interceptors...)
-	c.PlanIntroduce.Intercept(interceptors...)
-	c.PointLog.Intercept(interceptors...)
-	c.Reserve.Intercept(interceptors...)
-	c.Rider.Intercept(interceptors...)
-	c.RiderFollowUp.Intercept(interceptors...)
-	c.Role.Intercept(interceptors...)
-	c.Setting.Intercept(interceptors...)
-	c.Stock.Intercept(interceptors...)
-	c.Store.Intercept(interceptors...)
-	c.Subscribe.Intercept(interceptors...)
-	c.SubscribeAlter.Intercept(interceptors...)
-	c.SubscribePause.Intercept(interceptors...)
-	c.SubscribeReminder.Intercept(interceptors...)
-	c.SubscribeSuspend.Intercept(interceptors...)
+	for _, n := range []interface{ Intercept(...Interceptor) }{
+		c.Agent, c.Allocate, c.Assistance, c.Attendance, c.Battery, c.BatteryFlow,
+		c.BatteryModel, c.Branch, c.BranchContract, c.Business, c.Cabinet,
+		c.CabinetFault, c.City, c.Commission, c.Contract, c.Coupon, c.CouponAssembly,
+		c.CouponTemplate, c.Ebike, c.EbikeBrand, c.Employee, c.Enterprise,
+		c.EnterpriseBill, c.EnterpriseContract, c.EnterprisePrepayment,
+		c.EnterprisePrice, c.EnterpriseStatement, c.EnterpriseStation, c.Exception,
+		c.Exchange, c.Export, c.Inventory, c.Manager, c.Order, c.OrderRefund, c.Person,
+		c.Plan, c.PlanIntroduce, c.PointLog, c.Reserve, c.Rider, c.RiderFollowUp,
+		c.Role, c.Setting, c.Stock, c.Store, c.Subscribe, c.SubscribeAlter,
+		c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend,
+	} {
+		n.Intercept(interceptors...)
+	}
 }
 
 // Mutate implements the ent.Mutator interface.
@@ -10156,4 +10133,54 @@ func (c *SubscribeSuspendClient) mutate(ctx context.Context, m *SubscribeSuspend
 	default:
 		return nil, fmt.Errorf("ent: unknown SubscribeSuspend mutation op: %q", m.Op())
 	}
+}
+
+// hooks and interceptors per client, for fast access.
+type (
+	hooks struct {
+		Agent, Allocate, Assistance, Attendance, Battery, BatteryFlow, BatteryModel,
+		Branch, BranchContract, Business, Cabinet, CabinetFault, City, Commission,
+		Contract, Coupon, CouponAssembly, CouponTemplate, Ebike, EbikeBrand, Employee,
+		Enterprise, EnterpriseBill, EnterpriseContract, EnterprisePrepayment,
+		EnterprisePrice, EnterpriseStatement, EnterpriseStation, Exception, Exchange,
+		Export, Inventory, Manager, Order, OrderRefund, Person, Plan, PlanIntroduce,
+		PointLog, Reserve, Rider, RiderFollowUp, Role, Setting, Stock, Store,
+		Subscribe, SubscribeAlter, SubscribePause, SubscribeReminder,
+		SubscribeSuspend []ent.Hook
+	}
+	inters struct {
+		Agent, Allocate, Assistance, Attendance, Battery, BatteryFlow, BatteryModel,
+		Branch, BranchContract, Business, Cabinet, CabinetFault, City, Commission,
+		Contract, Coupon, CouponAssembly, CouponTemplate, Ebike, EbikeBrand, Employee,
+		Enterprise, EnterpriseBill, EnterpriseContract, EnterprisePrepayment,
+		EnterprisePrice, EnterpriseStatement, EnterpriseStation, Exception, Exchange,
+		Export, Inventory, Manager, Order, OrderRefund, Person, Plan, PlanIntroduce,
+		PointLog, Reserve, Rider, RiderFollowUp, Role, Setting, Stock, Store,
+		Subscribe, SubscribeAlter, SubscribePause, SubscribeReminder,
+		SubscribeSuspend []ent.Interceptor
+	}
+)
+
+// ExecContext allows calling the underlying ExecContext method of the driver if it is supported by it.
+// See, database/sql#DB.ExecContext for more information.
+func (c *config) ExecContext(ctx context.Context, query string, args ...any) (stdsql.Result, error) {
+	ex, ok := c.driver.(interface {
+		ExecContext(context.Context, string, ...any) (stdsql.Result, error)
+	})
+	if !ok {
+		return nil, fmt.Errorf("Driver.ExecContext is not supported")
+	}
+	return ex.ExecContext(ctx, query, args...)
+}
+
+// QueryContext allows calling the underlying QueryContext method of the driver if it is supported by it.
+// See, database/sql#DB.QueryContext for more information.
+func (c *config) QueryContext(ctx context.Context, query string, args ...any) (*stdsql.Rows, error) {
+	q, ok := c.driver.(interface {
+		QueryContext(context.Context, string, ...any) (*stdsql.Rows, error)
+	})
+	if !ok {
+		return nil, fmt.Errorf("Driver.QueryContext is not supported")
+	}
+	return q.QueryContext(ctx, query, args...)
 }
