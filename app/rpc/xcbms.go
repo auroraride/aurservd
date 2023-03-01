@@ -11,67 +11,65 @@ import (
     "github.com/auroraride/adapter/rpc/pb"
     "github.com/auroraride/aurservd/internal/ar"
     "go.uber.org/zap"
-    "google.golang.org/grpc"
 )
 
 var (
-    xcBmsClient pb.BatteryClient
+    bmsXcClient pb.BatteryClient
 )
 
 func createXcClient() {
-    err := rpc.NewClient(ar.Config.Rpc.Xcbms.Server, func(conn *grpc.ClientConn) {
-        xcBmsClient = pb.NewBatteryClient(conn)
-    })
+    var err error
+    bmsXcClient, err = rpc.NewClient(ar.Config.Rpc.BmsXc.Server, pb.NewBatteryClient)
     if err != nil {
         zap.L().Error("xcbms rpc连接失败", zap.Error(err))
     }
 }
 
 func tryCreateXcClient() bool {
-    if xcBmsClient == nil {
+    if bmsXcClient == nil {
         createXcClient()
     }
-    return xcBmsClient != nil
+    return bmsXcClient != nil
 }
 
 func XcBmsBatch(ctx context.Context, req *pb.BatteryBatchRequest) (res *pb.BatteryBatchResponse, err error) {
     if !tryCreateXcClient() {
         return
     }
-    return xcBmsClient.Batch(ctx, req)
+    return bmsXcClient.Batch(ctx, req)
 }
 
 func XcBmsSample(ctx context.Context, req *pb.BatterySnRequest) (res *pb.BatterySampleResponse, err error) {
     if !tryCreateXcClient() {
         return
     }
-    return xcBmsClient.Sample(ctx, req)
+    return bmsXcClient.Sample(ctx, req)
 }
 
 func XcBmsFaultList(ctx context.Context, req *pb.BatteryFaultListRequest) (res *pb.BatteryFaultListResponse, err error) {
     if !tryCreateXcClient() {
         return
     }
-    return xcBmsClient.FaultList(ctx, req)
+    return bmsXcClient.FaultList(ctx, req)
 }
 
 func XcBmsFaultOverview(ctx context.Context, req *pb.BatterySnRequest) (res *pb.BatteryFaultOverviewResponse, err error) {
     if !tryCreateXcClient() {
         return
     }
-    return xcBmsClient.FaultOverview(ctx, req)
+    return bmsXcClient.FaultOverview(ctx, req)
 }
 
 func XcBmsStatistics(ctx context.Context, req *pb.BatterySnRequest) (res *pb.BatteryStatisticsResponse, err error) {
     if !tryCreateXcClient() {
         return
     }
-    return xcBmsClient.Statistics(ctx, req)
+    return bmsXcClient.Statistics(ctx, req)
 }
 
 func XcBmsPosition(ctx context.Context, req *pb.BatteryPositionRequest) (res *pb.BatteryPositionResponse, err error) {
     if !tryCreateXcClient() {
         return
     }
-    return xcBmsClient.Position(ctx, req)
+    return bmsXcClient.Position(ctx, req)
 }

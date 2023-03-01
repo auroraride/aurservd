@@ -82,7 +82,10 @@ type config struct {
     }
 
     Rpc struct {
-        Xcbms struct {
+        BmsXc struct {
+            Server string
+        }
+        BmsTb struct {
             Server string
         }
     }
