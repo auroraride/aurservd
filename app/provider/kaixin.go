@@ -8,6 +8,7 @@ package provider
 import (
     "context"
     "fmt"
+    "github.com/auroraride/adapter"
     "github.com/auroraride/adapter/log"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
@@ -37,7 +38,7 @@ func (p *kaixin) Reboot(code string, serial string) bool {
 func (p *kaixin) Cabinets() ([]*ent.Cabinet, error) {
     return ent.Database.Cabinet.QueryNotDeleted().
         Where(
-            cabinet.Brand(model.CabinetBrandKaixin.Value()),
+            cabinet.Brand(adapter.CabinetBrandKaixin),
             cabinet.Status(model.CabinetStatusNormal.Value()),
             cabinet.Intelligent(false),
         ).

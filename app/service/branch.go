@@ -343,7 +343,7 @@ func (s *branchService) ListByDistanceManager(req *model.BranchDistanceListReq) 
                         b.Cabinets = append(b.Cabinets, model.CabinetListByDistanceRes{
                             CabinetBasicInfo: model.CabinetBasicInfo{
                                 ID:     cab.ID,
-                                Brand:  model.CabinetBrand(cab.Brand),
+                                Brand:  cab.Brand,
                                 Serial: cab.Serial,
                                 Name:   cab.Name,
                             },
@@ -456,6 +456,7 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq) (i
             // 计算可用电池数量
             for _, bin := range c.Bin {
                 fa.Total += 1
+                // TODO 替换
                 if bin.Electricity.IsBatteryFull() {
                     fa.Num += 1
                 }
@@ -665,6 +666,7 @@ func (s *branchService) Facility(req *model.BranchFacilityReq) (data model.Branc
             }
 
             // 获取仓位详情
+            // TODO 替换
             for bi, bin := range cab.Bin {
                 // 锁仓
                 if !bin.DoorHealth {

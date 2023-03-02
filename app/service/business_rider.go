@@ -67,7 +67,7 @@ func (s *businessRiderService) SetCabinet(cab *ent.Cabinet) *businessRiderServic
         s.cabinet = cab
         s.cabinetInfo = &model.CabinetBasicInfo{
             ID:     s.cabinet.ID,
-            Brand:  model.CabinetBrand(s.cabinet.Brand),
+            Brand:  s.cabinet.Brand,
             Serial: s.cabinet.Serial,
             Name:   s.cabinet.Name,
         }

@@ -9,7 +9,6 @@ import (
     "github.com/alibabacloud-go/tea/tea"
     sls "github.com/aliyun/aliyun-log-go-sdk"
     "github.com/auroraride/aurservd/app/logging"
-    "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/golang-module/carbon/v2"
     "github.com/jinzhu/copier"
@@ -27,7 +26,7 @@ func GenerateSlsStatusLogGroup(cab *ent.Cabinet) (lg *sls.LogGroup) {
         _ = copier.Copy(c, bin)
         c.Serial = cab.Serial
         c.Errors = strings.Join(bin.ChargerErrors, ",")
-        c.Brand = model.CabinetBrand(cab.Brand).String()
+        c.Brand = cab.Brand.String()
         c.Time = time.Now().Format(carbon.DateTimeLayout)
         logs[i] = &sls.Log{
             Time:     t,

@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/adapter"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/batteryflow"
@@ -144,8 +145,16 @@ func (cu *CabinetUpdate) SetSn(s string) *CabinetUpdate {
 }
 
 // SetBrand sets the "brand" field.
-func (cu *CabinetUpdate) SetBrand(s string) *CabinetUpdate {
-	cu.mutation.SetBrand(s)
+func (cu *CabinetUpdate) SetBrand(ab adapter.CabinetBrand) *CabinetUpdate {
+	cu.mutation.SetBrand(ab)
+	return cu
+}
+
+// SetNillableBrand sets the "brand" field if the given value is not nil.
+func (cu *CabinetUpdate) SetNillableBrand(ab *adapter.CabinetBrand) *CabinetUpdate {
+	if ab != nil {
+		cu.SetBrand(*ab)
+	}
 	return cu
 }
 
@@ -801,7 +810,7 @@ func (cu *CabinetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.SetField(cabinet.FieldSn, field.TypeString, value)
 	}
 	if value, ok := cu.mutation.Brand(); ok {
-		_spec.SetField(cabinet.FieldBrand, field.TypeString, value)
+		_spec.SetField(cabinet.FieldBrand, field.TypeOther, value)
 	}
 	if value, ok := cu.mutation.Serial(); ok {
 		_spec.SetField(cabinet.FieldSerial, field.TypeString, value)
@@ -1431,8 +1440,16 @@ func (cuo *CabinetUpdateOne) SetSn(s string) *CabinetUpdateOne {
 }
 
 // SetBrand sets the "brand" field.
-func (cuo *CabinetUpdateOne) SetBrand(s string) *CabinetUpdateOne {
-	cuo.mutation.SetBrand(s)
+func (cuo *CabinetUpdateOne) SetBrand(ab adapter.CabinetBrand) *CabinetUpdateOne {
+	cuo.mutation.SetBrand(ab)
+	return cuo
+}
+
+// SetNillableBrand sets the "brand" field if the given value is not nil.
+func (cuo *CabinetUpdateOne) SetNillableBrand(ab *adapter.CabinetBrand) *CabinetUpdateOne {
+	if ab != nil {
+		cuo.SetBrand(*ab)
+	}
 	return cuo
 }
 
@@ -2118,7 +2135,7 @@ func (cuo *CabinetUpdateOne) sqlSave(ctx context.Context) (_node *Cabinet, err e
 		_spec.SetField(cabinet.FieldSn, field.TypeString, value)
 	}
 	if value, ok := cuo.mutation.Brand(); ok {
-		_spec.SetField(cabinet.FieldBrand, field.TypeString, value)
+		_spec.SetField(cabinet.FieldBrand, field.TypeOther, value)
 	}
 	if value, ok := cuo.mutation.Serial(); ok {
 		_spec.SetField(cabinet.FieldSerial, field.TypeString, value)

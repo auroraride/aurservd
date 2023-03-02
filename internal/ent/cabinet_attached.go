@@ -40,5 +40,5 @@ func (c *Cabinet) ReserveAble(typ business.Type, num int) bool {
 }
 
 func (c *Cabinet) UsingMicroService() bool {
-    return c.Intelligent || c.Brand == adapter.CabinetYundong.String()
+    return c.Intelligent || c.Brand == adapter.CabinetBrandYundong
 }

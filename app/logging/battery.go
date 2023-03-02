@@ -7,6 +7,7 @@ package logging
 
 import (
     "fmt"
+    "github.com/auroraride/adapter"
     "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
@@ -37,9 +38,9 @@ func (l *BatteryLog) Send() {
     PutLog(l)
 }
 
-func NewBatteryLog(brand, serial string, from, to int, updatedAt time.Time) *BatteryLog {
+func NewBatteryLog(brand adapter.CabinetBrand, serial string, from, to int, updatedAt time.Time) *BatteryLog {
     return &BatteryLog{
-        Brand:  model.CabinetBrand(brand).String(),
+        Brand:  brand.String(),
         Serial: serial,
         Time:   updatedAt.Format(carbon.DateTimeLayout),
         Number: to - from,

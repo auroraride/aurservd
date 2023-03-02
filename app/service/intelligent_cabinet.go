@@ -38,7 +38,7 @@ func NewIntelligentCabinet(params ...any) *intelligentCabinetService {
 }
 
 // ExchangeUsable 获取换电信息
-func (s *intelligentCabinetService) ExchangeUsable(bm, serial string, br model.CabinetBrand) (uid string, info *model.RiderCabinetOperateProcess) {
+func (s *intelligentCabinetService) ExchangeUsable(bm, serial string, br adapter.CabinetBrand) (uid string, info *model.RiderCabinetOperateProcess) {
     payload := &cabdef.ExchangeUsableRequest{
         Serial: serial,
         Minsoc: cache.Float64(model.SettingExchangeMinBatteryKey),
@@ -144,7 +144,7 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
     }
 
     var v cabdef.ExchangeResponse
-    v, err = adapter.Post[cabdef.ExchangeResponse](s.GetCabinetAdapterUrlX(model.CabinetBrand(cab.Brand), "/exchange/do"), s.GetAdapterUserX(), payload, func(r *resty.Response) {
+    v, err = adapter.Post[cabdef.ExchangeResponse](s.GetCabinetAdapterUrlX(cab.Brand, "/exchange/do"), s.GetAdapterUserX(), payload, func(r *resty.Response) {
         zap.L().Info("换电请求完成", log.ResponseBody(r.Body()))
     })
 
@@ -329,7 +329,7 @@ func (s *intelligentCabinetService) BusinessCensorX(bus adapter.Business, sub *e
 }
 
 // BusinessUsable 获取可用的业务仓位信息
-func (s *intelligentCabinetService) BusinessUsable(br model.CabinetBrand, bus adapter.Business, serial, bm string) (uid string, index int, err error) {
+func (s *intelligentCabinetService) BusinessUsable(br adapter.CabinetBrand, bus adapter.Business, serial, bm string) (uid string, index int, err error) {
     payload := &cabdef.BusinuessUsableRequest{
         Minsoc:   cache.Float64(model.SettingExchangeMinBatteryKey),
         Business: bus,
@@ -349,7 +349,7 @@ func (s *intelligentCabinetService) BusinessUsable(br model.CabinetBrand, bus ad
 }
 
 // DoBusiness 请求办理业务
-func (s *intelligentCabinetService) DoBusiness(br model.CabinetBrand, uidstr string, bus adapter.Business, sub *ent.Subscribe, riderBat *ent.Battery, cab *ent.Cabinet) (info *model.BinInfo, batinfo *model.Battery, err error) {
+func (s *intelligentCabinetService) DoBusiness(br adapter.CabinetBrand, uidstr string, bus adapter.Business, sub *ent.Subscribe, riderBat *ent.Battery, cab *ent.Cabinet) (info *model.BinInfo, batinfo *model.Battery, err error) {
     defer func() {
         // 缓存任务返回
         data := &model.BusinessCabinetStatusRes{
@@ -451,7 +451,7 @@ func (s *intelligentCabinetService) Operate(cab *ent.Cabinet, op cabdef.Operate,
     }
 
     now := time.Now()
-    br := model.CabinetBrand(cab.Brand)
+    br := cab.Brand
     ordinal := *req.Index + 1
 
     go func() {
@@ -502,7 +502,7 @@ func (s *intelligentCabinetService) OpenBind(req *model.CabinetOpenBindReq) {
         snag.Panic("非智能电柜, 无法操作")
     }
     // 查询电柜最新信息
-    info, _ := s.Bininfo(model.CabinetBrand(cab.Brand), cab.Serial, *req.Index+1)
+    info, _ := s.Bininfo(cab.Brand, cab.Serial, *req.Index+1)
     if info == nil {
         snag.Panic("获取最新仓位信息失败")
     }
@@ -529,7 +529,7 @@ func (s *intelligentCabinetService) OpenBind(req *model.CabinetOpenBindReq) {
     bs.Bind(bat, sub, rd)
 }
 
-func (s *intelligentCabinetService) Bininfo(br model.CabinetBrand, serial string, ordinal int) (*cabdef.BinInfo, error) {
+func (s *intelligentCabinetService) Bininfo(br adapter.CabinetBrand, serial string, ordinal int) (*cabdef.BinInfo, error) {
     return adapter.Post[*cabdef.BinInfo](s.GetCabinetAdapterUrlX(br, "/device/bininfo"), s.GetAdapterUserX(), &cabdef.BinInfoRequest{
         Serial:  serial,
         Ordinal: silk.Int(ordinal),

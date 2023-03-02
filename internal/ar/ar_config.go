@@ -82,11 +82,22 @@ type config struct {
     }
 
     Rpc struct {
+        // 星创电池
         BmsXc struct {
             Server string
         }
+        // 拓邦BMS
         BmsTb struct {
             Server string
+        }
+        // 云动电柜
+        CabYD struct {
+            Server string
+        }
+        // 凯信电柜
+        CabKX struct {
+            Server         string // 智能柜
+            NonIntelligent string // 非智能柜
         }
     }
 

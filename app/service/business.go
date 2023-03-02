@@ -311,7 +311,7 @@ func (s *businessService) detailInfo(item *ent.Business) model.BusinessListRes {
     if cab != nil {
         detail.Cabinet = &model.CabinetBasicInfo{
             ID:     cab.ID,
-            Brand:  model.CabinetBrand(cab.Brand),
+            Brand:  cab.Brand,
             Serial: cab.Serial,
             Name:   cab.Name,
         }

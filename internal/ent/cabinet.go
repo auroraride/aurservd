@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/auroraride/adapter"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
@@ -39,7 +40,7 @@ type Cabinet struct {
 	// 编号
 	Sn string `json:"sn,omitempty"`
 	// 品牌
-	Brand string `json:"brand,omitempty"`
+	Brand adapter.CabinetBrand `json:"brand,omitempty"`
 	// 原始编号
 	Serial string `json:"serial,omitempty"`
 	// 名称
@@ -191,13 +192,15 @@ func (*Cabinet) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case cabinet.FieldCreator, cabinet.FieldLastModifier, cabinet.FieldBin:
 			values[i] = new([]byte)
+		case cabinet.FieldBrand:
+			values[i] = new(adapter.CabinetBrand)
 		case cabinet.FieldTransferred, cabinet.FieldIntelligent:
 			values[i] = new(sql.NullBool)
 		case cabinet.FieldLng, cabinet.FieldLat:
 			values[i] = new(sql.NullFloat64)
 		case cabinet.FieldID, cabinet.FieldCityID, cabinet.FieldBranchID, cabinet.FieldDoors, cabinet.FieldStatus, cabinet.FieldHealth, cabinet.FieldBatteryNum, cabinet.FieldBatteryFullNum, cabinet.FieldBatteryChargingNum, cabinet.FieldEmptyBinNum, cabinet.FieldLockedBinNum:
 			values[i] = new(sql.NullInt64)
-		case cabinet.FieldRemark, cabinet.FieldSn, cabinet.FieldBrand, cabinet.FieldSerial, cabinet.FieldName, cabinet.FieldAddress, cabinet.FieldSimSn:
+		case cabinet.FieldRemark, cabinet.FieldSn, cabinet.FieldSerial, cabinet.FieldName, cabinet.FieldAddress, cabinet.FieldSimSn:
 			values[i] = new(sql.NullString)
 		case cabinet.FieldCreatedAt, cabinet.FieldUpdatedAt, cabinet.FieldDeletedAt, cabinet.FieldSimDate:
 			values[i] = new(sql.NullTime)
@@ -284,10 +287,10 @@ func (c *Cabinet) assignValues(columns []string, values []any) error {
 				c.Sn = value.String
 			}
 		case cabinet.FieldBrand:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*adapter.CabinetBrand); !ok {
 				return fmt.Errorf("unexpected type %T for field brand", values[i])
-			} else if value.Valid {
-				c.Brand = value.String
+			} else if value != nil {
+				c.Brand = *value
 			}
 		case cabinet.FieldSerial:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -501,7 +504,7 @@ func (c *Cabinet) String() string {
 	builder.WriteString(c.Sn)
 	builder.WriteString(", ")
 	builder.WriteString("brand=")
-	builder.WriteString(c.Brand)
+	builder.WriteString(fmt.Sprintf("%v", c.Brand))
 	builder.WriteString(", ")
 	builder.WriteString("serial=")
 	builder.WriteString(c.Serial)

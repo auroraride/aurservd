@@ -11,6 +11,7 @@ import (
     "entgo.io/ent/dialect/sql/sqljson"
     "errors"
     "fmt"
+    "github.com/auroraride/adapter"
     "github.com/auroraride/adapter/defs/cabdef"
     "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/app/logging"
@@ -94,7 +95,7 @@ func (s *cabinetService) CreateCabinet(req *model.CabinetCreateReq) (res *model.
         SetDoors(req.Doors).
         SetNillableRemark(req.Remark).
         SetIntelligent(req.Intelligent).
-        SetBrand(req.Brand.Value()).
+        SetBrand(req.Brand).
         SetHealth(model.CabinetHealthStatusOffline)
     if req.BranchID != nil {
         b := NewBranch().Query(*req.BranchID)
@@ -230,7 +231,7 @@ func (s *cabinetService) Modify(req *model.CabinetModifyReq) {
             q.SetStatus(req.Status.Value())
         }
         if req.Brand != nil {
-            q.SetBrand(req.Brand.Value())
+            q.SetBrand(*req.Brand)
         }
         if req.Serial != nil {
             q.SetSerial(*req.Serial)
@@ -362,7 +363,7 @@ func (s *cabinetService) DoorOperate(req *model.CabinetDoorOperateReq, operator 
         return
     }
 
-    brand := model.CabinetBrand(item.Brand)
+    brand := item.Brand
     op, ok := req.Operation.Value(brand)
     if !ok {
         err = errors.New("操作方式错误")
@@ -375,10 +376,10 @@ func (s *cabinetService) DoorOperate(req *model.CabinetDoorOperateReq, operator 
         }
     }
     switch brand {
-    case model.CabinetBrandYundong:
+    case adapter.CabinetBrandYundong:
         // TODO 云动 - 开启柜门
         break
-    case model.CabinetBrandKaixin:
+    case adapter.CabinetBrandKaixin:
         // 请求开启柜门
         state = provider.NewKaixin().DoorOperate(operator.Name+"-"+opId, item.Serial, op, *req.Index)
         // 如果成功, 重新获取状态更新数据
@@ -523,7 +524,7 @@ func (s *cabinetService) Data(req *model.CabinetDataReq) *model.PaginationRes {
     }
 
     if req.Brand != "" {
-        q.Where(cabinet.Brand(req.Brand.Value()))
+        q.Where(cabinet.Brand(req.Brand))
     }
 
     if req.Votage != 0 {
@@ -554,7 +555,7 @@ func (s *cabinetService) dataDetail(item *ent.Cabinet) model.CabinetDataRes {
         ID:         item.ID,
         Name:       item.Name,
         Serial:     item.Serial,
-        Brand:      model.CabinetBrand(item.Brand).String(),
+        Brand:      item.Brand,
         Online:     item.Health == model.CabinetHealthStatusOnline,
         BinNum:     item.Doors,
         BatteryNum: item.BatteryNum,

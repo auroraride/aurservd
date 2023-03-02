@@ -170,11 +170,11 @@ func (s *BaseService) GetXlsxRows(c echo.Context, start, columnsNumber int, pkIn
     return
 }
 
-func (s *BaseService) GetCabinetAdapterUrl(br model.CabinetBrand, apiurl string) (url string, err error) {
+func (s *BaseService) GetCabinetAdapterUrl(br adapter.CabinetBrand, apiurl string) (url string, err error) {
     switch br {
-    case model.CabinetBrandKaixin:
+    case adapter.CabinetBrandKaixin:
         url = ar.Config.Sync.Kxcab.Api
-    case model.CabinetBrandYundong:
+    case adapter.CabinetBrandYundong:
         url = ar.Config.Sync.Ydcab.Api
     default:
         return "", adapter.ErrorCabinetBrand
@@ -183,7 +183,7 @@ func (s *BaseService) GetCabinetAdapterUrl(br model.CabinetBrand, apiurl string)
     return url + apiurl, nil
 }
 
-func (s *BaseService) GetCabinetAdapterUrlX(br model.CabinetBrand, apiurl string) string {
+func (s *BaseService) GetCabinetAdapterUrlX(br adapter.CabinetBrand, apiurl string) string {
     url, err := s.GetCabinetAdapterUrl(br, apiurl)
     if err != nil {
         snag.Panic(err)

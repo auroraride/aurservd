@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/adapter"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/batteryflow"
@@ -134,8 +135,16 @@ func (cc *CabinetCreate) SetSn(s string) *CabinetCreate {
 }
 
 // SetBrand sets the "brand" field.
-func (cc *CabinetCreate) SetBrand(s string) *CabinetCreate {
-	cc.mutation.SetBrand(s)
+func (cc *CabinetCreate) SetBrand(ab adapter.CabinetBrand) *CabinetCreate {
+	cc.mutation.SetBrand(ab)
+	return cc
+}
+
+// SetNillableBrand sets the "brand" field if the given value is not nil.
+func (cc *CabinetCreate) SetNillableBrand(ab *adapter.CabinetBrand) *CabinetCreate {
+	if ab != nil {
+		cc.SetBrand(*ab)
+	}
 	return cc
 }
 
@@ -502,6 +511,10 @@ func (cc *CabinetCreate) defaults() error {
 		v := cabinet.DefaultUpdatedAt()
 		cc.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := cc.mutation.Brand(); !ok {
+		v := cabinet.DefaultBrand
+		cc.mutation.SetBrand(v)
+	}
 	if _, ok := cc.mutation.Transferred(); !ok {
 		v := cabinet.DefaultTransferred
 		cc.mutation.SetTransferred(v)
@@ -643,7 +656,7 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 		_node.Sn = value
 	}
 	if value, ok := cc.mutation.Brand(); ok {
-		_spec.SetField(cabinet.FieldBrand, field.TypeString, value)
+		_spec.SetField(cabinet.FieldBrand, field.TypeOther, value)
 		_node.Brand = value
 	}
 	if value, ok := cc.mutation.Serial(); ok {
@@ -1039,7 +1052,7 @@ func (u *CabinetUpsert) UpdateSn() *CabinetUpsert {
 }
 
 // SetBrand sets the "brand" field.
-func (u *CabinetUpsert) SetBrand(v string) *CabinetUpsert {
+func (u *CabinetUpsert) SetBrand(v adapter.CabinetBrand) *CabinetUpsert {
 	u.Set(cabinet.FieldBrand, v)
 	return u
 }
@@ -1544,7 +1557,7 @@ func (u *CabinetUpsertOne) UpdateSn() *CabinetUpsertOne {
 }
 
 // SetBrand sets the "brand" field.
-func (u *CabinetUpsertOne) SetBrand(v string) *CabinetUpsertOne {
+func (u *CabinetUpsertOne) SetBrand(v adapter.CabinetBrand) *CabinetUpsertOne {
 	return u.Update(func(s *CabinetUpsert) {
 		s.SetBrand(v)
 	})
@@ -2265,7 +2278,7 @@ func (u *CabinetUpsertBulk) UpdateSn() *CabinetUpsertBulk {
 }
 
 // SetBrand sets the "brand" field.
-func (u *CabinetUpsertBulk) SetBrand(v string) *CabinetUpsertBulk {
+func (u *CabinetUpsertBulk) SetBrand(v adapter.CabinetBrand) *CabinetUpsertBulk {
 	return u.Update(func(s *CabinetUpsert) {
 		s.SetBrand(v)
 	})

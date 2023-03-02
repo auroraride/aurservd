@@ -9,5 +9,17 @@ func CreateClients() {
     createXcClient()
 }
 
+// func Client[C any]() C {
+//
+// }
+//
+// func Request() {
+// }
+//
+
 func Run() {
+    // Request[*pb.BatteryBatchResponse](func(c pb.BatteryClient) {
+    //     res, _ := c.Batch(context.Background(), nil)
+    //     return res
+    // })
 }

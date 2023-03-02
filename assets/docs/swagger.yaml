@@ -1,5 +1,17 @@
 basePath: /
 definitions:
+  adapter.CabinetBrand:
+    enum:
+    - UNKNOWN
+    - KAIXIN
+    - YUNDONG
+    - TUOBANG
+    type: string
+    x-enum-varnames:
+    - CabinetBrandUnknown
+    - CabinetBrandKaixin
+    - CabinetBrandYundong
+    - CabinetBrandTuobang
   adapter.Geometry:
     properties:
       lat:
@@ -1929,7 +1941,7 @@ definitions:
     properties:
       brand:
         allOf:
-        - $ref: '#/definitions/model.CabinetBrand'
+        - $ref: '#/definitions/adapter.CabinetBrand'
         description: '品牌: KAIXIN(凯信) YUNDONG(云动)'
         enum:
         - KAIXIN
@@ -1984,17 +1996,6 @@ definitions:
         description: 电压(V)
         type: number
     type: object
-  model.CabinetBrand:
-    enum:
-    - KAIXIN
-    - YUNDONG
-    type: string
-    x-enum-comments:
-      CabinetBrandKaixin: 凯信电柜
-      CabinetBrandYundong: 云动电柜
-    x-enum-varnames:
-    - CabinetBrandKaixin
-    - CabinetBrandYundong
   model.CabinetCreateReq:
     properties:
       branchId:
@@ -2002,7 +2003,7 @@ definitions:
         type: integer
       brand:
         allOf:
-        - $ref: '#/definitions/model.CabinetBrand'
+        - $ref: '#/definitions/adapter.CabinetBrand'
         description: 品牌 KAIXIN(凯信) YUNDONG(云动)
         enum:
         - KAIXIN
@@ -2078,8 +2079,9 @@ definitions:
           $ref: '#/definitions/model.CabinetDataBin'
         type: array
       brand:
+        allOf:
+        - $ref: '#/definitions/adapter.CabinetBrand'
         description: 品牌
-        type: string
       emptyNum:
         description: 空仓数量
         type: integer
@@ -2122,7 +2124,7 @@ definitions:
         type: integer
       brand:
         allOf:
-        - $ref: '#/definitions/model.CabinetBrand'
+        - $ref: '#/definitions/adapter.CabinetBrand'
         description: 品牌 KAIXIN(凯信) YUNDONG(云动)
         enum:
         - KAIXIN
@@ -2330,7 +2332,7 @@ definitions:
         type: integer
       brand:
         allOf:
-        - $ref: '#/definitions/model.CabinetBrand'
+        - $ref: '#/definitions/adapter.CabinetBrand'
         description: 品牌 KAIXIN(凯信) YUNDONG(云动)
         enum:
         - KAIXIN
@@ -2397,7 +2399,7 @@ definitions:
     properties:
       brand:
         allOf:
-        - $ref: '#/definitions/model.CabinetBrand'
+        - $ref: '#/definitions/adapter.CabinetBrand'
         description: '品牌: KAIXIN(凯信) YUNDONG(云动)'
         enum:
         - KAIXIN
@@ -3852,11 +3854,13 @@ definitions:
         - 2
         type: integer
       brand:
-        description: 电柜类型, KAIXIN(凯信) YUNDONG(云动)
+        allOf:
+        - $ref: '#/definitions/adapter.CabinetBrand'
+        description: 电柜类型, KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
         enum:
         - KAIXIN
         - YUNDONG
-        type: string
+        - TUOBANG
       cabinetId:
         description: 选择电柜ID
         type: integer
@@ -5255,7 +5259,7 @@ definitions:
         type: integer
       brand:
         allOf:
-        - $ref: '#/definitions/model.CabinetBrand'
+        - $ref: '#/definitions/adapter.CabinetBrand'
         description: 电柜型号
       cityId:
         description: 城市ID
@@ -9939,10 +9943,6 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
-      - description: 电柜型号
-        in: query
-        name: brand
-        type: string
       - description: 城市ID
         in: query
         name: cityId
@@ -12107,13 +12107,6 @@ paths:
         in: query
         name: alternative
         type: integer
-      - description: 电柜类型, KAIXIN(凯信) YUNDONG(云动)
-        enum:
-        - KAIXIN
-        - YUNDONG
-        in: query
-        name: brand
-        type: string
       - description: 选择电柜ID
         in: query
         name: cabinetId

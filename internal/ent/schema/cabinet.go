@@ -1,6 +1,7 @@
 package schema
 
 import (
+    "ariga.io/atlas/sql/postgres"
     "context"
     "entgo.io/ent"
     "entgo.io/ent/dialect"
@@ -12,6 +13,7 @@ import (
     "entgo.io/ent/schema/index"
     "entgo.io/ent/schema/mixin"
     "fmt"
+    "github.com/auroraride/adapter"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent/internal"
@@ -78,7 +80,10 @@ func (Cabinet) Fields() []ent.Field {
     return []ent.Field{
         field.Uint64("branch_id").Optional().Nillable().Comment("网点"),
         field.String("sn").Unique().Comment("编号"),
-        field.String("brand").Comment("品牌"),
+        // field.String("brand").Comment("品牌"),
+        field.Other("brand", adapter.CabinetBrandUnknown).Default(adapter.CabinetBrandUnknown).SchemaType(map[string]string{
+            dialect.Postgres: postgres.TypeCharVar,
+        }).Comment("品牌"),
         field.String("serial").Comment("原始编号"),
         field.String("name").Comment("名称"),
         field.Int("doors").Comment("柜门数量"),

@@ -7,6 +7,7 @@ package provider
 
 import (
     "context"
+    "github.com/auroraride/adapter"
     "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
@@ -31,13 +32,12 @@ type CabinetStatus struct {
 }
 
 func NewUpdater(cab *ent.Cabinet) *updater {
-    var prov Provider
-    if cab.Brand == model.CabinetBrandKaixin.Value() {
-        prov = NewKaixin()
+    if cab.Brand != adapter.CabinetBrandKaixin {
+        return nil
     }
     return &updater{
         cab:      cab,
-        provider: prov,
+        provider: NewKaixin(),
         ctx:      context.Background(),
     }
 }

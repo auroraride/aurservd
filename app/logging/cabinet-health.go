@@ -6,6 +6,7 @@
 package logging
 
 import (
+    "github.com/auroraride/adapter"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/golang-module/carbon/v2"
@@ -28,9 +29,9 @@ func (l *HealthLog) Send() {
     PutLog(l)
 }
 
-func NewHealthLog(brand, serial string, updatedAt time.Time) *HealthLog {
+func NewHealthLog(brand adapter.CabinetBrand, serial string, updatedAt time.Time) *HealthLog {
     return &HealthLog{
-        Brand:  model.CabinetBrand(brand).String(),
+        Brand:  brand.String(),
         Serial: serial,
         Time:   updatedAt.Format(carbon.DateTimeLayout),
     }

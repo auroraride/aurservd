@@ -3987,12 +3987,6 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "string",
-                        "description": "电柜型号",
-                        "name": "brand",
-                        "in": "query"
-                    },
-                    {
                         "type": "integer",
                         "description": "城市ID",
                         "name": "cityId",
@@ -7305,16 +7299,6 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "换电方案 0:全部 1:满电 2:非满电",
                         "name": "alternative",
-                        "in": "query"
-                    },
-                    {
-                        "enum": [
-                            "KAIXIN",
-                            "YUNDONG"
-                        ],
-                        "type": "string",
-                        "description": "电柜类型, KAIXIN(凯信) YUNDONG(云动)",
-                        "name": "brand",
                         "in": "query"
                     },
                     {
@@ -13803,6 +13787,21 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "adapter.CabinetBrand": {
+            "type": "string",
+            "enum": [
+                "UNKNOWN",
+                "KAIXIN",
+                "YUNDONG",
+                "TUOBANG"
+            ],
+            "x-enum-varnames": [
+                "CabinetBrandUnknown",
+                "CabinetBrandKaixin",
+                "CabinetBrandYundong",
+                "CabinetBrandTuobang"
+            ]
+        },
         "adapter.Geometry": {
             "type": "object",
             "properties": {
@@ -16578,7 +16577,7 @@ const docTemplate = `{
                     ],
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.CabinetBrand"
+                            "$ref": "#/definitions/adapter.CabinetBrand"
                         }
                     ]
                 },
@@ -16651,21 +16650,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.CabinetBrand": {
-            "type": "string",
-            "enum": [
-                "KAIXIN",
-                "YUNDONG"
-            ],
-            "x-enum-comments": {
-                "CabinetBrandKaixin": "凯信电柜",
-                "CabinetBrandYundong": "云动电柜"
-            },
-            "x-enum-varnames": [
-                "CabinetBrandKaixin",
-                "CabinetBrandYundong"
-            ]
-        },
         "model.CabinetCreateReq": {
             "type": "object",
             "required": [
@@ -16687,7 +16671,7 @@ const docTemplate = `{
                     ],
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.CabinetBrand"
+                            "$ref": "#/definitions/adapter.CabinetBrand"
                         }
                     ]
                 },
@@ -16784,7 +16768,11 @@ const docTemplate = `{
                 },
                 "brand": {
                     "description": "品牌",
-                    "type": "string"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/adapter.CabinetBrand"
+                        }
+                    ]
                 },
                 "emptyNum": {
                     "description": "空仓数量",
@@ -16854,7 +16842,7 @@ const docTemplate = `{
                     ],
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.CabinetBrand"
+                            "$ref": "#/definitions/adapter.CabinetBrand"
                         }
                     ]
                 },
@@ -17155,7 +17143,7 @@ const docTemplate = `{
                     ],
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.CabinetBrand"
+                            "$ref": "#/definitions/adapter.CabinetBrand"
                         }
                     ]
                 },
@@ -17248,7 +17236,7 @@ const docTemplate = `{
                     ],
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.CabinetBrand"
+                            "$ref": "#/definitions/adapter.CabinetBrand"
                         }
                     ]
                 },
@@ -19296,11 +19284,16 @@ const docTemplate = `{
                     ]
                 },
                 "brand": {
-                    "description": "电柜类型, KAIXIN(凯信) YUNDONG(云动)",
-                    "type": "string",
+                    "description": "电柜类型, KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
                     "enum": [
                         "KAIXIN",
-                        "YUNDONG"
+                        "YUNDONG",
+                        "TUOBANG"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/adapter.CabinetBrand"
+                        }
                     ]
                 },
                 "cabinetId": {
@@ -21307,7 +21300,7 @@ const docTemplate = `{
                     "description": "电柜型号",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.CabinetBrand"
+                            "$ref": "#/definitions/adapter.CabinetBrand"
                         }
                     ]
                 },

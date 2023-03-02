@@ -7,34 +7,13 @@ package model
 
 import (
     "fmt"
+    "github.com/auroraride/adapter"
     "sort"
 )
 
 const (
     CabinetBinBatteryFault = "有电池无电压"
 )
-
-// CabinetBrand 电柜品牌
-type CabinetBrand string
-
-const (
-    CabinetBrandKaixin  CabinetBrand = "KAIXIN"  // 凯信电柜
-    CabinetBrandYundong CabinetBrand = "YUNDONG" // 云动电柜
-)
-
-func (cb CabinetBrand) Value() string {
-    return string(cb)
-}
-
-func (cb CabinetBrand) String() string {
-    switch cb {
-    case CabinetBrandKaixin:
-        return "凯信"
-    case CabinetBrandYundong:
-        return "云动"
-    }
-    return "Unknown"
-}
 
 type CabinetStatus uint8
 
@@ -69,22 +48,22 @@ const (
 
 // Cabinet 电柜基础属性
 type Cabinet struct {
-    BranchID    *uint64       `json:"branchId"`                                                      // 网点
-    Status      CabinetStatus `json:"status" enums:"0,1,2"`                                          // 电柜状态 0未投放 1运营中 2维护中
-    Brand       CabinetBrand  `json:"brand" validate:"required" trans:"品牌" enums:"KAIXIN,YUNDONG"` // KAIXIN(凯信) YUNDONG(云动)
-    Serial      string        `json:"serial" validate:"required" trans:"电柜编码"`
-    Name        string        `json:"name" validate:"required" trans:"电柜名称"`
-    Doors       int           `json:"doors"` // 柜门数量
-    Remark      *string       `json:"remark" trans:"备注"`
-    Health      *uint8        `json:"health"`      // 在线状态 0离线 1在线 2故障
-    Intelligent bool          `json:"intelligent"` // 是否智能柜
+    BranchID    *uint64              `json:"branchId"`                                                      // 网点
+    Status      CabinetStatus        `json:"status" enums:"0,1,2"`                                          // 电柜状态 0未投放 1运营中 2维护中
+    Brand       adapter.CabinetBrand `json:"brand" validate:"required" trans:"品牌" enums:"KAIXIN,YUNDONG"` // KAIXIN(凯信) YUNDONG(云动)
+    Serial      string               `json:"serial" validate:"required" trans:"电柜编码"`
+    Name        string               `json:"name" validate:"required" trans:"电柜名称"`
+    Doors       int                  `json:"doors"` // 柜门数量
+    Remark      *string              `json:"remark" trans:"备注"`
+    Health      *uint8               `json:"health"`      // 在线状态 0离线 1在线 2故障
+    Intelligent bool                 `json:"intelligent"` // 是否智能柜
 }
 
 type CabinetBasicInfo struct {
-    ID     uint64       `json:"id"`
-    Brand  CabinetBrand `json:"brand" enums:"KAIXIN,YUNDONG"` // 品牌: KAIXIN(凯信) YUNDONG(云动)
-    Serial string       `json:"serial"`                       // 电柜编码
-    Name   string       `json:"name"`                         // 电柜名称
+    ID     uint64               `json:"id"`
+    Brand  adapter.CabinetBrand `json:"brand" enums:"KAIXIN,YUNDONG"` // 品牌: KAIXIN(凯信) YUNDONG(云动)
+    Serial string               `json:"serial"`                       // 电柜编码
+    Name   string               `json:"name"`                         // 电柜名称
 }
 
 type CabinetListByDistanceRes struct {
@@ -120,30 +99,30 @@ type CabinetItem struct {
 type CabinetQueryReq struct {
     PaginationReq
 
-    Serial      *string `json:"serial" query:"serial"`           // 电柜编号
-    Name        *string `json:"name" query:"name"`               // 电柜名称
-    CityID      *uint64 `json:"cityId" query:"cityId"`           // 城市ID
-    Brand       *string `json:"brand" query:"brand"`             // 电柜型号
-    Status      *uint8  `json:"status" query:"status"`           // 电柜状态
-    Model       *string `json:"model" query:"model"`             // 电池型号
-    Online      uint8   `json:"online" query:"online"`           // 在线状态
-    Intelligent uint8   `json:"intelligent" query:"intelligent"` // 是否智能柜 0:全部 1:是 2:否
+    Serial      *string               `json:"serial" query:"serial"`           // 电柜编号
+    Name        *string               `json:"name" query:"name"`               // 电柜名称
+    CityID      *uint64               `json:"cityId" query:"cityId"`           // 城市ID
+    Brand       *adapter.CabinetBrand `json:"brand" query:"brand"`             // 电柜型号
+    Status      *uint8                `json:"status" query:"status"`           // 电柜状态
+    Model       *string               `json:"model" query:"model"`             // 电池型号
+    Online      uint8                 `json:"online" query:"online"`           // 在线状态
+    Intelligent uint8                 `json:"intelligent" query:"intelligent"` // 是否智能柜 0:全部 1:是 2:否
 }
 
 // CabinetModifyReq 电柜修改请求
 type CabinetModifyReq struct {
-    ID          uint64         `json:"id" param:"id"`
-    BranchID    *uint64        `json:"branchId"`                                  // 网点
-    Status      *CabinetStatus `json:"status" enums:"0,1,2"`                      // 电柜状态 0未投放 1运营中 2维护中
-    Brand       *CabinetBrand  `json:"brand" trans:"品牌" enums:"KAIXIN,YUNDONG"` // KAIXIN(凯信) YUNDONG(云动)
-    Serial      *string        `json:"serial" trans:"电柜原始编码"`
-    Name        *string        `json:"name" trans:"电柜名称"`
-    Doors       *uint          `json:"doors" trans:"柜门数量"`
-    Remark      *string        `json:"remark" trans:"备注"`
-    Models      *[]string      `json:"models" trans:"电池型号"`
-    SimSn       *string        `json:"simSn,omitempty"`       // SIM卡号
-    SimDate     *string        `json:"simDate,omitempty"`     // SIM卡到期日期, 例: 2022-06-01
-    Intelligent *bool          `json:"intelligent,omitempty"` // 是否智能柜
+    ID          uint64                `json:"id" param:"id"`
+    BranchID    *uint64               `json:"branchId"`                                  // 网点
+    Status      *CabinetStatus        `json:"status" enums:"0,1,2"`                      // 电柜状态 0未投放 1运营中 2维护中
+    Brand       *adapter.CabinetBrand `json:"brand" trans:"品牌" enums:"KAIXIN,YUNDONG"` // KAIXIN(凯信) YUNDONG(云动)
+    Serial      *string               `json:"serial" trans:"电柜原始编码"`
+    Name        *string               `json:"name" trans:"电柜名称"`
+    Doors       *uint                 `json:"doors" trans:"柜门数量"`
+    Remark      *string               `json:"remark" trans:"备注"`
+    Models      *[]string             `json:"models" trans:"电池型号"`
+    SimSn       *string               `json:"simSn,omitempty"`       // SIM卡号
+    SimDate     *string               `json:"simDate,omitempty"`     // SIM卡到期日期, 例: 2022-06-01
+    Intelligent *bool                 `json:"intelligent,omitempty"` // 是否智能柜
 }
 
 // CabinetDeleteReq 电柜删除请求
@@ -250,23 +229,23 @@ func (cdo CabinetDoorOperate) String() string {
     return ""
 }
 
-var CabinetDoorOperates = map[CabinetDoorOperate]map[CabinetBrand]string{
+var CabinetDoorOperates = map[CabinetDoorOperate]map[adapter.CabinetBrand]string{
     CabinetDoorOperateOpen: {
-        CabinetBrandKaixin:  "1",
-        CabinetBrandYundong: "opendoor",
+        adapter.CabinetBrandKaixin:  "1",
+        adapter.CabinetBrandYundong: "opendoor",
     },
     CabinetDoorOperateLock: {
-        CabinetBrandKaixin:  "3",
-        CabinetBrandYundong: "disabledoor",
+        adapter.CabinetBrandKaixin:  "3",
+        adapter.CabinetBrandYundong: "disabledoor",
     },
     CabinetDoorOperateUnlock: {
-        CabinetBrandKaixin:  "4",
-        CabinetBrandYundong: "enabledoor",
+        adapter.CabinetBrandKaixin:  "4",
+        adapter.CabinetBrandYundong: "enabledoor",
     },
 }
 
 // Value 获取柜门操作值
-func (cdo CabinetDoorOperate) Value(brand CabinetBrand) (v string, ex bool) {
+func (cdo CabinetDoorOperate) Value(brand adapter.CabinetBrand) (v string, ex bool) {
     v, ex = CabinetDoorOperates[cdo][brand]
     return
 }
@@ -335,12 +314,12 @@ type YundongDeployInfo struct {
 type CabinetDataReq struct {
     PaginationReq
 
-    Status uint8        `json:"status" enums:"0,1,2,3" query:"status"`      // 电柜状态 0:全部 1:在线 2:离线 3:锁仓
-    Votage float64      `json:"votage" query:"votage"`                      // 电压型号筛选
-    Name   string       `json:"name" query:"name"`                          // 电柜名称
-    Serial string       `json:"serial" query:"serial"`                      // 电柜编号
-    CityID uint64       `json:"cityId" query:"cityId"`                      // 城市
-    Brand  CabinetBrand `json:"brand" enums:"KAIXIN,YUNDONG" query:"brand"` // 品牌 KAIXIN(凯信) YUNDONG(云动)
+    Status uint8                `json:"status" enums:"0,1,2,3" query:"status"`      // 电柜状态 0:全部 1:在线 2:离线 3:锁仓
+    Votage float64              `json:"votage" query:"votage"`                      // 电压型号筛选
+    Name   string               `json:"name" query:"name"`                          // 电柜名称
+    Serial string               `json:"serial" query:"serial"`                      // 电柜编号
+    CityID uint64               `json:"cityId" query:"cityId"`                      // 城市
+    Brand  adapter.CabinetBrand `json:"brand" enums:"KAIXIN,YUNDONG" query:"brand"` // 品牌 KAIXIN(凯信) YUNDONG(云动)
 }
 
 const (
@@ -356,19 +335,19 @@ type CabinetDataBin struct {
 }
 
 type CabinetDataRes struct {
-    ID         uint64           `json:"id"`
-    Name       string           `json:"name"`       // 名称
-    Serial     string           `json:"serial"`     // 编号
-    Model      string           `json:"model"`      // 型号
-    Brand      string           `json:"brand"`      // 品牌
-    Online     bool             `json:"online"`     // 是否在线
-    BinNum     int              `json:"binNum"`     // 仓位数量
-    BatteryNum int              `json:"batteryNum"` // 电池数量
-    EmptyNum   int              `json:"emptyNum"`   // 空仓数量
-    LockNum    int              `json:"lockNum"`    // 锁仓数
-    FullNum    int              `json:"fullNum"`    // 满电数
-    Bins       []CabinetDataBin `json:"bins"`       // 仓位信息
-    StockNum   int              `json:"stockNum"`   // 库存电池
+    ID         uint64               `json:"id"`
+    Name       string               `json:"name"`       // 名称
+    Serial     string               `json:"serial"`     // 编号
+    Model      string               `json:"model"`      // 型号
+    Brand      adapter.CabinetBrand `json:"brand"`      // 品牌
+    Online     bool                 `json:"online"`     // 是否在线
+    BinNum     int                  `json:"binNum"`     // 仓位数量
+    BatteryNum int                  `json:"batteryNum"` // 电池数量
+    EmptyNum   int                  `json:"emptyNum"`   // 空仓数量
+    LockNum    int                  `json:"lockNum"`    // 锁仓数
+    FullNum    int                  `json:"fullNum"`    // 满电数
+    Bins       []CabinetDataBin     `json:"bins"`       // 仓位信息
+    StockNum   int                  `json:"stockNum"`   // 库存电池
 }
 
 type CabinetSimNotice struct {

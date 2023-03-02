@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent"
+	"github.com/auroraride/adapter"
 )
 
 const (
@@ -205,6 +206,8 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultBrand holds the default value on creation for the "brand" field.
+	DefaultBrand adapter.CabinetBrand
 	// DefaultTransferred holds the default value on creation for the "transferred" field.
 	DefaultTransferred bool
 	// DefaultIntelligent holds the default value on creation for the "intelligent" field.

@@ -8,6 +8,7 @@ package service
 import (
     "context"
     "fmt"
+    "github.com/auroraride/adapter"
     "github.com/auroraride/adapter/defs/cabdef"
     "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/app/logging"
@@ -179,7 +180,7 @@ func (s *cabinetMgrService) Reboot(req *model.IDPostReq) bool {
         snag.Panic("非操作维护中不可操作")
     }
 
-    if cab.Brand == model.CabinetBrandKaixin.Value() {
+    if cab.Brand == adapter.CabinetBrandKaixin {
         snag.Panic("凯信电柜不支持该操作")
     }
 
@@ -208,7 +209,7 @@ func (s *cabinetMgrService) Reboot(req *model.IDPostReq) bool {
     // 请求云动重启
     // TODO 云动 - 重启
 
-    brand := model.CabinetBrand(cab.Brand)
+    brand := cab.Brand
     go func() {
         // 上传日志
         dlog := &logging.DoorOperateLog{

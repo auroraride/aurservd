@@ -374,7 +374,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			cabinet.FieldCityID:             {Type: field.TypeUint64, Column: cabinet.FieldCityID},
 			cabinet.FieldBranchID:           {Type: field.TypeUint64, Column: cabinet.FieldBranchID},
 			cabinet.FieldSn:                 {Type: field.TypeString, Column: cabinet.FieldSn},
-			cabinet.FieldBrand:              {Type: field.TypeString, Column: cabinet.FieldBrand},
+			cabinet.FieldBrand:              {Type: field.TypeOther, Column: cabinet.FieldBrand},
 			cabinet.FieldSerial:             {Type: field.TypeString, Column: cabinet.FieldSerial},
 			cabinet.FieldName:               {Type: field.TypeString, Column: cabinet.FieldName},
 			cabinet.FieldDoors:              {Type: field.TypeInt, Column: cabinet.FieldDoors},
@@ -5991,8 +5991,8 @@ func (f *CabinetFilter) WhereSn(p entql.StringP) {
 	f.Where(p.Field(cabinet.FieldSn))
 }
 
-// WhereBrand applies the entql string predicate on the brand field.
-func (f *CabinetFilter) WhereBrand(p entql.StringP) {
+// WhereBrand applies the entql other predicate on the brand field.
+func (f *CabinetFilter) WhereBrand(p entql.OtherP) {
 	f.Where(p.Field(cabinet.FieldBrand))
 }
 

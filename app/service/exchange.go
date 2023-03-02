@@ -559,7 +559,7 @@ func (s *exchangeService) listDetail(item *ent.Exchange) (res model.ExchangeMana
     if cab != nil {
         res.Cabinet = &model.CabinetBasicInfo{
             ID:     cab.ID,
-            Brand:  model.CabinetBrand(cab.Brand),
+            Brand:  cab.Brand,
             Serial: cab.Serial,
             Name:   cab.Name,
         }

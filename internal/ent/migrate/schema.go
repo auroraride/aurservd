@@ -861,7 +861,7 @@ var (
 		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
 		{Name: "sn", Type: field.TypeString, Unique: true, Comment: "编号"},
-		{Name: "brand", Type: field.TypeString, Comment: "品牌"},
+		{Name: "brand", Type: field.TypeOther, Comment: "品牌", SchemaType: map[string]string{"postgres": "character varying"}},
 		{Name: "serial", Type: field.TypeString, Comment: "原始编号"},
 		{Name: "name", Type: field.TypeString, Comment: "名称"},
 		{Name: "doors", Type: field.TypeInt, Comment: "柜门数量"},

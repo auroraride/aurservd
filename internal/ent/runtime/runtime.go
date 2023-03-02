@@ -5,6 +5,7 @@ package runtime
 import (
 	"time"
 
+	"github.com/auroraride/adapter"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
@@ -260,6 +261,10 @@ func init() {
 	cabinet.DefaultUpdatedAt = cabinetDescUpdatedAt.Default.(func() time.Time)
 	// cabinet.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	cabinet.UpdateDefaultUpdatedAt = cabinetDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// cabinetDescBrand is the schema descriptor for brand field.
+	cabinetDescBrand := cabinetFields[2].Descriptor()
+	// cabinet.DefaultBrand holds the default value on creation for the brand field.
+	cabinet.DefaultBrand = cabinetDescBrand.Default.(adapter.CabinetBrand)
 	// cabinetDescTransferred is the schema descriptor for transferred field.
 	cabinetDescTransferred := cabinetFields[12].Descriptor()
 	// cabinet.DefaultTransferred holds the default value on creation for the transferred field.
