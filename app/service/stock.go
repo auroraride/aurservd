@@ -586,9 +586,16 @@ func (s *stockService) CabinetList(req *model.StockCabinetListReq) *model.Pagina
 func (s *stockService) listFilter(req model.StockDetailFilter) (q *ent.StockQuery, info ar.Map) {
     info = make(ar.Map)
 
-    q = s.orm.QueryNotDeleted().WithCabinet().WithStore().WithSpouse(func(sq *ent.StockQuery) {
-        sq.WithStore().WithCabinet().WithRider()
-    }).WithRider().WithEmployee().WithCity().WithEbike()
+    q = s.orm.QueryNotDeleted().
+        WithCabinet().
+        WithStore().
+        WithSpouse(func(sq *ent.StockQuery) {
+            sq.WithStore().WithCabinet().WithRider()
+        }).
+        WithRider().
+        WithEmployee().
+        WithCity().
+        WithEbike()
     // 排序
     if req.Positive {
         q.Order(ent.Asc(stock.FieldSn))
@@ -693,7 +700,7 @@ func (s *stockService) listFilter(req model.StockDetailFilter) (q *ent.StockQuer
     }
 
     q.Modify(func(sel *sql.Selector) {
-        sel.Select("ON (sn,parent_id) *")
+        sel.Distinct().Select("ON (sn,parent_id) *")
     })
 
     return
