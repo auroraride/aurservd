@@ -590,3 +590,22 @@ func (s *enterpriseStatementService) usageItemCalculate(srcStart time.Time, srcE
         Cost:  tools.NewDecimal().Mul(float64(days), price),
     }
 }
+
+func (s *enterpriseStatementService) HistoryCost(enterpriseID uint64) float64 {
+    var result []struct {
+        ID  uint64  `json:"id"`
+        Sum float64 `json:"sum"`
+    }
+
+    _ = s.orm.Query().Modify().
+        Where(enterprisestatement.EnterpriseID(enterpriseID), enterprisestatement.SettledAtNotNil()).
+        GroupBy(enterprisestatement.FieldID).
+        Aggregate(ent.Sum(enterprisestatement.FieldCost)).
+        Scan(s.ctx, &result)
+
+    if result == nil {
+        return 0
+    }
+
+    return result[0].Sum
+}

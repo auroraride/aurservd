@@ -444,6 +444,9 @@ func (s *enterpriseService) UpdateStatement(e *ent.Enterprise) {
         days += bill.Days
     }
 
+    // 统计历史轧账
+    cost += NewEnterpriseStatement().HistoryCost(e.ID)
+
     // 企业付款方式
     var balance float64
     switch e.Payment {
@@ -470,7 +473,8 @@ func (s *enterpriseService) UpdateStatement(e *ent.Enterprise) {
         zap.L().Error("企业更新失败: "+strconv.FormatUint(e.ID, 10), zap.Error(err))
     }
 
-    zap.L().Info("企业更新成功: " + strconv.FormatUint(e.ID, 10) +
+    zap.L().Info("企业更新成功: " + e.Name +
+        "[" + strconv.FormatUint(e.ID, 10) + "]" +
         ", 总使用人数: " + strconv.Itoa(len(bills)) +
         ", 账期使用总天数: " + strconv.Itoa(days) +
         ", 总费用: " + strconv.FormatFloat(cost, 'f', 2, 64) +
