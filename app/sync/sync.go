@@ -19,17 +19,17 @@ func Run() {
         Addr: ar.Config.Redis.Address,
     })
 
-    // 同步电柜
-    go func() {
-        sync.New[cabdef.CabinetMessage](
-            rdb,
-            ar.Config.Environment,
-            sync.StreamCabinet,
-            func(data *cabdef.CabinetMessage) {
-                service.NewCabinet().Sync(data)
-            },
-        ).Run()
-    }()
+    // // 同步电柜
+    // go func() {
+    //     sync.New[cabdef.CabinetMessage](
+    //         rdb,
+    //         ar.Config.Environment,
+    //         sync.StreamCabinet,
+    //         func(data *cabdef.CabinetMessage) {
+    //             service.NewCabinet().Sync(data)
+    //         },
+    //     ).Run()
+    // }()
 
     // 同步换电步骤
     go func() {

@@ -5,21 +5,15 @@
 
 package rpc
 
+import "github.com/auroraride/aurservd/internal/ar"
+
 func CreateClients() {
     createXcClient()
 }
 
-// func Client[C any]() C {
-//
-// }
-//
-// func Request() {
-// }
-//
+func serverAddress(key string) string {
+    return ar.Config.RpcServer[key]
+}
 
 func Run() {
-    // Request[*pb.BatteryBatchResponse](func(c pb.BatteryClient) {
-    //     res, _ := c.Batch(context.Background(), nil)
-    //     return res
-    // })
 }

@@ -12,11 +12,12 @@ import (
     "errors"
     "fmt"
     "github.com/auroraride/adapter"
-    "github.com/auroraride/adapter/defs/cabdef"
+    "github.com/auroraride/adapter/rpc/pb"
     "github.com/auroraride/aurservd/app/ec"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/provider"
+    "github.com/auroraride/aurservd/app/rpc"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/batterymodel"
@@ -30,7 +31,6 @@ import (
     "github.com/golang-module/carbon/v2"
     "github.com/jinzhu/copier"
     "github.com/lithammer/shortuuid/v4"
-    "go.uber.org/zap"
     "golang.org/x/exp/slices"
     "regexp"
     "sort"
@@ -616,124 +616,142 @@ func (s *cabinetService) Transfer(req *model.CabinetTransferReq) {
 
 }
 
-// Sync 电柜同步
-func (s *cabinetService) Sync(data *cabdef.CabinetMessage) {
-    if data.Serial == "" {
-        return
+func (s *cabinetService) Sync(cabs ent.Cabinets) {
+    sm := make(map[string][]string)
+    m := make(map[string]*ent.Cabinet)
+
+    for _, cab := range cabs {
+        k := rpc.CabinetKey(cab.Brand, cab.Intelligent)
+        sm[k] = append(sm[k], cab.Serial)
+        m[cab.Serial] = cab
     }
 
-    cab, _ := s.orm.QueryNotDeleted().Where(cabinet.Serial(data.Serial)).WithModels().First(s.ctx)
-    if cab == nil {
-        zap.L().Error("未找到电柜信息, 请先添加电柜" + data.Serial)
-        return
-    }
-
-    updater := cab.Update()
-
-    defer func() {
-        _ = updater.Exec(s.ctx)
-    }()
-
-    c := data.Cabinet
-    if c != nil {
-        health := model.CabinetHealthStatusOffline
-        if c.Online {
-            health = model.CabinetHealthStatusOnline
+    // 请求rpc数据
+    for k := range sm {
+        res := rpc.CabinetBatch(k, &pb.CabinetBatchRequest{Serials: sm[k]})
+        if res == nil {
+            continue
         }
-        if c.Status == cabdef.StatusAbnormal {
-            health = model.CabinetHealthStatusFault
-        }
-        updater.SetHealth(health)
-    }
-
-    var bins model.CabinetBins
-
-    if !data.Full {
-        bins = cab.Bin
-    }
-
-    if len(data.Bins) > 0 {
-        var (
-            bn, bf, bc, be, bl int
-        )
-        for _, b := range data.Bins {
-
-            hasBattery := b.BatteryExists && b.BatterySn != ""
-            var (
-                isFull bool
-                remark string
-            )
-            if b.Remark != nil {
-                remark = *b.Remark
-            }
-            // 电池数
-            if hasBattery {
-                // 如果该仓位有电池
-                // 智能电柜操作放入电池
-                if cab.Intelligent {
-                    _, _ = NewBattery().SyncPutin(b.BatterySn, cab.Serial, cab.ID, b.Ordinal, bins)
-                }
-                bn += 1
-                if b.Soc >= model.IntelligentBatteryFullSoc {
-                    // 满电
-                    bf += 1
-                    isFull = true
-                } else {
-                    // 充电
-                    bc += 1
-                }
-            } else {
-                // 如果该仓位无电池
-                NewBattery().SyncPutout(cab.ID, b.Ordinal)
-                // 空仓
-                be += 1
-            }
-            // 锁仓
-            if !b.Enable {
-                bl += 1
-            }
-
-            // 新仓位信息
-            nb := &model.CabinetBin{
-                Index:       b.Ordinal - 1,
-                Name:        b.Name,
-                BatterySN:   b.BatterySn,
-                Full:        isFull,
-                Battery:     hasBattery,
-                Electricity: model.NewBatterySoc(b.Soc),
-                OpenStatus:  b.Open,
-                DoorHealth:  b.Health && b.Enable,
-                Current:     b.Current,
-                Voltage:     b.Voltage,
-                Remark:      remark,
-            }
-
-            if data.Full || len(cab.Bin) < len(data.Bins) {
-                bins = append(bins, nb)
-            }
-
-            if !data.Full {
-                for i, xb := range bins {
-                    if xb.Index+1 == b.Ordinal {
-                        bins[i] = nb
-                    }
-                }
-            }
-        }
-
-        sort.Slice(bins, func(i, j int) bool {
-            return bins[i].Index <= bins[j].Index
-        })
-
-        updater.SetDoors(len(bins)).
-            SetBatteryNum(bn).
-            SetBatteryFullNum(bf).
-            SetBatteryChargingNum(bc).
-            SetEmptyBinNum(be).
-            SetLockedBinNum(bl).
-            SetBin(bins)
     }
 }
+
+// // Sync 电柜同步
+// func (s *cabinetService) Sync(data *cabdef.CabinetMessage) {
+//     if data.Serial == "" {
+//         return
+//     }
+//
+//     cab, _ := s.orm.QueryNotDeleted().Where(cabinet.Serial(data.Serial)).WithModels().First(s.ctx)
+//     if cab == nil {
+//         zap.L().Error("未找到电柜信息, 请先添加电柜" + data.Serial)
+//         return
+//     }
+//
+//     updater := cab.Update()
+//
+//     defer func() {
+//         _ = updater.Exec(s.ctx)
+//     }()
+//
+//     if c != nil {
+//         health := model.CabinetHealthStatusOffline
+//         if c.Online {
+//             health = model.CabinetHealthStatusOnline
+//         }
+//         if c.Status == cabdef.StatusAbnormal {
+//             health = model.CabinetHealthStatusFault
+//         }
+//         updater.SetHealth(health)
+//     }
+//
+//     var bins model.CabinetBins
+//
+//     if !data.Full {
+//         bins = cab.Bin
+//     }
+//
+//     if len(data.Bins) > 0 {
+//         var (
+//             bn, bf, bc, be, bl int
+//         )
+//         for _, b := range data.Bins {
+//
+//             hasBattery := b.BatteryExists && b.BatterySn != ""
+//             var (
+//                 isFull bool
+//                 remark string
+//             )
+//             if b.Remark != nil {
+//                 remark = *b.Remark
+//             }
+//             // 电池数
+//             if hasBattery {
+//                 // 如果该仓位有电池
+//                 // 智能电柜操作放入电池
+//                 if cab.Intelligent {
+//                     _, _ = NewBattery().SyncPutin(b.BatterySn, cab.Serial, cab.ID, b.Ordinal, bins)
+//                 }
+//                 bn += 1
+//                 if b.Soc >= model.IntelligentBatteryFullSoc {
+//                     // 满电
+//                     bf += 1
+//                     isFull = true
+//                 } else {
+//                     // 充电
+//                     bc += 1
+//                 }
+//             } else {
+//                 // 如果该仓位无电池
+//                 NewBattery().SyncPutout(cab.ID, b.Ordinal)
+//                 // 空仓
+//                 be += 1
+//             }
+//             // 锁仓
+//             if !b.Enable {
+//                 bl += 1
+//             }
+//
+//             // 新仓位信息
+//             nb := &model.CabinetBin{
+//                 Index:       b.Ordinal - 1,
+//                 Name:        b.Name,
+//                 BatterySN:   b.BatterySn,
+//                 Full:        isFull,
+//                 Battery:     hasBattery,
+//                 Electricity: model.NewBatterySoc(b.Soc),
+//                 OpenStatus:  b.Open,
+//                 DoorHealth:  b.Health && b.Enable,
+//                 Current:     b.Current,
+//                 Voltage:     b.Voltage,
+//                 Remark:      remark,
+//             }
+//
+//             if data.Full || len(cab.Bin) < len(data.Bins) {
+//                 bins = append(bins, nb)
+//             }
+//
+//             if !data.Full {
+//                 for i, xb := range bins {
+//                     if xb.Index+1 == b.Ordinal {
+//                         bins[i] = nb
+//                     }
+//                 }
+//             }
+//         }
+//
+//         sort.Slice(bins, func(i, j int) bool {
+//             return bins[i].Index <= bins[j].Index
+//         })
+//
+//         updater.SetDoors(len(bins)).
+//             SetBatteryNum(bn).
+//             SetBatteryFullNum(bf).
+//             SetBatteryChargingNum(bc).
+//             SetEmptyBinNum(be).
+//             SetLockedBinNum(bl).
+//             SetBin(bins)
+//     }
+// }
 
 func (s *cabinetService) EntHooks() []ent.Hook {
     return []ent.Hook{

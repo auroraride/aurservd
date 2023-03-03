@@ -7,9 +7,9 @@ package rpc
 
 import (
     "context"
+    "github.com/auroraride/adapter"
     "github.com/auroraride/adapter/rpc"
     "github.com/auroraride/adapter/rpc/pb"
-    "github.com/auroraride/aurservd/internal/ar"
     "go.uber.org/zap"
 )
 
@@ -19,7 +19,7 @@ var (
 
 func createXcClient() {
     var err error
-    bmsXcClient, err = rpc.NewClient(ar.Config.Rpc.BmsXc.Server, pb.NewBatteryClient)
+    bmsXcClient, err = rpc.NewClient(serverAddress(adapter.BatteryBrandXC.RpcName()), pb.NewBatteryClient)
     if err != nil {
         zap.L().Error("xcbms rpc连接失败", zap.Error(err))
     }
