@@ -474,10 +474,12 @@ func (s *cabinetService) Usable(cab *ent.Cabinet) (op *model.RiderCabinetOperate
 // Businessable 判定电柜是否可用
 func (s *cabinetService) Businessable(cab *ent.Cabinet) (health bool, maintenance bool) {
     maintenance = model.CabinetStatus(cab.Status) == model.CabinetStatusMaintenance
-    health = model.CabinetStatus(cab.Status) == model.CabinetStatusNormal &&
-        cab.Health == model.CabinetHealthStatusOnline &&
-        time.Now().Sub(cab.UpdatedAt).Minutes() < 5 &&
-        len(cab.Bin) > 0
+    if !cab.UsingMicroService() {
+        health = model.CabinetStatus(cab.Status) == model.CabinetStatusNormal &&
+            cab.Health == model.CabinetHealthStatusOnline &&
+            time.Now().Sub(cab.UpdatedAt).Minutes() < 5 &&
+            len(cab.Bin) > 0
+    }
     return
 }
 

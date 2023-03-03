@@ -73,6 +73,9 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
         uid   string
     )
 
+    // 查询电柜是否可使用
+    NewCabinet().BusinessableX(cab)
+
     // 判断设备是否智能设备
     if cab.UsingMicroService() {
         // 判定是否可以换电
@@ -86,9 +89,6 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
         }
 
         info = cs.Usable(cab)
-
-        // 查询电柜是否可使用
-        NewCabinet().BusinessableX(cab)
 
         ec.BusyX(cab.Serial)
 
@@ -194,6 +194,10 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
     // 判断设备是否智能设备
     if err == nil {
         cab = NewCabinet().QueryOneSerialX(info.Serial)
+
+        // 查询电柜是否可使用
+        NewCabinet().BusinessableX(cab)
+
         bat = NewIntelligentCabinet(s.rider).BusinessCensorX(adapter.BusinessExchange, sub, cab)
         if bat != nil {
             batSN = silk.String(bat.Sn)
@@ -213,6 +217,9 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
             tex.Fully = info.Alternative
         }
     } else {
+        // 查询电柜是否可使用
+        NewCabinet().BusinessableX(cab)
+
         // 查找任务
         var uid xid.ID
         uid, err = xid.FromString(req.UUID)
@@ -243,9 +250,6 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
         if x := ec.Obtain(ec.ObtainReq{Serial: cab.Serial}); x != nil && x.ID != uid.String() {
             snag.Panic("电柜忙, 请稍后重试")
         }
-
-        // 查询电柜是否可使用
-        NewCabinet().BusinessableX(cab)
 
         s.logger = logging.NewExchangeLog(s.rider.ID, t.ID, cab.Serial, s.rider.Phone, be.IsBatteryFull())
         s.cabinet = cab
