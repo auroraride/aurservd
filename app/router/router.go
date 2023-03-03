@@ -106,10 +106,6 @@ func Run() {
         // mw.Recover(),
         middleware.Recover(),
         mw.CORSWithConfig(corsConfig),
-        mw.GzipWithConfig(mw.GzipConfig{
-            Level: 5,
-        }),
-        mw.RequestID(),
     )
 
     if cfg.BodyLimit != "" {
