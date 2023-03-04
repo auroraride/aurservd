@@ -25,7 +25,7 @@ func Run() {
             rdb,
             ar.Config.Environment,
             sync.StreamCabinet,
-            func(data *cabdef.CabinetMessage) {
+            func(data []*cabdef.CabinetMessage) {
                 service.NewCabinet().Sync(data)
             },
         ).Run()
@@ -37,7 +37,7 @@ func Run() {
             rdb,
             ar.Config.Environment,
             sync.StreamExchange,
-            func(data *cabdef.ExchangeStepMessage) {
+            func(data []*cabdef.ExchangeStepMessage) {
                 service.NewIntelligentCabinet().ExchangeStepSync(data)
             },
         ).Run()

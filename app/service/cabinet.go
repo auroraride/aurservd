@@ -616,9 +616,9 @@ func (s *cabinetService) Transfer(req *model.CabinetTransferReq) {
 
 }
 
-// Sync 电柜同步
-func (s *cabinetService) Sync(data *cabdef.CabinetMessage) {
+func (s *cabinetService) syncUpdater(tx *ent.Tx, data *cabdef.CabinetMessage) {
     if data.Serial == "" {
+        zap.L().Error("电柜编号不能为空")
         return
     }
 
@@ -628,7 +628,7 @@ func (s *cabinetService) Sync(data *cabdef.CabinetMessage) {
         return
     }
 
-    updater := cab.Update()
+    updater := tx.Cabinet.UpdateOne(cab)
 
     defer func() {
         _ = updater.Exec(s.ctx)
@@ -732,6 +732,19 @@ func (s *cabinetService) Sync(data *cabdef.CabinetMessage) {
             SetEmptyBinNum(be).
             SetLockedBinNum(bl).
             SetBin(bins)
+    }
+}
+
+// Sync 电柜同步
+func (s *cabinetService) Sync(items []*cabdef.CabinetMessage) {
+    err := ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
+        for _, item := range items {
+            s.syncUpdater(tx, item)
+        }
+        return nil
+    })
+    if err != nil {
+        zap.L().Error("电柜同步失败", zap.Error(err))
     }
 }
 
