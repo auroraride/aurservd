@@ -616,15 +616,9 @@ func (s *cabinetService) Transfer(req *model.CabinetTransferReq) {
 
 }
 
-func (s *cabinetService) syncUpdater(tx *ent.Tx, data *cabdef.CabinetMessage) {
+func (s *cabinetService) syncUpdater(tx *ent.Tx, cab *ent.Cabinet, data *cabdef.CabinetMessage) {
     if data.Serial == "" {
         zap.L().Error("电柜编号不能为空")
-        return
-    }
-
-    cab, _ := s.orm.QueryNotDeleted().Where(cabinet.Serial(data.Serial)).WithModels().First(s.ctx)
-    if cab == nil {
-        zap.L().Error("未找到电柜信息, 请先添加电柜" + data.Serial)
         return
     }
 
@@ -737,14 +731,38 @@ func (s *cabinetService) syncUpdater(tx *ent.Tx, data *cabdef.CabinetMessage) {
 
 // Sync 电柜同步
 func (s *cabinetService) Sync(items []*cabdef.CabinetMessage) {
-    err := ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
-        for _, item := range items {
-            s.syncUpdater(tx, item)
+    m := make(map[string]string)
+    for _, item := range items {
+        m[item.Serial] = item.Serial
+    }
+
+    var arr []string
+    for k := range m {
+        arr = append(arr, k)
+    }
+
+    if len(arr) == 0 {
+        return
+    }
+
+    cabs, _ := s.orm.QueryNotDeleted().Where(cabinet.SerialIn(arr...)).WithModels().All(s.ctx)
+    cm := make(map[string]*ent.Cabinet)
+    for _, cab := range cabs {
+        cm[cab.Serial] = cab
+    }
+
+    if len(cabs) > 0 {
+        err := ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
+            for _, item := range items {
+                if cab, ok := cm[item.Serial]; ok {
+                    s.syncUpdater(tx, cab, item)
+                }
+            }
+            return nil
+        })
+        if err != nil {
+            zap.L().Error("电柜同步失败", zap.Error(err))
         }
-        return nil
-    })
-    if err != nil {
-        zap.L().Error("电柜同步失败", zap.Error(err))
     }
 }
 

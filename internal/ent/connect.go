@@ -87,3 +87,26 @@ func WithTxPanic(ctx context.Context, fn TxFunc) {
         snag.Panic(err)
     }
 }
+
+func WithIsolationTx(ctx context.Context, fn TxFunc) error {
+    tx, err := Database.BeginTx(ctx, &sql.TxOptions{Isolation: sql.LevelRepeatableRead})
+    if err != nil {
+        return err
+    }
+    defer func() {
+        if v := recover(); v != nil {
+            tx.Rollback()
+            panic(v)
+        }
+    }()
+    if err = fn(tx); err != nil {
+        if txErr := tx.Rollback(); txErr != nil {
+            err = fmt.Errorf("rolling back transaction: %w", txErr)
+        }
+        return err
+    }
+    if err = tx.Commit(); err != nil {
+        return fmt.Errorf("committing transaction: %w", err)
+    }
+    return nil
+}
