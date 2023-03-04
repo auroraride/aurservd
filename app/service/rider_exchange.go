@@ -217,9 +217,6 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
             tex.Fully = info.Alternative
         }
     } else {
-        // 查询电柜是否可使用
-        NewCabinet().BusinessableX(cab)
-
         // 查找任务
         var uid xid.ID
         uid, err = xid.FromString(req.UUID)
@@ -235,6 +232,9 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
         }
 
         cab = NewCabinet().QueryOneSerialX(t.Serial)
+
+        // 查询电柜是否可使用
+        NewCabinet().BusinessableX(cab)
         var be model.BatterySoc
         if t.Exchange.Alternative && !req.Alternative {
             snag.Panic("非满电换电取消")

@@ -474,12 +474,10 @@ func (s *cabinetService) Usable(cab *ent.Cabinet) (op *model.RiderCabinetOperate
 // Businessable 判定电柜是否可用
 func (s *cabinetService) Businessable(cab *ent.Cabinet) (health bool, maintenance bool) {
     maintenance = model.CabinetStatus(cab.Status) == model.CabinetStatusMaintenance
-    if !cab.UsingMicroService() {
-        health = model.CabinetStatus(cab.Status) == model.CabinetStatusNormal &&
-            cab.Health == model.CabinetHealthStatusOnline &&
-            time.Now().Sub(cab.UpdatedAt).Minutes() < 5 &&
-            len(cab.Bin) > 0
-    }
+    health = model.CabinetStatus(cab.Status) == model.CabinetStatusNormal &&
+        cab.Health == model.CabinetHealthStatusOnline &&
+        time.Now().Sub(cab.UpdatedAt).Minutes() < 5 &&
+        len(cab.Bin) > 0
     return
 }
 
@@ -488,7 +486,7 @@ func (s *cabinetService) BusinessableX(cab *ent.Cabinet) {
     if maintenance {
         snag.Panic("电柜开小差了, 请联系客服")
     }
-    if !health {
+    if !health && !cab.UsingMicroService() {
         snag.Panic("电柜离线, 暂无法使用")
     }
 }
