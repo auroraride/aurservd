@@ -73,6 +73,9 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
         uid   string
     )
 
+    // 查询电柜是否可使用
+    NewCabinet().BusinessableX(cab)
+
     // 判断设备是否智能设备
     if cab.UsingMicroService() {
         // 判定是否可以换电
@@ -86,9 +89,6 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
         }
 
         info = cs.Usable(cab)
-
-        // 查询电柜是否可使用
-        NewCabinet().BusinessableX(cab)
 
         ec.BusyX(cab.Serial)
 
@@ -194,6 +194,10 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
     // 判断设备是否智能设备
     if err == nil {
         cab = NewCabinet().QueryOneSerialX(info.Serial)
+
+        // 查询电柜是否可使用
+        NewCabinet().BusinessableX(cab)
+
         bat = NewIntelligentCabinet(s.rider).BusinessCensorX(adapter.BusinessExchange, sub, cab)
         if bat != nil {
             batSN = silk.String(bat.Sn)

@@ -58,3 +58,13 @@ func CabinetBatch(key string, req *pb.CabinetBatchRequest) *pb.CabinetBatchRespo
     res, _ := c.Batch(context.Background(), req)
     return res
 }
+
+func CabinetSync(key string, req *pb.CabinetSyncRequest) *pb.CabinetSyncResponse {
+    c := GetCabinet(key)
+    if c == nil {
+        return nil
+    }
+
+    res, _ := c.Sync(context.Background(), req)
+    return res
+}

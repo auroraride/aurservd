@@ -24,6 +24,7 @@ import (
     "github.com/lithammer/shortuuid/v4"
     "go.uber.org/zap"
     "golang.org/x/exp/slices"
+    "strconv"
     "time"
 )
 
@@ -463,7 +464,7 @@ func (s *intelligentCabinetService) Operate(cab *ent.Cabinet, op cabdef.Operate,
             OperatorID:    s.modifier.ID,
             OperatorPhone: s.modifier.Phone,
             Serial:        cab.Serial,
-            Name:          cab.Bin[ordinal-1].Name,
+            Name:          strconv.Itoa(ordinal) + "号仓",
             Operation:     req.Operation.String(),
             OperatorRole:  model.CabinetDoorOperatorRoleManager,
             Success:       success,
