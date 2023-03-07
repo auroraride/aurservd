@@ -6,6 +6,7 @@
 package sync
 
 import (
+    "github.com/auroraride/adapter/defs/batdef"
     "github.com/auroraride/adapter/defs/cabdef"
     "github.com/auroraride/adapter/sync"
     "github.com/auroraride/aurservd/app/service"
@@ -19,17 +20,17 @@ func Run() {
         Addr: ar.Config.Redis.Address,
     })
 
-    // // 同步电柜
-    // go func() {
-    //     sync.New[cabdef.CabinetMessage](
-    //         rdb,
-    //         ar.Config.Environment,
-    //         sync.StreamCabinet,
-    //         func(data *cabdef.CabinetMessage) {
-    //             service.NewCabinet().Sync(data)
-    //         },
-    //     ).Run()
-    // }()
+    // 同步电池流转
+    go func() {
+        sync.New[batdef.BatteryFlow](
+            rdb,
+            ar.Config.Environment,
+            sync.StreamBatteryFlow,
+            func(data []*batdef.BatteryFlow) {
+                service.NewBatteryBms().Sync(data)
+            },
+        ).Run()
+    }()
 
     // 同步换电步骤
     go func() {
@@ -37,7 +38,7 @@ func Run() {
             rdb,
             ar.Config.Environment,
             sync.StreamExchange,
-            func(data *cabdef.ExchangeStepMessage) {
+            func(data []*cabdef.ExchangeStepMessage) {
                 service.NewIntelligentCabinet().ExchangeStepSync(data)
             },
         ).Run()

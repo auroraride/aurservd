@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent"
+	"github.com/auroraride/adapter"
 )
 
 const (
@@ -35,6 +36,8 @@ const (
 	FieldSubscribeID = "subscribe_id"
 	// FieldSn holds the string denoting the sn field in the database.
 	FieldSn = "sn"
+	// FieldBrand holds the string denoting the brand field in the database.
+	FieldBrand = "brand"
 	// FieldEnable holds the string denoting the enable field in the database.
 	FieldEnable = "enable"
 	// FieldModel holds the string denoting the model field in the database.
@@ -104,6 +107,7 @@ var Columns = []string{
 	FieldCabinetID,
 	FieldSubscribeID,
 	FieldSn,
+	FieldBrand,
 	FieldEnable,
 	FieldModel,
 	FieldOrdinal,
@@ -132,6 +136,8 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultBrand holds the default value on creation for the "brand" field.
+	DefaultBrand adapter.BatteryBrand
 	// DefaultEnable holds the default value on creation for the "enable" field.
 	DefaultEnable bool
 )

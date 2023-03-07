@@ -47,7 +47,7 @@ type BatteryListRes struct {
     SN      string            `json:"sn"`                // 编号
     Rider   *Rider            `json:"rider,omitempty"`   // 骑手
     Cabinet *CabinetBasicInfo `json:"cabinet,omitempty"` // 电柜
-    *XcBmsBattery
+    *BmsBattery
 }
 
 type Battery struct {

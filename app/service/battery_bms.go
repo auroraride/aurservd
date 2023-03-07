@@ -7,9 +7,10 @@ package service
 
 import (
     "github.com/auroraride/adapter"
+    "github.com/auroraride/adapter/defs/batdef"
     "github.com/auroraride/adapter/defs/xcdef"
     "github.com/auroraride/adapter/rpc/pb"
-    "github.com/auroraride/adapter/rpc/pb/xcpb"
+    "github.com/auroraride/adapter/rpc/pb/timestamppb"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/rpc"
     "github.com/auroraride/aurservd/internal/ar"
@@ -17,25 +18,33 @@ import (
     "github.com/auroraride/aurservd/internal/ent/battery"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
-    "google.golang.org/protobuf/types/known/timestamppb"
+    "github.com/golang-module/carbon/v2"
     "math"
     "strconv"
     "time"
 )
 
-type batteryXcService struct {
+type batteryBmsService struct {
     *BaseService
 }
 
-func NewBatteryXc(params ...any) *batteryXcService {
-    return &batteryXcService{
+func NewBatteryBms(params ...any) *batteryBmsService {
+    return &batteryBmsService{
         BaseService: newService(params...),
     }
 }
 
-func (s *batteryXcService) Detail(req *model.XcBatterySNRequest) (detail *model.XcBatteryDetail) {
-    // 请求xcbms rpc
-    r, _ := rpc.XcBmsBatch(s.ctx, &pb.BatteryBatchRequest{Sn: []string{req.SN}})
+func (s *batteryBmsService) Sync(data []*batdef.BatteryFlow) {
+
+}
+
+func (s *batteryBmsService) Detail(req *model.BatterySNRequest) (detail *model.BatteryBmsDetail) {
+    ab, err := adapter.ParseBatterySN(req.SN)
+    if err != nil {
+        snag.Panic(err)
+    }
+    // 请求bms rpc
+    r := rpc.BmsBatch(ab.Brand, &pb.BatteryBatchRequest{Sn: []string{req.SN}})
     if r == nil {
         snag.Panic("电池信息查询失败")
     }
@@ -47,8 +56,8 @@ func (s *batteryXcService) Detail(req *model.XcBatterySNRequest) (detail *model.
     }
 
     var (
-        hb *xcpb.Heartbeat
-        rb *xcpb.Battery
+        hb *pb.BatteryHeartbeat
+        rb *pb.BatteryItem
     )
 
     if len(r.Items[req.SN].Heartbeats) > 0 {
@@ -56,11 +65,11 @@ func (s *batteryXcService) Detail(req *model.XcBatterySNRequest) (detail *model.
         hb = rb.Heartbeats[0]
     }
 
-    detail = &model.XcBatteryDetail{}
+    detail = &model.BatteryBmsDetail{}
     if hb != nil {
-        detail = &model.XcBatteryDetail{
+        detail = &model.BatteryBmsDetail{
             UpdatedAt:            hb.CreatedAt.AsTime().In(ar.TimeLocation).Format("2006-01-02 15:04:05"),
-            XcBmsBattery:         model.NewXcBmsBattery(hb),
+            BmsBattery:           model.NewBmsBattery(hb),
             Current:              hb.Current,
             Soh:                  uint8(hb.Soh),
             Cycles:               uint16(hb.Cycles),
@@ -113,7 +122,7 @@ func (s *batteryXcService) Detail(req *model.XcBatterySNRequest) (detail *model.
         detail.BelongsTo = bat.Edges.Rider.Name + "-" + bat.Edges.Rider.Phone
     }
 
-    fr, _ := rpc.XcBmsFaultOverview(s.ctx, &pb.BatterySnRequest{Sn: req.SN})
+    fr := rpc.BmsFaultOverview(ab.Brand, &pb.BatterySnRequest{Sn: req.SN})
     if fr != nil {
         detail.FaultsOverview = fr.Items
     }
@@ -121,14 +130,18 @@ func (s *batteryXcService) Detail(req *model.XcBatterySNRequest) (detail *model.
     return
 }
 
-func (s *batteryXcService) Statistics(req *model.XcBatterySNRequest) (detail *model.XcBatteryStatistics) {
+func (s *batteryBmsService) Statistics(req *model.BatterySNRequest) (detail *model.BatteryStatistics) {
+    ab, err := adapter.ParseBatterySN(req.SN)
+    if err != nil {
+        snag.Panic(err)
+    }
     // 请求xcbms rpc
-    r, _ := rpc.XcBmsStatistics(s.ctx, &pb.BatterySnRequest{Sn: req.SN})
+    r := rpc.BmsStatistics(ab.Brand, &pb.BatterySnRequest{Sn: req.SN})
     if r == nil {
         snag.Panic("电池数据查询失败")
     }
 
-    return &model.XcBatteryStatistics{
+    return &model.BatteryStatistics{
         DateHour:    r.DateHour,
         Voltage:     r.Voltage,
         BatTemp:     r.BatTemp,
@@ -141,26 +154,34 @@ func (s *batteryXcService) Statistics(req *model.XcBatterySNRequest) (detail *mo
     }
 }
 
-func (s *batteryXcService) Position(req *model.XcBatteryPositionReq) (res *model.XcBatteryPositionRes) {
-    r, _ := rpc.XcBmsPosition(s.ctx, &pb.BatteryPositionRequest{
+func (s *batteryBmsService) Position(req *model.BatteryPositionReq) (res *model.BatteryPositionRes) {
+    ab, err := adapter.ParseBatterySN(req.SN)
+    if err != nil {
+        snag.Panic(err)
+    }
+    var start, end *timestamppb.Timestamp
+    if req.Start != "" {
+        start = timestamppb.New(carbon.ParseByLayout(req.Start, carbon.DateTimeLayout).Carbon2Time())
+    }
+    r := rpc.BmsPosition(ab.Brand, &pb.BatteryPositionRequest{
         Sn:    req.SN,
-        Start: nil,
-        End:   nil,
+        Start: start,
+        End:   end,
     })
     if r == nil {
-        return &model.XcBatteryPositionRes{
-            Positions:  make([]*model.XcBatteryPosition, 0),
-            Stationary: make([]*model.XcBatteryStationary, 0),
+        return &model.BatteryPositionRes{
+            Positions:  make([]*model.BatteryPosition, 0),
+            Stationary: make([]*model.BatteryStationary, 0),
         }
     }
-    res = &model.XcBatteryPositionRes{
+    res = &model.BatteryPositionRes{
         Start:      r.Start.AsTime().In(ar.TimeLocation).Format("2006-01-02 15:04:05"),
         End:        r.End.AsTime().In(ar.TimeLocation).Format("2006-01-02 15:04:05"),
-        Positions:  make([]*model.XcBatteryPosition, len(r.Positions)),
-        Stationary: make([]*model.XcBatteryStationary, len(r.Stationary)),
+        Positions:  make([]*model.BatteryPosition, len(r.Positions)),
+        Stationary: make([]*model.BatteryStationary, len(r.Stationary)),
     }
     for i, p := range r.Positions {
-        res.Positions[i] = &model.XcBatteryPosition{
+        res.Positions[i] = &model.BatteryPosition{
             InCabinet:  p.InCabinet,
             Stationary: p.Stationary,
             Soc:        p.Soc,
@@ -174,7 +195,7 @@ func (s *batteryXcService) Position(req *model.XcBatteryPositionReq) (res *model
         }
     }
     for i, sa := range r.Stationary {
-        res.Stationary[i] = &model.XcBatteryStationary{
+        res.Stationary[i] = &model.BatteryStationary{
             InCabinet: sa.InCabinet,
             Duration:  sa.Duration,
             StartSoc:  sa.StartSoc,
@@ -192,7 +213,12 @@ func (s *batteryXcService) Position(req *model.XcBatteryPositionReq) (res *model
     return
 }
 
-func (s *batteryXcService) FaultList(req *model.XcBatteryFaultReq) *model.PaginationRes {
+func (s *batteryBmsService) FaultList(req *model.BatteryFaultReq) *model.PaginationRes {
+    ab, err := adapter.ParseBatterySN(*req.SN)
+    if err != nil {
+        snag.Panic(err)
+    }
+
     pq := &pb.BatteryFaultListRequest{
         Sn:    req.SN,
         Fault: req.Fault,
@@ -208,20 +234,20 @@ func (s *batteryXcService) FaultList(req *model.XcBatteryFaultReq) *model.Pagina
         pq.EndAt = timestamppb.New(tools.NewTime().ParseNextDateStringX(req.End))
     }
 
-    r, _ := rpc.XcBmsFaultList(s.ctx, pq)
+    r := rpc.BmsFaultList(ab.Brand, pq)
 
     page := model.Pagination{
         Current: req.Current,
     }
 
-    items := make([]*model.XcBatteryFaultRes, 0)
+    items := make([]*model.BatteryFaultRes, 0)
     if r != nil {
         page.Pages = int(r.Pagination.Pages)
         page.Total = int(r.Pagination.Total)
 
-        items = make([]*model.XcBatteryFaultRes, len(r.Items))
+        items = make([]*model.BatteryFaultRes, len(r.Items))
         for i, item := range r.Items {
-            items[i] = &model.XcBatteryFaultRes{
+            items[i] = &model.BatteryFaultRes{
                 Sn:      item.Sn,
                 Fault:   item.Fault,
                 BeginAt: item.BeginAt.AsTime().In(ar.TimeLocation).Format("2006-01-02 15:04:05"),

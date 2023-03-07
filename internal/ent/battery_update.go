@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/adapter"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/batteryflow"
@@ -176,6 +177,20 @@ func (bu *BatteryUpdate) ClearSubscribeID() *BatteryUpdate {
 // SetSn sets the "sn" field.
 func (bu *BatteryUpdate) SetSn(s string) *BatteryUpdate {
 	bu.mutation.SetSn(s)
+	return bu
+}
+
+// SetBrand sets the "brand" field.
+func (bu *BatteryUpdate) SetBrand(ab adapter.BatteryBrand) *BatteryUpdate {
+	bu.mutation.SetBrand(ab)
+	return bu
+}
+
+// SetNillableBrand sets the "brand" field if the given value is not nil.
+func (bu *BatteryUpdate) SetNillableBrand(ab *adapter.BatteryBrand) *BatteryUpdate {
+	if ab != nil {
+		bu.SetBrand(*ab)
+	}
 	return bu
 }
 
@@ -394,6 +409,9 @@ func (bu *BatteryUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := bu.mutation.Sn(); ok {
 		_spec.SetField(battery.FieldSn, field.TypeString, value)
+	}
+	if value, ok := bu.mutation.Brand(); ok {
+		_spec.SetField(battery.FieldBrand, field.TypeOther, value)
 	}
 	if value, ok := bu.mutation.Enable(); ok {
 		_spec.SetField(battery.FieldEnable, field.TypeBool, value)
@@ -770,6 +788,20 @@ func (buo *BatteryUpdateOne) SetSn(s string) *BatteryUpdateOne {
 	return buo
 }
 
+// SetBrand sets the "brand" field.
+func (buo *BatteryUpdateOne) SetBrand(ab adapter.BatteryBrand) *BatteryUpdateOne {
+	buo.mutation.SetBrand(ab)
+	return buo
+}
+
+// SetNillableBrand sets the "brand" field if the given value is not nil.
+func (buo *BatteryUpdateOne) SetNillableBrand(ab *adapter.BatteryBrand) *BatteryUpdateOne {
+	if ab != nil {
+		buo.SetBrand(*ab)
+	}
+	return buo
+}
+
 // SetEnable sets the "enable" field.
 func (buo *BatteryUpdateOne) SetEnable(b bool) *BatteryUpdateOne {
 	buo.mutation.SetEnable(b)
@@ -1015,6 +1047,9 @@ func (buo *BatteryUpdateOne) sqlSave(ctx context.Context) (_node *Battery, err e
 	}
 	if value, ok := buo.mutation.Sn(); ok {
 		_spec.SetField(battery.FieldSn, field.TypeString, value)
+	}
+	if value, ok := buo.mutation.Brand(); ok {
+		_spec.SetField(battery.FieldBrand, field.TypeOther, value)
 	}
 	if value, ok := buo.mutation.Enable(); ok {
 		_spec.SetField(battery.FieldEnable, field.TypeBool, value)

@@ -80,7 +80,6 @@ func (Cabinet) Fields() []ent.Field {
     return []ent.Field{
         field.Uint64("branch_id").Optional().Nillable().Comment("网点"),
         field.String("sn").Unique().Comment("编号"),
-        // field.String("brand").Comment("品牌"),
         field.Other("brand", adapter.CabinetBrandUnknown).Default(adapter.CabinetBrandUnknown).SchemaType(map[string]string{
             dialect.Postgres: postgres.TypeCharVar,
         }).Comment("品牌"),

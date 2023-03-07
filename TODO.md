@@ -56,6 +56,9 @@
 - [x] 删除MongoDB
 - [ ] 按条件撤回已发送优惠券
 - [ ] 电池流转记录存储在电池微服务中, (主业务服务和电柜服务告知电池服务当前归属人, 电池存储心跳数据时记录归属人)
+- [ ] 后台新增操作: 换电立即超时
+- [ ] 电柜未操作开门, 电池失联立即锁仓
+
 
 ```sql
 INSERT INTO "public"."subscribe_pause"("id","created_at","updated_at","deleted_at","creator","last_modifier","remark","start_at","end_at","days","subscribe_id","rider_id","employee_id","end_employee_id","end_modifier","city_id","store_id","end_store_id","cabinet_id","end_cabinet_id","overdue_days","pause_overdue","suspend_days")

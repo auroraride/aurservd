@@ -6,8 +6,6 @@
 package model
 
 type BatteryFlowCreateReq struct {
-    SN          string  `json:"sn" validate:"required"`
-    BatteryID   uint64  `json:"batteryId" validate:"required"`
     RiderID     *uint64 `json:"riderId"`
     CabinetID   *uint64 `json:"cabinetId"`
     Serial      *string `json:"serial"`

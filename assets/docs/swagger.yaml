@@ -1163,6 +1163,157 @@ definitions:
     - batteryId
     - riderId
     type: object
+  model.BatteryBmsDetail:
+    properties:
+      belongsTo:
+        description: 当前位置
+        type: string
+      capacity:
+        description: 剩余容量 (单位AH)
+        type: number
+      charge:
+        description: 充电是否开启
+        type: boolean
+      chargingTime:
+        description: 本次充电时长
+        type: integer
+      createdAt:
+        description: 入库时间
+        type: string
+      current:
+        description: 电流 (A, 充电为正, 放电为负)
+        type: number
+      cycles:
+        description: 电池包循环次数 (80%累加一次)
+        type: integer
+      disCharge:
+        description: 放电是否开启
+        type: boolean
+      disChargingTime:
+        description: 本次放电时长
+        type: integer
+      envTemp:
+        description: 环境温度 (1个环境温度传感器, 单位1℃)
+        type: integer
+      faults:
+        description: 故障列表, `0`:总压低, `1`:总压高, `2`:单体低, `3`:单体高, `6`:放电过流, `7`:充电过流,
+          `8`:SOC低, `11`:充电高温, `12`:充电低温, `13`:放电高温, `14`:放电低温, `15`:短路, `16`:MOS高温
+        items:
+          type: integer
+        type: array
+      faultsOverview:
+        description: 故障统计, 需要将13种故障都显示出来, 若无返回则数量为0 (`0`:总压低, `1`:总压高, `2`:单体低, `3`:单体高,
+          `6`:放电过流, `7`:充电过流, `8`:SOC低, `11`:充电高温, `12`:充电低温, `13`:放电高温, `14`:放电低温,
+          `15`:短路, `16`:MOS高温)
+        items:
+          $ref: '#/definitions/pb.BatteryFaultOverview'
+        type: array
+      geom:
+        allOf:
+        - $ref: '#/definitions/adapter.Geometry'
+        description: 坐标
+      gps:
+        allOf:
+        - $ref: '#/definitions/xcdef.GPSStatus'
+        description: GPS定位状态 (0=未定位 1=GPS定位 4=LBS定位)
+      hard4GVersion:
+        description: 4G硬件版本
+        type: integer
+      hardVersion:
+        description: BMS硬件版本
+        type: integer
+      iccid:
+        description: SIM卡ICCID
+        type: string
+      inCabinet:
+        description: 是否在电柜
+        type: boolean
+      maxTemp:
+        description: 最大温度 (单位1℃)
+        type: integer
+      minTemp:
+        description: 最小温度 (单位1℃)
+        type: integer
+      monMaxVoltage:
+        description: 最大单体电压 (mV)
+        type: integer
+      monMaxVoltagePos:
+        description: 最大单体电压位置 (第x串)
+        type: integer
+      monMinVoltage:
+        description: 最小单体电压 (mV)
+        type: integer
+      monMinVoltagePos:
+        description: 最小单体电压位置 (第x串)
+        type: integer
+      monVoltage:
+        description: 单体电压 (24个单体电压, 单位mV)
+        items:
+          type: integer
+        type: array
+      mosStatus:
+        description: MOS状态 (Bit0表示充电, Bit1表示放电, 此字段无法判定电池是否充放电状态)
+        items:
+          type: integer
+        type: array
+      mosTemp:
+        description: MOS温度 (1个MOS温度传感器, 单位1℃)
+        type: integer
+      online:
+        description: 电池是否在线
+        type: boolean
+      power:
+        description: 功率 (Kw)
+        type: number
+      sn:
+        description: 电池编号
+        type: string
+      sn4G:
+        description: 4G板SN
+        type: integer
+      soc:
+        description: 剩余容量, 单位1%
+        type: integer
+      soft4GVersion:
+        description: 4G软件版本
+        type: integer
+      softVersion:
+        description: BMS软件版本
+        type: integer
+      soh:
+        description: 健康度 单位1%
+        type: integer
+      status:
+        allOf:
+        - $ref: '#/definitions/model.BatteryStatus'
+        description: 状态, 0:静置 1:充电 2:放电 3:异常(此时faults字段存在)
+      strength:
+        description: 4G通讯信号强度 (0-100 百分比形式)
+        type: integer
+      temp:
+        description: 电池温度 (4个电池温度传感器, 单位1℃)
+        items:
+          type: integer
+        type: array
+      totalChargingTime:
+        description: 总充电时长
+        type: integer
+      totalDisChargingTime:
+        description: 总放电时长
+        type: integer
+      totalUsingTime:
+        description: 总使用时长
+        type: integer
+      updatedAt:
+        description: 最后通讯时间
+        type: string
+      usingTime:
+        description: 本次使用时长
+        type: integer
+      voltage:
+        description: 电池总压 (V)
+        type: number
+    type: object
   model.BatteryCreateReq:
     properties:
       cityId:
@@ -1192,6 +1343,17 @@ definitions:
       soc:
         description: 当前电量, 暂时隐藏
         type: number
+    type: object
+  model.BatteryFaultRes:
+    properties:
+      begin_at:
+        type: string
+      end_at:
+        type: string
+      fault:
+        $ref: '#/definitions/pb.BatteryFaultType'
+      sn:
+        type: string
     type: object
   model.BatteryListRes:
     properties:
@@ -1260,6 +1422,127 @@ definitions:
       enable:
         description: 是否启用
         type: boolean
+    type: object
+  model.BatteryPosition:
+    properties:
+      at:
+        description: '时间 (格式为: yyyy-mm-dd hh:mm:ss)'
+        type: string
+      gsm:
+        description: GSM信号强度
+        type: integer
+      inCabinet:
+        description: 是否在电柜中
+        type: boolean
+      lat:
+        description: 纬度
+        type: number
+      lng:
+        description: 经度
+        type: number
+      soc:
+        description: 电量
+        type: integer
+      stationary:
+        description: 是否停留
+        type: boolean
+      voltage:
+        description: 电压
+        type: number
+    type: object
+  model.BatteryPositionRes:
+    properties:
+      end:
+        description: 结束时间
+        type: string
+      positions:
+        description: 所有位置信息
+        items:
+          $ref: '#/definitions/model.BatteryPosition'
+        type: array
+      start:
+        description: 开始时间
+        type: string
+      stationary:
+        description: 静止位置信息
+        items:
+          $ref: '#/definitions/model.BatteryStationary'
+        type: array
+    type: object
+  model.BatteryStationary:
+    properties:
+      duration:
+        description: 停留时间 (秒)
+        type: integer
+      endAt:
+        description: '结束时间 (格式为: yyyy-mm-dd hh:mm:ss)'
+        type: string
+      endSoc:
+        description: 结束电量, 可能为空
+        type: integer
+      inCabinet:
+        description: 是否在电柜中
+        type: boolean
+      lat:
+        description: 纬度
+        type: number
+      lng:
+        description: 经度
+        type: number
+      startAt:
+        description: '开始时间 (格式为: yyyy-mm-dd hh:mm:ss)'
+        type: string
+      startSoc:
+        description: 开始电量
+        type: integer
+    type: object
+  model.BatteryStatistics:
+    properties:
+      batTemp:
+        description: 电池温度(℃)
+        items:
+          type: number
+        type: array
+      charging:
+        description: 充电电流(A)
+        items:
+          type: number
+        type: array
+      dateHour:
+        description: 整点
+        items:
+          type: string
+        type: array
+      disCharging:
+        description: 放电电流(A)
+        items:
+          type: number
+        type: array
+      envTemp:
+        description: 环境温度(℃)
+        items:
+          type: number
+        type: array
+      mosTemp:
+        description: Mos温度(℃)
+        items:
+          type: number
+        type: array
+      soc:
+        description: 剩余容量(%)
+        items:
+          type: number
+        type: array
+      strength:
+        description: 信号强度(%)
+        items:
+          type: number
+        type: array
+      voltage:
+        description: 电压(V)
+        items:
+          type: number
+        type: array
     type: object
   model.BatteryStatus:
     enum:
@@ -6871,289 +7154,6 @@ definitions:
         description: 积分数量
         type: integer
     type: object
-  model.XcBatteryDetail:
-    properties:
-      belongsTo:
-        description: 当前位置
-        type: string
-      capacity:
-        description: 剩余容量 (单位AH)
-        type: number
-      charge:
-        description: 充电是否开启
-        type: boolean
-      chargingTime:
-        description: 本次充电时长
-        type: integer
-      createdAt:
-        description: 入库时间
-        type: string
-      current:
-        description: 电流 (A, 充电为正, 放电为负)
-        type: number
-      cycles:
-        description: 电池包循环次数 (80%累加一次)
-        type: integer
-      disCharge:
-        description: 放电是否开启
-        type: boolean
-      disChargingTime:
-        description: 本次放电时长
-        type: integer
-      envTemp:
-        description: 环境温度 (1个环境温度传感器, 单位1℃)
-        type: integer
-      faults:
-        description: 故障列表, `0`:总压低, `1`:总压高, `2`:单体低, `3`:单体高, `6`:放电过流, `7`:充电过流,
-          `8`:SOC低, `11`:充电高温, `12`:充电低温, `13`:放电高温, `14`:放电低温, `15`:短路, `16`:MOS高温
-        items:
-          type: integer
-        type: array
-      faultsOverview:
-        description: 故障统计, 需要将13种故障都显示出来, 若无返回则数量为0 (`0`:总压低, `1`:总压高, `2`:单体低, `3`:单体高,
-          `6`:放电过流, `7`:充电过流, `8`:SOC低, `11`:充电高温, `12`:充电低温, `13`:放电高温, `14`:放电低温,
-          `15`:短路, `16`:MOS高温)
-        items:
-          $ref: '#/definitions/pb.BatteryFaultOverview'
-        type: array
-      geom:
-        allOf:
-        - $ref: '#/definitions/adapter.Geometry'
-        description: 坐标
-      gps:
-        allOf:
-        - $ref: '#/definitions/xcdef.GPSStatus'
-        description: GPS定位状态 (0=未定位 1=GPS定位 4=LBS定位)
-      hard4GVersion:
-        description: 4G硬件版本
-        type: integer
-      hardVersion:
-        description: BMS硬件版本
-        type: integer
-      iccid:
-        description: SIM卡ICCID
-        type: string
-      inCabinet:
-        description: 是否在电柜
-        type: boolean
-      maxTemp:
-        description: 最大温度 (单位1℃)
-        type: integer
-      minTemp:
-        description: 最小温度 (单位1℃)
-        type: integer
-      monMaxVoltage:
-        description: 最大单体电压 (mV)
-        type: integer
-      monMaxVoltagePos:
-        description: 最大单体电压位置 (第x串)
-        type: integer
-      monMinVoltage:
-        description: 最小单体电压 (mV)
-        type: integer
-      monMinVoltagePos:
-        description: 最小单体电压位置 (第x串)
-        type: integer
-      monVoltage:
-        description: 单体电压 (24个单体电压, 单位mV)
-        items:
-          type: integer
-        type: array
-      mosStatus:
-        description: MOS状态 (Bit0表示充电, Bit1表示放电, 此字段无法判定电池是否充放电状态)
-        items:
-          type: integer
-        type: array
-      mosTemp:
-        description: MOS温度 (1个MOS温度传感器, 单位1℃)
-        type: integer
-      online:
-        description: 电池是否在线
-        type: boolean
-      power:
-        description: 功率 (Kw)
-        type: number
-      sn:
-        description: 电池编号
-        type: string
-      sn4G:
-        description: 4G板SN
-        type: integer
-      soc:
-        description: 剩余容量, 单位1%
-        type: integer
-      soft4GVersion:
-        description: 4G软件版本
-        type: integer
-      softVersion:
-        description: BMS软件版本
-        type: integer
-      soh:
-        description: 健康度 单位1%
-        type: integer
-      status:
-        allOf:
-        - $ref: '#/definitions/model.BatteryStatus'
-        description: 状态, 0:静置 1:充电 2:放电 3:异常(此时faults字段存在)
-      strength:
-        description: 4G通讯信号强度 (0-100 百分比形式)
-        type: integer
-      temp:
-        description: 电池温度 (4个电池温度传感器, 单位1℃)
-        items:
-          type: integer
-        type: array
-      totalChargingTime:
-        description: 总充电时长
-        type: integer
-      totalDisChargingTime:
-        description: 总放电时长
-        type: integer
-      totalUsingTime:
-        description: 总使用时长
-        type: integer
-      updatedAt:
-        description: 最后通讯时间
-        type: string
-      usingTime:
-        description: 本次使用时长
-        type: integer
-      voltage:
-        description: 电池总压 (V)
-        type: number
-    type: object
-  model.XcBatteryFaultRes:
-    properties:
-      begin_at:
-        type: string
-      end_at:
-        type: string
-      fault:
-        $ref: '#/definitions/pb.BatteryFaultType'
-      sn:
-        type: string
-    type: object
-  model.XcBatteryPosition:
-    properties:
-      at:
-        description: '时间 (格式为: yyyy-mm-dd hh:mm:ss)'
-        type: string
-      gsm:
-        description: GSM信号强度
-        type: integer
-      inCabinet:
-        description: 是否在电柜中
-        type: boolean
-      lat:
-        description: 纬度
-        type: number
-      lng:
-        description: 经度
-        type: number
-      soc:
-        description: 电量
-        type: integer
-      stationary:
-        description: 是否停留
-        type: boolean
-      voltage:
-        description: 电压
-        type: number
-    type: object
-  model.XcBatteryPositionRes:
-    properties:
-      end:
-        description: 结束时间
-        type: string
-      positions:
-        description: 所有位置信息
-        items:
-          $ref: '#/definitions/model.XcBatteryPosition'
-        type: array
-      start:
-        description: 开始时间
-        type: string
-      stationary:
-        description: 静止位置信息
-        items:
-          $ref: '#/definitions/model.XcBatteryStationary'
-        type: array
-    type: object
-  model.XcBatteryStationary:
-    properties:
-      duration:
-        description: 停留时间 (秒)
-        type: integer
-      endAt:
-        description: '结束时间 (格式为: yyyy-mm-dd hh:mm:ss)'
-        type: string
-      endSoc:
-        description: 结束电量, 可能为空
-        type: integer
-      inCabinet:
-        description: 是否在电柜中
-        type: boolean
-      lat:
-        description: 纬度
-        type: number
-      lng:
-        description: 经度
-        type: number
-      startAt:
-        description: '开始时间 (格式为: yyyy-mm-dd hh:mm:ss)'
-        type: string
-      startSoc:
-        description: 开始电量
-        type: integer
-    type: object
-  model.XcBatteryStatistics:
-    properties:
-      batTemp:
-        description: 电池温度(℃)
-        items:
-          type: number
-        type: array
-      charging:
-        description: 充电电流(A)
-        items:
-          type: number
-        type: array
-      dateHour:
-        description: 整点
-        items:
-          type: string
-        type: array
-      disCharging:
-        description: 放电电流(A)
-        items:
-          type: number
-        type: array
-      envTemp:
-        description: 环境温度(℃)
-        items:
-          type: number
-        type: array
-      mosTemp:
-        description: Mos温度(℃)
-        items:
-          type: number
-        type: array
-      soc:
-        description: 剩余容量(%)
-        items:
-          type: number
-        type: array
-      strength:
-        description: 信号强度(%)
-        items:
-          type: number
-        type: array
-      voltage:
-        description: 电压(V)
-        items:
-          type: number
-        type: array
-    type: object
   pb.BatteryFaultOverview:
     properties:
       fault:
@@ -9321,7 +9321,7 @@ paths:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/model.XcBatteryDetail'
+            $ref: '#/definitions/model.BatteryBmsDetail'
       summary: M4010 电池详情
       tags:
       - '[M]管理接口'
@@ -9367,7 +9367,7 @@ paths:
             - properties:
                 items:
                   items:
-                    $ref: '#/definitions/model.XcBatteryFaultRes'
+                    $ref: '#/definitions/model.BatteryFaultRes'
                   type: array
               type: object
       summary: M4013 电池故障列表
@@ -9403,7 +9403,7 @@ paths:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/model.XcBatteryPositionRes'
+            $ref: '#/definitions/model.BatteryPositionRes'
       summary: M4012 电池位置
       tags:
       - '[M]管理接口'
@@ -9429,7 +9429,7 @@ paths:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/model.XcBatteryStatistics'
+            $ref: '#/definitions/model.BatteryStatistics'
       summary: M4011 电池数据
       tags:
       - '[M]管理接口'

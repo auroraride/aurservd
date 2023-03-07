@@ -17,7 +17,7 @@ import (
 var (
     // 客户端列表
     // brand + [intelligent] => pb.CabinetClient
-    cabinets sync.Map
+    cabinetClients sync.Map
 )
 
 func CabinetKey(br adapter.CabinetBrand, intelligent bool) string {
@@ -30,7 +30,7 @@ func CabinetKey(br adapter.CabinetBrand, intelligent bool) string {
 }
 
 func GetCabinet(key string) pb.CabinetClient {
-    if c, ok := cabinets.Load(key); ok {
+    if c, ok := cabinetClients.Load(key); ok {
         return c.(pb.CabinetClient)
     }
 
@@ -44,19 +44,9 @@ func GetCabinet(key string) pb.CabinetClient {
         zap.L().Error(key+" rpc连接失败", zap.Error(err))
     }
 
-    cabinets.Store(key, c)
+    cabinetClients.Store(key, c)
 
     return c
-}
-
-func CabinetBatch(key string, req *pb.CabinetBatchRequest) *pb.CabinetBatchResponse {
-    c := GetCabinet(key)
-    if c == nil {
-        return nil
-    }
-
-    res, _ := c.Batch(context.Background(), req)
-    return res
 }
 
 func CabinetSync(key string, req *pb.CabinetSyncRequest) *pb.CabinetSyncResponse {

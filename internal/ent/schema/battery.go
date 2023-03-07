@@ -1,6 +1,7 @@
 package schema
 
 import (
+    "ariga.io/atlas/sql/postgres"
     "entgo.io/ent"
     "entgo.io/ent/dialect"
     "entgo.io/ent/dialect/entsql"
@@ -9,6 +10,7 @@ import (
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
     "entgo.io/ent/schema/mixin"
+    "github.com/auroraride/adapter"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -63,6 +65,9 @@ func (Battery) Fields() []ent.Field {
         field.Uint64("cabinet_id").Optional().Nillable().Comment("电柜ID"),
         field.Uint64("subscribe_id").Optional().Nillable().Comment("订阅ID"),
         field.String("sn").Unique().Comment("电池编号"),
+        field.Other("brand", adapter.BatteryBrandUnknown).Default(adapter.BatteryBrandUnknown).SchemaType(map[string]string{
+            dialect.Postgres: postgres.TypeCharVar,
+        }).Comment("品牌"),
         field.Bool("enable").Default(true).Comment("是否启用"),
         field.String("model").Comment("电池型号"),
         field.Int("ordinal").Optional().Nillable().Comment("所在智能柜仓位序号"),

@@ -7643,6 +7643,7 @@ type BatteryMutation struct {
 	last_modifier    **model.Modifier
 	remark           *string
 	sn               *string
+	brand            *adapter.BatteryBrand
 	enable           *bool
 	model            *string
 	ordinal          *int
@@ -8262,6 +8263,42 @@ func (m *BatteryMutation) ResetSn() {
 	m.sn = nil
 }
 
+// SetBrand sets the "brand" field.
+func (m *BatteryMutation) SetBrand(ab adapter.BatteryBrand) {
+	m.brand = &ab
+}
+
+// Brand returns the value of the "brand" field in the mutation.
+func (m *BatteryMutation) Brand() (r adapter.BatteryBrand, exists bool) {
+	v := m.brand
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBrand returns the old "brand" field's value of the Battery entity.
+// If the Battery object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BatteryMutation) OldBrand(ctx context.Context) (v adapter.BatteryBrand, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBrand is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBrand requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBrand: %w", err)
+	}
+	return oldValue.Brand, nil
+}
+
+// ResetBrand resets all changes to the "brand" field.
+func (m *BatteryMutation) ResetBrand() {
+	m.brand = nil
+}
+
 // SetEnable sets the "enable" field.
 func (m *BatteryMutation) SetEnable(b bool) {
 	m.enable = &b
@@ -8596,7 +8633,7 @@ func (m *BatteryMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *BatteryMutation) Fields() []string {
-	fields := make([]string, 0, 14)
+	fields := make([]string, 0, 15)
 	if m.created_at != nil {
 		fields = append(fields, battery.FieldCreatedAt)
 	}
@@ -8629,6 +8666,9 @@ func (m *BatteryMutation) Fields() []string {
 	}
 	if m.sn != nil {
 		fields = append(fields, battery.FieldSn)
+	}
+	if m.brand != nil {
+		fields = append(fields, battery.FieldBrand)
 	}
 	if m.enable != nil {
 		fields = append(fields, battery.FieldEnable)
@@ -8669,6 +8709,8 @@ func (m *BatteryMutation) Field(name string) (ent.Value, bool) {
 		return m.SubscribeID()
 	case battery.FieldSn:
 		return m.Sn()
+	case battery.FieldBrand:
+		return m.Brand()
 	case battery.FieldEnable:
 		return m.Enable()
 	case battery.FieldModel:
@@ -8706,6 +8748,8 @@ func (m *BatteryMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldSubscribeID(ctx)
 	case battery.FieldSn:
 		return m.OldSn(ctx)
+	case battery.FieldBrand:
+		return m.OldBrand(ctx)
 	case battery.FieldEnable:
 		return m.OldEnable(ctx)
 	case battery.FieldModel:
@@ -8797,6 +8841,13 @@ func (m *BatteryMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetSn(v)
+		return nil
+	case battery.FieldBrand:
+		v, ok := value.(adapter.BatteryBrand)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBrand(v)
 		return nil
 	case battery.FieldEnable:
 		v, ok := value.(bool)
@@ -8972,6 +9023,9 @@ func (m *BatteryMutation) ResetField(name string) error {
 		return nil
 	case battery.FieldSn:
 		m.ResetSn()
+		return nil
+	case battery.FieldBrand:
+		m.ResetBrand()
 		return nil
 	case battery.FieldEnable:
 		m.ResetEnable()

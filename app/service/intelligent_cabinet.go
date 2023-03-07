@@ -206,26 +206,28 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 }
 
 // ExchangeStepSync 换电步骤同步
-func (s *intelligentCabinetService) ExchangeStepSync(req *cabdef.ExchangeStepMessage) {
-    if req.Step == 0 {
-        return
-    }
+func (s *intelligentCabinetService) ExchangeStepSync(items []*cabdef.ExchangeStepMessage) {
+    for _, req := range items {
+        if req.Step == 0 {
+            return
+        }
 
-    // TODO 检查电池是否存在???
-    key := s.exchangeCacheKey(req.UUID)
+        // TODO 检查电池是否存在???
+        key := s.exchangeCacheKey(req.UUID)
 
-    c := &model.ExchangeStepResultCache{}
-    _ = cache.Get(s.ctx, key).Scan(c)
-    c.Results = append(c.Results, req)
+        c := &model.ExchangeStepResultCache{}
+        _ = cache.Get(s.ctx, key).Scan(c)
+        c.Results = append(c.Results, req)
 
-    // 排序
-    slices.SortFunc(c.Results, func(a, b *cabdef.ExchangeStepMessage) bool {
-        return a.Step <= b.Step
-    })
+        // 排序
+        slices.SortFunc(c.Results, func(a, b *cabdef.ExchangeStepMessage) bool {
+            return a.Step <= b.Step
+        })
 
-    err := cache.Set(s.ctx, key, c, 10*time.Minute).Err()
-    if err != nil {
-        return
+        err := cache.Set(s.ctx, key, c, 10*time.Minute).Err()
+        if err != nil {
+            return
+        }
     }
 }
 

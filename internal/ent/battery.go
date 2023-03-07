@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/auroraride/adapter"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
@@ -44,6 +45,8 @@ type Battery struct {
 	SubscribeID *uint64 `json:"subscribe_id,omitempty"`
 	// 电池编号
 	Sn string `json:"sn,omitempty"`
+	// 品牌
+	Brand adapter.BatteryBrand `json:"brand,omitempty"`
 	// 是否启用
 	Enable bool `json:"enable,omitempty"`
 	// 电池型号
@@ -140,6 +143,8 @@ func (*Battery) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case battery.FieldCreator, battery.FieldLastModifier:
 			values[i] = new([]byte)
+		case battery.FieldBrand:
+			values[i] = new(adapter.BatteryBrand)
 		case battery.FieldEnable:
 			values[i] = new(sql.NullBool)
 		case battery.FieldID, battery.FieldCityID, battery.FieldRiderID, battery.FieldCabinetID, battery.FieldSubscribeID, battery.FieldOrdinal:
@@ -243,6 +248,12 @@ func (b *Battery) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field sn", values[i])
 			} else if value.Valid {
 				b.Sn = value.String
+			}
+		case battery.FieldBrand:
+			if value, ok := values[i].(*adapter.BatteryBrand); !ok {
+				return fmt.Errorf("unexpected type %T for field brand", values[i])
+			} else if value != nil {
+				b.Brand = *value
 			}
 		case battery.FieldEnable:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -358,6 +369,9 @@ func (b *Battery) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("sn=")
 	builder.WriteString(b.Sn)
+	builder.WriteString(", ")
+	builder.WriteString("brand=")
+	builder.WriteString(fmt.Sprintf("%v", b.Brand))
 	builder.WriteString(", ")
 	builder.WriteString("enable=")
 	builder.WriteString(fmt.Sprintf("%v", b.Enable))

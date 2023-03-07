@@ -639,7 +639,7 @@ func (s *cabinetService) Sync(cab *ent.Cabinet) {
     if res == nil || len(res.Items) == 0 {
         return
     }
-    s.parseSyncData(cab, res.Items[0])
+    s.parseSyncData(cab, res.Items[cab.Serial])
 }
 
 func (s *cabinetService) SyncCabinets(cabs []*ent.Cabinet) {
@@ -679,6 +679,9 @@ func (s *cabinetService) SyncCabinets(cabs []*ent.Cabinet) {
 }
 
 func (s *cabinetService) parseSyncData(cab *ent.Cabinet, item *pb.CabinetSyncItem) {
+    if item == nil {
+        return
+    }
     cab.BatteryNum = int(item.BatteryNum)
     cab.BatteryFullNum = int(item.BatteryFullNum)
     cab.BatteryChargingNum = int(item.BatteryChargingNum)

@@ -27,16 +27,17 @@ func NewBatteryFlow(params ...any) *batteryFlowService {
     }
 }
 
-func (s *batteryFlowService) Create(req model.BatteryFlowCreateReq) {
+func (s *batteryFlowService) Create(bat *ent.Battery, req model.BatteryFlowCreateReq) {
     updater := s.orm.Create().
-        SetSn(req.SN).
-        SetBatteryID(req.BatteryID).
+        SetSn(bat.Sn).
+        SetBatteryID(bat.ID).
         SetNillableRiderID(req.RiderID).
         SetNillableSubscribeID(req.SubscribeID).
         SetNillableCabinetID(req.CabinetID).
         SetNillableOrdinal(req.Ordinal).
         SetNillableSerial(req.Serial)
-    sr, _ := rpc.XcBmsSample(s.ctx, &pb.BatterySnRequest{Sn: req.SN})
+
+    sr := rpc.BmsSample(bat.Brand, &pb.BatterySnRequest{Sn: bat.Sn})
     if sr != nil {
         updater.SetSoc(float64(sr.Soc)).SetGeom(adapter.NewGeometry(sr.Geom).WGS84toGCJ02())
     }
