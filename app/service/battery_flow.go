@@ -11,6 +11,7 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/rpc"
     "github.com/auroraride/aurservd/internal/ent"
+    "go.uber.org/zap"
 )
 
 type batteryFlowService struct {
@@ -41,7 +42,10 @@ func (s *batteryFlowService) Create(bat *ent.Battery, req model.BatteryFlowCreat
     if sr != nil {
         updater.SetSoc(float64(sr.Soc)).SetGeom(adapter.NewGeometry(sr.Geom).WGS84toGCJ02())
     }
-    _ = updater.Exec(s.ctx)
+    err := updater.Exec(s.ctx)
+    if err != nil {
+        zap.L().Error("电池流转创建失败", zap.Error(err))
+    }
 }
 
 //

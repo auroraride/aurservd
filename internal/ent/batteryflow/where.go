@@ -576,6 +576,16 @@ func GeomLTE(v *adapter.Geometry) predicate.BatteryFlow {
 	return predicate.BatteryFlow(sql.FieldLTE(FieldGeom, v))
 }
 
+// GeomIsNil applies the IsNil predicate on the "geom" field.
+func GeomIsNil() predicate.BatteryFlow {
+	return predicate.BatteryFlow(sql.FieldIsNull(FieldGeom))
+}
+
+// GeomNotNil applies the NotNil predicate on the "geom" field.
+func GeomNotNil() predicate.BatteryFlow {
+	return predicate.BatteryFlow(sql.FieldNotNull(FieldGeom))
+}
+
 // RemarkEQ applies the EQ predicate on the "remark" field.
 func RemarkEQ(v string) predicate.BatteryFlow {
 	return predicate.BatteryFlow(sql.FieldEQ(FieldRemark, v))

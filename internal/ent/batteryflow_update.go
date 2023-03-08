@@ -186,6 +186,12 @@ func (bfu *BatteryFlowUpdate) SetGeom(a *adapter.Geometry) *BatteryFlowUpdate {
 	return bfu
 }
 
+// ClearGeom clears the value of the "geom" field.
+func (bfu *BatteryFlowUpdate) ClearGeom() *BatteryFlowUpdate {
+	bfu.mutation.ClearGeom()
+	return bfu
+}
+
 // SetRemark sets the "remark" field.
 func (bfu *BatteryFlowUpdate) SetRemark(s string) *BatteryFlowUpdate {
 	bfu.mutation.SetRemark(s)
@@ -346,6 +352,9 @@ func (bfu *BatteryFlowUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := bfu.mutation.Geom(); ok {
 		_spec.SetField(batteryflow.FieldGeom, field.TypeOther, value)
+	}
+	if bfu.mutation.GeomCleared() {
+		_spec.ClearField(batteryflow.FieldGeom, field.TypeOther)
 	}
 	if value, ok := bfu.mutation.Remark(); ok {
 		_spec.SetField(batteryflow.FieldRemark, field.TypeString, value)
@@ -667,6 +676,12 @@ func (bfuo *BatteryFlowUpdateOne) SetGeom(a *adapter.Geometry) *BatteryFlowUpdat
 	return bfuo
 }
 
+// ClearGeom clears the value of the "geom" field.
+func (bfuo *BatteryFlowUpdateOne) ClearGeom() *BatteryFlowUpdateOne {
+	bfuo.mutation.ClearGeom()
+	return bfuo
+}
+
 // SetRemark sets the "remark" field.
 func (bfuo *BatteryFlowUpdateOne) SetRemark(s string) *BatteryFlowUpdateOne {
 	bfuo.mutation.SetRemark(s)
@@ -857,6 +872,9 @@ func (bfuo *BatteryFlowUpdateOne) sqlSave(ctx context.Context) (_node *BatteryFl
 	}
 	if value, ok := bfuo.mutation.Geom(); ok {
 		_spec.SetField(batteryflow.FieldGeom, field.TypeOther, value)
+	}
+	if bfuo.mutation.GeomCleared() {
+		_spec.ClearField(batteryflow.FieldGeom, field.TypeOther)
 	}
 	if value, ok := bfuo.mutation.Remark(); ok {
 		_spec.SetField(batteryflow.FieldRemark, field.TypeString, value)

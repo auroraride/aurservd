@@ -257,9 +257,6 @@ func (bfc *BatteryFlowCreate) check() error {
 	if _, ok := bfc.mutation.Soc(); !ok {
 		return &ValidationError{Name: "soc", err: errors.New(`ent: missing required field "BatteryFlow.soc"`)}
 	}
-	if _, ok := bfc.mutation.Geom(); !ok {
-		return &ValidationError{Name: "geom", err: errors.New(`ent: missing required field "BatteryFlow.geom"`)}
-	}
 	if _, ok := bfc.mutation.BatteryID(); !ok {
 		return &ValidationError{Name: "battery", err: errors.New(`ent: missing required edge "BatteryFlow.battery"`)}
 	}
@@ -616,6 +613,12 @@ func (u *BatteryFlowUpsert) UpdateGeom() *BatteryFlowUpsert {
 	return u
 }
 
+// ClearGeom clears the value of the "geom" field.
+func (u *BatteryFlowUpsert) ClearGeom() *BatteryFlowUpsert {
+	u.SetNull(batteryflow.FieldGeom)
+	return u
+}
+
 // SetRemark sets the "remark" field.
 func (u *BatteryFlowUpsert) SetRemark(v string) *BatteryFlowUpsert {
 	u.Set(batteryflow.FieldRemark, v)
@@ -865,6 +868,13 @@ func (u *BatteryFlowUpsertOne) SetGeom(v *adapter.Geometry) *BatteryFlowUpsertOn
 func (u *BatteryFlowUpsertOne) UpdateGeom() *BatteryFlowUpsertOne {
 	return u.Update(func(s *BatteryFlowUpsert) {
 		s.UpdateGeom()
+	})
+}
+
+// ClearGeom clears the value of the "geom" field.
+func (u *BatteryFlowUpsertOne) ClearGeom() *BatteryFlowUpsertOne {
+	return u.Update(func(s *BatteryFlowUpsert) {
+		s.ClearGeom()
 	})
 }
 
@@ -1282,6 +1292,13 @@ func (u *BatteryFlowUpsertBulk) SetGeom(v *adapter.Geometry) *BatteryFlowUpsertB
 func (u *BatteryFlowUpsertBulk) UpdateGeom() *BatteryFlowUpsertBulk {
 	return u.Update(func(s *BatteryFlowUpsert) {
 		s.UpdateGeom()
+	})
+}
+
+// ClearGeom clears the value of the "geom" field.
+func (u *BatteryFlowUpsertBulk) ClearGeom() *BatteryFlowUpsertBulk {
+	return u.Update(func(s *BatteryFlowUpsert) {
+		s.ClearGeom()
 	})
 }
 

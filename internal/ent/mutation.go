@@ -9821,9 +9821,22 @@ func (m *BatteryFlowMutation) OldGeom(ctx context.Context) (v *adapter.Geometry,
 	return oldValue.Geom, nil
 }
 
+// ClearGeom clears the value of the "geom" field.
+func (m *BatteryFlowMutation) ClearGeom() {
+	m.geom = nil
+	m.clearedFields[batteryflow.FieldGeom] = struct{}{}
+}
+
+// GeomCleared returns if the "geom" field was cleared in this mutation.
+func (m *BatteryFlowMutation) GeomCleared() bool {
+	_, ok := m.clearedFields[batteryflow.FieldGeom]
+	return ok
+}
+
 // ResetGeom resets all changes to the "geom" field.
 func (m *BatteryFlowMutation) ResetGeom() {
 	m.geom = nil
+	delete(m.clearedFields, batteryflow.FieldGeom)
 }
 
 // SetRemark sets the "remark" field.
@@ -10280,6 +10293,9 @@ func (m *BatteryFlowMutation) ClearedFields() []string {
 	if m.FieldCleared(batteryflow.FieldOrdinal) {
 		fields = append(fields, batteryflow.FieldOrdinal)
 	}
+	if m.FieldCleared(batteryflow.FieldGeom) {
+		fields = append(fields, batteryflow.FieldGeom)
+	}
 	if m.FieldCleared(batteryflow.FieldRemark) {
 		fields = append(fields, batteryflow.FieldRemark)
 	}
@@ -10311,6 +10327,9 @@ func (m *BatteryFlowMutation) ClearField(name string) error {
 		return nil
 	case batteryflow.FieldOrdinal:
 		m.ClearOrdinal()
+		return nil
+	case batteryflow.FieldGeom:
+		m.ClearGeom()
 		return nil
 	case batteryflow.FieldRemark:
 		m.ClearRemark()

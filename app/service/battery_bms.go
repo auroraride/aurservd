@@ -66,6 +66,7 @@ func (s *batteryBmsService) SyncPutin(sn string, cab *ent.Cabinet, ordinal int) 
         Ordinal:   ordinal,
     })
     if err != nil {
+        zap.L().Error("电池信息获取失败", zap.Error(err))
         return
     }
 
@@ -73,7 +74,10 @@ func (s *batteryBmsService) SyncPutin(sn string, cab *ent.Cabinet, ordinal int) 
     s.SyncPutout(cab, ordinal)
 
     // 更新电池电柜信息
-    bat, err = bat.Update().SetCabinetID(cab.ID).SetOrdinal(ordinal).ClearRiderID().ClearSubscribeID().Save(s.ctx)
+    _, err = bat.Update().SetCabinetID(cab.ID).SetOrdinal(ordinal).ClearRiderID().ClearSubscribeID().Save(s.ctx)
+    if err != nil {
+        zap.L().Error("放入电柜更新电池失败", zap.Error(err))
+    }
 
     // 更新电池流转
     go NewBatteryFlow().Create(bat, model.BatteryFlowCreateReq{

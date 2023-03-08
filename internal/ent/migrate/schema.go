@@ -477,7 +477,7 @@ var (
 		{Name: "soc", Type: field.TypeFloat64, Comment: "容量, -1代表未查询到", Default: -1},
 		{Name: "serial", Type: field.TypeString, Nullable: true, Comment: "电柜编号"},
 		{Name: "ordinal", Type: field.TypeInt, Nullable: true, Comment: "仓位序号, 从1开始"},
-		{Name: "geom", Type: field.TypeOther, Comment: "坐标", SchemaType: map[string]string{"postgres": "geometry(POINT, 4326)"}},
+		{Name: "geom", Type: field.TypeOther, Nullable: true, Comment: "坐标", SchemaType: map[string]string{"postgres": "geometry(POINT, 4326)"}},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "备注信息"},
 		{Name: "battery_id", Type: field.TypeUint64, Comment: "电池ID"},
 		{Name: "subscribe_id", Type: field.TypeUint64, Nullable: true},
