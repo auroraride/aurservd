@@ -607,6 +607,9 @@ func (s *cabinetService) Transfer(req *model.CabinetTransferReq) {
     if cab.Transferred {
         snag.Panic("电柜已初始化过")
     }
+    if cab.UsingMicroService() {
+        s.Sync(cab)
+    }
     if cab.Health != model.CabinetHealthStatusOnline {
         snag.Panic("电柜不在线")
     }
