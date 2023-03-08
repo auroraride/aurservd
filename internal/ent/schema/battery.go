@@ -101,6 +101,7 @@ func (Battery) Indexes() []ent.Index {
     return []ent.Index{
         index.Fields("cabinet_id", "ordinal"),
         index.Fields("enable"),
+        index.Fields("brand"),
         index.Fields("model").StorageKey("index_battery_model"),
         index.Fields("sn").Annotations(
             entsql.IndexTypes(map[string]string{

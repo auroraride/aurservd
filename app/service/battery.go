@@ -105,36 +105,6 @@ func (s *batteryService) LoadOrCreate(sn string, params ...any) (bat *ent.Batter
     return s.orm.Create().SetModel(ab.Model).SetSn(sn).SetBrand(ab.Brand).SetNillableCabinetID(cabID).SetNillableOrdinal(ordinal).Save(s.ctx)
 }
 
-// SyncPutout 同步消息 - 从电柜中取出
-func (s *batteryService) SyncPutout(sn string, cab *ent.Cabinet, ordinal int) {
-    _ = s.orm.Update().Where(battery.CabinetID(cab.ID), battery.Ordinal(ordinal)).ClearCabinetID().ClearOrdinal().Exec(s.ctx)
-}
-
-// SyncPutin 同步消息 - 放入电柜中
-func (s *batteryService) SyncPutin(sn string, cab *ent.Cabinet, ordinal int) (bat *ent.Battery, err error) {
-    bat, err = s.LoadOrCreate(sn, &model.BatteryInCabinet{
-        CabinetID: cab.ID,
-        Ordinal:   ordinal,
-    })
-    if err != nil {
-        return
-    }
-
-    // TODO 是否有必要移除别的电池信息?
-    // s.SyncPutout(cab.ID, ordinal)
-
-    // 更新电池电柜信息
-    bat, err = bat.Update().SetCabinetID(cab.ID).SetOrdinal(ordinal).ClearRiderID().ClearSubscribeID().Save(s.ctx)
-
-    // TODO 更新电池流转
-    go NewBatteryFlow().Create(bat, model.BatteryFlowCreateReq{
-        CabinetID: silk.Pointer(cab.ID),
-        Ordinal:   silk.Pointer(ordinal),
-        Serial:    silk.Pointer(cab.Serial),
-    })
-    return
-}
-
 // TODO 电池需要做库存管理
 
 // Create 创建电池

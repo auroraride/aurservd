@@ -16,9 +16,11 @@ import (
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/battery"
+    "github.com/auroraride/aurservd/pkg/silk"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
+    "go.uber.org/zap"
     "math"
     "strconv"
     "time"
@@ -26,16 +28,60 @@ import (
 
 type batteryBmsService struct {
     *BaseService
+    orm *ent.BatteryClient
 }
 
 func NewBatteryBms(params ...any) *batteryBmsService {
     return &batteryBmsService{
         BaseService: newService(params...),
+        orm:         ent.Database.Battery,
     }
 }
 
 func (s *batteryBmsService) Sync(data []*batdef.BatteryFlow) {
+    // 获取对应的battery rpc
+    for _, bf := range data {
+        // 获取电柜信息
+        cab := NewCabinet().QueryOneSerial(bf.Serial)
+        if cab == nil {
+            zap.L().Error("未找到电柜信息: " + bf.Serial)
+            continue
+        }
+        if bf.In != nil {
+            // 放入电池
+            _, _ = s.SyncPutin(bf.In.SN, cab, bf.Ordinal)
+        }
+    }
+}
 
+// SyncPutout 同步消息 - 从电柜中取出
+func (s *batteryBmsService) SyncPutout(cab *ent.Cabinet, ordinal int) {
+    _ = s.orm.Update().Where(battery.CabinetID(cab.ID), battery.Ordinal(ordinal)).ClearCabinetID().ClearOrdinal().Exec(s.ctx)
+}
+
+// SyncPutin 同步消息 - 放入电柜中
+func (s *batteryBmsService) SyncPutin(sn string, cab *ent.Cabinet, ordinal int) (bat *ent.Battery, err error) {
+    bat, err = NewBattery().LoadOrCreate(sn, &model.BatteryInCabinet{
+        CabinetID: cab.ID,
+        Ordinal:   ordinal,
+    })
+    if err != nil {
+        return
+    }
+
+    // 移除该仓位其他电池
+    s.SyncPutout(cab, ordinal)
+
+    // 更新电池电柜信息
+    bat, err = bat.Update().SetCabinetID(cab.ID).SetOrdinal(ordinal).ClearRiderID().ClearSubscribeID().Save(s.ctx)
+
+    // 更新电池流转
+    go NewBatteryFlow().Create(bat, model.BatteryFlowCreateReq{
+        CabinetID: silk.Pointer(cab.ID),
+        Ordinal:   silk.Pointer(ordinal),
+        Serial:    silk.Pointer(cab.Serial),
+    })
+    return
 }
 
 func (s *batteryBmsService) Detail(req *model.BatterySNRequest) (detail *model.BatteryBmsDetail) {

@@ -64,9 +64,6 @@ func serverCommand() *cobra.Command {
             // 启动sync
             go sync.Run()
 
-            // 创建rpc客户端
-            go rpc.CreateClients()
-
             // 启动rpc服务端
             go rpc.Run()
 

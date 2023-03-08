@@ -446,6 +446,11 @@ var (
 				Columns: []*schema.Column{BatteryColumns[9]},
 			},
 			{
+				Name:    "battery_brand",
+				Unique:  false,
+				Columns: []*schema.Column{BatteryColumns[8]},
+			},
+			{
 				Name:    "index_battery_model",
 				Unique:  false,
 				Columns: []*schema.Column{BatteryColumns[10]},

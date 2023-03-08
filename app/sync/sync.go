@@ -27,7 +27,7 @@ func Run() {
             ar.Config.Environment,
             sync.StreamBatteryFlow,
             func(data []*batdef.BatteryFlow) {
-                service.NewBatteryBms().Sync(data)
+                go service.NewBatteryBms().Sync(data)
             },
         ).Run()
     }()
@@ -39,7 +39,7 @@ func Run() {
             ar.Config.Environment,
             sync.StreamExchange,
             func(data []*cabdef.ExchangeStepMessage) {
-                service.NewIntelligentCabinet().ExchangeStepSync(data)
+                go service.NewIntelligentCabinet().ExchangeStepSync(data)
             },
         ).Run()
     }()

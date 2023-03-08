@@ -69,7 +69,7 @@ func (s *cabinetService) QueryOne(id uint64) *ent.Cabinet {
 }
 
 func (s *cabinetService) QueryOneSerial(serial string) *ent.Cabinet {
-    serial = strings.ReplaceAll(serial, "https://www.yunfuture.cn/qrcode/cabinet?cabinetSN=", "")
+    // serial = strings.ReplaceAll(serial, "https://www.yunfuture.cn/qrcode/cabinet?cabinetSN=", "")
     cab, _ := s.orm.QueryNotDeleted().Where(cabinet.Serial(serial)).WithModels().First(s.ctx)
     return cab
 }
