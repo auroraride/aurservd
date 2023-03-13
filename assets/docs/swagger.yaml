@@ -1,5 +1,19 @@
 basePath: /
 definitions:
+  adapter.BatteryBrand:
+    enum:
+    - UNKNOWN
+    - XC
+    - TB
+    type: string
+    x-enum-comments:
+      BatteryBrandTB: 拓邦电池
+      BatteryBrandUnknown: 未知
+      BatteryBrandXC: 星创电池
+    x-enum-varnames:
+    - BatteryBrandUnknown
+    - BatteryBrandXC
+    - BatteryBrandTB
   adapter.CabinetBrand:
     enum:
     - UNKNOWN
@@ -1357,6 +1371,10 @@ definitions:
     type: object
   model.BatteryListRes:
     properties:
+      brand:
+        allOf:
+        - $ref: '#/definitions/adapter.BatteryBrand'
+        description: 品牌 TB:拓邦, XC:星创
       cabinet:
         allOf:
         - $ref: '#/definitions/model.CabinetBasicInfo'
@@ -2225,10 +2243,11 @@ definitions:
       brand:
         allOf:
         - $ref: '#/definitions/adapter.CabinetBrand'
-        description: '品牌: KAIXIN(凯信) YUNDONG(云动)'
+        description: '品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)'
         enum:
         - KAIXIN
         - YUNDONG
+        - TUOBANG
       id:
         type: integer
       name:
@@ -2287,10 +2306,11 @@ definitions:
       brand:
         allOf:
         - $ref: '#/definitions/adapter.CabinetBrand'
-        description: 品牌 KAIXIN(凯信) YUNDONG(云动)
+        description: 品牌 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
         enum:
         - KAIXIN
         - YUNDONG
+        - TUOBANG
       doors:
         description: 柜门数量
         type: integer
@@ -2364,7 +2384,7 @@ definitions:
       brand:
         allOf:
         - $ref: '#/definitions/adapter.CabinetBrand'
-        description: 品牌
+        description: 品牌 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
       emptyNum:
         description: 空仓数量
         type: integer
@@ -2408,10 +2428,11 @@ definitions:
       brand:
         allOf:
         - $ref: '#/definitions/adapter.CabinetBrand'
-        description: 品牌 KAIXIN(凯信) YUNDONG(云动)
+        description: 品牌 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
         enum:
         - KAIXIN
         - YUNDONG
+        - TUOBANG
       city:
         allOf:
         - $ref: '#/definitions/model.City'
@@ -2616,10 +2637,11 @@ definitions:
       brand:
         allOf:
         - $ref: '#/definitions/adapter.CabinetBrand'
-        description: 品牌 KAIXIN(凯信) YUNDONG(云动)
+        description: 品牌 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
         enum:
         - KAIXIN
         - YUNDONG
+        - TUOBANG
       city:
         allOf:
         - $ref: '#/definitions/model.City'
@@ -2683,10 +2705,11 @@ definitions:
       brand:
         allOf:
         - $ref: '#/definitions/adapter.CabinetBrand'
-        description: '品牌: KAIXIN(凯信) YUNDONG(云动)'
+        description: '品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)'
         enum:
         - KAIXIN
         - YUNDONG
+        - TUOBANG
       health:
         description: 在线状态 0离线 1在线 2故障
         type: integer

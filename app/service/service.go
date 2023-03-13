@@ -176,6 +176,8 @@ func (s *BaseService) GetCabinetAdapterUrl(br adapter.CabinetBrand, apiurl strin
         url = ar.Config.Sync.Kxcab.Api
     case adapter.CabinetBrandYundong:
         url = ar.Config.Sync.Ydcab.Api
+    case adapter.CabinetBrandTuobang:
+        url = ar.Config.Sync.Tbcab.Api
     default:
         return "", adapter.ErrorCabinetBrand
     }

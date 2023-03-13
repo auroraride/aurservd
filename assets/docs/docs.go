@@ -13787,6 +13787,24 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "adapter.BatteryBrand": {
+            "type": "string",
+            "enum": [
+                "UNKNOWN",
+                "XC",
+                "TB"
+            ],
+            "x-enum-comments": {
+                "BatteryBrandTB": "拓邦电池",
+                "BatteryBrandUnknown": "未知",
+                "BatteryBrandXC": "星创电池"
+            },
+            "x-enum-varnames": [
+                "BatteryBrandUnknown",
+                "BatteryBrandXC",
+                "BatteryBrandTB"
+            ]
+        },
         "adapter.CabinetBrand": {
             "type": "string",
             "enum": [
@@ -15724,6 +15742,14 @@ const docTemplate = `{
         "model.BatteryListRes": {
             "type": "object",
             "properties": {
+                "brand": {
+                    "description": "品牌 TB:拓邦, XC:星创",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/adapter.BatteryBrand"
+                        }
+                    ]
+                },
                 "cabinet": {
                     "description": "电柜",
                     "allOf": [
@@ -16964,10 +16990,11 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "brand": {
-                    "description": "品牌: KAIXIN(凯信) YUNDONG(云动)",
+                    "description": "品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
                     "enum": [
                         "KAIXIN",
-                        "YUNDONG"
+                        "YUNDONG",
+                        "TUOBANG"
                     ],
                     "allOf": [
                         {
@@ -17058,10 +17085,11 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "brand": {
-                    "description": "品牌 KAIXIN(凯信) YUNDONG(云动)",
+                    "description": "品牌 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
                     "enum": [
                         "KAIXIN",
-                        "YUNDONG"
+                        "YUNDONG",
+                        "TUOBANG"
                     ],
                     "allOf": [
                         {
@@ -17161,7 +17189,7 @@ const docTemplate = `{
                     }
                 },
                 "brand": {
-                    "description": "品牌",
+                    "description": "品牌 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
                     "allOf": [
                         {
                             "$ref": "#/definitions/adapter.CabinetBrand"
@@ -17229,10 +17257,11 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "brand": {
-                    "description": "品牌 KAIXIN(凯信) YUNDONG(云动)",
+                    "description": "品牌 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
                     "enum": [
                         "KAIXIN",
-                        "YUNDONG"
+                        "YUNDONG",
+                        "TUOBANG"
                     ],
                     "allOf": [
                         {
@@ -17530,10 +17559,11 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "brand": {
-                    "description": "品牌 KAIXIN(凯信) YUNDONG(云动)",
+                    "description": "品牌 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
                     "enum": [
                         "KAIXIN",
-                        "YUNDONG"
+                        "YUNDONG",
+                        "TUOBANG"
                     ],
                     "allOf": [
                         {
@@ -17623,10 +17653,11 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "brand": {
-                    "description": "品牌: KAIXIN(凯信) YUNDONG(云动)",
+                    "description": "品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
                     "enum": [
                         "KAIXIN",
-                        "YUNDONG"
+                        "YUNDONG",
+                        "TUOBANG"
                     ],
                     "allOf": [
                         {

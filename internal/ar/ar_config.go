@@ -79,6 +79,9 @@ type config struct {
         Ydcab struct {
             Api string
         }
+        Tbcab struct {
+            Api string
+        }
     }
 
     RpcServer map[string]string `koanf:"rpc-server"`

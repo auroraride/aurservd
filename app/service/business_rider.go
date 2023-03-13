@@ -562,6 +562,10 @@ func (s *businessRiderService) Active(sub *ent.Subscribe, allo *ent.Allocate) {
             of, _ := tx.OrderRefund.QueryNotDeleted().Where(orderrefund.OrderID(sub.InitialOrderID)).First(s.ctx)
             if of != nil {
                 err = tx.OrderRefund.UpdateOne(of).SetReason("激活订阅, 自动拒绝退款").SetStatus(model.OrderStatusRefundRefused).Exec(s.ctx)
+                if err != nil {
+                    return
+                }
+                err = tx.Order.UpdateOneID(of.OrderID).SetStatus(model.OrderStatusPaid).Exec(s.ctx)
             }
         }
     })

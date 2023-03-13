@@ -5,6 +5,8 @@
 
 package model
 
+import "github.com/auroraride/adapter"
+
 type BatteryCreateReq struct {
     SN     string `json:"sn" validate:"required" trans:"电池编号"`
     CityID uint64 `json:"cityId" validate:"required" trans:"城市"`
@@ -40,13 +42,14 @@ const (
 )
 
 type BatteryListRes struct {
-    ID      uint64            `json:"id"`
-    City    *City             `json:"city,omitempty"`    // 城市
-    Model   string            `json:"model"`             // 型号
-    Enable  bool              `json:"enable"`            // 是否启用
-    SN      string            `json:"sn"`                // 编号
-    Rider   *Rider            `json:"rider,omitempty"`   // 骑手
-    Cabinet *CabinetBasicInfo `json:"cabinet,omitempty"` // 电柜
+    ID      uint64               `json:"id"`
+    Brand   adapter.BatteryBrand `json:"brand"`             // 品牌 TB:拓邦, XC:星创
+    City    *City                `json:"city,omitempty"`    // 城市
+    Model   string               `json:"model"`             // 型号
+    Enable  bool                 `json:"enable"`            // 是否启用
+    SN      string               `json:"sn"`                // 编号
+    Rider   *Rider               `json:"rider,omitempty"`   // 骑手
+    Cabinet *CabinetBasicInfo    `json:"cabinet,omitempty"` // 电柜
     *BmsBattery
 }
 

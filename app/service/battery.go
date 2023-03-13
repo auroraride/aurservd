@@ -257,6 +257,7 @@ func (s *batteryService) List(req *model.BatteryListReq) (res *model.PaginationR
         snmap[item.Brand] = append(snmap[item.Brand], item.Sn)
         res = &model.BatteryListRes{
             ID:     item.ID,
+            Brand:  item.Brand,
             Model:  item.Model,
             Enable: item.Enable,
             SN:     item.Sn,
