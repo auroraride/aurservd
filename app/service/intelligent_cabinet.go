@@ -180,6 +180,7 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
             }
 
             // 记录用户取走的电池
+            // 判定第三步是否成功, 只要柜门开启就把电池绑定到骑手 - BY: 曹博文
             if result.Step == model.ExchangeStepOpenFull.Int() && before != nil {
                 putout = before.BatterySN
 

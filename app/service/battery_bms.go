@@ -20,6 +20,7 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
+    jsoniter "github.com/json-iterator/go"
     "go.uber.org/zap"
     "math"
     "strconv"
@@ -39,6 +40,11 @@ func NewBatteryBms(params ...any) *batteryBmsService {
 }
 
 func (s *batteryBmsService) Sync(data []*batdef.BatteryFlow) {
+    go func() {
+        bb, _ := jsoniter.Marshal(data)
+        zap.L().Info("电池同步消息", zap.ByteString("sync-battery", bb))
+    }()
+
     // 获取对应的battery rpc
     for _, bf := range data {
         // 获取电柜信息
@@ -50,6 +56,10 @@ func (s *batteryBmsService) Sync(data []*batdef.BatteryFlow) {
         if bf.In != nil {
             // 放入电池
             _, _ = s.SyncPutin(bf.In.SN, cab, bf.Ordinal)
+        }
+        if bf.Out != nil {
+            // 取出电池
+            s.SyncPutout(cab, bf.Ordinal)
         }
     }
 }
@@ -70,8 +80,17 @@ func (s *batteryBmsService) SyncPutin(sn string, cab *ent.Cabinet, ordinal int) 
         return
     }
 
+    if time.Now().Sub(bat.UpdatedAt).Seconds() < 20 {
+        rid := ""
+        if bat.RiderID != nil {
+            rid = strconv.FormatUint(*bat.RiderID, 10)
+        }
+        zap.L().Error("电池解绑过快, sn=" + bat.Sn + ", updated_at=" + bat.UpdatedAt.Format("2006-01-02 15:04:05.000") + ", rider_id=" + rid + ", serial=" + cab.Serial + ", ordinal=" + strconv.Itoa(ordinal))
+        return
+    }
+
     // 移除该仓位其他电池
-    s.SyncPutout(cab, ordinal)
+    // s.SyncPutout(cab, ordinal)
 
     // 更新电池电柜信息
     _, err = bat.Update().SetCabinetID(cab.ID).SetOrdinal(ordinal).ClearRiderID().ClearSubscribeID().Save(s.ctx)
@@ -95,7 +114,7 @@ func (s *batteryBmsService) Detail(req *model.BatterySNRequest) (detail *model.B
     }
     // 请求bms rpc
     r := rpc.BmsBatch(ab.Brand, &pb.BatteryBatchRequest{Sn: []string{req.SN}})
-    if r == nil {
+    if r == nil || r.Items[req.SN] == nil {
         snag.Panic("电池信息查询失败")
     }
 

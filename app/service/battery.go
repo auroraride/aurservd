@@ -333,6 +333,12 @@ func (s *batteryService) RiderBusiness(putin bool, sn string, r *model.Rider, ca
 
     go logging.NewOperateLog().
         SetOperate(op).
+        SetCabinet(&model.CabinetBasicInfo{
+            ID:     cab.ID,
+            Brand:  cab.Brand,
+            Serial: cab.Serial,
+            Name:   cab.Name,
+        }).
         SetRefManually(rider.Table, r.ID).
         SetDiff(before, after).
         Send()
