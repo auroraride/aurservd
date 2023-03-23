@@ -31,9 +31,9 @@ type Provider interface {
 }
 
 func Run() {
-    if ar.Config.Cabinet.Provider {
-        StartCabinetProvider(NewKaixin())
-    }
+    // if ar.Config.Cabinet.Provider {
+    //     StartCabinetProvider(NewKaixin())
+    // }
 }
 
 // cabinetCity 电柜城市获取
