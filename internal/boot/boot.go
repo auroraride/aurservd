@@ -15,7 +15,6 @@ import (
     "github.com/golang-module/carbon/v2"
     "io"
     "os"
-    "strings"
     "time"
 
     _ "github.com/auroraride/aurservd/app/permission"
@@ -42,9 +41,9 @@ func Bootstrap() {
 
     // 配置elk+zap
     log.New(&log.Config{
-        FormatJson:  true,
-        Stdout:      ar.Config.Debug,
-        Application: strings.ToLower(ar.Config.Application),
+        FormatJson: true,
+        Stdout:     ar.Config.Debug,
+        LoggerName: ar.Config.LoggerName,
         Writers: []io.Writer{
             log.NewRedisWriter(redis.NewClient(&redis.Options{})),
         },

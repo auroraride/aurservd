@@ -39,7 +39,7 @@ type PaginationQuery interface {
 }
 
 // ParsePaginationResponse 处理分页数据
-func ParsePaginationResponse[T any, K any](pq PaginationQuery, req PaginationReq, itemFunc func(item *K) T) (res *PaginationRes) {
+func ParsePaginationResponse[T any, K any](pq PaginationQuery, req PaginationReq, itemFunc func(item *K) T, params ...any) (res *PaginationRes) {
     res = new(PaginationRes)
     res.Pagination = pq.PaginationResult(req)
 
@@ -48,6 +48,14 @@ func ParsePaginationResponse[T any, K any](pq PaginationQuery, req PaginationReq
     if qr != nil {
         items = qr.([]*K)
     }
+
+    for _, param := range params {
+        switch f := param.(type) {
+        case func([]*K):
+            f(items)
+        }
+    }
+
     out := make([]T, len(items))
     for i, item := range items {
         out[i] = itemFunc(item)

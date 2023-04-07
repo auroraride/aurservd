@@ -562,6 +562,10 @@ func (s *businessRiderService) Active(sub *ent.Subscribe, allo *ent.Allocate) {
             of, _ := tx.OrderRefund.QueryNotDeleted().Where(orderrefund.OrderID(sub.InitialOrderID)).First(s.ctx)
             if of != nil {
                 err = tx.OrderRefund.UpdateOne(of).SetReason("激活订阅, 自动拒绝退款").SetStatus(model.OrderStatusRefundRefused).Exec(s.ctx)
+                if err != nil {
+                    return
+                }
+                err = tx.Order.UpdateOneID(of.OrderID).SetStatus(model.OrderStatusPaid).Exec(s.ctx)
             }
         }
     })
@@ -632,6 +636,12 @@ func (s *businessRiderService) UnSubscribe(subscribeID uint64, fns ...func(sub *
         if sub.EbikeID != nil {
             // 删除电车所属
             err = tx.Ebike.UpdateOneID(*sub.EbikeID).ClearRiderID().SetStatus(model.EbikeStatusInStock).SetNillableStoreID(s.storeID).Exec(s.ctx)
+        }
+
+        // 删除电池
+        if bat, _ := sub.QueryBattery().First(s.ctx); bat != nil {
+            err = NewBattery().Unallocate(bat)
+            snag.PanicIfError(err)
         }
     })
 

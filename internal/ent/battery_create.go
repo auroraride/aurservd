@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/adapter"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/batteryflow"
@@ -158,6 +159,20 @@ func (bc *BatteryCreate) SetSn(s string) *BatteryCreate {
 	return bc
 }
 
+// SetBrand sets the "brand" field.
+func (bc *BatteryCreate) SetBrand(ab adapter.BatteryBrand) *BatteryCreate {
+	bc.mutation.SetBrand(ab)
+	return bc
+}
+
+// SetNillableBrand sets the "brand" field if the given value is not nil.
+func (bc *BatteryCreate) SetNillableBrand(ab *adapter.BatteryBrand) *BatteryCreate {
+	if ab != nil {
+		bc.SetBrand(*ab)
+	}
+	return bc
+}
+
 // SetEnable sets the "enable" field.
 func (bc *BatteryCreate) SetEnable(b bool) *BatteryCreate {
 	bc.mutation.SetEnable(b)
@@ -278,6 +293,10 @@ func (bc *BatteryCreate) defaults() error {
 		v := battery.DefaultUpdatedAt()
 		bc.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := bc.mutation.Brand(); !ok {
+		v := battery.DefaultBrand
+		bc.mutation.SetBrand(v)
+	}
 	if _, ok := bc.mutation.Enable(); !ok {
 		v := battery.DefaultEnable
 		bc.mutation.SetEnable(v)
@@ -295,6 +314,9 @@ func (bc *BatteryCreate) check() error {
 	}
 	if _, ok := bc.mutation.Sn(); !ok {
 		return &ValidationError{Name: "sn", err: errors.New(`ent: missing required field "Battery.sn"`)}
+	}
+	if _, ok := bc.mutation.Brand(); !ok {
+		return &ValidationError{Name: "brand", err: errors.New(`ent: missing required field "Battery.brand"`)}
 	}
 	if _, ok := bc.mutation.Enable(); !ok {
 		return &ValidationError{Name: "enable", err: errors.New(`ent: missing required field "Battery.enable"`)}
@@ -356,6 +378,10 @@ func (bc *BatteryCreate) createSpec() (*Battery, *sqlgraph.CreateSpec) {
 	if value, ok := bc.mutation.Sn(); ok {
 		_spec.SetField(battery.FieldSn, field.TypeString, value)
 		_node.Sn = value
+	}
+	if value, ok := bc.mutation.Brand(); ok {
+		_spec.SetField(battery.FieldBrand, field.TypeOther, value)
+		_node.Brand = value
 	}
 	if value, ok := bc.mutation.Enable(); ok {
 		_spec.SetField(battery.FieldEnable, field.TypeBool, value)
@@ -670,6 +696,18 @@ func (u *BatteryUpsert) UpdateSn() *BatteryUpsert {
 	return u
 }
 
+// SetBrand sets the "brand" field.
+func (u *BatteryUpsert) SetBrand(v adapter.BatteryBrand) *BatteryUpsert {
+	u.Set(battery.FieldBrand, v)
+	return u
+}
+
+// UpdateBrand sets the "brand" field to the value that was provided on create.
+func (u *BatteryUpsert) UpdateBrand() *BatteryUpsert {
+	u.SetExcluded(battery.FieldBrand)
+	return u
+}
+
 // SetEnable sets the "enable" field.
 func (u *BatteryUpsert) SetEnable(v bool) *BatteryUpsert {
 	u.Set(battery.FieldEnable, v)
@@ -938,6 +976,20 @@ func (u *BatteryUpsertOne) SetSn(v string) *BatteryUpsertOne {
 func (u *BatteryUpsertOne) UpdateSn() *BatteryUpsertOne {
 	return u.Update(func(s *BatteryUpsert) {
 		s.UpdateSn()
+	})
+}
+
+// SetBrand sets the "brand" field.
+func (u *BatteryUpsertOne) SetBrand(v adapter.BatteryBrand) *BatteryUpsertOne {
+	return u.Update(func(s *BatteryUpsert) {
+		s.SetBrand(v)
+	})
+}
+
+// UpdateBrand sets the "brand" field to the value that was provided on create.
+func (u *BatteryUpsertOne) UpdateBrand() *BatteryUpsertOne {
+	return u.Update(func(s *BatteryUpsert) {
+		s.UpdateBrand()
 	})
 }
 
@@ -1379,6 +1431,20 @@ func (u *BatteryUpsertBulk) SetSn(v string) *BatteryUpsertBulk {
 func (u *BatteryUpsertBulk) UpdateSn() *BatteryUpsertBulk {
 	return u.Update(func(s *BatteryUpsert) {
 		s.UpdateSn()
+	})
+}
+
+// SetBrand sets the "brand" field.
+func (u *BatteryUpsertBulk) SetBrand(v adapter.BatteryBrand) *BatteryUpsertBulk {
+	return u.Update(func(s *BatteryUpsert) {
+		s.SetBrand(v)
+	})
+}
+
+// UpdateBrand sets the "brand" field to the value that was provided on create.
+func (u *BatteryUpsertBulk) UpdateBrand() *BatteryUpsertBulk {
+	return u.Update(func(s *BatteryUpsert) {
+		s.UpdateBrand()
 	})
 }
 

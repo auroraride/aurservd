@@ -166,10 +166,10 @@ func (*battery) Unbind(c echo.Context) (err error) {
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Param        sn  path  string  true  "电池编号"
-// @Success      200  {object}  model.XcBatteryDetail  "请求成功"
+// @Success      200  {object}  model.BatteryBmsDetail  "请求成功"
 func (*battery) Detail(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.XcBatterySNRequest](c)
-    return ctx.SendResponse(service.NewBatteryXc().Detail(req))
+    ctx, req := app.ManagerContextAndBinding[model.BatterySNRequest](c)
+    return ctx.SendResponse(service.NewBatteryBms().Detail(req))
 }
 
 // Statistics
@@ -181,10 +181,10 @@ func (*battery) Detail(c echo.Context) (err error) {
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Param        sn  path  string  true  "电池编号"
-// @Success      200  {object}  model.XcBatteryStatistics  "请求成功"
+// @Success      200  {object}  model.BatteryStatistics  "请求成功"
 func (*battery) Statistics(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.XcBatterySNRequest](c)
-    return ctx.SendResponse(service.NewBatteryXc().Statistics(req))
+    ctx, req := app.ManagerContextAndBinding[model.BatterySNRequest](c)
+    return ctx.SendResponse(service.NewBatteryBms().Statistics(req))
 }
 
 // Position
@@ -198,10 +198,10 @@ func (*battery) Statistics(c echo.Context) (err error) {
 // @Param        sn  path  string  true  "电池编号"
 // @Param        start  query  string  false  "开始时间 (精确到秒, 默认6小时前, 格式为: yyyy-mm-dd hh:mm:ss)"
 // @Param        end  query  string  false  "结束时间 (精确到秒, 默认当前时间, 格式为: yyyy-mm-dd hh:mm:ss)"
-// @Success      200  {object}  model.XcBatteryPositionRes  "请求成功"
+// @Success      200  {object}  model.BatteryPositionRes  "请求成功"
 func (*battery) Position(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.XcBatteryPositionReq](c)
-    return ctx.SendResponse(service.NewBatteryXc().Position(req))
+    ctx, req := app.ManagerContextAndBinding[model.BatteryPositionReq](c)
+    return ctx.SendResponse(service.NewBatteryBms().Position(req))
 }
 
 // Fault
@@ -212,9 +212,9 @@ func (*battery) Position(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        query  query  model.XcBatteryFaultReq  false  "请求参数"
-// @Success      200 {object} model.PaginationRes{items=[]model.XcBatteryFaultRes} "请求成功"
+// @Param        query  query  model.BatteryFaultReq  false  "请求参数"
+// @Success      200 {object} model.PaginationRes{items=[]model.BatteryFaultRes} "请求成功"
 func (*battery) Fault(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.XcBatteryFaultReq](c)
-    return ctx.SendResponse(service.NewBatteryXc().FaultList(req))
+    ctx, req := app.ManagerContextAndBinding[model.BatteryFaultReq](c)
+    return ctx.SendResponse(service.NewBatteryBms().FaultList(req))
 }

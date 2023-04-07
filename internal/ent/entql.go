@@ -217,6 +217,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			battery.FieldCabinetID:    {Type: field.TypeUint64, Column: battery.FieldCabinetID},
 			battery.FieldSubscribeID:  {Type: field.TypeUint64, Column: battery.FieldSubscribeID},
 			battery.FieldSn:           {Type: field.TypeString, Column: battery.FieldSn},
+			battery.FieldBrand:        {Type: field.TypeOther, Column: battery.FieldBrand},
 			battery.FieldEnable:       {Type: field.TypeBool, Column: battery.FieldEnable},
 			battery.FieldModel:        {Type: field.TypeString, Column: battery.FieldModel},
 			battery.FieldOrdinal:      {Type: field.TypeInt, Column: battery.FieldOrdinal},
@@ -4990,6 +4991,11 @@ func (f *BatteryFilter) WhereSubscribeID(p entql.Uint64P) {
 // WhereSn applies the entql string predicate on the sn field.
 func (f *BatteryFilter) WhereSn(p entql.StringP) {
 	f.Where(p.Field(battery.FieldSn))
+}
+
+// WhereBrand applies the entql other predicate on the brand field.
+func (f *BatteryFilter) WhereBrand(p entql.OtherP) {
+	f.Where(p.Field(battery.FieldBrand))
 }
 
 // WhereEnable applies the entql bool predicate on the enable field.

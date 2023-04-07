@@ -102,39 +102,7 @@ func (s *batteryService) LoadOrCreate(sn string, params ...any) (bat *ent.Batter
         return nil, adapter.ErrorBatterySN
     }
 
-    return s.orm.Create().SetModel(ab.Model).SetSn(sn).SetNillableCabinetID(cabID).SetNillableOrdinal(ordinal).Save(s.ctx)
-}
-
-// SyncPutout 同步消息 - 从电柜中取出
-func (s *batteryService) SyncPutout(cabinetID uint64, ordinal int) {
-    _ = s.orm.Update().Where(battery.CabinetID(cabinetID), battery.Ordinal(ordinal)).ClearCabinetID().ClearOrdinal().Exec(s.ctx)
-}
-
-// SyncPutin 同步消息 - 放入电柜中
-func (s *batteryService) SyncPutin(sn, serial string, cabinetID uint64, ordinal int, old model.CabinetBins) (bat *ent.Battery, err error) {
-    bat, err = s.LoadOrCreate(sn, &model.BatteryInCabinet{
-        CabinetID: cabinetID,
-        Ordinal:   ordinal,
-    })
-    if err != nil {
-        return
-    }
-
-    // 移除别的电池信息
-    s.SyncPutout(cabinetID, ordinal)
-
-    // 更新电池电柜信息
-    bat, err = bat.Update().SetCabinetID(cabinetID).SetOrdinal(ordinal).ClearRiderID().ClearSubscribeID().Save(s.ctx)
-
-    // TODO 更新电池流转
-    // go NewBatteryFlow().Create(model.BatteryFlowCreateReq{
-    //     SN:        bat.Sn,
-    //     BatteryID: bat.ID,
-    //     CabinetID: silk.Pointer(cabinetID),
-    //     Ordinal:   silk.Pointer(ordinal),
-    //     Serial:    silk.Pointer(serial),
-    // })
-    return
+    return s.orm.Create().SetModel(ab.Model).SetSn(sn).SetBrand(ab.Brand).SetNillableCabinetID(cabID).SetNillableOrdinal(ordinal).Save(s.ctx)
 }
 
 // TODO 电池需要做库存管理
@@ -153,6 +121,7 @@ func (s *batteryService) Create(req *model.BatteryCreateReq) {
     }
     _, err = s.orm.Create().
         SetSn(req.SN).
+        SetBrand(ab.Brand).
         SetModel(ab.Model).
         SetEnable(enable).
         SetCityID(req.CityID).
@@ -214,7 +183,7 @@ func (s *batteryService) BatchCreate(c echo.Context) []string {
             continue
         }
 
-        _, err = creator.SetModel(ab.Model).SetSn(sn).Save(s.ctx)
+        _, err = creator.SetModel(ab.Model).SetBrand(ab.Brand).SetSn(sn).Save(s.ctx)
         if err != nil {
             failed = append(failed, fmt.Sprintf("%s保存失败: %v", sn, err))
         }
@@ -283,11 +252,12 @@ func (s *batteryService) listFilter(req model.BatteryFilter) (q *ent.BatteryQuer
 
 func (s *batteryService) List(req *model.BatteryListReq) (res *model.PaginationRes) {
     q, _ := s.listFilter(req.BatteryFilter)
-    var sn []string
+    snmap := make(map[adapter.BatteryBrand][]string)
     res = model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Battery) (res *model.BatteryListRes) {
-        sn = append(sn, item.Sn)
+        snmap[item.Brand] = append(snmap[item.Brand], item.Sn)
         res = &model.BatteryListRes{
             ID:     item.ID,
+            Brand:  item.Brand,
             Model:  item.Model,
             Enable: item.Enable,
             SN:     item.Sn,
@@ -322,17 +292,23 @@ func (s *batteryService) List(req *model.BatteryListReq) (res *model.PaginationR
         return
     })
 
-    // 请求xcbms rpc
-    r, _ := rpc.XcBmsBatch(s.ctx, &pb.BatteryBatchRequest{Sn: sn})
+    // 请求bms rpc
+    result := make(map[string]*pb.BatteryItem)
+    for br, list := range snmap {
+        r := rpc.BmsBatch(br, &pb.BatteryBatchRequest{Sn: list})
+        if r == nil {
+            continue
+        }
 
-    if r == nil {
-        return
+        for _, rb := range r.Items {
+            result[rb.Sn] = rb
+        }
     }
 
     for _, data := range res.Items.([]*model.BatteryListRes) {
-        if rb, ok := r.Items[data.SN]; ok {
+        if rb, ok := result[data.SN]; ok {
             if len(rb.Heartbeats) > 0 {
-                data.XcBmsBattery = model.NewXcBmsBattery(rb.Heartbeats[0])
+                data.BmsBattery = model.NewBmsBattery(rb.Heartbeats[0])
             }
         }
     }
@@ -357,6 +333,12 @@ func (s *batteryService) RiderBusiness(putin bool, sn string, r *model.Rider, ca
 
     go logging.NewOperateLog().
         SetOperate(op).
+        SetCabinet(&model.CabinetBasicInfo{
+            ID:     cab.ID,
+            Brand:  cab.Brand,
+            Serial: cab.Serial,
+            Name:   cab.Name,
+        }).
         SetRefManually(rider.Table, r.ID).
         SetDiff(before, after).
         Send()
@@ -454,9 +436,7 @@ func (s *batteryService) Allocate(buo *ent.BatteryUpdateOne, bat *ent.Battery, s
 
     // 更新流转
     if ignoreError || err == nil {
-        go NewBatteryFlow().Create(model.BatteryFlowCreateReq{
-            SN:          bat.Sn,
-            BatteryID:   bat.ID,
+        go NewBatteryFlow().Create(bat, model.BatteryFlowCreateReq{
             RiderID:     silk.Pointer(sub.RiderID),
             SubscribeID: silk.Pointer(sub.ID),
         })

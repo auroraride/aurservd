@@ -432,6 +432,8 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq) (i
     }
 
     // 电柜
+    // 同步电柜信息
+    NewCabinet().SyncCabinets(cabinets)
     for _, c := range cabinets {
         // 预约检查 = 非预约筛选 或 电柜可满足预约并且如果订阅非空则电柜电池型号满足订阅型号
         // resvcheck := req.Business == "" || (c.ReserveAble(business.Type(req.Business), rm[c.ID]) && (sub == nil || NewCabinet().ModelInclude(c, sub.Model)))
@@ -618,6 +620,8 @@ func (s *branchService) Facility(req *model.BranchFacilityReq) (data model.Branc
             Name:   sto.Name,
         }
     } else {
+        // 同步电柜信息
+        NewCabinet().SyncCabinets(cabs)
         // 订阅
         var sub *ent.Subscribe
         // 预约
@@ -666,7 +670,6 @@ func (s *branchService) Facility(req *model.BranchFacilityReq) (data model.Branc
             }
 
             // 获取仓位详情
-            // TODO 替换
             for bi, bin := range cab.Bin {
                 // 锁仓
                 if !bin.DoorHealth {

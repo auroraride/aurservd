@@ -162,8 +162,12 @@ func init() {
 	battery.DefaultUpdatedAt = batteryDescUpdatedAt.Default.(func() time.Time)
 	// battery.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	battery.UpdateDefaultUpdatedAt = batteryDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// batteryDescBrand is the schema descriptor for brand field.
+	batteryDescBrand := batteryFields[4].Descriptor()
+	// battery.DefaultBrand holds the default value on creation for the brand field.
+	battery.DefaultBrand = batteryDescBrand.Default.(adapter.BatteryBrand)
 	// batteryDescEnable is the schema descriptor for enable field.
-	batteryDescEnable := batteryFields[4].Descriptor()
+	batteryDescEnable := batteryFields[5].Descriptor()
 	// battery.DefaultEnable holds the default value on creation for the enable field.
 	battery.DefaultEnable = batteryDescEnable.Default.(bool)
 	batteryflowMixin := schema.BatteryFlow{}.Mixin()

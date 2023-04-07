@@ -379,6 +379,7 @@ var (
 		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
 		{Name: "sn", Type: field.TypeString, Unique: true, Comment: "电池编号"},
+		{Name: "brand", Type: field.TypeOther, Comment: "品牌", SchemaType: map[string]string{"postgres": "character varying"}},
 		{Name: "enable", Type: field.TypeBool, Comment: "是否启用", Default: true},
 		{Name: "model", Type: field.TypeString, Comment: "电池型号"},
 		{Name: "ordinal", Type: field.TypeInt, Nullable: true, Comment: "所在智能柜仓位序号"},
@@ -395,25 +396,25 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "battery_city_city",
-				Columns:    []*schema.Column{BatteryColumns[11]},
+				Columns:    []*schema.Column{BatteryColumns[12]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "battery_cabinet_batteries",
-				Columns:    []*schema.Column{BatteryColumns[12]},
+				Columns:    []*schema.Column{BatteryColumns[13]},
 				RefColumns: []*schema.Column{CabinetColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "battery_rider_battery",
-				Columns:    []*schema.Column{BatteryColumns[13]},
+				Columns:    []*schema.Column{BatteryColumns[14]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "battery_subscribe_battery",
-				Columns:    []*schema.Column{BatteryColumns[14]},
+				Columns:    []*schema.Column{BatteryColumns[15]},
 				RefColumns: []*schema.Column{SubscribeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -432,22 +433,27 @@ var (
 			{
 				Name:    "battery_city_id",
 				Unique:  false,
-				Columns: []*schema.Column{BatteryColumns[11]},
+				Columns: []*schema.Column{BatteryColumns[12]},
 			},
 			{
 				Name:    "battery_cabinet_id_ordinal",
 				Unique:  false,
-				Columns: []*schema.Column{BatteryColumns[12], BatteryColumns[10]},
+				Columns: []*schema.Column{BatteryColumns[13], BatteryColumns[11]},
 			},
 			{
 				Name:    "battery_enable",
+				Unique:  false,
+				Columns: []*schema.Column{BatteryColumns[9]},
+			},
+			{
+				Name:    "battery_brand",
 				Unique:  false,
 				Columns: []*schema.Column{BatteryColumns[8]},
 			},
 			{
 				Name:    "index_battery_model",
 				Unique:  false,
-				Columns: []*schema.Column{BatteryColumns[9]},
+				Columns: []*schema.Column{BatteryColumns[10]},
 			},
 			{
 				Name:    "battery_sn",
@@ -471,7 +477,7 @@ var (
 		{Name: "soc", Type: field.TypeFloat64, Comment: "容量, -1代表未查询到", Default: -1},
 		{Name: "serial", Type: field.TypeString, Nullable: true, Comment: "电柜编号"},
 		{Name: "ordinal", Type: field.TypeInt, Nullable: true, Comment: "仓位序号, 从1开始"},
-		{Name: "geom", Type: field.TypeOther, Comment: "坐标", SchemaType: map[string]string{"postgres": "geometry(POINT, 4326)"}},
+		{Name: "geom", Type: field.TypeOther, Nullable: true, Comment: "坐标", SchemaType: map[string]string{"postgres": "geometry(POINT, 4326)"}},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "备注信息"},
 		{Name: "battery_id", Type: field.TypeUint64, Comment: "电池ID"},
 		{Name: "subscribe_id", Type: field.TypeUint64, Nullable: true},

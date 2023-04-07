@@ -68,6 +68,7 @@ func (BatteryFlow) Fields() []ent.Field {
         field.String("serial").Optional().Comment("电柜编号"),
         field.Int("ordinal").Optional().Comment("仓位序号, 从1开始"),
         field.Other("geom", &adapter.Geometry{}).
+            Optional().
             SchemaType(map[string]string{dialect.Postgres: "geometry(POINT, 4326)"}).
             Comment("坐标"),
         field.String("remark").Optional().Nillable().Comment("备注信息"),

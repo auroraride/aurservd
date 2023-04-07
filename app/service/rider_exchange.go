@@ -80,7 +80,7 @@ func (s *riderExchangeService) GetProcess(req *model.RiderCabinetOperateInfoReq)
     if cab.UsingMicroService() {
         // 判定是否可以换电
         NewIntelligentCabinet(s.rider).BusinessCensorX(adapter.BusinessExchange, sub, cab)
-        uid, info = NewIntelligentCabinet(s.rider).ExchangeUsable(sub.Model, cab.Serial, cab.Brand)
+        uid, info = NewIntelligentCabinet(s.rider).ExchangeUsable(sub.Model, cab)
     } else {
         // 更新一次电柜状态
         err := cs.UpdateStatus(cab)

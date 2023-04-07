@@ -98,8 +98,6 @@ func (*cabinet) Detail(c echo.Context) (err error) {
     return ctx.SendResponse(service.NewCabinet().DetailFromID(req.ID))
 }
 
-// TODO 非维护状态禁止操作柜门
-
 // DoorOperate
 // @ID           CabinetDoorOperate
 // @Router       /manager/v1/cabinet/door-operate [POST]

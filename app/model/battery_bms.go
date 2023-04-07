@@ -9,11 +9,10 @@ import (
     "github.com/auroraride/adapter"
     "github.com/auroraride/adapter/defs/xcdef"
     "github.com/auroraride/adapter/rpc/pb"
-    "github.com/auroraride/adapter/rpc/pb/xcpb"
     "github.com/auroraride/aurservd/pkg/silk"
 )
 
-type XcBmsBattery struct {
+type BmsBattery struct {
     Status BatteryStatus `json:"status"` // 状态, 0:静置 1:充电 2:放电 3:异常(此时faults字段存在)
     Soc    uint32        `json:"soc"`    // 剩余容量, 单位1%
 
@@ -22,8 +21,8 @@ type XcBmsBattery struct {
     Faults    *xcdef.Faults `json:"faults,omitempty"` // 故障列表, `0`:总压低, `1`:总压高, `2`:单体低, `3`:单体高, `6`:放电过流, `7`:充电过流, `8`:SOC低, `11`:充电高温, `12`:充电低温, `13`:放电高温, `14`:放电低温, `15`:短路, `16`:MOS高温
 }
 
-func NewXcBmsBattery(hb *xcpb.Heartbeat) (item *XcBmsBattery) {
-    item = new(XcBmsBattery)
+func NewBmsBattery(hb *pb.BatteryHeartbeat) (item *BmsBattery) {
+    item = new(BmsBattery)
 
     item.Soc = hb.Soc
 
@@ -53,12 +52,12 @@ func NewXcBmsBattery(hb *xcpb.Heartbeat) (item *XcBmsBattery) {
     return
 }
 
-type XcBatterySNRequest struct {
+type BatterySNRequest struct {
     SN string `json:"sn" param:"sn" validate:"required"` // 电池编码
 }
 
-type XcBatteryDetail struct {
-    *XcBmsBattery
+type BatteryBmsDetail struct {
+    *BmsBattery
     // 电池编号
     Sn string `json:"sn,omitempty"`
     // 入库时间
@@ -139,7 +138,7 @@ type XcBatteryDetail struct {
     FaultsOverview []*pb.BatteryFaultOverview `json:"faultsOverview"`
 }
 
-type XcBatteryStatistics struct {
+type BatteryStatistics struct {
     DateHour    []string  `json:"dateHour,omitempty"`    // 整点
     Voltage     []float64 `json:"voltage,omitempty"`     // 电压(V)
     BatTemp     []float64 `json:"batTemp,omitempty"`     // 电池温度(℃)
@@ -151,20 +150,20 @@ type XcBatteryStatistics struct {
     DisCharging []float64 `json:"disCharging,omitempty"` // 放电电流(A)
 }
 
-type XcBatteryPositionReq struct {
+type BatteryPositionReq struct {
     SN    string `json:"sn" param:"sn" validate:"required"` // 电池编码
     Start string `json:"start" query:"start"`               // 开始时间 (精确到秒, 格式为: yyyy-mm-dd hh:mm:ss, 默认6小时前)
     End   string `json:"end" query:"end"`                   // 结束时间 (精确到秒, 格式为: yyyy-mm-dd hh:mm:ss, 默认当前时间)
 }
 
-type XcBatteryPositionRes struct {
-    Start      string                 `json:"start,omitempty"`      // 开始时间
-    End        string                 `json:"end,omitempty"`        // 结束时间
-    Stationary []*XcBatteryStationary `json:"stationary,omitempty"` // 静止位置信息
-    Positions  []*XcBatteryPosition   `json:"positions,omitempty"`  // 所有位置信息
+type BatteryPositionRes struct {
+    Start      string               `json:"start,omitempty"`      // 开始时间
+    End        string               `json:"end,omitempty"`        // 结束时间
+    Stationary []*BatteryStationary `json:"stationary,omitempty"` // 静止位置信息
+    Positions  []*BatteryPosition   `json:"positions,omitempty"`  // 所有位置信息
 }
 
-type XcBatteryStationary struct {
+type BatteryStationary struct {
     InCabinet bool    `json:"inCabinet,omitempty"` // 是否在电柜中
     Duration  int64   `json:"duration,omitempty"`  // 停留时间 (秒)
     StartAt   string  `json:"startAt,omitempty"`   // 开始时间 (格式为: yyyy-mm-dd hh:mm:ss)
@@ -175,7 +174,7 @@ type XcBatteryStationary struct {
     Lat       float64 `json:"lat,omitempty"`       // 纬度
 }
 
-type XcBatteryPosition struct {
+type BatteryPosition struct {
     InCabinet  bool    `json:"inCabinet,omitempty"`  // 是否在电柜中
     Stationary bool    `json:"stationary,omitempty"` // 是否停留
     Soc        uint32  `json:"soc,omitempty"`        // 电量
@@ -186,7 +185,7 @@ type XcBatteryPosition struct {
     At         string  `json:"at,omitempty"`         // 时间 (格式为: yyyy-mm-dd hh:mm:ss)
 }
 
-type XcBatteryFaultReq struct {
+type BatteryFaultReq struct {
     PaginationReq
     SN    *string              `json:"sn" query:"sn"`       // 电池编号
     Start string               `json:"start" query:"start"` // 开始日期 (格式为: yyyy-mm-dd)
@@ -194,7 +193,7 @@ type XcBatteryFaultReq struct {
     Fault *pb.BatteryFaultType `json:"fault" query:"fault"` // 选择故障, `0`:总压低, `1`:总压高, `2`:单体低, `3`:单体高, `6`:放电过流, `7`:充电过流, `8`:SOC低, `11`:充电高温, `12`:充电低温, `13`:放电高温, `14`:放电低温, `15`:短路, `16`:MOS高温
 }
 
-type XcBatteryFaultRes struct {
+type BatteryFaultRes struct {
     Sn      string              `json:"sn,omitempty"`
     Fault   pb.BatteryFaultType `json:"fault,omitempty"`
     BeginAt string              `json:"begin_at,omitempty"`

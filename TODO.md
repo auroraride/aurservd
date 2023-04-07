@@ -51,11 +51,15 @@
 - [ ] 绑定电池时, 需要进行城市限定, 并且, 在电柜中的电池无法直接从后台绑定
 - [ ] 远程请求最新电柜数据
 - [ ] 仓控或其他电柜数据请求时, 直接请求新的智能柜系统, 抛弃老的电柜系统. 例如: 电柜列表中不显示智能柜, 智能柜列表管理使用新的系统
-- [ ] 为啥有两条寄存信息 `subscribe_id = 115964117567|124554055925`
+- [ ] 为啥有两条寄存信息 `subscribe_id = 115964117567|124554055925` / 为啥有重复的业务记录和出入库记录 `stock.id = 141733947759, 141733947758`
 - [ ] 可配置：按城市自然日（或小时）配置用户一定时间段内（动态）换电次数若大于等于某个阈值，则使用不同的换电间隔, 可给某个用户单独配置换电间隔阶梯
 - [x] 删除MongoDB
 - [ ] 按条件撤回已发送优惠券
 - [ ] 电池流转记录存储在电池微服务中, (主业务服务和电柜服务告知电池服务当前归属人, 电池存储心跳数据时记录归属人)
+- [ ] 后台新增操作: 换电立即超时
+- [ ] 电柜未操作开门, 电池失联立即锁仓
+- [ ] 根据身份证查找所有的订阅情况, 并可操作将其标记为删除
+
 
 ```sql
 INSERT INTO "public"."subscribe_pause"("id","created_at","updated_at","deleted_at","creator","last_modifier","remark","start_at","end_at","days","subscribe_id","rider_id","employee_id","end_employee_id","end_modifier","city_id","store_id","end_store_id","cabinet_id","end_cabinet_id","overdue_days","pause_overdue","suspend_days")

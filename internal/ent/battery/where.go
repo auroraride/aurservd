@@ -7,6 +7,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/auroraride/adapter"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
@@ -98,6 +99,11 @@ func SubscribeID(v uint64) predicate.Battery {
 // Sn applies equality check predicate on the "sn" field. It's identical to SnEQ.
 func Sn(v string) predicate.Battery {
 	return predicate.Battery(sql.FieldEQ(FieldSn, v))
+}
+
+// Brand applies equality check predicate on the "brand" field. It's identical to BrandEQ.
+func Brand(v adapter.BatteryBrand) predicate.Battery {
+	return predicate.Battery(sql.FieldEQ(FieldBrand, v))
 }
 
 // Enable applies equality check predicate on the "enable" field. It's identical to EnableEQ.
@@ -523,6 +529,46 @@ func SnEqualFold(v string) predicate.Battery {
 // SnContainsFold applies the ContainsFold predicate on the "sn" field.
 func SnContainsFold(v string) predicate.Battery {
 	return predicate.Battery(sql.FieldContainsFold(FieldSn, v))
+}
+
+// BrandEQ applies the EQ predicate on the "brand" field.
+func BrandEQ(v adapter.BatteryBrand) predicate.Battery {
+	return predicate.Battery(sql.FieldEQ(FieldBrand, v))
+}
+
+// BrandNEQ applies the NEQ predicate on the "brand" field.
+func BrandNEQ(v adapter.BatteryBrand) predicate.Battery {
+	return predicate.Battery(sql.FieldNEQ(FieldBrand, v))
+}
+
+// BrandIn applies the In predicate on the "brand" field.
+func BrandIn(vs ...adapter.BatteryBrand) predicate.Battery {
+	return predicate.Battery(sql.FieldIn(FieldBrand, vs...))
+}
+
+// BrandNotIn applies the NotIn predicate on the "brand" field.
+func BrandNotIn(vs ...adapter.BatteryBrand) predicate.Battery {
+	return predicate.Battery(sql.FieldNotIn(FieldBrand, vs...))
+}
+
+// BrandGT applies the GT predicate on the "brand" field.
+func BrandGT(v adapter.BatteryBrand) predicate.Battery {
+	return predicate.Battery(sql.FieldGT(FieldBrand, v))
+}
+
+// BrandGTE applies the GTE predicate on the "brand" field.
+func BrandGTE(v adapter.BatteryBrand) predicate.Battery {
+	return predicate.Battery(sql.FieldGTE(FieldBrand, v))
+}
+
+// BrandLT applies the LT predicate on the "brand" field.
+func BrandLT(v adapter.BatteryBrand) predicate.Battery {
+	return predicate.Battery(sql.FieldLT(FieldBrand, v))
+}
+
+// BrandLTE applies the LTE predicate on the "brand" field.
+func BrandLTE(v adapter.BatteryBrand) predicate.Battery {
+	return predicate.Battery(sql.FieldLTE(FieldBrand, v))
 }
 
 // EnableEQ applies the EQ predicate on the "enable" field.

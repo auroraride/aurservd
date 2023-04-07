@@ -18,7 +18,7 @@ const (
     SettingRescueReasonKey           = "RESCUE_REASON"            // 救援原因
     SettingRescueFeeKey              = "RESCUE_FEE"               // 救援费用
     SettingReminderKey               = "REMINDER"                 // 催费通知
-    SettingBatteryFullKey            = "BATTERY_FULL"             // 满电电量
+    SettingBatteryFullKey            = "BATTERY_FULL"             // 非智能电池满电电量
     SettingExceptionKey              = "EXCEPTION"                // 物资异常
     SettingPauseMaxDaysKey           = "PAUSE_MAX_DAYS"           // 最大寄存时间
     SettingExchangeIntervalKey       = "EXCHANGE_INTERVAL"        // 限制换电间隔
