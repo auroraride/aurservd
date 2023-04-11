@@ -13,6 +13,7 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/model/battery"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/batterymodel"
     "github.com/auroraride/aurservd/internal/ent/branch"
     "github.com/auroraride/aurservd/internal/ent/branchcontract"
     "github.com/auroraride/aurservd/internal/ent/business"
@@ -216,7 +217,7 @@ type branchListTemp struct {
     Address  string  `json:"address"`
 }
 
-func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq) (temps []branchListTemp, stores []*ent.Store, cabinets []*ent.Cabinet) {
+func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq, sub *ent.Subscribe) (temps []branchListTemp, stores []*ent.Store, cabinets []*ent.Cabinet) {
     if req.Distance == nil && req.CityID == nil {
         snag.Panic("距离和城市不能同时为空")
     }
@@ -265,7 +266,11 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq) (temps 
             ),
         )
     default:
-        cabinets = ent.Database.Cabinet.QueryNotDeleted().Where(cabinet.BranchIDIn(ids...)).WithModels().AllX(s.ctx)
+        cabQuery := ent.Database.Cabinet.QueryNotDeleted().Where(cabinet.BranchIDIn(ids...)).WithModels()
+        if sub != nil {
+            cabQuery.Where(cabinet.Intelligent(sub.Intelligent), cabinet.HasModelsWith(batterymodel.Model(sub.Model)))
+        }
+        cabinets = cabQuery.AllX(s.ctx)
     }
     stores = storeQuery.AllX(s.ctx)
     return
@@ -289,7 +294,7 @@ func (s *branchService) ListByDistanceManager(req *model.BranchDistanceListReq) 
         Lng:      &lng,
         Lat:      &lat,
         Distance: &distance,
-    })
+    }, nil)
     bmap := make(map[uint64]*model.BranchDistanceListRes)
     for _, temp := range temps {
         bmap[temp.ID] = &model.BranchDistanceListRes{
@@ -371,7 +376,7 @@ func (s *branchService) ListByDistanceManager(req *model.BranchDistanceListReq) 
 func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq) (items []*model.BranchWithDistanceRes) {
     var sub *ent.Subscribe
     if s.rider != nil {
-        sub = NewSubscribeWithRider(s.rider).Recent(s.rider.ID)
+        sub, _ = NewSubscribeWithRider(s.rider).QueryEffective(s.rider.ID)
     }
 
     // TODO 业务获取限制
@@ -382,7 +387,7 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq) (i
     //     if req.Business == business.TypeUnsubscribe && sub.Status != model.SubscribeStatusUsing {}
     // }
 
-    temps, stores, cabinets := s.ListByDistance(req)
+    temps, stores, cabinets := s.ListByDistance(req, sub)
 
     items = make([]*model.BranchWithDistanceRes, 0)
     // 三种设备类别
