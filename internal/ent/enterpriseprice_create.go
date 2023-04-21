@@ -117,6 +117,20 @@ func (epc *EnterprisePriceCreate) SetModel(s string) *EnterprisePriceCreate {
 	return epc
 }
 
+// SetIntelligent sets the "intelligent" field.
+func (epc *EnterprisePriceCreate) SetIntelligent(b bool) *EnterprisePriceCreate {
+	epc.mutation.SetIntelligent(b)
+	return epc
+}
+
+// SetNillableIntelligent sets the "intelligent" field if the given value is not nil.
+func (epc *EnterprisePriceCreate) SetNillableIntelligent(b *bool) *EnterprisePriceCreate {
+	if b != nil {
+		epc.SetIntelligent(*b)
+	}
+	return epc
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (epc *EnterprisePriceCreate) SetCity(c *City) *EnterprisePriceCreate {
 	return epc.SetCityID(c.ID)
@@ -178,6 +192,10 @@ func (epc *EnterprisePriceCreate) defaults() error {
 		v := enterpriseprice.DefaultUpdatedAt()
 		epc.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := epc.mutation.Intelligent(); !ok {
+		v := enterpriseprice.DefaultIntelligent
+		epc.mutation.SetIntelligent(v)
+	}
 	return nil
 }
 
@@ -200,6 +218,9 @@ func (epc *EnterprisePriceCreate) check() error {
 	}
 	if _, ok := epc.mutation.Model(); !ok {
 		return &ValidationError{Name: "model", err: errors.New(`ent: missing required field "EnterprisePrice.model"`)}
+	}
+	if _, ok := epc.mutation.Intelligent(); !ok {
+		return &ValidationError{Name: "intelligent", err: errors.New(`ent: missing required field "EnterprisePrice.intelligent"`)}
 	}
 	if _, ok := epc.mutation.CityID(); !ok {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "EnterprisePrice.city"`)}
@@ -265,6 +286,10 @@ func (epc *EnterprisePriceCreate) createSpec() (*EnterprisePrice, *sqlgraph.Crea
 	if value, ok := epc.mutation.Model(); ok {
 		_spec.SetField(enterpriseprice.FieldModel, field.TypeString, value)
 		_node.Model = value
+	}
+	if value, ok := epc.mutation.Intelligent(); ok {
+		_spec.SetField(enterpriseprice.FieldIntelligent, field.TypeBool, value)
+		_node.Intelligent = value
 	}
 	if nodes := epc.mutation.CityIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -478,6 +503,18 @@ func (u *EnterprisePriceUpsert) UpdateModel() *EnterprisePriceUpsert {
 	return u
 }
 
+// SetIntelligent sets the "intelligent" field.
+func (u *EnterprisePriceUpsert) SetIntelligent(v bool) *EnterprisePriceUpsert {
+	u.Set(enterpriseprice.FieldIntelligent, v)
+	return u
+}
+
+// UpdateIntelligent sets the "intelligent" field to the value that was provided on create.
+func (u *EnterprisePriceUpsert) UpdateIntelligent() *EnterprisePriceUpsert {
+	u.SetExcluded(enterpriseprice.FieldIntelligent)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -663,6 +700,20 @@ func (u *EnterprisePriceUpsertOne) SetModel(v string) *EnterprisePriceUpsertOne 
 func (u *EnterprisePriceUpsertOne) UpdateModel() *EnterprisePriceUpsertOne {
 	return u.Update(func(s *EnterprisePriceUpsert) {
 		s.UpdateModel()
+	})
+}
+
+// SetIntelligent sets the "intelligent" field.
+func (u *EnterprisePriceUpsertOne) SetIntelligent(v bool) *EnterprisePriceUpsertOne {
+	return u.Update(func(s *EnterprisePriceUpsert) {
+		s.SetIntelligent(v)
+	})
+}
+
+// UpdateIntelligent sets the "intelligent" field to the value that was provided on create.
+func (u *EnterprisePriceUpsertOne) UpdateIntelligent() *EnterprisePriceUpsertOne {
+	return u.Update(func(s *EnterprisePriceUpsert) {
+		s.UpdateIntelligent()
 	})
 }
 
@@ -1013,6 +1064,20 @@ func (u *EnterprisePriceUpsertBulk) SetModel(v string) *EnterprisePriceUpsertBul
 func (u *EnterprisePriceUpsertBulk) UpdateModel() *EnterprisePriceUpsertBulk {
 	return u.Update(func(s *EnterprisePriceUpsert) {
 		s.UpdateModel()
+	})
+}
+
+// SetIntelligent sets the "intelligent" field.
+func (u *EnterprisePriceUpsertBulk) SetIntelligent(v bool) *EnterprisePriceUpsertBulk {
+	return u.Update(func(s *EnterprisePriceUpsert) {
+		s.SetIntelligent(v)
+	})
+}
+
+// UpdateIntelligent sets the "intelligent" field to the value that was provided on create.
+func (u *EnterprisePriceUpsertBulk) UpdateIntelligent() *EnterprisePriceUpsertBulk {
+	return u.Update(func(s *EnterprisePriceUpsert) {
+		s.UpdateIntelligent()
 	})
 }
 

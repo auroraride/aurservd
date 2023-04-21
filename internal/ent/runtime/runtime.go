@@ -660,6 +660,10 @@ func init() {
 	enterpriseprice.DefaultUpdatedAt = enterprisepriceDescUpdatedAt.Default.(func() time.Time)
 	// enterpriseprice.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	enterpriseprice.UpdateDefaultUpdatedAt = enterprisepriceDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// enterprisepriceDescIntelligent is the schema descriptor for intelligent field.
+	enterprisepriceDescIntelligent := enterprisepriceFields[3].Descriptor()
+	// enterpriseprice.DefaultIntelligent holds the default value on creation for the intelligent field.
+	enterpriseprice.DefaultIntelligent = enterprisepriceDescIntelligent.Default.(bool)
 	enterprisestatementMixin := schema.EnterpriseStatement{}.Mixin()
 	enterprisestatementMixinHooks2 := enterprisestatementMixin[2].Hooks()
 	enterprisestatement.Hooks[0] = enterprisestatementMixinHooks2[0]

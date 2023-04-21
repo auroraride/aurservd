@@ -121,6 +121,20 @@ func (epu *EnterprisePriceUpdate) SetModel(s string) *EnterprisePriceUpdate {
 	return epu
 }
 
+// SetIntelligent sets the "intelligent" field.
+func (epu *EnterprisePriceUpdate) SetIntelligent(b bool) *EnterprisePriceUpdate {
+	epu.mutation.SetIntelligent(b)
+	return epu
+}
+
+// SetNillableIntelligent sets the "intelligent" field if the given value is not nil.
+func (epu *EnterprisePriceUpdate) SetNillableIntelligent(b *bool) *EnterprisePriceUpdate {
+	if b != nil {
+		epu.SetIntelligent(*b)
+	}
+	return epu
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (epu *EnterprisePriceUpdate) SetCity(c *City) *EnterprisePriceUpdate {
 	return epu.SetCityID(c.ID)
@@ -251,6 +265,9 @@ func (epu *EnterprisePriceUpdate) sqlSave(ctx context.Context) (n int, err error
 	}
 	if value, ok := epu.mutation.Model(); ok {
 		_spec.SetField(enterpriseprice.FieldModel, field.TypeString, value)
+	}
+	if value, ok := epu.mutation.Intelligent(); ok {
+		_spec.SetField(enterpriseprice.FieldIntelligent, field.TypeBool, value)
 	}
 	if epu.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -433,6 +450,20 @@ func (epuo *EnterprisePriceUpdateOne) SetModel(s string) *EnterprisePriceUpdateO
 	return epuo
 }
 
+// SetIntelligent sets the "intelligent" field.
+func (epuo *EnterprisePriceUpdateOne) SetIntelligent(b bool) *EnterprisePriceUpdateOne {
+	epuo.mutation.SetIntelligent(b)
+	return epuo
+}
+
+// SetNillableIntelligent sets the "intelligent" field if the given value is not nil.
+func (epuo *EnterprisePriceUpdateOne) SetNillableIntelligent(b *bool) *EnterprisePriceUpdateOne {
+	if b != nil {
+		epuo.SetIntelligent(*b)
+	}
+	return epuo
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (epuo *EnterprisePriceUpdateOne) SetCity(c *City) *EnterprisePriceUpdateOne {
 	return epuo.SetCityID(c.ID)
@@ -593,6 +624,9 @@ func (epuo *EnterprisePriceUpdateOne) sqlSave(ctx context.Context) (_node *Enter
 	}
 	if value, ok := epuo.mutation.Model(); ok {
 		_spec.SetField(enterpriseprice.FieldModel, field.TypeString, value)
+	}
+	if value, ok := epuo.mutation.Intelligent(); ok {
+		_spec.SetField(enterpriseprice.FieldIntelligent, field.TypeBool, value)
 	}
 	if epuo.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{

@@ -19272,6 +19272,10 @@
                     "description": "价格ID, 请求`M9016 编辑价格`时携带此字段为编辑, 不携带为新增",
                     "type": "integer"
                 },
+                "intelligent": {
+                    "description": "是否智能电池",
+                    "type": "boolean"
+                },
                 "model": {
                     "description": "电池型号 ",
                     "type": "string"

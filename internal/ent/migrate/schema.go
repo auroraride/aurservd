@@ -1999,6 +1999,7 @@ var (
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
 		{Name: "price", Type: field.TypeFloat64, Comment: "单价 元/天"},
 		{Name: "model", Type: field.TypeString, Comment: "可用电池型号"},
+		{Name: "intelligent", Type: field.TypeBool, Comment: "是否智能电池", Default: false},
 		{Name: "enterprise_id", Type: field.TypeUint64},
 		{Name: "city_id", Type: field.TypeUint64, Comment: "城市ID"},
 	}
@@ -2010,13 +2011,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "enterprise_price_enterprise_prices",
-				Columns:    []*schema.Column{EnterprisePriceColumns[9]},
+				Columns:    []*schema.Column{EnterprisePriceColumns[10]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "enterprise_price_city_city",
-				Columns:    []*schema.Column{EnterprisePriceColumns[10]},
+				Columns:    []*schema.Column{EnterprisePriceColumns[11]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -2035,7 +2036,7 @@ var (
 			{
 				Name:    "enterpriseprice_city_id",
 				Unique:  false,
-				Columns: []*schema.Column{EnterprisePriceColumns[10]},
+				Columns: []*schema.Column{EnterprisePriceColumns[11]},
 			},
 			{
 				Name:    "enterpriseprice_model",
@@ -2045,7 +2046,7 @@ var (
 			{
 				Name:    "enterpriseprice_enterprise_id",
 				Unique:  false,
-				Columns: []*schema.Column{EnterprisePriceColumns[9]},
+				Columns: []*schema.Column{EnterprisePriceColumns[10]},
 			},
 		},
 	}

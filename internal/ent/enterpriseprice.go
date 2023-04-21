@@ -40,6 +40,8 @@ type EnterprisePrice struct {
 	Price float64 `json:"price,omitempty"`
 	// 可用电池型号
 	Model string `json:"model,omitempty"`
+	// 是否智能电池
+	Intelligent bool `json:"intelligent,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EnterprisePriceQuery when eager-loading is set.
 	Edges EnterprisePriceEdges `json:"edges"`
@@ -89,6 +91,8 @@ func (*EnterprisePrice) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case enterpriseprice.FieldCreator, enterpriseprice.FieldLastModifier:
 			values[i] = new([]byte)
+		case enterpriseprice.FieldIntelligent:
+			values[i] = new(sql.NullBool)
 		case enterpriseprice.FieldPrice:
 			values[i] = new(sql.NullFloat64)
 		case enterpriseprice.FieldID, enterpriseprice.FieldCityID, enterpriseprice.FieldEnterpriseID:
@@ -183,6 +187,12 @@ func (ep *EnterprisePrice) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				ep.Model = value.String
 			}
+		case enterpriseprice.FieldIntelligent:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field intelligent", values[i])
+			} else if value.Valid {
+				ep.Intelligent = value.Bool
+			}
 		}
 	}
 	return nil
@@ -252,6 +262,9 @@ func (ep *EnterprisePrice) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("model=")
 	builder.WriteString(ep.Model)
+	builder.WriteString(", ")
+	builder.WriteString("intelligent=")
+	builder.WriteString(fmt.Sprintf("%v", ep.Intelligent))
 	builder.WriteByte(')')
 	return builder.String()
 }

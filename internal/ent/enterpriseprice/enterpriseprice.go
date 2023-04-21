@@ -33,6 +33,8 @@ const (
 	FieldPrice = "price"
 	// FieldModel holds the string denoting the model field in the database.
 	FieldModel = "model"
+	// FieldIntelligent holds the string denoting the intelligent field in the database.
+	FieldIntelligent = "intelligent"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
 	// EdgeEnterprise holds the string denoting the enterprise edge name in mutations.
@@ -68,6 +70,7 @@ var Columns = []string{
 	FieldEnterpriseID,
 	FieldPrice,
 	FieldModel,
+	FieldIntelligent,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -93,4 +96,6 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultIntelligent holds the default value on creation for the "intelligent" field.
+	DefaultIntelligent bool
 )

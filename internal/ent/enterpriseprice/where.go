@@ -95,6 +95,11 @@ func Model(v string) predicate.EnterprisePrice {
 	return predicate.EnterprisePrice(sql.FieldEQ(FieldModel, v))
 }
 
+// Intelligent applies equality check predicate on the "intelligent" field. It's identical to IntelligentEQ.
+func Intelligent(v bool) predicate.EnterprisePrice {
+	return predicate.EnterprisePrice(sql.FieldEQ(FieldIntelligent, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.EnterprisePrice {
 	return predicate.EnterprisePrice(sql.FieldEQ(FieldCreatedAt, v))
@@ -463,6 +468,16 @@ func ModelEqualFold(v string) predicate.EnterprisePrice {
 // ModelContainsFold applies the ContainsFold predicate on the "model" field.
 func ModelContainsFold(v string) predicate.EnterprisePrice {
 	return predicate.EnterprisePrice(sql.FieldContainsFold(FieldModel, v))
+}
+
+// IntelligentEQ applies the EQ predicate on the "intelligent" field.
+func IntelligentEQ(v bool) predicate.EnterprisePrice {
+	return predicate.EnterprisePrice(sql.FieldEQ(FieldIntelligent, v))
+}
+
+// IntelligentNEQ applies the NEQ predicate on the "intelligent" field.
+func IntelligentNEQ(v bool) predicate.EnterprisePrice {
+	return predicate.EnterprisePrice(sql.FieldNEQ(FieldIntelligent, v))
 }
 
 // HasCity applies the HasEdge predicate on the "city" edge.

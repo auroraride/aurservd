@@ -38828,6 +38828,7 @@ type EnterprisePriceMutation struct {
 	price             *float64
 	addprice          *float64
 	model             *string
+	intelligent       *bool
 	clearedFields     map[string]struct{}
 	city              *uint64
 	clearedcity       bool
@@ -39368,6 +39369,42 @@ func (m *EnterprisePriceMutation) ResetModel() {
 	m.model = nil
 }
 
+// SetIntelligent sets the "intelligent" field.
+func (m *EnterprisePriceMutation) SetIntelligent(b bool) {
+	m.intelligent = &b
+}
+
+// Intelligent returns the value of the "intelligent" field in the mutation.
+func (m *EnterprisePriceMutation) Intelligent() (r bool, exists bool) {
+	v := m.intelligent
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIntelligent returns the old "intelligent" field's value of the EnterprisePrice entity.
+// If the EnterprisePrice object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterprisePriceMutation) OldIntelligent(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIntelligent is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIntelligent requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIntelligent: %w", err)
+	}
+	return oldValue.Intelligent, nil
+}
+
+// ResetIntelligent resets all changes to the "intelligent" field.
+func (m *EnterprisePriceMutation) ResetIntelligent() {
+	m.intelligent = nil
+}
+
 // ClearCity clears the "city" edge to the City entity.
 func (m *EnterprisePriceMutation) ClearCity() {
 	m.clearedcity = true
@@ -39454,7 +39491,7 @@ func (m *EnterprisePriceMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EnterprisePriceMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 11)
 	if m.created_at != nil {
 		fields = append(fields, enterpriseprice.FieldCreatedAt)
 	}
@@ -39485,6 +39522,9 @@ func (m *EnterprisePriceMutation) Fields() []string {
 	if m.model != nil {
 		fields = append(fields, enterpriseprice.FieldModel)
 	}
+	if m.intelligent != nil {
+		fields = append(fields, enterpriseprice.FieldIntelligent)
+	}
 	return fields
 }
 
@@ -39513,6 +39553,8 @@ func (m *EnterprisePriceMutation) Field(name string) (ent.Value, bool) {
 		return m.Price()
 	case enterpriseprice.FieldModel:
 		return m.Model()
+	case enterpriseprice.FieldIntelligent:
+		return m.Intelligent()
 	}
 	return nil, false
 }
@@ -39542,6 +39584,8 @@ func (m *EnterprisePriceMutation) OldField(ctx context.Context, name string) (en
 		return m.OldPrice(ctx)
 	case enterpriseprice.FieldModel:
 		return m.OldModel(ctx)
+	case enterpriseprice.FieldIntelligent:
+		return m.OldIntelligent(ctx)
 	}
 	return nil, fmt.Errorf("unknown EnterprisePrice field %s", name)
 }
@@ -39620,6 +39664,13 @@ func (m *EnterprisePriceMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetModel(v)
+		return nil
+	case enterpriseprice.FieldIntelligent:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIntelligent(v)
 		return nil
 	}
 	return fmt.Errorf("unknown EnterprisePrice field %s", name)
@@ -39741,6 +39792,9 @@ func (m *EnterprisePriceMutation) ResetField(name string) error {
 		return nil
 	case enterpriseprice.FieldModel:
 		m.ResetModel()
+		return nil
+	case enterpriseprice.FieldIntelligent:
+		m.ResetIntelligent()
 		return nil
 	}
 	return fmt.Errorf("unknown EnterprisePrice field %s", name)
