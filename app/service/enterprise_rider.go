@@ -335,7 +335,7 @@ func (s *enterpriseRiderService) ChooseBatteryModel(req *model.EnterpriseRiderSu
 			SetIntelligent(ep.Intelligent).
 			Save(s.ctx)
 	} else {
-		sub, err = sub.Update().SetModel(ep.Model).Save(s.ctx)
+		sub, err = sub.Update().SetIntelligent(ep.Intelligent).SetModel(ep.Model).Save(s.ctx)
 		if err != nil {
 			return model.EnterpriseRiderSubscribeChooseRes{}
 		}
