@@ -6,46 +6,46 @@
 package service
 
 import (
-    "github.com/auroraride/adapter"
-    "github.com/auroraride/adapter/rpc/pb"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/rpc"
-    "github.com/auroraride/aurservd/internal/ent"
-    "go.uber.org/zap"
+	"github.com/auroraride/adapter"
+	"github.com/auroraride/adapter/rpc/pb"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/rpc"
+	"github.com/auroraride/aurservd/internal/ent"
+	"go.uber.org/zap"
 )
 
 type batteryFlowService struct {
-    *BaseService
+	*BaseService
 
-    orm *ent.BatteryFlowClient
+	orm *ent.BatteryFlowClient
 }
 
 func NewBatteryFlow(params ...any) *batteryFlowService {
-    return &batteryFlowService{
-        BaseService: newService(params...),
+	return &batteryFlowService{
+		BaseService: newService(params...),
 
-        orm: ent.Database.BatteryFlow,
-    }
+		orm: ent.Database.BatteryFlow,
+	}
 }
 
 func (s *batteryFlowService) Create(bat *ent.Battery, req model.BatteryFlowCreateReq) {
-    updater := s.orm.Create().
-        SetSn(bat.Sn).
-        SetBatteryID(bat.ID).
-        SetNillableRiderID(req.RiderID).
-        SetNillableSubscribeID(req.SubscribeID).
-        SetNillableCabinetID(req.CabinetID).
-        SetNillableOrdinal(req.Ordinal).
-        SetNillableSerial(req.Serial)
+	updater := s.orm.Create().
+		SetSn(bat.Sn).
+		SetBatteryID(bat.ID).
+		SetNillableRiderID(req.RiderID).
+		SetNillableSubscribeID(req.SubscribeID).
+		SetNillableCabinetID(req.CabinetID).
+		SetNillableOrdinal(req.Ordinal).
+		SetNillableSerial(req.Serial)
 
-    sr := rpc.BmsSample(bat.Brand, &pb.BatterySnRequest{Sn: bat.Sn})
-    if sr != nil {
-        updater.SetSoc(float64(sr.Soc)).SetGeom(adapter.NewGeometry(sr.Geom).WGS84toGCJ02())
-    }
-    err := updater.Exec(s.ctx)
-    if err != nil {
-        zap.L().Error("电池流转创建失败", zap.Error(err))
-    }
+	sr := rpc.BmsSample(bat.Brand, &pb.BatterySnRequest{Sn: bat.Sn})
+	if sr != nil {
+		updater.SetSoc(float64(sr.Soc)).SetGeom(adapter.NewGeometry(sr.Geom).WGS84toGCJ02())
+	}
+	err := updater.Exec(s.ctx)
+	if err != nil {
+		zap.L().Error("电池流转创建失败", zap.Error(err))
+	}
 }
 
 //

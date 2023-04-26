@@ -8,87 +8,87 @@ package model
 import "github.com/auroraride/adapter"
 
 type BatteryCreateReq struct {
-    SN     string `json:"sn" validate:"required" trans:"电池编号"`
-    CityID uint64 `json:"cityId" validate:"required" trans:"城市"`
+	SN     string `json:"sn" validate:"required" trans:"电池编号"`
+	CityID uint64 `json:"cityId" validate:"required" trans:"城市"`
 
-    Enable *bool `json:"enable"` // 是否启用, 需默认为`true`
+	Enable *bool `json:"enable"` // 是否启用, 需默认为`true`
 }
 
 type BatteryModifyReq struct {
-    ID     uint64  `json:"id" param:"id" validate:"required" trans:"电池ID"`
-    Enable *bool   `json:"enable"` // 是否启用
-    CityID *uint64 `json:"cityId"` // 城市ID
+	ID     uint64  `json:"id" param:"id" validate:"required" trans:"电池ID"`
+	Enable *bool   `json:"enable"` // 是否启用
+	CityID *uint64 `json:"cityId"` // 城市ID
 }
 
 type BatteryFilter struct {
-    SN     string `json:"sn" query:"sn"`         // 编号
-    Model  string `json:"model" query:"model"`   // 型号
-    CityID uint64 `json:"cityId" query:"cityId"` // 城市
-    Status *int   `json:"status" query:"status"` // 状态 0:全部 1:启用(不携带默认为启用) 2:禁用
+	SN     string `json:"sn" query:"sn"`         // 编号
+	Model  string `json:"model" query:"model"`   // 型号
+	CityID uint64 `json:"cityId" query:"cityId"` // 城市
+	Status *int   `json:"status" query:"status"` // 状态 0:全部 1:启用(不携带默认为启用) 2:禁用
 }
 
 type BatteryListReq struct {
-    PaginationReq
-    BatteryFilter
+	PaginationReq
+	BatteryFilter
 }
 
 type BatteryStatus uint8
 
 const (
-    BatteryStatusIdle        BatteryStatus = iota // 充电中
-    BatteryStatusCharging                         // 充电中
-    BatteryStatusDisCharging                      // 放电中
-    BatteryStatusFault                            // 异常
+	BatteryStatusIdle        BatteryStatus = iota // 充电中
+	BatteryStatusCharging                         // 充电中
+	BatteryStatusDisCharging                      // 放电中
+	BatteryStatusFault                            // 异常
 )
 
 type BatteryListRes struct {
-    ID      uint64               `json:"id"`
-    Brand   adapter.BatteryBrand `json:"brand"`             // 品牌 TB:拓邦, XC:星创
-    City    *City                `json:"city,omitempty"`    // 城市
-    Model   string               `json:"model"`             // 型号
-    Enable  bool                 `json:"enable"`            // 是否启用
-    SN      string               `json:"sn"`                // 编号
-    Rider   *Rider               `json:"rider,omitempty"`   // 骑手
-    Cabinet *CabinetBasicInfo    `json:"cabinet,omitempty"` // 电柜
-    *BmsBattery
+	ID      uint64               `json:"id"`
+	Brand   adapter.BatteryBrand `json:"brand"`             // 品牌 TB:拓邦, XC:星创
+	City    *City                `json:"city,omitempty"`    // 城市
+	Model   string               `json:"model"`             // 型号
+	Enable  bool                 `json:"enable"`            // 是否启用
+	SN      string               `json:"sn"`                // 编号
+	Rider   *Rider               `json:"rider,omitempty"`   // 骑手
+	Cabinet *CabinetBasicInfo    `json:"cabinet,omitempty"` // 电柜
+	*BmsBattery
 }
 
 type Battery struct {
-    ID    uint64 `json:"id"`
-    SN    string `json:"sn"`    // 编号
-    Model string `json:"model"` // 型号
+	ID    uint64 `json:"id"`
+	SN    string `json:"sn"`    // 编号
+	Model string `json:"model"` // 型号
 }
 
 type BatterySearchReq struct {
-    Serial string `json:"serial" query:"serial" trans:"流水号" validate:"required,min=4"`
+	Serial string `json:"serial" query:"serial" trans:"流水号" validate:"required,min=4"`
 }
 
 type BatteryBind struct {
-    RiderID   uint64 `json:"riderId" validate:"required"`   // 骑手ID
-    BatteryID uint64 `json:"batteryId" validate:"required"` // 电池ID
+	RiderID   uint64 `json:"riderId" validate:"required"`   // 骑手ID
+	BatteryID uint64 `json:"batteryId" validate:"required"` // 电池ID
 }
 
 // BatteryDetail 电池信息
 type BatteryDetail struct {
-    ID    uint64  `json:"id"`    // 电池ID
-    Model string  `json:"model"` // 电池型号
-    SN    string  `json:"sn"`    // 电池编码
-    Soc   float64 `json:"soc"`   // 当前电量, 暂时隐藏
+	ID    uint64  `json:"id"`    // 电池ID
+	Model string  `json:"model"` // 电池型号
+	SN    string  `json:"sn"`    // 电池编码
+	Soc   float64 `json:"soc"`   // 当前电量, 暂时隐藏
 }
 
 type BatteryInCabinet struct {
-    CabinetID uint64 `json:"cabinetId"` // 所在电柜ID
-    Ordinal   int    `json:"ordinal"`   // 仓位序号
+	CabinetID uint64 `json:"cabinetId"` // 所在电柜ID
+	Ordinal   int    `json:"ordinal"`   // 仓位序号
 }
 
 type BatteryUnbindRequest struct {
-    RiderID uint64 `json:"riderId" validate:"required"` // 骑手ID
+	RiderID uint64 `json:"riderId" validate:"required"` // 骑手ID
 }
 
 type BatteryBatchQueryRequest struct {
-    IDs []uint64 `json:"ids" validate:"required,min=1"`
+	IDs []uint64 `json:"ids" validate:"required,min=1"`
 }
 
 type BatteryQueryRequest struct {
-    ID uint64 `json:"id" validate:"required"`
+	ID uint64 `json:"id" validate:"required"`
 }
