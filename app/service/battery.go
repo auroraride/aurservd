@@ -348,13 +348,13 @@ func (s *batteryService) RiderBusiness(putin bool, sn string, r *model.Rider, ca
 // RiderDetail 获取电池详情
 func (s *batteryService) RiderDetail(riderID uint64) (res model.BatteryDetail) {
 	bat, _ := s.QueryRiderID(riderID)
-	// 获取电量信息
-	var soc float64 = 0
-	sr := rpc.BmsSample(bat.Brand, &pb.BatterySnRequest{Sn: bat.Sn})
-	if sr != nil {
-		soc = float64(sr.Soc)
-	}
 	if bat != nil {
+		// 获取电量信息
+		var soc float64 = 0
+		sr := rpc.BmsSample(bat.Brand, &pb.BatterySnRequest{Sn: bat.Sn})
+		if sr != nil {
+			soc = float64(sr.Soc)
+		}
 		res = model.BatteryDetail{
 			ID:    bat.ID,
 			Model: bat.Model,
