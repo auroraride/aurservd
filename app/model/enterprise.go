@@ -46,10 +46,11 @@ type EnterprisePriceModifyReq struct {
 }
 
 type EnterprisePriceWithCity struct {
-	ID    uint64  `json:"id"`    // 价格ID
-	Model string  `json:"model"` // 电池型号
-	Price float64 `json:"price"` // 单价(元/天)
-	City  City    `json:"city"`  // 城市
+	ID          uint64  `json:"id"`          // 价格ID
+	Model       string  `json:"model"`       // 电池型号
+	Price       float64 `json:"price"`       // 单价(元/天)
+	City        City    `json:"city"`        // 城市
+	Intelligent bool    `json:"intelligent"` // 是否智能电池
 }
 
 // Enterprise 企业基础字段

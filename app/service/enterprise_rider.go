@@ -122,6 +122,7 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 				SetType(model.OrderTypeNewly).
 				SetRiderID(r.ID).
 				SetModel(ep.Model).
+				SetIntelligent(ep.Intelligent).
 				SetRemaining(0).
 				SetInitialDays(req.Days).
 				SetStatus(model.SubscribeStatusInactive).

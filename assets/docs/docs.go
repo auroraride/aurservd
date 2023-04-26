@@ -19308,6 +19308,10 @@ const docTemplate = `{
                     "description": "价格ID",
                     "type": "integer"
                 },
+                "intelligent": {
+                    "description": "是否智能电池",
+                    "type": "boolean"
+                },
                 "model": {
                     "description": "电池型号",
                     "type": "string"
@@ -20266,6 +20270,10 @@ const docTemplate = `{
                 "id"
             ],
             "properties": {
+                "batteryId": {
+                    "description": "电池编码 (参数可选, 以便于当该电池在电柜中时需要客服手动开仓并绑定到骑手)",
+                    "type": "integer"
+                },
                 "ebikeKeyword": {
                     "description": "车架号或车牌号",
                     "type": "string"

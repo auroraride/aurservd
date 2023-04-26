@@ -211,9 +211,10 @@ func (s *enterpriseService) Detail(item *ent.Enterprise) (res model.EnterpriseRe
 		res.Prices = make([]model.EnterprisePriceWithCity, len(prices))
 		for i, ep := range prices {
 			res.Prices[i] = model.EnterprisePriceWithCity{
-				ID:    ep.ID,
-				Model: ep.Model,
-				Price: ep.Price,
+				ID:          ep.ID,
+				Model:       ep.Model,
+				Price:       ep.Price,
+				Intelligent: ep.Intelligent,
 				City: model.City{
 					ID:   ep.Edges.City.ID,
 					Name: ep.Edges.City.Name,
