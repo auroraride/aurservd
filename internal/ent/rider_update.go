@@ -411,6 +411,12 @@ func (ru *RiderUpdate) ClearExchangeFrequency() *RiderUpdate {
 	return ru
 }
 
+// SetBelongs sets the "belongs" field.
+func (ru *RiderUpdate) SetBelongs(s string) *RiderUpdate {
+	ru.mutation.SetBelongs(s)
+	return ru
+}
+
 // SetStation sets the "station" edge to the EnterpriseStation entity.
 func (ru *RiderUpdate) SetStation(e *EnterpriseStation) *RiderUpdate {
 	return ru.SetStationID(e.ID)
@@ -953,6 +959,9 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if ru.mutation.ExchangeFrequencyCleared() {
 		_spec.ClearField(rider.FieldExchangeFrequency, field.TypeJSON)
+	}
+	if value, ok := ru.mutation.Belongs(); ok {
+		_spec.SetField(rider.FieldBelongs, field.TypeString, value)
 	}
 	if ru.mutation.StationCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1916,6 +1925,12 @@ func (ruo *RiderUpdateOne) ClearExchangeFrequency() *RiderUpdateOne {
 	return ruo
 }
 
+// SetBelongs sets the "belongs" field.
+func (ruo *RiderUpdateOne) SetBelongs(s string) *RiderUpdateOne {
+	ruo.mutation.SetBelongs(s)
+	return ruo
+}
+
 // SetStation sets the "station" edge to the EnterpriseStation entity.
 func (ruo *RiderUpdateOne) SetStation(e *EnterpriseStation) *RiderUpdateOne {
 	return ruo.SetStationID(e.ID)
@@ -2488,6 +2503,9 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 	}
 	if ruo.mutation.ExchangeFrequencyCleared() {
 		_spec.ClearField(rider.FieldExchangeFrequency, field.TypeJSON)
+	}
+	if value, ok := ruo.mutation.Belongs(); ok {
+		_spec.SetField(rider.FieldBelongs, field.TypeString, value)
 	}
 	if ruo.mutation.StationCleared() {
 		edge := &sqlgraph.EdgeSpec{

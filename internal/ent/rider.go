@@ -68,6 +68,8 @@ type Rider struct {
 	ExchangeLimit model.RiderExchangeLimit `json:"exchange_limit,omitempty"`
 	// 换电频次配置
 	ExchangeFrequency model.RiderExchangeFrequency `json:"exchange_frequency,omitempty"`
+	// 归属
+	Belongs *string `json:"belongs,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the RiderQuery when eager-loading is set.
 	Edges RiderEdges `json:"edges"`
@@ -239,7 +241,7 @@ func (*Rider) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case rider.FieldID, rider.FieldStationID, rider.FieldPersonID, rider.FieldEnterpriseID, rider.FieldDeviceType, rider.FieldPoints:
 			values[i] = new(sql.NullInt64)
-		case rider.FieldRemark, rider.FieldName, rider.FieldIDCardNumber, rider.FieldPhone, rider.FieldLastDevice, rider.FieldLastFace, rider.FieldPushID:
+		case rider.FieldRemark, rider.FieldName, rider.FieldIDCardNumber, rider.FieldPhone, rider.FieldLastDevice, rider.FieldLastFace, rider.FieldPushID, rider.FieldBelongs:
 			values[i] = new(sql.NullString)
 		case rider.FieldCreatedAt, rider.FieldUpdatedAt, rider.FieldDeletedAt, rider.FieldLastSigninAt:
 			values[i] = new(sql.NullTime)
@@ -418,6 +420,13 @@ func (r *Rider) assignValues(columns []string, values []any) error {
 					return fmt.Errorf("unmarshal field exchange_frequency: %w", err)
 				}
 			}
+		case rider.FieldBelongs:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field belongs", values[i])
+			} else if value.Valid {
+				r.Belongs = new(string)
+				*r.Belongs = value.String
+			}
 		}
 	}
 	return nil
@@ -586,6 +595,11 @@ func (r *Rider) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("exchange_frequency=")
 	builder.WriteString(fmt.Sprintf("%v", r.ExchangeFrequency))
+	builder.WriteString(", ")
+	if v := r.Belongs; v != nil {
+		builder.WriteString("belongs=")
+		builder.WriteString(*v)
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

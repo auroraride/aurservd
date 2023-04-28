@@ -145,6 +145,11 @@ func Points(v int64) predicate.Rider {
 	return predicate.Rider(sql.FieldEQ(FieldPoints, v))
 }
 
+// Belongs applies equality check predicate on the "belongs" field. It's identical to BelongsEQ.
+func Belongs(v string) predicate.Rider {
+	return predicate.Rider(sql.FieldEQ(FieldBelongs, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Rider {
 	return predicate.Rider(sql.FieldEQ(FieldCreatedAt, v))
@@ -1088,6 +1093,71 @@ func ExchangeFrequencyIsNil() predicate.Rider {
 // ExchangeFrequencyNotNil applies the NotNil predicate on the "exchange_frequency" field.
 func ExchangeFrequencyNotNil() predicate.Rider {
 	return predicate.Rider(sql.FieldNotNull(FieldExchangeFrequency))
+}
+
+// BelongsEQ applies the EQ predicate on the "belongs" field.
+func BelongsEQ(v string) predicate.Rider {
+	return predicate.Rider(sql.FieldEQ(FieldBelongs, v))
+}
+
+// BelongsNEQ applies the NEQ predicate on the "belongs" field.
+func BelongsNEQ(v string) predicate.Rider {
+	return predicate.Rider(sql.FieldNEQ(FieldBelongs, v))
+}
+
+// BelongsIn applies the In predicate on the "belongs" field.
+func BelongsIn(vs ...string) predicate.Rider {
+	return predicate.Rider(sql.FieldIn(FieldBelongs, vs...))
+}
+
+// BelongsNotIn applies the NotIn predicate on the "belongs" field.
+func BelongsNotIn(vs ...string) predicate.Rider {
+	return predicate.Rider(sql.FieldNotIn(FieldBelongs, vs...))
+}
+
+// BelongsGT applies the GT predicate on the "belongs" field.
+func BelongsGT(v string) predicate.Rider {
+	return predicate.Rider(sql.FieldGT(FieldBelongs, v))
+}
+
+// BelongsGTE applies the GTE predicate on the "belongs" field.
+func BelongsGTE(v string) predicate.Rider {
+	return predicate.Rider(sql.FieldGTE(FieldBelongs, v))
+}
+
+// BelongsLT applies the LT predicate on the "belongs" field.
+func BelongsLT(v string) predicate.Rider {
+	return predicate.Rider(sql.FieldLT(FieldBelongs, v))
+}
+
+// BelongsLTE applies the LTE predicate on the "belongs" field.
+func BelongsLTE(v string) predicate.Rider {
+	return predicate.Rider(sql.FieldLTE(FieldBelongs, v))
+}
+
+// BelongsContains applies the Contains predicate on the "belongs" field.
+func BelongsContains(v string) predicate.Rider {
+	return predicate.Rider(sql.FieldContains(FieldBelongs, v))
+}
+
+// BelongsHasPrefix applies the HasPrefix predicate on the "belongs" field.
+func BelongsHasPrefix(v string) predicate.Rider {
+	return predicate.Rider(sql.FieldHasPrefix(FieldBelongs, v))
+}
+
+// BelongsHasSuffix applies the HasSuffix predicate on the "belongs" field.
+func BelongsHasSuffix(v string) predicate.Rider {
+	return predicate.Rider(sql.FieldHasSuffix(FieldBelongs, v))
+}
+
+// BelongsEqualFold applies the EqualFold predicate on the "belongs" field.
+func BelongsEqualFold(v string) predicate.Rider {
+	return predicate.Rider(sql.FieldEqualFold(FieldBelongs, v))
+}
+
+// BelongsContainsFold applies the ContainsFold predicate on the "belongs" field.
+func BelongsContainsFold(v string) predicate.Rider {
+	return predicate.Rider(sql.FieldContainsFold(FieldBelongs, v))
 }
 
 // HasStation applies the HasEdge predicate on the "station" edge.

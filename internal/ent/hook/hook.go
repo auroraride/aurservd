@@ -501,6 +501,18 @@ func (f RiderFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.RiderMutation", m)
 }
 
+// The RiderBelongsFunc type is an adapter to allow the use of ordinary
+// function as RiderBelongs mutator.
+type RiderBelongsFunc func(context.Context, *ent.RiderBelongsMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f RiderBelongsFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.RiderBelongsMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.RiderBelongsMutation", m)
+}
+
 // The RiderFollowUpFunc type is an adapter to allow the use of ordinary
 // function as RiderFollowUp mutator.
 type RiderFollowUpFunc func(context.Context, *ent.RiderFollowUpMutation) (ent.Value, error)

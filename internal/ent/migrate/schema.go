@@ -3141,6 +3141,7 @@ var (
 		{Name: "points", Type: field.TypeInt64, Comment: "骑手积分", Default: 0},
 		{Name: "exchange_limit", Type: field.TypeJSON, Nullable: true, Comment: "换电间隔配置"},
 		{Name: "exchange_frequency", Type: field.TypeJSON, Nullable: true, Comment: "换电频次配置"},
+		{Name: "belongs", Type: field.TypeString, Comment: "归属"},
 		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true, Comment: "所属企业"},
 		{Name: "person_id", Type: field.TypeUint64, Nullable: true, Comment: "身份"},
 		{Name: "station_id", Type: field.TypeUint64, Nullable: true, Comment: "站点ID"},
@@ -3153,19 +3154,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "rider_enterprise_riders",
-				Columns:    []*schema.Column{RiderColumns[21]},
+				Columns:    []*schema.Column{RiderColumns[22]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "rider_person_rider",
-				Columns:    []*schema.Column{RiderColumns[22]},
+				Columns:    []*schema.Column{RiderColumns[23]},
 				RefColumns: []*schema.Column{PersonColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "rider_enterprise_station_station",
-				Columns:    []*schema.Column{RiderColumns[23]},
+				Columns:    []*schema.Column{RiderColumns[24]},
 				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -3184,7 +3185,7 @@ var (
 			{
 				Name:    "rider_station_id",
 				Unique:  false,
-				Columns: []*schema.Column{RiderColumns[23]},
+				Columns: []*schema.Column{RiderColumns[24]},
 			},
 			{
 				Name:    "rider_phone",
@@ -3216,12 +3217,12 @@ var (
 			{
 				Name:    "rider_person_id",
 				Unique:  false,
-				Columns: []*schema.Column{RiderColumns[22]},
+				Columns: []*schema.Column{RiderColumns[23]},
 			},
 			{
 				Name:    "rider_enterprise_id",
 				Unique:  false,
-				Columns: []*schema.Column{RiderColumns[21]},
+				Columns: []*schema.Column{RiderColumns[22]},
 			},
 			{
 				Name:    "rider_last_device",
@@ -3232,6 +3233,45 @@ var (
 				Name:    "rider_push_id",
 				Unique:  false,
 				Columns: []*schema.Column{RiderColumns[15]},
+			},
+			{
+				Name:    "rider_belongs",
+				Unique:  false,
+				Columns: []*schema.Column{RiderColumns[21]},
+				Annotation: &entsql.IndexAnnotation{
+					OpClass: "gin_trgm_ops",
+					Types: map[string]string{
+						"postgres": "GIN",
+					},
+				},
+			},
+		},
+	}
+	// RiderBelongsColumns holds the columns for the "rider_belongs" table.
+	RiderBelongsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
+		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
+	}
+	// RiderBelongsTable holds the schema information for the "rider_belongs" table.
+	RiderBelongsTable = &schema.Table{
+		Name:       "rider_belongs",
+		Columns:    RiderBelongsColumns,
+		PrimaryKey: []*schema.Column{RiderBelongsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "riderbelongs_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{RiderBelongsColumns[1]},
+			},
+			{
+				Name:    "riderbelongs_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{RiderBelongsColumns[3]},
 			},
 		},
 	}
@@ -4326,6 +4366,7 @@ var (
 		PointLogTable,
 		ReserveTable,
 		RiderTable,
+		RiderBelongsTable,
 		RiderFollowUpTable,
 		RoleTable,
 		SettingTable,
@@ -4573,6 +4614,9 @@ func init() {
 	RiderTable.ForeignKeys[2].RefTable = EnterpriseStationTable
 	RiderTable.Annotation = &entsql.Annotation{
 		Table: "rider",
+	}
+	RiderBelongsTable.Annotation = &entsql.Annotation{
+		Table: "rider_belongs",
 	}
 	RiderFollowUpTable.ForeignKeys[0].RefTable = RiderTable
 	RiderFollowUpTable.ForeignKeys[1].RefTable = ManagerTable

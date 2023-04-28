@@ -48,6 +48,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/pointlog"
 	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/riderbelongs"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
 	"github.com/auroraride/aurservd/internal/ent/role"
 	"github.com/auroraride/aurservd/internal/ent/schema"
@@ -1043,6 +1044,23 @@ func init() {
 	riderDescPoints := riderFields[13].Descriptor()
 	// rider.DefaultPoints holds the default value on creation for the points field.
 	rider.DefaultPoints = riderDescPoints.Default.(int64)
+	riderbelongsMixin := schema.RiderBelongs{}.Mixin()
+	riderbelongsMixinHooks2 := riderbelongsMixin[2].Hooks()
+	riderbelongs.Hooks[0] = riderbelongsMixinHooks2[0]
+	riderbelongsMixinFields0 := riderbelongsMixin[0].Fields()
+	_ = riderbelongsMixinFields0
+	riderbelongsFields := schema.RiderBelongs{}.Fields()
+	_ = riderbelongsFields
+	// riderbelongsDescCreatedAt is the schema descriptor for created_at field.
+	riderbelongsDescCreatedAt := riderbelongsMixinFields0[0].Descriptor()
+	// riderbelongs.DefaultCreatedAt holds the default value on creation for the created_at field.
+	riderbelongs.DefaultCreatedAt = riderbelongsDescCreatedAt.Default.(func() time.Time)
+	// riderbelongsDescUpdatedAt is the schema descriptor for updated_at field.
+	riderbelongsDescUpdatedAt := riderbelongsMixinFields0[1].Descriptor()
+	// riderbelongs.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	riderbelongs.DefaultUpdatedAt = riderbelongsDescUpdatedAt.Default.(func() time.Time)
+	// riderbelongs.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	riderbelongs.UpdateDefaultUpdatedAt = riderbelongsDescUpdatedAt.UpdateDefault.(func() time.Time)
 	riderfollowupMixin := schema.RiderFollowUp{}.Mixin()
 	riderfollowupMixinHooks2 := riderfollowupMixin[2].Hooks()
 	riderfollowup.Hooks[0] = riderfollowupMixinHooks2[0]

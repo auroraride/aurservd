@@ -52,6 +52,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/pointlog"
 	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/riderbelongs"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
 	"github.com/auroraride/aurservd/internal/ent/role"
 	"github.com/auroraride/aurservd/internal/ent/setting"
@@ -156,6 +157,7 @@ func columnChecker(table string) func(string) error {
 		pointlog.Table:             pointlog.ValidColumn,
 		reserve.Table:              reserve.ValidColumn,
 		rider.Table:                rider.ValidColumn,
+		riderbelongs.Table:         riderbelongs.ValidColumn,
 		riderfollowup.Table:        riderfollowup.ValidColumn,
 		role.Table:                 role.ValidColumn,
 		setting.Table:              setting.ValidColumn,

@@ -55,6 +55,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/riderbelongs"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
 	"github.com/auroraride/aurservd/internal/ent/role"
 	"github.com/auroraride/aurservd/internal/ent/setting"
@@ -118,6 +119,7 @@ const (
 	TypePointLog             = "PointLog"
 	TypeReserve              = "Reserve"
 	TypeRider                = "Rider"
+	TypeRiderBelongs         = "RiderBelongs"
 	TypeRiderFollowUp        = "RiderFollowUp"
 	TypeRole                 = "Role"
 	TypeSetting              = "Setting"
@@ -60518,6 +60520,7 @@ type RiderMutation struct {
 	appendexchange_limit     model.RiderExchangeLimit
 	exchange_frequency       *model.RiderExchangeFrequency
 	appendexchange_frequency model.RiderExchangeFrequency
+	belongs                  *string
 	clearedFields            map[string]struct{}
 	station                  *uint64
 	clearedstation           bool
@@ -61776,6 +61779,42 @@ func (m *RiderMutation) ResetExchangeFrequency() {
 	delete(m.clearedFields, rider.FieldExchangeFrequency)
 }
 
+// SetBelongs sets the "belongs" field.
+func (m *RiderMutation) SetBelongs(s string) {
+	m.belongs = &s
+}
+
+// Belongs returns the value of the "belongs" field in the mutation.
+func (m *RiderMutation) Belongs() (r string, exists bool) {
+	v := m.belongs
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBelongs returns the old "belongs" field's value of the Rider entity.
+// If the Rider object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RiderMutation) OldBelongs(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBelongs is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBelongs requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBelongs: %w", err)
+	}
+	return oldValue.Belongs, nil
+}
+
+// ResetBelongs resets all changes to the "belongs" field.
+func (m *RiderMutation) ResetBelongs() {
+	m.belongs = nil
+}
+
 // ClearStation clears the "station" edge to the EnterpriseStation entity.
 func (m *RiderMutation) ClearStation() {
 	m.clearedstation = true
@@ -62359,7 +62398,7 @@ func (m *RiderMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RiderMutation) Fields() []string {
-	fields := make([]string, 0, 23)
+	fields := make([]string, 0, 24)
 	if m.created_at != nil {
 		fields = append(fields, rider.FieldCreatedAt)
 	}
@@ -62429,6 +62468,9 @@ func (m *RiderMutation) Fields() []string {
 	if m.exchange_frequency != nil {
 		fields = append(fields, rider.FieldExchangeFrequency)
 	}
+	if m.belongs != nil {
+		fields = append(fields, rider.FieldBelongs)
+	}
 	return fields
 }
 
@@ -62483,6 +62525,8 @@ func (m *RiderMutation) Field(name string) (ent.Value, bool) {
 		return m.ExchangeLimit()
 	case rider.FieldExchangeFrequency:
 		return m.ExchangeFrequency()
+	case rider.FieldBelongs:
+		return m.Belongs()
 	}
 	return nil, false
 }
@@ -62538,6 +62582,8 @@ func (m *RiderMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldExchangeLimit(ctx)
 	case rider.FieldExchangeFrequency:
 		return m.OldExchangeFrequency(ctx)
+	case rider.FieldBelongs:
+		return m.OldBelongs(ctx)
 	}
 	return nil, fmt.Errorf("unknown Rider field %s", name)
 }
@@ -62707,6 +62753,13 @@ func (m *RiderMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetExchangeFrequency(v)
+		return nil
+	case rider.FieldBelongs:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBelongs(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Rider field %s", name)
@@ -62957,6 +63010,9 @@ func (m *RiderMutation) ResetField(name string) error {
 		return nil
 	case rider.FieldExchangeFrequency:
 		m.ResetExchangeFrequency()
+		return nil
+	case rider.FieldBelongs:
+		m.ResetBelongs()
 		return nil
 	}
 	return fmt.Errorf("unknown Rider field %s", name)
@@ -63298,6 +63354,681 @@ func (m *RiderMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown Rider edge %s", name)
+}
+
+// RiderBelongsMutation represents an operation that mutates the RiderBelongs nodes in the graph.
+type RiderBelongsMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *uint64
+	created_at    *time.Time
+	updated_at    *time.Time
+	deleted_at    *time.Time
+	creator       **model.Modifier
+	last_modifier **model.Modifier
+	remark        *string
+	clearedFields map[string]struct{}
+	done          bool
+	oldValue      func(context.Context) (*RiderBelongs, error)
+	predicates    []predicate.RiderBelongs
+}
+
+var _ ent.Mutation = (*RiderBelongsMutation)(nil)
+
+// riderbelongsOption allows management of the mutation configuration using functional options.
+type riderbelongsOption func(*RiderBelongsMutation)
+
+// newRiderBelongsMutation creates new mutation for the RiderBelongs entity.
+func newRiderBelongsMutation(c config, op Op, opts ...riderbelongsOption) *RiderBelongsMutation {
+	m := &RiderBelongsMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeRiderBelongs,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withRiderBelongsID sets the ID field of the mutation.
+func withRiderBelongsID(id uint64) riderbelongsOption {
+	return func(m *RiderBelongsMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *RiderBelongs
+		)
+		m.oldValue = func(ctx context.Context) (*RiderBelongs, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().RiderBelongs.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withRiderBelongs sets the old RiderBelongs of the mutation.
+func withRiderBelongs(node *RiderBelongs) riderbelongsOption {
+	return func(m *RiderBelongsMutation) {
+		m.oldValue = func(context.Context) (*RiderBelongs, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m RiderBelongsMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m RiderBelongsMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *RiderBelongsMutation) ID() (id uint64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *RiderBelongsMutation) IDs(ctx context.Context) ([]uint64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uint64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().RiderBelongs.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *RiderBelongsMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *RiderBelongsMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the RiderBelongs entity.
+// If the RiderBelongs object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RiderBelongsMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *RiderBelongsMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *RiderBelongsMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *RiderBelongsMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the RiderBelongs entity.
+// If the RiderBelongs object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RiderBelongsMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *RiderBelongsMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *RiderBelongsMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *RiderBelongsMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the RiderBelongs entity.
+// If the RiderBelongs object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RiderBelongsMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *RiderBelongsMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[riderbelongs.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *RiderBelongsMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[riderbelongs.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *RiderBelongsMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, riderbelongs.FieldDeletedAt)
+}
+
+// SetCreator sets the "creator" field.
+func (m *RiderBelongsMutation) SetCreator(value *model.Modifier) {
+	m.creator = &value
+}
+
+// Creator returns the value of the "creator" field in the mutation.
+func (m *RiderBelongsMutation) Creator() (r *model.Modifier, exists bool) {
+	v := m.creator
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreator returns the old "creator" field's value of the RiderBelongs entity.
+// If the RiderBelongs object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RiderBelongsMutation) OldCreator(ctx context.Context) (v *model.Modifier, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreator is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreator requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreator: %w", err)
+	}
+	return oldValue.Creator, nil
+}
+
+// ClearCreator clears the value of the "creator" field.
+func (m *RiderBelongsMutation) ClearCreator() {
+	m.creator = nil
+	m.clearedFields[riderbelongs.FieldCreator] = struct{}{}
+}
+
+// CreatorCleared returns if the "creator" field was cleared in this mutation.
+func (m *RiderBelongsMutation) CreatorCleared() bool {
+	_, ok := m.clearedFields[riderbelongs.FieldCreator]
+	return ok
+}
+
+// ResetCreator resets all changes to the "creator" field.
+func (m *RiderBelongsMutation) ResetCreator() {
+	m.creator = nil
+	delete(m.clearedFields, riderbelongs.FieldCreator)
+}
+
+// SetLastModifier sets the "last_modifier" field.
+func (m *RiderBelongsMutation) SetLastModifier(value *model.Modifier) {
+	m.last_modifier = &value
+}
+
+// LastModifier returns the value of the "last_modifier" field in the mutation.
+func (m *RiderBelongsMutation) LastModifier() (r *model.Modifier, exists bool) {
+	v := m.last_modifier
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastModifier returns the old "last_modifier" field's value of the RiderBelongs entity.
+// If the RiderBelongs object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RiderBelongsMutation) OldLastModifier(ctx context.Context) (v *model.Modifier, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastModifier is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastModifier requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastModifier: %w", err)
+	}
+	return oldValue.LastModifier, nil
+}
+
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (m *RiderBelongsMutation) ClearLastModifier() {
+	m.last_modifier = nil
+	m.clearedFields[riderbelongs.FieldLastModifier] = struct{}{}
+}
+
+// LastModifierCleared returns if the "last_modifier" field was cleared in this mutation.
+func (m *RiderBelongsMutation) LastModifierCleared() bool {
+	_, ok := m.clearedFields[riderbelongs.FieldLastModifier]
+	return ok
+}
+
+// ResetLastModifier resets all changes to the "last_modifier" field.
+func (m *RiderBelongsMutation) ResetLastModifier() {
+	m.last_modifier = nil
+	delete(m.clearedFields, riderbelongs.FieldLastModifier)
+}
+
+// SetRemark sets the "remark" field.
+func (m *RiderBelongsMutation) SetRemark(s string) {
+	m.remark = &s
+}
+
+// Remark returns the value of the "remark" field in the mutation.
+func (m *RiderBelongsMutation) Remark() (r string, exists bool) {
+	v := m.remark
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRemark returns the old "remark" field's value of the RiderBelongs entity.
+// If the RiderBelongs object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RiderBelongsMutation) OldRemark(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRemark is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRemark requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRemark: %w", err)
+	}
+	return oldValue.Remark, nil
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (m *RiderBelongsMutation) ClearRemark() {
+	m.remark = nil
+	m.clearedFields[riderbelongs.FieldRemark] = struct{}{}
+}
+
+// RemarkCleared returns if the "remark" field was cleared in this mutation.
+func (m *RiderBelongsMutation) RemarkCleared() bool {
+	_, ok := m.clearedFields[riderbelongs.FieldRemark]
+	return ok
+}
+
+// ResetRemark resets all changes to the "remark" field.
+func (m *RiderBelongsMutation) ResetRemark() {
+	m.remark = nil
+	delete(m.clearedFields, riderbelongs.FieldRemark)
+}
+
+// Where appends a list predicates to the RiderBelongsMutation builder.
+func (m *RiderBelongsMutation) Where(ps ...predicate.RiderBelongs) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the RiderBelongsMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *RiderBelongsMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.RiderBelongs, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *RiderBelongsMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *RiderBelongsMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (RiderBelongs).
+func (m *RiderBelongsMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *RiderBelongsMutation) Fields() []string {
+	fields := make([]string, 0, 6)
+	if m.created_at != nil {
+		fields = append(fields, riderbelongs.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, riderbelongs.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, riderbelongs.FieldDeletedAt)
+	}
+	if m.creator != nil {
+		fields = append(fields, riderbelongs.FieldCreator)
+	}
+	if m.last_modifier != nil {
+		fields = append(fields, riderbelongs.FieldLastModifier)
+	}
+	if m.remark != nil {
+		fields = append(fields, riderbelongs.FieldRemark)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *RiderBelongsMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case riderbelongs.FieldCreatedAt:
+		return m.CreatedAt()
+	case riderbelongs.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case riderbelongs.FieldDeletedAt:
+		return m.DeletedAt()
+	case riderbelongs.FieldCreator:
+		return m.Creator()
+	case riderbelongs.FieldLastModifier:
+		return m.LastModifier()
+	case riderbelongs.FieldRemark:
+		return m.Remark()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *RiderBelongsMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case riderbelongs.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case riderbelongs.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case riderbelongs.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case riderbelongs.FieldCreator:
+		return m.OldCreator(ctx)
+	case riderbelongs.FieldLastModifier:
+		return m.OldLastModifier(ctx)
+	case riderbelongs.FieldRemark:
+		return m.OldRemark(ctx)
+	}
+	return nil, fmt.Errorf("unknown RiderBelongs field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *RiderBelongsMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case riderbelongs.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case riderbelongs.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case riderbelongs.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case riderbelongs.FieldCreator:
+		v, ok := value.(*model.Modifier)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreator(v)
+		return nil
+	case riderbelongs.FieldLastModifier:
+		v, ok := value.(*model.Modifier)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastModifier(v)
+		return nil
+	case riderbelongs.FieldRemark:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRemark(v)
+		return nil
+	}
+	return fmt.Errorf("unknown RiderBelongs field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *RiderBelongsMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *RiderBelongsMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *RiderBelongsMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown RiderBelongs numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *RiderBelongsMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(riderbelongs.FieldDeletedAt) {
+		fields = append(fields, riderbelongs.FieldDeletedAt)
+	}
+	if m.FieldCleared(riderbelongs.FieldCreator) {
+		fields = append(fields, riderbelongs.FieldCreator)
+	}
+	if m.FieldCleared(riderbelongs.FieldLastModifier) {
+		fields = append(fields, riderbelongs.FieldLastModifier)
+	}
+	if m.FieldCleared(riderbelongs.FieldRemark) {
+		fields = append(fields, riderbelongs.FieldRemark)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *RiderBelongsMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *RiderBelongsMutation) ClearField(name string) error {
+	switch name {
+	case riderbelongs.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
+	case riderbelongs.FieldCreator:
+		m.ClearCreator()
+		return nil
+	case riderbelongs.FieldLastModifier:
+		m.ClearLastModifier()
+		return nil
+	case riderbelongs.FieldRemark:
+		m.ClearRemark()
+		return nil
+	}
+	return fmt.Errorf("unknown RiderBelongs nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *RiderBelongsMutation) ResetField(name string) error {
+	switch name {
+	case riderbelongs.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case riderbelongs.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case riderbelongs.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case riderbelongs.FieldCreator:
+		m.ResetCreator()
+		return nil
+	case riderbelongs.FieldLastModifier:
+		m.ResetLastModifier()
+		return nil
+	case riderbelongs.FieldRemark:
+		m.ResetRemark()
+		return nil
+	}
+	return fmt.Errorf("unknown RiderBelongs field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *RiderBelongsMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *RiderBelongsMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *RiderBelongsMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *RiderBelongsMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *RiderBelongsMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *RiderBelongsMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *RiderBelongsMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown RiderBelongs unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *RiderBelongsMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown RiderBelongs edge %s", name)
 }
 
 // RiderFollowUpMutation represents an operation that mutates the RiderFollowUp nodes in the graph.

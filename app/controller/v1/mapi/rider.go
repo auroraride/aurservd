@@ -188,3 +188,9 @@ func (*rider) ExchangeFrequency(c echo.Context) (err error) {
 	service.NewRiderWithModifier(ctx.Modifier).ExchangeFrequency(req)
 	return ctx.SendResponse()
 }
+
+func (*rider) BelongList(c echo.Context) (err error) {
+	ctx := app.Context(c)
+
+	return ctx.SendResponse()
+}

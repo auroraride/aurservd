@@ -55,6 +55,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/pointlog"
 	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/riderbelongs"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
 	"github.com/auroraride/aurservd/internal/ent/role"
 	"github.com/auroraride/aurservd/internal/ent/setting"
@@ -156,6 +157,8 @@ type Client struct {
 	Reserve *ReserveClient
 	// Rider is the client for interacting with the Rider builders.
 	Rider *RiderClient
+	// RiderBelongs is the client for interacting with the RiderBelongs builders.
+	RiderBelongs *RiderBelongsClient
 	// RiderFollowUp is the client for interacting with the RiderFollowUp builders.
 	RiderFollowUp *RiderFollowUpClient
 	// Role is the client for interacting with the Role builders.
@@ -230,6 +233,7 @@ func (c *Client) init() {
 	c.PointLog = NewPointLogClient(c.config)
 	c.Reserve = NewReserveClient(c.config)
 	c.Rider = NewRiderClient(c.config)
+	c.RiderBelongs = NewRiderBelongsClient(c.config)
 	c.RiderFollowUp = NewRiderFollowUpClient(c.config)
 	c.Role = NewRoleClient(c.config)
 	c.Setting = NewSettingClient(c.config)
@@ -363,6 +367,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		PointLog:             NewPointLogClient(cfg),
 		Reserve:              NewReserveClient(cfg),
 		Rider:                NewRiderClient(cfg),
+		RiderBelongs:         NewRiderBelongsClient(cfg),
 		RiderFollowUp:        NewRiderFollowUpClient(cfg),
 		Role:                 NewRoleClient(cfg),
 		Setting:              NewSettingClient(cfg),
@@ -433,6 +438,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		PointLog:             NewPointLogClient(cfg),
 		Reserve:              NewReserveClient(cfg),
 		Rider:                NewRiderClient(cfg),
+		RiderBelongs:         NewRiderBelongsClient(cfg),
 		RiderFollowUp:        NewRiderFollowUpClient(cfg),
 		Role:                 NewRoleClient(cfg),
 		Setting:              NewSettingClient(cfg),
@@ -479,9 +485,9 @@ func (c *Client) Use(hooks ...Hook) {
 		c.EnterpriseBill, c.EnterpriseContract, c.EnterprisePrepayment,
 		c.EnterprisePrice, c.EnterpriseStatement, c.EnterpriseStation, c.Exception,
 		c.Exchange, c.Export, c.Inventory, c.Manager, c.Order, c.OrderRefund, c.Person,
-		c.Plan, c.PlanIntroduce, c.PointLog, c.Reserve, c.Rider, c.RiderFollowUp,
-		c.Role, c.Setting, c.Stock, c.Store, c.Subscribe, c.SubscribeAlter,
-		c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend,
+		c.Plan, c.PlanIntroduce, c.PointLog, c.Reserve, c.Rider, c.RiderBelongs,
+		c.RiderFollowUp, c.Role, c.Setting, c.Stock, c.Store, c.Subscribe,
+		c.SubscribeAlter, c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend,
 	} {
 		n.Use(hooks...)
 	}
@@ -498,9 +504,9 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.EnterpriseBill, c.EnterpriseContract, c.EnterprisePrepayment,
 		c.EnterprisePrice, c.EnterpriseStatement, c.EnterpriseStation, c.Exception,
 		c.Exchange, c.Export, c.Inventory, c.Manager, c.Order, c.OrderRefund, c.Person,
-		c.Plan, c.PlanIntroduce, c.PointLog, c.Reserve, c.Rider, c.RiderFollowUp,
-		c.Role, c.Setting, c.Stock, c.Store, c.Subscribe, c.SubscribeAlter,
-		c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend,
+		c.Plan, c.PlanIntroduce, c.PointLog, c.Reserve, c.Rider, c.RiderBelongs,
+		c.RiderFollowUp, c.Role, c.Setting, c.Stock, c.Store, c.Subscribe,
+		c.SubscribeAlter, c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -591,6 +597,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Reserve.mutate(ctx, m)
 	case *RiderMutation:
 		return c.Rider.mutate(ctx, m)
+	case *RiderBelongsMutation:
+		return c.RiderBelongs.mutate(ctx, m)
 	case *RiderFollowUpMutation:
 		return c.RiderFollowUp.mutate(ctx, m)
 	case *RoleMutation:
@@ -7987,6 +7995,125 @@ func (c *RiderClient) mutate(ctx context.Context, m *RiderMutation) (Value, erro
 	}
 }
 
+// RiderBelongsClient is a client for the RiderBelongs schema.
+type RiderBelongsClient struct {
+	config
+}
+
+// NewRiderBelongsClient returns a client for the RiderBelongs from the given config.
+func NewRiderBelongsClient(c config) *RiderBelongsClient {
+	return &RiderBelongsClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `riderbelongs.Hooks(f(g(h())))`.
+func (c *RiderBelongsClient) Use(hooks ...Hook) {
+	c.hooks.RiderBelongs = append(c.hooks.RiderBelongs, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `riderbelongs.Intercept(f(g(h())))`.
+func (c *RiderBelongsClient) Intercept(interceptors ...Interceptor) {
+	c.inters.RiderBelongs = append(c.inters.RiderBelongs, interceptors...)
+}
+
+// Create returns a builder for creating a RiderBelongs entity.
+func (c *RiderBelongsClient) Create() *RiderBelongsCreate {
+	mutation := newRiderBelongsMutation(c.config, OpCreate)
+	return &RiderBelongsCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of RiderBelongs entities.
+func (c *RiderBelongsClient) CreateBulk(builders ...*RiderBelongsCreate) *RiderBelongsCreateBulk {
+	return &RiderBelongsCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for RiderBelongs.
+func (c *RiderBelongsClient) Update() *RiderBelongsUpdate {
+	mutation := newRiderBelongsMutation(c.config, OpUpdate)
+	return &RiderBelongsUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *RiderBelongsClient) UpdateOne(rb *RiderBelongs) *RiderBelongsUpdateOne {
+	mutation := newRiderBelongsMutation(c.config, OpUpdateOne, withRiderBelongs(rb))
+	return &RiderBelongsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *RiderBelongsClient) UpdateOneID(id uint64) *RiderBelongsUpdateOne {
+	mutation := newRiderBelongsMutation(c.config, OpUpdateOne, withRiderBelongsID(id))
+	return &RiderBelongsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for RiderBelongs.
+func (c *RiderBelongsClient) Delete() *RiderBelongsDelete {
+	mutation := newRiderBelongsMutation(c.config, OpDelete)
+	return &RiderBelongsDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *RiderBelongsClient) DeleteOne(rb *RiderBelongs) *RiderBelongsDeleteOne {
+	return c.DeleteOneID(rb.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *RiderBelongsClient) DeleteOneID(id uint64) *RiderBelongsDeleteOne {
+	builder := c.Delete().Where(riderbelongs.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &RiderBelongsDeleteOne{builder}
+}
+
+// Query returns a query builder for RiderBelongs.
+func (c *RiderBelongsClient) Query() *RiderBelongsQuery {
+	return &RiderBelongsQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeRiderBelongs},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a RiderBelongs entity by its id.
+func (c *RiderBelongsClient) Get(ctx context.Context, id uint64) (*RiderBelongs, error) {
+	return c.Query().Where(riderbelongs.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *RiderBelongsClient) GetX(ctx context.Context, id uint64) *RiderBelongs {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *RiderBelongsClient) Hooks() []Hook {
+	hooks := c.hooks.RiderBelongs
+	return append(hooks[:len(hooks):len(hooks)], riderbelongs.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *RiderBelongsClient) Interceptors() []Interceptor {
+	return c.inters.RiderBelongs
+}
+
+func (c *RiderBelongsClient) mutate(ctx context.Context, m *RiderBelongsMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&RiderBelongsCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&RiderBelongsUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&RiderBelongsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&RiderBelongsDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown RiderBelongs mutation op: %q", m.Op())
+	}
+}
+
 // RiderFollowUpClient is a client for the RiderFollowUp schema.
 type RiderFollowUpClient struct {
 	config
@@ -10144,8 +10271,8 @@ type (
 		Enterprise, EnterpriseBill, EnterpriseContract, EnterprisePrepayment,
 		EnterprisePrice, EnterpriseStatement, EnterpriseStation, Exception, Exchange,
 		Export, Inventory, Manager, Order, OrderRefund, Person, Plan, PlanIntroduce,
-		PointLog, Reserve, Rider, RiderFollowUp, Role, Setting, Stock, Store,
-		Subscribe, SubscribeAlter, SubscribePause, SubscribeReminder,
+		PointLog, Reserve, Rider, RiderBelongs, RiderFollowUp, Role, Setting, Stock,
+		Store, Subscribe, SubscribeAlter, SubscribePause, SubscribeReminder,
 		SubscribeSuspend []ent.Hook
 	}
 	inters struct {
@@ -10155,8 +10282,8 @@ type (
 		Enterprise, EnterpriseBill, EnterpriseContract, EnterprisePrepayment,
 		EnterprisePrice, EnterpriseStatement, EnterpriseStation, Exception, Exchange,
 		Export, Inventory, Manager, Order, OrderRefund, Person, Plan, PlanIntroduce,
-		PointLog, Reserve, Rider, RiderFollowUp, Role, Setting, Stock, Store,
-		Subscribe, SubscribeAlter, SubscribePause, SubscribeReminder,
+		PointLog, Reserve, Rider, RiderBelongs, RiderFollowUp, Role, Setting, Stock,
+		Store, Subscribe, SubscribeAlter, SubscribePause, SubscribeReminder,
 		SubscribeSuspend []ent.Interceptor
 	}
 )

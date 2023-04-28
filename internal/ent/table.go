@@ -480,6 +480,16 @@ func (r *Rider) GetName() string {
 	return r.Name
 }
 
+// GetTableName returns table name for RiderBelongs.
+func (rb *RiderBelongs) GetTableName() string {
+	return "rider_belongs"
+}
+
+// GetID returns id for RiderBelongs.
+func (rb *RiderBelongs) GetID() uint64 {
+	return rb.ID
+}
+
 // GetTableName returns table name for RiderFollowUp.
 func (rfu *RiderFollowUp) GetTableName() string {
 	return "rider_follow_up"

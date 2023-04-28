@@ -1099,3 +1099,7 @@ func (s *riderService) ExchangeFrequency(req *model.RiderExchangeFrequencyReq) {
 		SetDiff(r.ExchangeFrequency.String(), req.ExchangeFrequency.String()).
 		Send()
 }
+
+func (s *riderService) BelongList() []string {
+	return []string{}
+}

@@ -129,6 +129,9 @@ type Reserve func(*sql.Selector)
 // Rider is the predicate function for rider builders.
 type Rider func(*sql.Selector)
 
+// RiderBelongs is the predicate function for riderbelongs builders.
+type RiderBelongs func(*sql.Selector)
+
 // RiderFollowUp is the predicate function for riderfollowup builders.
 type RiderFollowUp func(*sql.Selector)
 

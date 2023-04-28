@@ -309,6 +309,12 @@ func (rc *RiderCreate) SetExchangeFrequency(mef model.RiderExchangeFrequency) *R
 	return rc
 }
 
+// SetBelongs sets the "belongs" field.
+func (rc *RiderCreate) SetBelongs(s string) *RiderCreate {
+	rc.mutation.SetBelongs(s)
+	return rc
+}
+
 // SetStation sets the "station" edge to the EnterpriseStation entity.
 func (rc *RiderCreate) SetStation(e *EnterpriseStation) *RiderCreate {
 	return rc.SetStationID(e.ID)
@@ -564,6 +570,9 @@ func (rc *RiderCreate) check() error {
 	if _, ok := rc.mutation.Points(); !ok {
 		return &ValidationError{Name: "points", err: errors.New(`ent: missing required field "Rider.points"`)}
 	}
+	if _, ok := rc.mutation.Belongs(); !ok {
+		return &ValidationError{Name: "belongs", err: errors.New(`ent: missing required field "Rider.belongs"`)}
+	}
 	return nil
 }
 
@@ -670,6 +679,10 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 	if value, ok := rc.mutation.ExchangeFrequency(); ok {
 		_spec.SetField(rider.FieldExchangeFrequency, field.TypeJSON, value)
 		_node.ExchangeFrequency = value
+	}
+	if value, ok := rc.mutation.Belongs(); ok {
+		_spec.SetField(rider.FieldBelongs, field.TypeString, value)
+		_node.Belongs = &value
 	}
 	if nodes := rc.mutation.StationIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1314,6 +1327,18 @@ func (u *RiderUpsert) ClearExchangeFrequency() *RiderUpsert {
 	return u
 }
 
+// SetBelongs sets the "belongs" field.
+func (u *RiderUpsert) SetBelongs(v string) *RiderUpsert {
+	u.Set(rider.FieldBelongs, v)
+	return u
+}
+
+// UpdateBelongs sets the "belongs" field to the value that was provided on create.
+func (u *RiderUpsert) UpdateBelongs() *RiderUpsert {
+	u.SetExcluded(rider.FieldBelongs)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1779,6 +1804,20 @@ func (u *RiderUpsertOne) UpdateExchangeFrequency() *RiderUpsertOne {
 func (u *RiderUpsertOne) ClearExchangeFrequency() *RiderUpsertOne {
 	return u.Update(func(s *RiderUpsert) {
 		s.ClearExchangeFrequency()
+	})
+}
+
+// SetBelongs sets the "belongs" field.
+func (u *RiderUpsertOne) SetBelongs(v string) *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetBelongs(v)
+	})
+}
+
+// UpdateBelongs sets the "belongs" field to the value that was provided on create.
+func (u *RiderUpsertOne) UpdateBelongs() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateBelongs()
 	})
 }
 
@@ -2409,6 +2448,20 @@ func (u *RiderUpsertBulk) UpdateExchangeFrequency() *RiderUpsertBulk {
 func (u *RiderUpsertBulk) ClearExchangeFrequency() *RiderUpsertBulk {
 	return u.Update(func(s *RiderUpsert) {
 		s.ClearExchangeFrequency()
+	})
+}
+
+// SetBelongs sets the "belongs" field.
+func (u *RiderUpsertBulk) SetBelongs(v string) *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetBelongs(v)
+	})
+}
+
+// UpdateBelongs sets the "belongs" field to the value that was provided on create.
+func (u *RiderUpsertBulk) UpdateBelongs() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateBelongs()
 	})
 }
 

@@ -38,6 +38,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/riderbelongs"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
@@ -1319,6 +1320,46 @@ func (c *RiderClient) GetNotDeleted(ctx context.Context, id uint64) (*Rider, err
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *RiderClient) GetNotDeletedX(ctx context.Context, id uint64) *Rider {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for RiderBelongs.
+func (c *RiderBelongsClient) SoftDelete() *RiderBelongsUpdate {
+	mutation := newRiderBelongsMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &RiderBelongsUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *RiderBelongsClient) SoftDeleteOne(rb *RiderBelongs) *RiderBelongsUpdateOne {
+	mutation := newRiderBelongsMutation(c.config, OpUpdateOne, withRiderBelongs(rb))
+	mutation.SetDeletedAt(time.Now())
+	return &RiderBelongsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *RiderBelongsClient) SoftDeleteOneID(id uint64) *RiderBelongsUpdateOne {
+	mutation := newRiderBelongsMutation(c.config, OpUpdateOne, withRiderBelongsID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &RiderBelongsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for RiderBelongs.
+func (c *RiderBelongsClient) QueryNotDeleted() *RiderBelongsQuery {
+	return c.Query().Where(riderbelongs.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a RiderBelongs not deleted entity by its id.
+func (c *RiderBelongsClient) GetNotDeleted(ctx context.Context, id uint64) (*RiderBelongs, error) {
+	return c.Query().Where(riderbelongs.ID(id), riderbelongs.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *RiderBelongsClient) GetNotDeletedX(ctx context.Context, id uint64) *RiderBelongs {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)
