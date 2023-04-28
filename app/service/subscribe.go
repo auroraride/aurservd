@@ -8,7 +8,6 @@ package service
 import (
 	"context"
 	"fmt"
-	"math"
 	"strconv"
 	"time"
 
@@ -26,7 +25,6 @@ import (
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
 	"github.com/golang-module/carbon/v2"
-	"github.com/shopspring/decimal"
 	"go.uber.org/zap"
 )
 
@@ -533,14 +531,6 @@ func (s *subscribeService) OverdueFee(riderID uint64, sub *ent.Subscribe) (fee f
 	}
 
 	fee, formula = p.OverdueFee(remaining)
-	return
-}
-
-func (s *subscribeService) OverdueFeeFormula(price float64, days uint, remaining int) (fee float64, formula string) {
-	fee, _ = decimal.NewFromFloat(price).Div(decimal.NewFromInt(int64(days))).Mul(decimal.NewFromInt(int64(remaining)).Neg()).Mul(decimal.NewFromFloat(1.24)).Float64()
-	fee = math.Round(fee*100) / 100
-
-	formula = fmt.Sprintf("(上次购买骑士卡价格 %.2f元 ÷ 天数 %d天) × 逾期天数 %d天 × 1.24 = 逾期费用 %.2f元", price, days, remaining, fee)
 	return
 }
 
