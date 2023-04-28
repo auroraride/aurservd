@@ -6,60 +6,61 @@
 package boot
 
 import (
-    "github.com/auroraride/adapter/log"
-    "github.com/auroraride/aurservd/app/logging"
-    "github.com/auroraride/aurservd/assets"
-    "github.com/auroraride/aurservd/internal/ar"
-    "github.com/auroraride/aurservd/internal/payment"
-    "github.com/go-redis/redis/v9"
-    "github.com/golang-module/carbon/v2"
-    "io"
-    "os"
-    "time"
+	"io"
+	"os"
+	"time"
 
-    _ "github.com/auroraride/aurservd/app/permission"
+	"github.com/auroraride/adapter/log"
+	"github.com/auroraride/aurservd/app/logging"
+	"github.com/auroraride/aurservd/assets"
+	"github.com/auroraride/aurservd/internal/ar"
+	"github.com/auroraride/aurservd/internal/payment"
+	"github.com/go-redis/redis/v9"
+	"github.com/golang-module/carbon/v2"
+
+	_ "github.com/auroraride/aurservd/app/permission"
 )
 
 func Bootstrap() {
-    // 设置全局时区
-    tz := "Asia/Shanghai"
-    _ = os.Setenv("TZ", tz)
-    loc, _ := time.LoadLocation(tz)
-    ar.TimeLocation = loc
-    time.Local = loc
-    carbon.SetTimezone(tz)
+	// 设置全局时区
+	tz := "Asia/Shanghai"
+	_ = os.Setenv("TZ", tz)
+	loc, _ := time.LoadLocation(tz)
+	ar.TimeLocation = loc
+	time.Local = loc
+	carbon.SetTimezone(tz)
 
-    // 载入配置
-    ar.LoadConfig()
+	// 载入配置
+	ar.LoadConfig()
 
-    // 创建redis客户端
-    ar.Redis = redis.NewClient(&redis.Options{
-        Addr:     ar.Config.Redis.Address,
-        Password: ar.Config.Redis.Password,
-        DB:       ar.Config.Redis.DB,
-    })
+	// 创建redis客户端
+	ar.Redis = redis.NewClient(&redis.Options{
+		Addr:     ar.Config.Redis.Address,
+		Password: ar.Config.Redis.Password,
+		DB:       ar.Config.Redis.DB,
+	})
 
-    // 配置elk+zap
-    log.New(&log.Config{
-        FormatJson: true,
-        Stdout:     ar.Config.Debug,
-        LoggerName: ar.Config.LoggerName,
-        Writers: []io.Writer{
-            log.NewRedisWriter(redis.NewClient(&redis.Options{})),
-        },
-    })
+	// 配置elk+zap
+	log.New(&log.Config{
+		FormatJson: true,
+		Stdout:     ar.Config.Debug,
+		LoggerName: ar.Config.LoggerName,
+		Writers: []io.Writer{
+			log.NewRedisWriter(redis.NewClient(&redis.Options{})),
+		},
+	})
 
-    // 加载数据库
-    entInit()
+	// 加载数据库
+	entInit()
 
-    // 加载其他数据
+	// 加载其他数据
 
-    // 初始化日志
-    logging.Boot()
+	// 初始化日志
+	logging.Boot()
 
-    // 初始化支付
-    payment.Boot()
+	// 初始化支付
+	payment.Boot()
 
-    // 加载模板
-    assets.LoadTemplates()
+	// 加载模板
+	assets.LoadTemplates()
 }

@@ -6,10 +6,10 @@
 package mapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type coupon struct{}
@@ -27,8 +27,8 @@ var Coupon = new(coupon)
 // @Param        query  query   model.CouponTemplateListReq  false  "筛选选项"
 // @Success      200  {object}  model.PaginationRes{items=[]model.CouponTemplateListRes}  "请求成功"
 func (*coupon) TemplateList(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.CouponTemplateListReq](c)
-    return ctx.SendResponse(service.NewCouponTemplateWithModifier(ctx.Modifier).List(req))
+	ctx, req := app.ManagerContextAndBinding[model.CouponTemplateListReq](c)
+	return ctx.SendResponse(service.NewCouponTemplateWithModifier(ctx.Modifier).List(req))
 }
 
 // TemplateCreate
@@ -42,9 +42,9 @@ func (*coupon) TemplateList(c echo.Context) (err error) {
 // @Param        body  body     model.CouponTemplateCreateReq  true  "模板内容"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*coupon) TemplateCreate(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.CouponTemplateCreateReq](c)
-    service.NewCouponTemplateWithModifier(ctx.Modifier).Create(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.CouponTemplateCreateReq](c)
+	service.NewCouponTemplateWithModifier(ctx.Modifier).Create(req)
+	return ctx.SendResponse()
 }
 
 // TemplateStatus
@@ -58,9 +58,9 @@ func (*coupon) TemplateCreate(c echo.Context) (err error) {
 // @Param        body  body     model.CouponTemplateStatusReq  true  "模板信息"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*coupon) TemplateStatus(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.CouponTemplateStatusReq](c)
-    service.NewCouponTemplateWithModifier(ctx.Modifier).Status(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.CouponTemplateStatusReq](c)
+	service.NewCouponTemplateWithModifier(ctx.Modifier).Status(req)
+	return ctx.SendResponse()
 }
 
 // Generate
@@ -74,8 +74,8 @@ func (*coupon) TemplateStatus(c echo.Context) (err error) {
 // @Param        body  body     model.CouponGenerateReq  true  "优惠券信息"
 // @Success      200  {object}  []string  "失败列表"
 func (*coupon) Generate(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.CouponGenerateReq](c)
-    return ctx.SendResponse(service.NewCouponWithModifier(ctx.Modifier).Generate(req))
+	ctx, req := app.ManagerContextAndBinding[model.CouponGenerateReq](c)
+	return ctx.SendResponse(service.NewCouponWithModifier(ctx.Modifier).Generate(req))
 }
 
 // Assembly
@@ -89,8 +89,8 @@ func (*coupon) Generate(c echo.Context) (err error) {
 // @Param        query  query   model.CouponAssemblyListReq  false  "筛选条件"
 // @Success      200  {object}  model.PaginationRes{items=[]model.CouponAssembly}  "请求成功"
 func (*coupon) Assembly(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.CouponAssemblyListReq](c)
-    return ctx.SendResponse(service.NewCouponAssemblyWithModifier(ctx.Modifier).List(req))
+	ctx, req := app.ManagerContextAndBinding[model.CouponAssemblyListReq](c)
+	return ctx.SendResponse(service.NewCouponAssemblyWithModifier(ctx.Modifier).List(req))
 }
 
 // List
@@ -104,8 +104,8 @@ func (*coupon) Assembly(c echo.Context) (err error) {
 // @Param        query  query   model.CouponListReq  false  "筛选条件"
 // @Success      200  {object}  model.PaginationRes{items=[]model.CouponListRes}  "请求成功"
 func (*coupon) List(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.CouponListReq](c)
-    return ctx.SendResponse(service.NewCouponWithModifier(ctx.Modifier).List(req))
+	ctx, req := app.ManagerContextAndBinding[model.CouponListReq](c)
+	return ctx.SendResponse(service.NewCouponWithModifier(ctx.Modifier).List(req))
 }
 
 // Allocate
@@ -119,7 +119,7 @@ func (*coupon) List(c echo.Context) (err error) {
 // @Param        body  body     model.CouponAllocateReq  true  "优惠券和骑手信息"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*coupon) Allocate(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.CouponAllocateReq](c)
-    service.NewCouponWithModifier(ctx.Modifier).Allocate(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.CouponAllocateReq](c)
+	service.NewCouponWithModifier(ctx.Modifier).Allocate(req)
+	return ctx.SendResponse()
 }

@@ -6,10 +6,10 @@
 package mapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type rider struct{}
@@ -27,8 +27,8 @@ var Rider = new(rider)
 // @Param        query  query   model.RiderListReq  true  "请求体"
 // @Success      200  {object}  model.PaginationRes{items=[]model.RiderItem} "请求成功"
 func (*rider) List(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.RiderListReq](c)
-    return ctx.SendResponse(service.NewRiderWithModifier(ctx.Modifier).List(req))
+	ctx, req := app.ManagerContextAndBinding[model.RiderListReq](c)
+	return ctx.SendResponse(service.NewRiderWithModifier(ctx.Modifier).List(req))
 }
 
 // Ban
@@ -42,9 +42,9 @@ func (*rider) List(c echo.Context) (err error) {
 // @Param        body  body     model.PersonBanReq  true  "desc"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*rider) Ban(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.PersonBanReq](c)
-    service.NewPersonWithModifier(ctx.Modifier).Ban(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.PersonBanReq](c)
+	service.NewPersonWithModifier(ctx.Modifier).Ban(req)
+	return ctx.SendResponse()
 }
 
 // Block
@@ -58,9 +58,9 @@ func (*rider) Ban(c echo.Context) (err error) {
 // @Param        body  body     model.RiderBlockReq  true  "desc"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*rider) Block(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.RiderBlockReq](c)
-    service.NewRiderWithModifier(ctx.Modifier).Block(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.RiderBlockReq](c)
+	service.NewRiderWithModifier(ctx.Modifier).Block(req)
+	return ctx.SendResponse()
 }
 
 // Log
@@ -74,8 +74,8 @@ func (*rider) Block(c echo.Context) (err error) {
 // @Param        query  query   model.RiderLogReq  true  "desc"
 // @Success      200  {object}  model.PaginationRes{items=[]model.LogOperate}  "请求成功"
 func (*rider) Log(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.RiderLogReq](c)
-    return ctx.SendResponse(service.NewRiderWithModifier(ctx.Modifier).GetLogs(req))
+	ctx, req := app.ManagerContextAndBinding[model.RiderLogReq](c)
+	return ctx.SendResponse(service.NewRiderWithModifier(ctx.Modifier).GetLogs(req))
 }
 
 // Deposit
@@ -89,9 +89,9 @@ func (*rider) Log(c echo.Context) (err error) {
 // @Param        body  body     model.RiderMgrDepositReq  true  "desc"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*rider) Deposit(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.RiderMgrDepositReq](c)
-    service.NewRiderMgrWithModifier(ctx.Modifier).Deposit(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.RiderMgrDepositReq](c)
+	service.NewRiderMgrWithModifier(ctx.Modifier).Deposit(req)
+	return ctx.SendResponse()
 }
 
 // Modify
@@ -105,9 +105,9 @@ func (*rider) Deposit(c echo.Context) (err error) {
 // @Param        body  body     model.RiderMgrModifyReq  true  "desc"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*rider) Modify(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.RiderMgrModifyReq](c)
-    service.NewRiderMgrWithModifier(ctx.Modifier).Modify(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.RiderMgrModifyReq](c)
+	service.NewRiderMgrWithModifier(ctx.Modifier).Modify(req)
+	return ctx.SendResponse()
 }
 
 // Delete
@@ -121,9 +121,9 @@ func (*rider) Modify(c echo.Context) (err error) {
 // @Param        id  path  uint64  true  "骑手ID"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*rider) Delete(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
-    service.NewRider().Delete(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
+	service.NewRider().Delete(req)
+	return ctx.SendResponse()
 }
 
 // FollowUpCreate
@@ -137,9 +137,9 @@ func (*rider) Delete(c echo.Context) (err error) {
 // @Param        body  body     model.RiderFollowUpCreateReq  true  "跟进请求"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*rider) FollowUpCreate(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.RiderFollowUpCreateReq](c)
-    service.NewRiderFollowupWithModifier(ctx.Modifier).Create(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.RiderFollowUpCreateReq](c)
+	service.NewRiderFollowupWithModifier(ctx.Modifier).Create(req)
+	return ctx.SendResponse()
 }
 
 // FollowUpList
@@ -153,8 +153,8 @@ func (*rider) FollowUpCreate(c echo.Context) (err error) {
 // @Param        query  query   model.RiderFollowUpListReq  true  "骑手跟进筛选请求"
 // @Success      200  {object}  model.PaginationRes{items=[]model.RiderFollowUpListRes}  "请求成功"
 func (*rider) FollowUpList(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.RiderFollowUpListReq](c)
-    return ctx.SendResponse(service.NewRiderFollowupWithModifier(ctx.Modifier).List(req))
+	ctx, req := app.ManagerContextAndBinding[model.RiderFollowUpListReq](c)
+	return ctx.SendResponse(service.NewRiderFollowupWithModifier(ctx.Modifier).List(req))
 }
 
 // ExchangeLimit
@@ -168,9 +168,9 @@ func (*rider) FollowUpList(c echo.Context) (err error) {
 // @Param        body  body  model.RiderExchangeLimitReq  true  "配置项"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*rider) ExchangeLimit(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.RiderExchangeLimitReq](c)
-    service.NewRiderWithModifier(ctx.Modifier).ExchangeLimit(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.RiderExchangeLimitReq](c)
+	service.NewRiderWithModifier(ctx.Modifier).ExchangeLimit(req)
+	return ctx.SendResponse()
 }
 
 // ExchangeFrequency
@@ -184,7 +184,7 @@ func (*rider) ExchangeLimit(c echo.Context) (err error) {
 // @Param        body  body  model.RiderExchangeFrequencyReq  true  "配置项"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*rider) ExchangeFrequency(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.RiderExchangeFrequencyReq](c)
-    service.NewRiderWithModifier(ctx.Modifier).ExchangeFrequency(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.RiderExchangeFrequencyReq](c)
+	service.NewRiderWithModifier(ctx.Modifier).ExchangeFrequency(req)
+	return ctx.SendResponse()
 }

@@ -6,23 +6,23 @@
 package model
 
 import (
-    "github.com/auroraride/aurservd/pkg/cache"
+	"github.com/auroraride/aurservd/pkg/cache"
 )
 
 type BatterySoc float64
 
 func NewBatterySoc(pos float64) BatterySoc {
-    if pos < 0 {
-        pos = 0
-    }
-    return BatterySoc(pos)
+	if pos < 0 {
+		pos = 0
+	}
+	return BatterySoc(pos)
 }
 
 // IsBatteryFull 电池是否满电
 func (be BatterySoc) IsBatteryFull() bool {
-    return be >= BatterySoc(cache.Float64(SettingBatteryFullKey))
+	return be >= BatterySoc(cache.Float64(SettingBatteryFullKey))
 }
 
 func (be BatterySoc) Value() float64 {
-    return float64(be)
+	return float64(be)
 }

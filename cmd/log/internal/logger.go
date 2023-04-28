@@ -6,11 +6,11 @@
 package internal
 
 import (
-    "fmt"
-    "os"
+	"fmt"
+	"os"
 )
 
 func FmtFatalln(err any) {
-    fmt.Println(err)
-    os.Exit(0)
+	fmt.Println(err)
+	os.Exit(0)
 }

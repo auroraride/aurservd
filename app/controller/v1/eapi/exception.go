@@ -6,10 +6,10 @@
 package eapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type exception struct{}
@@ -26,10 +26,10 @@ var Exception = new(exception)
 // @Param        X-Employee-Token   header  string  true  "店员校验token"
 // @Success      200  {object}      model.ExceptionEmployeeSetting  "请求成功"
 func (*exception) Setting(c echo.Context) (err error) {
-    ctx := app.Context(c)
-    return ctx.SendResponse(
-        service.NewException().Setting(),
-    )
+	ctx := app.Context(c)
+	return ctx.SendResponse(
+		service.NewException().Setting(),
+	)
 }
 
 // Create
@@ -43,7 +43,7 @@ func (*exception) Setting(c echo.Context) (err error) {
 // @Param        body  body     model.ExceptionEmployeeReq  true  "异常上报请求"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*exception) Create(c echo.Context) (err error) {
-    ctx, req := app.EmployeeContextAndBinding[model.ExceptionEmployeeReq](c)
-    service.NewExceptionWithEmployee(ctx.Employee).Create(req)
-    return ctx.SendResponse()
+	ctx, req := app.EmployeeContextAndBinding[model.ExceptionEmployeeReq](c)
+	service.NewExceptionWithEmployee(ctx.Employee).Create(req)
+	return ctx.SendResponse()
 }

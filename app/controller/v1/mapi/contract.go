@@ -6,10 +6,10 @@
 package mapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type contract struct{}
@@ -27,6 +27,6 @@ var Contract = new(contract)
 // @Param        qery query   model.ContractListReq false "筛选选项"
 // @Success      200 {object} model.PaginationRes{items=[]model.ContractListRes} "请求成功"
 func (*contract) List(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.ContractListReq](c)
-    return ctx.SendResponse(service.NewContract().List(req))
+	ctx, req := app.ManagerContextAndBinding[model.ContractListReq](c)
+	return ctx.SendResponse(service.NewContract().List(req))
 }

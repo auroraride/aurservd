@@ -6,10 +6,10 @@
 package mapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type employee struct{}
@@ -27,8 +27,8 @@ var Employee = new(employee)
 // @Param        body  body  model.EmployeeCreateReq  true  "desc"
 // @Success      200  {object}  uint64  "请求成功"
 func (*employee) Create(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.EmployeeCreateReq](c)
-    return ctx.SendResponse(service.NewEmployeeWithModifier(ctx.Modifier).Create(req).ID)
+	ctx, req := app.ManagerContextAndBinding[model.EmployeeCreateReq](c)
+	return ctx.SendResponse(service.NewEmployeeWithModifier(ctx.Modifier).Create(req).ID)
 }
 
 // Modify
@@ -42,9 +42,9 @@ func (*employee) Create(c echo.Context) (err error) {
 // @Param        id  path  uint64   true  "店员ID"
 // @Success      200  {object}      model.StatusResponse  "请求成功"
 func (*employee) Modify(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.EmployeeModifyReq](c)
-    service.NewEmployeeWithModifier(ctx.Modifier).Modify(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.EmployeeModifyReq](c)
+	service.NewEmployeeWithModifier(ctx.Modifier).Modify(req)
+	return ctx.SendResponse()
 }
 
 // List
@@ -58,8 +58,8 @@ func (*employee) Modify(c echo.Context) (err error) {
 // @Param        query  query   model.EmployeeListReq  true  "筛选选项"
 // @Success      200  {object}  model.PaginationRes{items=[]model.EmployeeListRes}  "请求成功"
 func (*employee) List(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.EmployeeListReq](c)
-    return ctx.SendResponse(service.NewEmployeeWithModifier(ctx.Modifier).List(req))
+	ctx, req := app.ManagerContextAndBinding[model.EmployeeListReq](c)
+	return ctx.SendResponse(service.NewEmployeeWithModifier(ctx.Modifier).List(req))
 }
 
 // Delete
@@ -73,9 +73,9 @@ func (*employee) List(c echo.Context) (err error) {
 // @Param        id  path  uint64  true  "店员ID"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*employee) Delete(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.EmployeeDeleteReq](c)
-    service.NewEmployeeWithModifier(ctx.Modifier).Delete(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.EmployeeDeleteReq](c)
+	service.NewEmployeeWithModifier(ctx.Modifier).Delete(req)
+	return ctx.SendResponse()
 }
 
 // Activity
@@ -89,8 +89,8 @@ func (*employee) Delete(c echo.Context) (err error) {
 // @Param        query  query   model.EmployeeActivityListReq  true  "店员业绩列表筛选"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*employee) Activity(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.EmployeeActivityListReq](c)
-    return ctx.SendResponse(service.NewEmployeeWithModifier(ctx.Modifier).Activity(req))
+	ctx, req := app.ManagerContextAndBinding[model.EmployeeActivityListReq](c)
+	return ctx.SendResponse(service.NewEmployeeWithModifier(ctx.Modifier).Activity(req))
 }
 
 // Enable
@@ -104,9 +104,9 @@ func (*employee) Activity(c echo.Context) (err error) {
 // @Param        body  body     model.EmployeeEnableReq  true  "请求参数"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*employee) Enable(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.EmployeeEnableReq](c)
-    service.NewEmployeeWithModifier(ctx.Modifier).Enable(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.EmployeeEnableReq](c)
+	service.NewEmployeeWithModifier(ctx.Modifier).Enable(req)
+	return ctx.SendResponse()
 }
 
 // OffWork
@@ -120,7 +120,7 @@ func (*employee) Enable(c echo.Context) (err error) {
 // @Param        id   body      uint64  true  "店员ID"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*employee) OffWork(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.IDPostReq](c)
-    service.NewEmployeeWithModifier(ctx.Modifier).OffWork(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.IDPostReq](c)
+	service.NewEmployeeWithModifier(ctx.Modifier).OffWork(req)
+	return ctx.SendResponse()
 }

@@ -6,23 +6,23 @@
 package script
 
 import (
-    "github.com/auroraride/aurservd/cmd/aurservd/internal/script/fix"
-    "github.com/spf13/cobra"
+	"github.com/auroraride/aurservd/cmd/aurservd/internal/script/fix"
+	"github.com/spf13/cobra"
 )
 
 func fixCommand() *cobra.Command {
-    cmd := &cobra.Command{
-        Use:   "fix",
-        Short: "修复指令",
-    }
+	cmd := &cobra.Command{
+		Use:   "fix",
+		Short: "修复指令",
+	}
 
-    cmd.AddCommand(
-        fix.Commission(),
-        fix.Reminder(),
-        fix.Assistance(),
-        fix.Contract(),
-        fix.Sql(),
-    )
+	cmd.AddCommand(
+		fix.Commission(),
+		fix.Reminder(),
+		fix.Assistance(),
+		fix.Contract(),
+		fix.Sql(),
+	)
 
-    return cmd
+	return cmd
 }

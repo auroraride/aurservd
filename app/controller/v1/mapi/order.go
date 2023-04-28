@@ -6,10 +6,10 @@
 package mapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type order struct{}
@@ -27,10 +27,10 @@ var Order = new(order)
 // @Param        query  query   model.OrderListReq  true  "desc"
 // @Success      200  {object}  model.PaginationRes{items=[]model.Order} "请求成功"
 func (*order) List(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.OrderListReq](c)
-    return ctx.SendResponse(
-        service.NewOrderWithModifier(ctx.Modifier).List(req),
-    )
+	ctx, req := app.ManagerContextAndBinding[model.OrderListReq](c)
+	return ctx.SendResponse(
+		service.NewOrderWithModifier(ctx.Modifier).List(req),
+	)
 }
 
 // RefundAudit
@@ -44,12 +44,12 @@ func (*order) List(c echo.Context) (err error) {
 // @Param        body  body  model.RefundAuditReq  true  "desc"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*order) RefundAudit(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.RefundAuditReq](c)
-    service.NewRefundWithModifier(ctx.Modifier).RefundAudit(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.RefundAuditReq](c)
+	service.NewRefundWithModifier(ctx.Modifier).RefundAudit(req)
+	return ctx.SendResponse()
 }
 
 func (*order) Coupon(c echo.Context) (err error) {
-    ctx := app.Context(c)
-    return ctx.SendResponse()
+	ctx := app.Context(c)
+	return ctx.SendResponse()
 }

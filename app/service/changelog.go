@@ -6,22 +6,23 @@
 package service
 
 import (
-    "context"
-    "fmt"
-    "github.com/auroraride/aurservd/assets/docs"
+	"context"
+	"fmt"
+
+	"github.com/auroraride/aurservd/assets/docs"
 )
 
 type changelogService struct {
-    ctx context.Context
+	ctx context.Context
 }
 
 func NewChangelog() *changelogService {
-    return &changelogService{
-        ctx: context.Background(),
-    }
+	return &changelogService{
+		ctx: context.Background(),
+	}
 }
 
 func (s *changelogService) Generate() {
-    tmpl := docs.SwaggerInfo.SwaggerTemplate
-    fmt.Println(tmpl)
+	tmpl := docs.SwaggerInfo.SwaggerTemplate
+	fmt.Println(tmpl)
 }

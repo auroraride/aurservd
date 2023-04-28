@@ -6,11 +6,12 @@
 package eapi
 
 import (
-    "errors"
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
+	"errors"
+
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type allocate struct{}
@@ -28,8 +29,8 @@ var Allocate = new(allocate)
 // @Param        keyword  query  string  true  "关键词"
 // @Success      200  {object}  model.Ebike  "电车信息"
 func (*allocate) UnallocatedEbike(c echo.Context) (err error) {
-    ctx, req := app.EmployeeContextAndBinding[model.KeywordQueryReq](c)
-    return ctx.SendResponse(service.NewAllocate(ctx.Employee).UnallocatedEbikeInfo(req.Keyword))
+	ctx, req := app.EmployeeContextAndBinding[model.KeywordQueryReq](c)
+	return ctx.SendResponse(service.NewAllocate(ctx.Employee).UnallocatedEbikeInfo(req.Keyword))
 }
 
 // Allocate
@@ -41,8 +42,8 @@ func (*allocate) UnallocatedEbike(c echo.Context) (err error) {
 // @Produce      json
 // @Param        X-Employee-Token  header  string  true  "店员校验token"
 func (*allocate) Allocate(c echo.Context) (err error) {
-    return errors.New("接口已废弃")
-    // return ctx.SendResponse(service.NewAllocate(ctx.Employee).AllocateEbike(req))
+	return errors.New("接口已废弃")
+	// return ctx.SendResponse(service.NewAllocate(ctx.Employee).AllocateEbike(req))
 }
 
 // Info
@@ -57,8 +58,8 @@ func (*allocate) Allocate(c echo.Context) (err error) {
 // @Param        id   path      uint64  true  "分配ID"
 // @Success      200  {object}  model.AllocateDetail  "请求成功"
 func (*allocate) Info(c echo.Context) (err error) {
-    ctx, req := app.EmployeeContextAndBinding[model.IDParamReq](c)
-    return ctx.SendResponse(service.NewAllocate(ctx.Employee).Info(req))
+	ctx, req := app.EmployeeContextAndBinding[model.IDParamReq](c)
+	return ctx.SendResponse(service.NewAllocate(ctx.Employee).Info(req))
 }
 
 // List
@@ -72,6 +73,6 @@ func (*allocate) Info(c echo.Context) (err error) {
 // @Param        query  query   model.AllocateEmployeeListReq  false  "筛选选项"
 // @Success      200  {object}  model.PaginationRes{items=[]model.AllocateDetail}  "请求成功"
 func (*allocate) List(c echo.Context) (err error) {
-    ctx, req := app.EmployeeContextAndBinding[model.AllocateEmployeeListReq](c)
-    return ctx.SendResponse(service.NewAllocate(ctx.Employee).EmployeeList(req))
+	ctx, req := app.EmployeeContextAndBinding[model.AllocateEmployeeListReq](c)
+	return ctx.SendResponse(service.NewAllocate(ctx.Employee).EmployeeList(req))
 }

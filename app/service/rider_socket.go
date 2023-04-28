@@ -6,34 +6,35 @@
 package service
 
 import (
-    "context"
-    "errors"
-    "github.com/auroraride/aurservd/app/socket"
-    "github.com/auroraride/aurservd/internal/ent"
-    "github.com/auroraride/aurservd/internal/ent/rider"
-    "github.com/auroraride/aurservd/pkg/cache"
+	"context"
+	"errors"
+
+	"github.com/auroraride/aurservd/app/socket"
+	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/pkg/cache"
 )
 
 type riderSocketService struct {
-    ctx context.Context
+	ctx context.Context
 }
 
 func NewRiderSocket() *riderSocketService {
-    return &riderSocketService{
-        ctx: context.Background(),
-    }
+	return &riderSocketService{
+		ctx: context.Background(),
+	}
 }
 
 func (s *riderSocketService) Prefix() string {
-    return "RIDER"
+	return "RIDER"
 }
 
 func (s *riderSocketService) Connect(hub *socket.WebsocketHub, token string) (uint64, error) {
-    id, _ := cache.Get(context.Background(), token).Uint64()
-    r, _ := ent.Database.Rider.QueryNotDeleted().Where(rider.ID(id)).First(s.ctx)
-    if r == nil {
-        return 0, errors.New("骑手未找到")
-    }
+	id, _ := cache.Get(context.Background(), token).Uint64()
+	r, _ := ent.Database.Rider.QueryNotDeleted().Where(rider.ID(id)).First(s.ctx)
+	if r == nil {
+		return 0, errors.New("骑手未找到")
+	}
 
-    return id, nil
+	return id, nil
 }

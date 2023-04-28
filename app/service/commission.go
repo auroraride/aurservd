@@ -6,26 +6,27 @@
 package service
 
 import (
-    "context"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/internal/ent"
+	"context"
+
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent"
 )
 
 type commissionService struct {
-    ctx      context.Context
-    modifier *model.Modifier
-    rider    *ent.Rider
+	ctx      context.Context
+	modifier *model.Modifier
+	rider    *ent.Rider
 }
 
 func NewCommission() *commissionService {
-    return &commissionService{
-        ctx: context.Background(),
-    }
+	return &commissionService{
+		ctx: context.Background(),
+	}
 }
 
 func NewCommissionWithModifier(m *model.Modifier) *commissionService {
-    s := NewCommission()
-    s.ctx = context.WithValue(s.ctx, "modifier", m)
-    s.modifier = m
-    return s
+	s := NewCommission()
+	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.modifier = m
+	return s
 }

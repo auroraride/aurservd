@@ -8,15 +8,15 @@ package amap
 import "github.com/auroraride/aurservd/internal/ar"
 
 type amap struct {
-    Key string
+	Key string
 }
 
 type LngLat struct {
-    Lng float64 `json:"lng"`
-    Lat float64 `json:"lat"`
+	Lng float64 `json:"lng"`
+	Lat float64 `json:"lat"`
 }
 
 func New() *amap {
-    cfg := ar.Config.Amap
-    return &amap{Key: cfg.Key}
+	cfg := ar.Config.Amap
+	return &amap{Key: cfg.Key}
 }

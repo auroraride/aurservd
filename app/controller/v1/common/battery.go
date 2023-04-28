@@ -6,9 +6,9 @@
 package common
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type battery struct{}
@@ -24,6 +24,6 @@ var Battery = new(battery)
 // @Produce      json
 // @Success      200 {object} []string "型号列表"
 func (*battery) Model(c echo.Context) (err error) {
-    ctx := app.Context(c)
-    return ctx.SendResponse(service.NewBatteryModel().Models())
+	ctx := app.Context(c)
+	return ctx.SendResponse(service.NewBatteryModel().Models())
 }

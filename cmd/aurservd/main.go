@@ -6,26 +6,26 @@
 package main
 
 import (
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/auroraride/aurservd/cmd/aurservd/internal/script"
-    "github.com/auroraride/aurservd/internal/ar"
-    "github.com/auroraride/aurservd/internal/boot"
-    "github.com/auroraride/aurservd/pkg/cache"
-    "github.com/auroraride/aurservd/pkg/snag"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/auroraride/aurservd/cmd/aurservd/internal/script"
+	"github.com/auroraride/aurservd/internal/ar"
+	"github.com/auroraride/aurservd/internal/boot"
+	"github.com/auroraride/aurservd/pkg/cache"
+	"github.com/auroraride/aurservd/pkg/snag"
 )
 
 func main() {
 
-    snag.WithPanicStack(func() {
-        boot.Bootstrap()
+	snag.WithPanicStack(func() {
+		boot.Bootstrap()
 
-        // 初始化缓存
-        cache.CreateClient(ar.Redis)
+		// 初始化缓存
+		cache.CreateClient(ar.Redis)
 
-        // 初始化系统设置
-        service.NewSetting().Initialize()
+		// 初始化系统设置
+		service.NewSetting().Initialize()
 
-        // 启动脚本
-        script.Execute()
-    })
+		// 启动脚本
+		script.Execute()
+	})
 }

@@ -6,10 +6,10 @@
 package rapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type business struct{}
@@ -27,10 +27,10 @@ var Business = new(business)
 // @Param        body  body     model.BusinessCabinetReq  true  "业务请求"
 // @Success      200 {object}   model.BusinessCabinetStatus  "请求成功"
 func (*business) Active(c echo.Context) (err error) {
-    ctx, req := app.RiderContextAndBinding[model.BusinessCabinetReq](c)
-    return ctx.SendResponse(
-        service.NewRiderBusiness(ctx.Rider).Active(req),
-    )
+	ctx, req := app.RiderContextAndBinding[model.BusinessCabinetReq](c)
+	return ctx.SendResponse(
+		service.NewRiderBusiness(ctx.Rider).Active(req),
+	)
 }
 
 // Unsubscribe
@@ -44,10 +44,10 @@ func (*business) Active(c echo.Context) (err error) {
 // @Param        body  body     model.BusinessCabinetReq  true  "业务请求"
 // @Success      200 {object}   model.BusinessCabinetStatus  "请求成功"
 func (*business) Unsubscribe(c echo.Context) (err error) {
-    ctx, req := app.RiderContextAndBinding[model.BusinessCabinetReq](c)
-    return ctx.SendResponse(
-        service.NewRiderBusiness(ctx.Rider).Unsubscribe(req),
-    )
+	ctx, req := app.RiderContextAndBinding[model.BusinessCabinetReq](c)
+	return ctx.SendResponse(
+		service.NewRiderBusiness(ctx.Rider).Unsubscribe(req),
+	)
 }
 
 // Pause
@@ -61,10 +61,10 @@ func (*business) Unsubscribe(c echo.Context) (err error) {
 // @Param        body  body     model.BusinessCabinetReq  true  "业务请求"
 // @Success      200 {object}   model.BusinessCabinetStatus  "请求成功"
 func (*business) Pause(c echo.Context) (err error) {
-    ctx, req := app.RiderContextAndBinding[model.BusinessCabinetReq](c)
-    return ctx.SendResponse(
-        service.NewRiderBusiness(ctx.Rider).Pause(req),
-    )
+	ctx, req := app.RiderContextAndBinding[model.BusinessCabinetReq](c)
+	return ctx.SendResponse(
+		service.NewRiderBusiness(ctx.Rider).Pause(req),
+	)
 }
 
 // Continue
@@ -78,10 +78,10 @@ func (*business) Pause(c echo.Context) (err error) {
 // @Param        body  body     model.BusinessCabinetReq  true  "业务请求"
 // @Success      200 {object}   model.BusinessCabinetStatus  "请求成功"
 func (*business) Continue(c echo.Context) (err error) {
-    ctx, req := app.RiderContextAndBinding[model.BusinessCabinetReq](c)
-    return ctx.SendResponse(
-        service.NewRiderBusiness(ctx.Rider).Continue(req),
-    )
+	ctx, req := app.RiderContextAndBinding[model.BusinessCabinetReq](c)
+	return ctx.SendResponse(
+		service.NewRiderBusiness(ctx.Rider).Continue(req),
+	)
 }
 
 // Status
@@ -95,10 +95,10 @@ func (*business) Continue(c echo.Context) (err error) {
 // @Param        query  query   model.BusinessCabinetStatusReq  true  "业务请求"
 // @Success      200 {object}   model.BusinessCabinetStatusRes  "请求成功"
 func (*business) Status(c echo.Context) (err error) {
-    ctx, req := app.RiderContextAndBinding[model.BusinessCabinetStatusReq](c)
-    return ctx.SendResponse(
-        service.NewRiderBusiness(ctx.Rider).Status(req),
-    )
+	ctx, req := app.RiderContextAndBinding[model.BusinessCabinetStatusReq](c)
+	return ctx.SendResponse(
+		service.NewRiderBusiness(ctx.Rider).Status(req),
+	)
 }
 
 // PauseInfo
@@ -111,8 +111,8 @@ func (*business) Status(c echo.Context) (err error) {
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
 // @Success      200 {object}  model.BusinessPauseInfoRes  "请求成功"
 func (*business) PauseInfo(c echo.Context) (err error) {
-    ctx := app.ContextX[app.RiderContext](c)
-    return ctx.SendResponse(service.NewRiderBusiness(ctx.Rider).PauseInfo())
+	ctx := app.ContextX[app.RiderContext](c)
+	return ctx.SendResponse(service.NewRiderBusiness(ctx.Rider).PauseInfo())
 }
 
 // Allocated
@@ -127,8 +127,8 @@ func (*business) PauseInfo(c echo.Context) (err error) {
 // @Param        id path uint64 true "订阅ID"
 // @Success      200 {object} model.AllocateRiderRes "请求成功"
 func (*business) Allocated(c echo.Context) (err error) {
-    ctx, req := app.RiderContextAndBinding[model.IDParamReq](c)
-    return ctx.SendResponse(service.NewAllocate().LoopStatus(ctx.Rider.ID, req.ID))
+	ctx, req := app.RiderContextAndBinding[model.IDParamReq](c)
+	return ctx.SendResponse(service.NewAllocate().LoopStatus(ctx.Rider.ID, req.ID))
 }
 
 // SubscribeSigned
@@ -142,6 +142,6 @@ func (*business) Allocated(c echo.Context) (err error) {
 // @Param        id path uint64 true "订阅ID"
 // @Success      200 {object} model.SubscribeSigned "请求成功"
 func (*business) SubscribeSigned(c echo.Context) (err error) {
-    ctx, req := app.RiderContextAndBinding[model.IDParamReq](c)
-    return ctx.SendResponse(service.NewSubscribe().Signed(ctx.Rider.ID, req.ID))
+	ctx, req := app.RiderContextAndBinding[model.IDParamReq](c)
+	return ctx.SendResponse(service.NewSubscribe().Signed(ctx.Rider.ID, req.ID))
 }

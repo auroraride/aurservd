@@ -8,19 +8,19 @@ package script
 import "github.com/spf13/cobra"
 
 func Execute() {
-    rootCmd := &cobra.Command{
-        Use:               "aurservd",
-        Short:             "极光出行管理端控制台",
-        CompletionOptions: cobra.CompletionOptions{DisableDefaultCmd: true},
-    }
-    rootCmd.AddCommand(
-        cityCmd,
-        managerCmd,
-        importCmd,
-        serverCommand(),
-        customerCommand(),
-        fixCommand(),
-        personCommand(),
-    )
-    _ = rootCmd.Execute()
+	rootCmd := &cobra.Command{
+		Use:               "aurservd",
+		Short:             "极光出行管理端控制台",
+		CompletionOptions: cobra.CompletionOptions{DisableDefaultCmd: true},
+	}
+	rootCmd.AddCommand(
+		cityCmd,
+		managerCmd,
+		importCmd,
+		serverCommand(),
+		customerCommand(),
+		fixCommand(),
+		personCommand(),
+	)
+	_ = rootCmd.Execute()
 }

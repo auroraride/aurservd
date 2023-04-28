@@ -6,10 +6,10 @@
 package eapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type exchange struct{}
@@ -27,6 +27,6 @@ var Exchange = new(exchange)
 // @Param        query  query   model.ExchangeEmployeeListReq  true  "列表请求筛选参数"
 // @Success      200  {object}  model.PaginationRes{items=[]model.ExchangeEmployeeListRes}  "请求成功"
 func (*exchange) List(c echo.Context) (err error) {
-    ctx, req := app.EmployeeContextAndBinding[model.ExchangeEmployeeListReq](c)
-    return ctx.SendResponse(service.NewExchangeWithEmployee(ctx.Employee).EmployeeList(req))
+	ctx, req := app.EmployeeContextAndBinding[model.ExchangeEmployeeListReq](c)
+	return ctx.SendResponse(service.NewExchangeWithEmployee(ctx.Employee).EmployeeList(req))
 }

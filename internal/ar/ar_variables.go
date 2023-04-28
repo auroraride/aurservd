@@ -6,18 +6,19 @@
 package ar
 
 import (
-    "github.com/go-redis/redis/v9"
-    "time"
+	"time"
+
+	"github.com/go-redis/redis/v9"
 )
 
 var (
-    TimeLocation        *time.Location
-    Quit                chan bool
-    Redis               *redis.Client
-    CabinetNameCacheKey string
-    TaskCacheKey        string
+	TimeLocation        *time.Location
+	Quit                chan bool
+	Redis               *redis.Client
+	CabinetNameCacheKey string
+	TaskCacheKey        string
 )
 
 func init() {
-    Quit = make(chan bool)
+	Quit = make(chan bool)
 }

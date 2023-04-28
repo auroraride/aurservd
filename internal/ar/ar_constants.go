@@ -6,8 +6,8 @@
 package ar
 
 const (
-    BannedMessage = "你已被封禁"
+	BannedMessage = "你已被封禁"
 
-    UserNotFound             = "用户未找到"
-    UserAuthenticationFailed = "用户认证失败"
+	UserNotFound             = "用户未找到"
+	UserAuthenticationFailed = "用户认证失败"
 )

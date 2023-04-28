@@ -6,33 +6,34 @@
 package task
 
 import (
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/auroraride/aurservd/internal/ar"
-    "github.com/auroraride/aurservd/pkg/cache"
-    "time"
+	"time"
+
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/auroraride/aurservd/internal/ar"
+	"github.com/auroraride/aurservd/pkg/cache"
 )
 
 type reserveTask struct {
-    max time.Duration
+	max time.Duration
 }
 
 func NewReserve() *reserveTask {
-    return &reserveTask{
-        max: time.Duration(cache.Int(model.SettingReserveDurationKey)),
-    }
+	return &reserveTask{
+		max: time.Duration(cache.Int(model.SettingReserveDurationKey)),
+	}
 }
 
 func (t *reserveTask) Start() {
-    if ar.Config.Task.Reserve {
-        ticker := time.NewTicker(1 * time.Minute)
-        for {
-            select {
-            case <-ticker.C:
-                service.NewReserve().Timeout()
-                break
-            }
-        }
-    }
+	if ar.Config.Task.Reserve {
+		ticker := time.NewTicker(1 * time.Minute)
+		for {
+			select {
+			case <-ticker.C:
+				service.NewReserve().Timeout()
+				break
+			}
+		}
+	}
 
 }

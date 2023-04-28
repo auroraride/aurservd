@@ -6,21 +6,21 @@
 package workwx
 
 import (
-    "github.com/auroraride/aurservd/internal/ar"
+	"github.com/auroraride/aurservd/internal/ar"
 )
 
 type GroupCreateReponse struct {
-    baseResponse
-    Chatid string `json:"chatid"`
+	baseResponse
+	Chatid string `json:"chatid"`
 }
 
 // CreateGroup 创建群聊
 func (w *Client) CreateGroup(name, owner, chatid string, users []string) error {
-    var res GroupCreateReponse
-    return w.RequestPost("/appchat/create", ar.Map{
-        "name":     name,
-        "owner":    owner,
-        "userlist": users,
-        "chatid":   chatid,
-    }, &res)
+	var res GroupCreateReponse
+	return w.RequestPost("/appchat/create", ar.Map{
+		"name":     name,
+		"owner":    owner,
+		"userlist": users,
+		"chatid":   chatid,
+	}, &res)
 }

@@ -6,10 +6,10 @@
 package aapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type prepayment struct{}
@@ -26,8 +26,8 @@ var Prepayment = new(prepayment)
 // @Param        X-Agent-Token  header  string  true  "代理校验token"
 // @Success      200  {object}  model.PrepaymentOverview  "请求成功"
 func (*prepayment) Overview(c echo.Context) (err error) {
-    ctx := app.ContextX[app.AgentContext](c)
-    return ctx.SendResponse(service.NewPrepaymentWithAgent(ctx.Agent, ctx.Enterprise).Overview(ctx.Enterprise))
+	ctx := app.ContextX[app.AgentContext](c)
+	return ctx.SendResponse(service.NewPrepaymentWithAgent(ctx.Agent, ctx.Enterprise).Overview(ctx.Enterprise))
 }
 
 // List
@@ -40,6 +40,6 @@ func (*prepayment) Overview(c echo.Context) (err error) {
 // @Param        X-Agent-Token  header  string  true  "代理校验token"
 // @Success      200  {object}  model.PaginationRes{items=[]model.PrepaymentListRes}  "请求成功"
 func (*prepayment) List(c echo.Context) (err error) {
-    ctx, req := app.AgentContextAndBinding[model.PrepaymentListReq](c)
-    return ctx.SendResponse(service.NewPrepaymentWithAgent(ctx.Agent, ctx.Enterprise).List(req))
+	ctx, req := app.AgentContextAndBinding[model.PrepaymentListReq](c)
+	return ctx.SendResponse(service.NewPrepaymentWithAgent(ctx.Agent, ctx.Enterprise).List(req))
 }

@@ -6,8 +6,8 @@
 package common
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/labstack/echo/v4"
 )
 
 type basic struct{}
@@ -15,7 +15,7 @@ type basic struct{}
 var Basic = new(basic)
 
 func (*basic) Get(c echo.Context) (err error) {
-    ctx := app.Context(c)
+	ctx := app.Context(c)
 
-    return ctx.SendResponse()
+	return ctx.SendResponse()
 }

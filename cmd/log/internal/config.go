@@ -6,33 +6,34 @@
 package internal
 
 import (
-    "github.com/spf13/viper"
-    "log"
+	"log"
+
+	"github.com/spf13/viper"
 )
 
 type config struct {
-    AccessKeyId     string
-    AccessKeySecret string
-    Bucket          string
-    Endpoint        string
-    RegionId        string
-    LogPath         string
+	AccessKeyId     string
+	AccessKeySecret string
+	Bucket          string
+	Endpoint        string
+	RegionId        string
+	LogPath         string
 }
 
 var (
-    cfg        *config
-    configFile string
+	cfg        *config
+	configFile string
 )
 
 func ParseConfig() {
-    viper.SetConfigFile(configFile)
-    err := viper.ReadInConfig()
-    if err != nil {
-        log.Fatal(err)
-    }
-    cfg = new(config)
-    err = viper.Unmarshal(cfg)
-    if err != nil {
-        log.Fatal(err)
-    }
+	viper.SetConfigFile(configFile)
+	err := viper.ReadInConfig()
+	if err != nil {
+		log.Fatal(err)
+	}
+	cfg = new(config)
+	err = viper.Unmarshal(cfg)
+	if err != nil {
+		log.Fatal(err)
+	}
 }

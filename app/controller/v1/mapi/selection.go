@@ -6,10 +6,10 @@
 package mapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type selection struct {
@@ -28,8 +28,8 @@ var Selection = new(selection)
 // @Param        query  query   model.PlanSelectionReq  false  "骑士卡筛选项"
 // @Success      200  {object}  []model.CascaderOptionLevel3  "请求成功"
 func (*selection) Plan(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.PlanSelectionReq](c)
-    return ctx.SendResponse(service.NewSelection().Plan(req))
+	ctx, req := app.ManagerContextAndBinding[model.PlanSelectionReq](c)
+	return ctx.SendResponse(service.NewSelection().Plan(req))
 }
 
 // Rider
@@ -43,8 +43,8 @@ func (*selection) Plan(c echo.Context) (err error) {
 // @Param        query  query   model.RiderSelectionReq  true  "骑手筛选项"
 // @Success      200  {object}  []model.SelectOption  "请求成功"
 func (*selection) Rider(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.RiderSelectionReq](c)
-    return ctx.SendResponse(service.NewSelection().Rider(req))
+	ctx, req := app.ManagerContextAndBinding[model.RiderSelectionReq](c)
+	return ctx.SendResponse(service.NewSelection().Rider(req))
 }
 
 // Store
@@ -57,8 +57,8 @@ func (*selection) Rider(c echo.Context) (err error) {
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Success      200  {object}  []model.CascaderOptionLevel2  "请求成功"
 func (*selection) Store(c echo.Context) (err error) {
-    ctx := app.ContextX[app.ManagerContext](c)
-    return ctx.SendResponse(service.NewSelection().Store())
+	ctx := app.ContextX[app.ManagerContext](c)
+	return ctx.SendResponse(service.NewSelection().Store())
 }
 
 // Employee
@@ -71,8 +71,8 @@ func (*selection) Store(c echo.Context) (err error) {
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Success      200  {object}  []model.CascaderOptionLevel2  "请求成功"
 func (*selection) Employee(c echo.Context) (err error) {
-    ctx := app.ContextX[app.ManagerContext](c)
-    return ctx.SendResponse(service.NewSelection().Employee())
+	ctx := app.ContextX[app.ManagerContext](c)
+	return ctx.SendResponse(service.NewSelection().Employee())
 }
 
 // City
@@ -85,8 +85,8 @@ func (*selection) Employee(c echo.Context) (err error) {
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Success      200  {object}  []model.CascaderOptionLevel2  "请求成功"
 func (*selection) City(c echo.Context) (err error) {
-    ctx := app.ContextX[app.ManagerContext](c)
-    return ctx.SendResponse(service.NewSelection().City())
+	ctx := app.ContextX[app.ManagerContext](c)
+	return ctx.SendResponse(service.NewSelection().City())
 }
 
 // Branch
@@ -99,8 +99,8 @@ func (*selection) City(c echo.Context) (err error) {
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Success      200  {object}  []model.CascaderOptionLevel2  "请求成功"
 func (*selection) Branch(c echo.Context) (err error) {
-    ctx := app.ContextX[app.ManagerContext](c)
-    return ctx.SendResponse(service.NewSelection().Branch())
+	ctx := app.ContextX[app.ManagerContext](c)
+	return ctx.SendResponse(service.NewSelection().Branch())
 }
 
 // Enterprise
@@ -113,8 +113,8 @@ func (*selection) Branch(c echo.Context) (err error) {
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Success      200  {object}  []model.CascaderOptionLevel2  "请求成功"
 func (*selection) Enterprise(c echo.Context) (err error) {
-    ctx := app.ContextX[app.ManagerContext](c)
-    return ctx.SendResponse(service.NewSelection().Enterprise())
+	ctx := app.ContextX[app.ManagerContext](c)
+	return ctx.SendResponse(service.NewSelection().Enterprise())
 }
 
 // Cabinet
@@ -127,8 +127,8 @@ func (*selection) Enterprise(c echo.Context) (err error) {
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Success      200  {object}  []model.CascaderOptionLevel2  "请求成功"
 func (*selection) Cabinet(c echo.Context) (err error) {
-    ctx := app.ContextX[app.ManagerContext](c)
-    return ctx.SendResponse(service.NewSelection().Cabinet())
+	ctx := app.ContextX[app.ManagerContext](c)
+	return ctx.SendResponse(service.NewSelection().Cabinet())
 }
 
 // Role
@@ -141,8 +141,8 @@ func (*selection) Cabinet(c echo.Context) (err error) {
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Success      200  {object}  []model.SelectOption  "请求成功"
 func (*selection) Role(c echo.Context) (err error) {
-    ctx := app.Context(c)
-    return ctx.SendResponse(service.NewSelection().Role())
+	ctx := app.Context(c)
+	return ctx.SendResponse(service.NewSelection().Role())
 }
 
 // WxEmployee
@@ -155,8 +155,8 @@ func (*selection) Role(c echo.Context) (err error) {
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Success      200  {object}  []map[string]interface{}  "请求成功"
 func (*selection) WxEmployee(c echo.Context) (err error) {
-    ctx := app.Context(c)
-    return ctx.SendResponse(service.NewSelection().WorkwxEmployee())
+	ctx := app.Context(c)
+	return ctx.SendResponse(service.NewSelection().WorkwxEmployee())
 }
 
 // PlanModel
@@ -170,8 +170,8 @@ func (*selection) WxEmployee(c echo.Context) (err error) {
 // @Param        query  query  model.SelectionPlanModelReq  true  "选项"
 // @Success      200  {object}  []string  "电池型号列表"
 func (*selection) PlanModel(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.SelectionPlanModelReq](c)
-    return ctx.SendResponse(service.NewSelection().PlanModel(req))
+	ctx, req := app.ManagerContextAndBinding[model.SelectionPlanModelReq](c)
+	return ctx.SendResponse(service.NewSelection().PlanModel(req))
 }
 
 // CabinetModel
@@ -185,8 +185,8 @@ func (*selection) PlanModel(c echo.Context) (err error) {
 // @Param        query  query  model.SelectionCabinetModelReq  true  "选项"
 // @Success      200  {object}  []string  "电池型号列表"
 func (*selection) CabinetModel(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.SelectionCabinetModelReq](c)
-    return ctx.SendResponse(service.NewSelection().CabinetModel(req))
+	ctx, req := app.ManagerContextAndBinding[model.SelectionCabinetModelReq](c)
+	return ctx.SendResponse(service.NewSelection().CabinetModel(req))
 }
 
 // Model
@@ -199,8 +199,8 @@ func (*selection) CabinetModel(c echo.Context) (err error) {
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Success      200  {object}  []string  "电池型号列表"
 func (*selection) Model(c echo.Context) (err error) {
-    ctx := app.ContextX[app.ManagerContext](c)
-    return ctx.SendResponse(service.NewSelection().Models())
+	ctx := app.ContextX[app.ManagerContext](c)
+	return ctx.SendResponse(service.NewSelection().Models())
 }
 
 // CouponTemplate
@@ -214,8 +214,8 @@ func (*selection) Model(c echo.Context) (err error) {
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Success      200  {object}  []model.SelectOptionGroup  "请求成功"
 func (*selection) CouponTemplate(c echo.Context) (err error) {
-    ctx := app.Context(c)
-    return ctx.SendResponse(service.NewSelection().CouponTemplate())
+	ctx := app.Context(c)
+	return ctx.SendResponse(service.NewSelection().CouponTemplate())
 }
 
 // EbikeBrand
@@ -228,8 +228,8 @@ func (*selection) CouponTemplate(c echo.Context) (err error) {
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Success      200  {object}  []model.SelectOption  "请求成功"
 func (*selection) EbikeBrand(c echo.Context) (err error) {
-    ctx := app.Context(c)
-    return ctx.SendResponse(service.NewSelection().EbikeBrand())
+	ctx := app.Context(c)
+	return ctx.SendResponse(service.NewSelection().EbikeBrand())
 }
 
 // BatterySerial
@@ -243,6 +243,6 @@ func (*selection) EbikeBrand(c echo.Context) (err error) {
 // @Param        serial  query  string  true  "流水号"
 // @Success      200  {object}  []model.Battery  "请求成功"
 func (*selection) BatterySerial(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.BatterySearchReq](c)
-    return ctx.SendResponse(service.NewSelection().BatterySerialSearch(req))
+	ctx, req := app.ManagerContextAndBinding[model.BatterySearchReq](c)
+	return ctx.SendResponse(service.NewSelection().BatterySerialSearch(req))
 }

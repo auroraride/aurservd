@@ -6,10 +6,10 @@
 package mapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type business struct{}
@@ -27,8 +27,8 @@ var Business = new(business)
 // @Param        query  query   model.BusinessListReq  true  "列表请求筛选参数"
 // @Success      200  {object}  model.PaginationRes{items=[]model.BusinessListRes}  "请求成功"
 func (*business) List(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.BusinessListReq](c)
-    return ctx.SendResponse(service.NewBusiness().ListManager(req))
+	ctx, req := app.ManagerContextAndBinding[model.BusinessListReq](c)
+	return ctx.SendResponse(service.NewBusiness().ListManager(req))
 }
 
 // Pause
@@ -42,8 +42,8 @@ func (*business) List(c echo.Context) (err error) {
 // @Param        query  query   model.BusinessPauseList  true  "列表请求筛选参数"
 // @Success      200  {object}  model.PaginationRes{items=[]model.BusinessPauseListRes}  "请求成功"
 func (*business) Pause(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.BusinessPauseList](c)
-    return ctx.SendResponse(service.NewBusinessWithModifier(ctx.Modifier).ListPause(req))
+	ctx, req := app.ManagerContextAndBinding[model.BusinessPauseList](c)
+	return ctx.SendResponse(service.NewBusinessWithModifier(ctx.Modifier).ListPause(req))
 }
 
 // Reserve
@@ -57,8 +57,8 @@ func (*business) Pause(c echo.Context) (err error) {
 // @Param        query  query   model.ReserveListReq  true  "列表请求筛选参数"
 // @Success      200  {object}  model.PaginationRes{items=[]model.ReserveListRes}  "请求成功"
 func (*business) Reserve(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.ReserveListReq](c)
-    return ctx.SendResponse(service.NewReserveWithModifier(ctx.Modifier).List(req))
+	ctx, req := app.ManagerContextAndBinding[model.ReserveListReq](c)
+	return ctx.SendResponse(service.NewReserveWithModifier(ctx.Modifier).List(req))
 }
 
 // Suspend
@@ -72,12 +72,12 @@ func (*business) Reserve(c echo.Context) (err error) {
 // @Param        query  query   model.SuspendListReq  true  "列表请求筛选参数"
 // @Success      200  {object}  model.PaginationRes{items=[]model.SuspendListRes}  "请求成功"
 func (*business) Suspend(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.SuspendListReq](c)
-    return ctx.SendResponse(service.NewSuspendWithModifier(ctx.Modifier).List(req))
+	ctx, req := app.ManagerContextAndBinding[model.SuspendListReq](c)
+	return ctx.SendResponse(service.NewSuspendWithModifier(ctx.Modifier).List(req))
 }
 
 func (*business) Commission(c echo.Context) (err error) {
-    ctx := app.Context(c)
+	ctx := app.Context(c)
 
-    return ctx.SendResponse()
+	return ctx.SendResponse()
 }

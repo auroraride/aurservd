@@ -6,10 +6,10 @@
 package eapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type business struct{}
@@ -27,9 +27,9 @@ var Business = new(business)
 // @Param        qrcode query       string  true  "骑手二维码"
 // @Success      200    {object}    model.SubscribeBusiness  "业务详情返回"
 func (*business) Rider(c echo.Context) (err error) {
-    ctx, req := app.EmployeeContextAndBinding[model.QRQueryReq](c)
-    id := service.NewRider().ParseQrcode(req.Qrcode)
-    return ctx.SendResponse(service.NewBusinessWithEmployee(ctx.Employee).Detail(id))
+	ctx, req := app.EmployeeContextAndBinding[model.QRQueryReq](c)
+	id := service.NewRider().ParseQrcode(req.Qrcode)
+	return ctx.SendResponse(service.NewBusinessWithEmployee(ctx.Employee).Detail(id))
 }
 
 // Inactive
@@ -43,9 +43,9 @@ func (*business) Rider(c echo.Context) (err error) {
 // @Param        qrcode  query  string  true  "二维码详情, 可带`SUBSCRIBE:`, 也可不带"
 // @Success      200  {object}  model.SubscribeActiveInfo  "请求成功"
 func (*business) Inactive(c echo.Context) (err error) {
-    ctx, req := app.EmployeeContextAndBinding[model.QRQueryReq](c)
-    detail, _ := service.NewBusinessEmployee(ctx.Employee).Inactive(req.Qrcode)
-    return ctx.SendResponse(detail)
+	ctx, req := app.EmployeeContextAndBinding[model.QRQueryReq](c)
+	detail, _ := service.NewBusinessEmployee(ctx.Employee).Inactive(req.Qrcode)
+	return ctx.SendResponse(detail)
 }
 
 // Active
@@ -59,8 +59,8 @@ func (*business) Inactive(c echo.Context) (err error) {
 // @Param        body  body     model.AllocateCreateReq  true  "分配请求"
 // @Success      200  {object}  model.IDPostReq  "请求成功"
 func (*business) Active(c echo.Context) (err error) {
-    ctx, req := app.EmployeeContextAndBinding[model.AllocateCreateReq](c)
-    return ctx.SendResponse(service.NewBusinessEmployee(ctx.Employee).Active(req))
+	ctx, req := app.EmployeeContextAndBinding[model.AllocateCreateReq](c)
+	return ctx.SendResponse(service.NewBusinessEmployee(ctx.Employee).Active(req))
 }
 
 // Pause
@@ -74,9 +74,9 @@ func (*business) Active(c echo.Context) (err error) {
 // @Param        body  body     model.BusinessSubscribeID  true  "寄存请求"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*business) Pause(c echo.Context) (err error) {
-    ctx, req := app.EmployeeContextAndBinding[model.BusinessSubscribeID](c)
-    service.NewBusinessRiderWithEmployee(ctx.Employee).Pause(req.SubscribeID)
-    return ctx.SendResponse()
+	ctx, req := app.EmployeeContextAndBinding[model.BusinessSubscribeID](c)
+	service.NewBusinessRiderWithEmployee(ctx.Employee).Pause(req.SubscribeID)
+	return ctx.SendResponse()
 }
 
 // Continue
@@ -90,9 +90,9 @@ func (*business) Pause(c echo.Context) (err error) {
 // @Param        body  body     model.BusinessSubscribeID  true  "结束寄存请求"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*business) Continue(c echo.Context) (err error) {
-    ctx, req := app.EmployeeContextAndBinding[model.BusinessSubscribeID](c)
-    service.NewBusinessRiderWithEmployee(ctx.Employee).Continue(req.SubscribeID)
-    return ctx.SendResponse()
+	ctx, req := app.EmployeeContextAndBinding[model.BusinessSubscribeID](c)
+	service.NewBusinessRiderWithEmployee(ctx.Employee).Continue(req.SubscribeID)
+	return ctx.SendResponse()
 }
 
 // UnSubscribe
@@ -106,9 +106,9 @@ func (*business) Continue(c echo.Context) (err error) {
 // @Param        body  body     model.UnsubscribeEmployeeReq  true  "退租请求"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*business) UnSubscribe(c echo.Context) (err error) {
-    ctx, req := app.EmployeeContextAndBinding[model.UnsubscribeEmployeeReq](c)
-    service.NewBusinessEmployee(ctx.Employee).UnSubscribe(req)
-    return ctx.SendResponse()
+	ctx, req := app.EmployeeContextAndBinding[model.UnsubscribeEmployeeReq](c)
+	service.NewBusinessEmployee(ctx.Employee).UnSubscribe(req)
+	return ctx.SendResponse()
 }
 
 // List
@@ -122,6 +122,6 @@ func (*business) UnSubscribe(c echo.Context) (err error) {
 // @Param        query  query   model.BusinessListReq  true  "列表请求筛选参数"
 // @Success      200  {object}  model.PaginationRes{items=[]model.BusinessEmployeeListRes}  "请求成功"
 func (*business) List(c echo.Context) (err error) {
-    ctx, req := app.EmployeeContextAndBinding[model.BusinessListReq](c)
-    return ctx.SendResponse(service.NewBusinessWithEmployee(ctx.Employee).ListEmployee(req))
+	ctx, req := app.EmployeeContextAndBinding[model.BusinessListReq](c)
+	return ctx.SendResponse(service.NewBusinessWithEmployee(ctx.Employee).ListEmployee(req))
 }

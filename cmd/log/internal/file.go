@@ -6,14 +6,14 @@
 package internal
 
 import (
-    "os"
-    "path/filepath"
+	"os"
+	"path/filepath"
 )
 
 func createDirIfNotExists(path string) error {
-    d := filepath.Dir(path)
-    if _, err := os.Stat(d); os.IsNotExist(err) {
-        return os.MkdirAll(d, 0755)
-    }
-    return nil
+	d := filepath.Dir(path)
+	if _, err := os.Stat(d); os.IsNotExist(err) {
+		return os.MkdirAll(d, 0755)
+	}
+	return nil
 }

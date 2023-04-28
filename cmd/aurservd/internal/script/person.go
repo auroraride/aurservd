@@ -6,72 +6,72 @@
 package script
 
 import (
-    "github.com/auroraride/aurservd/internal/esign"
-    "github.com/spf13/cobra"
+	"github.com/auroraride/aurservd/internal/esign"
+	"github.com/spf13/cobra"
 )
 
 func personCommand() *cobra.Command {
-    cmd := &cobra.Command{
-        Use:   "person",
-        Short: "骑手信息工具",
-    }
-    cmd.AddCommand(
-        esignCommand(),
-    )
-    return cmd
+	cmd := &cobra.Command{
+		Use:   "person",
+		Short: "骑手信息工具",
+	}
+	cmd.AddCommand(
+		esignCommand(),
+	)
+	return cmd
 }
 
 func esignCommand() *cobra.Command {
-    cmd := &cobra.Command{
-        Use:   "esign",
-        Short: "E签宝服务",
-    }
-    cmd.AddCommand(
-        modifyPersonCommand(),
-        queryPersonCommand(),
-    )
-    return cmd
+	cmd := &cobra.Command{
+		Use:   "esign",
+		Short: "E签宝服务",
+	}
+	cmd.AddCommand(
+		modifyPersonCommand(),
+		queryPersonCommand(),
+	)
+	return cmd
 }
 
 func modifyPersonCommand() *cobra.Command {
-    var (
-        accountID string
-        name      string
-    )
+	var (
+		accountID string
+		name      string
+	)
 
-    cmd := &cobra.Command{
-        Use:   "modify",
-        Short: "修改骑手E签宝信息",
-        Run: func(_ *cobra.Command, _ []string) {
-            esign.New().ModifyAccount(accountID, esign.PersonAccountReq{Name: name})
-        },
-    }
+	cmd := &cobra.Command{
+		Use:   "modify",
+		Short: "修改骑手E签宝信息",
+		Run: func(_ *cobra.Command, _ []string) {
+			esign.New().ModifyAccount(accountID, esign.PersonAccountReq{Name: name})
+		},
+	}
 
-    cmd.Flags().StringVar(&accountID, "account", "", "E签宝accountID")
-    cmd.Flags().StringVar(&name, "name", "", "骑手姓名")
+	cmd.Flags().StringVar(&accountID, "account", "", "E签宝accountID")
+	cmd.Flags().StringVar(&name, "name", "", "骑手姓名")
 
-    _ = cmd.MarkFlagRequired("account")
-    _ = cmd.MarkFlagRequired("name")
+	_ = cmd.MarkFlagRequired("account")
+	_ = cmd.MarkFlagRequired("name")
 
-    return cmd
+	return cmd
 }
 
 func queryPersonCommand() *cobra.Command {
-    var (
-        accountID string
-    )
+	var (
+		accountID string
+	)
 
-    cmd := &cobra.Command{
-        Use:   "query",
-        Short: "查询骑手E签宝信息",
-        Run: func(_ *cobra.Command, _ []string) {
-            esign.New().QueryAccount(accountID)
-        },
-    }
+	cmd := &cobra.Command{
+		Use:   "query",
+		Short: "查询骑手E签宝信息",
+		Run: func(_ *cobra.Command, _ []string) {
+			esign.New().QueryAccount(accountID)
+		},
+	}
 
-    cmd.Flags().StringVar(&accountID, "account", "", "E签宝accountID")
+	cmd.Flags().StringVar(&accountID, "account", "", "E签宝accountID")
 
-    _ = cmd.MarkFlagRequired("account")
+	_ = cmd.MarkFlagRequired("account")
 
-    return cmd
+	return cmd
 }

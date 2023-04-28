@@ -6,10 +6,10 @@
 package router
 
 import (
-    "github.com/auroraride/aurservd/app/controller/kit"
+	"github.com/auroraride/aurservd/app/controller/kit"
 )
 
 func loadKitRoutes() {
-    g := root.Group("kit")
-    g.GET("/cabinet/name/:serial", kit.Cabinet.Name)
+	g := root.Group("kit")
+	g.GET("/cabinet/name/:serial", kit.Cabinet.Name)
 }

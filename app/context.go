@@ -6,74 +6,74 @@
 package app
 
 import (
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/pkg/snag"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/pkg/snag"
+	"github.com/labstack/echo/v4"
 )
 
 type BaseContext struct {
-    echo.Context
+	echo.Context
 
-    Device *model.Device
+	Device *model.Device
 }
 
 // Context 获取上下文
 func Context(c echo.Context) *BaseContext {
-    switch c.(type) {
-    case *ManagerContext:
-        return c.(*ManagerContext).BaseContext
-    case *RiderContext:
-        return c.(*RiderContext).BaseContext
-    case *BaseContext:
-        return c.(*BaseContext)
-    case *EmployeeContext:
-        return c.(*EmployeeContext).BaseContext
-    case *AgentContext:
-        return c.(*AgentContext).BaseContext
-    default:
-        return nil
-    }
+	switch c.(type) {
+	case *ManagerContext:
+		return c.(*ManagerContext).BaseContext
+	case *RiderContext:
+		return c.(*RiderContext).BaseContext
+	case *BaseContext:
+		return c.(*BaseContext)
+	case *EmployeeContext:
+		return c.(*EmployeeContext).BaseContext
+	case *AgentContext:
+		return c.(*AgentContext).BaseContext
+	default:
+		return nil
+	}
 }
 
 // NewContext 创建上下文
 func NewContext(c echo.Context) *BaseContext {
-    return &BaseContext{
-        Context: c,
-    }
+	return &BaseContext{
+		Context: c,
+	}
 }
 
 // BindValidate 绑定并校验数据
 func (c *BaseContext) BindValidate(ptr any) {
-    err := c.Bind(ptr)
-    if err != nil {
-        snag.Panic(err)
-    }
-    err = c.Validate(ptr)
-    if err != nil {
-        snag.Panic(err)
-    }
+	err := c.Bind(ptr)
+	if err != nil {
+		snag.Panic(err)
+	}
+	err = c.Validate(ptr)
+	if err != nil {
+		snag.Panic(err)
+	}
 }
 
 // ContextBinding 绑定上下文并校验数据之后返回
 func ContextBinding[T any](c echo.Context) (*BaseContext, *T) {
-    ctx := Context(c)
-    req := new(T)
-    ctx.BindValidate(req)
-    return ctx, req
+	ctx := Context(c)
+	req := new(T)
+	ctx.BindValidate(req)
+	return ctx, req
 }
 
 type ContextWrapper interface {
-    ManagerContext | RiderContext | EmployeeContext | AgentContext
+	ManagerContext | RiderContext | EmployeeContext | AgentContext
 }
 
 func ContextX[T ContextWrapper](c any) *T {
-    ctx, _ := c.(*T)
-    return ctx
+	ctx, _ := c.(*T)
+	return ctx
 }
 
 func ContextBindingX[K ContextWrapper, T any](c echo.Context) (*K, *T) {
-    ctx := ContextX[K](c)
-    req := new(T)
-    Context(c).BindValidate(req)
-    return ctx, req
+	ctx := ContextX[K](c)
+	req := new(T)
+	Context(c).BindValidate(req)
+	return ctx, req
 }

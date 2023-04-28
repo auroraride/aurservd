@@ -6,45 +6,46 @@
 package tools
 
 import (
-    "fmt"
-    "github.com/auroraride/aurservd/pkg/utils"
-    "github.com/golang-module/carbon/v2"
-    "github.com/sony/sonyflake"
-    "strings"
-    "time"
+	"fmt"
+	"strings"
+	"time"
+
+	"github.com/auroraride/aurservd/pkg/utils"
+	"github.com/golang-module/carbon/v2"
+	"github.com/sony/sonyflake"
 )
 
 type unique struct {
 }
 
 func NewUnique() *unique {
-    return &unique{}
+	return &unique{}
 }
 
 func (*unique) NewSonyflakeID() string {
-    sid, _ := sonyflake.NewSonyflake(sonyflake.Settings{}).NextID()
-    return fmt.Sprintf("%d", sid)
+	sid, _ := sonyflake.NewSonyflake(sonyflake.Settings{}).NextID()
+	return fmt.Sprintf("%d", sid)
 }
 
 // NewSN28 生成28位字符串
 func (u *unique) NewSN28() string {
-    str := strings.ReplaceAll(time.Now().Format(carbon.ShortDateTimeMicroLayout), ".", "")
-    n := 20 - len(str)
-    if n > 0 {
-        str += strings.Repeat("0", n)
-    }
-    return fmt.Sprintf(
-        "%s%d",
-        str,
-        utils.RandomIntMaxMin(10000000, 99999999),
-    )
+	str := strings.ReplaceAll(time.Now().Format(carbon.ShortDateTimeMicroLayout), ".", "")
+	n := 20 - len(str)
+	if n > 0 {
+		str += strings.Repeat("0", n)
+	}
+	return fmt.Sprintf(
+		"%s%d",
+		str,
+		utils.RandomIntMaxMin(10000000, 99999999),
+	)
 }
 
 func (u *unique) NewSN() string {
-    str := strings.ReplaceAll(time.Now().Format(carbon.ShortDateTimeMilliLayout), ".", "")
-    n := 17 - len(str)
-    if n > 0 {
-        str += strings.Repeat("0", n)
-    }
-    return str
+	str := strings.ReplaceAll(time.Now().Format(carbon.ShortDateTimeMilliLayout), ".", "")
+	n := 17 - len(str)
+	if n > 0 {
+		str += strings.Repeat("0", n)
+	}
+	return str
 }

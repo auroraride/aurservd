@@ -6,10 +6,10 @@
 package rapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type order struct{}
@@ -27,11 +27,11 @@ var Order = new(order)
 // @Param        body  body     model.OrderCreateReq  true  "订单创建请求"
 // @Success      200  {object}  model.OrderCreateRes  "请求成功"
 func (*order) Create(c echo.Context) (err error) {
-    ctx, req := app.RiderContextAndBinding[model.OrderCreateReq](c)
+	ctx, req := app.RiderContextAndBinding[model.OrderCreateReq](c)
 
-    return ctx.SendResponse(
-        service.NewOrderWithRider(ctx.Rider).Create(req),
-    )
+	return ctx.SendResponse(
+		service.NewOrderWithRider(ctx.Rider).Create(req),
+	)
 }
 
 // Refund
@@ -45,8 +45,8 @@ func (*order) Create(c echo.Context) (err error) {
 // @Param        body  body     model.RefundReq  true  "desc"
 // @Success      200  {object}  model.RefundRes  "请求成功"
 func (*order) Refund(c echo.Context) (err error) {
-    ctx, req := app.RiderContextAndBinding[model.RefundReq](c)
-    return ctx.SendResponse(service.NewRefundWithRider(ctx.Rider).Refund(ctx.Rider.ID, req))
+	ctx, req := app.RiderContextAndBinding[model.RefundReq](c)
+	return ctx.SendResponse(service.NewRefundWithRider(ctx.Rider).Refund(ctx.Rider.ID, req))
 }
 
 // List
@@ -61,10 +61,10 @@ func (*order) Refund(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 // @Success      200  {object}  model.PaginationRes{items=[]model.Order}  "请求成功"
 func (*order) List(c echo.Context) (err error) {
-    ctx, req := app.RiderContextAndBinding[model.PaginationReq](c)
-    return ctx.SendResponse(
-        service.NewRiderOrder().List(ctx.Rider.ID, model.PaginationReqFromPointer(req)),
-    )
+	ctx, req := app.RiderContextAndBinding[model.PaginationReq](c)
+	return ctx.SendResponse(
+		service.NewRiderOrder().List(ctx.Rider.ID, model.PaginationReqFromPointer(req)),
+	)
 }
 
 // Detail
@@ -78,9 +78,9 @@ func (*order) List(c echo.Context) (err error) {
 // @Param        id  path  int  true  "订单ID"
 // @Success      200  {object}  model.Order  "请求成功"
 func (*order) Detail(c echo.Context) (err error) {
-    ctx, req := app.RiderContextAndBinding[model.IDParamReq](c)
-    srv := service.NewRiderOrderWithRider(ctx.Rider)
-    return ctx.SendResponse(srv.Detail(srv.Query(ctx.Rider.ID, req.ID)))
+	ctx, req := app.RiderContextAndBinding[model.IDParamReq](c)
+	srv := service.NewRiderOrderWithRider(ctx.Rider)
+	return ctx.SendResponse(srv.Detail(srv.Query(ctx.Rider.ID, req.ID)))
 }
 
 // Status
@@ -94,6 +94,6 @@ func (*order) Detail(c echo.Context) (err error) {
 // @Param        outTradeNo     query  string  true  "订单编号"
 // @Success      200 {object}   model.OrderStatusRes  "请求成功"
 func (*order) Status(c echo.Context) (err error) {
-    ctx, req := app.RiderContextAndBinding[model.OrderStatusReq](c)
-    return ctx.SendResponse(service.NewOrder().QueryStatus(req))
+	ctx, req := app.RiderContextAndBinding[model.OrderStatusReq](c)
+	return ctx.SendResponse(service.NewOrder().QueryStatus(req))
 }

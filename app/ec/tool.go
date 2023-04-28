@@ -6,5 +6,5 @@
 package ec
 
 func Pointer[T any](i T) *T {
-    return &i
+	return &i
 }

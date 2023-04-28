@@ -6,10 +6,10 @@
 package mapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type export struct{}
@@ -27,8 +27,8 @@ var Export = new(export)
 // @Param        query  query   model.ExportListReq  false  "分页信息"
 // @Success      200  {object}  model.PaginationRes{items=[]model.ExportListRes}  "请求成功"
 func (*export) List(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.ExportListReq](c)
-    return ctx.SendResponse(service.NewExportWithModifier(ctx.Modifier).List(ctx.Manager, req))
+	ctx, req := app.ManagerContextAndBinding[model.ExportListReq](c)
+	return ctx.SendResponse(service.NewExportWithModifier(ctx.Modifier).List(ctx.Manager, req))
 }
 
 // Download
@@ -42,8 +42,8 @@ func (*export) List(c echo.Context) (err error) {
 // @Param        sn  path  string  true  "编号"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*export) Download(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.ExportDownloadReq](c)
-    return ctx.Attachment(service.NewExportWithModifier(ctx.Modifier).Download(req))
+	ctx, req := app.ManagerContextAndBinding[model.ExportDownloadReq](c)
+	return ctx.Attachment(service.NewExportWithModifier(ctx.Modifier).Download(req))
 }
 
 // Rider
@@ -57,8 +57,8 @@ func (*export) Download(c echo.Context) (err error) {
 // @Param        body  body     model.RiderListExport  false  "筛选条件"
 // @Success      200  {object}  model.ExportRes  "请求成功"
 func (*export) Rider(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.RiderListExport](c)
-    return ctx.SendResponse(service.NewRiderWithModifier(ctx.Modifier).ListExport(req))
+	ctx, req := app.ManagerContextAndBinding[model.RiderListExport](c)
+	return ctx.SendResponse(service.NewRiderWithModifier(ctx.Modifier).ListExport(req))
 }
 
 // StatementDetail
@@ -72,8 +72,8 @@ func (*export) Rider(c echo.Context) (err error) {
 // @Param        body  body     model.StatementBillDetailExport  true  "筛选条件"
 // @Success      200  {object}  model.ExportRes  "请求成功"
 func (*export) StatementDetail(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.StatementBillDetailExport](c)
-    return ctx.SendResponse(service.NewEnterpriseStatementWithModifier(ctx.Modifier).DetailExport(req))
+	ctx, req := app.ManagerContextAndBinding[model.StatementBillDetailExport](c)
+	return ctx.SendResponse(service.NewEnterpriseStatementWithModifier(ctx.Modifier).DetailExport(req))
 }
 
 // StatementUsage
@@ -87,8 +87,8 @@ func (*export) StatementDetail(c echo.Context) (err error) {
 // @Param        body  body     model.StatementUsageExport  true  "筛选条件"
 // @Success      200  {object}  model.ExportRes  "请求成功"
 func (*export) StatementUsage(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.StatementUsageExport](c)
-    return ctx.SendResponse(service.NewEnterpriseStatementWithModifier(ctx.Modifier).UsageExport(req))
+	ctx, req := app.ManagerContextAndBinding[model.StatementUsageExport](c)
+	return ctx.SendResponse(service.NewEnterpriseStatementWithModifier(ctx.Modifier).UsageExport(req))
 }
 
 // Order
@@ -102,8 +102,8 @@ func (*export) StatementUsage(c echo.Context) (err error) {
 // @Param        body  body     model.OrderListExport  true  "筛选条件"
 // @Success      200  {object}  model.ExportRes  "请求成功"
 func (*export) Order(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.OrderListExport](c)
-    return ctx.SendResponse(service.NewOrderWithModifier(ctx.Modifier).Export(req))
+	ctx, req := app.ManagerContextAndBinding[model.OrderListExport](c)
+	return ctx.SendResponse(service.NewOrderWithModifier(ctx.Modifier).Export(req))
 }
 
 // Commission
@@ -117,8 +117,8 @@ func (*export) Order(c echo.Context) (err error) {
 // @Param        body  body     model.EmployeeActivityExportReq  true  "筛选条件"
 // @Success      200  {object}  model.ExportRes  "请求成功"
 func (*export) Commission(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.EmployeeActivityExportReq](c)
-    return ctx.SendResponse(service.NewEmployeeWithModifier(ctx.Modifier).ActivityExport(req))
+	ctx, req := app.ManagerContextAndBinding[model.EmployeeActivityExportReq](c)
+	return ctx.SendResponse(service.NewEmployeeWithModifier(ctx.Modifier).ActivityExport(req))
 }
 
 // Business
@@ -132,8 +132,8 @@ func (*export) Commission(c echo.Context) (err error) {
 // @Param        body  body     model.BusinessExportReq  true  "筛选条件"
 // @Success      200  {object}  model.ExportRes  "请求成功"
 func (*export) Business(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.BusinessExportReq](c)
-    return ctx.SendResponse(service.NewBusinessWithModifier(ctx.Modifier).Export(req))
+	ctx, req := app.ManagerContextAndBinding[model.BusinessExportReq](c)
+	return ctx.SendResponse(service.NewBusinessWithModifier(ctx.Modifier).Export(req))
 }
 
 // StockDetail
@@ -147,8 +147,8 @@ func (*export) Business(c echo.Context) (err error) {
 // @Param        body  body     model.StockDetailExportReq  true  "筛选条件"
 // @Success      200  {object}  model.ExportRes  "请求成功"
 func (*export) StockDetail(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.StockDetailExportReq](c)
-    return ctx.SendResponse(service.NewStockWithModifier(ctx.Modifier).Export(req))
+	ctx, req := app.ManagerContextAndBinding[model.StockDetailExportReq](c)
+	return ctx.SendResponse(service.NewStockWithModifier(ctx.Modifier).Export(req))
 }
 
 // Exchange
@@ -162,6 +162,6 @@ func (*export) StockDetail(c echo.Context) (err error) {
 // @Param        body  body     model.ExchangeListExport  true  "筛选条件"
 // @Success      200  {object}  model.ExportRes  "请求成功"
 func (*export) Exchange(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.ExchangeListExport](c)
-    return ctx.SendResponse(service.NewExchangeWithModifier(ctx.Modifier).Export(req))
+	ctx, req := app.ManagerContextAndBinding[model.ExchangeListExport](c)
+	return ctx.SendResponse(service.NewExchangeWithModifier(ctx.Modifier).Export(req))
 }

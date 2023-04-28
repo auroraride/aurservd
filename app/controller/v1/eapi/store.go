@@ -6,10 +6,10 @@
 package eapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type store struct{}
@@ -27,7 +27,7 @@ var Store = new(store)
 // @Param        body  body  model.StoreSwtichStatusReq  true  "状态请求"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*store) Status(c echo.Context) (err error) {
-    ctx, req := app.EmployeeContextAndBinding[model.StoreSwtichStatusReq](c)
-    service.NewStoreWithEmployee(ctx.Employee).SwitchStatus(req)
-    return ctx.SendResponse()
+	ctx, req := app.EmployeeContextAndBinding[model.StoreSwtichStatusReq](c)
+	service.NewStoreWithEmployee(ctx.Employee).SwitchStatus(req)
+	return ctx.SendResponse()
 }

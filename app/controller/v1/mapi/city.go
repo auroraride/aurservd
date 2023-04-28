@@ -6,10 +6,10 @@
 package mapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type city struct{}
@@ -27,9 +27,9 @@ var City = new(city)
 // @Param        status           query  model.CityListReq  false  "启用状态"
 // @Success      200  {object}  []model.CityItem  "请求成功"
 func (*city) List(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.CityListReq](c)
+	ctx, req := app.ManagerContextAndBinding[model.CityListReq](c)
 
-    return ctx.SendResponse(service.NewCity().List(req))
+	return ctx.SendResponse(service.NewCity().List(req))
 }
 
 // Modify
@@ -45,9 +45,9 @@ func (*city) List(c echo.Context) (err error) {
 // @Param        body  body  model.CityModifyReq  true  "城市数据"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*city) Modify(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.CityModifyReq](c)
+	ctx, req := app.ManagerContextAndBinding[model.CityModifyReq](c)
 
-    return ctx.SendResponse(
-        model.CityModifyRes{Open: service.NewCityWithModifier(ctx.Modifier).Modify(req)},
-    )
+	return ctx.SendResponse(
+		model.CityModifyRes{Open: service.NewCityWithModifier(ctx.Modifier).Modify(req)},
+	)
 }

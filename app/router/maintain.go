@@ -8,6 +8,6 @@ package router
 import "github.com/auroraride/aurservd/app/controller"
 
 func loadMaintainRoutes() {
-    g := root.Group("maintain")
-    g.GET("/update", controller.Maintain.Update)
+	g := root.Group("maintain")
+	g.GET("/update", controller.Maintain.Update)
 }

@@ -6,11 +6,11 @@
 package rapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/auroraride/aurservd/pkg/cache"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/auroraride/aurservd/pkg/cache"
+	"github.com/labstack/echo/v4"
 )
 
 type setting struct{}
@@ -27,12 +27,12 @@ var Setting = new(setting)
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
 // @Success      200 {object}  model.SettingRiderApp  "请求成功"
 func (*setting) App(c echo.Context) (err error) {
-    ctx := app.Context(c)
+	ctx := app.Context(c)
 
-    return ctx.SendResponse(model.SettingRiderApp{
-        AssistanceFee:   cache.Float64(model.SettingRescueFeeKey),
-        ReserveDuration: cache.Int(model.SettingReserveDurationKey),
-    })
+	return ctx.SendResponse(model.SettingRiderApp{
+		AssistanceFee:   cache.Float64(model.SettingRescueFeeKey),
+		ReserveDuration: cache.Int(model.SettingReserveDurationKey),
+	})
 }
 
 // Question
@@ -45,6 +45,6 @@ func (*setting) App(c echo.Context) (err error) {
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
 // @Success      200 {object}  []model.SettingQuestion  "请求成功"
 func (*setting) Question(c echo.Context) (err error) {
-    ctx := app.Context(c)
-    return ctx.SendResponse(service.NewSetting().Question())
+	ctx := app.Context(c)
+	return ctx.SendResponse(service.NewSetting().Question())
 }

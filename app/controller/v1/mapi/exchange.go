@@ -6,10 +6,10 @@
 package mapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type exchange struct{}
@@ -27,6 +27,6 @@ var Exchange = new(exchange)
 // @Param        query  query   model.ExchangeManagerListReq  false  "筛选选项"
 // @Success      200  {object}  model.PaginationRes{items=[]model.ExchangeManagerListRes}  "请求成功"
 func (*exchange) List(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.ExchangeManagerListReq](c)
-    return ctx.SendResponse(service.NewExchangeWithModifier(ctx.Modifier).List(req))
+	ctx, req := app.ManagerContextAndBinding[model.ExchangeManagerListReq](c)
+	return ctx.SendResponse(service.NewExchangeWithModifier(ctx.Modifier).List(req))
 }

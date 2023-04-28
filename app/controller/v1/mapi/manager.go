@@ -6,18 +6,18 @@
 package mapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/auroraride/aurservd/pkg/snag"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/auroraride/aurservd/pkg/snag"
+	"github.com/labstack/echo/v4"
 )
 
 type manager struct {
 }
 
 var (
-    Manager = new(manager)
+	Manager = new(manager)
 )
 
 // Signin
@@ -30,12 +30,12 @@ var (
 // @Produce      json
 // @Success      200  {object}  model.ManagerSigninRes  "请求成功"
 func (*manager) Signin(c echo.Context) (err error) {
-    ctx, req := app.ContextBinding[model.ManagerSigninReq](c)
-    data, err := service.NewManager().Signin(req)
-    if err != nil {
-        snag.Panic(err)
-    }
-    return ctx.SendResponse(data)
+	ctx, req := app.ContextBinding[model.ManagerSigninReq](c)
+	data, err := service.NewManager().Signin(req)
+	if err != nil {
+		snag.Panic(err)
+	}
+	return ctx.SendResponse(data)
 }
 
 // Create
@@ -49,12 +49,12 @@ func (*manager) Signin(c echo.Context) (err error) {
 // @Param        body  body  model.ManagerCreateReq  true  "desc"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*manager) Create(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.ManagerCreateReq](c)
-    err = service.NewManager().Create(req)
-    if err != nil {
-        snag.Panic(err)
-    }
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.ManagerCreateReq](c)
+	err = service.NewManager().Create(req)
+	if err != nil {
+		snag.Panic(err)
+	}
+	return ctx.SendResponse()
 }
 
 // List
@@ -68,8 +68,8 @@ func (*manager) Create(c echo.Context) (err error) {
 // @Param        query  query  model.ManagerListReq  true  "desc"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*manager) List(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.ManagerListReq](c)
-    return ctx.SendResponse(service.NewManagerWithModifier(ctx.Modifier).List(req))
+	ctx, req := app.ManagerContextAndBinding[model.ManagerListReq](c)
+	return ctx.SendResponse(service.NewManagerWithModifier(ctx.Modifier).List(req))
 }
 
 // Delete
@@ -83,9 +83,9 @@ func (*manager) List(c echo.Context) (err error) {
 // @Param        id  path  uint64  true  "管理员ID"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*manager) Delete(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
-    service.NewManagerWithModifier(ctx.Modifier).Delete(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
+	service.NewManagerWithModifier(ctx.Modifier).Delete(req)
+	return ctx.SendResponse()
 }
 
 // Modify
@@ -100,7 +100,7 @@ func (*manager) Delete(c echo.Context) (err error) {
 // @Param        body  body     model.ManagerModifyReq  true  "编辑属性"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*manager) Modify(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.ManagerModifyReq](c)
-    service.NewManagerWithModifier(ctx.Modifier).Modify(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.ManagerModifyReq](c)
+	service.NewManagerWithModifier(ctx.Modifier).Modify(req)
+	return ctx.SendResponse()
 }

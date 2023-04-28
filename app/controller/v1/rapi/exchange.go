@@ -6,10 +6,10 @@
 package rapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type exchange struct{}
@@ -27,8 +27,8 @@ var Exchange = new(exchange)
 // @Param        body  body  model.ExchangeStoreReq  true  "desc"
 // @Success      200  {object}  model.ExchangeStoreRes  "请求成功"
 func (*exchange) Store(c echo.Context) (err error) {
-    ctx, req := app.RiderContextAndBinding[model.ExchangeStoreReq](c)
-    return ctx.SendResponse(service.NewExchangeWithRider(ctx.Rider).Store(req))
+	ctx, req := app.RiderContextAndBinding[model.ExchangeStoreReq](c)
+	return ctx.SendResponse(service.NewExchangeWithRider(ctx.Rider).Store(req))
 }
 
 // Overview
@@ -41,8 +41,8 @@ func (*exchange) Store(c echo.Context) (err error) {
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
 // @Success      200  {object}  model.ExchangeOverview  "请求成功"
 func (*exchange) Overview(c echo.Context) (err error) {
-    ctx := app.ContextX[app.RiderContext](c)
-    return ctx.SendResponse(service.NewExchange().Overview(ctx.Rider.ID))
+	ctx := app.ContextX[app.RiderContext](c)
+	return ctx.SendResponse(service.NewExchange().Overview(ctx.Rider.ID))
 }
 
 // Log
@@ -56,6 +56,6 @@ func (*exchange) Overview(c echo.Context) (err error) {
 // @Param        query  query   model.PaginationReq  true  "分页请求参数"
 // @Success      200  {object}  model.PaginationRes{items=[]model.ExchangeRiderListRes}  "请求成功"
 func (*exchange) Log(c echo.Context) (err error) {
-    ctx, req := app.RiderContextAndBinding[model.PaginationReq](c)
-    return ctx.SendResponse(service.NewExchange().RiderList(ctx.Rider.ID, model.PaginationReqFromPointer(req)))
+	ctx, req := app.RiderContextAndBinding[model.PaginationReq](c)
+	return ctx.SendResponse(service.NewExchange().RiderList(ctx.Rider.ID, model.PaginationReqFromPointer(req)))
 }

@@ -6,10 +6,10 @@
 package aapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type rider struct{}
@@ -27,8 +27,8 @@ var Rider = new(rider)
 // @Param        query  query   model.AgentRiderListReq  false  "查询条件"
 // @Success      200  {object}  model.PaginationRes{items=[]model.AgentRider}  "请求成功"
 func (*rider) List(c echo.Context) (err error) {
-    ctx, req := app.AgentContextAndBinding[model.AgentRiderListReq](c)
-    return ctx.SendResponse(service.NewRiderAgentWithAgent(ctx.Agent, ctx.Enterprise).List(ctx.Enterprise.ID, req))
+	ctx, req := app.AgentContextAndBinding[model.AgentRiderListReq](c)
+	return ctx.SendResponse(service.NewRiderAgentWithAgent(ctx.Agent, ctx.Enterprise).List(ctx.Enterprise.ID, req))
 }
 
 // Create
@@ -42,8 +42,8 @@ func (*rider) List(c echo.Context) (err error) {
 // @Param        body  body     model.EnterpriseRiderCreateReq  true  "骑手信息"
 // @Success      200  {object}  model.EnterpriseRider  "请求成功"
 func (*rider) Create(c echo.Context) (err error) {
-    ctx, req := app.AgentContextAndBinding[model.EnterpriseRiderCreateReq](c)
-    return ctx.SendResponse(service.NewEnterpriseRiderWithAgent(ctx.Agent, ctx.Enterprise).Create(req))
+	ctx, req := app.AgentContextAndBinding[model.EnterpriseRiderCreateReq](c)
+	return ctx.SendResponse(service.NewEnterpriseRiderWithAgent(ctx.Agent, ctx.Enterprise).Create(req))
 }
 
 // Alter
@@ -57,8 +57,8 @@ func (*rider) Create(c echo.Context) (err error) {
 // @Param        body  body     model.SubscribeAlter  true  "请求详情"
 // @Success      200  {object}  model.RiderItemSubscribe  "请求成功"
 func (*rider) Alter(c echo.Context) (err error) {
-    ctx, req := app.AgentContextAndBinding[model.SubscribeAlter](c)
-    return ctx.SendResponse(service.NewSubscribeWithAgent(ctx.Agent, ctx.Enterprise).AlterDays(req))
+	ctx, req := app.AgentContextAndBinding[model.SubscribeAlter](c)
+	return ctx.SendResponse(service.NewSubscribeWithAgent(ctx.Agent, ctx.Enterprise).AlterDays(req))
 }
 
 // Detail
@@ -72,6 +72,6 @@ func (*rider) Alter(c echo.Context) (err error) {
 // @Param        id  path  uint64  true  "骑手ID"
 // @Success      200  {object}  model.AgentRiderDetail  "请求成功"
 func (*rider) Detail(c echo.Context) (err error) {
-    ctx, req := app.AgentContextAndBinding[model.IDParamReq](c)
-    return ctx.SendResponse(service.NewRiderAgentWithAgent(ctx.Agent, ctx.Enterprise).Detail(req, ctx.Enterprise.ID))
+	ctx, req := app.AgentContextAndBinding[model.IDParamReq](c)
+	return ctx.SendResponse(service.NewRiderAgentWithAgent(ctx.Agent, ctx.Enterprise).Detail(req, ctx.Enterprise.ID))
 }

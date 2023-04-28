@@ -6,10 +6,10 @@
 package mapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type statement struct{}
@@ -27,8 +27,8 @@ var Statement = new(statement)
 // @Param        query  query   model.StatementBillReq  true  "账单请求参数"
 // @Success      200  {object}  model.StatementBillRes  "请求成功"
 func (*statement) GetBill(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.StatementBillReq](c)
-    return ctx.SendResponse(service.NewEnterpriseStatementWithModifier(ctx.Modifier).GetBill(req))
+	ctx, req := app.ManagerContextAndBinding[model.StatementBillReq](c)
+	return ctx.SendResponse(service.NewEnterpriseStatementWithModifier(ctx.Modifier).GetBill(req))
 }
 
 // Bill
@@ -42,9 +42,9 @@ func (*statement) GetBill(c echo.Context) (err error) {
 // @Param        body  body     model.StatementClearBillReq  true  "结账请求"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*statement) Bill(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.StatementClearBillReq](c)
-    service.NewEnterpriseStatementWithModifier(ctx.Modifier).Bill(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.StatementClearBillReq](c)
+	service.NewEnterpriseStatementWithModifier(ctx.Modifier).Bill(req)
+	return ctx.SendResponse()
 }
 
 // Historical
@@ -58,8 +58,8 @@ func (*statement) Bill(c echo.Context) (err error) {
 // @Param        query  query   model.StatementBillHistoricalListReq  true  "请求数据"
 // @Success      200  {object}  model.PaginationRes{items=[]model.StatementBillHistoricalListRes}  "请求成功"
 func (*statement) Historical(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.StatementBillHistoricalListReq](c)
-    return ctx.SendResponse(service.NewEnterpriseStatementWithModifier(ctx.Modifier).Historical(req))
+	ctx, req := app.ManagerContextAndBinding[model.StatementBillHistoricalListReq](c)
+	return ctx.SendResponse(service.NewEnterpriseStatementWithModifier(ctx.Modifier).Historical(req))
 }
 
 // Statement
@@ -73,8 +73,8 @@ func (*statement) Historical(c echo.Context) (err error) {
 // @Param        query  query   model.StatementBillDetailReq  true  "请求详情"
 // @Success      200  {object}  model.StatementDetail  "请求成功"
 func (*statement) Statement(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.StatementBillDetailReq](c)
-    return ctx.SendResponse(service.NewEnterpriseStatementWithModifier(ctx.Modifier).Statement(req.ID))
+	ctx, req := app.ManagerContextAndBinding[model.StatementBillDetailReq](c)
+	return ctx.SendResponse(service.NewEnterpriseStatementWithModifier(ctx.Modifier).Statement(req.ID))
 }
 
 // Usage
@@ -88,6 +88,6 @@ func (*statement) Statement(c echo.Context) (err error) {
 // @Param        query  query   model.StatementUsageReq  true  "筛选项"
 // @Success      200  {object}  model.Pagination{items=[]model.StatementUsageRes}  "请求成功"
 func (*statement) Usage(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.StatementUsageReq](c)
-    return ctx.SendResponse(service.NewEnterpriseStatementWithModifier(ctx.Modifier).Usage(req))
+	ctx, req := app.ManagerContextAndBinding[model.StatementUsageReq](c)
+	return ctx.SendResponse(service.NewEnterpriseStatementWithModifier(ctx.Modifier).Usage(req))
 }

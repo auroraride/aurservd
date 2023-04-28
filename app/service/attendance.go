@@ -6,243 +6,244 @@
 package service
 
 import (
-    "context"
-    "github.com/LucaTheHacker/go-haversine"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/workwx"
-    "github.com/auroraride/aurservd/internal/ent"
-    "github.com/auroraride/aurservd/internal/ent/attendance"
-    "github.com/auroraride/aurservd/internal/ent/employee"
-    "github.com/auroraride/aurservd/internal/ent/store"
-    "github.com/auroraride/aurservd/pkg/snag"
-    "github.com/auroraride/aurservd/pkg/tools"
-    "github.com/golang-module/carbon/v2"
-    "strings"
-    "time"
+	"context"
+	"strings"
+	"time"
+
+	"github.com/LucaTheHacker/go-haversine"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/workwx"
+	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/attendance"
+	"github.com/auroraride/aurservd/internal/ent/employee"
+	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/pkg/snag"
+	"github.com/auroraride/aurservd/pkg/tools"
+	"github.com/golang-module/carbon/v2"
 )
 
 type attendanceService struct {
-    ctx          context.Context
-    modifier     *model.Modifier
-    rider        *ent.Rider
-    employee     *ent.Employee
-    orm          *ent.AttendanceClient
-    employeeInfo *model.Employee
+	ctx          context.Context
+	modifier     *model.Modifier
+	rider        *ent.Rider
+	employee     *ent.Employee
+	orm          *ent.AttendanceClient
+	employeeInfo *model.Employee
 }
 
 func NewAttendance() *attendanceService {
-    return &attendanceService{
-        ctx: context.Background(),
-        orm: ent.Database.Attendance,
-    }
+	return &attendanceService{
+		ctx: context.Background(),
+		orm: ent.Database.Attendance,
+	}
 }
 
 func NewAttendanceWithRider(r *ent.Rider) *attendanceService {
-    s := NewAttendance()
-    s.ctx = context.WithValue(s.ctx, "rider", r)
-    s.rider = r
-    return s
+	s := NewAttendance()
+	s.ctx = context.WithValue(s.ctx, "rider", r)
+	s.rider = r
+	return s
 }
 
 func NewAttendanceWithModifier(m *model.Modifier) *attendanceService {
-    s := NewAttendance()
-    s.ctx = context.WithValue(s.ctx, "modifier", m)
-    s.modifier = m
-    return s
+	s := NewAttendance()
+	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.modifier = m
+	return s
 }
 
 func NewAttendanceWithEmployee(e *ent.Employee) *attendanceService {
-    s := NewAttendance()
-    if e != nil {
-        s.employee = e
-        s.employeeInfo = &model.Employee{
-            ID:    e.ID,
-            Name:  e.Name,
-            Phone: e.Phone,
-        }
-        s.ctx = context.WithValue(s.ctx, "employee", s.employeeInfo)
-    }
-    return s
+	s := NewAttendance()
+	if e != nil {
+		s.employee = e
+		s.employeeInfo = &model.Employee{
+			ID:    e.ID,
+			Name:  e.Name,
+			Phone: e.Phone,
+		}
+		s.ctx = context.WithValue(s.ctx, "employee", s.employeeInfo)
+	}
+	return s
 }
 
 // check 检查是否满足打卡条件并获取需盘点物资清单
 func (s *attendanceService) check(req *model.AttendancePrecheck) (*ent.Store, float64, []model.InventoryNum) {
-    st := NewStore().QuerySn(*req.SN)
-    b := NewBranch().Query(st.BranchID)
-    if st.EmployeeID != nil && req.Duty {
-        snag.Panic("当前已有员工上班")
-    }
-    if !req.Duty && (st.EmployeeID == nil || *st.EmployeeID != s.employee.ID) {
-        snag.Panic("当前上班员工非本人")
-    }
-    // 判断距离
-    if b == nil || b.Lat == 0 || b.Lng == 0 {
-        snag.Panic("未找到门店地理信息")
-    }
-    distance := haversine.Distance(haversine.NewCoordinates(*req.Lat, *req.Lng), haversine.NewCoordinates(b.Lat, b.Lng))
-    meters := distance.Kilometers() * 1000
-    if meters > 1000 {
-        snag.Panic("距离过远")
-    }
-    return st, meters, NewInventory().ListStockInventory(st.ID, model.InventoryListReq{Count: true})
+	st := NewStore().QuerySn(*req.SN)
+	b := NewBranch().Query(st.BranchID)
+	if st.EmployeeID != nil && req.Duty {
+		snag.Panic("当前已有员工上班")
+	}
+	if !req.Duty && (st.EmployeeID == nil || *st.EmployeeID != s.employee.ID) {
+		snag.Panic("当前上班员工非本人")
+	}
+	// 判断距离
+	if b == nil || b.Lat == 0 || b.Lng == 0 {
+		snag.Panic("未找到门店地理信息")
+	}
+	distance := haversine.Distance(haversine.NewCoordinates(*req.Lat, *req.Lng), haversine.NewCoordinates(b.Lat, b.Lng))
+	meters := distance.Kilometers() * 1000
+	if meters > 1000 {
+		snag.Panic("距离过远")
+	}
+	return st, meters, NewInventory().ListStockInventory(st.ID, model.InventoryListReq{Count: true})
 }
 
 func (s *attendanceService) Precheck(req *model.AttendancePrecheck) []model.InventoryNum {
-    _, _, items := s.check(req)
-    return items
+	_, _, items := s.check(req)
+	return items
 }
 
 // QueryDuty 获取员工最近的上班打卡信息
 func (s *attendanceService) QueryDuty(storeID, employeeID uint64, panic ...bool) *ent.Attendance {
-    at, _ := s.orm.QueryNotDeleted().Where(
-        attendance.StoreID(storeID),
-        attendance.EmployeeID(employeeID),
-        attendance.Duty(true),
-    ).First(s.ctx)
-    if at == nil && (len(panic) == 0 || panic[0]) {
-        snag.Panic("未找到员工上班信息")
-    }
-    return at
+	at, _ := s.orm.QueryNotDeleted().Where(
+		attendance.StoreID(storeID),
+		attendance.EmployeeID(employeeID),
+		attendance.Duty(true),
+	).First(s.ctx)
+	if at == nil && (len(panic) == 0 || panic[0]) {
+		snag.Panic("未找到员工上班信息")
+	}
+	return at
 }
 
 // dutyDate 获取上下班日期
 func (s *attendanceService) dutyDate(duty bool, storeID, employeeID uint64) time.Time {
-    now := carbon.Now().StartOfDay().Carbon2Time()
-    // 下班需要计算日期
-    if !duty {
-        at := s.QueryDuty(storeID, employeeID)
-        now = at.Date
-    }
-    return now
+	now := carbon.Now().StartOfDay().Carbon2Time()
+	// 下班需要计算日期
+	if !duty {
+		at := s.QueryDuty(storeID, employeeID)
+		now = at.Date
+	}
+	return now
 }
 
 // Create 打卡
 func (s *attendanceService) Create(req *model.AttendanceCreateReq) {
-    if !strings.HasPrefix(*req.Photo, "employee/") {
-        snag.Panic("照片错误")
-    }
+	if !strings.HasPrefix(*req.Photo, "employee/") {
+		snag.Panic("照片错误")
+	}
 
-    inventory := make([]model.AttendanceInventory, 0)
-    st, distance, items := s.check(req.AttendancePrecheck)
+	inventory := make([]model.AttendanceInventory, 0)
+	st, distance, items := s.check(req.AttendancePrecheck)
 
-    em := model.Employee{
-        ID:    s.employee.ID,
-        Name:  s.employee.Name,
-        Phone: s.employee.Phone,
-    }
+	em := model.Employee{
+		ID:    s.employee.ID,
+		Name:  s.employee.Name,
+		Phone: s.employee.Phone,
+	}
 
-    var noticeItems []model.AttendanceInventory
+	var noticeItems []model.AttendanceInventory
 
-    for _, item := range items {
-        n, ok := req.Inventory[item.Name]
-        if !ok {
-            snag.Panic("请提交全部的物资清单")
-        }
+	for _, item := range items {
+		n, ok := req.Inventory[item.Name]
+		if !ok {
+			snag.Panic("请提交全部的物资清单")
+		}
 
-        ai := model.AttendanceInventory{
-            Name:     item.Name,
-            Num:      n,
-            StockNum: item.Num,
-            Model:    item.Model,
-        }
-        inventory = append(inventory, ai)
+		ai := model.AttendanceInventory{
+			Name:     item.Name,
+			Num:      n,
+			StockNum: item.Num,
+			Model:    item.Model,
+		}
+		inventory = append(inventory, ai)
 
-        if n != item.Num {
-            noticeItems = append(noticeItems, ai)
-        }
-    }
+		if n != item.Num {
+			noticeItems = append(noticeItems, ai)
+		}
+	}
 
-    c := NewCity().Query(st.CityID)
+	c := NewCity().Query(st.CityID)
 
-    if len(noticeItems) > 0 {
-        go func() { workwx.New().SendInventory(req.Duty, c.Name, st.Name, em, noticeItems) }()
-    }
+	if len(noticeItems) > 0 {
+		go func() { workwx.New().SendInventory(req.Duty, c.Name, st.Name, em, noticeItems) }()
+	}
 
-    ent.WithTxPanic(s.ctx, func(tx *ent.Tx) error {
-        _, err := tx.Attendance.Create().
-            SetEmployee(s.employee).
-            SetStore(st).
-            SetDate(s.dutyDate(req.Duty, st.ID, s.employee.ID)).
-            SetDuty(req.Duty).
-            SetInventory(inventory).
-            SetPhoto(*req.Photo).
-            SetDuty(req.Duty).
-            SetAddress(*req.Address).
-            SetLng(*req.Lng).
-            SetLat(*req.Lat).
-            SetDistance(distance).
-            Save(s.ctx)
+	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) error {
+		_, err := tx.Attendance.Create().
+			SetEmployee(s.employee).
+			SetStore(st).
+			SetDate(s.dutyDate(req.Duty, st.ID, s.employee.ID)).
+			SetDuty(req.Duty).
+			SetInventory(inventory).
+			SetPhoto(*req.Photo).
+			SetDuty(req.Duty).
+			SetAddress(*req.Address).
+			SetLng(*req.Lng).
+			SetLat(*req.Lat).
+			SetDistance(distance).
+			Save(s.ctx)
 
-        if err != nil {
-            snag.Panic("考勤打卡失败")
-        }
+		if err != nil {
+			snag.Panic("考勤打卡失败")
+		}
 
-        if req.Duty {
-            _, err = tx.Store.UpdateOneID(st.ID).SetEmployee(s.employee).Save(s.ctx)
-        } else {
-            _, err = tx.Store.UpdateOneID(st.ID).ClearEmployeeID().Save(s.ctx)
-        }
-        if err != nil {
-            snag.Panic("考勤打卡失败")
-        }
-        return nil
-    })
+		if req.Duty {
+			_, err = tx.Store.UpdateOneID(st.ID).SetEmployee(s.employee).Save(s.ctx)
+		} else {
+			_, err = tx.Store.UpdateOneID(st.ID).ClearEmployeeID().Save(s.ctx)
+		}
+		if err != nil {
+			snag.Panic("考勤打卡失败")
+		}
+		return nil
+	})
 }
 
 func (s *attendanceService) List(req *model.AttendanceListReq) *model.PaginationRes {
-    q := s.orm.QueryNotDeleted().
-        WithStore(func(sq *ent.StoreQuery) {
-            sq.WithCity()
-        }).
-        WithEmployee().
-        Order(ent.Desc(attendance.FieldCreatedAt))
-    tt := tools.NewTime()
-    if req.Start != nil {
-        q.Where(attendance.CreatedAtGTE(tt.ParseDateStringX(*req.Start)))
-    }
-    if req.End != nil {
-        q.Where(attendance.CreatedAtLT(tt.ParseNextDateStringX(*req.End)))
-    }
-    if req.Keyword != nil {
-        q.Where(
-            attendance.HasEmployeeWith(
-                employee.Or(
-                    employee.NameContainsFold(*req.Keyword),
-                    employee.PhoneContainsFold(*req.Keyword),
-                ),
-            ),
-        )
-    }
-    if req.Duty != 0 {
-        q.Where(attendance.Duty(req.Duty == 1))
-    }
-    if req.CityID != nil {
-        q.Where(attendance.HasStoreWith(store.CityID(*req.CityID)))
-    }
-    if req.StoreID != nil {
-        q.Where(attendance.StoreID(*req.StoreID))
-    }
+	q := s.orm.QueryNotDeleted().
+		WithStore(func(sq *ent.StoreQuery) {
+			sq.WithCity()
+		}).
+		WithEmployee().
+		Order(ent.Desc(attendance.FieldCreatedAt))
+	tt := tools.NewTime()
+	if req.Start != nil {
+		q.Where(attendance.CreatedAtGTE(tt.ParseDateStringX(*req.Start)))
+	}
+	if req.End != nil {
+		q.Where(attendance.CreatedAtLT(tt.ParseNextDateStringX(*req.End)))
+	}
+	if req.Keyword != nil {
+		q.Where(
+			attendance.HasEmployeeWith(
+				employee.Or(
+					employee.NameContainsFold(*req.Keyword),
+					employee.PhoneContainsFold(*req.Keyword),
+				),
+			),
+		)
+	}
+	if req.Duty != 0 {
+		q.Where(attendance.Duty(req.Duty == 1))
+	}
+	if req.CityID != nil {
+		q.Where(attendance.HasStoreWith(store.CityID(*req.CityID)))
+	}
+	if req.StoreID != nil {
+		q.Where(attendance.StoreID(*req.StoreID))
+	}
 
-    return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Attendance) model.AttendanceListRes {
-        es := item.Edges.Store
-        esc := es.Edges.City
-        ee := item.Edges.Employee
-        return model.AttendanceListRes{
-            ID: item.ID,
-            City: model.City{
-                ID:   esc.ID,
-                Name: esc.Name,
-            },
-            Store: model.Store{
-                ID:   es.ID,
-                Name: es.Name,
-            },
-            Name:      ee.Name,
-            Phone:     ee.Phone,
-            Time:      item.CreatedAt.Format(carbon.DateTimeLayout),
-            Photo:     *item.Photo,
-            Inventory: item.Inventory,
-            Duty:      item.Duty,
-        }
-    })
+	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Attendance) model.AttendanceListRes {
+		es := item.Edges.Store
+		esc := es.Edges.City
+		ee := item.Edges.Employee
+		return model.AttendanceListRes{
+			ID: item.ID,
+			City: model.City{
+				ID:   esc.ID,
+				Name: esc.Name,
+			},
+			Store: model.Store{
+				ID:   es.ID,
+				Name: es.Name,
+			},
+			Name:      ee.Name,
+			Phone:     ee.Phone,
+			Time:      item.CreatedAt.Format(carbon.DateTimeLayout),
+			Photo:     *item.Photo,
+			Inventory: item.Inventory,
+			Duty:      item.Duty,
+		}
+	})
 }

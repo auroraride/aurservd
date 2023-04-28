@@ -6,13 +6,14 @@
 package common
 
 import (
-    "bytes"
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/auroraride/aurservd/pkg/snag"
-    "github.com/labstack/echo/v4"
-    "net/http"
+	"bytes"
+	"net/http"
+
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/auroraride/aurservd/pkg/snag"
+	"github.com/labstack/echo/v4"
 )
 
 // CaptchaGenerate
@@ -26,30 +27,30 @@ import (
 // @Success      200  {string}  string  "ok"
 // @Header       200  {string}  X-Captcha-Id  true  "Captcha验证码ID"
 func CaptchaGenerate(c echo.Context) error {
-    id, item, err := service.NewCaptcha().DrawCaptcha()
-    if err != nil {
-        return err
-    }
+	id, item, err := service.NewCaptcha().DrawCaptcha()
+	if err != nil {
+		return err
+	}
 
-    b := new(bytes.Buffer)
-    _, err = item.WriteTo(b)
-    if err != nil {
-        return err
-    }
+	b := new(bytes.Buffer)
+	_, err = item.WriteTo(b)
+	if err != nil {
+		return err
+	}
 
-    c.Response().Header().Set(app.HeaderCaptchaID, id)
+	c.Response().Header().Set(app.HeaderCaptchaID, id)
 
-    return c.Stream(http.StatusOK, "image/png", b)
+	return c.Stream(http.StatusOK, "image/png", b)
 }
 
 // CaptchaVerify 验证
 func CaptchaVerify(c echo.Context) error {
-    ctx, req := app.ContextBinding[model.CaptchaReq](c)
+	ctx, req := app.ContextBinding[model.CaptchaReq](c)
 
-    id := c.Request().Header.Get(app.HeaderCaptchaID)
-    if !service.NewCaptcha().Verify(id, req.Code, true) {
-        snag.Panic("验证码校验失败")
-    }
+	id := c.Request().Header.Get(app.HeaderCaptchaID)
+	if !service.NewCaptcha().Verify(id, req.Code, true) {
+		snag.Panic("验证码校验失败")
+	}
 
-    return ctx.SendResponse()
+	return ctx.SendResponse()
 }

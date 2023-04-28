@@ -6,132 +6,133 @@
 package provider
 
 import (
-    "context"
-    "github.com/auroraride/adapter"
-    "github.com/auroraride/aurservd/app/ec"
-    "github.com/auroraride/aurservd/app/logging"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/workwx"
-    "github.com/auroraride/aurservd/internal/ent"
-    "go.uber.org/zap"
-    "math"
+	"context"
+	"math"
+
+	"github.com/auroraride/adapter"
+	"github.com/auroraride/aurservd/app/ec"
+	"github.com/auroraride/aurservd/app/logging"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/workwx"
+	"github.com/auroraride/aurservd/internal/ent"
+	"go.uber.org/zap"
 )
 
 type updater struct {
-    provider Provider
-    ctx      context.Context
+	provider Provider
+	ctx      context.Context
 
-    cab  *ent.Cabinet
-    old  *ent.Cabinet
-    task *ec.Task
+	cab  *ent.Cabinet
+	old  *ent.Cabinet
+	task *ec.Task
 }
 
 type CabinetStatus struct {
-    Health uint8
-    Bins   model.CabinetBins
+	Health uint8
+	Bins   model.CabinetBins
 }
 
 func NewUpdater(cab *ent.Cabinet) *updater {
-    if cab.Brand != adapter.CabinetBrandKaixin {
-        return nil
-    }
-    return &updater{
-        cab:      cab,
-        provider: NewKaixin(),
-        ctx:      context.Background(),
-    }
+	if cab.Brand != adapter.CabinetBrandKaixin {
+		return nil
+	}
+	return &updater{
+		cab:      cab,
+		provider: NewKaixin(),
+		ctx:      context.Background(),
+	}
 }
 
 func (s *updater) cloneCabinet() *ent.Cabinet {
-    item := new(ent.Cabinet)
-    *item = *s.cab
-    return item
+	item := new(ent.Cabinet)
+	*item = *s.cab
+	return item
 }
 
 func (s *updater) DoUpdate() (crr error) {
-    // 获取电柜当前执行的任务
-    s.task = ec.Obtain(ec.ObtainReq{Serial: s.cab.Serial})
-    var bins model.CabinetBins
-    var online bool
+	// 获取电柜当前执行的任务
+	s.task = ec.Obtain(ec.ObtainReq{Serial: s.cab.Serial})
+	var bins model.CabinetBins
+	var online bool
 
-    online, bins, crr = s.provider.FetchStatus(s.cab.Serial)
-    err := crr
+	online, bins, crr = s.provider.FetchStatus(s.cab.Serial)
+	err := crr
 
-    // 设置是否离线
-    setOfflineTime(s.cab.Serial, online)
+	// 设置是否离线
+	setOfflineTime(s.cab.Serial, online)
 
-    s.old = s.cloneCabinet()
+	s.old = s.cloneCabinet()
 
-    up := s.cab.Update()
+	up := s.cab.Update()
 
-    if err == nil && online {
-        var num, full, empty, locked, charging int
-        for i, bin := range bins {
-            // 电池数量
-            if bin.Battery {
-                num += 1
-            }
-            // 仓位备注信息
-            if len(s.old.Bin) > i {
-                bin.Remark = s.old.Bin[i].Remark
-            }
-            // 锁仓判定
-            if bin.DoorHealth && len(bin.ChargerErrors) == 0 {
-                // 仓门正常清除告警设置
-                delBinFault(s.cab.Serial, i)
-                // 满电充电空仓判定
-                if bin.Battery {
-                    if bin.Full {
-                        // 满电数量
-                        full += 1
-                    } else {
-                        // 充电数量
-                        charging += 1
-                    }
-                } else {
-                    // 空仓数量 = 无电池 && 仓门无锁
-                    empty += 1
-                }
-            } else {
-                // 锁仓数量
-                locked += 1
-            }
-        }
+	if err == nil && online {
+		var num, full, empty, locked, charging int
+		for i, bin := range bins {
+			// 电池数量
+			if bin.Battery {
+				num += 1
+			}
+			// 仓位备注信息
+			if len(s.old.Bin) > i {
+				bin.Remark = s.old.Bin[i].Remark
+			}
+			// 锁仓判定
+			if bin.DoorHealth && len(bin.ChargerErrors) == 0 {
+				// 仓门正常清除告警设置
+				delBinFault(s.cab.Serial, i)
+				// 满电充电空仓判定
+				if bin.Battery {
+					if bin.Full {
+						// 满电数量
+						full += 1
+					} else {
+						// 充电数量
+						charging += 1
+					}
+				} else {
+					// 空仓数量 = 无电池 && 仓门无锁
+					empty += 1
+				}
+			} else {
+				// 锁仓数量
+				locked += 1
+			}
+		}
 
-        up.SetBin(bins).SetBatteryNum(num).SetDoors(len(bins)).SetLockedBinNum(locked).SetEmptyBinNum(empty).SetBatteryFullNum(full).SetBatteryChargingNum(charging)
-    }
+		up.SetBin(bins).SetBatteryNum(num).SetDoors(len(bins)).SetLockedBinNum(locked).SetEmptyBinNum(empty).SetBatteryFullNum(full).SetBatteryChargingNum(charging)
+	}
 
-    health := s.cab.Health
-    if online {
-        health = model.CabinetHealthStatusOnline
-    } else if isOffline(s.cab.Serial) {
-        health = model.CabinetHealthStatusOffline
-    }
+	health := s.cab.Health
+	if online {
+		health = model.CabinetHealthStatusOnline
+	} else if isOffline(s.cab.Serial) {
+		health = model.CabinetHealthStatusOffline
+	}
 
-    var item *ent.Cabinet
-    item, err = up.SetHealth(health).Save(s.ctx)
-    if err != nil {
-        zap.L().Error(s.cab.Serial+": 更新写入失败", zap.Error(err))
-        return
-    }
+	var item *ent.Cabinet
+	item, err = up.SetHealth(health).Save(s.ctx)
+	if err != nil {
+		zap.L().Error(s.cab.Serial+": 更新写入失败", zap.Error(err))
+		return
+	}
 
-    // 在线变化
-    if s.old.Health != health {
-        // 电柜在线变动日志
-        logging.NewHealthLog(item.Brand, item.Serial, item.UpdatedAt).SetStatus(s.old.Health, health).Send()
-        if health == model.CabinetHealthStatusOffline {
-            go workwx.New().SendCabinetOffline(item.Name, item.Serial, cabinetCity(item))
-        }
-    }
+	// 在线变化
+	if s.old.Health != health {
+		// 电柜在线变动日志
+		logging.NewHealthLog(item.Brand, item.Serial, item.UpdatedAt).SetStatus(s.old.Health, health).Send()
+		if health == model.CabinetHealthStatusOffline {
+			go workwx.New().SendCabinetOffline(item.Name, item.Serial, cabinetCity(item))
+		}
+	}
 
-    *s.cab = *item
+	*s.cab = *item
 
-    if item.Health == model.CabinetHealthStatusOnline {
-        // 电池变动
-        s.batteryMonitor()
-    }
+	if item.Health == model.CabinetHealthStatusOnline {
+		// 电池变动
+		s.batteryMonitor()
+	}
 
-    return
+	return
 }
 
 // batteryMonitor 监控电柜电池变动
@@ -141,37 +142,36 @@ func (s *updater) DoUpdate() (crr error) {
 // 2. 电池变动时判定当前是否有任务和维护状态
 // 2.1 如果有任务或维护时变动数量>=2推送
 // 2.2 如果没有任务且非维护中时变动数量>=1推送
-//
 func (s *updater) batteryMonitor() {
-    oldNum := s.old.BatteryNum
-    oldBins := s.old.Bin
-    max := 1.0
-    // 判断电柜是否正在执行业务, 若正在执行任务则使用执行任务中的电池数量信息
-    if s.task != nil {
-        oldNum = s.task.Cabinet.BatteryNum
-        oldBins = s.task.Cabinet.Bins
-        max = 2.0
-    }
+	oldNum := s.old.BatteryNum
+	oldBins := s.old.Bin
+	max := 1.0
+	// 判断电柜是否正在执行业务, 若正在执行任务则使用执行任务中的电池数量信息
+	if s.task != nil {
+		oldNum = s.task.Cabinet.BatteryNum
+		oldBins = s.task.Cabinet.Bins
+		max = 2.0
+	}
 
-    // 监控电池变化
-    if oldNum != s.cab.BatteryNum {
-        diff := s.cab.BatteryNum - oldNum
-        // 当前非业务状态或电池变动数量大于1时
-        if math.Abs(float64(diff)) >= max {
-            status := model.CabinetStatus(s.cab.Status)
-            logging.NewBatteryLog(s.cab.Brand, s.cab.Serial, oldNum, s.cab.BatteryNum, s.cab.UpdatedAt).
-                SetTask(s.task).
-                SetBin(oldBins, s.cab.Bin).
-                SetStatus(status).
-                Send()
+	// 监控电池变化
+	if oldNum != s.cab.BatteryNum {
+		diff := s.cab.BatteryNum - oldNum
+		// 当前非业务状态或电池变动数量大于1时
+		if math.Abs(float64(diff)) >= max {
+			status := model.CabinetStatus(s.cab.Status)
+			logging.NewBatteryLog(s.cab.Brand, s.cab.Serial, oldNum, s.cab.BatteryNum, s.cab.UpdatedAt).
+				SetTask(s.task).
+				SetBin(oldBins, s.cab.Bin).
+				SetStatus(status).
+				Send()
 
-            // 推送消息
-            go func() {
-                // 非运营中状态不推送
-                if status == model.CabinetStatusNormal {
-                    workwx.New().SendBatteryAbnormality(cabinetCity(s.cab), s.cab.Serial, s.cab.Name, oldNum, s.cab.BatteryNum, diff)
-                }
-            }()
-        }
-    }
+			// 推送消息
+			go func() {
+				// 非运营中状态不推送
+				if status == model.CabinetStatusNormal {
+					workwx.New().SendBatteryAbnormality(cabinetCity(s.cab), s.cab.Serial, s.cab.Name, oldNum, s.cab.BatteryNum, diff)
+				}
+			}()
+		}
+	}
 }

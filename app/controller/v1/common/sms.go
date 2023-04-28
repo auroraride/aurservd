@@ -6,13 +6,14 @@
 package common
 
 import (
-    "errors"
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/auroraride/aurservd/internal/ar"
-    "github.com/labstack/echo/v4"
-    "github.com/lithammer/shortuuid/v4"
+	"errors"
+
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/auroraride/aurservd/internal/ar"
+	"github.com/labstack/echo/v4"
+	"github.com/lithammer/shortuuid/v4"
 )
 
 // SendSmsCode
@@ -27,24 +28,24 @@ import (
 // @Produce      json
 // @Success      200  {object}  model.SmsRes  "请求成功"
 func SendSmsCode(c echo.Context) error {
-    ctx, req := app.ContextBinding[model.SmsReq](c)
-    id := ctx.Request().Header.Get(app.HeaderCaptchaID)
-    var smsId string
-    var err error
-    debugPhones := ar.Config.App.Debug.Phone
+	ctx, req := app.ContextBinding[model.SmsReq](c)
+	id := ctx.Request().Header.Get(app.HeaderCaptchaID)
+	var smsId string
+	var err error
+	debugPhones := ar.Config.App.Debug.Phone
 
-    if !debugPhones[req.Phone] && !service.NewCaptcha().Verify(id, req.CaptchaCode, false) {
-        return errors.New("图形验证码校验失败")
-    }
-    if debugPhones[req.Phone] {
-        smsId = shortuuid.New()
-    } else {
-        // 发送短信
-        smsId, err = service.NewSms().SendCode(req.Phone)
-        if err != nil {
-            return err
-        }
-    }
+	if !debugPhones[req.Phone] && !service.NewCaptcha().Verify(id, req.CaptchaCode, false) {
+		return errors.New("图形验证码校验失败")
+	}
+	if debugPhones[req.Phone] {
+		smsId = shortuuid.New()
+	} else {
+		// 发送短信
+		smsId, err = service.NewSms().SendCode(req.Phone)
+		if err != nil {
+			return err
+		}
+	}
 
-    return ctx.SendResponse(model.SmsResponse{Id: smsId})
+	return ctx.SendResponse(model.SmsResponse{Id: smsId})
 }

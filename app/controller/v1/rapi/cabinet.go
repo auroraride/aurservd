@@ -6,10 +6,10 @@
 package rapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type cabinet struct{}
@@ -27,8 +27,8 @@ var Cabinet = new(cabinet)
 // @Param        serial  path  string  true  "电柜二维码"
 // @Success      200  {object}  model.RiderExchangeInfo  "请求成功"
 func (*cabinet) GetProcess(c echo.Context) (err error) {
-    ctx, req := app.RiderContextAndBinding[model.RiderCabinetOperateInfoReq](c)
-    return ctx.SendResponse(service.NewRiderExchange(ctx.Rider).GetProcess(req))
+	ctx, req := app.RiderContextAndBinding[model.RiderCabinetOperateInfoReq](c)
+	return ctx.SendResponse(service.NewRiderExchange(ctx.Rider).GetProcess(req))
 }
 
 // Process
@@ -42,9 +42,9 @@ func (*cabinet) GetProcess(c echo.Context) (err error) {
 // @Param        body  body  model.RiderExchangeProcessReq  true  "desc"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*cabinet) Process(c echo.Context) (err error) {
-    ctx, req := app.RiderContextAndBinding[model.RiderExchangeProcessReq](c)
-    service.NewRiderExchange(ctx.Rider).Start(req)
-    return ctx.SendResponse()
+	ctx, req := app.RiderContextAndBinding[model.RiderExchangeProcessReq](c)
+	service.NewRiderExchange(ctx.Rider).Start(req)
+	return ctx.SendResponse()
 }
 
 // ProcessStatus
@@ -58,11 +58,11 @@ func (*cabinet) Process(c echo.Context) (err error) {
 // @Param        query  query  model.RiderExchangeProcessStatusReq  true  "desc"
 // @Success      200  {object}  model.RiderExchangeProcessRes  "请求成功"
 func (*cabinet) ProcessStatus(c echo.Context) (err error) {
-    ctx, req := app.RiderContextAndBinding[model.RiderExchangeProcessStatusReq](c)
+	ctx, req := app.RiderContextAndBinding[model.RiderExchangeProcessStatusReq](c)
 
-    return ctx.SendResponse(
-        service.NewRiderExchange(ctx.Rider).GetProcessStatus(req),
-    )
+	return ctx.SendResponse(
+		service.NewRiderExchange(ctx.Rider).GetProcessStatus(req),
+	)
 }
 
 // Report
@@ -76,10 +76,10 @@ func (*cabinet) ProcessStatus(c echo.Context) (err error) {
 // @Param        body  body     model.CabinetFaultReportReq  true  "desc"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*cabinet) Report(c echo.Context) (err error) {
-    ctx, req := app.RiderContextAndBinding[model.CabinetFaultReportReq](c)
-    return ctx.SendResponse(
-        model.StatusResponse{Status: service.NewCabinetFault().Report(ctx.Rider, req)},
-    )
+	ctx, req := app.RiderContextAndBinding[model.CabinetFaultReportReq](c)
+	return ctx.SendResponse(
+		model.StatusResponse{Status: service.NewCabinetFault().Report(ctx.Rider, req)},
+	)
 }
 
 // Fault
@@ -92,6 +92,6 @@ func (*cabinet) Report(c echo.Context) (err error) {
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
 // @Success      200 {object}  []string  "请求成功"
 func (*cabinet) Fault(c echo.Context) (err error) {
-    ctx := app.ContextX[app.RiderContext](c)
-    return ctx.SendResponse(service.NewSetting().GetSetting(model.SettingCabinetFaultKey))
+	ctx := app.ContextX[app.RiderContext](c)
+	return ctx.SendResponse(service.NewSetting().GetSetting(model.SettingCabinetFaultKey))
 }

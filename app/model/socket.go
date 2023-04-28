@@ -8,14 +8,14 @@ package model
 import jsoniter "github.com/json-iterator/go"
 
 type SocketBinaryMessage interface {
-    Bytes() []byte
+	Bytes() []byte
 }
 
 type SocketMessage struct {
-    Error string `json:"error"`
+	Error string `json:"error"`
 }
 
 func (res *SocketMessage) Bytes() []byte {
-    b, _ := jsoniter.Marshal(res)
-    return b
+	b, _ := jsoniter.Marshal(res)
+	return b
 }

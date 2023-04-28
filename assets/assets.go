@@ -6,37 +6,37 @@
 package assets
 
 import (
-    _ "embed"
+	_ "embed"
 )
 
 var (
-    //go:embed city.json
-    City []byte
+	//go:embed city.json
+	City []byte
 
-    //go:embed swagger.redoc.html
-    SwaggerRedocUI string
+	//go:embed swagger.redoc.html
+	SwaggerRedocUI string
 
-    //go:embed docs/swagger.json
-    SwaggerSpec []byte
+	//go:embed docs/swagger.json
+	SwaggerSpec []byte
 
-    //go:embed docs/swagger.yaml
-    SwaggerSpecYaml []byte
+	//go:embed docs/swagger.yaml
+	SwaggerSpecYaml []byte
 
-    //go:embed api.paw
-    Paw []byte
+	//go:embed api.paw
+	Paw []byte
 
-    //go:embed changelog/manager.md
-    ChangelogManager []byte
+	//go:embed changelog/manager.md
+	ChangelogManager []byte
 
-    //go:embed changelog/rider.md
-    ChangelogRider []byte
+	//go:embed changelog/rider.md
+	ChangelogRider []byte
 
-    //go:embed changelog/employee.md
-    ChangelogEmployee []byte
+	//go:embed changelog/employee.md
+	ChangelogEmployee []byte
 
-    //go:embed octicons.css
-    OcticonsCss []byte
+	//go:embed octicons.css
+	OcticonsCss []byte
 
-    //go:embed sql/stock_overview.sql
-    SQLStockOverview string
+	//go:embed sql/stock_overview.sql
+	SQLStockOverview string
 )

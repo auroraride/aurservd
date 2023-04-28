@@ -6,10 +6,10 @@
 package mapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type enterprise struct{}
@@ -27,8 +27,8 @@ var Enterprise = new(enterprise)
 // @Param        body  body  model.EnterpriseDetail  true  "desc"
 // @Success      200  {object}  int  "请求成功"
 func (*enterprise) Create(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.EnterpriseDetail](c)
-    return ctx.SendResponse(service.NewEnterpriseWithModifier(ctx.Modifier).Create(req))
+	ctx, req := app.ManagerContextAndBinding[model.EnterpriseDetail](c)
+	return ctx.SendResponse(service.NewEnterpriseWithModifier(ctx.Modifier).Create(req))
 }
 
 // Modify
@@ -42,9 +42,9 @@ func (*enterprise) Create(c echo.Context) (err error) {
 // @Param        body  body     model.EnterpriseDetailWithID  true  "desc"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*enterprise) Modify(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.EnterpriseDetailWithID](c)
-    service.NewEnterpriseWithModifier(ctx.Modifier).Modify(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.EnterpriseDetailWithID](c)
+	service.NewEnterpriseWithModifier(ctx.Modifier).Modify(req)
+	return ctx.SendResponse()
 }
 
 // List
@@ -58,10 +58,10 @@ func (*enterprise) Modify(c echo.Context) (err error) {
 // @Param        query  query  model.EnterpriseListReq  true  "desc"
 // @Success      200  {object}  model.PaginationRes{items=[]model.EnterpriseRes} "请求成功"
 func (*enterprise) List(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.EnterpriseListReq](c)
-    return ctx.SendResponse(
-        service.NewEnterpriseWithModifier(ctx.Modifier).List(req),
-    )
+	ctx, req := app.ManagerContextAndBinding[model.EnterpriseListReq](c)
+	return ctx.SendResponse(
+		service.NewEnterpriseWithModifier(ctx.Modifier).List(req),
+	)
 }
 
 // Detail
@@ -75,8 +75,8 @@ func (*enterprise) List(c echo.Context) (err error) {
 // @Param        id  path  uint64  true  "企业ID"
 // @Success      200  {object}  model.EnterpriseRes  "请求成功"
 func (*enterprise) Detail(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
-    return ctx.SendResponse(service.NewEnterpriseWithModifier(ctx.Modifier).GetDetail(req))
+	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
+	return ctx.SendResponse(service.NewEnterpriseWithModifier(ctx.Modifier).GetDetail(req))
 }
 
 // Prepayment
@@ -90,10 +90,10 @@ func (*enterprise) Detail(c echo.Context) (err error) {
 // @Param        body  body  model.EnterprisePrepaymentReq  true  "desc"
 // @Success      200  {object}  float64  "当前余额"
 func (*enterprise) Prepayment(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.EnterprisePrepaymentReq](c)
-    return ctx.SendResponse(
-        service.NewEnterpriseWithModifier(ctx.Modifier).Prepayment(req),
-    )
+	ctx, req := app.ManagerContextAndBinding[model.EnterprisePrepaymentReq](c)
+	return ctx.SendResponse(
+		service.NewEnterpriseWithModifier(ctx.Modifier).Prepayment(req),
+	)
 }
 
 // CreateStation
@@ -107,8 +107,8 @@ func (*enterprise) Prepayment(c echo.Context) (err error) {
 // @Param        body  body  model.EnterpriseStationCreateReq  true  "desc"
 // @Success      200  {object}  int64  "请求成功"
 func (*enterprise) CreateStation(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.EnterpriseStationCreateReq](c)
-    return ctx.SendResponse(service.NewEnterpriseStationWithModifier(ctx.Modifier).Create(req))
+	ctx, req := app.ManagerContextAndBinding[model.EnterpriseStationCreateReq](c)
+	return ctx.SendResponse(service.NewEnterpriseStationWithModifier(ctx.Modifier).Create(req))
 }
 
 // ModifyStation
@@ -123,9 +123,9 @@ func (*enterprise) CreateStation(c echo.Context) (err error) {
 // @Param        id  path  uint64  true  "站点ID"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*enterprise) ModifyStation(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.EnterpriseStationModifyReq](c)
-    service.NewEnterpriseStationWithModifier(ctx.Modifier).Modify(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.EnterpriseStationModifyReq](c)
+	service.NewEnterpriseStationWithModifier(ctx.Modifier).Modify(req)
+	return ctx.SendResponse()
 }
 
 // ListStation
@@ -139,10 +139,10 @@ func (*enterprise) ModifyStation(c echo.Context) (err error) {
 // @Param        enterpriseId  query  uint64  true  "企业ID"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*enterprise) ListStation(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.EnterpriseStationListReq](c)
-    return ctx.SendResponse(
-        service.NewEnterpriseStationWithModifier(ctx.Modifier).List(req),
-    )
+	ctx, req := app.ManagerContextAndBinding[model.EnterpriseStationListReq](c)
+	return ctx.SendResponse(
+		service.NewEnterpriseStationWithModifier(ctx.Modifier).List(req),
+	)
 }
 
 // CreateRider
@@ -156,8 +156,8 @@ func (*enterprise) ListStation(c echo.Context) (err error) {
 // @Param        body  body     model.EnterpriseRiderCreateReq  true  "desc"
 // @Success      200  {object}  model.EnterpriseRider  "请求成功"
 func (*enterprise) CreateRider(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.EnterpriseRiderCreateReq](c)
-    return ctx.SendResponse(service.NewEnterpriseRiderWithModifier(ctx.Modifier).Create(req))
+	ctx, req := app.ManagerContextAndBinding[model.EnterpriseRiderCreateReq](c)
+	return ctx.SendResponse(service.NewEnterpriseRiderWithModifier(ctx.Modifier).Create(req))
 }
 
 // ListRider
@@ -171,8 +171,8 @@ func (*enterprise) CreateRider(c echo.Context) (err error) {
 // @Param        query  query   model.EnterpriseRiderListReq  true  "desc"
 // @Success      200  {object}  model.PaginationRes{items=[]model.EnterpriseRider}  "请求成功"
 func (*enterprise) ListRider(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.EnterpriseRiderListReq](c)
-    return ctx.SendResponse(service.NewEnterpriseRiderWithModifier(ctx.Modifier).List(req))
+	ctx, req := app.ManagerContextAndBinding[model.EnterpriseRiderListReq](c)
+	return ctx.SendResponse(service.NewEnterpriseRiderWithModifier(ctx.Modifier).List(req))
 }
 
 // ModifyPrice
@@ -186,8 +186,8 @@ func (*enterprise) ListRider(c echo.Context) (err error) {
 // @Param        body  body     model.EnterprisePriceModifyReq  true  "价格详情"
 // @Success      200  {object}  model.EnterprisePriceWithCity  "请求成功"
 func (*enterprise) ModifyPrice(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.EnterprisePriceModifyReq](c)
-    return ctx.SendResponse(service.NewEnterpriseWithModifier(ctx.Modifier).ModifyPrice(req))
+	ctx, req := app.ManagerContextAndBinding[model.EnterprisePriceModifyReq](c)
+	return ctx.SendResponse(service.NewEnterpriseWithModifier(ctx.Modifier).ModifyPrice(req))
 }
 
 // DeletePrice
@@ -201,9 +201,9 @@ func (*enterprise) ModifyPrice(c echo.Context) (err error) {
 // @Param        id  path  uint64  true  "价格ID"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*enterprise) DeletePrice(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
-    service.NewEnterpriseWithModifier(ctx.Modifier).DeletePrice(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
+	service.NewEnterpriseWithModifier(ctx.Modifier).DeletePrice(req)
+	return ctx.SendResponse()
 }
 
 // ModifyContract
@@ -217,9 +217,9 @@ func (*enterprise) DeletePrice(c echo.Context) (err error) {
 // @Param        body  body     model.EnterpriseContractModifyReq  true  "合同字段"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*enterprise) ModifyContract(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.EnterpriseContractModifyReq](c)
-    service.NewEnterpriseWithModifier(ctx.Modifier).ModifyContract(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.EnterpriseContractModifyReq](c)
+	service.NewEnterpriseWithModifier(ctx.Modifier).ModifyContract(req)
+	return ctx.SendResponse()
 }
 
 // DeleteContract
@@ -233,9 +233,9 @@ func (*enterprise) ModifyContract(c echo.Context) (err error) {
 // @Param        id  path  uint64  true  "合同ID"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*enterprise) DeleteContract(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
-    service.NewEnterpriseWithModifier(ctx.Modifier).DeleteContract(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
+	service.NewEnterpriseWithModifier(ctx.Modifier).DeleteContract(req)
+	return ctx.SendResponse()
 }
 
 // AgentList
@@ -249,8 +249,8 @@ func (*enterprise) DeleteContract(c echo.Context) (err error) {
 // @Param        enterpriseId  query  uint64  true  "团签ID"
 // @Success      200  {object}  []model.AgentListRes  "请求成功"
 func (*enterprise) AgentList(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.AgentListReq](c)
-    return ctx.SendResponse(service.NewAgent().List(req))
+	ctx, req := app.ManagerContextAndBinding[model.AgentListReq](c)
+	return ctx.SendResponse(service.NewAgent().List(req))
 }
 
 // AgentCreate
@@ -264,9 +264,9 @@ func (*enterprise) AgentList(c echo.Context) (err error) {
 // @Param        body  body     model.AgentCreateReq  true  "账号属性"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*enterprise) AgentCreate(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.AgentCreateReq](c)
-    service.NewAgentWithModifier(ctx.Modifier).Create(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.AgentCreateReq](c)
+	service.NewAgentWithModifier(ctx.Modifier).Create(req)
+	return ctx.SendResponse()
 }
 
 // AgentModify
@@ -281,9 +281,9 @@ func (*enterprise) AgentCreate(c echo.Context) (err error) {
 // @Param        body  body     model.AgentModifyReq  true  "账号属性"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*enterprise) AgentModify(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.AgentModifyReq](c)
-    service.NewAgentWithModifier(ctx.Modifier).Modify(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.AgentModifyReq](c)
+	service.NewAgentWithModifier(ctx.Modifier).Modify(req)
+	return ctx.SendResponse()
 }
 
 // AgentDelete
@@ -297,7 +297,7 @@ func (*enterprise) AgentModify(c echo.Context) (err error) {
 // @Param        id  path       uint64  true  "账号ID"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*enterprise) AgentDelete(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
-    service.NewAgentWithModifier(ctx.Modifier).Delete(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
+	service.NewAgentWithModifier(ctx.Modifier).Delete(req)
+	return ctx.SendResponse()
 }

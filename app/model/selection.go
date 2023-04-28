@@ -6,9 +6,9 @@
 package model
 
 type SelectionPlanModelReq struct {
-    PlanID uint64 `json:"planId" validate:"required" trans:"骑行卡ID" query:"planId"`
+	PlanID uint64 `json:"planId" validate:"required" trans:"骑行卡ID" query:"planId"`
 }
 
 type SelectionCabinetModelReq struct {
-    CabinetID uint64 `json:"cabinetId" validate:"required" trans:"电柜ID" query:"cabinetId"`
+	CabinetID uint64 `json:"cabinetId" validate:"required" trans:"电柜ID" query:"cabinetId"`
 }

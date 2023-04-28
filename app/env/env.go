@@ -6,7 +6,7 @@
 package env
 
 type Env[T any] struct {
-    Key   string `json:"key"`   // 键值
-    Desc  string `json:"desc"`  // 描述
-    Value T      `json:"value"` // 值
+	Key   string `json:"key"`   // 键值
+	Desc  string `json:"desc"`  // 描述
+	Value T      `json:"value"` // 值
 }

@@ -6,10 +6,10 @@
 package eapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type employee struct{}
@@ -27,8 +27,8 @@ var Employee = new(employee)
 // @Param        body  body     model.EmployeeSignReq  true  "店员登录请求"
 // @Success      200  {object}  model.EmployeeProfile  "店员登录信息"
 func (*employee) Signin(c echo.Context) (err error) {
-    ctx, req := app.EmployeeContextAndBinding[model.EmployeeSignReq](c)
-    return ctx.SendResponse(service.NewEmployee().Signin(req))
+	ctx, req := app.EmployeeContextAndBinding[model.EmployeeSignReq](c)
+	return ctx.SendResponse(service.NewEmployee().Signin(req))
 }
 
 // Qrcode
@@ -41,8 +41,8 @@ func (*employee) Signin(c echo.Context) (err error) {
 // @Param        X-Employee-Token  header  string  true  "店员校验token"
 // @Success      200  {object}  model.EmployeeQrcodeRes  "请求成功"
 func (*employee) Qrcode(c echo.Context) (err error) {
-    ctx := app.ContextX[app.EmployeeContext](c)
-    return ctx.SendResponse(service.NewEmployeeWithEmployee(ctx.Employee).RefreshQrcode())
+	ctx := app.ContextX[app.EmployeeContext](c)
+	return ctx.SendResponse(service.NewEmployeeWithEmployee(ctx.Employee).RefreshQrcode())
 }
 
 // Profile
@@ -55,6 +55,6 @@ func (*employee) Qrcode(c echo.Context) (err error) {
 // @Param        X-Employee-Token   header  string  true  "店员校验token"
 // @Success      200  {object}      model.EmployeeProfile  "请求成功"
 func (*employee) Profile(c echo.Context) (err error) {
-    ctx := app.ContextX[app.EmployeeContext](c)
-    return ctx.SendResponse(service.NewEmployee().Profile(ctx.Employee))
+	ctx := app.ContextX[app.EmployeeContext](c)
+	return ctx.SendResponse(service.NewEmployee().Profile(ctx.Employee))
 }

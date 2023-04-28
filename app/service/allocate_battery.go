@@ -6,11 +6,11 @@
 package service
 
 type allocateBatteryService struct {
-    *BaseService
+	*BaseService
 }
 
 func NewAllocateBattery(params ...any) *allocateBatteryService {
-    return &allocateBatteryService{
-        BaseService: newService(params...),
-    }
+	return &allocateBatteryService{
+		BaseService: newService(params...),
+	}
 }

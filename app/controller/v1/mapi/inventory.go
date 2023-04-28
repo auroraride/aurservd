@@ -6,10 +6,10 @@
 package mapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type inventory struct{}
@@ -27,9 +27,9 @@ var Inventory = new(inventory)
 // @Param        body  body  model.Inventory  true  "desc"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*inventory) CreateOrModify(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.Inventory](c)
-    service.NewInventoryWithModifier(ctx.Modifier).CreateOrModify(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.Inventory](c)
+	service.NewInventoryWithModifier(ctx.Modifier).CreateOrModify(req)
+	return ctx.SendResponse()
 }
 
 // List
@@ -42,8 +42,8 @@ func (*inventory) CreateOrModify(c echo.Context) (err error) {
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Success      200  {object}  model.Inventory  "请求成功"
 func (*inventory) List(c echo.Context) (err error) {
-    ctx := app.ContextX[app.ManagerContext](c)
-    return ctx.SendResponse(service.NewInventory().List())
+	ctx := app.ContextX[app.ManagerContext](c)
+	return ctx.SendResponse(service.NewInventory().List())
 }
 
 // Delete
@@ -57,9 +57,9 @@ func (*inventory) List(c echo.Context) (err error) {
 // @Param        body  body  model.InventoryDelete  true  "desc"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*inventory) Delete(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.InventoryDelete](c)
-    service.NewInventoryWithModifier(ctx.Modifier).Delete(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.InventoryDelete](c)
+	service.NewInventoryWithModifier(ctx.Modifier).Delete(req)
+	return ctx.SendResponse()
 }
 
 // Transferable
@@ -72,6 +72,6 @@ func (*inventory) Delete(c echo.Context) (err error) {
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Success      200  {object}  []model.InventoryItem  "请求成功"
 func (*inventory) Transferable(c echo.Context) (err error) {
-    ctx := app.ContextX[app.ManagerContext](c)
-    return ctx.SendResponse(service.NewInventory().ListInventory(model.InventoryListReq{Transfer: true}))
+	ctx := app.ContextX[app.ManagerContext](c)
+	return ctx.SendResponse(service.NewInventory().ListInventory(model.InventoryListReq{Transfer: true}))
 }

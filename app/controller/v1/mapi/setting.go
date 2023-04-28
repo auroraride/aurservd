@@ -6,10 +6,10 @@
 package mapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type setting struct{}
@@ -26,9 +26,9 @@ var Setting = new(setting)
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Success      200  {object}  []model.SettingReq  "请求成功"
 func (*setting) List(c echo.Context) (err error) {
-    ctx := app.ContextX[app.ManagerContext](c)
+	ctx := app.ContextX[app.ManagerContext](c)
 
-    return ctx.SendResponse(service.NewSetting().List())
+	return ctx.SendResponse(service.NewSetting().List())
 }
 
 // Modify
@@ -43,7 +43,7 @@ func (*setting) List(c echo.Context) (err error) {
 // @Param        body  body  model.SettingReq  true  "desc"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*setting) Modify(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.SettingReq](c)
-    service.NewSettingWithModifier(ctx.Modifier).Modify(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.SettingReq](c)
+	service.NewSettingWithModifier(ctx.Modifier).Modify(req)
+	return ctx.SendResponse()
 }

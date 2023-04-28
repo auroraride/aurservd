@@ -6,6 +6,6 @@
 package model
 
 const (
-    CommissionStatusPending uint8 = iota // 未发放
-    CommissionStatusIssued               // 已发放
+	CommissionStatusPending uint8 = iota // 未发放
+	CommissionStatusIssued               // 已发放
 )

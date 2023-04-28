@@ -6,12 +6,12 @@
 package ent
 
 func (sc *StockCreate) Clone() (creator *StockCreate) {
-    mutation := new(StockMutation)
-    *mutation = *sc.mutation
-    return &StockCreate{
-        config:   sc.config,
-        mutation: mutation,
-        hooks:    sc.hooks,
-        conflict: sc.conflict,
-    }
+	mutation := new(StockMutation)
+	*mutation = *sc.mutation
+	return &StockCreate{
+		config:   sc.config,
+		mutation: mutation,
+		hooks:    sc.hooks,
+		conflict: sc.conflict,
+	}
 }

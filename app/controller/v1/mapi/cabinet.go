@@ -6,10 +6,10 @@
 package mapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type cabinet struct{}
@@ -27,11 +27,11 @@ var Cabinet = new(cabinet)
 // @Param        body  body     model.CabinetCreateReq  true  "电柜数据"
 // @Success      200  {object}  model.ItemRes{item=model.CabinetItem}  "请求成功"
 func (*cabinet) Create(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.CabinetCreateReq](c)
+	ctx, req := app.ManagerContextAndBinding[model.CabinetCreateReq](c)
 
-    return ctx.SendResponse(
-        model.ItemRes{Item: service.NewCabinetWithModifier(ctx.Modifier).CreateCabinet(req)},
-    )
+	return ctx.SendResponse(
+		model.ItemRes{Item: service.NewCabinetWithModifier(ctx.Modifier).CreateCabinet(req)},
+	)
 }
 
 // List
@@ -45,8 +45,8 @@ func (*cabinet) Create(c echo.Context) (err error) {
 // @Param        query  query   model.CabinetQueryReq  true  "搜索参数"
 // @Success      200  {object}  model.PaginationRes{items=[]model.CabinetItem}  "请求成功"
 func (*cabinet) List(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.CabinetQueryReq](c)
-    return ctx.SendResponse(service.NewCabinetWithModifier(ctx.Modifier).List(req))
+	ctx, req := app.ManagerContextAndBinding[model.CabinetQueryReq](c)
+	return ctx.SendResponse(service.NewCabinetWithModifier(ctx.Modifier).List(req))
 }
 
 // Modify
@@ -61,9 +61,9 @@ func (*cabinet) List(c echo.Context) (err error) {
 // @Param        id    path     int  true  "电柜ID"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*cabinet) Modify(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.CabinetModifyReq](c)
-    service.NewCabinetWithModifier(ctx.Modifier).Modify(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.CabinetModifyReq](c)
+	service.NewCabinetWithModifier(ctx.Modifier).Modify(req)
+	return ctx.SendResponse()
 }
 
 // Delete
@@ -77,10 +77,10 @@ func (*cabinet) Modify(c echo.Context) (err error) {
 // @Param        id    path  int  true  "电柜ID"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*cabinet) Delete(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.CabinetDeleteReq](c)
-    service.NewCabinetWithModifier(ctx.Modifier).Delete(req)
+	ctx, req := app.ManagerContextAndBinding[model.CabinetDeleteReq](c)
+	service.NewCabinetWithModifier(ctx.Modifier).Delete(req)
 
-    return ctx.SendResponse()
+	return ctx.SendResponse()
 }
 
 // Detail
@@ -94,8 +94,8 @@ func (*cabinet) Delete(c echo.Context) (err error) {
 // @Param        id    path  int  true  "电柜ID"
 // @Success      200  {object}  model.CabinetDetailRes  "请求成功"
 func (*cabinet) Detail(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
-    return ctx.SendResponse(service.NewCabinet().DetailFromID(req.ID))
+	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
+	return ctx.SendResponse(service.NewCabinet().DetailFromID(req.ID))
 }
 
 // DoorOperate
@@ -109,10 +109,10 @@ func (*cabinet) Detail(c echo.Context) (err error) {
 // @Param        body  body     model.CabinetDoorOperateReq  true  "柜门操作请求"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*cabinet) DoorOperate(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.CabinetDoorOperateReq](c)
-    return ctx.SendResponse(
-        model.StatusResponse{Status: service.NewCabinetMgrWithModifier(ctx.Modifier).BinOperate(req)},
-    )
+	ctx, req := app.ManagerContextAndBinding[model.CabinetDoorOperateReq](c)
+	return ctx.SendResponse(
+		model.StatusResponse{Status: service.NewCabinetMgrWithModifier(ctx.Modifier).BinOperate(req)},
+	)
 }
 
 // Reboot
@@ -126,11 +126,11 @@ func (*cabinet) DoorOperate(c echo.Context) (err error) {
 // @Param        body  body     model.IDPostReq  true  "重启请求"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*cabinet) Reboot(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.IDPostReq](c)
+	ctx, req := app.ManagerContextAndBinding[model.IDPostReq](c)
 
-    return ctx.SendResponse(
-        model.StatusResponse{Status: service.NewCabinetMgrWithModifier(ctx.Modifier).Reboot(req)},
-    )
+	return ctx.SendResponse(
+		model.StatusResponse{Status: service.NewCabinetMgrWithModifier(ctx.Modifier).Reboot(req)},
+	)
 }
 
 // Fault
@@ -144,10 +144,10 @@ func (*cabinet) Reboot(c echo.Context) (err error) {
 // @Param        query  query   model.CabinetFaultListReq  false  "请求体"
 // @Success      200  {object}  model.PaginationRes{items=[]model.CabinetFaultItem}  "请求成功"
 func (*cabinet) Fault(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.CabinetFaultListReq](c)
-    return ctx.SendResponse(
-        service.NewCabinetFault().List(req),
-    )
+	ctx, req := app.ManagerContextAndBinding[model.CabinetFaultListReq](c)
+	return ctx.SendResponse(
+		service.NewCabinetFault().List(req),
+	)
 }
 
 // FaultDeal
@@ -162,9 +162,9 @@ func (*cabinet) Fault(c echo.Context) (err error) {
 // @Param        body  body     model.CabinetFaultDealReq  true  "desc"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*cabinet) FaultDeal(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.CabinetFaultDealReq](c)
-    service.NewCabinetFaultWithModifier(ctx.Modifier).Deal(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.CabinetFaultDealReq](c)
+	service.NewCabinetFaultWithModifier(ctx.Modifier).Deal(req)
+	return ctx.SendResponse()
 }
 
 // Data
@@ -178,8 +178,8 @@ func (*cabinet) FaultDeal(c echo.Context) (err error) {
 // @Param        query  query   model.CabinetDataReq  false  "筛选数据"
 // @Success      200  {object}  model.PaginationRes{items=[]model.CabinetDataRes}  "请求成功"
 func (*cabinet) Data(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.CabinetDataReq](c)
-    return ctx.SendResponse(service.NewCabinetWithModifier(ctx.Modifier).Data(req))
+	ctx, req := app.ManagerContextAndBinding[model.CabinetDataReq](c)
+	return ctx.SendResponse(service.NewCabinetWithModifier(ctx.Modifier).Data(req))
 }
 
 // Transfer
@@ -193,9 +193,9 @@ func (*cabinet) Data(c echo.Context) (err error) {
 // @Param        body  body     model.CabinetTransferReq  true  "调拨数据"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*cabinet) Transfer(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.CabinetTransferReq](c)
-    service.NewCabinetWithModifier(ctx.Modifier).Transfer(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.CabinetTransferReq](c)
+	service.NewCabinetWithModifier(ctx.Modifier).Transfer(req)
+	return ctx.SendResponse()
 }
 
 // Maintain
@@ -209,8 +209,8 @@ func (*cabinet) Transfer(c echo.Context) (err error) {
 // @Param        body  body     model.CabinetMaintainReq  true  "请求参数"
 // @Success      200  {object}  model.CabinetDetailRes  "请求成功"
 func (*cabinet) Maintain(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.CabinetMaintainReq](c)
-    return ctx.SendResponse(service.NewCabinetMgrWithModifier(ctx.Modifier).Maintain(req))
+	ctx, req := app.ManagerContextAndBinding[model.CabinetMaintainReq](c)
+	return ctx.SendResponse(service.NewCabinetMgrWithModifier(ctx.Modifier).Maintain(req))
 }
 
 // OpenBind
@@ -225,7 +225,7 @@ func (*cabinet) Maintain(c echo.Context) (err error) {
 // @Param        body  body     model.CabinetOpenBindReq  true  "操作请求"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*cabinet) OpenBind(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.CabinetOpenBindReq](c)
-    service.NewIntelligentCabinet(ctx.Modifier).OpenBind(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.CabinetOpenBindReq](c)
+	service.NewIntelligentCabinet(ctx.Modifier).OpenBind(req)
+	return ctx.SendResponse()
 }

@@ -6,10 +6,10 @@
 package mapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/auroraride/aurservd/pkg/snag"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/auroraride/aurservd/pkg/snag"
+	"github.com/labstack/echo/v4"
 )
 
 type csc struct{}
@@ -27,10 +27,10 @@ var Csc = new(csc)
 // @Param        file  formData  file  true  "外呼文件"
 // @Success      200  {object}  model.ShiguangjuIVRRes  "请求成功"
 func (*csc) BatchReminder(c echo.Context) (err error) {
-    file, err := c.FormFile("file")
-    if err != nil {
-        snag.Panic(err)
-    }
+	file, err := c.FormFile("file")
+	if err != nil {
+		snag.Panic(err)
+	}
 
-    return app.ContextX[app.ManagerContext](c).SendResponse(service.NewCSC().BatchReminder(file))
+	return app.ContextX[app.ManagerContext](c).SendResponse(service.NewCSC().BatchReminder(file))
 }

@@ -6,12 +6,13 @@
 package rapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/auroraride/aurservd/internal/baidu"
-    "github.com/labstack/echo/v4"
-    "math"
+	"math"
+
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/auroraride/aurservd/internal/baidu"
+	"github.com/labstack/echo/v4"
 )
 
 type branch struct{}
@@ -29,8 +30,8 @@ var Branch = new(branch)
 // @Param        query  query   model.BranchWithDistanceReq  true  "根据距离获取网点请求参数"
 // @Success      200  {object}  []model.BranchWithDistanceRes  "请求成功"
 func (*branch) List(c echo.Context) (err error) {
-    ctx, req := app.RiderContextAndBinding[model.BranchWithDistanceReq](c)
-    return ctx.SendResponse(service.NewBranchWithRider(ctx.Rider).ListByDistanceRider(req))
+	ctx, req := app.RiderContextAndBinding[model.BranchWithDistanceReq](c)
+	return ctx.SendResponse(service.NewBranchWithRider(ctx.Rider).ListByDistanceRider(req))
 }
 
 // Riding
@@ -44,9 +45,9 @@ func (*branch) List(c echo.Context) (err error) {
 // @Param        query  query  model.BranchRidingReq  true  "desc"
 // @Success      200  {object}  model.BranchRidingRes  "请求成功"
 func (*branch) Riding(c echo.Context) (err error) {
-    ctx, req := app.RiderContextAndBinding[model.BranchRidingReq](c)
-    seconds, _, _ := baidu.NewMap().RidingPlanX(req.Origin, req.Destination)
-    return ctx.SendResponse(model.BranchRidingRes{Minutes: math.Round(float64(seconds) / 60.0)})
+	ctx, req := app.RiderContextAndBinding[model.BranchRidingReq](c)
+	seconds, _, _ := baidu.NewMap().RidingPlanX(req.Origin, req.Destination)
+	return ctx.SendResponse(model.BranchRidingRes{Minutes: math.Round(float64(seconds) / 60.0)})
 }
 
 // Facility
@@ -62,6 +63,6 @@ func (*branch) Riding(c echo.Context) (err error) {
 // @Param        lat  query  float64  true  "纬度"
 // @Success      200 {object}  model.BranchFacilityRes  "请求成功"
 func (*branch) Facility(c echo.Context) (err error) {
-    ctx, req := app.RiderContextAndBinding[model.BranchFacilityReq](c)
-    return ctx.SendResponse(service.NewBranchWithRider(ctx.Rider).Facility(req))
+	ctx, req := app.RiderContextAndBinding[model.BranchFacilityReq](c)
+	return ctx.SendResponse(service.NewBranchWithRider(ctx.Rider).Facility(req))
 }

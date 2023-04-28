@@ -6,5 +6,5 @@
 package types
 
 type Enum interface {
-    IsValid() bool
+	IsValid() bool
 }

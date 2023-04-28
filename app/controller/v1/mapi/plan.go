@@ -6,10 +6,10 @@
 package mapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type plan struct{}
@@ -27,8 +27,8 @@ var Plan = new(plan)
 // @Param        body  body     model.PlanCreateReq  true  "骑行卡信息"
 // @Success      200  {object}  model.PlanListRes  "请求成功"
 func (*plan) Create(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.PlanCreateReq](c)
-    return ctx.SendResponse(service.NewPlanWithModifier(ctx.Modifier).Create(req))
+	ctx, req := app.ManagerContextAndBinding[model.PlanCreateReq](c)
+	return ctx.SendResponse(service.NewPlanWithModifier(ctx.Modifier).Create(req))
 }
 
 // UpdateEnable
@@ -43,9 +43,9 @@ func (*plan) Create(c echo.Context) (err error) {
 // @Param        body  body     model.PlanEnableModifyReq  true  "desc"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*plan) UpdateEnable(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.PlanEnableModifyReq](c)
-    service.NewPlanWithModifier(ctx.Modifier).UpdateEnable(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.PlanEnableModifyReq](c)
+	service.NewPlanWithModifier(ctx.Modifier).UpdateEnable(req)
+	return ctx.SendResponse()
 }
 
 // Delete
@@ -59,9 +59,9 @@ func (*plan) UpdateEnable(c echo.Context) (err error) {
 // @Param        id  path  int  true  "骑士卡ID"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*plan) Delete(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
-    service.NewPlanWithModifier(ctx.Modifier).Delete(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
+	service.NewPlanWithModifier(ctx.Modifier).Delete(req)
+	return ctx.SendResponse()
 }
 
 // List
@@ -75,8 +75,8 @@ func (*plan) Delete(c echo.Context) (err error) {
 // @Param        query  query   model.PlanListReq  true  "desc"
 // @Success      200  {object}  model.PaginationRes{items=[]model.PlanListRes}  "请求成功"
 func (*plan) List(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.PlanListReq](c)
-    return ctx.SendResponse(service.NewPlan().List(req))
+	ctx, req := app.ManagerContextAndBinding[model.PlanListReq](c)
+	return ctx.SendResponse(service.NewPlan().List(req))
 }
 
 // func (*plan) Modify(c echo.Context) (err error) {
@@ -95,8 +95,8 @@ func (*plan) List(c echo.Context) (err error) {
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Success      200  {object}  []model.PlanIntroduceOption  "未设定列表"
 func (*plan) IntroduceNotset(c echo.Context) (err error) {
-    ctx := app.Context(c)
-    return ctx.SendResponse(service.NewPlanIntroduce().Notset())
+	ctx := app.Context(c)
+	return ctx.SendResponse(service.NewPlanIntroduce().Notset())
 }
 
 // IntroduceList
@@ -109,8 +109,8 @@ func (*plan) IntroduceNotset(c echo.Context) (err error) {
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Success      200  {object}  []model.PlanIntroduce  "请求成功"
 func (*plan) IntroduceList(c echo.Context) (err error) {
-    ctx := app.Context(c)
-    return ctx.SendResponse(service.NewPlanIntroduce().List())
+	ctx := app.Context(c)
+	return ctx.SendResponse(service.NewPlanIntroduce().List())
 }
 
 // IntroduceCreate
@@ -124,9 +124,9 @@ func (*plan) IntroduceList(c echo.Context) (err error) {
 // @Param        body  body     model.PlanIntroduceCreateReq  true  "介绍详情"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*plan) IntroduceCreate(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.PlanIntroduceCreateReq](c)
-    service.NewPlanIntroduce(ctx.Modifier).Create(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.PlanIntroduceCreateReq](c)
+	service.NewPlanIntroduce(ctx.Modifier).Create(req)
+	return ctx.SendResponse()
 }
 
 // IntroduceModify
@@ -141,9 +141,9 @@ func (*plan) IntroduceCreate(c echo.Context) (err error) {
 // @Param        image  body  string  true  "介绍图片"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*plan) IntroduceModify(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.PlanIntroduceModifyReq](c)
-    service.NewPlanIntroduce(ctx.Modifier).Modify(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.PlanIntroduceModifyReq](c)
+	service.NewPlanIntroduce(ctx.Modifier).Modify(req)
+	return ctx.SendResponse()
 }
 
 // Time
@@ -157,7 +157,7 @@ func (*plan) IntroduceModify(c echo.Context) (err error) {
 // @Param        body  body     model.PlanModifyTimeReq  true  "骑士卡和有效期"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*plan) Time(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.PlanModifyTimeReq](c)
-    service.NewPlanWithModifier(ctx.Modifier).ModifyTime(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.PlanModifyTimeReq](c)
+	service.NewPlanWithModifier(ctx.Modifier).ModifyTime(req)
+	return ctx.SendResponse()
 }

@@ -6,10 +6,10 @@
 package rapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type reserve struct{}
@@ -26,8 +26,8 @@ var Reserve = new(reserve)
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
 // @Success      200 {object}  model.ReserveUnfinishedRes  "请求成功, 预约不存在时为`null`"
 func (*reserve) Unfinished(c echo.Context) (err error) {
-    ctx := app.ContextX[app.RiderContext](c)
-    return ctx.SendResponse(service.NewReserve().RiderUnfinishedDetail(ctx.Rider.ID))
+	ctx := app.ContextX[app.RiderContext](c)
+	return ctx.SendResponse(service.NewReserve().RiderUnfinishedDetail(ctx.Rider.ID))
 }
 
 // Create
@@ -41,8 +41,8 @@ func (*reserve) Unfinished(c echo.Context) (err error) {
 // @Param        body  body     model.ReserveCreateReq  true  "预约信息"
 // @Success      200 {object}   model.ReserveUnfinishedRes  "请求成功"
 func (*reserve) Create(c echo.Context) (err error) {
-    ctx, req := app.RiderContextAndBinding[model.ReserveCreateReq](c)
-    return ctx.SendResponse(service.NewReserveWithRider(ctx.Rider).Create(req))
+	ctx, req := app.RiderContextAndBinding[model.ReserveCreateReq](c)
+	return ctx.SendResponse(service.NewReserveWithRider(ctx.Rider).Create(req))
 }
 
 // Cancel
@@ -56,7 +56,7 @@ func (*reserve) Create(c echo.Context) (err error) {
 // @Param        id  path  uint64  true  "预约ID"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*reserve) Cancel(c echo.Context) (err error) {
-    ctx, req := app.RiderContextAndBinding[model.IDParamReq](c)
-    service.NewReserveWithRider(ctx.Rider).Cancel(req)
-    return ctx.SendResponse()
+	ctx, req := app.RiderContextAndBinding[model.IDParamReq](c)
+	service.NewReserveWithRider(ctx.Rider).Cancel(req)
+	return ctx.SendResponse()
 }

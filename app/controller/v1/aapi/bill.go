@@ -6,10 +6,10 @@
 package aapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type bill struct{}
@@ -27,8 +27,8 @@ var Bill = new(bill)
 // @Param        query  query   model.StatementUsageReq  true  "筛选项"
 // @Success      200  {object}  model.Pagination{items=[]model.StatementUsageRes}  "请求成功"
 func (*bill) Usage(c echo.Context) (err error) {
-    ctx, req := app.AgentContextAndBinding[model.StatementUsageReq](c)
-    req.StatementUsageFilter.ID = ctx.Enterprise.ID
-    // req.StatementUsageFilter.ID = 42949672960
-    return ctx.SendResponse(service.NewEnterpriseStatement().Usage(req))
+	ctx, req := app.AgentContextAndBinding[model.StatementUsageReq](c)
+	req.StatementUsageFilter.ID = ctx.Enterprise.ID
+	// req.StatementUsageFilter.ID = 42949672960
+	return ctx.SendResponse(service.NewEnterpriseStatement().Usage(req))
 }

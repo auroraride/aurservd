@@ -6,10 +6,10 @@
 package eapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type assistance struct{}
@@ -27,10 +27,10 @@ var Assistance = new(assistance)
 // @Param        id  path  uint64  true  "救援ID"
 // @Success      200  {object}  model.AssistanceEmployeeDetailRes  "请求成功"
 func (*assistance) Detail(c echo.Context) (err error) {
-    ctx, req := app.EmployeeContextAndBinding[model.IDParamReq](c)
-    return ctx.SendResponse(
-        service.NewAssistanceWithEmployee(ctx.Employee).EmployeeDetail(req.ID),
-    )
+	ctx, req := app.EmployeeContextAndBinding[model.IDParamReq](c)
+	return ctx.SendResponse(
+		service.NewAssistanceWithEmployee(ctx.Employee).EmployeeDetail(req.ID),
+	)
 }
 
 // Process
@@ -44,8 +44,8 @@ func (*assistance) Detail(c echo.Context) (err error) {
 // @Param        body  body     model.AssistanceProcessReq  true  "救援处理详情"
 // @Success      200  {object}  model.AssistanceProcessRes  "请求成功"
 func (*assistance) Process(c echo.Context) (err error) {
-    ctx, req := app.EmployeeContextAndBinding[model.AssistanceProcessReq](c)
-    return ctx.SendResponse(service.NewAssistanceWithEmployee(ctx.Employee).Process(req))
+	ctx, req := app.EmployeeContextAndBinding[model.AssistanceProcessReq](c)
+	return ctx.SendResponse(service.NewAssistanceWithEmployee(ctx.Employee).Process(req))
 }
 
 // Pay
@@ -59,8 +59,8 @@ func (*assistance) Process(c echo.Context) (err error) {
 // @Param        body  body     model.AssistancePayReq  true  "支付信息"
 // @Success      200  {object}  model.AssistancePayRes  "请求成功"
 func (*assistance) Pay(c echo.Context) (err error) {
-    ctx, req := app.EmployeeContextAndBinding[model.AssistancePayReq](c)
-    return ctx.SendResponse(service.NewAssistanceWithEmployee(ctx.Employee).Pay(req))
+	ctx, req := app.EmployeeContextAndBinding[model.AssistancePayReq](c)
+	return ctx.SendResponse(service.NewAssistanceWithEmployee(ctx.Employee).Pay(req))
 }
 
 // PayStatus
@@ -74,8 +74,8 @@ func (*assistance) Pay(c echo.Context) (err error) {
 // @Param        outTradeNo     query  string  true  "订单编号"
 // @Success      200 {object}   model.OrderStatusRes  "请求成功"
 func (*assistance) PayStatus(c echo.Context) (err error) {
-    ctx, req := app.EmployeeContextAndBinding[model.OrderStatusReq](c)
-    return ctx.SendResponse(service.NewOrder().QueryStatus(req))
+	ctx, req := app.EmployeeContextAndBinding[model.OrderStatusReq](c)
+	return ctx.SendResponse(service.NewOrder().QueryStatus(req))
 }
 
 // List
@@ -89,8 +89,8 @@ func (*assistance) PayStatus(c echo.Context) (err error) {
 // @Param        query  query   model.PaginationReq  true  "分页参数"
 // @Success      200  {object}  model.Pagination{items=[]model.AssistanceSimpleListRes}  "请求成功"
 func (*assistance) List(c echo.Context) (err error) {
-    ctx, req := app.EmployeeContextAndBinding[model.PaginationReq](c)
-    return ctx.SendResponse(service.NewAssistanceWithEmployee(ctx.Employee).SimpleList(*req))
+	ctx, req := app.EmployeeContextAndBinding[model.PaginationReq](c)
+	return ctx.SendResponse(service.NewAssistanceWithEmployee(ctx.Employee).SimpleList(*req))
 }
 
 // Overview
@@ -103,6 +103,6 @@ func (*assistance) List(c echo.Context) (err error) {
 // @Param        X-Employee-Token  header  string  true  "店员校验token"
 // @Success      200  {object}  model.AssistanceEmployeeOverview  "总览"
 func (*assistance) Overview(c echo.Context) (err error) {
-    ctx := app.ContextX[app.EmployeeContext](c)
-    return ctx.SendResponse(service.NewAssistance().EmployeeOverview(ctx.Employee.ID))
+	ctx := app.ContextX[app.EmployeeContext](c)
+	return ctx.SendResponse(service.NewAssistance().EmployeeOverview(ctx.Employee.ID))
 }

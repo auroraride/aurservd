@@ -6,10 +6,10 @@
 package mapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type subscribe struct{}
@@ -27,8 +27,8 @@ var Subscribe = new(subscribe)
 // @Param        body  body     model.SubscribeAlter  true  "desc"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*subscribe) Alter(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.SubscribeAlter](c)
-    return ctx.SendResponse(service.NewSubscribeWithModifier(ctx.Modifier).AlterDays(req))
+	ctx, req := app.ManagerContextAndBinding[model.SubscribeAlter](c)
+	return ctx.SendResponse(service.NewSubscribeWithModifier(ctx.Modifier).AlterDays(req))
 }
 
 // Pause
@@ -42,9 +42,9 @@ func (*subscribe) Alter(c echo.Context) (err error) {
 // @Param        body  body     model.BusinessSubscribeReq  true  "订阅信息"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*subscribe) Pause(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.BusinessSubscribeReq](c)
-    service.NewBusinessRiderWithModifier(ctx.Modifier).SetCabinetID(req.CabinetID).SetStoreID(req.StoreID).Pause(req.ID)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.BusinessSubscribeReq](c)
+	service.NewBusinessRiderWithModifier(ctx.Modifier).SetCabinetID(req.CabinetID).SetStoreID(req.StoreID).Pause(req.ID)
+	return ctx.SendResponse()
 }
 
 // Continue
@@ -58,9 +58,9 @@ func (*subscribe) Pause(c echo.Context) (err error) {
 // @Param        body  body     model.BusinessSubscribeReq  true  "订阅信息"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*subscribe) Continue(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.BusinessSubscribeReq](c)
-    service.NewBusinessRiderWithModifier(ctx.Modifier).SetCabinetID(req.CabinetID).SetStoreID(req.StoreID).Continue(req.ID)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.BusinessSubscribeReq](c)
+	service.NewBusinessRiderWithModifier(ctx.Modifier).SetCabinetID(req.CabinetID).SetStoreID(req.StoreID).Continue(req.ID)
+	return ctx.SendResponse()
 }
 
 // Halt
@@ -74,9 +74,9 @@ func (*subscribe) Continue(c echo.Context) (err error) {
 // @Param        body  body     model.BusinessSubscribeReq  true  "订阅信息"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*subscribe) Halt(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.BusinessSubscribeReq](c)
-    service.NewBusinessRiderWithModifier(ctx.Modifier).SetCabinetID(req.CabinetID).SetStoreID(req.StoreID).UnSubscribe(req.ID)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.BusinessSubscribeReq](c)
+	service.NewBusinessRiderWithModifier(ctx.Modifier).SetCabinetID(req.CabinetID).SetStoreID(req.StoreID).UnSubscribe(req.ID)
+	return ctx.SendResponse()
 }
 
 // Active
@@ -90,9 +90,9 @@ func (*subscribe) Halt(c echo.Context) (err error) {
 // @Param        body  body     model.ManagerSubscribeActive  true  "订阅信息"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*subscribe) Active(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.ManagerSubscribeActive](c)
-    service.NewManagerSubscribe(ctx.Modifier).Active(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.ManagerSubscribeActive](c)
+	service.NewManagerSubscribe(ctx.Modifier).Active(req)
+	return ctx.SendResponse()
 }
 
 // Suspend
@@ -106,9 +106,9 @@ func (*subscribe) Active(c echo.Context) (err error) {
 // @Param        body  body     model.SuspendReq  true  "请求字段"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*subscribe) Suspend(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.SuspendReq](c)
-    service.NewSuspendWithModifier(ctx.Modifier).Suspend(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.SuspendReq](c)
+	service.NewSuspendWithModifier(ctx.Modifier).Suspend(req)
+	return ctx.SendResponse()
 }
 
 // UnSuspend
@@ -122,9 +122,9 @@ func (*subscribe) Suspend(c echo.Context) (err error) {
 // @Param        body  body     model.SuspendReq  true  "请求字段"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*subscribe) UnSuspend(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.SuspendReq](c)
-    service.NewSuspendWithModifier(ctx.Modifier).UnSuspend(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.SuspendReq](c)
+	service.NewSuspendWithModifier(ctx.Modifier).UnSuspend(req)
+	return ctx.SendResponse()
 }
 
 // EbikeChange
@@ -138,9 +138,9 @@ func (*subscribe) UnSuspend(c echo.Context) (err error) {
 // @Param        body body    model.ManagerSubscribeChangeEbike true "换车参数"
 // @Success      200 {object} model.StatusResponse "请求成功"
 func (*subscribe) EbikeChange(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.ManagerSubscribeChangeEbike](c)
-    service.NewManagerSubscribe(ctx.Modifier).ChangeEBike(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.ManagerSubscribeChangeEbike](c)
+	service.NewManagerSubscribe(ctx.Modifier).ChangeEBike(req)
+	return ctx.SendResponse()
 }
 
 // Reminder
@@ -154,6 +154,6 @@ func (*subscribe) EbikeChange(c echo.Context) (err error) {
 // @Param        query query  model.ReminderListReq false "筛选选项"
 // @Success      200 {object} model.PaginationRes{items=[]model.ReminderListRes} "请求成功"
 func (*subscribe) Reminder(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.ReminderListReq](c)
-    return ctx.SendResponse(service.NewReminder(ctx.Modifier).List(req))
+	ctx, req := app.ManagerContextAndBinding[model.ReminderListReq](c)
+	return ctx.SendResponse(service.NewReminder(ctx.Modifier).List(req))
 }

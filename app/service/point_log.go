@@ -6,13 +6,13 @@
 package service
 
 type pointLogService struct {
-    *BaseService
+	*BaseService
 }
 
 func NewPointLog(params ...any) *pointLogService {
-    return &pointLogService{
-        BaseService: newService(params...),
-    }
+	return &pointLogService{
+		BaseService: newService(params...),
+	}
 }
 
 func (s *pointLogService) Create() {

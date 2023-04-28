@@ -6,10 +6,10 @@
 package mapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type branch struct {
@@ -28,8 +28,8 @@ var Branch = new(branch)
 // @Param        query  query  model.BranchListReq  true  "desc"
 // @Success      200  {object}  model.PaginationRes{items=[]model.BranchItem}  "请求成功"
 func (*branch) List(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.BranchListReq](c)
-    return ctx.SendResponse(service.NewBranch().List(req))
+	ctx, req := app.ManagerContextAndBinding[model.BranchListReq](c)
+	return ctx.SendResponse(service.NewBranch().List(req))
 }
 
 // Selector
@@ -42,8 +42,8 @@ func (*branch) List(c echo.Context) (err error) {
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Success      200  {object}  model.ItemListRes{items=[]model.BranchSampleItem}  "请求成功"
 func (*branch) Selector(c echo.Context) (err error) {
-    ctx := app.ContextX[app.ManagerContext](c)
-    return ctx.SendResponse(service.NewBranch().Selector())
+	ctx := app.ContextX[app.ManagerContext](c)
+	return ctx.SendResponse(service.NewBranch().Selector())
 }
 
 // Create
@@ -57,9 +57,9 @@ func (*branch) Selector(c echo.Context) (err error) {
 // @Param        body  body  model.BranchCreateReq  true  "网点数据"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*branch) Create(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.BranchCreateReq](c)
-    service.NewBranchWithModifier(ctx.Modifier).Create(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.BranchCreateReq](c)
+	service.NewBranchWithModifier(ctx.Modifier).Create(req)
+	return ctx.SendResponse()
 }
 
 // Modify
@@ -74,9 +74,9 @@ func (*branch) Create(c echo.Context) (err error) {
 // @Param        id  path  int  true  "网点ID"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*branch) Modify(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.BranchModifyReq](c)
-    service.NewBranchWithModifier(ctx.Modifier).Modify(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.BranchModifyReq](c)
+	service.NewBranchWithModifier(ctx.Modifier).Modify(req)
+	return ctx.SendResponse()
 }
 
 // AddContract
@@ -91,9 +91,9 @@ func (*branch) Modify(c echo.Context) (err error) {
 // @Param        id  path  int  true  "网点ID"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*branch) AddContract(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.BranchContract](c)
-    service.NewBranchWithModifier(ctx.Modifier).AddContract(req.BranchID, req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.BranchContract](c)
+	service.NewBranchWithModifier(ctx.Modifier).AddContract(req.BranchID, req)
+	return ctx.SendResponse()
 }
 
 // Sheet
@@ -107,9 +107,9 @@ func (*branch) AddContract(c echo.Context) (err error) {
 // @Param        body  body     model.BranchContractSheetReq  true  "合同底单修改请求"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*branch) Sheet(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.BranchContractSheetReq](c)
-    service.NewBranchWithModifier(ctx.Modifier).Sheet(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.BranchContractSheetReq](c)
+	service.NewBranchWithModifier(ctx.Modifier).Sheet(req)
+	return ctx.SendResponse()
 }
 
 // Nearby
@@ -123,6 +123,6 @@ func (*branch) Sheet(c echo.Context) (err error) {
 // @Param        query  query   model.BranchDistanceListReq  false  "筛选选项"
 // @Success      200  {object}  []model.BranchDistanceListRes  "请求成功"
 func (*branch) Nearby(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.BranchDistanceListReq](c)
-    return ctx.SendResponse(service.NewBranch().ListByDistanceManager(req))
+	ctx, req := app.ManagerContextAndBinding[model.BranchDistanceListReq](c)
+	return ctx.SendResponse(service.NewBranch().ListByDistanceManager(req))
 }

@@ -6,10 +6,10 @@
 package mapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type store struct{}
@@ -27,8 +27,8 @@ var Store = new(store)
 // @Param        query  query  model.StoreListReq  true  "desc"
 // @Success      200  {object}  model.PaginationRes{items=[]model.StoreItem}  "请求成功"
 func (*store) List(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.StoreListReq](c)
-    return ctx.SendResponse(service.NewStore().List(req))
+	ctx, req := app.ManagerContextAndBinding[model.StoreListReq](c)
+	return ctx.SendResponse(service.NewStore().List(req))
 }
 
 // Create
@@ -42,8 +42,8 @@ func (*store) List(c echo.Context) (err error) {
 // @Param        body  body  model.StoreCreateReq  true  "desc"
 // @Success      200  {object}  model.StoreItem  "请求成功"
 func (*store) Create(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.StoreCreateReq](c)
-    return ctx.SendResponse(service.NewStoreWithModifier(ctx.Modifier).Create(req))
+	ctx, req := app.ManagerContextAndBinding[model.StoreCreateReq](c)
+	return ctx.SendResponse(service.NewStoreWithModifier(ctx.Modifier).Create(req))
 }
 
 // Modify
@@ -58,8 +58,8 @@ func (*store) Create(c echo.Context) (err error) {
 // @Param        body  body  model.StoreModifyReq  true  "desc"
 // @Success      200  {object}  model.StoreItem  "请求成功"
 func (*store) Modify(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.StoreModifyReq](c)
-    return ctx.SendResponse(service.NewStoreWithModifier(ctx.Modifier).Modify(req))
+	ctx, req := app.ManagerContextAndBinding[model.StoreModifyReq](c)
+	return ctx.SendResponse(service.NewStoreWithModifier(ctx.Modifier).Modify(req))
 }
 
 // Delete
@@ -73,7 +73,7 @@ func (*store) Modify(c echo.Context) (err error) {
 // @Param        id  path  int  true  "门店ID"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*store) Delete(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
-    service.NewStoreWithModifier(ctx.Modifier).Delete(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
+	service.NewStoreWithModifier(ctx.Modifier).Delete(req)
+	return ctx.SendResponse()
 }

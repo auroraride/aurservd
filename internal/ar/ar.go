@@ -6,5 +6,5 @@
 package ar
 
 type (
-    Map map[string]interface{}
+	Map map[string]interface{}
 )

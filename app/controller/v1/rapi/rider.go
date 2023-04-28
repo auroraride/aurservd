@@ -6,16 +6,17 @@
 package rapi
 
 import (
-    "errors"
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/auroraride/aurservd/internal/ar"
-    "github.com/labstack/echo/v4"
+	"errors"
+
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/auroraride/aurservd/internal/ar"
+	"github.com/labstack/echo/v4"
 )
 
 var (
-    Rider = new(rider)
+	Rider = new(rider)
 )
 
 type rider struct {
@@ -31,19 +32,19 @@ type rider struct {
 // @Param        body  body     model.RiderSignupReq  true  "desc"
 // @Success      200  {object}  model.RiderSigninRes  "请求成功"
 func (*rider) Signin(c echo.Context) (err error) {
-    ctx, req := app.ContextBinding[model.RiderSignupReq](c)
+	ctx, req := app.ContextBinding[model.RiderSignupReq](c)
 
-    // 校验短信
-    debugPhones := ar.Config.App.Debug.Phone
-    if !debugPhones[req.Phone] && !service.NewSms().VerifyCode(req.SmsId, req.SmsCode) {
-        return errors.New("短信验证码校验失败")
-    }
+	// 校验短信
+	debugPhones := ar.Config.App.Debug.Phone
+	if !debugPhones[req.Phone] && !service.NewSms().VerifyCode(req.SmsId, req.SmsCode) {
+		return errors.New("短信验证码校验失败")
+	}
 
-    // 注册+登录
-    var data *model.RiderSigninRes
-    s := service.NewRider()
-    data = s.Signin(ctx.Device, req)
-    return ctx.SendResponse(data)
+	// 注册+登录
+	var data *model.RiderSigninRes
+	s := service.NewRider()
+	data = s.Signin(ctx.Device, req)
+	return ctx.SendResponse(data)
 }
 
 // Contact
@@ -57,9 +58,9 @@ func (*rider) Signin(c echo.Context) (err error) {
 // @Param        body  body  model.RiderContact  true  "desc"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (r *rider) Contact(c echo.Context) error {
-    ctx, req := app.RiderContextAndBinding[model.RiderContact](c)
-    service.NewRider().UpdateContact(ctx.Rider, req)
-    return ctx.SendResponse()
+	ctx, req := app.RiderContextAndBinding[model.RiderContact](c)
+	service.NewRider().UpdateContact(ctx.Rider, req)
+	return ctx.SendResponse()
 }
 
 // Authenticator
@@ -73,14 +74,14 @@ func (r *rider) Contact(c echo.Context) error {
 // @Param        body  body  model.RiderContact  true  "desc"
 // @Success      200  {object}  model.FaceAuthUrlResponse  "请求成功"
 func (*rider) Authenticator(c echo.Context) error {
-    ctx, req := app.RiderContextAndBinding[model.RiderContact](c)
-    r := service.NewRider()
-    // 更新紧急联系人
-    r.UpdateContact(ctx.Rider, req)
-    // 获取人脸识别URL
-    return ctx.SendResponse(model.FaceAuthUrlResponse{
-        Url: r.GetFaceAuthUrl(ctx),
-    })
+	ctx, req := app.RiderContextAndBinding[model.RiderContact](c)
+	r := service.NewRider()
+	// 更新紧急联系人
+	r.UpdateContact(ctx.Rider, req)
+	// 获取人脸识别URL
+	return ctx.SendResponse(model.FaceAuthUrlResponse{
+		Url: r.GetFaceAuthUrl(ctx),
+	})
 }
 
 // AuthResult
@@ -95,8 +96,8 @@ func (*rider) Authenticator(c echo.Context) error {
 // @Param        token  path  string  true  "实名认证token"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (r *rider) AuthResult(c echo.Context) error {
-    ctx, req := app.RiderContextAndBinding[model.FaceResultReq](c)
-    return ctx.SendResponse(model.StatusResponse{Status: service.NewRider().FaceAuthResult(ctx, req.Token)})
+	ctx, req := app.RiderContextAndBinding[model.FaceResultReq](c)
+	return ctx.SendResponse(model.StatusResponse{Status: service.NewRider().FaceAuthResult(ctx, req.Token)})
 }
 
 // FaceResult
@@ -110,13 +111,13 @@ func (r *rider) AuthResult(c echo.Context) error {
 // @Param        token  path  string  true  "人脸校验token"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (r *rider) FaceResult(c echo.Context) error {
-    ctx, req := app.RiderContextAndBinding[model.FaceResultReq](c)
-    return ctx.SendResponse(model.StatusResponse{Status: service.NewRider().FaceResult(ctx, req.Token)})
+	ctx, req := app.RiderContextAndBinding[model.FaceResultReq](c)
+	return ctx.SendResponse(model.StatusResponse{Status: service.NewRider().FaceResult(ctx, req.Token)})
 }
 
 func (r *rider) Demo(c echo.Context) error {
-    ctx := c.(*app.RiderContext)
-    return ctx.SendResponse(model.StatusResponse{Status: true})
+	ctx := c.(*app.RiderContext)
+	return ctx.SendResponse(model.StatusResponse{Status: true})
 }
 
 // Profile
@@ -129,10 +130,10 @@ func (r *rider) Demo(c echo.Context) error {
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
 // @Success      200  {object}  model.RiderSigninRes  "请求成功"
 func (r *rider) Profile(c echo.Context) error {
-    ctx := c.(*app.RiderContext)
-    profile := service.NewRider().Profile(ctx.Rider, ctx.Device, ctx.Token)
-    profile.Token = ctx.Token
-    return ctx.SendResponse(profile)
+	ctx := c.(*app.RiderContext)
+	profile := service.NewRider().Profile(ctx.Rider, ctx.Device, ctx.Token)
+	profile.Token = ctx.Token
+	return ctx.SendResponse(profile)
 }
 
 // Deposit
@@ -145,8 +146,8 @@ func (r *rider) Profile(c echo.Context) error {
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
 // @Success      200 {object}   model.RiderDepositRes  "请求成功"
 func (*rider) Deposit(c echo.Context) (err error) {
-    ctx := app.ContextX[app.RiderContext](c)
-    return ctx.SendResponse(service.NewRider().DepositPaid(ctx.Rider.ID))
+	ctx := app.ContextX[app.RiderContext](c)
+	return ctx.SendResponse(service.NewRider().DepositPaid(ctx.Rider.ID))
 }
 
 // Deregister
@@ -159,7 +160,7 @@ func (*rider) Deposit(c echo.Context) (err error) {
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
 // @Success      200 {object}  model.StatusResponse  "请求成功"
 func (*rider) Deregister(c echo.Context) (err error) {
-    ctx := app.ContextX[app.RiderContext](c)
-    service.NewRiderWithRider(ctx.Rider).Delete(&model.IDParamReq{ID: ctx.Rider.ID})
-    return ctx.SendResponse()
+	ctx := app.ContextX[app.RiderContext](c)
+	service.NewRiderWithRider(ctx.Rider).Delete(&model.IDParamReq{ID: ctx.Rider.ID})
+	return ctx.SendResponse()
 }

@@ -6,26 +6,26 @@
 package model
 
 type Table interface {
-    GetTableName() string
-    GetID() uint64
+	GetTableName() string
+	GetID() uint64
 }
 
 type IDName interface {
-    GetName() string
-    GetID() uint64
+	GetName() string
+	GetID() uint64
 }
 
 type NilIDName struct {
 }
 
 func (d *NilIDName) GetID() uint64 {
-    return 0
+	return 0
 }
 
 func (d *NilIDName) GetName() string {
-    return ""
+	return ""
 }
 
 type TableSlsInfo interface {
-    GetSLSLogInfo() string
+	GetSLSLogInfo() string
 }

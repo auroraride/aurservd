@@ -6,21 +6,21 @@
 package model
 
 import (
-    "github.com/auroraride/aurservd/pkg/cache"
+	"github.com/auroraride/aurservd/pkg/cache"
 )
 
 // RecentSubscribePastDays 距上次订阅已过去天数
 type RecentSubscribePastDays float64
 
 func NewRecentSubscribePastDays(days int) RecentSubscribePastDays {
-    return RecentSubscribePastDays(days)
+	return RecentSubscribePastDays(days)
 }
 
 // Commission 是否需要计算佣金
 func (rspd RecentSubscribePastDays) Commission() bool {
-    return rspd >= RecentSubscribePastDays(cache.Float64(SettingRenewalKey))
+	return rspd >= RecentSubscribePastDays(cache.Float64(SettingRenewalKey))
 }
 
 func (rspd RecentSubscribePastDays) Value() int {
-    return int(rspd)
+	return int(rspd)
 }

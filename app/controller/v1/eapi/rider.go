@@ -6,10 +6,10 @@
 package eapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type rider struct{}
@@ -27,10 +27,10 @@ var Rider = new(rider)
 // @Param        phone  query   string  true  "骑手手机号"
 // @Success      200  {object}  model.RiderEmployeeSearchRes  "请求成功"
 func (*rider) Detail(c echo.Context) (err error) {
-    ctx, req := app.EmployeeContextAndBinding[model.RiderPhoneSearchReq](c)
-    return ctx.SendResponse(
-        service.NewRiderMgrWithEmployee(ctx.Employee).EmployeeQueryPhone(req.Phone),
-    )
+	ctx, req := app.EmployeeContextAndBinding[model.RiderPhoneSearchReq](c)
+	return ctx.SendResponse(
+		service.NewRiderMgrWithEmployee(ctx.Employee).EmployeeQueryPhone(req.Phone),
+	)
 }
 
 // Exchange
@@ -44,8 +44,8 @@ func (*rider) Detail(c echo.Context) (err error) {
 // @Param        query  query   model.RiderExchangeReq  true  "换电记录筛选项"
 // @Success      200  {object}  model.PaginationRes{items=[]model.ExchangeRiderListRes}  "请求成功"
 func (*rider) Exchange(c echo.Context) (err error) {
-    ctx, req := app.EmployeeContextAndBinding[model.RiderExchangeReq](c)
-    return ctx.SendResponse(
-        service.NewExchange().RiderList(req.RiderID, req.PaginationReq),
-    )
+	ctx, req := app.EmployeeContextAndBinding[model.RiderExchangeReq](c)
+	return ctx.SendResponse(
+		service.NewExchange().RiderList(req.RiderID, req.PaginationReq),
+	)
 }

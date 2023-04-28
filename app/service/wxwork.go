@@ -6,21 +6,22 @@
 package service
 
 import (
-    "context"
-    "github.com/auroraride/aurservd/app/workwx"
+	"context"
+
+	"github.com/auroraride/aurservd/app/workwx"
 )
 
 type wxworkService struct {
-    ctx        context.Context
-    agentID    int64
-    corpID     string
-    corpSecret string
-    client     *workwx.Client
+	ctx        context.Context
+	agentID    int64
+	corpID     string
+	corpSecret string
+	client     *workwx.Client
 }
 
 func NewWxwork() *wxworkService {
-    return &wxworkService{
-        ctx:    context.Background(),
-        client: workwx.New(),
-    }
+	return &wxworkService{
+		ctx:    context.Background(),
+		client: workwx.New(),
+	}
 }

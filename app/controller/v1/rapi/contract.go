@@ -6,10 +6,10 @@
 package rapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type contract struct {
@@ -28,8 +28,8 @@ var Contract = new(contract)
 // @Param        body  body     model.ContractSignReq  true  "desc"
 // @Success      200  {object}  model.ContractSignRes  "请求成功"
 func (*contract) Sign(c echo.Context) error {
-    ctx, req := app.RiderContextAndBinding[model.ContractSignReq](c)
-    return ctx.SendResponse(service.NewContractWithRider(ctx.Rider).Sign(req))
+	ctx, req := app.RiderContextAndBinding[model.ContractSignReq](c)
+	return ctx.SendResponse(service.NewContractWithRider(ctx.Rider).Sign(req))
 }
 
 // SignResult
@@ -43,6 +43,6 @@ func (*contract) Sign(c echo.Context) error {
 // @Param        sn  path  string  true  "合同编号"
 // @Success      200 {object}  model.StatusResponse  "请求成功"
 func (*contract) SignResult(c echo.Context) error {
-    ctx, req := app.RiderContextAndBinding[model.ContractSignResultReq](c)
-    return ctx.SendResponse(service.NewContract().Result(ctx.Rider, req.Sn))
+	ctx, req := app.RiderContextAndBinding[model.ContractSignResultReq](c)
+	return ctx.SendResponse(service.NewContract().Result(ctx.Rider, req.Sn))
 }

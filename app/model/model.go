@@ -8,25 +8,25 @@ package model
 type StoreCabiletGoal uint8
 
 const (
-    StockGoalAll StoreCabiletGoal = iota
-    StockGoalStore
-    StockGoalCabinet
+	StockGoalAll StoreCabiletGoal = iota
+	StockGoalStore
+	StockGoalCabinet
 )
 
 func (sg StoreCabiletGoal) String() string {
-    switch sg {
-    case StockGoalStore:
-        return "门店"
-    case StockGoalCabinet:
-        return "电柜"
-    default:
-        return ""
-    }
+	switch sg {
+	case StockGoalStore:
+		return "门店"
+	case StockGoalCabinet:
+		return "电柜"
+	default:
+		return ""
+	}
 }
 
 func (sg StoreCabiletGoal) SQLString() string {
-    return map[StoreCabiletGoal]string{
-        StockGoalStore:   "store",
-        StockGoalCabinet: "cabinet",
-    }[sg]
+	return map[StoreCabiletGoal]string{
+		StockGoalStore:   "store",
+		StockGoalCabinet: "cabinet",
+	}[sg]
 }

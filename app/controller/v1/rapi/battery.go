@@ -6,9 +6,9 @@
 package rapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type battery struct{}
@@ -25,6 +25,6 @@ var Battery = new(battery)
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
 // @Success      200 {object}  model.BatteryDetail  "请求成功"
 func (*battery) Detail(c echo.Context) (err error) {
-    ctx := app.ContextX[app.RiderContext](c)
-    return ctx.SendResponse(service.NewBattery(ctx.Rider).RiderDetail(ctx.Rider.ID))
+	ctx := app.ContextX[app.RiderContext](c)
+	return ctx.SendResponse(service.NewBattery(ctx.Rider).RiderDetail(ctx.Rider.ID))
 }

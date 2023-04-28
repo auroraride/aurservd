@@ -6,10 +6,10 @@
 package mapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type attendance struct{}
@@ -27,6 +27,6 @@ var Attendance = new(attendance)
 // @Param        query  query   model.AttendanceListReq  true  "筛选请求"
 // @Success      200  {object}  model.PaginationRes{items=[]model.AttendanceListRes}  "请求成功"
 func (*attendance) List(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.AttendanceListReq](c)
-    return ctx.SendResponse(service.NewAttendanceWithModifier(ctx.Modifier).List(req))
+	ctx, req := app.ManagerContextAndBinding[model.AttendanceListReq](c)
+	return ctx.SendResponse(service.NewAttendanceWithModifier(ctx.Modifier).List(req))
 }

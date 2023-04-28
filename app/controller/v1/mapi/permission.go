@@ -6,13 +6,14 @@
 package mapi
 
 import (
-    "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/model"
-    perm "github.com/auroraride/aurservd/app/permission"
-    "github.com/auroraride/aurservd/app/service"
-    "github.com/labstack/echo/v4"
-    "sort"
-    "strings"
+	"sort"
+	"strings"
+
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	perm "github.com/auroraride/aurservd/app/permission"
+	"github.com/auroraride/aurservd/app/service"
+	"github.com/labstack/echo/v4"
 )
 
 type permission struct{}
@@ -29,17 +30,17 @@ var Permission = new(permission)
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Success      200  {object}  []permission.Group  "请求成功"
 func (*permission) List(c echo.Context) (err error) {
-    ctx := app.Context(c)
-    items := make([]*perm.Group, 0)
-    for _, g := range perm.Groups {
-        items = append(items, g)
-    }
+	ctx := app.Context(c)
+	items := make([]*perm.Group, 0)
+	for _, g := range perm.Groups {
+		items = append(items, g)
+	}
 
-    sort.Slice(items, func(i, j int) bool {
-        return strings.Compare(items[i].Name, items[j].Name) < 0
-    })
+	sort.Slice(items, func(i, j int) bool {
+		return strings.Compare(items[i].Name, items[j].Name) < 0
+	})
 
-    return ctx.SendResponse(items)
+	return ctx.SendResponse(items)
 }
 
 // ListRole
@@ -52,8 +53,8 @@ func (*permission) List(c echo.Context) (err error) {
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Success      200  {object}  []model.Role  "请求成功"
 func (*permission) ListRole(c echo.Context) (err error) {
-    ctx := app.ContextX[app.ManagerContext](c)
-    return ctx.SendResponse(service.NewRole().List())
+	ctx := app.ContextX[app.ManagerContext](c)
+	return ctx.SendResponse(service.NewRole().List())
 }
 
 // CreateRole
@@ -67,10 +68,10 @@ func (*permission) ListRole(c echo.Context) (err error) {
 // @Param        body  body     model.RoleCreateReq  true  "角色字段"
 // @Success      200  {object}  model.Role  "请求成功"
 func (*permission) CreateRole(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.RoleCreateReq](c)
-    return ctx.SendResponse(
-        service.NewRoleWithModifier(ctx.Modifier).Create(req),
-    )
+	ctx, req := app.ManagerContextAndBinding[model.RoleCreateReq](c)
+	return ctx.SendResponse(
+		service.NewRoleWithModifier(ctx.Modifier).Create(req),
+	)
 }
 
 // ModifyRole
@@ -85,8 +86,8 @@ func (*permission) CreateRole(c echo.Context) (err error) {
 // @Param        body  body     model.RoleModifyReq  true  "角色详情"
 // @Success      200  {object}  model.Role  "请求成功"
 func (*permission) ModifyRole(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.RoleModifyReq](c)
-    return ctx.SendResponse(service.NewRoleWithModifier(ctx.Modifier).Modify(req))
+	ctx, req := app.ManagerContextAndBinding[model.RoleModifyReq](c)
+	return ctx.SendResponse(service.NewRoleWithModifier(ctx.Modifier).Modify(req))
 }
 
 // DeleteRole
@@ -100,7 +101,7 @@ func (*permission) ModifyRole(c echo.Context) (err error) {
 // @Param        id  path  uint64  true  "角色ID"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*permission) DeleteRole(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
-    service.NewRoleWithModifier(ctx.Modifier).Delete(req)
-    return ctx.SendResponse()
+	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
+	service.NewRoleWithModifier(ctx.Modifier).Delete(req)
+	return ctx.SendResponse()
 }
