@@ -340,7 +340,7 @@ func (s *orderService) CreateFee(riderID uint64, payway uint8) *model.OrderCreat
 		snag.Panic("未找到逾期骑士卡信息")
 	}
 
-	fee, _, o := NewSubscribe().OverdueFee(riderID, sub)
+	fee, _, o := NewSubscribe().CalculateOverdueFee(sub)
 
 	// DEBUG 模式支付一分钱
 	mode := ar.Config.App.Mode

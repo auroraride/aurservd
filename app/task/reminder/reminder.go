@@ -111,7 +111,7 @@ func newReminder() {
 	return
 }
 
-func Subscribe(sub *ent.Subscribe) {
+func Subscribe(sub *ent.Subscribe, fee *float64, formula *string) {
 	if !runner.running {
 		return
 	}
@@ -148,11 +148,8 @@ func Subscribe(sub *ent.Subscribe) {
 		return
 	}
 
-	if sub.Remaining < 0 {
-		f, fl := pl.OverdueFee(sub.Remaining)
-		task.FeeFormula = silk.Pointer(fl)
-		task.Fee = silk.Pointer(f)
-	}
+	task.Fee = fee
+	task.FeeFormula = formula
 
 	tasks.Store(task.Phone, task)
 }

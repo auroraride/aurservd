@@ -155,6 +155,13 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanListRes {
 		req.Notes = make([]string, 0)
 	}
 
+	// 日租金价格
+	ss := NewSetting()
+	drs := ss.DailyRentItems()
+
+	// 初始化未设定的日租金价格
+	nsdrs := make(map[string]*model.PlanNotSettedDailyRent)
+
 	// 开始创建
 	var parent *ent.Plan
 	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) error {
@@ -195,12 +202,36 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanListRes {
 			} else {
 				parent.Edges.Complexes[i] = r
 			}
+
+			// 获取日租金详细
+			for _, pc := range cities {
+				// 若日租金是默认999 并且列表中不存在
+				if key, dr := ss.DailyRent(drs, pc.ID, cl.Model, brandID); dr == model.DailyRentDefault && nsdrs[key] == nil {
+					nsdrs[key] = &model.PlanNotSettedDailyRent{
+						City: model.City{
+							ID:   pc.ID,
+							Name: pc.Name,
+						},
+						Model: cl.Model,
+					}
+					if brand != nil {
+						nsdrs[key].EbikeBrand = &model.EbikeBrand{
+							ID:   brand.ID,
+							Name: brand.Name,
+						}
+					}
+				}
+			}
 		}
 
 		return nil
 	})
 
-	return s.PlanWithComplexes(parent)
+	res := s.PlanWithComplexes(parent)
+	for _, nsdr := range nsdrs {
+		res.NotSettedDailyRent = append(res.NotSettedDailyRent, nsdr)
+	}
+	return res
 }
 
 // // Modify 修改骑士卡 TODO: 修改太麻烦了, 情况贼多, 暂时不做?
@@ -582,7 +613,7 @@ func (s *planService) RiderListRenewal() model.RiderPlanRenewalRes {
 	var min uint
 
 	if sub.Remaining < 0 {
-		fee, formula, _ = NewSubscribe().OverdueFee(s.rider.ID, sub)
+		fee, formula, _ = NewSubscribe().CalculateOverdueFee(sub)
 		min = uint(0 - sub.Remaining)
 	}
 

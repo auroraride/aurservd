@@ -197,3 +197,33 @@ func (s *settingService) Question() (v []interface{}) {
 	}
 	return v
 }
+
+// DailyRentItems 日租金设定
+func (s *settingService) DailyRentItems() (data map[string]float64) {
+	items, ok := s.GetSetting(model.SettingDailyRent).(map[string]any)
+	if !ok {
+		return
+	}
+
+	data = make(map[string]float64)
+	for k, v := range items {
+		data[k] = v.(float64)
+	}
+	return
+}
+
+// DailyRent 获取日租金
+func (s *settingService) DailyRent(items map[string]float64, cityID uint64, batteryModel string, brandID *uint64) (key string, v float64) {
+	key = strconv.FormatInt(int64(cityID), 10) + "_" + batteryModel
+	if brandID != nil && *brandID > 0 {
+		key += "_" + strconv.FormatInt(int64(*brandID), 10)
+	}
+	if items == nil {
+		items = s.DailyRentItems()
+	}
+	v, _ = items[key]
+	if v == 0 {
+		v = model.DailyRentDefault
+	}
+	return
+}

@@ -85,6 +85,12 @@ type PlanListReq struct {
 	BrandID     *uint64   `json:"brandId" query:"brandId"`         // 电车型号
 }
 
+type PlanNotSettedDailyRent struct {
+	City       City        `json:"city"`                 // 城市
+	Model      string      `json:"model"`                // 电池型号
+	EbikeBrand *EbikeBrand `json:"ebikeBrand,omitempty"` // 电车型号
+}
+
 type PlanListRes struct {
 	ID        uint64           `json:"id"`
 	Type      PlanType         `json:"type"`      // 类别
@@ -98,6 +104,8 @@ type PlanListRes struct {
 	Brand       *EbikeBrand `json:"brand,omitempty"` // 电车型号
 	Notes       []string    `json:"notes,omitempty"` // 购买须知
 	Intelligent bool        `json:"intelligent"`     // 是否智能柜套餐
+
+	NotSettedDailyRent []*PlanNotSettedDailyRent `json:"notSettedDailyRent,omitempty"` // 未设定的日租金
 }
 
 // PlanListRiderReq 骑士卡列表请求

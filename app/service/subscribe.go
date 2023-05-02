@@ -8,6 +8,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"math"
 	"strconv"
 	"time"
 
@@ -22,9 +23,11 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
 	"github.com/auroraride/aurservd/internal/ent/subscribesuspend"
+	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
 	"github.com/golang-module/carbon/v2"
+	"github.com/shopspring/decimal"
 	"go.uber.org/zap"
 )
 
@@ -392,9 +395,22 @@ func (s *subscribeService) UpdateStatus(item *ent.Subscribe, notice bool) error 
 			_, _ = tx.Contract.Update().Where(contract.RiderID(sub.RiderID)).SetEffective(false).Save(s.ctx)
 		}
 
-		if notice {
-			reminder.Subscribe(item)
+		if !notice {
+			return nil
 		}
+
+		// 提醒
+		var (
+			fee        *float64
+			feeFormula *string
+		)
+		if sub.Remaining < 0 {
+			f, fl := s.OverdueFee(sub)
+			feeFormula = silk.Pointer(fl)
+			fee = silk.Pointer(f)
+		}
+		reminder.Subscribe(item, fee, feeFormula)
+
 		return nil
 	})
 }
@@ -512,14 +528,28 @@ func (s *subscribeService) AlterDays(req *model.SubscribeAlter) (res model.Rider
 	return out
 }
 
-// OverdueFee 计算逾期费用
-func (s *subscribeService) OverdueFee(riderID uint64, sub *ent.Subscribe) (fee float64, formula string, o *ent.Order) {
-	remaining := sub.Remaining
-	if remaining > 0 {
+func (s *subscribeService) OverdueFee(sub *ent.Subscribe) (fee float64, formula string) {
+	if sub.Remaining > 0 {
 		return
 	}
 
-	o, _ = NewOrder().RencentSubscribeOrder(riderID)
+	remaining := -sub.Remaining
+
+	_, dr := NewSetting().DailyRent(nil, sub.CityID, sub.Model, sub.BrandID)
+	fee, _ = decimal.NewFromFloat(dr).Mul(decimal.NewFromInt(int64(remaining))).Mul(decimal.NewFromFloat(1.24)).Float64()
+	fee = math.Round(fee*100) / 100
+
+	formula = fmt.Sprintf("该骑士卡日租价格 %.2f元 × 逾期天数 %d天 × 1.24 = 逾期费用 %.2f元", dr, remaining, fee)
+	return
+}
+
+// CalculateOverdueFee 计算逾期费用
+func (s *subscribeService) CalculateOverdueFee(sub *ent.Subscribe) (fee float64, formula string, o *ent.Order) {
+	if sub.Remaining > 0 {
+		return
+	}
+
+	o, _ = NewOrder().RencentSubscribeOrder(sub.RiderID)
 	var p *ent.Plan
 	if o != nil {
 		p = o.Edges.Plan
@@ -530,7 +560,7 @@ func (s *subscribeService) OverdueFee(riderID uint64, sub *ent.Subscribe) (fee f
 		snag.Panic("上次购买骑士卡获取失败")
 	}
 
-	fee, formula = p.OverdueFee(remaining)
+	fee, formula = s.OverdueFee(sub)
 	return
 }
 

@@ -9,6 +9,7 @@ const (
 	IntelligentBatteryFullSoc      float64 = 95.0 // 智能电池定义满电soc TODO: 具体数值待定义
 	IntelligentBusinessScanExpires int64   = 30   // 智能电柜业务 - 扫码有效期(s)
 	IntelligentBusinessStepTimeout int64   = 200  // 智能电柜业务 - 操作超时(s)
+	DailyRentDefault               float64 = 999.0
 )
 
 const (
@@ -32,6 +33,7 @@ const (
 	SettingQuestionKey               = "QUESTION"                 // 常见问题
 	SettingAppVersionKey             = "APP_VERSION"              // App版本
 	SettingConsumePointKey           = "CONSUME_POINTS"           // 消费赠送积分
+	SettingDailyRent                 = "DAILY_RENT"               // 日租金, 格式为 key(cityid + batterymodal + bikebrandid): amount
 )
 
 type SettingValueConvert func(content string) any
@@ -171,5 +173,9 @@ var Settings = map[string]SettingItem{
 	SettingConsumePointKey: {
 		Desc:    "消费赠送积分",
 		Default: []SettingConsumePoint{},
+	},
+	SettingDailyRent: {
+		Desc:    "日租金",
+		Default: make(map[string]float64),
 	},
 }

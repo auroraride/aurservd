@@ -12,7 +12,6 @@ import (
 
 	"github.com/auroraride/aurservd/app/ec"
 	"github.com/auroraride/aurservd/app/model"
-	pvd "github.com/auroraride/aurservd/app/provider"
 	"github.com/auroraride/aurservd/app/router"
 	"github.com/auroraride/aurservd/app/rpc"
 	"github.com/auroraride/aurservd/app/service"
@@ -37,9 +36,6 @@ func serverCommand() *cobra.Command {
 
 			// 启动催费服务
 			go reminder.Run()
-
-			// 启动电柜服务
-			go pvd.Run()
 
 			// 启动 subscribe task
 			go task.NewSubscribe().Start()

@@ -20991,6 +20991,13 @@ const docTemplate = `{
                     "description": "名称",
                     "type": "string"
                 },
+                "notSettedDailyRent": {
+                    "description": "未设定的日租金",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.PlanNotSettedDailyRent"
+                    }
+                },
                 "notes": {
                     "description": "购买须知",
                     "type": "array",
@@ -21105,6 +21112,31 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/model.PlanModelOption"
                     }
+                }
+            }
+        },
+        "model.PlanNotSettedDailyRent": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "description": "城市",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.City"
+                        }
+                    ]
+                },
+                "ebikeBrand": {
+                    "description": "电车型号",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EbikeBrand"
+                        }
+                    ]
+                },
+                "model": {
+                    "description": "电池型号",
+                    "type": "string"
                 }
             }
         },
