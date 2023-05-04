@@ -12,6 +12,10 @@ import (
 
 	"github.com/auroraride/adapter"
 	"github.com/auroraride/adapter/async"
+	jsoniter "github.com/json-iterator/go"
+	"github.com/rs/xid"
+	"go.uber.org/zap"
+
 	"github.com/auroraride/aurservd/app/ec"
 	"github.com/auroraride/aurservd/app/logging"
 	"github.com/auroraride/aurservd/app/model"
@@ -20,9 +24,6 @@ import (
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
-	jsoniter "github.com/json-iterator/go"
-	"github.com/rs/xid"
-	"go.uber.org/zap"
 )
 
 type riderExchangeService struct {

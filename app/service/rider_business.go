@@ -11,6 +11,10 @@ import (
 	"time"
 
 	"github.com/auroraride/adapter"
+	"github.com/golang-module/carbon/v2"
+	"github.com/rs/xid"
+	"go.uber.org/zap"
+
 	"github.com/auroraride/aurservd/app/ec"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
@@ -20,9 +24,6 @@ import (
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
-	"github.com/golang-module/carbon/v2"
-	"github.com/rs/xid"
-	"go.uber.org/zap"
 )
 
 // TODO 服务器崩溃后自动启动继续换电进程

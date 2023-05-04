@@ -38,6 +38,8 @@ func (c *Cabinet) ReserveAble(typ business.Type, num int) bool {
 	return false
 }
 
+// UsingMicroService 是否使用微服务
+// TODO 删除无用逻辑[是否使用微服务]
 func (c *Cabinet) UsingMicroService() bool {
 	// return c.Intelligent || c.Brand == adapter.CabinetBrandYundong || c.Brand == adapter.CabinetBrandTuobang
 	return true

@@ -7,18 +7,19 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/auroraride/adapter"
 	"github.com/auroraride/adapter/defs/cabdef"
+	"github.com/golang-module/carbon/v2"
+	"github.com/lithammer/shortuuid/v4"
+
 	"github.com/auroraride/aurservd/app/ec"
 	"github.com/auroraride/aurservd/app/logging"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
-	"github.com/golang-module/carbon/v2"
-	"github.com/lithammer/shortuuid/v4"
 )
 
 type cabinetMgrService struct {
@@ -77,21 +78,22 @@ func (s *cabinetMgrService) Maintain(req *model.CabinetMaintainReq) (detail *mod
 	return
 }
 
-// BinOperate 仓门操控
-func (s *cabinetMgrService) BinOperate(req *model.CabinetDoorOperateReq) bool {
+// BinOperate 仓位操作
+func (s *cabinetMgrService) BinOperate(id uint64, data any) bool {
 	if s.modifier == nil {
 		snag.Panic("权限校验失败")
 	}
 
 	cs := NewCabinetWithModifier(s.modifier)
 
-	cab := cs.QueryOne(req.ID)
+	cab := cs.QueryOne(id)
 
 	if model.CabinetStatus(cab.Status) != model.CabinetStatusMaintenance {
 		snag.Panic("非操作维护中不可操作")
 	}
 
-	if cab.UsingMicroService() {
+	switch req := data.(type) {
+	case *model.CabinetDoorOperateReq:
 		var op cabdef.Operate
 		switch *req.Operation {
 		case model.CabinetDoorOperateOpen:
@@ -102,66 +104,16 @@ func (s *cabinetMgrService) BinOperate(req *model.CabinetDoorOperateReq) bool {
 			op = cabdef.OperateBinEnable
 		}
 		return NewIntelligentCabinet(s.modifier).Operate(cab, op, req)
+	case *model.CabinetBinDeactivateReq:
+		return NewIntelligentCabinet(s.modifier).Deactivate(cab, &cabdef.BinDeactivateRequest{
+			Serial:     cab.Serial,
+			Ordinal:    *req.Index + 1,
+			Deactivate: silk.Bool(req.Operation == 2),
+			Reason:     silk.String(req.Remark),
+		})
+	default:
+		return false
 	}
-
-	ec.BusyFromIDX(req.ID)
-
-	task := &ec.Task{
-		CabinetID: req.ID,
-		Serial:    cab.Serial,
-		Cabinet:   cab.GetTaskInfo(),
-	}
-
-	switch *req.Operation {
-	case model.CabinetDoorOperateOpen:
-		task.Job = model.JobManagerOpen
-		break
-	case model.CabinetDoorOperateLock:
-		task.Job = model.JobManagerLock
-		break
-	case model.CabinetDoorOperateUnlock:
-		task.Job = model.JobManagerUnLock
-		break
-	}
-
-	var status bool
-	var err error
-
-	// 创建并开始任务
-	task.Create().Start()
-
-	// 结束回调
-	defer func() {
-		if v := recover(); v != nil {
-			err = fmt.Errorf("%v", v)
-		}
-
-		ts := model.TaskStatusSuccess
-		if !status {
-			ts = model.TaskStatusFail
-			task.Message = err.Error()
-		}
-
-		task.Stop(ts)
-
-		if err != nil {
-			snag.Panic(err)
-		}
-	}()
-
-	// 柜门操作
-	status, err = cs.DoorOperate(req, model.CabinetDoorOperator{
-		ID:    s.modifier.ID,
-		Role:  model.CabinetDoorOperatorRoleManager,
-		Name:  s.modifier.Name,
-		Phone: s.modifier.Phone,
-	})
-
-	if err != nil {
-		snag.Panic(err)
-	}
-
-	return status
 }
 
 // Reboot 重启电柜

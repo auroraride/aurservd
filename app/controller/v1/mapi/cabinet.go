@@ -6,10 +6,11 @@
 package mapi
 
 import (
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
-	"github.com/labstack/echo/v4"
 )
 
 type cabinet struct{}
@@ -111,7 +112,7 @@ func (*cabinet) Detail(c echo.Context) (err error) {
 func (*cabinet) DoorOperate(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.CabinetDoorOperateReq](c)
 	return ctx.SendResponse(
-		model.StatusResponse{Status: service.NewCabinetMgrWithModifier(ctx.Modifier).BinOperate(req)},
+		model.StatusResponse{Status: service.NewCabinetMgrWithModifier(ctx.Modifier).BinOperate(req.ID, req)},
 	)
 }
 
@@ -228,4 +229,21 @@ func (*cabinet) OpenBind(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.CabinetOpenBindReq](c)
 	service.NewIntelligentCabinet(ctx.Modifier).OpenBind(req)
 	return ctx.SendResponse()
+}
+
+// Deactivate
+// @ID           CabinetDeactivate
+// @Router       /manager/v1/cabinet/bin/deactivate [POST]
+// @Summary      M5014 仓位逻辑禁用/启用
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        body  body     cabdef.BinDeactivateRequest  true  "柜门操作请求"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*cabinet) Deactivate(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[model.CabinetBinDeactivateReq](c)
+	return ctx.SendResponse(
+		model.StatusResponse{Status: service.NewCabinetMgrWithModifier(ctx.Modifier).BinOperate(req.ID, req)},
+	)
 }

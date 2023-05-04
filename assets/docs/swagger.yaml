@@ -33,6 +33,25 @@ definitions:
       lng:
         type: number
     type: object
+  cabdef.BinDeactivateRequest:
+    properties:
+      deactivate:
+        description: 是否启用
+        type: boolean
+      ordinal:
+        description: 仓位序号
+        type: integer
+      reason:
+        description: 原因
+        type: string
+      serial:
+        description: 电柜编号
+        type: string
+    required:
+    - deactivate
+    - ordinal
+    - serial
+    type: object
   controller.CrmCustomerWithID:
     properties:
       address:
@@ -2273,6 +2292,12 @@ definitions:
       current:
         description: 充电电流(A)
         type: number
+      deactivate:
+        description: 是否禁用
+        type: boolean
+      deactivateReason:
+        description: 禁用原因
+        type: string
       doorHealth:
         description: 是否锁仓 (柜门是否正常)
         type: boolean
@@ -2519,7 +2544,7 @@ definitions:
         description: 电柜ID
         type: integer
       index:
-        description: 仓门index
+        description: 仓门index (从0开始)
         type: integer
       operation:
         allOf:
@@ -10158,6 +10183,33 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M5003 编辑电柜
+      tags:
+      - '[M]管理接口'
+  /manager/v1/cabinet/bin/deactivate:
+    post:
+      consumes:
+      - application/json
+      operationId: CabinetDeactivate
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 柜门操作请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/cabdef.BinDeactivateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M5014 仓位逻辑禁用/启用
       tags:
       - '[M]管理接口'
   /manager/v1/cabinet/data:

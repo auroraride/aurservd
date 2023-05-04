@@ -14,6 +14,13 @@ import (
 	"github.com/auroraride/adapter"
 	"github.com/auroraride/adapter/defs/cabdef"
 	"github.com/auroraride/adapter/log"
+	"github.com/go-resty/resty/v2"
+	"github.com/golang-module/carbon/v2"
+	"github.com/google/uuid"
+	"github.com/lithammer/shortuuid/v4"
+	"go.uber.org/zap"
+	"golang.org/x/exp/slices"
+
 	"github.com/auroraride/aurservd/app/logging"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ar"
@@ -21,12 +28,6 @@ import (
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
-	"github.com/go-resty/resty/v2"
-	"github.com/golang-module/carbon/v2"
-	"github.com/google/uuid"
-	"github.com/lithammer/shortuuid/v4"
-	"go.uber.org/zap"
-	"golang.org/x/exp/slices"
 )
 
 type intelligentCabinetService struct {
@@ -451,10 +452,6 @@ func (s *intelligentCabinetService) DoBusiness(uidstr string, bus adapter.Busine
 }
 
 func (s *intelligentCabinetService) Operate(cab *ent.Cabinet, op cabdef.Operate, req *model.CabinetDoorOperateReq) (success bool) {
-	if s.modifier == nil {
-		return false
-	}
-
 	now := time.Now()
 	br := cab.Brand
 	ordinal := *req.Index + 1
@@ -484,6 +481,43 @@ func (s *intelligentCabinetService) Operate(cab *ent.Cabinet, op cabdef.Operate,
 		Serial:  cab.Serial,
 		Remark:  req.Remark,
 	}
+
+	_, err := adapter.Post[[]*cabdef.BinOperateResult](s.GetCabinetAdapterUrlX(cab, "/operate/bin"), s.GetAdapterUserX(), payload)
+
+	success = err == nil
+	return
+}
+
+func (s *intelligentCabinetService) Deactivate(cab *ent.Cabinet, payload *cabdef.BinDeactivateRequest) (success bool) {
+	if s.modifier == nil {
+		snag.Panic("权限校验失败")
+	}
+	now := time.Now()
+	br := cab.Brand
+
+	operation := "启用仓位"
+	if *payload.Deactivate {
+		operation = "禁用仓位"
+	}
+
+	go func() {
+		// 上传日志
+		dlog := &logging.DoorOperateLog{
+			ID:            shortuuid.New(),
+			Brand:         br.String(),
+			OperatorName:  s.modifier.Name,
+			OperatorID:    s.modifier.ID,
+			OperatorPhone: s.modifier.Phone,
+			Serial:        cab.Serial,
+			Name:          strconv.Itoa(payload.Ordinal) + "号仓",
+			Operation:     operation,
+			OperatorRole:  model.CabinetDoorOperatorRoleManager,
+			Success:       success,
+			Remark:        *payload.Reason,
+			Time:          now.Format(carbon.DateTimeLayout),
+		}
+		dlog.Send()
+	}()
 
 	_, err := adapter.Post[[]*cabdef.BinOperateResult](s.GetCabinetAdapterUrlX(cab, "/operate/bin"), s.GetAdapterUserX(), payload)
 

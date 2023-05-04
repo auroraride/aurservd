@@ -19,6 +19,11 @@ import (
 	"entgo.io/ent/dialect/sql/sqljson"
 	"github.com/auroraride/adapter"
 	"github.com/auroraride/adapter/rpc/pb"
+	"github.com/golang-module/carbon/v2"
+	"github.com/jinzhu/copier"
+	"github.com/lithammer/shortuuid/v4"
+	"golang.org/x/exp/slices"
+
 	"github.com/auroraride/aurservd/app/ec"
 	"github.com/auroraride/aurservd/app/logging"
 	"github.com/auroraride/aurservd/app/model"
@@ -34,10 +39,6 @@ import (
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
-	"github.com/golang-module/carbon/v2"
-	"github.com/jinzhu/copier"
-	"github.com/lithammer/shortuuid/v4"
-	"golang.org/x/exp/slices"
 )
 
 type cabinetService struct {
@@ -320,12 +321,6 @@ func (s *cabinetService) DetailFromID(id uint64) *model.CabinetDetailRes {
 
 func (s *cabinetService) Detail(item *ent.Cabinet) *model.CabinetDetailRes {
 	s.Sync(item)
-	if !item.UsingMicroService() && time.Now().Sub(item.UpdatedAt).Seconds() > 2 {
-		err := s.UpdateStatus(item)
-		if err != nil {
-			snag.Panic(err)
-		}
-	}
 
 	bms := item.Edges.Models
 	if bms == nil {
@@ -715,6 +710,10 @@ func (s *cabinetService) parseSyncData(cab *ent.Cabinet, item *pb.CabinetSyncIte
 			Voltage:       b.Voltage,
 			ChargerErrors: b.Faults,
 			Remark:        b.Remark,
+			Deactivate:    b.Deactivate,
+		}
+		if b.Deactivate {
+			cab.Bin[x].DeactivateReason = b.DeactivateReason
 		}
 	}
 }

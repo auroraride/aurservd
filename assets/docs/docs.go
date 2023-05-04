@@ -4117,6 +4117,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/cabinet/bin/deactivate": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M5014 仓位逻辑禁用/启用",
+                "operationId": "CabinetDeactivate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "柜门操作请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/cabdef.BinDeactivateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/cabinet/data": {
             "get": {
                 "consumes": [
@@ -13831,6 +13872,32 @@ const docTemplate = `{
                 }
             }
         },
+        "cabdef.BinDeactivateRequest": {
+            "type": "object",
+            "required": [
+                "deactivate",
+                "ordinal",
+                "serial"
+            ],
+            "properties": {
+                "deactivate": {
+                    "description": "是否启用",
+                    "type": "boolean"
+                },
+                "ordinal": {
+                    "description": "仓位序号",
+                    "type": "integer"
+                },
+                "reason": {
+                    "description": "原因",
+                    "type": "string"
+                },
+                "serial": {
+                    "description": "电柜编号",
+                    "type": "string"
+                }
+            }
+        },
         "controller.CrmCustomerWithID": {
             "type": "object",
             "required": [
@@ -17037,6 +17104,14 @@ const docTemplate = `{
                     "description": "充电电流(A)",
                     "type": "number"
                 },
+                "deactivate": {
+                    "description": "是否禁用",
+                    "type": "boolean"
+                },
+                "deactivateReason": {
+                    "description": "禁用原因",
+                    "type": "string"
+                },
                 "doorHealth": {
                     "description": "是否锁仓 (柜门是否正常)",
                     "type": "boolean"
@@ -17389,7 +17464,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "index": {
-                    "description": "仓门index",
+                    "description": "仓门index (从0开始)",
                     "type": "integer"
                 },
                 "operation": {

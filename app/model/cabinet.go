@@ -183,6 +183,9 @@ type CabinetBin struct {
 	Voltage       float64    `json:"voltage"`                 // 电压(V)
 	ChargerErrors []string   `json:"chargerErrors,omitempty"` // 故障信息
 	Remark        string     `json:"remark,omitempty"`        // 备注
+
+	Deactivate       bool    `json:"deactivate"`                 // 是否禁用
+	DeactivateReason *string `json:"deactivateReason,omitempty"` // 禁用原因
 }
 
 // CabinetBinRemark 仓位备注
@@ -279,9 +282,17 @@ type CabinetDoorOperator struct {
 // CabinetDoorOperateReq 仓门操作
 type CabinetDoorOperateReq struct {
 	ID        uint64              `json:"id" validate:"required"`        // 电柜ID
-	Index     *int                `json:"index" validate:"required"`     // 仓门index
+	Index     *int                `json:"index" validate:"required"`     // 仓门index (从0开始)
 	Remark    string              `json:"remark"`                        // 操作原因
 	Operation *CabinetDoorOperate `json:"operation" validate:"required"` // 操作方式 1:开仓 2:锁定(标记为故障) 3:解锁(取消标记故障)
+}
+
+// CabinetBinDeactivateReq 仓门操作
+type CabinetBinDeactivateReq struct {
+	ID        uint64 `json:"id" validate:"required"`                                // 电柜ID
+	Index     *int   `json:"index" validate:"required"`                             // 仓门index
+	Remark    string `json:"remark"`                                                // 操作原因
+	Operation int    `json:"operation" validate:"required,gte=1,lte=2" enums:"1,2"` // 操作方式 1:启用 2:禁用
 }
 
 // BinInfo 任务电柜仓位信息
