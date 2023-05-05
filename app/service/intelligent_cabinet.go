@@ -137,6 +137,7 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 
 	payload := &cabdef.ExchangeRequest{
 		UUID:    id,
+		Serial:  cab.Serial,
 		Expires: model.IntelligentBusinessScanExpires,
 		Timeout: model.IntelligentBusinessStepTimeout,
 		Minsoc:  cache.Float64(model.SettingExchangeMinBatteryKey),
@@ -500,7 +501,11 @@ func (s *intelligentCabinetService) Deactivate(cab *ent.Cabinet, payload *cabdef
 		operation = "禁用仓位"
 	}
 
-	go func() {
+	res, _ := adapter.Post[model.StatusResponse](s.GetCabinetAdapterUrlX(cab, "/bin/deactivate"), s.GetAdapterUserX(), payload)
+
+	success = res.Status
+
+	if success {
 		// 上传日志
 		dlog := &logging.DoorOperateLog{
 			ID:            shortuuid.New(),
@@ -516,12 +521,8 @@ func (s *intelligentCabinetService) Deactivate(cab *ent.Cabinet, payload *cabdef
 			Remark:        *payload.Reason,
 			Time:          now.Format(carbon.DateTimeLayout),
 		}
-		dlog.Send()
-	}()
-
-	_, err := adapter.Post[[]*cabdef.BinOperateResult](s.GetCabinetAdapterUrlX(cab, "/bin/deactivate"), s.GetAdapterUserX(), payload)
-
-	success = err == nil
+		go dlog.Send()
+	}
 	return
 }
 
