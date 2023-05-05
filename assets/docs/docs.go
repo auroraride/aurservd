@@ -4144,7 +4144,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/cabdef.BinDeactivateRequest"
+                            "$ref": "#/definitions/model.CabinetBinDeactivateReq"
                         }
                     }
                 ],
@@ -13872,32 +13872,6 @@ const docTemplate = `{
                 }
             }
         },
-        "cabdef.BinDeactivateRequest": {
-            "type": "object",
-            "required": [
-                "deactivate",
-                "ordinal",
-                "serial"
-            ],
-            "properties": {
-                "deactivate": {
-                    "description": "是否启用",
-                    "type": "boolean"
-                },
-                "ordinal": {
-                    "description": "仓位序号",
-                    "type": "integer"
-                },
-                "reason": {
-                    "description": "原因",
-                    "type": "string"
-                },
-                "serial": {
-                    "description": "电柜编号",
-                    "type": "string"
-                }
-            }
-        },
         "controller.CrmCustomerWithID": {
             "type": "object",
             "required": [
@@ -17143,6 +17117,38 @@ const docTemplate = `{
                 "voltage": {
                     "description": "电压(V)",
                     "type": "number"
+                }
+            }
+        },
+        "model.CabinetBinDeactivateReq": {
+            "type": "object",
+            "required": [
+                "id",
+                "index",
+                "operation"
+            ],
+            "properties": {
+                "id": {
+                    "description": "电柜ID",
+                    "type": "integer"
+                },
+                "index": {
+                    "description": "仓门index",
+                    "type": "integer"
+                },
+                "operation": {
+                    "description": "操作方式 1:启用 2:禁用",
+                    "type": "integer",
+                    "maximum": 2,
+                    "minimum": 1,
+                    "enum": [
+                        1,
+                        2
+                    ]
+                },
+                "remark": {
+                    "description": "操作原因",
+                    "type": "string"
                 }
             }
         },

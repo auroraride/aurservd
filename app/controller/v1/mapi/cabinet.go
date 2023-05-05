@@ -239,7 +239,7 @@ func (*cabinet) OpenBind(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        body  body     cabdef.BinDeactivateRequest  true  "柜门操作请求"
+// @Param        body  body     model.CabinetBinDeactivateReq  true  "柜门操作请求"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*cabinet) Deactivate(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.CabinetBinDeactivateReq](c)

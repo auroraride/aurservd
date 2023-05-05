@@ -519,7 +519,7 @@ func (s *intelligentCabinetService) Deactivate(cab *ent.Cabinet, payload *cabdef
 		dlog.Send()
 	}()
 
-	_, err := adapter.Post[[]*cabdef.BinOperateResult](s.GetCabinetAdapterUrlX(cab, "/operate/bin"), s.GetAdapterUserX(), payload)
+	_, err := adapter.Post[[]*cabdef.BinOperateResult](s.GetCabinetAdapterUrlX(cab, "/bin/deactivate"), s.GetAdapterUserX(), payload)
 
 	success = err == nil
 	return

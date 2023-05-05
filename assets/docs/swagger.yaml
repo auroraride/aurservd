@@ -33,25 +33,6 @@ definitions:
       lng:
         type: number
     type: object
-  cabdef.BinDeactivateRequest:
-    properties:
-      deactivate:
-        description: 是否启用
-        type: boolean
-      ordinal:
-        description: 仓位序号
-        type: integer
-      reason:
-        description: 原因
-        type: string
-      serial:
-        description: 电柜编号
-        type: string
-    required:
-    - deactivate
-    - ordinal
-    - serial
-    type: object
   controller.CrmCustomerWithID:
     properties:
       address:
@@ -2322,6 +2303,30 @@ definitions:
       voltage:
         description: 电压(V)
         type: number
+    type: object
+  model.CabinetBinDeactivateReq:
+    properties:
+      id:
+        description: 电柜ID
+        type: integer
+      index:
+        description: 仓门index
+        type: integer
+      operation:
+        description: 操作方式 1:启用 2:禁用
+        enum:
+        - 1
+        - 2
+        maximum: 2
+        minimum: 1
+        type: integer
+      remark:
+        description: 操作原因
+        type: string
+    required:
+    - id
+    - index
+    - operation
     type: object
   model.CabinetCreateReq:
     properties:
@@ -10201,7 +10206,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/cabdef.BinDeactivateRequest'
+          $ref: '#/definitions/model.CabinetBinDeactivateReq'
       produces:
       - application/json
       responses:
