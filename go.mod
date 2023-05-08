@@ -172,5 +172,3 @@ replace github.com/swaggo/swag => github.com/liasica/swag v1.8.7-0.2022093001003
 //replace entgo.io/ent => github.com/liasica/ent v0.11.3-0.20220926082554-08715525d2cf
 
 replace github.com/auroraride/adapter => ../adapter
-
-replace github.com/auroraride/yundong => ../yundong
