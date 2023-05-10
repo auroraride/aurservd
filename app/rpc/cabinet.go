@@ -59,3 +59,23 @@ func CabinetSync(key string, req *pb.CabinetSyncRequest) *pb.CabinetSyncResponse
 	res, _ := c.Sync(context.Background(), req)
 	return res
 }
+
+func CabinetBiz(key string, req *pb.CabinetBizRequest) *pb.CabinetBizResponse {
+	c := GetCabinet(key)
+	if c == nil {
+		return nil
+	}
+
+	res, _ := c.Biz(context.Background(), req)
+	return res
+}
+
+func CabinetInterrupt(key string, req *pb.CabinetInterruptRequest) *pb.CabinetBizResponse {
+	c := GetCabinet(key)
+	if c == nil {
+		return nil
+	}
+
+	res, _ := c.Interrupt(context.Background(), req)
+	return res
+}

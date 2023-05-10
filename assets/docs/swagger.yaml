@@ -2452,6 +2452,11 @@ definitions:
         items:
           $ref: '#/definitions/model.CabinetBin'
         type: array
+      biz:
+        description: 电柜当前业务
+        items:
+          $ref: '#/definitions/pb.CabinetBiz'
+        type: array
       branchId:
         description: 网点
         type: integer
@@ -2655,6 +2660,18 @@ definitions:
     - cabinetId
     - description
     - fault
+    type: object
+  model.CabinetInterruptRequest:
+    properties:
+      message:
+        description: 中断消息
+        type: string
+      serial:
+        description: 电柜编码
+        type: string
+    required:
+    - message
+    - serial
     type: object
   model.CabinetItem:
     properties:
@@ -7286,6 +7303,23 @@ definitions:
     - BatteryFaultType_BatteryFaultDisChargingTemperatureLow
     - BatteryFaultType_BatteryFaultShortCircuit
     - BatteryFaultType_BatteryFaultMosTemperatureHigh
+  pb.CabinetBiz:
+    properties:
+      desc:
+        description: 业务描述
+        type: string
+      ordinal:
+        type: integer
+      serial:
+        type: string
+    type: object
+  pb.CabinetBizResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/pb.CabinetBiz'
+        type: array
+    type: object
   permission.Group:
     properties:
       desc:
@@ -10357,6 +10391,33 @@ paths:
                   type: array
               type: object
       summary: M5008 故障列表
+      tags:
+      - '[M]管理接口'
+  /manager/v1/cabinet/interrupt:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerCabinetInterrupt
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 中断请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.CabinetInterruptRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/pb.CabinetBizResponse'
+      summary: M5015 中断电柜业务
       tags:
       - '[M]管理接口'
   /manager/v1/cabinet/maintain:

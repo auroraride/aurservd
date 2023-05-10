@@ -81,6 +81,7 @@ func loadManagerRoutes() {
 	g.POST("/cabinet/maintain", mapi.Cabinet.Maintain)
 	g.POST("/cabinet/openbind", mapi.Cabinet.OpenBind)
 	g.POST("/cabinet/bin/deactivate", mapi.Cabinet.Deactivate)
+	g.POST("/cabinet/interrupt", mapi.Cabinet.Interrupt)
 
 	// 骑士卡
 	g.GET("/plan", mapi.Plan.List)

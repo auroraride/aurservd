@@ -247,3 +247,18 @@ func (*cabinet) Deactivate(c echo.Context) (err error) {
 		model.StatusResponse{Status: service.NewCabinetMgrWithModifier(ctx.Modifier).BinOperate(req.ID, req)},
 	)
 }
+
+// Interrupt
+// @ID           ManagerCabinetInterrupt
+// @Router       /manager/v1/cabinet/interrupt [POST]
+// @Summary      M5015 中断电柜业务
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        body  body  model.CabinetInterruptRequest  true  "中断请求"
+// @Success      200  {object}  pb.CabinetBizResponse  "请求成功"
+func (*cabinet) Interrupt(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[model.CabinetInterruptRequest](c)
+	return ctx.SendResponse(service.NewCabinetWithModifier(ctx.Modifier).Interrupt(req))
+}

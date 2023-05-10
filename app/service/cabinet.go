@@ -347,6 +347,14 @@ func (s *cabinetService) Detail(item *ent.Cabinet) *model.CabinetDetailRes {
 		})
 	}
 
+	// 获取电柜业务
+	biz := rpc.CabinetBiz(rpc.CabinetKey(item.Brand, item.Intelligent), &pb.CabinetBizRequest{
+		Serial: item.Serial,
+	})
+	if biz != nil {
+		res.Biz = biz.Items
+	}
+
 	return res
 }
 
@@ -862,4 +870,13 @@ func (s *cabinetService) CacheAll() {
 	for _, item := range items {
 		ar.Redis.HSet(s.ctx, ar.CabinetNameCacheKey, item.Serial, item.Name)
 	}
+}
+
+// Interrupt 中断电柜所有业务
+func (s *cabinetService) Interrupt(req *model.CabinetInterruptRequest) *pb.CabinetBizResponse {
+	// 查找电柜
+	item := s.QueryOneSerialX(req.Serial)
+	return rpc.CabinetInterrupt(rpc.CabinetKey(item.Brand, item.Intelligent), &pb.CabinetInterruptRequest{
+		Serial: item.Serial,
+	})
 }

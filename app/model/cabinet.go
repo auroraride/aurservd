@@ -10,6 +10,7 @@ import (
 	"sort"
 
 	"github.com/auroraride/adapter"
+	"github.com/auroraride/adapter/rpc/pb"
 )
 
 const (
@@ -205,6 +206,7 @@ type CabinetDetailRes struct {
 	Bin      []CabinetBin         `json:"bins"`     // 仓位信息
 	StockNum int                  `json:"stockNum"` // 库存电池
 	Reserves []ReserveCabinetItem `json:"reserves"` // 当前预约
+	Biz      []*pb.CabinetBiz     `json:"biz"`      // 电柜当前业务
 }
 
 // CanUse 仓位是否可以换电
@@ -396,4 +398,9 @@ type CabinetOpenBindReq struct {
 type CabinetRpcBatchRequestItem struct {
 	Serial      string `json:"serial"`
 	Intelligent bool   `json:"intelligent"`
+}
+
+type CabinetInterruptRequest struct {
+	Serial  string `json:"serial" validate:"required"`  // 电柜编码
+	Message string `json:"message" validate:"required"` // 中断消息
 }

@@ -4383,6 +4383,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/cabinet/interrupt": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M5015 中断电柜业务",
+                "operationId": "ManagerCabinetInterrupt",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "中断请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.CabinetInterruptRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/pb.CabinetBizResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/cabinet/maintain": {
             "post": {
                 "consumes": [
@@ -17333,6 +17374,13 @@ const docTemplate = `{
                         "$ref": "#/definitions/model.CabinetBin"
                     }
                 },
+                "biz": {
+                    "description": "电柜当前业务",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/pb.CabinetBiz"
+                    }
+                },
                 "branchId": {
                     "description": "网点",
                     "type": "integer"
@@ -17619,6 +17667,23 @@ const docTemplate = `{
                 },
                 "fault": {
                     "description": "故障 ",
+                    "type": "string"
+                }
+            }
+        },
+        "model.CabinetInterruptRequest": {
+            "type": "object",
+            "required": [
+                "message",
+                "serial"
+            ],
+            "properties": {
+                "message": {
+                    "description": "中断消息",
+                    "type": "string"
+                },
+                "serial": {
+                    "description": "电柜编码",
                     "type": "string"
                 }
             }
@@ -24256,6 +24321,32 @@ const docTemplate = `{
                 "BatteryFaultType_BatteryFaultShortCircuit",
                 "BatteryFaultType_BatteryFaultMosTemperatureHigh"
             ]
+        },
+        "pb.CabinetBiz": {
+            "type": "object",
+            "properties": {
+                "desc": {
+                    "description": "业务描述",
+                    "type": "string"
+                },
+                "ordinal": {
+                    "type": "integer"
+                },
+                "serial": {
+                    "type": "string"
+                }
+            }
+        },
+        "pb.CabinetBizResponse": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/pb.CabinetBiz"
+                    }
+                }
+            }
         },
         "permission.Group": {
             "type": "object",
