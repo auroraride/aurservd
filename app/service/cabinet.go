@@ -876,7 +876,13 @@ func (s *cabinetService) CacheAll() {
 func (s *cabinetService) Interrupt(req *model.CabinetInterruptRequest) *pb.CabinetBizResponse {
 	// 查找电柜
 	item := s.QueryOneSerialX(req.Serial)
-	return rpc.CabinetInterrupt(rpc.CabinetKey(item.Brand, item.Intelligent), &pb.CabinetInterruptRequest{
+	res := rpc.CabinetInterrupt(rpc.CabinetKey(item.Brand, item.Intelligent), &pb.CabinetInterruptRequest{
 		Serial: item.Serial,
 	})
+	cnt := 0
+	if res != nil {
+		cnt = len(res.Items)
+	}
+	items := make([]*pb.CabinetBiz, cnt)
+	return &pb.CabinetBizResponse{Items: items}
 }
