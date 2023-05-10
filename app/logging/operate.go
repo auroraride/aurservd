@@ -9,11 +9,12 @@ import (
 	"time"
 
 	sls "github.com/aliyun/aliyun-log-go-sdk"
+	"github.com/lithammer/shortuuid/v4"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ali"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
-	"github.com/lithammer/shortuuid/v4"
 )
 
 // OperateLog 系统操作日志
@@ -47,13 +48,17 @@ func NewOperateLog() *OperateLog {
 	}
 }
 
+func (o *OperateLog) SetInfo(info string) *OperateLog {
+	o.Info = info
+	return o
+}
+
 func (o *OperateLog) SetRef(ref model.Table) *OperateLog {
 	o.RefTable = ref.GetTableName()
 	o.RefID = ref.GetID()
 	switch ref.(type) {
 	case model.TableSlsInfo:
 		o.Info = ref.(model.TableSlsInfo).GetSLSLogInfo()
-		break
 	}
 	return o
 }

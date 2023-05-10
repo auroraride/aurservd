@@ -877,11 +877,21 @@ func (s *cabinetService) Interrupt(req *model.CabinetInterruptRequest) *pb.Cabin
 	// 查找电柜
 	item := s.QueryOneSerialX(req.Serial)
 	res := rpc.CabinetInterrupt(rpc.CabinetKey(item.Brand, item.Intelligent), &pb.CabinetInterruptRequest{
-		Serial: item.Serial,
+		Serial:  item.Serial,
+		Message: req.Message,
 	})
 	cnt := 0
 	if res != nil {
 		cnt = len(res.Items)
+		for _, biz := range res.Items {
+			// 记录日志
+			go logging.NewOperateLog().
+				SetInfo(biz.User).
+				SetModifier(s.modifier).
+				SetOperate(model.OperateInterruptBusiness).
+				SetDiff(biz.Desc, "已中断").
+				Send()
+		}
 	}
 	items := make([]*pb.CabinetBiz, cnt)
 	return &pb.CabinetBizResponse{Items: items}

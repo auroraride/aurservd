@@ -7312,6 +7312,9 @@ definitions:
         type: integer
       serial:
         type: string
+      user:
+        description: 业务人员
+        type: string
     type: object
   pb.CabinetBizResponse:
     properties:

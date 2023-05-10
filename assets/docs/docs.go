@@ -24334,6 +24334,10 @@ const docTemplate = `{
                 },
                 "serial": {
                     "type": "string"
+                },
+                "user": {
+                    "description": "业务人员",
+                    "type": "string"
                 }
             }
         },
