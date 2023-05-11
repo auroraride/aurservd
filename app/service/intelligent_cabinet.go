@@ -138,8 +138,8 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 	payload := &cabdef.ExchangeRequest{
 		UUID:    id,
 		Serial:  cab.Serial,
-		Expires: model.IntelligentBusinessScanExpires,
-		Timeout: model.IntelligentBusinessStepTimeout,
+		Expires: model.CabinetBusinessScanExpires,
+		Timeout: model.CabinetBusinessStepTimeout,
 		Minsoc:  cache.Float64(model.SettingExchangeMinBatteryKey),
 	}
 
@@ -384,7 +384,7 @@ func (s *intelligentCabinetService) DoBusiness(uidstr string, bus adapter.Busine
 		UUID:     uid,
 		Business: bus,
 		Serial:   cab.Serial,
-		Timeout:  model.IntelligentBusinessStepTimeout,
+		Timeout:  model.CabinetBusinessStepTimeout,
 		Battery:  batterySN,
 		Model:    sub.Model,
 	}
