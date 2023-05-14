@@ -54,12 +54,6 @@ type config struct {
 	Debug bool
 	adapter.Configure
 
-	Tcp struct {
-		Bind struct {
-			Yundong string
-		}
-	}
-
 	App struct {
 		Host         string
 		Mode         string
