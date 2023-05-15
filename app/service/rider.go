@@ -14,6 +14,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/golang-module/carbon/v2"
+	jsoniter "github.com/json-iterator/go"
+	"github.com/rs/xid"
+	"golang.org/x/exp/slices"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/logging"
 	"github.com/auroraride/aurservd/app/model"
@@ -37,10 +42,6 @@ import (
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
 	"github.com/auroraride/aurservd/pkg/utils"
-	"github.com/golang-module/carbon/v2"
-	jsoniter "github.com/json-iterator/go"
-	"github.com/rs/xid"
-	"golang.org/x/exp/slices"
 )
 
 type riderService struct {
@@ -554,34 +555,41 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
 
 	if req.Suspend != nil {
 		if *req.Suspend {
-			q.Where(rider.HasSubscribesWith(subscribe.SuspendAtNotNil()))
+			q.Where(rider.HasSubscribesWith(subscribe.SuspendAtNotNil(), subscribe.EndAtIsNil()))
 			info["暂停扣费"] = "是"
 		} else {
-			q.Where(rider.HasSubscribesWith(subscribe.SuspendAtIsNil()))
+			q.Where(rider.HasSubscribesWith(subscribe.SuspendAtIsNil(), subscribe.EndAtIsNil()))
 			info["暂停扣费"] = "否"
 		}
 	}
 
-	if req.Model != "" {
+	if req.Model != nil {
 		info["电池型号"] = req.Model
 		subarr := []predicate.Subscribe{
-			subscribe.Model(req.Model),
+			subscribe.Model(*req.Model),
 		}
-		// 如果筛选了电池型号但是未筛选订阅状态时, 默认订阅状态为: 非退订且非取消
+		// 如果筛选了电池型号但是未筛选订阅状态时, 默认订阅状态为: 非退订 && 非取消
 		if req.SubscribeStatus == nil {
 			subarr = append(subarr, subscribe.StatusNotIn(model.SubscribeStatusCanceled, model.SubscribeStatusUnSubscribed))
 		}
 		q.Where(rider.HasSubscribesWith(subarr...))
 	}
 
-	if req.EbikeBrandID != 0 {
-		info["电车型号"] = ent.NewExportInfo(req.EbikeBrandID, ebikebrand.Table)
-		q.Where(rider.HasSubscribesWith(subscribe.BrandID(req.EbikeBrandID)))
+	if req.EbikeBrandID != nil {
+		info["电车型号"] = ent.NewExportInfo(*req.EbikeBrandID, ebikebrand.Table)
+		subarr := []predicate.Subscribe{
+			subscribe.BrandID(*req.EbikeBrandID),
+		}
+		// 如果筛选了电车型号但是未筛选订阅状态时, 默认订阅状态为: 非退订 && 非取消
+		if req.SubscribeStatus == nil {
+			subarr = append(subarr, subscribe.StatusNotIn(model.SubscribeStatusCanceled, model.SubscribeStatusUnSubscribed))
+		}
+		q.Where(rider.HasSubscribesWith(subarr...))
 	}
 
-	if req.BatteryID != 0 {
-		info["电池型号"] = ent.NewExportInfo(req.BatteryID, battery.Table)
-		q.Where(rider.HasBatteryWith(battery.ID(req.BatteryID)))
+	if req.BatteryID != nil {
+		info["电池编码"] = ent.NewExportInfo(*req.BatteryID, battery.Table)
+		q.Where(rider.HasBatteryWith(battery.ID(*req.BatteryID)))
 	}
 	return
 }

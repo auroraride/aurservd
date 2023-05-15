@@ -102,9 +102,9 @@ type RiderListFilter struct {
 	PlanID          *uint64           `json:"planId,omitempty" query:"planId"`                                             // 骑士卡
 	Remaining       *string           `json:"remaining,omitempty" query:"remaining"`                                       // 订阅剩余天数区间, 逗号分隔, 例如 `0,7`
 	Suspend         *bool             `json:"suspend,omitempty" query:"suspend"`                                           // 是否筛选暂停扣费中, 不携带此参数获取全部, 携带此参数`true`暂停中 `false`非暂停
-	Model           string            `json:"model,omitempty" query:"model"`                                               // 电池型号筛选
-	EbikeBrandID    uint64            `json:"ebikeBrandId" query:"ebikeBrandId"`                                           // 电车型号筛选
-	BatteryID       uint64            `json:"batteryId" query:"batteryId"`                                                 // 电池筛选
+	Model           *string           `json:"model,omitempty" query:"model"`                                               // 电池型号筛选
+	EbikeBrandID    *uint64           `json:"ebikeBrandId" query:"ebikeBrandId"`                                           // 电车型号筛选
+	BatteryID       *uint64           `json:"batteryId" query:"batteryId"`                                                 // 电池筛选
 }
 
 // RiderItemSubscribe 骑手骑士卡简单信息
