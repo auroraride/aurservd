@@ -5,13 +5,14 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
-	"entgo.io/ent/entc/integration/ent/hook"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 	"entgo.io/ent/schema/mixin"
+
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/hook"
 	"github.com/auroraride/aurservd/internal/ent/internal"
 	"github.com/auroraride/aurservd/pkg/snag"
 )

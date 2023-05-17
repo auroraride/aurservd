@@ -10,11 +10,12 @@ import (
 	"fmt"
 
 	"entgo.io/ent"
-	"entgo.io/ent/entc/integration/ent/hook"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 	"entgo.io/ent/schema/mixin"
 	"github.com/sony/sonyflake"
+
+	"github.com/auroraride/aurservd/internal/ent/hook"
 )
 
 // DeleteMixin 删除字段
