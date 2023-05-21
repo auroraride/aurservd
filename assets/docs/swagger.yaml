@@ -20,12 +20,16 @@ definitions:
     - KAIXIN
     - YUNDONG
     - TUOBANG
+    - XILIULOUSERV
     type: string
+    x-enum-comments:
+      CabinetBrandXiliulouServer: 西六楼服务器版
     x-enum-varnames:
     - CabinetBrandUnknown
     - CabinetBrandKaixin
     - CabinetBrandYundong
     - CabinetBrandTuobang
+    - CabinetBrandXiliulouServer
   adapter.Geometry:
     properties:
       lat:

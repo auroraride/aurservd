@@ -13893,13 +13893,18 @@ const docTemplate = `{
                 "UNKNOWN",
                 "KAIXIN",
                 "YUNDONG",
-                "TUOBANG"
+                "TUOBANG",
+                "XILIULOUSERV"
             ],
+            "x-enum-comments": {
+                "CabinetBrandXiliulouServer": "西六楼服务器版"
+            },
             "x-enum-varnames": [
                 "CabinetBrandUnknown",
                 "CabinetBrandKaixin",
                 "CabinetBrandYundong",
-                "CabinetBrandTuobang"
+                "CabinetBrandTuobang",
+                "CabinetBrandXiliulouServer"
             ]
         },
         "adapter.Geometry": {
