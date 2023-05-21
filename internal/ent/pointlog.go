@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/order"
@@ -44,7 +45,8 @@ type PointLog struct {
 	Attach *model.PointLogAttach `json:"attach,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PointLogQuery when eager-loading is set.
-	Edges PointLogEdges `json:"edges"`
+	Edges        PointLogEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // PointLogEdges holds the relations/edges for other nodes in the graph.
@@ -98,7 +100,7 @@ func (*PointLog) scanValues(columns []string) ([]any, error) {
 		case pointlog.FieldCreatedAt, pointlog.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type PointLog", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -192,9 +194,17 @@ func (pl *PointLog) assignValues(columns []string, values []any) error {
 					return fmt.Errorf("unmarshal field attach: %w", err)
 				}
 			}
+		default:
+			pl.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the PointLog.
+// This includes values selected through modifiers, order, etc.
+func (pl *PointLog) Value(name string) (ent.Value, error) {
+	return pl.selectValues.Get(name)
 }
 
 // QueryRider queries the "rider" edge of the PointLog entity.

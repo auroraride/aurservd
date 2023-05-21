@@ -27,7 +27,7 @@ func (ed *ExchangeDelete) Where(ps ...predicate.Exchange) *ExchangeDelete {
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (ed *ExchangeDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks[int, ExchangeMutation](ctx, ed.sqlExec, ed.mutation, ed.hooks)
+	return withHooks(ctx, ed.sqlExec, ed.mutation, ed.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.

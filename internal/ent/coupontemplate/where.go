@@ -344,11 +344,7 @@ func HasCoupons() predicate.CouponTemplate {
 // HasCouponsWith applies the HasEdge predicate on the "coupons" edge with a given conditions (other predicates).
 func HasCouponsWith(preds ...predicate.Coupon) predicate.CouponTemplate {
 	return predicate.CouponTemplate(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CouponsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, CouponsTable, CouponsColumn),
-		)
+		step := newCouponsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

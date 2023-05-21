@@ -707,7 +707,7 @@ func (au *AssistanceUpdate) Save(ctx context.Context) (int, error) {
 	if err := au.defaults(); err != nil {
 		return 0, err
 	}
-	return withHooks[int, AssistanceMutation](ctx, au.sqlSave, au.mutation, au.hooks)
+	return withHooks(ctx, au.sqlSave, au.mutation, au.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -965,10 +965,7 @@ func (au *AssistanceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{assistance.StoreColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: store.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -981,10 +978,7 @@ func (au *AssistanceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{assistance.StoreColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: store.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -1000,10 +994,7 @@ func (au *AssistanceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{assistance.RiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -1016,10 +1007,7 @@ func (au *AssistanceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{assistance.RiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -1035,10 +1023,7 @@ func (au *AssistanceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{assistance.SubscribeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: subscribe.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -1051,10 +1036,7 @@ func (au *AssistanceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{assistance.SubscribeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: subscribe.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -1070,10 +1052,7 @@ func (au *AssistanceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{assistance.CityColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -1086,10 +1065,7 @@ func (au *AssistanceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{assistance.CityColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -1105,10 +1081,7 @@ func (au *AssistanceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{assistance.OrderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: order.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -1121,10 +1094,7 @@ func (au *AssistanceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{assistance.OrderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: order.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -1140,10 +1110,7 @@ func (au *AssistanceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{assistance.EmployeeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: employee.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(employee.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -1156,10 +1123,7 @@ func (au *AssistanceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{assistance.EmployeeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: employee.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(employee.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -1872,7 +1836,7 @@ func (auo *AssistanceUpdateOne) Save(ctx context.Context) (*Assistance, error) {
 	if err := auo.defaults(); err != nil {
 		return nil, err
 	}
-	return withHooks[*Assistance, AssistanceMutation](ctx, auo.sqlSave, auo.mutation, auo.hooks)
+	return withHooks(ctx, auo.sqlSave, auo.mutation, auo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -2147,10 +2111,7 @@ func (auo *AssistanceUpdateOne) sqlSave(ctx context.Context) (_node *Assistance,
 			Columns: []string{assistance.StoreColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: store.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -2163,10 +2124,7 @@ func (auo *AssistanceUpdateOne) sqlSave(ctx context.Context) (_node *Assistance,
 			Columns: []string{assistance.StoreColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: store.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -2182,10 +2140,7 @@ func (auo *AssistanceUpdateOne) sqlSave(ctx context.Context) (_node *Assistance,
 			Columns: []string{assistance.RiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -2198,10 +2153,7 @@ func (auo *AssistanceUpdateOne) sqlSave(ctx context.Context) (_node *Assistance,
 			Columns: []string{assistance.RiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -2217,10 +2169,7 @@ func (auo *AssistanceUpdateOne) sqlSave(ctx context.Context) (_node *Assistance,
 			Columns: []string{assistance.SubscribeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: subscribe.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -2233,10 +2182,7 @@ func (auo *AssistanceUpdateOne) sqlSave(ctx context.Context) (_node *Assistance,
 			Columns: []string{assistance.SubscribeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: subscribe.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -2252,10 +2198,7 @@ func (auo *AssistanceUpdateOne) sqlSave(ctx context.Context) (_node *Assistance,
 			Columns: []string{assistance.CityColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -2268,10 +2211,7 @@ func (auo *AssistanceUpdateOne) sqlSave(ctx context.Context) (_node *Assistance,
 			Columns: []string{assistance.CityColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -2287,10 +2227,7 @@ func (auo *AssistanceUpdateOne) sqlSave(ctx context.Context) (_node *Assistance,
 			Columns: []string{assistance.OrderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: order.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -2303,10 +2240,7 @@ func (auo *AssistanceUpdateOne) sqlSave(ctx context.Context) (_node *Assistance,
 			Columns: []string{assistance.OrderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: order.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -2322,10 +2256,7 @@ func (auo *AssistanceUpdateOne) sqlSave(ctx context.Context) (_node *Assistance,
 			Columns: []string{assistance.EmployeeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: employee.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(employee.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -2338,10 +2269,7 @@ func (auo *AssistanceUpdateOne) sqlSave(ctx context.Context) (_node *Assistance,
 			Columns: []string{assistance.EmployeeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: employee.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(employee.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

@@ -854,11 +854,7 @@ func HasSubscribe() predicate.Contract {
 // HasSubscribeWith applies the HasEdge predicate on the "subscribe" edge with a given conditions (other predicates).
 func HasSubscribeWith(preds ...predicate.Subscribe) predicate.Contract {
 	return predicate.Contract(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(SubscribeInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, SubscribeTable, SubscribeColumn),
-		)
+		step := newSubscribeStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -881,11 +877,7 @@ func HasEmployee() predicate.Contract {
 // HasEmployeeWith applies the HasEdge predicate on the "employee" edge with a given conditions (other predicates).
 func HasEmployeeWith(preds ...predicate.Employee) predicate.Contract {
 	return predicate.Contract(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(EmployeeInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, EmployeeTable, EmployeeColumn),
-		)
+		step := newEmployeeStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -908,11 +900,7 @@ func HasRider() predicate.Contract {
 // HasRiderWith applies the HasEdge predicate on the "rider" edge with a given conditions (other predicates).
 func HasRiderWith(preds ...predicate.Rider) predicate.Contract {
 	return predicate.Contract(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(RiderInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, RiderTable, RiderColumn),
-		)
+		step := newRiderStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -935,11 +923,7 @@ func HasAllocate() predicate.Contract {
 // HasAllocateWith applies the HasEdge predicate on the "allocate" edge with a given conditions (other predicates).
 func HasAllocateWith(preds ...predicate.Allocate) predicate.Contract {
 	return predicate.Contract(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(AllocateInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, AllocateTable, AllocateColumn),
-		)
+		step := newAllocateStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

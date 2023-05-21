@@ -27,7 +27,7 @@ func (ord *OrderRefundDelete) Where(ps ...predicate.OrderRefund) *OrderRefundDel
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (ord *OrderRefundDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks[int, OrderRefundMutation](ctx, ord.sqlExec, ord.mutation, ord.hooks)
+	return withHooks(ctx, ord.sqlExec, ord.mutation, ord.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.

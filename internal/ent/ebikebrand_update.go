@@ -110,7 +110,7 @@ func (ebu *EbikeBrandUpdate) Save(ctx context.Context) (int, error) {
 	if err := ebu.defaults(); err != nil {
 		return 0, err
 	}
-	return withHooks[int, EbikeBrandMutation](ctx, ebu.sqlSave, ebu.mutation, ebu.hooks)
+	return withHooks(ctx, ebu.sqlSave, ebu.mutation, ebu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -307,7 +307,7 @@ func (ebuo *EbikeBrandUpdateOne) Save(ctx context.Context) (*EbikeBrand, error) 
 	if err := ebuo.defaults(); err != nil {
 		return nil, err
 	}
-	return withHooks[*EbikeBrand, EbikeBrandMutation](ctx, ebuo.sqlSave, ebuo.mutation, ebuo.hooks)
+	return withHooks(ctx, ebuo.sqlSave, ebuo.mutation, ebuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.

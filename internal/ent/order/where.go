@@ -1259,11 +1259,7 @@ func HasPlan() predicate.Order {
 // HasPlanWith applies the HasEdge predicate on the "plan" edge with a given conditions (other predicates).
 func HasPlanWith(preds ...predicate.Plan) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(PlanInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, PlanTable, PlanColumn),
-		)
+		step := newPlanStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -1286,11 +1282,7 @@ func HasCity() predicate.Order {
 // HasCityWith applies the HasEdge predicate on the "city" edge with a given conditions (other predicates).
 func HasCityWith(preds ...predicate.City) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CityInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
-		)
+		step := newCityStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -1313,11 +1305,7 @@ func HasBrand() predicate.Order {
 // HasBrandWith applies the HasEdge predicate on the "brand" edge with a given conditions (other predicates).
 func HasBrandWith(preds ...predicate.EbikeBrand) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(BrandInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, BrandTable, BrandColumn),
-		)
+		step := newBrandStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -1340,11 +1328,7 @@ func HasEbike() predicate.Order {
 // HasEbikeWith applies the HasEdge predicate on the "ebike" edge with a given conditions (other predicates).
 func HasEbikeWith(preds ...predicate.Ebike) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(EbikeInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, EbikeTable, EbikeColumn),
-		)
+		step := newEbikeStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -1367,11 +1351,7 @@ func HasRider() predicate.Order {
 // HasRiderWith applies the HasEdge predicate on the "rider" edge with a given conditions (other predicates).
 func HasRiderWith(preds ...predicate.Rider) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(RiderInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, RiderTable, RiderColumn),
-		)
+		step := newRiderStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -1394,11 +1374,7 @@ func HasSubscribe() predicate.Order {
 // HasSubscribeWith applies the HasEdge predicate on the "subscribe" edge with a given conditions (other predicates).
 func HasSubscribeWith(preds ...predicate.Subscribe) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(SubscribeInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, SubscribeTable, SubscribeColumn),
-		)
+		step := newSubscribeStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -1421,11 +1397,7 @@ func HasCommission() predicate.Order {
 // HasCommissionWith applies the HasEdge predicate on the "commission" edge with a given conditions (other predicates).
 func HasCommissionWith(preds ...predicate.Commission) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CommissionInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, CommissionTable, CommissionColumn),
-		)
+		step := newCommissionStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -1448,11 +1420,7 @@ func HasParent() predicate.Order {
 // HasParentWith applies the HasEdge predicate on the "parent" edge with a given conditions (other predicates).
 func HasParentWith(preds ...predicate.Order) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, ParentTable, ParentColumn),
-		)
+		step := newParentStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -1475,11 +1443,7 @@ func HasChildren() predicate.Order {
 // HasChildrenWith applies the HasEdge predicate on the "children" edge with a given conditions (other predicates).
 func HasChildrenWith(preds ...predicate.Order) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ChildrenTable, ChildrenColumn),
-		)
+		step := newChildrenStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -1502,11 +1466,7 @@ func HasRefund() predicate.Order {
 // HasRefundWith applies the HasEdge predicate on the "refund" edge with a given conditions (other predicates).
 func HasRefundWith(preds ...predicate.OrderRefund) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(RefundInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, RefundTable, RefundColumn),
-		)
+		step := newRefundStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -1529,11 +1489,7 @@ func HasAssistance() predicate.Order {
 // HasAssistanceWith applies the HasEdge predicate on the "assistance" edge with a given conditions (other predicates).
 func HasAssistanceWith(preds ...predicate.Assistance) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(AssistanceInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, AssistanceTable, AssistanceColumn),
-		)
+		step := newAssistanceStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -1556,11 +1512,7 @@ func HasCoupons() predicate.Order {
 // HasCouponsWith applies the HasEdge predicate on the "coupons" edge with a given conditions (other predicates).
 func HasCouponsWith(preds ...predicate.Coupon) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CouponsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, CouponsTable, CouponsColumn),
-		)
+		step := newCouponsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

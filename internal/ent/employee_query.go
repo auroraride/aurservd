@@ -26,7 +26,7 @@ import (
 type EmployeeQuery struct {
 	config
 	ctx             *QueryContext
-	order           []OrderFunc
+	order           []employee.OrderOption
 	inters          []Interceptor
 	predicates      []predicate.Employee
 	withCity        *CityQuery
@@ -68,7 +68,7 @@ func (eq *EmployeeQuery) Unique(unique bool) *EmployeeQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (eq *EmployeeQuery) Order(o ...OrderFunc) *EmployeeQuery {
+func (eq *EmployeeQuery) Order(o ...employee.OrderOption) *EmployeeQuery {
 	eq.order = append(eq.order, o...)
 	return eq
 }
@@ -416,7 +416,7 @@ func (eq *EmployeeQuery) Clone() *EmployeeQuery {
 	return &EmployeeQuery{
 		config:          eq.config,
 		ctx:             eq.ctx.Clone(),
-		order:           append([]OrderFunc{}, eq.order...),
+		order:           append([]employee.OrderOption{}, eq.order...),
 		inters:          append([]Interceptor{}, eq.inters...),
 		predicates:      append([]predicate.Employee{}, eq.predicates...),
 		withCity:        eq.withCity.Clone(),
@@ -704,8 +704,11 @@ func (eq *EmployeeQuery) loadStore(ctx context.Context, query *StoreQuery, nodes
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(store.FieldEmployeeID)
+	}
 	query.Where(predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.InValues(employee.StoreColumn, fks...))
+		s.Where(sql.InValues(s.C(employee.StoreColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -718,7 +721,7 @@ func (eq *EmployeeQuery) loadStore(ctx context.Context, query *StoreQuery, nodes
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "employee_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "employee_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -734,8 +737,11 @@ func (eq *EmployeeQuery) loadAttendances(ctx context.Context, query *AttendanceQ
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(attendance.FieldEmployeeID)
+	}
 	query.Where(predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.InValues(employee.AttendancesColumn, fks...))
+		s.Where(sql.InValues(s.C(employee.AttendancesColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -745,7 +751,7 @@ func (eq *EmployeeQuery) loadAttendances(ctx context.Context, query *AttendanceQ
 		fk := n.EmployeeID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "employee_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "employee_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -762,8 +768,11 @@ func (eq *EmployeeQuery) loadStocks(ctx context.Context, query *StockQuery, node
 		}
 	}
 	query.withFKs = true
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(stock.FieldEmployeeID)
+	}
 	query.Where(predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.InValues(employee.StocksColumn, fks...))
+		s.Where(sql.InValues(s.C(employee.StocksColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -776,7 +785,7 @@ func (eq *EmployeeQuery) loadStocks(ctx context.Context, query *StockQuery, node
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "employee_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "employee_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -792,8 +801,11 @@ func (eq *EmployeeQuery) loadExchanges(ctx context.Context, query *ExchangeQuery
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(exchange.FieldEmployeeID)
+	}
 	query.Where(predicate.Exchange(func(s *sql.Selector) {
-		s.Where(sql.InValues(employee.ExchangesColumn, fks...))
+		s.Where(sql.InValues(s.C(employee.ExchangesColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -806,7 +818,7 @@ func (eq *EmployeeQuery) loadExchanges(ctx context.Context, query *ExchangeQuery
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "employee_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "employee_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -822,8 +834,11 @@ func (eq *EmployeeQuery) loadCommissions(ctx context.Context, query *CommissionQ
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(commission.FieldEmployeeID)
+	}
 	query.Where(predicate.Commission(func(s *sql.Selector) {
-		s.Where(sql.InValues(employee.CommissionsColumn, fks...))
+		s.Where(sql.InValues(s.C(employee.CommissionsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -836,7 +851,7 @@ func (eq *EmployeeQuery) loadCommissions(ctx context.Context, query *CommissionQ
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "employee_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "employee_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -852,8 +867,11 @@ func (eq *EmployeeQuery) loadAssistances(ctx context.Context, query *AssistanceQ
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(assistance.FieldEmployeeID)
+	}
 	query.Where(predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.InValues(employee.AssistancesColumn, fks...))
+		s.Where(sql.InValues(s.C(employee.AssistancesColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -866,7 +884,7 @@ func (eq *EmployeeQuery) loadAssistances(ctx context.Context, query *AssistanceQ
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "employee_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "employee_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -900,6 +918,9 @@ func (eq *EmployeeQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != employee.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if eq.withCity != nil {
+			_spec.Node.AddColumnOnce(employee.FieldCityID)
 		}
 	}
 	if ps := eq.predicates; len(ps) > 0 {

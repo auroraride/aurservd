@@ -131,7 +131,7 @@ func (ac *AgentCreate) Save(ctx context.Context) (*Agent, error) {
 	if err := ac.defaults(); err != nil {
 		return nil, err
 	}
-	return withHooks[*Agent, AgentMutation](ctx, ac.sqlSave, ac.mutation, ac.hooks)
+	return withHooks(ctx, ac.sqlSave, ac.mutation, ac.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -269,10 +269,7 @@ func (ac *AgentCreate) createSpec() (*Agent, *sqlgraph.CreateSpec) {
 			Columns: []string{agent.EnterpriseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: enterprise.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -686,8 +683,8 @@ func (acb *AgentCreateBulk) Save(ctx context.Context) ([]*Agent, error) {
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, acb.builders[i+1].mutation)
 				} else {

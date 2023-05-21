@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -49,7 +50,8 @@ type EnterpriseStatement struct {
 	End *time.Time `json:"end,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EnterpriseStatementQuery when eager-loading is set.
-	Edges EnterpriseStatementEdges `json:"edges"`
+	Edges        EnterpriseStatementEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // EnterpriseStatementEdges holds the relations/edges for other nodes in the graph.
@@ -101,7 +103,7 @@ func (*EnterpriseStatement) scanValues(columns []string) ([]any, error) {
 		case enterprisestatement.FieldCreatedAt, enterprisestatement.FieldUpdatedAt, enterprisestatement.FieldDeletedAt, enterprisestatement.FieldSettledAt, enterprisestatement.FieldDate, enterprisestatement.FieldStart, enterprisestatement.FieldEnd:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type EnterpriseStatement", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -213,9 +215,17 @@ func (es *EnterpriseStatement) assignValues(columns []string, values []any) erro
 				es.End = new(time.Time)
 				*es.End = value.Time
 			}
+		default:
+			es.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the EnterpriseStatement.
+// This includes values selected through modifiers, order, etc.
+func (es *EnterpriseStatement) Value(name string) (ent.Value, error) {
+	return es.selectValues.Get(name)
 }
 
 // QueryEnterprise queries the "enterprise" edge of the EnterpriseStatement entity.

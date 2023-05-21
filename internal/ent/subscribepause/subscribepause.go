@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 const (
@@ -208,3 +210,253 @@ var (
 	// DefaultSuspendDays holds the default value on creation for the "suspend_days" field.
 	DefaultSuspendDays int
 )
+
+// OrderOption defines the ordering options for the SubscribePause queries.
+type OrderOption func(*sql.Selector)
+
+// ByID orders the results by the id field.
+func ByID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByCreatedAt orders the results by the created_at field.
+func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
+}
+
+// ByUpdatedAt orders the results by the updated_at field.
+func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
+}
+
+// ByDeletedAt orders the results by the deleted_at field.
+func ByDeletedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDeletedAt, opts...).ToFunc()
+}
+
+// ByRemark orders the results by the remark field.
+func ByRemark(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRemark, opts...).ToFunc()
+}
+
+// ByRiderID orders the results by the rider_id field.
+func ByRiderID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRiderID, opts...).ToFunc()
+}
+
+// ByEmployeeID orders the results by the employee_id field.
+func ByEmployeeID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldEmployeeID, opts...).ToFunc()
+}
+
+// ByCityID orders the results by the city_id field.
+func ByCityID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCityID, opts...).ToFunc()
+}
+
+// ByStoreID orders the results by the store_id field.
+func ByStoreID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldStoreID, opts...).ToFunc()
+}
+
+// ByEndStoreID orders the results by the end_store_id field.
+func ByEndStoreID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldEndStoreID, opts...).ToFunc()
+}
+
+// ByCabinetID orders the results by the cabinet_id field.
+func ByCabinetID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCabinetID, opts...).ToFunc()
+}
+
+// ByEndCabinetID orders the results by the end_cabinet_id field.
+func ByEndCabinetID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldEndCabinetID, opts...).ToFunc()
+}
+
+// BySubscribeID orders the results by the subscribe_id field.
+func BySubscribeID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSubscribeID, opts...).ToFunc()
+}
+
+// ByStartAt orders the results by the start_at field.
+func ByStartAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldStartAt, opts...).ToFunc()
+}
+
+// ByEndAt orders the results by the end_at field.
+func ByEndAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldEndAt, opts...).ToFunc()
+}
+
+// ByDays orders the results by the days field.
+func ByDays(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDays, opts...).ToFunc()
+}
+
+// ByEndEmployeeID orders the results by the end_employee_id field.
+func ByEndEmployeeID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldEndEmployeeID, opts...).ToFunc()
+}
+
+// ByOverdueDays orders the results by the overdue_days field.
+func ByOverdueDays(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldOverdueDays, opts...).ToFunc()
+}
+
+// ByPauseOverdue orders the results by the pause_overdue field.
+func ByPauseOverdue(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPauseOverdue, opts...).ToFunc()
+}
+
+// BySuspendDays orders the results by the suspend_days field.
+func BySuspendDays(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSuspendDays, opts...).ToFunc()
+}
+
+// ByRiderField orders the results by rider field.
+func ByRiderField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRiderStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByEmployeeField orders the results by employee field.
+func ByEmployeeField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newEmployeeStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByCityField orders the results by city field.
+func ByCityField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCityStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByStoreField orders the results by store field.
+func ByStoreField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newStoreStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByEndStoreField orders the results by endStore field.
+func ByEndStoreField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newEndStoreStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByCabinetField orders the results by cabinet field.
+func ByCabinetField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCabinetStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByEndCabinetField orders the results by endCabinet field.
+func ByEndCabinetField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newEndCabinetStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// BySubscribeField orders the results by subscribe field.
+func BySubscribeField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newSubscribeStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByEndEmployeeField orders the results by end_employee field.
+func ByEndEmployeeField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newEndEmployeeStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// BySuspendsCount orders the results by suspends count.
+func BySuspendsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newSuspendsStep(), opts...)
+	}
+}
+
+// BySuspends orders the results by suspends terms.
+func BySuspends(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newSuspendsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+func newRiderStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(RiderInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, RiderTable, RiderColumn),
+	)
+}
+func newEmployeeStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(EmployeeInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, EmployeeTable, EmployeeColumn),
+	)
+}
+func newCityStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CityInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
+	)
+}
+func newStoreStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(StoreInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, StoreTable, StoreColumn),
+	)
+}
+func newEndStoreStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(EndStoreInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, EndStoreTable, EndStoreColumn),
+	)
+}
+func newCabinetStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CabinetInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, CabinetTable, CabinetColumn),
+	)
+}
+func newEndCabinetStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(EndCabinetInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, EndCabinetTable, EndCabinetColumn),
+	)
+}
+func newSubscribeStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(SubscribeInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, SubscribeTable, SubscribeColumn),
+	)
+}
+func newEndEmployeeStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(EndEmployeeInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, EndEmployeeTable, EndEmployeeColumn),
+	)
+}
+func newSuspendsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(SuspendsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, SuspendsTable, SuspendsColumn),
+	)
+}

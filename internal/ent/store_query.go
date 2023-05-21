@@ -25,7 +25,7 @@ import (
 type StoreQuery struct {
 	config
 	ctx             *QueryContext
-	order           []OrderFunc
+	order           []store.OrderOption
 	inters          []Interceptor
 	predicates      []predicate.Store
 	withCity        *CityQuery
@@ -66,7 +66,7 @@ func (sq *StoreQuery) Unique(unique bool) *StoreQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (sq *StoreQuery) Order(o ...OrderFunc) *StoreQuery {
+func (sq *StoreQuery) Order(o ...store.OrderOption) *StoreQuery {
 	sq.order = append(sq.order, o...)
 	return sq
 }
@@ -392,7 +392,7 @@ func (sq *StoreQuery) Clone() *StoreQuery {
 	return &StoreQuery{
 		config:          sq.config,
 		ctx:             sq.ctx.Clone(),
-		order:           append([]OrderFunc{}, sq.order...),
+		order:           append([]store.OrderOption{}, sq.order...),
 		inters:          append([]Interceptor{}, sq.inters...),
 		predicates:      append([]predicate.Store{}, sq.predicates...),
 		withCity:        sq.withCity.Clone(),
@@ -724,8 +724,11 @@ func (sq *StoreQuery) loadStocks(ctx context.Context, query *StockQuery, nodes [
 		}
 	}
 	query.withFKs = true
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(stock.FieldStoreID)
+	}
 	query.Where(predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.InValues(store.StocksColumn, fks...))
+		s.Where(sql.InValues(s.C(store.StocksColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -738,7 +741,7 @@ func (sq *StoreQuery) loadStocks(ctx context.Context, query *StockQuery, nodes [
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "store_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "store_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -754,8 +757,11 @@ func (sq *StoreQuery) loadAttendances(ctx context.Context, query *AttendanceQuer
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(attendance.FieldStoreID)
+	}
 	query.Where(predicate.Attendance(func(s *sql.Selector) {
-		s.Where(sql.InValues(store.AttendancesColumn, fks...))
+		s.Where(sql.InValues(s.C(store.AttendancesColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -765,7 +771,7 @@ func (sq *StoreQuery) loadAttendances(ctx context.Context, query *AttendanceQuer
 		fk := n.StoreID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "store_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "store_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -781,8 +787,11 @@ func (sq *StoreQuery) loadExceptions(ctx context.Context, query *ExceptionQuery,
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(exception.FieldStoreID)
+	}
 	query.Where(predicate.Exception(func(s *sql.Selector) {
-		s.Where(sql.InValues(store.ExceptionsColumn, fks...))
+		s.Where(sql.InValues(s.C(store.ExceptionsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -792,7 +801,7 @@ func (sq *StoreQuery) loadExceptions(ctx context.Context, query *ExceptionQuery,
 		fk := n.StoreID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "store_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "store_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -826,6 +835,15 @@ func (sq *StoreQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != store.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if sq.withCity != nil {
+			_spec.Node.AddColumnOnce(store.FieldCityID)
+		}
+		if sq.withBranch != nil {
+			_spec.Node.AddColumnOnce(store.FieldBranchID)
+		}
+		if sq.withEmployee != nil {
+			_spec.Node.AddColumnOnce(store.FieldEmployeeID)
 		}
 	}
 	if ps := sq.predicates; len(ps) > 0 {

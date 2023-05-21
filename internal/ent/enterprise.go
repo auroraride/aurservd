@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -65,7 +66,8 @@ type Enterprise struct {
 	Days []int `json:"days,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EnterpriseQuery when eager-loading is set.
-	Edges EnterpriseEdges `json:"edges"`
+	Edges        EnterpriseEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // EnterpriseEdges holds the relations/edges for other nodes in the graph.
@@ -185,7 +187,7 @@ func (*Enterprise) scanValues(columns []string) ([]any, error) {
 		case enterprise.FieldCreatedAt, enterprise.FieldUpdatedAt, enterprise.FieldDeletedAt, enterprise.FieldSuspensedAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Enterprise", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -345,9 +347,17 @@ func (e *Enterprise) assignValues(columns []string, values []any) error {
 					return fmt.Errorf("unmarshal field days: %w", err)
 				}
 			}
+		default:
+			e.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the Enterprise.
+// This includes values selected through modifiers, order, etc.
+func (e *Enterprise) Value(name string) (ent.Value, error) {
+	return e.selectValues.Get(name)
 }
 
 // QueryCity queries the "city" edge of the Enterprise entity.

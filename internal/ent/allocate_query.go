@@ -27,7 +27,7 @@ import (
 type AllocateQuery struct {
 	config
 	ctx           *QueryContext
-	order         []OrderFunc
+	order         []allocate.OrderOption
 	inters        []Interceptor
 	predicates    []predicate.Allocate
 	withRider     *RiderQuery
@@ -70,7 +70,7 @@ func (aq *AllocateQuery) Unique(unique bool) *AllocateQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (aq *AllocateQuery) Order(o ...OrderFunc) *AllocateQuery {
+func (aq *AllocateQuery) Order(o ...allocate.OrderOption) *AllocateQuery {
 	aq.order = append(aq.order, o...)
 	return aq
 }
@@ -440,7 +440,7 @@ func (aq *AllocateQuery) Clone() *AllocateQuery {
 	return &AllocateQuery{
 		config:        aq.config,
 		ctx:           aq.ctx.Clone(),
-		order:         append([]OrderFunc{}, aq.order...),
+		order:         append([]allocate.OrderOption{}, aq.order...),
 		inters:        append([]Interceptor{}, aq.inters...),
 		predicates:    append([]predicate.Allocate{}, aq.predicates...),
 		withRider:     aq.withRider.Clone(),
@@ -931,8 +931,11 @@ func (aq *AllocateQuery) loadContract(ctx context.Context, query *ContractQuery,
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(contract.FieldAllocateID)
+	}
 	query.Where(predicate.Contract(func(s *sql.Selector) {
-		s.Where(sql.InValues(allocate.ContractColumn, fks...))
+		s.Where(sql.InValues(s.C(allocate.ContractColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -945,7 +948,7 @@ func (aq *AllocateQuery) loadContract(ctx context.Context, query *ContractQuery,
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "allocate_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "allocate_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -979,6 +982,27 @@ func (aq *AllocateQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != allocate.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if aq.withRider != nil {
+			_spec.Node.AddColumnOnce(allocate.FieldRiderID)
+		}
+		if aq.withSubscribe != nil {
+			_spec.Node.AddColumnOnce(allocate.FieldSubscribeID)
+		}
+		if aq.withEmployee != nil {
+			_spec.Node.AddColumnOnce(allocate.FieldEmployeeID)
+		}
+		if aq.withCabinet != nil {
+			_spec.Node.AddColumnOnce(allocate.FieldCabinetID)
+		}
+		if aq.withStore != nil {
+			_spec.Node.AddColumnOnce(allocate.FieldStoreID)
+		}
+		if aq.withEbike != nil {
+			_spec.Node.AddColumnOnce(allocate.FieldEbikeID)
+		}
+		if aq.withBrand != nil {
+			_spec.Node.AddColumnOnce(allocate.FieldBrandID)
 		}
 	}
 	if ps := aq.predicates; len(ps) > 0 {

@@ -8,14 +8,16 @@ package internal
 import (
 	"fmt"
 	"log"
+	"reflect"
 	"strings"
 
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/entc"
 	"entgo.io/ent/entc/gen"
 	"entgo.io/ent/schema/field"
-	"github.com/auroraride/aurservd/pkg/utils"
 	"github.com/spf13/cobra"
+
+	"github.com/auroraride/aurservd/pkg/utils"
 )
 
 func init() {
@@ -135,6 +137,9 @@ func GenerateCmd(postRun ...func(*gen.Config)) *cobra.Command {
 				// cfg.Hooks = []gen.Hook{
 				//     SingularTableName(),
 				// }
+				// cfg.Hooks = []gen.Hook{
+				// 	EnsureStructTag("json"),
+				// }
 				if err := entc.Generate(p, &cfg, opts...); err != nil {
 					log.Fatalln(err)
 				}
@@ -168,6 +173,23 @@ func SingularTableName() gen.Hook {
 					n.Annotations[ant.Name()] = ant
 				}
 				ant.Table = utils.StrToSnakeCase(n.Name)
+			}
+			return next.Generate(g)
+		})
+	}
+}
+
+// EnsureStructTag ensures all fields in the graph have a specific tag name.
+func EnsureStructTag(name string) gen.Hook {
+	return func(next gen.Generator) gen.Generator {
+		return gen.GenerateFunc(func(g *gen.Graph) error {
+			for _, node := range g.Nodes {
+				for _, f := range node.Fields {
+					tag := reflect.StructTag(f.StructTag)
+					if _, ok := tag.Lookup(name); !ok {
+						return fmt.Errorf("struct tag %q is missing for field %s.%s", name, node.Name, f.Name)
+					}
+				}
 			}
 			return next.Generate(g)
 		})

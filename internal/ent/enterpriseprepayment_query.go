@@ -19,7 +19,7 @@ import (
 type EnterprisePrepaymentQuery struct {
 	config
 	ctx            *QueryContext
-	order          []OrderFunc
+	order          []enterpriseprepayment.OrderOption
 	inters         []Interceptor
 	predicates     []predicate.EnterprisePrepayment
 	withEnterprise *EnterpriseQuery
@@ -55,7 +55,7 @@ func (epq *EnterprisePrepaymentQuery) Unique(unique bool) *EnterprisePrepaymentQ
 }
 
 // Order specifies how the records should be ordered.
-func (epq *EnterprisePrepaymentQuery) Order(o ...OrderFunc) *EnterprisePrepaymentQuery {
+func (epq *EnterprisePrepaymentQuery) Order(o ...enterpriseprepayment.OrderOption) *EnterprisePrepaymentQuery {
 	epq.order = append(epq.order, o...)
 	return epq
 }
@@ -271,7 +271,7 @@ func (epq *EnterprisePrepaymentQuery) Clone() *EnterprisePrepaymentQuery {
 	return &EnterprisePrepaymentQuery{
 		config:         epq.config,
 		ctx:            epq.ctx.Clone(),
-		order:          append([]OrderFunc{}, epq.order...),
+		order:          append([]enterpriseprepayment.OrderOption{}, epq.order...),
 		inters:         append([]Interceptor{}, epq.inters...),
 		predicates:     append([]predicate.EnterprisePrepayment{}, epq.predicates...),
 		withEnterprise: epq.withEnterprise.Clone(),
@@ -461,6 +461,9 @@ func (epq *EnterprisePrepaymentQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != enterpriseprepayment.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if epq.withEnterprise != nil {
+			_spec.Node.AddColumnOnce(enterpriseprepayment.FieldEnterpriseID)
 		}
 	}
 	if ps := epq.predicates; len(ps) > 0 {

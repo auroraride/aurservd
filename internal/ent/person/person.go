@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 const (
@@ -122,3 +124,112 @@ var (
 	// DefaultIDCardType holds the default value on creation for the "id_card_type" field.
 	DefaultIDCardType uint8
 )
+
+// OrderOption defines the ordering options for the Person queries.
+type OrderOption func(*sql.Selector)
+
+// ByID orders the results by the id field.
+func ByID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByCreatedAt orders the results by the created_at field.
+func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
+}
+
+// ByUpdatedAt orders the results by the updated_at field.
+func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
+}
+
+// ByDeletedAt orders the results by the deleted_at field.
+func ByDeletedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDeletedAt, opts...).ToFunc()
+}
+
+// ByRemark orders the results by the remark field.
+func ByRemark(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRemark, opts...).ToFunc()
+}
+
+// ByStatus orders the results by the status field.
+func ByStatus(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldStatus, opts...).ToFunc()
+}
+
+// ByBanned orders the results by the banned field.
+func ByBanned(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBanned, opts...).ToFunc()
+}
+
+// ByName orders the results by the name field.
+func ByName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldName, opts...).ToFunc()
+}
+
+// ByIDCardNumber orders the results by the id_card_number field.
+func ByIDCardNumber(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIDCardNumber, opts...).ToFunc()
+}
+
+// ByIDCardType orders the results by the id_card_type field.
+func ByIDCardType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIDCardType, opts...).ToFunc()
+}
+
+// ByIDCardPortrait orders the results by the id_card_portrait field.
+func ByIDCardPortrait(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIDCardPortrait, opts...).ToFunc()
+}
+
+// ByIDCardNational orders the results by the id_card_national field.
+func ByIDCardNational(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIDCardNational, opts...).ToFunc()
+}
+
+// ByAuthFace orders the results by the auth_face field.
+func ByAuthFace(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAuthFace, opts...).ToFunc()
+}
+
+// ByAuthAt orders the results by the auth_at field.
+func ByAuthAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAuthAt, opts...).ToFunc()
+}
+
+// ByEsignAccountID orders the results by the esign_account_id field.
+func ByEsignAccountID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldEsignAccountID, opts...).ToFunc()
+}
+
+// ByBaiduVerifyToken orders the results by the baidu_verify_token field.
+func ByBaiduVerifyToken(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBaiduVerifyToken, opts...).ToFunc()
+}
+
+// ByBaiduLogID orders the results by the baidu_log_id field.
+func ByBaiduLogID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBaiduLogID, opts...).ToFunc()
+}
+
+// ByRiderCount orders the results by rider count.
+func ByRiderCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newRiderStep(), opts...)
+	}
+}
+
+// ByRider orders the results by rider terms.
+func ByRider(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRiderStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+func newRiderStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(RiderInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, RiderTable, RiderColumn),
+	)
+}

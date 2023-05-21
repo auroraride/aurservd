@@ -164,7 +164,7 @@ func (src *SubscribeReminderCreate) Mutation() *SubscribeReminderMutation {
 // Save creates the SubscribeReminder in the database.
 func (src *SubscribeReminderCreate) Save(ctx context.Context) (*SubscribeReminder, error) {
 	src.defaults()
-	return withHooks[*SubscribeReminder, SubscribeReminderMutation](ctx, src.sqlSave, src.mutation, src.hooks)
+	return withHooks(ctx, src.sqlSave, src.mutation, src.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -339,10 +339,7 @@ func (src *SubscribeReminderCreate) createSpec() (*SubscribeReminder, *sqlgraph.
 			Columns: []string{subscribereminder.SubscribeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: subscribe.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -359,10 +356,7 @@ func (src *SubscribeReminderCreate) createSpec() (*SubscribeReminder, *sqlgraph.
 			Columns: []string{subscribereminder.PlanColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: plan.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -379,10 +373,7 @@ func (src *SubscribeReminderCreate) createSpec() (*SubscribeReminder, *sqlgraph.
 			Columns: []string{subscribereminder.RiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -923,8 +914,8 @@ func (srcb *SubscribeReminderCreateBulk) Save(ctx context.Context) ([]*Subscribe
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, srcb.builders[i+1].mutation)
 				} else {

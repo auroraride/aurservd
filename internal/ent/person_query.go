@@ -20,7 +20,7 @@ import (
 type PersonQuery struct {
 	config
 	ctx        *QueryContext
-	order      []OrderFunc
+	order      []person.OrderOption
 	inters     []Interceptor
 	predicates []predicate.Person
 	withRider  *RiderQuery
@@ -56,7 +56,7 @@ func (pq *PersonQuery) Unique(unique bool) *PersonQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (pq *PersonQuery) Order(o ...OrderFunc) *PersonQuery {
+func (pq *PersonQuery) Order(o ...person.OrderOption) *PersonQuery {
 	pq.order = append(pq.order, o...)
 	return pq
 }
@@ -272,7 +272,7 @@ func (pq *PersonQuery) Clone() *PersonQuery {
 	return &PersonQuery{
 		config:     pq.config,
 		ctx:        pq.ctx.Clone(),
-		order:      append([]OrderFunc{}, pq.order...),
+		order:      append([]person.OrderOption{}, pq.order...),
 		inters:     append([]Interceptor{}, pq.inters...),
 		predicates: append([]predicate.Person{}, pq.predicates...),
 		withRider:  pq.withRider.Clone(),
@@ -416,8 +416,11 @@ func (pq *PersonQuery) loadRider(ctx context.Context, query *RiderQuery, nodes [
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(rider.FieldPersonID)
+	}
 	query.Where(predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.InValues(person.RiderColumn, fks...))
+		s.Where(sql.InValues(s.C(person.RiderColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -430,7 +433,7 @@ func (pq *PersonQuery) loadRider(ctx context.Context, query *RiderQuery, nodes [
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "person_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "person_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

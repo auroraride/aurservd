@@ -1104,11 +1104,7 @@ func HasStation() predicate.Rider {
 // HasStationWith applies the HasEdge predicate on the "station" edge with a given conditions (other predicates).
 func HasStationWith(preds ...predicate.EnterpriseStation) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(StationInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, StationTable, StationColumn),
-		)
+		step := newStationStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -1131,11 +1127,7 @@ func HasPerson() predicate.Rider {
 // HasPersonWith applies the HasEdge predicate on the "person" edge with a given conditions (other predicates).
 func HasPersonWith(preds ...predicate.Person) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(PersonInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, PersonTable, PersonColumn),
-		)
+		step := newPersonStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -1158,11 +1150,7 @@ func HasEnterprise() predicate.Rider {
 // HasEnterpriseWith applies the HasEdge predicate on the "enterprise" edge with a given conditions (other predicates).
 func HasEnterpriseWith(preds ...predicate.Enterprise) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(EnterpriseInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, EnterpriseTable, EnterpriseColumn),
-		)
+		step := newEnterpriseStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -1185,11 +1173,7 @@ func HasContracts() predicate.Rider {
 // HasContractsWith applies the HasEdge predicate on the "contracts" edge with a given conditions (other predicates).
 func HasContractsWith(preds ...predicate.Contract) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ContractsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ContractsTable, ContractsColumn),
-		)
+		step := newContractsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -1212,11 +1196,7 @@ func HasFaults() predicate.Rider {
 // HasFaultsWith applies the HasEdge predicate on the "faults" edge with a given conditions (other predicates).
 func HasFaultsWith(preds ...predicate.CabinetFault) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(FaultsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, FaultsTable, FaultsColumn),
-		)
+		step := newFaultsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -1239,11 +1219,7 @@ func HasOrders() predicate.Rider {
 // HasOrdersWith applies the HasEdge predicate on the "orders" edge with a given conditions (other predicates).
 func HasOrdersWith(preds ...predicate.Order) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(OrdersInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, OrdersTable, OrdersColumn),
-		)
+		step := newOrdersStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -1266,11 +1242,7 @@ func HasExchanges() predicate.Rider {
 // HasExchangesWith applies the HasEdge predicate on the "exchanges" edge with a given conditions (other predicates).
 func HasExchangesWith(preds ...predicate.Exchange) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ExchangesInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ExchangesTable, ExchangesColumn),
-		)
+		step := newExchangesStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -1293,11 +1265,7 @@ func HasSubscribes() predicate.Rider {
 // HasSubscribesWith applies the HasEdge predicate on the "subscribes" edge with a given conditions (other predicates).
 func HasSubscribesWith(preds ...predicate.Subscribe) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(SubscribesInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, SubscribesTable, SubscribesColumn),
-		)
+		step := newSubscribesStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -1320,11 +1288,7 @@ func HasStocks() predicate.Rider {
 // HasStocksWith applies the HasEdge predicate on the "stocks" edge with a given conditions (other predicates).
 func HasStocksWith(preds ...predicate.Stock) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(StocksInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, StocksTable, StocksColumn),
-		)
+		step := newStocksStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -1347,11 +1311,7 @@ func HasFollowups() predicate.Rider {
 // HasFollowupsWith applies the HasEdge predicate on the "followups" edge with a given conditions (other predicates).
 func HasFollowupsWith(preds ...predicate.RiderFollowUp) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(FollowupsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, FollowupsTable, FollowupsColumn),
-		)
+		step := newFollowupsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -1374,11 +1334,7 @@ func HasBattery() predicate.Rider {
 // HasBatteryWith applies the HasEdge predicate on the "battery" edge with a given conditions (other predicates).
 func HasBatteryWith(preds ...predicate.Battery) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(BatteryInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, BatteryTable, BatteryColumn),
-		)
+		step := newBatteryStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -1401,11 +1357,7 @@ func HasBatteryFlows() predicate.Rider {
 // HasBatteryFlowsWith applies the HasEdge predicate on the "battery_flows" edge with a given conditions (other predicates).
 func HasBatteryFlowsWith(preds ...predicate.BatteryFlow) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(BatteryFlowsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, BatteryFlowsTable, BatteryFlowsColumn),
-		)
+		step := newBatteryFlowsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

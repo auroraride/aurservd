@@ -4,6 +4,9 @@ package role
 
 import (
 	"time"
+
+	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 const (
@@ -62,3 +65,52 @@ var (
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 )
+
+// OrderOption defines the ordering options for the Role queries.
+type OrderOption func(*sql.Selector)
+
+// ByID orders the results by the id field.
+func ByID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByName orders the results by the name field.
+func ByName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldName, opts...).ToFunc()
+}
+
+// ByBuildin orders the results by the buildin field.
+func ByBuildin(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBuildin, opts...).ToFunc()
+}
+
+// BySuper orders the results by the super field.
+func BySuper(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSuper, opts...).ToFunc()
+}
+
+// ByCreatedAt orders the results by the created_at field.
+func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
+}
+
+// ByManagersCount orders the results by managers count.
+func ByManagersCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newManagersStep(), opts...)
+	}
+}
+
+// ByManagers orders the results by managers terms.
+func ByManagers(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newManagersStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+func newManagersStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ManagersInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, ManagersTable, ManagersColumn),
+	)
+}

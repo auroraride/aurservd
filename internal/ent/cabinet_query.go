@@ -27,7 +27,7 @@ import (
 type CabinetQuery struct {
 	config
 	ctx              *QueryContext
-	order            []OrderFunc
+	order            []cabinet.OrderOption
 	inters           []Interceptor
 	predicates       []predicate.Cabinet
 	withCity         *CityQuery
@@ -70,7 +70,7 @@ func (cq *CabinetQuery) Unique(unique bool) *CabinetQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (cq *CabinetQuery) Order(o ...OrderFunc) *CabinetQuery {
+func (cq *CabinetQuery) Order(o ...cabinet.OrderOption) *CabinetQuery {
 	cq.order = append(cq.order, o...)
 	return cq
 }
@@ -440,7 +440,7 @@ func (cq *CabinetQuery) Clone() *CabinetQuery {
 	return &CabinetQuery{
 		config:           cq.config,
 		ctx:              cq.ctx.Clone(),
-		order:            append([]OrderFunc{}, cq.order...),
+		order:            append([]cabinet.OrderOption{}, cq.order...),
 		inters:           append([]Interceptor{}, cq.inters...),
 		predicates:       append([]predicate.Cabinet{}, cq.predicates...),
 		withCity:         cq.withCity.Clone(),
@@ -847,8 +847,11 @@ func (cq *CabinetQuery) loadFaults(ctx context.Context, query *CabinetFaultQuery
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(cabinetfault.FieldCabinetID)
+	}
 	query.Where(predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.InValues(cabinet.FaultsColumn, fks...))
+		s.Where(sql.InValues(s.C(cabinet.FaultsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -858,7 +861,7 @@ func (cq *CabinetQuery) loadFaults(ctx context.Context, query *CabinetFaultQuery
 		fk := n.CabinetID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "cabinet_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "cabinet_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -874,8 +877,11 @@ func (cq *CabinetQuery) loadExchanges(ctx context.Context, query *ExchangeQuery,
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(exchange.FieldCabinetID)
+	}
 	query.Where(predicate.Exchange(func(s *sql.Selector) {
-		s.Where(sql.InValues(cabinet.ExchangesColumn, fks...))
+		s.Where(sql.InValues(s.C(cabinet.ExchangesColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -885,7 +891,7 @@ func (cq *CabinetQuery) loadExchanges(ctx context.Context, query *ExchangeQuery,
 		fk := n.CabinetID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "cabinet_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "cabinet_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -902,8 +908,11 @@ func (cq *CabinetQuery) loadStocks(ctx context.Context, query *StockQuery, nodes
 		}
 	}
 	query.withFKs = true
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(stock.FieldCabinetID)
+	}
 	query.Where(predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.InValues(cabinet.StocksColumn, fks...))
+		s.Where(sql.InValues(s.C(cabinet.StocksColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -916,7 +925,7 @@ func (cq *CabinetQuery) loadStocks(ctx context.Context, query *StockQuery, nodes
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "cabinet_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "cabinet_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -932,8 +941,11 @@ func (cq *CabinetQuery) loadBatteries(ctx context.Context, query *BatteryQuery, 
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(battery.FieldCabinetID)
+	}
 	query.Where(predicate.Battery(func(s *sql.Selector) {
-		s.Where(sql.InValues(cabinet.BatteriesColumn, fks...))
+		s.Where(sql.InValues(s.C(cabinet.BatteriesColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -946,7 +958,7 @@ func (cq *CabinetQuery) loadBatteries(ctx context.Context, query *BatteryQuery, 
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "cabinet_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "cabinet_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -962,8 +974,11 @@ func (cq *CabinetQuery) loadBatteryFlows(ctx context.Context, query *BatteryFlow
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(batteryflow.FieldCabinetID)
+	}
 	query.Where(predicate.BatteryFlow(func(s *sql.Selector) {
-		s.Where(sql.InValues(cabinet.BatteryFlowsColumn, fks...))
+		s.Where(sql.InValues(s.C(cabinet.BatteryFlowsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -973,7 +988,7 @@ func (cq *CabinetQuery) loadBatteryFlows(ctx context.Context, query *BatteryFlow
 		fk := n.CabinetID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "cabinet_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "cabinet_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -1007,6 +1022,12 @@ func (cq *CabinetQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != cabinet.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if cq.withCity != nil {
+			_spec.Node.AddColumnOnce(cabinet.FieldCityID)
+		}
+		if cq.withBranch != nil {
+			_spec.Node.AddColumnOnce(cabinet.FieldBranchID)
 		}
 	}
 	if ps := cq.predicates; len(ps) > 0 {

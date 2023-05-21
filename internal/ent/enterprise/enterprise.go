@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 const (
@@ -194,3 +196,267 @@ var (
 	// DefaultUseStore holds the default value on creation for the "use_store" field.
 	DefaultUseStore bool
 )
+
+// OrderOption defines the ordering options for the Enterprise queries.
+type OrderOption func(*sql.Selector)
+
+// ByID orders the results by the id field.
+func ByID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByCreatedAt orders the results by the created_at field.
+func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
+}
+
+// ByUpdatedAt orders the results by the updated_at field.
+func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
+}
+
+// ByDeletedAt orders the results by the deleted_at field.
+func ByDeletedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDeletedAt, opts...).ToFunc()
+}
+
+// ByRemark orders the results by the remark field.
+func ByRemark(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRemark, opts...).ToFunc()
+}
+
+// ByCityID orders the results by the city_id field.
+func ByCityID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCityID, opts...).ToFunc()
+}
+
+// ByName orders the results by the name field.
+func ByName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldName, opts...).ToFunc()
+}
+
+// ByCompanyName orders the results by the company_name field.
+func ByCompanyName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCompanyName, opts...).ToFunc()
+}
+
+// ByStatus orders the results by the status field.
+func ByStatus(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldStatus, opts...).ToFunc()
+}
+
+// ByContactName orders the results by the contact_name field.
+func ByContactName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldContactName, opts...).ToFunc()
+}
+
+// ByContactPhone orders the results by the contact_phone field.
+func ByContactPhone(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldContactPhone, opts...).ToFunc()
+}
+
+// ByIdcardNumber orders the results by the idcard_number field.
+func ByIdcardNumber(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIdcardNumber, opts...).ToFunc()
+}
+
+// ByAddress orders the results by the address field.
+func ByAddress(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAddress, opts...).ToFunc()
+}
+
+// ByPayment orders the results by the payment field.
+func ByPayment(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPayment, opts...).ToFunc()
+}
+
+// ByDeposit orders the results by the deposit field.
+func ByDeposit(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDeposit, opts...).ToFunc()
+}
+
+// ByBalance orders the results by the balance field.
+func ByBalance(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBalance, opts...).ToFunc()
+}
+
+// ByPrepaymentTotal orders the results by the prepayment_total field.
+func ByPrepaymentTotal(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPrepaymentTotal, opts...).ToFunc()
+}
+
+// BySuspensedAt orders the results by the suspensed_at field.
+func BySuspensedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSuspensedAt, opts...).ToFunc()
+}
+
+// ByAgent orders the results by the agent field.
+func ByAgent(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAgent, opts...).ToFunc()
+}
+
+// ByUseStore orders the results by the use_store field.
+func ByUseStore(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUseStore, opts...).ToFunc()
+}
+
+// ByCityField orders the results by city field.
+func ByCityField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCityStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByRidersCount orders the results by riders count.
+func ByRidersCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newRidersStep(), opts...)
+	}
+}
+
+// ByRiders orders the results by riders terms.
+func ByRiders(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRidersStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByContractsCount orders the results by contracts count.
+func ByContractsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newContractsStep(), opts...)
+	}
+}
+
+// ByContracts orders the results by contracts terms.
+func ByContracts(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newContractsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByPricesCount orders the results by prices count.
+func ByPricesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newPricesStep(), opts...)
+	}
+}
+
+// ByPrices orders the results by prices terms.
+func ByPrices(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newPricesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// BySubscribesCount orders the results by subscribes count.
+func BySubscribesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newSubscribesStep(), opts...)
+	}
+}
+
+// BySubscribes orders the results by subscribes terms.
+func BySubscribes(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newSubscribesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByStatementsCount orders the results by statements count.
+func ByStatementsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newStatementsStep(), opts...)
+	}
+}
+
+// ByStatements orders the results by statements terms.
+func ByStatements(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newStatementsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByStationsCount orders the results by stations count.
+func ByStationsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newStationsStep(), opts...)
+	}
+}
+
+// ByStations orders the results by stations terms.
+func ByStations(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newStationsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByBillsCount orders the results by bills count.
+func ByBillsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newBillsStep(), opts...)
+	}
+}
+
+// ByBills orders the results by bills terms.
+func ByBills(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newBillsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+func newCityStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CityInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
+	)
+}
+func newRidersStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(RidersInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, RidersTable, RidersColumn),
+	)
+}
+func newContractsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ContractsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, ContractsTable, ContractsColumn),
+	)
+}
+func newPricesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(PricesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, PricesTable, PricesColumn),
+	)
+}
+func newSubscribesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(SubscribesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, SubscribesTable, SubscribesColumn),
+	)
+}
+func newStatementsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(StatementsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, StatementsTable, StatementsColumn),
+	)
+}
+func newStationsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(StationsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, StationsTable, StationsColumn),
+	)
+}
+func newBillsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(BillsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, BillsTable, BillsColumn),
+	)
+}

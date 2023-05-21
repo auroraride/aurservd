@@ -28,7 +28,7 @@ import (
 type StockQuery struct {
 	config
 	ctx           *QueryContext
-	order         []OrderFunc
+	order         []stock.OrderOption
 	inters        []Interceptor
 	predicates    []predicate.Stock
 	withCity      *CityQuery
@@ -76,7 +76,7 @@ func (sq *StockQuery) Unique(unique bool) *StockQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (sq *StockQuery) Order(o ...OrderFunc) *StockQuery {
+func (sq *StockQuery) Order(o ...stock.OrderOption) *StockQuery {
 	sq.order = append(sq.order, o...)
 	return sq
 }
@@ -534,7 +534,7 @@ func (sq *StockQuery) Clone() *StockQuery {
 	return &StockQuery{
 		config:        sq.config,
 		ctx:           sq.ctx.Clone(),
-		order:         append([]OrderFunc{}, sq.order...),
+		order:         append([]stock.OrderOption{}, sq.order...),
 		inters:        append([]Interceptor{}, sq.inters...),
 		predicates:    append([]predicate.Stock{}, sq.predicates...),
 		withCity:      sq.withCity.Clone(),
@@ -781,7 +781,7 @@ func (sq *StockQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Stock,
 			sq.withChildren != nil,
 		}
 	)
-	if sq.withCity != nil || sq.withSubscribe != nil || sq.withEbike != nil || sq.withBrand != nil || sq.withBattery != nil || sq.withStore != nil || sq.withCabinet != nil || sq.withRider != nil || sq.withEmployee != nil || sq.withSpouse != nil || sq.withParent != nil {
+	if sq.withSpouse != nil {
 		withFKs = true
 	}
 	if withFKs {
@@ -1247,8 +1247,11 @@ func (sq *StockQuery) loadChildren(ctx context.Context, query *StockQuery, nodes
 		}
 	}
 	query.withFKs = true
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(stock.FieldParentID)
+	}
 	query.Where(predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.InValues(stock.ChildrenColumn, fks...))
+		s.Where(sql.InValues(s.C(stock.ChildrenColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1261,7 +1264,7 @@ func (sq *StockQuery) loadChildren(ctx context.Context, query *StockQuery, nodes
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "parent_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "parent_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -1295,6 +1298,36 @@ func (sq *StockQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != stock.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if sq.withCity != nil {
+			_spec.Node.AddColumnOnce(stock.FieldCityID)
+		}
+		if sq.withSubscribe != nil {
+			_spec.Node.AddColumnOnce(stock.FieldSubscribeID)
+		}
+		if sq.withEbike != nil {
+			_spec.Node.AddColumnOnce(stock.FieldEbikeID)
+		}
+		if sq.withBrand != nil {
+			_spec.Node.AddColumnOnce(stock.FieldBrandID)
+		}
+		if sq.withBattery != nil {
+			_spec.Node.AddColumnOnce(stock.FieldBatteryID)
+		}
+		if sq.withStore != nil {
+			_spec.Node.AddColumnOnce(stock.FieldStoreID)
+		}
+		if sq.withCabinet != nil {
+			_spec.Node.AddColumnOnce(stock.FieldCabinetID)
+		}
+		if sq.withRider != nil {
+			_spec.Node.AddColumnOnce(stock.FieldRiderID)
+		}
+		if sq.withEmployee != nil {
+			_spec.Node.AddColumnOnce(stock.FieldEmployeeID)
+		}
+		if sq.withParent != nil {
+			_spec.Node.AddColumnOnce(stock.FieldParentID)
 		}
 	}
 	if ps := sq.predicates; len(ps) > 0 {

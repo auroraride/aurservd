@@ -1024,11 +1024,7 @@ func HasBrand() predicate.Plan {
 // HasBrandWith applies the HasEdge predicate on the "brand" edge with a given conditions (other predicates).
 func HasBrandWith(preds ...predicate.EbikeBrand) predicate.Plan {
 	return predicate.Plan(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(BrandInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, BrandTable, BrandColumn),
-		)
+		step := newBrandStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -1051,11 +1047,7 @@ func HasCities() predicate.Plan {
 // HasCitiesWith applies the HasEdge predicate on the "cities" edge with a given conditions (other predicates).
 func HasCitiesWith(preds ...predicate.City) predicate.Plan {
 	return predicate.Plan(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CitiesInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, CitiesTable, CitiesPrimaryKey...),
-		)
+		step := newCitiesStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -1078,11 +1070,7 @@ func HasParent() predicate.Plan {
 // HasParentWith applies the HasEdge predicate on the "parent" edge with a given conditions (other predicates).
 func HasParentWith(preds ...predicate.Plan) predicate.Plan {
 	return predicate.Plan(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, ParentTable, ParentColumn),
-		)
+		step := newParentStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -1105,11 +1093,7 @@ func HasComplexes() predicate.Plan {
 // HasComplexesWith applies the HasEdge predicate on the "complexes" edge with a given conditions (other predicates).
 func HasComplexesWith(preds ...predicate.Plan) predicate.Plan {
 	return predicate.Plan(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ComplexesTable, ComplexesColumn),
-		)
+		step := newComplexesStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

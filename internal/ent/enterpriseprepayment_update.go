@@ -116,7 +116,7 @@ func (epu *EnterprisePrepaymentUpdate) Save(ctx context.Context) (int, error) {
 	if err := epu.defaults(); err != nil {
 		return 0, err
 	}
-	return withHooks[int, EnterprisePrepaymentMutation](ctx, epu.sqlSave, epu.mutation, epu.hooks)
+	return withHooks(ctx, epu.sqlSave, epu.mutation, epu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -211,10 +211,7 @@ func (epu *EnterprisePrepaymentUpdate) sqlSave(ctx context.Context) (n int, err 
 			Columns: []string{enterpriseprepayment.EnterpriseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: enterprise.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -227,10 +224,7 @@ func (epu *EnterprisePrepaymentUpdate) sqlSave(ctx context.Context) (n int, err 
 			Columns: []string{enterpriseprepayment.EnterpriseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: enterprise.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -358,7 +352,7 @@ func (epuo *EnterprisePrepaymentUpdateOne) Save(ctx context.Context) (*Enterpris
 	if err := epuo.defaults(); err != nil {
 		return nil, err
 	}
-	return withHooks[*EnterprisePrepayment, EnterprisePrepaymentMutation](ctx, epuo.sqlSave, epuo.mutation, epuo.hooks)
+	return withHooks(ctx, epuo.sqlSave, epuo.mutation, epuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -470,10 +464,7 @@ func (epuo *EnterprisePrepaymentUpdateOne) sqlSave(ctx context.Context) (_node *
 			Columns: []string{enterpriseprepayment.EnterpriseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: enterprise.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -486,10 +477,7 @@ func (epuo *EnterprisePrepaymentUpdateOne) sqlSave(ctx context.Context) (_node *
 			Columns: []string{enterpriseprepayment.EnterpriseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: enterprise.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

@@ -27,7 +27,7 @@ func (cad *CouponAssemblyDelete) Where(ps ...predicate.CouponAssembly) *CouponAs
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (cad *CouponAssemblyDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks[int, CouponAssemblyMutation](ctx, cad.sqlExec, cad.mutation, cad.hooks)
+	return withHooks(ctx, cad.sqlExec, cad.mutation, cad.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.

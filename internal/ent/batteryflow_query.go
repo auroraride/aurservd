@@ -22,7 +22,7 @@ import (
 type BatteryFlowQuery struct {
 	config
 	ctx           *QueryContext
-	order         []OrderFunc
+	order         []batteryflow.OrderOption
 	inters        []Interceptor
 	predicates    []predicate.BatteryFlow
 	withSubscribe *SubscribeQuery
@@ -61,7 +61,7 @@ func (bfq *BatteryFlowQuery) Unique(unique bool) *BatteryFlowQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (bfq *BatteryFlowQuery) Order(o ...OrderFunc) *BatteryFlowQuery {
+func (bfq *BatteryFlowQuery) Order(o ...batteryflow.OrderOption) *BatteryFlowQuery {
 	bfq.order = append(bfq.order, o...)
 	return bfq
 }
@@ -343,7 +343,7 @@ func (bfq *BatteryFlowQuery) Clone() *BatteryFlowQuery {
 	return &BatteryFlowQuery{
 		config:        bfq.config,
 		ctx:           bfq.ctx.Clone(),
-		order:         append([]OrderFunc{}, bfq.order...),
+		order:         append([]batteryflow.OrderOption{}, bfq.order...),
 		inters:        append([]Interceptor{}, bfq.inters...),
 		predicates:    append([]predicate.BatteryFlow{}, bfq.predicates...),
 		withSubscribe: bfq.withSubscribe.Clone(),
@@ -680,6 +680,18 @@ func (bfq *BatteryFlowQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != batteryflow.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if bfq.withSubscribe != nil {
+			_spec.Node.AddColumnOnce(batteryflow.FieldSubscribeID)
+		}
+		if bfq.withBattery != nil {
+			_spec.Node.AddColumnOnce(batteryflow.FieldBatteryID)
+		}
+		if bfq.withCabinet != nil {
+			_spec.Node.AddColumnOnce(batteryflow.FieldCabinetID)
+		}
+		if bfq.withRider != nil {
+			_spec.Node.AddColumnOnce(batteryflow.FieldRiderID)
 		}
 	}
 	if ps := bfq.predicates; len(ps) > 0 {

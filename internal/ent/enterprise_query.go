@@ -27,7 +27,7 @@ import (
 type EnterpriseQuery struct {
 	config
 	ctx            *QueryContext
-	order          []OrderFunc
+	order          []enterprise.OrderOption
 	inters         []Interceptor
 	predicates     []predicate.Enterprise
 	withCity       *CityQuery
@@ -70,7 +70,7 @@ func (eq *EnterpriseQuery) Unique(unique bool) *EnterpriseQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (eq *EnterpriseQuery) Order(o ...OrderFunc) *EnterpriseQuery {
+func (eq *EnterpriseQuery) Order(o ...enterprise.OrderOption) *EnterpriseQuery {
 	eq.order = append(eq.order, o...)
 	return eq
 }
@@ -440,7 +440,7 @@ func (eq *EnterpriseQuery) Clone() *EnterpriseQuery {
 	return &EnterpriseQuery{
 		config:         eq.config,
 		ctx:            eq.ctx.Clone(),
-		order:          append([]OrderFunc{}, eq.order...),
+		order:          append([]enterprise.OrderOption{}, eq.order...),
 		inters:         append([]Interceptor{}, eq.inters...),
 		predicates:     append([]predicate.Enterprise{}, eq.predicates...),
 		withCity:       eq.withCity.Clone(),
@@ -752,8 +752,11 @@ func (eq *EnterpriseQuery) loadRiders(ctx context.Context, query *RiderQuery, no
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(rider.FieldEnterpriseID)
+	}
 	query.Where(predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.InValues(enterprise.RidersColumn, fks...))
+		s.Where(sql.InValues(s.C(enterprise.RidersColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -766,7 +769,7 @@ func (eq *EnterpriseQuery) loadRiders(ctx context.Context, query *RiderQuery, no
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "enterprise_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "enterprise_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -782,8 +785,11 @@ func (eq *EnterpriseQuery) loadContracts(ctx context.Context, query *EnterpriseC
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(enterprisecontract.FieldEnterpriseID)
+	}
 	query.Where(predicate.EnterpriseContract(func(s *sql.Selector) {
-		s.Where(sql.InValues(enterprise.ContractsColumn, fks...))
+		s.Where(sql.InValues(s.C(enterprise.ContractsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -793,7 +799,7 @@ func (eq *EnterpriseQuery) loadContracts(ctx context.Context, query *EnterpriseC
 		fk := n.EnterpriseID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "enterprise_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "enterprise_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -809,8 +815,11 @@ func (eq *EnterpriseQuery) loadPrices(ctx context.Context, query *EnterprisePric
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(enterpriseprice.FieldEnterpriseID)
+	}
 	query.Where(predicate.EnterprisePrice(func(s *sql.Selector) {
-		s.Where(sql.InValues(enterprise.PricesColumn, fks...))
+		s.Where(sql.InValues(s.C(enterprise.PricesColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -820,7 +829,7 @@ func (eq *EnterpriseQuery) loadPrices(ctx context.Context, query *EnterprisePric
 		fk := n.EnterpriseID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "enterprise_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "enterprise_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -836,8 +845,11 @@ func (eq *EnterpriseQuery) loadSubscribes(ctx context.Context, query *SubscribeQ
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(subscribe.FieldEnterpriseID)
+	}
 	query.Where(predicate.Subscribe(func(s *sql.Selector) {
-		s.Where(sql.InValues(enterprise.SubscribesColumn, fks...))
+		s.Where(sql.InValues(s.C(enterprise.SubscribesColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -850,7 +862,7 @@ func (eq *EnterpriseQuery) loadSubscribes(ctx context.Context, query *SubscribeQ
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "enterprise_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "enterprise_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -866,8 +878,11 @@ func (eq *EnterpriseQuery) loadStatements(ctx context.Context, query *Enterprise
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(enterprisestatement.FieldEnterpriseID)
+	}
 	query.Where(predicate.EnterpriseStatement(func(s *sql.Selector) {
-		s.Where(sql.InValues(enterprise.StatementsColumn, fks...))
+		s.Where(sql.InValues(s.C(enterprise.StatementsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -877,7 +892,7 @@ func (eq *EnterpriseQuery) loadStatements(ctx context.Context, query *Enterprise
 		fk := n.EnterpriseID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "enterprise_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "enterprise_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -893,8 +908,11 @@ func (eq *EnterpriseQuery) loadStations(ctx context.Context, query *EnterpriseSt
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(enterprisestation.FieldEnterpriseID)
+	}
 	query.Where(predicate.EnterpriseStation(func(s *sql.Selector) {
-		s.Where(sql.InValues(enterprise.StationsColumn, fks...))
+		s.Where(sql.InValues(s.C(enterprise.StationsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -904,7 +922,7 @@ func (eq *EnterpriseQuery) loadStations(ctx context.Context, query *EnterpriseSt
 		fk := n.EnterpriseID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "enterprise_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "enterprise_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -920,8 +938,11 @@ func (eq *EnterpriseQuery) loadBills(ctx context.Context, query *EnterpriseBillQ
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(enterprisebill.FieldEnterpriseID)
+	}
 	query.Where(predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.InValues(enterprise.BillsColumn, fks...))
+		s.Where(sql.InValues(s.C(enterprise.BillsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -931,7 +952,7 @@ func (eq *EnterpriseQuery) loadBills(ctx context.Context, query *EnterpriseBillQ
 		fk := n.EnterpriseID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "enterprise_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "enterprise_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -965,6 +986,9 @@ func (eq *EnterpriseQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != enterprise.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if eq.withCity != nil {
+			_spec.Node.AddColumnOnce(enterprise.FieldCityID)
 		}
 	}
 	if ps := eq.predicates; len(ps) > 0 {

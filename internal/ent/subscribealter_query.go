@@ -23,7 +23,7 @@ import (
 type SubscribeAlterQuery struct {
 	config
 	ctx            *QueryContext
-	order          []OrderFunc
+	order          []subscribealter.OrderOption
 	inters         []Interceptor
 	predicates     []predicate.SubscribeAlter
 	withRider      *RiderQuery
@@ -63,7 +63,7 @@ func (saq *SubscribeAlterQuery) Unique(unique bool) *SubscribeAlterQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (saq *SubscribeAlterQuery) Order(o ...OrderFunc) *SubscribeAlterQuery {
+func (saq *SubscribeAlterQuery) Order(o ...subscribealter.OrderOption) *SubscribeAlterQuery {
 	saq.order = append(saq.order, o...)
 	return saq
 }
@@ -367,7 +367,7 @@ func (saq *SubscribeAlterQuery) Clone() *SubscribeAlterQuery {
 	return &SubscribeAlterQuery{
 		config:         saq.config,
 		ctx:            saq.ctx.Clone(),
-		order:          append([]OrderFunc{}, saq.order...),
+		order:          append([]subscribealter.OrderOption{}, saq.order...),
 		inters:         append([]Interceptor{}, saq.inters...),
 		predicates:     append([]predicate.SubscribeAlter{}, saq.predicates...),
 		withRider:      saq.withRider.Clone(),
@@ -758,6 +758,21 @@ func (saq *SubscribeAlterQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != subscribealter.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if saq.withRider != nil {
+			_spec.Node.AddColumnOnce(subscribealter.FieldRiderID)
+		}
+		if saq.withManager != nil {
+			_spec.Node.AddColumnOnce(subscribealter.FieldManagerID)
+		}
+		if saq.withEnterprise != nil {
+			_spec.Node.AddColumnOnce(subscribealter.FieldEnterpriseID)
+		}
+		if saq.withAgent != nil {
+			_spec.Node.AddColumnOnce(subscribealter.FieldAgentID)
+		}
+		if saq.withSubscribe != nil {
+			_spec.Node.AddColumnOnce(subscribealter.FieldSubscribeID)
 		}
 	}
 	if ps := saq.predicates; len(ps) > 0 {

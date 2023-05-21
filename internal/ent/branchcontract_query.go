@@ -19,7 +19,7 @@ import (
 type BranchContractQuery struct {
 	config
 	ctx        *QueryContext
-	order      []OrderFunc
+	order      []branchcontract.OrderOption
 	inters     []Interceptor
 	predicates []predicate.BranchContract
 	withBranch *BranchQuery
@@ -55,7 +55,7 @@ func (bcq *BranchContractQuery) Unique(unique bool) *BranchContractQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (bcq *BranchContractQuery) Order(o ...OrderFunc) *BranchContractQuery {
+func (bcq *BranchContractQuery) Order(o ...branchcontract.OrderOption) *BranchContractQuery {
 	bcq.order = append(bcq.order, o...)
 	return bcq
 }
@@ -271,7 +271,7 @@ func (bcq *BranchContractQuery) Clone() *BranchContractQuery {
 	return &BranchContractQuery{
 		config:     bcq.config,
 		ctx:        bcq.ctx.Clone(),
-		order:      append([]OrderFunc{}, bcq.order...),
+		order:      append([]branchcontract.OrderOption{}, bcq.order...),
 		inters:     append([]Interceptor{}, bcq.inters...),
 		predicates: append([]predicate.BranchContract{}, bcq.predicates...),
 		withBranch: bcq.withBranch.Clone(),
@@ -461,6 +461,9 @@ func (bcq *BranchContractQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != branchcontract.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if bcq.withBranch != nil {
+			_spec.Node.AddColumnOnce(branchcontract.FieldBranchID)
 		}
 	}
 	if ps := bcq.predicates; len(ps) > 0 {

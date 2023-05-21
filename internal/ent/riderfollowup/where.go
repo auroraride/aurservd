@@ -364,11 +364,7 @@ func HasManager() predicate.RiderFollowUp {
 // HasManagerWith applies the HasEdge predicate on the "manager" edge with a given conditions (other predicates).
 func HasManagerWith(preds ...predicate.Manager) predicate.RiderFollowUp {
 	return predicate.RiderFollowUp(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ManagerInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, ManagerTable, ManagerColumn),
-		)
+		step := newManagerStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -391,11 +387,7 @@ func HasRider() predicate.RiderFollowUp {
 // HasRiderWith applies the HasEdge predicate on the "rider" edge with a given conditions (other predicates).
 func HasRiderWith(preds ...predicate.Rider) predicate.RiderFollowUp {
 	return predicate.RiderFollowUp(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(RiderInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, RiderTable, RiderColumn),
-		)
+		step := newRiderStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

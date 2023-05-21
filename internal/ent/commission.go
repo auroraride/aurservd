@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/business"
@@ -54,7 +55,8 @@ type Commission struct {
 	EmployeeID *uint64 `json:"employee_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CommissionQuery when eager-loading is set.
-	Edges CommissionEdges `json:"edges"`
+	Edges        CommissionEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // CommissionEdges holds the relations/edges for other nodes in the graph.
@@ -170,7 +172,7 @@ func (*Commission) scanValues(columns []string) ([]any, error) {
 		case commission.FieldCreatedAt, commission.FieldUpdatedAt, commission.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Commission", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -284,9 +286,17 @@ func (c *Commission) assignValues(columns []string, values []any) error {
 				c.EmployeeID = new(uint64)
 				*c.EmployeeID = uint64(value.Int64)
 			}
+		default:
+			c.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the Commission.
+// This includes values selected through modifiers, order, etc.
+func (c *Commission) Value(name string) (ent.Value, error) {
+	return c.selectValues.Get(name)
 }
 
 // QueryBusiness queries the "business" edge of the Commission entity.

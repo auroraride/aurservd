@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -49,7 +50,8 @@ type SubscribeReminder struct {
 	FeeFormula string `json:"fee_formula,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the SubscribeReminderQuery when eager-loading is set.
-	Edges SubscribeReminderEdges `json:"edges"`
+	Edges        SubscribeReminderEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // SubscribeReminderEdges holds the relations/edges for other nodes in the graph.
@@ -120,7 +122,7 @@ func (*SubscribeReminder) scanValues(columns []string) ([]any, error) {
 		case subscribereminder.FieldCreatedAt, subscribereminder.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type SubscribeReminder", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -224,9 +226,17 @@ func (sr *SubscribeReminder) assignValues(columns []string, values []any) error 
 			} else if value.Valid {
 				sr.FeeFormula = value.String
 			}
+		default:
+			sr.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the SubscribeReminder.
+// This includes values selected through modifiers, order, etc.
+func (sr *SubscribeReminder) Value(name string) (ent.Value, error) {
+	return sr.selectValues.Get(name)
 }
 
 // QuerySubscribe queries the "subscribe" edge of the SubscribeReminder entity.

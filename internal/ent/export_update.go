@@ -225,7 +225,7 @@ func (eu *ExportUpdate) ClearManager() *ExportUpdate {
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (eu *ExportUpdate) Save(ctx context.Context) (int, error) {
 	eu.defaults()
-	return withHooks[int, ExportMutation](ctx, eu.sqlSave, eu.mutation, eu.hooks)
+	return withHooks(ctx, eu.sqlSave, eu.mutation, eu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -352,10 +352,7 @@ func (eu *ExportUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{export.ManagerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: manager.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(manager.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -368,10 +365,7 @@ func (eu *ExportUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{export.ManagerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: manager.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(manager.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -609,7 +603,7 @@ func (euo *ExportUpdateOne) Select(field string, fields ...string) *ExportUpdate
 // Save executes the query and returns the updated Export entity.
 func (euo *ExportUpdateOne) Save(ctx context.Context) (*Export, error) {
 	euo.defaults()
-	return withHooks[*Export, ExportMutation](ctx, euo.sqlSave, euo.mutation, euo.hooks)
+	return withHooks(ctx, euo.sqlSave, euo.mutation, euo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -753,10 +747,7 @@ func (euo *ExportUpdateOne) sqlSave(ctx context.Context) (_node *Export, err err
 			Columns: []string{export.ManagerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: manager.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(manager.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -769,10 +760,7 @@ func (euo *ExportUpdateOne) sqlSave(ctx context.Context) (_node *Export, err err
 			Columns: []string{export.ManagerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: manager.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(manager.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

@@ -125,7 +125,7 @@ func (ic *InventoryCreate) Save(ctx context.Context) (*Inventory, error) {
 	if err := ic.defaults(); err != nil {
 		return nil, err
 	}
-	return withHooks[*Inventory, InventoryMutation](ctx, ic.sqlSave, ic.mutation, ic.hooks)
+	return withHooks(ctx, ic.sqlSave, ic.mutation, ic.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -661,8 +661,8 @@ func (icb *InventoryCreateBulk) Save(ctx context.Context) ([]*Inventory, error) 
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, icb.builders[i+1].mutation)
 				} else {

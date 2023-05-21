@@ -177,7 +177,7 @@ func (rc *ReserveCreate) Save(ctx context.Context) (*Reserve, error) {
 	if err := rc.defaults(); err != nil {
 		return nil, err
 	}
-	return withHooks[*Reserve, ReserveMutation](ctx, rc.sqlSave, rc.mutation, rc.hooks)
+	return withHooks(ctx, rc.sqlSave, rc.mutation, rc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -324,10 +324,7 @@ func (rc *ReserveCreate) createSpec() (*Reserve, *sqlgraph.CreateSpec) {
 			Columns: []string{reserve.CabinetColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: cabinet.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -344,10 +341,7 @@ func (rc *ReserveCreate) createSpec() (*Reserve, *sqlgraph.CreateSpec) {
 			Columns: []string{reserve.RiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -364,10 +358,7 @@ func (rc *ReserveCreate) createSpec() (*Reserve, *sqlgraph.CreateSpec) {
 			Columns: []string{reserve.CityColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -384,10 +375,7 @@ func (rc *ReserveCreate) createSpec() (*Reserve, *sqlgraph.CreateSpec) {
 			Columns: []string{reserve.BusinessColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: business.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -879,8 +867,8 @@ func (rcb *ReserveCreateBulk) Save(ctx context.Context) ([]*Reserve, error) {
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, rcb.builders[i+1].mutation)
 				} else {

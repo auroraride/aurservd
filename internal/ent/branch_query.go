@@ -24,7 +24,7 @@ import (
 type BranchQuery struct {
 	config
 	ctx           *QueryContext
-	order         []OrderFunc
+	order         []branch.OrderOption
 	inters        []Interceptor
 	predicates    []predicate.Branch
 	withCity      *CityQuery
@@ -64,7 +64,7 @@ func (bq *BranchQuery) Unique(unique bool) *BranchQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (bq *BranchQuery) Order(o ...OrderFunc) *BranchQuery {
+func (bq *BranchQuery) Order(o ...branch.OrderOption) *BranchQuery {
 	bq.order = append(bq.order, o...)
 	return bq
 }
@@ -368,7 +368,7 @@ func (bq *BranchQuery) Clone() *BranchQuery {
 	return &BranchQuery{
 		config:        bq.config,
 		ctx:           bq.ctx.Clone(),
-		order:         append([]OrderFunc{}, bq.order...),
+		order:         append([]branch.OrderOption{}, bq.order...),
 		inters:        append([]Interceptor{}, bq.inters...),
 		predicates:    append([]predicate.Branch{}, bq.predicates...),
 		withCity:      bq.withCity.Clone(),
@@ -620,8 +620,11 @@ func (bq *BranchQuery) loadContracts(ctx context.Context, query *BranchContractQ
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(branchcontract.FieldBranchID)
+	}
 	query.Where(predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.InValues(branch.ContractsColumn, fks...))
+		s.Where(sql.InValues(s.C(branch.ContractsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -631,7 +634,7 @@ func (bq *BranchQuery) loadContracts(ctx context.Context, query *BranchContractQ
 		fk := n.BranchID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "branch_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "branch_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -647,8 +650,11 @@ func (bq *BranchQuery) loadCabinets(ctx context.Context, query *CabinetQuery, no
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(cabinet.FieldBranchID)
+	}
 	query.Where(predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.InValues(branch.CabinetsColumn, fks...))
+		s.Where(sql.InValues(s.C(branch.CabinetsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -661,7 +667,7 @@ func (bq *BranchQuery) loadCabinets(ctx context.Context, query *CabinetQuery, no
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "branch_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "branch_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -677,8 +683,11 @@ func (bq *BranchQuery) loadFaults(ctx context.Context, query *CabinetFaultQuery,
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(cabinetfault.FieldBranchID)
+	}
 	query.Where(predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.InValues(branch.FaultsColumn, fks...))
+		s.Where(sql.InValues(s.C(branch.FaultsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -688,7 +697,7 @@ func (bq *BranchQuery) loadFaults(ctx context.Context, query *CabinetFaultQuery,
 		fk := n.BranchID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "branch_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "branch_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -704,8 +713,11 @@ func (bq *BranchQuery) loadStores(ctx context.Context, query *StoreQuery, nodes 
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(store.FieldBranchID)
+	}
 	query.Where(predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.InValues(branch.StoresColumn, fks...))
+		s.Where(sql.InValues(s.C(branch.StoresColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -715,7 +727,7 @@ func (bq *BranchQuery) loadStores(ctx context.Context, query *StoreQuery, nodes 
 		fk := n.BranchID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "branch_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "branch_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -749,6 +761,9 @@ func (bq *BranchQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != branch.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if bq.withCity != nil {
+			_spec.Node.AddColumnOnce(branch.FieldCityID)
 		}
 	}
 	if ps := bq.predicates; len(ps) > 0 {

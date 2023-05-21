@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
@@ -65,7 +66,8 @@ type Plan struct {
 	Intelligent bool `json:"intelligent,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PlanQuery when eager-loading is set.
-	Edges PlanEdges `json:"edges"`
+	Edges        PlanEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // PlanEdges holds the relations/edges for other nodes in the graph.
@@ -145,7 +147,7 @@ func (*Plan) scanValues(columns []string) ([]any, error) {
 		case plan.FieldCreatedAt, plan.FieldUpdatedAt, plan.FieldDeletedAt, plan.FieldStart, plan.FieldEnd:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Plan", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -306,9 +308,17 @@ func (pl *Plan) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pl.Intelligent = value.Bool
 			}
+		default:
+			pl.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the Plan.
+// This includes values selected through modifiers, order, etc.
+func (pl *Plan) Value(name string) (ent.Value, error) {
+	return pl.selectValues.Get(name)
 }
 
 // QueryBrand queries the "brand" edge of the Plan entity.

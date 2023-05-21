@@ -90,7 +90,7 @@ func (pic *PlanIntroduceCreate) Mutation() *PlanIntroduceMutation {
 // Save creates the PlanIntroduce in the database.
 func (pic *PlanIntroduceCreate) Save(ctx context.Context) (*PlanIntroduce, error) {
 	pic.defaults()
-	return withHooks[*PlanIntroduce, PlanIntroduceMutation](ctx, pic.sqlSave, pic.mutation, pic.hooks)
+	return withHooks(ctx, pic.sqlSave, pic.mutation, pic.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -192,10 +192,7 @@ func (pic *PlanIntroduceCreate) createSpec() (*PlanIntroduce, *sqlgraph.CreateSp
 			Columns: []string{planintroduce.BrandColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: ebikebrand.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(ebikebrand.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -476,8 +473,8 @@ func (picb *PlanIntroduceCreateBulk) Save(ctx context.Context) ([]*PlanIntroduce
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, picb.builders[i+1].mutation)
 				} else {

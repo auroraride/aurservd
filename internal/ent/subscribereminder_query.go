@@ -21,7 +21,7 @@ import (
 type SubscribeReminderQuery struct {
 	config
 	ctx           *QueryContext
-	order         []OrderFunc
+	order         []subscribereminder.OrderOption
 	inters        []Interceptor
 	predicates    []predicate.SubscribeReminder
 	withSubscribe *SubscribeQuery
@@ -59,7 +59,7 @@ func (srq *SubscribeReminderQuery) Unique(unique bool) *SubscribeReminderQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (srq *SubscribeReminderQuery) Order(o ...OrderFunc) *SubscribeReminderQuery {
+func (srq *SubscribeReminderQuery) Order(o ...subscribereminder.OrderOption) *SubscribeReminderQuery {
 	srq.order = append(srq.order, o...)
 	return srq
 }
@@ -319,7 +319,7 @@ func (srq *SubscribeReminderQuery) Clone() *SubscribeReminderQuery {
 	return &SubscribeReminderQuery{
 		config:        srq.config,
 		ctx:           srq.ctx.Clone(),
-		order:         append([]OrderFunc{}, srq.order...),
+		order:         append([]subscribereminder.OrderOption{}, srq.order...),
 		inters:        append([]Interceptor{}, srq.inters...),
 		predicates:    append([]predicate.SubscribeReminder{}, srq.predicates...),
 		withSubscribe: srq.withSubscribe.Clone(),
@@ -605,6 +605,15 @@ func (srq *SubscribeReminderQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != subscribereminder.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if srq.withSubscribe != nil {
+			_spec.Node.AddColumnOnce(subscribereminder.FieldSubscribeID)
+		}
+		if srq.withPlan != nil {
+			_spec.Node.AddColumnOnce(subscribereminder.FieldPlanID)
+		}
+		if srq.withRider != nil {
+			_spec.Node.AddColumnOnce(subscribereminder.FieldRiderID)
 		}
 	}
 	if ps := srq.predicates; len(ps) > 0 {

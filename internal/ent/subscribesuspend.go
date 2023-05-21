@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -48,7 +49,8 @@ type SubscribeSuspend struct {
 	EndModifier *model.Modifier `json:"end_modifier,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the SubscribeSuspendQuery when eager-loading is set.
-	Edges SubscribeSuspendEdges `json:"edges"`
+	Edges        SubscribeSuspendEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // SubscribeSuspendEdges holds the relations/edges for other nodes in the graph.
@@ -132,7 +134,7 @@ func (*SubscribeSuspend) scanValues(columns []string) ([]any, error) {
 		case subscribesuspend.FieldStartAt, subscribesuspend.FieldEndAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type SubscribeSuspend", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -230,9 +232,17 @@ func (ss *SubscribeSuspend) assignValues(columns []string, values []any) error {
 					return fmt.Errorf("unmarshal field end_modifier: %w", err)
 				}
 			}
+		default:
+			ss.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the SubscribeSuspend.
+// This includes values selected through modifiers, order, etc.
+func (ss *SubscribeSuspend) Value(name string) (ent.Value, error) {
+	return ss.selectValues.Get(name)
 }
 
 // QueryCity queries the "city" edge of the SubscribeSuspend entity.

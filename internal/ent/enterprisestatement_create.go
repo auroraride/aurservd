@@ -219,7 +219,7 @@ func (esc *EnterpriseStatementCreate) Save(ctx context.Context) (*EnterpriseStat
 	if err := esc.defaults(); err != nil {
 		return nil, err
 	}
-	return withHooks[*EnterpriseStatement, EnterpriseStatementMutation](ctx, esc.sqlSave, esc.mutation, esc.hooks)
+	return withHooks(ctx, esc.sqlSave, esc.mutation, esc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -388,10 +388,7 @@ func (esc *EnterpriseStatementCreate) createSpec() (*EnterpriseStatement, *sqlgr
 			Columns: []string{enterprisestatement.EnterpriseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: enterprise.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -408,10 +405,7 @@ func (esc *EnterpriseStatementCreate) createSpec() (*EnterpriseStatement, *sqlgr
 			Columns: []string{enterprisestatement.BillsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: enterprisebill.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(enterprisebill.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -1006,8 +1000,8 @@ func (escb *EnterpriseStatementCreateBulk) Save(ctx context.Context) ([]*Enterpr
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, escb.builders[i+1].mutation)
 				} else {

@@ -27,7 +27,7 @@ func (pid *PlanIntroduceDelete) Where(ps ...predicate.PlanIntroduce) *PlanIntrod
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (pid *PlanIntroduceDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks[int, PlanIntroduceMutation](ctx, pid.sqlExec, pid.mutation, pid.hooks)
+	return withHooks(ctx, pid.sqlExec, pid.mutation, pid.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.

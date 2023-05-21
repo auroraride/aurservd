@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -37,7 +38,8 @@ type EnterprisePrepayment struct {
 	Amount float64 `json:"amount,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EnterprisePrepaymentQuery when eager-loading is set.
-	Edges EnterprisePrepaymentEdges `json:"edges"`
+	Edges        EnterprisePrepaymentEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // EnterprisePrepaymentEdges holds the relations/edges for other nodes in the graph.
@@ -78,7 +80,7 @@ func (*EnterprisePrepayment) scanValues(columns []string) ([]any, error) {
 		case enterpriseprepayment.FieldCreatedAt, enterpriseprepayment.FieldUpdatedAt, enterpriseprepayment.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type EnterprisePrepayment", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -151,9 +153,17 @@ func (ep *EnterprisePrepayment) assignValues(columns []string, values []any) err
 			} else if value.Valid {
 				ep.Amount = value.Float64
 			}
+		default:
+			ep.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the EnterprisePrepayment.
+// This includes values selected through modifiers, order, etc.
+func (ep *EnterprisePrepayment) Value(name string) (ent.Value, error) {
+	return ep.selectValues.Get(name)
 }
 
 // QueryEnterprise queries the "enterprise" edge of the EnterprisePrepayment entity.

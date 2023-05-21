@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/battery"
@@ -75,6 +76,7 @@ type Stock struct {
 	// The values are being populated by the StockQuery when eager-loading is set.
 	Edges        StockEdges `json:"edges"`
 	stock_spouse *uint64
+	selectValues sql.SelectValues
 }
 
 // StockEdges holds the relations/edges for other nodes in the graph.
@@ -276,7 +278,7 @@ func (*Stock) scanValues(columns []string) ([]any, error) {
 		case stock.ForeignKeys[0]: // stock_spouse
 			values[i] = new(sql.NullInt64)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Stock", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -451,9 +453,17 @@ func (s *Stock) assignValues(columns []string, values []any) error {
 				s.stock_spouse = new(uint64)
 				*s.stock_spouse = uint64(value.Int64)
 			}
+		default:
+			s.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the Stock.
+// This includes values selected through modifiers, order, etc.
+func (s *Stock) Value(name string) (ent.Value, error) {
+	return s.selectValues.Get(name)
 }
 
 // QueryCity queries the "city" edge of the Stock entity.

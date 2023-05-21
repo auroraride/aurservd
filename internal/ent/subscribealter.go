@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/agent"
@@ -49,7 +50,8 @@ type SubscribeAlter struct {
 	Days int `json:"days,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the SubscribeAlterQuery when eager-loading is set.
-	Edges SubscribeAlterEdges `json:"edges"`
+	Edges        SubscribeAlterEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // SubscribeAlterEdges holds the relations/edges for other nodes in the graph.
@@ -148,7 +150,7 @@ func (*SubscribeAlter) scanValues(columns []string) ([]any, error) {
 		case subscribealter.FieldCreatedAt, subscribealter.FieldUpdatedAt, subscribealter.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type SubscribeAlter", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -248,9 +250,17 @@ func (sa *SubscribeAlter) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				sa.Days = int(value.Int64)
 			}
+		default:
+			sa.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the SubscribeAlter.
+// This includes values selected through modifiers, order, etc.
+func (sa *SubscribeAlter) Value(name string) (ent.Value, error) {
+	return sa.selectValues.Get(name)
 }
 
 // QueryRider queries the "rider" edge of the SubscribeAlter entity.

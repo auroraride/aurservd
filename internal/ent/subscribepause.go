@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
@@ -70,7 +71,8 @@ type SubscribePause struct {
 	SuspendDays int `json:"suspend_days,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the SubscribePauseQuery when eager-loading is set.
-	Edges SubscribePauseEdges `json:"edges"`
+	Edges        SubscribePauseEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // SubscribePauseEdges holds the relations/edges for other nodes in the graph.
@@ -242,7 +244,7 @@ func (*SubscribePause) scanValues(columns []string) ([]any, error) {
 		case subscribepause.FieldCreatedAt, subscribepause.FieldUpdatedAt, subscribepause.FieldDeletedAt, subscribepause.FieldStartAt, subscribepause.FieldEndAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type SubscribePause", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -408,9 +410,17 @@ func (sp *SubscribePause) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				sp.SuspendDays = int(value.Int64)
 			}
+		default:
+			sp.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the SubscribePause.
+// This includes values selected through modifiers, order, etc.
+func (sp *SubscribePause) Value(name string) (ent.Value, error) {
+	return sp.selectValues.Get(name)
 }
 
 // QueryRider queries the "rider" edge of the SubscribePause entity.

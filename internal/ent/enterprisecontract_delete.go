@@ -27,7 +27,7 @@ func (ecd *EnterpriseContractDelete) Where(ps ...predicate.EnterpriseContract) *
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (ecd *EnterpriseContractDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks[int, EnterpriseContractMutation](ctx, ecd.sqlExec, ecd.mutation, ecd.hooks)
+	return withHooks(ctx, ecd.sqlExec, ecd.mutation, ecd.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.

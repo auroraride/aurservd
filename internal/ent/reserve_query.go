@@ -22,7 +22,7 @@ import (
 type ReserveQuery struct {
 	config
 	ctx          *QueryContext
-	order        []OrderFunc
+	order        []reserve.OrderOption
 	inters       []Interceptor
 	predicates   []predicate.Reserve
 	withCabinet  *CabinetQuery
@@ -61,7 +61,7 @@ func (rq *ReserveQuery) Unique(unique bool) *ReserveQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (rq *ReserveQuery) Order(o ...OrderFunc) *ReserveQuery {
+func (rq *ReserveQuery) Order(o ...reserve.OrderOption) *ReserveQuery {
 	rq.order = append(rq.order, o...)
 	return rq
 }
@@ -343,7 +343,7 @@ func (rq *ReserveQuery) Clone() *ReserveQuery {
 	return &ReserveQuery{
 		config:       rq.config,
 		ctx:          rq.ctx.Clone(),
-		order:        append([]OrderFunc{}, rq.order...),
+		order:        append([]reserve.OrderOption{}, rq.order...),
 		inters:       append([]Interceptor{}, rq.inters...),
 		predicates:   append([]predicate.Reserve{}, rq.predicates...),
 		withCabinet:  rq.withCabinet.Clone(),
@@ -680,6 +680,18 @@ func (rq *ReserveQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != reserve.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if rq.withCabinet != nil {
+			_spec.Node.AddColumnOnce(reserve.FieldCabinetID)
+		}
+		if rq.withRider != nil {
+			_spec.Node.AddColumnOnce(reserve.FieldRiderID)
+		}
+		if rq.withCity != nil {
+			_spec.Node.AddColumnOnce(reserve.FieldCityID)
+		}
+		if rq.withBusiness != nil {
+			_spec.Node.AddColumnOnce(reserve.FieldBusinessID)
 		}
 	}
 	if ps := rq.predicates; len(ps) > 0 {

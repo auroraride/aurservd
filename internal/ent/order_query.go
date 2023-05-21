@@ -29,7 +29,7 @@ import (
 type OrderQuery struct {
 	config
 	ctx            *QueryContext
-	order          []OrderFunc
+	order          []order.OrderOption
 	inters         []Interceptor
 	predicates     []predicate.Order
 	withPlan       *PlanQuery
@@ -76,7 +76,7 @@ func (oq *OrderQuery) Unique(unique bool) *OrderQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (oq *OrderQuery) Order(o ...OrderFunc) *OrderQuery {
+func (oq *OrderQuery) Order(o ...order.OrderOption) *OrderQuery {
 	oq.order = append(oq.order, o...)
 	return oq
 }
@@ -534,7 +534,7 @@ func (oq *OrderQuery) Clone() *OrderQuery {
 	return &OrderQuery{
 		config:         oq.config,
 		ctx:            oq.ctx.Clone(),
-		order:          append([]OrderFunc{}, oq.order...),
+		order:          append([]order.OrderOption{}, oq.order...),
 		inters:         append([]Interceptor{}, oq.inters...),
 		predicates:     append([]predicate.Order{}, oq.predicates...),
 		withPlan:       oq.withPlan.Clone(),
@@ -1071,8 +1071,11 @@ func (oq *OrderQuery) loadCommission(ctx context.Context, query *CommissionQuery
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(commission.FieldOrderID)
+	}
 	query.Where(predicate.Commission(func(s *sql.Selector) {
-		s.Where(sql.InValues(order.CommissionColumn, fks...))
+		s.Where(sql.InValues(s.C(order.CommissionColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1082,7 +1085,7 @@ func (oq *OrderQuery) loadCommission(ctx context.Context, query *CommissionQuery
 		fk := n.OrderID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "order_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "order_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -1127,8 +1130,11 @@ func (oq *OrderQuery) loadChildren(ctx context.Context, query *OrderQuery, nodes
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(order.FieldParentID)
+	}
 	query.Where(predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.InValues(order.ChildrenColumn, fks...))
+		s.Where(sql.InValues(s.C(order.ChildrenColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1138,7 +1144,7 @@ func (oq *OrderQuery) loadChildren(ctx context.Context, query *OrderQuery, nodes
 		fk := n.ParentID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "parent_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "parent_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -1151,8 +1157,11 @@ func (oq *OrderQuery) loadRefund(ctx context.Context, query *OrderRefundQuery, n
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(orderrefund.FieldOrderID)
+	}
 	query.Where(predicate.OrderRefund(func(s *sql.Selector) {
-		s.Where(sql.InValues(order.RefundColumn, fks...))
+		s.Where(sql.InValues(s.C(order.RefundColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1162,7 +1171,7 @@ func (oq *OrderQuery) loadRefund(ctx context.Context, query *OrderRefundQuery, n
 		fk := n.OrderID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "order_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "order_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -1175,8 +1184,11 @@ func (oq *OrderQuery) loadAssistance(ctx context.Context, query *AssistanceQuery
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(assistance.FieldOrderID)
+	}
 	query.Where(predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.InValues(order.AssistanceColumn, fks...))
+		s.Where(sql.InValues(s.C(order.AssistanceColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1189,7 +1201,7 @@ func (oq *OrderQuery) loadAssistance(ctx context.Context, query *AssistanceQuery
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "order_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "order_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -1205,8 +1217,11 @@ func (oq *OrderQuery) loadCoupons(ctx context.Context, query *CouponQuery, nodes
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(coupon.FieldOrderID)
+	}
 	query.Where(predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.InValues(order.CouponsColumn, fks...))
+		s.Where(sql.InValues(s.C(order.CouponsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1219,7 +1234,7 @@ func (oq *OrderQuery) loadCoupons(ctx context.Context, query *CouponQuery, nodes
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "order_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "order_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -1253,6 +1268,27 @@ func (oq *OrderQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != order.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if oq.withPlan != nil {
+			_spec.Node.AddColumnOnce(order.FieldPlanID)
+		}
+		if oq.withCity != nil {
+			_spec.Node.AddColumnOnce(order.FieldCityID)
+		}
+		if oq.withBrand != nil {
+			_spec.Node.AddColumnOnce(order.FieldBrandID)
+		}
+		if oq.withEbike != nil {
+			_spec.Node.AddColumnOnce(order.FieldEbikeID)
+		}
+		if oq.withRider != nil {
+			_spec.Node.AddColumnOnce(order.FieldRiderID)
+		}
+		if oq.withSubscribe != nil {
+			_spec.Node.AddColumnOnce(order.FieldSubscribeID)
+		}
+		if oq.withParent != nil {
+			_spec.Node.AddColumnOnce(order.FieldParentID)
 		}
 	}
 	if ps := oq.predicates; len(ps) > 0 {

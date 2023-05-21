@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/order"
@@ -45,7 +46,8 @@ type OrderRefund struct {
 	RefundAt *time.Time `json:"refund_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the OrderRefundQuery when eager-loading is set.
-	Edges OrderRefundEdges `json:"edges"`
+	Edges        OrderRefundEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // OrderRefundEdges holds the relations/edges for other nodes in the graph.
@@ -86,7 +88,7 @@ func (*OrderRefund) scanValues(columns []string) ([]any, error) {
 		case orderrefund.FieldCreatedAt, orderrefund.FieldUpdatedAt, orderrefund.FieldDeletedAt, orderrefund.FieldRefundAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type OrderRefund", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -184,9 +186,17 @@ func (or *OrderRefund) assignValues(columns []string, values []any) error {
 				or.RefundAt = new(time.Time)
 				*or.RefundAt = value.Time
 			}
+		default:
+			or.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the OrderRefund.
+// This includes values selected through modifiers, order, etc.
+func (or *OrderRefund) Value(name string) (ent.Value, error) {
+	return or.selectValues.Get(name)
 }
 
 // QueryOrder queries the "order" edge of the OrderRefund entity.

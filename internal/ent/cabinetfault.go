@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/branch"
@@ -52,7 +53,8 @@ type CabinetFault struct {
 	Description string `json:"description,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CabinetFaultQuery when eager-loading is set.
-	Edges CabinetFaultEdges `json:"edges"`
+	Edges        CabinetFaultEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // CabinetFaultEdges holds the relations/edges for other nodes in the graph.
@@ -136,7 +138,7 @@ func (*CabinetFault) scanValues(columns []string) ([]any, error) {
 		case cabinetfault.FieldCreatedAt, cabinetfault.FieldUpdatedAt, cabinetfault.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type CabinetFault", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -247,9 +249,17 @@ func (cf *CabinetFault) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				cf.Description = value.String
 			}
+		default:
+			cf.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the CabinetFault.
+// This includes values selected through modifiers, order, etc.
+func (cf *CabinetFault) Value(name string) (ent.Value, error) {
+	return cf.selectValues.Get(name)
 }
 
 // QueryCity queries the "city" edge of the CabinetFault entity.

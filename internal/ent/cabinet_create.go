@@ -470,7 +470,7 @@ func (cc *CabinetCreate) Save(ctx context.Context) (*Cabinet, error) {
 	if err := cc.defaults(); err != nil {
 		return nil, err
 	}
-	return withHooks[*Cabinet, CabinetMutation](ctx, cc.sqlSave, cc.mutation, cc.hooks)
+	return withHooks(ctx, cc.sqlSave, cc.mutation, cc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -739,10 +739,7 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 			Columns: []string{cabinet.CityColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -759,10 +756,7 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 			Columns: []string{cabinet.BranchColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: branch.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(branch.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -779,10 +773,7 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 			Columns: cabinet.ModelsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: batterymodel.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(batterymodel.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -798,10 +789,7 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 			Columns: []string{cabinet.FaultsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: cabinetfault.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(cabinetfault.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -817,10 +805,7 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 			Columns: []string{cabinet.ExchangesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: exchange.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(exchange.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -836,10 +821,7 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 			Columns: []string{cabinet.StocksColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: stock.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -855,10 +837,7 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 			Columns: []string{cabinet.BatteriesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: battery.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -874,10 +853,7 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 			Columns: []string{cabinet.BatteryFlowsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: batteryflow.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(batteryflow.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -1992,8 +1968,8 @@ func (ccb *CabinetCreateBulk) Save(ctx context.Context) ([]*Cabinet, error) {
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, ccb.builders[i+1].mutation)
 				} else {

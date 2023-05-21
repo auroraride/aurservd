@@ -19,7 +19,7 @@ import (
 type PlanIntroduceQuery struct {
 	config
 	ctx        *QueryContext
-	order      []OrderFunc
+	order      []planintroduce.OrderOption
 	inters     []Interceptor
 	predicates []predicate.PlanIntroduce
 	withBrand  *EbikeBrandQuery
@@ -55,7 +55,7 @@ func (piq *PlanIntroduceQuery) Unique(unique bool) *PlanIntroduceQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (piq *PlanIntroduceQuery) Order(o ...OrderFunc) *PlanIntroduceQuery {
+func (piq *PlanIntroduceQuery) Order(o ...planintroduce.OrderOption) *PlanIntroduceQuery {
 	piq.order = append(piq.order, o...)
 	return piq
 }
@@ -271,7 +271,7 @@ func (piq *PlanIntroduceQuery) Clone() *PlanIntroduceQuery {
 	return &PlanIntroduceQuery{
 		config:     piq.config,
 		ctx:        piq.ctx.Clone(),
-		order:      append([]OrderFunc{}, piq.order...),
+		order:      append([]planintroduce.OrderOption{}, piq.order...),
 		inters:     append([]Interceptor{}, piq.inters...),
 		predicates: append([]predicate.PlanIntroduce{}, piq.predicates...),
 		withBrand:  piq.withBrand.Clone(),
@@ -464,6 +464,9 @@ func (piq *PlanIntroduceQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != planintroduce.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if piq.withBrand != nil {
+			_spec.Node.AddColumnOnce(planintroduce.FieldBrandID)
 		}
 	}
 	if ps := piq.predicates; len(ps) > 0 {

@@ -27,7 +27,7 @@ func (bfd *BatteryFlowDelete) Where(ps ...predicate.BatteryFlow) *BatteryFlowDel
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (bfd *BatteryFlowDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks[int, BatteryFlowMutation](ctx, bfd.sqlExec, bfd.mutation, bfd.hooks)
+	return withHooks(ctx, bfd.sqlExec, bfd.mutation, bfd.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.

@@ -28,7 +28,7 @@ import (
 type BusinessQuery struct {
 	config
 	ctx            *QueryContext
-	order          []OrderFunc
+	order          []business.OrderOption
 	inters         []Interceptor
 	predicates     []predicate.Business
 	withRider      *RiderQuery
@@ -73,7 +73,7 @@ func (bq *BusinessQuery) Unique(unique bool) *BusinessQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (bq *BusinessQuery) Order(o ...OrderFunc) *BusinessQuery {
+func (bq *BusinessQuery) Order(o ...business.OrderOption) *BusinessQuery {
 	bq.order = append(bq.order, o...)
 	return bq
 }
@@ -487,7 +487,7 @@ func (bq *BusinessQuery) Clone() *BusinessQuery {
 	return &BusinessQuery{
 		config:         bq.config,
 		ctx:            bq.ctx.Clone(),
-		order:          append([]OrderFunc{}, bq.order...),
+		order:          append([]business.OrderOption{}, bq.order...),
 		inters:         append([]Interceptor{}, bq.inters...),
 		predicates:     append([]predicate.Business{}, bq.predicates...),
 		withRider:      bq.withRider.Clone(),
@@ -1130,6 +1130,36 @@ func (bq *BusinessQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != business.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if bq.withRider != nil {
+			_spec.Node.AddColumnOnce(business.FieldRiderID)
+		}
+		if bq.withCity != nil {
+			_spec.Node.AddColumnOnce(business.FieldCityID)
+		}
+		if bq.withSubscribe != nil {
+			_spec.Node.AddColumnOnce(business.FieldSubscribeID)
+		}
+		if bq.withEmployee != nil {
+			_spec.Node.AddColumnOnce(business.FieldEmployeeID)
+		}
+		if bq.withStore != nil {
+			_spec.Node.AddColumnOnce(business.FieldStoreID)
+		}
+		if bq.withPlan != nil {
+			_spec.Node.AddColumnOnce(business.FieldPlanID)
+		}
+		if bq.withEnterprise != nil {
+			_spec.Node.AddColumnOnce(business.FieldEnterpriseID)
+		}
+		if bq.withStation != nil {
+			_spec.Node.AddColumnOnce(business.FieldStationID)
+		}
+		if bq.withCabinet != nil {
+			_spec.Node.AddColumnOnce(business.FieldCabinetID)
+		}
+		if bq.withBattery != nil {
+			_spec.Node.AddColumnOnce(business.FieldBatteryID)
 		}
 	}
 	if ps := bq.predicates; len(ps) > 0 {

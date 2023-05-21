@@ -844,11 +844,7 @@ func HasManager() predicate.Export {
 // HasManagerWith applies the HasEdge predicate on the "manager" edge with a given conditions (other predicates).
 func HasManagerWith(preds ...predicate.Manager) predicate.Export {
 	return predicate.Export(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ManagerInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, ManagerTable, ManagerColumn),
-		)
+		step := newManagerStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

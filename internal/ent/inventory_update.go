@@ -122,7 +122,7 @@ func (iu *InventoryUpdate) Save(ctx context.Context) (int, error) {
 	if err := iu.defaults(); err != nil {
 		return 0, err
 	}
-	return withHooks[int, InventoryMutation](ctx, iu.sqlSave, iu.mutation, iu.hooks)
+	return withHooks(ctx, iu.sqlSave, iu.mutation, iu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -337,7 +337,7 @@ func (iuo *InventoryUpdateOne) Save(ctx context.Context) (*Inventory, error) {
 	if err := iuo.defaults(); err != nil {
 		return nil, err
 	}
-	return withHooks[*Inventory, InventoryMutation](ctx, iuo.sqlSave, iuo.mutation, iuo.hooks)
+	return withHooks(ctx, iuo.sqlSave, iuo.mutation, iuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.

@@ -27,7 +27,7 @@ func (spd *SubscribePauseDelete) Where(ps ...predicate.SubscribePause) *Subscrib
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (spd *SubscribePauseDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks[int, SubscribePauseMutation](ctx, spd.sqlExec, spd.mutation, spd.hooks)
+	return withHooks(ctx, spd.sqlExec, spd.mutation, spd.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.

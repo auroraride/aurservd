@@ -27,7 +27,7 @@ func (sd *StockDelete) Where(ps ...predicate.Stock) *StockDelete {
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (sd *StockDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks[int, StockMutation](ctx, sd.sqlExec, sd.mutation, sd.hooks)
+	return withHooks(ctx, sd.sqlExec, sd.mutation, sd.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.

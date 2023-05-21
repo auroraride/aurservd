@@ -87,7 +87,7 @@ func (piu *PlanIntroduceUpdate) ClearBrand() *PlanIntroduceUpdate {
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (piu *PlanIntroduceUpdate) Save(ctx context.Context) (int, error) {
 	piu.defaults()
-	return withHooks[int, PlanIntroduceMutation](ctx, piu.sqlSave, piu.mutation, piu.hooks)
+	return withHooks(ctx, piu.sqlSave, piu.mutation, piu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -152,10 +152,7 @@ func (piu *PlanIntroduceUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Columns: []string{planintroduce.BrandColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: ebikebrand.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(ebikebrand.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -168,10 +165,7 @@ func (piu *PlanIntroduceUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Columns: []string{planintroduce.BrandColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: ebikebrand.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(ebikebrand.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -271,7 +265,7 @@ func (piuo *PlanIntroduceUpdateOne) Select(field string, fields ...string) *Plan
 // Save executes the query and returns the updated PlanIntroduce entity.
 func (piuo *PlanIntroduceUpdateOne) Save(ctx context.Context) (*PlanIntroduce, error) {
 	piuo.defaults()
-	return withHooks[*PlanIntroduce, PlanIntroduceMutation](ctx, piuo.sqlSave, piuo.mutation, piuo.hooks)
+	return withHooks(ctx, piuo.sqlSave, piuo.mutation, piuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -353,10 +347,7 @@ func (piuo *PlanIntroduceUpdateOne) sqlSave(ctx context.Context) (_node *PlanInt
 			Columns: []string{planintroduce.BrandColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: ebikebrand.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(ebikebrand.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -369,10 +360,7 @@ func (piuo *PlanIntroduceUpdateOne) sqlSave(ctx context.Context) (_node *PlanInt
 			Columns: []string{planintroduce.BrandColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: ebikebrand.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(ebikebrand.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

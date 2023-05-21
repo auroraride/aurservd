@@ -12,7 +12,6 @@ import (
 	"entgo.io/ent/schema/index"
 
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/internal/ent/hook"
 	"github.com/auroraride/aurservd/internal/ent/internal"
 	"github.com/auroraride/aurservd/pkg/snag"
 )
@@ -106,9 +105,9 @@ func (Stock) Hooks() []ent.Hook {
 	}
 
 	return []ent.Hook{
-		hook.On(
-			func(next ent.Mutator) ent.Mutator {
-				return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+		func(next ent.Mutator) ent.Mutator {
+			return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+				if m.Op().Is(ent.OpCreate) {
 					if st, ok := m.(intr); ok {
 						n, _ := st.Num()
 						if t, ok := st.GetType(); ok {
@@ -119,10 +118,9 @@ func (Stock) Hooks() []ent.Hook {
 							}
 						}
 					}
-					return next.Mutate(ctx, m)
-				})
-			},
-			ent.OpCreate,
-		),
+				}
+				return next.Mutate(ctx, m)
+			})
+		},
 	}
 }

@@ -151,7 +151,7 @@ func (orc *OrderRefundCreate) Save(ctx context.Context) (*OrderRefund, error) {
 	if err := orc.defaults(); err != nil {
 		return nil, err
 	}
-	return withHooks[*OrderRefund, OrderRefundMutation](ctx, orc.sqlSave, orc.mutation, orc.hooks)
+	return withHooks(ctx, orc.sqlSave, orc.mutation, orc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -300,10 +300,7 @@ func (orc *OrderRefundCreate) createSpec() (*OrderRefund, *sqlgraph.CreateSpec) 
 			Columns: []string{orderrefund.OrderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: order.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -808,8 +805,8 @@ func (orcb *OrderRefundCreateBulk) Save(ctx context.Context) ([]*OrderRefund, er
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, orcb.builders[i+1].mutation)
 				} else {

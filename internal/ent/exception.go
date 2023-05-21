@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -55,7 +56,8 @@ type Exception struct {
 	Attachments []string `json:"attachments,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ExceptionQuery when eager-loading is set.
-	Edges ExceptionEdges `json:"edges"`
+	Edges        ExceptionEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // ExceptionEdges holds the relations/edges for other nodes in the graph.
@@ -124,7 +126,7 @@ func (*Exception) scanValues(columns []string) ([]any, error) {
 		case exception.FieldCreatedAt, exception.FieldUpdatedAt, exception.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Exception", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -248,9 +250,17 @@ func (e *Exception) assignValues(columns []string, values []any) error {
 					return fmt.Errorf("unmarshal field attachments: %w", err)
 				}
 			}
+		default:
+			e.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the Exception.
+// This includes values selected through modifiers, order, etc.
+func (e *Exception) Value(name string) (ent.Value, error) {
+	return e.selectValues.Get(name)
 }
 
 // QueryCity queries the "city" edge of the Exception entity.

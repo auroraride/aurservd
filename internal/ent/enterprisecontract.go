@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -41,7 +42,8 @@ type EnterpriseContract struct {
 	File string `json:"file,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EnterpriseContractQuery when eager-loading is set.
-	Edges EnterpriseContractEdges `json:"edges"`
+	Edges        EnterpriseContractEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // EnterpriseContractEdges holds the relations/edges for other nodes in the graph.
@@ -80,7 +82,7 @@ func (*EnterpriseContract) scanValues(columns []string) ([]any, error) {
 		case enterprisecontract.FieldCreatedAt, enterprisecontract.FieldUpdatedAt, enterprisecontract.FieldDeletedAt, enterprisecontract.FieldStart, enterprisecontract.FieldEnd:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type EnterpriseContract", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -165,9 +167,17 @@ func (ec *EnterpriseContract) assignValues(columns []string, values []any) error
 			} else if value.Valid {
 				ec.File = value.String
 			}
+		default:
+			ec.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the EnterpriseContract.
+// This includes values selected through modifiers, order, etc.
+func (ec *EnterpriseContract) Value(name string) (ent.Value, error) {
+	return ec.selectValues.Get(name)
 }
 
 // QueryEnterprise queries the "enterprise" edge of the EnterpriseContract entity.

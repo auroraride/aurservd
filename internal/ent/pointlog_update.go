@@ -191,7 +191,7 @@ func (plu *PointLogUpdate) Save(ctx context.Context) (int, error) {
 	if err := plu.defaults(); err != nil {
 		return 0, err
 	}
-	return withHooks[int, PointLogMutation](ctx, plu.sqlSave, plu.mutation, plu.hooks)
+	return withHooks(ctx, plu.sqlSave, plu.mutation, plu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -307,10 +307,7 @@ func (plu *PointLogUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{pointlog.RiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -323,10 +320,7 @@ func (plu *PointLogUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{pointlog.RiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -342,10 +336,7 @@ func (plu *PointLogUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{pointlog.OrderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: order.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -358,10 +349,7 @@ func (plu *PointLogUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{pointlog.OrderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: order.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -563,7 +551,7 @@ func (pluo *PointLogUpdateOne) Save(ctx context.Context) (*PointLog, error) {
 	if err := pluo.defaults(); err != nil {
 		return nil, err
 	}
-	return withHooks[*PointLog, PointLogMutation](ctx, pluo.sqlSave, pluo.mutation, pluo.hooks)
+	return withHooks(ctx, pluo.sqlSave, pluo.mutation, pluo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -696,10 +684,7 @@ func (pluo *PointLogUpdateOne) sqlSave(ctx context.Context) (_node *PointLog, er
 			Columns: []string{pointlog.RiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -712,10 +697,7 @@ func (pluo *PointLogUpdateOne) sqlSave(ctx context.Context) (_node *PointLog, er
 			Columns: []string{pointlog.RiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -731,10 +713,7 @@ func (pluo *PointLogUpdateOne) sqlSave(ctx context.Context) (_node *PointLog, er
 			Columns: []string{pointlog.OrderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: order.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -747,10 +726,7 @@ func (pluo *PointLogUpdateOne) sqlSave(ctx context.Context) (_node *PointLog, er
 			Columns: []string{pointlog.OrderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: order.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/ebike"
@@ -55,7 +56,8 @@ type Ebike struct {
 	ExFactory string `json:"ex_factory,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EbikeQuery when eager-loading is set.
-	Edges EbikeEdges `json:"edges"`
+	Edges        EbikeEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // EbikeEdges holds the relations/edges for other nodes in the graph.
@@ -128,7 +130,7 @@ func (*Ebike) scanValues(columns []string) ([]any, error) {
 		case ebike.FieldCreatedAt, ebike.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Ebike", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -253,9 +255,17 @@ func (e *Ebike) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				e.ExFactory = value.String
 			}
+		default:
+			e.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the Ebike.
+// This includes values selected through modifiers, order, etc.
+func (e *Ebike) Value(name string) (ent.Value, error) {
+	return e.selectValues.Get(name)
 }
 
 // QueryBrand queries the "brand" edge of the Ebike entity.

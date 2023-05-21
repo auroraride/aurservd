@@ -20,7 +20,7 @@ import (
 type CityQuery struct {
 	config
 	ctx          *QueryContext
-	order        []OrderFunc
+	order        []city.OrderOption
 	inters       []Interceptor
 	predicates   []predicate.City
 	withParent   *CityQuery
@@ -58,7 +58,7 @@ func (cq *CityQuery) Unique(unique bool) *CityQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (cq *CityQuery) Order(o ...OrderFunc) *CityQuery {
+func (cq *CityQuery) Order(o ...city.OrderOption) *CityQuery {
 	cq.order = append(cq.order, o...)
 	return cq
 }
@@ -318,7 +318,7 @@ func (cq *CityQuery) Clone() *CityQuery {
 	return &CityQuery{
 		config:       cq.config,
 		ctx:          cq.ctx.Clone(),
-		order:        append([]OrderFunc{}, cq.order...),
+		order:        append([]city.OrderOption{}, cq.order...),
 		inters:       append([]Interceptor{}, cq.inters...),
 		predicates:   append([]predicate.City{}, cq.predicates...),
 		withParent:   cq.withParent.Clone(),
@@ -533,8 +533,11 @@ func (cq *CityQuery) loadChildren(ctx context.Context, query *CityQuery, nodes [
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(city.FieldParentID)
+	}
 	query.Where(predicate.City(func(s *sql.Selector) {
-		s.Where(sql.InValues(city.ChildrenColumn, fks...))
+		s.Where(sql.InValues(s.C(city.ChildrenColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -547,7 +550,7 @@ func (cq *CityQuery) loadChildren(ctx context.Context, query *CityQuery, nodes [
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "parent_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "parent_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -642,6 +645,9 @@ func (cq *CityQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != city.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if cq.withParent != nil {
+			_spec.Node.AddColumnOnce(city.FieldParentID)
 		}
 	}
 	if ps := cq.predicates; len(ps) > 0 {

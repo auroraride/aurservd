@@ -134,7 +134,7 @@ func (ecu *EnterpriseContractUpdate) Save(ctx context.Context) (int, error) {
 	if err := ecu.defaults(); err != nil {
 		return 0, err
 	}
-	return withHooks[int, EnterpriseContractMutation](ctx, ecu.sqlSave, ecu.mutation, ecu.hooks)
+	return withHooks(ctx, ecu.sqlSave, ecu.mutation, ecu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -238,10 +238,7 @@ func (ecu *EnterpriseContractUpdate) sqlSave(ctx context.Context) (n int, err er
 			Columns: []string{enterprisecontract.EnterpriseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: enterprise.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -254,10 +251,7 @@ func (ecu *EnterpriseContractUpdate) sqlSave(ctx context.Context) (n int, err er
 			Columns: []string{enterprisecontract.EnterpriseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: enterprise.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -403,7 +397,7 @@ func (ecuo *EnterpriseContractUpdateOne) Save(ctx context.Context) (*EnterpriseC
 	if err := ecuo.defaults(); err != nil {
 		return nil, err
 	}
-	return withHooks[*EnterpriseContract, EnterpriseContractMutation](ctx, ecuo.sqlSave, ecuo.mutation, ecuo.hooks)
+	return withHooks(ctx, ecuo.sqlSave, ecuo.mutation, ecuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -524,10 +518,7 @@ func (ecuo *EnterpriseContractUpdateOne) sqlSave(ctx context.Context) (_node *En
 			Columns: []string{enterprisecontract.EnterpriseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: enterprise.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -540,10 +531,7 @@ func (ecuo *EnterpriseContractUpdateOne) sqlSave(ctx context.Context) (_node *En
 			Columns: []string{enterprisecontract.EnterpriseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: enterprise.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

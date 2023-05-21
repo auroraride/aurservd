@@ -129,7 +129,7 @@ func (cac *CouponAssemblyCreate) Save(ctx context.Context) (*CouponAssembly, err
 	if err := cac.defaults(); err != nil {
 		return nil, err
 	}
-	return withHooks[*CouponAssembly, CouponAssemblyMutation](ctx, cac.sqlSave, cac.mutation, cac.hooks)
+	return withHooks(ctx, cac.sqlSave, cac.mutation, cac.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -277,10 +277,7 @@ func (cac *CouponAssemblyCreate) createSpec() (*CouponAssembly, *sqlgraph.Create
 			Columns: []string{couponassembly.TemplateColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: coupontemplate.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(coupontemplate.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -746,8 +743,8 @@ func (cacb *CouponAssemblyCreateBulk) Save(ctx context.Context) ([]*CouponAssemb
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, cacb.builders[i+1].mutation)
 				} else {

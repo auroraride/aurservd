@@ -119,7 +119,7 @@ func (epc *EnterprisePrepaymentCreate) Save(ctx context.Context) (*EnterprisePre
 	if err := epc.defaults(); err != nil {
 		return nil, err
 	}
-	return withHooks[*EnterprisePrepayment, EnterprisePrepaymentMutation](ctx, epc.sqlSave, epc.mutation, epc.hooks)
+	return withHooks(ctx, epc.sqlSave, epc.mutation, epc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -243,10 +243,7 @@ func (epc *EnterprisePrepaymentCreate) createSpec() (*EnterprisePrepayment, *sql
 			Columns: []string{enterpriseprepayment.EnterpriseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: enterprise.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -585,8 +582,8 @@ func (epcb *EnterprisePrepaymentCreateBulk) Save(ctx context.Context) ([]*Enterp
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, epcb.builders[i+1].mutation)
 				} else {

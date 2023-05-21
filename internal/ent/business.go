@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/battery"
@@ -68,7 +69,8 @@ type Business struct {
 	StockSn string `json:"stock_sn,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the BusinessQuery when eager-loading is set.
-	Edges BusinessEdges `json:"edges"`
+	Edges        BusinessEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // BusinessEdges holds the relations/edges for other nodes in the graph.
@@ -242,7 +244,7 @@ func (*Business) scanValues(columns []string) ([]any, error) {
 		case business.FieldCreatedAt, business.FieldUpdatedAt, business.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Business", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -390,9 +392,17 @@ func (b *Business) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				b.StockSn = value.String
 			}
+		default:
+			b.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the Business.
+// This includes values selected through modifiers, order, etc.
+func (b *Business) Value(name string) (ent.Value, error) {
+	return b.selectValues.Get(name)
 }
 
 // QueryRider queries the "rider" edge of the Business entity.

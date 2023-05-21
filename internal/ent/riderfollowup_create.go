@@ -125,7 +125,7 @@ func (rfuc *RiderFollowUpCreate) Save(ctx context.Context) (*RiderFollowUp, erro
 	if err := rfuc.defaults(); err != nil {
 		return nil, err
 	}
-	return withHooks[*RiderFollowUp, RiderFollowUpMutation](ctx, rfuc.sqlSave, rfuc.mutation, rfuc.hooks)
+	return withHooks(ctx, rfuc.sqlSave, rfuc.mutation, rfuc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -248,10 +248,7 @@ func (rfuc *RiderFollowUpCreate) createSpec() (*RiderFollowUp, *sqlgraph.CreateS
 			Columns: []string{riderfollowup.ManagerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: manager.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(manager.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -268,10 +265,7 @@ func (rfuc *RiderFollowUpCreate) createSpec() (*RiderFollowUp, *sqlgraph.CreateS
 			Columns: []string{riderfollowup.RiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -633,8 +627,8 @@ func (rfucb *RiderFollowUpCreateBulk) Save(ctx context.Context) ([]*RiderFollowU
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, rfucb.builders[i+1].mutation)
 				} else {

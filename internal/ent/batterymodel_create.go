@@ -66,7 +66,7 @@ func (bmc *BatteryModelCreate) Mutation() *BatteryModelMutation {
 // Save creates the BatteryModel in the database.
 func (bmc *BatteryModelCreate) Save(ctx context.Context) (*BatteryModel, error) {
 	bmc.defaults()
-	return withHooks[*BatteryModel, BatteryModelMutation](ctx, bmc.sqlSave, bmc.mutation, bmc.hooks)
+	return withHooks(ctx, bmc.sqlSave, bmc.mutation, bmc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -150,10 +150,7 @@ func (bmc *BatteryModelCreate) createSpec() (*BatteryModel, *sqlgraph.CreateSpec
 			Columns: batterymodel.CabinetsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: cabinet.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -342,8 +339,8 @@ func (bmcb *BatteryModelCreateBulk) Save(ctx context.Context) ([]*BatteryModel, 
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, bmcb.builders[i+1].mutation)
 				} else {

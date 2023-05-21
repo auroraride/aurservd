@@ -234,7 +234,7 @@ func (ssu *SubscribeSuspendUpdate) ClearPause() *SubscribeSuspendUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (ssu *SubscribeSuspendUpdate) Save(ctx context.Context) (int, error) {
-	return withHooks[int, SubscribeSuspendMutation](ctx, ssu.sqlSave, ssu.mutation, ssu.hooks)
+	return withHooks(ctx, ssu.sqlSave, ssu.mutation, ssu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -341,10 +341,7 @@ func (ssu *SubscribeSuspendUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Columns: []string{subscribesuspend.CityColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -357,10 +354,7 @@ func (ssu *SubscribeSuspendUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Columns: []string{subscribesuspend.CityColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -376,10 +370,7 @@ func (ssu *SubscribeSuspendUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Columns: []string{subscribesuspend.RiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -392,10 +383,7 @@ func (ssu *SubscribeSuspendUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Columns: []string{subscribesuspend.RiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -411,10 +399,7 @@ func (ssu *SubscribeSuspendUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Columns: []string{subscribesuspend.SubscribeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: subscribe.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -427,10 +412,7 @@ func (ssu *SubscribeSuspendUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Columns: []string{subscribesuspend.SubscribeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: subscribe.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -446,10 +428,7 @@ func (ssu *SubscribeSuspendUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Columns: []string{subscribesuspend.PauseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: subscribepause.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(subscribepause.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -462,10 +441,7 @@ func (ssu *SubscribeSuspendUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Columns: []string{subscribesuspend.PauseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: subscribepause.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(subscribepause.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -708,7 +684,7 @@ func (ssuo *SubscribeSuspendUpdateOne) Select(field string, fields ...string) *S
 
 // Save executes the query and returns the updated SubscribeSuspend entity.
 func (ssuo *SubscribeSuspendUpdateOne) Save(ctx context.Context) (*SubscribeSuspend, error) {
-	return withHooks[*SubscribeSuspend, SubscribeSuspendMutation](ctx, ssuo.sqlSave, ssuo.mutation, ssuo.hooks)
+	return withHooks(ctx, ssuo.sqlSave, ssuo.mutation, ssuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -832,10 +808,7 @@ func (ssuo *SubscribeSuspendUpdateOne) sqlSave(ctx context.Context) (_node *Subs
 			Columns: []string{subscribesuspend.CityColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -848,10 +821,7 @@ func (ssuo *SubscribeSuspendUpdateOne) sqlSave(ctx context.Context) (_node *Subs
 			Columns: []string{subscribesuspend.CityColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -867,10 +837,7 @@ func (ssuo *SubscribeSuspendUpdateOne) sqlSave(ctx context.Context) (_node *Subs
 			Columns: []string{subscribesuspend.RiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -883,10 +850,7 @@ func (ssuo *SubscribeSuspendUpdateOne) sqlSave(ctx context.Context) (_node *Subs
 			Columns: []string{subscribesuspend.RiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -902,10 +866,7 @@ func (ssuo *SubscribeSuspendUpdateOne) sqlSave(ctx context.Context) (_node *Subs
 			Columns: []string{subscribesuspend.SubscribeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: subscribe.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -918,10 +879,7 @@ func (ssuo *SubscribeSuspendUpdateOne) sqlSave(ctx context.Context) (_node *Subs
 			Columns: []string{subscribesuspend.SubscribeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: subscribe.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -937,10 +895,7 @@ func (ssuo *SubscribeSuspendUpdateOne) sqlSave(ctx context.Context) (_node *Subs
 			Columns: []string{subscribesuspend.PauseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: subscribepause.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(subscribepause.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -953,10 +908,7 @@ func (ssuo *SubscribeSuspendUpdateOne) sqlSave(ctx context.Context) (_node *Subs
 			Columns: []string{subscribesuspend.PauseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: subscribepause.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(subscribepause.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

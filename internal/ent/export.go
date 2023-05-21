@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/internal/ent/export"
 	"github.com/auroraride/aurservd/internal/ent/manager"
@@ -48,7 +49,8 @@ type Export struct {
 	Remark string `json:"remark,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ExportQuery when eager-loading is set.
-	Edges ExportEdges `json:"edges"`
+	Edges        ExportEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // ExportEdges holds the relations/edges for other nodes in the graph.
@@ -87,7 +89,7 @@ func (*Export) scanValues(columns []string) ([]any, error) {
 		case export.FieldCreatedAt, export.FieldUpdatedAt, export.FieldDeletedAt, export.FieldFinishAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Export", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -194,9 +196,17 @@ func (e *Export) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				e.Remark = value.String
 			}
+		default:
+			e.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the Export.
+// This includes values selected through modifiers, order, etc.
+func (e *Export) Value(name string) (ent.Value, error) {
+	return e.selectValues.Get(name)
 }
 
 // QueryManager queries the "manager" edge of the Export entity.

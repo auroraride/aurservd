@@ -211,7 +211,7 @@ func (ru *ReserveUpdate) Save(ctx context.Context) (int, error) {
 	if err := ru.defaults(); err != nil {
 		return 0, err
 	}
-	return withHooks[int, ReserveMutation](ctx, ru.sqlSave, ru.mutation, ru.hooks)
+	return withHooks(ctx, ru.sqlSave, ru.mutation, ru.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -321,10 +321,7 @@ func (ru *ReserveUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{reserve.CabinetColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: cabinet.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -337,10 +334,7 @@ func (ru *ReserveUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{reserve.CabinetColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: cabinet.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -356,10 +350,7 @@ func (ru *ReserveUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{reserve.RiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -372,10 +363,7 @@ func (ru *ReserveUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{reserve.RiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -391,10 +379,7 @@ func (ru *ReserveUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{reserve.CityColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -407,10 +392,7 @@ func (ru *ReserveUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{reserve.CityColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -426,10 +408,7 @@ func (ru *ReserveUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{reserve.BusinessColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: business.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -442,10 +421,7 @@ func (ru *ReserveUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{reserve.BusinessColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: business.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -665,7 +641,7 @@ func (ruo *ReserveUpdateOne) Save(ctx context.Context) (*Reserve, error) {
 	if err := ruo.defaults(); err != nil {
 		return nil, err
 	}
-	return withHooks[*Reserve, ReserveMutation](ctx, ruo.sqlSave, ruo.mutation, ruo.hooks)
+	return withHooks(ctx, ruo.sqlSave, ruo.mutation, ruo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -792,10 +768,7 @@ func (ruo *ReserveUpdateOne) sqlSave(ctx context.Context) (_node *Reserve, err e
 			Columns: []string{reserve.CabinetColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: cabinet.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -808,10 +781,7 @@ func (ruo *ReserveUpdateOne) sqlSave(ctx context.Context) (_node *Reserve, err e
 			Columns: []string{reserve.CabinetColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: cabinet.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -827,10 +797,7 @@ func (ruo *ReserveUpdateOne) sqlSave(ctx context.Context) (_node *Reserve, err e
 			Columns: []string{reserve.RiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -843,10 +810,7 @@ func (ruo *ReserveUpdateOne) sqlSave(ctx context.Context) (_node *Reserve, err e
 			Columns: []string{reserve.RiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -862,10 +826,7 @@ func (ruo *ReserveUpdateOne) sqlSave(ctx context.Context) (_node *Reserve, err e
 			Columns: []string{reserve.CityColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -878,10 +839,7 @@ func (ruo *ReserveUpdateOne) sqlSave(ctx context.Context) (_node *Reserve, err e
 			Columns: []string{reserve.CityColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -897,10 +855,7 @@ func (ruo *ReserveUpdateOne) sqlSave(ctx context.Context) (_node *Reserve, err e
 			Columns: []string{reserve.BusinessColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: business.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -913,10 +868,7 @@ func (ruo *ReserveUpdateOne) sqlSave(ctx context.Context) (_node *Reserve, err e
 			Columns: []string{reserve.BusinessColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: business.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

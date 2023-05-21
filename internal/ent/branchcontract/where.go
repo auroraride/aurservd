@@ -1074,11 +1074,7 @@ func HasBranch() predicate.BranchContract {
 // HasBranchWith applies the HasEdge predicate on the "branch" edge with a given conditions (other predicates).
 func HasBranchWith(preds ...predicate.Branch) predicate.BranchContract {
 	return predicate.BranchContract(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(BranchInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, BranchTable, BranchColumn),
-		)
+		step := newBranchStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

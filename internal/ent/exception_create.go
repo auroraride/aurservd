@@ -203,7 +203,7 @@ func (ec *ExceptionCreate) Save(ctx context.Context) (*Exception, error) {
 	if err := ec.defaults(); err != nil {
 		return nil, err
 	}
-	return withHooks[*Exception, ExceptionMutation](ctx, ec.sqlSave, ec.mutation, ec.hooks)
+	return withHooks(ctx, ec.sqlSave, ec.mutation, ec.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -376,10 +376,7 @@ func (ec *ExceptionCreate) createSpec() (*Exception, *sqlgraph.CreateSpec) {
 			Columns: []string{exception.CityColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -396,10 +393,7 @@ func (ec *ExceptionCreate) createSpec() (*Exception, *sqlgraph.CreateSpec) {
 			Columns: []string{exception.EmployeeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: employee.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(employee.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -416,10 +410,7 @@ func (ec *ExceptionCreate) createSpec() (*Exception, *sqlgraph.CreateSpec) {
 			Columns: []string{exception.StoreColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: store.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -1018,8 +1009,8 @@ func (ecb *ExceptionCreateBulk) Save(ctx context.Context) ([]*Exception, error) 
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, ecb.builders[i+1].mutation)
 				} else {

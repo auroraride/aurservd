@@ -35,7 +35,7 @@ import (
 type SubscribeQuery struct {
 	config
 	ctx              *QueryContext
-	order            []OrderFunc
+	order            []subscribe.OrderOption
 	inters           []Interceptor
 	predicates       []predicate.Subscribe
 	withPlan         *PlanQuery
@@ -87,7 +87,7 @@ func (sq *SubscribeQuery) Unique(unique bool) *SubscribeQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (sq *SubscribeQuery) Order(o ...OrderFunc) *SubscribeQuery {
+func (sq *SubscribeQuery) Order(o ...subscribe.OrderOption) *SubscribeQuery {
 	sq.order = append(sq.order, o...)
 	return sq
 }
@@ -655,7 +655,7 @@ func (sq *SubscribeQuery) Clone() *SubscribeQuery {
 	return &SubscribeQuery{
 		config:           sq.config,
 		ctx:              sq.ctx.Clone(),
-		order:            append([]OrderFunc{}, sq.order...),
+		order:            append([]subscribe.OrderOption{}, sq.order...),
 		inters:           append([]Interceptor{}, sq.inters...),
 		predicates:       append([]predicate.Subscribe{}, sq.predicates...),
 		withPlan:         sq.withPlan.Clone(),
@@ -1421,8 +1421,11 @@ func (sq *SubscribeQuery) loadPauses(ctx context.Context, query *SubscribePauseQ
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(subscribepause.FieldSubscribeID)
+	}
 	query.Where(predicate.SubscribePause(func(s *sql.Selector) {
-		s.Where(sql.InValues(subscribe.PausesColumn, fks...))
+		s.Where(sql.InValues(s.C(subscribe.PausesColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1432,7 +1435,7 @@ func (sq *SubscribeQuery) loadPauses(ctx context.Context, query *SubscribePauseQ
 		fk := n.SubscribeID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "subscribe_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "subscribe_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -1448,8 +1451,11 @@ func (sq *SubscribeQuery) loadSuspends(ctx context.Context, query *SubscribeSusp
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(subscribesuspend.FieldSubscribeID)
+	}
 	query.Where(predicate.SubscribeSuspend(func(s *sql.Selector) {
-		s.Where(sql.InValues(subscribe.SuspendsColumn, fks...))
+		s.Where(sql.InValues(s.C(subscribe.SuspendsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1459,7 +1465,7 @@ func (sq *SubscribeQuery) loadSuspends(ctx context.Context, query *SubscribeSusp
 		fk := n.SubscribeID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "subscribe_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "subscribe_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -1475,8 +1481,11 @@ func (sq *SubscribeQuery) loadAlters(ctx context.Context, query *SubscribeAlterQ
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(subscribealter.FieldSubscribeID)
+	}
 	query.Where(predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.InValues(subscribe.AltersColumn, fks...))
+		s.Where(sql.InValues(s.C(subscribe.AltersColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1486,7 +1495,7 @@ func (sq *SubscribeQuery) loadAlters(ctx context.Context, query *SubscribeAlterQ
 		fk := n.SubscribeID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "subscribe_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "subscribe_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -1502,8 +1511,11 @@ func (sq *SubscribeQuery) loadOrders(ctx context.Context, query *OrderQuery, nod
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(order.FieldSubscribeID)
+	}
 	query.Where(predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.InValues(subscribe.OrdersColumn, fks...))
+		s.Where(sql.InValues(s.C(subscribe.OrdersColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1513,7 +1525,7 @@ func (sq *SubscribeQuery) loadOrders(ctx context.Context, query *OrderQuery, nod
 		fk := n.SubscribeID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "subscribe_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "subscribe_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -1558,8 +1570,11 @@ func (sq *SubscribeQuery) loadBills(ctx context.Context, query *EnterpriseBillQu
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(enterprisebill.FieldSubscribeID)
+	}
 	query.Where(predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.InValues(subscribe.BillsColumn, fks...))
+		s.Where(sql.InValues(s.C(subscribe.BillsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1569,7 +1584,7 @@ func (sq *SubscribeQuery) loadBills(ctx context.Context, query *EnterpriseBillQu
 		fk := n.SubscribeID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "subscribe_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "subscribe_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -1582,8 +1597,11 @@ func (sq *SubscribeQuery) loadBattery(ctx context.Context, query *BatteryQuery, 
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(battery.FieldSubscribeID)
+	}
 	query.Where(predicate.Battery(func(s *sql.Selector) {
-		s.Where(sql.InValues(subscribe.BatteryColumn, fks...))
+		s.Where(sql.InValues(s.C(subscribe.BatteryColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1596,7 +1614,7 @@ func (sq *SubscribeQuery) loadBattery(ctx context.Context, query *BatteryQuery, 
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "subscribe_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "subscribe_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -1630,6 +1648,39 @@ func (sq *SubscribeQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != subscribe.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if sq.withPlan != nil {
+			_spec.Node.AddColumnOnce(subscribe.FieldPlanID)
+		}
+		if sq.withEmployee != nil {
+			_spec.Node.AddColumnOnce(subscribe.FieldEmployeeID)
+		}
+		if sq.withCity != nil {
+			_spec.Node.AddColumnOnce(subscribe.FieldCityID)
+		}
+		if sq.withStation != nil {
+			_spec.Node.AddColumnOnce(subscribe.FieldStationID)
+		}
+		if sq.withStore != nil {
+			_spec.Node.AddColumnOnce(subscribe.FieldStoreID)
+		}
+		if sq.withCabinet != nil {
+			_spec.Node.AddColumnOnce(subscribe.FieldCabinetID)
+		}
+		if sq.withBrand != nil {
+			_spec.Node.AddColumnOnce(subscribe.FieldBrandID)
+		}
+		if sq.withEbike != nil {
+			_spec.Node.AddColumnOnce(subscribe.FieldEbikeID)
+		}
+		if sq.withRider != nil {
+			_spec.Node.AddColumnOnce(subscribe.FieldRiderID)
+		}
+		if sq.withEnterprise != nil {
+			_spec.Node.AddColumnOnce(subscribe.FieldEnterpriseID)
+		}
+		if sq.withInitialOrder != nil {
+			_spec.Node.AddColumnOnce(subscribe.FieldInitialOrderID)
 		}
 	}
 	if ps := sq.predicates; len(ps) > 0 {

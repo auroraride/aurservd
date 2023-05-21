@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 )
@@ -22,7 +23,8 @@ type BatteryModel struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the BatteryModelQuery when eager-loading is set.
-	Edges BatteryModelEdges `json:"edges"`
+	Edges        BatteryModelEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // BatteryModelEdges holds the relations/edges for other nodes in the graph.
@@ -55,7 +57,7 @@ func (*BatteryModel) scanValues(columns []string) ([]any, error) {
 		case batterymodel.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type BatteryModel", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -87,9 +89,17 @@ func (bm *BatteryModel) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				bm.CreatedAt = value.Time
 			}
+		default:
+			bm.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the BatteryModel.
+// This includes values selected through modifiers, order, etc.
+func (bm *BatteryModel) Value(name string) (ent.Value, error) {
+	return bm.selectValues.Get(name)
 }
 
 // QueryCabinets queries the "cabinets" edge of the BatteryModel entity.

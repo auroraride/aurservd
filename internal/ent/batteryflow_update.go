@@ -264,7 +264,7 @@ func (bfu *BatteryFlowUpdate) ClearRider() *BatteryFlowUpdate {
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (bfu *BatteryFlowUpdate) Save(ctx context.Context) (int, error) {
 	bfu.defaults()
-	return withHooks[int, BatteryFlowMutation](ctx, bfu.sqlSave, bfu.mutation, bfu.hooks)
+	return withHooks(ctx, bfu.sqlSave, bfu.mutation, bfu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -370,10 +370,7 @@ func (bfu *BatteryFlowUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{batteryflow.SubscribeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: subscribe.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -386,10 +383,7 @@ func (bfu *BatteryFlowUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{batteryflow.SubscribeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: subscribe.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -405,10 +399,7 @@ func (bfu *BatteryFlowUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{batteryflow.BatteryColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: battery.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -421,10 +412,7 @@ func (bfu *BatteryFlowUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{batteryflow.BatteryColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: battery.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -440,10 +428,7 @@ func (bfu *BatteryFlowUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{batteryflow.CabinetColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: cabinet.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -456,10 +441,7 @@ func (bfu *BatteryFlowUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{batteryflow.CabinetColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: cabinet.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -475,10 +457,7 @@ func (bfu *BatteryFlowUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{batteryflow.RiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -491,10 +470,7 @@ func (bfu *BatteryFlowUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{batteryflow.RiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -767,7 +743,7 @@ func (bfuo *BatteryFlowUpdateOne) Select(field string, fields ...string) *Batter
 // Save executes the query and returns the updated BatteryFlow entity.
 func (bfuo *BatteryFlowUpdateOne) Save(ctx context.Context) (*BatteryFlow, error) {
 	bfuo.defaults()
-	return withHooks[*BatteryFlow, BatteryFlowMutation](ctx, bfuo.sqlSave, bfuo.mutation, bfuo.hooks)
+	return withHooks(ctx, bfuo.sqlSave, bfuo.mutation, bfuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -890,10 +866,7 @@ func (bfuo *BatteryFlowUpdateOne) sqlSave(ctx context.Context) (_node *BatteryFl
 			Columns: []string{batteryflow.SubscribeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: subscribe.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -906,10 +879,7 @@ func (bfuo *BatteryFlowUpdateOne) sqlSave(ctx context.Context) (_node *BatteryFl
 			Columns: []string{batteryflow.SubscribeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: subscribe.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -925,10 +895,7 @@ func (bfuo *BatteryFlowUpdateOne) sqlSave(ctx context.Context) (_node *BatteryFl
 			Columns: []string{batteryflow.BatteryColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: battery.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -941,10 +908,7 @@ func (bfuo *BatteryFlowUpdateOne) sqlSave(ctx context.Context) (_node *BatteryFl
 			Columns: []string{batteryflow.BatteryColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: battery.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -960,10 +924,7 @@ func (bfuo *BatteryFlowUpdateOne) sqlSave(ctx context.Context) (_node *BatteryFl
 			Columns: []string{batteryflow.CabinetColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: cabinet.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -976,10 +937,7 @@ func (bfuo *BatteryFlowUpdateOne) sqlSave(ctx context.Context) (_node *BatteryFl
 			Columns: []string{batteryflow.CabinetColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: cabinet.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -995,10 +953,7 @@ func (bfuo *BatteryFlowUpdateOne) sqlSave(ctx context.Context) (_node *BatteryFl
 			Columns: []string{batteryflow.RiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -1011,10 +966,7 @@ func (bfuo *BatteryFlowUpdateOne) sqlSave(ctx context.Context) (_node *BatteryFl
 			Columns: []string{batteryflow.RiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

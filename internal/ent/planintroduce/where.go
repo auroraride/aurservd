@@ -334,11 +334,7 @@ func HasBrand() predicate.PlanIntroduce {
 // HasBrandWith applies the HasEdge predicate on the "brand" edge with a given conditions (other predicates).
 func HasBrandWith(preds ...predicate.EbikeBrand) predicate.PlanIntroduce {
 	return predicate.PlanIntroduce(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(BrandInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, BrandTable, BrandColumn),
-		)
+		step := newBrandStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

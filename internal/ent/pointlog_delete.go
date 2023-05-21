@@ -27,7 +27,7 @@ func (pld *PointLogDelete) Where(ps ...predicate.PointLog) *PointLogDelete {
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (pld *PointLogDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks[int, PointLogMutation](ctx, pld.sqlExec, pld.mutation, pld.hooks)
+	return withHooks(ctx, pld.sqlExec, pld.mutation, pld.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.

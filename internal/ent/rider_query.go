@@ -31,7 +31,7 @@ import (
 type RiderQuery struct {
 	config
 	ctx              *QueryContext
-	order            []OrderFunc
+	order            []rider.OrderOption
 	inters           []Interceptor
 	predicates       []predicate.Rider
 	withStation      *EnterpriseStationQuery
@@ -78,7 +78,7 @@ func (rq *RiderQuery) Unique(unique bool) *RiderQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (rq *RiderQuery) Order(o ...OrderFunc) *RiderQuery {
+func (rq *RiderQuery) Order(o ...rider.OrderOption) *RiderQuery {
 	rq.order = append(rq.order, o...)
 	return rq
 }
@@ -536,7 +536,7 @@ func (rq *RiderQuery) Clone() *RiderQuery {
 	return &RiderQuery{
 		config:           rq.config,
 		ctx:              rq.ctx.Clone(),
-		order:            append([]OrderFunc{}, rq.order...),
+		order:            append([]rider.OrderOption{}, rq.order...),
 		inters:           append([]Interceptor{}, rq.inters...),
 		predicates:       append([]predicate.Rider{}, rq.predicates...),
 		withStation:      rq.withStation.Clone(),
@@ -992,8 +992,11 @@ func (rq *RiderQuery) loadContracts(ctx context.Context, query *ContractQuery, n
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(contract.FieldRiderID)
+	}
 	query.Where(predicate.Contract(func(s *sql.Selector) {
-		s.Where(sql.InValues(rider.ContractsColumn, fks...))
+		s.Where(sql.InValues(s.C(rider.ContractsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1003,7 +1006,7 @@ func (rq *RiderQuery) loadContracts(ctx context.Context, query *ContractQuery, n
 		fk := n.RiderID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "rider_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "rider_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -1019,8 +1022,11 @@ func (rq *RiderQuery) loadFaults(ctx context.Context, query *CabinetFaultQuery, 
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(cabinetfault.FieldRiderID)
+	}
 	query.Where(predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.InValues(rider.FaultsColumn, fks...))
+		s.Where(sql.InValues(s.C(rider.FaultsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1030,7 +1036,7 @@ func (rq *RiderQuery) loadFaults(ctx context.Context, query *CabinetFaultQuery, 
 		fk := n.RiderID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "rider_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "rider_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -1046,8 +1052,11 @@ func (rq *RiderQuery) loadOrders(ctx context.Context, query *OrderQuery, nodes [
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(order.FieldRiderID)
+	}
 	query.Where(predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.InValues(rider.OrdersColumn, fks...))
+		s.Where(sql.InValues(s.C(rider.OrdersColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1057,7 +1066,7 @@ func (rq *RiderQuery) loadOrders(ctx context.Context, query *OrderQuery, nodes [
 		fk := n.RiderID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "rider_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "rider_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -1073,8 +1082,11 @@ func (rq *RiderQuery) loadExchanges(ctx context.Context, query *ExchangeQuery, n
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(exchange.FieldRiderID)
+	}
 	query.Where(predicate.Exchange(func(s *sql.Selector) {
-		s.Where(sql.InValues(rider.ExchangesColumn, fks...))
+		s.Where(sql.InValues(s.C(rider.ExchangesColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1084,7 +1096,7 @@ func (rq *RiderQuery) loadExchanges(ctx context.Context, query *ExchangeQuery, n
 		fk := n.RiderID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "rider_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "rider_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -1100,8 +1112,11 @@ func (rq *RiderQuery) loadSubscribes(ctx context.Context, query *SubscribeQuery,
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(subscribe.FieldRiderID)
+	}
 	query.Where(predicate.Subscribe(func(s *sql.Selector) {
-		s.Where(sql.InValues(rider.SubscribesColumn, fks...))
+		s.Where(sql.InValues(s.C(rider.SubscribesColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1111,7 +1126,7 @@ func (rq *RiderQuery) loadSubscribes(ctx context.Context, query *SubscribeQuery,
 		fk := n.RiderID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "rider_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "rider_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -1128,8 +1143,11 @@ func (rq *RiderQuery) loadStocks(ctx context.Context, query *StockQuery, nodes [
 		}
 	}
 	query.withFKs = true
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(stock.FieldRiderID)
+	}
 	query.Where(predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.InValues(rider.StocksColumn, fks...))
+		s.Where(sql.InValues(s.C(rider.StocksColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1142,7 +1160,7 @@ func (rq *RiderQuery) loadStocks(ctx context.Context, query *StockQuery, nodes [
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "rider_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "rider_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -1158,8 +1176,11 @@ func (rq *RiderQuery) loadFollowups(ctx context.Context, query *RiderFollowUpQue
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(riderfollowup.FieldRiderID)
+	}
 	query.Where(predicate.RiderFollowUp(func(s *sql.Selector) {
-		s.Where(sql.InValues(rider.FollowupsColumn, fks...))
+		s.Where(sql.InValues(s.C(rider.FollowupsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1169,7 +1190,7 @@ func (rq *RiderQuery) loadFollowups(ctx context.Context, query *RiderFollowUpQue
 		fk := n.RiderID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "rider_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "rider_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -1182,8 +1203,11 @@ func (rq *RiderQuery) loadBattery(ctx context.Context, query *BatteryQuery, node
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(battery.FieldRiderID)
+	}
 	query.Where(predicate.Battery(func(s *sql.Selector) {
-		s.Where(sql.InValues(rider.BatteryColumn, fks...))
+		s.Where(sql.InValues(s.C(rider.BatteryColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1196,7 +1220,7 @@ func (rq *RiderQuery) loadBattery(ctx context.Context, query *BatteryQuery, node
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "rider_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "rider_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -1212,8 +1236,11 @@ func (rq *RiderQuery) loadBatteryFlows(ctx context.Context, query *BatteryFlowQu
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(batteryflow.FieldRiderID)
+	}
 	query.Where(predicate.BatteryFlow(func(s *sql.Selector) {
-		s.Where(sql.InValues(rider.BatteryFlowsColumn, fks...))
+		s.Where(sql.InValues(s.C(rider.BatteryFlowsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1223,7 +1250,7 @@ func (rq *RiderQuery) loadBatteryFlows(ctx context.Context, query *BatteryFlowQu
 		fk := n.RiderID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "rider_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "rider_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -1257,6 +1284,15 @@ func (rq *RiderQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != rider.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if rq.withStation != nil {
+			_spec.Node.AddColumnOnce(rider.FieldStationID)
+		}
+		if rq.withPerson != nil {
+			_spec.Node.AddColumnOnce(rider.FieldPersonID)
+		}
+		if rq.withEnterprise != nil {
+			_spec.Node.AddColumnOnce(rider.FieldEnterpriseID)
 		}
 	}
 	if ps := rq.predicates; len(ps) > 0 {

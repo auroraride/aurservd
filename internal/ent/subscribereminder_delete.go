@@ -27,7 +27,7 @@ func (srd *SubscribeReminderDelete) Where(ps ...predicate.SubscribeReminder) *Su
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (srd *SubscribeReminderDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks[int, SubscribeReminderMutation](ctx, srd.sqlExec, srd.mutation, srd.hooks)
+	return withHooks(ctx, srd.sqlExec, srd.mutation, srd.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.

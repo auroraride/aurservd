@@ -147,7 +147,7 @@ func (cau *CouponAssemblyUpdate) Save(ctx context.Context) (int, error) {
 	if err := cau.defaults(); err != nil {
 		return 0, err
 	}
-	return withHooks[int, CouponAssemblyMutation](ctx, cau.sqlSave, cau.mutation, cau.hooks)
+	return withHooks(ctx, cau.sqlSave, cau.mutation, cau.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -260,10 +260,7 @@ func (cau *CouponAssemblyUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Columns: []string{couponassembly.TemplateColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: coupontemplate.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(coupontemplate.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -276,10 +273,7 @@ func (cau *CouponAssemblyUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Columns: []string{couponassembly.TemplateColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: coupontemplate.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(coupontemplate.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -438,7 +432,7 @@ func (cauo *CouponAssemblyUpdateOne) Save(ctx context.Context) (*CouponAssembly,
 	if err := cauo.defaults(); err != nil {
 		return nil, err
 	}
-	return withHooks[*CouponAssembly, CouponAssemblyMutation](ctx, cauo.sqlSave, cauo.mutation, cauo.hooks)
+	return withHooks(ctx, cauo.sqlSave, cauo.mutation, cauo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -568,10 +562,7 @@ func (cauo *CouponAssemblyUpdateOne) sqlSave(ctx context.Context) (_node *Coupon
 			Columns: []string{couponassembly.TemplateColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: coupontemplate.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(coupontemplate.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -584,10 +575,7 @@ func (cauo *CouponAssemblyUpdateOne) sqlSave(ctx context.Context) (_node *Coupon
 			Columns: []string{couponassembly.TemplateColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: coupontemplate.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(coupontemplate.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

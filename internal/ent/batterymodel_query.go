@@ -20,7 +20,7 @@ import (
 type BatteryModelQuery struct {
 	config
 	ctx          *QueryContext
-	order        []OrderFunc
+	order        []batterymodel.OrderOption
 	inters       []Interceptor
 	predicates   []predicate.BatteryModel
 	withCabinets *CabinetQuery
@@ -56,7 +56,7 @@ func (bmq *BatteryModelQuery) Unique(unique bool) *BatteryModelQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (bmq *BatteryModelQuery) Order(o ...OrderFunc) *BatteryModelQuery {
+func (bmq *BatteryModelQuery) Order(o ...batterymodel.OrderOption) *BatteryModelQuery {
 	bmq.order = append(bmq.order, o...)
 	return bmq
 }
@@ -272,7 +272,7 @@ func (bmq *BatteryModelQuery) Clone() *BatteryModelQuery {
 	return &BatteryModelQuery{
 		config:       bmq.config,
 		ctx:          bmq.ctx.Clone(),
-		order:        append([]OrderFunc{}, bmq.order...),
+		order:        append([]batterymodel.OrderOption{}, bmq.order...),
 		inters:       append([]Interceptor{}, bmq.inters...),
 		predicates:   append([]predicate.BatteryModel{}, bmq.predicates...),
 		withCabinets: bmq.withCabinets.Clone(),

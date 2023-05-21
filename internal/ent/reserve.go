@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/business"
@@ -48,7 +49,8 @@ type Reserve struct {
 	Type string `json:"type,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ReserveQuery when eager-loading is set.
-	Edges ReserveEdges `json:"edges"`
+	Edges        ReserveEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // ReserveEdges holds the relations/edges for other nodes in the graph.
@@ -132,7 +134,7 @@ func (*Reserve) scanValues(columns []string) ([]any, error) {
 		case reserve.FieldCreatedAt, reserve.FieldUpdatedAt, reserve.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Reserve", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -230,9 +232,17 @@ func (r *Reserve) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				r.Type = value.String
 			}
+		default:
+			r.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the Reserve.
+// This includes values selected through modifiers, order, etc.
+func (r *Reserve) Value(name string) (ent.Value, error) {
+	return r.selectValues.Get(name)
 }
 
 // QueryCabinet queries the "cabinet" edge of the Reserve entity.

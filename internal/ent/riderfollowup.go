@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/manager"
@@ -38,7 +39,8 @@ type RiderFollowUp struct {
 	RiderID uint64 `json:"rider_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the RiderFollowUpQuery when eager-loading is set.
-	Edges RiderFollowUpEdges `json:"edges"`
+	Edges        RiderFollowUpEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // RiderFollowUpEdges holds the relations/edges for other nodes in the graph.
@@ -92,7 +94,7 @@ func (*RiderFollowUp) scanValues(columns []string) ([]any, error) {
 		case riderfollowup.FieldCreatedAt, riderfollowup.FieldUpdatedAt, riderfollowup.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type RiderFollowUp", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -165,9 +167,17 @@ func (rfu *RiderFollowUp) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				rfu.RiderID = uint64(value.Int64)
 			}
+		default:
+			rfu.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the RiderFollowUp.
+// This includes values selected through modifiers, order, etc.
+func (rfu *RiderFollowUp) Value(name string) (ent.Value, error) {
+	return rfu.selectValues.Get(name)
 }
 
 // QueryManager queries the "manager" edge of the RiderFollowUp entity.

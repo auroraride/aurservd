@@ -141,7 +141,7 @@ func (ctu *CouponTemplateUpdate) Save(ctx context.Context) (int, error) {
 	if err := ctu.defaults(); err != nil {
 		return 0, err
 	}
-	return withHooks[int, CouponTemplateMutation](ctx, ctu.sqlSave, ctu.mutation, ctu.hooks)
+	return withHooks(ctx, ctu.sqlSave, ctu.mutation, ctu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -228,10 +228,7 @@ func (ctu *CouponTemplateUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Columns: []string{coupontemplate.CouponsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: coupon.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(coupon.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -244,10 +241,7 @@ func (ctu *CouponTemplateUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Columns: []string{coupontemplate.CouponsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: coupon.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(coupon.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -263,10 +257,7 @@ func (ctu *CouponTemplateUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Columns: []string{coupontemplate.CouponsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: coupon.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(coupon.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -419,7 +410,7 @@ func (ctuo *CouponTemplateUpdateOne) Save(ctx context.Context) (*CouponTemplate,
 	if err := ctuo.defaults(); err != nil {
 		return nil, err
 	}
-	return withHooks[*CouponTemplate, CouponTemplateMutation](ctx, ctuo.sqlSave, ctuo.mutation, ctuo.hooks)
+	return withHooks(ctx, ctuo.sqlSave, ctuo.mutation, ctuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -523,10 +514,7 @@ func (ctuo *CouponTemplateUpdateOne) sqlSave(ctx context.Context) (_node *Coupon
 			Columns: []string{coupontemplate.CouponsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: coupon.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(coupon.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -539,10 +527,7 @@ func (ctuo *CouponTemplateUpdateOne) sqlSave(ctx context.Context) (_node *Coupon
 			Columns: []string{coupontemplate.CouponsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: coupon.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(coupon.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -558,10 +543,7 @@ func (ctuo *CouponTemplateUpdateOne) sqlSave(ctx context.Context) (_node *Coupon
 			Columns: []string{coupontemplate.CouponsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: coupon.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(coupon.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

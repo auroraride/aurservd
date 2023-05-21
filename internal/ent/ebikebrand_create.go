@@ -113,7 +113,7 @@ func (ebc *EbikeBrandCreate) Save(ctx context.Context) (*EbikeBrand, error) {
 	if err := ebc.defaults(); err != nil {
 		return nil, err
 	}
-	return withHooks[*EbikeBrand, EbikeBrandMutation](ctx, ebc.sqlSave, ebc.mutation, ebc.hooks)
+	return withHooks(ctx, ebc.sqlSave, ebc.mutation, ebc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -583,8 +583,8 @@ func (ebcb *EbikeBrandCreateBulk) Save(ctx context.Context) ([]*EbikeBrand, erro
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, ebcb.builders[i+1].mutation)
 				} else {

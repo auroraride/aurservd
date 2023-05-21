@@ -499,11 +499,7 @@ func HasEnterprise() predicate.EnterpriseContract {
 // HasEnterpriseWith applies the HasEdge predicate on the "enterprise" edge with a given conditions (other predicates).
 func HasEnterpriseWith(preds ...predicate.Enterprise) predicate.EnterpriseContract {
 	return predicate.EnterpriseContract(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(EnterpriseInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, EnterpriseTable, EnterpriseColumn),
-		)
+		step := newEnterpriseStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

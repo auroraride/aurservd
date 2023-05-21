@@ -24,7 +24,7 @@ import (
 type EnterpriseBillQuery struct {
 	config
 	ctx            *QueryContext
-	order          []OrderFunc
+	order          []enterprisebill.OrderOption
 	inters         []Interceptor
 	predicates     []predicate.EnterpriseBill
 	withRider      *RiderQuery
@@ -65,7 +65,7 @@ func (ebq *EnterpriseBillQuery) Unique(unique bool) *EnterpriseBillQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (ebq *EnterpriseBillQuery) Order(o ...OrderFunc) *EnterpriseBillQuery {
+func (ebq *EnterpriseBillQuery) Order(o ...enterprisebill.OrderOption) *EnterpriseBillQuery {
 	ebq.order = append(ebq.order, o...)
 	return ebq
 }
@@ -391,7 +391,7 @@ func (ebq *EnterpriseBillQuery) Clone() *EnterpriseBillQuery {
 	return &EnterpriseBillQuery{
 		config:         ebq.config,
 		ctx:            ebq.ctx.Clone(),
-		order:          append([]OrderFunc{}, ebq.order...),
+		order:          append([]enterprisebill.OrderOption{}, ebq.order...),
 		inters:         append([]Interceptor{}, ebq.inters...),
 		predicates:     append([]predicate.EnterpriseBill{}, ebq.predicates...),
 		withRider:      ebq.withRider.Clone(),
@@ -824,6 +824,24 @@ func (ebq *EnterpriseBillQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != enterprisebill.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if ebq.withRider != nil {
+			_spec.Node.AddColumnOnce(enterprisebill.FieldRiderID)
+		}
+		if ebq.withCity != nil {
+			_spec.Node.AddColumnOnce(enterprisebill.FieldCityID)
+		}
+		if ebq.withStation != nil {
+			_spec.Node.AddColumnOnce(enterprisebill.FieldStationID)
+		}
+		if ebq.withEnterprise != nil {
+			_spec.Node.AddColumnOnce(enterprisebill.FieldEnterpriseID)
+		}
+		if ebq.withStatement != nil {
+			_spec.Node.AddColumnOnce(enterprisebill.FieldStatementID)
+		}
+		if ebq.withSubscribe != nil {
+			_spec.Node.AddColumnOnce(enterprisebill.FieldSubscribeID)
 		}
 	}
 	if ps := ebq.predicates; len(ps) > 0 {

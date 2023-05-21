@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
@@ -60,7 +61,8 @@ type Allocate struct {
 	Model string `json:"model,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AllocateQuery when eager-loading is set.
-	Edges AllocateEdges `json:"edges"`
+	Edges        AllocateEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // AllocateEdges holds the relations/edges for other nodes in the graph.
@@ -204,7 +206,7 @@ func (*Allocate) scanValues(columns []string) ([]any, error) {
 		case allocate.FieldCreatedAt, allocate.FieldUpdatedAt, allocate.FieldTime:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Allocate", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -331,9 +333,17 @@ func (a *Allocate) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				a.Model = value.String
 			}
+		default:
+			a.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the Allocate.
+// This includes values selected through modifiers, order, etc.
+func (a *Allocate) Value(name string) (ent.Value, error) {
+	return a.selectValues.Get(name)
 }
 
 // QueryRider queries the "rider" edge of the Allocate entity.

@@ -197,7 +197,7 @@ func (bcc *BranchContractCreate) Save(ctx context.Context) (*BranchContract, err
 	if err := bcc.defaults(); err != nil {
 		return nil, err
 	}
-	return withHooks[*BranchContract, BranchContractMutation](ctx, bcc.sqlSave, bcc.mutation, bcc.hooks)
+	return withHooks(ctx, bcc.sqlSave, bcc.mutation, bcc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -412,10 +412,7 @@ func (bcc *BranchContractCreate) createSpec() (*BranchContract, *sqlgraph.Create
 			Columns: []string{branchcontract.BranchColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: branch.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(branch.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -1180,8 +1177,8 @@ func (bccb *BranchContractCreateBulk) Save(ctx context.Context) ([]*BranchContra
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, bccb.builders[i+1].mutation)
 				} else {

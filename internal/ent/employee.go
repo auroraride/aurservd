@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -45,7 +46,8 @@ type Employee struct {
 	Enable bool `json:"enable,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EmployeeQuery when eager-loading is set.
-	Edges EmployeeEdges `json:"edges"`
+	Edges        EmployeeEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // EmployeeEdges holds the relations/edges for other nodes in the graph.
@@ -158,7 +160,7 @@ func (*Employee) scanValues(columns []string) ([]any, error) {
 		case employee.FieldSn:
 			values[i] = new(uuid.UUID)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Employee", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -249,9 +251,17 @@ func (e *Employee) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				e.Enable = value.Bool
 			}
+		default:
+			e.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the Employee.
+// This includes values selected through modifiers, order, etc.
+func (e *Employee) Value(name string) (ent.Value, error) {
+	return e.selectValues.Get(name)
 }
 
 // QueryCity queries the "city" edge of the Employee entity.

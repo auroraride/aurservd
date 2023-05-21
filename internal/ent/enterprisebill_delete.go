@@ -27,7 +27,7 @@ func (ebd *EnterpriseBillDelete) Where(ps ...predicate.EnterpriseBill) *Enterpri
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (ebd *EnterpriseBillDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks[int, EnterpriseBillMutation](ctx, ebd.sqlExec, ebd.mutation, ebd.hooks)
+	return withHooks(ctx, ebd.sqlExec, ebd.mutation, ebd.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.

@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/manager"
@@ -43,7 +44,8 @@ type Manager struct {
 	LastSigninAt *time.Time `json:"last_signin_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ManagerQuery when eager-loading is set.
-	Edges ManagerEdges `json:"edges"`
+	Edges        ManagerEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // ManagerEdges holds the relations/edges for other nodes in the graph.
@@ -82,7 +84,7 @@ func (*Manager) scanValues(columns []string) ([]any, error) {
 		case manager.FieldCreatedAt, manager.FieldUpdatedAt, manager.FieldDeletedAt, manager.FieldLastSigninAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Manager", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -175,9 +177,17 @@ func (m *Manager) assignValues(columns []string, values []any) error {
 				m.LastSigninAt = new(time.Time)
 				*m.LastSigninAt = value.Time
 			}
+		default:
+			m.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the Manager.
+// This includes values selected through modifiers, order, etc.
+func (m *Manager) Value(name string) (ent.Value, error) {
+	return m.selectValues.Get(name)
 }
 
 // QueryRole queries the "role" edge of the Manager entity.

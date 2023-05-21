@@ -151,7 +151,7 @@ func (epc *EnterprisePriceCreate) Save(ctx context.Context) (*EnterprisePrice, e
 	if err := epc.defaults(); err != nil {
 		return nil, err
 	}
-	return withHooks[*EnterprisePrice, EnterprisePriceMutation](ctx, epc.sqlSave, epc.mutation, epc.hooks)
+	return withHooks(ctx, epc.sqlSave, epc.mutation, epc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -299,10 +299,7 @@ func (epc *EnterprisePriceCreate) createSpec() (*EnterprisePrice, *sqlgraph.Crea
 			Columns: []string{enterpriseprice.CityColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -319,10 +316,7 @@ func (epc *EnterprisePriceCreate) createSpec() (*EnterprisePrice, *sqlgraph.Crea
 			Columns: []string{enterpriseprice.EnterpriseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: enterprise.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -775,8 +769,8 @@ func (epcb *EnterprisePriceCreateBulk) Save(ctx context.Context) ([]*EnterpriseP
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, epcb.builders[i+1].mutation)
 				} else {

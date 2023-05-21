@@ -489,11 +489,7 @@ func HasTemplate() predicate.CouponAssembly {
 // HasTemplateWith applies the HasEdge predicate on the "template" edge with a given conditions (other predicates).
 func HasTemplateWith(preds ...predicate.CouponTemplate) predicate.CouponAssembly {
 	return predicate.CouponAssembly(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(TemplateInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, TemplateTable, TemplateColumn),
-		)
+		step := newTemplateStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

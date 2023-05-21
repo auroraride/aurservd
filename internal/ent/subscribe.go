@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/battery"
@@ -110,7 +111,8 @@ type Subscribe struct {
 	Intelligent bool `json:"intelligent,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the SubscribeQuery when eager-loading is set.
-	Edges SubscribeEdges `json:"edges"`
+	Edges        SubscribeEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // SubscribeEdges holds the relations/edges for other nodes in the graph.
@@ -371,7 +373,7 @@ func (*Subscribe) scanValues(columns []string) ([]any, error) {
 		case subscribe.FieldCreatedAt, subscribe.FieldUpdatedAt, subscribe.FieldDeletedAt, subscribe.FieldPausedAt, subscribe.FieldSuspendAt, subscribe.FieldStartAt, subscribe.FieldEndAt, subscribe.FieldRefundAt, subscribe.FieldLastBillDate, subscribe.FieldAgentEndAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Subscribe", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -646,9 +648,17 @@ func (s *Subscribe) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				s.Intelligent = value.Bool
 			}
+		default:
+			s.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the Subscribe.
+// This includes values selected through modifiers, order, etc.
+func (s *Subscribe) Value(name string) (ent.Value, error) {
+	return s.selectValues.Get(name)
 }
 
 // QueryPlan queries the "plan" edge of the Subscribe entity.

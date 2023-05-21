@@ -131,7 +131,7 @@ func (ecc *EnterpriseContractCreate) Save(ctx context.Context) (*EnterpriseContr
 	if err := ecc.defaults(); err != nil {
 		return nil, err
 	}
-	return withHooks[*EnterpriseContract, EnterpriseContractMutation](ctx, ecc.sqlSave, ecc.mutation, ecc.hooks)
+	return withHooks(ctx, ecc.sqlSave, ecc.mutation, ecc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -269,10 +269,7 @@ func (ecc *EnterpriseContractCreate) createSpec() (*EnterpriseContract, *sqlgrap
 			Columns: []string{enterprisecontract.EnterpriseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: enterprise.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -686,8 +683,8 @@ func (eccb *EnterpriseContractCreateBulk) Save(ctx context.Context) ([]*Enterpri
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, eccb.builders[i+1].mutation)
 				} else {

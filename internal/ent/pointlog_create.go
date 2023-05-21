@@ -143,7 +143,7 @@ func (plc *PointLogCreate) Save(ctx context.Context) (*PointLog, error) {
 	if err := plc.defaults(); err != nil {
 		return nil, err
 	}
-	return withHooks[*PointLog, PointLogMutation](ctx, plc.sqlSave, plc.mutation, plc.hooks)
+	return withHooks(ctx, plc.sqlSave, plc.mutation, plc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -281,10 +281,7 @@ func (plc *PointLogCreate) createSpec() (*PointLog, *sqlgraph.CreateSpec) {
 			Columns: []string{pointlog.RiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -301,10 +298,7 @@ func (plc *PointLogCreate) createSpec() (*PointLog, *sqlgraph.CreateSpec) {
 			Columns: []string{pointlog.OrderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: order.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -832,8 +826,8 @@ func (plcb *PointLogCreateBulk) Save(ctx context.Context) ([]*PointLog, error) {
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, plcb.builders[i+1].mutation)
 				} else {

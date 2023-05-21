@@ -17,7 +17,6 @@ import (
 
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ar"
-	"github.com/auroraride/aurservd/internal/ent/hook"
 	"github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -169,18 +168,20 @@ type cabinetNameHook interface {
 
 func (Cabinet) Hooks() []ent.Hook {
 	return []ent.Hook{
-		hook.On(func(next ent.Mutator) ent.Mutator {
+		func(next ent.Mutator) ent.Mutator {
 			return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-				switch cm := m.(type) {
-				case cabinetNameHook:
-					serial, ce := cm.Serial()
-					name, ne := cm.Name()
-					if ce && ne {
-						ar.Redis.HSet(ctx, ar.CabinetNameCacheKey, serial, name)
+				if m.Op().Is(ent.OpCreate | ent.OpUpdateOne | ent.OpUpdate) {
+					switch cm := m.(type) {
+					case cabinetNameHook:
+						serial, ce := cm.Serial()
+						name, ne := cm.Name()
+						if ce && ne {
+							ar.Redis.HSet(ctx, ar.CabinetNameCacheKey, serial, name)
+						}
 					}
 				}
 				return next.Mutate(ctx, m)
 			})
-		}, ent.OpCreate|ent.OpUpdateOne|ent.OpUpdate),
+		},
 	}
 }

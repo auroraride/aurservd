@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/adapter"
 	"github.com/auroraride/aurservd/internal/ent/battery"
@@ -47,7 +48,8 @@ type BatteryFlow struct {
 	Remark *string `json:"remark,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the BatteryFlowQuery when eager-loading is set.
-	Edges BatteryFlowEdges `json:"edges"`
+	Edges        BatteryFlowEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // BatteryFlowEdges holds the relations/edges for other nodes in the graph.
@@ -133,7 +135,7 @@ func (*BatteryFlow) scanValues(columns []string) ([]any, error) {
 		case batteryflow.FieldCreatedAt, batteryflow.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type BatteryFlow", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -227,9 +229,17 @@ func (bf *BatteryFlow) assignValues(columns []string, values []any) error {
 				bf.Remark = new(string)
 				*bf.Remark = value.String
 			}
+		default:
+			bf.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the BatteryFlow.
+// This includes values selected through modifiers, order, etc.
+func (bf *BatteryFlow) Value(name string) (ent.Value, error) {
+	return bf.selectValues.Get(name)
 }
 
 // QuerySubscribe queries the "subscribe" edge of the BatteryFlow entity.

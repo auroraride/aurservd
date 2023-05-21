@@ -22,7 +22,7 @@ import (
 type ContractQuery struct {
 	config
 	ctx           *QueryContext
-	order         []OrderFunc
+	order         []contract.OrderOption
 	inters        []Interceptor
 	predicates    []predicate.Contract
 	withSubscribe *SubscribeQuery
@@ -61,7 +61,7 @@ func (cq *ContractQuery) Unique(unique bool) *ContractQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (cq *ContractQuery) Order(o ...OrderFunc) *ContractQuery {
+func (cq *ContractQuery) Order(o ...contract.OrderOption) *ContractQuery {
 	cq.order = append(cq.order, o...)
 	return cq
 }
@@ -343,7 +343,7 @@ func (cq *ContractQuery) Clone() *ContractQuery {
 	return &ContractQuery{
 		config:        cq.config,
 		ctx:           cq.ctx.Clone(),
-		order:         append([]OrderFunc{}, cq.order...),
+		order:         append([]contract.OrderOption{}, cq.order...),
 		inters:        append([]Interceptor{}, cq.inters...),
 		predicates:    append([]predicate.Contract{}, cq.predicates...),
 		withSubscribe: cq.withSubscribe.Clone(),
@@ -686,6 +686,18 @@ func (cq *ContractQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != contract.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if cq.withSubscribe != nil {
+			_spec.Node.AddColumnOnce(contract.FieldSubscribeID)
+		}
+		if cq.withEmployee != nil {
+			_spec.Node.AddColumnOnce(contract.FieldEmployeeID)
+		}
+		if cq.withRider != nil {
+			_spec.Node.AddColumnOnce(contract.FieldRiderID)
+		}
+		if cq.withAllocate != nil {
+			_spec.Node.AddColumnOnce(contract.FieldAllocateID)
 		}
 	}
 	if ps := cq.predicates; len(ps) > 0 {

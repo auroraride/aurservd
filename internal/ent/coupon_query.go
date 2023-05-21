@@ -23,7 +23,7 @@ import (
 type CouponQuery struct {
 	config
 	ctx          *QueryContext
-	order        []OrderFunc
+	order        []coupon.OrderOption
 	inters       []Interceptor
 	predicates   []predicate.Coupon
 	withRider    *RiderQuery
@@ -63,7 +63,7 @@ func (cq *CouponQuery) Unique(unique bool) *CouponQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (cq *CouponQuery) Order(o ...OrderFunc) *CouponQuery {
+func (cq *CouponQuery) Order(o ...coupon.OrderOption) *CouponQuery {
 	cq.order = append(cq.order, o...)
 	return cq
 }
@@ -367,7 +367,7 @@ func (cq *CouponQuery) Clone() *CouponQuery {
 	return &CouponQuery{
 		config:       cq.config,
 		ctx:          cq.ctx.Clone(),
-		order:        append([]OrderFunc{}, cq.order...),
+		order:        append([]coupon.OrderOption{}, cq.order...),
 		inters:       append([]Interceptor{}, cq.inters...),
 		predicates:   append([]predicate.Coupon{}, cq.predicates...),
 		withRider:    cq.withRider.Clone(),
@@ -758,6 +758,21 @@ func (cq *CouponQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != coupon.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if cq.withRider != nil {
+			_spec.Node.AddColumnOnce(coupon.FieldRiderID)
+		}
+		if cq.withAssembly != nil {
+			_spec.Node.AddColumnOnce(coupon.FieldAssemblyID)
+		}
+		if cq.withPlan != nil {
+			_spec.Node.AddColumnOnce(coupon.FieldPlanID)
+		}
+		if cq.withTemplate != nil {
+			_spec.Node.AddColumnOnce(coupon.FieldTemplateID)
+		}
+		if cq.withOrder != nil {
+			_spec.Node.AddColumnOnce(coupon.FieldOrderID)
 		}
 	}
 	if ps := cq.predicates; len(ps) > 0 {

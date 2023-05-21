@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
@@ -86,7 +87,8 @@ type Exchange struct {
 	Message string `json:"message,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ExchangeQuery when eager-loading is set.
-	Edges ExchangeEdges `json:"edges"`
+	Edges        ExchangeEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // ExchangeEdges holds the relations/edges for other nodes in the graph.
@@ -232,7 +234,7 @@ func (*Exchange) scanValues(columns []string) ([]any, error) {
 		case exchange.FieldCreatedAt, exchange.FieldUpdatedAt, exchange.FieldDeletedAt, exchange.FieldStartAt, exchange.FieldFinishAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Exchange", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -446,9 +448,17 @@ func (e *Exchange) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				e.Message = value.String
 			}
+		default:
+			e.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the Exchange.
+// This includes values selected through modifiers, order, etc.
+func (e *Exchange) Value(name string) (ent.Value, error) {
+	return e.selectValues.Get(name)
 }
 
 // QuerySubscribe queries the "subscribe" edge of the Exchange entity.

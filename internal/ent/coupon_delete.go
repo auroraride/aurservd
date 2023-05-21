@@ -27,7 +27,7 @@ func (cd *CouponDelete) Where(ps ...predicate.Coupon) *CouponDelete {
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (cd *CouponDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks[int, CouponMutation](ctx, cd.sqlExec, cd.mutation, cd.hooks)
+	return withHooks(ctx, cd.sqlExec, cd.mutation, cd.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.

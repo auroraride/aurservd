@@ -20,7 +20,7 @@ import (
 type RiderFollowUpQuery struct {
 	config
 	ctx         *QueryContext
-	order       []OrderFunc
+	order       []riderfollowup.OrderOption
 	inters      []Interceptor
 	predicates  []predicate.RiderFollowUp
 	withManager *ManagerQuery
@@ -57,7 +57,7 @@ func (rfuq *RiderFollowUpQuery) Unique(unique bool) *RiderFollowUpQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (rfuq *RiderFollowUpQuery) Order(o ...OrderFunc) *RiderFollowUpQuery {
+func (rfuq *RiderFollowUpQuery) Order(o ...riderfollowup.OrderOption) *RiderFollowUpQuery {
 	rfuq.order = append(rfuq.order, o...)
 	return rfuq
 }
@@ -295,7 +295,7 @@ func (rfuq *RiderFollowUpQuery) Clone() *RiderFollowUpQuery {
 	return &RiderFollowUpQuery{
 		config:      rfuq.config,
 		ctx:         rfuq.ctx.Clone(),
-		order:       append([]OrderFunc{}, rfuq.order...),
+		order:       append([]riderfollowup.OrderOption{}, rfuq.order...),
 		inters:      append([]Interceptor{}, rfuq.inters...),
 		predicates:  append([]predicate.RiderFollowUp{}, rfuq.predicates...),
 		withManager: rfuq.withManager.Clone(),
@@ -533,6 +533,12 @@ func (rfuq *RiderFollowUpQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != riderfollowup.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if rfuq.withManager != nil {
+			_spec.Node.AddColumnOnce(riderfollowup.FieldManagerID)
+		}
+		if rfuq.withRider != nil {
+			_spec.Node.AddColumnOnce(riderfollowup.FieldRiderID)
 		}
 	}
 	if ps := rfuq.predicates; len(ps) > 0 {

@@ -12,7 +12,6 @@ import (
 	"entgo.io/ent/schema/mixin"
 
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/internal/ent/hook"
 	"github.com/auroraride/aurservd/internal/ent/internal"
 	"github.com/auroraride/aurservd/pkg/snag"
 )
@@ -156,9 +155,9 @@ func (Subscribe) Hooks() []ent.Hook {
 		Status() (r uint8, exists bool)
 	}
 	return []ent.Hook{
-		hook.On(
-			func(next ent.Mutator) ent.Mutator {
-				return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+		func(next ent.Mutator) ent.Mutator {
+			return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+				if m.Op().Is(ent.OpUpdate | ent.OpUpdateOne) {
 					if sub, ok := m.(intr); ok {
 						if status, ok := sub.Status(); ok && status == model.SubscribeStatusUnSubscribed {
 							if reason, _ := sub.UnsubscribeReason(); reason == "" {
@@ -166,10 +165,9 @@ func (Subscribe) Hooks() []ent.Hook {
 							}
 						}
 					}
-					return next.Mutate(ctx, m)
-				})
-			},
-			ent.OpUpdate|ent.OpUpdateOne,
-		),
+				}
+				return next.Mutate(ctx, m)
+			})
+		},
 	}
 }

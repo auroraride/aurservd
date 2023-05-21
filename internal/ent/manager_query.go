@@ -19,7 +19,7 @@ import (
 type ManagerQuery struct {
 	config
 	ctx        *QueryContext
-	order      []OrderFunc
+	order      []manager.OrderOption
 	inters     []Interceptor
 	predicates []predicate.Manager
 	withRole   *RoleQuery
@@ -55,7 +55,7 @@ func (mq *ManagerQuery) Unique(unique bool) *ManagerQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (mq *ManagerQuery) Order(o ...OrderFunc) *ManagerQuery {
+func (mq *ManagerQuery) Order(o ...manager.OrderOption) *ManagerQuery {
 	mq.order = append(mq.order, o...)
 	return mq
 }
@@ -271,7 +271,7 @@ func (mq *ManagerQuery) Clone() *ManagerQuery {
 	return &ManagerQuery{
 		config:     mq.config,
 		ctx:        mq.ctx.Clone(),
-		order:      append([]OrderFunc{}, mq.order...),
+		order:      append([]manager.OrderOption{}, mq.order...),
 		inters:     append([]Interceptor{}, mq.inters...),
 		predicates: append([]predicate.Manager{}, mq.predicates...),
 		withRole:   mq.withRole.Clone(),
@@ -464,6 +464,9 @@ func (mq *ManagerQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != manager.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if mq.withRole != nil {
+			_spec.Node.AddColumnOnce(manager.FieldRoleID)
 		}
 	}
 	if ps := mq.predicates; len(ps) > 0 {

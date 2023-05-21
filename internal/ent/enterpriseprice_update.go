@@ -167,7 +167,7 @@ func (epu *EnterprisePriceUpdate) Save(ctx context.Context) (int, error) {
 	if err := epu.defaults(); err != nil {
 		return 0, err
 	}
-	return withHooks[int, EnterprisePriceMutation](ctx, epu.sqlSave, epu.mutation, epu.hooks)
+	return withHooks(ctx, epu.sqlSave, epu.mutation, epu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -277,10 +277,7 @@ func (epu *EnterprisePriceUpdate) sqlSave(ctx context.Context) (n int, err error
 			Columns: []string{enterpriseprice.CityColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -293,10 +290,7 @@ func (epu *EnterprisePriceUpdate) sqlSave(ctx context.Context) (n int, err error
 			Columns: []string{enterpriseprice.CityColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -312,10 +306,7 @@ func (epu *EnterprisePriceUpdate) sqlSave(ctx context.Context) (n int, err error
 			Columns: []string{enterpriseprice.EnterpriseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: enterprise.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -328,10 +319,7 @@ func (epu *EnterprisePriceUpdate) sqlSave(ctx context.Context) (n int, err error
 			Columns: []string{enterpriseprice.EnterpriseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: enterprise.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -509,7 +497,7 @@ func (epuo *EnterprisePriceUpdateOne) Save(ctx context.Context) (*EnterprisePric
 	if err := epuo.defaults(); err != nil {
 		return nil, err
 	}
-	return withHooks[*EnterprisePrice, EnterprisePriceMutation](ctx, epuo.sqlSave, epuo.mutation, epuo.hooks)
+	return withHooks(ctx, epuo.sqlSave, epuo.mutation, epuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -636,10 +624,7 @@ func (epuo *EnterprisePriceUpdateOne) sqlSave(ctx context.Context) (_node *Enter
 			Columns: []string{enterpriseprice.CityColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -652,10 +637,7 @@ func (epuo *EnterprisePriceUpdateOne) sqlSave(ctx context.Context) (_node *Enter
 			Columns: []string{enterpriseprice.CityColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -671,10 +653,7 @@ func (epuo *EnterprisePriceUpdateOne) sqlSave(ctx context.Context) (_node *Enter
 			Columns: []string{enterpriseprice.EnterpriseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: enterprise.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -687,10 +666,7 @@ func (epuo *EnterprisePriceUpdateOne) sqlSave(ctx context.Context) (_node *Enter
 			Columns: []string{enterpriseprice.EnterpriseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: enterprise.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

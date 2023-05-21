@@ -197,7 +197,7 @@ func (cfc *CabinetFaultCreate) Save(ctx context.Context) (*CabinetFault, error) 
 	if err := cfc.defaults(); err != nil {
 		return nil, err
 	}
-	return withHooks[*CabinetFault, CabinetFaultMutation](ctx, cfc.sqlSave, cfc.mutation, cfc.hooks)
+	return withHooks(ctx, cfc.sqlSave, cfc.mutation, cfc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -355,10 +355,7 @@ func (cfc *CabinetFaultCreate) createSpec() (*CabinetFault, *sqlgraph.CreateSpec
 			Columns: []string{cabinetfault.CityColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -375,10 +372,7 @@ func (cfc *CabinetFaultCreate) createSpec() (*CabinetFault, *sqlgraph.CreateSpec
 			Columns: []string{cabinetfault.BranchColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: branch.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(branch.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -395,10 +389,7 @@ func (cfc *CabinetFaultCreate) createSpec() (*CabinetFault, *sqlgraph.CreateSpec
 			Columns: []string{cabinetfault.CabinetColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: cabinet.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -415,10 +406,7 @@ func (cfc *CabinetFaultCreate) createSpec() (*CabinetFault, *sqlgraph.CreateSpec
 			Columns: []string{cabinetfault.RiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -988,8 +976,8 @@ func (cfcb *CabinetFaultCreateBulk) Save(ctx context.Context) ([]*CabinetFault, 
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, cfcb.builders[i+1].mutation)
 				} else {

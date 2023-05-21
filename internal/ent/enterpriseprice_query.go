@@ -20,7 +20,7 @@ import (
 type EnterprisePriceQuery struct {
 	config
 	ctx            *QueryContext
-	order          []OrderFunc
+	order          []enterpriseprice.OrderOption
 	inters         []Interceptor
 	predicates     []predicate.EnterprisePrice
 	withCity       *CityQuery
@@ -57,7 +57,7 @@ func (epq *EnterprisePriceQuery) Unique(unique bool) *EnterprisePriceQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (epq *EnterprisePriceQuery) Order(o ...OrderFunc) *EnterprisePriceQuery {
+func (epq *EnterprisePriceQuery) Order(o ...enterpriseprice.OrderOption) *EnterprisePriceQuery {
 	epq.order = append(epq.order, o...)
 	return epq
 }
@@ -295,7 +295,7 @@ func (epq *EnterprisePriceQuery) Clone() *EnterprisePriceQuery {
 	return &EnterprisePriceQuery{
 		config:         epq.config,
 		ctx:            epq.ctx.Clone(),
-		order:          append([]OrderFunc{}, epq.order...),
+		order:          append([]enterpriseprice.OrderOption{}, epq.order...),
 		inters:         append([]Interceptor{}, epq.inters...),
 		predicates:     append([]predicate.EnterprisePrice{}, epq.predicates...),
 		withCity:       epq.withCity.Clone(),
@@ -533,6 +533,12 @@ func (epq *EnterprisePriceQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != enterpriseprice.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if epq.withCity != nil {
+			_spec.Node.AddColumnOnce(enterpriseprice.FieldCityID)
+		}
+		if epq.withEnterprise != nil {
+			_spec.Node.AddColumnOnce(enterpriseprice.FieldEnterpriseID)
 		}
 	}
 	if ps := epq.predicates; len(ps) > 0 {

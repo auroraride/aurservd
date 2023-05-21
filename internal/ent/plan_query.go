@@ -21,7 +21,7 @@ import (
 type PlanQuery struct {
 	config
 	ctx           *QueryContext
-	order         []OrderFunc
+	order         []plan.OrderOption
 	inters        []Interceptor
 	predicates    []predicate.Plan
 	withBrand     *EbikeBrandQuery
@@ -60,7 +60,7 @@ func (pq *PlanQuery) Unique(unique bool) *PlanQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (pq *PlanQuery) Order(o ...OrderFunc) *PlanQuery {
+func (pq *PlanQuery) Order(o ...plan.OrderOption) *PlanQuery {
 	pq.order = append(pq.order, o...)
 	return pq
 }
@@ -342,7 +342,7 @@ func (pq *PlanQuery) Clone() *PlanQuery {
 	return &PlanQuery{
 		config:        pq.config,
 		ctx:           pq.ctx.Clone(),
-		order:         append([]OrderFunc{}, pq.order...),
+		order:         append([]plan.OrderOption{}, pq.order...),
 		inters:        append([]Interceptor{}, pq.inters...),
 		predicates:    append([]predicate.Plan{}, pq.predicates...),
 		withBrand:     pq.withBrand.Clone(),
@@ -669,8 +669,11 @@ func (pq *PlanQuery) loadComplexes(ctx context.Context, query *PlanQuery, nodes 
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(plan.FieldParentID)
+	}
 	query.Where(predicate.Plan(func(s *sql.Selector) {
-		s.Where(sql.InValues(plan.ComplexesColumn, fks...))
+		s.Where(sql.InValues(s.C(plan.ComplexesColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -683,7 +686,7 @@ func (pq *PlanQuery) loadComplexes(ctx context.Context, query *PlanQuery, nodes 
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "parent_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "parent_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -717,6 +720,12 @@ func (pq *PlanQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != plan.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if pq.withBrand != nil {
+			_spec.Node.AddColumnOnce(plan.FieldBrandID)
+		}
+		if pq.withParent != nil {
+			_spec.Node.AddColumnOnce(plan.FieldParentID)
 		}
 	}
 	if ps := pq.predicates; len(ps) > 0 {

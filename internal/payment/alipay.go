@@ -13,14 +13,15 @@ import (
 	"time"
 
 	"github.com/auroraride/adapter/log"
+	"github.com/golang-module/carbon/v2"
+	"github.com/smartwalle/alipay/v3"
+	"go.uber.org/zap"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
-	"github.com/golang-module/carbon/v2"
-	"github.com/smartwalle/alipay/v3"
-	"go.uber.org/zap"
 )
 
 var _alipay *alipayClient
@@ -81,8 +82,8 @@ func (c *alipayClient) AppPay(pc *model.PaymentCache) (string, error) {
 			NotifyURL:   cfg.NotifyUrl,
 			Subject:     subject,
 			OutTradeNo:  no,
+			TimeExpire:  time.Now().Add(10 * time.Minute).Format(carbon.DateTimeLayout),
 		},
-		TimeExpire: time.Now().Add(10 * time.Minute).Format(carbon.DateTimeLayout),
 	}
 	return c.TradeAppPay(trade)
 }
@@ -96,8 +97,8 @@ func (c *alipayClient) AppPayDemo() (string, string, error) {
 			NotifyURL:   cfg.NotifyUrl,
 			Subject:     "测试支付",
 			OutTradeNo:  no,
+			TimeExpire:  time.Now().Add(10 * time.Minute).Format(carbon.DateTimeLayout),
 		},
-		TimeExpire: time.Now().Add(10 * time.Minute).Format(carbon.DateTimeLayout),
 	}
 
 	s, err := c.TradeAppPay(trade)
@@ -152,7 +153,7 @@ func (c *alipayClient) Refund(req *model.PaymentRefund) {
 	req.Request = true
 	if result.Content.FundChange == "Y" {
 		req.Success = true
-		req.Time = carbon.Parse(result.Content.GmtRefundPay).Carbon2Time()
+		req.Time = time.Now()
 	}
 	return
 }

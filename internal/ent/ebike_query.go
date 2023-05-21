@@ -21,7 +21,7 @@ import (
 type EbikeQuery struct {
 	config
 	ctx        *QueryContext
-	order      []OrderFunc
+	order      []ebike.OrderOption
 	inters     []Interceptor
 	predicates []predicate.Ebike
 	withBrand  *EbikeBrandQuery
@@ -59,7 +59,7 @@ func (eq *EbikeQuery) Unique(unique bool) *EbikeQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (eq *EbikeQuery) Order(o ...OrderFunc) *EbikeQuery {
+func (eq *EbikeQuery) Order(o ...ebike.OrderOption) *EbikeQuery {
 	eq.order = append(eq.order, o...)
 	return eq
 }
@@ -319,7 +319,7 @@ func (eq *EbikeQuery) Clone() *EbikeQuery {
 	return &EbikeQuery{
 		config:     eq.config,
 		ctx:        eq.ctx.Clone(),
-		order:      append([]OrderFunc{}, eq.order...),
+		order:      append([]ebike.OrderOption{}, eq.order...),
 		inters:     append([]Interceptor{}, eq.inters...),
 		predicates: append([]predicate.Ebike{}, eq.predicates...),
 		withBrand:  eq.withBrand.Clone(),
@@ -611,6 +611,15 @@ func (eq *EbikeQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != ebike.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if eq.withBrand != nil {
+			_spec.Node.AddColumnOnce(ebike.FieldBrandID)
+		}
+		if eq.withRider != nil {
+			_spec.Node.AddColumnOnce(ebike.FieldRiderID)
+		}
+		if eq.withStore != nil {
+			_spec.Node.AddColumnOnce(ebike.FieldStoreID)
 		}
 	}
 	if ps := eq.predicates; len(ps) > 0 {

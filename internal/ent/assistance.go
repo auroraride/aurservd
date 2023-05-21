@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
@@ -98,7 +99,8 @@ type Assistance struct {
 	NaviPolylines []string `json:"navi_polylines,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AssistanceQuery when eager-loading is set.
-	Edges AssistanceEdges `json:"edges"`
+	Edges        AssistanceEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // AssistanceEdges holds the relations/edges for other nodes in the graph.
@@ -214,7 +216,7 @@ func (*Assistance) scanValues(columns []string) ([]any, error) {
 		case assistance.FieldCreatedAt, assistance.FieldUpdatedAt, assistance.FieldDeletedAt, assistance.FieldPayAt, assistance.FieldAllocateAt, assistance.FieldProcessAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Assistance", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -470,9 +472,17 @@ func (a *Assistance) assignValues(columns []string, values []any) error {
 					return fmt.Errorf("unmarshal field navi_polylines: %w", err)
 				}
 			}
+		default:
+			a.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the Assistance.
+// This includes values selected through modifiers, order, etc.
+func (a *Assistance) Value(name string) (ent.Value, error) {
+	return a.selectValues.Get(name)
 }
 
 // QueryStore queries the "store" edge of the Assistance entity.

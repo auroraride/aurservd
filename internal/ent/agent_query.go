@@ -19,7 +19,7 @@ import (
 type AgentQuery struct {
 	config
 	ctx            *QueryContext
-	order          []OrderFunc
+	order          []agent.OrderOption
 	inters         []Interceptor
 	predicates     []predicate.Agent
 	withEnterprise *EnterpriseQuery
@@ -55,7 +55,7 @@ func (aq *AgentQuery) Unique(unique bool) *AgentQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (aq *AgentQuery) Order(o ...OrderFunc) *AgentQuery {
+func (aq *AgentQuery) Order(o ...agent.OrderOption) *AgentQuery {
 	aq.order = append(aq.order, o...)
 	return aq
 }
@@ -271,7 +271,7 @@ func (aq *AgentQuery) Clone() *AgentQuery {
 	return &AgentQuery{
 		config:         aq.config,
 		ctx:            aq.ctx.Clone(),
-		order:          append([]OrderFunc{}, aq.order...),
+		order:          append([]agent.OrderOption{}, aq.order...),
 		inters:         append([]Interceptor{}, aq.inters...),
 		predicates:     append([]predicate.Agent{}, aq.predicates...),
 		withEnterprise: aq.withEnterprise.Clone(),
@@ -461,6 +461,9 @@ func (aq *AgentQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != agent.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if aq.withEnterprise != nil {
+			_spec.Node.AddColumnOnce(agent.FieldEnterpriseID)
 		}
 	}
 	if ps := aq.predicates; len(ps) > 0 {

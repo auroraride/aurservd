@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 const (
@@ -118,3 +120,115 @@ var (
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
 )
+
+// OrderOption defines the ordering options for the BranchContract queries.
+type OrderOption func(*sql.Selector)
+
+// ByID orders the results by the id field.
+func ByID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByCreatedAt orders the results by the created_at field.
+func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
+}
+
+// ByUpdatedAt orders the results by the updated_at field.
+func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
+}
+
+// ByDeletedAt orders the results by the deleted_at field.
+func ByDeletedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDeletedAt, opts...).ToFunc()
+}
+
+// ByRemark orders the results by the remark field.
+func ByRemark(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRemark, opts...).ToFunc()
+}
+
+// ByBranchID orders the results by the branch_id field.
+func ByBranchID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBranchID, opts...).ToFunc()
+}
+
+// ByLandlordName orders the results by the landlord_name field.
+func ByLandlordName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLandlordName, opts...).ToFunc()
+}
+
+// ByIDCardNumber orders the results by the id_card_number field.
+func ByIDCardNumber(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIDCardNumber, opts...).ToFunc()
+}
+
+// ByPhone orders the results by the phone field.
+func ByPhone(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPhone, opts...).ToFunc()
+}
+
+// ByBankNumber orders the results by the bank_number field.
+func ByBankNumber(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBankNumber, opts...).ToFunc()
+}
+
+// ByPledge orders the results by the pledge field.
+func ByPledge(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPledge, opts...).ToFunc()
+}
+
+// ByRent orders the results by the rent field.
+func ByRent(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRent, opts...).ToFunc()
+}
+
+// ByLease orders the results by the lease field.
+func ByLease(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLease, opts...).ToFunc()
+}
+
+// ByElectricityPledge orders the results by the electricity_pledge field.
+func ByElectricityPledge(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldElectricityPledge, opts...).ToFunc()
+}
+
+// ByElectricity orders the results by the electricity field.
+func ByElectricity(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldElectricity, opts...).ToFunc()
+}
+
+// ByArea orders the results by the area field.
+func ByArea(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldArea, opts...).ToFunc()
+}
+
+// ByStartTime orders the results by the start_time field.
+func ByStartTime(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldStartTime, opts...).ToFunc()
+}
+
+// ByEndTime orders the results by the end_time field.
+func ByEndTime(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldEndTime, opts...).ToFunc()
+}
+
+// ByFile orders the results by the file field.
+func ByFile(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFile, opts...).ToFunc()
+}
+
+// ByBranchField orders the results by branch field.
+func ByBranchField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newBranchStep(), sql.OrderByField(field, opts...))
+	}
+}
+func newBranchStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(BranchInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, BranchTable, BranchColumn),
+	)
+}

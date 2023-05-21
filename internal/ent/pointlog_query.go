@@ -20,7 +20,7 @@ import (
 type PointLogQuery struct {
 	config
 	ctx        *QueryContext
-	order      []OrderFunc
+	order      []pointlog.OrderOption
 	inters     []Interceptor
 	predicates []predicate.PointLog
 	withRider  *RiderQuery
@@ -57,7 +57,7 @@ func (plq *PointLogQuery) Unique(unique bool) *PointLogQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (plq *PointLogQuery) Order(o ...OrderFunc) *PointLogQuery {
+func (plq *PointLogQuery) Order(o ...pointlog.OrderOption) *PointLogQuery {
 	plq.order = append(plq.order, o...)
 	return plq
 }
@@ -295,7 +295,7 @@ func (plq *PointLogQuery) Clone() *PointLogQuery {
 	return &PointLogQuery{
 		config:     plq.config,
 		ctx:        plq.ctx.Clone(),
-		order:      append([]OrderFunc{}, plq.order...),
+		order:      append([]pointlog.OrderOption{}, plq.order...),
 		inters:     append([]Interceptor{}, plq.inters...),
 		predicates: append([]predicate.PointLog{}, plq.predicates...),
 		withRider:  plq.withRider.Clone(),
@@ -536,6 +536,12 @@ func (plq *PointLogQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != pointlog.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if plq.withRider != nil {
+			_spec.Node.AddColumnOnce(pointlog.FieldRiderID)
+		}
+		if plq.withOrder != nil {
+			_spec.Node.AddColumnOnce(pointlog.FieldOrderID)
 		}
 	}
 	if ps := plq.predicates; len(ps) > 0 {

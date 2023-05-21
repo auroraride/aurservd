@@ -27,7 +27,7 @@ func (epd *EnterprisePriceDelete) Where(ps ...predicate.EnterprisePrice) *Enterp
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (epd *EnterprisePriceDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks[int, EnterprisePriceMutation](ctx, epd.sqlExec, epd.mutation, epd.hooks)
+	return withHooks(ctx, epd.sqlExec, epd.mutation, epd.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.

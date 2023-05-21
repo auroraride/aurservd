@@ -242,7 +242,7 @@ func (bcu *BranchContractUpdate) Save(ctx context.Context) (int, error) {
 	if err := bcu.defaults(); err != nil {
 		return 0, err
 	}
-	return withHooks[int, BranchContractMutation](ctx, bcu.sqlSave, bcu.mutation, bcu.hooks)
+	return withHooks(ctx, bcu.sqlSave, bcu.mutation, bcu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -399,10 +399,7 @@ func (bcu *BranchContractUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Columns: []string{branchcontract.BranchColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: branch.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(branch.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -415,10 +412,7 @@ func (bcu *BranchContractUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Columns: []string{branchcontract.BranchColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: branch.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(branch.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -671,7 +665,7 @@ func (bcuo *BranchContractUpdateOne) Save(ctx context.Context) (*BranchContract,
 	if err := bcuo.defaults(); err != nil {
 		return nil, err
 	}
-	return withHooks[*BranchContract, BranchContractMutation](ctx, bcuo.sqlSave, bcuo.mutation, bcuo.hooks)
+	return withHooks(ctx, bcuo.sqlSave, bcuo.mutation, bcuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -845,10 +839,7 @@ func (bcuo *BranchContractUpdateOne) sqlSave(ctx context.Context) (_node *Branch
 			Columns: []string{branchcontract.BranchColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: branch.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(branch.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -861,10 +852,7 @@ func (bcuo *BranchContractUpdateOne) sqlSave(ctx context.Context) (_node *Branch
 			Columns: []string{branchcontract.BranchColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: branch.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(branch.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

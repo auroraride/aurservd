@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -62,7 +63,8 @@ type EnterpriseBill struct {
 	Model string `json:"model,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EnterpriseBillQuery when eager-loading is set.
-	Edges EnterpriseBillEdges `json:"edges"`
+	Edges        EnterpriseBillEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // EnterpriseBillEdges holds the relations/edges for other nodes in the graph.
@@ -178,7 +180,7 @@ func (*EnterpriseBill) scanValues(columns []string) ([]any, error) {
 		case enterprisebill.FieldCreatedAt, enterprisebill.FieldUpdatedAt, enterprisebill.FieldDeletedAt, enterprisebill.FieldStart, enterprisebill.FieldEnd:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type EnterpriseBill", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -312,9 +314,17 @@ func (eb *EnterpriseBill) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				eb.Model = value.String
 			}
+		default:
+			eb.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the EnterpriseBill.
+// This includes values selected through modifiers, order, etc.
+func (eb *EnterpriseBill) Value(name string) (ent.Value, error) {
+	return eb.selectValues.Get(name)
 }
 
 // QueryRider queries the "rider" edge of the EnterpriseBill entity.

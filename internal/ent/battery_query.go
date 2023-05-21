@@ -24,7 +24,7 @@ import (
 type BatteryQuery struct {
 	config
 	ctx           *QueryContext
-	order         []OrderFunc
+	order         []battery.OrderOption
 	inters        []Interceptor
 	predicates    []predicate.Battery
 	withCity      *CityQuery
@@ -64,7 +64,7 @@ func (bq *BatteryQuery) Unique(unique bool) *BatteryQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (bq *BatteryQuery) Order(o ...OrderFunc) *BatteryQuery {
+func (bq *BatteryQuery) Order(o ...battery.OrderOption) *BatteryQuery {
 	bq.order = append(bq.order, o...)
 	return bq
 }
@@ -368,7 +368,7 @@ func (bq *BatteryQuery) Clone() *BatteryQuery {
 	return &BatteryQuery{
 		config:        bq.config,
 		ctx:           bq.ctx.Clone(),
-		order:         append([]OrderFunc{}, bq.order...),
+		order:         append([]battery.OrderOption{}, bq.order...),
 		inters:        append([]Interceptor{}, bq.inters...),
 		predicates:    append([]predicate.Battery{}, bq.predicates...),
 		withCity:      bq.withCity.Clone(),
@@ -716,8 +716,11 @@ func (bq *BatteryQuery) loadFlows(ctx context.Context, query *BatteryFlowQuery, 
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(batteryflow.FieldBatteryID)
+	}
 	query.Where(predicate.BatteryFlow(func(s *sql.Selector) {
-		s.Where(sql.InValues(battery.FlowsColumn, fks...))
+		s.Where(sql.InValues(s.C(battery.FlowsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -727,7 +730,7 @@ func (bq *BatteryQuery) loadFlows(ctx context.Context, query *BatteryFlowQuery, 
 		fk := n.BatteryID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "battery_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "battery_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -761,6 +764,18 @@ func (bq *BatteryQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != battery.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if bq.withCity != nil {
+			_spec.Node.AddColumnOnce(battery.FieldCityID)
+		}
+		if bq.withRider != nil {
+			_spec.Node.AddColumnOnce(battery.FieldRiderID)
+		}
+		if bq.withCabinet != nil {
+			_spec.Node.AddColumnOnce(battery.FieldCabinetID)
+		}
+		if bq.withSubscribe != nil {
+			_spec.Node.AddColumnOnce(battery.FieldSubscribeID)
 		}
 	}
 	if ps := bq.predicates; len(ps) > 0 {

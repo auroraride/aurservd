@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/adapter"
 	"github.com/auroraride/aurservd/app/model"
@@ -55,7 +56,8 @@ type Battery struct {
 	Ordinal *int `json:"ordinal,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the BatteryQuery when eager-loading is set.
-	Edges BatteryEdges `json:"edges"`
+	Edges        BatteryEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // BatteryEdges holds the relations/edges for other nodes in the graph.
@@ -154,7 +156,7 @@ func (*Battery) scanValues(columns []string) ([]any, error) {
 		case battery.FieldCreatedAt, battery.FieldUpdatedAt, battery.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Battery", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -274,9 +276,17 @@ func (b *Battery) assignValues(columns []string, values []any) error {
 				b.Ordinal = new(int)
 				*b.Ordinal = int(value.Int64)
 			}
+		default:
+			b.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the Battery.
+// This includes values selected through modifiers, order, etc.
+func (b *Battery) Value(name string) (ent.Value, error) {
+	return b.selectValues.Get(name)
 }
 
 // QueryCity queries the "city" edge of the Battery entity.

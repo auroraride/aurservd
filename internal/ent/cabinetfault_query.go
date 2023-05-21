@@ -22,7 +22,7 @@ import (
 type CabinetFaultQuery struct {
 	config
 	ctx         *QueryContext
-	order       []OrderFunc
+	order       []cabinetfault.OrderOption
 	inters      []Interceptor
 	predicates  []predicate.CabinetFault
 	withCity    *CityQuery
@@ -61,7 +61,7 @@ func (cfq *CabinetFaultQuery) Unique(unique bool) *CabinetFaultQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (cfq *CabinetFaultQuery) Order(o ...OrderFunc) *CabinetFaultQuery {
+func (cfq *CabinetFaultQuery) Order(o ...cabinetfault.OrderOption) *CabinetFaultQuery {
 	cfq.order = append(cfq.order, o...)
 	return cfq
 }
@@ -343,7 +343,7 @@ func (cfq *CabinetFaultQuery) Clone() *CabinetFaultQuery {
 	return &CabinetFaultQuery{
 		config:      cfq.config,
 		ctx:         cfq.ctx.Clone(),
-		order:       append([]OrderFunc{}, cfq.order...),
+		order:       append([]cabinetfault.OrderOption{}, cfq.order...),
 		inters:      append([]Interceptor{}, cfq.inters...),
 		predicates:  append([]predicate.CabinetFault{}, cfq.predicates...),
 		withCity:    cfq.withCity.Clone(),
@@ -677,6 +677,18 @@ func (cfq *CabinetFaultQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != cabinetfault.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if cfq.withCity != nil {
+			_spec.Node.AddColumnOnce(cabinetfault.FieldCityID)
+		}
+		if cfq.withBranch != nil {
+			_spec.Node.AddColumnOnce(cabinetfault.FieldBranchID)
+		}
+		if cfq.withCabinet != nil {
+			_spec.Node.AddColumnOnce(cabinetfault.FieldCabinetID)
+		}
+		if cfq.withRider != nil {
+			_spec.Node.AddColumnOnce(cabinetfault.FieldRiderID)
 		}
 	}
 	if ps := cfq.predicates; len(ps) > 0 {

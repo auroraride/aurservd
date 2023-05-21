@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/branch"
@@ -63,7 +64,8 @@ type BranchContract struct {
 	Sheets []string `json:"sheets,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the BranchContractQuery when eager-loading is set.
-	Edges BranchContractEdges `json:"edges"`
+	Edges        BranchContractEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // BranchContractEdges holds the relations/edges for other nodes in the graph.
@@ -104,7 +106,7 @@ func (*BranchContract) scanValues(columns []string) ([]any, error) {
 		case branchcontract.FieldCreatedAt, branchcontract.FieldUpdatedAt, branchcontract.FieldDeletedAt, branchcontract.FieldStartTime, branchcontract.FieldEndTime:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type BranchContract", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -257,9 +259,17 @@ func (bc *BranchContract) assignValues(columns []string, values []any) error {
 					return fmt.Errorf("unmarshal field sheets: %w", err)
 				}
 			}
+		default:
+			bc.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the BranchContract.
+// This includes values selected through modifiers, order, etc.
+func (bc *BranchContract) Value(name string) (ent.Value, error) {
+	return bc.selectValues.Get(name)
 }
 
 // QueryBranch queries the "branch" edge of the BranchContract entity.

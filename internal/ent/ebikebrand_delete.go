@@ -27,7 +27,7 @@ func (ebd *EbikeBrandDelete) Where(ps ...predicate.EbikeBrand) *EbikeBrandDelete
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (ebd *EbikeBrandDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks[int, EbikeBrandMutation](ctx, ebd.sqlExec, ebd.mutation, ebd.hooks)
+	return withHooks(ctx, ebd.sqlExec, ebd.mutation, ebd.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.

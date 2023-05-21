@@ -26,7 +26,7 @@ import (
 type SubscribePauseQuery struct {
 	config
 	ctx             *QueryContext
-	order           []OrderFunc
+	order           []subscribepause.OrderOption
 	inters          []Interceptor
 	predicates      []predicate.SubscribePause
 	withRider       *RiderQuery
@@ -71,7 +71,7 @@ func (spq *SubscribePauseQuery) Unique(unique bool) *SubscribePauseQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (spq *SubscribePauseQuery) Order(o ...OrderFunc) *SubscribePauseQuery {
+func (spq *SubscribePauseQuery) Order(o ...subscribepause.OrderOption) *SubscribePauseQuery {
 	spq.order = append(spq.order, o...)
 	return spq
 }
@@ -485,7 +485,7 @@ func (spq *SubscribePauseQuery) Clone() *SubscribePauseQuery {
 	return &SubscribePauseQuery{
 		config:          spq.config,
 		ctx:             spq.ctx.Clone(),
-		order:           append([]OrderFunc{}, spq.order...),
+		order:           append([]subscribepause.OrderOption{}, spq.order...),
 		inters:          append([]Interceptor{}, spq.inters...),
 		predicates:      append([]predicate.SubscribePause{}, spq.predicates...),
 		withRider:       spq.withRider.Clone(),
@@ -1082,8 +1082,11 @@ func (spq *SubscribePauseQuery) loadSuspends(ctx context.Context, query *Subscri
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(subscribesuspend.FieldPauseID)
+	}
 	query.Where(predicate.SubscribeSuspend(func(s *sql.Selector) {
-		s.Where(sql.InValues(subscribepause.SuspendsColumn, fks...))
+		s.Where(sql.InValues(s.C(subscribepause.SuspendsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1093,7 +1096,7 @@ func (spq *SubscribePauseQuery) loadSuspends(ctx context.Context, query *Subscri
 		fk := n.PauseID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "pause_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "pause_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -1127,6 +1130,33 @@ func (spq *SubscribePauseQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != subscribepause.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if spq.withRider != nil {
+			_spec.Node.AddColumnOnce(subscribepause.FieldRiderID)
+		}
+		if spq.withEmployee != nil {
+			_spec.Node.AddColumnOnce(subscribepause.FieldEmployeeID)
+		}
+		if spq.withCity != nil {
+			_spec.Node.AddColumnOnce(subscribepause.FieldCityID)
+		}
+		if spq.withStore != nil {
+			_spec.Node.AddColumnOnce(subscribepause.FieldStoreID)
+		}
+		if spq.withEndStore != nil {
+			_spec.Node.AddColumnOnce(subscribepause.FieldEndStoreID)
+		}
+		if spq.withCabinet != nil {
+			_spec.Node.AddColumnOnce(subscribepause.FieldCabinetID)
+		}
+		if spq.withEndCabinet != nil {
+			_spec.Node.AddColumnOnce(subscribepause.FieldEndCabinetID)
+		}
+		if spq.withSubscribe != nil {
+			_spec.Node.AddColumnOnce(subscribepause.FieldSubscribeID)
+		}
+		if spq.withEndEmployee != nil {
+			_spec.Node.AddColumnOnce(subscribepause.FieldEndEmployeeID)
 		}
 	}
 	if ps := spq.predicates; len(ps) > 0 {

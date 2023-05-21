@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/auroraride/adapter"
 )
 
@@ -225,3 +227,290 @@ var (
 	// DefaultLockedBinNum holds the default value on creation for the "locked_bin_num" field.
 	DefaultLockedBinNum int
 )
+
+// OrderOption defines the ordering options for the Cabinet queries.
+type OrderOption func(*sql.Selector)
+
+// ByID orders the results by the id field.
+func ByID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByCreatedAt orders the results by the created_at field.
+func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
+}
+
+// ByUpdatedAt orders the results by the updated_at field.
+func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
+}
+
+// ByDeletedAt orders the results by the deleted_at field.
+func ByDeletedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDeletedAt, opts...).ToFunc()
+}
+
+// ByRemark orders the results by the remark field.
+func ByRemark(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRemark, opts...).ToFunc()
+}
+
+// ByCityID orders the results by the city_id field.
+func ByCityID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCityID, opts...).ToFunc()
+}
+
+// ByBranchID orders the results by the branch_id field.
+func ByBranchID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBranchID, opts...).ToFunc()
+}
+
+// BySn orders the results by the sn field.
+func BySn(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSn, opts...).ToFunc()
+}
+
+// ByBrand orders the results by the brand field.
+func ByBrand(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBrand, opts...).ToFunc()
+}
+
+// BySerial orders the results by the serial field.
+func BySerial(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSerial, opts...).ToFunc()
+}
+
+// ByName orders the results by the name field.
+func ByName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldName, opts...).ToFunc()
+}
+
+// ByDoors orders the results by the doors field.
+func ByDoors(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDoors, opts...).ToFunc()
+}
+
+// ByStatus orders the results by the status field.
+func ByStatus(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldStatus, opts...).ToFunc()
+}
+
+// ByLng orders the results by the lng field.
+func ByLng(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLng, opts...).ToFunc()
+}
+
+// ByLat orders the results by the lat field.
+func ByLat(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLat, opts...).ToFunc()
+}
+
+// ByAddress orders the results by the address field.
+func ByAddress(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAddress, opts...).ToFunc()
+}
+
+// BySimSn orders the results by the sim_sn field.
+func BySimSn(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSimSn, opts...).ToFunc()
+}
+
+// BySimDate orders the results by the sim_date field.
+func BySimDate(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSimDate, opts...).ToFunc()
+}
+
+// ByTransferred orders the results by the transferred field.
+func ByTransferred(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTransferred, opts...).ToFunc()
+}
+
+// ByIntelligent orders the results by the intelligent field.
+func ByIntelligent(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIntelligent, opts...).ToFunc()
+}
+
+// ByHealth orders the results by the health field.
+func ByHealth(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldHealth, opts...).ToFunc()
+}
+
+// ByBatteryNum orders the results by the battery_num field.
+func ByBatteryNum(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBatteryNum, opts...).ToFunc()
+}
+
+// ByBatteryFullNum orders the results by the battery_full_num field.
+func ByBatteryFullNum(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBatteryFullNum, opts...).ToFunc()
+}
+
+// ByBatteryChargingNum orders the results by the battery_charging_num field.
+func ByBatteryChargingNum(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBatteryChargingNum, opts...).ToFunc()
+}
+
+// ByEmptyBinNum orders the results by the empty_bin_num field.
+func ByEmptyBinNum(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldEmptyBinNum, opts...).ToFunc()
+}
+
+// ByLockedBinNum orders the results by the locked_bin_num field.
+func ByLockedBinNum(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLockedBinNum, opts...).ToFunc()
+}
+
+// ByCityField orders the results by city field.
+func ByCityField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCityStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByBranchField orders the results by branch field.
+func ByBranchField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newBranchStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByModelsCount orders the results by models count.
+func ByModelsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newModelsStep(), opts...)
+	}
+}
+
+// ByModels orders the results by models terms.
+func ByModels(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newModelsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByFaultsCount orders the results by faults count.
+func ByFaultsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newFaultsStep(), opts...)
+	}
+}
+
+// ByFaults orders the results by faults terms.
+func ByFaults(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newFaultsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByExchangesCount orders the results by exchanges count.
+func ByExchangesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newExchangesStep(), opts...)
+	}
+}
+
+// ByExchanges orders the results by exchanges terms.
+func ByExchanges(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newExchangesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByStocksCount orders the results by stocks count.
+func ByStocksCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newStocksStep(), opts...)
+	}
+}
+
+// ByStocks orders the results by stocks terms.
+func ByStocks(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newStocksStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByBatteriesCount orders the results by batteries count.
+func ByBatteriesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newBatteriesStep(), opts...)
+	}
+}
+
+// ByBatteries orders the results by batteries terms.
+func ByBatteries(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newBatteriesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByBatteryFlowsCount orders the results by battery_flows count.
+func ByBatteryFlowsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newBatteryFlowsStep(), opts...)
+	}
+}
+
+// ByBatteryFlows orders the results by battery_flows terms.
+func ByBatteryFlows(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newBatteryFlowsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+func newCityStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CityInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
+	)
+}
+func newBranchStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(BranchInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, BranchTable, BranchColumn),
+	)
+}
+func newModelsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ModelsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, false, ModelsTable, ModelsPrimaryKey...),
+	)
+}
+func newFaultsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(FaultsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, FaultsTable, FaultsColumn),
+	)
+}
+func newExchangesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ExchangesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, ExchangesTable, ExchangesColumn),
+	)
+}
+func newStocksStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(StocksInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, StocksTable, StocksColumn),
+	)
+}
+func newBatteriesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(BatteriesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, BatteriesTable, BatteriesColumn),
+	)
+}
+func newBatteryFlowsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(BatteryFlowsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, BatteryFlowsTable, BatteryFlowsColumn),
+	)
+}

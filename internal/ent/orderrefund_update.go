@@ -174,7 +174,7 @@ func (oru *OrderRefundUpdate) Save(ctx context.Context) (int, error) {
 	if err := oru.defaults(); err != nil {
 		return 0, err
 	}
-	return withHooks[int, OrderRefundMutation](ctx, oru.sqlSave, oru.mutation, oru.hooks)
+	return withHooks(ctx, oru.sqlSave, oru.mutation, oru.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -293,10 +293,7 @@ func (oru *OrderRefundUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{orderrefund.OrderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: order.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -309,10 +306,7 @@ func (oru *OrderRefundUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{orderrefund.OrderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: order.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -498,7 +492,7 @@ func (oruo *OrderRefundUpdateOne) Save(ctx context.Context) (*OrderRefund, error
 	if err := oruo.defaults(); err != nil {
 		return nil, err
 	}
-	return withHooks[*OrderRefund, OrderRefundMutation](ctx, oruo.sqlSave, oruo.mutation, oruo.hooks)
+	return withHooks(ctx, oruo.sqlSave, oruo.mutation, oruo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -634,10 +628,7 @@ func (oruo *OrderRefundUpdateOne) sqlSave(ctx context.Context) (_node *OrderRefu
 			Columns: []string{orderrefund.OrderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: order.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -650,10 +641,7 @@ func (oruo *OrderRefundUpdateOne) sqlSave(ctx context.Context) (_node *OrderRefu
 			Columns: []string{orderrefund.OrderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: order.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

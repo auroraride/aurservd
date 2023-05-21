@@ -20,7 +20,7 @@ import (
 type CouponTemplateQuery struct {
 	config
 	ctx         *QueryContext
-	order       []OrderFunc
+	order       []coupontemplate.OrderOption
 	inters      []Interceptor
 	predicates  []predicate.CouponTemplate
 	withCoupons *CouponQuery
@@ -56,7 +56,7 @@ func (ctq *CouponTemplateQuery) Unique(unique bool) *CouponTemplateQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (ctq *CouponTemplateQuery) Order(o ...OrderFunc) *CouponTemplateQuery {
+func (ctq *CouponTemplateQuery) Order(o ...coupontemplate.OrderOption) *CouponTemplateQuery {
 	ctq.order = append(ctq.order, o...)
 	return ctq
 }
@@ -272,7 +272,7 @@ func (ctq *CouponTemplateQuery) Clone() *CouponTemplateQuery {
 	return &CouponTemplateQuery{
 		config:      ctq.config,
 		ctx:         ctq.ctx.Clone(),
-		order:       append([]OrderFunc{}, ctq.order...),
+		order:       append([]coupontemplate.OrderOption{}, ctq.order...),
 		inters:      append([]Interceptor{}, ctq.inters...),
 		predicates:  append([]predicate.CouponTemplate{}, ctq.predicates...),
 		withCoupons: ctq.withCoupons.Clone(),
@@ -416,8 +416,11 @@ func (ctq *CouponTemplateQuery) loadCoupons(ctx context.Context, query *CouponQu
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(coupon.FieldTemplateID)
+	}
 	query.Where(predicate.Coupon(func(s *sql.Selector) {
-		s.Where(sql.InValues(coupontemplate.CouponsColumn, fks...))
+		s.Where(sql.InValues(s.C(coupontemplate.CouponsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -427,7 +430,7 @@ func (ctq *CouponTemplateQuery) loadCoupons(ctx context.Context, query *CouponQu
 		fk := n.TemplateID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "template_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "template_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}

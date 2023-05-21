@@ -18,7 +18,7 @@ import (
 type InventoryQuery struct {
 	config
 	ctx        *QueryContext
-	order      []OrderFunc
+	order      []inventory.OrderOption
 	inters     []Interceptor
 	predicates []predicate.Inventory
 	modifiers  []func(*sql.Selector)
@@ -53,7 +53,7 @@ func (iq *InventoryQuery) Unique(unique bool) *InventoryQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (iq *InventoryQuery) Order(o ...OrderFunc) *InventoryQuery {
+func (iq *InventoryQuery) Order(o ...inventory.OrderOption) *InventoryQuery {
 	iq.order = append(iq.order, o...)
 	return iq
 }
@@ -247,7 +247,7 @@ func (iq *InventoryQuery) Clone() *InventoryQuery {
 	return &InventoryQuery{
 		config:     iq.config,
 		ctx:        iq.ctx.Clone(),
-		order:      append([]OrderFunc{}, iq.order...),
+		order:      append([]inventory.OrderOption{}, iq.order...),
 		inters:     append([]Interceptor{}, iq.inters...),
 		predicates: append([]predicate.Inventory{}, iq.predicates...),
 		// clone intermediate query.

@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -37,7 +38,8 @@ type EnterpriseStation struct {
 	Name string `json:"name,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EnterpriseStationQuery when eager-loading is set.
-	Edges EnterpriseStationEdges `json:"edges"`
+	Edges        EnterpriseStationEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // EnterpriseStationEdges holds the relations/edges for other nodes in the graph.
@@ -76,7 +78,7 @@ func (*EnterpriseStation) scanValues(columns []string) ([]any, error) {
 		case enterprisestation.FieldCreatedAt, enterprisestation.FieldUpdatedAt, enterprisestation.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type EnterpriseStation", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -149,9 +151,17 @@ func (es *EnterpriseStation) assignValues(columns []string, values []any) error 
 			} else if value.Valid {
 				es.Name = value.String
 			}
+		default:
+			es.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the EnterpriseStation.
+// This includes values selected through modifiers, order, etc.
+func (es *EnterpriseStation) Value(name string) (ent.Value, error) {
+	return es.selectValues.Get(name)
 }
 
 // QueryEnterprise queries the "enterprise" edge of the EnterpriseStation entity.

@@ -187,7 +187,7 @@ func (sru *SubscribeReminderUpdate) ClearRider() *SubscribeReminderUpdate {
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (sru *SubscribeReminderUpdate) Save(ctx context.Context) (int, error) {
 	sru.defaults()
-	return withHooks[int, SubscribeReminderMutation](ctx, sru.sqlSave, sru.mutation, sru.hooks)
+	return withHooks(ctx, sru.sqlSave, sru.mutation, sru.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -304,10 +304,7 @@ func (sru *SubscribeReminderUpdate) sqlSave(ctx context.Context) (n int, err err
 			Columns: []string{subscribereminder.SubscribeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: subscribe.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -320,10 +317,7 @@ func (sru *SubscribeReminderUpdate) sqlSave(ctx context.Context) (n int, err err
 			Columns: []string{subscribereminder.SubscribeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: subscribe.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -339,10 +333,7 @@ func (sru *SubscribeReminderUpdate) sqlSave(ctx context.Context) (n int, err err
 			Columns: []string{subscribereminder.PlanColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: plan.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -355,10 +346,7 @@ func (sru *SubscribeReminderUpdate) sqlSave(ctx context.Context) (n int, err err
 			Columns: []string{subscribereminder.PlanColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: plan.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -374,10 +362,7 @@ func (sru *SubscribeReminderUpdate) sqlSave(ctx context.Context) (n int, err err
 			Columns: []string{subscribereminder.RiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -390,10 +375,7 @@ func (sru *SubscribeReminderUpdate) sqlSave(ctx context.Context) (n int, err err
 			Columns: []string{subscribereminder.RiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -591,7 +573,7 @@ func (sruo *SubscribeReminderUpdateOne) Select(field string, fields ...string) *
 // Save executes the query and returns the updated SubscribeReminder entity.
 func (sruo *SubscribeReminderUpdateOne) Save(ctx context.Context) (*SubscribeReminder, error) {
 	sruo.defaults()
-	return withHooks[*SubscribeReminder, SubscribeReminderMutation](ctx, sruo.sqlSave, sruo.mutation, sruo.hooks)
+	return withHooks(ctx, sruo.sqlSave, sruo.mutation, sruo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -725,10 +707,7 @@ func (sruo *SubscribeReminderUpdateOne) sqlSave(ctx context.Context) (_node *Sub
 			Columns: []string{subscribereminder.SubscribeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: subscribe.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -741,10 +720,7 @@ func (sruo *SubscribeReminderUpdateOne) sqlSave(ctx context.Context) (_node *Sub
 			Columns: []string{subscribereminder.SubscribeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: subscribe.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -760,10 +736,7 @@ func (sruo *SubscribeReminderUpdateOne) sqlSave(ctx context.Context) (_node *Sub
 			Columns: []string{subscribereminder.PlanColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: plan.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -776,10 +749,7 @@ func (sruo *SubscribeReminderUpdateOne) sqlSave(ctx context.Context) (_node *Sub
 			Columns: []string{subscribereminder.PlanColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: plan.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -795,10 +765,7 @@ func (sruo *SubscribeReminderUpdateOne) sqlSave(ctx context.Context) (_node *Sub
 			Columns: []string{subscribereminder.RiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -811,10 +778,7 @@ func (sruo *SubscribeReminderUpdateOne) sqlSave(ctx context.Context) (_node *Sub
 			Columns: []string{subscribereminder.RiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

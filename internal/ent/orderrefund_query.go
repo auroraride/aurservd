@@ -19,7 +19,7 @@ import (
 type OrderRefundQuery struct {
 	config
 	ctx        *QueryContext
-	order      []OrderFunc
+	order      []orderrefund.OrderOption
 	inters     []Interceptor
 	predicates []predicate.OrderRefund
 	withOrder  *OrderQuery
@@ -55,7 +55,7 @@ func (orq *OrderRefundQuery) Unique(unique bool) *OrderRefundQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (orq *OrderRefundQuery) Order(o ...OrderFunc) *OrderRefundQuery {
+func (orq *OrderRefundQuery) Order(o ...orderrefund.OrderOption) *OrderRefundQuery {
 	orq.order = append(orq.order, o...)
 	return orq
 }
@@ -271,7 +271,7 @@ func (orq *OrderRefundQuery) Clone() *OrderRefundQuery {
 	return &OrderRefundQuery{
 		config:     orq.config,
 		ctx:        orq.ctx.Clone(),
-		order:      append([]OrderFunc{}, orq.order...),
+		order:      append([]orderrefund.OrderOption{}, orq.order...),
 		inters:     append([]Interceptor{}, orq.inters...),
 		predicates: append([]predicate.OrderRefund{}, orq.predicates...),
 		withOrder:  orq.withOrder.Clone(),
@@ -461,6 +461,9 @@ func (orq *OrderRefundQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != orderrefund.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if orq.withOrder != nil {
+			_spec.Node.AddColumnOnce(orderrefund.FieldOrderID)
 		}
 	}
 	if ps := orq.predicates; len(ps) > 0 {

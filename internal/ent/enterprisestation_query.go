@@ -19,7 +19,7 @@ import (
 type EnterpriseStationQuery struct {
 	config
 	ctx            *QueryContext
-	order          []OrderFunc
+	order          []enterprisestation.OrderOption
 	inters         []Interceptor
 	predicates     []predicate.EnterpriseStation
 	withEnterprise *EnterpriseQuery
@@ -55,7 +55,7 @@ func (esq *EnterpriseStationQuery) Unique(unique bool) *EnterpriseStationQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (esq *EnterpriseStationQuery) Order(o ...OrderFunc) *EnterpriseStationQuery {
+func (esq *EnterpriseStationQuery) Order(o ...enterprisestation.OrderOption) *EnterpriseStationQuery {
 	esq.order = append(esq.order, o...)
 	return esq
 }
@@ -271,7 +271,7 @@ func (esq *EnterpriseStationQuery) Clone() *EnterpriseStationQuery {
 	return &EnterpriseStationQuery{
 		config:         esq.config,
 		ctx:            esq.ctx.Clone(),
-		order:          append([]OrderFunc{}, esq.order...),
+		order:          append([]enterprisestation.OrderOption{}, esq.order...),
 		inters:         append([]Interceptor{}, esq.inters...),
 		predicates:     append([]predicate.EnterpriseStation{}, esq.predicates...),
 		withEnterprise: esq.withEnterprise.Clone(),
@@ -461,6 +461,9 @@ func (esq *EnterpriseStationQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != enterprisestation.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if esq.withEnterprise != nil {
+			_spec.Node.AddColumnOnce(enterprisestation.FieldEnterpriseID)
 		}
 	}
 	if ps := esq.predicates; len(ps) > 0 {

@@ -184,7 +184,7 @@ func (ec *ExportCreate) Mutation() *ExportMutation {
 // Save creates the Export in the database.
 func (ec *ExportCreate) Save(ctx context.Context) (*Export, error) {
 	ec.defaults()
-	return withHooks[*Export, ExportMutation](ctx, ec.sqlSave, ec.mutation, ec.hooks)
+	return withHooks(ctx, ec.sqlSave, ec.mutation, ec.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -341,10 +341,7 @@ func (ec *ExportCreate) createSpec() (*Export, *sqlgraph.CreateSpec) {
 			Columns: []string{export.ManagerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: manager.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(manager.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -950,8 +947,8 @@ func (ecb *ExportCreateBulk) Save(ctx context.Context) ([]*Export, error) {
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, ecb.builders[i+1].mutation)
 				} else {

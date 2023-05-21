@@ -615,11 +615,7 @@ func HasCity() predicate.Branch {
 // HasCityWith applies the HasEdge predicate on the "city" edge with a given conditions (other predicates).
 func HasCityWith(preds ...predicate.City) predicate.Branch {
 	return predicate.Branch(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CityInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
-		)
+		step := newCityStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -642,11 +638,7 @@ func HasContracts() predicate.Branch {
 // HasContractsWith applies the HasEdge predicate on the "contracts" edge with a given conditions (other predicates).
 func HasContractsWith(preds ...predicate.BranchContract) predicate.Branch {
 	return predicate.Branch(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ContractsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ContractsTable, ContractsColumn),
-		)
+		step := newContractsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -669,11 +661,7 @@ func HasCabinets() predicate.Branch {
 // HasCabinetsWith applies the HasEdge predicate on the "cabinets" edge with a given conditions (other predicates).
 func HasCabinetsWith(preds ...predicate.Cabinet) predicate.Branch {
 	return predicate.Branch(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CabinetsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, CabinetsTable, CabinetsColumn),
-		)
+		step := newCabinetsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -696,11 +684,7 @@ func HasFaults() predicate.Branch {
 // HasFaultsWith applies the HasEdge predicate on the "faults" edge with a given conditions (other predicates).
 func HasFaultsWith(preds ...predicate.CabinetFault) predicate.Branch {
 	return predicate.Branch(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(FaultsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, FaultsTable, FaultsColumn),
-		)
+		step := newFaultsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -723,11 +707,7 @@ func HasStores() predicate.Branch {
 // HasStoresWith applies the HasEdge predicate on the "stores" edge with a given conditions (other predicates).
 func HasStoresWith(preds ...predicate.Store) predicate.Branch {
 	return predicate.Branch(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(StoresInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, StoresTable, StoresColumn),
-		)
+		step := newStoresStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

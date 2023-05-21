@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/adapter"
 	"github.com/auroraride/aurservd/app/model"
@@ -79,7 +80,8 @@ type Cabinet struct {
 	LockedBinNum int `json:"locked_bin_num,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CabinetQuery when eager-loading is set.
-	Edges CabinetEdges `json:"edges"`
+	Edges        CabinetEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // CabinetEdges holds the relations/edges for other nodes in the graph.
@@ -205,7 +207,7 @@ func (*Cabinet) scanValues(columns []string) ([]any, error) {
 		case cabinet.FieldCreatedAt, cabinet.FieldUpdatedAt, cabinet.FieldDeletedAt, cabinet.FieldSimDate:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Cabinet", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -402,9 +404,17 @@ func (c *Cabinet) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				c.LockedBinNum = int(value.Int64)
 			}
+		default:
+			c.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the Cabinet.
+// This includes values selected through modifiers, order, etc.
+func (c *Cabinet) Value(name string) (ent.Value, error) {
+	return c.selectValues.Get(name)
 }
 
 // QueryCity queries the "city" edge of the Cabinet entity.

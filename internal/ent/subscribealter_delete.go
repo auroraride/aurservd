@@ -27,7 +27,7 @@ func (sad *SubscribeAlterDelete) Where(ps ...predicate.SubscribeAlter) *Subscrib
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (sad *SubscribeAlterDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks[int, SubscribeAlterMutation](ctx, sad.sqlExec, sad.mutation, sad.hooks)
+	return withHooks(ctx, sad.sqlExec, sad.mutation, sad.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.

@@ -24,7 +24,7 @@ import (
 type AssistanceQuery struct {
 	config
 	ctx           *QueryContext
-	order         []OrderFunc
+	order         []assistance.OrderOption
 	inters        []Interceptor
 	predicates    []predicate.Assistance
 	withStore     *StoreQuery
@@ -65,7 +65,7 @@ func (aq *AssistanceQuery) Unique(unique bool) *AssistanceQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (aq *AssistanceQuery) Order(o ...OrderFunc) *AssistanceQuery {
+func (aq *AssistanceQuery) Order(o ...assistance.OrderOption) *AssistanceQuery {
 	aq.order = append(aq.order, o...)
 	return aq
 }
@@ -391,7 +391,7 @@ func (aq *AssistanceQuery) Clone() *AssistanceQuery {
 	return &AssistanceQuery{
 		config:        aq.config,
 		ctx:           aq.ctx.Clone(),
-		order:         append([]OrderFunc{}, aq.order...),
+		order:         append([]assistance.OrderOption{}, aq.order...),
 		inters:        append([]Interceptor{}, aq.inters...),
 		predicates:    append([]predicate.Assistance{}, aq.predicates...),
 		withStore:     aq.withStore.Clone(),
@@ -830,6 +830,24 @@ func (aq *AssistanceQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != assistance.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if aq.withStore != nil {
+			_spec.Node.AddColumnOnce(assistance.FieldStoreID)
+		}
+		if aq.withRider != nil {
+			_spec.Node.AddColumnOnce(assistance.FieldRiderID)
+		}
+		if aq.withSubscribe != nil {
+			_spec.Node.AddColumnOnce(assistance.FieldSubscribeID)
+		}
+		if aq.withCity != nil {
+			_spec.Node.AddColumnOnce(assistance.FieldCityID)
+		}
+		if aq.withOrder != nil {
+			_spec.Node.AddColumnOnce(assistance.FieldOrderID)
+		}
+		if aq.withEmployee != nil {
+			_spec.Node.AddColumnOnce(assistance.FieldEmployeeID)
 		}
 	}
 	if ps := aq.predicates; len(ps) > 0 {

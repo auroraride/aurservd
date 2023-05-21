@@ -78,7 +78,7 @@ func (bmu *BatteryModelUpdate) RemoveCabinets(c ...*Cabinet) *BatteryModelUpdate
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (bmu *BatteryModelUpdate) Save(ctx context.Context) (int, error) {
-	return withHooks[int, BatteryModelMutation](ctx, bmu.sqlSave, bmu.mutation, bmu.hooks)
+	return withHooks(ctx, bmu.sqlSave, bmu.mutation, bmu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -129,10 +129,7 @@ func (bmu *BatteryModelUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: batterymodel.CabinetsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: cabinet.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -145,10 +142,7 @@ func (bmu *BatteryModelUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: batterymodel.CabinetsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: cabinet.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -164,10 +158,7 @@ func (bmu *BatteryModelUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: batterymodel.CabinetsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: cabinet.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -259,7 +250,7 @@ func (bmuo *BatteryModelUpdateOne) Select(field string, fields ...string) *Batte
 
 // Save executes the query and returns the updated BatteryModel entity.
 func (bmuo *BatteryModelUpdateOne) Save(ctx context.Context) (*BatteryModel, error) {
-	return withHooks[*BatteryModel, BatteryModelMutation](ctx, bmuo.sqlSave, bmuo.mutation, bmuo.hooks)
+	return withHooks(ctx, bmuo.sqlSave, bmuo.mutation, bmuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -327,10 +318,7 @@ func (bmuo *BatteryModelUpdateOne) sqlSave(ctx context.Context) (_node *BatteryM
 			Columns: batterymodel.CabinetsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: cabinet.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -343,10 +331,7 @@ func (bmuo *BatteryModelUpdateOne) sqlSave(ctx context.Context) (_node *BatteryM
 			Columns: batterymodel.CabinetsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: cabinet.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -362,10 +347,7 @@ func (bmuo *BatteryModelUpdateOne) sqlSave(ctx context.Context) (_node *BatteryM
 			Columns: batterymodel.CabinetsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: cabinet.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

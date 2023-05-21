@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -44,7 +45,8 @@ type EnterprisePrice struct {
 	Intelligent bool `json:"intelligent,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EnterprisePriceQuery when eager-loading is set.
-	Edges EnterprisePriceEdges `json:"edges"`
+	Edges        EnterprisePriceEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // EnterprisePriceEdges holds the relations/edges for other nodes in the graph.
@@ -102,7 +104,7 @@ func (*EnterprisePrice) scanValues(columns []string) ([]any, error) {
 		case enterpriseprice.FieldCreatedAt, enterpriseprice.FieldUpdatedAt, enterpriseprice.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type EnterprisePrice", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -193,9 +195,17 @@ func (ep *EnterprisePrice) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				ep.Intelligent = value.Bool
 			}
+		default:
+			ep.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the EnterprisePrice.
+// This includes values selected through modifiers, order, etc.
+func (ep *EnterprisePrice) Value(name string) (ent.Value, error) {
+	return ep.selectValues.Get(name)
 }
 
 // QueryCity queries the "city" edge of the EnterprisePrice entity.

@@ -27,7 +27,7 @@ func (cfd *CabinetFaultDelete) Where(ps ...predicate.CabinetFault) *CabinetFault
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (cfd *CabinetFaultDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks[int, CabinetFaultMutation](ctx, cfd.sqlExec, cfd.mutation, cfd.hooks)
+	return withHooks(ctx, cfd.sqlExec, cfd.mutation, cfd.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.

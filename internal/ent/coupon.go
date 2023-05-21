@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/coupon"
@@ -65,7 +66,8 @@ type Coupon struct {
 	Cities []model.City `json:"cities,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CouponQuery when eager-loading is set.
-	Edges CouponEdges `json:"edges"`
+	Edges        CouponEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // CouponEdges holds the relations/edges for other nodes in the graph.
@@ -168,7 +170,7 @@ func (*Coupon) scanValues(columns []string) ([]any, error) {
 		case coupon.FieldCreatedAt, coupon.FieldUpdatedAt, coupon.FieldExpiresAt, coupon.FieldUsedAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Coupon", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -322,9 +324,17 @@ func (c *Coupon) assignValues(columns []string, values []any) error {
 					return fmt.Errorf("unmarshal field cities: %w", err)
 				}
 			}
+		default:
+			c.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the Coupon.
+// This includes values selected through modifiers, order, etc.
+func (c *Coupon) Value(name string) (ent.Value, error) {
+	return c.selectValues.Get(name)
 }
 
 // QueryRider queries the "rider" edge of the Coupon entity.

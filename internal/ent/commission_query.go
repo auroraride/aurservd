@@ -24,7 +24,7 @@ import (
 type CommissionQuery struct {
 	config
 	ctx           *QueryContext
-	order         []OrderFunc
+	order         []commission.OrderOption
 	inters        []Interceptor
 	predicates    []predicate.Commission
 	withBusiness  *BusinessQuery
@@ -65,7 +65,7 @@ func (cq *CommissionQuery) Unique(unique bool) *CommissionQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (cq *CommissionQuery) Order(o ...OrderFunc) *CommissionQuery {
+func (cq *CommissionQuery) Order(o ...commission.OrderOption) *CommissionQuery {
 	cq.order = append(cq.order, o...)
 	return cq
 }
@@ -391,7 +391,7 @@ func (cq *CommissionQuery) Clone() *CommissionQuery {
 	return &CommissionQuery{
 		config:        cq.config,
 		ctx:           cq.ctx.Clone(),
-		order:         append([]OrderFunc{}, cq.order...),
+		order:         append([]commission.OrderOption{}, cq.order...),
 		inters:        append([]Interceptor{}, cq.inters...),
 		predicates:    append([]predicate.Commission{}, cq.predicates...),
 		withBusiness:  cq.withBusiness.Clone(),
@@ -836,6 +836,24 @@ func (cq *CommissionQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != commission.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if cq.withBusiness != nil {
+			_spec.Node.AddColumnOnce(commission.FieldBusinessID)
+		}
+		if cq.withSubscribe != nil {
+			_spec.Node.AddColumnOnce(commission.FieldSubscribeID)
+		}
+		if cq.withPlan != nil {
+			_spec.Node.AddColumnOnce(commission.FieldPlanID)
+		}
+		if cq.withRider != nil {
+			_spec.Node.AddColumnOnce(commission.FieldRiderID)
+		}
+		if cq.withOrder != nil {
+			_spec.Node.AddColumnOnce(commission.FieldOrderID)
+		}
+		if cq.withEmployee != nil {
+			_spec.Node.AddColumnOnce(commission.FieldEmployeeID)
 		}
 	}
 	if ps := cq.predicates; len(ps) > 0 {

@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/person"
@@ -58,7 +59,8 @@ type Person struct {
 	BaiduLogID string `json:"baidu_log_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PersonQuery when eager-loading is set.
-	Edges PersonEdges `json:"edges"`
+	Edges        PersonEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // PersonEdges holds the relations/edges for other nodes in the graph.
@@ -95,7 +97,7 @@ func (*Person) scanValues(columns []string) ([]any, error) {
 		case person.FieldCreatedAt, person.FieldUpdatedAt, person.FieldDeletedAt, person.FieldAuthAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Person", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -237,9 +239,17 @@ func (pe *Person) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pe.BaiduLogID = value.String
 			}
+		default:
+			pe.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the Person.
+// This includes values selected through modifiers, order, etc.
+func (pe *Person) Value(name string) (ent.Value, error) {
+	return pe.selectValues.Get(name)
 }
 
 // QueryRider queries the "rider" edge of the Person entity.

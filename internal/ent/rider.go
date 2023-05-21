@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/battery"
@@ -70,7 +71,8 @@ type Rider struct {
 	ExchangeFrequency model.RiderExchangeFrequency `json:"exchange_frequency,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the RiderQuery when eager-loading is set.
-	Edges RiderEdges `json:"edges"`
+	Edges        RiderEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // RiderEdges holds the relations/edges for other nodes in the graph.
@@ -244,7 +246,7 @@ func (*Rider) scanValues(columns []string) ([]any, error) {
 		case rider.FieldCreatedAt, rider.FieldUpdatedAt, rider.FieldDeletedAt, rider.FieldLastSigninAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Rider", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -418,9 +420,17 @@ func (r *Rider) assignValues(columns []string, values []any) error {
 					return fmt.Errorf("unmarshal field exchange_frequency: %w", err)
 				}
 			}
+		default:
+			r.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the Rider.
+// This includes values selected through modifiers, order, etc.
+func (r *Rider) Value(name string) (ent.Value, error) {
+	return r.selectValues.Get(name)
 }
 
 // QueryStation queries the "station" edge of the Rider entity.

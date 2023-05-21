@@ -19,7 +19,7 @@ import (
 type EnterpriseContractQuery struct {
 	config
 	ctx            *QueryContext
-	order          []OrderFunc
+	order          []enterprisecontract.OrderOption
 	inters         []Interceptor
 	predicates     []predicate.EnterpriseContract
 	withEnterprise *EnterpriseQuery
@@ -55,7 +55,7 @@ func (ecq *EnterpriseContractQuery) Unique(unique bool) *EnterpriseContractQuery
 }
 
 // Order specifies how the records should be ordered.
-func (ecq *EnterpriseContractQuery) Order(o ...OrderFunc) *EnterpriseContractQuery {
+func (ecq *EnterpriseContractQuery) Order(o ...enterprisecontract.OrderOption) *EnterpriseContractQuery {
 	ecq.order = append(ecq.order, o...)
 	return ecq
 }
@@ -271,7 +271,7 @@ func (ecq *EnterpriseContractQuery) Clone() *EnterpriseContractQuery {
 	return &EnterpriseContractQuery{
 		config:         ecq.config,
 		ctx:            ecq.ctx.Clone(),
-		order:          append([]OrderFunc{}, ecq.order...),
+		order:          append([]enterprisecontract.OrderOption{}, ecq.order...),
 		inters:         append([]Interceptor{}, ecq.inters...),
 		predicates:     append([]predicate.EnterpriseContract{}, ecq.predicates...),
 		withEnterprise: ecq.withEnterprise.Clone(),
@@ -461,6 +461,9 @@ func (ecq *EnterpriseContractQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != enterprisecontract.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if ecq.withEnterprise != nil {
+			_spec.Node.AddColumnOnce(enterprisecontract.FieldEnterpriseID)
 		}
 	}
 	if ps := ecq.predicates; len(ps) > 0 {

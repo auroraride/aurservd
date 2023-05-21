@@ -514,11 +514,7 @@ func HasRider() predicate.SubscribeAlter {
 // HasRiderWith applies the HasEdge predicate on the "rider" edge with a given conditions (other predicates).
 func HasRiderWith(preds ...predicate.Rider) predicate.SubscribeAlter {
 	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(RiderInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, RiderTable, RiderColumn),
-		)
+		step := newRiderStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -541,11 +537,7 @@ func HasManager() predicate.SubscribeAlter {
 // HasManagerWith applies the HasEdge predicate on the "manager" edge with a given conditions (other predicates).
 func HasManagerWith(preds ...predicate.Manager) predicate.SubscribeAlter {
 	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ManagerInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, ManagerTable, ManagerColumn),
-		)
+		step := newManagerStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -568,11 +560,7 @@ func HasEnterprise() predicate.SubscribeAlter {
 // HasEnterpriseWith applies the HasEdge predicate on the "enterprise" edge with a given conditions (other predicates).
 func HasEnterpriseWith(preds ...predicate.Enterprise) predicate.SubscribeAlter {
 	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(EnterpriseInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, EnterpriseTable, EnterpriseColumn),
-		)
+		step := newEnterpriseStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -595,11 +583,7 @@ func HasAgent() predicate.SubscribeAlter {
 // HasAgentWith applies the HasEdge predicate on the "agent" edge with a given conditions (other predicates).
 func HasAgentWith(preds ...predicate.Agent) predicate.SubscribeAlter {
 	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(AgentInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, AgentTable, AgentColumn),
-		)
+		step := newAgentStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -622,11 +606,7 @@ func HasSubscribe() predicate.SubscribeAlter {
 // HasSubscribeWith applies the HasEdge predicate on the "subscribe" edge with a given conditions (other predicates).
 func HasSubscribeWith(preds ...predicate.Subscribe) predicate.SubscribeAlter {
 	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(SubscribeInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, SubscribeTable, SubscribeColumn),
-		)
+		step := newSubscribeStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

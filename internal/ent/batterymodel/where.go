@@ -184,11 +184,7 @@ func HasCabinets() predicate.BatteryModel {
 // HasCabinetsWith applies the HasEdge predicate on the "cabinets" edge with a given conditions (other predicates).
 func HasCabinetsWith(preds ...predicate.Cabinet) predicate.BatteryModel {
 	return predicate.BatteryModel(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CabinetsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, CabinetsTable, CabinetsPrimaryKey...),
-		)
+		step := newCabinetsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

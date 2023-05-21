@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -44,7 +45,8 @@ type City struct {
 	Lat float64 `json:"lat,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CityQuery when eager-loading is set.
-	Edges CityEdges `json:"edges"`
+	Edges        CityEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // CityEdges holds the relations/edges for other nodes in the graph.
@@ -109,7 +111,7 @@ func (*City) scanValues(columns []string) ([]any, error) {
 		case city.FieldCreatedAt, city.FieldUpdatedAt, city.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type City", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -208,9 +210,17 @@ func (c *City) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				c.Lat = value.Float64
 			}
+		default:
+			c.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the City.
+// This includes values selected through modifiers, order, etc.
+func (c *City) Value(name string) (ent.Value, error) {
+	return c.selectValues.Get(name)
 }
 
 // QueryParent queries the "parent" edge of the City entity.

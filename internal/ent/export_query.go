@@ -19,7 +19,7 @@ import (
 type ExportQuery struct {
 	config
 	ctx         *QueryContext
-	order       []OrderFunc
+	order       []export.OrderOption
 	inters      []Interceptor
 	predicates  []predicate.Export
 	withManager *ManagerQuery
@@ -55,7 +55,7 @@ func (eq *ExportQuery) Unique(unique bool) *ExportQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (eq *ExportQuery) Order(o ...OrderFunc) *ExportQuery {
+func (eq *ExportQuery) Order(o ...export.OrderOption) *ExportQuery {
 	eq.order = append(eq.order, o...)
 	return eq
 }
@@ -271,7 +271,7 @@ func (eq *ExportQuery) Clone() *ExportQuery {
 	return &ExportQuery{
 		config:      eq.config,
 		ctx:         eq.ctx.Clone(),
-		order:       append([]OrderFunc{}, eq.order...),
+		order:       append([]export.OrderOption{}, eq.order...),
 		inters:      append([]Interceptor{}, eq.inters...),
 		predicates:  append([]predicate.Export{}, eq.predicates...),
 		withManager: eq.withManager.Clone(),
@@ -461,6 +461,9 @@ func (eq *ExportQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != export.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if eq.withManager != nil {
+			_spec.Node.AddColumnOnce(export.FieldManagerID)
 		}
 	}
 	if ps := eq.predicates; len(ps) > 0 {

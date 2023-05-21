@@ -789,11 +789,7 @@ func HasRider() predicate.Coupon {
 // HasRiderWith applies the HasEdge predicate on the "rider" edge with a given conditions (other predicates).
 func HasRiderWith(preds ...predicate.Rider) predicate.Coupon {
 	return predicate.Coupon(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(RiderInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, RiderTable, RiderColumn),
-		)
+		step := newRiderStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -816,11 +812,7 @@ func HasAssembly() predicate.Coupon {
 // HasAssemblyWith applies the HasEdge predicate on the "assembly" edge with a given conditions (other predicates).
 func HasAssemblyWith(preds ...predicate.CouponAssembly) predicate.Coupon {
 	return predicate.Coupon(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(AssemblyInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, AssemblyTable, AssemblyColumn),
-		)
+		step := newAssemblyStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -843,11 +835,7 @@ func HasPlan() predicate.Coupon {
 // HasPlanWith applies the HasEdge predicate on the "plan" edge with a given conditions (other predicates).
 func HasPlanWith(preds ...predicate.Plan) predicate.Coupon {
 	return predicate.Coupon(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(PlanInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, PlanTable, PlanColumn),
-		)
+		step := newPlanStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -870,11 +858,7 @@ func HasTemplate() predicate.Coupon {
 // HasTemplateWith applies the HasEdge predicate on the "template" edge with a given conditions (other predicates).
 func HasTemplateWith(preds ...predicate.CouponTemplate) predicate.Coupon {
 	return predicate.Coupon(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(TemplateInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, TemplateTable, TemplateColumn),
-		)
+		step := newTemplateStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -897,11 +881,7 @@ func HasOrder() predicate.Coupon {
 // HasOrderWith applies the HasEdge predicate on the "order" edge with a given conditions (other predicates).
 func HasOrderWith(preds ...predicate.Order) predicate.Coupon {
 	return predicate.Coupon(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(OrderInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, OrderTable, OrderColumn),
-		)
+		step := newOrderStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

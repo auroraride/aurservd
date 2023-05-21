@@ -134,7 +134,7 @@ func (rfuu *RiderFollowUpUpdate) Save(ctx context.Context) (int, error) {
 	if err := rfuu.defaults(); err != nil {
 		return 0, err
 	}
-	return withHooks[int, RiderFollowUpMutation](ctx, rfuu.sqlSave, rfuu.mutation, rfuu.hooks)
+	return withHooks(ctx, rfuu.sqlSave, rfuu.mutation, rfuu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -232,10 +232,7 @@ func (rfuu *RiderFollowUpUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Columns: []string{riderfollowup.ManagerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: manager.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(manager.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -248,10 +245,7 @@ func (rfuu *RiderFollowUpUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Columns: []string{riderfollowup.ManagerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: manager.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(manager.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -267,10 +261,7 @@ func (rfuu *RiderFollowUpUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Columns: []string{riderfollowup.RiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -283,10 +274,7 @@ func (rfuu *RiderFollowUpUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Columns: []string{riderfollowup.RiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -431,7 +419,7 @@ func (rfuuo *RiderFollowUpUpdateOne) Save(ctx context.Context) (*RiderFollowUp, 
 	if err := rfuuo.defaults(); err != nil {
 		return nil, err
 	}
-	return withHooks[*RiderFollowUp, RiderFollowUpMutation](ctx, rfuuo.sqlSave, rfuuo.mutation, rfuuo.hooks)
+	return withHooks(ctx, rfuuo.sqlSave, rfuuo.mutation, rfuuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -546,10 +534,7 @@ func (rfuuo *RiderFollowUpUpdateOne) sqlSave(ctx context.Context) (_node *RiderF
 			Columns: []string{riderfollowup.ManagerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: manager.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(manager.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -562,10 +547,7 @@ func (rfuuo *RiderFollowUpUpdateOne) sqlSave(ctx context.Context) (_node *RiderF
 			Columns: []string{riderfollowup.ManagerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: manager.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(manager.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -581,10 +563,7 @@ func (rfuuo *RiderFollowUpUpdateOne) sqlSave(ctx context.Context) (_node *RiderF
 			Columns: []string{riderfollowup.RiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -597,10 +576,7 @@ func (rfuuo *RiderFollowUpUpdateOne) sqlSave(ctx context.Context) (_node *RiderF
 			Columns: []string{riderfollowup.RiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

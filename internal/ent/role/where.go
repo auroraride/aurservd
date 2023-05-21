@@ -224,11 +224,7 @@ func HasManagers() predicate.Role {
 // HasManagersWith applies the HasEdge predicate on the "managers" edge with a given conditions (other predicates).
 func HasManagersWith(preds ...predicate.Manager) predicate.Role {
 	return predicate.Role(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ManagersInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ManagersTable, ManagersColumn),
-		)
+		step := newManagersStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

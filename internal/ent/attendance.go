@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/attendance"
@@ -54,7 +55,8 @@ type Attendance struct {
 	Distance *float64 `json:"distance,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AttendanceQuery when eager-loading is set.
-	Edges AttendanceEdges `json:"edges"`
+	Edges        AttendanceEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // AttendanceEdges holds the relations/edges for other nodes in the graph.
@@ -112,7 +114,7 @@ func (*Attendance) scanValues(columns []string) ([]any, error) {
 		case attendance.FieldCreatedAt, attendance.FieldUpdatedAt, attendance.FieldDeletedAt, attendance.FieldDate:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Attendance", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -240,9 +242,17 @@ func (a *Attendance) assignValues(columns []string, values []any) error {
 				a.Distance = new(float64)
 				*a.Distance = value.Float64
 			}
+		default:
+			a.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the Attendance.
+// This includes values selected through modifiers, order, etc.
+func (a *Attendance) Value(name string) (ent.Value, error) {
+	return a.selectValues.Get(name)
 }
 
 // QueryStore queries the "store" edge of the Attendance entity.

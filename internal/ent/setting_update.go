@@ -96,7 +96,7 @@ func (su *SettingUpdate) Save(ctx context.Context) (int, error) {
 	if err := su.defaults(); err != nil {
 		return 0, err
 	}
-	return withHooks[int, SettingMutation](ctx, su.sqlSave, su.mutation, su.hooks)
+	return withHooks(ctx, su.sqlSave, su.mutation, su.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -289,7 +289,7 @@ func (suo *SettingUpdateOne) Save(ctx context.Context) (*Setting, error) {
 	if err := suo.defaults(); err != nil {
 		return nil, err
 	}
-	return withHooks[*Setting, SettingMutation](ctx, suo.sqlSave, suo.mutation, suo.hooks)
+	return withHooks(ctx, suo.sqlSave, suo.mutation, suo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.

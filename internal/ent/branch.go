@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/branch"
@@ -47,7 +48,8 @@ type Branch struct {
 	Geom *model.Geometry `json:"geom,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the BranchQuery when eager-loading is set.
-	Edges BranchEdges `json:"edges"`
+	Edges        BranchEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // BranchEdges holds the relations/edges for other nodes in the graph.
@@ -134,7 +136,7 @@ func (*Branch) scanValues(columns []string) ([]any, error) {
 		case branch.FieldCreatedAt, branch.FieldUpdatedAt, branch.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Branch", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -239,9 +241,17 @@ func (b *Branch) assignValues(columns []string, values []any) error {
 			} else if value != nil {
 				b.Geom = value
 			}
+		default:
+			b.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the Branch.
+// This includes values selected through modifiers, order, etc.
+func (b *Branch) Value(name string) (ent.Value, error) {
+	return b.selectValues.Get(name)
 }
 
 // QueryCity queries the "city" edge of the Branch entity.

@@ -20,7 +20,7 @@ import (
 type RoleQuery struct {
 	config
 	ctx          *QueryContext
-	order        []OrderFunc
+	order        []role.OrderOption
 	inters       []Interceptor
 	predicates   []predicate.Role
 	withManagers *ManagerQuery
@@ -56,7 +56,7 @@ func (rq *RoleQuery) Unique(unique bool) *RoleQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (rq *RoleQuery) Order(o ...OrderFunc) *RoleQuery {
+func (rq *RoleQuery) Order(o ...role.OrderOption) *RoleQuery {
 	rq.order = append(rq.order, o...)
 	return rq
 }
@@ -272,7 +272,7 @@ func (rq *RoleQuery) Clone() *RoleQuery {
 	return &RoleQuery{
 		config:       rq.config,
 		ctx:          rq.ctx.Clone(),
-		order:        append([]OrderFunc{}, rq.order...),
+		order:        append([]role.OrderOption{}, rq.order...),
 		inters:       append([]Interceptor{}, rq.inters...),
 		predicates:   append([]predicate.Role{}, rq.predicates...),
 		withManagers: rq.withManagers.Clone(),
@@ -416,8 +416,11 @@ func (rq *RoleQuery) loadManagers(ctx context.Context, query *ManagerQuery, node
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(manager.FieldRoleID)
+	}
 	query.Where(predicate.Manager(func(s *sql.Selector) {
-		s.Where(sql.InValues(role.ManagersColumn, fks...))
+		s.Where(sql.InValues(s.C(role.ManagersColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -430,7 +433,7 @@ func (rq *RoleQuery) loadManagers(ctx context.Context, query *ManagerQuery, node
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "role_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "role_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

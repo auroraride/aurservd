@@ -19,7 +19,7 @@ import (
 type CouponAssemblyQuery struct {
 	config
 	ctx          *QueryContext
-	order        []OrderFunc
+	order        []couponassembly.OrderOption
 	inters       []Interceptor
 	predicates   []predicate.CouponAssembly
 	withTemplate *CouponTemplateQuery
@@ -55,7 +55,7 @@ func (caq *CouponAssemblyQuery) Unique(unique bool) *CouponAssemblyQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (caq *CouponAssemblyQuery) Order(o ...OrderFunc) *CouponAssemblyQuery {
+func (caq *CouponAssemblyQuery) Order(o ...couponassembly.OrderOption) *CouponAssemblyQuery {
 	caq.order = append(caq.order, o...)
 	return caq
 }
@@ -271,7 +271,7 @@ func (caq *CouponAssemblyQuery) Clone() *CouponAssemblyQuery {
 	return &CouponAssemblyQuery{
 		config:       caq.config,
 		ctx:          caq.ctx.Clone(),
-		order:        append([]OrderFunc{}, caq.order...),
+		order:        append([]couponassembly.OrderOption{}, caq.order...),
 		inters:       append([]Interceptor{}, caq.inters...),
 		predicates:   append([]predicate.CouponAssembly{}, caq.predicates...),
 		withTemplate: caq.withTemplate.Clone(),
@@ -461,6 +461,9 @@ func (caq *CouponAssemblyQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != couponassembly.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if caq.withTemplate != nil {
+			_spec.Node.AddColumnOnce(couponassembly.FieldTemplateID)
 		}
 	}
 	if ps := caq.predicates; len(ps) > 0 {

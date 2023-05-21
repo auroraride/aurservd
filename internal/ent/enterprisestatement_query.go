@@ -21,7 +21,7 @@ import (
 type EnterpriseStatementQuery struct {
 	config
 	ctx            *QueryContext
-	order          []OrderFunc
+	order          []enterprisestatement.OrderOption
 	inters         []Interceptor
 	predicates     []predicate.EnterpriseStatement
 	withEnterprise *EnterpriseQuery
@@ -58,7 +58,7 @@ func (esq *EnterpriseStatementQuery) Unique(unique bool) *EnterpriseStatementQue
 }
 
 // Order specifies how the records should be ordered.
-func (esq *EnterpriseStatementQuery) Order(o ...OrderFunc) *EnterpriseStatementQuery {
+func (esq *EnterpriseStatementQuery) Order(o ...enterprisestatement.OrderOption) *EnterpriseStatementQuery {
 	esq.order = append(esq.order, o...)
 	return esq
 }
@@ -296,7 +296,7 @@ func (esq *EnterpriseStatementQuery) Clone() *EnterpriseStatementQuery {
 	return &EnterpriseStatementQuery{
 		config:         esq.config,
 		ctx:            esq.ctx.Clone(),
-		order:          append([]OrderFunc{}, esq.order...),
+		order:          append([]enterprisestatement.OrderOption{}, esq.order...),
 		inters:         append([]Interceptor{}, esq.inters...),
 		predicates:     append([]predicate.EnterpriseStatement{}, esq.predicates...),
 		withEnterprise: esq.withEnterprise.Clone(),
@@ -488,8 +488,11 @@ func (esq *EnterpriseStatementQuery) loadBills(ctx context.Context, query *Enter
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(enterprisebill.FieldStatementID)
+	}
 	query.Where(predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.InValues(enterprisestatement.BillsColumn, fks...))
+		s.Where(sql.InValues(s.C(enterprisestatement.BillsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -499,7 +502,7 @@ func (esq *EnterpriseStatementQuery) loadBills(ctx context.Context, query *Enter
 		fk := n.StatementID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "statement_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "statement_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -533,6 +536,9 @@ func (esq *EnterpriseStatementQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != enterprisestatement.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if esq.withEnterprise != nil {
+			_spec.Node.AddColumnOnce(enterprisestatement.FieldEnterpriseID)
 		}
 	}
 	if ps := esq.predicates; len(ps) > 0 {

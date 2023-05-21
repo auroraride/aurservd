@@ -21,7 +21,7 @@ import (
 type ExceptionQuery struct {
 	config
 	ctx          *QueryContext
-	order        []OrderFunc
+	order        []exception.OrderOption
 	inters       []Interceptor
 	predicates   []predicate.Exception
 	withCity     *CityQuery
@@ -59,7 +59,7 @@ func (eq *ExceptionQuery) Unique(unique bool) *ExceptionQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (eq *ExceptionQuery) Order(o ...OrderFunc) *ExceptionQuery {
+func (eq *ExceptionQuery) Order(o ...exception.OrderOption) *ExceptionQuery {
 	eq.order = append(eq.order, o...)
 	return eq
 }
@@ -319,7 +319,7 @@ func (eq *ExceptionQuery) Clone() *ExceptionQuery {
 	return &ExceptionQuery{
 		config:       eq.config,
 		ctx:          eq.ctx.Clone(),
-		order:        append([]OrderFunc{}, eq.order...),
+		order:        append([]exception.OrderOption{}, eq.order...),
 		inters:       append([]Interceptor{}, eq.inters...),
 		predicates:   append([]predicate.Exception{}, eq.predicates...),
 		withCity:     eq.withCity.Clone(),
@@ -605,6 +605,15 @@ func (eq *ExceptionQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != exception.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if eq.withCity != nil {
+			_spec.Node.AddColumnOnce(exception.FieldCityID)
+		}
+		if eq.withEmployee != nil {
+			_spec.Node.AddColumnOnce(exception.FieldEmployeeID)
+		}
+		if eq.withStore != nil {
+			_spec.Node.AddColumnOnce(exception.FieldStoreID)
 		}
 	}
 	if ps := eq.predicates; len(ps) > 0 {

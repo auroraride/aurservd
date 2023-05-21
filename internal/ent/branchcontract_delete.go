@@ -27,7 +27,7 @@ func (bcd *BranchContractDelete) Where(ps ...predicate.BranchContract) *BranchCo
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (bcd *BranchContractDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks[int, BranchContractMutation](ctx, bcd.sqlExec, bcd.mutation, bcd.hooks)
+	return withHooks(ctx, bcd.sqlExec, bcd.mutation, bcd.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.

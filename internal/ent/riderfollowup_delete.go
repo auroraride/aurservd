@@ -27,7 +27,7 @@ func (rfud *RiderFollowUpDelete) Where(ps ...predicate.RiderFollowUp) *RiderFoll
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (rfud *RiderFollowUpDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks[int, RiderFollowUpMutation](ctx, rfud.sqlExec, rfud.mutation, rfud.hooks)
+	return withHooks(ctx, rfud.sqlExec, rfud.mutation, rfud.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.

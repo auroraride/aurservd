@@ -26,7 +26,7 @@ import (
 type ExchangeQuery struct {
 	config
 	ctx            *QueryContext
-	order          []OrderFunc
+	order          []exchange.OrderOption
 	inters         []Interceptor
 	predicates     []predicate.Exchange
 	withSubscribe  *SubscribeQuery
@@ -69,7 +69,7 @@ func (eq *ExchangeQuery) Unique(unique bool) *ExchangeQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (eq *ExchangeQuery) Order(o ...OrderFunc) *ExchangeQuery {
+func (eq *ExchangeQuery) Order(o ...exchange.OrderOption) *ExchangeQuery {
 	eq.order = append(eq.order, o...)
 	return eq
 }
@@ -439,7 +439,7 @@ func (eq *ExchangeQuery) Clone() *ExchangeQuery {
 	return &ExchangeQuery{
 		config:         eq.config,
 		ctx:            eq.ctx.Clone(),
-		order:          append([]OrderFunc{}, eq.order...),
+		order:          append([]exchange.OrderOption{}, eq.order...),
 		inters:         append([]Interceptor{}, eq.inters...),
 		predicates:     append([]predicate.Exchange{}, eq.predicates...),
 		withSubscribe:  eq.withSubscribe.Clone(),
@@ -977,6 +977,30 @@ func (eq *ExchangeQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != exchange.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if eq.withSubscribe != nil {
+			_spec.Node.AddColumnOnce(exchange.FieldSubscribeID)
+		}
+		if eq.withCity != nil {
+			_spec.Node.AddColumnOnce(exchange.FieldCityID)
+		}
+		if eq.withStore != nil {
+			_spec.Node.AddColumnOnce(exchange.FieldStoreID)
+		}
+		if eq.withEnterprise != nil {
+			_spec.Node.AddColumnOnce(exchange.FieldEnterpriseID)
+		}
+		if eq.withStation != nil {
+			_spec.Node.AddColumnOnce(exchange.FieldStationID)
+		}
+		if eq.withCabinet != nil {
+			_spec.Node.AddColumnOnce(exchange.FieldCabinetID)
+		}
+		if eq.withRider != nil {
+			_spec.Node.AddColumnOnce(exchange.FieldRiderID)
+		}
+		if eq.withEmployee != nil {
+			_spec.Node.AddColumnOnce(exchange.FieldEmployeeID)
 		}
 	}
 	if ps := eq.predicates; len(ps) > 0 {

@@ -20,7 +20,7 @@ import (
 type AttendanceQuery struct {
 	config
 	ctx          *QueryContext
-	order        []OrderFunc
+	order        []attendance.OrderOption
 	inters       []Interceptor
 	predicates   []predicate.Attendance
 	withStore    *StoreQuery
@@ -57,7 +57,7 @@ func (aq *AttendanceQuery) Unique(unique bool) *AttendanceQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (aq *AttendanceQuery) Order(o ...OrderFunc) *AttendanceQuery {
+func (aq *AttendanceQuery) Order(o ...attendance.OrderOption) *AttendanceQuery {
 	aq.order = append(aq.order, o...)
 	return aq
 }
@@ -295,7 +295,7 @@ func (aq *AttendanceQuery) Clone() *AttendanceQuery {
 	return &AttendanceQuery{
 		config:       aq.config,
 		ctx:          aq.ctx.Clone(),
-		order:        append([]OrderFunc{}, aq.order...),
+		order:        append([]attendance.OrderOption{}, aq.order...),
 		inters:       append([]Interceptor{}, aq.inters...),
 		predicates:   append([]predicate.Attendance{}, aq.predicates...),
 		withStore:    aq.withStore.Clone(),
@@ -533,6 +533,12 @@ func (aq *AttendanceQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != attendance.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if aq.withStore != nil {
+			_spec.Node.AddColumnOnce(attendance.FieldStoreID)
+		}
+		if aq.withEmployee != nil {
+			_spec.Node.AddColumnOnce(attendance.FieldEmployeeID)
 		}
 	}
 	if ps := aq.predicates; len(ps) > 0 {

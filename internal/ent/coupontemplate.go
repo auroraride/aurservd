@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
@@ -36,7 +37,8 @@ type CouponTemplate struct {
 	Meta *model.CouponTemplateMeta `json:"meta,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CouponTemplateQuery when eager-loading is set.
-	Edges CouponTemplateEdges `json:"edges"`
+	Edges        CouponTemplateEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // CouponTemplateEdges holds the relations/edges for other nodes in the graph.
@@ -73,7 +75,7 @@ func (*CouponTemplate) scanValues(columns []string) ([]any, error) {
 		case coupontemplate.FieldCreatedAt, coupontemplate.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type CouponTemplate", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -147,9 +149,17 @@ func (ct *CouponTemplate) assignValues(columns []string, values []any) error {
 					return fmt.Errorf("unmarshal field meta: %w", err)
 				}
 			}
+		default:
+			ct.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the CouponTemplate.
+// This includes values selected through modifiers, order, etc.
+func (ct *CouponTemplate) Value(name string) (ent.Value, error) {
+	return ct.selectValues.Get(name)
 }
 
 // QueryCoupons queries the "coupons" edge of the CouponTemplate entity.

@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
@@ -83,7 +84,8 @@ type Order struct {
 	DiscountNewly float64 `json:"discount_newly,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the OrderQuery when eager-loading is set.
-	Edges OrderEdges `json:"edges"`
+	Edges        OrderEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // OrderEdges holds the relations/edges for other nodes in the graph.
@@ -281,7 +283,7 @@ func (*Order) scanValues(columns []string) ([]any, error) {
 		case order.FieldCreatedAt, order.FieldUpdatedAt, order.FieldDeletedAt, order.FieldRefundAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Order", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -473,9 +475,17 @@ func (o *Order) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				o.DiscountNewly = value.Float64
 			}
+		default:
+			o.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the Order.
+// This includes values selected through modifiers, order, etc.
+func (o *Order) Value(name string) (ent.Value, error) {
+	return o.selectValues.Get(name)
 }
 
 // QueryPlan queries the "plan" edge of the Order entity.

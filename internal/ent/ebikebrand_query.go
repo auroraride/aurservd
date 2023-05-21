@@ -18,7 +18,7 @@ import (
 type EbikeBrandQuery struct {
 	config
 	ctx        *QueryContext
-	order      []OrderFunc
+	order      []ebikebrand.OrderOption
 	inters     []Interceptor
 	predicates []predicate.EbikeBrand
 	modifiers  []func(*sql.Selector)
@@ -53,7 +53,7 @@ func (ebq *EbikeBrandQuery) Unique(unique bool) *EbikeBrandQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (ebq *EbikeBrandQuery) Order(o ...OrderFunc) *EbikeBrandQuery {
+func (ebq *EbikeBrandQuery) Order(o ...ebikebrand.OrderOption) *EbikeBrandQuery {
 	ebq.order = append(ebq.order, o...)
 	return ebq
 }
@@ -247,7 +247,7 @@ func (ebq *EbikeBrandQuery) Clone() *EbikeBrandQuery {
 	return &EbikeBrandQuery{
 		config:     ebq.config,
 		ctx:        ebq.ctx.Clone(),
-		order:      append([]OrderFunc{}, ebq.order...),
+		order:      append([]ebikebrand.OrderOption{}, ebq.order...),
 		inters:     append([]Interceptor{}, ebq.inters...),
 		predicates: append([]predicate.EbikeBrand{}, ebq.predicates...),
 		// clone intermediate query.

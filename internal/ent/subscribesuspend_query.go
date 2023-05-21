@@ -22,7 +22,7 @@ import (
 type SubscribeSuspendQuery struct {
 	config
 	ctx           *QueryContext
-	order         []OrderFunc
+	order         []subscribesuspend.OrderOption
 	inters        []Interceptor
 	predicates    []predicate.SubscribeSuspend
 	withCity      *CityQuery
@@ -61,7 +61,7 @@ func (ssq *SubscribeSuspendQuery) Unique(unique bool) *SubscribeSuspendQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (ssq *SubscribeSuspendQuery) Order(o ...OrderFunc) *SubscribeSuspendQuery {
+func (ssq *SubscribeSuspendQuery) Order(o ...subscribesuspend.OrderOption) *SubscribeSuspendQuery {
 	ssq.order = append(ssq.order, o...)
 	return ssq
 }
@@ -343,7 +343,7 @@ func (ssq *SubscribeSuspendQuery) Clone() *SubscribeSuspendQuery {
 	return &SubscribeSuspendQuery{
 		config:        ssq.config,
 		ctx:           ssq.ctx.Clone(),
-		order:         append([]OrderFunc{}, ssq.order...),
+		order:         append([]subscribesuspend.OrderOption{}, ssq.order...),
 		inters:        append([]Interceptor{}, ssq.inters...),
 		predicates:    append([]predicate.SubscribeSuspend{}, ssq.predicates...),
 		withCity:      ssq.withCity.Clone(),
@@ -677,6 +677,18 @@ func (ssq *SubscribeSuspendQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != subscribesuspend.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if ssq.withCity != nil {
+			_spec.Node.AddColumnOnce(subscribesuspend.FieldCityID)
+		}
+		if ssq.withRider != nil {
+			_spec.Node.AddColumnOnce(subscribesuspend.FieldRiderID)
+		}
+		if ssq.withSubscribe != nil {
+			_spec.Node.AddColumnOnce(subscribesuspend.FieldSubscribeID)
+		}
+		if ssq.withPause != nil {
+			_spec.Node.AddColumnOnce(subscribesuspend.FieldPauseID)
 		}
 	}
 	if ps := ssq.predicates; len(ps) > 0 {

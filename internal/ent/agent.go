@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/agent"
@@ -41,7 +42,8 @@ type Agent struct {
 	Password string `json:"password,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AgentQuery when eager-loading is set.
-	Edges AgentEdges `json:"edges"`
+	Edges        AgentEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // AgentEdges holds the relations/edges for other nodes in the graph.
@@ -80,7 +82,7 @@ func (*Agent) scanValues(columns []string) ([]any, error) {
 		case agent.FieldCreatedAt, agent.FieldUpdatedAt, agent.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Agent", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -165,9 +167,17 @@ func (a *Agent) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				a.Password = value.String
 			}
+		default:
+			a.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the Agent.
+// This includes values selected through modifiers, order, etc.
+func (a *Agent) Value(name string) (ent.Value, error) {
+	return a.selectValues.Get(name)
 }
 
 // QueryEnterprise queries the "enterprise" edge of the Agent entity.
