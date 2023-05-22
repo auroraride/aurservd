@@ -80,6 +80,9 @@ type config struct {
 		Tbcab struct {
 			Api string
 		}
+		Xllscab struct {
+			Api string
+		}
 	}
 
 	RpcServer map[string]string `koanf:"rpc-server"`

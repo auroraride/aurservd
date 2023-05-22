@@ -12,15 +12,16 @@ import (
 	"strings"
 
 	"github.com/auroraride/adapter"
-	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/internal/ar"
-	"github.com/auroraride/aurservd/internal/ent"
-	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/h2non/filetype"
 	"github.com/h2non/filetype/matchers"
 	"github.com/h2non/filetype/types"
 	"github.com/labstack/echo/v4"
 	"github.com/xuri/excelize/v2"
+
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ar"
+	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/pkg/snag"
 )
 
 type BaseService struct {
@@ -182,6 +183,8 @@ func (s *BaseService) GetCabinetAdapterUrl(cab *ent.Cabinet, apiurl string) (url
 		url = ar.Config.Sync.Ydcab.Api
 	case adapter.CabinetBrandTuobang:
 		url = ar.Config.Sync.Tbcab.Api
+	case adapter.CabinetBrandXiliulouServer:
+		url = ar.Config.Sync.Xllscab.Api
 	default:
 		return "", adapter.ErrorCabinetBrand
 	}
