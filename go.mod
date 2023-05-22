@@ -166,7 +166,7 @@ require (
 )
 
 //replace github.com/swaggo/swag => /Users/liasica/Downloads/swag
-replace github.com/swaggo/swag => github.com/liasica/swag v1.8.7-0.20220930010030-939b77c142c8
+replace github.com/swaggo/swag => github.com/liasica/swag v1.16.2-0.20230517011152-3279b6061bcc
 
 //replace entgo.io/ent => github.com/CharlesGe129/ent v0.10.2-0.20220520130033-5886b54e4875
 //replace entgo.io/ent => github.com/liasica/ent v0.11.3-0.20220926082554-08715525d2cf

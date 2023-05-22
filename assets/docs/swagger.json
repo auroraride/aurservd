@@ -642,6 +642,27 @@
                         "description": "每页数据, 默认20",
                         "name": "pageSize",
                         "in": "query"
+                    },
+                    {
+                        "enum": [
+                            1,
+                            2,
+                            3
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "AllocateStatusPending": "未激活",
+                            "AllocateStatusSigned": "已签约",
+                            "AllocateStatusVoid": "已作废"
+                        },
+                        "x-enum-varnames": [
+                            "AllocateStatusPending",
+                            "AllocateStatusSigned",
+                            "AllocateStatusVoid"
+                        ],
+                        "description": "签约状态 1:未签约(默认) 2:已签约",
+                        "name": "status",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1169,6 +1190,22 @@
                         "in": "query"
                     },
                     {
+                        "enum": [
+                            0,
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "x-enum-varnames": [
+                            "StockGoalAll",
+                            "StockGoalStore",
+                            "StockGoalCabinet"
+                        ],
+                        "description": "查询目标, 0:不筛选 1:门店 2:电柜",
+                        "name": "goal",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "description": "筛选骑手姓名或电话",
                         "name": "keyword",
@@ -1686,7 +1723,6 @@
                     },
                     {
                         "type": "integer",
-                        "description": "骑手ID ",
                         "name": "riderId",
                         "in": "query"
                     }
@@ -2965,6 +3001,57 @@
                         "in": "query"
                     },
                     {
+                        "enum": [
+                            0,
+                            1,
+                            2,
+                            3,
+                            6,
+                            7,
+                            8,
+                            11,
+                            12,
+                            13,
+                            14,
+                            15,
+                            16
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "BatteryFaultType_BatteryFaultChargeOvercurrent": "充电过流",
+                            "BatteryFaultType_BatteryFaultChargingTemperatureHigh": "充电高温",
+                            "BatteryFaultType_BatteryFaultChargingTemperatureLow": "充电低温",
+                            "BatteryFaultType_BatteryFaultDisChargingTemperatureHigh": "放电高温",
+                            "BatteryFaultType_BatteryFaultDisChargingTemperatureLow": "放电低温",
+                            "BatteryFaultType_BatteryFaultDischargeOvercurrent": "放电过流",
+                            "BatteryFaultType_BatteryFaultMonVoltageHigh": "单体高",
+                            "BatteryFaultType_BatteryFaultMonVoltageLow": "单体低",
+                            "BatteryFaultType_BatteryFaultMosTemperatureHigh": "MOS高温",
+                            "BatteryFaultType_BatteryFaultShortCircuit": "短路",
+                            "BatteryFaultType_BatteryFaultSocLow": "SOC低",
+                            "BatteryFaultType_BatteryFaultVoltageHigh": "总压高",
+                            "BatteryFaultType_BatteryFaultVoltageLow": "总压低"
+                        },
+                        "x-enum-varnames": [
+                            "BatteryFaultType_BatteryFaultVoltageLow",
+                            "BatteryFaultType_BatteryFaultVoltageHigh",
+                            "BatteryFaultType_BatteryFaultMonVoltageLow",
+                            "BatteryFaultType_BatteryFaultMonVoltageHigh",
+                            "BatteryFaultType_BatteryFaultDischargeOvercurrent",
+                            "BatteryFaultType_BatteryFaultChargeOvercurrent",
+                            "BatteryFaultType_BatteryFaultSocLow",
+                            "BatteryFaultType_BatteryFaultChargingTemperatureHigh",
+                            "BatteryFaultType_BatteryFaultChargingTemperatureLow",
+                            "BatteryFaultType_BatteryFaultDisChargingTemperatureHigh",
+                            "BatteryFaultType_BatteryFaultDisChargingTemperatureLow",
+                            "BatteryFaultType_BatteryFaultShortCircuit",
+                            "BatteryFaultType_BatteryFaultMosTemperatureHigh"
+                        ],
+                        "description": "选择故障, `0`:总压低, `1`:总压高, `2`:单体低, `3`:单体高, `6`:放电过流, `7`:充电过流, `8`:SOC低, `11`:充电高温, `12`:充电低温, `13`:放电高温, `14`:放电低温, `15`:短路, `16`:MOS高温",
+                        "name": "fault",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "每页数据, 默认20",
                         "name": "pageSize",
@@ -3566,6 +3653,22 @@
                         "in": "query"
                     },
                     {
+                        "enum": [
+                            0,
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "x-enum-varnames": [
+                            "StockGoalAll",
+                            "StockGoalStore",
+                            "StockGoalCabinet"
+                        ],
+                        "description": "查询目标, 0:不筛选 1:门店 2:电柜",
+                        "name": "goal",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "description": "筛选骑手姓名或电话",
                         "name": "keyword",
@@ -3980,6 +4083,29 @@
                         "required": true
                     },
                     {
+                        "enum": [
+                            "UNKNOWN",
+                            "KAIXIN",
+                            "YUNDONG",
+                            "TUOBANG",
+                            "XILIULOUSERV"
+                        ],
+                        "type": "string",
+                        "x-enum-comments": {
+                            "CabinetBrandXiliulouServer": "西六楼服务器版"
+                        },
+                        "x-enum-varnames": [
+                            "CabinetBrandUnknown",
+                            "CabinetBrandKaixin",
+                            "CabinetBrandYundong",
+                            "CabinetBrandTuobang",
+                            "CabinetBrandXiliulouServer"
+                        ],
+                        "description": "电柜型号 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
+                        "name": "brand",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "城市ID",
                         "name": "cityId",
@@ -4171,6 +4297,29 @@
                         "name": "X-Manager-Token",
                         "in": "header",
                         "required": true
+                    },
+                    {
+                        "enum": [
+                            "UNKNOWN",
+                            "KAIXIN",
+                            "YUNDONG",
+                            "TUOBANG",
+                            "XILIULOUSERV"
+                        ],
+                        "type": "string",
+                        "x-enum-comments": {
+                            "CabinetBrandXiliulouServer": "西六楼服务器版"
+                        },
+                        "x-enum-varnames": [
+                            "CabinetBrandUnknown",
+                            "CabinetBrandKaixin",
+                            "CabinetBrandYundong",
+                            "CabinetBrandTuobang",
+                            "CabinetBrandXiliulouServer"
+                        ],
+                        "description": "品牌 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
+                        "name": "brand",
+                        "in": "query"
                     },
                     {
                         "type": "integer",
@@ -4990,6 +5139,48 @@
                         "type": "integer",
                         "name": "riderId",
                         "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2,
+                            3
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "CouponStatusExpired": "已过期",
+                            "CouponStatusInStock": "库存中",
+                            "CouponStatusUnused": "未使用",
+                            "CouponStatusUsed": "已使用"
+                        },
+                        "x-enum-varnames": [
+                            "CouponStatusInStock",
+                            "CouponStatusUnused",
+                            "CouponStatusUsed",
+                            "CouponStatusExpired"
+                        ],
+                        "description": "状态, 不携带参数为全部, 0:库存中 1:未使用 2:已使用 3:已过期",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "CouponTargetRider": "骑手",
+                            "CouponTargetStock": "库存"
+                        },
+                        "x-enum-varnames": [
+                            "CouponTargetRider",
+                            "CouponTargetStock"
+                        ],
+                        "description": "发送对象, 不携带参数为全部, 1:骑手 2:库存",
+                        "name": "target",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -5453,6 +5644,30 @@
                         "type": "integer",
                         "description": "骑手ID",
                         "name": "riderId",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2,
+                            3
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "EbikeStatusInStock": "库存中",
+                            "EbikeStatusMaintenance": "维修中",
+                            "EbikeStatusScrapped": "已报废",
+                            "EbikeStatusUsing": "使用中"
+                        },
+                        "x-enum-varnames": [
+                            "EbikeStatusInStock",
+                            "EbikeStatusUsing",
+                            "EbikeStatusMaintenance",
+                            "EbikeStatusScrapped"
+                        ],
+                        "description": "状态, 0:库存中 1:使用中 2:维修中 3:已报废, 不携带为获取全部",
+                        "name": "status",
                         "in": "query"
                     },
                     {
@@ -6525,14 +6740,12 @@
                     },
                     {
                         "type": "string",
-                        "description": "账单截止日期 ",
                         "name": "end",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "integer",
-                        "description": "企业ID ",
                         "name": "id",
                         "in": "query",
                         "required": true
@@ -6616,7 +6829,6 @@
                     },
                     {
                         "type": "integer",
-                        "description": "企业ID ",
                         "name": "enterpriseId",
                         "in": "query",
                         "required": true
@@ -6676,7 +6888,6 @@
                     },
                     {
                         "type": "integer",
-                        "description": "账单ID ",
                         "name": "id",
                         "in": "query",
                         "required": true
@@ -6993,7 +7204,6 @@
                     },
                     {
                         "type": "integer",
-                        "description": "企业ID ",
                         "name": "enterpriseId",
                         "in": "query",
                         "required": true
@@ -7374,6 +7584,29 @@
                         "type": "integer",
                         "description": "换电方案 0:全部 1:满电 2:非满电",
                         "name": "alternative",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "UNKNOWN",
+                            "KAIXIN",
+                            "YUNDONG",
+                            "TUOBANG",
+                            "XILIULOUSERV"
+                        ],
+                        "type": "string",
+                        "x-enum-comments": {
+                            "CabinetBrandXiliulouServer": "西六楼服务器版"
+                        },
+                        "x-enum-varnames": [
+                            "CabinetBrandUnknown",
+                            "CabinetBrandKaixin",
+                            "CabinetBrandYundong",
+                            "CabinetBrandTuobang",
+                            "CabinetBrandXiliulouServer"
+                        ],
+                        "description": "电柜类型, KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
+                        "name": "brand",
                         "in": "query"
                     },
                     {
@@ -8547,6 +8780,24 @@
                         "description": "每页数据, 默认20",
                         "name": "pageSize",
                         "in": "query"
+                    },
+                    {
+                        "enum": [
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "PlanTypeBattery": "单电",
+                            "PlanTypeEbikeWithBattery": "车加电"
+                        },
+                        "x-enum-varnames": [
+                            "PlanTypeBattery",
+                            "PlanTypeEbikeWithBattery"
+                        ],
+                        "description": "骑士卡类别, 不携带字段为全部, 1:单电 2:车加电",
+                        "name": "type",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -8983,6 +9234,24 @@
                         "description": "骑手",
                         "name": "riderId",
                         "in": "query"
+                    },
+                    {
+                        "enum": [
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "PointLogTypeAward": "奖励",
+                            "PointLogTypeConsume": "消费"
+                        },
+                        "x-enum-varnames": [
+                            "PointLogTypeConsume",
+                            "PointLogTypeAward"
+                        ],
+                        "description": "类别, 1:消费 2:奖励",
+                        "name": "type",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -9071,6 +9340,30 @@
                         "name": "X-Manager-Token",
                         "in": "header",
                         "required": true
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2,
+                            3
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "PersonAuthPending": "认证中",
+                            "PersonAuthenticated": "已认证",
+                            "PersonAuthenticationFailed": "认证失败",
+                            "PersonUnauthenticated": "未认证"
+                        },
+                        "x-enum-varnames": [
+                            "PersonUnauthenticated",
+                            "PersonAuthPending",
+                            "PersonAuthenticated",
+                            "PersonAuthenticationFailed"
+                        ],
+                        "description": "认证状态 0:未认证 1:认证中 2:已认证 3:认证失败",
+                        "name": "authStatus",
+                        "in": "query"
                     },
                     {
                         "type": "integer",
@@ -9416,7 +9709,6 @@
                     },
                     {
                         "type": "integer",
-                        "description": "骑手ID ",
                         "name": "riderId",
                         "in": "query",
                         "required": true
@@ -9515,7 +9807,6 @@
                     },
                     {
                         "type": "integer",
-                        "description": "骑手ID ",
                         "name": "id",
                         "in": "query",
                         "required": true
@@ -9780,7 +10071,6 @@
                     },
                     {
                         "type": "integer",
-                        "description": "电柜ID ",
                         "name": "cabinetId",
                         "in": "query",
                         "required": true
@@ -10090,7 +10380,6 @@
                     },
                     {
                         "type": "integer",
-                        "description": "骑行卡ID ",
                         "name": "planId",
                         "in": "query",
                         "required": true
@@ -10423,6 +10712,22 @@
                         "in": "query"
                     },
                     {
+                        "enum": [
+                            0,
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "x-enum-varnames": [
+                            "StockGoalAll",
+                            "StockGoalStore",
+                            "StockGoalCabinet"
+                        ],
+                        "description": "查询目标, 0:不筛选 1:门店(默认) 2:电柜",
+                        "name": "goal",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "description": "开始时间",
                         "name": "start",
@@ -10577,6 +10882,22 @@
                         "type": "string",
                         "description": "结束时间",
                         "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "x-enum-varnames": [
+                            "StockGoalAll",
+                            "StockGoalStore",
+                            "StockGoalCabinet"
+                        ],
+                        "description": "查询目标 0:不筛选 1:门店(默认) 2:电柜 3:平台",
+                        "name": "goal",
                         "in": "query"
                     },
                     {
@@ -12000,13 +12321,11 @@
                     },
                     {
                         "type": "integer",
-                        "description": "城市ID ",
                         "name": "cityId",
                         "in": "query"
                     },
                     {
                         "type": "number",
-                        "description": "距离 ",
                         "name": "distance",
                         "in": "query"
                     },
@@ -12018,14 +12337,12 @@
                     },
                     {
                         "type": "number",
-                        "description": "纬度 ",
                         "name": "lat",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "number",
-                        "description": "经度 ",
                         "name": "lng",
                         "in": "query",
                         "required": true
@@ -12120,13 +12437,11 @@
                     },
                     {
                         "type": "string",
-                        "description": "结束坐标 ",
                         "name": "destination",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "开始坐标 ",
                         "name": "origin",
                         "in": "query"
                     }
@@ -12359,7 +12674,6 @@
                     },
                     {
                         "type": "string",
-                        "description": "操作ID ",
                         "name": "uuid",
                         "in": "query",
                         "required": true
@@ -12554,7 +12868,6 @@
                     },
                     {
                         "type": "string",
-                        "description": "操作ID ",
                         "name": "uuid",
                         "in": "query"
                     }
@@ -13400,7 +13713,6 @@
                     },
                     {
                         "type": "integer",
-                        "description": "城市ID ",
                         "name": "cityId",
                         "in": "query",
                         "required": true
@@ -14307,19 +14619,15 @@
             ],
             "properties": {
                 "enterpriseId": {
-                    "description": "团签ID ",
                     "type": "integer"
                 },
                 "name": {
-                    "description": "姓名 ",
                     "type": "string"
                 },
                 "password": {
-                    "description": "密码 ",
                     "type": "string"
                 },
                 "phone": {
-                    "description": "电话 ",
                     "type": "string"
                 }
             }
@@ -14613,11 +14921,9 @@
                     "type": "integer"
                 },
                 "qrcode": {
-                    "description": "二维码 ",
                     "type": "string"
                 },
                 "subscribeId": {
-                    "description": "订阅ID ",
                     "type": "integer"
                 }
             }
@@ -14705,11 +15011,9 @@
             ],
             "properties": {
                 "id": {
-                    "description": "救援ID ",
                     "type": "integer"
                 },
                 "storeId": {
-                    "description": "门店ID ",
                     "type": "integer"
                 }
             }
@@ -14726,11 +15030,9 @@
                     "type": "string"
                 },
                 "id": {
-                    "description": "救援ID ",
                     "type": "integer"
                 },
                 "reason": {
-                    "description": "取消原因 ",
                     "type": "string"
                 }
             }
@@ -14747,19 +15049,15 @@
             ],
             "properties": {
                 "address": {
-                    "description": "详细地址 ",
                     "type": "string"
                 },
                 "breakdown": {
-                    "description": "故障原因 ",
                     "type": "string"
                 },
                 "breakdownDesc": {
-                    "description": "故障描述 ",
                     "type": "string"
                 },
                 "breakdownPhotos": {
-                    "description": "故障图片 ",
                     "type": "array",
                     "maxItems": 3,
                     "minItems": 1,
@@ -14768,11 +15066,9 @@
                     }
                 },
                 "lat": {
-                    "description": "纬度 ",
                     "type": "number"
                 },
                 "lng": {
-                    "description": "经度 ",
                     "type": "number"
                 }
             }
@@ -15037,11 +15333,9 @@
             ],
             "properties": {
                 "id": {
-                    "description": "救援ID ",
                     "type": "integer"
                 },
                 "reason": {
-                    "description": "免费理由 ",
                     "type": "string"
                 }
             }
@@ -15151,11 +15445,10 @@
             ],
             "properties": {
                 "id": {
-                    "description": "救援ID ",
                     "type": "integer"
                 },
                 "payway": {
-                    "description": "支付方式 1支付宝 2微信",
+                    "description": "1支付宝 2微信",
                     "type": "integer",
                     "enum": [
                         1,
@@ -15272,11 +15565,9 @@
             ],
             "properties": {
                 "id": {
-                    "description": "救援ID ",
                     "type": "integer"
                 },
                 "reason": {
-                    "description": "拒绝原因 ",
                     "type": "string"
                 }
             }
@@ -15384,7 +15675,6 @@
             ],
             "properties": {
                 "address": {
-                    "description": "详细地址 ",
                     "type": "string"
                 },
                 "duty": {
@@ -15392,18 +15682,16 @@
                     "type": "boolean"
                 },
                 "inventory": {
-                    "description": "物资盘点清单 格式为 [名称]:数量",
+                    "description": "格式为 [名称]:数量",
                     "type": "object",
                     "additionalProperties": {
                         "type": "integer"
                     }
                 },
                 "lat": {
-                    "description": "纬度 ",
                     "type": "number"
                 },
                 "lng": {
-                    "description": "经度 ",
                     "type": "number"
                 },
                 "photo": {
@@ -15411,7 +15699,6 @@
                     "type": "string"
                 },
                 "sn": {
-                    "description": "门店编号 ",
                     "type": "string"
                 }
             }
@@ -15498,7 +15785,6 @@
             ],
             "properties": {
                 "address": {
-                    "description": "详细地址 ",
                     "type": "string"
                 },
                 "duty": {
@@ -15506,15 +15792,12 @@
                     "type": "boolean"
                 },
                 "lat": {
-                    "description": "纬度 ",
                     "type": "number"
                 },
                 "lng": {
-                    "description": "经度 ",
                     "type": "number"
                 },
                 "sn": {
-                    "description": "门店编号 ",
                     "type": "string"
                 }
             }
@@ -15768,7 +16051,6 @@
             ],
             "properties": {
                 "cityId": {
-                    "description": "城市 ",
                     "type": "integer"
                 },
                 "enable": {
@@ -15776,7 +16058,6 @@
                     "type": "boolean"
                 },
                 "sn": {
-                    "description": "电池编号 ",
                     "type": "string"
                 }
             }
@@ -16200,62 +16481,48 @@
             ],
             "properties": {
                 "area": {
-                    "description": "网点面积 ",
                     "type": "number"
                 },
                 "bankNumber": {
-                    "description": "房东银行卡号 ",
                     "type": "string"
                 },
                 "electricity": {
-                    "description": "电费单价 ",
                     "type": "string"
                 },
                 "electricityPledge": {
-                    "description": "电费押金 ",
                     "type": "number"
                 },
                 "endTime": {
-                    "description": "租期结束时间 ",
                     "type": "string"
                 },
                 "file": {
-                    "description": "合同文件 ",
                     "type": "string"
                 },
                 "idCardNumber": {
-                    "description": "房东身份证 ",
                     "type": "string"
                 },
                 "landlordName": {
-                    "description": "房东姓名 ",
                     "type": "string"
                 },
                 "lease": {
-                    "description": "租期月数 ",
                     "type": "integer"
                 },
                 "phone": {
-                    "description": "房东手机号 ",
                     "type": "string"
                 },
                 "pledge": {
-                    "description": "押金 ",
                     "type": "number"
                 },
                 "rent": {
-                    "description": "租金 ",
                     "type": "number"
                 },
                 "sheets": {
-                    "description": "底单 ",
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
                 },
                 "startTime": {
-                    "description": "租期开始时间 ",
                     "type": "string"
                 }
             }
@@ -16267,7 +16534,6 @@
             ],
             "properties": {
                 "id": {
-                    "description": "合同ID ",
                     "type": "integer"
                 },
                 "sheets": {
@@ -16291,11 +16557,9 @@
             ],
             "properties": {
                 "address": {
-                    "description": "详细地址 ",
                     "type": "string"
                 },
                 "cityId": {
-                    "description": "城市 ",
                     "type": "integer"
                 },
                 "contracts": {
@@ -16305,19 +16569,15 @@
                     }
                 },
                 "lat": {
-                    "description": "纬度 ",
                     "type": "number"
                 },
                 "lng": {
-                    "description": "经度 ",
                     "type": "number"
                 },
                 "name": {
-                    "description": "网点名称 ",
                     "type": "string"
                 },
                 "photos": {
-                    "description": "网点照片 ",
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -16612,11 +16872,9 @@
             "type": "object",
             "properties": {
                 "address": {
-                    "description": "详细地址 ",
                     "type": "string"
                 },
                 "cityId": {
-                    "description": "城市 ",
                     "type": "integer"
                 },
                 "contracts": {
@@ -16626,19 +16884,15 @@
                     }
                 },
                 "lat": {
-                    "description": "纬度 ",
                     "type": "number"
                 },
                 "lng": {
-                    "description": "经度 ",
                     "type": "number"
                 },
                 "name": {
-                    "description": "网点名称 ",
                     "type": "string"
                 },
                 "photos": {
-                    "description": "网点照片 ",
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -16714,11 +16968,9 @@
             ],
             "properties": {
                 "id": {
-                    "description": "订阅ID ",
                     "type": "integer"
                 },
                 "serial": {
-                    "description": "电柜编码 ",
                     "type": "string"
                 }
             }
@@ -16845,7 +17097,6 @@
                     "type": "string"
                 },
                 "remark": {
-                    "description": "备注 ",
                     "type": "string"
                 },
                 "start": {
@@ -17041,7 +17292,6 @@
             ],
             "properties": {
                 "subscribeId": {
-                    "description": "订阅ID ",
                     "type": "integer"
                 }
             }
@@ -17053,15 +17303,12 @@
             ],
             "properties": {
                 "cabinetId": {
-                    "description": "电柜ID ",
                     "type": "integer"
                 },
                 "id": {
-                    "description": "订阅ID ",
                     "type": "integer"
                 },
                 "storeId": {
-                    "description": "门店ID ",
                     "type": "integer"
                 }
             }
@@ -17205,7 +17452,7 @@
                     "type": "integer"
                 },
                 "brand": {
-                    "description": "品牌 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
+                    "description": "KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
                     "enum": [
                         "KAIXIN",
                         "YUNDONG",
@@ -17230,22 +17477,18 @@
                     "type": "boolean"
                 },
                 "models": {
-                    "description": "电池型号 ",
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
                 },
                 "name": {
-                    "description": "电柜名称 ",
                     "type": "string"
                 },
                 "remark": {
-                    "description": "备注 ",
                     "type": "string"
                 },
                 "serial": {
-                    "description": "电柜编码 ",
                     "type": "string"
                 },
                 "simDate": {
@@ -17384,7 +17627,7 @@
                     "type": "integer"
                 },
                 "brand": {
-                    "description": "品牌 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
+                    "description": "KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
                     "enum": [
                         "KAIXIN",
                         "YUNDONG",
@@ -17432,11 +17675,9 @@
                     }
                 },
                 "name": {
-                    "description": "电柜名称 ",
                     "type": "string"
                 },
                 "remark": {
-                    "description": "备注 ",
                     "type": "string"
                 },
                 "reserves": {
@@ -17447,7 +17688,6 @@
                     }
                 },
                 "serial": {
-                    "description": "电柜编码 ",
                     "type": "string"
                 },
                 "simDate": {
@@ -17568,11 +17808,10 @@
             ],
             "properties": {
                 "remark": {
-                    "description": "备注 ",
                     "type": "string"
                 },
                 "status": {
-                    "description": "故障状态 0未处理 1已处理",
+                    "description": "0未处理 1已处理",
                     "type": "integer",
                     "maximum": 1,
                     "minimum": 0,
@@ -17656,15 +17895,12 @@
                     }
                 },
                 "cabinetId": {
-                    "description": "电柜ID ",
                     "type": "integer"
                 },
                 "description": {
-                    "description": "故障描述 ",
                     "type": "string"
                 },
                 "fault": {
-                    "description": "故障 ",
                     "type": "string"
                 }
             }
@@ -17703,7 +17939,7 @@
                     "type": "integer"
                 },
                 "brand": {
-                    "description": "品牌 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
+                    "description": "KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
                     "enum": [
                         "KAIXIN",
                         "YUNDONG",
@@ -17751,15 +17987,12 @@
                     }
                 },
                 "name": {
-                    "description": "电柜名称 ",
                     "type": "string"
                 },
                 "remark": {
-                    "description": "备注 ",
                     "type": "string"
                 },
                 "serial": {
-                    "description": "电柜编码 ",
                     "type": "string"
                 },
                 "simDate": {
@@ -17858,23 +18091,19 @@
             ],
             "properties": {
                 "batterySn": {
-                    "description": "电池编码 ",
                     "type": "string"
                 },
                 "id": {
-                    "description": "电柜ID ",
                     "type": "integer"
                 },
                 "index": {
-                    "description": "仓门序号 ",
                     "type": "integer"
                 },
                 "phone": {
-                    "description": "骑手电话 ",
                     "type": "string"
                 },
                 "remark": {
-                    "description": "操作原因 可手动输入, 预留项: `吞电池` `柜门未关好` `仓位不足`",
+                    "description": "可手动输入, 预留项: `吞电池` `柜门未关好` `仓位不足`",
                     "type": "string"
                 }
             }
@@ -17906,15 +18135,12 @@
             ],
             "properties": {
                 "cabinetId": {
-                    "description": "电柜ID ",
                     "type": "integer"
                 },
                 "model": {
-                    "description": "型号 ",
                     "type": "string"
                 },
                 "num": {
-                    "description": "数量 ",
                     "type": "integer"
                 }
             }
@@ -18011,7 +18237,6 @@
             ],
             "properties": {
                 "open": {
-                    "description": "状态 ",
                     "type": "boolean"
                 }
             }
@@ -18081,7 +18306,6 @@
             ],
             "properties": {
                 "subscribeId": {
-                    "description": "订阅ID ",
                     "type": "integer"
                 }
             }
@@ -18246,26 +18470,21 @@
             ],
             "properties": {
                 "amount": {
-                    "description": "金额 ",
                     "type": "number"
                 },
                 "number": {
-                    "description": "生成数量 ",
                     "type": "integer"
                 },
                 "phones": {
-                    "description": "骑手电话 ",
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
                 },
                 "remark": {
-                    "description": "备注 ",
                     "type": "string"
                 },
                 "templateId": {
-                    "description": "优惠券模板 ",
                     "type": "integer"
                 }
             }
@@ -18438,18 +18657,18 @@
             ],
             "properties": {
                 "cityIds": {
-                    "description": "可用城市 和`plans`不能同时为空也不能同时存在",
+                    "description": "和`plans`不能同时为空也不能同时存在",
                     "type": "array",
                     "items": {
                         "type": "integer"
                     }
                 },
                 "durationDays": {
-                    "description": "相对天数 `durationRule=2`必填",
+                    "description": "`durationRule=2`必填",
                     "type": "integer"
                 },
                 "durationRule": {
-                    "description": "有效期规则 1:固定时间(固定自然时间) 2:相对时间(自领取日算起)",
+                    "description": "1:固定时间(固定自然时间) 2:相对时间(自领取日算起)",
                     "enum": [
                         1,
                         2
@@ -18461,7 +18680,7 @@
                     ]
                 },
                 "durationTime": {
-                    "description": "过期时间 `durationRule=1`必填 yyyy-mm-dd, 如 2022-09-25",
+                    "description": "`durationRule=1`必填 yyyy-mm-dd, 如 2022-09-25",
                     "type": "string"
                 },
                 "multiple": {
@@ -18469,23 +18688,22 @@
                     "type": "boolean"
                 },
                 "name": {
-                    "description": "名称 ",
                     "type": "string"
                 },
                 "planIds": {
-                    "description": "绑定骑士卡 和`cities`不能同时为空也不能同时存在",
+                    "description": "和`cities`不能同时为空也不能同时存在",
                     "type": "array",
                     "items": {
                         "type": "integer"
                     }
                 },
                 "remark": {
-                    "description": "备注信息 10字以内, 需要显示在优惠券列表中",
+                    "description": "10字以内, 需要显示在优惠券列表中",
                     "type": "string",
                     "maxLength": 10
                 },
                 "rule": {
-                    "description": "使用规则 1:互斥 2:可叠加",
+                    "description": "1:互斥 2:可叠加",
                     "enum": [
                         1,
                         2
@@ -18513,18 +18731,18 @@
                     }
                 },
                 "cityIds": {
-                    "description": "可用城市 和`plans`不能同时为空也不能同时存在",
+                    "description": "和`plans`不能同时为空也不能同时存在",
                     "type": "array",
                     "items": {
                         "type": "integer"
                     }
                 },
                 "durationDays": {
-                    "description": "相对天数 `durationRule=2`必填",
+                    "description": "`durationRule=2`必填",
                     "type": "integer"
                 },
                 "durationRule": {
-                    "description": "有效期规则 1:固定时间(固定自然时间) 2:相对时间(自领取日算起)",
+                    "description": "1:固定时间(固定自然时间) 2:相对时间(自领取日算起)",
                     "enum": [
                         1,
                         2
@@ -18536,7 +18754,7 @@
                     ]
                 },
                 "durationTime": {
-                    "description": "过期时间 `durationRule=1`必填 yyyy-mm-dd, 如 2022-09-25",
+                    "description": "`durationRule=1`必填 yyyy-mm-dd, 如 2022-09-25",
                     "type": "string"
                 },
                 "enable": {
@@ -18561,7 +18779,7 @@
                     "type": "string"
                 },
                 "planIds": {
-                    "description": "绑定骑士卡 和`cities`不能同时为空也不能同时存在",
+                    "description": "和`cities`不能同时为空也不能同时存在",
                     "type": "array",
                     "items": {
                         "type": "integer"
@@ -18578,7 +18796,7 @@
                     "type": "string"
                 },
                 "rule": {
-                    "description": "使用规则 1:互斥 2:可叠加",
+                    "description": "1:互斥 2:可叠加",
                     "enum": [
                         1,
                         2
@@ -18622,18 +18840,18 @@
                     }
                 },
                 "cityIds": {
-                    "description": "可用城市 和`plans`不能同时为空也不能同时存在",
+                    "description": "和`plans`不能同时为空也不能同时存在",
                     "type": "array",
                     "items": {
                         "type": "integer"
                     }
                 },
                 "durationDays": {
-                    "description": "相对天数 `durationRule=2`必填",
+                    "description": "`durationRule=2`必填",
                     "type": "integer"
                 },
                 "durationRule": {
-                    "description": "有效期规则 1:固定时间(固定自然时间) 2:相对时间(自领取日算起)",
+                    "description": "1:固定时间(固定自然时间) 2:相对时间(自领取日算起)",
                     "enum": [
                         1,
                         2
@@ -18645,7 +18863,7 @@
                     ]
                 },
                 "durationTime": {
-                    "description": "过期时间 `durationRule=1`必填 yyyy-mm-dd, 如 2022-09-25",
+                    "description": "`durationRule=1`必填 yyyy-mm-dd, 如 2022-09-25",
                     "type": "string"
                 },
                 "multiple": {
@@ -18653,7 +18871,7 @@
                     "type": "boolean"
                 },
                 "planIds": {
-                    "description": "绑定骑士卡 和`cities`不能同时为空也不能同时存在",
+                    "description": "和`cities`不能同时为空也不能同时存在",
                     "type": "array",
                     "items": {
                         "type": "integer"
@@ -18667,7 +18885,7 @@
                     }
                 },
                 "rule": {
-                    "description": "使用规则 1:互斥 2:可叠加",
+                    "description": "1:互斥 2:可叠加",
                     "enum": [
                         1,
                         2
@@ -18781,7 +18999,7 @@
             ],
             "properties": {
                 "brandId": {
-                    "description": "型号 关联: `MB015 车辆型号列表`",
+                    "description": "关联: `MB015 车辆型号列表`",
                     "type": "integer"
                 },
                 "color": {
@@ -18793,7 +19011,6 @@
                     "type": "boolean"
                 },
                 "exFactory": {
-                    "description": "生产批次 ",
                     "type": "string"
                 },
                 "machine": {
@@ -18809,7 +19026,6 @@
                     "type": "string"
                 },
                 "sn": {
-                    "description": "车架号 ",
                     "type": "string"
                 }
             }
@@ -18955,7 +19171,6 @@
                     "type": "string"
                 },
                 "remark": {
-                    "description": "备注 ",
                     "type": "string"
                 },
                 "start": {
@@ -18977,15 +19192,12 @@
             ],
             "properties": {
                 "cityId": {
-                    "description": "城市ID ",
                     "type": "integer"
                 },
                 "name": {
-                    "description": "姓名 ",
                     "type": "string"
                 },
                 "phone": {
-                    "description": "手机号 ",
                     "type": "string"
                 }
             }
@@ -19001,7 +19213,6 @@
                     "type": "boolean"
                 },
                 "id": {
-                    "description": "店员ID ",
                     "type": "integer"
                 }
             }
@@ -19095,15 +19306,12 @@
             ],
             "properties": {
                 "phone": {
-                    "description": "电话 ",
                     "type": "string"
                 },
                 "smsCode": {
-                    "description": "短信验证码 ",
                     "type": "string"
                 },
                 "smsId": {
-                    "description": "短信ID ",
                     "type": "string"
                 }
             }
@@ -19147,11 +19355,9 @@
             ],
             "properties": {
                 "end": {
-                    "description": "合同结束日期 ",
                     "type": "string"
                 },
                 "file": {
-                    "description": "合同文件 ",
                     "type": "string"
                 },
                 "id": {
@@ -19159,7 +19365,6 @@
                     "type": "integer"
                 },
                 "start": {
-                    "description": "合同开始日期 ",
                     "type": "string"
                 }
             }
@@ -19174,15 +19379,12 @@
             ],
             "properties": {
                 "end": {
-                    "description": "合同结束日期 ",
                     "type": "string"
                 },
                 "enterpriseId": {
-                    "description": "企业ID ",
                     "type": "integer"
                 },
                 "file": {
-                    "description": "合同文件 ",
                     "type": "string"
                 },
                 "id": {
@@ -19190,7 +19392,6 @@
                     "type": "integer"
                 },
                 "start": {
-                    "description": "合同开始日期 ",
                     "type": "string"
                 }
             }
@@ -19211,7 +19412,6 @@
             ],
             "properties": {
                 "address": {
-                    "description": "企业地址 ",
                     "type": "string"
                 },
                 "agent": {
@@ -19219,19 +19419,15 @@
                     "type": "boolean"
                 },
                 "cityId": {
-                    "description": "所在城市 ",
                     "type": "integer"
                 },
                 "companyName": {
-                    "description": "企业全称 ",
                     "type": "string"
                 },
                 "contactName": {
-                    "description": "联系人 ",
                     "type": "string"
                 },
                 "contactPhone": {
-                    "description": "联系电话 ",
                     "type": "string"
                 },
                 "days": {
@@ -19242,19 +19438,16 @@
                     }
                 },
                 "deposit": {
-                    "description": "押金 ",
                     "type": "number"
                 },
                 "idcardNumber": {
-                    "description": "身份证号 ",
                     "type": "string"
                 },
                 "name": {
-                    "description": "团签名称 ",
                     "type": "string"
                 },
                 "payment": {
-                    "description": "付费方式 1:预付费 2:后付费",
+                    "description": "1:预付费 2:后付费",
                     "type": "integer",
                     "maximum": 2,
                     "minimum": 1,
@@ -19264,7 +19457,7 @@
                     ]
                 },
                 "status": {
-                    "description": "合作状态 0:未合作 1:合作中 2:已暂停",
+                    "description": "0:未合作 1:合作中 2:已暂停",
                     "type": "integer",
                     "maximum": 2,
                     "minimum": 0,
@@ -19296,7 +19489,6 @@
             ],
             "properties": {
                 "address": {
-                    "description": "企业地址 ",
                     "type": "string"
                 },
                 "agent": {
@@ -19304,19 +19496,15 @@
                     "type": "boolean"
                 },
                 "cityId": {
-                    "description": "所在城市 ",
                     "type": "integer"
                 },
                 "companyName": {
-                    "description": "企业全称 ",
                     "type": "string"
                 },
                 "contactName": {
-                    "description": "联系人 ",
                     "type": "string"
                 },
                 "contactPhone": {
-                    "description": "联系电话 ",
                     "type": "string"
                 },
                 "days": {
@@ -19327,19 +19515,16 @@
                     }
                 },
                 "deposit": {
-                    "description": "押金 ",
                     "type": "number"
                 },
                 "idcardNumber": {
-                    "description": "身份证号 ",
                     "type": "string"
                 },
                 "name": {
-                    "description": "团签名称 ",
                     "type": "string"
                 },
                 "payment": {
-                    "description": "付费方式 1:预付费 2:后付费",
+                    "description": "1:预付费 2:后付费",
                     "type": "integer",
                     "maximum": 2,
                     "minimum": 1,
@@ -19349,7 +19534,7 @@
                     ]
                 },
                 "status": {
-                    "description": "合作状态 0:未合作 1:合作中 2:已暂停",
+                    "description": "0:未合作 1:合作中 2:已暂停",
                     "type": "integer",
                     "maximum": 2,
                     "minimum": 0,
@@ -19373,11 +19558,9 @@
             ],
             "properties": {
                 "amount": {
-                    "description": "金额 ",
                     "type": "number"
                 },
                 "remark": {
-                    "description": "备注 ",
                     "type": "string"
                 }
             }
@@ -19412,11 +19595,9 @@
             ],
             "properties": {
                 "cityId": {
-                    "description": "城市 ",
                     "type": "integer"
                 },
                 "enterpriseId": {
-                    "description": "企业ID ",
                     "type": "integer"
                 },
                 "id": {
@@ -19428,11 +19609,9 @@
                     "type": "boolean"
                 },
                 "model": {
-                    "description": "电池型号 ",
                     "type": "string"
                 },
                 "price": {
-                    "description": "单价(元/天) ",
                     "type": "number"
                 }
             }
@@ -19631,15 +19810,12 @@
                     "type": "integer"
                 },
                 "enterpriseId": {
-                    "description": "企业ID ",
                     "type": "integer"
                 },
                 "name": {
-                    "description": "姓名 ",
                     "type": "string"
                 },
                 "phone": {
-                    "description": "电话号 ",
                     "type": "string"
                 },
                 "priceId": {
@@ -19647,7 +19823,6 @@
                     "type": "integer"
                 },
                 "stationId": {
-                    "description": "站点ID ",
                     "type": "integer"
                 }
             }
@@ -19659,7 +19834,6 @@
             ],
             "properties": {
                 "model": {
-                    "description": "电池型号 ",
                     "type": "string"
                 }
             }
@@ -19694,11 +19868,9 @@
             ],
             "properties": {
                 "enterpriseId": {
-                    "description": "企业ID ",
                     "type": "integer"
                 },
                 "name": {
-                    "description": "站点名称 ",
                     "type": "string"
                 }
             }
@@ -19710,7 +19882,6 @@
             ],
             "properties": {
                 "name": {
-                    "description": "站点名称 ",
                     "type": "string"
                 }
             }
@@ -19732,7 +19903,6 @@
                     }
                 },
                 "description": {
-                    "description": "描述 ",
                     "type": "string"
                 },
                 "model": {
@@ -19744,12 +19914,11 @@
                     "type": "string"
                 },
                 "num": {
-                    "description": "异常数量 ",
                     "type": "integer",
                     "minimum": 1
                 },
                 "reason": {
-                    "description": "异常原因 异常原因查看接口 `E3001 物资异常配置`",
+                    "description": "异常原因查看接口 `E3001 物资异常配置`",
                     "type": "string"
                 }
             }
@@ -19898,7 +20067,6 @@
                     "type": "string"
                 },
                 "remark": {
-                    "description": "备注 ",
                     "type": "string"
                 },
                 "serial": {
@@ -20191,7 +20359,6 @@
             ],
             "properties": {
                 "cityId": {
-                    "description": "城市ID ",
                     "type": "integer"
                 },
                 "ebikeSn": {
@@ -20199,27 +20366,21 @@
                     "type": "string"
                 },
                 "employeeId": {
-                    "description": "店员ID ",
                     "type": "integer"
                 },
                 "end": {
-                    "description": "结束日期 ",
                     "type": "string"
                 },
                 "name": {
-                    "description": "姓名 ",
                     "type": "string"
                 },
                 "phone": {
-                    "description": "电话 ",
                     "type": "string"
                 },
                 "planId": {
-                    "description": "骑行卡ID ",
                     "type": "integer"
                 },
                 "storeId": {
-                    "description": "门店ID ",
                     "type": "integer"
                 }
             }
@@ -20231,19 +20392,15 @@
             ],
             "properties": {
                 "count": {
-                    "description": "是否需要盘点 ",
                     "type": "boolean"
                 },
                 "name": {
-                    "description": "物资名称 ",
                     "type": "string"
                 },
                 "purchase": {
-                    "description": "是否可采购 ",
                     "type": "boolean"
                 },
                 "transfer": {
-                    "description": "是否可调拨 ",
                     "type": "boolean"
                 }
             }
@@ -20255,7 +20412,7 @@
             ],
             "properties": {
                 "name": {
-                    "description": "物资名称 *POST参数*",
+                    "description": "*POST参数*",
                     "type": "string"
                 }
             }
@@ -20342,19 +20499,15 @@
             ],
             "properties": {
                 "name": {
-                    "description": "姓名 ",
                     "type": "string"
                 },
                 "password": {
-                    "description": "密码 ",
                     "type": "string"
                 },
                 "phone": {
-                    "description": "手机号 ",
                     "type": "string"
                 },
                 "roleId": {
-                    "description": "角色ID ",
                     "type": "integer"
                 }
             }
@@ -20423,7 +20576,6 @@
                     "type": "string"
                 },
                 "id": {
-                    "description": "订阅ID ",
                     "type": "integer"
                 },
                 "storeId": {
@@ -20441,15 +20593,13 @@
             ],
             "properties": {
                 "ebikeKeyword": {
-                    "description": "车架号或车牌号 ",
                     "type": "string"
                 },
                 "id": {
-                    "description": "订阅ID ",
                     "type": "integer"
                 },
                 "storeId": {
-                    "description": "门店ID 旧车入库至门店",
+                    "description": "旧车入库至门店",
                     "type": "integer"
                 }
             }
@@ -20604,7 +20754,7 @@
                     }
                 },
                 "orderType": {
-                    "description": "订单类型 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金",
+                    "description": "1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金",
                     "type": "integer",
                     "enum": [
                         1,
@@ -20617,7 +20767,7 @@
                     ]
                 },
                 "payway": {
-                    "description": "支付方式 1支付宝 2微信",
+                    "description": "1支付宝 2微信",
                     "type": "integer",
                     "enum": [
                         1,
@@ -20625,7 +20775,6 @@
                     ]
                 },
                 "planId": {
-                    "description": "套餐ID ",
                     "type": "integer"
                 },
                 "point": {
@@ -20691,7 +20840,6 @@
                     "type": "integer"
                 },
                 "remark": {
-                    "description": "备注 ",
                     "type": "string"
                 },
                 "riderId": {
@@ -20871,7 +21019,6 @@
                     "type": "number"
                 },
                 "days": {
-                    "description": "有效天数 ",
                     "type": "integer",
                     "minimum": 1
                 },
@@ -20896,7 +21043,6 @@
                     "type": "number"
                 },
                 "price": {
-                    "description": "价格 ",
                     "type": "number"
                 }
             }
@@ -20914,11 +21060,10 @@
             ],
             "properties": {
                 "brandId": {
-                    "description": "电车型号 车加电必填",
+                    "description": "车加电必填",
                     "type": "integer"
                 },
                 "cities": {
-                    "description": "启用城市 ",
                     "type": "array",
                     "minItems": 1,
                     "items": {
@@ -20926,7 +21071,6 @@
                     }
                 },
                 "complexes": {
-                    "description": "骑士卡详细信息 ",
                     "type": "array",
                     "minItems": 1,
                     "items": {
@@ -20938,7 +21082,6 @@
                     "type": "boolean"
                 },
                 "end": {
-                    "description": "结束日期 ",
                     "type": "string"
                 },
                 "intelligent": {
@@ -20946,7 +21089,6 @@
                     "type": "boolean"
                 },
                 "name": {
-                    "description": "骑士卡名称 ",
                     "type": "string"
                 },
                 "notes": {
@@ -20957,11 +21099,9 @@
                     }
                 },
                 "start": {
-                    "description": "开始日期 ",
                     "type": "string"
                 },
                 "type": {
-                    "description": "骑士卡类别 ",
                     "$ref": "#/definitions/model.PlanType"
                 }
             }
@@ -21199,15 +21339,13 @@
             ],
             "properties": {
                 "end": {
-                    "description": "结束日期 ",
                     "type": "string"
                 },
                 "id": {
-                    "description": "骑士卡ID 使用items[n].id",
+                    "description": "使用items[n].id",
                     "type": "integer"
                 },
                 "start": {
-                    "description": "开始日期 ",
                     "type": "string"
                 }
             }
@@ -21309,7 +21447,6 @@
             ],
             "properties": {
                 "phones": {
-                    "description": "电话 ",
                     "type": "array",
                     "minItems": 1,
                     "items": {
@@ -21317,15 +21454,13 @@
                     }
                 },
                 "points": {
-                    "description": "积分 ",
                     "type": "integer"
                 },
                 "reason": {
-                    "description": "原因 ",
                     "type": "string"
                 },
                 "type": {
-                    "description": "类别 1:消费 2:奖励",
+                    "description": "1:消费 2:奖励",
                     "enum": [
                         1,
                         2
@@ -21399,19 +21534,16 @@
             ],
             "properties": {
                 "points": {
-                    "description": "积分 ",
                     "type": "integer"
                 },
                 "reason": {
-                    "description": "原因 ",
                     "type": "string"
                 },
                 "riderId": {
-                    "description": "骑手 ",
                     "type": "integer"
                 },
                 "type": {
-                    "description": "类别 1:消费 2:奖励",
+                    "description": "1:消费 2:奖励",
                     "enum": [
                         1,
                         2
@@ -21534,7 +21666,6 @@
             ],
             "properties": {
                 "outRefundNo": {
-                    "description": "退款单号 ",
                     "type": "string"
                 },
                 "remark": {
@@ -21796,15 +21927,12 @@
             ],
             "properties": {
                 "name": {
-                    "description": "联系人姓名 ",
                     "type": "string"
                 },
                 "phone": {
-                    "description": "联系人电话 ",
                     "type": "string"
                 },
                 "relation": {
-                    "description": "关系 ",
                     "type": "string"
                 }
             }
@@ -22033,11 +22161,9 @@
             ],
             "properties": {
                 "remark": {
-                    "description": "跟进信息 ",
                     "type": "string"
                 },
                 "riderId": {
-                    "description": "骑手ID ",
                     "type": "integer"
                 }
             }
@@ -22302,7 +22428,6 @@
                     "type": "string"
                 },
                 "remark": {
-                    "description": "备注 ",
                     "type": "string"
                 },
                 "start": {
@@ -22351,7 +22476,6 @@
                     "type": "number"
                 },
                 "id": {
-                    "description": "骑手ID ",
                     "type": "integer"
                 }
             }
@@ -22385,7 +22509,6 @@
                     ]
                 },
                 "id": {
-                    "description": "骑手ID ",
                     "type": "integer"
                 },
                 "phone": {
@@ -22575,15 +22698,12 @@
                     "type": "integer"
                 },
                 "phone": {
-                    "description": "电话 ",
                     "type": "string"
                 },
                 "smsCode": {
-                    "description": "短信验证码 ",
                     "type": "string"
                 },
                 "smsId": {
-                    "description": "短信ID ",
                     "type": "string"
                 }
             }
@@ -22622,7 +22742,6 @@
             ],
             "properties": {
                 "name": {
-                    "description": "角色名称 ",
                     "type": "string"
                 },
                 "permissions": {
@@ -22724,7 +22843,6 @@
             ],
             "properties": {
                 "content": {
-                    "description": "值 ",
                     "type": "string"
                 }
             }
@@ -22865,11 +22983,9 @@
             ],
             "properties": {
                 "id": {
-                    "description": "账单ID ",
                     "type": "integer"
                 },
                 "remark": {
-                    "description": "备注 ",
                     "type": "string"
                 }
             }
@@ -22985,11 +23101,9 @@
             ],
             "properties": {
                 "remark": {
-                    "description": "备注信息 ",
                     "type": "string"
                 },
                 "uuid": {
-                    "description": "账单编码 ",
                     "type": "string"
                 }
             }
@@ -23059,11 +23173,9 @@
                     "type": "string"
                 },
                 "id": {
-                    "description": "企业ID ",
                     "type": "integer"
                 },
                 "remark": {
-                    "description": "备注 ",
                     "type": "string"
                 },
                 "start": {
@@ -23295,7 +23407,6 @@
                     "type": "boolean"
                 },
                 "remark": {
-                    "description": "备注 ",
                     "type": "string"
                 },
                 "serial": {
@@ -23625,7 +23736,6 @@
                     ]
                 },
                 "remark": {
-                    "description": "备注 ",
                     "type": "string"
                 }
             }
@@ -23664,7 +23774,6 @@
             ],
             "properties": {
                 "branchId": {
-                    "description": "网点 ",
                     "type": "integer"
                 },
                 "ebikeObtain": {
@@ -23683,7 +23792,6 @@
                     }
                 },
                 "name": {
-                    "description": "门店名称 ",
                     "type": "string"
                 },
                 "status": {
@@ -23771,7 +23879,6 @@
             "type": "object",
             "properties": {
                 "branchId": {
-                    "description": "网点 ",
                     "type": "integer"
                 },
                 "ebikeObtain": {
@@ -23783,7 +23890,6 @@
                     "type": "boolean"
                 },
                 "name": {
-                    "description": "门店名称 ",
                     "type": "string"
                 },
                 "status": {
@@ -24215,11 +24321,9 @@
             ],
             "properties": {
                 "id": {
-                    "description": "订阅ID ",
                     "type": "integer"
                 },
                 "remark": {
-                    "description": "备注 ",
                     "type": "string"
                 }
             }
@@ -24235,7 +24339,6 @@
                     "type": "string"
                 },
                 "subscribeId": {
-                    "description": "订阅ID ",
                     "type": "integer"
                 }
             }
