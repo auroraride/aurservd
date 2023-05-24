@@ -149,8 +149,8 @@ func (s *managerSubscribeService) UnbindEbike(req *model.ManagerSubscribeUnbindE
 			return
 		}
 
-		// 更新订阅
-		return tx.Subscribe.UpdateOneID(sub.ID).ClearEbikeID().ClearBrandID().Exec(s.ctx)
+		// 删除订阅标的车辆信息, 保留车辆型号以便下次绑定新车
+		return tx.Subscribe.UpdateOneID(sub.ID).ClearEbikeID().Exec(s.ctx)
 	})
 
 	// 记录操作日志
