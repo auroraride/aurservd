@@ -13,6 +13,10 @@ import (
 	"github.com/auroraride/adapter"
 	"github.com/auroraride/adapter/log"
 	"github.com/auroraride/adapter/rpc/pb"
+	"github.com/jackc/pgconn"
+	"github.com/labstack/echo/v4"
+	"go.uber.org/zap"
+
 	"github.com/auroraride/aurservd/app/logging"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/rpc"
@@ -23,9 +27,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
-	"github.com/jackc/pgconn"
-	"github.com/labstack/echo/v4"
-	"go.uber.org/zap"
 )
 
 type batteryService struct {
@@ -398,21 +399,8 @@ func (s *batteryService) Bind(bat *ent.Battery, sub *ent.Subscribe, rd *ent.Ride
 		Send()
 }
 
-func (s *batteryService) Unbind(bat *ent.Battery, rd *ent.Rider) {
-	err := s.Unallocate(bat)
-	if err != nil {
-		snag.Panic(err)
-	}
-
-	go logging.NewOperateLog().
-		SetOperate(model.OperateUnbindBattery).
-		SetRef(rd).
-		SetDiff("旧电池: "+bat.Sn, "无电池").
-		SetModifier(s.modifier).
-		Send()
-}
-
-func (s *batteryService) UnbindRequest(req *model.BatteryUnbindRequest) {
+// Unbind 解绑电池
+func (s *batteryService) Unbind(req *model.BatteryUnbindRequest) {
 	// 查找订阅
 	sub := NewSubscribe().QueryEffectiveIntelligentX(req.RiderID, ent.SubscribeQueryWithBattery, ent.SubscribeQueryWithRider, ent.SubscribeQueryWithBattery)
 
@@ -421,7 +409,17 @@ func (s *batteryService) UnbindRequest(req *model.BatteryUnbindRequest) {
 		snag.Panic("未找到绑定的电池")
 	}
 
-	s.Unbind(bat, sub.Edges.Rider)
+	err := s.Unallocate(bat)
+	if err != nil {
+		snag.Panic(err)
+	}
+
+	go logging.NewOperateLog().
+		SetOperate(model.OperateUnbindBattery).
+		SetDiff("旧电池: "+bat.Sn, "无电池").
+		SetModifier(s.modifier).
+		SetRef(sub.Edges.Rider).
+		Send()
 }
 
 // Allocate 将电池分配给骑手

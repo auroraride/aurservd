@@ -11466,6 +11466,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/subscribe/ebike/unbind": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M7025 解绑骑手电车",
+                "operationId": "ManagerSubscribeEbikeUnbind",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ManagerSubscribeUnbindEbike"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/subscribe/halt": {
             "post": {
                 "consumes": [
@@ -20602,6 +20643,22 @@ const docTemplate = `{
                 "ebikeKeyword": {
                     "type": "string"
                 },
+                "id": {
+                    "type": "integer"
+                },
+                "storeId": {
+                    "description": "旧车入库至门店",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.ManagerSubscribeUnbindEbike": {
+            "type": "object",
+            "required": [
+                "id",
+                "storeId"
+            ],
+            "properties": {
                 "id": {
                     "type": "integer"
                 },

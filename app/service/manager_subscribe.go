@@ -6,6 +6,7 @@
 package service
 
 import (
+	"github.com/auroraride/aurservd/app/logging"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/stock"
@@ -46,7 +47,8 @@ func (s *managerSubscribeService) Active(req *model.ManagerSubscribeActive) {
 	})
 }
 
-func (s *managerSubscribeService) ChangeEBike(req *model.ManagerSubscribeChangeEbike) {
+// ChangeEbike 修改订阅车辆
+func (s *managerSubscribeService) ChangeEbike(req *model.ManagerSubscribeChangeEbike) {
 	bike := NewAllocate().UnallocatedEbikeInfo(*req.EbikeKeyword)
 
 	sub, _ := ent.Database.Subscribe.QueryNotDeleted().
@@ -115,4 +117,47 @@ func (s *managerSubscribeService) ChangeEBike(req *model.ManagerSubscribeChangeE
 		// 更新订阅
 		return tx.Subscribe.UpdateOneID(sub.ID).SetEbikeID(bike.ID).SetBrandID(bike.Brand.ID).Exec(s.ctx)
 	})
+}
+
+func (s *managerSubscribeService) UnbindEbike(req *model.ManagerSubscribeUnbindEbike) {
+	sub, _ := ent.Database.Subscribe.QueryNotDeleted().Where(subscribe.EbikeIDNotNil(), subscribe.ID(req.ID)).WithRider().WithEbike().WithBrand().First(s.ctx)
+	if sub == nil {
+		snag.Panic("未找到有效订阅")
+	}
+
+	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
+		// 旧车入库
+		err = tx.Stock.Create().
+			SetEbikeID(*sub.EbikeID).
+			SetNum(1).
+			SetStoreID(req.StoreID).
+			SetSn(tools.NewUnique().NewSN()).
+			SetRiderID(sub.RiderID).
+			SetName(sub.Edges.Brand.Name).
+			SetMaterial(stock.MaterialEbike).
+			SetCityID(sub.CityID).
+			SetSubscribeID(sub.ID).
+			SetBrandID(*sub.BrandID).
+			Exec(s.ctx)
+		if err != nil {
+			return
+		}
+
+		// 删除电车所属
+		err = tx.Ebike.UpdateOneID(*sub.EbikeID).ClearRiderID().SetStatus(model.EbikeStatusInStock).Exec(s.ctx)
+		if err != nil {
+			return
+		}
+
+		// 更新订阅
+		return tx.Subscribe.UpdateOneID(sub.ID).ClearEbikeID().ClearBrandID().Exec(s.ctx)
+	})
+
+	// 记录操作日志
+	go logging.NewOperateLog().
+		SetOperate(model.OperateUnbindEbike).
+		SetRef(sub.Edges.Rider).
+		SetDiff("车辆编号: "+sub.Edges.Ebike.Sn, "无车辆").
+		SetModifier(s.modifier).
+		Send()
 }

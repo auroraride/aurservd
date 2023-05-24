@@ -9,6 +9,9 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/golang-module/carbon/v2"
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
@@ -19,8 +22,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
-	"github.com/golang-module/carbon/v2"
-	"github.com/labstack/echo/v4"
 )
 
 type ebikeService struct {
@@ -318,4 +319,12 @@ func (s *ebikeService) Detail(bike *ent.Ebike, brand *ent.EbikeBrand) *model.Ebi
 		}
 	}
 	return res
+}
+
+// Bind TODO 解耦: 绑定骑手
+func (s *ebikeService) Bind() {
+}
+
+// Unbind TODO 解耦: 解绑骑手
+func (s *ebikeService) Unbind() {
 }

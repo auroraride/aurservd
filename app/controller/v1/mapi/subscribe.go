@@ -6,10 +6,11 @@
 package mapi
 
 import (
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
-	"github.com/labstack/echo/v4"
 )
 
 type subscribe struct{}
@@ -139,7 +140,7 @@ func (*subscribe) UnSuspend(c echo.Context) (err error) {
 // @Success      200 {object} model.StatusResponse "请求成功"
 func (*subscribe) EbikeChange(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.ManagerSubscribeChangeEbike](c)
-	service.NewManagerSubscribe(ctx.Modifier).ChangeEBike(req)
+	service.NewManagerSubscribe(ctx.Modifier).ChangeEbike(req)
 	return ctx.SendResponse()
 }
 
@@ -156,4 +157,20 @@ func (*subscribe) EbikeChange(c echo.Context) (err error) {
 func (*subscribe) Reminder(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.ReminderListReq](c)
 	return ctx.SendResponse(service.NewReminder(ctx.Modifier).List(req))
+}
+
+// EbikeUnbind
+// @ID           ManagerSubscribeEbikeUnbind
+// @Router       /manager/v1/subscribe/ebike/unbind [POST]
+// @Summary      M7025 解绑骑手电车
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        body body model.ManagerSubscribeUnbindEbike true "请求参数"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*subscribe) EbikeUnbind(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[model.ManagerSubscribeUnbindEbike](c)
+	service.NewManagerSubscribe(ctx.Modifier).UnbindEbike(req)
+	return ctx.SendResponse()
 }

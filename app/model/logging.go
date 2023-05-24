@@ -49,6 +49,8 @@ const (
 	OperateExchangeLimit                       // 设置换电限制
 	OperateExchangeFrequency                   // 设置换电频次
 	OperateInterruptBusiness                   // 中断电柜业务
+	OperateBindEbike                           // 绑定电车
+	OperateUnbindEbike                         // 解绑电车
 )
 
 func (o Operate) String() string {
@@ -98,7 +100,7 @@ func (o Operate) String() string {
 	case OperateBindBattery:
 		return "绑定电池"
 	case OperateUnbindBattery:
-		return "绑定电池"
+		return "解绑电池"
 	case OperateRiderPutin:
 		return "骑手放入电池"
 	case OperateRiderPutout:
@@ -109,6 +111,10 @@ func (o Operate) String() string {
 		return "设置换电频次"
 	case OperateInterruptBusiness:
 		return "中断电柜业务"
+	case OperateBindEbike:
+		return "绑定电车"
+	case OperateUnbindEbike:
+		return "解绑电车"
 	default:
 		return "未知操作"
 	}

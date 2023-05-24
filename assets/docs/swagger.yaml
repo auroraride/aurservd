@@ -4469,6 +4469,17 @@ definitions:
     - id
     - storeId
     type: object
+  model.ManagerSubscribeUnbindEbike:
+    properties:
+      id:
+        type: integer
+      storeId:
+        description: 旧车入库至门店
+        type: integer
+    required:
+    - id
+    - storeId
+    type: object
   model.Modifier:
     properties:
       id:
@@ -14792,6 +14803,33 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M7020 修改订阅车辆
+      tags:
+      - '[M]管理接口'
+  /manager/v1/subscribe/ebike/unbind:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerSubscribeEbikeUnbind
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.ManagerSubscribeUnbindEbike'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M7025 解绑骑手电车
       tags:
       - '[M]管理接口'
   /manager/v1/subscribe/halt:

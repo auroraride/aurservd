@@ -153,7 +153,7 @@ func (*battery) Bind(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*battery) Unbind(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.BatteryUnbindRequest](c)
-	service.NewBattery(ctx.Modifier).UnbindRequest(req)
+	service.NewBattery(ctx.Modifier).Unbind(req)
 	return ctx.SendResponse()
 }
 

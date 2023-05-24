@@ -17,3 +17,8 @@ type ManagerSubscribeChangeEbike struct {
 	StoreID      uint64  `json:"storeId" validate:"required" trans:"门店ID"` // 旧车入库至门店
 	EbikeKeyword *string `json:"ebikeKeyword" validate:"required" trans:"车架号或车牌号"`
 }
+
+type ManagerSubscribeUnbindEbike struct {
+	ID      uint64 `json:"id" validate:"required" trans:"订阅ID"`
+	StoreID uint64 `json:"storeId" validate:"required" trans:"门店ID"` // 旧车入库至门店
+}
