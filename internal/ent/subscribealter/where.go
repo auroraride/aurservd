@@ -105,6 +105,11 @@ func Days(v int) predicate.SubscribeAlter {
 	return predicate.SubscribeAlter(sql.FieldEQ(FieldDays, v))
 }
 
+// Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
+func Status(v int) predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(sql.FieldEQ(FieldStatus, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.SubscribeAlter {
 	return predicate.SubscribeAlter(sql.FieldEQ(FieldCreatedAt, v))
@@ -498,6 +503,46 @@ func DaysLT(v int) predicate.SubscribeAlter {
 // DaysLTE applies the LTE predicate on the "days" field.
 func DaysLTE(v int) predicate.SubscribeAlter {
 	return predicate.SubscribeAlter(sql.FieldLTE(FieldDays, v))
+}
+
+// StatusEQ applies the EQ predicate on the "status" field.
+func StatusEQ(v int) predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(sql.FieldEQ(FieldStatus, v))
+}
+
+// StatusNEQ applies the NEQ predicate on the "status" field.
+func StatusNEQ(v int) predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(sql.FieldNEQ(FieldStatus, v))
+}
+
+// StatusIn applies the In predicate on the "status" field.
+func StatusIn(vs ...int) predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(sql.FieldIn(FieldStatus, vs...))
+}
+
+// StatusNotIn applies the NotIn predicate on the "status" field.
+func StatusNotIn(vs ...int) predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(sql.FieldNotIn(FieldStatus, vs...))
+}
+
+// StatusGT applies the GT predicate on the "status" field.
+func StatusGT(v int) predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(sql.FieldGT(FieldStatus, v))
+}
+
+// StatusGTE applies the GTE predicate on the "status" field.
+func StatusGTE(v int) predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(sql.FieldGTE(FieldStatus, v))
+}
+
+// StatusLT applies the LT predicate on the "status" field.
+func StatusLT(v int) predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(sql.FieldLT(FieldStatus, v))
+}
+
+// StatusLTE applies the LTE predicate on the "status" field.
+func StatusLTE(v int) predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(sql.FieldLTE(FieldStatus, v))
 }
 
 // HasRider applies the HasEdge predicate on the "rider" edge.

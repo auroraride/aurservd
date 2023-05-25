@@ -39,6 +39,8 @@ const (
 	FieldSubscribeID = "subscribe_id"
 	// FieldDays holds the string denoting the days field in the database.
 	FieldDays = "days"
+	// FieldStatus holds the string denoting the status field in the database.
+	FieldStatus = "status"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
 	// EdgeManager holds the string denoting the manager edge name in mutations.
@@ -103,6 +105,7 @@ var Columns = []string{
 	FieldAgentID,
 	FieldSubscribeID,
 	FieldDays,
+	FieldStatus,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -128,6 +131,8 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultStatus holds the default value on creation for the "status" field.
+	DefaultStatus int
 )
 
 // OrderOption defines the ordering options for the SubscribeAlter queries.
@@ -186,6 +191,11 @@ func BySubscribeID(opts ...sql.OrderTermOption) OrderOption {
 // ByDays orders the results by the days field.
 func ByDays(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDays, opts...).ToFunc()
+}
+
+// ByStatus orders the results by the status field.
+func ByStatus(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldStatus, opts...).ToFunc()
 }
 
 // ByRiderField orders the results by rider field.

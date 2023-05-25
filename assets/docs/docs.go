@@ -4094,19 +4094,14 @@ const docTemplate = `{
                             "UNKNOWN",
                             "KAIXIN",
                             "YUNDONG",
-                            "TUOBANG",
-                            "XILIULOUSERV"
+                            "TUOBANG"
                         ],
                         "type": "string",
-                        "x-enum-comments": {
-                            "CabinetBrandXiliulouServer": "西六楼服务器版"
-                        },
                         "x-enum-varnames": [
                             "CabinetBrandUnknown",
                             "CabinetBrandKaixin",
                             "CabinetBrandYundong",
-                            "CabinetBrandTuobang",
-                            "CabinetBrandXiliulouServer"
+                            "CabinetBrandTuobang"
                         ],
                         "description": "电柜型号 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
                         "name": "brand",
@@ -4310,19 +4305,14 @@ const docTemplate = `{
                             "UNKNOWN",
                             "KAIXIN",
                             "YUNDONG",
-                            "TUOBANG",
-                            "XILIULOUSERV"
+                            "TUOBANG"
                         ],
                         "type": "string",
-                        "x-enum-comments": {
-                            "CabinetBrandXiliulouServer": "西六楼服务器版"
-                        },
                         "x-enum-varnames": [
                             "CabinetBrandUnknown",
                             "CabinetBrandKaixin",
                             "CabinetBrandYundong",
-                            "CabinetBrandTuobang",
-                            "CabinetBrandXiliulouServer"
+                            "CabinetBrandTuobang"
                         ],
                         "description": "品牌 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
                         "name": "brand",
@@ -7598,19 +7588,14 @@ const docTemplate = `{
                             "UNKNOWN",
                             "KAIXIN",
                             "YUNDONG",
-                            "TUOBANG",
-                            "XILIULOUSERV"
+                            "TUOBANG"
                         ],
                         "type": "string",
-                        "x-enum-comments": {
-                            "CabinetBrandXiliulouServer": "西六楼服务器版"
-                        },
                         "x-enum-varnames": [
                             "CabinetBrandUnknown",
                             "CabinetBrandKaixin",
                             "CabinetBrandYundong",
-                            "CabinetBrandTuobang",
-                            "CabinetBrandXiliulouServer"
+                            "CabinetBrandTuobang"
                         ],
                         "description": "电柜类型, KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
                         "name": "brand",
@@ -13350,6 +13335,150 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v1/enterprise/subscribe/add": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R3014 企业骑手申请增加订阅时长",
+                "operationId": "RiderEnterpriseApplyAddSubscribeTime",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "申请增加订阅时长请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.RiderSubscribeAddReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                }
+            }
+        },
+        "/rider/v1/enterprise/subscribe/alter/list": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R3015 企业骑手申请列表",
+                "operationId": "RiderEnterpriseApplyList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间",
+                        "name": "end_time",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间",
+                        "name": "start_time",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.ApplyListRsp"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/rider/v1/enterprise/subscribe/info": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R3013 企业骑手订阅信息",
+                "operationId": "RiderEnterpriseGetSubscribeInfo",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.RiderSubscribeRsp"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v1/exchange/log": {
             "get": {
                 "consumes": [
@@ -14246,18 +14375,13 @@ const docTemplate = `{
                 "UNKNOWN",
                 "KAIXIN",
                 "YUNDONG",
-                "TUOBANG",
-                "XILIULOUSERV"
+                "TUOBANG"
             ],
-            "x-enum-comments": {
-                "CabinetBrandXiliulouServer": "西六楼服务器版"
-            },
             "x-enum-varnames": [
                 "CabinetBrandUnknown",
                 "CabinetBrandKaixin",
                 "CabinetBrandYundong",
-                "CabinetBrandTuobang",
-                "CabinetBrandXiliulouServer"
+                "CabinetBrandTuobang"
             ]
         },
         "adapter.Geometry": {
@@ -15050,6 +15174,27 @@ const docTemplate = `{
                 "AllocateStatusSigned",
                 "AllocateStatusVoid"
             ]
+        },
+        "model.ApplyListRsp": {
+            "type": "object",
+            "properties": {
+                "apply_time": {
+                    "description": "申请时间",
+                    "type": "string"
+                },
+                "days": {
+                    "description": "天数",
+                    "type": "integer"
+                },
+                "review_time": {
+                    "description": "审核时间",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "审核状态",
+                    "type": "integer"
+                }
+            }
         },
         "model.AssistanceAllocateReq": {
             "type": "object",
@@ -22768,6 +22913,50 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "smsId": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.RiderSubscribeAddReq": {
+            "type": "object",
+            "required": [
+                "days"
+            ],
+            "properties": {
+                "days": {
+                    "description": "天数",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.RiderSubscribeRsp": {
+            "type": "object",
+            "properties": {
+                "expireAt": {
+                    "description": "到期时间",
+                    "type": "string"
+                },
+                "extraDays": {
+                    "description": "加时天数",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "id": {
+                    "description": "骑手ID",
+                    "type": "integer"
+                },
+                "leftDays": {
+                    "description": "剩余天数",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "骑手姓名",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "骑手电话",
                     "type": "string"
                 }
             }

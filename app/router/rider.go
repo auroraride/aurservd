@@ -136,6 +136,12 @@ func loadRideRoutes() {
 	g.GET("/business/pause/info", rapi.Business.PauseInfo)
 	g.GET("/business/allocated/:id", rapi.Business.Allocated)
 	g.GET("/business/subscribe/signed/:id", rapi.Business.SubscribeSigned)
+	// 申请加时个人信息
+	g.GET("/enterprise/subscribe/info", rapi.Enterprise.GetSubscribeInfo)
+	// 申请加时
+	g.POST("/enterprise/subscribe/add", rapi.Enterprise.ApplyAddSubscribeTime)
+	// 申请列表
+	g.GET("/enterprise/subscribe/alter/list", rapi.Enterprise.ApplyList)
 
 	// 电柜
 	cabinet := g.Group("/cabinet")

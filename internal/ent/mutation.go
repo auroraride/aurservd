@@ -73937,6 +73937,8 @@ type SubscribeAlterMutation struct {
 	remark            *string
 	days              *int
 	adddays           *int
+	status            *int
+	addstatus         *int
 	clearedFields     map[string]struct{}
 	rider             *uint64
 	clearedrider      bool
@@ -74594,6 +74596,62 @@ func (m *SubscribeAlterMutation) ResetDays() {
 	m.adddays = nil
 }
 
+// SetStatus sets the "status" field.
+func (m *SubscribeAlterMutation) SetStatus(i int) {
+	m.status = &i
+	m.addstatus = nil
+}
+
+// Status returns the value of the "status" field in the mutation.
+func (m *SubscribeAlterMutation) Status() (r int, exists bool) {
+	v := m.status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatus returns the old "status" field's value of the SubscribeAlter entity.
+// If the SubscribeAlter object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscribeAlterMutation) OldStatus(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
+	}
+	return oldValue.Status, nil
+}
+
+// AddStatus adds i to the "status" field.
+func (m *SubscribeAlterMutation) AddStatus(i int) {
+	if m.addstatus != nil {
+		*m.addstatus += i
+	} else {
+		m.addstatus = &i
+	}
+}
+
+// AddedStatus returns the value that was added to the "status" field in this mutation.
+func (m *SubscribeAlterMutation) AddedStatus() (r int, exists bool) {
+	v := m.addstatus
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetStatus resets all changes to the "status" field.
+func (m *SubscribeAlterMutation) ResetStatus() {
+	m.status = nil
+	m.addstatus = nil
+}
+
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *SubscribeAlterMutation) ClearRider() {
 	m.clearedrider = true
@@ -74758,7 +74816,7 @@ func (m *SubscribeAlterMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SubscribeAlterMutation) Fields() []string {
-	fields := make([]string, 0, 12)
+	fields := make([]string, 0, 13)
 	if m.created_at != nil {
 		fields = append(fields, subscribealter.FieldCreatedAt)
 	}
@@ -74795,6 +74853,9 @@ func (m *SubscribeAlterMutation) Fields() []string {
 	if m.days != nil {
 		fields = append(fields, subscribealter.FieldDays)
 	}
+	if m.status != nil {
+		fields = append(fields, subscribealter.FieldStatus)
+	}
 	return fields
 }
 
@@ -74827,6 +74888,8 @@ func (m *SubscribeAlterMutation) Field(name string) (ent.Value, bool) {
 		return m.SubscribeID()
 	case subscribealter.FieldDays:
 		return m.Days()
+	case subscribealter.FieldStatus:
+		return m.Status()
 	}
 	return nil, false
 }
@@ -74860,6 +74923,8 @@ func (m *SubscribeAlterMutation) OldField(ctx context.Context, name string) (ent
 		return m.OldSubscribeID(ctx)
 	case subscribealter.FieldDays:
 		return m.OldDays(ctx)
+	case subscribealter.FieldStatus:
+		return m.OldStatus(ctx)
 	}
 	return nil, fmt.Errorf("unknown SubscribeAlter field %s", name)
 }
@@ -74953,6 +75018,13 @@ func (m *SubscribeAlterMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDays(v)
 		return nil
+	case subscribealter.FieldStatus:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatus(v)
+		return nil
 	}
 	return fmt.Errorf("unknown SubscribeAlter field %s", name)
 }
@@ -74964,6 +75036,9 @@ func (m *SubscribeAlterMutation) AddedFields() []string {
 	if m.adddays != nil {
 		fields = append(fields, subscribealter.FieldDays)
 	}
+	if m.addstatus != nil {
+		fields = append(fields, subscribealter.FieldStatus)
+	}
 	return fields
 }
 
@@ -74974,6 +75049,8 @@ func (m *SubscribeAlterMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	case subscribealter.FieldDays:
 		return m.AddedDays()
+	case subscribealter.FieldStatus:
+		return m.AddedStatus()
 	}
 	return nil, false
 }
@@ -74989,6 +75066,13 @@ func (m *SubscribeAlterMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddDays(v)
+		return nil
+	case subscribealter.FieldStatus:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddStatus(v)
 		return nil
 	}
 	return fmt.Errorf("unknown SubscribeAlter numeric field %s", name)
@@ -75097,6 +75181,9 @@ func (m *SubscribeAlterMutation) ResetField(name string) error {
 		return nil
 	case subscribealter.FieldDays:
 		m.ResetDays()
+		return nil
+	case subscribealter.FieldStatus:
+		m.ResetStatus()
 		return nil
 	}
 	return fmt.Errorf("unknown SubscribeAlter field %s", name)

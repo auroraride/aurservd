@@ -20,16 +20,12 @@ definitions:
     - KAIXIN
     - YUNDONG
     - TUOBANG
-    - XILIULOUSERV
     type: string
-    x-enum-comments:
-      CabinetBrandXiliulouServer: 西六楼服务器版
     x-enum-varnames:
     - CabinetBrandUnknown
     - CabinetBrandKaixin
     - CabinetBrandYundong
     - CabinetBrandTuobang
-    - CabinetBrandXiliulouServer
   adapter.Geometry:
     properties:
       lat:
@@ -591,6 +587,21 @@ definitions:
     - AllocateStatusPending
     - AllocateStatusSigned
     - AllocateStatusVoid
+  model.ApplyListRsp:
+    properties:
+      apply_time:
+        description: 申请时间
+        type: string
+      days:
+        description: 天数
+        type: integer
+      review_time:
+        description: 审核时间
+        type: string
+      status:
+        description: 审核状态
+        type: integer
+    type: object
   model.AssistanceAllocateReq:
     properties:
       id:
@@ -5919,6 +5930,37 @@ definitions:
     - smsCode
     - smsId
     type: object
+  model.RiderSubscribeAddReq:
+    properties:
+      days:
+        description: 天数
+        type: integer
+    required:
+    - days
+    type: object
+  model.RiderSubscribeRsp:
+    properties:
+      expireAt:
+        description: 到期时间
+        type: string
+      extraDays:
+        description: 加时天数
+        items:
+          type: integer
+        type: array
+      id:
+        description: 骑手ID
+        type: integer
+      leftDays:
+        description: 剩余天数
+        type: integer
+      name:
+        description: 骑手姓名
+        type: string
+      phone:
+        description: 骑手电话
+        type: string
+    type: object
   model.Role:
     properties:
       builtin:
@@ -9959,18 +10001,14 @@ paths:
         - KAIXIN
         - YUNDONG
         - TUOBANG
-        - XILIULOUSERV
         in: query
         name: brand
         type: string
-        x-enum-comments:
-          CabinetBrandXiliulouServer: 西六楼服务器版
         x-enum-varnames:
         - CabinetBrandUnknown
         - CabinetBrandKaixin
         - CabinetBrandYundong
         - CabinetBrandTuobang
-        - CabinetBrandXiliulouServer
       - description: 城市ID
         in: query
         name: cityId
@@ -10181,18 +10219,14 @@ paths:
         - KAIXIN
         - YUNDONG
         - TUOBANG
-        - XILIULOUSERV
         in: query
         name: brand
         type: string
-        x-enum-comments:
-          CabinetBrandXiliulouServer: 西六楼服务器版
         x-enum-varnames:
         - CabinetBrandUnknown
         - CabinetBrandKaixin
         - CabinetBrandYundong
         - CabinetBrandTuobang
-        - CabinetBrandXiliulouServer
       - description: 城市
         in: query
         name: cityId
@@ -12259,18 +12293,14 @@ paths:
         - KAIXIN
         - YUNDONG
         - TUOBANG
-        - XILIULOUSERV
         in: query
         name: brand
         type: string
-        x-enum-comments:
-          CabinetBrandXiliulouServer: 西六楼服务器版
         x-enum-varnames:
         - CabinetBrandUnknown
         - CabinetBrandKaixin
         - CabinetBrandYundong
         - CabinetBrandTuobang
-        - CabinetBrandXiliulouServer
       - description: 选择电柜ID
         in: query
         name: cabinetId
@@ -16012,6 +16042,98 @@ paths:
           schema:
             $ref: '#/definitions/model.EnterpriseRiderSubscribeChooseRes'
       summary: R3011 企业骑手选择电池
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/enterprise/subscribe/add:
+    post:
+      consumes:
+      - application/json
+      operationId: RiderEnterpriseApplyAddSubscribeTime
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 申请增加订阅时长请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.RiderSubscribeAddReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            type: boolean
+      summary: R3014 企业骑手申请增加订阅时长
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/enterprise/subscribe/alter/list:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderEnterpriseApplyList
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 结束时间
+        in: query
+        name: end_time
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 开始时间
+        in: query
+        name: start_time
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.ApplyListRsp'
+                  type: array
+              type: object
+      summary: R3015 企业骑手申请列表
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/enterprise/subscribe/info:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderEnterpriseGetSubscribeInfo
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.RiderSubscribeRsp'
+      summary: R3013 企业骑手订阅信息
       tags:
       - '[R]骑手接口'
   /rider/v1/exchange/log:

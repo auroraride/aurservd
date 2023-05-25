@@ -7,6 +7,7 @@ import (
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
+
 	"github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -28,6 +29,8 @@ func (SubscribeAlter) Fields() []ent.Field {
 	return []ent.Field{
 		field.Uint64("subscribe_id").Comment("订阅ID"),
 		field.Int("days").Comment("更改天数"),
+		// 状态 0未审批  1 同意 2 不同意
+		field.Int("status").Default(0).Comment("状态"),
 	}
 }
 

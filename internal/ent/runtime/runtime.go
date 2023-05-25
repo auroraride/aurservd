@@ -1227,6 +1227,10 @@ func init() {
 	subscribealter.DefaultUpdatedAt = subscribealterDescUpdatedAt.Default.(func() time.Time)
 	// subscribealter.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	subscribealter.UpdateDefaultUpdatedAt = subscribealterDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// subscribealterDescStatus is the schema descriptor for status field.
+	subscribealterDescStatus := subscribealterFields[2].Descriptor()
+	// subscribealter.DefaultStatus holds the default value on creation for the status field.
+	subscribealter.DefaultStatus = subscribealterDescStatus.Default.(int)
 	subscribepauseMixin := schema.SubscribePause{}.Mixin()
 	subscribepauseMixinHooks2 := subscribepauseMixin[2].Hooks()
 	subscribepause.Hooks[0] = subscribepauseMixinHooks2[0]

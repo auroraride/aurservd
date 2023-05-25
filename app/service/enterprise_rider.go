@@ -10,15 +10,17 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/golang-module/carbon/v2"
+
 	"github.com/auroraride/aurservd/app/logging"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
+	"github.com/auroraride/aurservd/internal/ent/subscribealter"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
-	"github.com/golang-module/carbon/v2"
 )
 
 type enterpriseRiderService struct {
@@ -369,4 +371,80 @@ func (s *enterpriseRiderService) SubscribeStatus(req *model.EnterpriseRiderSubsc
 		}
 		time.Sleep(1 * time.Second)
 	}
+}
+
+// GetSubscribeInfo 获取骑手订阅信息
+func (s *enterpriseRiderService) GetSubscribeInfo(u *ent.Rider) *model.RiderSubscribeRsp {
+	riderInfo, _ := ent.Database.Rider.QueryNotDeleted().Where(rider.ID(u.ID)).WithEnterprise().WithSubscribes().Order(ent.Desc(subscribe.FieldCreatedAt)).First(s.ctx)
+	if riderInfo == nil {
+		snag.Panic("未找到骑手信息")
+	}
+	leftDays := 0
+	expireAt := ""
+	// 计算团签剩余天数
+	if len(riderInfo.Edges.Subscribes) > 0 {
+		leftDays = tools.NewTime().LastDaysToNow(*riderInfo.Edges.Subscribes[0].StartAt)
+		expireAt = riderInfo.Edges.Subscribes[0].AgentEndAt.Format(carbon.DateLayout)
+	}
+	return &model.RiderSubscribeRsp{
+		RiderSampleInfo: model.RiderSampleInfo{
+			ID:    riderInfo.ID,
+			Name:  riderInfo.Name,
+			Phone: riderInfo.Phone,
+		},
+		LeftDays:  leftDays,
+		ExpireAt:  expireAt,
+		ExtraDays: riderInfo.Edges.Enterprise.Days,
+	}
+}
+
+// AddSubscribeDays 骑手申请增加团签订阅时长
+func (s *enterpriseRiderService) AddSubscribeDays(req *model.RiderSubscribeAddReq) bool {
+	// 查询骑手申请是否有未审批的
+	info, _ := ent.Database.SubscribeAlter.QueryNotDeleted().Where(subscribealter.RiderID(s.rider.ID), subscribealter.StatusNEQ(model.Unreviewed)).First(s.ctx)
+	if info != nil {
+		snag.Panic("存在未审批的申请")
+	}
+	if len(s.rider.Edges.Subscribes) == 0 {
+		snag.Panic("未找到订阅信息")
+	}
+	sid := s.rider.Edges.Subscribes[0].ID
+	// 增加记录
+	_, err := ent.Database.SubscribeAlter.Create().
+		SetRiderID(s.rider.ID).
+		SetEnterpriseID(*s.rider.EnterpriseID).
+		SetSubscribeID(sid).
+		SetDays(req.Days).
+		SetStatus(model.Unreviewed).
+		Save(s.ctx)
+	if err != nil {
+		snag.Panic("申请失败")
+	}
+	return true
+}
+
+// SubscribeAlterList 申请列表
+func (s *enterpriseRiderService) SubscribeAlterList(req *model.ApplyReq) *model.PaginationRes {
+	q := ent.Database.SubscribeAlter.QueryNotDeleted().Where(subscribealter.RiderID(s.rider.ID)).Order(ent.Desc(subscribealter.FieldCreatedAt))
+
+	if req.StartTime != nil && req.EndTime != nil {
+		rs := tools.NewTime().ParseDateStringX(*req.StartTime)
+		re := tools.NewTime().ParseDateStringX(*req.EndTime)
+		q = q.Where(subscribealter.CreatedAtGTE(rs), subscribealter.CreatedAtLTE(re))
+	}
+
+	return model.ParsePaginationResponse(
+		q,
+		req.PaginationReq,
+		func(item *ent.SubscribeAlter) model.ApplyListRsp {
+			return model.ApplyListRsp{
+				Days: item.Days,
+				// 申请时间
+				ApplyTime: item.CreatedAt.Format(carbon.DateTimeLayout),
+				// 审批时间
+				ReviewTime: item.UpdatedAt.Format(carbon.DateTimeLayout),
+				// 审批状态
+				Status: item.Status,
+			}
+		})
 }
