@@ -24416,7 +24416,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "inboundTarget": {
-                    "description": "调入目标 0:平台 1:门店 2:电柜",
+                    "description": "调入目标 0:平台 1:门店 2:电柜 3.站点",
                     "type": "integer",
                     "enum": [
                         0,
@@ -24441,7 +24441,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "outboundTarget": {
-                    "description": "调出目标 0:平台 1:门店 2:电柜",
+                    "description": "调出目标 0:平台 1:门店 2:电柜 3.站点",
                     "type": "integer",
                     "enum": [
                         0,
