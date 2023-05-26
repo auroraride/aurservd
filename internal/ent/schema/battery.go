@@ -87,6 +87,7 @@ func (Battery) Edges() []ent.Edge {
 		edge.To("flows", BatteryFlow.Type).Annotations(
 			entsql.WithComments(true),
 		).Comment("流转记录"),
+		edge.From("station", EnterpriseStation.Type).Ref("battery").Unique().Field("station_id").Comment("所属站点"),
 	}
 }
 

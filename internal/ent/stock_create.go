@@ -18,6 +18,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
+	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
@@ -404,6 +406,30 @@ func (sc *StockCreate) AddChildren(s ...*Stock) *StockCreate {
 	return sc.AddChildIDs(ids...)
 }
 
+// SetEnterprise sets the "enterprise" edge to the Enterprise entity.
+func (sc *StockCreate) SetEnterprise(e *Enterprise) *StockCreate {
+	return sc.SetEnterpriseID(e.ID)
+}
+
+// SetStationsID sets the "stations" edge to the EnterpriseStation entity by ID.
+func (sc *StockCreate) SetStationsID(id uint64) *StockCreate {
+	sc.mutation.SetStationsID(id)
+	return sc
+}
+
+// SetNillableStationsID sets the "stations" edge to the EnterpriseStation entity by ID if the given value is not nil.
+func (sc *StockCreate) SetNillableStationsID(id *uint64) *StockCreate {
+	if id != nil {
+		sc = sc.SetStationsID(*id)
+	}
+	return sc
+}
+
+// SetStations sets the "stations" edge to the EnterpriseStation entity.
+func (sc *StockCreate) SetStations(e *EnterpriseStation) *StockCreate {
+	return sc.SetStationsID(e.ID)
+}
+
 // Mutation returns the StockMutation object of the builder.
 func (sc *StockCreate) Mutation() *StockMutation {
 	return sc.mutation
@@ -548,14 +574,6 @@ func (sc *StockCreate) createSpec() (*Stock, *sqlgraph.CreateSpec) {
 	if value, ok := sc.mutation.GetType(); ok {
 		_spec.SetField(stock.FieldType, field.TypeUint8, value)
 		_node.Type = value
-	}
-	if value, ok := sc.mutation.StationID(); ok {
-		_spec.SetField(stock.FieldStationID, field.TypeUint64, value)
-		_node.StationID = &value
-	}
-	if value, ok := sc.mutation.EnterpriseID(); ok {
-		_spec.SetField(stock.FieldEnterpriseID, field.TypeUint64, value)
-		_node.EnterpriseID = &value
 	}
 	if value, ok := sc.mutation.Name(); ok {
 		_spec.SetField(stock.FieldName, field.TypeString, value)
@@ -774,6 +792,40 @@ func (sc *StockCreate) createSpec() (*Stock, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := sc.mutation.EnterpriseIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   stock.EnterpriseTable,
+			Columns: []string{stock.EnterpriseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.EnterpriseID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := sc.mutation.StationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   stock.StationsTable,
+			Columns: []string{stock.StationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.StationID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -1116,12 +1168,6 @@ func (u *StockUpsert) UpdateStationID() *StockUpsert {
 	return u
 }
 
-// AddStationID adds v to the "station_id" field.
-func (u *StockUpsert) AddStationID(v uint64) *StockUpsert {
-	u.Add(stock.FieldStationID, v)
-	return u
-}
-
 // ClearStationID clears the value of the "station_id" field.
 func (u *StockUpsert) ClearStationID() *StockUpsert {
 	u.SetNull(stock.FieldStationID)
@@ -1137,12 +1183,6 @@ func (u *StockUpsert) SetEnterpriseID(v uint64) *StockUpsert {
 // UpdateEnterpriseID sets the "enterprise_id" field to the value that was provided on create.
 func (u *StockUpsert) UpdateEnterpriseID() *StockUpsert {
 	u.SetExcluded(stock.FieldEnterpriseID)
-	return u
-}
-
-// AddEnterpriseID adds v to the "enterprise_id" field.
-func (u *StockUpsert) AddEnterpriseID(v uint64) *StockUpsert {
-	u.Add(stock.FieldEnterpriseID, v)
 	return u
 }
 
@@ -1574,13 +1614,6 @@ func (u *StockUpsertOne) SetStationID(v uint64) *StockUpsertOne {
 	})
 }
 
-// AddStationID adds v to the "station_id" field.
-func (u *StockUpsertOne) AddStationID(v uint64) *StockUpsertOne {
-	return u.Update(func(s *StockUpsert) {
-		s.AddStationID(v)
-	})
-}
-
 // UpdateStationID sets the "station_id" field to the value that was provided on create.
 func (u *StockUpsertOne) UpdateStationID() *StockUpsertOne {
 	return u.Update(func(s *StockUpsert) {
@@ -1599,13 +1632,6 @@ func (u *StockUpsertOne) ClearStationID() *StockUpsertOne {
 func (u *StockUpsertOne) SetEnterpriseID(v uint64) *StockUpsertOne {
 	return u.Update(func(s *StockUpsert) {
 		s.SetEnterpriseID(v)
-	})
-}
-
-// AddEnterpriseID adds v to the "enterprise_id" field.
-func (u *StockUpsertOne) AddEnterpriseID(v uint64) *StockUpsertOne {
-	return u.Update(func(s *StockUpsert) {
-		s.AddEnterpriseID(v)
 	})
 }
 
@@ -2214,13 +2240,6 @@ func (u *StockUpsertBulk) SetStationID(v uint64) *StockUpsertBulk {
 	})
 }
 
-// AddStationID adds v to the "station_id" field.
-func (u *StockUpsertBulk) AddStationID(v uint64) *StockUpsertBulk {
-	return u.Update(func(s *StockUpsert) {
-		s.AddStationID(v)
-	})
-}
-
 // UpdateStationID sets the "station_id" field to the value that was provided on create.
 func (u *StockUpsertBulk) UpdateStationID() *StockUpsertBulk {
 	return u.Update(func(s *StockUpsert) {
@@ -2239,13 +2258,6 @@ func (u *StockUpsertBulk) ClearStationID() *StockUpsertBulk {
 func (u *StockUpsertBulk) SetEnterpriseID(v uint64) *StockUpsertBulk {
 	return u.Update(func(s *StockUpsert) {
 		s.SetEnterpriseID(v)
-	})
-}
-
-// AddEnterpriseID adds v to the "enterprise_id" field.
-func (u *StockUpsertBulk) AddEnterpriseID(v uint64) *StockUpsertBulk {
-	return u.Update(func(s *StockUpsert) {
-		s.AddEnterpriseID(v)
 	})
 }
 

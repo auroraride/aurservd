@@ -17,6 +17,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
+	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
@@ -109,9 +111,13 @@ type StockEdges struct {
 	Parent *Stock `json:"parent,omitempty"`
 	// Children holds the value of the children edge.
 	Children []*Stock `json:"children,omitempty"`
+	// Enterprise holds the value of the enterprise edge.
+	Enterprise *Enterprise `json:"enterprise,omitempty"`
+	// Stations holds the value of the stations edge.
+	Stations *EnterpriseStation `json:"stations,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [12]bool
+	loadedTypes [14]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -264,6 +270,32 @@ func (e StockEdges) ChildrenOrErr() ([]*Stock, error) {
 		return e.Children, nil
 	}
 	return nil, &NotLoadedError{edge: "children"}
+}
+
+// EnterpriseOrErr returns the Enterprise value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e StockEdges) EnterpriseOrErr() (*Enterprise, error) {
+	if e.loadedTypes[12] {
+		if e.Enterprise == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: enterprise.Label}
+		}
+		return e.Enterprise, nil
+	}
+	return nil, &NotLoadedError{edge: "enterprise"}
+}
+
+// StationsOrErr returns the Stations value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e StockEdges) StationsOrErr() (*EnterpriseStation, error) {
+	if e.loadedTypes[13] {
+		if e.Stations == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: enterprisestation.Label}
+		}
+		return e.Stations, nil
+	}
+	return nil, &NotLoadedError{edge: "stations"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -542,6 +574,16 @@ func (s *Stock) QueryParent() *StockQuery {
 // QueryChildren queries the "children" edge of the Stock entity.
 func (s *Stock) QueryChildren() *StockQuery {
 	return NewStockClient(s.config).QueryChildren(s)
+}
+
+// QueryEnterprise queries the "enterprise" edge of the Stock entity.
+func (s *Stock) QueryEnterprise() *EnterpriseQuery {
+	return NewStockClient(s.config).QueryEnterprise(s)
+}
+
+// QueryStations queries the "stations" edge of the Stock entity.
+func (s *Stock) QueryStations() *EnterpriseStationQuery {
+	return NewStockClient(s.config).QueryStations(s)
 }
 
 // Update returns a builder for updating this Stock.

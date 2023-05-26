@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 )
 
@@ -40,9 +41,9 @@ type Cabinet struct {
 	// 网点
 	BranchID *uint64 `json:"branch_id,omitempty"`
 	// 团签ID
-	EnterpriseID uint64 `json:"enterprise_id,omitempty"`
+	EnterpriseID *uint64 `json:"enterprise_id,omitempty"`
 	// 站点ID
-	StationID uint64 `json:"station_id,omitempty"`
+	StationID *uint64 `json:"station_id,omitempty"`
 	// 编号
 	Sn string `json:"sn,omitempty"`
 	// 品牌
@@ -109,9 +110,11 @@ type CabinetEdges struct {
 	BatteryFlows []*BatteryFlow `json:"battery_flows,omitempty"`
 	// Station holds the value of the station edge.
 	Station *EnterpriseStation `json:"station,omitempty"`
+	// Enterprise holds the value of the enterprise edge.
+	Enterprise *Enterprise `json:"enterprise,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [9]bool
+	loadedTypes [10]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -205,6 +208,19 @@ func (e CabinetEdges) StationOrErr() (*EnterpriseStation, error) {
 		return e.Station, nil
 	}
 	return nil, &NotLoadedError{edge: "station"}
+}
+
+// EnterpriseOrErr returns the Enterprise value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e CabinetEdges) EnterpriseOrErr() (*Enterprise, error) {
+	if e.loadedTypes[9] {
+		if e.Enterprise == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: enterprise.Label}
+		}
+		return e.Enterprise, nil
+	}
+	return nil, &NotLoadedError{edge: "enterprise"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -306,13 +322,15 @@ func (c *Cabinet) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field enterprise_id", values[i])
 			} else if value.Valid {
-				c.EnterpriseID = uint64(value.Int64)
+				c.EnterpriseID = new(uint64)
+				*c.EnterpriseID = uint64(value.Int64)
 			}
 		case cabinet.FieldStationID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field station_id", values[i])
 			} else if value.Valid {
-				c.StationID = uint64(value.Int64)
+				c.StationID = new(uint64)
+				*c.StationID = uint64(value.Int64)
 			}
 		case cabinet.FieldSn:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -494,6 +512,11 @@ func (c *Cabinet) QueryStation() *EnterpriseStationQuery {
 	return NewCabinetClient(c.config).QueryStation(c)
 }
 
+// QueryEnterprise queries the "enterprise" edge of the Cabinet entity.
+func (c *Cabinet) QueryEnterprise() *EnterpriseQuery {
+	return NewCabinetClient(c.config).QueryEnterprise(c)
+}
+
 // Update returns a builder for updating this Cabinet.
 // Note that you need to call Cabinet.Unwrap() before calling this method if this Cabinet
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -547,11 +570,15 @@ func (c *Cabinet) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	builder.WriteString("enterprise_id=")
-	builder.WriteString(fmt.Sprintf("%v", c.EnterpriseID))
+	if v := c.EnterpriseID; v != nil {
+		builder.WriteString("enterprise_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", ")
-	builder.WriteString("station_id=")
-	builder.WriteString(fmt.Sprintf("%v", c.StationID))
+	if v := c.StationID; v != nil {
+		builder.WriteString("station_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", ")
 	builder.WriteString("sn=")
 	builder.WriteString(c.Sn)

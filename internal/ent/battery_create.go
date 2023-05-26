@@ -18,6 +18,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
@@ -276,6 +277,11 @@ func (bc *BatteryCreate) AddFlows(b ...*BatteryFlow) *BatteryCreate {
 	return bc.AddFlowIDs(ids...)
 }
 
+// SetStation sets the "station" edge to the EnterpriseStation entity.
+func (bc *BatteryCreate) SetStation(e *EnterpriseStation) *BatteryCreate {
+	return bc.SetStationID(e.ID)
+}
+
 // Mutation returns the BatteryMutation object of the builder.
 func (bc *BatteryCreate) Mutation() *BatteryMutation {
 	return bc.mutation
@@ -409,10 +415,6 @@ func (bc *BatteryCreate) createSpec() (*Battery, *sqlgraph.CreateSpec) {
 		_spec.SetField(battery.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
-	if value, ok := bc.mutation.StationID(); ok {
-		_spec.SetField(battery.FieldStationID, field.TypeUint64, value)
-		_node.StationID = &value
-	}
 	if value, ok := bc.mutation.Sn(); ok {
 		_spec.SetField(battery.FieldSn, field.TypeString, value)
 		_node.Sn = value
@@ -532,6 +534,23 @@ func (bc *BatteryCreate) createSpec() (*Battery, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := bc.mutation.StationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   battery.StationTable,
+			Columns: []string{battery.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.StationID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -751,12 +770,6 @@ func (u *BatteryUpsert) SetStationID(v uint64) *BatteryUpsert {
 // UpdateStationID sets the "station_id" field to the value that was provided on create.
 func (u *BatteryUpsert) UpdateStationID() *BatteryUpsert {
 	u.SetExcluded(battery.FieldStationID)
-	return u
-}
-
-// AddStationID adds v to the "station_id" field.
-func (u *BatteryUpsert) AddStationID(v uint64) *BatteryUpsert {
-	u.Add(battery.FieldStationID, v)
 	return u
 }
 
@@ -1072,13 +1085,6 @@ func (u *BatteryUpsertOne) ClearEnterpriseID() *BatteryUpsertOne {
 func (u *BatteryUpsertOne) SetStationID(v uint64) *BatteryUpsertOne {
 	return u.Update(func(s *BatteryUpsert) {
 		s.SetStationID(v)
-	})
-}
-
-// AddStationID adds v to the "station_id" field.
-func (u *BatteryUpsertOne) AddStationID(v uint64) *BatteryUpsertOne {
-	return u.Update(func(s *BatteryUpsert) {
-		s.AddStationID(v)
 	})
 }
 
@@ -1576,13 +1582,6 @@ func (u *BatteryUpsertBulk) ClearEnterpriseID() *BatteryUpsertBulk {
 func (u *BatteryUpsertBulk) SetStationID(v uint64) *BatteryUpsertBulk {
 	return u.Update(func(s *BatteryUpsert) {
 		s.SetStationID(v)
-	})
-}
-
-// AddStationID adds v to the "station_id" field.
-func (u *BatteryUpsertBulk) AddStationID(v uint64) *BatteryUpsertBulk {
-	return u.Update(func(s *BatteryUpsert) {
-		s.AddStationID(v)
 	})
 }
 

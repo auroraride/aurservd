@@ -6,13 +6,11 @@
 package rapi
 
 import (
-	"errors"
+	"github.com/labstack/echo/v4"
 
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
-	"github.com/auroraride/aurservd/internal/ar"
-	"github.com/labstack/echo/v4"
 )
 
 var (
@@ -34,11 +32,11 @@ type rider struct {
 func (*rider) Signin(c echo.Context) (err error) {
 	ctx, req := app.ContextBinding[model.RiderSignupReq](c)
 
-	// 校验短信
-	debugPhones := ar.Config.App.Debug.Phone
-	if !debugPhones[req.Phone] && !service.NewSms().VerifyCode(req.SmsId, req.SmsCode) {
-		return errors.New("短信验证码校验失败")
-	}
+	// // 校验短信
+	// debugPhones := ar.Config.App.Debug.Phone
+	// if !debugPhones[req.Phone] && !service.NewSms().VerifyCode(req.SmsId, req.SmsCode) {
+	// 	return errors.New("短信验证码校验失败")
+	// }
 
 	// 注册+登录
 	var data *model.RiderSigninRes

@@ -10,6 +10,8 @@ import (
 	"log"
 	"time"
 
+	"github.com/spf13/cobra"
+
 	"github.com/auroraride/aurservd/app/ec"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/router"
@@ -22,7 +24,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
-	"github.com/spf13/cobra"
 )
 
 func serverCommand() *cobra.Command {

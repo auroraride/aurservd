@@ -18,6 +18,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
+	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/stock"
@@ -326,7 +328,6 @@ func (su *StockUpdate) ClearEmployeeID() *StockUpdate {
 
 // SetStationID sets the "station_id" field.
 func (su *StockUpdate) SetStationID(u uint64) *StockUpdate {
-	su.mutation.ResetStationID()
 	su.mutation.SetStationID(u)
 	return su
 }
@@ -339,12 +340,6 @@ func (su *StockUpdate) SetNillableStationID(u *uint64) *StockUpdate {
 	return su
 }
 
-// AddStationID adds u to the "station_id" field.
-func (su *StockUpdate) AddStationID(u int64) *StockUpdate {
-	su.mutation.AddStationID(u)
-	return su
-}
-
 // ClearStationID clears the value of the "station_id" field.
 func (su *StockUpdate) ClearStationID() *StockUpdate {
 	su.mutation.ClearStationID()
@@ -353,7 +348,6 @@ func (su *StockUpdate) ClearStationID() *StockUpdate {
 
 // SetEnterpriseID sets the "enterprise_id" field.
 func (su *StockUpdate) SetEnterpriseID(u uint64) *StockUpdate {
-	su.mutation.ResetEnterpriseID()
 	su.mutation.SetEnterpriseID(u)
 	return su
 }
@@ -363,12 +357,6 @@ func (su *StockUpdate) SetNillableEnterpriseID(u *uint64) *StockUpdate {
 	if u != nil {
 		su.SetEnterpriseID(*u)
 	}
-	return su
-}
-
-// AddEnterpriseID adds u to the "enterprise_id" field.
-func (su *StockUpdate) AddEnterpriseID(u int64) *StockUpdate {
-	su.mutation.AddEnterpriseID(u)
 	return su
 }
 
@@ -494,6 +482,30 @@ func (su *StockUpdate) AddChildren(s ...*Stock) *StockUpdate {
 	return su.AddChildIDs(ids...)
 }
 
+// SetEnterprise sets the "enterprise" edge to the Enterprise entity.
+func (su *StockUpdate) SetEnterprise(e *Enterprise) *StockUpdate {
+	return su.SetEnterpriseID(e.ID)
+}
+
+// SetStationsID sets the "stations" edge to the EnterpriseStation entity by ID.
+func (su *StockUpdate) SetStationsID(id uint64) *StockUpdate {
+	su.mutation.SetStationsID(id)
+	return su
+}
+
+// SetNillableStationsID sets the "stations" edge to the EnterpriseStation entity by ID if the given value is not nil.
+func (su *StockUpdate) SetNillableStationsID(id *uint64) *StockUpdate {
+	if id != nil {
+		su = su.SetStationsID(*id)
+	}
+	return su
+}
+
+// SetStations sets the "stations" edge to the EnterpriseStation entity.
+func (su *StockUpdate) SetStations(e *EnterpriseStation) *StockUpdate {
+	return su.SetStationsID(e.ID)
+}
+
 // Mutation returns the StockMutation object of the builder.
 func (su *StockUpdate) Mutation() *StockMutation {
 	return su.mutation
@@ -584,6 +596,18 @@ func (su *StockUpdate) RemoveChildren(s ...*Stock) *StockUpdate {
 		ids[i] = s[i].ID
 	}
 	return su.RemoveChildIDs(ids...)
+}
+
+// ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
+func (su *StockUpdate) ClearEnterprise() *StockUpdate {
+	su.mutation.ClearEnterprise()
+	return su
+}
+
+// ClearStations clears the "stations" edge to the EnterpriseStation entity.
+func (su *StockUpdate) ClearStations() *StockUpdate {
+	su.mutation.ClearStations()
+	return su
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -688,24 +712,6 @@ func (su *StockUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := su.mutation.AddedType(); ok {
 		_spec.AddField(stock.FieldType, field.TypeUint8, value)
-	}
-	if value, ok := su.mutation.StationID(); ok {
-		_spec.SetField(stock.FieldStationID, field.TypeUint64, value)
-	}
-	if value, ok := su.mutation.AddedStationID(); ok {
-		_spec.AddField(stock.FieldStationID, field.TypeUint64, value)
-	}
-	if su.mutation.StationIDCleared() {
-		_spec.ClearField(stock.FieldStationID, field.TypeUint64)
-	}
-	if value, ok := su.mutation.EnterpriseID(); ok {
-		_spec.SetField(stock.FieldEnterpriseID, field.TypeUint64, value)
-	}
-	if value, ok := su.mutation.AddedEnterpriseID(); ok {
-		_spec.AddField(stock.FieldEnterpriseID, field.TypeUint64, value)
-	}
-	if su.mutation.EnterpriseIDCleared() {
-		_spec.ClearField(stock.FieldEnterpriseID, field.TypeUint64)
 	}
 	if value, ok := su.mutation.Name(); ok {
 		_spec.SetField(stock.FieldName, field.TypeString, value)
@@ -1083,6 +1089,64 @@ func (su *StockUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if su.mutation.EnterpriseCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   stock.EnterpriseTable,
+			Columns: []string{stock.EnterpriseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.EnterpriseIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   stock.EnterpriseTable,
+			Columns: []string{stock.EnterpriseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if su.mutation.StationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   stock.StationsTable,
+			Columns: []string{stock.StationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.StationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   stock.StationsTable,
+			Columns: []string{stock.StationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(su.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, su.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -1392,7 +1456,6 @@ func (suo *StockUpdateOne) ClearEmployeeID() *StockUpdateOne {
 
 // SetStationID sets the "station_id" field.
 func (suo *StockUpdateOne) SetStationID(u uint64) *StockUpdateOne {
-	suo.mutation.ResetStationID()
 	suo.mutation.SetStationID(u)
 	return suo
 }
@@ -1405,12 +1468,6 @@ func (suo *StockUpdateOne) SetNillableStationID(u *uint64) *StockUpdateOne {
 	return suo
 }
 
-// AddStationID adds u to the "station_id" field.
-func (suo *StockUpdateOne) AddStationID(u int64) *StockUpdateOne {
-	suo.mutation.AddStationID(u)
-	return suo
-}
-
 // ClearStationID clears the value of the "station_id" field.
 func (suo *StockUpdateOne) ClearStationID() *StockUpdateOne {
 	suo.mutation.ClearStationID()
@@ -1419,7 +1476,6 @@ func (suo *StockUpdateOne) ClearStationID() *StockUpdateOne {
 
 // SetEnterpriseID sets the "enterprise_id" field.
 func (suo *StockUpdateOne) SetEnterpriseID(u uint64) *StockUpdateOne {
-	suo.mutation.ResetEnterpriseID()
 	suo.mutation.SetEnterpriseID(u)
 	return suo
 }
@@ -1429,12 +1485,6 @@ func (suo *StockUpdateOne) SetNillableEnterpriseID(u *uint64) *StockUpdateOne {
 	if u != nil {
 		suo.SetEnterpriseID(*u)
 	}
-	return suo
-}
-
-// AddEnterpriseID adds u to the "enterprise_id" field.
-func (suo *StockUpdateOne) AddEnterpriseID(u int64) *StockUpdateOne {
-	suo.mutation.AddEnterpriseID(u)
 	return suo
 }
 
@@ -1560,6 +1610,30 @@ func (suo *StockUpdateOne) AddChildren(s ...*Stock) *StockUpdateOne {
 	return suo.AddChildIDs(ids...)
 }
 
+// SetEnterprise sets the "enterprise" edge to the Enterprise entity.
+func (suo *StockUpdateOne) SetEnterprise(e *Enterprise) *StockUpdateOne {
+	return suo.SetEnterpriseID(e.ID)
+}
+
+// SetStationsID sets the "stations" edge to the EnterpriseStation entity by ID.
+func (suo *StockUpdateOne) SetStationsID(id uint64) *StockUpdateOne {
+	suo.mutation.SetStationsID(id)
+	return suo
+}
+
+// SetNillableStationsID sets the "stations" edge to the EnterpriseStation entity by ID if the given value is not nil.
+func (suo *StockUpdateOne) SetNillableStationsID(id *uint64) *StockUpdateOne {
+	if id != nil {
+		suo = suo.SetStationsID(*id)
+	}
+	return suo
+}
+
+// SetStations sets the "stations" edge to the EnterpriseStation entity.
+func (suo *StockUpdateOne) SetStations(e *EnterpriseStation) *StockUpdateOne {
+	return suo.SetStationsID(e.ID)
+}
+
 // Mutation returns the StockMutation object of the builder.
 func (suo *StockUpdateOne) Mutation() *StockMutation {
 	return suo.mutation
@@ -1650,6 +1724,18 @@ func (suo *StockUpdateOne) RemoveChildren(s ...*Stock) *StockUpdateOne {
 		ids[i] = s[i].ID
 	}
 	return suo.RemoveChildIDs(ids...)
+}
+
+// ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
+func (suo *StockUpdateOne) ClearEnterprise() *StockUpdateOne {
+	suo.mutation.ClearEnterprise()
+	return suo
+}
+
+// ClearStations clears the "stations" edge to the EnterpriseStation entity.
+func (suo *StockUpdateOne) ClearStations() *StockUpdateOne {
+	suo.mutation.ClearStations()
+	return suo
 }
 
 // Where appends a list predicates to the StockUpdate builder.
@@ -1784,24 +1870,6 @@ func (suo *StockUpdateOne) sqlSave(ctx context.Context) (_node *Stock, err error
 	}
 	if value, ok := suo.mutation.AddedType(); ok {
 		_spec.AddField(stock.FieldType, field.TypeUint8, value)
-	}
-	if value, ok := suo.mutation.StationID(); ok {
-		_spec.SetField(stock.FieldStationID, field.TypeUint64, value)
-	}
-	if value, ok := suo.mutation.AddedStationID(); ok {
-		_spec.AddField(stock.FieldStationID, field.TypeUint64, value)
-	}
-	if suo.mutation.StationIDCleared() {
-		_spec.ClearField(stock.FieldStationID, field.TypeUint64)
-	}
-	if value, ok := suo.mutation.EnterpriseID(); ok {
-		_spec.SetField(stock.FieldEnterpriseID, field.TypeUint64, value)
-	}
-	if value, ok := suo.mutation.AddedEnterpriseID(); ok {
-		_spec.AddField(stock.FieldEnterpriseID, field.TypeUint64, value)
-	}
-	if suo.mutation.EnterpriseIDCleared() {
-		_spec.ClearField(stock.FieldEnterpriseID, field.TypeUint64)
 	}
 	if value, ok := suo.mutation.Name(); ok {
 		_spec.SetField(stock.FieldName, field.TypeString, value)
@@ -2172,6 +2240,64 @@ func (suo *StockUpdateOne) sqlSave(ctx context.Context) (_node *Stock, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if suo.mutation.EnterpriseCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   stock.EnterpriseTable,
+			Columns: []string{stock.EnterpriseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.EnterpriseIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   stock.EnterpriseTable,
+			Columns: []string{stock.EnterpriseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if suo.mutation.StationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   stock.StationsTable,
+			Columns: []string{stock.StationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.StationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   stock.StationsTable,
+			Columns: []string{stock.StationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

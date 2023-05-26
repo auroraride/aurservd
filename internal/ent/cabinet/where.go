@@ -496,26 +496,6 @@ func EnterpriseIDNotIn(vs ...uint64) predicate.Cabinet {
 	return predicate.Cabinet(sql.FieldNotIn(FieldEnterpriseID, vs...))
 }
 
-// EnterpriseIDGT applies the GT predicate on the "enterprise_id" field.
-func EnterpriseIDGT(v uint64) predicate.Cabinet {
-	return predicate.Cabinet(sql.FieldGT(FieldEnterpriseID, v))
-}
-
-// EnterpriseIDGTE applies the GTE predicate on the "enterprise_id" field.
-func EnterpriseIDGTE(v uint64) predicate.Cabinet {
-	return predicate.Cabinet(sql.FieldGTE(FieldEnterpriseID, v))
-}
-
-// EnterpriseIDLT applies the LT predicate on the "enterprise_id" field.
-func EnterpriseIDLT(v uint64) predicate.Cabinet {
-	return predicate.Cabinet(sql.FieldLT(FieldEnterpriseID, v))
-}
-
-// EnterpriseIDLTE applies the LTE predicate on the "enterprise_id" field.
-func EnterpriseIDLTE(v uint64) predicate.Cabinet {
-	return predicate.Cabinet(sql.FieldLTE(FieldEnterpriseID, v))
-}
-
 // EnterpriseIDIsNil applies the IsNil predicate on the "enterprise_id" field.
 func EnterpriseIDIsNil() predicate.Cabinet {
 	return predicate.Cabinet(sql.FieldIsNull(FieldEnterpriseID))
@@ -1640,6 +1620,29 @@ func HasStation() predicate.Cabinet {
 func HasStationWith(preds ...predicate.EnterpriseStation) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		step := newStationStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasEnterprise applies the HasEdge predicate on the "enterprise" edge.
+func HasEnterprise() predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, EnterpriseTable, EnterpriseColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasEnterpriseWith applies the HasEdge predicate on the "enterprise" edge with a given conditions (other predicates).
+func HasEnterpriseWith(preds ...predicate.Enterprise) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		step := newEnterpriseStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

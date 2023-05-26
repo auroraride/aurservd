@@ -12,9 +12,11 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
+	"github.com/auroraride/aurservd/internal/ent/stock"
 )
 
 // EnterpriseStationCreate is the builder for creating a EnterpriseStation entity.
@@ -123,6 +125,36 @@ func (esc *EnterpriseStationCreate) AddCabinets(c ...*Cabinet) *EnterpriseStatio
 		ids[i] = c[i].ID
 	}
 	return esc.AddCabinetIDs(ids...)
+}
+
+// AddBatteryIDs adds the "battery" edge to the Battery entity by IDs.
+func (esc *EnterpriseStationCreate) AddBatteryIDs(ids ...uint64) *EnterpriseStationCreate {
+	esc.mutation.AddBatteryIDs(ids...)
+	return esc
+}
+
+// AddBattery adds the "battery" edges to the Battery entity.
+func (esc *EnterpriseStationCreate) AddBattery(b ...*Battery) *EnterpriseStationCreate {
+	ids := make([]uint64, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return esc.AddBatteryIDs(ids...)
+}
+
+// AddStockIDs adds the "stocks" edge to the Stock entity by IDs.
+func (esc *EnterpriseStationCreate) AddStockIDs(ids ...uint64) *EnterpriseStationCreate {
+	esc.mutation.AddStockIDs(ids...)
+	return esc
+}
+
+// AddStocks adds the "stocks" edges to the Stock entity.
+func (esc *EnterpriseStationCreate) AddStocks(s ...*Stock) *EnterpriseStationCreate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return esc.AddStockIDs(ids...)
 }
 
 // Mutation returns the EnterpriseStationMutation object of the builder.
@@ -277,6 +309,38 @@ func (esc *EnterpriseStationCreate) createSpec() (*EnterpriseStation, *sqlgraph.
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := esc.mutation.BatteryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestation.BatteryTable,
+			Columns: []string{enterprisestation.BatteryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := esc.mutation.StocksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestation.StocksTable,
+			Columns: []string{enterprisestation.StocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

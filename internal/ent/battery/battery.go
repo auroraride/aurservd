@@ -62,6 +62,8 @@ const (
 	EdgeEnterprise = "enterprise"
 	// EdgeFlows holds the string denoting the flows edge name in mutations.
 	EdgeFlows = "flows"
+	// EdgeStation holds the string denoting the station edge name in mutations.
+	EdgeStation = "station"
 	// Table holds the table name of the battery in the database.
 	Table = "battery"
 	// CityTable is the table that holds the city relation/edge.
@@ -106,6 +108,13 @@ const (
 	FlowsInverseTable = "battery_flow"
 	// FlowsColumn is the table column denoting the flows relation/edge.
 	FlowsColumn = "battery_id"
+	// StationTable is the table that holds the station relation/edge.
+	StationTable = "battery"
+	// StationInverseTable is the table name for the EnterpriseStation entity.
+	// It exists in this package in order to avoid circular dependency with the "enterprisestation" package.
+	StationInverseTable = "enterprise_station"
+	// StationColumn is the table column denoting the station relation/edge.
+	StationColumn = "station_id"
 )
 
 // Columns holds all SQL columns for battery fields.
@@ -290,6 +299,13 @@ func ByFlows(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newFlowsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByStationField orders the results by station field.
+func ByStationField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newStationStep(), sql.OrderByField(field, opts...))
+	}
+}
 func newCityStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -330,5 +346,12 @@ func newFlowsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(FlowsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, FlowsTable, FlowsColumn),
+	)
+}
+func newStationStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(StationInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, StationTable, StationColumn),
 	)
 }

@@ -150,6 +150,11 @@ func UseStore(v bool) predicate.Enterprise {
 	return predicate.Enterprise(sql.FieldEQ(FieldUseStore, v))
 }
 
+// Distance applies equality check predicate on the "distance" field. It's identical to DistanceEQ.
+func Distance(v float64) predicate.Enterprise {
+	return predicate.Enterprise(sql.FieldEQ(FieldDistance, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Enterprise {
 	return predicate.Enterprise(sql.FieldEQ(FieldCreatedAt, v))
@@ -1085,6 +1090,46 @@ func DaysNotNil() predicate.Enterprise {
 	return predicate.Enterprise(sql.FieldNotNull(FieldDays))
 }
 
+// DistanceEQ applies the EQ predicate on the "distance" field.
+func DistanceEQ(v float64) predicate.Enterprise {
+	return predicate.Enterprise(sql.FieldEQ(FieldDistance, v))
+}
+
+// DistanceNEQ applies the NEQ predicate on the "distance" field.
+func DistanceNEQ(v float64) predicate.Enterprise {
+	return predicate.Enterprise(sql.FieldNEQ(FieldDistance, v))
+}
+
+// DistanceIn applies the In predicate on the "distance" field.
+func DistanceIn(vs ...float64) predicate.Enterprise {
+	return predicate.Enterprise(sql.FieldIn(FieldDistance, vs...))
+}
+
+// DistanceNotIn applies the NotIn predicate on the "distance" field.
+func DistanceNotIn(vs ...float64) predicate.Enterprise {
+	return predicate.Enterprise(sql.FieldNotIn(FieldDistance, vs...))
+}
+
+// DistanceGT applies the GT predicate on the "distance" field.
+func DistanceGT(v float64) predicate.Enterprise {
+	return predicate.Enterprise(sql.FieldGT(FieldDistance, v))
+}
+
+// DistanceGTE applies the GTE predicate on the "distance" field.
+func DistanceGTE(v float64) predicate.Enterprise {
+	return predicate.Enterprise(sql.FieldGTE(FieldDistance, v))
+}
+
+// DistanceLT applies the LT predicate on the "distance" field.
+func DistanceLT(v float64) predicate.Enterprise {
+	return predicate.Enterprise(sql.FieldLT(FieldDistance, v))
+}
+
+// DistanceLTE applies the LTE predicate on the "distance" field.
+func DistanceLTE(v float64) predicate.Enterprise {
+	return predicate.Enterprise(sql.FieldLTE(FieldDistance, v))
+}
+
 // HasCity applies the HasEdge predicate on the "city" edge.
 func HasCity() predicate.Enterprise {
 	return predicate.Enterprise(func(s *sql.Selector) {
@@ -1330,6 +1375,52 @@ func HasAgents() predicate.Enterprise {
 func HasAgentsWith(preds ...predicate.Agent) predicate.Enterprise {
 	return predicate.Enterprise(func(s *sql.Selector) {
 		step := newAgentsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasCabinets applies the HasEdge predicate on the "cabinets" edge.
+func HasCabinets() predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CabinetsTable, CabinetsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCabinetsWith applies the HasEdge predicate on the "cabinets" edge with a given conditions (other predicates).
+func HasCabinetsWith(preds ...predicate.Cabinet) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		step := newCabinetsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasStocks applies the HasEdge predicate on the "stocks" edge.
+func HasStocks() predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, StocksTable, StocksColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasStocksWith applies the HasEdge predicate on the "stocks" edge with a given conditions (other predicates).
+func HasStocksWith(preds ...predicate.Stock) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		step := newStocksStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

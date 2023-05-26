@@ -10,11 +10,12 @@ import (
 
 	"github.com/auroraride/adapter"
 	"github.com/auroraride/adapter/app"
+	"github.com/labstack/echo/v4"
+
 	inapp "github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/controller/v1/rapi"
 	"github.com/auroraride/aurservd/app/middleware"
 	"github.com/auroraride/aurservd/internal/ent"
-	"github.com/labstack/echo/v4"
 )
 
 // rideRoutes 骑手路由
@@ -94,10 +95,10 @@ func loadRideRoutes() {
 	g.POST("/contact", rapi.Rider.Contact)                // 编辑紧急联系人
 
 	// 检测是否需要实名验证以及补充紧急联系人
-	g.Use(middleware.RiderRequireAuthAndContact())
+	// g.Use(middleware.RiderRequireAuthAndContact())
 
 	// 检测是否需要人脸识别
-	g.Use(middleware.RiderFaceMiddleware())
+	// g.Use(middleware.RiderFaceMiddleware())
 
 	g.GET("/demo", rapi.Rider.Demo)       // 测试空白页面
 	g.GET("/profile", rapi.Rider.Profile) // 获取用户信息

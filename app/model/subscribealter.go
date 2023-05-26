@@ -16,6 +16,12 @@ type ApplyReq struct {
 	StartTime *string `json:"start"`
 	// 结束时间
 	EndTime *string `json:"end"`
+	// 关键词
+	Keyword *string `json:"keyword"`
+	// 审核状态
+	Status *int `json:"status"`
+	// 团签id
+	ID uint64 `json:"id" param:"id"`
 }
 
 // ApplyListRsp 申请列表返回信息
@@ -27,5 +33,18 @@ type ApplyListRsp struct {
 	// 审核时间
 	ReviewTime string `json:"review_time"`
 	// 审核状态
+	Status int `json:"status"`
+	// 到期时间
+	ExpireTime int `json:"expire_time,omitempty"`
+	// 骑手姓名
+	RiderName string `json:"rider_name,omitempty"`
+	// 骑手手机号
+	RiderPhone string `json:"rider_phone,omitempty"`
+}
+
+// 审批订阅申请
+type ReviewReq struct {
+	Ids []uint64 `json:"ids"`
+	// 审批状态
 	Status int `json:"status"`
 }

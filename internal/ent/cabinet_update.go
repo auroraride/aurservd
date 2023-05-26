@@ -21,6 +21,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -141,7 +142,6 @@ func (cu *CabinetUpdate) ClearBranchID() *CabinetUpdate {
 
 // SetEnterpriseID sets the "enterprise_id" field.
 func (cu *CabinetUpdate) SetEnterpriseID(u uint64) *CabinetUpdate {
-	cu.mutation.ResetEnterpriseID()
 	cu.mutation.SetEnterpriseID(u)
 	return cu
 }
@@ -151,12 +151,6 @@ func (cu *CabinetUpdate) SetNillableEnterpriseID(u *uint64) *CabinetUpdate {
 	if u != nil {
 		cu.SetEnterpriseID(*u)
 	}
-	return cu
-}
-
-// AddEnterpriseID adds u to the "enterprise_id" field.
-func (cu *CabinetUpdate) AddEnterpriseID(u int64) *CabinetUpdate {
-	cu.mutation.AddEnterpriseID(u)
 	return cu
 }
 
@@ -635,6 +629,11 @@ func (cu *CabinetUpdate) SetStation(e *EnterpriseStation) *CabinetUpdate {
 	return cu.SetStationID(e.ID)
 }
 
+// SetEnterprise sets the "enterprise" edge to the Enterprise entity.
+func (cu *CabinetUpdate) SetEnterprise(e *Enterprise) *CabinetUpdate {
+	return cu.SetEnterpriseID(e.ID)
+}
+
 // Mutation returns the CabinetMutation object of the builder.
 func (cu *CabinetUpdate) Mutation() *CabinetMutation {
 	return cu.mutation
@@ -784,6 +783,12 @@ func (cu *CabinetUpdate) ClearStation() *CabinetUpdate {
 	return cu
 }
 
+// ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
+func (cu *CabinetUpdate) ClearEnterprise() *CabinetUpdate {
+	cu.mutation.ClearEnterprise()
+	return cu
+}
+
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (cu *CabinetUpdate) Save(ctx context.Context) (int, error) {
 	if err := cu.defaults(); err != nil {
@@ -864,15 +869,6 @@ func (cu *CabinetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if cu.mutation.RemarkCleared() {
 		_spec.ClearField(cabinet.FieldRemark, field.TypeString)
-	}
-	if value, ok := cu.mutation.EnterpriseID(); ok {
-		_spec.SetField(cabinet.FieldEnterpriseID, field.TypeUint64, value)
-	}
-	if value, ok := cu.mutation.AddedEnterpriseID(); ok {
-		_spec.AddField(cabinet.FieldEnterpriseID, field.TypeUint64, value)
-	}
-	if cu.mutation.EnterpriseIDCleared() {
-		_spec.ClearField(cabinet.FieldEnterpriseID, field.TypeUint64)
 	}
 	if value, ok := cu.mutation.Sn(); ok {
 		_spec.SetField(cabinet.FieldSn, field.TypeString, value)
@@ -1344,6 +1340,35 @@ func (cu *CabinetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if cu.mutation.EnterpriseCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   cabinet.EnterpriseTable,
+			Columns: []string{cabinet.EnterpriseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.EnterpriseIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   cabinet.EnterpriseTable,
+			Columns: []string{cabinet.EnterpriseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(cu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, cu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -1466,7 +1491,6 @@ func (cuo *CabinetUpdateOne) ClearBranchID() *CabinetUpdateOne {
 
 // SetEnterpriseID sets the "enterprise_id" field.
 func (cuo *CabinetUpdateOne) SetEnterpriseID(u uint64) *CabinetUpdateOne {
-	cuo.mutation.ResetEnterpriseID()
 	cuo.mutation.SetEnterpriseID(u)
 	return cuo
 }
@@ -1476,12 +1500,6 @@ func (cuo *CabinetUpdateOne) SetNillableEnterpriseID(u *uint64) *CabinetUpdateOn
 	if u != nil {
 		cuo.SetEnterpriseID(*u)
 	}
-	return cuo
-}
-
-// AddEnterpriseID adds u to the "enterprise_id" field.
-func (cuo *CabinetUpdateOne) AddEnterpriseID(u int64) *CabinetUpdateOne {
-	cuo.mutation.AddEnterpriseID(u)
 	return cuo
 }
 
@@ -1960,6 +1978,11 @@ func (cuo *CabinetUpdateOne) SetStation(e *EnterpriseStation) *CabinetUpdateOne 
 	return cuo.SetStationID(e.ID)
 }
 
+// SetEnterprise sets the "enterprise" edge to the Enterprise entity.
+func (cuo *CabinetUpdateOne) SetEnterprise(e *Enterprise) *CabinetUpdateOne {
+	return cuo.SetEnterpriseID(e.ID)
+}
+
 // Mutation returns the CabinetMutation object of the builder.
 func (cuo *CabinetUpdateOne) Mutation() *CabinetMutation {
 	return cuo.mutation
@@ -2109,6 +2132,12 @@ func (cuo *CabinetUpdateOne) ClearStation() *CabinetUpdateOne {
 	return cuo
 }
 
+// ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
+func (cuo *CabinetUpdateOne) ClearEnterprise() *CabinetUpdateOne {
+	cuo.mutation.ClearEnterprise()
+	return cuo
+}
+
 // Where appends a list predicates to the CabinetUpdate builder.
 func (cuo *CabinetUpdateOne) Where(ps ...predicate.Cabinet) *CabinetUpdateOne {
 	cuo.mutation.Where(ps...)
@@ -2219,15 +2248,6 @@ func (cuo *CabinetUpdateOne) sqlSave(ctx context.Context) (_node *Cabinet, err e
 	}
 	if cuo.mutation.RemarkCleared() {
 		_spec.ClearField(cabinet.FieldRemark, field.TypeString)
-	}
-	if value, ok := cuo.mutation.EnterpriseID(); ok {
-		_spec.SetField(cabinet.FieldEnterpriseID, field.TypeUint64, value)
-	}
-	if value, ok := cuo.mutation.AddedEnterpriseID(); ok {
-		_spec.AddField(cabinet.FieldEnterpriseID, field.TypeUint64, value)
-	}
-	if cuo.mutation.EnterpriseIDCleared() {
-		_spec.ClearField(cabinet.FieldEnterpriseID, field.TypeUint64)
 	}
 	if value, ok := cuo.mutation.Sn(); ok {
 		_spec.SetField(cabinet.FieldSn, field.TypeString, value)
@@ -2692,6 +2712,35 @@ func (cuo *CabinetUpdateOne) sqlSave(ctx context.Context) (_node *Cabinet, err e
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cuo.mutation.EnterpriseCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   cabinet.EnterpriseTable,
+			Columns: []string{cabinet.EnterpriseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.EnterpriseIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   cabinet.EnterpriseTable,
+			Columns: []string{cabinet.EnterpriseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

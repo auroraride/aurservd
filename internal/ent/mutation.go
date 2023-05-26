@@ -7644,8 +7644,6 @@ type BatteryMutation struct {
 	creator           **model.Modifier
 	last_modifier     **model.Modifier
 	remark            *string
-	station_id        *uint64
-	addstation_id     *int64
 	sn                *string
 	brand             *adapter.BatteryBrand
 	enable            *bool
@@ -7666,6 +7664,8 @@ type BatteryMutation struct {
 	flows             map[uint64]struct{}
 	removedflows      map[uint64]struct{}
 	clearedflows      bool
+	station           *uint64
+	clearedstation    bool
 	done              bool
 	oldValue          func(context.Context) (*Battery, error)
 	predicates        []predicate.Battery
@@ -8284,13 +8284,12 @@ func (m *BatteryMutation) ResetEnterpriseID() {
 
 // SetStationID sets the "station_id" field.
 func (m *BatteryMutation) SetStationID(u uint64) {
-	m.station_id = &u
-	m.addstation_id = nil
+	m.station = &u
 }
 
 // StationID returns the value of the "station_id" field in the mutation.
 func (m *BatteryMutation) StationID() (r uint64, exists bool) {
-	v := m.station_id
+	v := m.station
 	if v == nil {
 		return
 	}
@@ -8314,28 +8313,9 @@ func (m *BatteryMutation) OldStationID(ctx context.Context) (v *uint64, err erro
 	return oldValue.StationID, nil
 }
 
-// AddStationID adds u to the "station_id" field.
-func (m *BatteryMutation) AddStationID(u int64) {
-	if m.addstation_id != nil {
-		*m.addstation_id += u
-	} else {
-		m.addstation_id = &u
-	}
-}
-
-// AddedStationID returns the value that was added to the "station_id" field in this mutation.
-func (m *BatteryMutation) AddedStationID() (r int64, exists bool) {
-	v := m.addstation_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
 // ClearStationID clears the value of the "station_id" field.
 func (m *BatteryMutation) ClearStationID() {
-	m.station_id = nil
-	m.addstation_id = nil
+	m.station = nil
 	m.clearedFields[battery.FieldStationID] = struct{}{}
 }
 
@@ -8347,8 +8327,7 @@ func (m *BatteryMutation) StationIDCleared() bool {
 
 // ResetStationID resets all changes to the "station_id" field.
 func (m *BatteryMutation) ResetStationID() {
-	m.station_id = nil
-	m.addstation_id = nil
+	m.station = nil
 	delete(m.clearedFields, battery.FieldStationID)
 }
 
@@ -8750,6 +8729,32 @@ func (m *BatteryMutation) ResetFlows() {
 	m.removedflows = nil
 }
 
+// ClearStation clears the "station" edge to the EnterpriseStation entity.
+func (m *BatteryMutation) ClearStation() {
+	m.clearedstation = true
+}
+
+// StationCleared reports if the "station" edge to the EnterpriseStation entity was cleared.
+func (m *BatteryMutation) StationCleared() bool {
+	return m.StationIDCleared() || m.clearedstation
+}
+
+// StationIDs returns the "station" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// StationID instead. It exists only for internal usage by the builders.
+func (m *BatteryMutation) StationIDs() (ids []uint64) {
+	if id := m.station; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetStation resets all changes to the "station" edge.
+func (m *BatteryMutation) ResetStation() {
+	m.station = nil
+	m.clearedstation = false
+}
+
 // Where appends a list predicates to the BatteryMutation builder.
 func (m *BatteryMutation) Where(ps ...predicate.Battery) {
 	m.predicates = append(m.predicates, ps...)
@@ -8818,7 +8823,7 @@ func (m *BatteryMutation) Fields() []string {
 	if m.enterprise != nil {
 		fields = append(fields, battery.FieldEnterpriseID)
 	}
-	if m.station_id != nil {
+	if m.station != nil {
 		fields = append(fields, battery.FieldStationID)
 	}
 	if m.sn != nil {
@@ -9057,9 +9062,6 @@ func (m *BatteryMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *BatteryMutation) AddedFields() []string {
 	var fields []string
-	if m.addstation_id != nil {
-		fields = append(fields, battery.FieldStationID)
-	}
 	if m.addordinal != nil {
 		fields = append(fields, battery.FieldOrdinal)
 	}
@@ -9071,8 +9073,6 @@ func (m *BatteryMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *BatteryMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
-	case battery.FieldStationID:
-		return m.AddedStationID()
 	case battery.FieldOrdinal:
 		return m.AddedOrdinal()
 	}
@@ -9084,13 +9084,6 @@ func (m *BatteryMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *BatteryMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case battery.FieldStationID:
-		v, ok := value.(int64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddStationID(v)
-		return nil
 	case battery.FieldOrdinal:
 		v, ok := value.(int)
 		if !ok {
@@ -9251,7 +9244,7 @@ func (m *BatteryMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *BatteryMutation) AddedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 7)
 	if m.city != nil {
 		edges = append(edges, battery.EdgeCity)
 	}
@@ -9269,6 +9262,9 @@ func (m *BatteryMutation) AddedEdges() []string {
 	}
 	if m.flows != nil {
 		edges = append(edges, battery.EdgeFlows)
+	}
+	if m.station != nil {
+		edges = append(edges, battery.EdgeStation)
 	}
 	return edges
 }
@@ -9303,13 +9299,17 @@ func (m *BatteryMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case battery.EdgeStation:
+		if id := m.station; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *BatteryMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 7)
 	if m.removedflows != nil {
 		edges = append(edges, battery.EdgeFlows)
 	}
@@ -9332,7 +9332,7 @@ func (m *BatteryMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *BatteryMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 7)
 	if m.clearedcity {
 		edges = append(edges, battery.EdgeCity)
 	}
@@ -9350,6 +9350,9 @@ func (m *BatteryMutation) ClearedEdges() []string {
 	}
 	if m.clearedflows {
 		edges = append(edges, battery.EdgeFlows)
+	}
+	if m.clearedstation {
+		edges = append(edges, battery.EdgeStation)
 	}
 	return edges
 }
@@ -9370,6 +9373,8 @@ func (m *BatteryMutation) EdgeCleared(name string) bool {
 		return m.clearedenterprise
 	case battery.EdgeFlows:
 		return m.clearedflows
+	case battery.EdgeStation:
+		return m.clearedstation
 	}
 	return false
 }
@@ -9392,6 +9397,9 @@ func (m *BatteryMutation) ClearEdge(name string) error {
 		return nil
 	case battery.EdgeEnterprise:
 		m.ClearEnterprise()
+		return nil
+	case battery.EdgeStation:
+		m.ClearStation()
 		return nil
 	}
 	return fmt.Errorf("unknown Battery unique edge %s", name)
@@ -9418,6 +9426,9 @@ func (m *BatteryMutation) ResetEdge(name string) error {
 		return nil
 	case battery.EdgeFlows:
 		m.ResetFlows()
+		return nil
+	case battery.EdgeStation:
+		m.ResetStation()
 		return nil
 	}
 	return fmt.Errorf("unknown Battery edge %s", name)
@@ -16478,8 +16489,6 @@ type CabinetMutation struct {
 	creator                 **model.Modifier
 	last_modifier           **model.Modifier
 	remark                  *string
-	enterprise_id           *uint64
-	addenterprise_id        *int64
 	sn                      *string
 	brand                   *adapter.CabinetBrand
 	serial                  *string
@@ -16536,6 +16545,8 @@ type CabinetMutation struct {
 	clearedbattery_flows    bool
 	station                 *uint64
 	clearedstation          bool
+	enterprise              *uint64
+	clearedenterprise       bool
 	done                    bool
 	oldValue                func(context.Context) (*Cabinet, error)
 	predicates              []predicate.Cabinet
@@ -17007,13 +17018,12 @@ func (m *CabinetMutation) ResetBranchID() {
 
 // SetEnterpriseID sets the "enterprise_id" field.
 func (m *CabinetMutation) SetEnterpriseID(u uint64) {
-	m.enterprise_id = &u
-	m.addenterprise_id = nil
+	m.enterprise = &u
 }
 
 // EnterpriseID returns the value of the "enterprise_id" field in the mutation.
 func (m *CabinetMutation) EnterpriseID() (r uint64, exists bool) {
-	v := m.enterprise_id
+	v := m.enterprise
 	if v == nil {
 		return
 	}
@@ -17023,7 +17033,7 @@ func (m *CabinetMutation) EnterpriseID() (r uint64, exists bool) {
 // OldEnterpriseID returns the old "enterprise_id" field's value of the Cabinet entity.
 // If the Cabinet object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CabinetMutation) OldEnterpriseID(ctx context.Context) (v uint64, err error) {
+func (m *CabinetMutation) OldEnterpriseID(ctx context.Context) (v *uint64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldEnterpriseID is only allowed on UpdateOne operations")
 	}
@@ -17037,28 +17047,9 @@ func (m *CabinetMutation) OldEnterpriseID(ctx context.Context) (v uint64, err er
 	return oldValue.EnterpriseID, nil
 }
 
-// AddEnterpriseID adds u to the "enterprise_id" field.
-func (m *CabinetMutation) AddEnterpriseID(u int64) {
-	if m.addenterprise_id != nil {
-		*m.addenterprise_id += u
-	} else {
-		m.addenterprise_id = &u
-	}
-}
-
-// AddedEnterpriseID returns the value that was added to the "enterprise_id" field in this mutation.
-func (m *CabinetMutation) AddedEnterpriseID() (r int64, exists bool) {
-	v := m.addenterprise_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
 // ClearEnterpriseID clears the value of the "enterprise_id" field.
 func (m *CabinetMutation) ClearEnterpriseID() {
-	m.enterprise_id = nil
-	m.addenterprise_id = nil
+	m.enterprise = nil
 	m.clearedFields[cabinet.FieldEnterpriseID] = struct{}{}
 }
 
@@ -17070,8 +17061,7 @@ func (m *CabinetMutation) EnterpriseIDCleared() bool {
 
 // ResetEnterpriseID resets all changes to the "enterprise_id" field.
 func (m *CabinetMutation) ResetEnterpriseID() {
-	m.enterprise_id = nil
-	m.addenterprise_id = nil
+	m.enterprise = nil
 	delete(m.clearedFields, cabinet.FieldEnterpriseID)
 }
 
@@ -17092,7 +17082,7 @@ func (m *CabinetMutation) StationID() (r uint64, exists bool) {
 // OldStationID returns the old "station_id" field's value of the Cabinet entity.
 // If the Cabinet object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CabinetMutation) OldStationID(ctx context.Context) (v uint64, err error) {
+func (m *CabinetMutation) OldStationID(ctx context.Context) (v *uint64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldStationID is only allowed on UpdateOne operations")
 	}
@@ -18542,6 +18532,32 @@ func (m *CabinetMutation) ResetStation() {
 	m.clearedstation = false
 }
 
+// ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
+func (m *CabinetMutation) ClearEnterprise() {
+	m.clearedenterprise = true
+}
+
+// EnterpriseCleared reports if the "enterprise" edge to the Enterprise entity was cleared.
+func (m *CabinetMutation) EnterpriseCleared() bool {
+	return m.EnterpriseIDCleared() || m.clearedenterprise
+}
+
+// EnterpriseIDs returns the "enterprise" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// EnterpriseID instead. It exists only for internal usage by the builders.
+func (m *CabinetMutation) EnterpriseIDs() (ids []uint64) {
+	if id := m.enterprise; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetEnterprise resets all changes to the "enterprise" edge.
+func (m *CabinetMutation) ResetEnterprise() {
+	m.enterprise = nil
+	m.clearedenterprise = false
+}
+
 // Where appends a list predicates to the CabinetMutation builder.
 func (m *CabinetMutation) Where(ps ...predicate.Cabinet) {
 	m.predicates = append(m.predicates, ps...)
@@ -18601,7 +18617,7 @@ func (m *CabinetMutation) Fields() []string {
 	if m.branch != nil {
 		fields = append(fields, cabinet.FieldBranchID)
 	}
-	if m.enterprise_id != nil {
+	if m.enterprise != nil {
 		fields = append(fields, cabinet.FieldEnterpriseID)
 	}
 	if m.station != nil {
@@ -19031,9 +19047,6 @@ func (m *CabinetMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *CabinetMutation) AddedFields() []string {
 	var fields []string
-	if m.addenterprise_id != nil {
-		fields = append(fields, cabinet.FieldEnterpriseID)
-	}
 	if m.adddoors != nil {
 		fields = append(fields, cabinet.FieldDoors)
 	}
@@ -19072,8 +19085,6 @@ func (m *CabinetMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *CabinetMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
-	case cabinet.FieldEnterpriseID:
-		return m.AddedEnterpriseID()
 	case cabinet.FieldDoors:
 		return m.AddedDoors()
 	case cabinet.FieldStatus:
@@ -19103,13 +19114,6 @@ func (m *CabinetMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *CabinetMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case cabinet.FieldEnterpriseID:
-		v, ok := value.(int64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddEnterpriseID(v)
-		return nil
 	case cabinet.FieldDoors:
 		v, ok := value.(int)
 		if !ok {
@@ -19390,7 +19394,7 @@ func (m *CabinetMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *CabinetMutation) AddedEdges() []string {
-	edges := make([]string, 0, 9)
+	edges := make([]string, 0, 10)
 	if m.city != nil {
 		edges = append(edges, cabinet.EdgeCity)
 	}
@@ -19417,6 +19421,9 @@ func (m *CabinetMutation) AddedEdges() []string {
 	}
 	if m.station != nil {
 		edges = append(edges, cabinet.EdgeStation)
+	}
+	if m.enterprise != nil {
+		edges = append(edges, cabinet.EdgeEnterprise)
 	}
 	return edges
 }
@@ -19473,13 +19480,17 @@ func (m *CabinetMutation) AddedIDs(name string) []ent.Value {
 		if id := m.station; id != nil {
 			return []ent.Value{*id}
 		}
+	case cabinet.EdgeEnterprise:
+		if id := m.enterprise; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *CabinetMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 9)
+	edges := make([]string, 0, 10)
 	if m.removedmodels != nil {
 		edges = append(edges, cabinet.EdgeModels)
 	}
@@ -19547,7 +19558,7 @@ func (m *CabinetMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *CabinetMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 9)
+	edges := make([]string, 0, 10)
 	if m.clearedcity {
 		edges = append(edges, cabinet.EdgeCity)
 	}
@@ -19575,6 +19586,9 @@ func (m *CabinetMutation) ClearedEdges() []string {
 	if m.clearedstation {
 		edges = append(edges, cabinet.EdgeStation)
 	}
+	if m.clearedenterprise {
+		edges = append(edges, cabinet.EdgeEnterprise)
+	}
 	return edges
 }
 
@@ -19600,6 +19614,8 @@ func (m *CabinetMutation) EdgeCleared(name string) bool {
 		return m.clearedbattery_flows
 	case cabinet.EdgeStation:
 		return m.clearedstation
+	case cabinet.EdgeEnterprise:
+		return m.clearedenterprise
 	}
 	return false
 }
@@ -19616,6 +19632,9 @@ func (m *CabinetMutation) ClearEdge(name string) error {
 		return nil
 	case cabinet.EdgeStation:
 		m.ClearStation()
+		return nil
+	case cabinet.EdgeEnterprise:
+		m.ClearEnterprise()
 		return nil
 	}
 	return fmt.Errorf("unknown Cabinet unique edge %s", name)
@@ -19651,6 +19670,9 @@ func (m *CabinetMutation) ResetEdge(name string) error {
 		return nil
 	case cabinet.EdgeStation:
 		m.ResetStation()
+		return nil
+	case cabinet.EdgeEnterprise:
+		m.ResetEnterprise()
 		return nil
 	}
 	return fmt.Errorf("unknown Cabinet edge %s", name)
@@ -33321,6 +33343,8 @@ type EnterpriseMutation struct {
 	use_store           *bool
 	days                *[]int
 	appenddays          []int
+	distance            *float64
+	adddistance         *float64
 	clearedFields       map[string]struct{}
 	city                *uint64
 	clearedcity         bool
@@ -33354,6 +33378,12 @@ type EnterpriseMutation struct {
 	agents              map[uint64]struct{}
 	removedagents       map[uint64]struct{}
 	clearedagents       bool
+	cabinets            map[uint64]struct{}
+	removedcabinets     map[uint64]struct{}
+	clearedcabinets     bool
+	stocks              map[uint64]struct{}
+	removedstocks       map[uint64]struct{}
+	clearedstocks       bool
 	done                bool
 	oldValue            func(context.Context) (*Enterprise, error)
 	predicates          []predicate.Enterprise
@@ -34469,6 +34499,62 @@ func (m *EnterpriseMutation) ResetDays() {
 	delete(m.clearedFields, enterprise.FieldDays)
 }
 
+// SetDistance sets the "distance" field.
+func (m *EnterpriseMutation) SetDistance(f float64) {
+	m.distance = &f
+	m.adddistance = nil
+}
+
+// Distance returns the value of the "distance" field in the mutation.
+func (m *EnterpriseMutation) Distance() (r float64, exists bool) {
+	v := m.distance
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDistance returns the old "distance" field's value of the Enterprise entity.
+// If the Enterprise object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseMutation) OldDistance(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDistance is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDistance requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDistance: %w", err)
+	}
+	return oldValue.Distance, nil
+}
+
+// AddDistance adds f to the "distance" field.
+func (m *EnterpriseMutation) AddDistance(f float64) {
+	if m.adddistance != nil {
+		*m.adddistance += f
+	} else {
+		m.adddistance = &f
+	}
+}
+
+// AddedDistance returns the value that was added to the "distance" field in this mutation.
+func (m *EnterpriseMutation) AddedDistance() (r float64, exists bool) {
+	v := m.adddistance
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetDistance resets all changes to the "distance" field.
+func (m *EnterpriseMutation) ResetDistance() {
+	m.distance = nil
+	m.adddistance = nil
+}
+
 // ClearCity clears the "city" edge to the City entity.
 func (m *EnterpriseMutation) ClearCity() {
 	m.clearedcity = true
@@ -35035,6 +35121,114 @@ func (m *EnterpriseMutation) ResetAgents() {
 	m.removedagents = nil
 }
 
+// AddCabinetIDs adds the "cabinets" edge to the Cabinet entity by ids.
+func (m *EnterpriseMutation) AddCabinetIDs(ids ...uint64) {
+	if m.cabinets == nil {
+		m.cabinets = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.cabinets[ids[i]] = struct{}{}
+	}
+}
+
+// ClearCabinets clears the "cabinets" edge to the Cabinet entity.
+func (m *EnterpriseMutation) ClearCabinets() {
+	m.clearedcabinets = true
+}
+
+// CabinetsCleared reports if the "cabinets" edge to the Cabinet entity was cleared.
+func (m *EnterpriseMutation) CabinetsCleared() bool {
+	return m.clearedcabinets
+}
+
+// RemoveCabinetIDs removes the "cabinets" edge to the Cabinet entity by IDs.
+func (m *EnterpriseMutation) RemoveCabinetIDs(ids ...uint64) {
+	if m.removedcabinets == nil {
+		m.removedcabinets = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.cabinets, ids[i])
+		m.removedcabinets[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedCabinets returns the removed IDs of the "cabinets" edge to the Cabinet entity.
+func (m *EnterpriseMutation) RemovedCabinetsIDs() (ids []uint64) {
+	for id := range m.removedcabinets {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// CabinetsIDs returns the "cabinets" edge IDs in the mutation.
+func (m *EnterpriseMutation) CabinetsIDs() (ids []uint64) {
+	for id := range m.cabinets {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetCabinets resets all changes to the "cabinets" edge.
+func (m *EnterpriseMutation) ResetCabinets() {
+	m.cabinets = nil
+	m.clearedcabinets = false
+	m.removedcabinets = nil
+}
+
+// AddStockIDs adds the "stocks" edge to the Stock entity by ids.
+func (m *EnterpriseMutation) AddStockIDs(ids ...uint64) {
+	if m.stocks == nil {
+		m.stocks = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.stocks[ids[i]] = struct{}{}
+	}
+}
+
+// ClearStocks clears the "stocks" edge to the Stock entity.
+func (m *EnterpriseMutation) ClearStocks() {
+	m.clearedstocks = true
+}
+
+// StocksCleared reports if the "stocks" edge to the Stock entity was cleared.
+func (m *EnterpriseMutation) StocksCleared() bool {
+	return m.clearedstocks
+}
+
+// RemoveStockIDs removes the "stocks" edge to the Stock entity by IDs.
+func (m *EnterpriseMutation) RemoveStockIDs(ids ...uint64) {
+	if m.removedstocks == nil {
+		m.removedstocks = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.stocks, ids[i])
+		m.removedstocks[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedStocks returns the removed IDs of the "stocks" edge to the Stock entity.
+func (m *EnterpriseMutation) RemovedStocksIDs() (ids []uint64) {
+	for id := range m.removedstocks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// StocksIDs returns the "stocks" edge IDs in the mutation.
+func (m *EnterpriseMutation) StocksIDs() (ids []uint64) {
+	for id := range m.stocks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetStocks resets all changes to the "stocks" edge.
+func (m *EnterpriseMutation) ResetStocks() {
+	m.stocks = nil
+	m.clearedstocks = false
+	m.removedstocks = nil
+}
+
 // Where appends a list predicates to the EnterpriseMutation builder.
 func (m *EnterpriseMutation) Where(ps ...predicate.Enterprise) {
 	m.predicates = append(m.predicates, ps...)
@@ -35069,7 +35263,7 @@ func (m *EnterpriseMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EnterpriseMutation) Fields() []string {
-	fields := make([]string, 0, 22)
+	fields := make([]string, 0, 23)
 	if m.created_at != nil {
 		fields = append(fields, enterprise.FieldCreatedAt)
 	}
@@ -35136,6 +35330,9 @@ func (m *EnterpriseMutation) Fields() []string {
 	if m.days != nil {
 		fields = append(fields, enterprise.FieldDays)
 	}
+	if m.distance != nil {
+		fields = append(fields, enterprise.FieldDistance)
+	}
 	return fields
 }
 
@@ -35188,6 +35385,8 @@ func (m *EnterpriseMutation) Field(name string) (ent.Value, bool) {
 		return m.UseStore()
 	case enterprise.FieldDays:
 		return m.Days()
+	case enterprise.FieldDistance:
+		return m.Distance()
 	}
 	return nil, false
 }
@@ -35241,6 +35440,8 @@ func (m *EnterpriseMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldUseStore(ctx)
 	case enterprise.FieldDays:
 		return m.OldDays(ctx)
+	case enterprise.FieldDistance:
+		return m.OldDistance(ctx)
 	}
 	return nil, fmt.Errorf("unknown Enterprise field %s", name)
 }
@@ -35404,6 +35605,13 @@ func (m *EnterpriseMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDays(v)
 		return nil
+	case enterprise.FieldDistance:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDistance(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Enterprise field %s", name)
 }
@@ -35427,6 +35635,9 @@ func (m *EnterpriseMutation) AddedFields() []string {
 	if m.addprepayment_total != nil {
 		fields = append(fields, enterprise.FieldPrepaymentTotal)
 	}
+	if m.adddistance != nil {
+		fields = append(fields, enterprise.FieldDistance)
+	}
 	return fields
 }
 
@@ -35445,6 +35656,8 @@ func (m *EnterpriseMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedBalance()
 	case enterprise.FieldPrepaymentTotal:
 		return m.AddedPrepaymentTotal()
+	case enterprise.FieldDistance:
+		return m.AddedDistance()
 	}
 	return nil, false
 }
@@ -35488,6 +35701,13 @@ func (m *EnterpriseMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddPrepaymentTotal(v)
+		return nil
+	case enterprise.FieldDistance:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDistance(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Enterprise numeric field %s", name)
@@ -35633,13 +35853,16 @@ func (m *EnterpriseMutation) ResetField(name string) error {
 	case enterprise.FieldDays:
 		m.ResetDays()
 		return nil
+	case enterprise.FieldDistance:
+		m.ResetDistance()
+		return nil
 	}
 	return fmt.Errorf("unknown Enterprise field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *EnterpriseMutation) AddedEdges() []string {
-	edges := make([]string, 0, 11)
+	edges := make([]string, 0, 13)
 	if m.city != nil {
 		edges = append(edges, enterprise.EdgeCity)
 	}
@@ -35672,6 +35895,12 @@ func (m *EnterpriseMutation) AddedEdges() []string {
 	}
 	if m.agents != nil {
 		edges = append(edges, enterprise.EdgeAgents)
+	}
+	if m.cabinets != nil {
+		edges = append(edges, enterprise.EdgeCabinets)
+	}
+	if m.stocks != nil {
+		edges = append(edges, enterprise.EdgeStocks)
 	}
 	return edges
 }
@@ -35744,13 +35973,25 @@ func (m *EnterpriseMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case enterprise.EdgeCabinets:
+		ids := make([]ent.Value, 0, len(m.cabinets))
+		for id := range m.cabinets {
+			ids = append(ids, id)
+		}
+		return ids
+	case enterprise.EdgeStocks:
+		ids := make([]ent.Value, 0, len(m.stocks))
+		for id := range m.stocks {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *EnterpriseMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 11)
+	edges := make([]string, 0, 13)
 	if m.removedriders != nil {
 		edges = append(edges, enterprise.EdgeRiders)
 	}
@@ -35780,6 +36021,12 @@ func (m *EnterpriseMutation) RemovedEdges() []string {
 	}
 	if m.removedagents != nil {
 		edges = append(edges, enterprise.EdgeAgents)
+	}
+	if m.removedcabinets != nil {
+		edges = append(edges, enterprise.EdgeCabinets)
+	}
+	if m.removedstocks != nil {
+		edges = append(edges, enterprise.EdgeStocks)
 	}
 	return edges
 }
@@ -35848,13 +36095,25 @@ func (m *EnterpriseMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case enterprise.EdgeCabinets:
+		ids := make([]ent.Value, 0, len(m.removedcabinets))
+		for id := range m.removedcabinets {
+			ids = append(ids, id)
+		}
+		return ids
+	case enterprise.EdgeStocks:
+		ids := make([]ent.Value, 0, len(m.removedstocks))
+		for id := range m.removedstocks {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *EnterpriseMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 11)
+	edges := make([]string, 0, 13)
 	if m.clearedcity {
 		edges = append(edges, enterprise.EdgeCity)
 	}
@@ -35888,6 +36147,12 @@ func (m *EnterpriseMutation) ClearedEdges() []string {
 	if m.clearedagents {
 		edges = append(edges, enterprise.EdgeAgents)
 	}
+	if m.clearedcabinets {
+		edges = append(edges, enterprise.EdgeCabinets)
+	}
+	if m.clearedstocks {
+		edges = append(edges, enterprise.EdgeStocks)
+	}
 	return edges
 }
 
@@ -35917,6 +36182,10 @@ func (m *EnterpriseMutation) EdgeCleared(name string) bool {
 		return m.clearedfeedback
 	case enterprise.EdgeAgents:
 		return m.clearedagents
+	case enterprise.EdgeCabinets:
+		return m.clearedcabinets
+	case enterprise.EdgeStocks:
+		return m.clearedstocks
 	}
 	return false
 }
@@ -35968,6 +36237,12 @@ func (m *EnterpriseMutation) ResetEdge(name string) error {
 		return nil
 	case enterprise.EdgeAgents:
 		m.ResetAgents()
+		return nil
+	case enterprise.EdgeCabinets:
+		m.ResetCabinets()
+		return nil
+	case enterprise.EdgeStocks:
+		m.ResetStocks()
 		return nil
 	}
 	return fmt.Errorf("unknown Enterprise edge %s", name)
@@ -42016,6 +42291,12 @@ type EnterpriseStationMutation struct {
 	cabinets          map[uint64]struct{}
 	removedcabinets   map[uint64]struct{}
 	clearedcabinets   bool
+	battery           map[uint64]struct{}
+	removedbattery    map[uint64]struct{}
+	clearedbattery    bool
+	stocks            map[uint64]struct{}
+	removedstocks     map[uint64]struct{}
+	clearedstocks     bool
 	done              bool
 	oldValue          func(context.Context) (*EnterpriseStation, error)
 	predicates        []predicate.EnterpriseStation
@@ -42539,6 +42820,114 @@ func (m *EnterpriseStationMutation) ResetCabinets() {
 	m.removedcabinets = nil
 }
 
+// AddBatteryIDs adds the "battery" edge to the Battery entity by ids.
+func (m *EnterpriseStationMutation) AddBatteryIDs(ids ...uint64) {
+	if m.battery == nil {
+		m.battery = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.battery[ids[i]] = struct{}{}
+	}
+}
+
+// ClearBattery clears the "battery" edge to the Battery entity.
+func (m *EnterpriseStationMutation) ClearBattery() {
+	m.clearedbattery = true
+}
+
+// BatteryCleared reports if the "battery" edge to the Battery entity was cleared.
+func (m *EnterpriseStationMutation) BatteryCleared() bool {
+	return m.clearedbattery
+}
+
+// RemoveBatteryIDs removes the "battery" edge to the Battery entity by IDs.
+func (m *EnterpriseStationMutation) RemoveBatteryIDs(ids ...uint64) {
+	if m.removedbattery == nil {
+		m.removedbattery = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.battery, ids[i])
+		m.removedbattery[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedBattery returns the removed IDs of the "battery" edge to the Battery entity.
+func (m *EnterpriseStationMutation) RemovedBatteryIDs() (ids []uint64) {
+	for id := range m.removedbattery {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// BatteryIDs returns the "battery" edge IDs in the mutation.
+func (m *EnterpriseStationMutation) BatteryIDs() (ids []uint64) {
+	for id := range m.battery {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetBattery resets all changes to the "battery" edge.
+func (m *EnterpriseStationMutation) ResetBattery() {
+	m.battery = nil
+	m.clearedbattery = false
+	m.removedbattery = nil
+}
+
+// AddStockIDs adds the "stocks" edge to the Stock entity by ids.
+func (m *EnterpriseStationMutation) AddStockIDs(ids ...uint64) {
+	if m.stocks == nil {
+		m.stocks = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.stocks[ids[i]] = struct{}{}
+	}
+}
+
+// ClearStocks clears the "stocks" edge to the Stock entity.
+func (m *EnterpriseStationMutation) ClearStocks() {
+	m.clearedstocks = true
+}
+
+// StocksCleared reports if the "stocks" edge to the Stock entity was cleared.
+func (m *EnterpriseStationMutation) StocksCleared() bool {
+	return m.clearedstocks
+}
+
+// RemoveStockIDs removes the "stocks" edge to the Stock entity by IDs.
+func (m *EnterpriseStationMutation) RemoveStockIDs(ids ...uint64) {
+	if m.removedstocks == nil {
+		m.removedstocks = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.stocks, ids[i])
+		m.removedstocks[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedStocks returns the removed IDs of the "stocks" edge to the Stock entity.
+func (m *EnterpriseStationMutation) RemovedStocksIDs() (ids []uint64) {
+	for id := range m.removedstocks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// StocksIDs returns the "stocks" edge IDs in the mutation.
+func (m *EnterpriseStationMutation) StocksIDs() (ids []uint64) {
+	for id := range m.stocks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetStocks resets all changes to the "stocks" edge.
+func (m *EnterpriseStationMutation) ResetStocks() {
+	m.stocks = nil
+	m.clearedstocks = false
+	m.removedstocks = nil
+}
+
 // Where appends a list predicates to the EnterpriseStationMutation builder.
 func (m *EnterpriseStationMutation) Where(ps ...predicate.EnterpriseStation) {
 	m.predicates = append(m.predicates, ps...)
@@ -42821,12 +43210,18 @@ func (m *EnterpriseStationMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *EnterpriseStationMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 4)
 	if m.enterprise != nil {
 		edges = append(edges, enterprisestation.EdgeEnterprise)
 	}
 	if m.cabinets != nil {
 		edges = append(edges, enterprisestation.EdgeCabinets)
+	}
+	if m.battery != nil {
+		edges = append(edges, enterprisestation.EdgeBattery)
+	}
+	if m.stocks != nil {
+		edges = append(edges, enterprisestation.EdgeStocks)
 	}
 	return edges
 }
@@ -42845,15 +43240,33 @@ func (m *EnterpriseStationMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case enterprisestation.EdgeBattery:
+		ids := make([]ent.Value, 0, len(m.battery))
+		for id := range m.battery {
+			ids = append(ids, id)
+		}
+		return ids
+	case enterprisestation.EdgeStocks:
+		ids := make([]ent.Value, 0, len(m.stocks))
+		for id := range m.stocks {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *EnterpriseStationMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 4)
 	if m.removedcabinets != nil {
 		edges = append(edges, enterprisestation.EdgeCabinets)
+	}
+	if m.removedbattery != nil {
+		edges = append(edges, enterprisestation.EdgeBattery)
+	}
+	if m.removedstocks != nil {
+		edges = append(edges, enterprisestation.EdgeStocks)
 	}
 	return edges
 }
@@ -42868,18 +43281,36 @@ func (m *EnterpriseStationMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case enterprisestation.EdgeBattery:
+		ids := make([]ent.Value, 0, len(m.removedbattery))
+		for id := range m.removedbattery {
+			ids = append(ids, id)
+		}
+		return ids
+	case enterprisestation.EdgeStocks:
+		ids := make([]ent.Value, 0, len(m.removedstocks))
+		for id := range m.removedstocks {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *EnterpriseStationMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 4)
 	if m.clearedenterprise {
 		edges = append(edges, enterprisestation.EdgeEnterprise)
 	}
 	if m.clearedcabinets {
 		edges = append(edges, enterprisestation.EdgeCabinets)
+	}
+	if m.clearedbattery {
+		edges = append(edges, enterprisestation.EdgeBattery)
+	}
+	if m.clearedstocks {
+		edges = append(edges, enterprisestation.EdgeStocks)
 	}
 	return edges
 }
@@ -42892,6 +43323,10 @@ func (m *EnterpriseStationMutation) EdgeCleared(name string) bool {
 		return m.clearedenterprise
 	case enterprisestation.EdgeCabinets:
 		return m.clearedcabinets
+	case enterprisestation.EdgeBattery:
+		return m.clearedbattery
+	case enterprisestation.EdgeStocks:
+		return m.clearedstocks
 	}
 	return false
 }
@@ -42916,6 +43351,12 @@ func (m *EnterpriseStationMutation) ResetEdge(name string) error {
 		return nil
 	case enterprisestation.EdgeCabinets:
 		m.ResetCabinets()
+		return nil
+	case enterprisestation.EdgeBattery:
+		m.ResetBattery()
+		return nil
+	case enterprisestation.EdgeStocks:
+		m.ResetStocks()
 		return nil
 	}
 	return fmt.Errorf("unknown EnterpriseStation edge %s", name)
@@ -67592,56 +68033,56 @@ func (m *SettingMutation) ResetEdge(name string) error {
 // StockMutation represents an operation that mutates the Stock nodes in the graph.
 type StockMutation struct {
 	config
-	op               Op
-	typ              string
-	id               *uint64
-	created_at       *time.Time
-	updated_at       *time.Time
-	deleted_at       *time.Time
-	creator          **model.Modifier
-	last_modifier    **model.Modifier
-	remark           *string
-	sn               *string
-	_type            *uint8
-	add_type         *int8
-	station_id       *uint64
-	addstation_id    *int64
-	enterprise_id    *uint64
-	addenterprise_id *int64
-	name             *string
-	model            *string
-	num              *int
-	addnum           *int
-	material         *stock.Material
-	clearedFields    map[string]struct{}
-	city             *uint64
-	clearedcity      bool
-	subscribe        *uint64
-	clearedsubscribe bool
-	ebike            *uint64
-	clearedebike     bool
-	brand            *uint64
-	clearedbrand     bool
-	battery          *uint64
-	clearedbattery   bool
-	store            *uint64
-	clearedstore     bool
-	cabinet          *uint64
-	clearedcabinet   bool
-	rider            *uint64
-	clearedrider     bool
-	employee         *uint64
-	clearedemployee  bool
-	spouse           *uint64
-	clearedspouse    bool
-	parent           *uint64
-	clearedparent    bool
-	children         map[uint64]struct{}
-	removedchildren  map[uint64]struct{}
-	clearedchildren  bool
-	done             bool
-	oldValue         func(context.Context) (*Stock, error)
-	predicates       []predicate.Stock
+	op                Op
+	typ               string
+	id                *uint64
+	created_at        *time.Time
+	updated_at        *time.Time
+	deleted_at        *time.Time
+	creator           **model.Modifier
+	last_modifier     **model.Modifier
+	remark            *string
+	sn                *string
+	_type             *uint8
+	add_type          *int8
+	name              *string
+	model             *string
+	num               *int
+	addnum            *int
+	material          *stock.Material
+	clearedFields     map[string]struct{}
+	city              *uint64
+	clearedcity       bool
+	subscribe         *uint64
+	clearedsubscribe  bool
+	ebike             *uint64
+	clearedebike      bool
+	brand             *uint64
+	clearedbrand      bool
+	battery           *uint64
+	clearedbattery    bool
+	store             *uint64
+	clearedstore      bool
+	cabinet           *uint64
+	clearedcabinet    bool
+	rider             *uint64
+	clearedrider      bool
+	employee          *uint64
+	clearedemployee   bool
+	spouse            *uint64
+	clearedspouse     bool
+	parent            *uint64
+	clearedparent     bool
+	children          map[uint64]struct{}
+	removedchildren   map[uint64]struct{}
+	clearedchildren   bool
+	enterprise        *uint64
+	clearedenterprise bool
+	stations          *uint64
+	clearedstations   bool
+	done              bool
+	oldValue          func(context.Context) (*Stock, error)
+	predicates        []predicate.Stock
 }
 
 var _ ent.Mutation = (*StockMutation)(nil)
@@ -68594,13 +69035,12 @@ func (m *StockMutation) ResetEmployeeID() {
 
 // SetStationID sets the "station_id" field.
 func (m *StockMutation) SetStationID(u uint64) {
-	m.station_id = &u
-	m.addstation_id = nil
+	m.stations = &u
 }
 
 // StationID returns the value of the "station_id" field in the mutation.
 func (m *StockMutation) StationID() (r uint64, exists bool) {
-	v := m.station_id
+	v := m.stations
 	if v == nil {
 		return
 	}
@@ -68624,28 +69064,9 @@ func (m *StockMutation) OldStationID(ctx context.Context) (v *uint64, err error)
 	return oldValue.StationID, nil
 }
 
-// AddStationID adds u to the "station_id" field.
-func (m *StockMutation) AddStationID(u int64) {
-	if m.addstation_id != nil {
-		*m.addstation_id += u
-	} else {
-		m.addstation_id = &u
-	}
-}
-
-// AddedStationID returns the value that was added to the "station_id" field in this mutation.
-func (m *StockMutation) AddedStationID() (r int64, exists bool) {
-	v := m.addstation_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
 // ClearStationID clears the value of the "station_id" field.
 func (m *StockMutation) ClearStationID() {
-	m.station_id = nil
-	m.addstation_id = nil
+	m.stations = nil
 	m.clearedFields[stock.FieldStationID] = struct{}{}
 }
 
@@ -68657,20 +69078,18 @@ func (m *StockMutation) StationIDCleared() bool {
 
 // ResetStationID resets all changes to the "station_id" field.
 func (m *StockMutation) ResetStationID() {
-	m.station_id = nil
-	m.addstation_id = nil
+	m.stations = nil
 	delete(m.clearedFields, stock.FieldStationID)
 }
 
 // SetEnterpriseID sets the "enterprise_id" field.
 func (m *StockMutation) SetEnterpriseID(u uint64) {
-	m.enterprise_id = &u
-	m.addenterprise_id = nil
+	m.enterprise = &u
 }
 
 // EnterpriseID returns the value of the "enterprise_id" field in the mutation.
 func (m *StockMutation) EnterpriseID() (r uint64, exists bool) {
-	v := m.enterprise_id
+	v := m.enterprise
 	if v == nil {
 		return
 	}
@@ -68694,28 +69113,9 @@ func (m *StockMutation) OldEnterpriseID(ctx context.Context) (v *uint64, err err
 	return oldValue.EnterpriseID, nil
 }
 
-// AddEnterpriseID adds u to the "enterprise_id" field.
-func (m *StockMutation) AddEnterpriseID(u int64) {
-	if m.addenterprise_id != nil {
-		*m.addenterprise_id += u
-	} else {
-		m.addenterprise_id = &u
-	}
-}
-
-// AddedEnterpriseID returns the value that was added to the "enterprise_id" field in this mutation.
-func (m *StockMutation) AddedEnterpriseID() (r int64, exists bool) {
-	v := m.addenterprise_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
 // ClearEnterpriseID clears the value of the "enterprise_id" field.
 func (m *StockMutation) ClearEnterpriseID() {
-	m.enterprise_id = nil
-	m.addenterprise_id = nil
+	m.enterprise = nil
 	m.clearedFields[stock.FieldEnterpriseID] = struct{}{}
 }
 
@@ -68727,8 +69127,7 @@ func (m *StockMutation) EnterpriseIDCleared() bool {
 
 // ResetEnterpriseID resets all changes to the "enterprise_id" field.
 func (m *StockMutation) ResetEnterpriseID() {
-	m.enterprise_id = nil
-	m.addenterprise_id = nil
+	m.enterprise = nil
 	delete(m.clearedFields, stock.FieldEnterpriseID)
 }
 
@@ -69262,6 +69661,71 @@ func (m *StockMutation) ResetChildren() {
 	m.removedchildren = nil
 }
 
+// ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
+func (m *StockMutation) ClearEnterprise() {
+	m.clearedenterprise = true
+}
+
+// EnterpriseCleared reports if the "enterprise" edge to the Enterprise entity was cleared.
+func (m *StockMutation) EnterpriseCleared() bool {
+	return m.EnterpriseIDCleared() || m.clearedenterprise
+}
+
+// EnterpriseIDs returns the "enterprise" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// EnterpriseID instead. It exists only for internal usage by the builders.
+func (m *StockMutation) EnterpriseIDs() (ids []uint64) {
+	if id := m.enterprise; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetEnterprise resets all changes to the "enterprise" edge.
+func (m *StockMutation) ResetEnterprise() {
+	m.enterprise = nil
+	m.clearedenterprise = false
+}
+
+// SetStationsID sets the "stations" edge to the EnterpriseStation entity by id.
+func (m *StockMutation) SetStationsID(id uint64) {
+	m.stations = &id
+}
+
+// ClearStations clears the "stations" edge to the EnterpriseStation entity.
+func (m *StockMutation) ClearStations() {
+	m.clearedstations = true
+}
+
+// StationsCleared reports if the "stations" edge to the EnterpriseStation entity was cleared.
+func (m *StockMutation) StationsCleared() bool {
+	return m.StationIDCleared() || m.clearedstations
+}
+
+// StationsID returns the "stations" edge ID in the mutation.
+func (m *StockMutation) StationsID() (id uint64, exists bool) {
+	if m.stations != nil {
+		return *m.stations, true
+	}
+	return
+}
+
+// StationsIDs returns the "stations" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// StationsID instead. It exists only for internal usage by the builders.
+func (m *StockMutation) StationsIDs() (ids []uint64) {
+	if id := m.stations; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetStations resets all changes to the "stations" edge.
+func (m *StockMutation) ResetStations() {
+	m.stations = nil
+	m.clearedstations = false
+}
+
 // Where appends a list predicates to the StockMutation builder.
 func (m *StockMutation) Where(ps ...predicate.Stock) {
 	m.predicates = append(m.predicates, ps...)
@@ -69351,10 +69815,10 @@ func (m *StockMutation) Fields() []string {
 	if m.employee != nil {
 		fields = append(fields, stock.FieldEmployeeID)
 	}
-	if m.station_id != nil {
+	if m.stations != nil {
 		fields = append(fields, stock.FieldStationID)
 	}
-	if m.enterprise_id != nil {
+	if m.enterprise != nil {
 		fields = append(fields, stock.FieldEnterpriseID)
 	}
 	if m.name != nil {
@@ -69670,12 +70134,6 @@ func (m *StockMutation) AddedFields() []string {
 	if m.add_type != nil {
 		fields = append(fields, stock.FieldType)
 	}
-	if m.addstation_id != nil {
-		fields = append(fields, stock.FieldStationID)
-	}
-	if m.addenterprise_id != nil {
-		fields = append(fields, stock.FieldEnterpriseID)
-	}
 	if m.addnum != nil {
 		fields = append(fields, stock.FieldNum)
 	}
@@ -69689,10 +70147,6 @@ func (m *StockMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	case stock.FieldType:
 		return m.AddedType()
-	case stock.FieldStationID:
-		return m.AddedStationID()
-	case stock.FieldEnterpriseID:
-		return m.AddedEnterpriseID()
 	case stock.FieldNum:
 		return m.AddedNum()
 	}
@@ -69710,20 +70164,6 @@ func (m *StockMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddType(v)
-		return nil
-	case stock.FieldStationID:
-		v, ok := value.(int64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddStationID(v)
-		return nil
-	case stock.FieldEnterpriseID:
-		v, ok := value.(int64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddEnterpriseID(v)
 		return nil
 	case stock.FieldNum:
 		v, ok := value.(int)
@@ -69942,7 +70382,7 @@ func (m *StockMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *StockMutation) AddedEdges() []string {
-	edges := make([]string, 0, 12)
+	edges := make([]string, 0, 14)
 	if m.city != nil {
 		edges = append(edges, stock.EdgeCity)
 	}
@@ -69978,6 +70418,12 @@ func (m *StockMutation) AddedEdges() []string {
 	}
 	if m.children != nil {
 		edges = append(edges, stock.EdgeChildren)
+	}
+	if m.enterprise != nil {
+		edges = append(edges, stock.EdgeEnterprise)
+	}
+	if m.stations != nil {
+		edges = append(edges, stock.EdgeStations)
 	}
 	return edges
 }
@@ -70036,13 +70482,21 @@ func (m *StockMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case stock.EdgeEnterprise:
+		if id := m.enterprise; id != nil {
+			return []ent.Value{*id}
+		}
+	case stock.EdgeStations:
+		if id := m.stations; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *StockMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 12)
+	edges := make([]string, 0, 14)
 	if m.removedchildren != nil {
 		edges = append(edges, stock.EdgeChildren)
 	}
@@ -70065,7 +70519,7 @@ func (m *StockMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *StockMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 12)
+	edges := make([]string, 0, 14)
 	if m.clearedcity {
 		edges = append(edges, stock.EdgeCity)
 	}
@@ -70102,6 +70556,12 @@ func (m *StockMutation) ClearedEdges() []string {
 	if m.clearedchildren {
 		edges = append(edges, stock.EdgeChildren)
 	}
+	if m.clearedenterprise {
+		edges = append(edges, stock.EdgeEnterprise)
+	}
+	if m.clearedstations {
+		edges = append(edges, stock.EdgeStations)
+	}
 	return edges
 }
 
@@ -70133,6 +70593,10 @@ func (m *StockMutation) EdgeCleared(name string) bool {
 		return m.clearedparent
 	case stock.EdgeChildren:
 		return m.clearedchildren
+	case stock.EdgeEnterprise:
+		return m.clearedenterprise
+	case stock.EdgeStations:
+		return m.clearedstations
 	}
 	return false
 }
@@ -70173,6 +70637,12 @@ func (m *StockMutation) ClearEdge(name string) error {
 		return nil
 	case stock.EdgeParent:
 		m.ClearParent()
+		return nil
+	case stock.EdgeEnterprise:
+		m.ClearEnterprise()
+		return nil
+	case stock.EdgeStations:
+		m.ClearStations()
 		return nil
 	}
 	return fmt.Errorf("unknown Stock unique edge %s", name)
@@ -70217,6 +70687,12 @@ func (m *StockMutation) ResetEdge(name string) error {
 		return nil
 	case stock.EdgeChildren:
 		m.ResetChildren()
+		return nil
+	case stock.EdgeEnterprise:
+		m.ResetEnterprise()
+		return nil
+	case stock.EdgeStations:
+		m.ResetStations()
 		return nil
 	}
 	return fmt.Errorf("unknown Stock edge %s", name)

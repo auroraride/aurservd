@@ -16,6 +16,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
@@ -79,9 +80,11 @@ type BatteryEdges struct {
 	Enterprise *Enterprise `json:"enterprise,omitempty"`
 	// 流转记录
 	Flows []*BatteryFlow `json:"flows,omitempty"`
+	// 所属站点
+	Station *EnterpriseStation `json:"station,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [6]bool
+	loadedTypes [7]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -156,6 +159,19 @@ func (e BatteryEdges) FlowsOrErr() ([]*BatteryFlow, error) {
 		return e.Flows, nil
 	}
 	return nil, &NotLoadedError{edge: "flows"}
+}
+
+// StationOrErr returns the Station value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e BatteryEdges) StationOrErr() (*EnterpriseStation, error) {
+	if e.loadedTypes[6] {
+		if e.Station == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: enterprisestation.Label}
+		}
+		return e.Station, nil
+	}
+	return nil, &NotLoadedError{edge: "station"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -351,6 +367,11 @@ func (b *Battery) QueryEnterprise() *EnterpriseQuery {
 // QueryFlows queries the "flows" edge of the Battery entity.
 func (b *Battery) QueryFlows() *BatteryFlowQuery {
 	return NewBatteryClient(b.config).QueryFlows(b)
+}
+
+// QueryStation queries the "station" edge of the Battery entity.
+func (b *Battery) QueryStation() *EnterpriseStationQuery {
+	return NewBatteryClient(b.config).QueryStation(b)
 }
 
 // Update returns a builder for updating this Battery.

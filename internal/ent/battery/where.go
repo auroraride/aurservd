@@ -526,26 +526,6 @@ func StationIDNotIn(vs ...uint64) predicate.Battery {
 	return predicate.Battery(sql.FieldNotIn(FieldStationID, vs...))
 }
 
-// StationIDGT applies the GT predicate on the "station_id" field.
-func StationIDGT(v uint64) predicate.Battery {
-	return predicate.Battery(sql.FieldGT(FieldStationID, v))
-}
-
-// StationIDGTE applies the GTE predicate on the "station_id" field.
-func StationIDGTE(v uint64) predicate.Battery {
-	return predicate.Battery(sql.FieldGTE(FieldStationID, v))
-}
-
-// StationIDLT applies the LT predicate on the "station_id" field.
-func StationIDLT(v uint64) predicate.Battery {
-	return predicate.Battery(sql.FieldLT(FieldStationID, v))
-}
-
-// StationIDLTE applies the LTE predicate on the "station_id" field.
-func StationIDLTE(v uint64) predicate.Battery {
-	return predicate.Battery(sql.FieldLTE(FieldStationID, v))
-}
-
 // StationIDIsNil applies the IsNil predicate on the "station_id" field.
 func StationIDIsNil() predicate.Battery {
 	return predicate.Battery(sql.FieldIsNull(FieldStationID))
@@ -916,6 +896,29 @@ func HasFlows() predicate.Battery {
 func HasFlowsWith(preds ...predicate.BatteryFlow) predicate.Battery {
 	return predicate.Battery(func(s *sql.Selector) {
 		step := newFlowsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasStation applies the HasEdge predicate on the "station" edge.
+func HasStation() predicate.Battery {
+	return predicate.Battery(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, StationTable, StationColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasStationWith applies the HasEdge predicate on the "station" edge with a given conditions (other predicates).
+func HasStationWith(preds ...predicate.EnterpriseStation) predicate.Battery {
+	return predicate.Battery(func(s *sql.Selector) {
+		step := newStationStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

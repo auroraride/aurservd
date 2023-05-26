@@ -20,6 +20,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/stock"
@@ -494,6 +495,11 @@ func (cc *CabinetCreate) SetStation(e *EnterpriseStation) *CabinetCreate {
 	return cc.SetStationID(e.ID)
 }
 
+// SetEnterprise sets the "enterprise" edge to the Enterprise entity.
+func (cc *CabinetCreate) SetEnterprise(e *Enterprise) *CabinetCreate {
+	return cc.SetEnterpriseID(e.ID)
+}
+
 // Mutation returns the CabinetMutation object of the builder.
 func (cc *CabinetCreate) Mutation() *CabinetMutation {
 	return cc.mutation
@@ -684,10 +690,6 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 	if value, ok := cc.mutation.Remark(); ok {
 		_spec.SetField(cabinet.FieldRemark, field.TypeString, value)
 		_node.Remark = value
-	}
-	if value, ok := cc.mutation.EnterpriseID(); ok {
-		_spec.SetField(cabinet.FieldEnterpriseID, field.TypeUint64, value)
-		_node.EnterpriseID = value
 	}
 	if value, ok := cc.mutation.Sn(); ok {
 		_spec.SetField(cabinet.FieldSn, field.TypeString, value)
@@ -913,7 +915,24 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.StationID = nodes[0]
+		_node.StationID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := cc.mutation.EnterpriseIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   cabinet.EnterpriseTable,
+			Columns: []string{cabinet.EnterpriseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.EnterpriseID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -1079,12 +1098,6 @@ func (u *CabinetUpsert) SetEnterpriseID(v uint64) *CabinetUpsert {
 // UpdateEnterpriseID sets the "enterprise_id" field to the value that was provided on create.
 func (u *CabinetUpsert) UpdateEnterpriseID() *CabinetUpsert {
 	u.SetExcluded(cabinet.FieldEnterpriseID)
-	return u
-}
-
-// AddEnterpriseID adds v to the "enterprise_id" field.
-func (u *CabinetUpsert) AddEnterpriseID(v uint64) *CabinetUpsert {
-	u.Add(cabinet.FieldEnterpriseID, v)
 	return u
 }
 
@@ -1619,13 +1632,6 @@ func (u *CabinetUpsertOne) ClearBranchID() *CabinetUpsertOne {
 func (u *CabinetUpsertOne) SetEnterpriseID(v uint64) *CabinetUpsertOne {
 	return u.Update(func(s *CabinetUpsert) {
 		s.SetEnterpriseID(v)
-	})
-}
-
-// AddEnterpriseID adds v to the "enterprise_id" field.
-func (u *CabinetUpsertOne) AddEnterpriseID(v uint64) *CabinetUpsertOne {
-	return u.Update(func(s *CabinetUpsert) {
-		s.AddEnterpriseID(v)
 	})
 }
 
@@ -2389,13 +2395,6 @@ func (u *CabinetUpsertBulk) ClearBranchID() *CabinetUpsertBulk {
 func (u *CabinetUpsertBulk) SetEnterpriseID(v uint64) *CabinetUpsertBulk {
 	return u.Update(func(s *CabinetUpsert) {
 		s.SetEnterpriseID(v)
-	})
-}
-
-// AddEnterpriseID adds v to the "enterprise_id" field.
-func (u *CabinetUpsertBulk) AddEnterpriseID(v uint64) *CabinetUpsertBulk {
-	return u.Update(func(s *CabinetUpsert) {
-		s.AddEnterpriseID(v)
 	})
 }
 

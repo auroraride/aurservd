@@ -12,10 +12,12 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
+	"github.com/auroraride/aurservd/internal/ent/stock"
 )
 
 // EnterpriseStationUpdate is the builder for updating EnterpriseStation entities.
@@ -122,6 +124,36 @@ func (esu *EnterpriseStationUpdate) AddCabinets(c ...*Cabinet) *EnterpriseStatio
 	return esu.AddCabinetIDs(ids...)
 }
 
+// AddBatteryIDs adds the "battery" edge to the Battery entity by IDs.
+func (esu *EnterpriseStationUpdate) AddBatteryIDs(ids ...uint64) *EnterpriseStationUpdate {
+	esu.mutation.AddBatteryIDs(ids...)
+	return esu
+}
+
+// AddBattery adds the "battery" edges to the Battery entity.
+func (esu *EnterpriseStationUpdate) AddBattery(b ...*Battery) *EnterpriseStationUpdate {
+	ids := make([]uint64, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return esu.AddBatteryIDs(ids...)
+}
+
+// AddStockIDs adds the "stocks" edge to the Stock entity by IDs.
+func (esu *EnterpriseStationUpdate) AddStockIDs(ids ...uint64) *EnterpriseStationUpdate {
+	esu.mutation.AddStockIDs(ids...)
+	return esu
+}
+
+// AddStocks adds the "stocks" edges to the Stock entity.
+func (esu *EnterpriseStationUpdate) AddStocks(s ...*Stock) *EnterpriseStationUpdate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return esu.AddStockIDs(ids...)
+}
+
 // Mutation returns the EnterpriseStationMutation object of the builder.
 func (esu *EnterpriseStationUpdate) Mutation() *EnterpriseStationMutation {
 	return esu.mutation
@@ -152,6 +184,48 @@ func (esu *EnterpriseStationUpdate) RemoveCabinets(c ...*Cabinet) *EnterpriseSta
 		ids[i] = c[i].ID
 	}
 	return esu.RemoveCabinetIDs(ids...)
+}
+
+// ClearBattery clears all "battery" edges to the Battery entity.
+func (esu *EnterpriseStationUpdate) ClearBattery() *EnterpriseStationUpdate {
+	esu.mutation.ClearBattery()
+	return esu
+}
+
+// RemoveBatteryIDs removes the "battery" edge to Battery entities by IDs.
+func (esu *EnterpriseStationUpdate) RemoveBatteryIDs(ids ...uint64) *EnterpriseStationUpdate {
+	esu.mutation.RemoveBatteryIDs(ids...)
+	return esu
+}
+
+// RemoveBattery removes "battery" edges to Battery entities.
+func (esu *EnterpriseStationUpdate) RemoveBattery(b ...*Battery) *EnterpriseStationUpdate {
+	ids := make([]uint64, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return esu.RemoveBatteryIDs(ids...)
+}
+
+// ClearStocks clears all "stocks" edges to the Stock entity.
+func (esu *EnterpriseStationUpdate) ClearStocks() *EnterpriseStationUpdate {
+	esu.mutation.ClearStocks()
+	return esu
+}
+
+// RemoveStockIDs removes the "stocks" edge to Stock entities by IDs.
+func (esu *EnterpriseStationUpdate) RemoveStockIDs(ids ...uint64) *EnterpriseStationUpdate {
+	esu.mutation.RemoveStockIDs(ids...)
+	return esu
+}
+
+// RemoveStocks removes "stocks" edges to Stock entities.
+func (esu *EnterpriseStationUpdate) RemoveStocks(s ...*Stock) *EnterpriseStationUpdate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return esu.RemoveStockIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -323,6 +397,96 @@ func (esu *EnterpriseStationUpdate) sqlSave(ctx context.Context) (n int, err err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if esu.mutation.BatteryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestation.BatteryTable,
+			Columns: []string{enterprisestation.BatteryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := esu.mutation.RemovedBatteryIDs(); len(nodes) > 0 && !esu.mutation.BatteryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestation.BatteryTable,
+			Columns: []string{enterprisestation.BatteryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := esu.mutation.BatteryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestation.BatteryTable,
+			Columns: []string{enterprisestation.BatteryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if esu.mutation.StocksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestation.StocksTable,
+			Columns: []string{enterprisestation.StocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := esu.mutation.RemovedStocksIDs(); len(nodes) > 0 && !esu.mutation.StocksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestation.StocksTable,
+			Columns: []string{enterprisestation.StocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := esu.mutation.StocksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestation.StocksTable,
+			Columns: []string{enterprisestation.StocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(esu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, esu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -435,6 +599,36 @@ func (esuo *EnterpriseStationUpdateOne) AddCabinets(c ...*Cabinet) *EnterpriseSt
 	return esuo.AddCabinetIDs(ids...)
 }
 
+// AddBatteryIDs adds the "battery" edge to the Battery entity by IDs.
+func (esuo *EnterpriseStationUpdateOne) AddBatteryIDs(ids ...uint64) *EnterpriseStationUpdateOne {
+	esuo.mutation.AddBatteryIDs(ids...)
+	return esuo
+}
+
+// AddBattery adds the "battery" edges to the Battery entity.
+func (esuo *EnterpriseStationUpdateOne) AddBattery(b ...*Battery) *EnterpriseStationUpdateOne {
+	ids := make([]uint64, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return esuo.AddBatteryIDs(ids...)
+}
+
+// AddStockIDs adds the "stocks" edge to the Stock entity by IDs.
+func (esuo *EnterpriseStationUpdateOne) AddStockIDs(ids ...uint64) *EnterpriseStationUpdateOne {
+	esuo.mutation.AddStockIDs(ids...)
+	return esuo
+}
+
+// AddStocks adds the "stocks" edges to the Stock entity.
+func (esuo *EnterpriseStationUpdateOne) AddStocks(s ...*Stock) *EnterpriseStationUpdateOne {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return esuo.AddStockIDs(ids...)
+}
+
 // Mutation returns the EnterpriseStationMutation object of the builder.
 func (esuo *EnterpriseStationUpdateOne) Mutation() *EnterpriseStationMutation {
 	return esuo.mutation
@@ -465,6 +659,48 @@ func (esuo *EnterpriseStationUpdateOne) RemoveCabinets(c ...*Cabinet) *Enterpris
 		ids[i] = c[i].ID
 	}
 	return esuo.RemoveCabinetIDs(ids...)
+}
+
+// ClearBattery clears all "battery" edges to the Battery entity.
+func (esuo *EnterpriseStationUpdateOne) ClearBattery() *EnterpriseStationUpdateOne {
+	esuo.mutation.ClearBattery()
+	return esuo
+}
+
+// RemoveBatteryIDs removes the "battery" edge to Battery entities by IDs.
+func (esuo *EnterpriseStationUpdateOne) RemoveBatteryIDs(ids ...uint64) *EnterpriseStationUpdateOne {
+	esuo.mutation.RemoveBatteryIDs(ids...)
+	return esuo
+}
+
+// RemoveBattery removes "battery" edges to Battery entities.
+func (esuo *EnterpriseStationUpdateOne) RemoveBattery(b ...*Battery) *EnterpriseStationUpdateOne {
+	ids := make([]uint64, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return esuo.RemoveBatteryIDs(ids...)
+}
+
+// ClearStocks clears all "stocks" edges to the Stock entity.
+func (esuo *EnterpriseStationUpdateOne) ClearStocks() *EnterpriseStationUpdateOne {
+	esuo.mutation.ClearStocks()
+	return esuo
+}
+
+// RemoveStockIDs removes the "stocks" edge to Stock entities by IDs.
+func (esuo *EnterpriseStationUpdateOne) RemoveStockIDs(ids ...uint64) *EnterpriseStationUpdateOne {
+	esuo.mutation.RemoveStockIDs(ids...)
+	return esuo
+}
+
+// RemoveStocks removes "stocks" edges to Stock entities.
+func (esuo *EnterpriseStationUpdateOne) RemoveStocks(s ...*Stock) *EnterpriseStationUpdateOne {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return esuo.RemoveStockIDs(ids...)
 }
 
 // Where appends a list predicates to the EnterpriseStationUpdate builder.
@@ -659,6 +895,96 @@ func (esuo *EnterpriseStationUpdateOne) sqlSave(ctx context.Context) (_node *Ent
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if esuo.mutation.BatteryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestation.BatteryTable,
+			Columns: []string{enterprisestation.BatteryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := esuo.mutation.RemovedBatteryIDs(); len(nodes) > 0 && !esuo.mutation.BatteryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestation.BatteryTable,
+			Columns: []string{enterprisestation.BatteryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := esuo.mutation.BatteryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestation.BatteryTable,
+			Columns: []string{enterprisestation.BatteryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if esuo.mutation.StocksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestation.StocksTable,
+			Columns: []string{enterprisestation.StocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := esuo.mutation.RemovedStocksIDs(); len(nodes) > 0 && !esuo.mutation.StocksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestation.StocksTable,
+			Columns: []string{enterprisestation.StocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := esuo.mutation.StocksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestation.StocksTable,
+			Columns: []string{enterprisestation.StocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

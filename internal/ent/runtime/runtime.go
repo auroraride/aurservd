@@ -593,6 +593,10 @@ func init() {
 	enterpriseDescUseStore := enterpriseFields[13].Descriptor()
 	// enterprise.DefaultUseStore holds the default value on creation for the use_store field.
 	enterprise.DefaultUseStore = enterpriseDescUseStore.Default.(bool)
+	// enterpriseDescDistance is the schema descriptor for distance field.
+	enterpriseDescDistance := enterpriseFields[15].Descriptor()
+	// enterprise.DefaultDistance holds the default value on creation for the distance field.
+	enterprise.DefaultDistance = enterpriseDescDistance.Default.(float64)
 	enterprisebillMixin := schema.EnterpriseBill{}.Mixin()
 	enterprisebillMixinHooks2 := enterprisebillMixin[2].Hooks()
 	enterprisebill.Hooks[0] = enterprisebillMixinHooks2[0]

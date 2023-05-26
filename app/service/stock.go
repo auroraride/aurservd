@@ -5,6 +5,7 @@
 
 package service
 
+import "C"
 import (
 	"context"
 	stdsql "database/sql"
@@ -16,6 +17,9 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/golang-module/carbon/v2"
+	jsoniter "github.com/json-iterator/go"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/assets"
 	"github.com/auroraride/aurservd/internal/ar"
@@ -24,6 +28,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/ebike"
+	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/exception"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/stock"
@@ -31,8 +37,6 @@ import (
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
-	"github.com/golang-module/carbon/v2"
-	jsoniter "github.com/json-iterator/go"
 )
 
 type stockService struct {
@@ -209,6 +213,83 @@ func (s *stockService) StoreList(req *model.StockListReq) *model.PaginationRes {
 			return res
 		},
 	)
+}
+
+// EnterpriseList 团签物资
+func (s *stockService) EnterpriseList(req *model.StockListReq) *model.PaginationRes {
+	q := ent.Database.EnterpriseStation.QueryNotDeleted().WithEnterprise(func(query *ent.EnterpriseQuery) {
+		query.WithStations().WithCity()
+	}).WithStocks()
+	if req.CityID != nil {
+		q.Where(
+			enterprisestation.HasEnterpriseWith(enterprise.HasCityWith(city.ID(*req.CityID))),
+		)
+	}
+	if req.EnterpriseID != nil {
+		q.Where(
+			enterprisestation.HasEnterpriseWith(enterprise.ID(*req.EnterpriseID)),
+		)
+	}
+	if req.StationID != nil {
+		q.Where(enterprisestation.ID(*req.StationID))
+	}
+
+	if req.Start != nil && req.End != nil {
+		start := carbon.Parse(*req.Start).StartOfDay().Carbon2Time()
+		end := carbon.Parse(*req.End).EndOfDay().Carbon2Time()
+		if start.IsZero() {
+			snag.Panic("开始时间错误")
+		}
+		if end.IsZero() {
+			snag.Panic("结束时间错误")
+		}
+		q.Where(
+			enterprisestation.HasEnterpriseWith(
+				enterprise.Or(
+					enterprise.HasStocksWith(stock.CreatedAtGTE(start)),
+					enterprise.HasStocksWith(stock.CreatedAtLTE(end)),
+				)),
+		)
+	}
+	if req.Model != "" {
+		q.Where(enterprisestation.HasEnterpriseWith(enterprise.HasStocksWith(stock.Model(req.Model))))
+	}
+	return model.ParsePaginationResponse(
+		q,
+		req.PaginationReq,
+		func(item *ent.EnterpriseStation) model.StockListRes {
+			rsp := model.StockListRes{
+				StationName: item.Name,
+			}
+			if item.Edges.Enterprise != nil {
+				if item.Edges.Enterprise.Edges.City != nil {
+					rsp.City = model.City{
+						ID:   item.Edges.Enterprise.Edges.City.ID,
+						Name: item.Edges.Enterprise.Edges.City.Name,
+					}
+				}
+			}
+			if item.Edges.Enterprise.Edges.Stations != nil {
+				rsp.EnterpriseName = item.Edges.Enterprise.Name
+			}
+			// 电池总数
+			rsp.BatteryTotal = 0
+			// 计算所有物资
+			batteries := make(map[string]*model.StockMaterial)
+			// 出入库
+			for _, st := range item.Edges.Stocks {
+				switch true {
+				case st.Model != nil:
+					// 电池
+					s.calculate(batteries, st)
+				}
+			}
+			for _, battery := range batteries {
+				rsp.Batteries = append(rsp.Batteries, battery)
+				rsp.BatteryTotal += battery.Surplus
+			}
+			return rsp
+		})
 }
 
 // TODO 统计故障电车
@@ -1033,6 +1114,15 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
 	}
 	if cab != nil && cab.CityID != nil && st != nil && st.CityID != *cab.CityID {
 		snag.Panic("不同城市电柜和门店无法调拨")
+	}
+
+	// 站点调拨
+	// todo
+	if req.InboundTarget == model.StockTargetStation {
+		stID = req.InboundID
+	}
+	if req.OutboundTarget == model.StockTargetStation {
+		stID = req.OutboundID
 	}
 
 	in := &req.InboundID

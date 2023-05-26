@@ -6,10 +6,11 @@
 package mapi
 
 import (
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
-	"github.com/labstack/echo/v4"
 )
 
 type enterprise struct{}
@@ -299,5 +300,67 @@ func (*enterprise) AgentModify(c echo.Context) (err error) {
 func (*enterprise) AgentDelete(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
 	service.NewAgentWithModifier(ctx.Modifier).Delete(req)
+	return ctx.SendResponse()
+}
+
+// BindCabinet 团签绑定电柜
+// @ID           ManagerEnterpriseBindCabinet
+// @Router       /manager/v1/enterprise/cabinet [POST]
+// @Summary      M9024 团签绑定电柜
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        body  body     model.EnterpriseBindCabinetReq true  "绑定电柜请求"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*enterprise) BindCabinet(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[model.EnterpriseBindCabinetReq](c)
+	return ctx.SendResponse(service.NewCabinetWithModifier(ctx.Modifier).BindCabinet(req))
+}
+
+// ModifyCabinet 编辑团签电柜
+// @ID           ManagerEnterpriseModifyCabinet
+// @Router       /manager/v1/enterprise/cabinet [PUT]
+// @Summary      M9025 编辑团签电柜
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        body  body     model.CabinetAgentEditReq true  "编辑电柜请求"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*enterprise) ModifyCabinet(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[model.CabinetAgentEditReq](c)
+	return ctx.SendResponse(service.NewCabinetWithModifier(ctx.Modifier).EditAgentCabinet(req))
+}
+
+// SubscribeApplyList 订阅申请列表
+// @ID           ManagerEnterpriseSubscribeApplyList
+// @Router       /manager/v1/enterprise/subscribe/apply [GET]
+// @Summary      M9026 订阅申请列表
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        id  query  uint64  true  "团签ID"
+// @Param        page          query  uint64  false  "页码"
+// @Param        pageSize      query  uint64  false  "每页数量"
+// @Param        start         query  string  false  "开始时间"
+// @Param        end     query  string  false  "结束时间"
+// @Param        status  query  uint8   false  "状态 0:待处理 1:已同意 2:已拒绝"
+// @Success      200  {object}  []model.ApplyListRsp
+func (*enterprise) SubscribeApplyList(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[model.ApplyReq](c)
+	return ctx.SendResponse(service.NewEnterpriseWithModifier(ctx.Modifier).SubscribeApplyList(req))
+}
+
+// SubscribeApply 审批订阅申请
+// @ID           ManagerEnterpriseSubscribeApply
+// @Router       /manager/v1/enterprise/subscribe/apply [PUT]
+// @Summary      M9027 审批订阅申请
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        body  body  model.ReviewReq true  "审批请求"
+// @Success      200  {object}  model.StatusResponse
+func (*enterprise) SubscribeApply(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[model.ReviewReq](c)
+	service.NewEnterpriseWithModifier(ctx.Modifier).ReviewApply(req)
 	return ctx.SendResponse()
 }

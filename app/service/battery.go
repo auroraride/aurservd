@@ -5,6 +5,7 @@
 
 package service
 
+import "C"
 import (
 	"fmt"
 	"strconv"
@@ -23,7 +24,9 @@ import (
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/battery"
+	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
@@ -248,6 +251,27 @@ func (s *batteryService) listFilter(req model.BatteryFilter) (q *ent.BatteryQuer
 		info["型号"] = m
 		q.Where(battery.Model(m))
 	}
+	// 团签相关电池搜索
+	if req.EnterpriseID != nil {
+		q.Where(battery.EnterpriseID(*req.EnterpriseID)).WithStation()
+		if req.StationID != nil {
+			q.Where(battery.HasStationWith(enterprisestation.ID(*req.StationID)))
+		}
+		if req.CabinetName != nil {
+			q.Where(battery.HasCabinetWith(cabinet.Name(*req.CabinetName)))
+		}
+		if req.Keyword != nil {
+			q.Where(battery.HasRiderWith(rider.NameContainsFold(*req.Keyword)))
+		}
+	}
+	if req.OwnerType != nil {
+		switch *req.OwnerType {
+		case 1: // 平台
+			q.Where(battery.EnterpriseIDIsNil())
+		case 2: // 代理商
+			q.Where(battery.EnterpriseIDNotNil())
+		}
+	}
 
 	return
 }
@@ -290,6 +314,12 @@ func (s *batteryService) List(req *model.BatteryListReq) (res *model.PaginationR
 				Serial: cab.Serial,
 				Name:   cab.Name,
 			}
+		}
+		if item.Edges.Station != nil {
+			res.StationName = item.Edges.Station.Name
+		}
+		if item.Edges.Enterprise != nil {
+			res.EnterpriseName = item.Edges.Enterprise.Name
 		}
 		return
 	})

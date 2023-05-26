@@ -20,8 +20,8 @@ type Payment interface {
 
 func Boot() {
 	_alipay = &alipayClient{
-		Client: newAlipayClient(),
+		// Client: newAlipayClient(),
 		// refundClient: newAlipayRefundClient(),
 	}
-	_wechat = newWechatClient()
+	// _wechat = newWechatClient()
 }

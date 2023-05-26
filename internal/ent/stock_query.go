@@ -17,6 +17,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
+	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/stock"
@@ -27,24 +29,26 @@ import (
 // StockQuery is the builder for querying Stock entities.
 type StockQuery struct {
 	config
-	ctx           *QueryContext
-	order         []stock.OrderOption
-	inters        []Interceptor
-	predicates    []predicate.Stock
-	withCity      *CityQuery
-	withSubscribe *SubscribeQuery
-	withEbike     *EbikeQuery
-	withBrand     *EbikeBrandQuery
-	withBattery   *BatteryQuery
-	withStore     *StoreQuery
-	withCabinet   *CabinetQuery
-	withRider     *RiderQuery
-	withEmployee  *EmployeeQuery
-	withSpouse    *StockQuery
-	withParent    *StockQuery
-	withChildren  *StockQuery
-	withFKs       bool
-	modifiers     []func(*sql.Selector)
+	ctx            *QueryContext
+	order          []stock.OrderOption
+	inters         []Interceptor
+	predicates     []predicate.Stock
+	withCity       *CityQuery
+	withSubscribe  *SubscribeQuery
+	withEbike      *EbikeQuery
+	withBrand      *EbikeBrandQuery
+	withBattery    *BatteryQuery
+	withStore      *StoreQuery
+	withCabinet    *CabinetQuery
+	withRider      *RiderQuery
+	withEmployee   *EmployeeQuery
+	withSpouse     *StockQuery
+	withParent     *StockQuery
+	withChildren   *StockQuery
+	withEnterprise *EnterpriseQuery
+	withStations   *EnterpriseStationQuery
+	withFKs        bool
+	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -345,6 +349,50 @@ func (sq *StockQuery) QueryChildren() *StockQuery {
 	return query
 }
 
+// QueryEnterprise chains the current query on the "enterprise" edge.
+func (sq *StockQuery) QueryEnterprise() *EnterpriseQuery {
+	query := (&EnterpriseClient{config: sq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := sq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := sq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, selector),
+			sqlgraph.To(enterprise.Table, enterprise.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, stock.EnterpriseTable, stock.EnterpriseColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryStations chains the current query on the "stations" edge.
+func (sq *StockQuery) QueryStations() *EnterpriseStationQuery {
+	query := (&EnterpriseStationClient{config: sq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := sq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := sq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, selector),
+			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, stock.StationsTable, stock.StationsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Stock entity from the query.
 // Returns a *NotFoundError when no Stock was found.
 func (sq *StockQuery) First(ctx context.Context) (*Stock, error) {
@@ -532,23 +580,25 @@ func (sq *StockQuery) Clone() *StockQuery {
 		return nil
 	}
 	return &StockQuery{
-		config:        sq.config,
-		ctx:           sq.ctx.Clone(),
-		order:         append([]stock.OrderOption{}, sq.order...),
-		inters:        append([]Interceptor{}, sq.inters...),
-		predicates:    append([]predicate.Stock{}, sq.predicates...),
-		withCity:      sq.withCity.Clone(),
-		withSubscribe: sq.withSubscribe.Clone(),
-		withEbike:     sq.withEbike.Clone(),
-		withBrand:     sq.withBrand.Clone(),
-		withBattery:   sq.withBattery.Clone(),
-		withStore:     sq.withStore.Clone(),
-		withCabinet:   sq.withCabinet.Clone(),
-		withRider:     sq.withRider.Clone(),
-		withEmployee:  sq.withEmployee.Clone(),
-		withSpouse:    sq.withSpouse.Clone(),
-		withParent:    sq.withParent.Clone(),
-		withChildren:  sq.withChildren.Clone(),
+		config:         sq.config,
+		ctx:            sq.ctx.Clone(),
+		order:          append([]stock.OrderOption{}, sq.order...),
+		inters:         append([]Interceptor{}, sq.inters...),
+		predicates:     append([]predicate.Stock{}, sq.predicates...),
+		withCity:       sq.withCity.Clone(),
+		withSubscribe:  sq.withSubscribe.Clone(),
+		withEbike:      sq.withEbike.Clone(),
+		withBrand:      sq.withBrand.Clone(),
+		withBattery:    sq.withBattery.Clone(),
+		withStore:      sq.withStore.Clone(),
+		withCabinet:    sq.withCabinet.Clone(),
+		withRider:      sq.withRider.Clone(),
+		withEmployee:   sq.withEmployee.Clone(),
+		withSpouse:     sq.withSpouse.Clone(),
+		withParent:     sq.withParent.Clone(),
+		withChildren:   sq.withChildren.Clone(),
+		withEnterprise: sq.withEnterprise.Clone(),
+		withStations:   sq.withStations.Clone(),
 		// clone intermediate query.
 		sql:  sq.sql.Clone(),
 		path: sq.path,
@@ -687,6 +737,28 @@ func (sq *StockQuery) WithChildren(opts ...func(*StockQuery)) *StockQuery {
 	return sq
 }
 
+// WithEnterprise tells the query-builder to eager-load the nodes that are connected to
+// the "enterprise" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *StockQuery) WithEnterprise(opts ...func(*EnterpriseQuery)) *StockQuery {
+	query := (&EnterpriseClient{config: sq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	sq.withEnterprise = query
+	return sq
+}
+
+// WithStations tells the query-builder to eager-load the nodes that are connected to
+// the "stations" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *StockQuery) WithStations(opts ...func(*EnterpriseStationQuery)) *StockQuery {
+	query := (&EnterpriseStationClient{config: sq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	sq.withStations = query
+	return sq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -766,7 +838,7 @@ func (sq *StockQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Stock,
 		nodes       = []*Stock{}
 		withFKs     = sq.withFKs
 		_spec       = sq.querySpec()
-		loadedTypes = [12]bool{
+		loadedTypes = [14]bool{
 			sq.withCity != nil,
 			sq.withSubscribe != nil,
 			sq.withEbike != nil,
@@ -779,6 +851,8 @@ func (sq *StockQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Stock,
 			sq.withSpouse != nil,
 			sq.withParent != nil,
 			sq.withChildren != nil,
+			sq.withEnterprise != nil,
+			sq.withStations != nil,
 		}
 	)
 	if sq.withSpouse != nil {
@@ -878,6 +952,18 @@ func (sq *StockQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Stock,
 		if err := sq.loadChildren(ctx, query, nodes,
 			func(n *Stock) { n.Edges.Children = []*Stock{} },
 			func(n *Stock, e *Stock) { n.Edges.Children = append(n.Edges.Children, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := sq.withEnterprise; query != nil {
+		if err := sq.loadEnterprise(ctx, query, nodes, nil,
+			func(n *Stock, e *Enterprise) { n.Edges.Enterprise = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := sq.withStations; query != nil {
+		if err := sq.loadStations(ctx, query, nodes, nil,
+			func(n *Stock, e *EnterpriseStation) { n.Edges.Stations = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -1270,6 +1356,70 @@ func (sq *StockQuery) loadChildren(ctx context.Context, query *StockQuery, nodes
 	}
 	return nil
 }
+func (sq *StockQuery) loadEnterprise(ctx context.Context, query *EnterpriseQuery, nodes []*Stock, init func(*Stock), assign func(*Stock, *Enterprise)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Stock)
+	for i := range nodes {
+		if nodes[i].EnterpriseID == nil {
+			continue
+		}
+		fk := *nodes[i].EnterpriseID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(enterprise.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "enterprise_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (sq *StockQuery) loadStations(ctx context.Context, query *EnterpriseStationQuery, nodes []*Stock, init func(*Stock), assign func(*Stock, *EnterpriseStation)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Stock)
+	for i := range nodes {
+		if nodes[i].StationID == nil {
+			continue
+		}
+		fk := *nodes[i].StationID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(enterprisestation.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "station_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 
 func (sq *StockQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := sq.querySpec()
@@ -1328,6 +1478,12 @@ func (sq *StockQuery) querySpec() *sqlgraph.QuerySpec {
 		}
 		if sq.withParent != nil {
 			_spec.Node.AddColumnOnce(stock.FieldParentID)
+		}
+		if sq.withEnterprise != nil {
+			_spec.Node.AddColumnOnce(stock.FieldEnterpriseID)
+		}
+		if sq.withStations != nil {
+			_spec.Node.AddColumnOnce(stock.FieldStationID)
 		}
 	}
 	if ps := sq.predicates; len(ps) > 0 {
@@ -1397,18 +1553,20 @@ func (sq *StockQuery) Modify(modifiers ...func(s *sql.Selector)) *StockSelect {
 type StockQueryWith string
 
 var (
-	StockQueryWithCity      StockQueryWith = "City"
-	StockQueryWithSubscribe StockQueryWith = "Subscribe"
-	StockQueryWithEbike     StockQueryWith = "Ebike"
-	StockQueryWithBrand     StockQueryWith = "Brand"
-	StockQueryWithBattery   StockQueryWith = "Battery"
-	StockQueryWithStore     StockQueryWith = "Store"
-	StockQueryWithCabinet   StockQueryWith = "Cabinet"
-	StockQueryWithRider     StockQueryWith = "Rider"
-	StockQueryWithEmployee  StockQueryWith = "Employee"
-	StockQueryWithSpouse    StockQueryWith = "Spouse"
-	StockQueryWithParent    StockQueryWith = "Parent"
-	StockQueryWithChildren  StockQueryWith = "Children"
+	StockQueryWithCity       StockQueryWith = "City"
+	StockQueryWithSubscribe  StockQueryWith = "Subscribe"
+	StockQueryWithEbike      StockQueryWith = "Ebike"
+	StockQueryWithBrand      StockQueryWith = "Brand"
+	StockQueryWithBattery    StockQueryWith = "Battery"
+	StockQueryWithStore      StockQueryWith = "Store"
+	StockQueryWithCabinet    StockQueryWith = "Cabinet"
+	StockQueryWithRider      StockQueryWith = "Rider"
+	StockQueryWithEmployee   StockQueryWith = "Employee"
+	StockQueryWithSpouse     StockQueryWith = "Spouse"
+	StockQueryWithParent     StockQueryWith = "Parent"
+	StockQueryWithChildren   StockQueryWith = "Children"
+	StockQueryWithEnterprise StockQueryWith = "Enterprise"
+	StockQueryWithStations   StockQueryWith = "Stations"
 )
 
 func (sq *StockQuery) With(withEdges ...StockQueryWith) *StockQuery {
@@ -1438,6 +1596,10 @@ func (sq *StockQuery) With(withEdges ...StockQueryWith) *StockQuery {
 			sq.WithParent()
 		case StockQueryWithChildren:
 			sq.WithChildren()
+		case StockQueryWithEnterprise:
+			sq.WithEnterprise()
+		case StockQueryWithStations:
+			sq.WithStations()
 		}
 	}
 	return sq

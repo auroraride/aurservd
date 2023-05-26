@@ -36,6 +36,8 @@ const (
 	StockTargetPlaform uint8 = iota
 	StockTargetStore         // 调拨对象 - 门店
 	StockTargetCabinet       // 调拨对象 - 电柜
+	StockTargetStation       // 调拨对象 团签站点
+
 )
 
 // StockNumberOfRiderBusiness 出入库电池数量
@@ -70,9 +72,9 @@ type StockTransferReq struct {
 	Remark string `json:"remark" validate:"required" trans:"备注"`
 
 	OutboundID     uint64 `json:"outboundId"`                   // 调出自 0:平台
-	OutboundTarget uint8  `json:"outboundTarget" enums:"0,1,2"` // 调出目标 0:平台 1:门店 2:电柜
+	OutboundTarget uint8  `json:"outboundTarget" enums:"0,1,2"` // 调出目标 0:平台 1:门店 2:电柜 3.站点
 	InboundID      uint64 `json:"inboundId"`                    // 调入至 0:平台
-	InboundTarget  uint8  `json:"inboundTarget" enums:"0,1,2"`  // 调入目标 0:平台 1:门店 2:电柜
+	InboundTarget  uint8  `json:"inboundTarget" enums:"0,1,2"`  // 调入目标 0:平台 1:门店 2:电柜 3.站点
 
 	Force bool `swaggerignore:"true"` // 是否强制 (忽略电柜初始化)
 }
@@ -99,6 +101,13 @@ func (req *StockTransferReq) IsToPlaform() bool {
 
 func (req *StockTransferReq) IsFromPlaform() bool {
 	return req.OutboundTarget == StockTargetPlaform
+}
+func (req *StockTransferReq) IsToStation() bool {
+	return req.InboundTarget == StockTargetStation
+}
+
+func (req *StockTransferReq) IsFromStation() bool {
+	return req.OutboundTarget == StockTargetStation
 }
 
 func (req *StockTransferReq) Batchable() bool {
@@ -166,11 +175,11 @@ func (req *StockTransferReq) Validate() error {
 		return errors.New("电柜之间无法调拨")
 	}
 
-	if ((req.IsToStore() || req.IsToCabinet()) && req.InboundID == 0) || (req.IsToPlaform() && req.InboundID != 0) {
+	if ((req.IsToStore() || req.IsToCabinet()) && req.InboundID == 0) || (req.IsToPlaform() && req.InboundID != 0) || (req.IsToStation() && req.InboundID != 0) {
 		return errors.New("调入参数错误")
 	}
 
-	if ((req.IsFromStore() || req.IsFromCabinet()) && req.OutboundID == 0) || (req.IsFromPlaform() && req.OutboundID != 0) {
+	if ((req.IsFromStore() || req.IsFromCabinet()) && req.OutboundID == 0) || (req.IsFromPlaform() && req.OutboundID != 0) || (req.IsFromStation() && req.OutboundID != 0) {
 		return errors.New("调出参数错误")
 	}
 
@@ -215,6 +224,11 @@ type StockListReq struct {
 	End     *string `json:"end" query:"end"`         // 结束时间
 	StoreID *uint64 `json:"storeId" query:"storeId"` // 门店ID
 
+	// 团签id
+	ID           *uint64 `json:"id" query:"id"`
+	StationID    *uint64 `json:"stationId" query:"stationId"`         // 站点id
+	EnterpriseID *uint64 `json:"enterprise_id" query:"enterprise_id"` // 企业名称
+
 	EbikeBrandID uint64 `json:"ebikeBrandId" query:"ebikeBrandId"` // 电车型号ID
 	Model        string `json:"model" query:"model"`               // 电池型号
 	Keyword      string `json:"keyword" query:"keyword"`           // 其他物资名称
@@ -235,13 +249,15 @@ type StockStoreMaterial struct {
 }
 
 type StockListRes struct {
-	Store        Store            `json:"store"`        // 门店
-	City         City             `json:"city"`         // 城市
-	BatteryTotal int              `json:"batteryTotal"` // 电池总数
-	Batteries    []*StockMaterial `json:"batteries"`    // 电池详情
-	Materials    []*StockMaterial `json:"materials"`    // 非电池物资详情
-	EbikeTotal   int              `json:"ebikeTotal"`   // 电车总数
-	Ebikes       []*StockMaterial `json:"ebikes"`       // 电车
+	Store          Store            `json:"store"`                    // 门店
+	City           City             `json:"city"`                     // 城市
+	BatteryTotal   int              `json:"batteryTotal"`             // 电池总数
+	Batteries      []*StockMaterial `json:"batteries"`                // 电池详情
+	Materials      []*StockMaterial `json:"materials"`                // 非电池物资详情
+	EbikeTotal     int              `json:"ebikeTotal"`               // 电车总数
+	Ebikes         []*StockMaterial `json:"ebikes"`                   // 电车
+	StationName    string           `json:"stationName,omitempty"`    // 站点名称
+	EnterpriseName string           `json:"enterpriseName,omitempty"` // 团签名称
 }
 
 // StockBusinessReq 业务库存调整请求

@@ -385,7 +385,6 @@ var (
 		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
 		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
-		{Name: "station_id", Type: field.TypeUint64, Nullable: true, Comment: "所属站点Id"},
 		{Name: "sn", Type: field.TypeString, Unique: true, Comment: "电池编号"},
 		{Name: "brand", Type: field.TypeOther, Comment: "品牌", SchemaType: map[string]string{"postgres": "character varying"}},
 		{Name: "enable", Type: field.TypeBool, Comment: "是否启用", Default: true},
@@ -394,6 +393,7 @@ var (
 		{Name: "city_id", Type: field.TypeUint64, Nullable: true, Comment: "城市ID"},
 		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true, Comment: "电柜ID"},
 		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true, Comment: "所属团签"},
+		{Name: "station_id", Type: field.TypeUint64, Nullable: true, Comment: "所属站点Id"},
 		{Name: "rider_id", Type: field.TypeUint64, Unique: true, Nullable: true, Comment: "骑手ID"},
 		{Name: "subscribe_id", Type: field.TypeUint64, Unique: true, Nullable: true, Comment: "订阅ID"},
 	}
@@ -405,20 +405,26 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "battery_city_city",
-				Columns:    []*schema.Column{BatteryColumns[13]},
+				Columns:    []*schema.Column{BatteryColumns[12]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "battery_cabinet_batteries",
-				Columns:    []*schema.Column{BatteryColumns[14]},
+				Columns:    []*schema.Column{BatteryColumns[13]},
 				RefColumns: []*schema.Column{CabinetColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "battery_enterprise_battery",
-				Columns:    []*schema.Column{BatteryColumns[15]},
+				Columns:    []*schema.Column{BatteryColumns[14]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "battery_enterprise_station_battery",
+				Columns:    []*schema.Column{BatteryColumns[15]},
+				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
@@ -448,32 +454,32 @@ var (
 			{
 				Name:    "battery_city_id",
 				Unique:  false,
-				Columns: []*schema.Column{BatteryColumns[13]},
+				Columns: []*schema.Column{BatteryColumns[12]},
 			},
 			{
 				Name:    "battery_cabinet_id_ordinal",
 				Unique:  false,
-				Columns: []*schema.Column{BatteryColumns[14], BatteryColumns[12]},
+				Columns: []*schema.Column{BatteryColumns[13], BatteryColumns[11]},
 			},
 			{
 				Name:    "battery_enable",
 				Unique:  false,
-				Columns: []*schema.Column{BatteryColumns[10]},
+				Columns: []*schema.Column{BatteryColumns[9]},
 			},
 			{
 				Name:    "battery_brand",
 				Unique:  false,
-				Columns: []*schema.Column{BatteryColumns[9]},
+				Columns: []*schema.Column{BatteryColumns[8]},
 			},
 			{
 				Name:    "index_battery_model",
 				Unique:  false,
-				Columns: []*schema.Column{BatteryColumns[11]},
+				Columns: []*schema.Column{BatteryColumns[10]},
 			},
 			{
 				Name:    "battery_sn",
 				Unique:  false,
-				Columns: []*schema.Column{BatteryColumns[8]},
+				Columns: []*schema.Column{BatteryColumns[7]},
 				Annotation: &entsql.IndexAnnotation{
 					OpClass: "gin_trgm_ops",
 					Types: map[string]string{
@@ -881,7 +887,6 @@ var (
 		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
 		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
-		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true, Comment: "团签ID"},
 		{Name: "sn", Type: field.TypeString, Unique: true, Comment: "编号"},
 		{Name: "brand", Type: field.TypeOther, Comment: "品牌", SchemaType: map[string]string{"postgres": "character varying"}},
 		{Name: "serial", Type: field.TypeString, Comment: "原始编号"},
@@ -904,6 +909,7 @@ var (
 		{Name: "locked_bin_num", Type: field.TypeInt, Comment: "锁仓数量", Default: 0},
 		{Name: "branch_id", Type: field.TypeUint64, Nullable: true, Comment: "网点"},
 		{Name: "city_id", Type: field.TypeUint64, Nullable: true, Comment: "城市ID"},
+		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true, Comment: "团签ID"},
 		{Name: "station_id", Type: field.TypeUint64, Nullable: true, Comment: "站点ID"},
 	}
 	// CabinetTable holds the schema information for the "cabinet" table.
@@ -914,14 +920,20 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "cabinet_branch_cabinets",
-				Columns:    []*schema.Column{CabinetColumns[28]},
+				Columns:    []*schema.Column{CabinetColumns[27]},
 				RefColumns: []*schema.Column{BranchColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "cabinet_city_city",
-				Columns:    []*schema.Column{CabinetColumns[29]},
+				Columns:    []*schema.Column{CabinetColumns[28]},
 				RefColumns: []*schema.Column{CityColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "cabinet_enterprise_cabinets",
+				Columns:    []*schema.Column{CabinetColumns[29]},
+				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
@@ -945,22 +957,22 @@ var (
 			{
 				Name:    "cabinet_city_id",
 				Unique:  false,
-				Columns: []*schema.Column{CabinetColumns[29]},
+				Columns: []*schema.Column{CabinetColumns[28]},
 			},
 			{
 				Name:    "cabinet_branch_id",
 				Unique:  false,
-				Columns: []*schema.Column{CabinetColumns[28]},
+				Columns: []*schema.Column{CabinetColumns[27]},
 			},
 			{
 				Name:    "cabinet_brand",
 				Unique:  false,
-				Columns: []*schema.Column{CabinetColumns[9]},
+				Columns: []*schema.Column{CabinetColumns[8]},
 			},
 			{
 				Name:    "cabinet_serial",
 				Unique:  false,
-				Columns: []*schema.Column{CabinetColumns[10]},
+				Columns: []*schema.Column{CabinetColumns[9]},
 				Annotation: &entsql.IndexAnnotation{
 					OpClass: "gin_trgm_ops",
 					Types: map[string]string{
@@ -971,7 +983,7 @@ var (
 			{
 				Name:    "cabinet_name",
 				Unique:  false,
-				Columns: []*schema.Column{CabinetColumns[11]},
+				Columns: []*schema.Column{CabinetColumns[10]},
 				Annotation: &entsql.IndexAnnotation{
 					OpClass: "gin_trgm_ops",
 					Types: map[string]string{
@@ -982,7 +994,7 @@ var (
 			{
 				Name:    "cabinet_bin",
 				Unique:  false,
-				Columns: []*schema.Column{CabinetColumns[22]},
+				Columns: []*schema.Column{CabinetColumns[21]},
 				Annotation: &entsql.IndexAnnotation{
 					OpClass: "jsonb_ops",
 					Types: map[string]string{
@@ -993,7 +1005,7 @@ var (
 			{
 				Name:    "cabinet_sim_date",
 				Unique:  false,
-				Columns: []*schema.Column{CabinetColumns[18]},
+				Columns: []*schema.Column{CabinetColumns[17]},
 			},
 		},
 	}
@@ -1713,6 +1725,7 @@ var (
 		{Name: "agent", Type: field.TypeBool, Comment: "代理商模式", Default: false},
 		{Name: "use_store", Type: field.TypeBool, Nullable: true, Comment: "是否可以使用门店, 只有代理商模式生效", Default: true},
 		{Name: "days", Type: field.TypeJSON, Nullable: true, Comment: "代理商时间选项"},
+		{Name: "distance", Type: field.TypeFloat64, Comment: "可控制电柜距离", Default: 0},
 		{Name: "city_id", Type: field.TypeUint64, Comment: "城市ID"},
 	}
 	// EnterpriseTable holds the schema information for the "enterprise" table.
@@ -1723,7 +1736,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "enterprise_city_city",
-				Columns:    []*schema.Column{EnterpriseColumns[22]},
+				Columns:    []*schema.Column{EnterpriseColumns[23]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -1742,7 +1755,7 @@ var (
 			{
 				Name:    "enterprise_city_id",
 				Unique:  false,
-				Columns: []*schema.Column{EnterpriseColumns[22]},
+				Columns: []*schema.Column{EnterpriseColumns[23]},
 			},
 			{
 				Name:    "enterprise_payment",
@@ -3417,14 +3430,14 @@ var (
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
 		{Name: "sn", Type: field.TypeString, Comment: "调拨编号"},
 		{Name: "type", Type: field.TypeUint8, Comment: "类型 0:调拨 1:领取电池 2:寄存电池 3:结束寄存 4:归还电池", Default: 0},
-		{Name: "station_id", Type: field.TypeUint64, Nullable: true, Comment: "入库至 或 出库自     站点ID"},
-		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true, Comment: "团签id"},
 		{Name: "name", Type: field.TypeString, Comment: "物资名称"},
 		{Name: "model", Type: field.TypeString, Nullable: true, Comment: "电池型号"},
 		{Name: "num", Type: field.TypeInt, Comment: "物资数量: 正值调入 / 负值调出"},
 		{Name: "material", Type: field.TypeEnum, Comment: "物资种类", Enums: []string{"battery", "ebike", "others"}},
 		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true, Comment: "入库至 或 出库自 电柜ID"},
 		{Name: "employee_id", Type: field.TypeUint64, Nullable: true, Comment: "操作店员ID"},
+		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true, Comment: "团签id"},
+		{Name: "station_id", Type: field.TypeUint64, Nullable: true, Comment: "入库至 或 出库自     站点ID"},
 		{Name: "rider_id", Type: field.TypeUint64, Nullable: true, Comment: "对应骑手ID"},
 		{Name: "city_id", Type: field.TypeUint64, Nullable: true, Comment: "城市ID"},
 		{Name: "subscribe_id", Type: field.TypeUint64, Nullable: true},
@@ -3443,14 +3456,26 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "stock_cabinet_stocks",
-				Columns:    []*schema.Column{StockColumns[15]},
+				Columns:    []*schema.Column{StockColumns[13]},
 				RefColumns: []*schema.Column{CabinetColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "stock_employee_stocks",
-				Columns:    []*schema.Column{StockColumns[16]},
+				Columns:    []*schema.Column{StockColumns[14]},
 				RefColumns: []*schema.Column{EmployeeColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "stock_enterprise_stocks",
+				Columns:    []*schema.Column{StockColumns[15]},
+				RefColumns: []*schema.Column{EnterpriseColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "stock_enterprise_station_stocks",
+				Columns:    []*schema.Column{StockColumns[16]},
+				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
@@ -3562,7 +3587,7 @@ var (
 			{
 				Name:    "stock_cabinet_id",
 				Unique:  false,
-				Columns: []*schema.Column{StockColumns[15]},
+				Columns: []*schema.Column{StockColumns[13]},
 			},
 			{
 				Name:    "stock_rider_id",
@@ -3572,12 +3597,12 @@ var (
 			{
 				Name:    "stock_employee_id",
 				Unique:  false,
-				Columns: []*schema.Column{StockColumns[16]},
+				Columns: []*schema.Column{StockColumns[14]},
 			},
 			{
 				Name:    "stock_model",
 				Unique:  false,
-				Columns: []*schema.Column{StockColumns[12]},
+				Columns: []*schema.Column{StockColumns[10]},
 			},
 			{
 				Name:    "stock_sn",
@@ -3592,7 +3617,7 @@ var (
 			{
 				Name:    "stock_name",
 				Unique:  false,
-				Columns: []*schema.Column{StockColumns[11]},
+				Columns: []*schema.Column{StockColumns[9]},
 				Annotation: &entsql.IndexAnnotation{
 					OpClass: "gin_trgm_ops",
 					Types: map[string]string{
@@ -4443,8 +4468,9 @@ func init() {
 	BatteryTable.ForeignKeys[0].RefTable = CityTable
 	BatteryTable.ForeignKeys[1].RefTable = CabinetTable
 	BatteryTable.ForeignKeys[2].RefTable = EnterpriseTable
-	BatteryTable.ForeignKeys[3].RefTable = RiderTable
-	BatteryTable.ForeignKeys[4].RefTable = SubscribeTable
+	BatteryTable.ForeignKeys[3].RefTable = EnterpriseStationTable
+	BatteryTable.ForeignKeys[4].RefTable = RiderTable
+	BatteryTable.ForeignKeys[5].RefTable = SubscribeTable
 	BatteryTable.Annotation = &entsql.Annotation{
 		Table: "battery",
 	}
@@ -4481,7 +4507,8 @@ func init() {
 	}
 	CabinetTable.ForeignKeys[0].RefTable = BranchTable
 	CabinetTable.ForeignKeys[1].RefTable = CityTable
-	CabinetTable.ForeignKeys[2].RefTable = EnterpriseStationTable
+	CabinetTable.ForeignKeys[2].RefTable = EnterpriseTable
+	CabinetTable.ForeignKeys[3].RefTable = EnterpriseStationTable
 	CabinetTable.Annotation = &entsql.Annotation{
 		Table: "cabinet",
 	}
@@ -4663,15 +4690,17 @@ func init() {
 	}
 	StockTable.ForeignKeys[0].RefTable = CabinetTable
 	StockTable.ForeignKeys[1].RefTable = EmployeeTable
-	StockTable.ForeignKeys[2].RefTable = RiderTable
-	StockTable.ForeignKeys[3].RefTable = CityTable
-	StockTable.ForeignKeys[4].RefTable = SubscribeTable
-	StockTable.ForeignKeys[5].RefTable = EbikeTable
-	StockTable.ForeignKeys[6].RefTable = EbikeBrandTable
-	StockTable.ForeignKeys[7].RefTable = BatteryTable
-	StockTable.ForeignKeys[8].RefTable = StockTable
-	StockTable.ForeignKeys[9].RefTable = StockTable
-	StockTable.ForeignKeys[10].RefTable = StoreTable
+	StockTable.ForeignKeys[2].RefTable = EnterpriseTable
+	StockTable.ForeignKeys[3].RefTable = EnterpriseStationTable
+	StockTable.ForeignKeys[4].RefTable = RiderTable
+	StockTable.ForeignKeys[5].RefTable = CityTable
+	StockTable.ForeignKeys[6].RefTable = SubscribeTable
+	StockTable.ForeignKeys[7].RefTable = EbikeTable
+	StockTable.ForeignKeys[8].RefTable = EbikeBrandTable
+	StockTable.ForeignKeys[9].RefTable = BatteryTable
+	StockTable.ForeignKeys[10].RefTable = StockTable
+	StockTable.ForeignKeys[11].RefTable = StockTable
+	StockTable.ForeignKeys[12].RefTable = StoreTable
 	StockTable.Annotation = &entsql.Annotation{
 		Table: "stock",
 	}

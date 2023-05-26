@@ -2615,6 +2615,12 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "type": "string",
+                        "description": "电柜名称",
+                        "name": "cabinetName",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "城市",
                         "name": "cityId",
@@ -2627,9 +2633,27 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "integer",
+                        "description": "团签id",
+                        "name": "enterpriseId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "关键词",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "description": "型号",
                         "name": "model",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "归属类型   1:平台 2:代理商",
+                        "name": "ownerType",
                         "in": "query"
                     },
                     {
@@ -2642,6 +2666,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "编号",
                         "name": "sn",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "站点id",
+                        "name": "stationId",
                         "in": "query"
                     },
                     {
@@ -4121,6 +4151,12 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "description": "团签id",
+                        "name": "enterpriseId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
                         "description": "是否智能柜 0:全部 1:是 2:否",
                         "name": "intelligent",
                         "in": "query"
@@ -4141,6 +4177,12 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "在线状态",
                         "name": "online",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "归属类型   1:平台 2:代理商",
+                        "name": "ownerType",
                         "in": "query"
                     },
                     {
@@ -6995,6 +7037,72 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/enterprise/cabinet": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M9025 编辑团签电柜",
+                "operationId": "ManagerEnterpriseModifyCabinet",
+                "parameters": [
+                    {
+                        "description": "编辑电柜请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.CabinetAgentEditReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M9024 团签绑定电柜",
+                "operationId": "ManagerEnterpriseBindCabinet",
+                "parameters": [
+                    {
+                        "description": "绑定电柜请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.EnterpriseBindCabinetReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/enterprise/contract": {
             "post": {
                 "consumes": [
@@ -7419,6 +7527,103 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/enterprise/subscribe/apply": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M9026 订阅申请列表",
+                "operationId": "ManagerEnterpriseSubscribeApplyList",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "团签ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数量",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "状态 0:待处理 1:已同意 2:已拒绝",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.ApplyListRsp"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M9027 审批订阅申请",
+                "operationId": "ManagerEnterpriseSubscribeApply",
+                "parameters": [
+                    {
+                        "description": "审批请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ReviewReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/model.StatusResponse"
                         }
@@ -10967,6 +11172,131 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/stock/enterprise/list": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "ME003 门店物资列表",
+                "operationId": "ManagerStockEnterpriseList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市ID",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "电车型号ID",
+                        "name": "ebikeBrandId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "企业名称",
+                        "name": "enterprise_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "团签id",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "其他物资名称",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "电池型号",
+                        "name": "model",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "门店名称",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "站点id",
+                        "name": "stationId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "门店ID",
+                        "name": "storeId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.StockListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/stock/store": {
             "get": {
                 "consumes": [
@@ -11013,6 +11343,18 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "integer",
+                        "description": "企业名称",
+                        "name": "enterprise_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "团签id",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "description": "其他物资名称",
                         "name": "keyword",
@@ -11040,6 +11382,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "开始时间",
                         "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "站点id",
+                        "name": "stationId",
                         "in": "query"
                     },
                     {
@@ -13406,7 +13754,13 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "结束时间",
-                        "name": "end_time",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "关键词",
+                        "name": "keyword",
                         "in": "query"
                     },
                     {
@@ -13418,7 +13772,13 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "开始时间",
-                        "name": "start_time",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "审核状态",
+                        "name": "status",
                         "in": "query"
                     }
                 ],
@@ -15186,8 +15546,20 @@ const docTemplate = `{
                     "description": "天数",
                     "type": "integer"
                 },
+                "expire_time": {
+                    "description": "到期时间",
+                    "type": "integer"
+                },
                 "review_time": {
                     "description": "审核时间",
+                    "type": "string"
+                },
+                "rider_name": {
+                    "description": "骑手姓名",
+                    "type": "string"
+                },
+                "rider_phone": {
+                    "description": "骑手手机号",
                     "type": "string"
                 },
                 "status": {
@@ -16332,6 +16704,10 @@ const docTemplate = `{
                     "description": "是否启用",
                     "type": "boolean"
                 },
+                "enterpriseName": {
+                    "description": "团签名称",
+                    "type": "string"
+                },
                 "faults": {
                     "description": "故障列表, ` + "`" + `0` + "`" + `:总压低, ` + "`" + `1` + "`" + `:总压高, ` + "`" + `2` + "`" + `:单体低, ` + "`" + `3` + "`" + `:单体高, ` + "`" + `6` + "`" + `:放电过流, ` + "`" + `7` + "`" + `:充电过流, ` + "`" + `8` + "`" + `:SOC低, ` + "`" + `11` + "`" + `:充电高温, ` + "`" + `12` + "`" + `:充电低温, ` + "`" + `13` + "`" + `:放电高温, ` + "`" + `14` + "`" + `:放电低温, ` + "`" + `15` + "`" + `:短路, ` + "`" + `16` + "`" + `:MOS高温",
                     "type": "array",
@@ -16361,6 +16737,10 @@ const docTemplate = `{
                 "soc": {
                     "description": "剩余容量, 单位1%",
                     "type": "integer"
+                },
+                "stationName": {
+                    "description": "站点名称",
+                    "type": "string"
                 },
                 "status": {
                     "description": "状态, 0:静置 1:充电 2:放电 3:异常(此时faults字段存在)",
@@ -17506,6 +17886,23 @@ const docTemplate = `{
                 }
             }
         },
+        "model.CabinetAgentEditReq": {
+            "type": "object",
+            "required": [
+                "stationId",
+                "status"
+            ],
+            "properties": {
+                "stationId": {
+                    "description": "站点id",
+                    "type": "integer"
+                },
+                "status": {
+                    "description": "电柜状态",
+                    "type": "integer"
+                }
+            }
+        },
         "model.CabinetBasicInfo": {
             "type": "object",
             "properties": {
@@ -17848,6 +18245,10 @@ const docTemplate = `{
                     "description": "柜门数量",
                     "type": "integer"
                 },
+                "enterpriseName": {
+                    "description": "团签名称",
+                    "type": "string"
+                },
                 "health": {
                     "description": "在线状态 0离线 1在线 2故障",
                     "type": "integer"
@@ -17893,6 +18294,10 @@ const docTemplate = `{
                 },
                 "sn": {
                     "description": "平台编码",
+                    "type": "string"
+                },
+                "stationName": {
+                    "description": "所属站点名称",
                     "type": "string"
                 },
                 "status": {
@@ -18160,6 +18565,10 @@ const docTemplate = `{
                     "description": "柜门数量",
                     "type": "integer"
                 },
+                "enterpriseName": {
+                    "description": "团签名称",
+                    "type": "string"
+                },
                 "health": {
                     "description": "在线状态 0离线 1在线 2故障",
                     "type": "integer"
@@ -18198,6 +18607,10 @@ const docTemplate = `{
                 },
                 "sn": {
                     "description": "平台编码",
+                    "type": "string"
+                },
+                "stationName": {
+                    "description": "所属站点名称",
                     "type": "string"
                 },
                 "status": {
@@ -19526,6 +19939,23 @@ const docTemplate = `{
                 }
             }
         },
+        "model.EnterpriseBindCabinetReq": {
+            "type": "object",
+            "required": [
+                "enterprise_id",
+                "station_id"
+            ],
+            "properties": {
+                "enterprise_id": {
+                    "description": "团签id",
+                    "type": "integer"
+                },
+                "station_id": {
+                    "description": "站点id",
+                    "type": "integer"
+                }
+            }
+        },
         "model.EnterpriseContact": {
             "type": "object",
             "properties": {
@@ -19598,6 +20028,7 @@ const docTemplate = `{
                 "contactName",
                 "contactPhone",
                 "deposit",
+                "distance",
                 "idcardNumber",
                 "name",
                 "payment",
@@ -19632,6 +20063,9 @@ const docTemplate = `{
                 },
                 "deposit": {
                     "type": "number"
+                },
+                "distance": {
+                    "type": "integer"
                 },
                 "idcardNumber": {
                     "type": "string"
@@ -19675,6 +20109,7 @@ const docTemplate = `{
                 "contactName",
                 "contactPhone",
                 "deposit",
+                "distance",
                 "idcardNumber",
                 "name",
                 "payment",
@@ -19709,6 +20144,9 @@ const docTemplate = `{
                 },
                 "deposit": {
                     "type": "number"
+                },
+                "distance": {
+                    "type": "integer"
                 },
                 "idcardNumber": {
                     "type": "string"
@@ -22098,6 +22536,21 @@ const docTemplate = `{
                 }
             }
         },
+        "model.ReviewReq": {
+            "type": "object",
+            "properties": {
+                "ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "status": {
+                    "description": "审批状态",
+                    "type": "integer"
+                }
+            }
+        },
         "model.Rider": {
             "type": "object",
             "properties": {
@@ -23878,12 +24331,20 @@ const docTemplate = `{
                         "$ref": "#/definitions/model.StockMaterial"
                     }
                 },
+                "enterpriseName": {
+                    "description": "团签名称",
+                    "type": "string"
+                },
                 "materials": {
                     "description": "非电池物资详情",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.StockMaterial"
                     }
+                },
+                "stationName": {
+                    "description": "站点名称",
+                    "type": "string"
                 },
                 "store": {
                     "description": "门店",

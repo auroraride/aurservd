@@ -18,6 +18,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -40,6 +41,7 @@ type CabinetQuery struct {
 	withBatteries    *BatteryQuery
 	withBatteryFlows *BatteryFlowQuery
 	withStation      *EnterpriseStationQuery
+	withEnterprise   *EnterpriseQuery
 	modifiers        []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -275,6 +277,28 @@ func (cq *CabinetQuery) QueryStation() *EnterpriseStationQuery {
 	return query
 }
 
+// QueryEnterprise chains the current query on the "enterprise" edge.
+func (cq *CabinetQuery) QueryEnterprise() *EnterpriseQuery {
+	query := (&EnterpriseClient{config: cq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cabinet.Table, cabinet.FieldID, selector),
+			sqlgraph.To(enterprise.Table, enterprise.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, cabinet.EnterpriseTable, cabinet.EnterpriseColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Cabinet entity from the query.
 // Returns a *NotFoundError when no Cabinet was found.
 func (cq *CabinetQuery) First(ctx context.Context) (*Cabinet, error) {
@@ -476,6 +500,7 @@ func (cq *CabinetQuery) Clone() *CabinetQuery {
 		withBatteries:    cq.withBatteries.Clone(),
 		withBatteryFlows: cq.withBatteryFlows.Clone(),
 		withStation:      cq.withStation.Clone(),
+		withEnterprise:   cq.withEnterprise.Clone(),
 		// clone intermediate query.
 		sql:  cq.sql.Clone(),
 		path: cq.path,
@@ -581,6 +606,17 @@ func (cq *CabinetQuery) WithStation(opts ...func(*EnterpriseStationQuery)) *Cabi
 	return cq
 }
 
+// WithEnterprise tells the query-builder to eager-load the nodes that are connected to
+// the "enterprise" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *CabinetQuery) WithEnterprise(opts ...func(*EnterpriseQuery)) *CabinetQuery {
+	query := (&EnterpriseClient{config: cq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withEnterprise = query
+	return cq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -659,7 +695,7 @@ func (cq *CabinetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cabi
 	var (
 		nodes       = []*Cabinet{}
 		_spec       = cq.querySpec()
-		loadedTypes = [9]bool{
+		loadedTypes = [10]bool{
 			cq.withCity != nil,
 			cq.withBranch != nil,
 			cq.withModels != nil,
@@ -669,6 +705,7 @@ func (cq *CabinetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cabi
 			cq.withBatteries != nil,
 			cq.withBatteryFlows != nil,
 			cq.withStation != nil,
+			cq.withEnterprise != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -749,6 +786,12 @@ func (cq *CabinetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cabi
 	if query := cq.withStation; query != nil {
 		if err := cq.loadStation(ctx, query, nodes, nil,
 			func(n *Cabinet, e *EnterpriseStation) { n.Edges.Station = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := cq.withEnterprise; query != nil {
+		if err := cq.loadEnterprise(ctx, query, nodes, nil,
+			func(n *Cabinet, e *Enterprise) { n.Edges.Enterprise = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -1041,7 +1084,10 @@ func (cq *CabinetQuery) loadStation(ctx context.Context, query *EnterpriseStatio
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*Cabinet)
 	for i := range nodes {
-		fk := nodes[i].StationID
+		if nodes[i].StationID == nil {
+			continue
+		}
+		fk := *nodes[i].StationID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -1059,6 +1105,38 @@ func (cq *CabinetQuery) loadStation(ctx context.Context, query *EnterpriseStatio
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "station_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (cq *CabinetQuery) loadEnterprise(ctx context.Context, query *EnterpriseQuery, nodes []*Cabinet, init func(*Cabinet), assign func(*Cabinet, *Enterprise)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Cabinet)
+	for i := range nodes {
+		if nodes[i].EnterpriseID == nil {
+			continue
+		}
+		fk := *nodes[i].EnterpriseID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(enterprise.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "enterprise_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -1103,6 +1181,9 @@ func (cq *CabinetQuery) querySpec() *sqlgraph.QuerySpec {
 		}
 		if cq.withStation != nil {
 			_spec.Node.AddColumnOnce(cabinet.FieldStationID)
+		}
+		if cq.withEnterprise != nil {
+			_spec.Node.AddColumnOnce(cabinet.FieldEnterpriseID)
 		}
 	}
 	if ps := cq.predicates; len(ps) > 0 {
@@ -1181,6 +1262,7 @@ var (
 	CabinetQueryWithBatteries    CabinetQueryWith = "Batteries"
 	CabinetQueryWithBatteryFlows CabinetQueryWith = "BatteryFlows"
 	CabinetQueryWithStation      CabinetQueryWith = "Station"
+	CabinetQueryWithEnterprise   CabinetQueryWith = "Enterprise"
 )
 
 func (cq *CabinetQuery) With(withEdges ...CabinetQueryWith) *CabinetQuery {
@@ -1204,6 +1286,8 @@ func (cq *CabinetQuery) With(withEdges ...CabinetQueryWith) *CabinetQuery {
 			cq.WithBatteryFlows()
 		case CabinetQueryWithStation:
 			cq.WithStation()
+		case CabinetQueryWithEnterprise:
+			cq.WithEnterprise()
 		}
 	}
 	return cq

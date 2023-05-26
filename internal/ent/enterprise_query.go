@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/battery"
+	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
@@ -23,6 +24,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/feedback"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
@@ -44,6 +46,8 @@ type EnterpriseQuery struct {
 	withBattery    *BatteryQuery
 	withFeedback   *FeedbackQuery
 	withAgents     *AgentQuery
+	withCabinets   *CabinetQuery
+	withStocks     *StockQuery
 	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -323,6 +327,50 @@ func (eq *EnterpriseQuery) QueryAgents() *AgentQuery {
 	return query
 }
 
+// QueryCabinets chains the current query on the "cabinets" edge.
+func (eq *EnterpriseQuery) QueryCabinets() *CabinetQuery {
+	query := (&CabinetClient{config: eq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprise.Table, enterprise.FieldID, selector),
+			sqlgraph.To(cabinet.Table, cabinet.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprise.CabinetsTable, enterprise.CabinetsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryStocks chains the current query on the "stocks" edge.
+func (eq *EnterpriseQuery) QueryStocks() *StockQuery {
+	query := (&StockClient{config: eq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprise.Table, enterprise.FieldID, selector),
+			sqlgraph.To(stock.Table, stock.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprise.StocksTable, enterprise.StocksColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Enterprise entity from the query.
 // Returns a *NotFoundError when no Enterprise was found.
 func (eq *EnterpriseQuery) First(ctx context.Context) (*Enterprise, error) {
@@ -526,6 +574,8 @@ func (eq *EnterpriseQuery) Clone() *EnterpriseQuery {
 		withBattery:    eq.withBattery.Clone(),
 		withFeedback:   eq.withFeedback.Clone(),
 		withAgents:     eq.withAgents.Clone(),
+		withCabinets:   eq.withCabinets.Clone(),
+		withStocks:     eq.withStocks.Clone(),
 		// clone intermediate query.
 		sql:  eq.sql.Clone(),
 		path: eq.path,
@@ -653,6 +703,28 @@ func (eq *EnterpriseQuery) WithAgents(opts ...func(*AgentQuery)) *EnterpriseQuer
 	return eq
 }
 
+// WithCabinets tells the query-builder to eager-load the nodes that are connected to
+// the "cabinets" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EnterpriseQuery) WithCabinets(opts ...func(*CabinetQuery)) *EnterpriseQuery {
+	query := (&CabinetClient{config: eq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withCabinets = query
+	return eq
+}
+
+// WithStocks tells the query-builder to eager-load the nodes that are connected to
+// the "stocks" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EnterpriseQuery) WithStocks(opts ...func(*StockQuery)) *EnterpriseQuery {
+	query := (&StockClient{config: eq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withStocks = query
+	return eq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -731,7 +803,7 @@ func (eq *EnterpriseQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*E
 	var (
 		nodes       = []*Enterprise{}
 		_spec       = eq.querySpec()
-		loadedTypes = [11]bool{
+		loadedTypes = [13]bool{
 			eq.withCity != nil,
 			eq.withRiders != nil,
 			eq.withContracts != nil,
@@ -743,6 +815,8 @@ func (eq *EnterpriseQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*E
 			eq.withBattery != nil,
 			eq.withFeedback != nil,
 			eq.withAgents != nil,
+			eq.withCabinets != nil,
+			eq.withStocks != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -839,6 +913,20 @@ func (eq *EnterpriseQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*E
 		if err := eq.loadAgents(ctx, query, nodes,
 			func(n *Enterprise) { n.Edges.Agents = []*Agent{} },
 			func(n *Enterprise, e *Agent) { n.Edges.Agents = append(n.Edges.Agents, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := eq.withCabinets; query != nil {
+		if err := eq.loadCabinets(ctx, query, nodes,
+			func(n *Enterprise) { n.Edges.Cabinets = []*Cabinet{} },
+			func(n *Enterprise, e *Cabinet) { n.Edges.Cabinets = append(n.Edges.Cabinets, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := eq.withStocks; query != nil {
+		if err := eq.loadStocks(ctx, query, nodes,
+			func(n *Enterprise) { n.Edges.Stocks = []*Stock{} },
+			func(n *Enterprise, e *Stock) { n.Edges.Stocks = append(n.Edges.Stocks, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -1187,6 +1275,73 @@ func (eq *EnterpriseQuery) loadAgents(ctx context.Context, query *AgentQuery, no
 	}
 	return nil
 }
+func (eq *EnterpriseQuery) loadCabinets(ctx context.Context, query *CabinetQuery, nodes []*Enterprise, init func(*Enterprise), assign func(*Enterprise, *Cabinet)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uint64]*Enterprise)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(cabinet.FieldEnterpriseID)
+	}
+	query.Where(predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(enterprise.CabinetsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.EnterpriseID
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "enterprise_id" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "enterprise_id" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (eq *EnterpriseQuery) loadStocks(ctx context.Context, query *StockQuery, nodes []*Enterprise, init func(*Enterprise), assign func(*Enterprise, *Stock)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uint64]*Enterprise)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(stock.FieldEnterpriseID)
+	}
+	query.Where(predicate.Stock(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(enterprise.StocksColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.EnterpriseID
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "enterprise_id" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "enterprise_id" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
 
 func (eq *EnterpriseQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := eq.querySpec()
@@ -1298,6 +1453,8 @@ var (
 	EnterpriseQueryWithBattery    EnterpriseQueryWith = "Battery"
 	EnterpriseQueryWithFeedback   EnterpriseQueryWith = "Feedback"
 	EnterpriseQueryWithAgents     EnterpriseQueryWith = "Agents"
+	EnterpriseQueryWithCabinets   EnterpriseQueryWith = "Cabinets"
+	EnterpriseQueryWithStocks     EnterpriseQueryWith = "Stocks"
 )
 
 func (eq *EnterpriseQuery) With(withEdges ...EnterpriseQueryWith) *EnterpriseQuery {
@@ -1325,6 +1482,10 @@ func (eq *EnterpriseQuery) With(withEdges ...EnterpriseQueryWith) *EnterpriseQue
 			eq.WithFeedback()
 		case EnterpriseQueryWithAgents:
 			eq.WithAgents()
+		case EnterpriseQueryWithCabinets:
+			eq.WithCabinets()
+		case EnterpriseQueryWithStocks:
+			eq.WithStocks()
 		}
 	}
 	return eq

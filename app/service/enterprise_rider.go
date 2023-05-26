@@ -383,7 +383,7 @@ func (s *enterpriseRiderService) GetSubscribeInfo(u *ent.Rider) *model.RiderSubs
 	expireAt := ""
 	// 计算团签剩余天数
 	if len(riderInfo.Edges.Subscribes) > 0 {
-		leftDays = tools.NewTime().LastDaysToNow(*riderInfo.Edges.Subscribes[0].StartAt)
+		leftDays = tools.NewTime().LastDays(*riderInfo.Edges.Subscribes[0].AgentEndAt, carbon.Now().StartOfDay().ToStdTime())
 		expireAt = riderInfo.Edges.Subscribes[0].AgentEndAt.Format(carbon.DateLayout)
 	}
 	return &model.RiderSubscribeRsp{
@@ -405,12 +405,15 @@ func (s *enterpriseRiderService) AddSubscribeDays(req *model.RiderSubscribeAddRe
 	if info != nil {
 		snag.Panic("存在未审批的申请")
 	}
-	if len(s.rider.Edges.Subscribes) == 0 {
-		snag.Panic("未找到订阅信息")
+
+	// 查询骑手是否有团签
+	first, err := ent.Database.Rider.Query().Where(rider.ID(s.rider.ID), rider.HasSubscribesWith(subscribe.StatusIn(model.SubscribeNotUnSubscribed()...))).WithSubscribes().First(s.ctx)
+	if err != nil {
+		snag.Panic("团签状态异常")
 	}
-	sid := s.rider.Edges.Subscribes[0].ID
+	sid := first.Edges.Subscribes[0].ID
 	// 增加记录
-	_, err := ent.Database.SubscribeAlter.Create().
+	_, err = ent.Database.SubscribeAlter.Create().
 		SetRiderID(s.rider.ID).
 		SetEnterpriseID(*s.rider.EnterpriseID).
 		SetSubscribeID(sid).

@@ -152,6 +152,14 @@ func loadManagerRoutes() {
 	g.POST("/enterprise/agent", mapi.Enterprise.AgentCreate)
 	g.PUT("/enterprise/agent/:id", mapi.Enterprise.AgentModify)
 	g.DELETE("/enterprise/agent/:id", mapi.Enterprise.AgentDelete)
+	// 绑定电柜
+	g.POST("/enterprise/bind/cabinet", mapi.Enterprise.BindCabinet)
+	// 编辑电柜
+	g.PUT("/enterprise/modify/cabinet/:id", mapi.Enterprise.ModifyCabinet)
+	// 申请列表
+	g.GET("/enterprise/subscribe/apply/:id", mapi.Enterprise.SubscribeApplyList)
+	// 申请审核
+	g.PUT("enterprise/subscribe/apply", mapi.Enterprise.SubscribeApply)
 
 	// 店员
 	g.POST("/employee", mapi.Employee.Create)
@@ -169,6 +177,8 @@ func loadManagerRoutes() {
 	g.GET("/stock/store", mapi.Stock.StoreList)
 	g.GET("/stock/cabinet", mapi.Stock.CabinetList)
 	g.GET("/stock/detail", mapi.Stock.Detail)
+	// 团签物资列表
+	g.GET("/stock/enterprise/list/:id", mapi.Stock.EnterpriseList)
 
 	// 选择项目
 	g.GET("/selection/plan", mapi.Selection.Plan)

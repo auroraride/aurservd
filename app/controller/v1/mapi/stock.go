@@ -6,10 +6,11 @@
 package mapi
 
 import (
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
-	"github.com/labstack/echo/v4"
 )
 
 type stock struct{}
@@ -89,4 +90,19 @@ func (*stock) CabinetList(c echo.Context) (err error) {
 func (*stock) Detail(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.StockDetailReq](c)
 	return ctx.SendResponse(service.NewStockWithModifier(ctx.Modifier).Detail(req))
+}
+
+// EnterpriseList 团签物资列表
+// @ID           ManagerStockEnterpriseList
+// @Router       /manager/v1/stock/enterprise/list [GET]
+// @Summary      ME003 门店物资列表
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        query  query   model.StockListReq  true  "desc"
+// @Success      200  {object}  model.PaginationRes{items=[]model.StockListRes}  "请求成功"
+func (*stock) EnterpriseList(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[model.StockListReq](c)
+	return ctx.SendResponse(service.NewStockWithModifier(ctx.Modifier).EnterpriseList(req))
 }

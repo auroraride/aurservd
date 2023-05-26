@@ -59,6 +59,8 @@ func (Stock) Edges() []ent.Edge {
 		edge.To("spouse", Stock.Type).Unique(),
 
 		edge.To("children", Stock.Type).From("parent").Field("parent_id").Unique(),
+		edge.From("enterprise", Enterprise.Type).Unique().Ref("stocks").Field("enterprise_id"),
+		edge.From("stations", EnterpriseStation.Type).Unique().Ref("stocks").Field("station_id"),
 	}
 }
 
