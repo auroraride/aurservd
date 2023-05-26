@@ -86,6 +86,9 @@ func (Enterprise) Edges() []ent.Edge {
 		edge.To("statements", EnterpriseStatement.Type),
 		edge.To("stations", EnterpriseStation.Type),
 		edge.To("bills", EnterpriseBill.Type),
+		edge.To("battery", Battery.Type),
+		edge.To("feedback", Feedback.Type),
+		edge.To("agents", Agent.Type),
 	}
 }
 

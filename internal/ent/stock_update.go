@@ -324,6 +324,60 @@ func (su *StockUpdate) ClearEmployeeID() *StockUpdate {
 	return su
 }
 
+// SetStationID sets the "station_id" field.
+func (su *StockUpdate) SetStationID(u uint64) *StockUpdate {
+	su.mutation.ResetStationID()
+	su.mutation.SetStationID(u)
+	return su
+}
+
+// SetNillableStationID sets the "station_id" field if the given value is not nil.
+func (su *StockUpdate) SetNillableStationID(u *uint64) *StockUpdate {
+	if u != nil {
+		su.SetStationID(*u)
+	}
+	return su
+}
+
+// AddStationID adds u to the "station_id" field.
+func (su *StockUpdate) AddStationID(u int64) *StockUpdate {
+	su.mutation.AddStationID(u)
+	return su
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (su *StockUpdate) ClearStationID() *StockUpdate {
+	su.mutation.ClearStationID()
+	return su
+}
+
+// SetEnterpriseID sets the "enterprise_id" field.
+func (su *StockUpdate) SetEnterpriseID(u uint64) *StockUpdate {
+	su.mutation.ResetEnterpriseID()
+	su.mutation.SetEnterpriseID(u)
+	return su
+}
+
+// SetNillableEnterpriseID sets the "enterprise_id" field if the given value is not nil.
+func (su *StockUpdate) SetNillableEnterpriseID(u *uint64) *StockUpdate {
+	if u != nil {
+		su.SetEnterpriseID(*u)
+	}
+	return su
+}
+
+// AddEnterpriseID adds u to the "enterprise_id" field.
+func (su *StockUpdate) AddEnterpriseID(u int64) *StockUpdate {
+	su.mutation.AddEnterpriseID(u)
+	return su
+}
+
+// ClearEnterpriseID clears the value of the "enterprise_id" field.
+func (su *StockUpdate) ClearEnterpriseID() *StockUpdate {
+	su.mutation.ClearEnterpriseID()
+	return su
+}
+
 // SetName sets the "name" field.
 func (su *StockUpdate) SetName(s string) *StockUpdate {
 	su.mutation.SetName(s)
@@ -634,6 +688,24 @@ func (su *StockUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := su.mutation.AddedType(); ok {
 		_spec.AddField(stock.FieldType, field.TypeUint8, value)
+	}
+	if value, ok := su.mutation.StationID(); ok {
+		_spec.SetField(stock.FieldStationID, field.TypeUint64, value)
+	}
+	if value, ok := su.mutation.AddedStationID(); ok {
+		_spec.AddField(stock.FieldStationID, field.TypeUint64, value)
+	}
+	if su.mutation.StationIDCleared() {
+		_spec.ClearField(stock.FieldStationID, field.TypeUint64)
+	}
+	if value, ok := su.mutation.EnterpriseID(); ok {
+		_spec.SetField(stock.FieldEnterpriseID, field.TypeUint64, value)
+	}
+	if value, ok := su.mutation.AddedEnterpriseID(); ok {
+		_spec.AddField(stock.FieldEnterpriseID, field.TypeUint64, value)
+	}
+	if su.mutation.EnterpriseIDCleared() {
+		_spec.ClearField(stock.FieldEnterpriseID, field.TypeUint64)
 	}
 	if value, ok := su.mutation.Name(); ok {
 		_spec.SetField(stock.FieldName, field.TypeString, value)
@@ -1318,6 +1390,60 @@ func (suo *StockUpdateOne) ClearEmployeeID() *StockUpdateOne {
 	return suo
 }
 
+// SetStationID sets the "station_id" field.
+func (suo *StockUpdateOne) SetStationID(u uint64) *StockUpdateOne {
+	suo.mutation.ResetStationID()
+	suo.mutation.SetStationID(u)
+	return suo
+}
+
+// SetNillableStationID sets the "station_id" field if the given value is not nil.
+func (suo *StockUpdateOne) SetNillableStationID(u *uint64) *StockUpdateOne {
+	if u != nil {
+		suo.SetStationID(*u)
+	}
+	return suo
+}
+
+// AddStationID adds u to the "station_id" field.
+func (suo *StockUpdateOne) AddStationID(u int64) *StockUpdateOne {
+	suo.mutation.AddStationID(u)
+	return suo
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (suo *StockUpdateOne) ClearStationID() *StockUpdateOne {
+	suo.mutation.ClearStationID()
+	return suo
+}
+
+// SetEnterpriseID sets the "enterprise_id" field.
+func (suo *StockUpdateOne) SetEnterpriseID(u uint64) *StockUpdateOne {
+	suo.mutation.ResetEnterpriseID()
+	suo.mutation.SetEnterpriseID(u)
+	return suo
+}
+
+// SetNillableEnterpriseID sets the "enterprise_id" field if the given value is not nil.
+func (suo *StockUpdateOne) SetNillableEnterpriseID(u *uint64) *StockUpdateOne {
+	if u != nil {
+		suo.SetEnterpriseID(*u)
+	}
+	return suo
+}
+
+// AddEnterpriseID adds u to the "enterprise_id" field.
+func (suo *StockUpdateOne) AddEnterpriseID(u int64) *StockUpdateOne {
+	suo.mutation.AddEnterpriseID(u)
+	return suo
+}
+
+// ClearEnterpriseID clears the value of the "enterprise_id" field.
+func (suo *StockUpdateOne) ClearEnterpriseID() *StockUpdateOne {
+	suo.mutation.ClearEnterpriseID()
+	return suo
+}
+
 // SetName sets the "name" field.
 func (suo *StockUpdateOne) SetName(s string) *StockUpdateOne {
 	suo.mutation.SetName(s)
@@ -1658,6 +1784,24 @@ func (suo *StockUpdateOne) sqlSave(ctx context.Context) (_node *Stock, err error
 	}
 	if value, ok := suo.mutation.AddedType(); ok {
 		_spec.AddField(stock.FieldType, field.TypeUint8, value)
+	}
+	if value, ok := suo.mutation.StationID(); ok {
+		_spec.SetField(stock.FieldStationID, field.TypeUint64, value)
+	}
+	if value, ok := suo.mutation.AddedStationID(); ok {
+		_spec.AddField(stock.FieldStationID, field.TypeUint64, value)
+	}
+	if suo.mutation.StationIDCleared() {
+		_spec.ClearField(stock.FieldStationID, field.TypeUint64)
+	}
+	if value, ok := suo.mutation.EnterpriseID(); ok {
+		_spec.SetField(stock.FieldEnterpriseID, field.TypeUint64, value)
+	}
+	if value, ok := suo.mutation.AddedEnterpriseID(); ok {
+		_spec.AddField(stock.FieldEnterpriseID, field.TypeUint64, value)
+	}
+	if suo.mutation.EnterpriseIDCleared() {
+		_spec.ClearField(stock.FieldEnterpriseID, field.TypeUint64)
 	}
 	if value, ok := suo.mutation.Name(); ok {
 		_spec.SetField(stock.FieldName, field.TypeString, value)

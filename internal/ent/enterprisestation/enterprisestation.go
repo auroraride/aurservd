@@ -33,6 +33,8 @@ const (
 	FieldName = "name"
 	// EdgeEnterprise holds the string denoting the enterprise edge name in mutations.
 	EdgeEnterprise = "enterprise"
+	// EdgeCabinets holds the string denoting the cabinets edge name in mutations.
+	EdgeCabinets = "cabinets"
 	// Table holds the table name of the enterprisestation in the database.
 	Table = "enterprise_station"
 	// EnterpriseTable is the table that holds the enterprise relation/edge.
@@ -42,6 +44,13 @@ const (
 	EnterpriseInverseTable = "enterprise"
 	// EnterpriseColumn is the table column denoting the enterprise relation/edge.
 	EnterpriseColumn = "enterprise_id"
+	// CabinetsTable is the table that holds the cabinets relation/edge.
+	CabinetsTable = "cabinet"
+	// CabinetsInverseTable is the table name for the Cabinet entity.
+	// It exists in this package in order to avoid circular dependency with the "cabinet" package.
+	CabinetsInverseTable = "cabinet"
+	// CabinetsColumn is the table column denoting the cabinets relation/edge.
+	CabinetsColumn = "station_id"
 )
 
 // Columns holds all SQL columns for enterprisestation fields.
@@ -126,10 +135,31 @@ func ByEnterpriseField(field string, opts ...sql.OrderTermOption) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newEnterpriseStep(), sql.OrderByField(field, opts...))
 	}
 }
+
+// ByCabinetsCount orders the results by cabinets count.
+func ByCabinetsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newCabinetsStep(), opts...)
+	}
+}
+
+// ByCabinets orders the results by cabinets terms.
+func ByCabinets(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCabinetsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newEnterpriseStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(EnterpriseInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, true, EnterpriseTable, EnterpriseColumn),
+	)
+}
+func newCabinetsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CabinetsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, CabinetsTable, CabinetsColumn),
 	)
 }

@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
@@ -44,6 +45,10 @@ type Battery struct {
 	CabinetID *uint64 `json:"cabinet_id,omitempty"`
 	// 订阅ID
 	SubscribeID *uint64 `json:"subscribe_id,omitempty"`
+	// 所属团签
+	EnterpriseID *uint64 `json:"enterprise_id,omitempty"`
+	// 所属站点Id
+	StationID *uint64 `json:"station_id,omitempty"`
 	// 电池编号
 	Sn string `json:"sn,omitempty"`
 	// 品牌
@@ -70,11 +75,13 @@ type BatteryEdges struct {
 	Cabinet *Cabinet `json:"cabinet,omitempty"`
 	// 所属订阅
 	Subscribe *Subscribe `json:"subscribe,omitempty"`
+	// 所属企业
+	Enterprise *Enterprise `json:"enterprise,omitempty"`
 	// 流转记录
 	Flows []*BatteryFlow `json:"flows,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [6]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -129,10 +136,23 @@ func (e BatteryEdges) SubscribeOrErr() (*Subscribe, error) {
 	return nil, &NotLoadedError{edge: "subscribe"}
 }
 
+// EnterpriseOrErr returns the Enterprise value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e BatteryEdges) EnterpriseOrErr() (*Enterprise, error) {
+	if e.loadedTypes[4] {
+		if e.Enterprise == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: enterprise.Label}
+		}
+		return e.Enterprise, nil
+	}
+	return nil, &NotLoadedError{edge: "enterprise"}
+}
+
 // FlowsOrErr returns the Flows value or an error if the edge
 // was not loaded in eager-loading.
 func (e BatteryEdges) FlowsOrErr() ([]*BatteryFlow, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[5] {
 		return e.Flows, nil
 	}
 	return nil, &NotLoadedError{edge: "flows"}
@@ -149,7 +169,7 @@ func (*Battery) scanValues(columns []string) ([]any, error) {
 			values[i] = new(adapter.BatteryBrand)
 		case battery.FieldEnable:
 			values[i] = new(sql.NullBool)
-		case battery.FieldID, battery.FieldCityID, battery.FieldRiderID, battery.FieldCabinetID, battery.FieldSubscribeID, battery.FieldOrdinal:
+		case battery.FieldID, battery.FieldCityID, battery.FieldRiderID, battery.FieldCabinetID, battery.FieldSubscribeID, battery.FieldEnterpriseID, battery.FieldStationID, battery.FieldOrdinal:
 			values[i] = new(sql.NullInt64)
 		case battery.FieldRemark, battery.FieldSn, battery.FieldModel:
 			values[i] = new(sql.NullString)
@@ -245,6 +265,20 @@ func (b *Battery) assignValues(columns []string, values []any) error {
 				b.SubscribeID = new(uint64)
 				*b.SubscribeID = uint64(value.Int64)
 			}
+		case battery.FieldEnterpriseID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field enterprise_id", values[i])
+			} else if value.Valid {
+				b.EnterpriseID = new(uint64)
+				*b.EnterpriseID = uint64(value.Int64)
+			}
+		case battery.FieldStationID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field station_id", values[i])
+			} else if value.Valid {
+				b.StationID = new(uint64)
+				*b.StationID = uint64(value.Int64)
+			}
 		case battery.FieldSn:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field sn", values[i])
@@ -307,6 +341,11 @@ func (b *Battery) QueryCabinet() *CabinetQuery {
 // QuerySubscribe queries the "subscribe" edge of the Battery entity.
 func (b *Battery) QuerySubscribe() *SubscribeQuery {
 	return NewBatteryClient(b.config).QuerySubscribe(b)
+}
+
+// QueryEnterprise queries the "enterprise" edge of the Battery entity.
+func (b *Battery) QueryEnterprise() *EnterpriseQuery {
+	return NewBatteryClient(b.config).QueryEnterprise(b)
 }
 
 // QueryFlows queries the "flows" edge of the Battery entity.
@@ -374,6 +413,16 @@ func (b *Battery) String() string {
 	builder.WriteString(", ")
 	if v := b.SubscribeID; v != nil {
 		builder.WriteString("subscribe_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := b.EnterpriseID; v != nil {
+		builder.WriteString("enterprise_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := b.StationID; v != nil {
+		builder.WriteString("station_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")

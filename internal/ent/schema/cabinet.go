@@ -80,6 +80,8 @@ func (Cabinet) Annotations() []schema.Annotation {
 func (Cabinet) Fields() []ent.Field {
 	return []ent.Field{
 		field.Uint64("branch_id").Optional().Nillable().Comment("网点"),
+		field.Uint64("enterprise_id").Optional().Comment("团签ID"),
+		field.Uint64("station_id").Optional().Comment("站点ID"),
 		field.String("sn").Unique().Comment("编号"),
 		field.Other("brand", adapter.CabinetBrandUnknown).Default(adapter.CabinetBrandUnknown).SchemaType(map[string]string{
 			dialect.Postgres: postgres.TypeCharVar,
@@ -122,6 +124,7 @@ func (Cabinet) Edges() []ent.Edge {
 		edge.To("stocks", Stock.Type),
 		edge.To("batteries", Battery.Type),
 		edge.To("battery_flows", BatteryFlow.Type),
+		edge.From("station", EnterpriseStation.Type).Ref("cabinets").Field("station_id").Unique(),
 	}
 }
 

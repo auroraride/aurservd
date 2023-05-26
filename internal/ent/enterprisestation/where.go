@@ -418,6 +418,29 @@ func HasEnterpriseWith(preds ...predicate.Enterprise) predicate.EnterpriseStatio
 	})
 }
 
+// HasCabinets applies the HasEdge predicate on the "cabinets" edge.
+func HasCabinets() predicate.EnterpriseStation {
+	return predicate.EnterpriseStation(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CabinetsTable, CabinetsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCabinetsWith applies the HasEdge predicate on the "cabinets" edge with a given conditions (other predicates).
+func HasCabinetsWith(preds ...predicate.Cabinet) predicate.EnterpriseStation {
+	return predicate.EnterpriseStation(func(s *sql.Selector) {
+		step := newCabinetsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.EnterpriseStation) predicate.EnterpriseStation {
 	return predicate.EnterpriseStation(func(s *sql.Selector) {

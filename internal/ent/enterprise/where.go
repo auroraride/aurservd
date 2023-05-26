@@ -1269,6 +1269,75 @@ func HasBillsWith(preds ...predicate.EnterpriseBill) predicate.Enterprise {
 	})
 }
 
+// HasBattery applies the HasEdge predicate on the "battery" edge.
+func HasBattery() predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, BatteryTable, BatteryColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasBatteryWith applies the HasEdge predicate on the "battery" edge with a given conditions (other predicates).
+func HasBatteryWith(preds ...predicate.Battery) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		step := newBatteryStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasFeedback applies the HasEdge predicate on the "feedback" edge.
+func HasFeedback() predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, FeedbackTable, FeedbackColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasFeedbackWith applies the HasEdge predicate on the "feedback" edge with a given conditions (other predicates).
+func HasFeedbackWith(preds ...predicate.Feedback) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		step := newFeedbackStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasAgents applies the HasEdge predicate on the "agents" edge.
+func HasAgents() predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, AgentsTable, AgentsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasAgentsWith applies the HasEdge predicate on the "agents" edge with a given conditions (other predicates).
+func HasAgentsWith(preds ...predicate.Agent) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		step := newAgentsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Enterprise) predicate.Enterprise {
 	return predicate.Enterprise(func(s *sql.Selector) {

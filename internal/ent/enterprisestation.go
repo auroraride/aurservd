@@ -46,9 +46,11 @@ type EnterpriseStation struct {
 type EnterpriseStationEdges struct {
 	// Enterprise holds the value of the enterprise edge.
 	Enterprise *Enterprise `json:"enterprise,omitempty"`
+	// Cabinets holds the value of the cabinets edge.
+	Cabinets []*Cabinet `json:"cabinets,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // EnterpriseOrErr returns the Enterprise value or an error if the edge
@@ -62,6 +64,15 @@ func (e EnterpriseStationEdges) EnterpriseOrErr() (*Enterprise, error) {
 		return e.Enterprise, nil
 	}
 	return nil, &NotLoadedError{edge: "enterprise"}
+}
+
+// CabinetsOrErr returns the Cabinets value or an error if the edge
+// was not loaded in eager-loading.
+func (e EnterpriseStationEdges) CabinetsOrErr() ([]*Cabinet, error) {
+	if e.loadedTypes[1] {
+		return e.Cabinets, nil
+	}
+	return nil, &NotLoadedError{edge: "cabinets"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -167,6 +178,11 @@ func (es *EnterpriseStation) Value(name string) (ent.Value, error) {
 // QueryEnterprise queries the "enterprise" edge of the EnterpriseStation entity.
 func (es *EnterpriseStation) QueryEnterprise() *EnterpriseQuery {
 	return NewEnterpriseStationClient(es.config).QueryEnterprise(es)
+}
+
+// QueryCabinets queries the "cabinets" edge of the EnterpriseStation entity.
+func (es *EnterpriseStation) QueryCabinets() *CabinetQuery {
+	return NewEnterpriseStationClient(es.config).QueryCabinets(es)
 }
 
 // Update returns a builder for updating this EnterpriseStation.

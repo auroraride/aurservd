@@ -13,6 +13,8 @@ import (
 	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/agent"
+	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
@@ -20,6 +22,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
+	"github.com/auroraride/aurservd/internal/ent/feedback"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
@@ -424,6 +427,51 @@ func (eu *EnterpriseUpdate) AddBills(e ...*EnterpriseBill) *EnterpriseUpdate {
 	return eu.AddBillIDs(ids...)
 }
 
+// AddBatteryIDs adds the "battery" edge to the Battery entity by IDs.
+func (eu *EnterpriseUpdate) AddBatteryIDs(ids ...uint64) *EnterpriseUpdate {
+	eu.mutation.AddBatteryIDs(ids...)
+	return eu
+}
+
+// AddBattery adds the "battery" edges to the Battery entity.
+func (eu *EnterpriseUpdate) AddBattery(b ...*Battery) *EnterpriseUpdate {
+	ids := make([]uint64, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return eu.AddBatteryIDs(ids...)
+}
+
+// AddFeedbackIDs adds the "feedback" edge to the Feedback entity by IDs.
+func (eu *EnterpriseUpdate) AddFeedbackIDs(ids ...uint64) *EnterpriseUpdate {
+	eu.mutation.AddFeedbackIDs(ids...)
+	return eu
+}
+
+// AddFeedback adds the "feedback" edges to the Feedback entity.
+func (eu *EnterpriseUpdate) AddFeedback(f ...*Feedback) *EnterpriseUpdate {
+	ids := make([]uint64, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return eu.AddFeedbackIDs(ids...)
+}
+
+// AddAgentIDs adds the "agents" edge to the Agent entity by IDs.
+func (eu *EnterpriseUpdate) AddAgentIDs(ids ...uint64) *EnterpriseUpdate {
+	eu.mutation.AddAgentIDs(ids...)
+	return eu
+}
+
+// AddAgents adds the "agents" edges to the Agent entity.
+func (eu *EnterpriseUpdate) AddAgents(a ...*Agent) *EnterpriseUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return eu.AddAgentIDs(ids...)
+}
+
 // Mutation returns the EnterpriseMutation object of the builder.
 func (eu *EnterpriseUpdate) Mutation() *EnterpriseMutation {
 	return eu.mutation
@@ -580,6 +628,69 @@ func (eu *EnterpriseUpdate) RemoveBills(e ...*EnterpriseBill) *EnterpriseUpdate 
 		ids[i] = e[i].ID
 	}
 	return eu.RemoveBillIDs(ids...)
+}
+
+// ClearBattery clears all "battery" edges to the Battery entity.
+func (eu *EnterpriseUpdate) ClearBattery() *EnterpriseUpdate {
+	eu.mutation.ClearBattery()
+	return eu
+}
+
+// RemoveBatteryIDs removes the "battery" edge to Battery entities by IDs.
+func (eu *EnterpriseUpdate) RemoveBatteryIDs(ids ...uint64) *EnterpriseUpdate {
+	eu.mutation.RemoveBatteryIDs(ids...)
+	return eu
+}
+
+// RemoveBattery removes "battery" edges to Battery entities.
+func (eu *EnterpriseUpdate) RemoveBattery(b ...*Battery) *EnterpriseUpdate {
+	ids := make([]uint64, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return eu.RemoveBatteryIDs(ids...)
+}
+
+// ClearFeedback clears all "feedback" edges to the Feedback entity.
+func (eu *EnterpriseUpdate) ClearFeedback() *EnterpriseUpdate {
+	eu.mutation.ClearFeedback()
+	return eu
+}
+
+// RemoveFeedbackIDs removes the "feedback" edge to Feedback entities by IDs.
+func (eu *EnterpriseUpdate) RemoveFeedbackIDs(ids ...uint64) *EnterpriseUpdate {
+	eu.mutation.RemoveFeedbackIDs(ids...)
+	return eu
+}
+
+// RemoveFeedback removes "feedback" edges to Feedback entities.
+func (eu *EnterpriseUpdate) RemoveFeedback(f ...*Feedback) *EnterpriseUpdate {
+	ids := make([]uint64, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return eu.RemoveFeedbackIDs(ids...)
+}
+
+// ClearAgents clears all "agents" edges to the Agent entity.
+func (eu *EnterpriseUpdate) ClearAgents() *EnterpriseUpdate {
+	eu.mutation.ClearAgents()
+	return eu
+}
+
+// RemoveAgentIDs removes the "agents" edge to Agent entities by IDs.
+func (eu *EnterpriseUpdate) RemoveAgentIDs(ids ...uint64) *EnterpriseUpdate {
+	eu.mutation.RemoveAgentIDs(ids...)
+	return eu
+}
+
+// RemoveAgents removes "agents" edges to Agent entities.
+func (eu *EnterpriseUpdate) RemoveAgents(a ...*Agent) *EnterpriseUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return eu.RemoveAgentIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1095,6 +1206,141 @@ func (eu *EnterpriseUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if eu.mutation.BatteryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.BatteryTable,
+			Columns: []string{enterprise.BatteryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.RemovedBatteryIDs(); len(nodes) > 0 && !eu.mutation.BatteryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.BatteryTable,
+			Columns: []string{enterprise.BatteryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.BatteryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.BatteryTable,
+			Columns: []string{enterprise.BatteryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if eu.mutation.FeedbackCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.FeedbackTable,
+			Columns: []string{enterprise.FeedbackColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(feedback.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.RemovedFeedbackIDs(); len(nodes) > 0 && !eu.mutation.FeedbackCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.FeedbackTable,
+			Columns: []string{enterprise.FeedbackColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(feedback.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.FeedbackIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.FeedbackTable,
+			Columns: []string{enterprise.FeedbackColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(feedback.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if eu.mutation.AgentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.AgentsTable,
+			Columns: []string{enterprise.AgentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.RemovedAgentsIDs(); len(nodes) > 0 && !eu.mutation.AgentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.AgentsTable,
+			Columns: []string{enterprise.AgentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.AgentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.AgentsTable,
+			Columns: []string{enterprise.AgentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(eu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, eu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -1502,6 +1748,51 @@ func (euo *EnterpriseUpdateOne) AddBills(e ...*EnterpriseBill) *EnterpriseUpdate
 	return euo.AddBillIDs(ids...)
 }
 
+// AddBatteryIDs adds the "battery" edge to the Battery entity by IDs.
+func (euo *EnterpriseUpdateOne) AddBatteryIDs(ids ...uint64) *EnterpriseUpdateOne {
+	euo.mutation.AddBatteryIDs(ids...)
+	return euo
+}
+
+// AddBattery adds the "battery" edges to the Battery entity.
+func (euo *EnterpriseUpdateOne) AddBattery(b ...*Battery) *EnterpriseUpdateOne {
+	ids := make([]uint64, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return euo.AddBatteryIDs(ids...)
+}
+
+// AddFeedbackIDs adds the "feedback" edge to the Feedback entity by IDs.
+func (euo *EnterpriseUpdateOne) AddFeedbackIDs(ids ...uint64) *EnterpriseUpdateOne {
+	euo.mutation.AddFeedbackIDs(ids...)
+	return euo
+}
+
+// AddFeedback adds the "feedback" edges to the Feedback entity.
+func (euo *EnterpriseUpdateOne) AddFeedback(f ...*Feedback) *EnterpriseUpdateOne {
+	ids := make([]uint64, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return euo.AddFeedbackIDs(ids...)
+}
+
+// AddAgentIDs adds the "agents" edge to the Agent entity by IDs.
+func (euo *EnterpriseUpdateOne) AddAgentIDs(ids ...uint64) *EnterpriseUpdateOne {
+	euo.mutation.AddAgentIDs(ids...)
+	return euo
+}
+
+// AddAgents adds the "agents" edges to the Agent entity.
+func (euo *EnterpriseUpdateOne) AddAgents(a ...*Agent) *EnterpriseUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return euo.AddAgentIDs(ids...)
+}
+
 // Mutation returns the EnterpriseMutation object of the builder.
 func (euo *EnterpriseUpdateOne) Mutation() *EnterpriseMutation {
 	return euo.mutation
@@ -1658,6 +1949,69 @@ func (euo *EnterpriseUpdateOne) RemoveBills(e ...*EnterpriseBill) *EnterpriseUpd
 		ids[i] = e[i].ID
 	}
 	return euo.RemoveBillIDs(ids...)
+}
+
+// ClearBattery clears all "battery" edges to the Battery entity.
+func (euo *EnterpriseUpdateOne) ClearBattery() *EnterpriseUpdateOne {
+	euo.mutation.ClearBattery()
+	return euo
+}
+
+// RemoveBatteryIDs removes the "battery" edge to Battery entities by IDs.
+func (euo *EnterpriseUpdateOne) RemoveBatteryIDs(ids ...uint64) *EnterpriseUpdateOne {
+	euo.mutation.RemoveBatteryIDs(ids...)
+	return euo
+}
+
+// RemoveBattery removes "battery" edges to Battery entities.
+func (euo *EnterpriseUpdateOne) RemoveBattery(b ...*Battery) *EnterpriseUpdateOne {
+	ids := make([]uint64, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return euo.RemoveBatteryIDs(ids...)
+}
+
+// ClearFeedback clears all "feedback" edges to the Feedback entity.
+func (euo *EnterpriseUpdateOne) ClearFeedback() *EnterpriseUpdateOne {
+	euo.mutation.ClearFeedback()
+	return euo
+}
+
+// RemoveFeedbackIDs removes the "feedback" edge to Feedback entities by IDs.
+func (euo *EnterpriseUpdateOne) RemoveFeedbackIDs(ids ...uint64) *EnterpriseUpdateOne {
+	euo.mutation.RemoveFeedbackIDs(ids...)
+	return euo
+}
+
+// RemoveFeedback removes "feedback" edges to Feedback entities.
+func (euo *EnterpriseUpdateOne) RemoveFeedback(f ...*Feedback) *EnterpriseUpdateOne {
+	ids := make([]uint64, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return euo.RemoveFeedbackIDs(ids...)
+}
+
+// ClearAgents clears all "agents" edges to the Agent entity.
+func (euo *EnterpriseUpdateOne) ClearAgents() *EnterpriseUpdateOne {
+	euo.mutation.ClearAgents()
+	return euo
+}
+
+// RemoveAgentIDs removes the "agents" edge to Agent entities by IDs.
+func (euo *EnterpriseUpdateOne) RemoveAgentIDs(ids ...uint64) *EnterpriseUpdateOne {
+	euo.mutation.RemoveAgentIDs(ids...)
+	return euo
+}
+
+// RemoveAgents removes "agents" edges to Agent entities.
+func (euo *EnterpriseUpdateOne) RemoveAgents(a ...*Agent) *EnterpriseUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return euo.RemoveAgentIDs(ids...)
 }
 
 // Where appends a list predicates to the EnterpriseUpdate builder.
@@ -2196,6 +2550,141 @@ func (euo *EnterpriseUpdateOne) sqlSave(ctx context.Context) (_node *Enterprise,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(enterprisebill.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if euo.mutation.BatteryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.BatteryTable,
+			Columns: []string{enterprise.BatteryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.RemovedBatteryIDs(); len(nodes) > 0 && !euo.mutation.BatteryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.BatteryTable,
+			Columns: []string{enterprise.BatteryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.BatteryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.BatteryTable,
+			Columns: []string{enterprise.BatteryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if euo.mutation.FeedbackCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.FeedbackTable,
+			Columns: []string{enterprise.FeedbackColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(feedback.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.RemovedFeedbackIDs(); len(nodes) > 0 && !euo.mutation.FeedbackCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.FeedbackTable,
+			Columns: []string{enterprise.FeedbackColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(feedback.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.FeedbackIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.FeedbackTable,
+			Columns: []string{enterprise.FeedbackColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(feedback.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if euo.mutation.AgentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.AgentsTable,
+			Columns: []string{enterprise.AgentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.RemovedAgentsIDs(); len(nodes) > 0 && !euo.mutation.AgentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.AgentsTable,
+			Columns: []string{enterprise.AgentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.AgentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.AgentsTable,
+			Columns: []string{enterprise.AgentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

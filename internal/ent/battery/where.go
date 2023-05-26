@@ -96,6 +96,16 @@ func SubscribeID(v uint64) predicate.Battery {
 	return predicate.Battery(sql.FieldEQ(FieldSubscribeID, v))
 }
 
+// EnterpriseID applies equality check predicate on the "enterprise_id" field. It's identical to EnterpriseIDEQ.
+func EnterpriseID(v uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldEQ(FieldEnterpriseID, v))
+}
+
+// StationID applies equality check predicate on the "station_id" field. It's identical to StationIDEQ.
+func StationID(v uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldEQ(FieldStationID, v))
+}
+
 // Sn applies equality check predicate on the "sn" field. It's identical to SnEQ.
 func Sn(v string) predicate.Battery {
 	return predicate.Battery(sql.FieldEQ(FieldSn, v))
@@ -466,6 +476,86 @@ func SubscribeIDNotNil() predicate.Battery {
 	return predicate.Battery(sql.FieldNotNull(FieldSubscribeID))
 }
 
+// EnterpriseIDEQ applies the EQ predicate on the "enterprise_id" field.
+func EnterpriseIDEQ(v uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldEQ(FieldEnterpriseID, v))
+}
+
+// EnterpriseIDNEQ applies the NEQ predicate on the "enterprise_id" field.
+func EnterpriseIDNEQ(v uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldNEQ(FieldEnterpriseID, v))
+}
+
+// EnterpriseIDIn applies the In predicate on the "enterprise_id" field.
+func EnterpriseIDIn(vs ...uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldIn(FieldEnterpriseID, vs...))
+}
+
+// EnterpriseIDNotIn applies the NotIn predicate on the "enterprise_id" field.
+func EnterpriseIDNotIn(vs ...uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldNotIn(FieldEnterpriseID, vs...))
+}
+
+// EnterpriseIDIsNil applies the IsNil predicate on the "enterprise_id" field.
+func EnterpriseIDIsNil() predicate.Battery {
+	return predicate.Battery(sql.FieldIsNull(FieldEnterpriseID))
+}
+
+// EnterpriseIDNotNil applies the NotNil predicate on the "enterprise_id" field.
+func EnterpriseIDNotNil() predicate.Battery {
+	return predicate.Battery(sql.FieldNotNull(FieldEnterpriseID))
+}
+
+// StationIDEQ applies the EQ predicate on the "station_id" field.
+func StationIDEQ(v uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldEQ(FieldStationID, v))
+}
+
+// StationIDNEQ applies the NEQ predicate on the "station_id" field.
+func StationIDNEQ(v uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldNEQ(FieldStationID, v))
+}
+
+// StationIDIn applies the In predicate on the "station_id" field.
+func StationIDIn(vs ...uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldIn(FieldStationID, vs...))
+}
+
+// StationIDNotIn applies the NotIn predicate on the "station_id" field.
+func StationIDNotIn(vs ...uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldNotIn(FieldStationID, vs...))
+}
+
+// StationIDGT applies the GT predicate on the "station_id" field.
+func StationIDGT(v uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldGT(FieldStationID, v))
+}
+
+// StationIDGTE applies the GTE predicate on the "station_id" field.
+func StationIDGTE(v uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldGTE(FieldStationID, v))
+}
+
+// StationIDLT applies the LT predicate on the "station_id" field.
+func StationIDLT(v uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldLT(FieldStationID, v))
+}
+
+// StationIDLTE applies the LTE predicate on the "station_id" field.
+func StationIDLTE(v uint64) predicate.Battery {
+	return predicate.Battery(sql.FieldLTE(FieldStationID, v))
+}
+
+// StationIDIsNil applies the IsNil predicate on the "station_id" field.
+func StationIDIsNil() predicate.Battery {
+	return predicate.Battery(sql.FieldIsNull(FieldStationID))
+}
+
+// StationIDNotNil applies the NotNil predicate on the "station_id" field.
+func StationIDNotNil() predicate.Battery {
+	return predicate.Battery(sql.FieldNotNull(FieldStationID))
+}
+
 // SnEQ applies the EQ predicate on the "sn" field.
 func SnEQ(v string) predicate.Battery {
 	return predicate.Battery(sql.FieldEQ(FieldSn, v))
@@ -780,6 +870,29 @@ func HasSubscribe() predicate.Battery {
 func HasSubscribeWith(preds ...predicate.Subscribe) predicate.Battery {
 	return predicate.Battery(func(s *sql.Selector) {
 		step := newSubscribeStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasEnterprise applies the HasEdge predicate on the "enterprise" edge.
+func HasEnterprise() predicate.Battery {
+	return predicate.Battery(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, EnterpriseTable, EnterpriseColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasEnterpriseWith applies the HasEdge predicate on the "enterprise" edge with a given conditions (other predicates).
+func HasEnterpriseWith(preds ...predicate.Enterprise) predicate.Battery {
+	return predicate.Battery(func(s *sql.Selector) {
+		step := newEnterpriseStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

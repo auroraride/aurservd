@@ -18,6 +18,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/stock"
@@ -38,6 +39,7 @@ type CabinetQuery struct {
 	withStocks       *StockQuery
 	withBatteries    *BatteryQuery
 	withBatteryFlows *BatteryFlowQuery
+	withStation      *EnterpriseStationQuery
 	modifiers        []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -251,6 +253,28 @@ func (cq *CabinetQuery) QueryBatteryFlows() *BatteryFlowQuery {
 	return query
 }
 
+// QueryStation chains the current query on the "station" edge.
+func (cq *CabinetQuery) QueryStation() *EnterpriseStationQuery {
+	query := (&EnterpriseStationClient{config: cq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cabinet.Table, cabinet.FieldID, selector),
+			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, cabinet.StationTable, cabinet.StationColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Cabinet entity from the query.
 // Returns a *NotFoundError when no Cabinet was found.
 func (cq *CabinetQuery) First(ctx context.Context) (*Cabinet, error) {
@@ -451,6 +475,7 @@ func (cq *CabinetQuery) Clone() *CabinetQuery {
 		withStocks:       cq.withStocks.Clone(),
 		withBatteries:    cq.withBatteries.Clone(),
 		withBatteryFlows: cq.withBatteryFlows.Clone(),
+		withStation:      cq.withStation.Clone(),
 		// clone intermediate query.
 		sql:  cq.sql.Clone(),
 		path: cq.path,
@@ -545,6 +570,17 @@ func (cq *CabinetQuery) WithBatteryFlows(opts ...func(*BatteryFlowQuery)) *Cabin
 	return cq
 }
 
+// WithStation tells the query-builder to eager-load the nodes that are connected to
+// the "station" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *CabinetQuery) WithStation(opts ...func(*EnterpriseStationQuery)) *CabinetQuery {
+	query := (&EnterpriseStationClient{config: cq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withStation = query
+	return cq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -623,7 +659,7 @@ func (cq *CabinetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cabi
 	var (
 		nodes       = []*Cabinet{}
 		_spec       = cq.querySpec()
-		loadedTypes = [8]bool{
+		loadedTypes = [9]bool{
 			cq.withCity != nil,
 			cq.withBranch != nil,
 			cq.withModels != nil,
@@ -632,6 +668,7 @@ func (cq *CabinetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cabi
 			cq.withStocks != nil,
 			cq.withBatteries != nil,
 			cq.withBatteryFlows != nil,
+			cq.withStation != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -706,6 +743,12 @@ func (cq *CabinetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cabi
 		if err := cq.loadBatteryFlows(ctx, query, nodes,
 			func(n *Cabinet) { n.Edges.BatteryFlows = []*BatteryFlow{} },
 			func(n *Cabinet, e *BatteryFlow) { n.Edges.BatteryFlows = append(n.Edges.BatteryFlows, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := cq.withStation; query != nil {
+		if err := cq.loadStation(ctx, query, nodes, nil,
+			func(n *Cabinet, e *EnterpriseStation) { n.Edges.Station = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -994,6 +1037,35 @@ func (cq *CabinetQuery) loadBatteryFlows(ctx context.Context, query *BatteryFlow
 	}
 	return nil
 }
+func (cq *CabinetQuery) loadStation(ctx context.Context, query *EnterpriseStationQuery, nodes []*Cabinet, init func(*Cabinet), assign func(*Cabinet, *EnterpriseStation)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Cabinet)
+	for i := range nodes {
+		fk := nodes[i].StationID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(enterprisestation.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "station_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 
 func (cq *CabinetQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := cq.querySpec()
@@ -1028,6 +1100,9 @@ func (cq *CabinetQuery) querySpec() *sqlgraph.QuerySpec {
 		}
 		if cq.withBranch != nil {
 			_spec.Node.AddColumnOnce(cabinet.FieldBranchID)
+		}
+		if cq.withStation != nil {
+			_spec.Node.AddColumnOnce(cabinet.FieldStationID)
 		}
 	}
 	if ps := cq.predicates; len(ps) > 0 {
@@ -1105,6 +1180,7 @@ var (
 	CabinetQueryWithStocks       CabinetQueryWith = "Stocks"
 	CabinetQueryWithBatteries    CabinetQueryWith = "Batteries"
 	CabinetQueryWithBatteryFlows CabinetQueryWith = "BatteryFlows"
+	CabinetQueryWithStation      CabinetQueryWith = "Station"
 )
 
 func (cq *CabinetQuery) With(withEdges ...CabinetQueryWith) *CabinetQuery {
@@ -1126,6 +1202,8 @@ func (cq *CabinetQuery) With(withEdges ...CabinetQueryWith) *CabinetQuery {
 			cq.WithBatteries()
 		case CabinetQueryWithBatteryFlows:
 			cq.WithBatteryFlows()
+		case CabinetQueryWithStation:
+			cq.WithStation()
 		}
 	}
 	return cq

@@ -23,6 +23,7 @@ type AgentQuery struct {
 	inters         []Interceptor
 	predicates     []predicate.Agent
 	withEnterprise *EnterpriseQuery
+	withFKs        bool
 	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -369,11 +370,15 @@ func (aq *AgentQuery) prepareQuery(ctx context.Context) error {
 func (aq *AgentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Agent, error) {
 	var (
 		nodes       = []*Agent{}
+		withFKs     = aq.withFKs
 		_spec       = aq.querySpec()
 		loadedTypes = [1]bool{
 			aq.withEnterprise != nil,
 		}
 	)
+	if withFKs {
+		_spec.Node.Columns = append(_spec.Node.Columns, agent.ForeignKeys...)
+	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Agent).scanValues(nil, columns)
 	}

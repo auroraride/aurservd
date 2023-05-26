@@ -12,6 +12,8 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/agent"
+	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
@@ -19,6 +21,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
+	"github.com/auroraride/aurservd/internal/ent/feedback"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
@@ -359,6 +362,51 @@ func (ec *EnterpriseCreate) AddBills(e ...*EnterpriseBill) *EnterpriseCreate {
 		ids[i] = e[i].ID
 	}
 	return ec.AddBillIDs(ids...)
+}
+
+// AddBatteryIDs adds the "battery" edge to the Battery entity by IDs.
+func (ec *EnterpriseCreate) AddBatteryIDs(ids ...uint64) *EnterpriseCreate {
+	ec.mutation.AddBatteryIDs(ids...)
+	return ec
+}
+
+// AddBattery adds the "battery" edges to the Battery entity.
+func (ec *EnterpriseCreate) AddBattery(b ...*Battery) *EnterpriseCreate {
+	ids := make([]uint64, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return ec.AddBatteryIDs(ids...)
+}
+
+// AddFeedbackIDs adds the "feedback" edge to the Feedback entity by IDs.
+func (ec *EnterpriseCreate) AddFeedbackIDs(ids ...uint64) *EnterpriseCreate {
+	ec.mutation.AddFeedbackIDs(ids...)
+	return ec
+}
+
+// AddFeedback adds the "feedback" edges to the Feedback entity.
+func (ec *EnterpriseCreate) AddFeedback(f ...*Feedback) *EnterpriseCreate {
+	ids := make([]uint64, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return ec.AddFeedbackIDs(ids...)
+}
+
+// AddAgentIDs adds the "agents" edge to the Agent entity by IDs.
+func (ec *EnterpriseCreate) AddAgentIDs(ids ...uint64) *EnterpriseCreate {
+	ec.mutation.AddAgentIDs(ids...)
+	return ec
+}
+
+// AddAgents adds the "agents" edges to the Agent entity.
+func (ec *EnterpriseCreate) AddAgents(a ...*Agent) *EnterpriseCreate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return ec.AddAgentIDs(ids...)
 }
 
 // Mutation returns the EnterpriseMutation object of the builder.
@@ -715,6 +763,54 @@ func (ec *EnterpriseCreate) createSpec() (*Enterprise, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(enterprisebill.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ec.mutation.BatteryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.BatteryTable,
+			Columns: []string{enterprise.BatteryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ec.mutation.FeedbackIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.FeedbackTable,
+			Columns: []string{enterprise.FeedbackColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(feedback.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ec.mutation.AgentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.AgentsTable,
+			Columns: []string{enterprise.AgentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

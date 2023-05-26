@@ -381,6 +381,18 @@ func (f ExportFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, erro
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ExportMutation", m)
 }
 
+// The FeedbackFunc type is an adapter to allow the use of ordinary
+// function as Feedback mutator.
+type FeedbackFunc func(context.Context, *ent.FeedbackMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f FeedbackFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.FeedbackMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.FeedbackMutation", m)
+}
+
 // The InventoryFunc type is an adapter to allow the use of ordinary
 // function as Inventory mutator.
 type InventoryFunc func(context.Context, *ent.InventoryMutation) (ent.Value, error)

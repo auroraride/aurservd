@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/batteryflow"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
@@ -23,16 +24,17 @@ import (
 // BatteryQuery is the builder for querying Battery entities.
 type BatteryQuery struct {
 	config
-	ctx           *QueryContext
-	order         []battery.OrderOption
-	inters        []Interceptor
-	predicates    []predicate.Battery
-	withCity      *CityQuery
-	withRider     *RiderQuery
-	withCabinet   *CabinetQuery
-	withSubscribe *SubscribeQuery
-	withFlows     *BatteryFlowQuery
-	modifiers     []func(*sql.Selector)
+	ctx            *QueryContext
+	order          []battery.OrderOption
+	inters         []Interceptor
+	predicates     []predicate.Battery
+	withCity       *CityQuery
+	withRider      *RiderQuery
+	withCabinet    *CabinetQuery
+	withSubscribe  *SubscribeQuery
+	withEnterprise *EnterpriseQuery
+	withFlows      *BatteryFlowQuery
+	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -150,6 +152,28 @@ func (bq *BatteryQuery) QuerySubscribe() *SubscribeQuery {
 			sqlgraph.From(battery.Table, battery.FieldID, selector),
 			sqlgraph.To(subscribe.Table, subscribe.FieldID),
 			sqlgraph.Edge(sqlgraph.O2O, true, battery.SubscribeTable, battery.SubscribeColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(bq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryEnterprise chains the current query on the "enterprise" edge.
+func (bq *BatteryQuery) QueryEnterprise() *EnterpriseQuery {
+	query := (&EnterpriseClient{config: bq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := bq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := bq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(battery.Table, battery.FieldID, selector),
+			sqlgraph.To(enterprise.Table, enterprise.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, battery.EnterpriseTable, battery.EnterpriseColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(bq.driver.Dialect(), step)
 		return fromU, nil
@@ -366,16 +390,17 @@ func (bq *BatteryQuery) Clone() *BatteryQuery {
 		return nil
 	}
 	return &BatteryQuery{
-		config:        bq.config,
-		ctx:           bq.ctx.Clone(),
-		order:         append([]battery.OrderOption{}, bq.order...),
-		inters:        append([]Interceptor{}, bq.inters...),
-		predicates:    append([]predicate.Battery{}, bq.predicates...),
-		withCity:      bq.withCity.Clone(),
-		withRider:     bq.withRider.Clone(),
-		withCabinet:   bq.withCabinet.Clone(),
-		withSubscribe: bq.withSubscribe.Clone(),
-		withFlows:     bq.withFlows.Clone(),
+		config:         bq.config,
+		ctx:            bq.ctx.Clone(),
+		order:          append([]battery.OrderOption{}, bq.order...),
+		inters:         append([]Interceptor{}, bq.inters...),
+		predicates:     append([]predicate.Battery{}, bq.predicates...),
+		withCity:       bq.withCity.Clone(),
+		withRider:      bq.withRider.Clone(),
+		withCabinet:    bq.withCabinet.Clone(),
+		withSubscribe:  bq.withSubscribe.Clone(),
+		withEnterprise: bq.withEnterprise.Clone(),
+		withFlows:      bq.withFlows.Clone(),
 		// clone intermediate query.
 		sql:  bq.sql.Clone(),
 		path: bq.path,
@@ -423,6 +448,17 @@ func (bq *BatteryQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *BatteryQue
 		opt(query)
 	}
 	bq.withSubscribe = query
+	return bq
+}
+
+// WithEnterprise tells the query-builder to eager-load the nodes that are connected to
+// the "enterprise" edge. The optional arguments are used to configure the query builder of the edge.
+func (bq *BatteryQuery) WithEnterprise(opts ...func(*EnterpriseQuery)) *BatteryQuery {
+	query := (&EnterpriseClient{config: bq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	bq.withEnterprise = query
 	return bq
 }
 
@@ -515,11 +551,12 @@ func (bq *BatteryQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Batt
 	var (
 		nodes       = []*Battery{}
 		_spec       = bq.querySpec()
-		loadedTypes = [5]bool{
+		loadedTypes = [6]bool{
 			bq.withCity != nil,
 			bq.withRider != nil,
 			bq.withCabinet != nil,
 			bq.withSubscribe != nil,
+			bq.withEnterprise != nil,
 			bq.withFlows != nil,
 		}
 	)
@@ -565,6 +602,12 @@ func (bq *BatteryQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Batt
 	if query := bq.withSubscribe; query != nil {
 		if err := bq.loadSubscribe(ctx, query, nodes, nil,
 			func(n *Battery, e *Subscribe) { n.Edges.Subscribe = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := bq.withEnterprise; query != nil {
+		if err := bq.loadEnterprise(ctx, query, nodes, nil,
+			func(n *Battery, e *Enterprise) { n.Edges.Enterprise = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -706,6 +749,38 @@ func (bq *BatteryQuery) loadSubscribe(ctx context.Context, query *SubscribeQuery
 	}
 	return nil
 }
+func (bq *BatteryQuery) loadEnterprise(ctx context.Context, query *EnterpriseQuery, nodes []*Battery, init func(*Battery), assign func(*Battery, *Enterprise)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Battery)
+	for i := range nodes {
+		if nodes[i].EnterpriseID == nil {
+			continue
+		}
+		fk := *nodes[i].EnterpriseID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(enterprise.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "enterprise_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 func (bq *BatteryQuery) loadFlows(ctx context.Context, query *BatteryFlowQuery, nodes []*Battery, init func(*Battery), assign func(*Battery, *BatteryFlow)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[uint64]*Battery)
@@ -777,6 +852,9 @@ func (bq *BatteryQuery) querySpec() *sqlgraph.QuerySpec {
 		if bq.withSubscribe != nil {
 			_spec.Node.AddColumnOnce(battery.FieldSubscribeID)
 		}
+		if bq.withEnterprise != nil {
+			_spec.Node.AddColumnOnce(battery.FieldEnterpriseID)
+		}
 	}
 	if ps := bq.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -845,11 +923,12 @@ func (bq *BatteryQuery) Modify(modifiers ...func(s *sql.Selector)) *BatterySelec
 type BatteryQueryWith string
 
 var (
-	BatteryQueryWithCity      BatteryQueryWith = "City"
-	BatteryQueryWithRider     BatteryQueryWith = "Rider"
-	BatteryQueryWithCabinet   BatteryQueryWith = "Cabinet"
-	BatteryQueryWithSubscribe BatteryQueryWith = "Subscribe"
-	BatteryQueryWithFlows     BatteryQueryWith = "Flows"
+	BatteryQueryWithCity       BatteryQueryWith = "City"
+	BatteryQueryWithRider      BatteryQueryWith = "Rider"
+	BatteryQueryWithCabinet    BatteryQueryWith = "Cabinet"
+	BatteryQueryWithSubscribe  BatteryQueryWith = "Subscribe"
+	BatteryQueryWithEnterprise BatteryQueryWith = "Enterprise"
+	BatteryQueryWithFlows      BatteryQueryWith = "Flows"
 )
 
 func (bq *BatteryQuery) With(withEdges ...BatteryQueryWith) *BatteryQuery {
@@ -863,6 +942,8 @@ func (bq *BatteryQuery) With(withEdges ...BatteryQueryWith) *BatteryQuery {
 			bq.WithCabinet()
 		case BatteryQueryWithSubscribe:
 			bq.WithSubscribe()
+		case BatteryQueryWithEnterprise:
+			bq.WithEnterprise()
 		case BatteryQueryWithFlows:
 			bq.WithFlows()
 		}

@@ -21,6 +21,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/stock"
@@ -135,6 +136,53 @@ func (cu *CabinetUpdate) SetNillableBranchID(u *uint64) *CabinetUpdate {
 // ClearBranchID clears the value of the "branch_id" field.
 func (cu *CabinetUpdate) ClearBranchID() *CabinetUpdate {
 	cu.mutation.ClearBranchID()
+	return cu
+}
+
+// SetEnterpriseID sets the "enterprise_id" field.
+func (cu *CabinetUpdate) SetEnterpriseID(u uint64) *CabinetUpdate {
+	cu.mutation.ResetEnterpriseID()
+	cu.mutation.SetEnterpriseID(u)
+	return cu
+}
+
+// SetNillableEnterpriseID sets the "enterprise_id" field if the given value is not nil.
+func (cu *CabinetUpdate) SetNillableEnterpriseID(u *uint64) *CabinetUpdate {
+	if u != nil {
+		cu.SetEnterpriseID(*u)
+	}
+	return cu
+}
+
+// AddEnterpriseID adds u to the "enterprise_id" field.
+func (cu *CabinetUpdate) AddEnterpriseID(u int64) *CabinetUpdate {
+	cu.mutation.AddEnterpriseID(u)
+	return cu
+}
+
+// ClearEnterpriseID clears the value of the "enterprise_id" field.
+func (cu *CabinetUpdate) ClearEnterpriseID() *CabinetUpdate {
+	cu.mutation.ClearEnterpriseID()
+	return cu
+}
+
+// SetStationID sets the "station_id" field.
+func (cu *CabinetUpdate) SetStationID(u uint64) *CabinetUpdate {
+	cu.mutation.SetStationID(u)
+	return cu
+}
+
+// SetNillableStationID sets the "station_id" field if the given value is not nil.
+func (cu *CabinetUpdate) SetNillableStationID(u *uint64) *CabinetUpdate {
+	if u != nil {
+		cu.SetStationID(*u)
+	}
+	return cu
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (cu *CabinetUpdate) ClearStationID() *CabinetUpdate {
+	cu.mutation.ClearStationID()
 	return cu
 }
 
@@ -582,6 +630,11 @@ func (cu *CabinetUpdate) AddBatteryFlows(b ...*BatteryFlow) *CabinetUpdate {
 	return cu.AddBatteryFlowIDs(ids...)
 }
 
+// SetStation sets the "station" edge to the EnterpriseStation entity.
+func (cu *CabinetUpdate) SetStation(e *EnterpriseStation) *CabinetUpdate {
+	return cu.SetStationID(e.ID)
+}
+
 // Mutation returns the CabinetMutation object of the builder.
 func (cu *CabinetUpdate) Mutation() *CabinetMutation {
 	return cu.mutation
@@ -725,6 +778,12 @@ func (cu *CabinetUpdate) RemoveBatteryFlows(b ...*BatteryFlow) *CabinetUpdate {
 	return cu.RemoveBatteryFlowIDs(ids...)
 }
 
+// ClearStation clears the "station" edge to the EnterpriseStation entity.
+func (cu *CabinetUpdate) ClearStation() *CabinetUpdate {
+	cu.mutation.ClearStation()
+	return cu
+}
+
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (cu *CabinetUpdate) Save(ctx context.Context) (int, error) {
 	if err := cu.defaults(); err != nil {
@@ -805,6 +864,15 @@ func (cu *CabinetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if cu.mutation.RemarkCleared() {
 		_spec.ClearField(cabinet.FieldRemark, field.TypeString)
+	}
+	if value, ok := cu.mutation.EnterpriseID(); ok {
+		_spec.SetField(cabinet.FieldEnterpriseID, field.TypeUint64, value)
+	}
+	if value, ok := cu.mutation.AddedEnterpriseID(); ok {
+		_spec.AddField(cabinet.FieldEnterpriseID, field.TypeUint64, value)
+	}
+	if cu.mutation.EnterpriseIDCleared() {
+		_spec.ClearField(cabinet.FieldEnterpriseID, field.TypeUint64)
 	}
 	if value, ok := cu.mutation.Sn(); ok {
 		_spec.SetField(cabinet.FieldSn, field.TypeString, value)
@@ -1247,6 +1315,35 @@ func (cu *CabinetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if cu.mutation.StationCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   cabinet.StationTable,
+			Columns: []string{cabinet.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.StationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   cabinet.StationTable,
+			Columns: []string{cabinet.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(cu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, cu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -1364,6 +1461,53 @@ func (cuo *CabinetUpdateOne) SetNillableBranchID(u *uint64) *CabinetUpdateOne {
 // ClearBranchID clears the value of the "branch_id" field.
 func (cuo *CabinetUpdateOne) ClearBranchID() *CabinetUpdateOne {
 	cuo.mutation.ClearBranchID()
+	return cuo
+}
+
+// SetEnterpriseID sets the "enterprise_id" field.
+func (cuo *CabinetUpdateOne) SetEnterpriseID(u uint64) *CabinetUpdateOne {
+	cuo.mutation.ResetEnterpriseID()
+	cuo.mutation.SetEnterpriseID(u)
+	return cuo
+}
+
+// SetNillableEnterpriseID sets the "enterprise_id" field if the given value is not nil.
+func (cuo *CabinetUpdateOne) SetNillableEnterpriseID(u *uint64) *CabinetUpdateOne {
+	if u != nil {
+		cuo.SetEnterpriseID(*u)
+	}
+	return cuo
+}
+
+// AddEnterpriseID adds u to the "enterprise_id" field.
+func (cuo *CabinetUpdateOne) AddEnterpriseID(u int64) *CabinetUpdateOne {
+	cuo.mutation.AddEnterpriseID(u)
+	return cuo
+}
+
+// ClearEnterpriseID clears the value of the "enterprise_id" field.
+func (cuo *CabinetUpdateOne) ClearEnterpriseID() *CabinetUpdateOne {
+	cuo.mutation.ClearEnterpriseID()
+	return cuo
+}
+
+// SetStationID sets the "station_id" field.
+func (cuo *CabinetUpdateOne) SetStationID(u uint64) *CabinetUpdateOne {
+	cuo.mutation.SetStationID(u)
+	return cuo
+}
+
+// SetNillableStationID sets the "station_id" field if the given value is not nil.
+func (cuo *CabinetUpdateOne) SetNillableStationID(u *uint64) *CabinetUpdateOne {
+	if u != nil {
+		cuo.SetStationID(*u)
+	}
+	return cuo
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (cuo *CabinetUpdateOne) ClearStationID() *CabinetUpdateOne {
+	cuo.mutation.ClearStationID()
 	return cuo
 }
 
@@ -1811,6 +1955,11 @@ func (cuo *CabinetUpdateOne) AddBatteryFlows(b ...*BatteryFlow) *CabinetUpdateOn
 	return cuo.AddBatteryFlowIDs(ids...)
 }
 
+// SetStation sets the "station" edge to the EnterpriseStation entity.
+func (cuo *CabinetUpdateOne) SetStation(e *EnterpriseStation) *CabinetUpdateOne {
+	return cuo.SetStationID(e.ID)
+}
+
 // Mutation returns the CabinetMutation object of the builder.
 func (cuo *CabinetUpdateOne) Mutation() *CabinetMutation {
 	return cuo.mutation
@@ -1954,6 +2103,12 @@ func (cuo *CabinetUpdateOne) RemoveBatteryFlows(b ...*BatteryFlow) *CabinetUpdat
 	return cuo.RemoveBatteryFlowIDs(ids...)
 }
 
+// ClearStation clears the "station" edge to the EnterpriseStation entity.
+func (cuo *CabinetUpdateOne) ClearStation() *CabinetUpdateOne {
+	cuo.mutation.ClearStation()
+	return cuo
+}
+
 // Where appends a list predicates to the CabinetUpdate builder.
 func (cuo *CabinetUpdateOne) Where(ps ...predicate.Cabinet) *CabinetUpdateOne {
 	cuo.mutation.Where(ps...)
@@ -2064,6 +2219,15 @@ func (cuo *CabinetUpdateOne) sqlSave(ctx context.Context) (_node *Cabinet, err e
 	}
 	if cuo.mutation.RemarkCleared() {
 		_spec.ClearField(cabinet.FieldRemark, field.TypeString)
+	}
+	if value, ok := cuo.mutation.EnterpriseID(); ok {
+		_spec.SetField(cabinet.FieldEnterpriseID, field.TypeUint64, value)
+	}
+	if value, ok := cuo.mutation.AddedEnterpriseID(); ok {
+		_spec.AddField(cabinet.FieldEnterpriseID, field.TypeUint64, value)
+	}
+	if cuo.mutation.EnterpriseIDCleared() {
+		_spec.ClearField(cabinet.FieldEnterpriseID, field.TypeUint64)
 	}
 	if value, ok := cuo.mutation.Sn(); ok {
 		_spec.SetField(cabinet.FieldSn, field.TypeString, value)
@@ -2499,6 +2663,35 @@ func (cuo *CabinetUpdateOne) sqlSave(ctx context.Context) (_node *Cabinet, err e
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(batteryflow.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cuo.mutation.StationCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   cabinet.StationTable,
+			Columns: []string{cabinet.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.StationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   cabinet.StationTable,
+			Columns: []string{cabinet.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

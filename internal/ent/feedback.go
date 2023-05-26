@@ -11,12 +11,12 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/feedback"
 )
 
-// Agent is the model entity for the Agent schema.
-type Agent struct {
+// Feedback is the model entity for the Feedback schema.
+type Feedback struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID uint64 `json:"id,omitempty"`
@@ -32,23 +32,26 @@ type Agent struct {
 	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
 	// 管理员改动原因/备注
 	Remark string `json:"remark,omitempty"`
-	// 企业ID
-	EnterpriseID uint64 `json:"enterprise_id,omitempty"`
-	// Name holds the value of the "name" field.
+	// 反馈内容
+	Content string `json:"content,omitempty"`
+	// 反馈类型
+	Type uint8 `json:"type,omitempty"`
+	// 反馈图片
+	URL []string `json:"url,omitempty"`
+	// 姓名
 	Name string `json:"name,omitempty"`
-	// Phone holds the value of the "phone" field.
+	// 电话
 	Phone string `json:"phone,omitempty"`
-	// Password holds the value of the "password" field.
-	Password string `json:"password,omitempty"`
+	// 团签id
+	EnterpriseID *uint64 `json:"enterprise_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
-	// The values are being populated by the AgentQuery when eager-loading is set.
-	Edges             AgentEdges `json:"edges"`
-	enterprise_agents *uint64
-	selectValues      sql.SelectValues
+	// The values are being populated by the FeedbackQuery when eager-loading is set.
+	Edges        FeedbackEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
-// AgentEdges holds the relations/edges for other nodes in the graph.
-type AgentEdges struct {
+// FeedbackEdges holds the relations/edges for other nodes in the graph.
+type FeedbackEdges struct {
 	// Enterprise holds the value of the enterprise edge.
 	Enterprise *Enterprise `json:"enterprise,omitempty"`
 	// loadedTypes holds the information for reporting if a
@@ -58,7 +61,7 @@ type AgentEdges struct {
 
 // EnterpriseOrErr returns the Enterprise value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e AgentEdges) EnterpriseOrErr() (*Enterprise, error) {
+func (e FeedbackEdges) EnterpriseOrErr() (*Enterprise, error) {
 	if e.loadedTypes[0] {
 		if e.Enterprise == nil {
 			// Edge was loaded but was not found.
@@ -70,20 +73,18 @@ func (e AgentEdges) EnterpriseOrErr() (*Enterprise, error) {
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*Agent) scanValues(columns []string) ([]any, error) {
+func (*Feedback) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case agent.FieldCreator, agent.FieldLastModifier:
+		case feedback.FieldCreator, feedback.FieldLastModifier, feedback.FieldURL:
 			values[i] = new([]byte)
-		case agent.FieldID, agent.FieldEnterpriseID:
+		case feedback.FieldID, feedback.FieldType, feedback.FieldEnterpriseID:
 			values[i] = new(sql.NullInt64)
-		case agent.FieldRemark, agent.FieldName, agent.FieldPhone, agent.FieldPassword:
+		case feedback.FieldRemark, feedback.FieldContent, feedback.FieldName, feedback.FieldPhone:
 			values[i] = new(sql.NullString)
-		case agent.FieldCreatedAt, agent.FieldUpdatedAt, agent.FieldDeletedAt:
+		case feedback.FieldCreatedAt, feedback.FieldUpdatedAt, feedback.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
-		case agent.ForeignKeys[0]: // enterprise_agents
-			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -92,166 +93,182 @@ func (*Agent) scanValues(columns []string) ([]any, error) {
 }
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
-// to the Agent fields.
-func (a *Agent) assignValues(columns []string, values []any) error {
+// to the Feedback fields.
+func (f *Feedback) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
 	for i := range columns {
 		switch columns[i] {
-		case agent.FieldID:
+		case feedback.FieldID:
 			value, ok := values[i].(*sql.NullInt64)
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			a.ID = uint64(value.Int64)
-		case agent.FieldCreatedAt:
+			f.ID = uint64(value.Int64)
+		case feedback.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				a.CreatedAt = value.Time
+				f.CreatedAt = value.Time
 			}
-		case agent.FieldUpdatedAt:
+		case feedback.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
-				a.UpdatedAt = value.Time
+				f.UpdatedAt = value.Time
 			}
-		case agent.FieldDeletedAt:
+		case feedback.FieldDeletedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
 			} else if value.Valid {
-				a.DeletedAt = new(time.Time)
-				*a.DeletedAt = value.Time
+				f.DeletedAt = new(time.Time)
+				*f.DeletedAt = value.Time
 			}
-		case agent.FieldCreator:
+		case feedback.FieldCreator:
 			if value, ok := values[i].(*[]byte); !ok {
 				return fmt.Errorf("unexpected type %T for field creator", values[i])
 			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &a.Creator); err != nil {
+				if err := json.Unmarshal(*value, &f.Creator); err != nil {
 					return fmt.Errorf("unmarshal field creator: %w", err)
 				}
 			}
-		case agent.FieldLastModifier:
+		case feedback.FieldLastModifier:
 			if value, ok := values[i].(*[]byte); !ok {
 				return fmt.Errorf("unexpected type %T for field last_modifier", values[i])
 			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &a.LastModifier); err != nil {
+				if err := json.Unmarshal(*value, &f.LastModifier); err != nil {
 					return fmt.Errorf("unmarshal field last_modifier: %w", err)
 				}
 			}
-		case agent.FieldRemark:
+		case feedback.FieldRemark:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field remark", values[i])
 			} else if value.Valid {
-				a.Remark = value.String
+				f.Remark = value.String
 			}
-		case agent.FieldEnterpriseID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field enterprise_id", values[i])
+		case feedback.FieldContent:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field content", values[i])
 			} else if value.Valid {
-				a.EnterpriseID = uint64(value.Int64)
+				f.Content = value.String
 			}
-		case agent.FieldName:
+		case feedback.FieldType:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field type", values[i])
+			} else if value.Valid {
+				f.Type = uint8(value.Int64)
+			}
+		case feedback.FieldURL:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field url", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &f.URL); err != nil {
+					return fmt.Errorf("unmarshal field url: %w", err)
+				}
+			}
+		case feedback.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
-				a.Name = value.String
+				f.Name = value.String
 			}
-		case agent.FieldPhone:
+		case feedback.FieldPhone:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field phone", values[i])
 			} else if value.Valid {
-				a.Phone = value.String
+				f.Phone = value.String
 			}
-		case agent.FieldPassword:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field password", values[i])
-			} else if value.Valid {
-				a.Password = value.String
-			}
-		case agent.ForeignKeys[0]:
+		case feedback.FieldEnterpriseID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field enterprise_agents", value)
+				return fmt.Errorf("unexpected type %T for field enterprise_id", values[i])
 			} else if value.Valid {
-				a.enterprise_agents = new(uint64)
-				*a.enterprise_agents = uint64(value.Int64)
+				f.EnterpriseID = new(uint64)
+				*f.EnterpriseID = uint64(value.Int64)
 			}
 		default:
-			a.selectValues.Set(columns[i], values[i])
+			f.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
 }
 
-// Value returns the ent.Value that was dynamically selected and assigned to the Agent.
+// Value returns the ent.Value that was dynamically selected and assigned to the Feedback.
 // This includes values selected through modifiers, order, etc.
-func (a *Agent) Value(name string) (ent.Value, error) {
-	return a.selectValues.Get(name)
+func (f *Feedback) Value(name string) (ent.Value, error) {
+	return f.selectValues.Get(name)
 }
 
-// QueryEnterprise queries the "enterprise" edge of the Agent entity.
-func (a *Agent) QueryEnterprise() *EnterpriseQuery {
-	return NewAgentClient(a.config).QueryEnterprise(a)
+// QueryEnterprise queries the "enterprise" edge of the Feedback entity.
+func (f *Feedback) QueryEnterprise() *EnterpriseQuery {
+	return NewFeedbackClient(f.config).QueryEnterprise(f)
 }
 
-// Update returns a builder for updating this Agent.
-// Note that you need to call Agent.Unwrap() before calling this method if this Agent
+// Update returns a builder for updating this Feedback.
+// Note that you need to call Feedback.Unwrap() before calling this method if this Feedback
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (a *Agent) Update() *AgentUpdateOne {
-	return NewAgentClient(a.config).UpdateOne(a)
+func (f *Feedback) Update() *FeedbackUpdateOne {
+	return NewFeedbackClient(f.config).UpdateOne(f)
 }
 
-// Unwrap unwraps the Agent entity that was returned from a transaction after it was closed,
+// Unwrap unwraps the Feedback entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (a *Agent) Unwrap() *Agent {
-	_tx, ok := a.config.driver.(*txDriver)
+func (f *Feedback) Unwrap() *Feedback {
+	_tx, ok := f.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: Agent is not a transactional entity")
+		panic("ent: Feedback is not a transactional entity")
 	}
-	a.config.driver = _tx.drv
-	return a
+	f.config.driver = _tx.drv
+	return f
 }
 
 // String implements the fmt.Stringer.
-func (a *Agent) String() string {
+func (f *Feedback) String() string {
 	var builder strings.Builder
-	builder.WriteString("Agent(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", a.ID))
+	builder.WriteString("Feedback(")
+	builder.WriteString(fmt.Sprintf("id=%v, ", f.ID))
 	builder.WriteString("created_at=")
-	builder.WriteString(a.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(f.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
-	builder.WriteString(a.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(f.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	if v := a.DeletedAt; v != nil {
+	if v := f.DeletedAt; v != nil {
 		builder.WriteString("deleted_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteString(", ")
 	builder.WriteString("creator=")
-	builder.WriteString(fmt.Sprintf("%v", a.Creator))
+	builder.WriteString(fmt.Sprintf("%v", f.Creator))
 	builder.WriteString(", ")
 	builder.WriteString("last_modifier=")
-	builder.WriteString(fmt.Sprintf("%v", a.LastModifier))
+	builder.WriteString(fmt.Sprintf("%v", f.LastModifier))
 	builder.WriteString(", ")
 	builder.WriteString("remark=")
-	builder.WriteString(a.Remark)
+	builder.WriteString(f.Remark)
 	builder.WriteString(", ")
-	builder.WriteString("enterprise_id=")
-	builder.WriteString(fmt.Sprintf("%v", a.EnterpriseID))
+	builder.WriteString("content=")
+	builder.WriteString(f.Content)
+	builder.WriteString(", ")
+	builder.WriteString("type=")
+	builder.WriteString(fmt.Sprintf("%v", f.Type))
+	builder.WriteString(", ")
+	builder.WriteString("url=")
+	builder.WriteString(fmt.Sprintf("%v", f.URL))
 	builder.WriteString(", ")
 	builder.WriteString("name=")
-	builder.WriteString(a.Name)
+	builder.WriteString(f.Name)
 	builder.WriteString(", ")
 	builder.WriteString("phone=")
-	builder.WriteString(a.Phone)
+	builder.WriteString(f.Phone)
 	builder.WriteString(", ")
-	builder.WriteString("password=")
-	builder.WriteString(a.Password)
+	if v := f.EnterpriseID; v != nil {
+		builder.WriteString("enterprise_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }
 
-// Agents is a parsable slice of Agent.
-type Agents []*Agent
+// Feedbacks is a parsable slice of Feedback.
+type Feedbacks []*Feedback

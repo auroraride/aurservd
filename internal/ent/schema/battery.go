@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/schema/index"
 	"entgo.io/ent/schema/mixin"
 	"github.com/auroraride/adapter"
+
 	"github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -64,6 +65,8 @@ func (Battery) Fields() []ent.Field {
 		field.Uint64("rider_id").Optional().Nillable().Comment("骑手ID"),
 		field.Uint64("cabinet_id").Optional().Nillable().Comment("电柜ID"),
 		field.Uint64("subscribe_id").Optional().Nillable().Comment("订阅ID"),
+		field.Uint64("enterprise_id").Optional().Nillable().Comment("所属团签"),
+		field.Uint64("station_id").Optional().Nillable().Comment("所属站点Id"),
 		field.String("sn").Unique().Comment("电池编号"),
 		field.Other("brand", adapter.BatteryBrandUnknown).Default(adapter.BatteryBrandUnknown).SchemaType(map[string]string{
 			dialect.Postgres: postgres.TypeCharVar,
@@ -80,7 +83,7 @@ func (Battery) Edges() []ent.Edge {
 		edge.From("rider", Rider.Type).Ref("battery").Unique().Field("rider_id").Comment("所属骑手"),
 		edge.From("cabinet", Cabinet.Type).Ref("batteries").Unique().Field("cabinet_id").Comment("所属电柜"),
 		edge.From("subscribe", Subscribe.Type).Ref("battery").Unique().Field("subscribe_id").Comment("所属订阅"),
-
+		edge.From("enterprise", Enterprise.Type).Ref("battery").Unique().Field("enterprise_id").Comment("所属企业"),
 		edge.To("flows", BatteryFlow.Type).Annotations(
 			entsql.WithComments(true),
 		).Comment("流转记录"),

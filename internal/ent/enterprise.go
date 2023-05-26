@@ -88,9 +88,15 @@ type EnterpriseEdges struct {
 	Stations []*EnterpriseStation `json:"stations,omitempty"`
 	// Bills holds the value of the bills edge.
 	Bills []*EnterpriseBill `json:"bills,omitempty"`
+	// Battery holds the value of the battery edge.
+	Battery []*Battery `json:"battery,omitempty"`
+	// Feedback holds the value of the feedback edge.
+	Feedback []*Feedback `json:"feedback,omitempty"`
+	// Agents holds the value of the agents edge.
+	Agents []*Agent `json:"agents,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [8]bool
+	loadedTypes [11]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -167,6 +173,33 @@ func (e EnterpriseEdges) BillsOrErr() ([]*EnterpriseBill, error) {
 		return e.Bills, nil
 	}
 	return nil, &NotLoadedError{edge: "bills"}
+}
+
+// BatteryOrErr returns the Battery value or an error if the edge
+// was not loaded in eager-loading.
+func (e EnterpriseEdges) BatteryOrErr() ([]*Battery, error) {
+	if e.loadedTypes[8] {
+		return e.Battery, nil
+	}
+	return nil, &NotLoadedError{edge: "battery"}
+}
+
+// FeedbackOrErr returns the Feedback value or an error if the edge
+// was not loaded in eager-loading.
+func (e EnterpriseEdges) FeedbackOrErr() ([]*Feedback, error) {
+	if e.loadedTypes[9] {
+		return e.Feedback, nil
+	}
+	return nil, &NotLoadedError{edge: "feedback"}
+}
+
+// AgentsOrErr returns the Agents value or an error if the edge
+// was not loaded in eager-loading.
+func (e EnterpriseEdges) AgentsOrErr() ([]*Agent, error) {
+	if e.loadedTypes[10] {
+		return e.Agents, nil
+	}
+	return nil, &NotLoadedError{edge: "agents"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -398,6 +431,21 @@ func (e *Enterprise) QueryStations() *EnterpriseStationQuery {
 // QueryBills queries the "bills" edge of the Enterprise entity.
 func (e *Enterprise) QueryBills() *EnterpriseBillQuery {
 	return NewEnterpriseClient(e.config).QueryBills(e)
+}
+
+// QueryBattery queries the "battery" edge of the Enterprise entity.
+func (e *Enterprise) QueryBattery() *BatteryQuery {
+	return NewEnterpriseClient(e.config).QueryBattery(e)
+}
+
+// QueryFeedback queries the "feedback" edge of the Enterprise entity.
+func (e *Enterprise) QueryFeedback() *FeedbackQuery {
+	return NewEnterpriseClient(e.config).QueryFeedback(e)
+}
+
+// QueryAgents queries the "agents" edge of the Enterprise entity.
+func (e *Enterprise) QueryAgents() *AgentQuery {
+	return NewEnterpriseClient(e.config).QueryAgents(e)
 }
 
 // Update returns a builder for updating this Enterprise.

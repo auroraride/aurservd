@@ -135,6 +135,16 @@ func EmployeeID(v uint64) predicate.Stock {
 	return predicate.Stock(sql.FieldEQ(FieldEmployeeID, v))
 }
 
+// StationID applies equality check predicate on the "station_id" field. It's identical to StationIDEQ.
+func StationID(v uint64) predicate.Stock {
+	return predicate.Stock(sql.FieldEQ(FieldStationID, v))
+}
+
+// EnterpriseID applies equality check predicate on the "enterprise_id" field. It's identical to EnterpriseIDEQ.
+func EnterpriseID(v uint64) predicate.Stock {
+	return predicate.Stock(sql.FieldEQ(FieldEnterpriseID, v))
+}
+
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
 func Name(v string) predicate.Stock {
 	return predicate.Stock(sql.FieldEQ(FieldName, v))
@@ -778,6 +788,106 @@ func EmployeeIDIsNil() predicate.Stock {
 // EmployeeIDNotNil applies the NotNil predicate on the "employee_id" field.
 func EmployeeIDNotNil() predicate.Stock {
 	return predicate.Stock(sql.FieldNotNull(FieldEmployeeID))
+}
+
+// StationIDEQ applies the EQ predicate on the "station_id" field.
+func StationIDEQ(v uint64) predicate.Stock {
+	return predicate.Stock(sql.FieldEQ(FieldStationID, v))
+}
+
+// StationIDNEQ applies the NEQ predicate on the "station_id" field.
+func StationIDNEQ(v uint64) predicate.Stock {
+	return predicate.Stock(sql.FieldNEQ(FieldStationID, v))
+}
+
+// StationIDIn applies the In predicate on the "station_id" field.
+func StationIDIn(vs ...uint64) predicate.Stock {
+	return predicate.Stock(sql.FieldIn(FieldStationID, vs...))
+}
+
+// StationIDNotIn applies the NotIn predicate on the "station_id" field.
+func StationIDNotIn(vs ...uint64) predicate.Stock {
+	return predicate.Stock(sql.FieldNotIn(FieldStationID, vs...))
+}
+
+// StationIDGT applies the GT predicate on the "station_id" field.
+func StationIDGT(v uint64) predicate.Stock {
+	return predicate.Stock(sql.FieldGT(FieldStationID, v))
+}
+
+// StationIDGTE applies the GTE predicate on the "station_id" field.
+func StationIDGTE(v uint64) predicate.Stock {
+	return predicate.Stock(sql.FieldGTE(FieldStationID, v))
+}
+
+// StationIDLT applies the LT predicate on the "station_id" field.
+func StationIDLT(v uint64) predicate.Stock {
+	return predicate.Stock(sql.FieldLT(FieldStationID, v))
+}
+
+// StationIDLTE applies the LTE predicate on the "station_id" field.
+func StationIDLTE(v uint64) predicate.Stock {
+	return predicate.Stock(sql.FieldLTE(FieldStationID, v))
+}
+
+// StationIDIsNil applies the IsNil predicate on the "station_id" field.
+func StationIDIsNil() predicate.Stock {
+	return predicate.Stock(sql.FieldIsNull(FieldStationID))
+}
+
+// StationIDNotNil applies the NotNil predicate on the "station_id" field.
+func StationIDNotNil() predicate.Stock {
+	return predicate.Stock(sql.FieldNotNull(FieldStationID))
+}
+
+// EnterpriseIDEQ applies the EQ predicate on the "enterprise_id" field.
+func EnterpriseIDEQ(v uint64) predicate.Stock {
+	return predicate.Stock(sql.FieldEQ(FieldEnterpriseID, v))
+}
+
+// EnterpriseIDNEQ applies the NEQ predicate on the "enterprise_id" field.
+func EnterpriseIDNEQ(v uint64) predicate.Stock {
+	return predicate.Stock(sql.FieldNEQ(FieldEnterpriseID, v))
+}
+
+// EnterpriseIDIn applies the In predicate on the "enterprise_id" field.
+func EnterpriseIDIn(vs ...uint64) predicate.Stock {
+	return predicate.Stock(sql.FieldIn(FieldEnterpriseID, vs...))
+}
+
+// EnterpriseIDNotIn applies the NotIn predicate on the "enterprise_id" field.
+func EnterpriseIDNotIn(vs ...uint64) predicate.Stock {
+	return predicate.Stock(sql.FieldNotIn(FieldEnterpriseID, vs...))
+}
+
+// EnterpriseIDGT applies the GT predicate on the "enterprise_id" field.
+func EnterpriseIDGT(v uint64) predicate.Stock {
+	return predicate.Stock(sql.FieldGT(FieldEnterpriseID, v))
+}
+
+// EnterpriseIDGTE applies the GTE predicate on the "enterprise_id" field.
+func EnterpriseIDGTE(v uint64) predicate.Stock {
+	return predicate.Stock(sql.FieldGTE(FieldEnterpriseID, v))
+}
+
+// EnterpriseIDLT applies the LT predicate on the "enterprise_id" field.
+func EnterpriseIDLT(v uint64) predicate.Stock {
+	return predicate.Stock(sql.FieldLT(FieldEnterpriseID, v))
+}
+
+// EnterpriseIDLTE applies the LTE predicate on the "enterprise_id" field.
+func EnterpriseIDLTE(v uint64) predicate.Stock {
+	return predicate.Stock(sql.FieldLTE(FieldEnterpriseID, v))
+}
+
+// EnterpriseIDIsNil applies the IsNil predicate on the "enterprise_id" field.
+func EnterpriseIDIsNil() predicate.Stock {
+	return predicate.Stock(sql.FieldIsNull(FieldEnterpriseID))
+}
+
+// EnterpriseIDNotNil applies the NotNil predicate on the "enterprise_id" field.
+func EnterpriseIDNotNil() predicate.Stock {
+	return predicate.Stock(sql.FieldNotNull(FieldEnterpriseID))
 }
 
 // NameEQ applies the EQ predicate on the "name" field.

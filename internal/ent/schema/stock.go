@@ -39,6 +39,8 @@ func (Stock) Fields() []ent.Field {
 		field.Uint64("cabinet_id").Optional().Nillable().Comment("入库至 或 出库自 电柜ID"),
 		field.Uint64("rider_id").Optional().Nillable().Comment("对应骑手ID"),
 		field.Uint64("employee_id").Optional().Nillable().Comment("操作店员ID"),
+		field.Uint64("station_id").Optional().Nillable().Comment("入库至 或 出库自     站点ID"),
+		field.Uint64("enterprise_id").Optional().Nillable().Comment("团签id"),
 		field.String("name").Comment("物资名称"),
 		field.String("model").Optional().Nillable().Comment("电池型号"),
 		field.Int("num").Immutable().Comment("物资数量: 正值调入 / 负值调出"),

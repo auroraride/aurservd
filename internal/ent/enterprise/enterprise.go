@@ -75,6 +75,12 @@ const (
 	EdgeStations = "stations"
 	// EdgeBills holds the string denoting the bills edge name in mutations.
 	EdgeBills = "bills"
+	// EdgeBattery holds the string denoting the battery edge name in mutations.
+	EdgeBattery = "battery"
+	// EdgeFeedback holds the string denoting the feedback edge name in mutations.
+	EdgeFeedback = "feedback"
+	// EdgeAgents holds the string denoting the agents edge name in mutations.
+	EdgeAgents = "agents"
 	// Table holds the table name of the enterprise in the database.
 	Table = "enterprise"
 	// CityTable is the table that holds the city relation/edge.
@@ -133,6 +139,27 @@ const (
 	BillsInverseTable = "enterprise_bill"
 	// BillsColumn is the table column denoting the bills relation/edge.
 	BillsColumn = "enterprise_id"
+	// BatteryTable is the table that holds the battery relation/edge.
+	BatteryTable = "battery"
+	// BatteryInverseTable is the table name for the Battery entity.
+	// It exists in this package in order to avoid circular dependency with the "battery" package.
+	BatteryInverseTable = "battery"
+	// BatteryColumn is the table column denoting the battery relation/edge.
+	BatteryColumn = "enterprise_id"
+	// FeedbackTable is the table that holds the feedback relation/edge.
+	FeedbackTable = "feedback"
+	// FeedbackInverseTable is the table name for the Feedback entity.
+	// It exists in this package in order to avoid circular dependency with the "feedback" package.
+	FeedbackInverseTable = "feedback"
+	// FeedbackColumn is the table column denoting the feedback relation/edge.
+	FeedbackColumn = "enterprise_id"
+	// AgentsTable is the table that holds the agents relation/edge.
+	AgentsTable = "agent"
+	// AgentsInverseTable is the table name for the Agent entity.
+	// It exists in this package in order to avoid circular dependency with the "agent" package.
+	AgentsInverseTable = "agent"
+	// AgentsColumn is the table column denoting the agents relation/edge.
+	AgentsColumn = "enterprise_agents"
 )
 
 // Columns holds all SQL columns for enterprise fields.
@@ -404,6 +431,48 @@ func ByBills(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newBillsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByBatteryCount orders the results by battery count.
+func ByBatteryCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newBatteryStep(), opts...)
+	}
+}
+
+// ByBattery orders the results by battery terms.
+func ByBattery(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newBatteryStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByFeedbackCount orders the results by feedback count.
+func ByFeedbackCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newFeedbackStep(), opts...)
+	}
+}
+
+// ByFeedback orders the results by feedback terms.
+func ByFeedback(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newFeedbackStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByAgentsCount orders the results by agents count.
+func ByAgentsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newAgentsStep(), opts...)
+	}
+}
+
+// ByAgents orders the results by agents terms.
+func ByAgents(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newAgentsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newCityStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -458,5 +527,26 @@ func newBillsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(BillsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, BillsTable, BillsColumn),
+	)
+}
+func newBatteryStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(BatteryInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, BatteryTable, BatteryColumn),
+	)
+}
+func newFeedbackStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(FeedbackInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, FeedbackTable, FeedbackColumn),
+	)
+}
+func newAgentsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(AgentsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, AgentsTable, AgentsColumn),
 	)
 }

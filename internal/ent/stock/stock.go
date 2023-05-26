@@ -52,6 +52,10 @@ const (
 	FieldRiderID = "rider_id"
 	// FieldEmployeeID holds the string denoting the employee_id field in the database.
 	FieldEmployeeID = "employee_id"
+	// FieldStationID holds the string denoting the station_id field in the database.
+	FieldStationID = "station_id"
+	// FieldEnterpriseID holds the string denoting the enterprise_id field in the database.
+	FieldEnterpriseID = "enterprise_id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldModel holds the string denoting the model field in the database.
@@ -184,6 +188,8 @@ var Columns = []string{
 	FieldCabinetID,
 	FieldRiderID,
 	FieldEmployeeID,
+	FieldStationID,
+	FieldEnterpriseID,
 	FieldName,
 	FieldModel,
 	FieldNum,
@@ -338,6 +344,16 @@ func ByRiderID(opts ...sql.OrderTermOption) OrderOption {
 // ByEmployeeID orders the results by the employee_id field.
 func ByEmployeeID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldEmployeeID, opts...).ToFunc()
+}
+
+// ByStationID orders the results by the station_id field.
+func ByStationID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldStationID, opts...).ToFunc()
+}
+
+// ByEnterpriseID orders the results by the enterprise_id field.
+func ByEnterpriseID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldEnterpriseID, opts...).ToFunc()
 }
 
 // ByName orders the results by the name field.

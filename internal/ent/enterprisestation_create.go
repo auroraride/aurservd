@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 )
@@ -107,6 +108,21 @@ func (esc *EnterpriseStationCreate) SetName(s string) *EnterpriseStationCreate {
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
 func (esc *EnterpriseStationCreate) SetEnterprise(e *Enterprise) *EnterpriseStationCreate {
 	return esc.SetEnterpriseID(e.ID)
+}
+
+// AddCabinetIDs adds the "cabinets" edge to the Cabinet entity by IDs.
+func (esc *EnterpriseStationCreate) AddCabinetIDs(ids ...uint64) *EnterpriseStationCreate {
+	esc.mutation.AddCabinetIDs(ids...)
+	return esc
+}
+
+// AddCabinets adds the "cabinets" edges to the Cabinet entity.
+func (esc *EnterpriseStationCreate) AddCabinets(c ...*Cabinet) *EnterpriseStationCreate {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return esc.AddCabinetIDs(ids...)
 }
 
 // Mutation returns the EnterpriseStationMutation object of the builder.
@@ -250,6 +266,22 @@ func (esc *EnterpriseStationCreate) createSpec() (*EnterpriseStation, *sqlgraph.
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.EnterpriseID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := esc.mutation.CabinetsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestation.CabinetsTable,
+			Columns: []string{enterprisestation.CabinetsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
