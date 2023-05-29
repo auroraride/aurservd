@@ -18,7 +18,7 @@ func loadAgentRoutes() {
 	guide.POST("/signin", aapi.Agent.Signin)
 
 	// 需校验
-	auth := g.Group("", middleware.AgentAuth())
+	auth := g.Group("", middleware.Agent(), middleware.AgentAuth())
 	auth.GET("/cabinet/:serial", aapi.Cabinet.Detail)
 	auth.GET("/profile", aapi.Agent.Profile)
 
