@@ -11,6 +11,9 @@ import (
 	"math"
 	"time"
 
+	"github.com/golang-module/carbon/v2"
+	"github.com/google/uuid"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
@@ -18,12 +21,11 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
+	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
-	"github.com/golang-module/carbon/v2"
-	"github.com/google/uuid"
 )
 
 type enterpriseStatementService struct {
@@ -425,6 +427,15 @@ func (s *enterpriseStatementService) usageFilter(e *ent.Enterprise, req model.St
 
 	if req.Model != "" {
 		q.Where(subscribe.Model(req.Model))
+	}
+
+	if req.Keyword != "" {
+		q.Where(
+			subscribe.HasRiderWith(rider.Or(
+				rider.NameContainsFold(req.Keyword),
+				rider.PhoneContainsFold(req.Keyword),
+			)),
+		)
 	}
 	return
 }
