@@ -21,7 +21,6 @@ var (
 		{Name: "name", Type: field.TypeString},
 		{Name: "phone", Type: field.TypeString, Unique: true},
 		{Name: "enterprise_id", Type: field.TypeUint64, Comment: "企业ID"},
-		{Name: "station_id", Type: field.TypeUint64, Nullable: true, Comment: "站点ID"},
 		{Name: "enterprise_agents", Type: field.TypeUint64, Nullable: true},
 	}
 	// AgentTable holds the schema information for the "agent" table.
@@ -37,14 +36,8 @@ var (
 				OnDelete:   schema.NoAction,
 			},
 			{
-				Symbol:     "agent_enterprise_station_station",
-				Columns:    []*schema.Column{AgentColumns[10]},
-				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
 				Symbol:     "agent_enterprise_agents",
-				Columns:    []*schema.Column{AgentColumns[11]},
+				Columns:    []*schema.Column{AgentColumns[10]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -70,11 +63,6 @@ var (
 				Name:    "agent_enterprise_id",
 				Unique:  false,
 				Columns: []*schema.Column{AgentColumns[9]},
-			},
-			{
-				Name:    "agent_station_id",
-				Unique:  false,
-				Columns: []*schema.Column{AgentColumns[10]},
 			},
 			{
 				Name:    "agent_phone",
@@ -4343,6 +4331,31 @@ var (
 			},
 		},
 	}
+	// AgentStationsColumns holds the columns for the "agent_stations" table.
+	AgentStationsColumns = []*schema.Column{
+		{Name: "agent_id", Type: field.TypeInt},
+		{Name: "enterprise_station_id", Type: field.TypeInt},
+	}
+	// AgentStationsTable holds the schema information for the "agent_stations" table.
+	AgentStationsTable = &schema.Table{
+		Name:       "agent_stations",
+		Columns:    AgentStationsColumns,
+		PrimaryKey: []*schema.Column{AgentStationsColumns[0], AgentStationsColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "agent_stations_agent_id",
+				Columns:    []*schema.Column{AgentStationsColumns[0]},
+				RefColumns: []*schema.Column{AgentColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "agent_stations_enterprise_station_id",
+				Columns:    []*schema.Column{AgentStationsColumns[1]},
+				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// CabinetModelsColumns holds the columns for the "cabinet_models" table.
 	CabinetModelsColumns = []*schema.Column{
 		{Name: "cabinet_id", Type: field.TypeInt},
@@ -4447,6 +4460,7 @@ var (
 		SubscribePauseTable,
 		SubscribeReminderTable,
 		SubscribeSuspendTable,
+		AgentStationsTable,
 		CabinetModelsTable,
 		PlanCitiesTable,
 	}
@@ -4454,8 +4468,7 @@ var (
 
 func init() {
 	AgentTable.ForeignKeys[0].RefTable = EnterpriseTable
-	AgentTable.ForeignKeys[1].RefTable = EnterpriseStationTable
-	AgentTable.ForeignKeys[2].RefTable = EnterpriseTable
+	AgentTable.ForeignKeys[1].RefTable = EnterpriseTable
 	AgentTable.Annotation = &entsql.Annotation{
 		Table: "agent",
 	}
@@ -4775,6 +4788,8 @@ func init() {
 	SubscribeSuspendTable.Annotation = &entsql.Annotation{
 		Table: "subscribe_suspend",
 	}
+	AgentStationsTable.ForeignKeys[0].RefTable = AgentTable
+	AgentStationsTable.ForeignKeys[1].RefTable = EnterpriseStationTable
 	CabinetModelsTable.ForeignKeys[0].RefTable = CabinetTable
 	CabinetModelsTable.ForeignKeys[1].RefTable = BatteryModelTable
 	PlanCitiesTable.ForeignKeys[0].RefTable = PlanTable

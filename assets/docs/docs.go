@@ -110,6 +110,45 @@ const docTemplate = `{
                 }
             }
         },
+        "/agent/v1/cabinet/{serial}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A5002 电柜详情",
+                "operationId": "AgentCabinetDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "电柜编号",
+                        "name": "serial",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/agent/v1/prepayment": {
             "get": {
                 "consumes": [
@@ -15137,7 +15176,6 @@ const docTemplate = `{
             "required": [
                 "enterpriseId",
                 "name",
-                "password",
                 "phone"
             ],
             "properties": {
@@ -15145,9 +15183,6 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "name": {
-                    "type": "string"
-                },
-                "password": {
                     "type": "string"
                 },
                 "phone": {
@@ -15174,10 +15209,6 @@ const docTemplate = `{
             "properties": {
                 "name": {
                     "description": "姓名",
-                    "type": "string"
-                },
-                "password": {
-                    "description": "密码",
                     "type": "string"
                 },
                 "phone": {

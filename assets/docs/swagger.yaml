@@ -324,14 +324,11 @@ definitions:
         type: integer
       name:
         type: string
-      password:
-        type: string
       phone:
         type: string
     required:
     - enterpriseId
     - name
-    - password
     - phone
     type: object
   model.AgentListRes:
@@ -347,9 +344,6 @@ definitions:
     properties:
       name:
         description: 姓名
-        type: string
-      password:
-        description: 密码
         type: string
       phone:
         description: 电话
@@ -7436,6 +7430,32 @@ paths:
                   type: array
               type: object
       summary: A4001 使用明细
+      tags:
+      - '[A]代理接口'
+  /agent/v1/cabinet/{serial}:
+    get:
+      consumes:
+      - application/json
+      operationId: AgentCabinetDetail
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - description: 电柜编号
+        in: path
+        name: serial
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: A5002 电柜详情
       tags:
       - '[A]代理接口'
   /agent/v1/prepayment:

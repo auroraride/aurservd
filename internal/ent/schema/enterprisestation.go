@@ -69,6 +69,7 @@ func (EnterpriseStation) Edges() []ent.Edge {
 		edge.To("cabinets", Cabinet.Type),
 		edge.To("battery", Battery.Type),
 		edge.To("stocks", Stock.Type),
+		edge.From("agents", Agent.Type).Ref("stations"),
 	}
 }
 

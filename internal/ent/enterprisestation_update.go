@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -154,6 +155,21 @@ func (esu *EnterpriseStationUpdate) AddStocks(s ...*Stock) *EnterpriseStationUpd
 	return esu.AddStockIDs(ids...)
 }
 
+// AddAgentIDs adds the "agents" edge to the Agent entity by IDs.
+func (esu *EnterpriseStationUpdate) AddAgentIDs(ids ...uint64) *EnterpriseStationUpdate {
+	esu.mutation.AddAgentIDs(ids...)
+	return esu
+}
+
+// AddAgents adds the "agents" edges to the Agent entity.
+func (esu *EnterpriseStationUpdate) AddAgents(a ...*Agent) *EnterpriseStationUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return esu.AddAgentIDs(ids...)
+}
+
 // Mutation returns the EnterpriseStationMutation object of the builder.
 func (esu *EnterpriseStationUpdate) Mutation() *EnterpriseStationMutation {
 	return esu.mutation
@@ -226,6 +242,27 @@ func (esu *EnterpriseStationUpdate) RemoveStocks(s ...*Stock) *EnterpriseStation
 		ids[i] = s[i].ID
 	}
 	return esu.RemoveStockIDs(ids...)
+}
+
+// ClearAgents clears all "agents" edges to the Agent entity.
+func (esu *EnterpriseStationUpdate) ClearAgents() *EnterpriseStationUpdate {
+	esu.mutation.ClearAgents()
+	return esu
+}
+
+// RemoveAgentIDs removes the "agents" edge to Agent entities by IDs.
+func (esu *EnterpriseStationUpdate) RemoveAgentIDs(ids ...uint64) *EnterpriseStationUpdate {
+	esu.mutation.RemoveAgentIDs(ids...)
+	return esu
+}
+
+// RemoveAgents removes "agents" edges to Agent entities.
+func (esu *EnterpriseStationUpdate) RemoveAgents(a ...*Agent) *EnterpriseStationUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return esu.RemoveAgentIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -487,6 +524,51 @@ func (esu *EnterpriseStationUpdate) sqlSave(ctx context.Context) (n int, err err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if esu.mutation.AgentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   enterprisestation.AgentsTable,
+			Columns: enterprisestation.AgentsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := esu.mutation.RemovedAgentsIDs(); len(nodes) > 0 && !esu.mutation.AgentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   enterprisestation.AgentsTable,
+			Columns: enterprisestation.AgentsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := esu.mutation.AgentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   enterprisestation.AgentsTable,
+			Columns: enterprisestation.AgentsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(esu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, esu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -629,6 +711,21 @@ func (esuo *EnterpriseStationUpdateOne) AddStocks(s ...*Stock) *EnterpriseStatio
 	return esuo.AddStockIDs(ids...)
 }
 
+// AddAgentIDs adds the "agents" edge to the Agent entity by IDs.
+func (esuo *EnterpriseStationUpdateOne) AddAgentIDs(ids ...uint64) *EnterpriseStationUpdateOne {
+	esuo.mutation.AddAgentIDs(ids...)
+	return esuo
+}
+
+// AddAgents adds the "agents" edges to the Agent entity.
+func (esuo *EnterpriseStationUpdateOne) AddAgents(a ...*Agent) *EnterpriseStationUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return esuo.AddAgentIDs(ids...)
+}
+
 // Mutation returns the EnterpriseStationMutation object of the builder.
 func (esuo *EnterpriseStationUpdateOne) Mutation() *EnterpriseStationMutation {
 	return esuo.mutation
@@ -701,6 +798,27 @@ func (esuo *EnterpriseStationUpdateOne) RemoveStocks(s ...*Stock) *EnterpriseSta
 		ids[i] = s[i].ID
 	}
 	return esuo.RemoveStockIDs(ids...)
+}
+
+// ClearAgents clears all "agents" edges to the Agent entity.
+func (esuo *EnterpriseStationUpdateOne) ClearAgents() *EnterpriseStationUpdateOne {
+	esuo.mutation.ClearAgents()
+	return esuo
+}
+
+// RemoveAgentIDs removes the "agents" edge to Agent entities by IDs.
+func (esuo *EnterpriseStationUpdateOne) RemoveAgentIDs(ids ...uint64) *EnterpriseStationUpdateOne {
+	esuo.mutation.RemoveAgentIDs(ids...)
+	return esuo
+}
+
+// RemoveAgents removes "agents" edges to Agent entities.
+func (esuo *EnterpriseStationUpdateOne) RemoveAgents(a ...*Agent) *EnterpriseStationUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return esuo.RemoveAgentIDs(ids...)
 }
 
 // Where appends a list predicates to the EnterpriseStationUpdate builder.
@@ -985,6 +1103,51 @@ func (esuo *EnterpriseStationUpdateOne) sqlSave(ctx context.Context) (_node *Ent
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if esuo.mutation.AgentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   enterprisestation.AgentsTable,
+			Columns: enterprisestation.AgentsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := esuo.mutation.RemovedAgentsIDs(); len(nodes) > 0 && !esuo.mutation.AgentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   enterprisestation.AgentsTable,
+			Columns: enterprisestation.AgentsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := esuo.mutation.AgentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   enterprisestation.AgentsTable,
+			Columns: enterprisestation.AgentsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

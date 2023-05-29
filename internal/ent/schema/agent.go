@@ -64,7 +64,9 @@ func (Agent) Fields() []ent.Field {
 
 // Edges of the Agent.
 func (Agent) Edges() []ent.Edge {
-	return []ent.Edge{}
+	return []ent.Edge{
+		edge.To("stations", EnterpriseStation.Type),
+	}
 }
 
 func (Agent) Mixin() []ent.Mixin {
@@ -73,7 +75,6 @@ func (Agent) Mixin() []ent.Mixin {
 		internal.DeleteMixin{},
 		internal.Modifier{},
 		EnterpriseMixin{},
-		StationMixin{Optional: true},
 	}
 }
 

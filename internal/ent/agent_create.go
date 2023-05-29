@@ -99,20 +99,6 @@ func (ac *AgentCreate) SetEnterpriseID(u uint64) *AgentCreate {
 	return ac
 }
 
-// SetStationID sets the "station_id" field.
-func (ac *AgentCreate) SetStationID(u uint64) *AgentCreate {
-	ac.mutation.SetStationID(u)
-	return ac
-}
-
-// SetNillableStationID sets the "station_id" field if the given value is not nil.
-func (ac *AgentCreate) SetNillableStationID(u *uint64) *AgentCreate {
-	if u != nil {
-		ac.SetStationID(*u)
-	}
-	return ac
-}
-
 // SetName sets the "name" field.
 func (ac *AgentCreate) SetName(s string) *AgentCreate {
 	ac.mutation.SetName(s)
@@ -130,9 +116,19 @@ func (ac *AgentCreate) SetEnterprise(e *Enterprise) *AgentCreate {
 	return ac.SetEnterpriseID(e.ID)
 }
 
-// SetStation sets the "station" edge to the EnterpriseStation entity.
-func (ac *AgentCreate) SetStation(e *EnterpriseStation) *AgentCreate {
-	return ac.SetStationID(e.ID)
+// AddStationIDs adds the "stations" edge to the EnterpriseStation entity by IDs.
+func (ac *AgentCreate) AddStationIDs(ids ...uint64) *AgentCreate {
+	ac.mutation.AddStationIDs(ids...)
+	return ac
+}
+
+// AddStations adds the "stations" edges to the EnterpriseStation entity.
+func (ac *AgentCreate) AddStations(e ...*EnterpriseStation) *AgentCreate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return ac.AddStationIDs(ids...)
 }
 
 // Mutation returns the AgentMutation object of the builder.
@@ -285,12 +281,12 @@ func (ac *AgentCreate) createSpec() (*Agent, *sqlgraph.CreateSpec) {
 		_node.EnterpriseID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := ac.mutation.StationIDs(); len(nodes) > 0 {
+	if nodes := ac.mutation.StationsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
+			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   agent.StationTable,
-			Columns: []string{agent.StationColumn},
+			Table:   agent.StationsTable,
+			Columns: agent.StationsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
@@ -299,7 +295,6 @@ func (ac *AgentCreate) createSpec() (*Agent, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.StationID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -429,24 +424,6 @@ func (u *AgentUpsert) SetEnterpriseID(v uint64) *AgentUpsert {
 // UpdateEnterpriseID sets the "enterprise_id" field to the value that was provided on create.
 func (u *AgentUpsert) UpdateEnterpriseID() *AgentUpsert {
 	u.SetExcluded(agent.FieldEnterpriseID)
-	return u
-}
-
-// SetStationID sets the "station_id" field.
-func (u *AgentUpsert) SetStationID(v uint64) *AgentUpsert {
-	u.Set(agent.FieldStationID, v)
-	return u
-}
-
-// UpdateStationID sets the "station_id" field to the value that was provided on create.
-func (u *AgentUpsert) UpdateStationID() *AgentUpsert {
-	u.SetExcluded(agent.FieldStationID)
-	return u
-}
-
-// ClearStationID clears the value of the "station_id" field.
-func (u *AgentUpsert) ClearStationID() *AgentUpsert {
-	u.SetNull(agent.FieldStationID)
 	return u
 }
 
@@ -610,27 +587,6 @@ func (u *AgentUpsertOne) SetEnterpriseID(v uint64) *AgentUpsertOne {
 func (u *AgentUpsertOne) UpdateEnterpriseID() *AgentUpsertOne {
 	return u.Update(func(s *AgentUpsert) {
 		s.UpdateEnterpriseID()
-	})
-}
-
-// SetStationID sets the "station_id" field.
-func (u *AgentUpsertOne) SetStationID(v uint64) *AgentUpsertOne {
-	return u.Update(func(s *AgentUpsert) {
-		s.SetStationID(v)
-	})
-}
-
-// UpdateStationID sets the "station_id" field to the value that was provided on create.
-func (u *AgentUpsertOne) UpdateStationID() *AgentUpsertOne {
-	return u.Update(func(s *AgentUpsert) {
-		s.UpdateStationID()
-	})
-}
-
-// ClearStationID clears the value of the "station_id" field.
-func (u *AgentUpsertOne) ClearStationID() *AgentUpsertOne {
-	return u.Update(func(s *AgentUpsert) {
-		s.ClearStationID()
 	})
 }
 
@@ -960,27 +916,6 @@ func (u *AgentUpsertBulk) SetEnterpriseID(v uint64) *AgentUpsertBulk {
 func (u *AgentUpsertBulk) UpdateEnterpriseID() *AgentUpsertBulk {
 	return u.Update(func(s *AgentUpsert) {
 		s.UpdateEnterpriseID()
-	})
-}
-
-// SetStationID sets the "station_id" field.
-func (u *AgentUpsertBulk) SetStationID(v uint64) *AgentUpsertBulk {
-	return u.Update(func(s *AgentUpsert) {
-		s.SetStationID(v)
-	})
-}
-
-// UpdateStationID sets the "station_id" field to the value that was provided on create.
-func (u *AgentUpsertBulk) UpdateStationID() *AgentUpsertBulk {
-	return u.Update(func(s *AgentUpsert) {
-		s.UpdateStationID()
-	})
-}
-
-// ClearStationID clears the value of the "station_id" field.
-func (u *AgentUpsertBulk) ClearStationID() *AgentUpsertBulk {
-	return u.Update(func(s *AgentUpsert) {
-		s.ClearStationID()
 	})
 }
 
