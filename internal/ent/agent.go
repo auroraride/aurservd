@@ -13,7 +13,6 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
-	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 )
 
 // Agent is the model entity for the Agent schema.
@@ -35,8 +34,6 @@ type Agent struct {
 	Remark string `json:"remark,omitempty"`
 	// 企业ID
 	EnterpriseID uint64 `json:"enterprise_id,omitempty"`
-	// 站点ID
-	StationID *uint64 `json:"station_id,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Phone holds the value of the "phone" field.
@@ -52,8 +49,8 @@ type Agent struct {
 type AgentEdges struct {
 	// Enterprise holds the value of the enterprise edge.
 	Enterprise *Enterprise `json:"enterprise,omitempty"`
-	// Station holds the value of the station edge.
-	Station *EnterpriseStation `json:"station,omitempty"`
+	// Stations holds the value of the stations edge.
+	Stations []*EnterpriseStation `json:"stations,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool
@@ -72,17 +69,13 @@ func (e AgentEdges) EnterpriseOrErr() (*Enterprise, error) {
 	return nil, &NotLoadedError{edge: "enterprise"}
 }
 
-// StationOrErr returns the Station value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e AgentEdges) StationOrErr() (*EnterpriseStation, error) {
+// StationsOrErr returns the Stations value or an error if the edge
+// was not loaded in eager-loading.
+func (e AgentEdges) StationsOrErr() ([]*EnterpriseStation, error) {
 	if e.loadedTypes[1] {
-		if e.Station == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: enterprisestation.Label}
-		}
-		return e.Station, nil
+		return e.Stations, nil
 	}
-	return nil, &NotLoadedError{edge: "station"}
+	return nil, &NotLoadedError{edge: "stations"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -92,7 +85,7 @@ func (*Agent) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case agent.FieldCreator, agent.FieldLastModifier:
 			values[i] = new([]byte)
-		case agent.FieldID, agent.FieldEnterpriseID, agent.FieldStationID:
+		case agent.FieldID, agent.FieldEnterpriseID:
 			values[i] = new(sql.NullInt64)
 		case agent.FieldRemark, agent.FieldName, agent.FieldPhone:
 			values[i] = new(sql.NullString)
@@ -168,13 +161,6 @@ func (a *Agent) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				a.EnterpriseID = uint64(value.Int64)
 			}
-		case agent.FieldStationID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field station_id", values[i])
-			} else if value.Valid {
-				a.StationID = new(uint64)
-				*a.StationID = uint64(value.Int64)
-			}
 		case agent.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
@@ -212,9 +198,9 @@ func (a *Agent) QueryEnterprise() *EnterpriseQuery {
 	return NewAgentClient(a.config).QueryEnterprise(a)
 }
 
-// QueryStation queries the "station" edge of the Agent entity.
-func (a *Agent) QueryStation() *EnterpriseStationQuery {
-	return NewAgentClient(a.config).QueryStation(a)
+// QueryStations queries the "stations" edge of the Agent entity.
+func (a *Agent) QueryStations() *EnterpriseStationQuery {
+	return NewAgentClient(a.config).QueryStations(a)
 }
 
 // Update returns a builder for updating this Agent.
@@ -262,11 +248,6 @@ func (a *Agent) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("enterprise_id=")
 	builder.WriteString(fmt.Sprintf("%v", a.EnterpriseID))
-	builder.WriteString(", ")
-	if v := a.StationID; v != nil {
-		builder.WriteString("station_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
 	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(a.Name)

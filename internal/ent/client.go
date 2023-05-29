@@ -733,15 +733,15 @@ func (c *AgentClient) QueryEnterprise(a *Agent) *EnterpriseQuery {
 	return query
 }
 
-// QueryStation queries the station edge of a Agent.
-func (c *AgentClient) QueryStation(a *Agent) *EnterpriseStationQuery {
+// QueryStations queries the stations edge of a Agent.
+func (c *AgentClient) QueryStations(a *Agent) *EnterpriseStationQuery {
 	query := (&EnterpriseStationClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := a.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(agent.Table, agent.FieldID, id),
 			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, agent.StationTable, agent.StationColumn),
+			sqlgraph.Edge(sqlgraph.M2M, false, agent.StationsTable, agent.StationsPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
 		return fromV, nil
@@ -5825,6 +5825,22 @@ func (c *EnterpriseStationClient) QueryStocks(es *EnterpriseStation) *StockQuery
 			sqlgraph.From(enterprisestation.Table, enterprisestation.FieldID, id),
 			sqlgraph.To(stock.Table, stock.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, enterprisestation.StocksTable, enterprisestation.StocksColumn),
+		)
+		fromV = sqlgraph.Neighbors(es.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryAgents queries the agents edge of a EnterpriseStation.
+func (c *EnterpriseStationClient) QueryAgents(es *EnterpriseStation) *AgentQuery {
+	query := (&AgentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := es.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisestation.Table, enterprisestation.FieldID, id),
+			sqlgraph.To(agent.Table, agent.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, enterprisestation.AgentsTable, enterprisestation.AgentsPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(es.driver.Dialect(), step)
 		return fromV, nil

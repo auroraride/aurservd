@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -155,6 +156,21 @@ func (esc *EnterpriseStationCreate) AddStocks(s ...*Stock) *EnterpriseStationCre
 		ids[i] = s[i].ID
 	}
 	return esc.AddStockIDs(ids...)
+}
+
+// AddAgentIDs adds the "agents" edge to the Agent entity by IDs.
+func (esc *EnterpriseStationCreate) AddAgentIDs(ids ...uint64) *EnterpriseStationCreate {
+	esc.mutation.AddAgentIDs(ids...)
+	return esc
+}
+
+// AddAgents adds the "agents" edges to the Agent entity.
+func (esc *EnterpriseStationCreate) AddAgents(a ...*Agent) *EnterpriseStationCreate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return esc.AddAgentIDs(ids...)
 }
 
 // Mutation returns the EnterpriseStationMutation object of the builder.
@@ -341,6 +357,22 @@ func (esc *EnterpriseStationCreate) createSpec() (*EnterpriseStation, *sqlgraph.
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := esc.mutation.AgentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   enterprisestation.AgentsTable,
+			Columns: enterprisestation.AgentsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

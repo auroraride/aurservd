@@ -84,7 +84,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 			agent.FieldLastModifier: {Type: field.TypeJSON, Column: agent.FieldLastModifier},
 			agent.FieldRemark:       {Type: field.TypeString, Column: agent.FieldRemark},
 			agent.FieldEnterpriseID: {Type: field.TypeUint64, Column: agent.FieldEnterpriseID},
-			agent.FieldStationID:    {Type: field.TypeUint64, Column: agent.FieldStationID},
 			agent.FieldName:         {Type: field.TypeString, Column: agent.FieldName},
 			agent.FieldPhone:        {Type: field.TypeString, Column: agent.FieldPhone},
 		},
@@ -1557,12 +1556,12 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Enterprise",
 	)
 	graph.MustAddE(
-		"station",
+		"stations",
 		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
+			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   agent.StationTable,
-			Columns: []string{agent.StationColumn},
+			Table:   agent.StationsTable,
+			Columns: agent.StationsPrimaryKey,
 			Bidi:    false,
 		},
 		"Agent",
@@ -2971,6 +2970,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"EnterpriseStation",
 		"Stock",
+	)
+	graph.MustAddE(
+		"agents",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   enterprisestation.AgentsTable,
+			Columns: enterprisestation.AgentsPrimaryKey,
+			Bidi:    false,
+		},
+		"EnterpriseStation",
+		"Agent",
 	)
 	graph.MustAddE(
 		"city",
@@ -4412,11 +4423,6 @@ func (f *AgentFilter) WhereEnterpriseID(p entql.Uint64P) {
 	f.Where(p.Field(agent.FieldEnterpriseID))
 }
 
-// WhereStationID applies the entql uint64 predicate on the station_id field.
-func (f *AgentFilter) WhereStationID(p entql.Uint64P) {
-	f.Where(p.Field(agent.FieldStationID))
-}
-
 // WhereName applies the entql string predicate on the name field.
 func (f *AgentFilter) WhereName(p entql.StringP) {
 	f.Where(p.Field(agent.FieldName))
@@ -4441,14 +4447,14 @@ func (f *AgentFilter) WhereHasEnterpriseWith(preds ...predicate.Enterprise) {
 	})))
 }
 
-// WhereHasStation applies a predicate to check if query has an edge station.
-func (f *AgentFilter) WhereHasStation() {
-	f.Where(entql.HasEdge("station"))
+// WhereHasStations applies a predicate to check if query has an edge stations.
+func (f *AgentFilter) WhereHasStations() {
+	f.Where(entql.HasEdge("stations"))
 }
 
-// WhereHasStationWith applies a predicate to check if query has an edge station with a given conditions (other predicates).
-func (f *AgentFilter) WhereHasStationWith(preds ...predicate.EnterpriseStation) {
-	f.Where(entql.HasEdgeWith("station", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasStationsWith applies a predicate to check if query has an edge stations with a given conditions (other predicates).
+func (f *AgentFilter) WhereHasStationsWith(preds ...predicate.EnterpriseStation) {
+	f.Where(entql.HasEdgeWith("stations", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -9202,6 +9208,20 @@ func (f *EnterpriseStationFilter) WhereHasStocks() {
 // WhereHasStocksWith applies a predicate to check if query has an edge stocks with a given conditions (other predicates).
 func (f *EnterpriseStationFilter) WhereHasStocksWith(preds ...predicate.Stock) {
 	f.Where(entql.HasEdgeWith("stocks", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasAgents applies a predicate to check if query has an edge agents.
+func (f *EnterpriseStationFilter) WhereHasAgents() {
+	f.Where(entql.HasEdge("agents"))
+}
+
+// WhereHasAgentsWith applies a predicate to check if query has an edge agents with a given conditions (other predicates).
+func (f *EnterpriseStationFilter) WhereHasAgentsWith(preds ...predicate.Agent) {
+	f.Where(entql.HasEdgeWith("agents", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -30,6 +31,7 @@ type EnterpriseStationQuery struct {
 	withCabinets   *CabinetQuery
 	withBattery    *BatteryQuery
 	withStocks     *StockQuery
+	withAgents     *AgentQuery
 	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -148,6 +150,28 @@ func (esq *EnterpriseStationQuery) QueryStocks() *StockQuery {
 			sqlgraph.From(enterprisestation.Table, enterprisestation.FieldID, selector),
 			sqlgraph.To(stock.Table, stock.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, enterprisestation.StocksTable, enterprisestation.StocksColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(esq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryAgents chains the current query on the "agents" edge.
+func (esq *EnterpriseStationQuery) QueryAgents() *AgentQuery {
+	query := (&AgentClient{config: esq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := esq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := esq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisestation.Table, enterprisestation.FieldID, selector),
+			sqlgraph.To(agent.Table, agent.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, enterprisestation.AgentsTable, enterprisestation.AgentsPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(esq.driver.Dialect(), step)
 		return fromU, nil
@@ -351,6 +375,7 @@ func (esq *EnterpriseStationQuery) Clone() *EnterpriseStationQuery {
 		withCabinets:   esq.withCabinets.Clone(),
 		withBattery:    esq.withBattery.Clone(),
 		withStocks:     esq.withStocks.Clone(),
+		withAgents:     esq.withAgents.Clone(),
 		// clone intermediate query.
 		sql:  esq.sql.Clone(),
 		path: esq.path,
@@ -398,6 +423,17 @@ func (esq *EnterpriseStationQuery) WithStocks(opts ...func(*StockQuery)) *Enterp
 		opt(query)
 	}
 	esq.withStocks = query
+	return esq
+}
+
+// WithAgents tells the query-builder to eager-load the nodes that are connected to
+// the "agents" edge. The optional arguments are used to configure the query builder of the edge.
+func (esq *EnterpriseStationQuery) WithAgents(opts ...func(*AgentQuery)) *EnterpriseStationQuery {
+	query := (&AgentClient{config: esq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	esq.withAgents = query
 	return esq
 }
 
@@ -479,11 +515,12 @@ func (esq *EnterpriseStationQuery) sqlAll(ctx context.Context, hooks ...queryHoo
 	var (
 		nodes       = []*EnterpriseStation{}
 		_spec       = esq.querySpec()
-		loadedTypes = [4]bool{
+		loadedTypes = [5]bool{
 			esq.withEnterprise != nil,
 			esq.withCabinets != nil,
 			esq.withBattery != nil,
 			esq.withStocks != nil,
+			esq.withAgents != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -531,6 +568,13 @@ func (esq *EnterpriseStationQuery) sqlAll(ctx context.Context, hooks ...queryHoo
 		if err := esq.loadStocks(ctx, query, nodes,
 			func(n *EnterpriseStation) { n.Edges.Stocks = []*Stock{} },
 			func(n *EnterpriseStation, e *Stock) { n.Edges.Stocks = append(n.Edges.Stocks, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := esq.withAgents; query != nil {
+		if err := esq.loadAgents(ctx, query, nodes,
+			func(n *EnterpriseStation) { n.Edges.Agents = []*Agent{} },
+			func(n *EnterpriseStation, e *Agent) { n.Edges.Agents = append(n.Edges.Agents, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -666,6 +710,67 @@ func (esq *EnterpriseStationQuery) loadStocks(ctx context.Context, query *StockQ
 	}
 	return nil
 }
+func (esq *EnterpriseStationQuery) loadAgents(ctx context.Context, query *AgentQuery, nodes []*EnterpriseStation, init func(*EnterpriseStation), assign func(*EnterpriseStation, *Agent)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[uint64]*EnterpriseStation)
+	nids := make(map[uint64]map[*EnterpriseStation]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(enterprisestation.AgentsTable)
+		s.Join(joinT).On(s.C(agent.FieldID), joinT.C(enterprisestation.AgentsPrimaryKey[0]))
+		s.Where(sql.InValues(joinT.C(enterprisestation.AgentsPrimaryKey[1]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(enterprisestation.AgentsPrimaryKey[1]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullInt64)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := uint64(values[0].(*sql.NullInt64).Int64)
+				inValue := uint64(values[1].(*sql.NullInt64).Int64)
+				if nids[inValue] == nil {
+					nids[inValue] = map[*EnterpriseStation]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*Agent](ctx, query, qr, query.inters)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "agents" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
+	}
+	return nil
+}
 
 func (esq *EnterpriseStationQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := esq.querySpec()
@@ -770,6 +875,7 @@ var (
 	EnterpriseStationQueryWithCabinets   EnterpriseStationQueryWith = "Cabinets"
 	EnterpriseStationQueryWithBattery    EnterpriseStationQueryWith = "Battery"
 	EnterpriseStationQueryWithStocks     EnterpriseStationQueryWith = "Stocks"
+	EnterpriseStationQueryWithAgents     EnterpriseStationQueryWith = "Agents"
 )
 
 func (esq *EnterpriseStationQuery) With(withEdges ...EnterpriseStationQueryWith) *EnterpriseStationQuery {
@@ -783,6 +889,8 @@ func (esq *EnterpriseStationQuery) With(withEdges ...EnterpriseStationQueryWith)
 			esq.WithBattery()
 		case EnterpriseStationQueryWithStocks:
 			esq.WithStocks()
+		case EnterpriseStationQueryWithAgents:
+			esq.WithAgents()
 		}
 	}
 	return esq

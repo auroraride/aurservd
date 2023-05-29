@@ -39,6 +39,8 @@ const (
 	EdgeBattery = "battery"
 	// EdgeStocks holds the string denoting the stocks edge name in mutations.
 	EdgeStocks = "stocks"
+	// EdgeAgents holds the string denoting the agents edge name in mutations.
+	EdgeAgents = "agents"
 	// Table holds the table name of the enterprisestation in the database.
 	Table = "enterprise_station"
 	// EnterpriseTable is the table that holds the enterprise relation/edge.
@@ -69,6 +71,11 @@ const (
 	StocksInverseTable = "stock"
 	// StocksColumn is the table column denoting the stocks relation/edge.
 	StocksColumn = "station_id"
+	// AgentsTable is the table that holds the agents relation/edge. The primary key declared below.
+	AgentsTable = "agent_stations"
+	// AgentsInverseTable is the table name for the Agent entity.
+	// It exists in this package in order to avoid circular dependency with the "agent" package.
+	AgentsInverseTable = "agent"
 )
 
 // Columns holds all SQL columns for enterprisestation fields.
@@ -83,6 +90,12 @@ var Columns = []string{
 	FieldEnterpriseID,
 	FieldName,
 }
+
+var (
+	// AgentsPrimaryKey and AgentsColumn2 are the table columns denoting the
+	// primary key for the agents relation (M2M).
+	AgentsPrimaryKey = []string{"agent_id", "enterprise_station_id"}
+)
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
@@ -195,6 +208,20 @@ func ByStocks(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newStocksStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByAgentsCount orders the results by agents count.
+func ByAgentsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newAgentsStep(), opts...)
+	}
+}
+
+// ByAgents orders the results by agents terms.
+func ByAgents(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newAgentsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newEnterpriseStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -221,5 +248,12 @@ func newStocksStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(StocksInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, StocksTable, StocksColumn),
+	)
+}
+func newAgentsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(AgentsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, true, AgentsTable, AgentsPrimaryKey...),
 	)
 }
