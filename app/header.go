@@ -27,3 +27,7 @@ const (
 	// HeaderAgentToken 代理商token
 	HeaderAgentToken = "X-Agent-Token"
 )
+
+const (
+	AgentBearer = "Bearer "
+)

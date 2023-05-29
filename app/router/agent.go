@@ -7,12 +7,12 @@ package router
 
 import (
 	"github.com/auroraride/aurservd/app/controller/v1/aapi"
+	"github.com/auroraride/aurservd/app/controller/v2/agent"
 	"github.com/auroraride/aurservd/app/middleware"
 )
 
 func loadAgentRoutes() {
 	g := root.Group("agent/v1")
-	g.Use(middleware.AgentMiddleware())
 
 	g.POST("/signin", aapi.Agent.Signin)
 	g.GET("/profile", aapi.Agent.Profile)
@@ -26,4 +26,13 @@ func loadAgentRoutes() {
 	g.GET("/prepayment", aapi.Prepayment.List)
 
 	g.GET("/bill/usage", aapi.Bill.Usage)
+}
+
+func loadAgentV2Routes() {
+	g := root.Group("agent/v2")
+
+	guide := g.Group("", middleware.Agent())
+	guide.POST("/signin", agent.User.Signin)
+	
+	// auth := g.Group("", middleware.AgentAuth())
 }

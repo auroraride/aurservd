@@ -6,17 +6,17 @@
 package boot
 
 import (
-	"io"
 	"os"
 	"time"
 
 	"github.com/auroraride/adapter/log"
+	"github.com/go-redis/redis/v9"
+	"github.com/golang-module/carbon/v2"
+
 	"github.com/auroraride/aurservd/app/logging"
 	"github.com/auroraride/aurservd/assets"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/payment"
-	"github.com/go-redis/redis/v9"
-	"github.com/golang-module/carbon/v2"
 
 	_ "github.com/auroraride/aurservd/app/permission"
 )
@@ -40,15 +40,17 @@ func Bootstrap() {
 		DB:       ar.Config.Redis.DB,
 	})
 
-	// 配置elk+zap
-	log.New(&log.Config{
-		FormatJson: true,
-		Stdout:     ar.Config.Debug,
+	// 初始化日志
+	logcfg := &log.Config{
+		FormatJson: !ar.Config.LoggerDebug,
+		Stdout:     ar.Config.LoggerDebug,
 		LoggerName: ar.Config.LoggerName,
-		Writers: []io.Writer{
-			log.NewRedisWriter(redis.NewClient(&redis.Options{})),
-		},
-	})
+		NoCaller:   true,
+	}
+	if !ar.Config.LoggerDebug {
+		logcfg.Writers = append(logcfg.Writers, log.NewRedisWriter(redis.NewClient(&redis.Options{})))
+	}
+	log.New(logcfg)
 
 	// 加载数据库
 	entInit()

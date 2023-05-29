@@ -442,15 +442,6 @@ const docTemplate = `{
                 ],
                 "summary": "A1001 登录",
                 "operationId": "AgentSignin",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "代理账号校验token",
-                        "name": "X-Agent-Token",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "请求成功",

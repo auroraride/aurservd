@@ -8,13 +8,15 @@ package middleware
 import (
 	"context"
 	"fmt"
+	"strings"
+
+	"github.com/labstack/echo/v4"
 
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/snag"
-	"github.com/labstack/echo/v4"
 )
 
 var (
@@ -48,6 +50,38 @@ func AgentMiddleware() echo.MiddlewareFunc {
 			}
 
 			return next(app.NewAgentContext(c, ag, en))
+		}
+	}
+}
+
+func Agent() echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			var en *ent.Enterprise
+			var ag *ent.Agent
+
+			// 查看是否是登录态
+			str := c.Request().Header.Get("Authorization")
+			if str != "" && strings.HasPrefix(str, app.AgentBearer) {
+				token := strings.TrimLeft(str, app.AgentBearer)
+				// 查找登录用户
+				ag, en = service.NewAgent().TokenVerify(token)
+				c.Set("agent", ag)
+				c.Set("enterprise", en)
+			}
+			return next(app.NewAgentContext(c, ag, en))
+		}
+	}
+}
+
+func AgentAuth() echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			ctx := c.(*app.AgentContext)
+			if ctx.Agent == nil || ctx.Enterprise == nil {
+				snag.Panic(snag.StatusUnauthorized)
+			}
+			return next(ctx)
 		}
 	}
 }
