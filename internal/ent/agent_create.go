@@ -105,6 +105,14 @@ func (ac *AgentCreate) SetStationID(u uint64) *AgentCreate {
 	return ac
 }
 
+// SetNillableStationID sets the "station_id" field if the given value is not nil.
+func (ac *AgentCreate) SetNillableStationID(u *uint64) *AgentCreate {
+	if u != nil {
+		ac.SetStationID(*u)
+	}
+	return ac
+}
+
 // SetName sets the "name" field.
 func (ac *AgentCreate) SetName(s string) *AgentCreate {
 	ac.mutation.SetName(s)
@@ -114,12 +122,6 @@ func (ac *AgentCreate) SetName(s string) *AgentCreate {
 // SetPhone sets the "phone" field.
 func (ac *AgentCreate) SetPhone(s string) *AgentCreate {
 	ac.mutation.SetPhone(s)
-	return ac
-}
-
-// SetPassword sets the "password" field.
-func (ac *AgentCreate) SetPassword(s string) *AgentCreate {
-	ac.mutation.SetPassword(s)
 	return ac
 }
 
@@ -198,23 +200,14 @@ func (ac *AgentCreate) check() error {
 	if _, ok := ac.mutation.EnterpriseID(); !ok {
 		return &ValidationError{Name: "enterprise_id", err: errors.New(`ent: missing required field "Agent.enterprise_id"`)}
 	}
-	if _, ok := ac.mutation.StationID(); !ok {
-		return &ValidationError{Name: "station_id", err: errors.New(`ent: missing required field "Agent.station_id"`)}
-	}
 	if _, ok := ac.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Agent.name"`)}
 	}
 	if _, ok := ac.mutation.Phone(); !ok {
 		return &ValidationError{Name: "phone", err: errors.New(`ent: missing required field "Agent.phone"`)}
 	}
-	if _, ok := ac.mutation.Password(); !ok {
-		return &ValidationError{Name: "password", err: errors.New(`ent: missing required field "Agent.password"`)}
-	}
 	if _, ok := ac.mutation.EnterpriseID(); !ok {
 		return &ValidationError{Name: "enterprise", err: errors.New(`ent: missing required edge "Agent.enterprise"`)}
-	}
-	if _, ok := ac.mutation.StationID(); !ok {
-		return &ValidationError{Name: "station", err: errors.New(`ent: missing required edge "Agent.station"`)}
 	}
 	return nil
 }
@@ -275,10 +268,6 @@ func (ac *AgentCreate) createSpec() (*Agent, *sqlgraph.CreateSpec) {
 		_spec.SetField(agent.FieldPhone, field.TypeString, value)
 		_node.Phone = value
 	}
-	if value, ok := ac.mutation.Password(); ok {
-		_spec.SetField(agent.FieldPassword, field.TypeString, value)
-		_node.Password = value
-	}
 	if nodes := ac.mutation.EnterpriseIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -310,7 +299,7 @@ func (ac *AgentCreate) createSpec() (*Agent, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.StationID = nodes[0]
+		_node.StationID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -455,6 +444,12 @@ func (u *AgentUpsert) UpdateStationID() *AgentUpsert {
 	return u
 }
 
+// ClearStationID clears the value of the "station_id" field.
+func (u *AgentUpsert) ClearStationID() *AgentUpsert {
+	u.SetNull(agent.FieldStationID)
+	return u
+}
+
 // SetName sets the "name" field.
 func (u *AgentUpsert) SetName(v string) *AgentUpsert {
 	u.Set(agent.FieldName, v)
@@ -476,18 +471,6 @@ func (u *AgentUpsert) SetPhone(v string) *AgentUpsert {
 // UpdatePhone sets the "phone" field to the value that was provided on create.
 func (u *AgentUpsert) UpdatePhone() *AgentUpsert {
 	u.SetExcluded(agent.FieldPhone)
-	return u
-}
-
-// SetPassword sets the "password" field.
-func (u *AgentUpsert) SetPassword(v string) *AgentUpsert {
-	u.Set(agent.FieldPassword, v)
-	return u
-}
-
-// UpdatePassword sets the "password" field to the value that was provided on create.
-func (u *AgentUpsert) UpdatePassword() *AgentUpsert {
-	u.SetExcluded(agent.FieldPassword)
 	return u
 }
 
@@ -644,6 +627,13 @@ func (u *AgentUpsertOne) UpdateStationID() *AgentUpsertOne {
 	})
 }
 
+// ClearStationID clears the value of the "station_id" field.
+func (u *AgentUpsertOne) ClearStationID() *AgentUpsertOne {
+	return u.Update(func(s *AgentUpsert) {
+		s.ClearStationID()
+	})
+}
+
 // SetName sets the "name" field.
 func (u *AgentUpsertOne) SetName(v string) *AgentUpsertOne {
 	return u.Update(func(s *AgentUpsert) {
@@ -669,20 +659,6 @@ func (u *AgentUpsertOne) SetPhone(v string) *AgentUpsertOne {
 func (u *AgentUpsertOne) UpdatePhone() *AgentUpsertOne {
 	return u.Update(func(s *AgentUpsert) {
 		s.UpdatePhone()
-	})
-}
-
-// SetPassword sets the "password" field.
-func (u *AgentUpsertOne) SetPassword(v string) *AgentUpsertOne {
-	return u.Update(func(s *AgentUpsert) {
-		s.SetPassword(v)
-	})
-}
-
-// UpdatePassword sets the "password" field to the value that was provided on create.
-func (u *AgentUpsertOne) UpdatePassword() *AgentUpsertOne {
-	return u.Update(func(s *AgentUpsert) {
-		s.UpdatePassword()
 	})
 }
 
@@ -1001,6 +977,13 @@ func (u *AgentUpsertBulk) UpdateStationID() *AgentUpsertBulk {
 	})
 }
 
+// ClearStationID clears the value of the "station_id" field.
+func (u *AgentUpsertBulk) ClearStationID() *AgentUpsertBulk {
+	return u.Update(func(s *AgentUpsert) {
+		s.ClearStationID()
+	})
+}
+
 // SetName sets the "name" field.
 func (u *AgentUpsertBulk) SetName(v string) *AgentUpsertBulk {
 	return u.Update(func(s *AgentUpsert) {
@@ -1026,20 +1009,6 @@ func (u *AgentUpsertBulk) SetPhone(v string) *AgentUpsertBulk {
 func (u *AgentUpsertBulk) UpdatePhone() *AgentUpsertBulk {
 	return u.Update(func(s *AgentUpsert) {
 		s.UpdatePhone()
-	})
-}
-
-// SetPassword sets the "password" field.
-func (u *AgentUpsertBulk) SetPassword(v string) *AgentUpsertBulk {
-	return u.Update(func(s *AgentUpsert) {
-		s.SetPassword(v)
-	})
-}
-
-// UpdatePassword sets the "password" field to the value that was provided on create.
-func (u *AgentUpsertBulk) UpdatePassword() *AgentUpsertBulk {
-	return u.Update(func(s *AgentUpsert) {
-		s.UpdatePassword()
 	})
 }
 

@@ -485,7 +485,10 @@ func (aq *AgentQuery) loadStation(ctx context.Context, query *EnterpriseStationQ
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*Agent)
 	for i := range nodes {
-		fk := nodes[i].StationID
+		if nodes[i].StationID == nil {
+			continue
+		}
+		fk := *nodes[i].StationID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}

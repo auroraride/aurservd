@@ -36,13 +36,11 @@ type Agent struct {
 	// 企业ID
 	EnterpriseID uint64 `json:"enterprise_id,omitempty"`
 	// 站点ID
-	StationID uint64 `json:"station_id,omitempty"`
+	StationID *uint64 `json:"station_id,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Phone holds the value of the "phone" field.
 	Phone string `json:"phone,omitempty"`
-	// Password holds the value of the "password" field.
-	Password string `json:"password,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AgentQuery when eager-loading is set.
 	Edges             AgentEdges `json:"edges"`
@@ -96,7 +94,7 @@ func (*Agent) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case agent.FieldID, agent.FieldEnterpriseID, agent.FieldStationID:
 			values[i] = new(sql.NullInt64)
-		case agent.FieldRemark, agent.FieldName, agent.FieldPhone, agent.FieldPassword:
+		case agent.FieldRemark, agent.FieldName, agent.FieldPhone:
 			values[i] = new(sql.NullString)
 		case agent.FieldCreatedAt, agent.FieldUpdatedAt, agent.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -174,7 +172,8 @@ func (a *Agent) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field station_id", values[i])
 			} else if value.Valid {
-				a.StationID = uint64(value.Int64)
+				a.StationID = new(uint64)
+				*a.StationID = uint64(value.Int64)
 			}
 		case agent.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -187,12 +186,6 @@ func (a *Agent) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field phone", values[i])
 			} else if value.Valid {
 				a.Phone = value.String
-			}
-		case agent.FieldPassword:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field password", values[i])
-			} else if value.Valid {
-				a.Password = value.String
 			}
 		case agent.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -270,17 +263,16 @@ func (a *Agent) String() string {
 	builder.WriteString("enterprise_id=")
 	builder.WriteString(fmt.Sprintf("%v", a.EnterpriseID))
 	builder.WriteString(", ")
-	builder.WriteString("station_id=")
-	builder.WriteString(fmt.Sprintf("%v", a.StationID))
+	if v := a.StationID; v != nil {
+		builder.WriteString("station_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(a.Name)
 	builder.WriteString(", ")
 	builder.WriteString("phone=")
 	builder.WriteString(a.Phone)
-	builder.WriteString(", ")
-	builder.WriteString("password=")
-	builder.WriteString(a.Password)
 	builder.WriteByte(')')
 	return builder.String()
 }

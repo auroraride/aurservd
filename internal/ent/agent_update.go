@@ -102,6 +102,20 @@ func (au *AgentUpdate) SetStationID(u uint64) *AgentUpdate {
 	return au
 }
 
+// SetNillableStationID sets the "station_id" field if the given value is not nil.
+func (au *AgentUpdate) SetNillableStationID(u *uint64) *AgentUpdate {
+	if u != nil {
+		au.SetStationID(*u)
+	}
+	return au
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (au *AgentUpdate) ClearStationID() *AgentUpdate {
+	au.mutation.ClearStationID()
+	return au
+}
+
 // SetName sets the "name" field.
 func (au *AgentUpdate) SetName(s string) *AgentUpdate {
 	au.mutation.SetName(s)
@@ -111,12 +125,6 @@ func (au *AgentUpdate) SetName(s string) *AgentUpdate {
 // SetPhone sets the "phone" field.
 func (au *AgentUpdate) SetPhone(s string) *AgentUpdate {
 	au.mutation.SetPhone(s)
-	return au
-}
-
-// SetPassword sets the "password" field.
-func (au *AgentUpdate) SetPassword(s string) *AgentUpdate {
-	au.mutation.SetPassword(s)
 	return au
 }
 
@@ -194,9 +202,6 @@ func (au *AgentUpdate) check() error {
 	if _, ok := au.mutation.EnterpriseID(); au.mutation.EnterpriseCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Agent.enterprise"`)
 	}
-	if _, ok := au.mutation.StationID(); au.mutation.StationCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Agent.station"`)
-	}
 	return nil
 }
 
@@ -247,9 +252,6 @@ func (au *AgentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := au.mutation.Phone(); ok {
 		_spec.SetField(agent.FieldPhone, field.TypeString, value)
-	}
-	if value, ok := au.mutation.Password(); ok {
-		_spec.SetField(agent.FieldPassword, field.TypeString, value)
 	}
 	if au.mutation.EnterpriseCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -401,6 +403,20 @@ func (auo *AgentUpdateOne) SetStationID(u uint64) *AgentUpdateOne {
 	return auo
 }
 
+// SetNillableStationID sets the "station_id" field if the given value is not nil.
+func (auo *AgentUpdateOne) SetNillableStationID(u *uint64) *AgentUpdateOne {
+	if u != nil {
+		auo.SetStationID(*u)
+	}
+	return auo
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (auo *AgentUpdateOne) ClearStationID() *AgentUpdateOne {
+	auo.mutation.ClearStationID()
+	return auo
+}
+
 // SetName sets the "name" field.
 func (auo *AgentUpdateOne) SetName(s string) *AgentUpdateOne {
 	auo.mutation.SetName(s)
@@ -410,12 +426,6 @@ func (auo *AgentUpdateOne) SetName(s string) *AgentUpdateOne {
 // SetPhone sets the "phone" field.
 func (auo *AgentUpdateOne) SetPhone(s string) *AgentUpdateOne {
 	auo.mutation.SetPhone(s)
-	return auo
-}
-
-// SetPassword sets the "password" field.
-func (auo *AgentUpdateOne) SetPassword(s string) *AgentUpdateOne {
-	auo.mutation.SetPassword(s)
 	return auo
 }
 
@@ -506,9 +516,6 @@ func (auo *AgentUpdateOne) check() error {
 	if _, ok := auo.mutation.EnterpriseID(); auo.mutation.EnterpriseCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Agent.enterprise"`)
 	}
-	if _, ok := auo.mutation.StationID(); auo.mutation.StationCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Agent.station"`)
-	}
 	return nil
 }
 
@@ -576,9 +583,6 @@ func (auo *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error
 	}
 	if value, ok := auo.mutation.Phone(); ok {
 		_spec.SetField(agent.FieldPhone, field.TypeString, value)
-	}
-	if value, ok := auo.mutation.Password(); ok {
-		_spec.SetField(agent.FieldPassword, field.TypeString, value)
 	}
 	if auo.mutation.EnterpriseCleared() {
 		edge := &sqlgraph.EdgeSpec{
