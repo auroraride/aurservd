@@ -36,6 +36,9 @@ type BaseService struct {
 	entEmployee *ent.Employee
 
 	entStore *ent.Store
+
+	agent      *ent.Agent
+	enterprise *ent.Enterprise
 }
 
 func newService(params ...any) (bs *BaseService) {
@@ -78,6 +81,10 @@ func newService(params ...any) (bs *BaseService) {
 			ctx = context.WithValue(ctx, "employee", bs.employee)
 		case *ent.Store:
 			bs.entStore = p
+		case *ent.Agent:
+			bs.agent = p
+		case *ent.Enterprise:
+			bs.enterprise = p
 		}
 	}
 

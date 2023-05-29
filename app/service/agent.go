@@ -6,54 +6,37 @@
 package service
 
 import (
-	"context"
 	"fmt"
-	"time"
+	"strconv"
+
+	"github.com/golang-module/carbon/v2"
 
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/enterprisecontract"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
-	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
 	"github.com/auroraride/aurservd/pkg/utils"
-	"github.com/golang-module/carbon/v2"
-	"github.com/rs/xid"
 )
 
 type agentService struct {
-	cacheKeyPrefix string
-	ctx            context.Context
-	modifier       *model.Modifier
-	agent          *ent.Agent
-	enterprise     *ent.Enterprise
-	orm            *ent.AgentClient
+	*BaseService
+
+	tokenCacheKey string
+	orm           *ent.AgentClient
 }
 
-func NewAgent() *agentService {
+func NewAgent(params ...any) *agentService {
 	return &agentService{
-		cacheKeyPrefix: "AGENT_",
-		ctx:            context.Background(),
-		orm:            ent.Database.Agent,
+		BaseService:   newService(params...),
+		tokenCacheKey: ar.Config.Environment.UpperString() + ":" + "AGENT:TOKEN",
+		orm:           ent.Database.Agent,
 	}
-}
-
-func NewAgentWithAgent(ag *ent.Agent, en *ent.Enterprise) *agentService {
-	s := NewAgent()
-	s.agent = ag
-	s.enterprise = en
-	return s
-}
-
-func NewAgentWithModifier(m *model.Modifier) *agentService {
-	s := NewAgent()
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
-	s.modifier = m
-	return s
 }
 
 func (s *agentService) Query(id uint64) (*ent.Agent, error) {
@@ -73,11 +56,9 @@ func (s *agentService) Create(req *model.AgentCreateReq) {
 	if !en.Agent {
 		snag.Panic("团签模式非代理商")
 	}
-	pass, _ := utils.PasswordGenerate(req.Password)
 	_, err := s.orm.Create().
 		SetName(req.Name).
 		SetPhone(req.Phone).
-		SetPassword(pass).
 		SetEnterpriseID(req.EnterpriseID).
 		Save(s.ctx)
 	if err != nil {
@@ -87,10 +68,6 @@ func (s *agentService) Create(req *model.AgentCreateReq) {
 
 func (s *agentService) Modify(req *model.AgentModifyReq) {
 	up := s.QueryX(req.ID).Update()
-	if req.Password != "" {
-		pass, _ := utils.PasswordGenerate(req.Password)
-		up.SetPassword(pass)
-	}
 	if req.Name != "" {
 		up.SetName(req.Name)
 	}
@@ -130,50 +107,68 @@ func (s *agentService) List(req *model.AgentListReq) *model.PaginationRes {
 	}
 }
 
-func (s *agentService) tokenKey(id uint64) string {
-	return fmt.Sprintf("%s%d", s.cacheKeyPrefix, id)
+// TokenVerify Token校验
+func (s *agentService) TokenVerify(token string) (ag *ent.Agent, en *ent.Enterprise) {
+	// 获取token对应ID
+	id, _ := ar.Redis.HGet(s.ctx, s.tokenCacheKey, token).Uint64()
+	if id <= 0 {
+		return
+	}
+	// 反向校验token是否正确
+	if ar.Redis.HGet(s.ctx, s.tokenCacheKey, strconv.FormatUint(id, 10)).Val() != token {
+		return
+	}
+	// 获取agent和enterprise
+	ag, _ = s.orm.QueryNotDeleted().Where(agent.ID(id)).WithEnterprise().First(s.ctx)
+	if ag == nil || ag.Edges.Enterprise == nil {
+		return
+	}
+	return ag, ag.Edges.Enterprise
 }
 
-func (s *agentService) Signin(req *model.AgentSigninReq) model.AgentSigninRes {
-	ag, _ := s.orm.QueryNotDeleted().Where(agent.Phone(req.Phone)).WithEnterprise().First(s.ctx)
-	if ag.Edges.Enterprise == nil {
-		snag.Panic("登录失败")
-	}
-	en := ag.Edges.Enterprise
-	if !en.Agent {
-		snag.Panic("非代理商")
-	}
-	if ag == nil || !utils.PasswordCompare(req.Password, ag.Password) {
-		snag.Panic("账号或密码错误")
+// 代理登录, 返回代理端资料
+// 需要关联查询 enterprise
+func (s *agentService) signin(ag *ent.Agent) *model.AgentSigninRes {
+	idstr := strconv.FormatUint(ag.ID, 10)
+	// 查询并删除旧token key
+	exists := ar.Redis.HGet(s.ctx, s.tokenCacheKey, idstr).Val()
+	if exists != "" {
+		ar.Redis.HDel(s.ctx, s.tokenCacheKey, exists)
 	}
 
 	// 生成token
-	token := xid.New().String() + utils.RandTokenString()
-	key := s.tokenKey(ag.ID)
+	token := utils.NewEcdsaToken()
 
-	// 删除旧的token
-	if old := cache.Get(s.ctx, key).Val(); old != "" {
-		cache.Del(s.ctx, key)
-		cache.Del(s.ctx, old)
-	}
+	// 存储登录token和ID进行对应
+	ar.Redis.HSet(s.ctx, s.tokenCacheKey, token, ag.ID)
+	ar.Redis.HSet(s.ctx, s.tokenCacheKey, idstr, token)
 
-	s.ExtendTokenTime(ag.ID, token)
-
-	return model.AgentSigninRes{
-		Profile: s.Profile(ag, en),
+	return &model.AgentSigninRes{
+		Profile: s.Profile(ag, ag.Edges.Enterprise),
 		Token:   token,
 	}
 }
 
-// ExtendTokenTime 延长登录有效期
-func (s *agentService) ExtendTokenTime(id uint64, token string) {
-	ctx := context.Background()
-	cache.Set(ctx, s.tokenKey(id), token, 7*24*time.Hour)
-	cache.Set(ctx, token, id, 7*24*time.Hour)
+// Signin 登录
+func (s *agentService) Signin(req *model.AgentSigninReq) *model.AgentSigninRes {
+	ag, _ := s.orm.QueryNotDeleted().Where(agent.Phone(req.Phone)).WithEnterprise().First(s.ctx)
+	if ag.Edges.Enterprise == nil {
+		snag.Panic("登录失败")
+	}
+
+	en := ag.Edges.Enterprise
+	if !en.Agent {
+		snag.Panic("非代理商")
+	}
+
+	// 校验短信
+	NewSms().VerifyCodeX(req.Phone, req.SmsId, req.SmsCode)
+
+	return s.signin(ag)
 }
 
+// Profile 代理商资料
 func (s *agentService) Profile(ag *ent.Agent, en *ent.Enterprise) model.AgentProfile {
-
 	// 查询合同
 	today := carbon.Now().StartOfDay().Carbon2Time()
 	cr, _ := ent.Database.EnterpriseContract.QueryNotDeleted().

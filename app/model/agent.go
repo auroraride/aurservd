@@ -8,15 +8,13 @@ package model
 type AgentCreateReq struct {
 	Phone        string `json:"phone" validate:"required" trans:"电话"`
 	Name         string `json:"name" validate:"required" trans:"姓名"`
-	Password     string `json:"password" validate:"required" trans:"密码"`
 	EnterpriseID uint64 `json:"enterpriseId" validate:"required" trans:"团签ID"`
 }
 
 type AgentModifyReq struct {
-	ID       uint64 `json:"id" param:"id" validate:"required" trans:"代理账号ID"`
-	Phone    string `json:"phone"`    // 电话
-	Name     string `json:"name"`     // 姓名
-	Password string `json:"password"` // 密码
+	ID    uint64 `json:"id" param:"id" validate:"required" trans:"代理账号ID"`
+	Phone string `json:"phone"` // 电话
+	Name  string `json:"name"`  // 姓名
 }
 
 type AgentListReq struct {
@@ -31,8 +29,9 @@ type AgentListRes struct {
 }
 
 type AgentSigninReq struct {
-	Phone    string `json:"phone" validate:"required" trans:"电话"`
-	Password string `json:"password" validate:"required" trans:"密码"`
+	Phone   string `json:"phone" validate:"required" trans:"电话"`
+	SmsId   string `json:"smsId" validate:"required" trans:"短信ID"`
+	SmsCode string `json:"smsCode" validate:"required" trans:"短信验证码"`
 }
 
 type AgentProfile struct {

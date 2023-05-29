@@ -128,10 +128,12 @@ func Run() {
 	loadRideRoutes()     // 骑手路由
 	loadManagerRoutes()  // 管理员路由
 	loadEmployeeRoutes() // 门店端路由
-	loadAgentRoutes()    // 代理端路由
 	loadToolRoutes()
 	loadMaintainRoutes()
 	loadKitRoutes()
+
+	loadAgentRoutes()
+	loadAgentV2Routes()
 
 	zap.L().Fatal("路由启动失败", zap.Error(e.Start(cfg.Bind)))
 }

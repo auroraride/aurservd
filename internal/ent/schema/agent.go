@@ -8,6 +8,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 	"entgo.io/ent/schema/mixin"
+
 	"github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -58,7 +59,6 @@ func (Agent) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name"),
 		field.String("phone").Unique(),
-		field.String("password"),
 	}
 }
 
@@ -73,6 +73,7 @@ func (Agent) Mixin() []ent.Mixin {
 		internal.DeleteMixin{},
 		internal.Modifier{},
 		EnterpriseMixin{},
+		StationMixin{Optional: true},
 	}
 }
 

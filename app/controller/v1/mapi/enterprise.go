@@ -266,7 +266,7 @@ func (*enterprise) AgentList(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*enterprise) AgentCreate(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.AgentCreateReq](c)
-	service.NewAgentWithModifier(ctx.Modifier).Create(req)
+	service.NewAgent(ctx.Modifier).Create(req)
 	return ctx.SendResponse()
 }
 
@@ -283,7 +283,7 @@ func (*enterprise) AgentCreate(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*enterprise) AgentModify(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.AgentModifyReq](c)
-	service.NewAgentWithModifier(ctx.Modifier).Modify(req)
+	service.NewAgent(ctx.Modifier).Modify(req)
 	return ctx.SendResponse()
 }
 
@@ -299,7 +299,7 @@ func (*enterprise) AgentModify(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*enterprise) AgentDelete(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
-	service.NewAgentWithModifier(ctx.Modifier).Delete(req)
+	service.NewAgent(ctx.Modifier).Delete(req)
 	return ctx.SendResponse()
 }
 

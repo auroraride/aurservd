@@ -733,6 +733,22 @@ func (c *AgentClient) QueryEnterprise(a *Agent) *EnterpriseQuery {
 	return query
 }
 
+// QueryStation queries the station edge of a Agent.
+func (c *AgentClient) QueryStation(a *Agent) *EnterpriseStationQuery {
+	query := (&EnterpriseStationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(agent.Table, agent.FieldID, id),
+			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, agent.StationTable, agent.StationColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *AgentClient) Hooks() []Hook {
 	hooks := c.hooks.Agent

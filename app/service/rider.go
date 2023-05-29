@@ -109,6 +109,8 @@ func (s *riderService) IsBlocked(u *ent.Rider) bool {
 
 // Signin 骑手登录
 func (s *riderService) Signin(device *model.Device, req *model.RiderSignupReq) (res *model.RiderSigninRes) {
+	NewSms().VerifyCodeX(req.Phone, req.SmsId, req.SmsCode)
+
 	ctx := context.Background()
 	orm := ent.Database.Rider
 	var u *ent.Rider

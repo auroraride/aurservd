@@ -53,6 +53,7 @@ type EsignConfig struct {
 type config struct {
 	Debug bool
 	adapter.Configure
+	LoggerDebug bool
 
 	App struct {
 		Host         string

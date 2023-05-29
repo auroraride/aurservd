@@ -10,6 +10,10 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/golang-module/carbon/v2"
+	"github.com/google/uuid"
+	"github.com/rs/xid"
+
 	"github.com/auroraride/aurservd/app/logging"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ar"
@@ -24,9 +28,6 @@ import (
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
 	"github.com/auroraride/aurservd/pkg/utils"
-	"github.com/golang-module/carbon/v2"
-	"github.com/google/uuid"
-	"github.com/rs/xid"
 )
 
 type employeeService struct {
@@ -403,11 +404,8 @@ func (s *employeeService) Profile(e *ent.Employee) model.EmployeeProfile {
 
 // Signin 店员登录
 func (s *employeeService) Signin(req *model.EmployeeSignReq) model.EmployeeProfile {
-	// 校验短信
-	debugPhones := ar.Config.App.Debug.Phone
-	if !debugPhones[req.Phone] && !NewSms().VerifyCode(req.SmsId, req.SmsCode) {
-		snag.Panic("短信验证码校验失败")
-	}
+	NewSms().VerifyCodeX(req.Phone, req.SmsId, req.SmsCode)
+
 	e, _ := s.orm.QueryNotDeleted().Where(employee.Phone(req.Phone)).WithStore().First(s.ctx)
 	if e == nil {
 		snag.Panic("未找到用户")

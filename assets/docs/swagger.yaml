@@ -7649,12 +7649,6 @@ paths:
       consumes:
       - application/json
       operationId: AgentSignin
-      parameters:
-      - description: 代理账号校验token
-        in: header
-        name: X-Agent-Token
-        required: true
-        type: string
       produces:
       - application/json
       responses:
