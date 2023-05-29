@@ -360,6 +360,20 @@ func (e *Export) GetID() uint64 {
 	return e.ID
 }
 
+// GetTableName returns table name for Feedback.
+func (f *Feedback) GetTableName() string {
+	return "feedback"
+}
+
+// GetID returns id for Feedback.
+func (f *Feedback) GetID() uint64 {
+	return f.ID
+}
+
+func (f *Feedback) GetName() string {
+	return f.Name
+}
+
 // GetTableName returns table name for Inventory.
 func (i *Inventory) GetTableName() string {
 	return "inventory"

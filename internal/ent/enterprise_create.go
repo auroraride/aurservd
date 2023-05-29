@@ -12,6 +12,9 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/agent"
+	"github.com/auroraride/aurservd/internal/ent/battery"
+	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
@@ -19,7 +22,9 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
+	"github.com/auroraride/aurservd/internal/ent/feedback"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
@@ -251,6 +256,20 @@ func (ec *EnterpriseCreate) SetDays(i []int) *EnterpriseCreate {
 	return ec
 }
 
+// SetDistance sets the "distance" field.
+func (ec *EnterpriseCreate) SetDistance(f float64) *EnterpriseCreate {
+	ec.mutation.SetDistance(f)
+	return ec
+}
+
+// SetNillableDistance sets the "distance" field if the given value is not nil.
+func (ec *EnterpriseCreate) SetNillableDistance(f *float64) *EnterpriseCreate {
+	if f != nil {
+		ec.SetDistance(*f)
+	}
+	return ec
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (ec *EnterpriseCreate) SetCity(c *City) *EnterpriseCreate {
 	return ec.SetCityID(c.ID)
@@ -361,6 +380,81 @@ func (ec *EnterpriseCreate) AddBills(e ...*EnterpriseBill) *EnterpriseCreate {
 	return ec.AddBillIDs(ids...)
 }
 
+// AddBatteryIDs adds the "battery" edge to the Battery entity by IDs.
+func (ec *EnterpriseCreate) AddBatteryIDs(ids ...uint64) *EnterpriseCreate {
+	ec.mutation.AddBatteryIDs(ids...)
+	return ec
+}
+
+// AddBattery adds the "battery" edges to the Battery entity.
+func (ec *EnterpriseCreate) AddBattery(b ...*Battery) *EnterpriseCreate {
+	ids := make([]uint64, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return ec.AddBatteryIDs(ids...)
+}
+
+// AddFeedbackIDs adds the "feedback" edge to the Feedback entity by IDs.
+func (ec *EnterpriseCreate) AddFeedbackIDs(ids ...uint64) *EnterpriseCreate {
+	ec.mutation.AddFeedbackIDs(ids...)
+	return ec
+}
+
+// AddFeedback adds the "feedback" edges to the Feedback entity.
+func (ec *EnterpriseCreate) AddFeedback(f ...*Feedback) *EnterpriseCreate {
+	ids := make([]uint64, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return ec.AddFeedbackIDs(ids...)
+}
+
+// AddAgentIDs adds the "agents" edge to the Agent entity by IDs.
+func (ec *EnterpriseCreate) AddAgentIDs(ids ...uint64) *EnterpriseCreate {
+	ec.mutation.AddAgentIDs(ids...)
+	return ec
+}
+
+// AddAgents adds the "agents" edges to the Agent entity.
+func (ec *EnterpriseCreate) AddAgents(a ...*Agent) *EnterpriseCreate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return ec.AddAgentIDs(ids...)
+}
+
+// AddCabinetIDs adds the "cabinets" edge to the Cabinet entity by IDs.
+func (ec *EnterpriseCreate) AddCabinetIDs(ids ...uint64) *EnterpriseCreate {
+	ec.mutation.AddCabinetIDs(ids...)
+	return ec
+}
+
+// AddCabinets adds the "cabinets" edges to the Cabinet entity.
+func (ec *EnterpriseCreate) AddCabinets(c ...*Cabinet) *EnterpriseCreate {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ec.AddCabinetIDs(ids...)
+}
+
+// AddStockIDs adds the "stocks" edge to the Stock entity by IDs.
+func (ec *EnterpriseCreate) AddStockIDs(ids ...uint64) *EnterpriseCreate {
+	ec.mutation.AddStockIDs(ids...)
+	return ec
+}
+
+// AddStocks adds the "stocks" edges to the Stock entity.
+func (ec *EnterpriseCreate) AddStocks(s ...*Stock) *EnterpriseCreate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return ec.AddStockIDs(ids...)
+}
+
 // Mutation returns the EnterpriseMutation object of the builder.
 func (ec *EnterpriseCreate) Mutation() *EnterpriseMutation {
 	return ec.mutation
@@ -432,6 +526,10 @@ func (ec *EnterpriseCreate) defaults() error {
 		v := enterprise.DefaultUseStore
 		ec.mutation.SetUseStore(v)
 	}
+	if _, ok := ec.mutation.Distance(); !ok {
+		v := enterprise.DefaultDistance
+		ec.mutation.SetDistance(v)
+	}
 	return nil
 }
 
@@ -478,6 +576,9 @@ func (ec *EnterpriseCreate) check() error {
 	}
 	if _, ok := ec.mutation.Agent(); !ok {
 		return &ValidationError{Name: "agent", err: errors.New(`ent: missing required field "Enterprise.agent"`)}
+	}
+	if _, ok := ec.mutation.Distance(); !ok {
+		return &ValidationError{Name: "distance", err: errors.New(`ent: missing required field "Enterprise.distance"`)}
 	}
 	if _, ok := ec.mutation.CityID(); !ok {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Enterprise.city"`)}
@@ -592,6 +693,10 @@ func (ec *EnterpriseCreate) createSpec() (*Enterprise, *sqlgraph.CreateSpec) {
 	if value, ok := ec.mutation.Days(); ok {
 		_spec.SetField(enterprise.FieldDays, field.TypeJSON, value)
 		_node.Days = value
+	}
+	if value, ok := ec.mutation.Distance(); ok {
+		_spec.SetField(enterprise.FieldDistance, field.TypeFloat64, value)
+		_node.Distance = value
 	}
 	if nodes := ec.mutation.CityIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -715,6 +820,86 @@ func (ec *EnterpriseCreate) createSpec() (*Enterprise, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(enterprisebill.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ec.mutation.BatteryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.BatteryTable,
+			Columns: []string{enterprise.BatteryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ec.mutation.FeedbackIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.FeedbackTable,
+			Columns: []string{enterprise.FeedbackColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(feedback.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ec.mutation.AgentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.AgentsTable,
+			Columns: []string{enterprise.AgentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ec.mutation.CabinetsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.CabinetsTable,
+			Columns: []string{enterprise.CabinetsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ec.mutation.StocksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.StocksTable,
+			Columns: []string{enterprise.StocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -1083,6 +1268,24 @@ func (u *EnterpriseUpsert) UpdateDays() *EnterpriseUpsert {
 // ClearDays clears the value of the "days" field.
 func (u *EnterpriseUpsert) ClearDays() *EnterpriseUpsert {
 	u.SetNull(enterprise.FieldDays)
+	return u
+}
+
+// SetDistance sets the "distance" field.
+func (u *EnterpriseUpsert) SetDistance(v float64) *EnterpriseUpsert {
+	u.Set(enterprise.FieldDistance, v)
+	return u
+}
+
+// UpdateDistance sets the "distance" field to the value that was provided on create.
+func (u *EnterpriseUpsert) UpdateDistance() *EnterpriseUpsert {
+	u.SetExcluded(enterprise.FieldDistance)
+	return u
+}
+
+// AddDistance adds v to the "distance" field.
+func (u *EnterpriseUpsert) AddDistance(v float64) *EnterpriseUpsert {
+	u.Add(enterprise.FieldDistance, v)
 	return u
 }
 
@@ -1495,6 +1698,27 @@ func (u *EnterpriseUpsertOne) UpdateDays() *EnterpriseUpsertOne {
 func (u *EnterpriseUpsertOne) ClearDays() *EnterpriseUpsertOne {
 	return u.Update(func(s *EnterpriseUpsert) {
 		s.ClearDays()
+	})
+}
+
+// SetDistance sets the "distance" field.
+func (u *EnterpriseUpsertOne) SetDistance(v float64) *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.SetDistance(v)
+	})
+}
+
+// AddDistance adds v to the "distance" field.
+func (u *EnterpriseUpsertOne) AddDistance(v float64) *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.AddDistance(v)
+	})
+}
+
+// UpdateDistance sets the "distance" field to the value that was provided on create.
+func (u *EnterpriseUpsertOne) UpdateDistance() *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.UpdateDistance()
 	})
 }
 
@@ -2069,6 +2293,27 @@ func (u *EnterpriseUpsertBulk) UpdateDays() *EnterpriseUpsertBulk {
 func (u *EnterpriseUpsertBulk) ClearDays() *EnterpriseUpsertBulk {
 	return u.Update(func(s *EnterpriseUpsert) {
 		s.ClearDays()
+	})
+}
+
+// SetDistance sets the "distance" field.
+func (u *EnterpriseUpsertBulk) SetDistance(v float64) *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.SetDistance(v)
+	})
+}
+
+// AddDistance adds v to the "distance" field.
+func (u *EnterpriseUpsertBulk) AddDistance(v float64) *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.AddDistance(v)
+	})
+}
+
+// UpdateDistance sets the "distance" field to the value that was provided on create.
+func (u *EnterpriseUpsertBulk) UpdateDistance() *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.UpdateDistance()
 	})
 }
 

@@ -156,6 +156,20 @@ func (sac *SubscribeAlterCreate) SetDays(i int) *SubscribeAlterCreate {
 	return sac
 }
 
+// SetStatus sets the "status" field.
+func (sac *SubscribeAlterCreate) SetStatus(i int) *SubscribeAlterCreate {
+	sac.mutation.SetStatus(i)
+	return sac
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (sac *SubscribeAlterCreate) SetNillableStatus(i *int) *SubscribeAlterCreate {
+	if i != nil {
+		sac.SetStatus(*i)
+	}
+	return sac
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (sac *SubscribeAlterCreate) SetRider(r *Rider) *SubscribeAlterCreate {
 	return sac.SetRiderID(r.ID)
@@ -232,6 +246,10 @@ func (sac *SubscribeAlterCreate) defaults() error {
 		v := subscribealter.DefaultUpdatedAt()
 		sac.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := sac.mutation.Status(); !ok {
+		v := subscribealter.DefaultStatus
+		sac.mutation.SetStatus(v)
+	}
 	return nil
 }
 
@@ -251,6 +269,9 @@ func (sac *SubscribeAlterCreate) check() error {
 	}
 	if _, ok := sac.mutation.Days(); !ok {
 		return &ValidationError{Name: "days", err: errors.New(`ent: missing required field "SubscribeAlter.days"`)}
+	}
+	if _, ok := sac.mutation.Status(); !ok {
+		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "SubscribeAlter.status"`)}
 	}
 	if _, ok := sac.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "SubscribeAlter.rider"`)}
@@ -312,6 +333,10 @@ func (sac *SubscribeAlterCreate) createSpec() (*SubscribeAlter, *sqlgraph.Create
 	if value, ok := sac.mutation.Days(); ok {
 		_spec.SetField(subscribealter.FieldDays, field.TypeInt, value)
 		_node.Days = value
+	}
+	if value, ok := sac.mutation.Status(); ok {
+		_spec.SetField(subscribealter.FieldStatus, field.TypeInt, value)
+		_node.Status = value
 	}
 	if nodes := sac.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -612,6 +637,24 @@ func (u *SubscribeAlterUpsert) AddDays(v int) *SubscribeAlterUpsert {
 	return u
 }
 
+// SetStatus sets the "status" field.
+func (u *SubscribeAlterUpsert) SetStatus(v int) *SubscribeAlterUpsert {
+	u.Set(subscribealter.FieldStatus, v)
+	return u
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *SubscribeAlterUpsert) UpdateStatus() *SubscribeAlterUpsert {
+	u.SetExcluded(subscribealter.FieldStatus)
+	return u
+}
+
+// AddStatus adds v to the "status" field.
+func (u *SubscribeAlterUpsert) AddStatus(v int) *SubscribeAlterUpsert {
+	u.Add(subscribealter.FieldStatus, v)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -846,6 +889,27 @@ func (u *SubscribeAlterUpsertOne) AddDays(v int) *SubscribeAlterUpsertOne {
 func (u *SubscribeAlterUpsertOne) UpdateDays() *SubscribeAlterUpsertOne {
 	return u.Update(func(s *SubscribeAlterUpsert) {
 		s.UpdateDays()
+	})
+}
+
+// SetStatus sets the "status" field.
+func (u *SubscribeAlterUpsertOne) SetStatus(v int) *SubscribeAlterUpsertOne {
+	return u.Update(func(s *SubscribeAlterUpsert) {
+		s.SetStatus(v)
+	})
+}
+
+// AddStatus adds v to the "status" field.
+func (u *SubscribeAlterUpsertOne) AddStatus(v int) *SubscribeAlterUpsertOne {
+	return u.Update(func(s *SubscribeAlterUpsert) {
+		s.AddStatus(v)
+	})
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *SubscribeAlterUpsertOne) UpdateStatus() *SubscribeAlterUpsertOne {
+	return u.Update(func(s *SubscribeAlterUpsert) {
+		s.UpdateStatus()
 	})
 }
 
@@ -1245,6 +1309,27 @@ func (u *SubscribeAlterUpsertBulk) AddDays(v int) *SubscribeAlterUpsertBulk {
 func (u *SubscribeAlterUpsertBulk) UpdateDays() *SubscribeAlterUpsertBulk {
 	return u.Update(func(s *SubscribeAlterUpsert) {
 		s.UpdateDays()
+	})
+}
+
+// SetStatus sets the "status" field.
+func (u *SubscribeAlterUpsertBulk) SetStatus(v int) *SubscribeAlterUpsertBulk {
+	return u.Update(func(s *SubscribeAlterUpsert) {
+		s.SetStatus(v)
+	})
+}
+
+// AddStatus adds v to the "status" field.
+func (u *SubscribeAlterUpsertBulk) AddStatus(v int) *SubscribeAlterUpsertBulk {
+	return u.Update(func(s *SubscribeAlterUpsert) {
+		s.AddStatus(v)
+	})
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *SubscribeAlterUpsertBulk) UpdateStatus() *SubscribeAlterUpsertBulk {
+	return u.Update(func(s *SubscribeAlterUpsert) {
+		s.UpdateStatus()
 	})
 }
 

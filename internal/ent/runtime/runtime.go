@@ -38,6 +38,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/exception"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/export"
+	"github.com/auroraride/aurservd/internal/ent/feedback"
 	"github.com/auroraride/aurservd/internal/ent/inventory"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/order"
@@ -163,11 +164,11 @@ func init() {
 	// battery.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	battery.UpdateDefaultUpdatedAt = batteryDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// batteryDescBrand is the schema descriptor for brand field.
-	batteryDescBrand := batteryFields[4].Descriptor()
+	batteryDescBrand := batteryFields[6].Descriptor()
 	// battery.DefaultBrand holds the default value on creation for the brand field.
 	battery.DefaultBrand = batteryDescBrand.Default.(adapter.BatteryBrand)
 	// batteryDescEnable is the schema descriptor for enable field.
-	batteryDescEnable := batteryFields[5].Descriptor()
+	batteryDescEnable := batteryFields[7].Descriptor()
 	// battery.DefaultEnable holds the default value on creation for the enable field.
 	battery.DefaultEnable = batteryDescEnable.Default.(bool)
 	batteryflowMixin := schema.BatteryFlow{}.Mixin()
@@ -266,39 +267,39 @@ func init() {
 	// cabinet.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	cabinet.UpdateDefaultUpdatedAt = cabinetDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// cabinetDescBrand is the schema descriptor for brand field.
-	cabinetDescBrand := cabinetFields[2].Descriptor()
+	cabinetDescBrand := cabinetFields[4].Descriptor()
 	// cabinet.DefaultBrand holds the default value on creation for the brand field.
 	cabinet.DefaultBrand = cabinetDescBrand.Default.(adapter.CabinetBrand)
 	// cabinetDescTransferred is the schema descriptor for transferred field.
-	cabinetDescTransferred := cabinetFields[12].Descriptor()
+	cabinetDescTransferred := cabinetFields[14].Descriptor()
 	// cabinet.DefaultTransferred holds the default value on creation for the transferred field.
 	cabinet.DefaultTransferred = cabinetDescTransferred.Default.(bool)
 	// cabinetDescIntelligent is the schema descriptor for intelligent field.
-	cabinetDescIntelligent := cabinetFields[13].Descriptor()
+	cabinetDescIntelligent := cabinetFields[15].Descriptor()
 	// cabinet.DefaultIntelligent holds the default value on creation for the intelligent field.
 	cabinet.DefaultIntelligent = cabinetDescIntelligent.Default.(bool)
 	// cabinetDescHealth is the schema descriptor for health field.
-	cabinetDescHealth := cabinetFields[14].Descriptor()
+	cabinetDescHealth := cabinetFields[16].Descriptor()
 	// cabinet.DefaultHealth holds the default value on creation for the health field.
 	cabinet.DefaultHealth = cabinetDescHealth.Default.(uint8)
 	// cabinetDescBatteryNum is the schema descriptor for battery_num field.
-	cabinetDescBatteryNum := cabinetFields[16].Descriptor()
+	cabinetDescBatteryNum := cabinetFields[18].Descriptor()
 	// cabinet.DefaultBatteryNum holds the default value on creation for the battery_num field.
 	cabinet.DefaultBatteryNum = cabinetDescBatteryNum.Default.(int)
 	// cabinetDescBatteryFullNum is the schema descriptor for battery_full_num field.
-	cabinetDescBatteryFullNum := cabinetFields[17].Descriptor()
+	cabinetDescBatteryFullNum := cabinetFields[19].Descriptor()
 	// cabinet.DefaultBatteryFullNum holds the default value on creation for the battery_full_num field.
 	cabinet.DefaultBatteryFullNum = cabinetDescBatteryFullNum.Default.(int)
 	// cabinetDescBatteryChargingNum is the schema descriptor for battery_charging_num field.
-	cabinetDescBatteryChargingNum := cabinetFields[18].Descriptor()
+	cabinetDescBatteryChargingNum := cabinetFields[20].Descriptor()
 	// cabinet.DefaultBatteryChargingNum holds the default value on creation for the battery_charging_num field.
 	cabinet.DefaultBatteryChargingNum = cabinetDescBatteryChargingNum.Default.(int)
 	// cabinetDescEmptyBinNum is the schema descriptor for empty_bin_num field.
-	cabinetDescEmptyBinNum := cabinetFields[19].Descriptor()
+	cabinetDescEmptyBinNum := cabinetFields[21].Descriptor()
 	// cabinet.DefaultEmptyBinNum holds the default value on creation for the empty_bin_num field.
 	cabinet.DefaultEmptyBinNum = cabinetDescEmptyBinNum.Default.(int)
 	// cabinetDescLockedBinNum is the schema descriptor for locked_bin_num field.
-	cabinetDescLockedBinNum := cabinetFields[20].Descriptor()
+	cabinetDescLockedBinNum := cabinetFields[22].Descriptor()
 	// cabinet.DefaultLockedBinNum holds the default value on creation for the locked_bin_num field.
 	cabinet.DefaultLockedBinNum = cabinetDescLockedBinNum.Default.(int)
 	cabinetfaultMixin := schema.CabinetFault{}.Mixin()
@@ -592,6 +593,10 @@ func init() {
 	enterpriseDescUseStore := enterpriseFields[13].Descriptor()
 	// enterprise.DefaultUseStore holds the default value on creation for the use_store field.
 	enterprise.DefaultUseStore = enterpriseDescUseStore.Default.(bool)
+	// enterpriseDescDistance is the schema descriptor for distance field.
+	enterpriseDescDistance := enterpriseFields[15].Descriptor()
+	// enterprise.DefaultDistance holds the default value on creation for the distance field.
+	enterprise.DefaultDistance = enterpriseDescDistance.Default.(float64)
 	enterprisebillMixin := schema.EnterpriseBill{}.Mixin()
 	enterprisebillMixinHooks2 := enterprisebillMixin[2].Hooks()
 	enterprisebill.Hooks[0] = enterprisebillMixinHooks2[0]
@@ -779,6 +784,27 @@ func init() {
 	exportDescStatus := exportFields[2].Descriptor()
 	// export.DefaultStatus holds the default value on creation for the status field.
 	export.DefaultStatus = exportDescStatus.Default.(uint8)
+	feedbackMixin := schema.Feedback{}.Mixin()
+	feedbackMixinHooks2 := feedbackMixin[2].Hooks()
+	feedback.Hooks[0] = feedbackMixinHooks2[0]
+	feedbackMixinFields0 := feedbackMixin[0].Fields()
+	_ = feedbackMixinFields0
+	feedbackFields := schema.Feedback{}.Fields()
+	_ = feedbackFields
+	// feedbackDescCreatedAt is the schema descriptor for created_at field.
+	feedbackDescCreatedAt := feedbackMixinFields0[0].Descriptor()
+	// feedback.DefaultCreatedAt holds the default value on creation for the created_at field.
+	feedback.DefaultCreatedAt = feedbackDescCreatedAt.Default.(func() time.Time)
+	// feedbackDescUpdatedAt is the schema descriptor for updated_at field.
+	feedbackDescUpdatedAt := feedbackMixinFields0[1].Descriptor()
+	// feedback.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	feedback.DefaultUpdatedAt = feedbackDescUpdatedAt.Default.(func() time.Time)
+	// feedback.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	feedback.UpdateDefaultUpdatedAt = feedbackDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// feedbackDescType is the schema descriptor for type field.
+	feedbackDescType := feedbackFields[1].Descriptor()
+	// feedback.DefaultType holds the default value on creation for the type field.
+	feedback.DefaultType = feedbackDescType.Default.(uint8)
 	inventoryMixin := schema.Inventory{}.Mixin()
 	inventoryMixinHooks2 := inventoryMixin[2].Hooks()
 	inventory.Hooks[0] = inventoryMixinHooks2[0]
@@ -1227,6 +1253,10 @@ func init() {
 	subscribealter.DefaultUpdatedAt = subscribealterDescUpdatedAt.Default.(func() time.Time)
 	// subscribealter.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	subscribealter.UpdateDefaultUpdatedAt = subscribealterDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// subscribealterDescStatus is the schema descriptor for status field.
+	subscribealterDescStatus := subscribealterFields[2].Descriptor()
+	// subscribealter.DefaultStatus holds the default value on creation for the status field.
+	subscribealter.DefaultStatus = subscribealterDescStatus.Default.(int)
 	subscribepauseMixin := schema.SubscribePause{}.Mixin()
 	subscribepauseMixinHooks2 := subscribepauseMixin[2].Hooks()
 	subscribepause.Hooks[0] = subscribepauseMixinHooks2[0]

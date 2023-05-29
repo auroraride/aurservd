@@ -45,6 +45,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/exception"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/export"
+	"github.com/auroraride/aurservd/internal/ent/feedback"
 	"github.com/auroraride/aurservd/internal/ent/inventory"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/order"
@@ -136,6 +137,8 @@ type Client struct {
 	Exchange *ExchangeClient
 	// Export is the client for interacting with the Export builders.
 	Export *ExportClient
+	// Feedback is the client for interacting with the Feedback builders.
+	Feedback *FeedbackClient
 	// Inventory is the client for interacting with the Inventory builders.
 	Inventory *InventoryClient
 	// Manager is the client for interacting with the Manager builders.
@@ -220,6 +223,7 @@ func (c *Client) init() {
 	c.Exception = NewExceptionClient(c.config)
 	c.Exchange = NewExchangeClient(c.config)
 	c.Export = NewExportClient(c.config)
+	c.Feedback = NewFeedbackClient(c.config)
 	c.Inventory = NewInventoryClient(c.config)
 	c.Manager = NewManagerClient(c.config)
 	c.Order = NewOrderClient(c.config)
@@ -353,6 +357,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Exception:            NewExceptionClient(cfg),
 		Exchange:             NewExchangeClient(cfg),
 		Export:               NewExportClient(cfg),
+		Feedback:             NewFeedbackClient(cfg),
 		Inventory:            NewInventoryClient(cfg),
 		Manager:              NewManagerClient(cfg),
 		Order:                NewOrderClient(cfg),
@@ -423,6 +428,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Exception:            NewExceptionClient(cfg),
 		Exchange:             NewExchangeClient(cfg),
 		Export:               NewExportClient(cfg),
+		Feedback:             NewFeedbackClient(cfg),
 		Inventory:            NewInventoryClient(cfg),
 		Manager:              NewManagerClient(cfg),
 		Order:                NewOrderClient(cfg),
@@ -478,10 +484,10 @@ func (c *Client) Use(hooks ...Hook) {
 		c.CouponTemplate, c.Ebike, c.EbikeBrand, c.Employee, c.Enterprise,
 		c.EnterpriseBill, c.EnterpriseContract, c.EnterprisePrepayment,
 		c.EnterprisePrice, c.EnterpriseStatement, c.EnterpriseStation, c.Exception,
-		c.Exchange, c.Export, c.Inventory, c.Manager, c.Order, c.OrderRefund, c.Person,
-		c.Plan, c.PlanIntroduce, c.PointLog, c.Reserve, c.Rider, c.RiderFollowUp,
-		c.Role, c.Setting, c.Stock, c.Store, c.Subscribe, c.SubscribeAlter,
-		c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend,
+		c.Exchange, c.Export, c.Feedback, c.Inventory, c.Manager, c.Order,
+		c.OrderRefund, c.Person, c.Plan, c.PlanIntroduce, c.PointLog, c.Reserve,
+		c.Rider, c.RiderFollowUp, c.Role, c.Setting, c.Stock, c.Store, c.Subscribe,
+		c.SubscribeAlter, c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend,
 	} {
 		n.Use(hooks...)
 	}
@@ -497,10 +503,10 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.CouponTemplate, c.Ebike, c.EbikeBrand, c.Employee, c.Enterprise,
 		c.EnterpriseBill, c.EnterpriseContract, c.EnterprisePrepayment,
 		c.EnterprisePrice, c.EnterpriseStatement, c.EnterpriseStation, c.Exception,
-		c.Exchange, c.Export, c.Inventory, c.Manager, c.Order, c.OrderRefund, c.Person,
-		c.Plan, c.PlanIntroduce, c.PointLog, c.Reserve, c.Rider, c.RiderFollowUp,
-		c.Role, c.Setting, c.Stock, c.Store, c.Subscribe, c.SubscribeAlter,
-		c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend,
+		c.Exchange, c.Export, c.Feedback, c.Inventory, c.Manager, c.Order,
+		c.OrderRefund, c.Person, c.Plan, c.PlanIntroduce, c.PointLog, c.Reserve,
+		c.Rider, c.RiderFollowUp, c.Role, c.Setting, c.Stock, c.Store, c.Subscribe,
+		c.SubscribeAlter, c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -571,6 +577,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Exchange.mutate(ctx, m)
 	case *ExportMutation:
 		return c.Export.mutate(ctx, m)
+	case *FeedbackMutation:
+		return c.Feedback.mutate(ctx, m)
 	case *InventoryMutation:
 		return c.Inventory.mutate(ctx, m)
 	case *ManagerMutation:
@@ -718,6 +726,22 @@ func (c *AgentClient) QueryEnterprise(a *Agent) *EnterpriseQuery {
 			sqlgraph.From(agent.Table, agent.FieldID, id),
 			sqlgraph.To(enterprise.Table, enterprise.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, agent.EnterpriseTable, agent.EnterpriseColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStation queries the station edge of a Agent.
+func (c *AgentClient) QueryStation(a *Agent) *EnterpriseStationQuery {
+	query := (&EnterpriseStationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(agent.Table, agent.FieldID, id),
+			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, agent.StationTable, agent.StationColumn),
 		)
 		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
 		return fromV, nil
@@ -1521,6 +1545,22 @@ func (c *BatteryClient) QuerySubscribe(b *Battery) *SubscribeQuery {
 	return query
 }
 
+// QueryEnterprise queries the enterprise edge of a Battery.
+func (c *BatteryClient) QueryEnterprise(b *Battery) *EnterpriseQuery {
+	query := (&EnterpriseClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(battery.Table, battery.FieldID, id),
+			sqlgraph.To(enterprise.Table, enterprise.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, battery.EnterpriseTable, battery.EnterpriseColumn),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryFlows queries the flows edge of a Battery.
 func (c *BatteryClient) QueryFlows(b *Battery) *BatteryFlowQuery {
 	query := (&BatteryFlowClient{config: c.config}).Query()
@@ -1530,6 +1570,22 @@ func (c *BatteryClient) QueryFlows(b *Battery) *BatteryFlowQuery {
 			sqlgraph.From(battery.Table, battery.FieldID, id),
 			sqlgraph.To(batteryflow.Table, batteryflow.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, battery.FlowsTable, battery.FlowsColumn),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStation queries the station edge of a Battery.
+func (c *BatteryClient) QueryStation(b *Battery) *EnterpriseStationQuery {
+	query := (&EnterpriseStationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(battery.Table, battery.FieldID, id),
+			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, battery.StationTable, battery.StationColumn),
 		)
 		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
 		return fromV, nil
@@ -2706,6 +2762,38 @@ func (c *CabinetClient) QueryBatteryFlows(ca *Cabinet) *BatteryFlowQuery {
 			sqlgraph.From(cabinet.Table, cabinet.FieldID, id),
 			sqlgraph.To(batteryflow.Table, batteryflow.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, cabinet.BatteryFlowsTable, cabinet.BatteryFlowsColumn),
+		)
+		fromV = sqlgraph.Neighbors(ca.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStation queries the station edge of a Cabinet.
+func (c *CabinetClient) QueryStation(ca *Cabinet) *EnterpriseStationQuery {
+	query := (&EnterpriseStationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ca.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cabinet.Table, cabinet.FieldID, id),
+			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, cabinet.StationTable, cabinet.StationColumn),
+		)
+		fromV = sqlgraph.Neighbors(ca.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEnterprise queries the enterprise edge of a Cabinet.
+func (c *CabinetClient) QueryEnterprise(ca *Cabinet) *EnterpriseQuery {
+	query := (&EnterpriseClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ca.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cabinet.Table, cabinet.FieldID, id),
+			sqlgraph.To(enterprise.Table, enterprise.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, cabinet.EnterpriseTable, cabinet.EnterpriseColumn),
 		)
 		fromV = sqlgraph.Neighbors(ca.driver.Dialect(), step)
 		return fromV, nil
@@ -4694,6 +4782,86 @@ func (c *EnterpriseClient) QueryBills(e *Enterprise) *EnterpriseBillQuery {
 	return query
 }
 
+// QueryBattery queries the battery edge of a Enterprise.
+func (c *EnterpriseClient) QueryBattery(e *Enterprise) *BatteryQuery {
+	query := (&BatteryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprise.Table, enterprise.FieldID, id),
+			sqlgraph.To(battery.Table, battery.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprise.BatteryTable, enterprise.BatteryColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryFeedback queries the feedback edge of a Enterprise.
+func (c *EnterpriseClient) QueryFeedback(e *Enterprise) *FeedbackQuery {
+	query := (&FeedbackClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprise.Table, enterprise.FieldID, id),
+			sqlgraph.To(feedback.Table, feedback.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprise.FeedbackTable, enterprise.FeedbackColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryAgents queries the agents edge of a Enterprise.
+func (c *EnterpriseClient) QueryAgents(e *Enterprise) *AgentQuery {
+	query := (&AgentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprise.Table, enterprise.FieldID, id),
+			sqlgraph.To(agent.Table, agent.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprise.AgentsTable, enterprise.AgentsColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCabinets queries the cabinets edge of a Enterprise.
+func (c *EnterpriseClient) QueryCabinets(e *Enterprise) *CabinetQuery {
+	query := (&CabinetClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprise.Table, enterprise.FieldID, id),
+			sqlgraph.To(cabinet.Table, cabinet.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprise.CabinetsTable, enterprise.CabinetsColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStocks queries the stocks edge of a Enterprise.
+func (c *EnterpriseClient) QueryStocks(e *Enterprise) *StockQuery {
+	query := (&StockClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprise.Table, enterprise.FieldID, id),
+			sqlgraph.To(stock.Table, stock.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprise.StocksTable, enterprise.StocksColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *EnterpriseClient) Hooks() []Hook {
 	hooks := c.hooks.Enterprise
@@ -5616,6 +5784,54 @@ func (c *EnterpriseStationClient) QueryEnterprise(es *EnterpriseStation) *Enterp
 	return query
 }
 
+// QueryCabinets queries the cabinets edge of a EnterpriseStation.
+func (c *EnterpriseStationClient) QueryCabinets(es *EnterpriseStation) *CabinetQuery {
+	query := (&CabinetClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := es.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisestation.Table, enterprisestation.FieldID, id),
+			sqlgraph.To(cabinet.Table, cabinet.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprisestation.CabinetsTable, enterprisestation.CabinetsColumn),
+		)
+		fromV = sqlgraph.Neighbors(es.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryBattery queries the battery edge of a EnterpriseStation.
+func (c *EnterpriseStationClient) QueryBattery(es *EnterpriseStation) *BatteryQuery {
+	query := (&BatteryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := es.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisestation.Table, enterprisestation.FieldID, id),
+			sqlgraph.To(battery.Table, battery.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprisestation.BatteryTable, enterprisestation.BatteryColumn),
+		)
+		fromV = sqlgraph.Neighbors(es.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStocks queries the stocks edge of a EnterpriseStation.
+func (c *EnterpriseStationClient) QueryStocks(es *EnterpriseStation) *StockQuery {
+	query := (&StockClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := es.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisestation.Table, enterprisestation.FieldID, id),
+			sqlgraph.To(stock.Table, stock.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprisestation.StocksTable, enterprisestation.StocksColumn),
+		)
+		fromV = sqlgraph.Neighbors(es.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *EnterpriseStationClient) Hooks() []Hook {
 	hooks := c.hooks.EnterpriseStation
@@ -6187,6 +6403,141 @@ func (c *ExportClient) mutate(ctx context.Context, m *ExportMutation) (Value, er
 		return (&ExportDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Export mutation op: %q", m.Op())
+	}
+}
+
+// FeedbackClient is a client for the Feedback schema.
+type FeedbackClient struct {
+	config
+}
+
+// NewFeedbackClient returns a client for the Feedback from the given config.
+func NewFeedbackClient(c config) *FeedbackClient {
+	return &FeedbackClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `feedback.Hooks(f(g(h())))`.
+func (c *FeedbackClient) Use(hooks ...Hook) {
+	c.hooks.Feedback = append(c.hooks.Feedback, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `feedback.Intercept(f(g(h())))`.
+func (c *FeedbackClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Feedback = append(c.inters.Feedback, interceptors...)
+}
+
+// Create returns a builder for creating a Feedback entity.
+func (c *FeedbackClient) Create() *FeedbackCreate {
+	mutation := newFeedbackMutation(c.config, OpCreate)
+	return &FeedbackCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Feedback entities.
+func (c *FeedbackClient) CreateBulk(builders ...*FeedbackCreate) *FeedbackCreateBulk {
+	return &FeedbackCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Feedback.
+func (c *FeedbackClient) Update() *FeedbackUpdate {
+	mutation := newFeedbackMutation(c.config, OpUpdate)
+	return &FeedbackUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *FeedbackClient) UpdateOne(f *Feedback) *FeedbackUpdateOne {
+	mutation := newFeedbackMutation(c.config, OpUpdateOne, withFeedback(f))
+	return &FeedbackUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *FeedbackClient) UpdateOneID(id uint64) *FeedbackUpdateOne {
+	mutation := newFeedbackMutation(c.config, OpUpdateOne, withFeedbackID(id))
+	return &FeedbackUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Feedback.
+func (c *FeedbackClient) Delete() *FeedbackDelete {
+	mutation := newFeedbackMutation(c.config, OpDelete)
+	return &FeedbackDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *FeedbackClient) DeleteOne(f *Feedback) *FeedbackDeleteOne {
+	return c.DeleteOneID(f.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *FeedbackClient) DeleteOneID(id uint64) *FeedbackDeleteOne {
+	builder := c.Delete().Where(feedback.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &FeedbackDeleteOne{builder}
+}
+
+// Query returns a query builder for Feedback.
+func (c *FeedbackClient) Query() *FeedbackQuery {
+	return &FeedbackQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeFeedback},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Feedback entity by its id.
+func (c *FeedbackClient) Get(ctx context.Context, id uint64) (*Feedback, error) {
+	return c.Query().Where(feedback.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *FeedbackClient) GetX(ctx context.Context, id uint64) *Feedback {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryEnterprise queries the enterprise edge of a Feedback.
+func (c *FeedbackClient) QueryEnterprise(f *Feedback) *EnterpriseQuery {
+	query := (&EnterpriseClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := f.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(feedback.Table, feedback.FieldID, id),
+			sqlgraph.To(enterprise.Table, enterprise.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, feedback.EnterpriseTable, feedback.EnterpriseColumn),
+		)
+		fromV = sqlgraph.Neighbors(f.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *FeedbackClient) Hooks() []Hook {
+	hooks := c.hooks.Feedback
+	return append(hooks[:len(hooks):len(hooks)], feedback.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *FeedbackClient) Interceptors() []Interceptor {
+	return c.inters.Feedback
+}
+
+func (c *FeedbackClient) mutate(ctx context.Context, m *FeedbackMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&FeedbackCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&FeedbackUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&FeedbackUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&FeedbackDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Feedback mutation op: %q", m.Op())
 	}
 }
 
@@ -8676,6 +9027,38 @@ func (c *StockClient) QueryChildren(s *Stock) *StockQuery {
 	return query
 }
 
+// QueryEnterprise queries the enterprise edge of a Stock.
+func (c *StockClient) QueryEnterprise(s *Stock) *EnterpriseQuery {
+	query := (&EnterpriseClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, id),
+			sqlgraph.To(enterprise.Table, enterprise.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, stock.EnterpriseTable, stock.EnterpriseColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStations queries the stations edge of a Stock.
+func (c *StockClient) QueryStations(s *Stock) *EnterpriseStationQuery {
+	query := (&EnterpriseStationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, id),
+			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, stock.StationsTable, stock.StationsColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *StockClient) Hooks() []Hook {
 	hooks := c.hooks.Stock
@@ -10143,9 +10526,9 @@ type (
 		Contract, Coupon, CouponAssembly, CouponTemplate, Ebike, EbikeBrand, Employee,
 		Enterprise, EnterpriseBill, EnterpriseContract, EnterprisePrepayment,
 		EnterprisePrice, EnterpriseStatement, EnterpriseStation, Exception, Exchange,
-		Export, Inventory, Manager, Order, OrderRefund, Person, Plan, PlanIntroduce,
-		PointLog, Reserve, Rider, RiderFollowUp, Role, Setting, Stock, Store,
-		Subscribe, SubscribeAlter, SubscribePause, SubscribeReminder,
+		Export, Feedback, Inventory, Manager, Order, OrderRefund, Person, Plan,
+		PlanIntroduce, PointLog, Reserve, Rider, RiderFollowUp, Role, Setting, Stock,
+		Store, Subscribe, SubscribeAlter, SubscribePause, SubscribeReminder,
 		SubscribeSuspend []ent.Hook
 	}
 	inters struct {
@@ -10154,9 +10537,9 @@ type (
 		Contract, Coupon, CouponAssembly, CouponTemplate, Ebike, EbikeBrand, Employee,
 		Enterprise, EnterpriseBill, EnterpriseContract, EnterprisePrepayment,
 		EnterprisePrice, EnterpriseStatement, EnterpriseStation, Exception, Exchange,
-		Export, Inventory, Manager, Order, OrderRefund, Person, Plan, PlanIntroduce,
-		PointLog, Reserve, Rider, RiderFollowUp, Role, Setting, Stock, Store,
-		Subscribe, SubscribeAlter, SubscribePause, SubscribeReminder,
+		Export, Feedback, Inventory, Manager, Order, OrderRefund, Person, Plan,
+		PlanIntroduce, PointLog, Reserve, Rider, RiderFollowUp, Role, Setting, Stock,
+		Store, Subscribe, SubscribeAlter, SubscribePause, SubscribeReminder,
 		SubscribeSuspend []ent.Interceptor
 	}
 )

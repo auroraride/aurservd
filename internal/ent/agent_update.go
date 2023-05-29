@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
@@ -95,6 +96,12 @@ func (au *AgentUpdate) SetEnterpriseID(u uint64) *AgentUpdate {
 	return au
 }
 
+// SetStationID sets the "station_id" field.
+func (au *AgentUpdate) SetStationID(u uint64) *AgentUpdate {
+	au.mutation.SetStationID(u)
+	return au
+}
+
 // SetName sets the "name" field.
 func (au *AgentUpdate) SetName(s string) *AgentUpdate {
 	au.mutation.SetName(s)
@@ -118,6 +125,11 @@ func (au *AgentUpdate) SetEnterprise(e *Enterprise) *AgentUpdate {
 	return au.SetEnterpriseID(e.ID)
 }
 
+// SetStation sets the "station" edge to the EnterpriseStation entity.
+func (au *AgentUpdate) SetStation(e *EnterpriseStation) *AgentUpdate {
+	return au.SetStationID(e.ID)
+}
+
 // Mutation returns the AgentMutation object of the builder.
 func (au *AgentUpdate) Mutation() *AgentMutation {
 	return au.mutation
@@ -126,6 +138,12 @@ func (au *AgentUpdate) Mutation() *AgentMutation {
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
 func (au *AgentUpdate) ClearEnterprise() *AgentUpdate {
 	au.mutation.ClearEnterprise()
+	return au
+}
+
+// ClearStation clears the "station" edge to the EnterpriseStation entity.
+func (au *AgentUpdate) ClearStation() *AgentUpdate {
+	au.mutation.ClearStation()
 	return au
 }
 
@@ -175,6 +193,9 @@ func (au *AgentUpdate) defaults() error {
 func (au *AgentUpdate) check() error {
 	if _, ok := au.mutation.EnterpriseID(); au.mutation.EnterpriseCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Agent.enterprise"`)
+	}
+	if _, ok := au.mutation.StationID(); au.mutation.StationCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Agent.station"`)
 	}
 	return nil
 }
@@ -252,6 +273,35 @@ func (au *AgentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if au.mutation.StationCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   agent.StationTable,
+			Columns: []string{agent.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.StationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   agent.StationTable,
+			Columns: []string{agent.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -345,6 +395,12 @@ func (auo *AgentUpdateOne) SetEnterpriseID(u uint64) *AgentUpdateOne {
 	return auo
 }
 
+// SetStationID sets the "station_id" field.
+func (auo *AgentUpdateOne) SetStationID(u uint64) *AgentUpdateOne {
+	auo.mutation.SetStationID(u)
+	return auo
+}
+
 // SetName sets the "name" field.
 func (auo *AgentUpdateOne) SetName(s string) *AgentUpdateOne {
 	auo.mutation.SetName(s)
@@ -368,6 +424,11 @@ func (auo *AgentUpdateOne) SetEnterprise(e *Enterprise) *AgentUpdateOne {
 	return auo.SetEnterpriseID(e.ID)
 }
 
+// SetStation sets the "station" edge to the EnterpriseStation entity.
+func (auo *AgentUpdateOne) SetStation(e *EnterpriseStation) *AgentUpdateOne {
+	return auo.SetStationID(e.ID)
+}
+
 // Mutation returns the AgentMutation object of the builder.
 func (auo *AgentUpdateOne) Mutation() *AgentMutation {
 	return auo.mutation
@@ -376,6 +437,12 @@ func (auo *AgentUpdateOne) Mutation() *AgentMutation {
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
 func (auo *AgentUpdateOne) ClearEnterprise() *AgentUpdateOne {
 	auo.mutation.ClearEnterprise()
+	return auo
+}
+
+// ClearStation clears the "station" edge to the EnterpriseStation entity.
+func (auo *AgentUpdateOne) ClearStation() *AgentUpdateOne {
+	auo.mutation.ClearStation()
 	return auo
 }
 
@@ -438,6 +505,9 @@ func (auo *AgentUpdateOne) defaults() error {
 func (auo *AgentUpdateOne) check() error {
 	if _, ok := auo.mutation.EnterpriseID(); auo.mutation.EnterpriseCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Agent.enterprise"`)
+	}
+	if _, ok := auo.mutation.StationID(); auo.mutation.StationCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Agent.station"`)
 	}
 	return nil
 }
@@ -532,6 +602,35 @@ func (auo *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.StationCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   agent.StationTable,
+			Columns: []string{agent.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.StationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   agent.StationTable,
+			Columns: []string{agent.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

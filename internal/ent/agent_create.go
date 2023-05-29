@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 )
 
 // AgentCreate is the builder for creating a Agent entity.
@@ -98,6 +99,12 @@ func (ac *AgentCreate) SetEnterpriseID(u uint64) *AgentCreate {
 	return ac
 }
 
+// SetStationID sets the "station_id" field.
+func (ac *AgentCreate) SetStationID(u uint64) *AgentCreate {
+	ac.mutation.SetStationID(u)
+	return ac
+}
+
 // SetName sets the "name" field.
 func (ac *AgentCreate) SetName(s string) *AgentCreate {
 	ac.mutation.SetName(s)
@@ -119,6 +126,11 @@ func (ac *AgentCreate) SetPassword(s string) *AgentCreate {
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
 func (ac *AgentCreate) SetEnterprise(e *Enterprise) *AgentCreate {
 	return ac.SetEnterpriseID(e.ID)
+}
+
+// SetStation sets the "station" edge to the EnterpriseStation entity.
+func (ac *AgentCreate) SetStation(e *EnterpriseStation) *AgentCreate {
+	return ac.SetStationID(e.ID)
 }
 
 // Mutation returns the AgentMutation object of the builder.
@@ -186,6 +198,9 @@ func (ac *AgentCreate) check() error {
 	if _, ok := ac.mutation.EnterpriseID(); !ok {
 		return &ValidationError{Name: "enterprise_id", err: errors.New(`ent: missing required field "Agent.enterprise_id"`)}
 	}
+	if _, ok := ac.mutation.StationID(); !ok {
+		return &ValidationError{Name: "station_id", err: errors.New(`ent: missing required field "Agent.station_id"`)}
+	}
 	if _, ok := ac.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Agent.name"`)}
 	}
@@ -197,6 +212,9 @@ func (ac *AgentCreate) check() error {
 	}
 	if _, ok := ac.mutation.EnterpriseID(); !ok {
 		return &ValidationError{Name: "enterprise", err: errors.New(`ent: missing required edge "Agent.enterprise"`)}
+	}
+	if _, ok := ac.mutation.StationID(); !ok {
+		return &ValidationError{Name: "station", err: errors.New(`ent: missing required edge "Agent.station"`)}
 	}
 	return nil
 }
@@ -276,6 +294,23 @@ func (ac *AgentCreate) createSpec() (*Agent, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.EnterpriseID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ac.mutation.StationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   agent.StationTable,
+			Columns: []string{agent.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.StationID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -405,6 +440,18 @@ func (u *AgentUpsert) SetEnterpriseID(v uint64) *AgentUpsert {
 // UpdateEnterpriseID sets the "enterprise_id" field to the value that was provided on create.
 func (u *AgentUpsert) UpdateEnterpriseID() *AgentUpsert {
 	u.SetExcluded(agent.FieldEnterpriseID)
+	return u
+}
+
+// SetStationID sets the "station_id" field.
+func (u *AgentUpsert) SetStationID(v uint64) *AgentUpsert {
+	u.Set(agent.FieldStationID, v)
+	return u
+}
+
+// UpdateStationID sets the "station_id" field to the value that was provided on create.
+func (u *AgentUpsert) UpdateStationID() *AgentUpsert {
+	u.SetExcluded(agent.FieldStationID)
 	return u
 }
 
@@ -580,6 +627,20 @@ func (u *AgentUpsertOne) SetEnterpriseID(v uint64) *AgentUpsertOne {
 func (u *AgentUpsertOne) UpdateEnterpriseID() *AgentUpsertOne {
 	return u.Update(func(s *AgentUpsert) {
 		s.UpdateEnterpriseID()
+	})
+}
+
+// SetStationID sets the "station_id" field.
+func (u *AgentUpsertOne) SetStationID(v uint64) *AgentUpsertOne {
+	return u.Update(func(s *AgentUpsert) {
+		s.SetStationID(v)
+	})
+}
+
+// UpdateStationID sets the "station_id" field to the value that was provided on create.
+func (u *AgentUpsertOne) UpdateStationID() *AgentUpsertOne {
+	return u.Update(func(s *AgentUpsert) {
+		s.UpdateStationID()
 	})
 }
 
@@ -923,6 +984,20 @@ func (u *AgentUpsertBulk) SetEnterpriseID(v uint64) *AgentUpsertBulk {
 func (u *AgentUpsertBulk) UpdateEnterpriseID() *AgentUpsertBulk {
 	return u.Update(func(s *AgentUpsert) {
 		s.UpdateEnterpriseID()
+	})
+}
+
+// SetStationID sets the "station_id" field.
+func (u *AgentUpsertBulk) SetStationID(v uint64) *AgentUpsertBulk {
+	return u.Update(func(s *AgentUpsert) {
+		s.SetStationID(v)
+	})
+}
+
+// UpdateStationID sets the "station_id" field to the value that was provided on create.
+func (u *AgentUpsertBulk) UpdateStationID() *AgentUpsertBulk {
+	return u.Update(func(s *AgentUpsert) {
+		s.UpdateStationID()
 	})
 }
 

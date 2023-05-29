@@ -418,6 +418,75 @@ func HasEnterpriseWith(preds ...predicate.Enterprise) predicate.EnterpriseStatio
 	})
 }
 
+// HasCabinets applies the HasEdge predicate on the "cabinets" edge.
+func HasCabinets() predicate.EnterpriseStation {
+	return predicate.EnterpriseStation(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CabinetsTable, CabinetsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCabinetsWith applies the HasEdge predicate on the "cabinets" edge with a given conditions (other predicates).
+func HasCabinetsWith(preds ...predicate.Cabinet) predicate.EnterpriseStation {
+	return predicate.EnterpriseStation(func(s *sql.Selector) {
+		step := newCabinetsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasBattery applies the HasEdge predicate on the "battery" edge.
+func HasBattery() predicate.EnterpriseStation {
+	return predicate.EnterpriseStation(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, BatteryTable, BatteryColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasBatteryWith applies the HasEdge predicate on the "battery" edge with a given conditions (other predicates).
+func HasBatteryWith(preds ...predicate.Battery) predicate.EnterpriseStation {
+	return predicate.EnterpriseStation(func(s *sql.Selector) {
+		step := newBatteryStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasStocks applies the HasEdge predicate on the "stocks" edge.
+func HasStocks() predicate.EnterpriseStation {
+	return predicate.EnterpriseStation(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, StocksTable, StocksColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasStocksWith applies the HasEdge predicate on the "stocks" edge with a given conditions (other predicates).
+func HasStocksWith(preds ...predicate.Stock) predicate.EnterpriseStation {
+	return predicate.EnterpriseStation(func(s *sql.Selector) {
+		step := newStocksStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.EnterpriseStation) predicate.EnterpriseStation {
 	return predicate.EnterpriseStation(func(s *sql.Selector) {

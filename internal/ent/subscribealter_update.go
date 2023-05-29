@@ -178,6 +178,27 @@ func (sau *SubscribeAlterUpdate) AddDays(i int) *SubscribeAlterUpdate {
 	return sau
 }
 
+// SetStatus sets the "status" field.
+func (sau *SubscribeAlterUpdate) SetStatus(i int) *SubscribeAlterUpdate {
+	sau.mutation.ResetStatus()
+	sau.mutation.SetStatus(i)
+	return sau
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (sau *SubscribeAlterUpdate) SetNillableStatus(i *int) *SubscribeAlterUpdate {
+	if i != nil {
+		sau.SetStatus(*i)
+	}
+	return sau
+}
+
+// AddStatus adds i to the "status" field.
+func (sau *SubscribeAlterUpdate) AddStatus(i int) *SubscribeAlterUpdate {
+	sau.mutation.AddStatus(i)
+	return sau
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (sau *SubscribeAlterUpdate) SetRider(r *Rider) *SubscribeAlterUpdate {
 	return sau.SetRiderID(r.ID)
@@ -338,6 +359,12 @@ func (sau *SubscribeAlterUpdate) sqlSave(ctx context.Context) (n int, err error)
 	}
 	if value, ok := sau.mutation.AddedDays(); ok {
 		_spec.AddField(subscribealter.FieldDays, field.TypeInt, value)
+	}
+	if value, ok := sau.mutation.Status(); ok {
+		_spec.SetField(subscribealter.FieldStatus, field.TypeInt, value)
+	}
+	if value, ok := sau.mutation.AddedStatus(); ok {
+		_spec.AddField(subscribealter.FieldStatus, field.TypeInt, value)
 	}
 	if sau.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -649,6 +676,27 @@ func (sauo *SubscribeAlterUpdateOne) AddDays(i int) *SubscribeAlterUpdateOne {
 	return sauo
 }
 
+// SetStatus sets the "status" field.
+func (sauo *SubscribeAlterUpdateOne) SetStatus(i int) *SubscribeAlterUpdateOne {
+	sauo.mutation.ResetStatus()
+	sauo.mutation.SetStatus(i)
+	return sauo
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (sauo *SubscribeAlterUpdateOne) SetNillableStatus(i *int) *SubscribeAlterUpdateOne {
+	if i != nil {
+		sauo.SetStatus(*i)
+	}
+	return sauo
+}
+
+// AddStatus adds i to the "status" field.
+func (sauo *SubscribeAlterUpdateOne) AddStatus(i int) *SubscribeAlterUpdateOne {
+	sauo.mutation.AddStatus(i)
+	return sauo
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (sauo *SubscribeAlterUpdateOne) SetRider(r *Rider) *SubscribeAlterUpdateOne {
 	return sauo.SetRiderID(r.ID)
@@ -839,6 +887,12 @@ func (sauo *SubscribeAlterUpdateOne) sqlSave(ctx context.Context) (_node *Subscr
 	}
 	if value, ok := sauo.mutation.AddedDays(); ok {
 		_spec.AddField(subscribealter.FieldDays, field.TypeInt, value)
+	}
+	if value, ok := sauo.mutation.Status(); ok {
+		_spec.SetField(subscribealter.FieldStatus, field.TypeInt, value)
+	}
+	if value, ok := sauo.mutation.AddedStatus(); ok {
+		_spec.AddField(subscribealter.FieldStatus, field.TypeInt, value)
 	}
 	if sauo.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
