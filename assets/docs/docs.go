@@ -121,6 +121,12 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "骑手关键词 (手机号或姓名)",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
                         "description": "型号",
                         "name": "model",
                         "in": "query"
@@ -7042,6 +7048,12 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "企业ID",
                         "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "骑手关键词 (手机号或姓名)",
+                        "name": "keyword",
                         "in": "query"
                     },
                     {

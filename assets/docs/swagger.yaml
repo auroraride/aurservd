@@ -7320,6 +7320,10 @@ paths:
         in: query
         name: id
         type: integer
+      - description: 骑手关键词 (手机号或姓名)
+        in: query
+        name: keyword
+        type: string
       - description: 型号
         in: query
         name: model
@@ -11962,6 +11966,10 @@ paths:
         in: query
         name: id
         type: integer
+      - description: 骑手关键词 (手机号或姓名)
+        in: query
+        name: keyword
+        type: string
       - description: 型号
         in: query
         name: model
