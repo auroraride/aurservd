@@ -17,6 +17,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
+	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
@@ -64,6 +66,10 @@ type Stock struct {
 	RiderID *uint64 `json:"rider_id,omitempty"`
 	// 操作店员ID
 	EmployeeID *uint64 `json:"employee_id,omitempty"`
+	// 入库至 或 出库自     站点ID
+	StationID *uint64 `json:"station_id,omitempty"`
+	// 团签id
+	EnterpriseID *uint64 `json:"enterprise_id,omitempty"`
 	// 物资名称
 	Name string `json:"name,omitempty"`
 	// 电池型号
@@ -105,9 +111,13 @@ type StockEdges struct {
 	Parent *Stock `json:"parent,omitempty"`
 	// Children holds the value of the children edge.
 	Children []*Stock `json:"children,omitempty"`
+	// Enterprise holds the value of the enterprise edge.
+	Enterprise *Enterprise `json:"enterprise,omitempty"`
+	// Stations holds the value of the stations edge.
+	Stations *EnterpriseStation `json:"stations,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [12]bool
+	loadedTypes [14]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -262,6 +272,32 @@ func (e StockEdges) ChildrenOrErr() ([]*Stock, error) {
 	return nil, &NotLoadedError{edge: "children"}
 }
 
+// EnterpriseOrErr returns the Enterprise value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e StockEdges) EnterpriseOrErr() (*Enterprise, error) {
+	if e.loadedTypes[12] {
+		if e.Enterprise == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: enterprise.Label}
+		}
+		return e.Enterprise, nil
+	}
+	return nil, &NotLoadedError{edge: "enterprise"}
+}
+
+// StationsOrErr returns the Stations value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e StockEdges) StationsOrErr() (*EnterpriseStation, error) {
+	if e.loadedTypes[13] {
+		if e.Stations == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: enterprisestation.Label}
+		}
+		return e.Stations, nil
+	}
+	return nil, &NotLoadedError{edge: "stations"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Stock) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -269,7 +305,7 @@ func (*Stock) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case stock.FieldCreator, stock.FieldLastModifier:
 			values[i] = new([]byte)
-		case stock.FieldID, stock.FieldCityID, stock.FieldSubscribeID, stock.FieldEbikeID, stock.FieldBrandID, stock.FieldBatteryID, stock.FieldParentID, stock.FieldType, stock.FieldStoreID, stock.FieldCabinetID, stock.FieldRiderID, stock.FieldEmployeeID, stock.FieldNum:
+		case stock.FieldID, stock.FieldCityID, stock.FieldSubscribeID, stock.FieldEbikeID, stock.FieldBrandID, stock.FieldBatteryID, stock.FieldParentID, stock.FieldType, stock.FieldStoreID, stock.FieldCabinetID, stock.FieldRiderID, stock.FieldEmployeeID, stock.FieldStationID, stock.FieldEnterpriseID, stock.FieldNum:
 			values[i] = new(sql.NullInt64)
 		case stock.FieldRemark, stock.FieldSn, stock.FieldName, stock.FieldModel, stock.FieldMaterial:
 			values[i] = new(sql.NullString)
@@ -421,6 +457,20 @@ func (s *Stock) assignValues(columns []string, values []any) error {
 				s.EmployeeID = new(uint64)
 				*s.EmployeeID = uint64(value.Int64)
 			}
+		case stock.FieldStationID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field station_id", values[i])
+			} else if value.Valid {
+				s.StationID = new(uint64)
+				*s.StationID = uint64(value.Int64)
+			}
+		case stock.FieldEnterpriseID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field enterprise_id", values[i])
+			} else if value.Valid {
+				s.EnterpriseID = new(uint64)
+				*s.EnterpriseID = uint64(value.Int64)
+			}
 		case stock.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
@@ -526,6 +576,16 @@ func (s *Stock) QueryChildren() *StockQuery {
 	return NewStockClient(s.config).QueryChildren(s)
 }
 
+// QueryEnterprise queries the "enterprise" edge of the Stock entity.
+func (s *Stock) QueryEnterprise() *EnterpriseQuery {
+	return NewStockClient(s.config).QueryEnterprise(s)
+}
+
+// QueryStations queries the "stations" edge of the Stock entity.
+func (s *Stock) QueryStations() *EnterpriseStationQuery {
+	return NewStockClient(s.config).QueryStations(s)
+}
+
 // Update returns a builder for updating this Stock.
 // Note that you need to call Stock.Unwrap() before calling this method if this Stock
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -622,6 +682,16 @@ func (s *Stock) String() string {
 	builder.WriteString(", ")
 	if v := s.EmployeeID; v != nil {
 		builder.WriteString("employee_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := s.StationID; v != nil {
+		builder.WriteString("station_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := s.EnterpriseID; v != nil {
+		builder.WriteString("enterprise_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")

@@ -52,6 +52,10 @@ const (
 	FieldRiderID = "rider_id"
 	// FieldEmployeeID holds the string denoting the employee_id field in the database.
 	FieldEmployeeID = "employee_id"
+	// FieldStationID holds the string denoting the station_id field in the database.
+	FieldStationID = "station_id"
+	// FieldEnterpriseID holds the string denoting the enterprise_id field in the database.
+	FieldEnterpriseID = "enterprise_id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldModel holds the string denoting the model field in the database.
@@ -84,6 +88,10 @@ const (
 	EdgeParent = "parent"
 	// EdgeChildren holds the string denoting the children edge name in mutations.
 	EdgeChildren = "children"
+	// EdgeEnterprise holds the string denoting the enterprise edge name in mutations.
+	EdgeEnterprise = "enterprise"
+	// EdgeStations holds the string denoting the stations edge name in mutations.
+	EdgeStations = "stations"
 	// Table holds the table name of the stock in the database.
 	Table = "stock"
 	// CityTable is the table that holds the city relation/edge.
@@ -161,6 +169,20 @@ const (
 	ChildrenTable = "stock"
 	// ChildrenColumn is the table column denoting the children relation/edge.
 	ChildrenColumn = "parent_id"
+	// EnterpriseTable is the table that holds the enterprise relation/edge.
+	EnterpriseTable = "stock"
+	// EnterpriseInverseTable is the table name for the Enterprise entity.
+	// It exists in this package in order to avoid circular dependency with the "enterprise" package.
+	EnterpriseInverseTable = "enterprise"
+	// EnterpriseColumn is the table column denoting the enterprise relation/edge.
+	EnterpriseColumn = "enterprise_id"
+	// StationsTable is the table that holds the stations relation/edge.
+	StationsTable = "stock"
+	// StationsInverseTable is the table name for the EnterpriseStation entity.
+	// It exists in this package in order to avoid circular dependency with the "enterprisestation" package.
+	StationsInverseTable = "enterprise_station"
+	// StationsColumn is the table column denoting the stations relation/edge.
+	StationsColumn = "station_id"
 )
 
 // Columns holds all SQL columns for stock fields.
@@ -184,6 +206,8 @@ var Columns = []string{
 	FieldCabinetID,
 	FieldRiderID,
 	FieldEmployeeID,
+	FieldStationID,
+	FieldEnterpriseID,
 	FieldName,
 	FieldModel,
 	FieldNum,
@@ -340,6 +364,16 @@ func ByEmployeeID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldEmployeeID, opts...).ToFunc()
 }
 
+// ByStationID orders the results by the station_id field.
+func ByStationID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldStationID, opts...).ToFunc()
+}
+
+// ByEnterpriseID orders the results by the enterprise_id field.
+func ByEnterpriseID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldEnterpriseID, opts...).ToFunc()
+}
+
 // ByName orders the results by the name field.
 func ByName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldName, opts...).ToFunc()
@@ -450,6 +484,20 @@ func ByChildren(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newChildrenStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByEnterpriseField orders the results by enterprise field.
+func ByEnterpriseField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newEnterpriseStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByStationsField orders the results by stations field.
+func ByStationsField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newStationsStep(), sql.OrderByField(field, opts...))
+	}
+}
 func newCityStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -532,5 +580,19 @@ func newChildrenStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(Table, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, ChildrenTable, ChildrenColumn),
+	)
+}
+func newEnterpriseStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(EnterpriseInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, EnterpriseTable, EnterpriseColumn),
+	)
+}
+func newStationsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(StationsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, StationsTable, StationsColumn),
 	)
 }

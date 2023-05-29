@@ -48,6 +48,8 @@ type SubscribeAlter struct {
 	SubscribeID uint64 `json:"subscribe_id,omitempty"`
 	// 更改天数
 	Days int `json:"days,omitempty"`
+	// 状态
+	Status int `json:"status,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the SubscribeAlterQuery when eager-loading is set.
 	Edges        SubscribeAlterEdges `json:"edges"`
@@ -143,7 +145,7 @@ func (*SubscribeAlter) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case subscribealter.FieldCreator, subscribealter.FieldLastModifier:
 			values[i] = new([]byte)
-		case subscribealter.FieldID, subscribealter.FieldRiderID, subscribealter.FieldManagerID, subscribealter.FieldEnterpriseID, subscribealter.FieldAgentID, subscribealter.FieldSubscribeID, subscribealter.FieldDays:
+		case subscribealter.FieldID, subscribealter.FieldRiderID, subscribealter.FieldManagerID, subscribealter.FieldEnterpriseID, subscribealter.FieldAgentID, subscribealter.FieldSubscribeID, subscribealter.FieldDays, subscribealter.FieldStatus:
 			values[i] = new(sql.NullInt64)
 		case subscribealter.FieldRemark:
 			values[i] = new(sql.NullString)
@@ -250,6 +252,12 @@ func (sa *SubscribeAlter) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				sa.Days = int(value.Int64)
 			}
+		case subscribealter.FieldStatus:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field status", values[i])
+			} else if value.Valid {
+				sa.Status = int(value.Int64)
+			}
 		default:
 			sa.selectValues.Set(columns[i], values[i])
 		}
@@ -354,6 +362,9 @@ func (sa *SubscribeAlter) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("days=")
 	builder.WriteString(fmt.Sprintf("%v", sa.Days))
+	builder.WriteString(", ")
+	builder.WriteString("status=")
+	builder.WriteString(fmt.Sprintf("%v", sa.Status))
 	builder.WriteByte(')')
 	return builder.String()
 }

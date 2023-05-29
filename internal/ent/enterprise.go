@@ -64,6 +64,8 @@ type Enterprise struct {
 	UseStore bool `json:"use_store,omitempty"`
 	// 代理商时间选项
 	Days []int `json:"days,omitempty"`
+	// 可控制电柜距离
+	Distance float64 `json:"distance,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EnterpriseQuery when eager-loading is set.
 	Edges        EnterpriseEdges `json:"edges"`
@@ -88,9 +90,19 @@ type EnterpriseEdges struct {
 	Stations []*EnterpriseStation `json:"stations,omitempty"`
 	// Bills holds the value of the bills edge.
 	Bills []*EnterpriseBill `json:"bills,omitempty"`
+	// Battery holds the value of the battery edge.
+	Battery []*Battery `json:"battery,omitempty"`
+	// Feedback holds the value of the feedback edge.
+	Feedback []*Feedback `json:"feedback,omitempty"`
+	// Agents holds the value of the agents edge.
+	Agents []*Agent `json:"agents,omitempty"`
+	// Cabinets holds the value of the cabinets edge.
+	Cabinets []*Cabinet `json:"cabinets,omitempty"`
+	// Stocks holds the value of the stocks edge.
+	Stocks []*Stock `json:"stocks,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [8]bool
+	loadedTypes [13]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -169,6 +181,51 @@ func (e EnterpriseEdges) BillsOrErr() ([]*EnterpriseBill, error) {
 	return nil, &NotLoadedError{edge: "bills"}
 }
 
+// BatteryOrErr returns the Battery value or an error if the edge
+// was not loaded in eager-loading.
+func (e EnterpriseEdges) BatteryOrErr() ([]*Battery, error) {
+	if e.loadedTypes[8] {
+		return e.Battery, nil
+	}
+	return nil, &NotLoadedError{edge: "battery"}
+}
+
+// FeedbackOrErr returns the Feedback value or an error if the edge
+// was not loaded in eager-loading.
+func (e EnterpriseEdges) FeedbackOrErr() ([]*Feedback, error) {
+	if e.loadedTypes[9] {
+		return e.Feedback, nil
+	}
+	return nil, &NotLoadedError{edge: "feedback"}
+}
+
+// AgentsOrErr returns the Agents value or an error if the edge
+// was not loaded in eager-loading.
+func (e EnterpriseEdges) AgentsOrErr() ([]*Agent, error) {
+	if e.loadedTypes[10] {
+		return e.Agents, nil
+	}
+	return nil, &NotLoadedError{edge: "agents"}
+}
+
+// CabinetsOrErr returns the Cabinets value or an error if the edge
+// was not loaded in eager-loading.
+func (e EnterpriseEdges) CabinetsOrErr() ([]*Cabinet, error) {
+	if e.loadedTypes[11] {
+		return e.Cabinets, nil
+	}
+	return nil, &NotLoadedError{edge: "cabinets"}
+}
+
+// StocksOrErr returns the Stocks value or an error if the edge
+// was not loaded in eager-loading.
+func (e EnterpriseEdges) StocksOrErr() ([]*Stock, error) {
+	if e.loadedTypes[12] {
+		return e.Stocks, nil
+	}
+	return nil, &NotLoadedError{edge: "stocks"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Enterprise) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -178,7 +235,7 @@ func (*Enterprise) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case enterprise.FieldAgent, enterprise.FieldUseStore:
 			values[i] = new(sql.NullBool)
-		case enterprise.FieldDeposit, enterprise.FieldBalance, enterprise.FieldPrepaymentTotal:
+		case enterprise.FieldDeposit, enterprise.FieldBalance, enterprise.FieldPrepaymentTotal, enterprise.FieldDistance:
 			values[i] = new(sql.NullFloat64)
 		case enterprise.FieldID, enterprise.FieldCityID, enterprise.FieldStatus, enterprise.FieldPayment:
 			values[i] = new(sql.NullInt64)
@@ -347,6 +404,12 @@ func (e *Enterprise) assignValues(columns []string, values []any) error {
 					return fmt.Errorf("unmarshal field days: %w", err)
 				}
 			}
+		case enterprise.FieldDistance:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field distance", values[i])
+			} else if value.Valid {
+				e.Distance = value.Float64
+			}
 		default:
 			e.selectValues.Set(columns[i], values[i])
 		}
@@ -398,6 +461,31 @@ func (e *Enterprise) QueryStations() *EnterpriseStationQuery {
 // QueryBills queries the "bills" edge of the Enterprise entity.
 func (e *Enterprise) QueryBills() *EnterpriseBillQuery {
 	return NewEnterpriseClient(e.config).QueryBills(e)
+}
+
+// QueryBattery queries the "battery" edge of the Enterprise entity.
+func (e *Enterprise) QueryBattery() *BatteryQuery {
+	return NewEnterpriseClient(e.config).QueryBattery(e)
+}
+
+// QueryFeedback queries the "feedback" edge of the Enterprise entity.
+func (e *Enterprise) QueryFeedback() *FeedbackQuery {
+	return NewEnterpriseClient(e.config).QueryFeedback(e)
+}
+
+// QueryAgents queries the "agents" edge of the Enterprise entity.
+func (e *Enterprise) QueryAgents() *AgentQuery {
+	return NewEnterpriseClient(e.config).QueryAgents(e)
+}
+
+// QueryCabinets queries the "cabinets" edge of the Enterprise entity.
+func (e *Enterprise) QueryCabinets() *CabinetQuery {
+	return NewEnterpriseClient(e.config).QueryCabinets(e)
+}
+
+// QueryStocks queries the "stocks" edge of the Enterprise entity.
+func (e *Enterprise) QueryStocks() *StockQuery {
+	return NewEnterpriseClient(e.config).QueryStocks(e)
 }
 
 // Update returns a builder for updating this Enterprise.
@@ -492,6 +580,9 @@ func (e *Enterprise) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("days=")
 	builder.WriteString(fmt.Sprintf("%v", e.Days))
+	builder.WriteString(", ")
+	builder.WriteString("distance=")
+	builder.WriteString(fmt.Sprintf("%v", e.Distance))
 	builder.WriteByte(')')
 	return builder.String()
 }

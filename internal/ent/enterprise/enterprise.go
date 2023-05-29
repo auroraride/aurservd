@@ -59,6 +59,8 @@ const (
 	FieldUseStore = "use_store"
 	// FieldDays holds the string denoting the days field in the database.
 	FieldDays = "days"
+	// FieldDistance holds the string denoting the distance field in the database.
+	FieldDistance = "distance"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
 	// EdgeRiders holds the string denoting the riders edge name in mutations.
@@ -75,6 +77,16 @@ const (
 	EdgeStations = "stations"
 	// EdgeBills holds the string denoting the bills edge name in mutations.
 	EdgeBills = "bills"
+	// EdgeBattery holds the string denoting the battery edge name in mutations.
+	EdgeBattery = "battery"
+	// EdgeFeedback holds the string denoting the feedback edge name in mutations.
+	EdgeFeedback = "feedback"
+	// EdgeAgents holds the string denoting the agents edge name in mutations.
+	EdgeAgents = "agents"
+	// EdgeCabinets holds the string denoting the cabinets edge name in mutations.
+	EdgeCabinets = "cabinets"
+	// EdgeStocks holds the string denoting the stocks edge name in mutations.
+	EdgeStocks = "stocks"
 	// Table holds the table name of the enterprise in the database.
 	Table = "enterprise"
 	// CityTable is the table that holds the city relation/edge.
@@ -133,6 +145,41 @@ const (
 	BillsInverseTable = "enterprise_bill"
 	// BillsColumn is the table column denoting the bills relation/edge.
 	BillsColumn = "enterprise_id"
+	// BatteryTable is the table that holds the battery relation/edge.
+	BatteryTable = "battery"
+	// BatteryInverseTable is the table name for the Battery entity.
+	// It exists in this package in order to avoid circular dependency with the "battery" package.
+	BatteryInverseTable = "battery"
+	// BatteryColumn is the table column denoting the battery relation/edge.
+	BatteryColumn = "enterprise_id"
+	// FeedbackTable is the table that holds the feedback relation/edge.
+	FeedbackTable = "feedback"
+	// FeedbackInverseTable is the table name for the Feedback entity.
+	// It exists in this package in order to avoid circular dependency with the "feedback" package.
+	FeedbackInverseTable = "feedback"
+	// FeedbackColumn is the table column denoting the feedback relation/edge.
+	FeedbackColumn = "enterprise_id"
+	// AgentsTable is the table that holds the agents relation/edge.
+	AgentsTable = "agent"
+	// AgentsInverseTable is the table name for the Agent entity.
+	// It exists in this package in order to avoid circular dependency with the "agent" package.
+	AgentsInverseTable = "agent"
+	// AgentsColumn is the table column denoting the agents relation/edge.
+	AgentsColumn = "enterprise_agents"
+	// CabinetsTable is the table that holds the cabinets relation/edge.
+	CabinetsTable = "cabinet"
+	// CabinetsInverseTable is the table name for the Cabinet entity.
+	// It exists in this package in order to avoid circular dependency with the "cabinet" package.
+	CabinetsInverseTable = "cabinet"
+	// CabinetsColumn is the table column denoting the cabinets relation/edge.
+	CabinetsColumn = "enterprise_id"
+	// StocksTable is the table that holds the stocks relation/edge.
+	StocksTable = "stock"
+	// StocksInverseTable is the table name for the Stock entity.
+	// It exists in this package in order to avoid circular dependency with the "stock" package.
+	StocksInverseTable = "stock"
+	// StocksColumn is the table column denoting the stocks relation/edge.
+	StocksColumn = "enterprise_id"
 )
 
 // Columns holds all SQL columns for enterprise fields.
@@ -160,6 +207,7 @@ var Columns = []string{
 	FieldAgent,
 	FieldUseStore,
 	FieldDays,
+	FieldDistance,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -195,6 +243,8 @@ var (
 	DefaultAgent bool
 	// DefaultUseStore holds the default value on creation for the "use_store" field.
 	DefaultUseStore bool
+	// DefaultDistance holds the default value on creation for the "distance" field.
+	DefaultDistance float64
 )
 
 // OrderOption defines the ordering options for the Enterprise queries.
@@ -298,6 +348,11 @@ func ByAgent(opts ...sql.OrderTermOption) OrderOption {
 // ByUseStore orders the results by the use_store field.
 func ByUseStore(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUseStore, opts...).ToFunc()
+}
+
+// ByDistance orders the results by the distance field.
+func ByDistance(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDistance, opts...).ToFunc()
 }
 
 // ByCityField orders the results by city field.
@@ -404,6 +459,76 @@ func ByBills(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newBillsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByBatteryCount orders the results by battery count.
+func ByBatteryCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newBatteryStep(), opts...)
+	}
+}
+
+// ByBattery orders the results by battery terms.
+func ByBattery(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newBatteryStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByFeedbackCount orders the results by feedback count.
+func ByFeedbackCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newFeedbackStep(), opts...)
+	}
+}
+
+// ByFeedback orders the results by feedback terms.
+func ByFeedback(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newFeedbackStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByAgentsCount orders the results by agents count.
+func ByAgentsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newAgentsStep(), opts...)
+	}
+}
+
+// ByAgents orders the results by agents terms.
+func ByAgents(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newAgentsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByCabinetsCount orders the results by cabinets count.
+func ByCabinetsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newCabinetsStep(), opts...)
+	}
+}
+
+// ByCabinets orders the results by cabinets terms.
+func ByCabinets(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCabinetsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByStocksCount orders the results by stocks count.
+func ByStocksCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newStocksStep(), opts...)
+	}
+}
+
+// ByStocks orders the results by stocks terms.
+func ByStocks(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newStocksStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newCityStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -458,5 +583,40 @@ func newBillsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(BillsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, BillsTable, BillsColumn),
+	)
+}
+func newBatteryStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(BatteryInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, BatteryTable, BatteryColumn),
+	)
+}
+func newFeedbackStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(FeedbackInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, FeedbackTable, FeedbackColumn),
+	)
+}
+func newAgentsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(AgentsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, AgentsTable, AgentsColumn),
+	)
+}
+func newCabinetsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CabinetsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, CabinetsTable, CabinetsColumn),
+	)
+}
+func newStocksStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(StocksInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, StocksTable, StocksColumn),
 	)
 }

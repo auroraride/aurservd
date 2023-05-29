@@ -46,9 +46,15 @@ type EnterpriseStation struct {
 type EnterpriseStationEdges struct {
 	// Enterprise holds the value of the enterprise edge.
 	Enterprise *Enterprise `json:"enterprise,omitempty"`
+	// Cabinets holds the value of the cabinets edge.
+	Cabinets []*Cabinet `json:"cabinets,omitempty"`
+	// Battery holds the value of the battery edge.
+	Battery []*Battery `json:"battery,omitempty"`
+	// Stocks holds the value of the stocks edge.
+	Stocks []*Stock `json:"stocks,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [4]bool
 }
 
 // EnterpriseOrErr returns the Enterprise value or an error if the edge
@@ -62,6 +68,33 @@ func (e EnterpriseStationEdges) EnterpriseOrErr() (*Enterprise, error) {
 		return e.Enterprise, nil
 	}
 	return nil, &NotLoadedError{edge: "enterprise"}
+}
+
+// CabinetsOrErr returns the Cabinets value or an error if the edge
+// was not loaded in eager-loading.
+func (e EnterpriseStationEdges) CabinetsOrErr() ([]*Cabinet, error) {
+	if e.loadedTypes[1] {
+		return e.Cabinets, nil
+	}
+	return nil, &NotLoadedError{edge: "cabinets"}
+}
+
+// BatteryOrErr returns the Battery value or an error if the edge
+// was not loaded in eager-loading.
+func (e EnterpriseStationEdges) BatteryOrErr() ([]*Battery, error) {
+	if e.loadedTypes[2] {
+		return e.Battery, nil
+	}
+	return nil, &NotLoadedError{edge: "battery"}
+}
+
+// StocksOrErr returns the Stocks value or an error if the edge
+// was not loaded in eager-loading.
+func (e EnterpriseStationEdges) StocksOrErr() ([]*Stock, error) {
+	if e.loadedTypes[3] {
+		return e.Stocks, nil
+	}
+	return nil, &NotLoadedError{edge: "stocks"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -167,6 +200,21 @@ func (es *EnterpriseStation) Value(name string) (ent.Value, error) {
 // QueryEnterprise queries the "enterprise" edge of the EnterpriseStation entity.
 func (es *EnterpriseStation) QueryEnterprise() *EnterpriseQuery {
 	return NewEnterpriseStationClient(es.config).QueryEnterprise(es)
+}
+
+// QueryCabinets queries the "cabinets" edge of the EnterpriseStation entity.
+func (es *EnterpriseStation) QueryCabinets() *CabinetQuery {
+	return NewEnterpriseStationClient(es.config).QueryCabinets(es)
+}
+
+// QueryBattery queries the "battery" edge of the EnterpriseStation entity.
+func (es *EnterpriseStation) QueryBattery() *BatteryQuery {
+	return NewEnterpriseStationClient(es.config).QueryBattery(es)
+}
+
+// QueryStocks queries the "stocks" edge of the EnterpriseStation entity.
+func (es *EnterpriseStation) QueryStocks() *StockQuery {
+	return NewEnterpriseStationClient(es.config).QueryStocks(es)
 }
 
 // Update returns a builder for updating this EnterpriseStation.

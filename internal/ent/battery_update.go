@@ -17,6 +17,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/batteryflow"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
@@ -174,6 +176,46 @@ func (bu *BatteryUpdate) ClearSubscribeID() *BatteryUpdate {
 	return bu
 }
 
+// SetEnterpriseID sets the "enterprise_id" field.
+func (bu *BatteryUpdate) SetEnterpriseID(u uint64) *BatteryUpdate {
+	bu.mutation.SetEnterpriseID(u)
+	return bu
+}
+
+// SetNillableEnterpriseID sets the "enterprise_id" field if the given value is not nil.
+func (bu *BatteryUpdate) SetNillableEnterpriseID(u *uint64) *BatteryUpdate {
+	if u != nil {
+		bu.SetEnterpriseID(*u)
+	}
+	return bu
+}
+
+// ClearEnterpriseID clears the value of the "enterprise_id" field.
+func (bu *BatteryUpdate) ClearEnterpriseID() *BatteryUpdate {
+	bu.mutation.ClearEnterpriseID()
+	return bu
+}
+
+// SetStationID sets the "station_id" field.
+func (bu *BatteryUpdate) SetStationID(u uint64) *BatteryUpdate {
+	bu.mutation.SetStationID(u)
+	return bu
+}
+
+// SetNillableStationID sets the "station_id" field if the given value is not nil.
+func (bu *BatteryUpdate) SetNillableStationID(u *uint64) *BatteryUpdate {
+	if u != nil {
+		bu.SetStationID(*u)
+	}
+	return bu
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (bu *BatteryUpdate) ClearStationID() *BatteryUpdate {
+	bu.mutation.ClearStationID()
+	return bu
+}
+
 // SetSn sets the "sn" field.
 func (bu *BatteryUpdate) SetSn(s string) *BatteryUpdate {
 	bu.mutation.SetSn(s)
@@ -261,6 +303,11 @@ func (bu *BatteryUpdate) SetSubscribe(s *Subscribe) *BatteryUpdate {
 	return bu.SetSubscribeID(s.ID)
 }
 
+// SetEnterprise sets the "enterprise" edge to the Enterprise entity.
+func (bu *BatteryUpdate) SetEnterprise(e *Enterprise) *BatteryUpdate {
+	return bu.SetEnterpriseID(e.ID)
+}
+
 // AddFlowIDs adds the "flows" edge to the BatteryFlow entity by IDs.
 func (bu *BatteryUpdate) AddFlowIDs(ids ...uint64) *BatteryUpdate {
 	bu.mutation.AddFlowIDs(ids...)
@@ -274,6 +321,11 @@ func (bu *BatteryUpdate) AddFlows(b ...*BatteryFlow) *BatteryUpdate {
 		ids[i] = b[i].ID
 	}
 	return bu.AddFlowIDs(ids...)
+}
+
+// SetStation sets the "station" edge to the EnterpriseStation entity.
+func (bu *BatteryUpdate) SetStation(e *EnterpriseStation) *BatteryUpdate {
+	return bu.SetStationID(e.ID)
 }
 
 // Mutation returns the BatteryMutation object of the builder.
@@ -305,6 +357,12 @@ func (bu *BatteryUpdate) ClearSubscribe() *BatteryUpdate {
 	return bu
 }
 
+// ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
+func (bu *BatteryUpdate) ClearEnterprise() *BatteryUpdate {
+	bu.mutation.ClearEnterprise()
+	return bu
+}
+
 // ClearFlows clears all "flows" edges to the BatteryFlow entity.
 func (bu *BatteryUpdate) ClearFlows() *BatteryUpdate {
 	bu.mutation.ClearFlows()
@@ -324,6 +382,12 @@ func (bu *BatteryUpdate) RemoveFlows(b ...*BatteryFlow) *BatteryUpdate {
 		ids[i] = b[i].ID
 	}
 	return bu.RemoveFlowIDs(ids...)
+}
+
+// ClearStation clears the "station" edge to the EnterpriseStation entity.
+func (bu *BatteryUpdate) ClearStation() *BatteryUpdate {
+	bu.mutation.ClearStation()
+	return bu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -544,6 +608,35 @@ func (bu *BatteryUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if bu.mutation.EnterpriseCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   battery.EnterpriseTable,
+			Columns: []string{battery.EnterpriseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.EnterpriseIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   battery.EnterpriseTable,
+			Columns: []string{battery.EnterpriseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if bu.mutation.FlowsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -582,6 +675,35 @@ func (bu *BatteryUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(batteryflow.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if bu.mutation.StationCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   battery.StationTable,
+			Columns: []string{battery.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.StationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   battery.StationTable,
+			Columns: []string{battery.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -749,6 +871,46 @@ func (buo *BatteryUpdateOne) ClearSubscribeID() *BatteryUpdateOne {
 	return buo
 }
 
+// SetEnterpriseID sets the "enterprise_id" field.
+func (buo *BatteryUpdateOne) SetEnterpriseID(u uint64) *BatteryUpdateOne {
+	buo.mutation.SetEnterpriseID(u)
+	return buo
+}
+
+// SetNillableEnterpriseID sets the "enterprise_id" field if the given value is not nil.
+func (buo *BatteryUpdateOne) SetNillableEnterpriseID(u *uint64) *BatteryUpdateOne {
+	if u != nil {
+		buo.SetEnterpriseID(*u)
+	}
+	return buo
+}
+
+// ClearEnterpriseID clears the value of the "enterprise_id" field.
+func (buo *BatteryUpdateOne) ClearEnterpriseID() *BatteryUpdateOne {
+	buo.mutation.ClearEnterpriseID()
+	return buo
+}
+
+// SetStationID sets the "station_id" field.
+func (buo *BatteryUpdateOne) SetStationID(u uint64) *BatteryUpdateOne {
+	buo.mutation.SetStationID(u)
+	return buo
+}
+
+// SetNillableStationID sets the "station_id" field if the given value is not nil.
+func (buo *BatteryUpdateOne) SetNillableStationID(u *uint64) *BatteryUpdateOne {
+	if u != nil {
+		buo.SetStationID(*u)
+	}
+	return buo
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (buo *BatteryUpdateOne) ClearStationID() *BatteryUpdateOne {
+	buo.mutation.ClearStationID()
+	return buo
+}
+
 // SetSn sets the "sn" field.
 func (buo *BatteryUpdateOne) SetSn(s string) *BatteryUpdateOne {
 	buo.mutation.SetSn(s)
@@ -836,6 +998,11 @@ func (buo *BatteryUpdateOne) SetSubscribe(s *Subscribe) *BatteryUpdateOne {
 	return buo.SetSubscribeID(s.ID)
 }
 
+// SetEnterprise sets the "enterprise" edge to the Enterprise entity.
+func (buo *BatteryUpdateOne) SetEnterprise(e *Enterprise) *BatteryUpdateOne {
+	return buo.SetEnterpriseID(e.ID)
+}
+
 // AddFlowIDs adds the "flows" edge to the BatteryFlow entity by IDs.
 func (buo *BatteryUpdateOne) AddFlowIDs(ids ...uint64) *BatteryUpdateOne {
 	buo.mutation.AddFlowIDs(ids...)
@@ -849,6 +1016,11 @@ func (buo *BatteryUpdateOne) AddFlows(b ...*BatteryFlow) *BatteryUpdateOne {
 		ids[i] = b[i].ID
 	}
 	return buo.AddFlowIDs(ids...)
+}
+
+// SetStation sets the "station" edge to the EnterpriseStation entity.
+func (buo *BatteryUpdateOne) SetStation(e *EnterpriseStation) *BatteryUpdateOne {
+	return buo.SetStationID(e.ID)
 }
 
 // Mutation returns the BatteryMutation object of the builder.
@@ -880,6 +1052,12 @@ func (buo *BatteryUpdateOne) ClearSubscribe() *BatteryUpdateOne {
 	return buo
 }
 
+// ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
+func (buo *BatteryUpdateOne) ClearEnterprise() *BatteryUpdateOne {
+	buo.mutation.ClearEnterprise()
+	return buo
+}
+
 // ClearFlows clears all "flows" edges to the BatteryFlow entity.
 func (buo *BatteryUpdateOne) ClearFlows() *BatteryUpdateOne {
 	buo.mutation.ClearFlows()
@@ -899,6 +1077,12 @@ func (buo *BatteryUpdateOne) RemoveFlows(b ...*BatteryFlow) *BatteryUpdateOne {
 		ids[i] = b[i].ID
 	}
 	return buo.RemoveFlowIDs(ids...)
+}
+
+// ClearStation clears the "station" edge to the EnterpriseStation entity.
+func (buo *BatteryUpdateOne) ClearStation() *BatteryUpdateOne {
+	buo.mutation.ClearStation()
+	return buo
 }
 
 // Where appends a list predicates to the BatteryUpdate builder.
@@ -1149,6 +1333,35 @@ func (buo *BatteryUpdateOne) sqlSave(ctx context.Context) (_node *Battery, err e
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if buo.mutation.EnterpriseCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   battery.EnterpriseTable,
+			Columns: []string{battery.EnterpriseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.EnterpriseIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   battery.EnterpriseTable,
+			Columns: []string{battery.EnterpriseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if buo.mutation.FlowsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -1187,6 +1400,35 @@ func (buo *BatteryUpdateOne) sqlSave(ctx context.Context) (_node *Battery, err e
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(batteryflow.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if buo.mutation.StationCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   battery.StationTable,
+			Columns: []string{battery.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.StationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   battery.StationTable,
+			Columns: []string{battery.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

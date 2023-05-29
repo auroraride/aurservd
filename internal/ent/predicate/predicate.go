@@ -99,6 +99,9 @@ type Exchange func(*sql.Selector)
 // Export is the predicate function for export builders.
 type Export func(*sql.Selector)
 
+// Feedback is the predicate function for feedback builders.
+type Feedback func(*sql.Selector)
+
 // Inventory is the predicate function for inventory builders.
 type Inventory func(*sql.Selector)
 

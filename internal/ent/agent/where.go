@@ -80,6 +80,11 @@ func EnterpriseID(v uint64) predicate.Agent {
 	return predicate.Agent(sql.FieldEQ(FieldEnterpriseID, v))
 }
 
+// StationID applies equality check predicate on the "station_id" field. It's identical to StationIDEQ.
+func StationID(v uint64) predicate.Agent {
+	return predicate.Agent(sql.FieldEQ(FieldStationID, v))
+}
+
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
 func Name(v string) predicate.Agent {
 	return predicate.Agent(sql.FieldEQ(FieldName, v))
@@ -340,6 +345,26 @@ func EnterpriseIDNotIn(vs ...uint64) predicate.Agent {
 	return predicate.Agent(sql.FieldNotIn(FieldEnterpriseID, vs...))
 }
 
+// StationIDEQ applies the EQ predicate on the "station_id" field.
+func StationIDEQ(v uint64) predicate.Agent {
+	return predicate.Agent(sql.FieldEQ(FieldStationID, v))
+}
+
+// StationIDNEQ applies the NEQ predicate on the "station_id" field.
+func StationIDNEQ(v uint64) predicate.Agent {
+	return predicate.Agent(sql.FieldNEQ(FieldStationID, v))
+}
+
+// StationIDIn applies the In predicate on the "station_id" field.
+func StationIDIn(vs ...uint64) predicate.Agent {
+	return predicate.Agent(sql.FieldIn(FieldStationID, vs...))
+}
+
+// StationIDNotIn applies the NotIn predicate on the "station_id" field.
+func StationIDNotIn(vs ...uint64) predicate.Agent {
+	return predicate.Agent(sql.FieldNotIn(FieldStationID, vs...))
+}
+
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.Agent {
 	return predicate.Agent(sql.FieldEQ(FieldName, v))
@@ -550,6 +575,29 @@ func HasEnterprise() predicate.Agent {
 func HasEnterpriseWith(preds ...predicate.Enterprise) predicate.Agent {
 	return predicate.Agent(func(s *sql.Selector) {
 		step := newEnterpriseStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasStation applies the HasEdge predicate on the "station" edge.
+func HasStation() predicate.Agent {
+	return predicate.Agent(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, StationTable, StationColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasStationWith applies the HasEdge predicate on the "station" edge with a given conditions (other predicates).
+func HasStationWith(preds ...predicate.EnterpriseStation) predicate.Agent {
+	return predicate.Agent(func(s *sql.Selector) {
+		step := newStationStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
