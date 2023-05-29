@@ -189,6 +189,19 @@ type CabinetBin struct {
 	DeactivateReason *string `json:"deactivateReason,omitempty"` // 禁用原因
 }
 
+// IsBizUsable 是否可办理业务
+// 骑手业务 或 代理商业务
+func (cb *CabinetBin) IsBizUsable() bool {
+	switch {
+	case !cb.DoorHealth,
+		cb.OpenStatus,
+		// TODO: 空仓模拟电压判定值
+		cb.BatterySN == "" && cb.Voltage > 40:
+		return false
+	}
+	return true
+}
+
 // CabinetBinRemark 仓位备注
 type CabinetBinRemark struct {
 	Index  int    `json:"index"`  // 仓位index

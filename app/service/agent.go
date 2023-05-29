@@ -108,7 +108,8 @@ func (s *agentService) List(req *model.AgentListReq) *model.PaginationRes {
 }
 
 // TokenVerify Token校验
-func (s *agentService) TokenVerify(token string) (ag *ent.Agent, en *ent.Enterprise) {
+// 返回携带 ent.Enterprise 和 ent.EnterpriseStations
+func (s *agentService) TokenVerify(token string) (ag *ent.Agent) {
 	// 获取token对应ID
 	id, _ := ar.Redis.HGet(s.ctx, s.tokenCacheKey, token).Uint64()
 	if id <= 0 {
@@ -119,11 +120,11 @@ func (s *agentService) TokenVerify(token string) (ag *ent.Agent, en *ent.Enterpr
 		return
 	}
 	// 获取agent和enterprise
-	ag, _ = s.orm.QueryNotDeleted().Where(agent.ID(id)).WithEnterprise().First(s.ctx)
+	ag, _ = s.orm.QueryNotDeleted().Where(agent.ID(id)).WithEnterprise().WithStations().First(s.ctx)
 	if ag == nil || ag.Edges.Enterprise == nil {
 		return
 	}
-	return ag, ag.Edges.Enterprise
+	return ag
 }
 
 // 代理登录, 返回代理端资料

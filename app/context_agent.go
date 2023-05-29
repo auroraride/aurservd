@@ -6,8 +6,9 @@
 package app
 
 import (
-	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/labstack/echo/v4"
+
+	"github.com/auroraride/aurservd/internal/ent"
 )
 
 type AgentContext struct {
@@ -15,14 +16,22 @@ type AgentContext struct {
 
 	Enterprise *ent.Enterprise
 	Agent      *ent.Agent
+	Stations   ent.EnterpriseStations
 }
 
 // NewAgentContext 新建代理上下文
-func NewAgentContext(c echo.Context, ag *ent.Agent, en *ent.Enterprise) *AgentContext {
+func NewAgentContext(c echo.Context, ag *ent.Agent) *AgentContext {
 	ctx := &AgentContext{
 		BaseContext: Context(c),
 		Agent:       ag,
-		Enterprise:  en,
+	}
+	if ag != nil {
+		if ag.Edges.Enterprise != nil {
+			ctx.Enterprise = ag.Edges.Enterprise
+		}
+		if ag.Edges.Stations != nil {
+			ctx.Stations = ag.Edges.Stations
+		}
 	}
 	return ctx
 }

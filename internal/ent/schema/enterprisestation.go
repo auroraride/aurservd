@@ -8,6 +8,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 	"entgo.io/ent/schema/mixin"
+
 	"github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -68,6 +69,7 @@ func (EnterpriseStation) Edges() []ent.Edge {
 		edge.To("cabinets", Cabinet.Type),
 		edge.To("battery", Battery.Type),
 		edge.To("stocks", Stock.Type),
+		edge.From("agents", Agent.Type).Ref("stations"),
 	}
 }
 

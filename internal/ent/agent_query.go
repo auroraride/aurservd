@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"math"
 
@@ -24,7 +25,7 @@ type AgentQuery struct {
 	inters         []Interceptor
 	predicates     []predicate.Agent
 	withEnterprise *EnterpriseQuery
-	withStation    *EnterpriseStationQuery
+	withStations   *EnterpriseStationQuery
 	withFKs        bool
 	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
@@ -85,8 +86,8 @@ func (aq *AgentQuery) QueryEnterprise() *EnterpriseQuery {
 	return query
 }
 
-// QueryStation chains the current query on the "station" edge.
-func (aq *AgentQuery) QueryStation() *EnterpriseStationQuery {
+// QueryStations chains the current query on the "stations" edge.
+func (aq *AgentQuery) QueryStations() *EnterpriseStationQuery {
 	query := (&EnterpriseStationClient{config: aq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := aq.prepareQuery(ctx); err != nil {
@@ -99,7 +100,7 @@ func (aq *AgentQuery) QueryStation() *EnterpriseStationQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(agent.Table, agent.FieldID, selector),
 			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, agent.StationTable, agent.StationColumn),
+			sqlgraph.Edge(sqlgraph.M2M, false, agent.StationsTable, agent.StationsPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
@@ -300,7 +301,7 @@ func (aq *AgentQuery) Clone() *AgentQuery {
 		inters:         append([]Interceptor{}, aq.inters...),
 		predicates:     append([]predicate.Agent{}, aq.predicates...),
 		withEnterprise: aq.withEnterprise.Clone(),
-		withStation:    aq.withStation.Clone(),
+		withStations:   aq.withStations.Clone(),
 		// clone intermediate query.
 		sql:  aq.sql.Clone(),
 		path: aq.path,
@@ -318,14 +319,14 @@ func (aq *AgentQuery) WithEnterprise(opts ...func(*EnterpriseQuery)) *AgentQuery
 	return aq
 }
 
-// WithStation tells the query-builder to eager-load the nodes that are connected to
-// the "station" edge. The optional arguments are used to configure the query builder of the edge.
-func (aq *AgentQuery) WithStation(opts ...func(*EnterpriseStationQuery)) *AgentQuery {
+// WithStations tells the query-builder to eager-load the nodes that are connected to
+// the "stations" edge. The optional arguments are used to configure the query builder of the edge.
+func (aq *AgentQuery) WithStations(opts ...func(*EnterpriseStationQuery)) *AgentQuery {
 	query := (&EnterpriseStationClient{config: aq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	aq.withStation = query
+	aq.withStations = query
 	return aq
 }
 
@@ -410,7 +411,7 @@ func (aq *AgentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Agent,
 		_spec       = aq.querySpec()
 		loadedTypes = [2]bool{
 			aq.withEnterprise != nil,
-			aq.withStation != nil,
+			aq.withStations != nil,
 		}
 	)
 	if withFKs {
@@ -443,9 +444,10 @@ func (aq *AgentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Agent,
 			return nil, err
 		}
 	}
-	if query := aq.withStation; query != nil {
-		if err := aq.loadStation(ctx, query, nodes, nil,
-			func(n *Agent, e *EnterpriseStation) { n.Edges.Station = e }); err != nil {
+	if query := aq.withStations; query != nil {
+		if err := aq.loadStations(ctx, query, nodes,
+			func(n *Agent) { n.Edges.Stations = []*EnterpriseStation{} },
+			func(n *Agent, e *EnterpriseStation) { n.Edges.Stations = append(n.Edges.Stations, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -481,34 +483,63 @@ func (aq *AgentQuery) loadEnterprise(ctx context.Context, query *EnterpriseQuery
 	}
 	return nil
 }
-func (aq *AgentQuery) loadStation(ctx context.Context, query *EnterpriseStationQuery, nodes []*Agent, init func(*Agent), assign func(*Agent, *EnterpriseStation)) error {
-	ids := make([]uint64, 0, len(nodes))
-	nodeids := make(map[uint64][]*Agent)
-	for i := range nodes {
-		if nodes[i].StationID == nil {
-			continue
+func (aq *AgentQuery) loadStations(ctx context.Context, query *EnterpriseStationQuery, nodes []*Agent, init func(*Agent), assign func(*Agent, *EnterpriseStation)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[uint64]*Agent)
+	nids := make(map[uint64]map[*Agent]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
 		}
-		fk := *nodes[i].StationID
-		if _, ok := nodeids[fk]; !ok {
-			ids = append(ids, fk)
-		}
-		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
-	if len(ids) == 0 {
-		return nil
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(agent.StationsTable)
+		s.Join(joinT).On(s.C(enterprisestation.FieldID), joinT.C(agent.StationsPrimaryKey[1]))
+		s.Where(sql.InValues(joinT.C(agent.StationsPrimaryKey[0]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(agent.StationsPrimaryKey[0]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
 	}
-	query.Where(enterprisestation.IDIn(ids...))
-	neighbors, err := query.All(ctx)
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullInt64)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := uint64(values[0].(*sql.NullInt64).Int64)
+				inValue := uint64(values[1].(*sql.NullInt64).Int64)
+				if nids[inValue] == nil {
+					nids[inValue] = map[*Agent]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*EnterpriseStation](ctx, query, qr, query.inters)
 	if err != nil {
 		return err
 	}
 	for _, n := range neighbors {
-		nodes, ok := nodeids[n.ID]
+		nodes, ok := nids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "station_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected "stations" node returned %v`, n.ID)
 		}
-		for i := range nodes {
-			assign(nodes[i], n)
+		for kn := range nodes {
+			assign(kn, n)
 		}
 	}
 	return nil
@@ -544,9 +575,6 @@ func (aq *AgentQuery) querySpec() *sqlgraph.QuerySpec {
 		}
 		if aq.withEnterprise != nil {
 			_spec.Node.AddColumnOnce(agent.FieldEnterpriseID)
-		}
-		if aq.withStation != nil {
-			_spec.Node.AddColumnOnce(agent.FieldStationID)
 		}
 	}
 	if ps := aq.predicates; len(ps) > 0 {
@@ -617,7 +645,7 @@ type AgentQueryWith string
 
 var (
 	AgentQueryWithEnterprise AgentQueryWith = "Enterprise"
-	AgentQueryWithStation    AgentQueryWith = "Station"
+	AgentQueryWithStations   AgentQueryWith = "Stations"
 )
 
 func (aq *AgentQuery) With(withEdges ...AgentQueryWith) *AgentQuery {
@@ -625,8 +653,8 @@ func (aq *AgentQuery) With(withEdges ...AgentQueryWith) *AgentQuery {
 		switch v {
 		case AgentQueryWithEnterprise:
 			aq.WithEnterprise()
-		case AgentQueryWithStation:
-			aq.WithStation()
+		case AgentQueryWithStations:
+			aq.WithStations()
 		}
 	}
 	return aq

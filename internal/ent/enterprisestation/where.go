@@ -487,6 +487,29 @@ func HasStocksWith(preds ...predicate.Stock) predicate.EnterpriseStation {
 	})
 }
 
+// HasAgents applies the HasEdge predicate on the "agents" edge.
+func HasAgents() predicate.EnterpriseStation {
+	return predicate.EnterpriseStation(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, AgentsTable, AgentsPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasAgentsWith applies the HasEdge predicate on the "agents" edge with a given conditions (other predicates).
+func HasAgentsWith(preds ...predicate.Agent) predicate.EnterpriseStation {
+	return predicate.EnterpriseStation(func(s *sql.Selector) {
+		step := newAgentsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.EnterpriseStation) predicate.EnterpriseStation {
 	return predicate.EnterpriseStation(func(s *sql.Selector) {

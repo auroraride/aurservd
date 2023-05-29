@@ -149,8 +149,9 @@ type AgentMutation struct {
 	clearedFields     map[string]struct{}
 	enterprise        *uint64
 	clearedenterprise bool
-	station           *uint64
-	clearedstation    bool
+	stations          map[uint64]struct{}
+	removedstations   map[uint64]struct{}
+	clearedstations   bool
 	done              bool
 	oldValue          func(context.Context) (*Agent, error)
 	predicates        []predicate.Agent
@@ -558,55 +559,6 @@ func (m *AgentMutation) ResetEnterpriseID() {
 	m.enterprise = nil
 }
 
-// SetStationID sets the "station_id" field.
-func (m *AgentMutation) SetStationID(u uint64) {
-	m.station = &u
-}
-
-// StationID returns the value of the "station_id" field in the mutation.
-func (m *AgentMutation) StationID() (r uint64, exists bool) {
-	v := m.station
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldStationID returns the old "station_id" field's value of the Agent entity.
-// If the Agent object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AgentMutation) OldStationID(ctx context.Context) (v *uint64, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldStationID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldStationID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldStationID: %w", err)
-	}
-	return oldValue.StationID, nil
-}
-
-// ClearStationID clears the value of the "station_id" field.
-func (m *AgentMutation) ClearStationID() {
-	m.station = nil
-	m.clearedFields[agent.FieldStationID] = struct{}{}
-}
-
-// StationIDCleared returns if the "station_id" field was cleared in this mutation.
-func (m *AgentMutation) StationIDCleared() bool {
-	_, ok := m.clearedFields[agent.FieldStationID]
-	return ok
-}
-
-// ResetStationID resets all changes to the "station_id" field.
-func (m *AgentMutation) ResetStationID() {
-	m.station = nil
-	delete(m.clearedFields, agent.FieldStationID)
-}
-
 // SetName sets the "name" field.
 func (m *AgentMutation) SetName(s string) {
 	m.name = &s
@@ -705,30 +657,58 @@ func (m *AgentMutation) ResetEnterprise() {
 	m.clearedenterprise = false
 }
 
-// ClearStation clears the "station" edge to the EnterpriseStation entity.
-func (m *AgentMutation) ClearStation() {
-	m.clearedstation = true
+// AddStationIDs adds the "stations" edge to the EnterpriseStation entity by ids.
+func (m *AgentMutation) AddStationIDs(ids ...uint64) {
+	if m.stations == nil {
+		m.stations = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.stations[ids[i]] = struct{}{}
+	}
 }
 
-// StationCleared reports if the "station" edge to the EnterpriseStation entity was cleared.
-func (m *AgentMutation) StationCleared() bool {
-	return m.StationIDCleared() || m.clearedstation
+// ClearStations clears the "stations" edge to the EnterpriseStation entity.
+func (m *AgentMutation) ClearStations() {
+	m.clearedstations = true
 }
 
-// StationIDs returns the "station" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// StationID instead. It exists only for internal usage by the builders.
-func (m *AgentMutation) StationIDs() (ids []uint64) {
-	if id := m.station; id != nil {
-		ids = append(ids, *id)
+// StationsCleared reports if the "stations" edge to the EnterpriseStation entity was cleared.
+func (m *AgentMutation) StationsCleared() bool {
+	return m.clearedstations
+}
+
+// RemoveStationIDs removes the "stations" edge to the EnterpriseStation entity by IDs.
+func (m *AgentMutation) RemoveStationIDs(ids ...uint64) {
+	if m.removedstations == nil {
+		m.removedstations = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.stations, ids[i])
+		m.removedstations[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedStations returns the removed IDs of the "stations" edge to the EnterpriseStation entity.
+func (m *AgentMutation) RemovedStationsIDs() (ids []uint64) {
+	for id := range m.removedstations {
+		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetStation resets all changes to the "station" edge.
-func (m *AgentMutation) ResetStation() {
-	m.station = nil
-	m.clearedstation = false
+// StationsIDs returns the "stations" edge IDs in the mutation.
+func (m *AgentMutation) StationsIDs() (ids []uint64) {
+	for id := range m.stations {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetStations resets all changes to the "stations" edge.
+func (m *AgentMutation) ResetStations() {
+	m.stations = nil
+	m.clearedstations = false
+	m.removedstations = nil
 }
 
 // Where appends a list predicates to the AgentMutation builder.
@@ -765,7 +745,7 @@ func (m *AgentMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AgentMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 9)
 	if m.created_at != nil {
 		fields = append(fields, agent.FieldCreatedAt)
 	}
@@ -786,9 +766,6 @@ func (m *AgentMutation) Fields() []string {
 	}
 	if m.enterprise != nil {
 		fields = append(fields, agent.FieldEnterpriseID)
-	}
-	if m.station != nil {
-		fields = append(fields, agent.FieldStationID)
 	}
 	if m.name != nil {
 		fields = append(fields, agent.FieldName)
@@ -818,8 +795,6 @@ func (m *AgentMutation) Field(name string) (ent.Value, bool) {
 		return m.Remark()
 	case agent.FieldEnterpriseID:
 		return m.EnterpriseID()
-	case agent.FieldStationID:
-		return m.StationID()
 	case agent.FieldName:
 		return m.Name()
 	case agent.FieldPhone:
@@ -847,8 +822,6 @@ func (m *AgentMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldRemark(ctx)
 	case agent.FieldEnterpriseID:
 		return m.OldEnterpriseID(ctx)
-	case agent.FieldStationID:
-		return m.OldStationID(ctx)
 	case agent.FieldName:
 		return m.OldName(ctx)
 	case agent.FieldPhone:
@@ -911,13 +884,6 @@ func (m *AgentMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetEnterpriseID(v)
 		return nil
-	case agent.FieldStationID:
-		v, ok := value.(uint64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetStationID(v)
-		return nil
 	case agent.FieldName:
 		v, ok := value.(string)
 		if !ok {
@@ -977,9 +943,6 @@ func (m *AgentMutation) ClearedFields() []string {
 	if m.FieldCleared(agent.FieldRemark) {
 		fields = append(fields, agent.FieldRemark)
 	}
-	if m.FieldCleared(agent.FieldStationID) {
-		fields = append(fields, agent.FieldStationID)
-	}
 	return fields
 }
 
@@ -1005,9 +968,6 @@ func (m *AgentMutation) ClearField(name string) error {
 		return nil
 	case agent.FieldRemark:
 		m.ClearRemark()
-		return nil
-	case agent.FieldStationID:
-		m.ClearStationID()
 		return nil
 	}
 	return fmt.Errorf("unknown Agent nullable field %s", name)
@@ -1038,9 +998,6 @@ func (m *AgentMutation) ResetField(name string) error {
 	case agent.FieldEnterpriseID:
 		m.ResetEnterpriseID()
 		return nil
-	case agent.FieldStationID:
-		m.ResetStationID()
-		return nil
 	case agent.FieldName:
 		m.ResetName()
 		return nil
@@ -1057,8 +1014,8 @@ func (m *AgentMutation) AddedEdges() []string {
 	if m.enterprise != nil {
 		edges = append(edges, agent.EdgeEnterprise)
 	}
-	if m.station != nil {
-		edges = append(edges, agent.EdgeStation)
+	if m.stations != nil {
+		edges = append(edges, agent.EdgeStations)
 	}
 	return edges
 }
@@ -1071,10 +1028,12 @@ func (m *AgentMutation) AddedIDs(name string) []ent.Value {
 		if id := m.enterprise; id != nil {
 			return []ent.Value{*id}
 		}
-	case agent.EdgeStation:
-		if id := m.station; id != nil {
-			return []ent.Value{*id}
+	case agent.EdgeStations:
+		ids := make([]ent.Value, 0, len(m.stations))
+		for id := range m.stations {
+			ids = append(ids, id)
 		}
+		return ids
 	}
 	return nil
 }
@@ -1082,12 +1041,23 @@ func (m *AgentMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *AgentMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 2)
+	if m.removedstations != nil {
+		edges = append(edges, agent.EdgeStations)
+	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *AgentMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case agent.EdgeStations:
+		ids := make([]ent.Value, 0, len(m.removedstations))
+		for id := range m.removedstations {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
@@ -1097,8 +1067,8 @@ func (m *AgentMutation) ClearedEdges() []string {
 	if m.clearedenterprise {
 		edges = append(edges, agent.EdgeEnterprise)
 	}
-	if m.clearedstation {
-		edges = append(edges, agent.EdgeStation)
+	if m.clearedstations {
+		edges = append(edges, agent.EdgeStations)
 	}
 	return edges
 }
@@ -1109,8 +1079,8 @@ func (m *AgentMutation) EdgeCleared(name string) bool {
 	switch name {
 	case agent.EdgeEnterprise:
 		return m.clearedenterprise
-	case agent.EdgeStation:
-		return m.clearedstation
+	case agent.EdgeStations:
+		return m.clearedstations
 	}
 	return false
 }
@@ -1121,9 +1091,6 @@ func (m *AgentMutation) ClearEdge(name string) error {
 	switch name {
 	case agent.EdgeEnterprise:
 		m.ClearEnterprise()
-		return nil
-	case agent.EdgeStation:
-		m.ClearStation()
 		return nil
 	}
 	return fmt.Errorf("unknown Agent unique edge %s", name)
@@ -1136,8 +1103,8 @@ func (m *AgentMutation) ResetEdge(name string) error {
 	case agent.EdgeEnterprise:
 		m.ResetEnterprise()
 		return nil
-	case agent.EdgeStation:
-		m.ResetStation()
+	case agent.EdgeStations:
+		m.ResetStations()
 		return nil
 	}
 	return fmt.Errorf("unknown Agent edge %s", name)
@@ -42361,6 +42328,9 @@ type EnterpriseStationMutation struct {
 	stocks            map[uint64]struct{}
 	removedstocks     map[uint64]struct{}
 	clearedstocks     bool
+	agents            map[uint64]struct{}
+	removedagents     map[uint64]struct{}
+	clearedagents     bool
 	done              bool
 	oldValue          func(context.Context) (*EnterpriseStation, error)
 	predicates        []predicate.EnterpriseStation
@@ -42992,6 +42962,60 @@ func (m *EnterpriseStationMutation) ResetStocks() {
 	m.removedstocks = nil
 }
 
+// AddAgentIDs adds the "agents" edge to the Agent entity by ids.
+func (m *EnterpriseStationMutation) AddAgentIDs(ids ...uint64) {
+	if m.agents == nil {
+		m.agents = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.agents[ids[i]] = struct{}{}
+	}
+}
+
+// ClearAgents clears the "agents" edge to the Agent entity.
+func (m *EnterpriseStationMutation) ClearAgents() {
+	m.clearedagents = true
+}
+
+// AgentsCleared reports if the "agents" edge to the Agent entity was cleared.
+func (m *EnterpriseStationMutation) AgentsCleared() bool {
+	return m.clearedagents
+}
+
+// RemoveAgentIDs removes the "agents" edge to the Agent entity by IDs.
+func (m *EnterpriseStationMutation) RemoveAgentIDs(ids ...uint64) {
+	if m.removedagents == nil {
+		m.removedagents = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.agents, ids[i])
+		m.removedagents[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedAgents returns the removed IDs of the "agents" edge to the Agent entity.
+func (m *EnterpriseStationMutation) RemovedAgentsIDs() (ids []uint64) {
+	for id := range m.removedagents {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// AgentsIDs returns the "agents" edge IDs in the mutation.
+func (m *EnterpriseStationMutation) AgentsIDs() (ids []uint64) {
+	for id := range m.agents {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetAgents resets all changes to the "agents" edge.
+func (m *EnterpriseStationMutation) ResetAgents() {
+	m.agents = nil
+	m.clearedagents = false
+	m.removedagents = nil
+}
+
 // Where appends a list predicates to the EnterpriseStationMutation builder.
 func (m *EnterpriseStationMutation) Where(ps ...predicate.EnterpriseStation) {
 	m.predicates = append(m.predicates, ps...)
@@ -43274,7 +43298,7 @@ func (m *EnterpriseStationMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *EnterpriseStationMutation) AddedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.enterprise != nil {
 		edges = append(edges, enterprisestation.EdgeEnterprise)
 	}
@@ -43286,6 +43310,9 @@ func (m *EnterpriseStationMutation) AddedEdges() []string {
 	}
 	if m.stocks != nil {
 		edges = append(edges, enterprisestation.EdgeStocks)
+	}
+	if m.agents != nil {
+		edges = append(edges, enterprisestation.EdgeAgents)
 	}
 	return edges
 }
@@ -43316,13 +43343,19 @@ func (m *EnterpriseStationMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case enterprisestation.EdgeAgents:
+		ids := make([]ent.Value, 0, len(m.agents))
+		for id := range m.agents {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *EnterpriseStationMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.removedcabinets != nil {
 		edges = append(edges, enterprisestation.EdgeCabinets)
 	}
@@ -43331,6 +43364,9 @@ func (m *EnterpriseStationMutation) RemovedEdges() []string {
 	}
 	if m.removedstocks != nil {
 		edges = append(edges, enterprisestation.EdgeStocks)
+	}
+	if m.removedagents != nil {
+		edges = append(edges, enterprisestation.EdgeAgents)
 	}
 	return edges
 }
@@ -43357,13 +43393,19 @@ func (m *EnterpriseStationMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case enterprisestation.EdgeAgents:
+		ids := make([]ent.Value, 0, len(m.removedagents))
+		for id := range m.removedagents {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *EnterpriseStationMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.clearedenterprise {
 		edges = append(edges, enterprisestation.EdgeEnterprise)
 	}
@@ -43375,6 +43417,9 @@ func (m *EnterpriseStationMutation) ClearedEdges() []string {
 	}
 	if m.clearedstocks {
 		edges = append(edges, enterprisestation.EdgeStocks)
+	}
+	if m.clearedagents {
+		edges = append(edges, enterprisestation.EdgeAgents)
 	}
 	return edges
 }
@@ -43391,6 +43436,8 @@ func (m *EnterpriseStationMutation) EdgeCleared(name string) bool {
 		return m.clearedbattery
 	case enterprisestation.EdgeStocks:
 		return m.clearedstocks
+	case enterprisestation.EdgeAgents:
+		return m.clearedagents
 	}
 	return false
 }
@@ -43421,6 +43468,9 @@ func (m *EnterpriseStationMutation) ResetEdge(name string) error {
 		return nil
 	case enterprisestation.EdgeStocks:
 		m.ResetStocks()
+		return nil
+	case enterprisestation.EdgeAgents:
+		m.ResetAgents()
 		return nil
 	}
 	return fmt.Errorf("unknown EnterpriseStation edge %s", name)

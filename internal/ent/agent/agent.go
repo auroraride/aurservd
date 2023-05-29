@@ -29,16 +29,14 @@ const (
 	FieldRemark = "remark"
 	// FieldEnterpriseID holds the string denoting the enterprise_id field in the database.
 	FieldEnterpriseID = "enterprise_id"
-	// FieldStationID holds the string denoting the station_id field in the database.
-	FieldStationID = "station_id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldPhone holds the string denoting the phone field in the database.
 	FieldPhone = "phone"
 	// EdgeEnterprise holds the string denoting the enterprise edge name in mutations.
 	EdgeEnterprise = "enterprise"
-	// EdgeStation holds the string denoting the station edge name in mutations.
-	EdgeStation = "station"
+	// EdgeStations holds the string denoting the stations edge name in mutations.
+	EdgeStations = "stations"
 	// Table holds the table name of the agent in the database.
 	Table = "agent"
 	// EnterpriseTable is the table that holds the enterprise relation/edge.
@@ -48,13 +46,11 @@ const (
 	EnterpriseInverseTable = "enterprise"
 	// EnterpriseColumn is the table column denoting the enterprise relation/edge.
 	EnterpriseColumn = "enterprise_id"
-	// StationTable is the table that holds the station relation/edge.
-	StationTable = "agent"
-	// StationInverseTable is the table name for the EnterpriseStation entity.
+	// StationsTable is the table that holds the stations relation/edge. The primary key declared below.
+	StationsTable = "agent_stations"
+	// StationsInverseTable is the table name for the EnterpriseStation entity.
 	// It exists in this package in order to avoid circular dependency with the "enterprisestation" package.
-	StationInverseTable = "enterprise_station"
-	// StationColumn is the table column denoting the station relation/edge.
-	StationColumn = "station_id"
+	StationsInverseTable = "enterprise_station"
 )
 
 // Columns holds all SQL columns for agent fields.
@@ -67,7 +63,6 @@ var Columns = []string{
 	FieldLastModifier,
 	FieldRemark,
 	FieldEnterpriseID,
-	FieldStationID,
 	FieldName,
 	FieldPhone,
 }
@@ -77,6 +72,12 @@ var Columns = []string{
 var ForeignKeys = []string{
 	"enterprise_agents",
 }
+
+var (
+	// StationsPrimaryKey and StationsColumn2 are the table columns denoting the
+	// primary key for the stations relation (M2M).
+	StationsPrimaryKey = []string{"agent_id", "enterprise_station_id"}
+)
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
@@ -141,11 +142,6 @@ func ByEnterpriseID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldEnterpriseID, opts...).ToFunc()
 }
 
-// ByStationID orders the results by the station_id field.
-func ByStationID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldStationID, opts...).ToFunc()
-}
-
 // ByName orders the results by the name field.
 func ByName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldName, opts...).ToFunc()
@@ -163,10 +159,17 @@ func ByEnterpriseField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
-// ByStationField orders the results by station field.
-func ByStationField(field string, opts ...sql.OrderTermOption) OrderOption {
+// ByStationsCount orders the results by stations count.
+func ByStationsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newStationStep(), sql.OrderByField(field, opts...))
+		sqlgraph.OrderByNeighborsCount(s, newStationsStep(), opts...)
+	}
+}
+
+// ByStations orders the results by stations terms.
+func ByStations(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newStationsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 func newEnterpriseStep() *sqlgraph.Step {
@@ -176,10 +179,10 @@ func newEnterpriseStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.M2O, false, EnterpriseTable, EnterpriseColumn),
 	)
 }
-func newStationStep() *sqlgraph.Step {
+func newStationsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(StationInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, StationTable, StationColumn),
+		sqlgraph.To(StationsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, false, StationsTable, StationsPrimaryKey...),
 	)
 }
