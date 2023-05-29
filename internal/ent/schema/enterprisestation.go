@@ -65,6 +65,9 @@ func (EnterpriseStation) Fields() []ent.Field {
 func (EnterpriseStation) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("enterprise", Enterprise.Type).Ref("stations").Unique().Required().Field("enterprise_id"),
+		edge.To("cabinets", Cabinet.Type),
+		edge.To("battery", Battery.Type),
+		edge.To("stocks", Stock.Type),
 	}
 }
 
