@@ -31,8 +31,9 @@ type AgentListRes struct {
 }
 
 type AgentSigninReq struct {
-	Phone    string `json:"phone" validate:"required" trans:"电话"`
-	Password string `json:"password" validate:"required" trans:"密码"`
+	Phone   string `json:"phone" validate:"required" trans:"电话"`
+	SmsId   string `json:"smsId" validate:"required" trans:"短信ID"`
+	SmsCode string `json:"smsCode" validate:"required" trans:"短信验证码"`
 }
 
 type AgentProfile struct {

@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ali"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/pkg/cache"
+	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/utils"
 )
 
@@ -55,11 +56,23 @@ func (s *sms) SendCode(phone string) (string, error) {
 }
 
 // VerifyCode 校验短信验证码
-func (s *sms) VerifyCode(id, code string) bool {
+func (s *sms) VerifyCode(phone, id, code string) bool {
+	if _, ok := ar.Config.App.Debug.Phone[phone]; ok {
+		return true
+	}
+
 	ctx := context.Background()
 	isValid := cache.Get(ctx, id).Val() == code
 	if isValid {
 		cache.Del(ctx, id)
 	}
+
 	return isValid
+}
+
+func (s *sms) VerifyCodeX(phone, id, code string) {
+	if s.VerifyCode(phone, id, code) {
+		return
+	}
+	snag.Panic("短信验证码校验失败")
 }

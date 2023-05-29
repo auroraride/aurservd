@@ -10,6 +10,11 @@ import (
 	"net/http"
 
 	"github.com/auroraride/adapter"
+	"github.com/labstack/echo/v4"
+	mw "github.com/labstack/echo/v4/middleware"
+	"go.uber.org/zap"
+	"golang.org/x/time/rate"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/controller"
 	"github.com/auroraride/aurservd/app/middleware"
@@ -17,10 +22,6 @@ import (
 	"github.com/auroraride/aurservd/assets"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/pkg/snag"
-	"github.com/labstack/echo/v4"
-	mw "github.com/labstack/echo/v4/middleware"
-	"go.uber.org/zap"
-	"golang.org/x/time/rate"
 )
 
 var (
@@ -126,10 +127,12 @@ func Run() {
 	loadRideRoutes()     // 骑手路由
 	loadManagerRoutes()  // 管理员路由
 	loadEmployeeRoutes() // 门店端路由
-	loadAgentRoutes()    // 代理端路由
 	loadToolRoutes()
 	loadMaintainRoutes()
 	loadKitRoutes()
+
+	loadAgentRoutes()
+	loadAgentV2Routes()
 
 	zap.L().Fatal("路由启动失败", zap.Error(e.Start(cfg.Bind)))
 }
