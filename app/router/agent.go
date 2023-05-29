@@ -22,13 +22,14 @@ func loadAgentRoutes() {
 	auth.GET("/cabinet/:serial", aapi.Cabinet.Detail)
 	auth.GET("/profile", aapi.Agent.Profile)
 
-	// g.GET("/rider", aapi.Rider.List)
-	// g.POST("/rider", aapi.Rider.Create)
-	// g.POST("/rider/alter", aapi.Rider.Alter)
-	// g.GET("/rider/:id", aapi.Rider.Detail)
+	// auth.GET("/rider", aapi.Rider.List)
+	// auth.POST("/rider", aapi.Rider.Create)
+	// auth.POST("/rider/alter", aapi.Rider.Alter)
+	// auth.GET("/rider/:id", aapi.Rider.Detail)
 	//
-	// g.GET("/prepayment/overview", aapi.Prepayment.Overview)
-	// g.GET("/prepayment", aapi.Prepayment.List)
-	//
-	// g.GET("/bill/usage", aapi.Bill.Usage)
+	// auth.GET("/prepayment/overview", aapi.Prepayment.Overview)
+	// auth.GET("/prepayment", aapi.Prepayment.List)
+
+	auth.GET("/bill/usage", aapi.Bill.Usage)
+	auth.GET("/bill/historical", aapi.Bill.Historical)
 }

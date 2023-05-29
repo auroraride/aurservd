@@ -110,6 +110,7 @@ type StatementUsageFilter struct {
 	CityID    uint64 `json:"cityId" query:"cityId"`       // 城市ID
 	StationID uint64 `json:"stationId" query:"stationId"` // 站点ID
 	Model     string `json:"model" query:"model"`         // 型号
+	Keyword   string `json:"keyword" query:"keyword"`     // 骑手关键词 (手机号或姓名)
 }
 
 type StatementUsageReq struct {

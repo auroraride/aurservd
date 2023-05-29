@@ -7257,6 +7257,42 @@ info:
   title: 极光出行API
   version: "1.0"
 paths:
+  /agent/v1/bill/historical:
+    get:
+      consumes:
+      - application/json
+      operationId: AgentBillHistorical
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.StatementBillHistoricalListRes'
+                  type: array
+              type: object
+      summary: A4001 历史账单
+      tags:
+      - '[A]代理接口'
   /agent/v1/bill/usage:
     get:
       consumes:
@@ -7314,7 +7350,7 @@ paths:
                     $ref: '#/definitions/model.StatementUsageRes'
                   type: array
               type: object
-      summary: A4001 使用明细
+      summary: A4002 使用明细
       tags:
       - '[A]代理接口'
   /agent/v1/cabinet/{serial}:
