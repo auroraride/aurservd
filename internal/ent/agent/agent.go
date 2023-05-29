@@ -35,8 +35,6 @@ const (
 	FieldName = "name"
 	// FieldPhone holds the string denoting the phone field in the database.
 	FieldPhone = "phone"
-	// FieldPassword holds the string denoting the password field in the database.
-	FieldPassword = "password"
 	// EdgeEnterprise holds the string denoting the enterprise edge name in mutations.
 	EdgeEnterprise = "enterprise"
 	// EdgeStation holds the string denoting the station edge name in mutations.
@@ -72,7 +70,6 @@ var Columns = []string{
 	FieldStationID,
 	FieldName,
 	FieldPhone,
-	FieldPassword,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "agent"
@@ -157,11 +154,6 @@ func ByName(opts ...sql.OrderTermOption) OrderOption {
 // ByPhone orders the results by the phone field.
 func ByPhone(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPhone, opts...).ToFunc()
-}
-
-// ByPassword orders the results by the password field.
-func ByPassword(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldPassword, opts...).ToFunc()
 }
 
 // ByEnterpriseField orders the results by enterprise field.

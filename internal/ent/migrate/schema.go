@@ -20,9 +20,8 @@ var (
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
 		{Name: "name", Type: field.TypeString},
 		{Name: "phone", Type: field.TypeString, Unique: true},
-		{Name: "password", Type: field.TypeString},
 		{Name: "enterprise_id", Type: field.TypeUint64, Comment: "企业ID"},
-		{Name: "station_id", Type: field.TypeUint64, Comment: "站点ID"},
+		{Name: "station_id", Type: field.TypeUint64, Nullable: true, Comment: "站点ID"},
 		{Name: "enterprise_agents", Type: field.TypeUint64, Nullable: true},
 	}
 	// AgentTable holds the schema information for the "agent" table.
@@ -33,19 +32,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "agent_enterprise_enterprise",
-				Columns:    []*schema.Column{AgentColumns[10]},
+				Columns:    []*schema.Column{AgentColumns[9]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "agent_enterprise_station_station",
-				Columns:    []*schema.Column{AgentColumns[11]},
+				Columns:    []*schema.Column{AgentColumns[10]},
 				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "agent_enterprise_agents",
-				Columns:    []*schema.Column{AgentColumns[12]},
+				Columns:    []*schema.Column{AgentColumns[11]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -64,12 +63,12 @@ var (
 			{
 				Name:    "agent_enterprise_id",
 				Unique:  false,
-				Columns: []*schema.Column{AgentColumns[10]},
+				Columns: []*schema.Column{AgentColumns[9]},
 			},
 			{
 				Name:    "agent_station_id",
 				Unique:  false,
-				Columns: []*schema.Column{AgentColumns[11]},
+				Columns: []*schema.Column{AgentColumns[10]},
 			},
 			{
 				Name:    "agent_phone",

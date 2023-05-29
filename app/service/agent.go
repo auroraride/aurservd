@@ -56,11 +56,9 @@ func (s *agentService) Create(req *model.AgentCreateReq) {
 	if !en.Agent {
 		snag.Panic("团签模式非代理商")
 	}
-	pass, _ := utils.PasswordGenerate(req.Password)
 	_, err := s.orm.Create().
 		SetName(req.Name).
 		SetPhone(req.Phone).
-		SetPassword(pass).
 		SetEnterpriseID(req.EnterpriseID).
 		Save(s.ctx)
 	if err != nil {
@@ -70,10 +68,6 @@ func (s *agentService) Create(req *model.AgentCreateReq) {
 
 func (s *agentService) Modify(req *model.AgentModifyReq) {
 	up := s.QueryX(req.ID).Update()
-	if req.Password != "" {
-		pass, _ := utils.PasswordGenerate(req.Password)
-		up.SetPassword(pass)
-	}
 	if req.Name != "" {
 		up.SetName(req.Name)
 	}
