@@ -556,6 +556,160 @@ const docTemplate = `{
                 }
             }
         },
+        "/agent/v1/stock": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A6001 出入库明细",
+                "operationId": "AgentStockDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "电柜ID",
+                        "name": "cabinetId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市ID",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "企业ID (代理无需该参数)",
+                        "name": "enterpriseId",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "x-enum-varnames": [
+                            "StockGoalAll",
+                            "StockGoalStore",
+                            "StockGoalCabinet"
+                        ],
+                        "description": "查询目标 0:不筛选 1:门店(默认) 2:电柜 3:平台",
+                        "name": "goal",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "骑手关键词 (手机号或姓名)",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "查询物资类别, 默认为电池, 逗号分隔 battery:电池 ebike:电车 others:其他物资",
+                        "name": "materials",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "是否正序(默认倒序)",
+                        "name": "positive",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "电柜编号",
+                        "name": "serial",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "站点ID",
+                        "name": "stationId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "门店ID",
+                        "name": "storeId",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2,
+                            3,
+                            4
+                        ],
+                        "type": "integer",
+                        "description": "调拨类型, 0:调拨 1:激活 2:寄存 3:结束寄存 4:退租",
+                        "name": "type",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.StockDetailRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/commom/sms": {
             "post": {
                 "description": "上传文件必须，单次获取有效时间为1个小时",
@@ -10993,6 +11147,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "integer",
+                        "description": "企业ID (代理无需该参数)",
+                        "name": "enterpriseId",
+                        "in": "query"
+                    },
+                    {
                         "enum": [
                             0,
                             1,
@@ -11006,6 +11166,12 @@ const docTemplate = `{
                         ],
                         "description": "查询目标 0:不筛选 1:门店(默认) 2:电柜 3:平台",
                         "name": "goal",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "骑手关键词 (手机号或姓名)",
+                        "name": "keyword",
                         "in": "query"
                     },
                     {
@@ -11036,6 +11202,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "开始时间",
                         "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "站点ID",
+                        "name": "stationId",
                         "in": "query"
                     },
                     {
@@ -23541,6 +23713,10 @@ const docTemplate = `{
                     "description": "结束时间",
                     "type": "string"
                 },
+                "enterpriseId": {
+                    "description": "企业ID (代理无需该参数)",
+                    "type": "integer"
+                },
                 "goal": {
                     "description": "查询目标 0:不筛选 1:门店(默认) 2:电柜 3:平台",
                     "enum": [
@@ -23554,6 +23730,10 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.StoreCabiletGoal"
                         }
                     ]
+                },
+                "keyword": {
+                    "description": "骑手关键词 (手机号或姓名)",
+                    "type": "string"
                 },
                 "materials": {
                     "description": "查询物资类别, 默认为电池, 逗号分隔 battery:电池 ebike:电车 others:其他物资",
@@ -23573,6 +23753,10 @@ const docTemplate = `{
                 "start": {
                     "description": "开始时间",
                     "type": "string"
+                },
+                "stationId": {
+                    "description": "站点ID",
+                    "type": "integer"
                 },
                 "storeId": {
                     "description": "门店ID",

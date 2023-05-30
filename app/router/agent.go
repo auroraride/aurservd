@@ -32,4 +32,6 @@ func loadAgentRoutes() {
 
 	auth.GET("/bill/usage", aapi.Bill.Usage)
 	auth.GET("/bill/historical", aapi.Bill.Historical)
+
+	auth.GET("/stock", aapi.Stock.Detail)
 }
