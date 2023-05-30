@@ -12,13 +12,14 @@ import (
 	"strconv"
 	"strings"
 
+	jsoniter "github.com/json-iterator/go"
+	"github.com/spf13/cobra"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/assets"
 	"github.com/auroraride/aurservd/internal/amap"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/city"
-	jsoniter "github.com/json-iterator/go"
-	"github.com/spf13/cobra"
 )
 
 var cityCmd = &cobra.Command{
@@ -84,8 +85,8 @@ func cityAmapCenterCmd() *cobra.Command {
 					log.Fatal(err)
 				}
 				location := strings.Split(res.Location, ",")
-				lng, _ := strconv.ParseFloat(location[0], 10)
-				lat, _ := strconv.ParseFloat(location[1], 10)
+				lng, _ := strconv.ParseFloat(location[0], 64)
+				lat, _ := strconv.ParseFloat(location[1], 64)
 				_, err = orm.UpdateOne(item).SetLng(lng).SetLat(lat).Save(context.Background())
 				if err != nil {
 					log.Fatal(err)

@@ -58,7 +58,7 @@ func (s *settingService) CacheSettings(sm *ent.Setting) {
 		model.SettingRescueFeeKey,
 		model.SettingReserveDurationKey,
 		model.SettingExchangeMinBatteryKey:
-		f, err := strconv.ParseFloat(strings.ReplaceAll(sm.Content, `"`, ""), 10)
+		f, err := strconv.ParseFloat(strings.ReplaceAll(sm.Content, `"`, ""), 64)
 		if err == nil {
 			cache.Set(s.ctx, sm.Key, f, 0)
 		}
