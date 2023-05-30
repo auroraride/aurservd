@@ -51,13 +51,13 @@ func Run() {
 		message := err.Error()
 		code := int(snag.StatusBadRequest)
 		var data any
-		switch err.(type) {
+		switch v := err.(type) {
 		case *snag.Error:
-			target := err.(*snag.Error)
+			target := v
 			code = int(target.Code)
 			data = target.Data
 		case *echo.HTTPError:
-			target := err.(*echo.HTTPError)
+			target := v
 			message = fmt.Sprintf("%v", target.Message)
 			switch target.Code {
 			case http.StatusNotFound:
@@ -122,7 +122,7 @@ func Run() {
 	root.GET("app/version", controller.Version.Get)
 
 	loadDocRoutes()      // 文档
-	loadCabinetRoutes()  // 电柜回调
+	// loadCabinetRoutes()  // 电柜回调
 	loadCommonRoutes()   // 公共API
 	loadRideRoutes()     // 骑手路由
 	loadManagerRoutes()  // 管理员路由

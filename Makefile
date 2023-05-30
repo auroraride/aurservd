@@ -27,3 +27,7 @@ latest:
 .PHONY: permisson
 permission:
 	go run ./cmd/permission
+
+.PHONY: doc
+doc:
+	swag init -g ./router/docs.go -d ./app,../adapter --exclude ./app/service,./app/router,./app/middleware,./app/request -o ./assets/docs --md ./wiki

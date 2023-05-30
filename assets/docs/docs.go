@@ -603,7 +603,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "企业ID (代理无需该参数)",
+                        "description": "企业ID (代理该参数不生效)",
                         "name": "enterpriseId",
                         "in": "query"
                     },
@@ -11148,7 +11148,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "企业ID (代理无需该参数)",
+                        "description": "企业ID (代理该参数不生效)",
                         "name": "enterpriseId",
                         "in": "query"
                     },
@@ -23714,7 +23714,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "enterpriseId": {
-                    "description": "企业ID (代理无需该参数)",
+                    "description": "企业ID (代理该参数不生效)",
                     "type": "integer"
                 },
                 "goal": {

@@ -10,9 +10,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/auroraride/aurservd/assets"
-	"github.com/auroraride/aurservd/assets/docs"
-	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/getkin/kin-openapi/openapi2"
 	"github.com/getkin/kin-openapi/openapi2conv"
 	jsoniter "github.com/json-iterator/go"
@@ -20,6 +17,10 @@ import (
 	"github.com/shurcooL/github_flavored_markdown"
 	"github.com/shurcooL/github_flavored_markdown/gfmstyle"
 	echoSwagger "github.com/swaggo/echo-swagger"
+
+	"github.com/auroraride/aurservd/assets"
+	"github.com/auroraride/aurservd/assets/docs"
+	"github.com/auroraride/aurservd/internal/ar"
 )
 
 // @title                极光出行API
@@ -47,7 +48,7 @@ func loadDocRoutes() {
 		if err = jsoniter.Unmarshal(assets.SwaggerSpec, &doc2); err != nil {
 			return
 		}
-		doc, err := openapi2conv.ToV3(&doc2)
+		doc, _ := openapi2conv.ToV3(&doc2)
 		b, _ := jsoniter.Marshal(doc)
 		return c.Blob(200, "application/json", b)
 	})
