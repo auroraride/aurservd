@@ -16,12 +16,9 @@ import (
 )
 
 type couponAssemblyService struct {
-	ctx          context.Context
-	modifier     *model.Modifier
-	rider        *ent.Rider
-	employee     *ent.Employee
-	employeeInfo *model.Employee
-	orm          *ent.CouponAssemblyClient
+	ctx      context.Context
+	modifier *model.Modifier
+	orm      *ent.CouponAssemblyClient
 }
 
 func NewCouponAssembly() *couponAssemblyService {

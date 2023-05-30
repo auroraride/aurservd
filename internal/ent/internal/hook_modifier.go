@@ -41,7 +41,7 @@ func (HookModifier) Hooks() []ent.Hook {
 						switch op := m.Op(); {
 						case op.Is(ent.OpCreate):
 							ml.SetModifier(value)
-						case op.Is(ent.OpUpdateOne | ent.OpUpdate):
+							// case op.Is(ent.OpUpdateOne | ent.OpUpdate):
 							// TODO: 更新?
 						}
 					}

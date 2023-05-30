@@ -24,7 +24,6 @@ import (
 type riderAgentService struct {
 	ctx        context.Context
 	modifier   *model.Modifier
-	rider      *ent.Rider
 	agent      *ent.Agent
 	enterprise *ent.Enterprise
 	orm        *ent.RiderClient

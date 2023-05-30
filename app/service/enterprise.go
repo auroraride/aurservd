@@ -36,7 +36,6 @@ import (
 type enterpriseService struct {
 	ctx        context.Context
 	modifier   *model.Modifier
-	rider      *ent.Rider
 	orm        *ent.EnterpriseClient
 	agent      *ent.Agent
 	enterprise *ent.Enterprise
@@ -104,8 +103,7 @@ func (s *enterpriseService) Modify(req *model.EnterpriseDetailWithID) {
 		snag.Panic("无法转换支付方式")
 	}
 
-	var err error
-	e, err = s.orm.ModifyOne(e, req.EnterpriseDetail).Save(s.ctx)
+	_, err := s.orm.ModifyOne(e, req.EnterpriseDetail).Save(s.ctx)
 	if err != nil {
 		snag.Panic("企业修改失败")
 	}

@@ -38,7 +38,7 @@ func New(rows []Row, args ...any) *excel {
 		sheet = args[0].(string)
 	}
 	fe := excelize.NewFile()
-	fe.SetSheetName("Sheet1", sheet)
+	_ = fe.SetSheetName("Sheet1", sheet)
 	return &excel{
 		rows: &Rows{
 			rowsi: rows,

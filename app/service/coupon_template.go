@@ -19,12 +19,9 @@ import (
 )
 
 type couponTemplateService struct {
-	ctx          context.Context
-	modifier     *model.Modifier
-	rider        *ent.Rider
-	employee     *ent.Employee
-	employeeInfo *model.Employee
-	orm          *ent.CouponTemplateClient
+	ctx      context.Context
+	modifier *model.Modifier
+	orm      *ent.CouponTemplateClient
 }
 
 func NewCouponTemplate() *couponTemplateService {

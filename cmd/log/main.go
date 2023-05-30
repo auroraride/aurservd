@@ -11,13 +11,14 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/auroraride/aurservd/cmd/log/internal"
 	"github.com/spf13/cobra"
+
+	"github.com/auroraride/aurservd/cmd/log/internal"
 )
 
 func main() {
 	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM, os.Kill)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGTERM)
 	go func() {
 		<-c
 		log.Printf("程序退出\n\n")

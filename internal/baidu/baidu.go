@@ -10,10 +10,11 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/go-resty/resty/v2"
+
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/snag"
-	"github.com/go-resty/resty/v2"
 )
 
 const (
@@ -27,7 +28,6 @@ type faceClient struct {
 	apiKey      string
 	secretKey   string
 	accessToken string
-	failTimes   int
 }
 
 // accessTokenResp 公共access_token返回体

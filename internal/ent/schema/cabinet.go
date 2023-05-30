@@ -25,9 +25,6 @@ type CabinetMixin struct {
 	Optional     bool
 	Prefix       string
 	DisableIndex bool
-
-	field    string
-	edgeName string
 }
 
 func (m CabinetMixin) prefield() (string, string) {

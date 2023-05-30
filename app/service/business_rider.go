@@ -569,7 +569,7 @@ func (s *businessRiderService) Active(sub *ent.Subscribe, allo *ent.Allocate) {
 		// 更新电车
 		if s.ebikeInfo != nil {
 			// 更新电车所属
-			err = tx.Ebike.UpdateOneID(s.ebikeInfo.ID).SetRiderID(sub.RiderID).SetStatus(model.EbikeStatusUsing).Exec(s.ctx)
+			_ = tx.Ebike.UpdateOneID(s.ebikeInfo.ID).SetRiderID(sub.RiderID).SetStatus(model.EbikeStatusUsing).Exec(s.ctx)
 		}
 
 		// 后台操作设置电池编码
@@ -586,7 +586,7 @@ func (s *businessRiderService) Active(sub *ent.Subscribe, allo *ent.Allocate) {
 				if err != nil {
 					return
 				}
-				err = tx.Order.UpdateOneID(of.OrderID).SetStatus(model.OrderStatusPaid).Exec(s.ctx)
+				_ = tx.Order.UpdateOneID(of.OrderID).SetStatus(model.OrderStatusPaid).Exec(s.ctx)
 			}
 		}
 	})

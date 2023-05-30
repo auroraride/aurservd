@@ -652,7 +652,6 @@ func (s *stockService) listFilter(req model.StockDetailFilter) (q *ent.StockQuer
 	if req.Materials == "" {
 		req.Materials = fmt.Sprintf("%s,%s", stock.MaterialBattery, stock.MaterialEbike)
 	} else {
-		strings.ReplaceAll(req.Materials, "frame", stock.MaterialEbike.String())
 		req.Materials = strings.ReplaceAll(req.Materials, " ", "")
 	}
 	materials := strings.Split(req.Materials, ",")

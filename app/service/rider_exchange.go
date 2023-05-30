@@ -44,7 +44,7 @@ func NewRiderExchange(r *ent.Rider) *riderExchangeService {
 		maxTime: 180 * time.Second,
 		rider:   r,
 	}
-	s.ctx = context.WithValue(context.Background(), "rider", r)
+	s.ctx = context.WithValue(context.Background(), model.CtxRiderKey{}, r)
 	return s
 }
 

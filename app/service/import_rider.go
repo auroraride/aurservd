@@ -214,7 +214,7 @@ func (s *importRiderService) Create(req *model.ImportRiderCreateReq) error {
 
 		// 查询电车
 		if s.plan.BrandID != nil {
-			bike, err = NewEbike().AllocatableBaseFilter().
+			bike, _ = NewEbike().AllocatableBaseFilter().
 				Where(ebike.Sn(req.EbikeSN), ebike.StoreID(req.StoreID)).
 				WithBrand().
 				First(s.ctx)

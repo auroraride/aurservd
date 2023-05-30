@@ -31,8 +31,6 @@ import (
 type enterpriseStatementService struct {
 	ctx      context.Context
 	modifier *model.Modifier
-	rider    *ent.Rider
-	employee *ent.Employee
 	orm      *ent.EnterpriseStatementClient
 }
 

@@ -32,13 +32,11 @@ func init() {
 }
 
 type couponService struct {
-	ctx          context.Context
-	modifier     *model.Modifier
-	rider        *ent.Rider
-	employee     *ent.Employee
-	employeeInfo *model.Employee
-	orm          *ent.CouponClient
-	max          uint64
+	ctx      context.Context
+	modifier *model.Modifier
+	rider    *ent.Rider
+	orm      *ent.CouponClient
+	max      uint64
 }
 
 func NewCoupon() *couponService {

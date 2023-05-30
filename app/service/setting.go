@@ -25,7 +25,6 @@ import (
 type settingService struct {
 	ctx      context.Context
 	modifier *model.Modifier
-	rider    *ent.Rider
 	orm      *ent.SettingClient
 }
 
@@ -173,7 +172,7 @@ func (s *settingService) GetSetting(key string) (v any) {
 		return d.Default
 	}
 
-	err = jsoniter.Unmarshal([]byte(set.Content), &d.Default)
+	_ = jsoniter.Unmarshal([]byte(set.Content), &d.Default)
 
 	return d.Default
 }

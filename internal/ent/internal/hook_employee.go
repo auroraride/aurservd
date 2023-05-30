@@ -55,7 +55,7 @@ func (HookEmployee) setEmployeeInfo(ctx context.Context, m ent.Mutation) {
 			switch op := m.Op(); {
 			case op.Is(ent.OpCreate):
 				ml.SetEmployeeInfo(value)
-			case op.Is(ent.OpUpdateOne | ent.OpUpdate):
+				// case op.Is(ent.OpUpdateOne | ent.OpUpdate):
 				// TODO: 更新?
 			}
 		}
@@ -73,7 +73,7 @@ func (HookEmployee) setEmployeeID(ctx context.Context, m ent.Mutation) {
 				switch op := m.Op(); {
 				case op.Is(ent.OpCreate):
 					ml.SetEmployeeID(value.ID)
-				case op.Is(ent.OpUpdateOne | ent.OpUpdate):
+					// case op.Is(ent.OpUpdateOne | ent.OpUpdate):
 					// TODO: 更新?
 				}
 			}

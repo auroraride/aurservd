@@ -11,11 +11,12 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/go-resty/resty/v2"
+	jsoniter "github.com/json-iterator/go"
+
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/utils"
-	"github.com/go-resty/resty/v2"
-	jsoniter "github.com/json-iterator/go"
 )
 
 const (
@@ -38,27 +39,27 @@ func NewMap() *mapClient {
 	}
 }
 
-var keys = map[string]string{
-	"%21": "!",
-	"%23": "#",
-	"%24": "$",
-	"%25": "%",
-	"%26": "&",
-	"%27": "'",
-	"%28": "(",
-	"%29": ")",
-	"%2A": "*",
-	"%2B": "+",
-	"%2C": ",",
-	"%2F": "/",
-	"%3A": ":",
-	"%3B": ";",
-	"%3D": "=",
-	"%3F": "?",
-	"%40": "@",
-	"%5B": "[",
-	"%5D": "]",
-}
+// var keys = map[string]string{
+// 	"%21": "!",
+// 	"%23": "#",
+// 	"%24": "$",
+// 	"%25": "%",
+// 	"%26": "&",
+// 	"%27": "'",
+// 	"%28": "(",
+// 	"%29": ")",
+// 	"%2A": "*",
+// 	"%2B": "+",
+// 	"%2C": ",",
+// 	"%2F": "/",
+// 	"%3A": ":",
+// 	"%3B": ";",
+// 	"%3D": "=",
+// 	"%3F": "?",
+// 	"%40": "@",
+// 	"%5B": "[",
+// 	"%5D": "]",
+// }
 
 func (c *mapClient) getSignedUrl(u string) string {
 	x, _ := url.Parse(u)

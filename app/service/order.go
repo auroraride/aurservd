@@ -38,7 +38,6 @@ type orderService struct {
 	modifier *model.Modifier
 	rider    *ent.Rider
 	orm      *ent.OrderClient
-	employee *ent.Employee
 }
 
 func NewOrder() *orderService {

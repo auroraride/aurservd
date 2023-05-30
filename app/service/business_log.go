@@ -17,7 +17,6 @@ import (
 type businessLogService struct {
 	ctx          context.Context
 	modifier     *model.Modifier
-	rider        *ent.Rider
 	employee     *ent.Employee
 	orm          *ent.BusinessClient
 	creator      *ent.BusinessCreate

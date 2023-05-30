@@ -88,7 +88,7 @@ func main() {
 }
 
 func upload() {
-	privPEM, err := os.ReadFile("/Users/liasica/.ssh/id_rsa")
+	privPEM, _ := os.ReadFile("/Users/liasica/.ssh/id_rsa")
 	sshConf, _ := scp.NewSSHConfigFromPrivateKey("root", privPEM)
 	client, err := scp.NewClient("39.106.77.239", sshConf, &scp.ClientOption{})
 	if err != nil {

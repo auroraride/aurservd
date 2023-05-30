@@ -9,13 +9,11 @@ import (
 	"context"
 
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/internal/ent"
 )
 
 type commissionService struct {
 	ctx      context.Context
 	modifier *model.Modifier
-	rider    *ent.Rider
 }
 
 func NewCommission() *commissionService {

@@ -670,12 +670,3 @@ func (s *contractService) List(req *model.ContractListReq) *model.PaginationRes 
 		return
 	})
 }
-
-// 下载合同文件
-func (s *contractService) downloadFile(id uint64, flowID string, r *model.ContractRider) {
-	err := s.orm.UpdateOneID(id).SetFiles(s.esign.DownloadDocument(fmt.Sprintf("%s-%s/contracts/", r.Name, r.IDCardNumber), flowID)).Exec(s.ctx)
-	if err != nil {
-		zap.L().Error("合同下载失败, id="+strconv.FormatUint(id, 10)+", flowID="+flowID, zap.Error(err))
-		return
-	}
-}

@@ -8,6 +8,8 @@ package middleware
 import (
 	"context"
 
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
@@ -15,7 +17,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/snag"
-	"github.com/labstack/echo/v4"
 )
 
 var (
@@ -130,12 +131,12 @@ func RiderFaceMiddleware() echo.MiddlewareFunc {
 			}
 
 			ctx := c.(*app.RiderContext)
-			u := ctx.Rider
-			s := service.NewRider()
-			if s.IsNewDevice(u, ctx.Device) {
-				// TODO 暂时跳过人脸校验
-				// snag.Panic(snag.StatusLocked, ar.Map{"url": s.GetFaceUrl(ctx)})
-			}
+			// TODO 暂时跳过人脸校验
+			// u := ctx.Rider
+			// s := service.NewRider()
+			// if s.IsNewDevice(u, ctx.Device) {
+			// 	snag.Panic(snag.StatusLocked, ar.Map{"url": s.GetFaceUrl(ctx)})
+			// }
 			return next(ctx)
 		}
 	}

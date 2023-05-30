@@ -652,5 +652,6 @@ func (s *exchangeService) Export(req *model.ExchangeListExport) model.ExportRes 
 			}
 			rows = append(rows, row)
 		}
+		tools.NewExcel(path).AddValues(rows).Done()
 	})
 }

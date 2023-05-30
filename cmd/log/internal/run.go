@@ -47,7 +47,7 @@ func doLogs() {
 	if !strings.HasSuffix(root, "/") {
 		root += "/"
 	}
-	_ = filepath.Walk(root, func(path string, info fs.FileInfo, err error) error {
+	_ = filepath.Walk(root, func(path string, info fs.FileInfo, _ error) error {
 		if info.IsDir() {
 			return nil
 		}
@@ -64,7 +64,7 @@ func doLogs() {
 
 		// 上传阿里云
 		start := time.Now()
-		err = alioss().PutObjectFromFile(key, path)
+		err := alioss().PutObjectFromFile(key, path)
 		if err != nil {
 			log.Printf("%s 处理失败: %s", key, err)
 			return nil

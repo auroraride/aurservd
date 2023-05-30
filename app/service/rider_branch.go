@@ -15,9 +15,8 @@ import (
 )
 
 type riderBranchService struct {
-	ctx      context.Context
-	modifier *model.Modifier
-	rider    *ent.Rider
+	ctx   context.Context
+	rider *ent.Rider
 }
 
 func NewRiderBranch(r *ent.Rider) *riderBranchService {

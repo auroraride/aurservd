@@ -68,7 +68,6 @@ const (
 type Esign struct {
 	Config        ar.EsignConfig
 	headers       map[string]string
-	client        *resty.Request
 	redirect      string
 	serialization jsoniter.Config
 	sn            string

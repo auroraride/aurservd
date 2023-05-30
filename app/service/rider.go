@@ -167,17 +167,17 @@ func (s *riderService) Signout(u *ent.Rider) {
 
 // SetNewDevice 更新用户设备
 func (s *riderService) SetNewDevice(u *ent.Rider, device *model.Device) {
-	isNew := true
-	if ar.Config.App.Debug.Phone[u.Phone] {
-		isNew = false
-	}
-	// TODO 暂时跳过人脸校验
-	isNew = false
+	// isNew := true
+	// if ar.Config.App.Debug.Phone[u.Phone] {
+	// 	isNew = false
+	// }
+	// // TODO 暂时跳过人脸校验
+	// isNew = false
 	_, err := ent.Database.Rider.
 		UpdateOneID(u.ID).
 		SetLastDevice(device.Serial).
 		SetDeviceType(device.Type.Value()).
-		SetIsNewDevice(isNew).
+		SetIsNewDevice(false). // 暂时跳过人脸校验 --by: 曹博文 2022-10-24 13:01
 		Save(context.Background())
 	if err != nil {
 		snag.Panic(err)

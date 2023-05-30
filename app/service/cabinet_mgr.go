@@ -17,7 +17,6 @@ import (
 	"github.com/auroraride/aurservd/app/ec"
 	"github.com/auroraride/aurservd/app/logging"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
 )
@@ -25,7 +24,6 @@ import (
 type cabinetMgrService struct {
 	ctx      context.Context
 	modifier *model.Modifier
-	rider    *ent.Rider
 }
 
 func NewCabinetMgr() *cabinetMgrService {

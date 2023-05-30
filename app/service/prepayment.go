@@ -19,7 +19,6 @@ import (
 type prepaymentService struct {
 	ctx        context.Context
 	modifier   *model.Modifier
-	rider      *ent.Rider
 	enterprise *ent.Enterprise
 	agent      *ent.Agent
 	orm        *ent.EnterprisePrepaymentClient
