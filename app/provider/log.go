@@ -12,9 +12,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/auroraride/aurservd/pkg/utils"
 	"github.com/golang-module/carbon/v2"
 	jsoniter "github.com/json-iterator/go"
+
+	"github.com/auroraride/aurservd/pkg/utils"
 )
 
 type Logger struct {
@@ -33,20 +34,17 @@ func (l *Logger) Write(message any) {
 	buffer := &bytes.Buffer{}
 	buffer.WriteString(time.Now().Format(carbon.TimeLayout))
 	buffer.WriteString(" ")
-	switch message.(type) {
+	switch v := message.(type) {
 	case string:
-		buffer.WriteString(message.(string))
-		break
+		buffer.WriteString(v)
 	case []byte:
-		buffer.Write(message.([]byte))
-		break
+		buffer.Write(v)
 	default:
 		b := &bytes.Buffer{}
 		encoder := jsoniter.NewEncoder(b)
 		encoder.SetEscapeHTML(false)
 		_ = encoder.Encode(message)
 		buffer.Write(b.Bytes())
-		break
 	}
 	if buffer.Bytes()[len(buffer.Bytes())-1] != '\n' {
 		buffer.WriteRune('\n')

@@ -43,10 +43,8 @@ func StockNumberOfRiderBusiness(typ uint8) (num int) {
 	switch typ {
 	case StockTypeRiderActive, StockTypeRiderContinue:
 		num = -1
-		break
 	case StockTypeRiderPause, StockTypeRiderUnSubscribe:
 		num = 1
-		break
 	}
 	return
 }

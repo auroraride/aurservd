@@ -11,12 +11,13 @@ import (
 	"time"
 
 	"github.com/auroraride/adapter/log"
-	"github.com/auroraride/aurservd/internal/ar"
-	"github.com/auroraride/aurservd/pkg/snag"
-	"github.com/auroraride/aurservd/pkg/utils"
 	"github.com/go-resty/resty/v2"
 	jsoniter "github.com/json-iterator/go"
 	"go.uber.org/zap"
+
+	"github.com/auroraride/aurservd/internal/ar"
+	"github.com/auroraride/aurservd/pkg/snag"
+	"github.com/auroraride/aurservd/pkg/utils"
 )
 
 const (
@@ -184,13 +185,10 @@ func (e *Esign) request(api, method string, body interface{}, data interface{}) 
 	switch method {
 	case methodPost:
 		r, err = req.SetBody(body).Post(e.Config.BaseUrl + api)
-		break
 	case methodPut:
 		r, err = req.SetBody(body).Put(e.Config.BaseUrl + api)
-		break
 	case methodGet:
 		r, err = req.Get(e.Config.BaseUrl + api)
-		break
 	}
 	if err != nil {
 		snag.Panic(err)

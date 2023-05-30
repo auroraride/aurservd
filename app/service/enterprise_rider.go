@@ -181,20 +181,16 @@ func (s *enterpriseRiderService) List(req *model.EnterpriseRiderListReq) *model.
 	switch req.Deleted {
 	case 1:
 		q.Where(rider.DeletedAtNotNil())
-		break
 	case 2:
 		q.Where(rider.DeletedAtIsNil())
-		break
 	}
 
 	// 筛选订阅状态
 	switch req.SubscribeStatus {
 	case 1:
 		q.Where(rider.HasSubscribesWith(subscribe.Status(model.SubscribeStatusUsing)))
-		break
 	case 2:
 		q.Where(rider.HasSubscribesWith(subscribe.Status(model.SubscribeStatusUnSubscribed)))
-		break
 	case 3:
 		q.Where(
 			rider.Or(
@@ -202,7 +198,6 @@ func (s *enterpriseRiderService) List(req *model.EnterpriseRiderListReq) *model.
 				rider.Not(rider.HasSubscribes()),
 			),
 		)
-		break
 	}
 	tt := tools.NewTime()
 	var rs, re time.Time

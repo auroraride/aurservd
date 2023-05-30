@@ -743,10 +743,8 @@ func (s *assistanceService) Pay(req *model.AssistancePayReq) model.AssistancePay
 	switch req.Payway {
 	case model.OrderPaywayAlipay:
 		qr, err = payment.NewAlipay().Native(pc)
-		break
 	case model.OrderPaywayWechat:
 		qr, err = payment.NewWechat().Native(pc)
-		break
 	}
 
 	if err != nil {

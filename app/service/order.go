@@ -84,13 +84,10 @@ func (s *orderService) PreconditionNewly(sub *ent.Subscribe) (state uint, past *
 	switch sub.Status {
 	case model.SubscribeStatusInactive:
 		snag.Panic("当前有未激活的骑士卡")
-		break
 	case model.SubscribeStatusUnSubscribed:
 		state = model.OrderTypeAgain
-		break
 	default:
 		snag.Panic("不满足新签条件")
-		break
 	}
 	// 距离上次订阅过去的时间(从退订的第二天0点开始计算,不满一天算0天)
 	if sub.EndAt != nil {
@@ -156,7 +153,6 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
 			snag.Panic("请求参数错误")
 		}
 		t, past = s.PreconditionNewly(sub)
-		break
 	case model.OrderTypeRenewal:
 		// 续签判定
 		s.PreconditionRenewal(sub)
@@ -166,10 +162,8 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
 		subID = silk.UInt64(sub.ID)
 		orderID = silk.UInt64(sub.InitialOrderID)
 		req.CityID = sub.CityID
-		break
 	default:
 		snag.Panic("未知的支付请求")
-		break
 	}
 
 	// 判定用户是否需要缴纳押金
@@ -392,7 +386,6 @@ func (s *orderService) Prepay(payway uint8, no string, prepay *model.PaymentCach
 			snag.Panic("支付宝支付请求失败")
 		}
 		result.Prepay = str
-		break
 	case model.OrderPaywayWechat:
 		// 使用微信支付
 		str, err = payment.NewWechat().AppPay(prepay)
@@ -400,10 +393,8 @@ func (s *orderService) Prepay(payway uint8, no string, prepay *model.PaymentCach
 			snag.Panic("微信支付请求失败")
 		}
 		result.Prepay = str
-		break
 	default:
 		snag.Panic("支付方式错误")
-		break
 	}
 }
 
@@ -415,16 +406,12 @@ func (s *orderService) DoPayment(pc *model.PaymentCache) {
 	switch pc.CacheType {
 	case model.PaymentCacheTypePlan:
 		s.OrderPaid(pc.Subscribe)
-		break
 	case model.PaymentCacheTypeAssistance:
 		NewAssistance().Paid(pc.Assistance)
-		break
 	case model.PaymentCacheTypeRefund:
 		s.RefundSuccess(pc.Refund)
-		break
 	case model.PaymentCacheTypeOverdueFee:
 		s.FeePaid(pc.OverDueFee)
-		break
 	}
 }
 
@@ -762,11 +749,9 @@ func (s *orderService) listFilter(req model.OrderListFilter) (*ent.OrderQuery, a
 		case 1:
 			q.Where(order.StatusNotIn(model.OrderStatusRefundPending, model.OrderStatusRefundRefused, model.OrderStatusRefundSuccess))
 			v = "未申请"
-			break
 		case 2:
 			q.Where(order.StatusIn(model.OrderStatusRefundPending, model.OrderStatusRefundRefused, model.OrderStatusRefundSuccess)).WithRefund()
 			v = "已申请"
-			break
 		}
 		info[k] = v
 	}

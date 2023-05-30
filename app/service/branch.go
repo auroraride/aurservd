@@ -330,10 +330,8 @@ func (s *branchService) ListByDistanceManager(req *model.BranchDistanceListReq) 
 			switch req.Type {
 			case 60:
 				mt = "V60"
-				break
 			case 72:
 				mt = "V72"
-				break
 			}
 		}
 		for _, cab := range cabinets {
@@ -568,7 +566,6 @@ func (s *branchService) DecodeFacility(fid string) (b *ent.Branch, sto *ent.Stor
 	case 1:
 		sto = NewStore().Query(uint64(arr[1]))
 		b, _ = sto.QueryBranch().First(s.ctx)
-		break
 	case 2:
 		cab, _ := ent.Database.Cabinet.QueryNotDeleted().
 			WithModels().
@@ -592,7 +589,6 @@ func (s *branchService) DecodeFacility(fid string) (b *ent.Branch, sto *ent.Stor
 			).
 			All(s.ctx)
 		cabs = append([]*ent.Cabinet{cab}, items...)
-		break
 	}
 	if b == nil || (sto == nil && len(cabs) == 0) {
 		snag.Panic("查询失败")
@@ -716,15 +712,12 @@ func (s *branchService) Facility(req *model.BranchFacilityReq) (data model.Branc
 				case model.SubscribeStatusInactive:
 					// 未激活时仅能办理激活业务
 					c.Businesses = []string{business.TypeActive.String()}
-					break
 				case model.SubscribeStatusPaused:
 					// 寄存中时仅能办理取消寄存业务
 					c.Businesses = []string{business.TypeContinue.String()}
-					break
 				case model.SubscribeStatusUsing:
 					// 使用中可办理寄存和退租业务
 					c.Businesses = []string{business.TypePause.String(), business.TypeUnsubscribe.String()}
-					break
 				}
 			}
 

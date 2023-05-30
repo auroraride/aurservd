@@ -9,9 +9,10 @@ import (
 	openapi "github.com/alibabacloud-go/darabonba-openapi/client"
 	dyvmsapi20170525 "github.com/alibabacloud-go/dyvmsapi-20170525/v2/client"
 	"github.com/alibabacloud-go/tea/tea"
+	"go.uber.org/zap"
+
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/pkg/snag"
-	"go.uber.org/zap"
 )
 
 type vms struct {
@@ -42,7 +43,6 @@ func (v *vms) log(phone, param *string, res *dyvmsapi20170525.SingleCallByTtsRes
 		pa = *param
 	}
 	zap.L().Info(p+", "+pa+" -> 语音发送结果: "+res.String(), zap.Error(err))
-	return
 }
 
 // SendVoiceMessageByTts 发送语音通知

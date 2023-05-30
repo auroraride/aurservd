@@ -11,6 +11,10 @@ import (
 	"sync"
 	"time"
 
+	"github.com/golang-module/carbon/v2"
+	jsoniter "github.com/json-iterator/go"
+	"go.uber.org/zap"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ali"
 	"github.com/auroraride/aurservd/internal/ar"
@@ -18,9 +22,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/setting"
 	"github.com/auroraride/aurservd/internal/ent/subscribereminder"
 	"github.com/auroraride/aurservd/pkg/silk"
-	"github.com/golang-module/carbon/v2"
-	jsoniter "github.com/json-iterator/go"
-	"go.uber.org/zap"
 )
 
 var tasks sync.Map
@@ -107,8 +108,6 @@ func newReminder() {
 			runner.running = ar.Config.Task.Reminder
 		}
 	}
-
-	return
 }
 
 func Subscribe(sub *ent.Subscribe, fee *float64, formula *string) {
@@ -159,29 +158,25 @@ func (r *reminderTask) run() {
 		zap.L().Info("催费任务未启动")
 	}
 	for {
-		select {
-		case <-r.ticker.C:
-			h := time.Now().Hour()
-			// 下午4点发送
-			if h == 16 {
+		<-r.ticker.C
+		h := time.Now().Hour()
+		// 下午4点发送
+		if h == 16 {
 
-				duplicateRemove()
+			duplicateRemove()
 
-				tasks.Range(func(_, v any) bool {
-					switch t := v.(type) {
-					case *Task:
-						if t.sms != "" {
-							r.sendsms(t)
-						}
-						if t.vms != nil {
-							r.sendvms(t)
-						}
-						break
+			tasks.Range(func(_, v any) bool {
+				switch t := v.(type) {
+				case *Task:
+					if t.sms != "" {
+						r.sendsms(t)
 					}
-					return true
-				})
-			}
-			break
+					if t.vms != nil {
+						r.sendvms(t)
+					}
+				}
+				return true
+			})
 		}
 	}
 }

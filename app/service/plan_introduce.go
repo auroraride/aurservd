@@ -89,9 +89,7 @@ func (s *planIntroduceService) Notset() (res []model.PlanIntroduceOption) {
 	items, _ := s.orm.Query().All(s.ctx)
 	for _, item := range items {
 		k := s.Key(item.Model, item.BrandID)
-		if _, ok := m[k]; ok {
-			delete(m, k)
-		}
+		delete(m, k)
 	}
 
 	r := make(map[string]*model.PlanIntroduceOption)

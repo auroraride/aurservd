@@ -15,6 +15,10 @@ import (
 	"time"
 
 	"github.com/auroraride/adapter/log"
+	"github.com/golang-module/carbon/v2"
+	jsoniter "github.com/json-iterator/go"
+	"go.uber.org/zap"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/socket"
 	"github.com/auroraride/aurservd/internal/ar"
@@ -25,9 +29,6 @@ import (
 	"github.com/auroraride/aurservd/internal/esign"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
-	"github.com/golang-module/carbon/v2"
-	jsoniter "github.com/json-iterator/go"
-	"go.uber.org/zap"
 )
 
 const (
@@ -372,14 +373,12 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
 			switch com.Key {
 			case snKey:
 				m[snKey] = sn
-				break
 			case aurSeal:
 				flow.EntSignBean = esign.PosBean{
 					PosPage: fmt.Sprintf("%v", com.Context.Pos.Page),
 					PosX:    com.Context.Pos.X,
 					PosY:    com.Context.Pos.Y,
 				}
-				break
 			case riderSeal:
 				flow.PsnSignBean = esign.PosBean{
 					PosPage: fmt.Sprintf("%v", com.Context.Pos.Page),
@@ -444,25 +443,23 @@ func (s *contractService) checkResult(flowID string) {
 	defer ticker.Stop()
 
 	for {
-		select {
-		case t := <-ticker.C:
-			// 获取合同
-			c, _ := s.orm.Query().Where(contract.FlowID(flowID)).WithRider().First(s.ctx)
+		t := <-ticker.C
+		// 获取合同
+		c, _ := s.orm.Query().Where(contract.FlowID(flowID)).WithRider().First(s.ctx)
 
-			// 如果合同状态不是签署中, 直接结束
-			if c.Status != model.ContractStatusSigning.Value() {
-				ticker.Stop()
-				return
-			}
+		// 如果合同状态不是签署中, 直接结束
+		if c.Status != model.ContractStatusSigning.Value() {
+			ticker.Stop()
+			return
+		}
 
-			// 签署是否过期
-			isExpired := t.Sub(c.CreatedAt).Minutes() > model.ContractExpiration+5
-			// 如果已过期, 直接结束
-			if isExpired {
-				_ = c.Update().SetStatus(model.ContractStatusExpired.Value()).Exec(s.ctx)
-				ticker.Stop()
-				return
-			}
+		// 签署是否过期
+		isExpired := t.Sub(c.CreatedAt).Minutes() > model.ContractExpiration+5
+		// 如果已过期, 直接结束
+		if isExpired {
+			_ = c.Update().SetStatus(model.ContractStatusExpired.Value()).Exec(s.ctx)
+			ticker.Stop()
+			return
 		}
 	}
 }
@@ -535,8 +532,6 @@ func (s *contractService) doResult(flowID string) {
 			})
 		}
 	}
-
-	return
 }
 
 // 关联更新

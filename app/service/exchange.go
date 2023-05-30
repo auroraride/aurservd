@@ -277,7 +277,6 @@ func (s *exchangeService) Overview(riderID uint64) (res model.ExchangeOverview) 
 			break
 		default:
 			res.Days += item.InitialDays + item.AlterDays + item.OverdueDays + item.RenewalDays + item.PauseDays - item.Remaining + 1 // 已用天数(+1代表当前天数算作1天)
-			break
 		}
 	}
 	return
@@ -364,10 +363,8 @@ func (s *exchangeService) listBasicQuery(req model.ExchangeListBasicFilter) (q *
 	switch req.Aimed {
 	case model.BusinessAimedPersonal:
 		q.Where(exchange.EnterpriseIDIsNil())
-		break
 	case model.BusinessAimedEnterprise:
 		q.Where(exchange.EnterpriseIDNotNil())
-		break
 	}
 
 	return
@@ -426,10 +423,8 @@ func (s *exchangeService) listFilter(req model.ExchangeListFilter) (q *ent.Excha
 	switch req.Target {
 	case 1:
 		q.Where(exchange.CabinetIDNotNil())
-		break
 	case 2:
 		q.Where(exchange.StoreIDNotNil())
-		break
 	}
 
 	info["换电类别"] = []string{"全部", "电柜", "门店"}[req.Target]

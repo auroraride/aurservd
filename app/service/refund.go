@@ -177,10 +177,8 @@ func (s *refundService) RefundAudit(req *model.RefundAuditReq) {
 		switch o.Payway {
 		case model.OrderPaywayAlipay:
 			payment.NewAlipay().Refund(prepay.Refund)
-			break
 		case model.OrderPaywayWechat:
 			payment.NewWechat().Refund(prepay.Refund)
-			break
 		}
 
 		// 原路退款请求是否成功

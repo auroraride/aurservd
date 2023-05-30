@@ -365,10 +365,8 @@ func (s *enterpriseService) CalculateStatement(e *ent.Enterprise, end time.Time)
 	prices := s.GetPriceValues(e)
 	es = NewEnterpriseStatement().Current(e)
 
-	// 获取所有骑手订阅
-	var subs []*ent.Subscribe
-	// 获取未结算订阅
-	subs = s.QueryAllBillingSubscribe(e.ID, end)
+	// 获取所有骑手未结算订阅
+	subs := s.QueryAllBillingSubscribe(e.ID, end)
 	for _, sub := range subs {
 		// 是否已终止并且终止时间早于结算时间
 		if sub.LastBillDate != nil && sub.EndAt != nil && sub.LastBillDate.After(*sub.EndAt) {
@@ -400,7 +398,7 @@ func (s *enterpriseService) CalculateStatement(e *ent.Enterprise, end time.Time)
 
 		// 按城市/型号计算金额
 		k := s.PriceKey(sub.CityID, sub.Model)
-		p, _ := prices[k]
+		p := prices[k]
 
 		cost, _ := decimal.NewFromFloat(p).Mul(decimal.NewFromInt(int64(used))).Float64()
 
@@ -456,7 +454,6 @@ func (s *enterpriseService) UpdateStatement(e *ent.Enterprise) {
 	case model.EnterprisePaymentPrepay:
 		// 预付费, 计算余额
 		balance = tools.NewDecimal().Sub(e.PrepaymentTotal, cost)
-		break
 	}
 
 	_, err := e.Update().SetBalance(balance).Save(s.ctx)

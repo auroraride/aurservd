@@ -8,10 +8,11 @@ package middleware
 import (
 	"fmt"
 
-	"github.com/auroraride/aurservd/internal/ent"
-	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/labstack/echo/v4"
 	"go.uber.org/zap"
+
+	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/pkg/snag"
 )
 
 func Recover() echo.MiddlewareFunc {
@@ -22,21 +23,17 @@ func Recover() echo.MiddlewareFunc {
 					switch v := r.(type) {
 					case *snag.Error:
 						c.Error(r.(*snag.Error))
-						break
 					case *ent.ValidationError:
 						zap.L().Error("捕获错误: ent.ValidationError", zap.Error(v), zap.Stack("stack"))
 						c.Error(r.(*ent.ValidationError).Unwrap())
-						break
 					case error:
 						zap.L().Error("捕获错误", zap.Error(v), zap.Stack("stack"))
 						c.Error(r.(error))
-						break
 					default:
 						x := fmt.Errorf("%v", r)
 						zap.L().Error("捕获错误: 其他", zap.Error(x), zap.Stack("stack"))
 						// _ = mw.Recover()(next)(c)
 						c.Error(x)
-						break
 					}
 				}
 			}()

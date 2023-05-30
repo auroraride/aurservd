@@ -224,11 +224,9 @@ func (s *businessService) listFilter(req model.BusinessFilter) (q *ent.BusinessQ
 	case model.BusinessAimedPersonal:
 		info["业务对象"] = "个签"
 		q.Where(business.EnterpriseIDIsNil())
-		break
 	case model.BusinessAimedEnterprise:
 		info["业务对象"] = "团签"
 		q.Where(business.EnterpriseIDNotNil())
-		break
 	}
 
 	if req.CityID != 0 {
@@ -365,10 +363,8 @@ func (s *businessService) ListPause(req *model.BusinessPauseList) *model.Paginat
 	switch req.Status {
 	case 1:
 		q.Where(subscribepause.EndAtIsNil())
-		break
 	case 2:
 		q.Where(subscribepause.EndAtNotNil())
-		break
 	}
 
 	// 是否逾期
@@ -379,19 +375,15 @@ func (s *businessService) ListPause(req *model.BusinessPauseList) *model.Paginat
 	switch req.StartAscription {
 	case 1:
 		q.Where(subscribepause.StoreIDNotNil())
-		break
 	case 2:
 		q.Where(subscribepause.CabinetIDNotNil())
-		break
 	}
 
 	switch req.EndAscription {
 	case 1:
 		q.Where(subscribepause.EndStoreIDNotNil())
-		break
 	case 2:
 		q.Where(subscribepause.EndCabinetIDNotNil())
-		break
 	}
 
 	if req.StartDate != "" {

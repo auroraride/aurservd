@@ -438,15 +438,12 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
 					rider.HasPersonWith(person.Banned(false)),
 				),
 			)
-			break
 		case model.RiderStatusBlocked:
 			info["用户状态"] = "已禁用"
 			q.Where(rider.Blocked(true))
-			break
 		case model.RiderStatusBanned:
 			info["用户状态"] = "已封禁"
 			q.Where(rider.HasPersonWith(person.Banned(true)))
-			break
 		}
 	}
 	if req.AuthStatus != nil {
@@ -460,10 +457,8 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
 					rider.HasPersonWith(person.Status(model.PersonUnauthenticated.Value())),
 				),
 			)
-			break
 		default:
 			q.Where(rider.HasPersonWith(person.Status(ra.Value())))
-			break
 		}
 	}
 	if req.SubscribeStatus != nil {
@@ -476,10 +471,8 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
 				subscribe.Status(model.SubscribeStatusUsing),
 				subscribe.RemainingLTE(3),
 			))
-			break
 		case 99:
 			q.Where(rider.Not(rider.HasSubscribes()))
-			break
 		case model.SubscribeStatusUnSubscribed:
 			q.Where(
 				rider.And(
@@ -492,7 +485,6 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
 			)
 		default:
 			q.Where(rider.HasSubscribesWith(subscribe.Status(rss)))
-			break
 		}
 		info[key] = map[uint8]string{
 			0:  "未激活",
@@ -653,7 +645,7 @@ func (s *riderService) detailRiderItem(item *ent.Rider) model.RiderItem {
 
 	// 获取合同
 	contracts := item.Edges.Contracts
-	if contracts != nil && len(contracts) > 0 && contracts[0].Files != nil {
+	if len(contracts) > 0 && contracts[0].Files != nil {
 		ri.Contract = contracts[0].Files[0]
 	}
 

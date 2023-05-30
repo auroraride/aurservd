@@ -505,13 +505,11 @@ func (s *riderExchangeService) ProcessDoorStatus() *riderExchangeService {
 		switch ds {
 		case ec.DoorStatusClose:
 			step.Status = model.TaskStatusSuccess
-			break
 		case ec.DoorStatusOpen:
 			break
 		default:
 			message = ec.DoorError[ds]
 			step.Status = model.TaskStatusFail
-			break
 		}
 
 		// 超时标记为任务失败
@@ -641,22 +639,20 @@ func (s *riderExchangeService) GetProcessStatus(req *model.RiderExchangeProcessS
 	}
 	ticker := time.NewTicker(1 * time.Second)
 	for {
-		select {
-		case <-ticker.C:
-			task := ec.QueryID(uid)
-			if task == nil {
-				snag.Panic("未找到换电操作")
-			}
-			cs := task.Exchange.CurrentStep()
-			res = &model.RiderExchangeProcessRes{
-				Step:    uint8(cs.Step),
-				Status:  uint8(cs.Status),
-				Message: task.Message,
-				Stop:    task.StopAt != nil,
-			}
-			if cs.IsSuccess() || res.Stop || time.Since(start).Seconds() > 30 {
-				return
-			}
+		<-ticker.C
+		task := ec.QueryID(uid)
+		if task == nil {
+			snag.Panic("未找到换电操作")
+		}
+		cs := task.Exchange.CurrentStep()
+		res = &model.RiderExchangeProcessRes{
+			Step:    uint8(cs.Step),
+			Status:  uint8(cs.Status),
+			Message: task.Message,
+			Stop:    task.StopAt != nil,
+		}
+		if cs.IsSuccess() || res.Stop || time.Since(start).Seconds() > 30 {
+			return
 		}
 	}
 }

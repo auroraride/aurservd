@@ -12,10 +12,11 @@ import (
 
 	"github.com/alibabacloud-go/tea/tea"
 	sls "github.com/aliyun/aliyun-log-go-sdk"
-	"github.com/auroraride/aurservd/internal/ali"
-	"github.com/auroraride/aurservd/internal/ar"
 	jsoniter "github.com/json-iterator/go"
 	"go.uber.org/zap"
+
+	"github.com/auroraride/aurservd/internal/ali"
+	"github.com/auroraride/aurservd/internal/ar"
 )
 
 var (
@@ -81,19 +82,16 @@ func bootLogStore(project, logstore string, typ any) {
 					ik = sls.IndexKey{
 						Type: "long",
 					}
-					break
 				case reflect.Float32, reflect.Float64:
 					ik = sls.IndexKey{
 						Type: "double",
 					}
-					break
 				default:
 					ik = sls.IndexKey{
 						Token: indexToken,
 						Type:  "text",
 						Chn:   true,
 					}
-					break
 				}
 				if idx == "doc" {
 					ik.DocValue = true

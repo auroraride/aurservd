@@ -222,7 +222,7 @@ func (s *settingService) DailyRent(items map[string]float64, cityID uint64, batt
 	if items == nil {
 		items = s.DailyRentItems()
 	}
-	v, _ = items[key]
+	v = items[key]
 	if v == 0 {
 		v = model.DailyRentDefault
 	}

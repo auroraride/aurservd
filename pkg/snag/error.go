@@ -33,37 +33,26 @@ func (e Error) Error() (message string) {
 		switch e.Code {
 		case StatusBadRequest:
 			message = "请求失败"
-			break
 		case StatusUnauthorized:
 			message = "需要登录"
-			break
 		case StatusForbidden:
 			message = "没有权限"
-			break
 		case StatusNotFound:
 			message = "未找到资源"
-			break
 		case StatusInternalServerError:
 			message = "未知错误"
-			break
 		case StatusRequireAuth:
 			message = "需要实名验证"
-			break
 		case StatusLocked:
 			message = "需要人脸验证"
-			break
 		case StatusRequireContact:
 			message = "需要补充紧急联系人"
-			break
 		case StatusRequestTimeout:
 			message = "请求过期"
-			break
 		case StatusRequireSign:
 			message = "需要签约"
-			break
 		default:
 			message = "请求失败"
-			break
 		}
 	}
 	return message
@@ -75,22 +64,17 @@ func NewError(params ...any) *Error {
 	}
 
 	for _, param := range params {
-		switch param.(type) {
+		switch v := param.(type) {
 		case string:
-			out.Message = param.(string)
-			break
+			out.Message = v
 		case error:
-			out.Message = param.(error).Error()
-			break
+			out.Message = v.Error()
 		case StatusCode:
-			out.Code = param.(StatusCode)
-			break
+			out.Code = v
 		case int:
-			out.Code = StatusCode(param.(int))
-			break
+			out.Code = StatusCode(v)
 		default:
-			out.Data = param
-			break
+			out.Data = v
 		}
 	}
 

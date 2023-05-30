@@ -83,13 +83,10 @@ func (s *exportService) Start(taxonomy string, con any, data map[string]interfac
 			switch ei := v.(type) {
 			case func() string:
 				info[k] = ei()
-				break
 			case *ent.ExportInfo:
 				info[k] = ei.GetExportInfoData()
-				break
 			default:
 				info[k] = v
-				break
 			}
 		}
 

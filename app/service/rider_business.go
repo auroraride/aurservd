@@ -139,7 +139,6 @@ func (s *riderBusinessService) preprocess(serial string, bt business.Type) {
 			}
 			s.empty = &model.BinInfo{Index: empty.Index}
 			target = s.empty
-			break
 		case business.TypeActive, business.TypeContinue:
 			if bn < 2 {
 				snag.Panic("电池不足, 无法处理当前业务")
@@ -153,7 +152,6 @@ func (s *riderBusinessService) preprocess(serial string, bt business.Type) {
 				Voltage:     max.Voltage,
 			}
 			target = s.max
-			break
 		}
 
 		jobs := map[business.Type]model.Job{
@@ -233,11 +231,9 @@ func (s *riderBusinessService) putin() (*model.BinInfo, *model.Battery, error) {
 			return s.empty, nil, nil
 		case ec.DoorStatusOpen:
 			ts = model.TaskStatusProcessing
-			break
 		default:
 			s.task.Message = ec.DoorError[ds]
 			ts = model.TaskStatusFail
-			break
 		}
 
 		// 超时标记为任务失败
