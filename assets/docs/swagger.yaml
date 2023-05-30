@@ -6373,6 +6373,9 @@ definitions:
       end:
         description: 结束时间
         type: string
+      enterpriseId:
+        description: 企业ID (代理无需该参数)
+        type: integer
       goal:
         allOf:
         - $ref: '#/definitions/model.StoreCabiletGoal'
@@ -6382,6 +6385,9 @@ definitions:
         - 1
         - 2
         - 3
+      keyword:
+        description: 骑手关键词 (手机号或姓名)
+        type: string
       materials:
         description: 查询物资类别, 默认为电池, 逗号分隔 battery:电池 ebike:电车 others:其他物资
         type: string
@@ -6396,6 +6402,9 @@ definitions:
       start:
         description: 开始时间
         type: string
+      stationId:
+        description: 站点ID
+        type: integer
       storeId:
         description: 门店ID
         type: integer
@@ -7602,6 +7611,108 @@ paths:
           schema:
             $ref: '#/definitions/model.AgentSigninRes'
       summary: A1001 登录
+      tags:
+      - '[A]代理接口'
+  /agent/v1/stock:
+    get:
+      consumes:
+      - application/json
+      operationId: AgentStockDetail
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - description: 电柜ID
+        in: query
+        name: cabinetId
+        type: integer
+      - description: 城市ID
+        in: query
+        name: cityId
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 结束时间
+        in: query
+        name: end
+        type: string
+      - description: 企业ID (代理无需该参数)
+        in: query
+        name: enterpriseId
+        type: integer
+      - description: 查询目标 0:不筛选 1:门店(默认) 2:电柜 3:平台
+        enum:
+        - 0
+        - 1
+        - 2
+        in: query
+        name: goal
+        type: integer
+        x-enum-varnames:
+        - StockGoalAll
+        - StockGoalStore
+        - StockGoalCabinet
+      - description: 骑手关键词 (手机号或姓名)
+        in: query
+        name: keyword
+        type: string
+      - description: 查询物资类别, 默认为电池, 逗号分隔 battery:电池 ebike:电车 others:其他物资
+        in: query
+        name: materials
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 是否正序(默认倒序)
+        in: query
+        name: positive
+        type: boolean
+      - description: 电柜编号
+        in: query
+        name: serial
+        type: string
+      - description: 开始时间
+        in: query
+        name: start
+        type: string
+      - description: 站点ID
+        in: query
+        name: stationId
+        type: integer
+      - description: 门店ID
+        in: query
+        name: storeId
+        type: integer
+      - description: 调拨类型, 0:调拨 1:激活 2:寄存 3:结束寄存 4:退租
+        enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+        in: query
+        name: type
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.StockDetailRes'
+                  type: array
+              type: object
+      summary: A6001 出入库明细
       tags:
       - '[A]代理接口'
   /commom/sms:
@@ -14485,6 +14596,10 @@ paths:
         in: query
         name: end
         type: string
+      - description: 企业ID (代理无需该参数)
+        in: query
+        name: enterpriseId
+        type: integer
       - description: 查询目标 0:不筛选 1:门店(默认) 2:电柜 3:平台
         enum:
         - 0
@@ -14497,6 +14612,10 @@ paths:
         - StockGoalAll
         - StockGoalStore
         - StockGoalCabinet
+      - description: 骑手关键词 (手机号或姓名)
+        in: query
+        name: keyword
+        type: string
       - description: 查询物资类别, 默认为电池, 逗号分隔 battery:电池 ebike:电车 others:其他物资
         in: query
         name: materials
@@ -14517,6 +14636,10 @@ paths:
         in: query
         name: start
         type: string
+      - description: 站点ID
+        in: query
+        name: stationId
+        type: integer
       - description: 门店ID
         in: query
         name: storeId

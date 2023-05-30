@@ -320,16 +320,19 @@ type StockCabinetListRes struct {
 }
 
 type StockDetailFilter struct {
-	Goal      StoreCabiletGoal `json:"goal" query:"goal" enums:"0,1,2,3"`   // 查询目标 0:不筛选 1:门店(默认) 2:电柜 3:平台
-	Materials string           `json:"materials" query:"materials"`         // 查询物资类别, 默认为电池, 逗号分隔 battery:电池 ebike:电车 others:其他物资
-	Serial    string           `json:"serial" query:"serial"`               // 电柜编号
-	CityID    uint64           `json:"cityId" query:"cityId"`               // 城市ID
-	CabinetID uint64           `json:"cabinetId" query:"cabinetId"`         // 电柜ID
-	StoreID   uint64           `json:"storeId" query:"storeId"`             // 门店ID
-	Start     string           `json:"start" query:"start"`                 // 开始时间
-	End       string           `json:"end" query:"end"`                     // 结束时间
-	Positive  bool             `json:"positive" query:"positive"`           // 是否正序(默认倒序)
-	Type      uint8            `json:"type" query:"type" enums:"0,1,2,3,4"` // 调拨类型, 0:调拨 1:激活 2:寄存 3:结束寄存 4:退租
+	Goal         StoreCabiletGoal `json:"goal" query:"goal" enums:"0,1,2,3"`   // 查询目标 0:不筛选 1:门店(默认) 2:电柜 3:平台
+	Materials    string           `json:"materials" query:"materials"`         // 查询物资类别, 默认为电池, 逗号分隔 battery:电池 ebike:电车 others:其他物资
+	Serial       string           `json:"serial" query:"serial"`               // 电柜编号
+	CityID       uint64           `json:"cityId" query:"cityId"`               // 城市ID
+	CabinetID    uint64           `json:"cabinetId" query:"cabinetId"`         // 电柜ID
+	StoreID      uint64           `json:"storeId" query:"storeId"`             // 门店ID
+	Start        string           `json:"start" query:"start"`                 // 开始时间
+	End          string           `json:"end" query:"end"`                     // 结束时间
+	Positive     bool             `json:"positive" query:"positive"`           // 是否正序(默认倒序)
+	Type         uint8            `json:"type" query:"type" enums:"0,1,2,3,4"` // 调拨类型, 0:调拨 1:激活 2:寄存 3:结束寄存 4:退租
+	Keyword      string           `json:"keyword" query:"keyword"`             // 骑手关键词 (手机号或姓名)
+	EnterpriseID uint64           `json:"enterpriseId" query:"enterpriseId"`   // 企业ID (代理该参数不生效)
+	StationID    uint64           `json:"stationId" query:"stationId"`         // 站点ID
 }
 
 type StockDetailReq struct {
