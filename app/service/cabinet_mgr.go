@@ -36,7 +36,7 @@ func NewCabinetMgr() *cabinetMgrService {
 
 func NewCabinetMgrWithModifier(m *model.Modifier) *cabinetMgrService {
 	s := NewCabinetMgr()
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	s.modifier = m
 	return s
 }

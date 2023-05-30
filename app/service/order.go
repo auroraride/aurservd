@@ -12,6 +12,9 @@ import (
 	"time"
 
 	"github.com/auroraride/adapter/log"
+	"github.com/golang-module/carbon/v2"
+	"go.uber.org/zap"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
@@ -28,8 +31,6 @@ import (
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
-	"github.com/golang-module/carbon/v2"
-	"go.uber.org/zap"
 )
 
 type orderService struct {
@@ -49,14 +50,14 @@ func NewOrder() *orderService {
 
 func NewOrderWithRider(rider *ent.Rider) *orderService {
 	s := NewOrder()
-	s.ctx = context.WithValue(s.ctx, "rider", rider)
+	s.ctx = context.WithValue(s.ctx, model.CtxRiderKey{}, rider)
 	s.rider = rider
 	return s
 }
 
 func NewOrderWithModifier(m *model.Modifier) *orderService {
 	s := NewOrder()
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	s.modifier = m
 	return s
 }
@@ -866,7 +867,7 @@ func (s *orderService) QueryStatus(req *model.OrderStatusReq) (res model.OrderSt
 			return
 		}
 
-		if time.Now().Sub(now).Seconds() > 30 {
+		if time.Since(now).Seconds() > 30 {
 			return
 		}
 

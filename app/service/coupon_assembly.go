@@ -8,10 +8,11 @@ package service
 import (
 	"context"
 
+	"github.com/golang-module/carbon/v2"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/couponassembly"
-	"github.com/golang-module/carbon/v2"
 )
 
 type couponAssemblyService struct {
@@ -32,7 +33,7 @@ func NewCouponAssembly() *couponAssemblyService {
 
 func NewCouponAssemblyWithModifier(m *model.Modifier) *couponAssemblyService {
 	s := NewCouponAssembly()
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	s.modifier = m
 	return s
 }

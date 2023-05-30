@@ -31,14 +31,14 @@ func NewException() *exceptionService {
 
 func NewExceptionWithRider(r *ent.Rider) *exceptionService {
 	s := NewException()
-	s.ctx = context.WithValue(s.ctx, "rider", r)
+	s.ctx = context.WithValue(s.ctx, model.CtxRiderKey{}, r)
 	s.rider = r
 	return s
 }
 
 func NewExceptionWithModifier(m *model.Modifier) *exceptionService {
 	s := NewException()
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	s.modifier = m
 	return s
 }
@@ -52,7 +52,7 @@ func NewExceptionWithEmployee(e *ent.Employee) *exceptionService {
 			Name:  e.Name,
 			Phone: e.Phone,
 		}
-		s.ctx = context.WithValue(s.ctx, "employee", s.employeeInfo)
+		s.ctx = context.WithValue(s.ctx, model.CtxEmployeeKey{}, s.employeeInfo)
 	}
 	return s
 }

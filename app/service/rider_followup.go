@@ -8,10 +8,11 @@ package service
 import (
 	"context"
 
+	"github.com/golang-module/carbon/v2"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
-	"github.com/golang-module/carbon/v2"
 )
 
 type riderFollowupService struct {
@@ -30,14 +31,14 @@ func NewRiderFollowup() *riderFollowupService {
 
 func NewRiderFollowupWithRider(r *ent.Rider) *riderFollowupService {
 	s := NewRiderFollowup()
-	s.ctx = context.WithValue(s.ctx, "rider", r)
+	s.ctx = context.WithValue(s.ctx, model.CtxRiderKey{}, r)
 	s.rider = r
 	return s
 }
 
 func NewRiderFollowupWithModifier(m *model.Modifier) *riderFollowupService {
 	s := NewRiderFollowup()
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	s.modifier = m
 	return s
 }

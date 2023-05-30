@@ -13,6 +13,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqljson"
 	"github.com/auroraride/adapter"
+	"github.com/golang-module/carbon/v2"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
@@ -26,7 +28,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
-	"github.com/golang-module/carbon/v2"
 )
 
 // 门店业务处理专用
@@ -71,7 +72,7 @@ func NewBusinessWithEmployee(e *ent.Employee) *businessService {
 			Name:  e.Name,
 			Phone: e.Phone,
 		}
-		s.ctx = context.WithValue(s.ctx, "employee", s.employeeInfo)
+		s.ctx = context.WithValue(s.ctx, model.CtxEmployeeKey{}, s.employeeInfo)
 	}
 	return s
 }
@@ -79,7 +80,7 @@ func NewBusinessWithEmployee(e *ent.Employee) *businessService {
 func NewBusinessWithModifier(m *model.Modifier) *businessService {
 	s := NewBusiness()
 	if m != nil {
-		s.ctx = context.WithValue(s.ctx, "modifier", m)
+		s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 		s.modifier = m
 	}
 	return s

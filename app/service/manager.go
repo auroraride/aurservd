@@ -11,6 +11,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/rs/xid"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/permission"
 	"github.com/auroraride/aurservd/internal/ar"
@@ -19,7 +21,6 @@ import (
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/utils"
-	"github.com/rs/xid"
 )
 
 type managerService struct {
@@ -40,7 +41,7 @@ func NewManager() *managerService {
 
 func NewManagerWithModifier(m *model.Modifier) *managerService {
 	s := NewManager()
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	s.modifier = m
 	return s
 }

@@ -45,7 +45,7 @@ func NewEnterpriseStatement() *enterpriseStatementService {
 
 func NewEnterpriseStatementWithModifier(m *model.Modifier) *enterpriseStatementService {
 	s := NewEnterpriseStatement()
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	s.modifier = m
 	return s
 }

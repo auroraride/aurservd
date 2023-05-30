@@ -10,13 +10,14 @@ import (
 	"errors"
 	"time"
 
+	"go.uber.org/zap"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/socket"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/pkg/silk"
-	"go.uber.org/zap"
 )
 
 type assistanceSocketService struct {
@@ -78,7 +79,7 @@ func (s *assistanceSocketService) Detail(ass *ent.Assistance) (message *model.As
 	}
 
 	if ass.Status == model.AssistanceStatusPending {
-		message.Seconds = int(time.Now().Sub(ass.CreatedAt).Seconds())
+		message.Seconds = int(time.Since(ass.CreatedAt).Seconds())
 	} else {
 		message.Seconds = ass.Wait
 	}

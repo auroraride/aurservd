@@ -56,20 +56,20 @@ func newService(params ...any) (bs *BaseService) {
 				Phone: p.Phone,
 				Name:  p.Name,
 			}
-			ctx = context.WithValue(ctx, "rider", bs.rider)
+			ctx = context.WithValue(ctx, model.CtxRiderKey{}, bs.rider)
 		case *model.Rider:
 			bs.rider = p
-			ctx = context.WithValue(ctx, "rider", bs.rider)
+			ctx = context.WithValue(ctx, model.CtxRiderKey{}, bs.rider)
 		case *ent.Manager:
 			bs.modifier = &model.Modifier{
 				ID:    p.ID,
 				Phone: p.Phone,
 				Name:  p.Name,
 			}
-			ctx = context.WithValue(ctx, "modifier", bs.modifier)
+			ctx = context.WithValue(ctx, model.CtxModifierKey{}, bs.modifier)
 		case *model.Modifier:
 			bs.modifier = p
-			ctx = context.WithValue(ctx, "modifier", bs.modifier)
+			ctx = context.WithValue(ctx, model.CtxModifierKey{}, bs.modifier)
 		case *ent.Employee:
 			bs.entEmployee = p
 			bs.entStore, _ = p.QueryStore().First(ctx)
@@ -78,7 +78,7 @@ func newService(params ...any) (bs *BaseService) {
 				Name:  p.Name,
 				Phone: p.Phone,
 			}
-			ctx = context.WithValue(ctx, "employee", bs.employee)
+			ctx = context.WithValue(ctx, model.CtxEmployeeKey{}, bs.employee)
 		case *ent.Store:
 			bs.entStore = p
 		case *ent.Agent:

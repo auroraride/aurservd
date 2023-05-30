@@ -31,7 +31,7 @@ func NewPerson() *personService {
 
 func NewPersonWithModifier(m *model.Modifier) *personService {
 	s := NewPerson()
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	s.modifier = m
 	return s
 }

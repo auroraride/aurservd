@@ -8,11 +8,12 @@ package service
 import (
 	"context"
 
+	"github.com/golang-module/carbon/v2"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprepayment"
 	"github.com/auroraride/aurservd/pkg/tools"
-	"github.com/golang-module/carbon/v2"
 )
 
 type prepaymentService struct {
@@ -40,7 +41,7 @@ func NewPrepaymentWithAgent(ag *ent.Agent, en *ent.Enterprise) *prepaymentServic
 
 func NewPrepaymentWithModifier(m *model.Modifier) *prepaymentService {
 	s := NewPrepayment()
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	s.modifier = m
 	return s
 }

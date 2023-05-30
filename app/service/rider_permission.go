@@ -35,7 +35,7 @@ func NewRiderPermissionWithRider(r *ent.Rider, params ...any) *riderPermissionSe
 			break
 		}
 	}
-	s.ctx = context.WithValue(s.ctx, "rider", r)
+	s.ctx = context.WithValue(s.ctx, model.CtxRiderKey{}, r)
 	s.rider = r
 	return s
 }

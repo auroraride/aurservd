@@ -14,6 +14,12 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/golang-module/carbon/v2"
+	"github.com/jinzhu/copier"
+	"github.com/r3labs/diff/v3"
+	"github.com/shopspring/decimal"
+	"go.uber.org/zap"
+
 	"github.com/auroraride/aurservd/app/logging"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
@@ -25,11 +31,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
-	"github.com/golang-module/carbon/v2"
-	"github.com/jinzhu/copier"
-	"github.com/r3labs/diff/v3"
-	"github.com/shopspring/decimal"
-	"go.uber.org/zap"
 )
 
 type enterpriseService struct {
@@ -50,7 +51,7 @@ func NewEnterprise() *enterpriseService {
 
 func NewEnterpriseWithModifier(m *model.Modifier) *enterpriseService {
 	s := NewEnterprise()
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	s.modifier = m
 	return s
 }

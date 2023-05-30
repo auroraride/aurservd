@@ -459,7 +459,7 @@ func (s *riderExchangeService) ProcessDoorBatteryStatus() (ds ec.DoorStatus) {
 		}
 
 		// 仓门关闭但是检测不到电池的情况下, 继续检测30s
-		if time.Now().Sub(step.Time).Seconds() > 30 {
+		if time.Since(step.Time).Seconds() > 30 {
 			return ec.DoorStatusBatteryEmpty
 		} else {
 			time.Sleep(1 * time.Second)
@@ -475,7 +475,7 @@ func (s *riderExchangeService) ProcessDoorBatteryStatus() (ds ec.DoorStatus) {
 		}
 
 		// 仓门关闭, 如果未取走则继续检测10s
-		if time.Now().Sub(step.Time).Seconds() > 10 {
+		if time.Since(step.Time).Seconds() > 10 {
 			return ec.DoorStatusBatteryFull
 		} else {
 			time.Sleep(1 * time.Second)
@@ -515,7 +515,7 @@ func (s *riderExchangeService) ProcessDoorStatus() *riderExchangeService {
 		}
 
 		// 超时标记为任务失败
-		if time.Now().Sub(start).Seconds() > s.maxTime.Seconds() && message == "" {
+		if time.Since(start).Seconds() > s.maxTime.Seconds() && message == "" {
 			message = "超时"
 			step.Status = model.TaskStatusFail
 			step.Time = time.Now()
@@ -654,7 +654,7 @@ func (s *riderExchangeService) GetProcessStatus(req *model.RiderExchangeProcessS
 				Message: task.Message,
 				Stop:    task.StopAt != nil,
 			}
-			if cs.IsSuccess() || res.Stop || time.Now().Sub(start).Seconds() > 30 {
+			if cs.IsSuccess() || res.Stop || time.Since(start).Seconds() > 30 {
 				return
 			}
 		}

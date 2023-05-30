@@ -14,6 +14,9 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/LucaTheHacker/go-haversine"
+	"github.com/jinzhu/copier"
+	"github.com/speps/go-hashids/v2"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/model/battery"
 	"github.com/auroraride/aurservd/internal/ent"
@@ -26,8 +29,6 @@ import (
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
-	"github.com/jinzhu/copier"
-	"github.com/speps/go-hashids/v2"
 )
 
 type branchService struct {
@@ -45,7 +46,7 @@ func NewBranch() *branchService {
 
 func NewBranchWithModifier(m *model.Modifier) *branchService {
 	s := NewBranch()
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	return s
 }
 
@@ -458,7 +459,7 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq) (i
 			}
 			// 获取健康状态
 			// 5分钟未更新视为离线
-			if c.Health == model.CabinetHealthStatusOnline && time.Now().Sub(c.UpdatedAt).Minutes() < 5 {
+			if c.Health == model.CabinetHealthStatusOnline && time.Since(c.UpdatedAt).Minutes() < 5 {
 				fa.State = model.BranchFacilityStateOnline
 			}
 			// 计算可用电池数量

@@ -25,7 +25,7 @@ func NewRiderBranch(r *ent.Rider) *riderBranchService {
 		ctx:   context.Background(),
 		rider: r,
 	}
-	s.ctx = context.WithValue(s.ctx, "rider", r)
+	s.ctx = context.WithValue(s.ctx, model.CtxRiderKey{}, r)
 	return s
 }
 

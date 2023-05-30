@@ -15,6 +15,10 @@ import (
 	"github.com/auroraride/adapter/defs/xcdef"
 	"github.com/auroraride/adapter/rpc/pb"
 	"github.com/auroraride/adapter/rpc/pb/timestamppb"
+	"github.com/golang-module/carbon/v2"
+	jsoniter "github.com/json-iterator/go"
+	"go.uber.org/zap"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/rpc"
 	"github.com/auroraride/aurservd/internal/ar"
@@ -23,9 +27,6 @@ import (
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
-	"github.com/golang-module/carbon/v2"
-	jsoniter "github.com/json-iterator/go"
-	"go.uber.org/zap"
 )
 
 type batteryBmsService struct {
@@ -81,7 +82,7 @@ func (s *batteryBmsService) SyncPutin(sn string, cab *ent.Cabinet, ordinal int) 
 		return
 	}
 
-	if time.Now().Sub(bat.UpdatedAt).Seconds() < 20 {
+	if time.Since(bat.UpdatedAt).Seconds() < 20 {
 		rid := ""
 		if bat.RiderID != nil {
 			rid = strconv.FormatUint(*bat.RiderID, 10)
@@ -167,7 +168,7 @@ func (s *batteryBmsService) Detail(req *model.BatterySNRequest) (detail *model.B
 			EnvTemp:              uint16(hb.EnvTemp),
 			Strength:             uint8(hb.Strength),
 			Gps:                  xcdef.GPSStatus(hb.Gps),
-			Online:               time.Now().Sub(hb.CreatedAt.AsTime().In(ar.TimeLocation)).Minutes() < 35,
+			Online:               time.Since(hb.CreatedAt.AsTime().In(ar.TimeLocation)).Minutes() < 35,
 			FaultsOverview:       make([]*pb.BatteryFaultOverview, 0),
 		}
 	}

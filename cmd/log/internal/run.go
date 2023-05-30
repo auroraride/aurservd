@@ -70,7 +70,7 @@ func doLogs() {
 			return nil
 		}
 
-		log.Printf("%s 处理成功: %.2fMB - %.4fs", key, float64(info.Size())/1024.0/1024.0, time.Now().Sub(start).Seconds())
+		log.Printf("%s 处理成功: %.2fMB - %.4fs", key, float64(info.Size())/1024.0/1024.0, time.Since(start).Seconds())
 
 		// 删除
 		_ = os.Remove(path)

@@ -249,7 +249,7 @@ func (s *intelligentCabinetService) ExchangeResult(uid string) (res *model.Rider
 	defer ticker.Stop()
 
 	for ; true; <-ticker.C {
-		if time.Now().Sub(start).Seconds() > 30 {
+		if time.Since(start).Seconds() > 30 {
 			return
 		}
 

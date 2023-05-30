@@ -29,7 +29,7 @@ func NewCity() *cityService {
 
 func NewCityWithModifier(m *model.Modifier) *cityService {
 	s := NewCity()
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	s.modifier = m
 	return s
 }

@@ -50,14 +50,14 @@ func NewEmployee() *employeeService {
 
 func NewEmployeeWithRider(r *ent.Rider) *employeeService {
 	s := NewEmployee()
-	s.ctx = context.WithValue(s.ctx, "rider", r)
+	s.ctx = context.WithValue(s.ctx, model.CtxRiderKey{}, r)
 	s.rider = r
 	return s
 }
 
 func NewEmployeeWithModifier(m *model.Modifier) *employeeService {
 	s := NewEmployee()
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	s.modifier = m
 	return s
 }
@@ -71,7 +71,7 @@ func NewEmployeeWithEmployee(e *ent.Employee) *employeeService {
 			Name:  e.Name,
 			Phone: e.Phone,
 		}
-		s.ctx = context.WithValue(s.ctx, "employee", s.employeeInfo)
+		s.ctx = context.WithValue(s.ctx, model.CtxEmployeeKey{}, s.employeeInfo)
 	}
 	return s
 }

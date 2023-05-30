@@ -10,6 +10,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/golang-module/carbon/v2"
+
 	"github.com/auroraride/aurservd/app/logging"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
@@ -18,7 +20,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
-	"github.com/golang-module/carbon/v2"
 )
 
 type enterpriseRiderService struct {
@@ -39,14 +40,14 @@ func NewEnterpriseRider() *enterpriseRiderService {
 
 func NewEnterpriseRiderWithRider(r *ent.Rider) *enterpriseRiderService {
 	s := NewEnterpriseRider()
-	s.ctx = context.WithValue(s.ctx, "rider", r)
+	s.ctx = context.WithValue(s.ctx, model.CtxRiderKey{}, r)
 	s.rider = r
 	return s
 }
 
 func NewEnterpriseRiderWithModifier(m *model.Modifier) *enterpriseRiderService {
 	s := NewEnterpriseRider()
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	s.modifier = m
 	return s
 }
@@ -60,7 +61,7 @@ func NewEnterpriseRiderWithEmployee(e *ent.Employee) *enterpriseRiderService {
 			Name:  e.Name,
 			Phone: e.Phone,
 		}
-		s.ctx = context.WithValue(s.ctx, "employee", s.employeeInfo)
+		s.ctx = context.WithValue(s.ctx, model.CtxEmployeeKey{}, s.employeeInfo)
 	}
 	return s
 }
@@ -364,7 +365,7 @@ func (s *enterpriseRiderService) SubscribeStatus(req *model.EnterpriseRiderSubsc
 		if sub.StartAt != nil {
 			return true
 		}
-		if time.Now().Sub(now).Seconds() >= 30 {
+		if time.Since(now).Seconds() >= 30 {
 			return false
 		}
 		time.Sleep(1 * time.Second)

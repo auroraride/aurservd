@@ -63,14 +63,14 @@ func NewRider() *riderService {
 
 func NewRiderWithModifier(m *model.Modifier) *riderService {
 	s := NewRider()
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	s.modifier = m
 	return s
 }
 
 func NewRiderWithRider(u *ent.Rider) *riderService {
 	s := NewRider()
-	s.ctx = context.WithValue(s.ctx, "rider", u)
+	s.ctx = context.WithValue(s.ctx, model.CtxRiderKey{}, u)
 	s.rider = u
 	return s
 }

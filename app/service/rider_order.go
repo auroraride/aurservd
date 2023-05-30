@@ -8,12 +8,13 @@ package service
 import (
 	"context"
 
+	"github.com/golang-module/carbon/v2"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
-	"github.com/golang-module/carbon/v2"
 )
 
 type riderOrderService struct {
@@ -32,14 +33,14 @@ func NewRiderOrder() *riderOrderService {
 
 func NewRiderOrderWithRider(rider *ent.Rider) *riderOrderService {
 	s := NewRiderOrder()
-	s.ctx = context.WithValue(s.ctx, "rider", rider)
+	s.ctx = context.WithValue(s.ctx, model.CtxRiderKey{}, rider)
 	s.rider = rider
 	return s
 }
 
 func NewRiderOrderWithModifier(m *model.Modifier) *riderOrderService {
 	s := NewRiderOrder()
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	s.modifier = m
 	return s
 }

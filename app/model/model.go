@@ -5,6 +5,10 @@
 
 package model
 
+type CtxRiderKey struct{}
+type CtxModifierKey struct{}
+type CtxEmployeeKey struct{}
+
 type StoreCabiletGoal uint8
 
 const (

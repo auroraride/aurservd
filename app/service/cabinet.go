@@ -56,7 +56,7 @@ func NewCabinet() *cabinetService {
 
 func NewCabinetWithModifier(m *model.Modifier) *cabinetService {
 	s := NewCabinet()
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	s.modifier = m
 	return s
 }
@@ -485,7 +485,7 @@ func (s *cabinetService) Businessable(cab *ent.Cabinet) (health bool, maintenanc
 	health = cab.UsingMicroService() ||
 		(model.CabinetStatus(cab.Status) == model.CabinetStatusNormal &&
 			cab.Health == model.CabinetHealthStatusOnline &&
-			time.Now().Sub(cab.UpdatedAt).Minutes() < 5 &&
+			time.Since(cab.UpdatedAt).Minutes() < 5 &&
 			len(cab.Bin) > 0)
 	return
 }

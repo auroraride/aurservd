@@ -12,13 +12,14 @@ import (
 	"strings"
 
 	"github.com/auroraride/adapter"
+	jsoniter "github.com/json-iterator/go"
+	"go.uber.org/zap"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/setting"
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/snag"
-	jsoniter "github.com/json-iterator/go"
-	"go.uber.org/zap"
 )
 
 type settingService struct {
@@ -37,7 +38,7 @@ func NewSetting() *settingService {
 
 func NewSettingWithModifier(m *model.Modifier) *settingService {
 	s := NewSetting()
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	s.modifier = m
 	return s
 }

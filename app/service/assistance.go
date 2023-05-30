@@ -14,6 +14,10 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/golang-module/carbon/v2"
+	"github.com/jinzhu/copier"
+	"go.uber.org/zap"
+
 	"github.com/auroraride/aurservd/app/logging"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/workwx"
@@ -30,9 +34,6 @@ import (
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
-	"github.com/golang-module/carbon/v2"
-	"github.com/jinzhu/copier"
-	"go.uber.org/zap"
 )
 
 type assistanceService struct {
@@ -53,14 +54,14 @@ func NewAssistance() *assistanceService {
 
 func NewAssistanceWithRider(r *ent.Rider) *assistanceService {
 	s := NewAssistance()
-	s.ctx = context.WithValue(s.ctx, "rider", r)
+	s.ctx = context.WithValue(s.ctx, model.CtxRiderKey{}, r)
 	s.rider = r
 	return s
 }
 
 func NewAssistanceWithModifier(m *model.Modifier) *assistanceService {
 	s := NewAssistance()
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	s.modifier = m
 	return s
 }
@@ -74,7 +75,7 @@ func NewAssistanceWithEmployee(e *ent.Employee) *assistanceService {
 			Name:  e.Name,
 			Phone: e.Phone,
 		}
-		s.ctx = context.WithValue(s.ctx, "employee", s.employeeInfo)
+		s.ctx = context.WithValue(s.ctx, model.CtxEmployeeKey{}, s.employeeInfo)
 	}
 	return s
 }
@@ -432,7 +433,7 @@ func (s *assistanceService) Allocate(req *model.AssistanceAllocateReq) {
 		SetEmployeeID(*st.EmployeeID).
 		SetStatus(model.AssistanceStatusAllocated).
 		SetAllocateAt(time.Now()).
-		SetWait(int(time.Now().Sub(item.CreatedAt).Seconds())).
+		SetWait(int(time.Since(item.CreatedAt).Seconds())).
 		Save(s.ctx)
 
 	if err != nil {
@@ -599,7 +600,7 @@ func (s *assistanceService) EmployeeDetail(id uint64) (res model.AssistanceEmplo
 	if ass.ProcessAt != nil {
 		res.Minutes = math.Round(ass.ProcessAt.Sub(ass.CreatedAt).Minutes())
 	} else if ass.Status == model.AssistanceStatusAllocated {
-		res.Minutes = math.Round(time.Now().Sub(ass.CreatedAt).Minutes())
+		res.Minutes = math.Round(time.Since(ass.CreatedAt).Minutes())
 	}
 
 	for _, polyline := range ass.NaviPolylines {

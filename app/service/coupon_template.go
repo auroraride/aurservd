@@ -8,13 +8,14 @@ package service
 import (
 	"context"
 
+	"github.com/golang-module/carbon/v2"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/coupontemplate"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/pkg/snag"
-	"github.com/golang-module/carbon/v2"
 )
 
 type couponTemplateService struct {
@@ -35,7 +36,7 @@ func NewCouponTemplate() *couponTemplateService {
 
 func NewCouponTemplateWithModifier(m *model.Modifier) *couponTemplateService {
 	s := NewCouponTemplate()
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	s.modifier = m
 	return s
 }

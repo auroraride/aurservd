@@ -16,6 +16,9 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/golang-module/carbon/v2"
+	jsoniter "github.com/json-iterator/go"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/assets"
 	"github.com/auroraride/aurservd/internal/ar"
@@ -31,8 +34,6 @@ import (
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
-	"github.com/golang-module/carbon/v2"
-	jsoniter "github.com/json-iterator/go"
 )
 
 type stockService struct {
@@ -53,7 +54,7 @@ func NewStock() *stockService {
 
 func NewStockWithRider(r *ent.Rider) *stockService {
 	s := NewStock()
-	s.ctx = context.WithValue(s.ctx, "rider", r)
+	s.ctx = context.WithValue(s.ctx, model.CtxRiderKey{}, r)
 	s.rider = r
 	return s
 }
@@ -61,7 +62,7 @@ func NewStockWithRider(r *ent.Rider) *stockService {
 func NewStockWithModifier(m *model.Modifier) *stockService {
 	s := NewStock()
 	if m != nil {
-		s.ctx = context.WithValue(s.ctx, "modifier", m)
+		s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 		s.modifier = m
 	}
 	return s
@@ -76,7 +77,7 @@ func NewStockWithEmployee(e *ent.Employee) *stockService {
 			Name:  e.Name,
 			Phone: e.Phone,
 		}
-		s.ctx = context.WithValue(s.ctx, "employee", s.employeeInfo)
+		s.ctx = context.WithValue(s.ctx, model.CtxEmployeeKey{}, s.employeeInfo)
 	}
 	return s
 }

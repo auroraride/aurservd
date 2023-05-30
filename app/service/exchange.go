@@ -15,6 +15,9 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/adapter"
+	"github.com/golang-module/carbon/v2"
+	"github.com/lithammer/shortuuid/v4"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
@@ -28,8 +31,6 @@ import (
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
-	"github.com/golang-module/carbon/v2"
-	"github.com/lithammer/shortuuid/v4"
 )
 
 type exchangeService struct {
@@ -50,14 +51,14 @@ func NewExchange() *exchangeService {
 
 func NewExchangeWithRider(r *ent.Rider) *exchangeService {
 	s := NewExchange()
-	s.ctx = context.WithValue(s.ctx, "rider", r)
+	s.ctx = context.WithValue(s.ctx, model.CtxRiderKey{}, r)
 	s.rider = r
 	return s
 }
 
 func NewExchangeWithModifier(m *model.Modifier) *exchangeService {
 	s := NewExchange()
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	s.modifier = m
 	return s
 }
@@ -71,7 +72,7 @@ func NewExchangeWithEmployee(e *ent.Employee) *exchangeService {
 			Name:  e.Name,
 			Phone: e.Phone,
 		}
-		s.ctx = context.WithValue(s.ctx, "employee", s.employeeInfo)
+		s.ctx = context.WithValue(s.ctx, model.CtxEmployeeKey{}, s.employeeInfo)
 	}
 	return s
 }
