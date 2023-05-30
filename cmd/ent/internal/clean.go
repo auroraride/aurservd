@@ -6,7 +6,6 @@
 package internal
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -59,7 +58,7 @@ func Clean(path ...string) {
 	//     return nil
 	// })
 
-	fs, _ := ioutil.ReadDir(p)
+	fs, _ := os.ReadDir(p)
 	for _, f := range fs {
 		name := f.Name()
 		if _, ok := removeNotable[name]; !ok {

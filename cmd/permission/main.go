@@ -7,15 +7,15 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
 	"sort"
 	"strings"
 
-	"github.com/auroraride/aurservd/app/permission"
 	"github.com/povsister/scp"
+
+	"github.com/auroraride/aurservd/app/permission"
 )
 
 var (
@@ -57,7 +57,7 @@ func main() {
 			pg.Desc = x.Desc
 		}
 
-		doc, _ := ioutil.ReadFile(filepath.Join(d, f.Name()))
+		doc, _ := os.ReadFile(filepath.Join(d, f.Name()))
 		re := regexp.MustCompile(`(?m)// @Router\s+(.*) \[(.*)][\S\s]*?@Summary\s+(.*)? (.*)`)
 		bs := re.FindAllStringSubmatch(string(doc), -1)
 		for _, sub := range bs {
@@ -88,7 +88,7 @@ func main() {
 }
 
 func upload() {
-	privPEM, err := ioutil.ReadFile("/Users/liasica/.ssh/id_rsa")
+	privPEM, err := os.ReadFile("/Users/liasica/.ssh/id_rsa")
 	sshConf, _ := scp.NewSSHConfigFromPrivateKey("root", privPEM)
 	client, err := scp.NewClient("39.106.77.239", sshConf, &scp.ClientOption{})
 	if err != nil {

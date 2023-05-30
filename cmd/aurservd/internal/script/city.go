@@ -7,8 +7,8 @@ package script
 
 import (
 	"context"
-	"io/ioutil"
 	"log"
+	"os"
 	"strconv"
 	"strings"
 
@@ -133,7 +133,7 @@ func cityJsonCmd() *cobra.Command {
 				items[i] = item
 			}
 			b, _ := jsoniter.MarshalIndent(items, "", "  ")
-			_ = ioutil.WriteFile("assets/city.json", b, 0755)
+			_ = os.WriteFile("assets/city.json", b, 0755)
 		},
 	}
 }
