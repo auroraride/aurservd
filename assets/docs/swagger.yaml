@@ -335,7 +335,7 @@ definitions:
     - name
     - phone
     type: object
-  model.AgentListRes:
+  model.AgentMeta:
     properties:
       id:
         type: integer
@@ -351,6 +351,23 @@ definitions:
         type: string
       phone:
         description: 电话
+        type: string
+    type: object
+  model.AgentPrepayReq:
+    properties:
+      amount:
+        description: 充值金额
+        type: number
+      openId:
+        description: 微信openid
+        type: string
+    required:
+    - amount
+    - openId
+    type: object
+  model.AgentPrepayRes:
+    properties:
+      prepayId:
         type: string
     type: object
   model.AgentProfile:
@@ -7441,6 +7458,33 @@ paths:
       summary: A3001 充值概览
       tags:
       - '[A]代理接口'
+  /agent/v1/prepayment/pay/wxmp:
+    post:
+      consumes:
+      - application/json
+      operationId: AgentPrepaymentWechatMiniprogramPay
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AgentPrepayReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.AgentPrepayRes'
+      summary: A3003 小程序储值
+      tags:
+      - '[A]代理接口'
   /agent/v1/profile:
     get:
       consumes:
@@ -11841,7 +11885,7 @@ paths:
           description: 请求成功
           schema:
             items:
-              $ref: '#/definitions/model.AgentListRes'
+              $ref: '#/definitions/model.AgentMeta'
             type: array
       summary: M9020 代理账号列表
       tags:

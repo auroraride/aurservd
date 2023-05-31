@@ -718,12 +718,10 @@ func (s *assistanceService) Pay(req *model.AssistancePayReq) model.AssistancePay
 	no := tools.NewUnique().NewSN()
 	cost := ass.Cost
 
-	// TODO DEBUG 模式支付一分钱
-	mode := ar.Config.App.Mode
-	if mode == "debug" || mode == "next" {
+	// Development模式支付一分钱
+	if ar.Config.Environment.IsDevelopment() {
 		cost = 0.01
 	}
-	// TODO DEBUG 记得删除
 
 	pc := &model.PaymentCache{
 		CacheType: model.PaymentCacheTypeAssistance,

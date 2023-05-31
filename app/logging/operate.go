@@ -17,6 +17,13 @@ import (
 	"github.com/auroraride/aurservd/internal/ent"
 )
 
+type Operator struct {
+	Type  model.OperatorType `json:"operatorType"`
+	ID    uint64             `json:"operatorId"`
+	Phone string             `json:"operatorPhone"`
+	Name  string             `json:"operatorName"`
+}
+
 // OperateLog 系统操作日志
 type OperateLog struct {
 	ID string `json:"id" sls:"操作ID"`
@@ -82,6 +89,16 @@ func (o *OperateLog) SetRemark(remark string) *OperateLog {
 func (o *OperateLog) SetDiff(before, after string) *OperateLog {
 	o.Before = before
 	o.After = after
+	return o
+}
+
+func (o *OperateLog) SetOperator(op *Operator) *OperateLog {
+	if op != nil {
+		o.OperatorID = op.ID
+		o.OperatorPhone = op.Phone
+		o.OperatorName = op.Name
+		o.OperatorType = op.Type
+	}
 	return o
 }
 

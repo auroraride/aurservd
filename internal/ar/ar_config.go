@@ -20,6 +20,11 @@ var (
 	Config *config
 )
 
+type Wechat struct {
+	AppID     string `koanf:"appID"`
+	AppSecret string `koanf:"appSecret"`
+}
+
 type Version struct {
 	Version     string `json:"version"`
 	Description string `json:"description"`
@@ -57,7 +62,6 @@ type config struct {
 
 	App struct {
 		Host         string
-		Mode         string
 		SQL          bool
 		CabinetDebug bool
 		Debug        struct {
@@ -236,6 +240,9 @@ type config struct {
 		CorpID     string `koanf:"corpID"`
 		CorpSecret string `koanf:"corpSecret"`
 	}
+	WechatMiniprogram struct {
+		Agent Wechat
+	} `koanf:"wechatMiniprogram"`
 }
 
 func LoadConfig() {

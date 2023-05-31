@@ -20,7 +20,6 @@ import (
 	"github.com/shopspring/decimal"
 	"go.uber.org/zap"
 
-	"github.com/auroraride/aurservd/app/logging"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -482,49 +481,14 @@ func (s *enterpriseService) UpdateStatement(e *ent.Enterprise) {
 
 // Prepayment 预付费
 func (s *enterpriseService) Prepayment(req *model.EnterprisePrepaymentReq) float64 {
-	e := s.QueryX(req.ID)
-	if e.Payment == model.EnterprisePaymentPostPay {
-		snag.Panic("该企业支付方式为后付费")
-	}
-
-	set := NewEnterpriseStatementWithModifier(s.modifier).Current(e)
-
-	before := e.Balance
-	var balance float64
-
-	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
-
-		// 创建预付费记录
-		_, err = tx.EnterprisePrepayment.Create().SetEnterpriseID(e.ID).SetAmount(req.Amount).SetRemark(req.Remark).Save(s.ctx)
-		if err != nil {
-			return
-		}
-
-		td := tools.NewDecimal()
-
-		// 更新余额
-		// 账单表
-		balance = td.Sum(e.Balance, req.Amount)
-		_, err = tx.EnterpriseStatement.UpdateOne(set).Save(s.ctx)
-		if err != nil {
-			return
-		}
-
-		// 更新企业表
-		e, err = tx.Enterprise.UpdateOne(e).SetBalance(balance).AddPrepaymentTotal(req.Amount).Save(s.ctx)
-		return
+	balance, err := NewPrepayment(s.modifier).UpdateAmount(&model.AgentPrepay{
+		EnterpriseID: req.ID,
+		Remark:       req.Remark,
+		Amount:       req.Amount,
 	})
-
-	// 记录日志
-	go logging.NewOperateLog().
-		SetRef(e).
-		SetModifier(s.modifier).
-		SetAgent(s.agent).
-		SetOperate(model.OperateEnterprisePrepayment).
-		SetDiff(fmt.Sprintf("余额%.2f元", before), fmt.Sprintf("余额%.2f元", balance)).
-		SetRemark(req.Remark).
-		Send()
-
+	if err != nil {
+		snag.Panic(err)
+	}
 	return balance
 }
 

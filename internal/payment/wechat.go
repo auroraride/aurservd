@@ -22,6 +22,7 @@ import (
 	"github.com/wechatpay-apiv3/wechatpay-go/core/option"
 	"github.com/wechatpay-apiv3/wechatpay-go/services/payments"
 	"github.com/wechatpay-apiv3/wechatpay-go/services/payments/app"
+	"github.com/wechatpay-apiv3/wechatpay-go/services/payments/jsapi"
 	"github.com/wechatpay-apiv3/wechatpay-go/services/payments/native"
 	"github.com/wechatpay-apiv3/wechatpay-go/services/refunddomestic"
 	"github.com/wechatpay-apiv3/wechatpay-go/utils"
@@ -31,7 +32,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/snag"
-	"github.com/auroraride/aurservd/pkg/tools"
 )
 
 const (
@@ -73,47 +73,6 @@ func newWechatClient() *wechatClient {
 
 func NewWechat() *wechatClient {
 	return _wechat
-}
-
-func (c *wechatClient) AppPayDemo() (string, string, error) {
-	cfg := ar.Config.Payment.Wechat
-
-	svc := app.AppApiService{
-		Client: c.Client,
-	}
-
-	no := tools.NewUnique().NewSN28()
-
-	resp, result, err := svc.PrepayWithRequestPayment(context.Background(), app.PrepayRequest{
-		Appid:       core.String(cfg.AppID),
-		Mchid:       core.String(cfg.MchID),
-		Description: core.String("测试支付"),
-		OutTradeNo:  core.String(no),
-		TimeExpire:  core.Time(time.Now().Add(10 * time.Minute)),
-		NotifyUrl:   core.String(cfg.NotifyUrl),
-		Amount: &app.Amount{
-			Currency: core.String("CNY"),
-			Total:    core.Int64(int64(math.Round(1))),
-		},
-	})
-
-	if err != nil {
-		b, _ := io.ReadAll(result.Response.Body)
-		zap.L().Error("微信支付调用失败", log.ResponseBody(b), zap.Error(err))
-		return "", "", err
-	}
-
-	var out struct {
-		*app.PrepayWithRequestPaymentResponse
-		AppID string `json:"appId"`
-	}
-
-	out.PrepayWithRequestPaymentResponse = resp
-	out.AppID = cfg.AppID
-
-	b, _ := jsoniter.Marshal(out)
-
-	return string(b), no, nil
 }
 
 // AppPay APP支付
@@ -162,7 +121,7 @@ func (c *wechatClient) Native(pc *model.PaymentCache) (string, error) {
 	cfg := ar.Config.Payment.Wechat
 
 	svc := native.NativeApiService{Client: c.Client}
-	resp, result, err := svc.Prepay(context.Background(), native.PrepayRequest{
+	resp, _, err := svc.Prepay(context.Background(), native.PrepayRequest{
 		Appid:       core.String(cfg.AppID),
 		Mchid:       core.String(cfg.MchID),
 		Description: core.String(subject),
@@ -176,8 +135,7 @@ func (c *wechatClient) Native(pc *model.PaymentCache) (string, error) {
 	})
 
 	if err != nil {
-		b, _ := io.ReadAll(result.Response.Body)
-		zap.L().Error("微信Native支付调用失败", log.ResponseBody(b), zap.Error(err))
+		zap.L().Error("微信Native支付调用失败", zap.Error(err))
 		return "", err
 	}
 
@@ -186,6 +144,37 @@ func (c *wechatClient) Native(pc *model.PaymentCache) (string, error) {
 	}
 
 	return *resp.CodeUrl, nil
+}
+
+func (c *wechatClient) Miniprogram(appID, openID string, pc *model.PaymentCache) (string, error) {
+	amount, subject, no := pc.GetPaymentArgs()
+	cfg := ar.Config.Payment.Wechat
+
+	svc := jsapi.JsapiApiService{Client: c.Client}
+	resp, _, err := svc.Prepay(context.Background(), jsapi.PrepayRequest{
+		Appid:       core.String(appID),
+		Mchid:       core.String(cfg.MchID),
+		Description: core.String(subject),
+		OutTradeNo:  core.String(no),
+		TimeExpire:  core.Time(time.Now().Add(10 * time.Minute)),
+		NotifyUrl:   core.String(cfg.NotifyUrl),
+		Payer:       &jsapi.Payer{Openid: core.String(openID)},
+		Amount: &jsapi.Amount{
+			Currency: core.String("CNY"),
+			Total:    core.Int64(int64(math.Round(amount * 100))),
+		},
+	})
+
+	if err != nil {
+		zap.L().Error("微信Miniprogram支付调用失败", zap.Error(err))
+		return "", err
+	}
+
+	if resp.PrepayId == nil {
+		return "", errors.New("支付二维码获取失败")
+	}
+
+	return *resp.PrepayId, nil
 }
 
 type WechatPayResponse struct {
@@ -255,13 +244,16 @@ func (c *wechatClient) Notification(req *http.Request) *model.PaymentCache {
 		return nil
 	}
 
+	tranID := *(transaction.TransactionId)
 	switch pc.CacheType {
 	case model.PaymentCacheTypePlan:
-		pc.Subscribe.TradeNo = *(transaction.TransactionId)
+		pc.Subscribe.TradeNo = tranID
 	case model.PaymentCacheTypeOverdueFee:
-		pc.OverDueFee.TradeNo = *(transaction.TransactionId)
+		pc.OverDueFee.TradeNo = tranID
 	case model.PaymentCacheTypeAssistance:
-		pc.Assistance.TradeNo = *(transaction.TransactionId)
+		pc.Assistance.TradeNo = tranID
+	case model.PaymentCacheTypeAgentPrepay:
+		pc.AgentPrepay.TradeNo = tranID
 	default:
 		return nil
 	}

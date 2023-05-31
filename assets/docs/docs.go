@@ -293,6 +293,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/agent/v1/prepayment/pay/wxmp": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A3003 小程序储值",
+                "operationId": "AgentPrepaymentWechatMiniprogramPay",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AgentPrepayReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.AgentPrepayRes"
+                        }
+                    }
+                }
+            }
+        },
         "/agent/v1/profile": {
             "get": {
                 "consumes": [
@@ -6840,7 +6881,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.AgentListRes"
+                                "$ref": "#/definitions/model.AgentMeta"
                             }
                         }
                     }
@@ -14949,7 +14990,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.AgentListRes": {
+        "model.AgentMeta": {
             "type": "object",
             "properties": {
                 "id": {
@@ -14972,6 +15013,31 @@ const docTemplate = `{
                 },
                 "phone": {
                     "description": "电话",
+                    "type": "string"
+                }
+            }
+        },
+        "model.AgentPrepayReq": {
+            "type": "object",
+            "required": [
+                "amount",
+                "openId"
+            ],
+            "properties": {
+                "amount": {
+                    "description": "充值金额",
+                    "type": "number"
+                },
+                "openId": {
+                    "description": "微信openid",
+                    "type": "string"
+                }
+            }
+        },
+        "model.AgentPrepayRes": {
+            "type": "object",
+            "properties": {
+                "prepayId": {
                     "type": "string"
                 }
             }

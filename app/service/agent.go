@@ -86,12 +86,12 @@ func (s *agentService) Delete(req *model.IDParamReq) {
 }
 
 func (s *agentService) List(req *model.AgentListReq) *model.PaginationRes {
-	// res []model.AgentListRes
+	// res []model.AgentMeta
 	items, _ := s.orm.QueryNotDeleted().Where(agent.EnterpriseID(req.EnterpriseID)).All(s.ctx)
 
-	out := make([]model.AgentListRes, len(items))
+	out := make([]model.AgentMeta, len(items))
 	for i, item := range items {
-		out[i] = model.AgentListRes{
+		out[i] = model.AgentMeta{
 			ID:    item.ID,
 			Name:  item.Name,
 			Phone: item.Phone,
