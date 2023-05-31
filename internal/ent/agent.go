@@ -180,13 +180,6 @@ func (a *Agent) assignValues(columns []string, values []any) error {
 				a.enterprise_agents = new(uint64)
 				*a.enterprise_agents = uint64(value.Int64)
 			}
-		case agent.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field enterprise_agents", value)
-			} else if value.Valid {
-				a.enterprise_agents = new(uint64)
-				*a.enterprise_agents = uint64(value.Int64)
-			}
 		default:
 			a.selectValues.Set(columns[i], values[i])
 		}

@@ -89,6 +89,7 @@ func loadRideRoutes() {
 	)
 
 	g.POST("/signin", rapi.Rider.Signin)                  // 登录
+	g.POST("/wechat/login", rapi.Rider.WechatMiniLogin)   // 微信登录
 	g.POST("/authenticator", rapi.Rider.Authenticator)    // 认证
 	g.GET("/authenticator/:token", rapi.Rider.AuthResult) // 获取实名认证结果
 	g.GET("/face/:token", rapi.Rider.FaceResult)          // 获取人脸验证结果
@@ -137,6 +138,11 @@ func loadRideRoutes() {
 	g.GET("/business/pause/info", rapi.Business.PauseInfo)
 	g.GET("/business/allocated/:id", rapi.Business.Allocated)
 	g.GET("/business/subscribe/signed/:id", rapi.Business.SubscribeSigned)
+	// 小程序骑手团签信息
+	g.GET("/enterprise/info", rapi.Enterprise.RiderEnterpriseInfo)
+	// 加入团签
+	g.POST("/enterprise/join", rapi.Enterprise.JoinEnterprise)
+
 	// 申请加时个人信息
 	g.GET("/enterprise/subscribe/info", rapi.Enterprise.GetSubscribeInfo)
 	// 申请加时

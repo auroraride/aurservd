@@ -17,6 +17,21 @@ type cabinet struct{}
 
 var Cabinet = new(cabinet)
 
+// List 电柜列表
+// @ID           AgentCabinetList
+// @Router       /agent/v1/cabinet [GET]
+// @Summary      A5001 电柜列表
+// @Tags         [A]代理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Agent-Token  header  string  true  "代理校验token"
+// @Param        query  query   model.CabinetQueryReq  false  "筛选选项"
+// @Success      200  {object}  model.PaginationRes{items=[]model.AgentCabinetDetailRes}  "请求成功"
+func (*cabinet) List(c echo.Context) (err error) {
+	ctx, req := app.AgentContextAndBinding[model.CabinetQueryReq](c)
+	return ctx.SendResponse(service.NewAgentCabinet().List(ctx.Agent.EnterpriseID, req))
+}
+
 // Detail
 // @ID           AgentCabinetDetail
 // @Router       /agent/v1/cabinet/{serial} [GET]

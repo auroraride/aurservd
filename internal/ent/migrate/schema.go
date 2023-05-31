@@ -41,12 +41,6 @@ var (
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
-			{
-				Symbol:     "agent_enterprise_agents",
-				Columns:    []*schema.Column{AgentColumns[11]},
-				RefColumns: []*schema.Column{EnterpriseColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
 		},
 		Indexes: []*schema.Index{
 			{

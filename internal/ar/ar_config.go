@@ -236,6 +236,10 @@ type config struct {
 		CorpID     string `koanf:"corpID"`
 		CorpSecret string `koanf:"corpSecret"`
 	}
+	WxMini struct {
+		AppID     string `koanf:"appID"`
+		AppSecret string `koanf:"appSecret"`
+	}
 }
 
 func LoadConfig() {

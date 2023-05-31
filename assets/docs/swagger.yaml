@@ -318,6 +318,50 @@ definitions:
         description: 电话
         type: string
     type: object
+  model.AgentCabinetBin:
+    properties:
+      batterySn:
+        description: 当前电池编码 (无电池的时候为空)
+        type: string
+      ordinal:
+        description: 仓位序号, 从`1`开始
+        type: integer
+      soc:
+        description: 当前电量 (无电池时为空)
+        type: number
+      usable:
+        description: 是否可用 `false`时,禁止代理操作该仓位
+        type: boolean
+    type: object
+  model.AgentCabinetDetailRes:
+    properties:
+      bins:
+        description: 仓位信息
+        items:
+          $ref: '#/definitions/model.AgentCabinetBin'
+        type: array
+      health:
+        description: 健康状态, 0:离线 1:在线 2:故障
+        enum:
+        - 0
+        - 1
+        - 2
+        type: integer
+      name:
+        description: 电柜名称
+        type: string
+      serial:
+        type: string
+      station:
+        description: 所属站点
+        type: string
+      status:
+        description: 投放状态, 1:运营中 2:维护中
+        enum:
+        - 1
+        - 2
+        type: integer
+    type: object
   model.AgentCreateReq:
     properties:
       enterpriseId:
@@ -396,20 +440,10 @@ definitions:
     type: object
   model.AgentRider:
     properties:
-      city:
-        allOf:
-        - $ref: '#/definitions/model.City'
-        description: 城市
-      date:
-        description: 创建日期
-        type: string
-      endAt:
-        description: 退租日期
-        type: string
       id:
         type: integer
       model:
-        description: 电池型号
+        description: SubscribeID uint64 `json:"subscribeId"`     // 订阅ID
         type: string
       name:
         description: 姓名
@@ -424,33 +458,19 @@ definitions:
         description: 开始日期
         type: string
       station:
-        description: 站点
+        description: |-
+          City        *City  `json:"city,omitempty"`      // 城市
+          Date        string `json:"date"`            // 创建日期
         type: string
       status:
         description: 状态
         type: string
       stopAt:
-        description: 到期日期
+        description: EndAt       string `json:"endAt"`           // 退租日期
         type: string
-      subscribeId:
-        description: 订阅ID
-        type: integer
-      used:
-        description: 使用天数
-        type: integer
     type: object
   model.AgentRiderDetail:
     properties:
-      city:
-        allOf:
-        - $ref: '#/definitions/model.City'
-        description: 城市
-      date:
-        description: 创建日期
-        type: string
-      endAt:
-        description: 退租日期
-        type: string
       id:
         type: integer
       logs:
@@ -458,7 +478,7 @@ definitions:
           $ref: '#/definitions/model.AgentRiderLog'
         type: array
       model:
-        description: 电池型号
+        description: SubscribeID uint64 `json:"subscribeId"`     // 订阅ID
         type: string
       name:
         description: 姓名
@@ -473,20 +493,16 @@ definitions:
         description: 开始日期
         type: string
       station:
-        description: 站点
+        description: |-
+          City        *City  `json:"city,omitempty"`      // 城市
+          Date        string `json:"date"`            // 创建日期
         type: string
       status:
         description: 状态
         type: string
       stopAt:
-        description: 到期日期
+        description: EndAt       string `json:"endAt"`           // 退租日期
         type: string
-      subscribeId:
-        description: 订阅ID
-        type: integer
-      used:
-        description: 使用天数
-        type: integer
     type: object
   model.AgentRiderLog:
     properties:
@@ -2860,6 +2876,14 @@ definitions:
         description: 是否启用
         type: boolean
     type: object
+  model.CityListReq:
+    properties:
+      status:
+        description: 启用状态 0:全部 1:未启用 2:已启用
+        maximum: 2
+        minimum: 0
+        type: integer
+    type: object
   model.CityModifyReq:
     properties:
       open:
@@ -3621,6 +3645,10 @@ definitions:
       agent:
         description: 是否代理商模式
         type: boolean
+      companyName:
+        type: string
+      contactPhone:
+        type: string
       id:
         description: 企业ID
         type: integer
@@ -3994,10 +4022,17 @@ definitions:
       stationId:
         type: integer
     required:
-    - enterpriseId
     - name
     - phone
     - stationId
+    type: object
+  model.EnterpriseRiderInviteReq:
+    properties:
+      station_id:
+        description: 站点id
+        type: integer
+    required:
+    - station_id
     type: object
   model.EnterpriseRiderSubscribeChooseReq:
     properties:
@@ -4037,6 +4072,32 @@ definitions:
         type: string
     required:
     - name
+    type: object
+  model.EnterproseInfoReq:
+    properties:
+      enterprise_id:
+        type: integer
+      station_id:
+        description: 站点id
+        type: integer
+    type: object
+  model.EnterproseInfoRsp:
+    properties:
+      enterprise_name:
+        description: 团签名称
+        type: string
+      is_join:
+        description: 是否可以加入团签
+        type: boolean
+      rider_name:
+        description: 骑手姓名
+        type: string
+      rider_phone:
+        description: 骑手电话
+        type: string
+      station_name:
+        description: 站点名称
+        type: string
     type: object
   model.ExceptionEmployeeReq:
     properties:
@@ -4155,6 +4216,9 @@ definitions:
       end:
         description: '筛选结束日期, 格式为yyyy-mm-dd, 例如: 2022-06-01'
         type: string
+      enterpriseId:
+        description: 团签id
+        type: integer
       keyword:
         description: 筛选骑手姓名或电话
         type: string
@@ -4345,6 +4409,79 @@ definitions:
         description: 实名认证跳转链接
         type: string
     type: object
+  model.FeedbackDetail:
+    properties:
+      content:
+        description: 反馈内容
+        type: string
+      created_at:
+        description: 反馈时间
+        type: string
+      enterprise_contact_name:
+        description: 反馈用户团签联系人
+        type: string
+      enterprise_contact_phone:
+        description: 反馈用户团签联系电话
+        type: string
+      enterprise_id:
+        description: 反馈用户团签id
+        type: integer
+      enterprise_name:
+        description: 反馈用户团签名称
+        type: string
+      id:
+        description: 反馈ID
+        type: integer
+      type:
+        description: 反馈类型
+        type: integer
+      url:
+        description: 反馈图片
+        items:
+          type: string
+        type: array
+    type: object
+  model.FeedbackListReq:
+    properties:
+      current:
+        description: 当前页, 从1开始, 默认1
+        type: integer
+      end_time:
+        description: 反馈结束时间
+        type: string
+      enterprise_id:
+        description: 反馈用户团签id
+        type: integer
+      keyword:
+        description: 关键词
+        type: string
+      pageSize:
+        description: 每页数据, 默认20
+        type: integer
+      start_time:
+        description: 反馈开始时间
+        type: string
+      type:
+        description: 反馈类型
+        type: integer
+    type: object
+  model.FeedbackReq:
+    properties:
+      content:
+        description: 反馈内容
+        type: string
+      enterprise_id:
+        description: 反馈用户团签id
+        type: integer
+      type:
+        description: 反馈类型
+        type: integer
+      url:
+        description: 反馈图片
+        items:
+          type: string
+        type: array
+    type: object
   model.IDPostReq:
     properties:
       id:
@@ -4510,6 +4647,9 @@ definitions:
         description: 车架号或车牌号
         type: string
       id:
+        type: integer
+      stationId:
+        description: 站点id
         type: integer
       storeId:
         description: 门店ID
@@ -5458,6 +5598,17 @@ definitions:
         description: 电话
         type: string
     type: object
+  model.RiderActiveBatteryReq:
+    properties:
+      battery_id:
+        description: 电池编号
+        type: integer
+      enterprise_id:
+        description: 团签id
+        type: integer
+    required:
+    - battery_id
+    type: object
   model.RiderBlockReq:
     properties:
       block:
@@ -5466,6 +5617,24 @@ definitions:
       id:
         description: 骑手ID
         type: integer
+    type: object
+  model.RiderCodeLoginReq:
+    properties:
+      code:
+        type: string
+      enterprise_id:
+        type: integer
+      phone:
+        type: string
+      smsId:
+        type: string
+      station_id:
+        description: 站点信息
+        type: integer
+    required:
+    - code
+    - enterprise_id
+    - station_id
     type: object
   model.RiderContact:
     properties:
@@ -5754,6 +5923,18 @@ definitions:
         description: 订阅类型 battery:单电 ebike:车电
         type: string
     type: object
+  model.RiderJoinEnterpriseReq:
+    properties:
+      enterprise_id:
+        description: 团签ID
+        type: integer
+      station_id:
+        description: 站点ID
+        type: integer
+    required:
+    - enterprise_id
+    - station_id
+    type: object
   model.RiderListExport:
     properties:
       authStatus:
@@ -6021,6 +6202,8 @@ definitions:
       phone:
         description: 骑手电话
         type: string
+    type: object
+  model.RiderUnbindBatteryReq:
     type: object
   model.Role:
     properties:
@@ -6482,6 +6665,9 @@ definitions:
       end:
         description: 结束时间
         type: string
+      enterpriseId:
+        description: 团签id
+        type: integer
       goal:
         allOf:
         - $ref: '#/definitions/model.StoreCabiletGoal'
@@ -6493,6 +6679,9 @@ definitions:
         - 3
       materials:
         description: 查询物资类别, 默认为电池, 逗号分隔 battery:电池 ebike:电车 others:其他物资
+        type: string
+      model:
+        description: 电池型号
         type: string
       positive:
         description: 是否正序(默认倒序)
@@ -6701,6 +6890,9 @@ definitions:
     type: object
   model.StockTransferReq:
     properties:
+      batteryID:
+        description: 电池编号
+        type: integer
       ebikes:
         description: 车架编号 (和 `物资名称` / `车架` 不能同时存在, 也不能同时为空)
         items:
@@ -7372,6 +7564,34 @@ info:
   title: 极光出行API
   version: "1.0"
 paths:
+  /agent/v1/battery/list:
+    get:
+      consumes:
+      - application/json
+      operationId: AgentBatteryList
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - in: query
+        minLength: 4
+        name: serial
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Battery'
+            type: array
+      summary: A1004 电池列表
+      tags:
+      - '[A]代理接口'
   /agent/v1/bill/usage:
     get:
       consumes:
@@ -7432,6 +7652,92 @@ paths:
       summary: A4001 使用明细
       tags:
       - '[A]代理接口'
+  /agent/v1/cabinet:
+    get:
+      consumes:
+      - application/json
+      operationId: AgentCabinetList
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - description: 电柜型号 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
+        enum:
+        - UNKNOWN
+        - KAIXIN
+        - YUNDONG
+        - TUOBANG
+        in: query
+        name: brand
+        type: string
+        x-enum-varnames:
+        - CabinetBrandUnknown
+        - CabinetBrandKaixin
+        - CabinetBrandYundong
+        - CabinetBrandTuobang
+      - description: 城市ID
+        in: query
+        name: cityId
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 团签id
+        in: query
+        name: enterpriseId
+        type: integer
+      - description: 是否智能柜 0:全部 1:是 2:否
+        in: query
+        name: intelligent
+        type: integer
+      - description: 电池型号
+        in: query
+        name: model
+        type: string
+      - description: 电柜名称
+        in: query
+        name: name
+        type: string
+      - description: 在线状态
+        in: query
+        name: online
+        type: integer
+      - description: 归属类型   1:平台 2:代理商
+        in: query
+        name: ownerType
+        type: integer
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 电柜编号
+        in: query
+        name: serial
+        type: string
+      - description: 电柜状态
+        in: query
+        name: status
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.AgentCabinetDetailRes'
+                  type: array
+              type: object
+      summary: A5001 电柜列表
+      tags:
+      - '[A]代理接口'
   /agent/v1/cabinet/{serial}:
     get:
       consumes:
@@ -7456,6 +7762,56 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: A5002 电柜详情
+      tags:
+      - '[A]代理接口'
+  /agent/v1/city/list:
+    get:
+      consumes:
+      - application/json
+      operationId: AgentCityList
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.CityListReq'
+            type: array
+      summary: A1003 城市列表
+      tags:
+      - '[A]代理接口'
+  /agent/v1/feedback:
+    post:
+      consumes:
+      - application/json
+      operationId: AgentFeedback
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - description: 反馈内容
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.FeedbackReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            type: boolean
+      summary: A1005 意见反馈
       tags:
       - '[A]代理接口'
   /agent/v1/prepayment:
@@ -7637,6 +7993,33 @@ paths:
       summary: A2004 骑手详情
       tags:
       - '[A]代理接口'
+  /agent/v1/rider/active:
+    post:
+      consumes:
+      - application/json
+      operationId: AgentRiderActive
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - description: 请求详情
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.RiderActiveBatteryReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            type: string
+      summary: A2005 激活骑手
+      tags:
+      - '[A]代理接口'
   /agent/v1/rider/alter:
     post:
       consumes:
@@ -7664,6 +8047,231 @@ paths:
       summary: A2003 延长天数
       tags:
       - '[A]代理接口'
+  /agent/v1/rider/exchange:
+    get:
+      consumes:
+      - application/json
+      operationId: AgentExchangeList
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - description: 筛选对象 0:全部 1:个签 2:团签
+        in: query
+        name: aimed
+        type: integer
+      - description: 换电方案 0:全部 1:满电 2:非满电
+        enum:
+        - 0
+        - 1
+        - 2
+        in: query
+        name: alternative
+        type: integer
+      - description: 电柜类型, KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
+        enum:
+        - UNKNOWN
+        - KAIXIN
+        - YUNDONG
+        - TUOBANG
+        in: query
+        name: brand
+        type: string
+        x-enum-varnames:
+        - CabinetBrandUnknown
+        - CabinetBrandKaixin
+        - CabinetBrandYundong
+        - CabinetBrandTuobang
+      - description: 选择电柜ID
+        in: query
+        name: cabinetId
+        type: integer
+      - description: 城市
+        in: query
+        name: cityId
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 筛选店员(手机号或姓名)
+        in: query
+        name: employee
+        type: string
+      - description: '筛选结束日期, 格式为yyyy-mm-dd, 例如: 2022-06-01'
+        in: query
+        name: end
+        type: string
+      - description: 团签id
+        in: query
+        name: enterpriseId
+        type: integer
+      - description: 筛选骑手姓名或电话
+        in: query
+        name: keyword
+        type: string
+      - description: 电池型号
+        in: query
+        name: model
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 电柜编号
+        in: query
+        name: serial
+        type: string
+      - description: '筛选开始日期, 格式为yyyy-mm-dd, 例如: 2022-06-01'
+        in: query
+        name: start
+        type: string
+      - description: 换电状态 0:进行中 1:成功 2:失败 (不携带此参数为全部)
+        enum:
+        - 0
+        - 1
+        - 2
+        in: query
+        name: status
+        type: integer
+      - description: 选择门店ID
+        in: query
+        name: storeId
+        type: integer
+      - description: 换电类别 0:全部 1:电柜 2:门店
+        in: query
+        name: target
+        type: integer
+      - description: 次数 (所选时间段内最小换电次数)
+        in: query
+        name: times
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.ExchangeManagerListRes'
+                  type: array
+              type: object
+      summary: A2008 换电列表
+      tags:
+      - '[A]代理接口'
+  /agent/v1/rider/invite:
+    get:
+      consumes:
+      - application/json
+      operationId: AgentRiderInvite
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - description: 邀请骑手
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.EnterpriseRiderInviteReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              type: integer
+            type: array
+      summary: A2006 邀请骑手
+      tags:
+      - '[A]代理接口'
+  /agent/v1/rider/subscribe/apply:
+    get:
+      consumes:
+      - application/json
+      operationId: AgentSubscribeApplyList
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 结束时间
+        in: query
+        name: end
+        type: string
+      - description: 关键词
+        in: query
+        name: keyword
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 开始时间
+        in: query
+        name: start
+        type: string
+      - description: 审核状态
+        in: query
+        name: status
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.ApplyListRsp'
+                  type: array
+              type: object
+      summary: A2006 申请加时列表
+      tags:
+      - '[A]代理接口'
+    post:
+      consumes:
+      - application/json
+      operationId: AgentReviewApply
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - description: 审核请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.ReviewReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            type: string
+      summary: A2007 审核加时
+      tags:
+      - '[A]代理接口'
   /agent/v1/signin:
     post:
       consumes:
@@ -7679,6 +8287,53 @@ paths:
       summary: A1001 登录
       tags:
       - '[A]代理接口'
+  /agent/v1/site/list:
+    get:
+      consumes:
+      - application/json
+      operationId: AgentAgentname
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.EnterpriseStation'
+            type: array
+      summary: A1002 站点列表
+      tags:
+      - '[A]代理接口'
+  /agent/v1/stock:
+    get:
+      consumes:
+      - application/json
+      operationId: AgentStockDetail
+      parameters:
+      - description: 代理商校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - in: query
+        name: enterpriseId
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StockDetailRes'
+      summary: AE002 团签物资明细
+      tags:
+      - '[A]代理商接口'
   /commom/sms:
     post:
       consumes:
@@ -12190,6 +12845,35 @@ paths:
       summary: M9019 删除合同
       tags:
       - '[M]管理接口'
+  /manager/v1/enterprise/feedback:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerEnterpriseFeedbackList
+      parameters:
+      - description: 反馈列表请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.FeedbackListReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.FeedbackDetail'
+                  type: array
+              type: object
+      summary: M9030 反馈列表
+      tags:
+      - '[M]管理接口'
   /manager/v1/enterprise/price:
     post:
       consumes:
@@ -12338,6 +13022,50 @@ paths:
       summary: M9009 添加骑手
       tags:
       - '[M]管理接口'
+  /manager/v1/enterprise/rider/active:
+    put:
+      consumes:
+      - application/json
+      operationId: ManagerEnterpriseActiveRider
+      parameters:
+      - description: 激活骑手请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.RiderActiveBatteryReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M9028 激活骑手
+      tags:
+      - '[M]管理接口'
+  /manager/v1/enterprise/rider/unbind:
+    put:
+      consumes:
+      - application/json
+      operationId: ManagerEnterpriseUnbindRider
+      parameters:
+      - description: 解绑骑手请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.RiderUnbindBatteryReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M9029 解绑骑手
+      tags:
+      - '[M]管理接口'
   /manager/v1/enterprise/station:
     get:
       consumes:
@@ -12433,26 +13161,6 @@ paths:
         name: id
         required: true
         type: integer
-      - description: 页码
-        in: query
-        name: page
-        type: integer
-      - description: 每页数量
-        in: query
-        name: pageSize
-        type: integer
-      - description: 开始时间
-        in: query
-        name: start
-        type: string
-      - description: 结束时间
-        in: query
-        name: end
-        type: string
-      - description: 状态 0:待处理 1:已同意 2:已拒绝
-        in: query
-        name: status
-        type: integer
       produces:
       - application/json
       responses:
@@ -12543,6 +13251,10 @@ paths:
         in: query
         name: end
         type: string
+      - description: 团签id
+        in: query
+        name: enterpriseId
+        type: integer
       - description: 筛选骑手姓名或电话
         in: query
         name: keyword
@@ -14679,6 +15391,10 @@ paths:
         in: query
         name: end
         type: string
+      - description: 团签id
+        in: query
+        name: enterpriseId
+        type: integer
       - description: 查询目标 0:不筛选 1:门店(默认) 2:电柜 3:平台
         enum:
         - 0
@@ -14694,6 +15410,10 @@ paths:
       - description: 查询物资类别, 默认为电池, 逗号分隔 battery:电池 ebike:电车 others:其他物资
         in: query
         name: materials
+        type: string
+      - description: 电池型号
+        in: query
+        name: model
         type: string
       - description: 每页数据, 默认20
         in: query
@@ -14773,10 +15493,6 @@ paths:
         in: query
         name: enterprise_id
         type: integer
-      - description: 团签id
-        in: query
-        name: id
-        type: integer
       - description: 其他物资名称
         in: query
         name: keyword
@@ -14852,10 +15568,6 @@ paths:
       - description: 企业名称
         in: query
         name: enterprise_id
-        type: integer
-      - description: 团签id
-        in: query
-        name: id
         type: integer
       - description: 其他物资名称
         in: query
@@ -16306,6 +17018,55 @@ paths:
       summary: R3010 企业骑手获取可用电池
       tags:
       - '[R]骑手接口'
+  /rider/v1/enterprise/info:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderEnterpriseInfo
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 团签信息请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.EnterproseInfoReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.EnterproseInfoRsp'
+      summary: R3016 企业骑手团签信息
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/enterprise/join:
+    post:
+      consumes:
+      - application/json
+      operationId: RiderEnterpriseJoin
+      parameters:
+      - description: 加入团签请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.RiderJoinEnterpriseReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            type: boolean
+      summary: R3017 企业骑手加入团签
+      tags:
+      - '[R]骑手接口'
   /rider/v1/enterprise/subscribe:
     get:
       consumes:
@@ -17022,6 +17783,28 @@ paths:
           schema:
             $ref: '#/definitions/model.PointRes'
       summary: R9003 积分详情
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/wechat/login:
+    post:
+      consumes:
+      - application/json
+      operationId: RiderWechatLogin
+      parameters:
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.RiderCodeLoginReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.RiderSigninRes'
+      summary: R1009 骑手微信登录
       tags:
       - '[R]骑手接口'
 swagger: "2.0"

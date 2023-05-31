@@ -232,9 +232,11 @@ func (s *agentService) Profile(ag *ent.Agent, en *ent.Enterprise) model.AgentPro
 
 	return model.AgentProfile{
 		Enterprise: model.Enterprise{
-			ID:    en.ID,
-			Name:  en.Name,
-			Agent: true,
+			ID:           en.ID,
+			Name:         en.Name,
+			Agent:        true,
+			CompanyName:  en.CompanyName,
+			ContactPhone: en.ContactPhone,
 		},
 		ID:        ag.ID,
 		Phone:     ag.Phone,

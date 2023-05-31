@@ -7,8 +7,17 @@ package service
 
 import (
 	"context"
+	"fmt"
+
+	"github.com/golang-module/carbon/v2"
+	"github.com/silenceper/wechat/v2/cache"
+	"github.com/silenceper/wechat/v2/miniprogram/config"
+	"github.com/silenceper/wechat/v2/miniprogram/qrcode"
+
+	"github.com/silenceper/wechat/v2"
 
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -17,7 +26,6 @@ import (
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
-	"github.com/golang-module/carbon/v2"
 )
 
 type riderAgentService struct {
@@ -55,7 +63,6 @@ func (s *riderAgentService) detail(item *ent.Rider) model.AgentRider {
 	res := model.AgentRider{
 		ID:    item.ID,
 		Phone: item.Phone,
-		Date:  item.CreatedAt.Format(carbon.DateLayout),
 		Name:  item.Name,
 	}
 	// 获取站点
@@ -67,22 +74,12 @@ func (s *riderAgentService) detail(item *ent.Rider) model.AgentRider {
 	subs := item.Edges.Subscribes
 	if len(subs) > 0 {
 		sub := subs[0]
-		res.SubscribeID = sub.ID
 		res.Model = sub.Model
-		ci := sub.Edges.City
-		res.City = &model.City{
-			ID:   ci.ID,
-			Name: ci.Name,
-		}
-		if sub.EndAt != nil {
-			res.EndAt = sub.EndAt.Format(carbon.DateLayout)
-		}
 		if sub.AgentEndAt != nil {
 			res.StopAt = sub.AgentEndAt.Format(carbon.DateLayout)
 		}
 		if sub.StartAt != nil {
 			res.StartAt = sub.StartAt.Format(carbon.DateLayout)
-			res.Used = tools.NewTime().UsedDaysToNow(*sub.StartAt)
 		}
 		switch sub.Status {
 		case model.SubscribeStatusInactive:
@@ -96,12 +93,10 @@ func (s *riderAgentService) detail(item *ent.Rider) model.AgentRider {
 			if sub.AgentEndAt != nil {
 				res.Remaining = silk.Pointer(tools.NewTime().LastDays(*sub.AgentEndAt, today))
 				// 判定当前状态
-				if sub.AgentEndAt.After(today) {
-					// 若代理商处到期日期晚于今天, 则是使用中
-					res.Status = model.AgentRiderStatusUsing
+				if *res.Remaining <= 3 {
+					res.Status = model.AgentRiderStatusWillOverdue
 				} else {
-					// 否则是已超期
-					res.Status = model.AgentRiderStatusOverdue
+					res.Status = model.AgentRiderStatusUsing
 				}
 			}
 		}
@@ -118,8 +113,6 @@ func (s *riderAgentService) List(enterpriseID uint64, req *model.AgentRiderListR
 		}).
 		WithStation().
 		Order(ent.Desc(rider.FieldCreatedAt))
-
-	today := carbon.Now().StartOfDay().Carbon2Time()
 
 	var subquery []predicate.Subscribe
 
@@ -149,14 +142,12 @@ func (s *riderAgentService) List(enterpriseID uint64, req *model.AgentRiderListR
 		// 使用中
 		subquery = append(subquery, subscribe.Status(model.SubscribeStatusUsing))
 		q.Where(rider.HasSubscribesWith(subquery...))
-	case model.AgentRiderStatusOverdue:
-		// 已逾期
-		// 代理商团签的逾期状态 = 使用中 并且 代理商处到期日期已过期
+	case model.AgentRiderStatusWillOverdue:
+		// 将逾期
 		subquery = append(
 			subquery,
 			subscribe.Status(model.SubscribeStatusUsing),
-			subscribe.EndAtIsNil(),
-			subscribe.AgentEndAtLT(today),
+			subscribe.RemainingLTE(3),
 		)
 		q.Where(rider.HasSubscribesWith(subquery...))
 	case model.AgentRiderStatusUnsubscribed:
@@ -190,10 +181,10 @@ func (s *riderAgentService) Detail(req *model.IDParamReq, enterpriseID uint64) m
 	}
 	return model.AgentRiderDetail{
 		AgentRider: s.detail(item),
-		Logs: s.Log(&model.AgentRiderLogReq{
-			ID:           req.ID,
-			EnterpriseID: enterpriseID,
-		}),
+		// Logs: s.Log(&model.AgentRiderLogReq{
+		// 	ID:           req.ID,
+		// 	EnterpriseID: enterpriseID,
+		// }),
 	}
 }
 
@@ -218,4 +209,27 @@ func (s *riderAgentService) Log(req *model.AgentRiderLogReq) (items []model.Agen
 		}
 	}
 	return
+}
+
+// Invite 邀请骑手二维码
+func (s *riderAgentService) Invite(req *model.EnterpriseRiderInviteReq) []byte {
+	url := fmt.Sprintf("s=%d&e=%d", req.StationID, s.agent.EnterpriseID)
+	redisOpts := &cache.RedisOpts{
+		Host:     ar.Config.Redis.Address,
+		Password: ar.Config.Redis.Password,
+		Database: ar.Config.Redis.DB,
+	}
+	wc := wechat.NewWechat()
+	redisCache := cache.NewRedis(context.Background(), redisOpts)
+	wc.SetCache(redisCache)
+	coderParam := qrcode.QRCoder{Scene: url}
+	code, err := wc.GetMiniProgram(&config.Config{
+		AppID:     ar.Config.WxMini.AppID,
+		AppSecret: ar.Config.WxMini.AppSecret,
+	}).GetQRCode().GetWXACodeUnlimit(coderParam)
+	if err != nil {
+		snag.Panic("生成二维码失败")
+	}
+	return code
+
 }

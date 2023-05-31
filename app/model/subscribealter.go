@@ -35,11 +35,11 @@ type ApplyListRsp struct {
 	// 审核状态
 	Status int `json:"status"`
 	// 到期时间
-	ExpireTime int `json:"expire_time,omitempty"`
+	ExpireTime int `json:"expire_time"`
 	// 骑手姓名
-	RiderName string `json:"rider_name,omitempty"`
+	RiderName string `json:"rider_name"`
 	// 骑手手机号
-	RiderPhone string `json:"rider_phone,omitempty"`
+	RiderPhone string `json:"rider_phone"`
 }
 
 // 审批订阅申请

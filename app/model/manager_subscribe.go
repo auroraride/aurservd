@@ -10,6 +10,7 @@ type ManagerSubscribeActive struct {
 	StoreID      *uint64 `json:"storeId"`                // 门店ID
 	EbikeKeyword *string `json:"ebikeKeyword,omitempty"` // 车架号或车牌号
 	BatteryID    *uint64 `json:"batteryId"`              // 电池编码 (参数可选, 以便于当该电池在电柜中时需要客服手动开仓并绑定到骑手)
+	StationID    *uint64 `json:"stationId"`              // 站点id
 }
 
 type ManagerSubscribeChangeEbike struct {

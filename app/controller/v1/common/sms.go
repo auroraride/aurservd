@@ -8,12 +8,13 @@ package common
 import (
 	"errors"
 
+	"github.com/labstack/echo/v4"
+	"github.com/lithammer/shortuuid/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/internal/ar"
-	"github.com/labstack/echo/v4"
-	"github.com/lithammer/shortuuid/v4"
 )
 
 // SendSmsCode

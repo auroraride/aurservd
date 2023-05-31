@@ -10,6 +10,7 @@ const (
 	AgentRiderStatusUsing        = "using"
 	AgentRiderStatusOverdue      = "overdue"
 	AgentRiderStatusUnsubscribed = "unsubscribed"
+	AgentRiderStatusWillOverdue  = "will_overdue"
 )
 
 type AgentRiderListReq struct {
@@ -22,20 +23,20 @@ type AgentRiderListReq struct {
 }
 
 type AgentRider struct {
-	ID          uint64 `json:"id"`
-	Name        string `json:"name"`                // 姓名
-	Phone       string `json:"phone"`               // 电话
-	Status      string `json:"status"`              // 状态
-	Remaining   *int   `json:"remaining,omitempty"` // 剩余天数
-	City        *City  `json:"city,omitempty"`      // 城市
-	Date        string `json:"date"`                // 创建日期
-	Station     string `json:"station"`             // 站点
-	EndAt       string `json:"endAt"`               // 退租日期
-	StopAt      string `json:"stopAt"`              // 到期日期
-	StartAt     string `json:"startAt"`             // 开始日期
-	SubscribeID uint64 `json:"subscribeId"`         // 订阅ID
-	Model       string `json:"model,omitempty"`     // 电池型号
-	Used        int    `json:"used"`                // 使用天数
+	ID        uint64 `json:"id"`
+	Name      string `json:"name"`                // 姓名
+	Phone     string `json:"phone,omitempty"`     // 电话
+	Status    string `json:"status"`              // 状态
+	Remaining *int   `json:"remaining,omitempty"` // 剩余天数
+	// City        *City  `json:"city,omitempty"`      // 城市
+	// Date        string `json:"date"`            // 创建日期
+	Station string `json:"station"` // 站点
+	// EndAt       string `json:"endAt"`           // 退租日期
+	StopAt  string `json:"stopAt"`  // 到期日期
+	StartAt string `json:"startAt"` // 开始日期
+	// SubscribeID uint64 `json:"subscribeId"`     // 订阅ID
+	Model string `json:"model,omitempty"` // 电池型号
+	// Used  int    `json:"used"`            // 使用天数
 }
 
 type AgentRiderLogReq struct {
@@ -51,5 +52,5 @@ type AgentRiderLog struct {
 
 type AgentRiderDetail struct {
 	AgentRider
-	Logs []AgentRiderLog `json:"logs"`
+	Logs []AgentRiderLog `json:"logs,omitempty"`
 }

@@ -26,7 +26,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
-	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
@@ -255,7 +254,7 @@ func (s *batteryService) listFilter(req model.BatteryFilter) (q *ent.BatteryQuer
 	if req.EnterpriseID != nil {
 		q.Where(battery.EnterpriseID(*req.EnterpriseID)).WithStation()
 		if req.StationID != nil {
-			q.Where(battery.HasStationWith(enterprisestation.ID(*req.StationID)))
+			q.Where(battery.StationID(*req.StationID))
 		}
 		if req.CabinetName != nil {
 			q.Where(battery.HasCabinetWith(cabinet.Name(*req.CabinetName)))

@@ -339,11 +339,6 @@ func (*enterprise) ModifyCabinet(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        id  query  uint64  true  "团签ID"
-// @Param        page          query  uint64  false  "页码"
-// @Param        pageSize      query  uint64  false  "每页数量"
-// @Param        start         query  string  false  "开始时间"
-// @Param        end     query  string  false  "结束时间"
-// @Param        status  query  uint8   false  "状态 0:待处理 1:已同意 2:已拒绝"
 // @Success      200  {object}  []model.ApplyListRsp
 func (*enterprise) SubscribeApplyList(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.ApplyReq](c)
@@ -361,6 +356,47 @@ func (*enterprise) SubscribeApplyList(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse
 func (*enterprise) SubscribeApply(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.ReviewReq](c)
-	service.NewEnterpriseWithModifier(ctx.Modifier).ReviewApply(req)
-	return ctx.SendResponse()
+	return ctx.SendResponse(service.NewEnterpriseWithModifier(ctx.Modifier).ReviewApply(req))
+}
+
+// ActiveRider 激活骑手
+// @ID           ManagerEnterpriseActiveRider
+// @Router       /manager/v1/enterprise/rider/active [PUT]
+// @Summary      M9028 激活骑手
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        body  body  model.RiderActiveBatteryReq true  "激活骑手请求"
+// @Success      200  {object}  model.StatusResponse
+func (*enterprise) ActiveRider(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[model.RiderActiveBatteryReq](c)
+	return ctx.SendResponse(service.NewEnterpriseWithModifier(ctx.Modifier).ActiveBattery(req))
+}
+
+// UnbindRider 解绑骑手
+// @ID           ManagerEnterpriseUnbindRider
+// @Router       /manager/v1/enterprise/rider/unbind [PUT]
+// @Summary      M9029 解绑骑手
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        body  body  model.RiderUnbindBatteryReq true  "解绑骑手请求"
+// @Success      200  {object}  model.StatusResponse
+func (*enterprise) UnbindRider(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[model.RiderUnbindBatteryReq](c)
+	return ctx.SendResponse(service.NewEnterpriseWithModifier(ctx.Modifier).UnbindBattery(req))
+}
+
+// FeedbackList 反馈列表
+// @ID           ManagerEnterpriseFeedbackList
+// @Router       /manager/v1/enterprise/feedback [GET]
+// @Summary      M9030 反馈列表
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        body  body  model.FeedbackListReq true  "反馈列表请求"
+// @Success      200  {object}  model.PaginationRes{items=[]model.FeedbackDetail}
+func (*enterprise) FeedbackList(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[model.FeedbackListReq](c)
+	return ctx.SendResponse(service.NewFeedback().FeedbackList(req))
 }

@@ -206,7 +206,7 @@ type RiderPhoneSearchReq struct {
 type RiderExchangeReq struct {
 	PaginationReq
 
-	RiderID uint64 `json:"riderId" query:"RiderId" trans:"骑手ID"`
+	RiderID uint64 `json:"riderId" query:"ID" trans:"骑手ID"`
 }
 
 type RiderSelectionReq struct {
@@ -272,4 +272,29 @@ type RiderSubscribeRsp struct {
 type RiderSubscribeAddReq struct {
 	// 天数
 	Days int `json:"days" validate:"required"`
+}
+
+type RiderActiveBatteryReq struct {
+	// 骑手id
+	ID uint64 `json:"id" param:"id" validate:"required"`
+	// 电池编号
+	BatteryId uint64 `json:"battery_id" validate:"required"`
+	// 团签id
+	EnterpriseId *uint64 `json:"enterprise_id"`
+}
+
+// RiderUnbindBatteryReq 解绑电池
+type RiderUnbindBatteryReq struct {
+	// 骑手id
+	ID uint64 `json:"id" param:"id" validate:"required"`
+}
+
+// RiderCodeLoginReq 代理商小程序登录
+type RiderCodeLoginReq struct {
+	Phone        *string `json:"phone" trans:"电话"`
+	SmsId        string  `json:"smsId" trans:"短信ID"`
+	Code         string  `json:"code" validate:"required" trans:"验证码"`
+	EnterpriseId *uint64 `json:"enterprise_id"  validate:"required"`
+	// 站点信息
+	StationId *uint64 `json:"station_id"  validate:"required"`
 }

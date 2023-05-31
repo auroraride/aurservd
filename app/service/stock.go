@@ -24,6 +24,7 @@ import (
 	"github.com/auroraride/aurservd/assets"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -284,9 +285,9 @@ func (s *stockService) EnterpriseList(req *model.StockListReq) *model.Pagination
 					s.calculate(batteries, st)
 				}
 			}
-			for _, battery := range batteries {
-				rsp.Batteries = append(rsp.Batteries, battery)
-				rsp.BatteryTotal += battery.Surplus
+			for _, bat := range batteries {
+				rsp.Batteries = append(rsp.Batteries, bat)
+				rsp.BatteryTotal += bat.Surplus
 			}
 			return rsp
 		})
@@ -677,7 +678,8 @@ func (s *stockService) listFilter(req model.StockDetailFilter) (q *ent.StockQuer
 		WithRider().
 		WithEmployee().
 		WithCity().
-		WithEbike()
+		WithEbike().
+		WithStations()
 	// 排序
 	if req.Positive {
 		q.Order(ent.Asc(stock.FieldSn))
@@ -785,6 +787,13 @@ func (s *stockService) listFilter(req model.StockDetailFilter) (q *ent.StockQuer
 		sel.Distinct().Select("ON (sn,parent_id) *")
 	})
 
+	if req.Model != "" {
+		q.Where(stock.Model(req.Model))
+	}
+	if req.EnterpriseID != 0 {
+		q.Where(stock.EnterpriseID(req.EnterpriseID))
+	}
+
 	return
 }
 
@@ -817,6 +826,7 @@ func (s *stockService) detailInfo(item *ent.Stock) model.StockDetailRes {
 	es := item.Edges.Store
 	ec := item.Edges.Cabinet
 
+	st := item.Edges.Stations
 	if item.Type == model.StockTypeTransfer {
 		// 平台调拨记录
 		res.Type = "平台调拨"
@@ -824,20 +834,21 @@ func (s *stockService) detailInfo(item *ent.Stock) model.StockDetailRes {
 
 		var ses *ent.Store
 		var sec *ent.Cabinet
-
+		var sst *ent.EnterpriseStation
 		sp := item.Edges.Spouse
 		if sp != nil {
 			ses = sp.Edges.Store
 			sec = sp.Edges.Cabinet
+			sst = sp.Edges.Stations
 		}
 
 		// 出入库对象判定
 		if item.Num > 0 {
-			res.Inbound = s.target(es, ec)
-			res.Outbound = s.target(ses, sec)
+			res.Inbound = s.target(es, ec, st)
+			res.Outbound = s.target(ses, sec, sst)
 		} else {
-			res.Inbound = s.target(ses, sec)
-			res.Outbound = s.target(es, ec)
+			res.Inbound = s.target(ses, sec, sst)
+			res.Outbound = s.target(es, ec, st)
 		}
 	} else {
 		// 业务调拨记录
@@ -866,20 +877,25 @@ func (s *stockService) detailInfo(item *ent.Stock) model.StockDetailRes {
 			} else if item.Creator != nil {
 				tmr = "后台"
 				res.Operator = fmt.Sprintf("后台 - %s", item.Creator.Name)
+			} else if st != nil {
+				tmr = "站点"
+				res.Operator = fmt.Sprintf("站点 - %s", st.Name)
 			}
 		}
 
 		res.Type = tmr + tm[item.Type]
-
+		target := ""
 		// 出入库对象
-		target := fmt.Sprintf("[骑手] %s - %s", er.Phone, er.Name)
+		if er != nil {
+			target = fmt.Sprintf("[骑手] %s - %s", er.Phone, er.Name)
+		}
 		switch item.Type {
 		case model.StockTypeRiderActive, model.StockTypeRiderContinue:
 			res.Inbound = target
-			res.Outbound = s.target(es, ec)
+			res.Outbound = s.target(es, ec, st)
 			break
 		case model.StockTypeRiderPause, model.StockTypeRiderUnSubscribe:
-			res.Inbound = s.target(es, ec)
+			res.Inbound = s.target(es, ec, st)
 			res.Outbound = target
 			break
 		}
@@ -889,13 +905,16 @@ func (s *stockService) detailInfo(item *ent.Stock) model.StockDetailRes {
 }
 
 // target 出入库对象
-func (s *stockService) target(es *ent.Store, ec *ent.Cabinet) (target string) {
+func (s *stockService) target(es *ent.Store, ec *ent.Cabinet, st *ent.EnterpriseStation) (target string) {
 	target = "平台"
 	if es != nil {
 		target = fmt.Sprintf("[门店] %s", es.Name)
 	}
 	if ec != nil {
 		target = fmt.Sprintf("[电柜] %s - %s", ec.Name, ec.Serial)
+	}
+	if st != nil {
+		target = fmt.Sprintf("[站点] %s", st.Name)
 	}
 	return
 }
@@ -907,6 +926,18 @@ func (s *stockService) Detail(req *model.StockDetailReq) *model.PaginationRes {
 	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Stock) model.StockDetailRes {
 		return s.detailInfo(item)
 	})
+}
+
+func (s *stockService) DetailById(req *model.StockDetailByIdReq) model.StockDetailRes {
+	q := s.orm.Query().Where(stock.ID(req.Id))
+	if req.EnterpriseID != 0 {
+		q.Where(stock.EnterpriseID(req.EnterpriseID))
+	}
+	first, err := q.First(s.ctx)
+	if err != nil {
+		snag.Panic("查询出入库记录失败")
+	}
+	return s.detailInfo(first)
 }
 
 // StoreCurrent 列出当前门店所有库存物资
@@ -1115,14 +1146,28 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
 	if cab != nil && cab.CityID != nil && st != nil && st.CityID != *cab.CityID {
 		snag.Panic("不同城市电柜和门店无法调拨")
 	}
-
-	// 站点调拨
-	// todo
+	// if req.EnterpriseId != nil {
+	var stationID uint64
+	var stationInfo *ent.EnterpriseStation
+	var enterpriseId uint64
+	var batinfo *ent.Battery
+	// 团签调拨
 	if req.InboundTarget == model.StockTargetStation {
-		stID = req.InboundID
+		stationID = req.InboundID
 	}
 	if req.OutboundTarget == model.StockTargetStation {
-		stID = req.OutboundID
+		stationID = req.OutboundID
+	}
+	if stationID > 0 {
+		stationInfo, err = ent.Database.EnterpriseStation.QueryNotDeleted().WithEnterprise().Where(enterprisestation.ID(stationID)).First(s.ctx)
+		if err != nil && !ent.IsNotFound(err) {
+			snag.Panic("电池调拨站点不存在")
+		}
+		// 查询电池
+		batinfo = NewBattery().QueryIDX(req.BatteryID)
+	}
+	if stationInfo != nil && stationInfo.Edges.Enterprise != nil {
+		enterpriseId = stationInfo.Edges.Enterprise.ID
 	}
 
 	in := &req.InboundID
@@ -1145,8 +1190,8 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
 	batchable := req.Batchable()
 
 	// 批量调拨, 调出检查
-	// 跳过电车
-	if req.OutboundID > 0 && len(req.Ebikes) == 0 && NewStockBatchable().Fetch(req.OutboundTarget, req.OutboundID, name) < req.Num {
+	// 跳过电车 跳过团签电池
+	if req.OutboundID > 0 && len(req.Ebikes) == 0 && req.BatteryID == 0 && NewStockBatchable().Fetch(req.OutboundTarget, req.OutboundID, name) < req.Num {
 		snag.Panic("操作失败, 调出物资大于库存物资")
 	}
 
@@ -1154,7 +1199,7 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
 		switch true {
 		case len(req.Ebikes) > 0:
 			return stock.MaterialEbike
-		case req.Model != "":
+		case req.Model != "" || req.BatteryID != 0:
 			return stock.MaterialBattery
 		}
 		return stock.MaterialOthers
@@ -1168,6 +1213,18 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
 		SetMaterial(material).
 		SetRemark(req.Remark).
 		SetSn(tools.NewUnique().NewSN())
+	switch req.OutboundTarget {
+	case model.StockTargetStore:
+		outCreator.SetNillableStoreID(out)
+	case model.StockTargetCabinet:
+		outCreator.SetNillableCabinetID(out)
+	case model.StockTargetStation:
+		outCreator.SetNillableStationID(out)
+		outCreator.SetEnterpriseID(enterpriseId)
+		outCreator.SetBatteryID(req.BatteryID)
+		outCreator.SetModel(batinfo.Model)
+	}
+
 	if req.OutboundTarget == model.StockTargetStore {
 		outCreator.SetNillableStoreID(out)
 	} else {
@@ -1182,6 +1239,18 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
 		SetMaterial(material).
 		SetRemark(req.Remark).
 		SetSn(tools.NewUnique().NewSN())
+	switch req.InboundTarget {
+	case model.StockTargetStore:
+		inCreator.SetNillableStoreID(in)
+	case model.StockTargetCabinet:
+		inCreator.SetNillableCabinetID(in)
+	case model.StockTargetStation:
+		inCreator.SetNillableStationID(in)
+		inCreator.SetEnterpriseID(enterpriseId)
+		inCreator.SetBatteryID(req.BatteryID)
+		inCreator.SetModel(batinfo.Model)
+	}
+
 	if req.InboundTarget == model.StockTargetStore {
 		inCreator.SetNillableStoreID(in)
 	} else {
@@ -1253,11 +1322,27 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
 					return fmt.Errorf("电车更新失败: %s", l.Message)
 				}
 			}
+
+			if req.BatteryID != 0 {
+				update := tx.Battery.UpdateOneID(req.BatteryID)
+				if req.IsToStation() { // 调拨到电站
+					update.SetNillableStationID(in)
+					update.SetEnterpriseID(enterpriseId)
+				}
+				if req.IsToPlaform() { // 调拨到平台
+					update.ClearStationID()
+					update.ClearEnterpriseID()
+				}
+			}
+
 			return
 		})
 
-		if req.Batchable() && err != nil {
-			failed = append(failed, err.Error())
+		if req.BatteryID != 0 {
+			ent.Database.Battery.Query().Where(battery.ID(req.BatteryID))
+			if req.IsToStation() {
+
+			}
 		}
 	}
 

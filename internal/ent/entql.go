@@ -6527,34 +6527,6 @@ func (f *CabinetFilter) WhereHasEnterpriseWith(preds ...predicate.Enterprise) {
 	})))
 }
 
-// WhereHasStation applies a predicate to check if query has an edge station.
-func (f *CabinetFilter) WhereHasStation() {
-	f.Where(entql.HasEdge("station"))
-}
-
-// WhereHasStationWith applies a predicate to check if query has an edge station with a given conditions (other predicates).
-func (f *CabinetFilter) WhereHasStationWith(preds ...predicate.EnterpriseStation) {
-	f.Where(entql.HasEdgeWith("station", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// WhereHasEnterprise applies a predicate to check if query has an edge enterprise.
-func (f *CabinetFilter) WhereHasEnterprise() {
-	f.Where(entql.HasEdge("enterprise"))
-}
-
-// WhereHasEnterpriseWith applies a predicate to check if query has an edge enterprise with a given conditions (other predicates).
-func (f *CabinetFilter) WhereHasEnterpriseWith(preds ...predicate.Enterprise) {
-	f.Where(entql.HasEdgeWith("enterprise", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
 // addPredicate implements the predicateAdder interface.
 func (cfq *CabinetFaultQuery) addPredicate(pred func(s *sql.Selector)) {
 	cfq.predicates = append(cfq.predicates, pred)

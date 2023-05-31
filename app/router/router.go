@@ -17,7 +17,6 @@ import (
 
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/controller"
-	"github.com/auroraride/aurservd/app/middleware"
 	"github.com/auroraride/aurservd/app/request"
 	"github.com/auroraride/aurservd/assets"
 	"github.com/auroraride/aurservd/internal/ar"
@@ -36,7 +35,7 @@ func Run() {
 	e.Renderer = assets.Templates
 
 	e.Static("/pages", "public/pages")
-
+	e.Static("/uploads", "./uploads")
 	root = e.Group("/")
 
 	// 校验规则
@@ -107,7 +106,7 @@ func Run() {
 		//     CustomTimeFormat: "2006-01-02 15:04:05.00000",
 		// }),
 		// mw.Recover(),
-		middleware.Recover(),
+		// middleware.Recover(),
 		mw.CORSWithConfig(corsConfig),
 	)
 
@@ -133,7 +132,7 @@ func Run() {
 	loadKitRoutes()
 
 	loadAgentRoutes()
-	loadAgentV2Routes()
+	// loadAgentV2Routes()
 
 	zap.L().Fatal("路由启动失败", zap.Error(e.Start(cfg.Bind)))
 }

@@ -156,3 +156,19 @@ func (*rider) Deregister(c echo.Context) (err error) {
 	service.NewRiderWithRider(ctx.Rider).Delete(&model.IDParamReq{ID: ctx.Rider.ID})
 	return ctx.SendResponse()
 }
+
+// WechatMiniLogin 骑手登录代理商小程序
+// @ID           RiderWechatLogin
+// @Router       /rider/v1/wechat/login [POST]
+// @Summary      R1009 骑手微信登录
+// @Tags         [R]骑手接口
+// @Accept       json
+// @Produce      json
+// @Param        body  body  model.RiderCodeLoginReq true "请求参数"
+// @Success      200  {object}  model.RiderSigninRes  "请求成功"
+func (*rider) WechatMiniLogin(c echo.Context) (err error) {
+	ctx, req := app.ContextBinding[model.RiderCodeLoginReq](c)
+	s := service.NewRider()
+	data := s.MiniSignin(ctx.Device, req)
+	return ctx.SendResponse(data)
+}

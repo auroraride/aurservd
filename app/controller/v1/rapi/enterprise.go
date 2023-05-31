@@ -105,3 +105,32 @@ func (*enterprise) ApplyList(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[model.ApplyReq](c)
 	return ctx.SendResponse(service.NewEnterpriseRiderWithRider(ctx.Rider).SubscribeAlterList(req))
 }
+
+// RiderEnterpriseInfo 骑手团签信息
+// @ID           RiderEnterpriseInfo
+// @Router       /rider/v1/enterprise/info [GET]
+// @Summary      R3016 企业骑手团签信息
+// @Tags         [R]骑手接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Rider-Token  header  string  true  "骑手校验token"
+// @Param        body  body     model.EnterproseInfoReq  true  "团签信息请求"
+// @Success      200  {object}  model.EnterproseInfoRsp  "请求成功"
+func (*enterprise) RiderEnterpriseInfo(c echo.Context) (err error) {
+	ctx, req := app.RiderContextAndBinding[model.EnterproseInfoReq](c)
+	return ctx.SendResponse(service.NewEnterpriseRiderWithRider(ctx.Rider).RiderEnterpriseInfo(req))
+}
+
+// JoinEnterprise 加入团签
+// @ID           RiderEnterpriseJoin
+// @Router       /rider/v1/enterprise/join [POST]
+// @Summary      R3017 企业骑手加入团签
+// @Tags         [R]骑手接口
+// @Accept       json
+// @Produce      json
+// @Param        body  body     model.RiderJoinEnterpriseReq true  "加入团签请求"
+// @Success      200  {object}  bool  "请求成功"
+func (s *enterprise) JoinEnterprise(c echo.Context) error {
+	ctx, req := app.RiderContextAndBinding[model.EnterproseInfoReq](c)
+	return ctx.SendResponse(service.NewEnterpriseRiderWithRider(ctx.Rider).JoinEnterprise(req))
+}

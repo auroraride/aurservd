@@ -9,11 +9,12 @@ import (
 	"bytes"
 	"net/http"
 
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/pkg/snag"
-	"github.com/labstack/echo/v4"
 )
 
 // CaptchaGenerate

@@ -12,6 +12,10 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/golang-module/carbon/v2"
+	"github.com/shopspring/decimal"
+	"go.uber.org/zap"
+
 	"github.com/auroraride/aurservd/app/logging"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/task/reminder"
@@ -26,9 +30,6 @@ import (
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
-	"github.com/golang-module/carbon/v2"
-	"github.com/shopspring/decimal"
-	"go.uber.org/zap"
 )
 
 type subscribeService struct {
@@ -307,6 +308,25 @@ func (s *subscribeService) QueryAllRidersEffective() []*ent.Subscribe {
 		WithRider().
 		All(s.ctx)
 	return items
+}
+
+// QueryRiderSubscribe 查询骑手订阅信息
+func (s *subscribeService) QueryRiderSubscribe(riderID uint64) []*ent.Subscribe {
+	all, err := ent.Database.Subscribe.QueryNotDeleted().Where(
+		subscribe.RiderID(riderID),
+		subscribe.StatusIn(
+			model.SubscribeStatusInactive,
+			model.SubscribeStatusUsing,
+			model.SubscribeStatusPaused,
+			model.SubscribeStatusOverdue,
+		),
+		// 非企业
+		subscribe.EnterpriseIDIsNil(),
+	).All(s.ctx)
+	if err != nil && !ent.IsNotFound(err) {
+		snag.Panic(err)
+	}
+	return all
 }
 
 // UpdateStatus 更新订阅状态

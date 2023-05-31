@@ -8,6 +8,8 @@ package middleware
 import (
 	"context"
 
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
@@ -15,12 +17,12 @@ import (
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/snag"
-	"github.com/labstack/echo/v4"
 )
 
 var (
 	riderLoginSkipper = map[string]bool{
 		"/rider/v1/signin":                    true,
+		"/rider/v1/wechat/login":              true,
 		"/rider/v1/socket":                    true,
 		"/rider/v1/callback":                  true,
 		"/rider/v1/callback/esign":            true,

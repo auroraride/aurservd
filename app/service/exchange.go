@@ -15,6 +15,9 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/adapter"
+	"github.com/golang-module/carbon/v2"
+	"github.com/lithammer/shortuuid/v4"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
@@ -28,8 +31,6 @@ import (
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
-	"github.com/golang-module/carbon/v2"
-	"github.com/lithammer/shortuuid/v4"
 )
 
 type exchangeService struct {
@@ -506,6 +507,9 @@ func (s *exchangeService) listFilter(req model.ExchangeListFilter) (q *ent.Excha
 				),
 			)
 		})
+	}
+	if req.EnterpriseID != 0 {
+		q.Where(exchange.EnterpriseID(req.EnterpriseID))
 	}
 
 	return

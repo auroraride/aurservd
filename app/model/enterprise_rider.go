@@ -7,7 +7,7 @@ package model
 
 // EnterpriseRiderCreateReq 企业骑手创建请求
 type EnterpriseRiderCreateReq struct {
-	EnterpriseID uint64 `json:"enterpriseId" validate:"required" trans:"企业ID"`
+	EnterpriseID uint64 `json:"enterpriseId"  trans:"企业ID"`
 	StationID    uint64 `json:"stationId" validate:"required" trans:"站点ID"`
 	Name         string `json:"name" validate:"required" trans:"姓名"`
 	Phone        string `json:"phone" validate:"required,phone" trans:"电话号"`
@@ -38,4 +38,10 @@ type EnterpriseRiderListReq struct {
 	End             *string `json:"end" query:"end"`                                         // 使用结束时间
 	Deleted         uint8   `json:"deleted" query:"deleted" enums:"0,1,2"`                   // 筛选删除 0:全部 1:已删除 2:未删除
 	SubscribeStatus uint8   `json:"subscribeStatus" query:"subscribeStatus" enums:"0,1,2,3"` // 筛选订阅状态 0:全部 1:计费中 2:已退租 3:未激活
+}
+
+// EnterpriseRiderInviteReq 邀请骑手
+type EnterpriseRiderInviteReq struct {
+	// 站点id
+	StationID uint64 `json:"station_id"  validate:"required"`
 }

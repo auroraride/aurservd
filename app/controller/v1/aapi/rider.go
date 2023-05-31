@@ -6,10 +6,11 @@
 package aapi
 
 import (
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
-	"github.com/labstack/echo/v4"
 )
 
 type rider struct{}
@@ -43,7 +44,8 @@ func (*rider) List(c echo.Context) (err error) {
 // @Success      200  {object}  model.EnterpriseRider  "请求成功"
 func (*rider) Create(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.EnterpriseRiderCreateReq](c)
-	return ctx.SendResponse(service.NewEnterpriseRiderWithAgent(ctx.Agent, ctx.Enterprise).Create(req))
+	req.EnterpriseID = ctx.Enterprise.ID
+	return ctx.SendResponse(service.NewEnterpriseRiderWithAgent(ctx.Agent, ctx.Enterprise).CreateByAgent(req))
 }
 
 // Alter
@@ -74,4 +76,69 @@ func (*rider) Alter(c echo.Context) (err error) {
 func (*rider) Detail(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.IDParamReq](c)
 	return ctx.SendResponse(service.NewRiderAgentWithAgent(ctx.Agent, ctx.Enterprise).Detail(req, ctx.Enterprise.ID))
+}
+
+// Active 激活骑手
+// @ID           AgentRiderActive
+// @Router       /agent/v1/rider/active [POST]
+// @Summary      A2005 激活骑手
+// @Tags         [A]代理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Agent-Token  header  string  true  "代理校验token"
+// @Param        body  body     model.RiderActiveBatteryReq  true  "请求详情"
+// @Success      200  {object}  string  "请求成功"
+func (*rider) Active(c echo.Context) (err error) {
+	ctx, req := app.AgentContextAndBinding[model.RiderActiveBatteryReq](c)
+	req.EnterpriseId = &ctx.Enterprise.ID
+	return ctx.SendResponse(service.NewEnterprise().ActiveBattery(req))
+}
+
+// SubscribeApplyList  申请加时列表
+// @ID           AgentSubscribeApplyList
+// @Router       /agent/v1/rider/subscribe/apply [GET]
+// @Summary      A2006 申请加时列表
+// @Tags         [A]代理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Agent-Token  header  string  true  "代理校验token"
+// @Param        query  query   model.ApplyReq  true  "查询条件"
+// @Success      200  {object}  model.PaginationRes{items=[]model.ApplyListRsp}  "请求成功"
+func (*rider) SubscribeApplyList(c echo.Context) (err error) {
+	ctx, req := app.AgentContextAndBinding[model.ApplyReq](c)
+	req.ID = ctx.Enterprise.ID
+	return ctx.SendResponse(service.NewEnterpriseWithAgent(ctx.Agent, ctx.Enterprise).SubscribeApplyList(req))
+}
+
+// ReviewApply  审核加时
+// @ID           AgentReviewApply
+// @Router       /agent/v1/rider/subscribe/apply [POST]
+// @Summary      A2007 审核加时
+// @Tags         [A]代理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Agent-Token  header  string  true  "代理校验token"
+// @Param        body  body   model.ReviewReq  true  "审核请求"
+// @Success      200  {object}  string  "请求成功"
+func (*rider) ReviewApply(c echo.Context) (err error) {
+	ctx, req := app.AgentContextAndBinding[model.ReviewReq](c)
+	return ctx.SendResponse(service.NewEnterpriseWithAgent(ctx.Agent, ctx.Enterprise).ReviewApply(req))
+}
+
+// ExchangeList  换电列表
+// @ID           AgentExchangeList
+// @Router       /agent/v1/rider/exchange [GET]
+// @Summary      A2008 换电列表
+// @Tags         [A]代理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Agent-Token  header  string  true  "代理校验token"
+// @Param        query  query   model.ExchangeManagerListReq  true  "查询条件"
+// @Success      200  {object}  model.PaginationRes{items=[]model.ExchangeManagerListRes}  "请求成功"
+func (*rider) ExchangeList(c echo.Context) (err error) {
+	ctx, req := app.AgentContextAndBinding[model.ExchangeManagerListReq](c)
+	req.EnterpriseID = ctx.Enterprise.ID
+	// 只查询已完成的换电记录
+	// req.Status =
+	return ctx.SendResponse(service.NewExchange().List(req))
 }

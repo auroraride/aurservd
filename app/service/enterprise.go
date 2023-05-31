@@ -23,6 +23,7 @@ import (
 	"github.com/auroraride/aurservd/app/logging"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisecontract"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
@@ -704,7 +705,8 @@ func (s *enterpriseService) NameFromID(id uint64) string {
 
 // SubscribeApplyList 骑手订阅申请加时列表
 func (s *enterpriseService) SubscribeApplyList(req *model.ApplyReq) *model.PaginationRes {
-	q := ent.Database.SubscribeAlter.QueryNotDeleted().Where(subscribealter.EnterpriseID(req.ID)).Order(ent.Desc(subscribealter.FieldCreatedAt))
+	q := ent.Database.SubscribeAlter.QueryNotDeleted().Where(subscribealter.EnterpriseID(req.ID)).
+		Order(ent.Desc(subscribealter.FieldCreatedAt)).WithRider().WithSubscribe()
 
 	if req.StartTime != nil && req.EndTime != nil {
 		rs := tools.NewTime().ParseDateStringX(*req.StartTime)
@@ -731,7 +733,10 @@ func (s *enterpriseService) SubscribeApplyList(req *model.ApplyReq) *model.Pagin
 				// 审批时间
 				ReviewTime: item.UpdatedAt.Format(carbon.DateTimeLayout),
 				// 审批状态
-				Status: item.Status,
+				Status:     item.Status,
+				RiderName:  "",
+				RiderPhone: "",
+				ExpireTime: 0,
 			}
 			if item.Edges.Rider != nil {
 				// 骑手姓名
@@ -751,7 +756,7 @@ func (s *enterpriseService) SubscribeApplyList(req *model.ApplyReq) *model.Pagin
 func (s *enterpriseService) ReviewApply(req *model.ReviewReq) bool {
 	// 查找申请记录
 	alter, err := ent.Database.SubscribeAlter.QueryNotDeleted().Where(subscribealter.IDIn(req.Ids...)).All(s.ctx)
-	if err != nil {
+	if err != nil || len(alter) == 0 {
 		snag.Panic("申请记录不存在")
 	}
 	for _, v := range alter {
@@ -790,6 +795,77 @@ func (s *enterpriseService) ReviewApply(req *model.ReviewReq) bool {
 		if err != nil {
 			snag.Panic("审批失败")
 		}
+	}
+	return true
+}
+
+// ActiveBattery 激活骑手电池
+func (s *enterpriseService) ActiveBattery(req *model.RiderActiveBatteryReq) bool {
+
+	if req.EnterpriseId != nil {
+		// 不是自己骑手的不能激活
+		NewRider().QueryGroupSignIDX(req.ID, *req.EnterpriseId)
+	}
+	// 查询电池是否存在
+	batteryInfo := NewBattery(s.ctx).QueryIDX(req.BatteryId)
+	if batteryInfo.CabinetID != nil {
+		snag.Panic("电柜中的电池无法手动绑定骑手")
+	}
+	if batteryInfo.RiderID != nil || batteryInfo.SubscribeID != nil {
+		snag.Panic("电池已被绑定")
+	}
+	// 查询骑手订阅信息
+	subscribeInfo := NewSubscribe().QueryEffectiveX(req.ID)
+	if subscribeInfo.Status != model.SubscribeStatusInactive {
+		snag.Panic("订阅状态异常,无法激活骑手,有未完成的订单")
+	}
+	// 绑定电池
+	err := ent.WithTx(s.ctx, func(tx *ent.Tx) error {
+		// 激活订阅
+		var aend *time.Time
+		aendTime := tools.NewTime().WillEnd(time.Now(), subscribeInfo.InitialDays)
+		aend = &aendTime
+		err := tx.Subscribe.UpdateOneID(subscribeInfo.ID).SetStatus(model.SubscribeStatusUsing).SetStartAt(time.Now()).
+			SetNillableAgentEndAt(aend).
+			Exec(s.ctx)
+		if err != nil {
+			snag.Panic("激活订阅失败")
+		}
+		// 删除原有信息
+		err = tx.Battery.Update().Where(battery.SubscribeID(subscribeInfo.ID)).ClearRiderID().ClearSubscribeID().Exec(s.ctx)
+		if err != nil {
+			snag.Panic("电池解绑失败")
+		}
+		// 绑定电池
+		err = tx.Battery.Update().Where(battery.Sn(batteryInfo.Sn)).SetRiderID(req.ID).SetSubscribeID(subscribeInfo.ID).Exec(s.ctx)
+		if err != nil {
+			snag.Panic("电池绑定失败")
+		}
+		// 更新电池流水记录表
+		err = tx.BatteryFlow.Create().SetSn(batteryInfo.Sn).SetRiderID(req.ID).
+			SetBatteryID(batteryInfo.ID).
+			SetNillableSubscribeID(&subscribeInfo.ID).Exec(s.ctx)
+		if err != nil {
+			snag.Panic("电池流水记录失败")
+		}
+		return nil
+	})
+	if err != nil {
+		snag.Panic("激活失败")
+	}
+	return true
+}
+
+// UnbindBattery 解绑电池
+func (s *enterpriseService) UnbindBattery(req *model.RiderUnbindBatteryReq) bool {
+	sub := NewSubscribe().QueryEffectiveX(req.ID, ent.SubscribeQueryWithBattery, ent.SubscribeQueryWithRider, ent.SubscribeQueryWithBattery)
+	bat := sub.Edges.Battery
+	if bat == nil {
+		snag.Panic("骑手未绑定电池")
+	}
+	err := NewBattery().Unallocate(bat)
+	if err != nil {
+		snag.Panic(err)
 	}
 	return true
 }

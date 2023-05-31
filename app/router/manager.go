@@ -159,7 +159,11 @@ func loadManagerRoutes() {
 	// 申请列表
 	g.GET("/enterprise/subscribe/apply/:id", mapi.Enterprise.SubscribeApplyList)
 	// 申请审核
-	g.PUT("enterprise/subscribe/apply", mapi.Enterprise.SubscribeApply)
+	g.PUT("/enterprise/subscribe/apply", mapi.Enterprise.SubscribeApply)
+	// 激活骑手
+	g.PUT("/enterprise/rider/active/:id", mapi.Enterprise.ActiveRider)
+	// 解绑骑手
+	g.PUT("/enterprise/rider/unbind/:id", mapi.Enterprise.UnbindRider)
 
 	// 店员
 	g.POST("/employee", mapi.Employee.Create)
@@ -178,7 +182,7 @@ func loadManagerRoutes() {
 	g.GET("/stock/cabinet", mapi.Stock.CabinetList)
 	g.GET("/stock/detail", mapi.Stock.Detail)
 	// 团签物资列表
-	g.GET("/stock/enterprise/list/:id", mapi.Stock.EnterpriseList)
+	g.GET("/stock/enterprise/list", mapi.Stock.EnterpriseList)
 
 	// 选择项目
 	g.GET("/selection/plan", mapi.Selection.Plan)
@@ -254,4 +258,7 @@ func loadManagerRoutes() {
 
 	// 合同
 	g.GET("/contract", mapi.Contract.List)
+
+	// 反馈
+	g.GET("/enterprise/feedback", mapi.Enterprise.FeedbackList)
 }

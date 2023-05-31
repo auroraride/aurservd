@@ -16,6 +16,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
@@ -157,6 +158,43 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 			Name: stat.Name,
 		},
 	}
+}
+
+// CreateByAgent 代理商小程序新增骑手
+func (s *enterpriseRiderService) CreateByAgent(req *model.EnterpriseRiderCreateReq) bool {
+	req.EnterpriseID = s.agent.EnterpriseID
+	if s.agent != nil && (req.EnterpriseID == 0 || req.StationID == 0) {
+		snag.Panic("缺失团签信息")
+	}
+	riderInfo, err := ent.Database.Rider.Query().Where(rider.Phone(req.Phone)).First(s.ctx)
+	if err != nil && !ent.IsNotFound(err) {
+		snag.Panic("查询骑手失败")
+	}
+	// 查询订阅信息
+	subscribeInfo := NewSubscribe().QueryRiderSubscribe(riderInfo.ID)
+	if subscribeInfo != nil || riderInfo.EnterpriseID != nil {
+		snag.Panic("该骑手不能绑定,已有团签或者已有未完成的订单")
+	}
+
+	// 查询团签
+	NewEnterprise().QueryX(req.EnterpriseID)
+
+	// 查询站点
+	NewEnterpriseStation().Query(req.StationID)
+	if riderInfo != nil {
+		// 更新rider
+		err = ent.Database.Rider.UpdateOne(riderInfo).SetPhone(req.Phone).SetEnterpriseID(req.EnterpriseID).SetStationID(req.StationID).Exec(s.ctx)
+		if err != nil {
+			snag.Panic("更新骑手失败")
+		}
+	} else {
+		// 创建rider
+		err = ent.Database.Rider.Create().SetPhone(req.Phone).SetEnterpriseID(req.EnterpriseID).SetStationID(req.StationID).Exec(s.ctx)
+		if err != nil {
+			snag.Panic("创建骑手失败")
+		}
+	}
+	return true
 }
 
 // List 列举骑手
@@ -450,4 +488,67 @@ func (s *enterpriseRiderService) SubscribeAlterList(req *model.ApplyReq) *model.
 				Status: item.Status,
 			}
 		})
+}
+
+// RiderEnterpriseInfo 骑手团签信息
+func (s *enterpriseRiderService) RiderEnterpriseInfo(req *model.EnterproseInfoReq) *model.EnterproseInfoRsp {
+	// 查询订阅信息
+	subscribeInfo := NewSubscribe().QueryRiderSubscribe(s.rider.ID)
+
+	rsp := &model.EnterproseInfoRsp{
+		IsJoin:     true,
+		RiderName:  s.rider.Name,
+		RiderPhone: s.rider.Phone,
+	}
+	if subscribeInfo != nil || s.rider.EnterpriseID == nil {
+		rsp.IsJoin = false
+	}
+	// 查询团签信息
+	enterpriseInfo := NewEnterprise().QueryX(req.EnterpriseId)
+	if enterpriseInfo == nil {
+		snag.Panic("未找到企业信息")
+	}
+	// 查询站点信息
+	stationInfo := ent.Database.EnterpriseStation.Query().Where(enterprisestation.IDEQ(req.StationId),
+		enterprisestation.EnterpriseIDEQ(req.EnterpriseId)).FirstX(s.ctx)
+	if stationInfo == nil {
+		snag.Panic("未找到站点信息")
+	}
+	rsp.StationName = stationInfo.Name
+	rsp.EnterproseName = enterpriseInfo.Name
+	return rsp
+}
+
+// JoinEnterprise 加入团签
+func (s *enterpriseRiderService) JoinEnterprise(req *model.EnterproseInfoReq) bool {
+	// 判断骑手是否加入团签
+	if s.rider.EnterpriseID != nil {
+		snag.Panic("已加入团签")
+	}
+	// 判断团签是否存在或者站点是否存在
+	// 查询团签信息
+	enterpriseInfo := NewEnterprise().QueryX(req.EnterpriseId)
+	if enterpriseInfo == nil {
+		snag.Panic("未找到企业信息")
+	}
+	// 查询站点信息
+	stationInfo := ent.Database.EnterpriseStation.Query().Where(enterprisestation.IDEQ(req.StationId),
+		enterprisestation.EnterpriseIDEQ(req.EnterpriseId)).FirstX(s.ctx)
+	if stationInfo == nil {
+		snag.Panic("未找到站点信息")
+	}
+	// 判断骑手是否有未完成的订单
+	// 查询订阅信息
+	subscribeInfo := NewSubscribe().QueryRiderSubscribe(s.rider.ID)
+	if subscribeInfo != nil {
+		snag.Panic("有未完成的订单")
+	}
+	_, err := ent.Database.Rider.Update().Where(rider.ID(s.rider.ID)).
+		SetEnterpriseID(req.EnterpriseId).
+		SetStationID(req.StationId).
+		Save(s.ctx)
+	if err != nil {
+		snag.Panic("加入团签失败")
+	}
+	return true
 }

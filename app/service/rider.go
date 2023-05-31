@@ -17,6 +17,9 @@ import (
 	"github.com/golang-module/carbon/v2"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/rs/xid"
+	"github.com/silenceper/wechat/v2"
+	wxcache "github.com/silenceper/wechat/v2/cache"
+	"github.com/silenceper/wechat/v2/miniprogram/config"
 	"golang.org/x/exp/slices"
 
 	"github.com/auroraride/aurservd/app"
@@ -154,6 +157,91 @@ func (s *riderService) Signin(device *model.Device, req *model.RiderSignupReq) (
 	s.ExtendTokenTime(u.ID, token)
 
 	return
+}
+
+// MiniSignin  骑手登录微信小程序
+func (s *riderService) MiniSignin(device *model.Device, req *model.RiderCodeLoginReq) *model.RiderSigninRes {
+	// 获取电话
+	if req.Phone == nil {
+		req.Phone = s.GetPhoneNumber(req.Code)
+	} else {
+		NewSms().VerifyCodeX(*req.Phone, req.SmsId, req.Code)
+	}
+
+	return s.Login(device, req)
+}
+func (s *riderService) Login(device *model.Device, req *model.RiderCodeLoginReq) (res *model.RiderSigninRes) {
+	ctx := context.Background()
+	orm := ent.Database.Rider
+	var u *ent.Rider
+	var err error
+
+	u, err = orm.QueryNotDeleted().Where(rider.Phone(*req.Phone)).WithPerson().WithEnterprise().First(ctx)
+	if err != nil {
+		// 创建骑手
+		u, err = orm.Create().
+			SetPhone(*req.Phone).
+			SetLastDevice(device.Serial).
+			SetDeviceType(device.Type.Value()).
+			Save(ctx)
+		if err != nil {
+			snag.Panic(err)
+		}
+	}
+
+	// 判定用户是否被封禁
+	if s.IsBanned(u) {
+		snag.Panic(snag.StatusForbidden, ar.BannedMessage)
+	}
+
+	token := xid.New().String() + utils.RandTokenString()
+	key := fmt.Sprintf("%s%d", s.cacheKeyPrefix, u.ID)
+
+	// 删除旧的token
+	if old := cache.Get(ctx, key).Val(); old != "" {
+		cache.Del(ctx, key)
+		cache.Del(ctx, old)
+	}
+
+	// 更新设备
+	if u.LastDevice != device.Serial {
+		s.SetNewDevice(u, device)
+	}
+
+	res = s.Profile(u, device, token)
+
+	// 设置登录token
+	s.ExtendTokenTime(u.ID, token)
+	return
+}
+
+// GetPhoneNumber 通过code换取手机号码
+func (s *riderService) GetPhoneNumber(code string) *string {
+	redisOpts := &wxcache.RedisOpts{
+		Host:     ar.Config.Redis.Address,
+		Password: ar.Config.Redis.Password,
+		Database: ar.Config.Redis.DB,
+	}
+	wc := wechat.NewWechat()
+	redisCache := wxcache.NewRedis(context.Background(), redisOpts)
+	wc.SetCache(redisCache)
+
+	result, err := wc.GetMiniProgram(&config.Config{
+		AppID:     ar.Config.WxMini.AppID,
+		AppSecret: ar.Config.WxMini.AppSecret,
+	}).GetAuth().GetPhoneNumber(code)
+
+	if err != nil {
+		snag.Panic("获取手机号码失败")
+	}
+	if result.ErrCode != 0 {
+		snag.Panic("获取手机号码失败")
+	}
+
+	// todo 假装获取成功了
+	// phoneNumber := "18683048570"
+	phoneNumber := result.PhoneInfo.PhoneNumber
+	return &phoneNumber
 }
 
 // Signout 强制登出
@@ -1060,6 +1148,18 @@ func (s *riderService) QueryPhoneX(phone string) (rd *ent.Rider) {
 		snag.Panic("未找到有效骑手")
 	}
 	return
+}
+
+// QueryGroupSignID 团签id查询骑手
+func (s *riderService) QueryGroupSignID(id, enterpriseID uint64) (*ent.Rider, error) {
+	return s.orm.QueryNotDeleted().Where(rider.EnterpriseID(enterpriseID), rider.ID(id)).First(s.ctx)
+}
+func (s *riderService) QueryGroupSignIDX(id, enterpriseID uint64) *ent.Rider {
+	r, err := s.QueryGroupSignID(id, enterpriseID)
+	if err != nil {
+		snag.Panic("未找到有效骑手")
+	}
+	return r
 }
 
 // ExchangeLimit 设置骑手换电限制

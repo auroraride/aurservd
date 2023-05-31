@@ -55,9 +55,11 @@ type EnterprisePriceWithCity struct {
 
 // Enterprise 企业基础字段
 type Enterprise struct {
-	ID    uint64 `json:"id"`    // 企业ID
-	Name  string `json:"name"`  // 企业名称
-	Agent bool   `json:"agent"` // 是否代理商模式
+	ID           uint64 `json:"id"`    // 企业ID
+	Name         string `json:"name"`  // 企业名称
+	Agent        bool   `json:"agent"` // 是否代理商模式
+	CompanyName  string `json:"companyName"`
+	ContactPhone string `json:"contactPhone"`
 }
 
 type EnterpriseContact struct {
@@ -164,4 +166,33 @@ type EnterpriseRiderSubscribeChooseRes struct {
 
 type EnterpriseRiderSubscribeStatusReq struct {
 	ID uint64 `json:"id" validate:"required" query:"id" trans:"订阅ID"`
+}
+
+// EnterproseInfoReq 团签信息请求
+type EnterproseInfoReq struct {
+	EnterpriseId uint64 `json:"enterprise_id"`
+	// 站点id
+	StationId uint64 `json:"station_id"`
+}
+
+// EnterproseInfoRsp 团签信息返回
+type EnterproseInfoRsp struct {
+	// 骑手姓名
+	RiderName string `json:"rider_name"`
+	// 骑手电话
+	RiderPhone string `json:"rider_phone"`
+	// 团签名称
+	EnterproseName string `json:"enterprise_name"`
+	// 站点名称
+	StationName string `json:"station_name"`
+	// 是否可以加入团签
+	IsJoin bool `json:"is_join"`
+}
+
+// RiderJoinEnterpriseReq 加入团签请求
+type RiderJoinEnterpriseReq struct {
+	// 团签ID
+	EnterpriseId uint64 `json:"enterprise_id" validate:"required"`
+	// 站点ID
+	StationId uint64 `json:"station_id" validate:"required"`
 }
