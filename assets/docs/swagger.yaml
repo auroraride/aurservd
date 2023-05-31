@@ -5354,6 +5354,17 @@ definitions:
         description: 电话
         type: string
     type: object
+  model.RiderActiveBatteryReq:
+    properties:
+      battery_id:
+        description: 电池编号
+        type: integer
+      enterprise_id:
+        description: 团签id
+        type: integer
+    required:
+    - battery_id
+    type: object
   model.RiderBlockReq:
     properties:
       block:
@@ -7596,6 +7607,33 @@ paths:
           schema:
             $ref: '#/definitions/model.AgentRider'
       summary: A2004 骑手详情
+      tags:
+      - '[A]代理接口'
+  /agent/v1/rider/active:
+    post:
+      consumes:
+      - application/json
+      operationId: AgentRiderActive
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - description: 请求详情
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.RiderActiveBatteryReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            type: string
+      summary: A2005 激活骑手
       tags:
       - '[A]代理接口'
   /agent/v1/rider/alter:

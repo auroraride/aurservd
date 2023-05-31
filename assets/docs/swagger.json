@@ -526,6 +526,47 @@
                 }
             }
         },
+        "/agent/v1/rider/active": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A2005 激活骑手",
+                "operationId": "AgentRiderActive",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求详情",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.RiderActiveBatteryReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/agent/v1/rider/alter": {
             "post": {
                 "consumes": [
@@ -22280,6 +22321,22 @@
                 "phone": {
                     "description": "电话",
                     "type": "string"
+                }
+            }
+        },
+        "model.RiderActiveBatteryReq": {
+            "type": "object",
+            "required": [
+                "battery_id"
+            ],
+            "properties": {
+                "battery_id": {
+                    "description": "电池编号",
+                    "type": "integer"
+                },
+                "enterprise_id": {
+                    "description": "团签id",
+                    "type": "integer"
                 }
             }
         },

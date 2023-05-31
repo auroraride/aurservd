@@ -7,11 +7,13 @@ package service
 
 import (
 	"context"
+	"time"
 
 	"github.com/golang-module/carbon/v2"
 
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
@@ -211,4 +213,65 @@ func (s *riderAgentService) Log(req *model.AgentRiderLogReq) (items []model.Agen
 		}
 	}
 	return
+}
+
+// Active 激活骑手电池
+func (s *enterpriseService) Active(req *model.RiderActiveBatteryReq) bool {
+	// 不是自己骑手的不能激活
+	riderInfo, err := NewRider().GetRiderById(req.ID)
+	if err != nil {
+		snag.Panic("骑手不存在")
+	}
+	if riderInfo.EnterpriseID != req.EnterpriseId {
+		snag.Panic("骑手不属于该企业")
+	}
+
+	// 查询电池是否存在
+	batteryInfo := NewBattery(s.ctx).QueryIDX(req.BatteryId)
+	if batteryInfo.CabinetID != nil {
+		snag.Panic("电柜中的电池无法手动绑定骑手")
+	}
+	if batteryInfo.RiderID != nil || batteryInfo.SubscribeID != nil {
+		snag.Panic("电池已被绑定")
+	}
+	// 查询骑手订阅信息
+	subscribeInfo := NewSubscribe().QueryEffectiveX(req.ID)
+	if subscribeInfo.Status != model.SubscribeStatusInactive {
+		snag.Panic("订阅状态异常,无法激活骑手,有未完成的订单")
+	}
+	// 绑定电池
+	err = ent.WithTx(s.ctx, func(tx *ent.Tx) error {
+		// 激活订阅
+		var aend *time.Time
+		aendTime := tools.NewTime().WillEnd(time.Now(), subscribeInfo.InitialDays)
+		aend = &aendTime
+		err := tx.Subscribe.UpdateOneID(subscribeInfo.ID).SetStatus(model.SubscribeStatusUsing).SetStartAt(time.Now()).
+			SetNillableAgentEndAt(aend).
+			Exec(s.ctx)
+		if err != nil {
+			snag.Panic("激活订阅失败")
+		}
+		// 删除原有信息
+		err = tx.Battery.Update().Where(battery.SubscribeID(subscribeInfo.ID)).ClearRiderID().ClearSubscribeID().Exec(s.ctx)
+		if err != nil {
+			snag.Panic("电池解绑失败")
+		}
+		// 绑定电池
+		err = tx.Battery.Update().Where(battery.Sn(batteryInfo.Sn)).SetRiderID(req.ID).SetSubscribeID(subscribeInfo.ID).Exec(s.ctx)
+		if err != nil {
+			snag.Panic("电池绑定失败")
+		}
+		// 更新电池流水记录表
+		err = tx.BatteryFlow.Create().SetSn(batteryInfo.Sn).SetRiderID(req.ID).
+			SetBatteryID(batteryInfo.ID).
+			SetNillableSubscribeID(&subscribeInfo.ID).Exec(s.ctx)
+		if err != nil {
+			snag.Panic("电池流水记录失败")
+		}
+		return nil
+	})
+	if err != nil {
+		snag.Panic("激活失败")
+	}
+	return true
 }
