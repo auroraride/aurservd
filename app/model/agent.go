@@ -5,6 +5,11 @@
 
 package model
 
+const (
+	SigninTypeSms    uint64 = 1 // 短信登录
+	SigninTypeWechat uint64 = 2 // 微信授权登录
+)
+
 type AgentCreateReq struct {
 	Phone        string `json:"phone" validate:"required" trans:"电话"`
 	Name         string `json:"name" validate:"required" trans:"姓名"`
@@ -29,9 +34,11 @@ type AgentMeta struct {
 }
 
 type AgentSigninReq struct {
-	Phone   string `json:"phone" validate:"required" trans:"电话"`
-	SmsId   string `json:"smsId" validate:"required" trans:"短信ID"`
-	SmsCode string `json:"smsCode" validate:"required" trans:"短信验证码"`
+	Phone      string `json:"phone,omitempty" validate:"required_if=SigninType 1" trans:"电话"`
+	SmsId      string `json:"smsId,omitempty" validate:"required_if=SigninType 1" trans:"短信ID"`
+	Code       string `json:"code,omitempty" validate:"required_if=SigninType 1,required_if=SigninType 2" trans:"验证码"`
+	JsCode     string `json:"jsCode,omitempty" validate:"required_if=SigninType 2"`
+	SigninType uint64 `json:"signinType" validate:"required,oneof=1 2"`
 }
 
 type AgentProfile struct {

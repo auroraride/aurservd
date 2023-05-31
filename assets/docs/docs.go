@@ -589,7 +589,7 @@ const docTemplate = `{
                 "operationId": "AgentSignin",
                 "parameters": [
                     {
-                        "description": "请求参数",
+                        "description": "登录请求",
                         "name": "body",
                         "in": "body",
                         "required": true,
@@ -15272,16 +15272,24 @@ const docTemplate = `{
         "model.AgentSigninReq": {
             "type": "object",
             "required": [
-                "phone",
-                "smsCode",
-                "smsId"
+                "signinType"
             ],
             "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "jsCode": {
+                    "type": "string"
+                },
                 "phone": {
                     "type": "string"
                 },
-                "smsCode": {
-                    "type": "string"
+                "signinType": {
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
                 },
                 "smsId": {
                     "type": "string"
