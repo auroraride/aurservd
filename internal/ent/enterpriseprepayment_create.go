@@ -104,6 +104,20 @@ func (epc *EnterprisePrepaymentCreate) SetAmount(f float64) *EnterprisePrepaymen
 	return epc
 }
 
+// SetPayway sets the "payway" field.
+func (epc *EnterprisePrepaymentCreate) SetPayway(m model.Payway) *EnterprisePrepaymentCreate {
+	epc.mutation.SetPayway(m)
+	return epc
+}
+
+// SetNillablePayway sets the "payway" field if the given value is not nil.
+func (epc *EnterprisePrepaymentCreate) SetNillablePayway(m *model.Payway) *EnterprisePrepaymentCreate {
+	if m != nil {
+		epc.SetPayway(*m)
+	}
+	return epc
+}
+
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
 func (epc *EnterprisePrepaymentCreate) SetEnterprise(e *Enterprise) *EnterprisePrepaymentCreate {
 	return epc.SetEnterpriseID(e.ID)
@@ -159,6 +173,10 @@ func (epc *EnterprisePrepaymentCreate) defaults() error {
 		}
 		v := enterpriseprepayment.DefaultUpdatedAt()
 		epc.mutation.SetUpdatedAt(v)
+	}
+	if _, ok := epc.mutation.Payway(); !ok {
+		v := enterpriseprepayment.DefaultPayway
+		epc.mutation.SetPayway(v)
 	}
 	return nil
 }
@@ -234,6 +252,10 @@ func (epc *EnterprisePrepaymentCreate) createSpec() (*EnterprisePrepayment, *sql
 	if value, ok := epc.mutation.Amount(); ok {
 		_spec.SetField(enterpriseprepayment.FieldAmount, field.TypeFloat64, value)
 		_node.Amount = value
+	}
+	if value, ok := epc.mutation.Payway(); ok {
+		_spec.SetField(enterpriseprepayment.FieldPayway, field.TypeOther, value)
+		_node.Payway = value
 	}
 	if nodes := epc.mutation.EnterpriseIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -382,6 +404,18 @@ func (u *EnterprisePrepaymentUpsert) UpdateEnterpriseID() *EnterprisePrepaymentU
 	return u
 }
 
+// SetPayway sets the "payway" field.
+func (u *EnterprisePrepaymentUpsert) SetPayway(v model.Payway) *EnterprisePrepaymentUpsert {
+	u.Set(enterpriseprepayment.FieldPayway, v)
+	return u
+}
+
+// UpdatePayway sets the "payway" field to the value that was provided on create.
+func (u *EnterprisePrepaymentUpsert) UpdatePayway() *EnterprisePrepaymentUpsert {
+	u.SetExcluded(enterpriseprepayment.FieldPayway)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -521,6 +555,20 @@ func (u *EnterprisePrepaymentUpsertOne) SetEnterpriseID(v uint64) *EnterprisePre
 func (u *EnterprisePrepaymentUpsertOne) UpdateEnterpriseID() *EnterprisePrepaymentUpsertOne {
 	return u.Update(func(s *EnterprisePrepaymentUpsert) {
 		s.UpdateEnterpriseID()
+	})
+}
+
+// SetPayway sets the "payway" field.
+func (u *EnterprisePrepaymentUpsertOne) SetPayway(v model.Payway) *EnterprisePrepaymentUpsertOne {
+	return u.Update(func(s *EnterprisePrepaymentUpsert) {
+		s.SetPayway(v)
+	})
+}
+
+// UpdatePayway sets the "payway" field to the value that was provided on create.
+func (u *EnterprisePrepaymentUpsertOne) UpdatePayway() *EnterprisePrepaymentUpsertOne {
+	return u.Update(func(s *EnterprisePrepaymentUpsert) {
+		s.UpdatePayway()
 	})
 }
 
@@ -825,6 +873,20 @@ func (u *EnterprisePrepaymentUpsertBulk) SetEnterpriseID(v uint64) *EnterprisePr
 func (u *EnterprisePrepaymentUpsertBulk) UpdateEnterpriseID() *EnterprisePrepaymentUpsertBulk {
 	return u.Update(func(s *EnterprisePrepaymentUpsert) {
 		s.UpdateEnterpriseID()
+	})
+}
+
+// SetPayway sets the "payway" field.
+func (u *EnterprisePrepaymentUpsertBulk) SetPayway(v model.Payway) *EnterprisePrepaymentUpsertBulk {
+	return u.Update(func(s *EnterprisePrepaymentUpsert) {
+		s.SetPayway(v)
+	})
+}
+
+// UpdatePayway sets the "payway" field to the value that was provided on create.
+func (u *EnterprisePrepaymentUpsertBulk) UpdatePayway() *EnterprisePrepaymentUpsertBulk {
+	return u.Update(func(s *EnterprisePrepaymentUpsert) {
+		s.UpdatePayway()
 	})
 }
 

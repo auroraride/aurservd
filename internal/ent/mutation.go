@@ -38962,6 +38962,7 @@ type EnterprisePrepaymentMutation struct {
 	remark            *string
 	amount            *float64
 	addamount         *float64
+	payway            *model.Payway
 	clearedFields     map[string]struct{}
 	enterprise        *uint64
 	clearedenterprise bool
@@ -39428,6 +39429,42 @@ func (m *EnterprisePrepaymentMutation) ResetAmount() {
 	m.addamount = nil
 }
 
+// SetPayway sets the "payway" field.
+func (m *EnterprisePrepaymentMutation) SetPayway(value model.Payway) {
+	m.payway = &value
+}
+
+// Payway returns the value of the "payway" field in the mutation.
+func (m *EnterprisePrepaymentMutation) Payway() (r model.Payway, exists bool) {
+	v := m.payway
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPayway returns the old "payway" field's value of the EnterprisePrepayment entity.
+// If the EnterprisePrepayment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterprisePrepaymentMutation) OldPayway(ctx context.Context) (v model.Payway, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPayway is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPayway requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPayway: %w", err)
+	}
+	return oldValue.Payway, nil
+}
+
+// ResetPayway resets all changes to the "payway" field.
+func (m *EnterprisePrepaymentMutation) ResetPayway() {
+	m.payway = nil
+}
+
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
 func (m *EnterprisePrepaymentMutation) ClearEnterprise() {
 	m.clearedenterprise = true
@@ -39488,7 +39525,7 @@ func (m *EnterprisePrepaymentMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EnterprisePrepaymentMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 9)
 	if m.created_at != nil {
 		fields = append(fields, enterpriseprepayment.FieldCreatedAt)
 	}
@@ -39512,6 +39549,9 @@ func (m *EnterprisePrepaymentMutation) Fields() []string {
 	}
 	if m.amount != nil {
 		fields = append(fields, enterpriseprepayment.FieldAmount)
+	}
+	if m.payway != nil {
+		fields = append(fields, enterpriseprepayment.FieldPayway)
 	}
 	return fields
 }
@@ -39537,6 +39577,8 @@ func (m *EnterprisePrepaymentMutation) Field(name string) (ent.Value, bool) {
 		return m.EnterpriseID()
 	case enterpriseprepayment.FieldAmount:
 		return m.Amount()
+	case enterpriseprepayment.FieldPayway:
+		return m.Payway()
 	}
 	return nil, false
 }
@@ -39562,6 +39604,8 @@ func (m *EnterprisePrepaymentMutation) OldField(ctx context.Context, name string
 		return m.OldEnterpriseID(ctx)
 	case enterpriseprepayment.FieldAmount:
 		return m.OldAmount(ctx)
+	case enterpriseprepayment.FieldPayway:
+		return m.OldPayway(ctx)
 	}
 	return nil, fmt.Errorf("unknown EnterprisePrepayment field %s", name)
 }
@@ -39626,6 +39670,13 @@ func (m *EnterprisePrepaymentMutation) SetField(name string, value ent.Value) er
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetAmount(v)
+		return nil
+	case enterpriseprepayment.FieldPayway:
+		v, ok := value.(model.Payway)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPayway(v)
 		return nil
 	}
 	return fmt.Errorf("unknown EnterprisePrepayment field %s", name)
@@ -39741,6 +39792,9 @@ func (m *EnterprisePrepaymentMutation) ResetField(name string) error {
 		return nil
 	case enterpriseprepayment.FieldAmount:
 		m.ResetAmount()
+		return nil
+	case enterpriseprepayment.FieldPayway:
+		m.ResetPayway()
 		return nil
 	}
 	return fmt.Errorf("unknown EnterprisePrepayment field %s", name)

@@ -31,7 +31,7 @@ func (EnterprisePrepayment) Fields() []ent.Field {
 		field.Float("amount").Immutable().Comment("预付金额"),
 		field.Other("payway", model.PaywayCash).Default(model.PaywayCash).SchemaType(map[string]string{
 			dialect.Postgres: postgres.TypeSmallInt,
-		}).Comment("支付方式"),
+		}).Comment("支付方式").Annotations(entsql.DefaultExpr("1")),
 	}
 }
 

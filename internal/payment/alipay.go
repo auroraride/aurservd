@@ -159,7 +159,14 @@ func (c *alipayClient) Refund(req *model.PaymentRefund) {
 
 // Notification 支付宝回调
 func (c *alipayClient) Notification(req *http.Request) *model.PaymentCache {
-	result, err := c.Client.DecodeNotification(req)
+	err := req.ParseForm()
+	if err != nil {
+		zap.L().Error("支付宝回调失败", zap.Error(err))
+		return nil
+	}
+
+	var result *alipay.Notification
+	result, err = c.Client.DecodeNotification(req.Form)
 	zap.L().Info("支付宝回调", log.JsonData(result), zap.Error(err))
 	if err != nil {
 		return nil

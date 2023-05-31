@@ -36,6 +36,8 @@ type EnterprisePrepayment struct {
 	EnterpriseID uint64 `json:"enterprise_id,omitempty"`
 	// 预付金额
 	Amount float64 `json:"amount,omitempty"`
+	// 支付方式
+	Payway model.Payway `json:"payway,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EnterprisePrepaymentQuery when eager-loading is set.
 	Edges        EnterprisePrepaymentEdges `json:"edges"`
@@ -71,6 +73,8 @@ func (*EnterprisePrepayment) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case enterpriseprepayment.FieldCreator, enterpriseprepayment.FieldLastModifier:
 			values[i] = new([]byte)
+		case enterpriseprepayment.FieldPayway:
+			values[i] = new(model.Payway)
 		case enterpriseprepayment.FieldAmount:
 			values[i] = new(sql.NullFloat64)
 		case enterpriseprepayment.FieldID, enterpriseprepayment.FieldEnterpriseID:
@@ -153,6 +157,12 @@ func (ep *EnterprisePrepayment) assignValues(columns []string, values []any) err
 			} else if value.Valid {
 				ep.Amount = value.Float64
 			}
+		case enterpriseprepayment.FieldPayway:
+			if value, ok := values[i].(*model.Payway); !ok {
+				return fmt.Errorf("unexpected type %T for field payway", values[i])
+			} else if value != nil {
+				ep.Payway = *value
+			}
 		default:
 			ep.selectValues.Set(columns[i], values[i])
 		}
@@ -219,6 +229,9 @@ func (ep *EnterprisePrepayment) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("amount=")
 	builder.WriteString(fmt.Sprintf("%v", ep.Amount))
+	builder.WriteString(", ")
+	builder.WriteString("payway=")
+	builder.WriteString(fmt.Sprintf("%v", ep.Payway))
 	builder.WriteByte(')')
 	return builder.String()
 }

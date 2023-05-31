@@ -1990,6 +1990,7 @@ var (
 		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
 		{Name: "amount", Type: field.TypeFloat64, Comment: "预付金额"},
+		{Name: "payway", Type: field.TypeOther, Comment: "支付方式", Default: schema.Expr("1"), SchemaType: map[string]string{"postgres": "smallint"}},
 		{Name: "enterprise_id", Type: field.TypeUint64, Comment: "企业ID"},
 	}
 	// EnterprisePrepaymentTable holds the schema information for the "enterprise_prepayment" table.
@@ -2000,7 +2001,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "enterprise_prepayment_enterprise_enterprise",
-				Columns:    []*schema.Column{EnterprisePrepaymentColumns[8]},
+				Columns:    []*schema.Column{EnterprisePrepaymentColumns[9]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -2019,7 +2020,7 @@ var (
 			{
 				Name:    "enterpriseprepayment_enterprise_id",
 				Unique:  false,
-				Columns: []*schema.Column{EnterprisePrepaymentColumns[8]},
+				Columns: []*schema.Column{EnterprisePrepaymentColumns[9]},
 			},
 		},
 	}

@@ -95,6 +95,20 @@ func (epu *EnterprisePrepaymentUpdate) SetEnterpriseID(u uint64) *EnterprisePrep
 	return epu
 }
 
+// SetPayway sets the "payway" field.
+func (epu *EnterprisePrepaymentUpdate) SetPayway(m model.Payway) *EnterprisePrepaymentUpdate {
+	epu.mutation.SetPayway(m)
+	return epu
+}
+
+// SetNillablePayway sets the "payway" field if the given value is not nil.
+func (epu *EnterprisePrepaymentUpdate) SetNillablePayway(m *model.Payway) *EnterprisePrepaymentUpdate {
+	if m != nil {
+		epu.SetPayway(*m)
+	}
+	return epu
+}
+
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
 func (epu *EnterprisePrepaymentUpdate) SetEnterprise(e *Enterprise) *EnterprisePrepaymentUpdate {
 	return epu.SetEnterpriseID(e.ID)
@@ -202,6 +216,9 @@ func (epu *EnterprisePrepaymentUpdate) sqlSave(ctx context.Context) (n int, err 
 	}
 	if epu.mutation.RemarkCleared() {
 		_spec.ClearField(enterpriseprepayment.FieldRemark, field.TypeString)
+	}
+	if value, ok := epu.mutation.Payway(); ok {
+		_spec.SetField(enterpriseprepayment.FieldPayway, field.TypeOther, value)
 	}
 	if epu.mutation.EnterpriseCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -315,6 +332,20 @@ func (epuo *EnterprisePrepaymentUpdateOne) ClearRemark() *EnterprisePrepaymentUp
 // SetEnterpriseID sets the "enterprise_id" field.
 func (epuo *EnterprisePrepaymentUpdateOne) SetEnterpriseID(u uint64) *EnterprisePrepaymentUpdateOne {
 	epuo.mutation.SetEnterpriseID(u)
+	return epuo
+}
+
+// SetPayway sets the "payway" field.
+func (epuo *EnterprisePrepaymentUpdateOne) SetPayway(m model.Payway) *EnterprisePrepaymentUpdateOne {
+	epuo.mutation.SetPayway(m)
+	return epuo
+}
+
+// SetNillablePayway sets the "payway" field if the given value is not nil.
+func (epuo *EnterprisePrepaymentUpdateOne) SetNillablePayway(m *model.Payway) *EnterprisePrepaymentUpdateOne {
+	if m != nil {
+		epuo.SetPayway(*m)
+	}
 	return epuo
 }
 
@@ -455,6 +486,9 @@ func (epuo *EnterprisePrepaymentUpdateOne) sqlSave(ctx context.Context) (_node *
 	}
 	if epuo.mutation.RemarkCleared() {
 		_spec.ClearField(enterpriseprepayment.FieldRemark, field.TypeString)
+	}
+	if value, ok := epuo.mutation.Payway(); ok {
+		_spec.SetField(enterpriseprepayment.FieldPayway, field.TypeOther, value)
 	}
 	if epuo.mutation.EnterpriseCleared() {
 		edge := &sqlgraph.EdgeSpec{
