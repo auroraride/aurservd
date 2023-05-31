@@ -1,0 +1,8 @@
+runner:
+  golint:
+    cmd: golangci-lint run --out-format=line-number --allow-parallel-runners --max-same-issues=0 --timeout=10m ./...
+    errorformat:
+      - '%E%f:%l:%c: %m'
+      - '%E%f:%l: %m'
+      - '%C%.%#'
+    level: warning
