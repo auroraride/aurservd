@@ -280,9 +280,8 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
 		snag.Panic("支付金额错误")
 	}
 
-	// DEBUG 模式支付一分钱
-	mode := ar.Config.App.Mode
-	if mode == "debug" || mode == "next" {
+	// Development模式支付一分钱
+	if ar.Config.Environment.IsDevelopment() {
 		price = 0.01
 		if deposit > 0 {
 			deposit = 0.01
@@ -336,9 +335,8 @@ func (s *orderService) CreateFee(riderID uint64, payway uint8) *model.OrderCreat
 
 	fee, _, o := NewSubscribe().CalculateOverdueFee(sub)
 
-	// DEBUG 模式支付一分钱
-	mode := ar.Config.App.Mode
-	if mode == "debug" || mode == "next" {
+	// Development模式支付一分钱
+	if ar.Config.Environment.IsDevelopment() {
 		fee = 0.01
 	}
 
@@ -411,6 +409,8 @@ func (s *orderService) DoPayment(pc *model.PaymentCache) {
 		s.RefundSuccess(pc.Refund)
 	case model.PaymentCacheTypeOverdueFee:
 		s.FeePaid(pc.OverDueFee)
+	case model.PaymentCacheTypeAgentPrepay:
+		NewPrepayment().Paid(pc.AgentPrepay)
 	}
 }
 

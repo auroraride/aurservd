@@ -12,10 +12,11 @@ import (
 )
 
 const (
-	PaymentCacheTypePlan       uint = iota + 1 // 购买骑士卡订单
-	PaymentCacheTypeRefund                     // 退款订单
-	PaymentCacheTypeOverdueFee                 // 欠费订单
-	PaymentCacheTypeAssistance                 // 救援订单
+	PaymentCacheTypePlan        uint = iota + 1 // 购买骑士卡订单
+	PaymentCacheTypeRefund                      // 退款订单
+	PaymentCacheTypeOverdueFee                  // 欠费订单
+	PaymentCacheTypeAssistance                  // 救援订单
+	PaymentCacheTypeAgentPrepay                 // 代理商预储值
 )
 
 // PaymentSubscribe 购买骑士卡订单
@@ -87,13 +88,22 @@ type PaymentAssistance struct {
 	TradeNo    string  `json:"tradeNo,omitempty"` // 支付单号
 }
 
+// PaymentAgentPrepay 代理商预储值
+type PaymentAgentPrepay struct {
+	*AgentPrepay
+	Payway     Payway `json:"payway"`            // 支付方式
+	OutTradeNo string `json:"outTradeNo"`        // 订单号
+	TradeNo    string `json:"tradeNo,omitempty"` // 支付单号
+}
+
 // PaymentCache 支付缓存
 type PaymentCache struct {
-	CacheType  uint               `json:"cacheType"`            // 订单类型
-	Subscribe  *PaymentSubscribe  `json:"create,omitempty"`     // 购买骑士卡订单
-	Refund     *PaymentRefund     `json:"refund,omitempty"`     // 退款订单
-	OverDueFee *PaymentOverdueFee `json:"overDueFee,omitempty"` // 逾期费用订单
-	Assistance *PaymentAssistance `json:"assistance,omitempty"` // 救援订单
+	CacheType   uint                `json:"cacheType"`             // 订单类型
+	Subscribe   *PaymentSubscribe   `json:"create,omitempty"`      // 购买骑士卡订单
+	Refund      *PaymentRefund      `json:"refund,omitempty"`      // 退款订单
+	OverDueFee  *PaymentOverdueFee  `json:"overDueFee,omitempty"`  // 逾期费用订单
+	Assistance  *PaymentAssistance  `json:"assistance,omitempty"`  // 救援订单
+	AgentPrepay *PaymentAgentPrepay `json:"agentPrepay,omitempty"` // 代理商预充值
 }
 
 func (pc *PaymentCache) MarshalBinary() ([]byte, error) {
@@ -112,6 +122,8 @@ func (pc *PaymentCache) GetPaymentArgs() (float64, string, string) {
 		return pc.OverDueFee.Amount, pc.OverDueFee.Subject, pc.OverDueFee.OutTradeNo
 	case PaymentCacheTypeAssistance:
 		return pc.Assistance.Cost, pc.Assistance.Subject, pc.Assistance.OutTradeNo
+	case PaymentCacheTypeAgentPrepay:
+		return pc.AgentPrepay.Amount, "代理商自主储值", pc.AgentPrepay.OutTradeNo
 	}
 	return 0, "", ""
 }

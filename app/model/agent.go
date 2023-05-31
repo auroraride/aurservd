@@ -22,7 +22,7 @@ type AgentListReq struct {
 	EnterpriseID uint64 `json:"enterpriseId" query:"enterpriseId" validate:"required" trans:"团签ID"`
 }
 
-type AgentListRes struct {
+type AgentMeta struct {
 	ID    uint64 `json:"id"`
 	Name  string `json:"name"`
 	Phone string `json:"phone"`

@@ -248,7 +248,7 @@ func (*enterprise) DeleteContract(c echo.Context) (err error) {
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Param        enterpriseId  query  uint64  true  "团签ID"
-// @Success      200  {object}  []model.AgentListRes  "请求成功"
+// @Success      200  {object}  []model.AgentMeta  "请求成功"
 func (*enterprise) AgentList(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.AgentListReq](c)
 	return ctx.SendResponse(service.NewAgent().List(req))

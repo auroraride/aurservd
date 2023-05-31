@@ -1,10 +1,14 @@
 package schema
 
 import (
+	"ariga.io/atlas/sql/postgres"
 	"entgo.io/ent"
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
+
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -25,6 +29,9 @@ func (EnterprisePrepayment) Annotations() []schema.Annotation {
 func (EnterprisePrepayment) Fields() []ent.Field {
 	return []ent.Field{
 		field.Float("amount").Immutable().Comment("预付金额"),
+		field.Other("payway", model.PaywayCash).Default(model.PaywayCash).SchemaType(map[string]string{
+			dialect.Postgres: postgres.TypeSmallInt,
+		}).Comment("支付方式"),
 	}
 }
 
@@ -39,7 +46,7 @@ func (EnterprisePrepayment) Mixin() []ent.Mixin {
 		internal.DeleteMixin{},
 		internal.Modifier{},
 
-		EnterpriseMixin{Optional: false},
+		EnterpriseMixin{},
 	}
 }
 

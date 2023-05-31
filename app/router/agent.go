@@ -29,6 +29,7 @@ func loadAgentRoutes() {
 	//
 	// auth.GET("/prepayment/overview", aapi.Prepayment.Overview)
 	// auth.GET("/prepayment", aapi.Prepayment.List)
+	auth.POST("/prepayment/pay/wxmp", aapi.Prepayment.WechatMiniprogramPay)
 
 	auth.GET("/bill/usage", aapi.Bill.Usage)
 	auth.GET("/bill/historical", aapi.Bill.Historical)
