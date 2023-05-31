@@ -152,18 +152,43 @@ func (s *agentService) signin(ag *ent.Agent) *model.AgentSigninRes {
 
 // Signin 登录
 func (s *agentService) Signin(req *model.AgentSigninReq) *model.AgentSigninRes {
-	ag, _ := s.orm.QueryNotDeleted().Where(agent.Phone(req.Phone)).WithEnterprise().First(s.ctx)
-	if ag == nil || ag.Edges.Enterprise == nil {
+	var openid string
+	switch req.SigninType {
+	case model.SigninTypeSms:
+		// 校验短信
+		NewSms().VerifyCodeX(req.Phone, req.SmsId, req.Code)
+	case model.SigninTypeWechat:
+		newProgram := NewminiProgram()
+		// 获取openid
+		openid = newProgram.GetAuth(req.JsCode)
+		// 获取手机号
+		req.Phone = NewminiProgram().GetPhoneNumber(req.Code)
+	}
+	ag, err := s.orm.QueryNotDeleted().Where(agent.Phone(req.Phone)).WithEnterprise().First(s.ctx)
+	if err != nil {
 		snag.Panic("登录失败")
 	}
-
+	if ag.Edges.Enterprise == nil {
+		snag.Panic("登录失败")
+	}
 	en := ag.Edges.Enterprise
 	if !en.Agent {
 		snag.Panic("非代理商")
 	}
-
-	// 校验短信
-	NewSms().VerifyCodeX(req.Phone, req.SmsId, req.SmsCode)
+	if openid != "" {
+		// 校验openid是否已经绑定
+		if ag.Openid == "" {
+			// 更新openid
+			_, err = s.orm.UpdateOne(ag).SetOpenid(openid).Save(s.ctx)
+			if err != nil {
+				snag.Panic("登录失败")
+			}
+		} else {
+			if ag.Openid != openid {
+				snag.Panic("该手机号已绑定其他微信号")
+			}
+		}
+	}
 
 	return s.signin(ag)
 }

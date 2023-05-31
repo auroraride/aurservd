@@ -648,6 +648,10 @@ func init() {
 	enterpriseprepayment.DefaultUpdatedAt = enterpriseprepaymentDescUpdatedAt.Default.(func() time.Time)
 	// enterpriseprepayment.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	enterpriseprepayment.UpdateDefaultUpdatedAt = enterpriseprepaymentDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// enterpriseprepaymentDescPayway is the schema descriptor for payway field.
+	enterpriseprepaymentDescPayway := enterpriseprepaymentFields[1].Descriptor()
+	// enterpriseprepayment.DefaultPayway holds the default value on creation for the payway field.
+	enterpriseprepayment.DefaultPayway = enterpriseprepaymentDescPayway.Default.(model.Payway)
 	enterprisepriceMixin := schema.EnterprisePrice{}.Mixin()
 	enterprisepriceMixinHooks2 := enterprisepriceMixin[2].Hooks()
 	enterpriseprice.Hooks[0] = enterprisepriceMixinHooks2[0]
