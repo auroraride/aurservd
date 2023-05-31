@@ -587,6 +587,17 @@ const docTemplate = `{
                 ],
                 "summary": "A1001 登录",
                 "operationId": "AgentSignin",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AgentSigninReq"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "请求成功",
@@ -15254,6 +15265,25 @@ const docTemplate = `{
                 },
                 "time": {
                     "description": "操作时间",
+                    "type": "string"
+                }
+            }
+        },
+        "model.AgentSigninReq": {
+            "type": "object",
+            "required": [
+                "phone",
+                "smsCode",
+                "smsId"
+            ],
+            "properties": {
+                "phone": {
+                    "type": "string"
+                },
+                "smsCode": {
+                    "type": "string"
+                },
+                "smsId": {
                     "type": "string"
                 }
             }

@@ -24,6 +24,7 @@ var Agent = new(agent)
 // @Tags         [A]代理接口
 // @Accept       json
 // @Produce      json
+// @Param        body  body  model.AgentSigninReq  true  "请求参数"
 // @Success      200  {object}  model.AgentSigninRes  "请求成功"
 func (*agent) Signin(c echo.Context) (err error) {
 	ctx, req := app.ContextBinding[model.AgentSigninReq](c)

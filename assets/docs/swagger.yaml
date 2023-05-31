@@ -521,6 +521,19 @@ definitions:
         description: 操作时间
         type: string
     type: object
+  model.AgentSigninReq:
+    properties:
+      phone:
+        type: string
+      smsCode:
+        type: string
+      smsId:
+        type: string
+    required:
+    - phone
+    - smsCode
+    - smsId
+    type: object
   model.AgentSigninRes:
     properties:
       profile:
@@ -7647,6 +7660,13 @@ paths:
       consumes:
       - application/json
       operationId: AgentSignin
+      parameters:
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AgentSigninReq'
       produces:
       - application/json
       responses:
