@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/golang-module/carbon/v2"
+	"go.uber.org/zap"
 
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
@@ -57,6 +58,7 @@ func (s *riderAgentService) detail(item *ent.Rider) model.AgentRider {
 	res := model.AgentRider{
 		ID:    item.ID,
 		Phone: item.Phone,
+		Date:  item.CreatedAt.Format(carbon.DateLayout),
 		Name:  item.Name,
 	}
 	// 获取站点
@@ -68,12 +70,22 @@ func (s *riderAgentService) detail(item *ent.Rider) model.AgentRider {
 	subs := item.Edges.Subscribes
 	if len(subs) > 0 {
 		sub := subs[0]
+		res.SubscribeID = sub.ID
 		res.Model = sub.Model
+		ci := sub.Edges.City
+		res.City = &model.City{
+			ID:   ci.ID,
+			Name: ci.Name,
+		}
+		if sub.EndAt != nil {
+			res.EndAt = sub.EndAt.Format(carbon.DateLayout)
+		}
 		if sub.AgentEndAt != nil {
 			res.StopAt = sub.AgentEndAt.Format(carbon.DateLayout)
 		}
 		if sub.StartAt != nil {
 			res.StartAt = sub.StartAt.Format(carbon.DateLayout)
+			res.Used = tools.NewTime().UsedDaysToNow(*sub.StartAt)
 		}
 		switch sub.Status {
 		case model.SubscribeStatusInactive:
@@ -216,7 +228,7 @@ func (s *riderAgentService) Log(req *model.AgentRiderLogReq) (items []model.Agen
 }
 
 // Active 激活骑手电池
-func (s *enterpriseService) Active(req *model.RiderActiveBatteryReq) bool {
+func (s *enterpriseService) Active(req *model.RiderActiveBatteryReq) model.StatusResponse {
 	// 不是自己骑手的不能激活
 	riderInfo, err := NewRider().GetRiderById(req.ID)
 	if err != nil {
@@ -240,38 +252,33 @@ func (s *enterpriseService) Active(req *model.RiderActiveBatteryReq) bool {
 		snag.Panic("订阅状态异常,无法激活骑手,有未完成的订单")
 	}
 	// 绑定电池
-	err = ent.WithTx(s.ctx, func(tx *ent.Tx) error {
+	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) error {
 		// 激活订阅
-		var aend *time.Time
 		aendTime := tools.NewTime().WillEnd(time.Now(), subscribeInfo.InitialDays)
-		aend = &aendTime
-		err := tx.Subscribe.UpdateOneID(subscribeInfo.ID).SetStatus(model.SubscribeStatusUsing).SetStartAt(time.Now()).
-			SetNillableAgentEndAt(aend).
-			Exec(s.ctx)
-		if err != nil {
+		if tx.Subscribe.UpdateOneID(subscribeInfo.ID).SetStatus(model.SubscribeStatusUsing).SetStartAt(time.Now()).
+			SetNillableAgentEndAt(&aendTime).Exec(s.ctx) != nil {
+			zap.L().Error("激活订阅失败", zap.Error(err))
 			snag.Panic("激活订阅失败")
 		}
 		// 删除原有信息
-		err = tx.Battery.Update().Where(battery.SubscribeID(subscribeInfo.ID)).ClearRiderID().ClearSubscribeID().Exec(s.ctx)
-		if err != nil {
+		if tx.Battery.Update().Where(battery.SubscribeID(subscribeInfo.ID)).ClearRiderID().ClearSubscribeID().Exec(s.ctx) != nil {
+			zap.L().Error("电池解绑失败", zap.Error(err))
 			snag.Panic("电池解绑失败")
 		}
 		// 绑定电池
-		err = tx.Battery.Update().Where(battery.Sn(batteryInfo.Sn)).SetRiderID(req.ID).SetSubscribeID(subscribeInfo.ID).Exec(s.ctx)
-		if err != nil {
+		if tx.Battery.Update().Where(battery.Sn(batteryInfo.Sn)).
+			SetRiderID(req.ID).SetSubscribeID(subscribeInfo.ID).Exec(s.ctx) != nil {
+			zap.L().Error("电池绑定失败", zap.Error(err))
 			snag.Panic("电池绑定失败")
 		}
 		// 更新电池流水记录表
-		err = tx.BatteryFlow.Create().SetSn(batteryInfo.Sn).SetRiderID(req.ID).
+		if tx.BatteryFlow.Create().SetSn(batteryInfo.Sn).SetRiderID(req.ID).
 			SetBatteryID(batteryInfo.ID).
-			SetNillableSubscribeID(&subscribeInfo.ID).Exec(s.ctx)
-		if err != nil {
+			SetNillableSubscribeID(&subscribeInfo.ID).Exec(s.ctx) != nil {
+			zap.L().Error("电池流水记录失败", zap.Error(err))
 			snag.Panic("电池流水记录失败")
 		}
 		return nil
 	})
-	if err != nil {
-		snag.Panic("激活失败")
-	}
-	return true
+	return model.StatusResponse{Status: true}
 }
