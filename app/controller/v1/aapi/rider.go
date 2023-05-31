@@ -71,8 +71,24 @@ func (*rider) Alter(c echo.Context) (err error) {
 // @Produce      json
 // @Param        X-Agent-Token  header  string  true  "代理校验token"
 // @Param        id  path  uint64  true  "骑手ID"
-// @Success      200  {object}  model.AgentRiderDetail  "请求成功"
+// @Success      200  {object}  model.AgentRider  "请求成功"
 func (*rider) Detail(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.IDParamReq](c)
 	return ctx.SendResponse(service.NewRiderAgentWithAgent(ctx.Agent, ctx.Enterprise).Detail(req, ctx.Enterprise.ID))
+}
+
+// Active 激活骑手
+// @ID           AgentRiderActive
+// @Router       /agent/v1/rider/active [POST]
+// @Summary      A2005 激活骑手
+// @Tags         [A]代理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Agent-Token  header  string  true  "代理校验token"
+// @Param        body  body     model.RiderActiveBatteryReq  true  "请求详情"
+// @Success      200  {object}  string  "请求成功"
+func (*rider) Active(c echo.Context) (err error) {
+	ctx, req := app.AgentContextAndBinding[model.RiderActiveBatteryReq](c)
+	req.EnterpriseId = &ctx.Enterprise.ID
+	return ctx.SendResponse(service.NewEnterprise().Active(req))
 }
