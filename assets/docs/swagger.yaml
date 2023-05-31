@@ -5356,14 +5356,11 @@ definitions:
     type: object
   model.RiderActiveBatteryReq:
     properties:
-      battery_id:
-        description: 电池编号
-        type: integer
-      enterprise_id:
-        description: 团签id
+      batteryId:
+        description: 电池ID
         type: integer
     required:
-    - battery_id
+    - batteryId
     type: object
   model.RiderBlockReq:
     properties:

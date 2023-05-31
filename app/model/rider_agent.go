@@ -10,7 +10,7 @@ const (
 	AgentRiderStatusUsing        = "using"
 	AgentRiderStatusOverdue      = "overdue"
 	AgentRiderStatusUnsubscribed = "unsubscribed"
-	AgentRiderStatusWillOverdue  = "will_overdue"
+	AgentRiderStatusWillOverdue  = "willOverdue"
 )
 
 const WillOverdueNum = 3

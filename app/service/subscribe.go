@@ -310,20 +310,6 @@ func (s *subscribeService) QueryAllRidersEffective() []*ent.Subscribe {
 	return items
 }
 
-// QueryRiderSubscribe 查询骑手订阅信息
-func (s *subscribeService) QueryRiderSubscribe(riderID uint64) *ent.Subscribe {
-	first, _ := ent.Database.Subscribe.QueryNotDeleted().Where(
-		subscribe.RiderID(riderID),
-		subscribe.StatusIn(
-			model.SubscribeStatusInactive,
-			model.SubscribeStatusUsing,
-			model.SubscribeStatusPaused,
-			model.SubscribeStatusOverdue,
-		),
-	).Order(ent.Desc(subscribe.FieldCreatedAt)).First(s.ctx)
-	return first
-}
-
 // UpdateStatus 更新订阅状态
 // notice 是否发送催费通知
 func (s *subscribeService) UpdateStatus(item *ent.Subscribe, notice bool) error {

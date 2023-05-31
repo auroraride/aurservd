@@ -44,7 +44,8 @@ func (*rider) List(c echo.Context) (err error) {
 // @Success      200  {object}  model.EnterpriseRider  "请求成功"
 func (*rider) Create(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.EnterpriseRiderCreateReq](c)
-	return ctx.SendResponse(service.NewEnterpriseRiderWithAgent(ctx.Agent, ctx.Enterprise).CreateByAgent(req))
+	service.NewEnterpriseRider().CreateByAgent(req, ctx.Agent, ctx.Stations)
+	return ctx.SendResponse(model.StatusResponse{Status: true})
 }
 
 // Alter
@@ -89,6 +90,6 @@ func (*rider) Detail(c echo.Context) (err error) {
 // @Success      200  {object}  string  "请求成功"
 func (*rider) Active(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.RiderActiveBatteryReq](c)
-	req.EnterpriseId = &ctx.Enterprise.ID
-	return ctx.SendResponse(service.NewEnterprise().Active(req))
+	service.NewEnterprise().Active(req, ctx.Agent)
+	return ctx.SendResponse(model.StatusResponse{Status: true})
 }

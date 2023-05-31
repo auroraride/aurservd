@@ -22376,15 +22376,11 @@ const docTemplate = `{
         "model.RiderActiveBatteryReq": {
             "type": "object",
             "required": [
-                "battery_id"
+                "batteryId"
             ],
             "properties": {
-                "battery_id": {
-                    "description": "电池编号",
-                    "type": "integer"
-                },
-                "enterprise_id": {
-                    "description": "团签id",
+                "batteryId": {
+                    "description": "电池ID",
                     "type": "integer"
                 }
             }

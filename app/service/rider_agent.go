@@ -228,51 +228,50 @@ func (s *riderAgentService) Log(req *model.AgentRiderLogReq) (items []model.Agen
 }
 
 // Active 激活骑手电池
-func (s *enterpriseService) Active(req *model.RiderActiveBatteryReq) model.StatusResponse {
+func (s *enterpriseService) Active(req *model.RiderActiveBatteryReq, ag *ent.Agent) {
 	// 不是自己骑手的不能激活
-	riderInfo, err := NewRider().GetRiderById(req.ID)
-	if err != nil {
-		snag.Panic("骑手不存在")
-	}
-	if riderInfo.EnterpriseID != req.EnterpriseId {
-		snag.Panic("骑手不属于该企业")
+	riderInfo, _ := ent.Database.Rider.QueryNotDeleted().Where(rider.ID(req.ID), rider.EnterpriseID(ag.EnterpriseID)).First(s.ctx)
+	if riderInfo != nil {
+		snag.Panic("未找到有效骑手")
 	}
 
 	// 查询电池是否存在
-	batteryInfo := NewBattery(s.ctx).QueryIDX(req.BatteryId)
+	batteryInfo := NewBattery(s.ctx).QueryIDX(req.BatteryID)
 	if batteryInfo.CabinetID != nil {
 		snag.Panic("电柜中的电池无法手动绑定骑手")
 	}
 	if batteryInfo.RiderID != nil || batteryInfo.SubscribeID != nil {
 		snag.Panic("电池已被绑定")
 	}
+
 	// 查询骑手订阅信息
 	subscribeInfo := NewSubscribe().QueryEffectiveX(req.ID)
 	if subscribeInfo.Status != model.SubscribeStatusInactive {
-		snag.Panic("订阅状态异常,无法激活骑手,有未完成的订单")
+		snag.Panic("订阅状态异常")
 	}
+
 	// 绑定电池
 	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) error {
 		// 激活订阅
 		aendTime := tools.NewTime().WillEnd(time.Now(), subscribeInfo.InitialDays)
-		if err = tx.Subscribe.UpdateOneID(subscribeInfo.ID).SetStatus(model.SubscribeStatusUsing).SetStartAt(time.Now()).
+		if err := tx.Subscribe.UpdateOneID(subscribeInfo.ID).SetStatus(model.SubscribeStatusUsing).SetStartAt(time.Now()).
 			SetNillableAgentEndAt(&aendTime).Exec(s.ctx); err != nil {
 			zap.L().Error("激活订阅失败", zap.Error(err))
 			snag.Panic("激活订阅失败")
 		}
 		// 删除原有信息
-		if err = tx.Battery.Update().Where(battery.SubscribeID(subscribeInfo.ID)).ClearRiderID().ClearSubscribeID().Exec(s.ctx); err != nil {
+		if err := tx.Battery.Update().Where(battery.SubscribeID(subscribeInfo.ID)).ClearRiderID().ClearSubscribeID().Exec(s.ctx); err != nil {
 			zap.L().Error("电池解绑失败", zap.Error(err))
 			snag.Panic("电池解绑失败")
 		}
 		// 绑定电池
-		if err = tx.Battery.Update().Where(battery.Sn(batteryInfo.Sn)).
+		if err := tx.Battery.Update().Where(battery.Sn(batteryInfo.Sn)).
 			SetRiderID(req.ID).SetSubscribeID(subscribeInfo.ID).Exec(s.ctx); err != nil {
 			zap.L().Error("电池绑定失败", zap.Error(err))
 			snag.Panic("电池绑定失败")
 		}
 		// 更新电池流水记录表
-		if err = tx.BatteryFlow.Create().SetSn(batteryInfo.Sn).SetRiderID(req.ID).
+		if err := tx.BatteryFlow.Create().SetSn(batteryInfo.Sn).SetRiderID(req.ID).
 			SetBatteryID(batteryInfo.ID).
 			SetNillableSubscribeID(&subscribeInfo.ID).Exec(s.ctx); err != nil {
 			zap.L().Error("电池流水记录失败", zap.Error(err))
@@ -280,5 +279,4 @@ func (s *enterpriseService) Active(req *model.RiderActiveBatteryReq) model.Statu
 		}
 		return nil
 	})
-	return model.StatusResponse{Status: true}
 }
