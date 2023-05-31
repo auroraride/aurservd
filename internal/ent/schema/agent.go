@@ -59,7 +59,6 @@ func (Agent) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name"),
 		field.String("phone").Unique(),
-		field.String("openid").Optional(),
 	}
 }
 
