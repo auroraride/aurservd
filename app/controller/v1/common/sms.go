@@ -8,17 +8,18 @@ package common
 import (
 	"errors"
 
+	"github.com/labstack/echo/v4"
+	"github.com/lithammer/shortuuid/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/internal/ar"
-	"github.com/labstack/echo/v4"
-	"github.com/lithammer/shortuuid/v4"
 )
 
 // SendSmsCode
 // @ID           SendSmsCode
-// @Router       /commom/sms [POST]
+// @Router       /common/sms [POST]
 // @Summary      C2 发送短信验证码
 // @Description  上传文件必须，单次获取有效时间为1个小时
 // @Tags         [C]公共接口

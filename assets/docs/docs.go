@@ -762,48 +762,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/commom/sms": {
-            "post": {
-                "description": "上传文件必须，单次获取有效时间为1个小时",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "[C]公共接口"
-                ],
-                "summary": "C2 发送短信验证码",
-                "operationId": "SendSmsCode",
-                "parameters": [
-                    {
-                        "description": "请求参数",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.SmsReq"
-                        }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Captcha验证码ID",
-                        "name": "X-Captcha-Id",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.SmsRes"
-                        }
-                    }
-                }
-            }
-        },
         "/common/battery/model": {
             "get": {
                 "consumes": [
@@ -879,6 +837,48 @@ const docTemplate = `{
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.AliyunOssStsRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/common/sms": {
+            "post": {
+                "description": "上传文件必须，单次获取有效时间为1个小时",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[C]公共接口"
+                ],
+                "summary": "C2 发送短信验证码",
+                "operationId": "SendSmsCode",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.SmsReq"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Captcha验证码ID",
+                        "name": "X-Captcha-Id",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.SmsRes"
                         }
                     }
                 }

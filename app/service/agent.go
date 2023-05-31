@@ -153,7 +153,7 @@ func (s *agentService) signin(ag *ent.Agent) *model.AgentSigninRes {
 // Signin 登录
 func (s *agentService) Signin(req *model.AgentSigninReq) *model.AgentSigninRes {
 	ag, _ := s.orm.QueryNotDeleted().Where(agent.Phone(req.Phone)).WithEnterprise().First(s.ctx)
-	if ag.Edges.Enterprise == nil {
+	if ag == nil || ag.Edges.Enterprise == nil {
 		snag.Panic("登录失败")
 	}
 
