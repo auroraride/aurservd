@@ -22,7 +22,10 @@ func loadAgentRoutes() {
 	auth.GET("/cabinet/:serial", aapi.Cabinet.Detail)
 	auth.GET("/profile", aapi.Agent.Profile)
 	auth.GET("/openid", aapi.Agent.GetOpenid)
-	// auth.GET("/rider", aapi.Rider.List)
+	// 骑手列表
+	auth.GET("/rider", aapi.Rider.List)
+	// 骑手详情
+	auth.GET("/rider/:id", aapi.Rider.Detail)
 	// auth.POST("/rider", aapi.Rider.Create)
 	// auth.POST("/rider/alter", aapi.Rider.Alter)
 	// auth.GET("/rider/:id", aapi.Rider.Detail)
