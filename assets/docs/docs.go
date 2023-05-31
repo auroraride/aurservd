@@ -214,6 +214,45 @@ const docTemplate = `{
                 }
             }
         },
+        "/agent/v1/getopenid": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A1003 获取openid",
+                "operationId": "AgentGetOpenid",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "微信code",
+                        "name": "code",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "code"
+                        }
+                    }
+                }
+            }
+        },
         "/agent/v1/prepayment": {
             "get": {
                 "consumes": [
@@ -589,7 +628,7 @@ const docTemplate = `{
                 "operationId": "AgentSignin",
                 "parameters": [
                     {
-                        "description": "请求参数",
+                        "description": "登录请求",
                         "name": "body",
                         "in": "body",
                         "required": true,
@@ -15272,16 +15311,24 @@ const docTemplate = `{
         "model.AgentSigninReq": {
             "type": "object",
             "required": [
-                "phone",
-                "smsCode",
-                "smsId"
+                "signinType"
             ],
             "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "jsCode": {
+                    "type": "string"
+                },
                 "phone": {
                     "type": "string"
                 },
-                "smsCode": {
-                    "type": "string"
+                "signinType": {
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
                 },
                 "smsId": {
                     "type": "string"

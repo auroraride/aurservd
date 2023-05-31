@@ -152,19 +152,22 @@ func (s *agentService) signin(ag *ent.Agent) *model.AgentSigninRes {
 
 // Signin 登录
 func (s *agentService) Signin(req *model.AgentSigninReq) *model.AgentSigninRes {
-	ag, _ := s.orm.QueryNotDeleted().Where(agent.Phone(req.Phone)).WithEnterprise().First(s.ctx)
-	if ag == nil || ag.Edges.Enterprise == nil {
+	switch req.SigninType {
+	case model.AgentSigninTypeSms:
+		// 校验短信
+		NewSms().VerifyCodeX(req.Phone, req.SmsId, req.Code)
+	case model.AgentSigninTypeWechat:
+		// 获取手机号
+		req.Phone = NewminiProgram().GetPhoneNumber(req.Code)
+	}
+	ag, err := s.orm.QueryNotDeleted().Where(agent.Phone(req.Phone)).WithEnterprise().First(s.ctx)
+	if err != nil || ag.Edges.Enterprise == nil {
 		snag.Panic("登录失败")
 	}
-
 	en := ag.Edges.Enterprise
 	if !en.Agent {
 		snag.Panic("非代理商")
 	}
-
-	// 校验短信
-	NewSms().VerifyCodeX(req.Phone, req.SmsId, req.SmsCode)
-
 	return s.signin(ag)
 }
 
