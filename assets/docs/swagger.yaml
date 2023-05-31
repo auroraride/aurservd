@@ -7427,6 +7427,32 @@ paths:
       summary: A5002 电柜详情
       tags:
       - '[A]代理接口'
+  /agent/v1/getopenid:
+    get:
+      consumes:
+      - application/json
+      operationId: AgentGetOpenid
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - description: 微信code
+        in: query
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            type: code
+      summary: A1003 获取openid
+      tags:
+      - '[A]代理接口'
   /agent/v1/prepayment:
     get:
       consumes:
@@ -7784,34 +7810,6 @@ paths:
       summary: A6001 出入库明细
       tags:
       - '[A]代理接口'
-  /commom/sms:
-    post:
-      consumes:
-      - application/json
-      description: 上传文件必须，单次获取有效时间为1个小时
-      operationId: SendSmsCode
-      parameters:
-      - description: 请求参数
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/model.SmsReq'
-      - description: Captcha验证码ID
-        in: header
-        name: X-Captcha-Id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.SmsRes'
-      summary: C2 发送短信验证码
-      tags:
-      - '[C]公共接口'
   /common/battery/model:
     get:
       consumes:
@@ -7863,6 +7861,34 @@ paths:
           schema:
             $ref: '#/definitions/model.AliyunOssStsRes'
       summary: C3 获取阿里云oss临时凭证
+      tags:
+      - '[C]公共接口'
+  /common/sms:
+    post:
+      consumes:
+      - application/json
+      description: 上传文件必须，单次获取有效时间为1个小时
+      operationId: SendSmsCode
+      parameters:
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.SmsReq'
+      - description: Captcha验证码ID
+        in: header
+        name: X-Captcha-Id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.SmsRes'
+      summary: C2 发送短信验证码
       tags:
       - '[C]公共接口'
   /crm/customer:

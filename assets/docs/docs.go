@@ -214,6 +214,45 @@ const docTemplate = `{
                 }
             }
         },
+        "/agent/v1/getopenid": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A1003 获取openid",
+                "operationId": "AgentGetOpenid",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "微信code",
+                        "name": "code",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "code"
+                        }
+                    }
+                }
+            }
+        },
         "/agent/v1/prepayment": {
             "get": {
                 "consumes": [

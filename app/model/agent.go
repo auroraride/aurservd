@@ -6,8 +6,8 @@
 package model
 
 const (
-	SigninTypeSms    uint64 = 1 // 短信登录
-	SigninTypeWechat uint64 = 2 // 微信授权登录
+	AgentSigninTypeSms    uint64 = iota + 1 // 短信登录
+	AgentSigninTypeWechat                   // 微信授权登录
 )
 
 type AgentCreateReq struct {
