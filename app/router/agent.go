@@ -25,6 +25,12 @@ func loadAgentRoutes() {
 	// auth.GET("/rider", aapi.Rider.List)
 	// 添加骑手
 	auth.POST("/rider", aapi.Rider.Create)
+	// 站点列表
+	auth.GET("/site/list", aapi.Agent.SiteList)
+	// 城市列表
+	auth.GET("/city/list", aapi.Agent.CityList)
+	// 电池搜索列表
+	auth.GET("/battery/list", aapi.Agent.BatteryList)
 	// auth.POST("/rider/alter", aapi.Rider.Alter)
 	// auth.GET("/rider/:id", aapi.Rider.Detail)
 	//
