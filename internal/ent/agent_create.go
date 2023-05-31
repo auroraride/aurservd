@@ -111,6 +111,20 @@ func (ac *AgentCreate) SetPhone(s string) *AgentCreate {
 	return ac
 }
 
+// SetOpenid sets the "openid" field.
+func (ac *AgentCreate) SetOpenid(s string) *AgentCreate {
+	ac.mutation.SetOpenid(s)
+	return ac
+}
+
+// SetNillableOpenid sets the "openid" field if the given value is not nil.
+func (ac *AgentCreate) SetNillableOpenid(s *string) *AgentCreate {
+	if s != nil {
+		ac.SetOpenid(*s)
+	}
+	return ac
+}
+
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
 func (ac *AgentCreate) SetEnterprise(e *Enterprise) *AgentCreate {
 	return ac.SetEnterpriseID(e.ID)
@@ -263,6 +277,10 @@ func (ac *AgentCreate) createSpec() (*Agent, *sqlgraph.CreateSpec) {
 	if value, ok := ac.mutation.Phone(); ok {
 		_spec.SetField(agent.FieldPhone, field.TypeString, value)
 		_node.Phone = value
+	}
+	if value, ok := ac.mutation.Openid(); ok {
+		_spec.SetField(agent.FieldOpenid, field.TypeString, value)
+		_node.Openid = value
 	}
 	if nodes := ac.mutation.EnterpriseIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -451,6 +469,24 @@ func (u *AgentUpsert) UpdatePhone() *AgentUpsert {
 	return u
 }
 
+// SetOpenid sets the "openid" field.
+func (u *AgentUpsert) SetOpenid(v string) *AgentUpsert {
+	u.Set(agent.FieldOpenid, v)
+	return u
+}
+
+// UpdateOpenid sets the "openid" field to the value that was provided on create.
+func (u *AgentUpsert) UpdateOpenid() *AgentUpsert {
+	u.SetExcluded(agent.FieldOpenid)
+	return u
+}
+
+// ClearOpenid clears the value of the "openid" field.
+func (u *AgentUpsert) ClearOpenid() *AgentUpsert {
+	u.SetNull(agent.FieldOpenid)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -615,6 +651,27 @@ func (u *AgentUpsertOne) SetPhone(v string) *AgentUpsertOne {
 func (u *AgentUpsertOne) UpdatePhone() *AgentUpsertOne {
 	return u.Update(func(s *AgentUpsert) {
 		s.UpdatePhone()
+	})
+}
+
+// SetOpenid sets the "openid" field.
+func (u *AgentUpsertOne) SetOpenid(v string) *AgentUpsertOne {
+	return u.Update(func(s *AgentUpsert) {
+		s.SetOpenid(v)
+	})
+}
+
+// UpdateOpenid sets the "openid" field to the value that was provided on create.
+func (u *AgentUpsertOne) UpdateOpenid() *AgentUpsertOne {
+	return u.Update(func(s *AgentUpsert) {
+		s.UpdateOpenid()
+	})
+}
+
+// ClearOpenid clears the value of the "openid" field.
+func (u *AgentUpsertOne) ClearOpenid() *AgentUpsertOne {
+	return u.Update(func(s *AgentUpsert) {
+		s.ClearOpenid()
 	})
 }
 
@@ -944,6 +1001,27 @@ func (u *AgentUpsertBulk) SetPhone(v string) *AgentUpsertBulk {
 func (u *AgentUpsertBulk) UpdatePhone() *AgentUpsertBulk {
 	return u.Update(func(s *AgentUpsert) {
 		s.UpdatePhone()
+	})
+}
+
+// SetOpenid sets the "openid" field.
+func (u *AgentUpsertBulk) SetOpenid(v string) *AgentUpsertBulk {
+	return u.Update(func(s *AgentUpsert) {
+		s.SetOpenid(v)
+	})
+}
+
+// UpdateOpenid sets the "openid" field to the value that was provided on create.
+func (u *AgentUpsertBulk) UpdateOpenid() *AgentUpsertBulk {
+	return u.Update(func(s *AgentUpsert) {
+		s.UpdateOpenid()
+	})
+}
+
+// ClearOpenid clears the value of the "openid" field.
+func (u *AgentUpsertBulk) ClearOpenid() *AgentUpsertBulk {
+	return u.Update(func(s *AgentUpsert) {
+		s.ClearOpenid()
 	})
 }
 

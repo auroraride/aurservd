@@ -146,6 +146,7 @@ type AgentMutation struct {
 	remark            *string
 	name              *string
 	phone             *string
+	openid            *string
 	clearedFields     map[string]struct{}
 	enterprise        *uint64
 	clearedenterprise bool
@@ -631,6 +632,55 @@ func (m *AgentMutation) ResetPhone() {
 	m.phone = nil
 }
 
+// SetOpenid sets the "openid" field.
+func (m *AgentMutation) SetOpenid(s string) {
+	m.openid = &s
+}
+
+// Openid returns the value of the "openid" field in the mutation.
+func (m *AgentMutation) Openid() (r string, exists bool) {
+	v := m.openid
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOpenid returns the old "openid" field's value of the Agent entity.
+// If the Agent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AgentMutation) OldOpenid(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOpenid is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOpenid requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOpenid: %w", err)
+	}
+	return oldValue.Openid, nil
+}
+
+// ClearOpenid clears the value of the "openid" field.
+func (m *AgentMutation) ClearOpenid() {
+	m.openid = nil
+	m.clearedFields[agent.FieldOpenid] = struct{}{}
+}
+
+// OpenidCleared returns if the "openid" field was cleared in this mutation.
+func (m *AgentMutation) OpenidCleared() bool {
+	_, ok := m.clearedFields[agent.FieldOpenid]
+	return ok
+}
+
+// ResetOpenid resets all changes to the "openid" field.
+func (m *AgentMutation) ResetOpenid() {
+	m.openid = nil
+	delete(m.clearedFields, agent.FieldOpenid)
+}
+
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
 func (m *AgentMutation) ClearEnterprise() {
 	m.clearedenterprise = true
@@ -745,7 +795,7 @@ func (m *AgentMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AgentMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 10)
 	if m.created_at != nil {
 		fields = append(fields, agent.FieldCreatedAt)
 	}
@@ -773,6 +823,9 @@ func (m *AgentMutation) Fields() []string {
 	if m.phone != nil {
 		fields = append(fields, agent.FieldPhone)
 	}
+	if m.openid != nil {
+		fields = append(fields, agent.FieldOpenid)
+	}
 	return fields
 }
 
@@ -799,6 +852,8 @@ func (m *AgentMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case agent.FieldPhone:
 		return m.Phone()
+	case agent.FieldOpenid:
+		return m.Openid()
 	}
 	return nil, false
 }
@@ -826,6 +881,8 @@ func (m *AgentMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldName(ctx)
 	case agent.FieldPhone:
 		return m.OldPhone(ctx)
+	case agent.FieldOpenid:
+		return m.OldOpenid(ctx)
 	}
 	return nil, fmt.Errorf("unknown Agent field %s", name)
 }
@@ -898,6 +955,13 @@ func (m *AgentMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetPhone(v)
 		return nil
+	case agent.FieldOpenid:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOpenid(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Agent field %s", name)
 }
@@ -943,6 +1007,9 @@ func (m *AgentMutation) ClearedFields() []string {
 	if m.FieldCleared(agent.FieldRemark) {
 		fields = append(fields, agent.FieldRemark)
 	}
+	if m.FieldCleared(agent.FieldOpenid) {
+		fields = append(fields, agent.FieldOpenid)
+	}
 	return fields
 }
 
@@ -968,6 +1035,9 @@ func (m *AgentMutation) ClearField(name string) error {
 		return nil
 	case agent.FieldRemark:
 		m.ClearRemark()
+		return nil
+	case agent.FieldOpenid:
+		m.ClearOpenid()
 		return nil
 	}
 	return fmt.Errorf("unknown Agent nullable field %s", name)
@@ -1003,6 +1073,9 @@ func (m *AgentMutation) ResetField(name string) error {
 		return nil
 	case agent.FieldPhone:
 		m.ResetPhone()
+		return nil
+	case agent.FieldOpenid:
+		m.ResetOpenid()
 		return nil
 	}
 	return fmt.Errorf("unknown Agent field %s", name)
@@ -38962,6 +39035,7 @@ type EnterprisePrepaymentMutation struct {
 	remark            *string
 	amount            *float64
 	addamount         *float64
+	payway            *model.Payway
 	clearedFields     map[string]struct{}
 	enterprise        *uint64
 	clearedenterprise bool
@@ -39428,6 +39502,42 @@ func (m *EnterprisePrepaymentMutation) ResetAmount() {
 	m.addamount = nil
 }
 
+// SetPayway sets the "payway" field.
+func (m *EnterprisePrepaymentMutation) SetPayway(value model.Payway) {
+	m.payway = &value
+}
+
+// Payway returns the value of the "payway" field in the mutation.
+func (m *EnterprisePrepaymentMutation) Payway() (r model.Payway, exists bool) {
+	v := m.payway
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPayway returns the old "payway" field's value of the EnterprisePrepayment entity.
+// If the EnterprisePrepayment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterprisePrepaymentMutation) OldPayway(ctx context.Context) (v model.Payway, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPayway is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPayway requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPayway: %w", err)
+	}
+	return oldValue.Payway, nil
+}
+
+// ResetPayway resets all changes to the "payway" field.
+func (m *EnterprisePrepaymentMutation) ResetPayway() {
+	m.payway = nil
+}
+
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
 func (m *EnterprisePrepaymentMutation) ClearEnterprise() {
 	m.clearedenterprise = true
@@ -39488,7 +39598,7 @@ func (m *EnterprisePrepaymentMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EnterprisePrepaymentMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 9)
 	if m.created_at != nil {
 		fields = append(fields, enterpriseprepayment.FieldCreatedAt)
 	}
@@ -39512,6 +39622,9 @@ func (m *EnterprisePrepaymentMutation) Fields() []string {
 	}
 	if m.amount != nil {
 		fields = append(fields, enterpriseprepayment.FieldAmount)
+	}
+	if m.payway != nil {
+		fields = append(fields, enterpriseprepayment.FieldPayway)
 	}
 	return fields
 }
@@ -39537,6 +39650,8 @@ func (m *EnterprisePrepaymentMutation) Field(name string) (ent.Value, bool) {
 		return m.EnterpriseID()
 	case enterpriseprepayment.FieldAmount:
 		return m.Amount()
+	case enterpriseprepayment.FieldPayway:
+		return m.Payway()
 	}
 	return nil, false
 }
@@ -39562,6 +39677,8 @@ func (m *EnterprisePrepaymentMutation) OldField(ctx context.Context, name string
 		return m.OldEnterpriseID(ctx)
 	case enterpriseprepayment.FieldAmount:
 		return m.OldAmount(ctx)
+	case enterpriseprepayment.FieldPayway:
+		return m.OldPayway(ctx)
 	}
 	return nil, fmt.Errorf("unknown EnterprisePrepayment field %s", name)
 }
@@ -39626,6 +39743,13 @@ func (m *EnterprisePrepaymentMutation) SetField(name string, value ent.Value) er
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetAmount(v)
+		return nil
+	case enterpriseprepayment.FieldPayway:
+		v, ok := value.(model.Payway)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPayway(v)
 		return nil
 	}
 	return fmt.Errorf("unknown EnterprisePrepayment field %s", name)
@@ -39741,6 +39865,9 @@ func (m *EnterprisePrepaymentMutation) ResetField(name string) error {
 		return nil
 	case enterpriseprepayment.FieldAmount:
 		m.ResetAmount()
+		return nil
+	case enterpriseprepayment.FieldPayway:
+		m.ResetPayway()
 		return nil
 	}
 	return fmt.Errorf("unknown EnterprisePrepayment field %s", name)

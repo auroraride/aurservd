@@ -523,16 +523,21 @@ definitions:
     type: object
   model.AgentSigninReq:
     properties:
+      code:
+        type: string
+      jsCode:
+        type: string
       phone:
         type: string
-      smsCode:
-        type: string
+      signinType:
+        enum:
+        - 1
+        - 2
+        type: integer
       smsId:
         type: string
     required:
-    - phone
-    - smsCode
-    - smsId
+    - signinType
     type: object
   model.AgentSigninRes:
     properties:
@@ -7661,7 +7666,7 @@ paths:
       - application/json
       operationId: AgentSignin
       parameters:
-      - description: 请求参数
+      - description: 登录请求
         in: body
         name: body
         required: true

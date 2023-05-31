@@ -86,6 +86,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			agent.FieldEnterpriseID: {Type: field.TypeUint64, Column: agent.FieldEnterpriseID},
 			agent.FieldName:         {Type: field.TypeString, Column: agent.FieldName},
 			agent.FieldPhone:        {Type: field.TypeString, Column: agent.FieldPhone},
+			agent.FieldOpenid:       {Type: field.TypeString, Column: agent.FieldOpenid},
 		},
 	}
 	graph.Nodes[1] = &sqlgraph.Node{
@@ -772,6 +773,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			enterpriseprepayment.FieldRemark:       {Type: field.TypeString, Column: enterpriseprepayment.FieldRemark},
 			enterpriseprepayment.FieldEnterpriseID: {Type: field.TypeUint64, Column: enterpriseprepayment.FieldEnterpriseID},
 			enterpriseprepayment.FieldAmount:       {Type: field.TypeFloat64, Column: enterpriseprepayment.FieldAmount},
+			enterpriseprepayment.FieldPayway:       {Type: field.TypeOther, Column: enterpriseprepayment.FieldPayway},
 		},
 	}
 	graph.Nodes[25] = &sqlgraph.Node{
@@ -4431,6 +4433,11 @@ func (f *AgentFilter) WhereName(p entql.StringP) {
 // WherePhone applies the entql string predicate on the phone field.
 func (f *AgentFilter) WherePhone(p entql.StringP) {
 	f.Where(p.Field(agent.FieldPhone))
+}
+
+// WhereOpenid applies the entql string predicate on the openid field.
+func (f *AgentFilter) WhereOpenid(p entql.StringP) {
+	f.Where(p.Field(agent.FieldOpenid))
 }
 
 // WhereHasEnterprise applies a predicate to check if query has an edge enterprise.
@@ -8801,6 +8808,11 @@ func (f *EnterprisePrepaymentFilter) WhereEnterpriseID(p entql.Uint64P) {
 // WhereAmount applies the entql float64 predicate on the amount field.
 func (f *EnterprisePrepaymentFilter) WhereAmount(p entql.Float64P) {
 	f.Where(p.Field(enterpriseprepayment.FieldAmount))
+}
+
+// WherePayway applies the entql other predicate on the payway field.
+func (f *EnterprisePrepaymentFilter) WherePayway(p entql.OtherP) {
+	f.Where(p.Field(enterpriseprepayment.FieldPayway))
 }
 
 // WhereHasEnterprise applies a predicate to check if query has an edge enterprise.
