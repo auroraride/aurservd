@@ -59,3 +59,50 @@ func (*agent) GetOpenid(c echo.Context) (err error) {
 	ctx, req := app.ContextBinding[model.OpenidReq](c)
 	return ctx.SendResponse(service.NewminiProgram().GetAuth(req.Code))
 }
+
+// SiteList 站点列表
+// @ID           AgentAgentname
+// @Router       /agent/v1/site/list [GET]
+// @Summary      A1004 站点列表
+// @Tags         [A]代理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Agent-Token  header  string  true  "代理校验token"
+// @Success      200  {object}  []model.EnterpriseStation  "请求成功"
+func (*agent) SiteList(c echo.Context) (err error) {
+	ctx := app.ContextX[app.AgentContext](c)
+	return ctx.SendResponse(service.NewEnterpriseStation().List(&model.EnterpriseStationListReq{
+		EnterpriseID: ctx.Enterprise.ID,
+	}))
+}
+
+// CityList 城市列表
+// @ID           AgentCityList
+// @Router       /agent/v1/city/list [GET]
+// @Summary      A1005 城市列表
+// @Tags         [A]代理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Agent-Token  header  string  true  "代理校验token"
+// @Success      200  {object}  []model.CityListReq  "请求成功"
+func (*agent) CityList(c echo.Context) (err error) {
+	ctx := app.ContextX[app.AgentContext](c)
+	return ctx.SendResponse(service.NewCity().List(&model.CityListReq{
+		Status: model.CityStatusOpen,
+	}))
+}
+
+// BatteryList 电池列表
+// @ID           AgentBatteryList
+// @Router       /agent/v1/battery/list [GET]
+// @Summary      A1006 电池列表
+// @Tags         [A]代理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Agent-Token  header  string  true  "代理校验token"
+// @Param        query  query   model.BatterySearchReq  true  "筛选项"
+// @Success      200  {object}  []model.Battery
+func (*agent) BatteryList(c echo.Context) (err error) {
+	ctx, req := app.AgentContextAndBinding[model.BatterySearchReq](c)
+	return ctx.SendResponse(service.NewSelection().BatterySerialSearch(req))
+}

@@ -2845,6 +2845,14 @@ definitions:
         description: 是否启用
         type: boolean
     type: object
+  model.CityListReq:
+    properties:
+      status:
+        description: 启用状态 0:全部 1:未启用 2:已启用
+        maximum: 2
+        minimum: 0
+        type: integer
+    type: object
   model.CityModifyReq:
     properties:
       open:
@@ -7301,6 +7309,34 @@ info:
   title: 极光出行API
   version: "1.0"
 paths:
+  /agent/v1/battery/list:
+    get:
+      consumes:
+      - application/json
+      operationId: AgentBatteryList
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - in: query
+        minLength: 4
+        name: serial
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Battery'
+            type: array
+      summary: A1006 电池列表
+      tags:
+      - '[A]代理接口'
   /agent/v1/bill/historical:
     get:
       consumes:
@@ -7425,6 +7461,29 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: A5002 电柜详情
+      tags:
+      - '[A]代理接口'
+  /agent/v1/city/list:
+    get:
+      consumes:
+      - application/json
+      operationId: AgentCityList
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.CityListReq'
+            type: array
+      summary: A1005 城市列表
       tags:
       - '[A]代理接口'
   /agent/v1/getopenid:
@@ -7706,6 +7765,29 @@ paths:
           schema:
             $ref: '#/definitions/model.AgentSigninRes'
       summary: A1001 登录
+      tags:
+      - '[A]代理接口'
+  /agent/v1/site/list:
+    get:
+      consumes:
+      - application/json
+      operationId: AgentAgentname
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.EnterpriseStation'
+            type: array
+      summary: A1004 站点列表
       tags:
       - '[A]代理接口'
   /agent/v1/stock:

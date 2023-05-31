@@ -158,6 +158,39 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 	}
 }
 
+// CreateByAgent 代理商小程序新增骑手
+func (s *enterpriseRiderService) CreateByAgent(req *model.EnterpriseRiderCreateReq) model.StatusResponse {
+	req.EnterpriseID = s.agent.EnterpriseID
+	riderInfo, err := ent.Database.Rider.Query().Where(rider.Phone(req.Phone)).First(s.ctx)
+	if err != nil && !ent.IsNotFound(err) {
+		snag.Panic("查询骑手失败")
+	}
+	// 查询订阅信息
+	subscribeInfo := NewSubscribe().QueryRiderSubscribe(riderInfo.ID)
+	if subscribeInfo != nil || riderInfo.EnterpriseID != nil {
+		snag.Panic("该骑手不能绑定,已有团签或者已有未完成的订单")
+	}
+
+	// 查询团签
+	NewEnterprise().QueryX(req.EnterpriseID)
+
+	// 查询站点
+	NewEnterpriseStation().Query(req.StationID)
+	if riderInfo != nil {
+		// 更新rider
+		if err = ent.Database.Rider.UpdateOne(riderInfo).SetPhone(req.Phone).
+			SetEnterpriseID(req.EnterpriseID).SetStationID(req.StationID).Exec(s.ctx); err != nil {
+			snag.Panic("更新骑手失败")
+		}
+	} else {
+		// 创建rider
+		if err = ent.Database.Rider.Create().SetPhone(req.Phone).SetEnterpriseID(req.EnterpriseID).SetStationID(req.StationID).Exec(s.ctx); err != nil {
+			snag.Panic("创建骑手失败")
+		}
+	}
+	return model.StatusResponse{Status: true}
+}
+
 // List 列举骑手
 func (s *enterpriseRiderService) List(req *model.EnterpriseRiderListReq) *model.PaginationRes {
 	q := ent.Database.Rider.

@@ -23,7 +23,8 @@ func loadAgentRoutes() {
 	auth.GET("/profile", aapi.Agent.Profile)
 	auth.GET("/openid", aapi.Agent.GetOpenid)
 	// auth.GET("/rider", aapi.Rider.List)
-	// auth.POST("/rider", aapi.Rider.Create)
+	// 添加骑手
+	auth.POST("/rider", aapi.Rider.Create)
 	// auth.POST("/rider/alter", aapi.Rider.Alter)
 	// auth.GET("/rider/:id", aapi.Rider.Detail)
 	//
