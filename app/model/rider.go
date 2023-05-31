@@ -256,3 +256,8 @@ type RiderAgentList struct {
 	Status  uint8  `json:"status"`  // 状态 0:全部 1:未激活 2:计费中 3:已超期 4:已退租
 	CityID  uint64 `json:"cityId"`  // 城市筛选
 }
+
+type RiderActiveBatteryReq struct {
+	ID        uint64 `json:"id" param:"id" validate:"required"` // 骑手ID
+	BatteryID uint64 `json:"batteryId" validate:"required"`     // 电池ID
+}

@@ -460,67 +460,6 @@ definitions:
         description: 使用天数
         type: integer
     type: object
-  model.AgentRiderDetail:
-    properties:
-      city:
-        allOf:
-        - $ref: '#/definitions/model.City'
-        description: 城市
-      date:
-        description: 创建日期
-        type: string
-      endAt:
-        description: 退租日期
-        type: string
-      id:
-        type: integer
-      logs:
-        items:
-          $ref: '#/definitions/model.AgentRiderLog'
-        type: array
-      model:
-        description: 电池型号
-        type: string
-      name:
-        description: 姓名
-        type: string
-      phone:
-        description: 电话
-        type: string
-      remaining:
-        description: 剩余天数
-        type: integer
-      startAt:
-        description: 开始日期
-        type: string
-      station:
-        description: 站点
-        type: string
-      status:
-        description: 状态
-        type: string
-      stopAt:
-        description: 到期日期
-        type: string
-      subscribeId:
-        description: 订阅ID
-        type: integer
-      used:
-        description: 使用天数
-        type: integer
-    type: object
-  model.AgentRiderLog:
-    properties:
-      days:
-        description: 延长天数
-        type: integer
-      name:
-        description: 操作人
-        type: string
-      time:
-        description: 操作时间
-        type: string
-    type: object
   model.AgentSigninReq:
     properties:
       code:
@@ -2844,14 +2783,6 @@ definitions:
       open:
         description: 是否启用
         type: boolean
-    type: object
-  model.CityListReq:
-    properties:
-      status:
-        description: 启用状态 0:全部 1:未启用 2:已启用
-        maximum: 2
-        minimum: 0
-        type: integer
     type: object
   model.CityModifyReq:
     properties:
@@ -5423,6 +5354,14 @@ definitions:
         description: 电话
         type: string
     type: object
+  model.RiderActiveBatteryReq:
+    properties:
+      batteryId:
+        description: 电池ID
+        type: integer
+    required:
+    - batteryId
+    type: object
   model.RiderBlockReq:
     properties:
       block:
@@ -7334,7 +7273,7 @@ paths:
             items:
               $ref: '#/definitions/model.Battery'
             type: array
-      summary: A1006 电池列表
+      summary: A5001 电池列表
       tags:
       - '[A]代理接口'
   /agent/v1/bill/historical:
@@ -7461,29 +7400,6 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: A5002 电柜详情
-      tags:
-      - '[A]代理接口'
-  /agent/v1/city/list:
-    get:
-      consumes:
-      - application/json
-      operationId: AgentCityList
-      parameters:
-      - description: 代理校验token
-        in: header
-        name: X-Agent-Token
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            items:
-              $ref: '#/definitions/model.CityListReq'
-            type: array
-      summary: A1005 城市列表
       tags:
       - '[A]代理接口'
   /agent/v1/getopenid:
@@ -7714,8 +7630,35 @@ paths:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/model.AgentRiderDetail'
+            $ref: '#/definitions/model.AgentRider'
       summary: A2004 骑手详情
+      tags:
+      - '[A]代理接口'
+  /agent/v1/rider/active:
+    post:
+      consumes:
+      - application/json
+      operationId: AgentRiderActive
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - description: 请求详情
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.RiderActiveBatteryReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            type: string
+      summary: A2005 激活骑手
       tags:
       - '[A]代理接口'
   /agent/v1/rider/alter:
@@ -7765,29 +7708,6 @@ paths:
           schema:
             $ref: '#/definitions/model.AgentSigninRes'
       summary: A1001 登录
-      tags:
-      - '[A]代理接口'
-  /agent/v1/site/list:
-    get:
-      consumes:
-      - application/json
-      operationId: AgentAgentname
-      parameters:
-      - description: 代理校验token
-        in: header
-        name: X-Agent-Token
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            items:
-              $ref: '#/definitions/model.EnterpriseStation'
-            type: array
-      summary: A1004 站点列表
       tags:
       - '[A]代理接口'
   /agent/v1/stock:

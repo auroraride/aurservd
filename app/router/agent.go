@@ -22,7 +22,6 @@ func loadAgentRoutes() {
 	auth.GET("/cabinet/:serial", aapi.Cabinet.Detail)
 	auth.GET("/profile", aapi.Agent.Profile)
 	auth.GET("/openid", aapi.Agent.GetOpenid)
-	// auth.GET("/rider", aapi.Rider.List)
 	// 添加骑手
 	auth.POST("/rider", aapi.Rider.Create)
 	// 站点列表
@@ -31,6 +30,10 @@ func loadAgentRoutes() {
 	auth.GET("/city/list", aapi.Agent.CityList)
 	// 电池搜索列表
 	auth.GET("/battery/list", aapi.Agent.BatteryList)
+	// 骑手列表
+	auth.GET("/rider", aapi.Rider.List)
+	// 骑手详情
+	auth.GET("/rider/:id", aapi.Rider.Detail)
 	// auth.POST("/rider/alter", aapi.Rider.Alter)
 	// auth.GET("/rider/:id", aapi.Rider.Detail)
 	//

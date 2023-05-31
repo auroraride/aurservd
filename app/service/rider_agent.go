@@ -7,11 +7,14 @@ package service
 
 import (
 	"context"
+	"time"
 
 	"github.com/golang-module/carbon/v2"
+	"go.uber.org/zap"
 
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
@@ -96,11 +99,13 @@ func (s *riderAgentService) detail(item *ent.Rider) model.AgentRider {
 			if sub.AgentEndAt != nil {
 				res.Remaining = silk.Pointer(tools.NewTime().LastDays(*sub.AgentEndAt, today))
 				// 判定当前状态
-				if sub.AgentEndAt.After(today) {
+				if sub.AgentEndAt.After(today) && *res.Remaining > model.WillOverdueNum {
 					// 若代理商处到期日期晚于今天, 则是使用中
 					res.Status = model.AgentRiderStatusUsing
+				} else if *res.Remaining <= model.WillOverdueNum && *res.Remaining > 0 { // 即将到期暂定3天
+					res.Status = model.AgentRiderStatusWillOverdue
 				} else {
-					// 否则是已超期
+					// 否则是已逾期
 					res.Status = model.AgentRiderStatusOverdue
 				}
 			}
@@ -170,6 +175,14 @@ func (s *riderAgentService) List(enterpriseID uint64, req *model.AgentRiderListR
 			rider.HasSubscribesWith(subquery...),
 			rider.Not(rider.HasSubscribesWith(subscribe.StatusIn(model.SubscribeNotUnSubscribed()...))),
 		))
+	case model.AgentRiderStatusWillOverdue:
+		// 将逾期
+		subquery = append(
+			subquery,
+			subscribe.Status(model.SubscribeStatusUsing),
+			subscribe.RemainingLTE(model.WillOverdueNum),
+		)
+		q.Where(rider.HasSubscribesWith(subquery...))
 	}
 
 	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Rider) model.AgentRider {
@@ -177,7 +190,7 @@ func (s *riderAgentService) List(enterpriseID uint64, req *model.AgentRiderListR
 	})
 }
 
-func (s *riderAgentService) Detail(req *model.IDParamReq, enterpriseID uint64) model.AgentRiderDetail {
+func (s *riderAgentService) Detail(req *model.IDParamReq, enterpriseID uint64) model.AgentRider {
 	item, _ := s.orm.QueryNotDeleted().
 		Where(rider.EnterpriseID(enterpriseID), rider.ID(req.ID)).
 		WithSubscribes(func(query *ent.SubscribeQuery) {
@@ -188,13 +201,7 @@ func (s *riderAgentService) Detail(req *model.IDParamReq, enterpriseID uint64) m
 	if item == nil {
 		snag.Panic("未找到骑手")
 	}
-	return model.AgentRiderDetail{
-		AgentRider: s.detail(item),
-		Logs: s.Log(&model.AgentRiderLogReq{
-			ID:           req.ID,
-			EnterpriseID: enterpriseID,
-		}),
-	}
+	return s.detail(item)
 }
 
 func (s *riderAgentService) Log(req *model.AgentRiderLogReq) (items []model.AgentRiderLog) {
@@ -218,4 +225,58 @@ func (s *riderAgentService) Log(req *model.AgentRiderLogReq) (items []model.Agen
 		}
 	}
 	return
+}
+
+// Active 激活骑手电池
+func (s *enterpriseService) Active(req *model.RiderActiveBatteryReq, ag *ent.Agent) {
+	// 不是自己骑手的不能激活
+	riderInfo, _ := ent.Database.Rider.QueryNotDeleted().Where(rider.ID(req.ID), rider.EnterpriseID(ag.EnterpriseID)).First(s.ctx)
+	if riderInfo != nil {
+		snag.Panic("未找到有效骑手")
+	}
+
+	// 查询电池是否存在
+	batteryInfo := NewBattery(s.ctx).QueryIDX(req.BatteryID)
+	if batteryInfo.CabinetID != nil {
+		snag.Panic("电柜中的电池无法手动绑定骑手")
+	}
+	if batteryInfo.RiderID != nil || batteryInfo.SubscribeID != nil {
+		snag.Panic("电池已被绑定")
+	}
+
+	// 查询骑手订阅信息
+	subscribeInfo := NewSubscribe().QueryEffectiveX(req.ID)
+	if subscribeInfo.Status != model.SubscribeStatusInactive {
+		snag.Panic("订阅状态异常")
+	}
+
+	// 绑定电池
+	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) error {
+		// 激活订阅
+		aendTime := tools.NewTime().WillEnd(time.Now(), subscribeInfo.InitialDays)
+		if err := tx.Subscribe.UpdateOneID(subscribeInfo.ID).SetStatus(model.SubscribeStatusUsing).SetStartAt(time.Now()).
+			SetNillableAgentEndAt(&aendTime).Exec(s.ctx); err != nil {
+			zap.L().Error("激活订阅失败", zap.Error(err))
+			snag.Panic("激活订阅失败")
+		}
+		// 删除原有信息
+		if err := tx.Battery.Update().Where(battery.SubscribeID(subscribeInfo.ID)).ClearRiderID().ClearSubscribeID().Exec(s.ctx); err != nil {
+			zap.L().Error("电池解绑失败", zap.Error(err))
+			snag.Panic("电池解绑失败")
+		}
+		// 绑定电池
+		if err := tx.Battery.Update().Where(battery.Sn(batteryInfo.Sn)).
+			SetRiderID(req.ID).SetSubscribeID(subscribeInfo.ID).Exec(s.ctx); err != nil {
+			zap.L().Error("电池绑定失败", zap.Error(err))
+			snag.Panic("电池绑定失败")
+		}
+		// 更新电池流水记录表
+		if err := tx.BatteryFlow.Create().SetSn(batteryInfo.Sn).SetRiderID(req.ID).
+			SetBatteryID(batteryInfo.ID).
+			SetNillableSubscribeID(&subscribeInfo.ID).Exec(s.ctx); err != nil {
+			zap.L().Error("电池流水记录失败", zap.Error(err))
+			snag.Panic("电池流水记录失败")
+		}
+		return nil
+	})
 }

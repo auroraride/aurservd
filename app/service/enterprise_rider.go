@@ -23,13 +23,10 @@ import (
 )
 
 type enterpriseRiderService struct {
-	ctx          context.Context
-	modifier     *model.Modifier
-	rider        *ent.Rider
-	employee     *ent.Employee
-	agent        *ent.Agent
-	enterprise   *ent.Enterprise
-	employeeInfo *model.Employee
+	ctx      context.Context
+	modifier *model.Modifier
+	rider    *ent.Rider
+	agent    *ent.Agent
 }
 
 func NewEnterpriseRider() *enterpriseRiderService {
@@ -49,27 +46,6 @@ func NewEnterpriseRiderWithModifier(m *model.Modifier) *enterpriseRiderService {
 	s := NewEnterpriseRider()
 	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	s.modifier = m
-	return s
-}
-
-func NewEnterpriseRiderWithEmployee(e *ent.Employee) *enterpriseRiderService {
-	s := NewEnterpriseRider()
-	if e != nil {
-		s.employee = e
-		s.employeeInfo = &model.Employee{
-			ID:    e.ID,
-			Name:  e.Name,
-			Phone: e.Phone,
-		}
-		s.ctx = context.WithValue(s.ctx, model.CtxEmployeeKey{}, s.employeeInfo)
-	}
-	return s
-}
-
-func NewEnterpriseRiderWithAgent(ag *ent.Agent, en *ent.Enterprise) *enterpriseRiderService {
-	s := NewEnterpriseRider()
-	s.agent = ag
-	s.enterprise = en
 	return s
 }
 
@@ -159,36 +135,41 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 }
 
 // CreateByAgent 代理商小程序新增骑手
-func (s *enterpriseRiderService) CreateByAgent(req *model.EnterpriseRiderCreateReq) model.StatusResponse {
-	req.EnterpriseID = s.agent.EnterpriseID
-	riderInfo, err := ent.Database.Rider.Query().Where(rider.Phone(req.Phone)).First(s.ctx)
-	if err != nil && !ent.IsNotFound(err) {
+func (s *enterpriseRiderService) CreateByAgent(req *model.EnterpriseRiderCreateReq, ag *ent.Agent, sts ent.EnterpriseStations) {
+	req.EnterpriseID = ag.EnterpriseID
+	riderInfo, _ := ent.Database.Rider.Query().Where(rider.Phone(req.Phone)).First(s.ctx)
+	if riderInfo != nil {
 		snag.Panic("查询骑手失败")
 	}
 	// 查询订阅信息
-	subscribeInfo := NewSubscribe().QueryRiderSubscribe(riderInfo.ID)
-	if subscribeInfo != nil || riderInfo.EnterpriseID != nil {
+	subscribeInfo, _ := NewSubscribe().QueryEffective(riderInfo.ID)
+	if subscribeInfo != nil {
 		snag.Panic("该骑手不能绑定,已有团签或者已有未完成的订单")
 	}
 
-	// 查询团签
-	NewEnterprise().QueryX(req.EnterpriseID)
+	// 判断代理商是否有该站点
+	for _, v := range sts {
+		if v.ID == req.StationID {
+			break
+		}
+		snag.Panic("代理商没有绑定该站点")
+	}
 
-	// 查询站点
-	NewEnterpriseStation().Query(req.StationID)
 	if riderInfo != nil {
 		// 更新rider
-		if err = ent.Database.Rider.UpdateOne(riderInfo).SetPhone(req.Phone).
-			SetEnterpriseID(req.EnterpriseID).SetStationID(req.StationID).Exec(s.ctx); err != nil {
+		if ent.Database.Rider.UpdateOne(riderInfo).
+			SetEnterpriseID(req.EnterpriseID).
+			SetStationID(req.StationID).
+			Exec(s.ctx) != nil {
 			snag.Panic("更新骑手失败")
 		}
-	} else {
-		// 创建rider
-		if err = ent.Database.Rider.Create().SetPhone(req.Phone).SetEnterpriseID(req.EnterpriseID).SetStationID(req.StationID).Exec(s.ctx); err != nil {
-			snag.Panic("创建骑手失败")
-		}
+		return
 	}
-	return model.StatusResponse{Status: true}
+
+	// 创建rider
+	if ent.Database.Rider.Create().SetPhone(req.Phone).SetEnterpriseID(req.EnterpriseID).SetStationID(req.StationID).Exec(s.ctx) != nil {
+		snag.Panic("创建骑手失败")
+	}
 }
 
 // List 列举骑手
