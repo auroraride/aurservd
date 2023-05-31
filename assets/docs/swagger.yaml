@@ -460,67 +460,6 @@ definitions:
         description: 使用天数
         type: integer
     type: object
-  model.AgentRiderDetail:
-    properties:
-      city:
-        allOf:
-        - $ref: '#/definitions/model.City'
-        description: 城市
-      date:
-        description: 创建日期
-        type: string
-      endAt:
-        description: 退租日期
-        type: string
-      id:
-        type: integer
-      logs:
-        items:
-          $ref: '#/definitions/model.AgentRiderLog'
-        type: array
-      model:
-        description: 电池型号
-        type: string
-      name:
-        description: 姓名
-        type: string
-      phone:
-        description: 电话
-        type: string
-      remaining:
-        description: 剩余天数
-        type: integer
-      startAt:
-        description: 开始日期
-        type: string
-      station:
-        description: 站点
-        type: string
-      status:
-        description: 状态
-        type: string
-      stopAt:
-        description: 到期日期
-        type: string
-      subscribeId:
-        description: 订阅ID
-        type: integer
-      used:
-        description: 使用天数
-        type: integer
-    type: object
-  model.AgentRiderLog:
-    properties:
-      days:
-        description: 延长天数
-        type: integer
-      name:
-        description: 操作人
-        type: string
-      time:
-        description: 操作时间
-        type: string
-    type: object
   model.AgentSigninReq:
     properties:
       code:
@@ -7655,7 +7594,7 @@ paths:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/model.AgentRiderDetail'
+            $ref: '#/definitions/model.AgentRider'
       summary: A2004 骑手详情
       tags:
       - '[A]代理接口'

@@ -10,7 +10,10 @@ const (
 	AgentRiderStatusUsing        = "using"
 	AgentRiderStatusOverdue      = "overdue"
 	AgentRiderStatusUnsubscribed = "unsubscribed"
+	AgentRiderStatusWillOverdue  = "will_overdue"
 )
+
+const WillOverdueNum = 3
 
 type AgentRiderListReq struct {
 	PaginationReq
@@ -34,7 +37,7 @@ type AgentRider struct {
 	StopAt      string `json:"stopAt"`              // 到期日期
 	StartAt     string `json:"startAt"`             // 开始日期
 	SubscribeID uint64 `json:"subscribeId"`         // 订阅ID
-	Model       string `json:"model,omitempty"`     // 电池型号
+	Model       string `json:"model"`               // 电池型号
 	Used        int    `json:"used"`                // 使用天数
 }
 

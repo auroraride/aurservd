@@ -55,7 +55,6 @@ func (s *riderAgentService) detail(item *ent.Rider) model.AgentRider {
 	res := model.AgentRider{
 		ID:    item.ID,
 		Phone: item.Phone,
-		Date:  item.CreatedAt.Format(carbon.DateLayout),
 		Name:  item.Name,
 	}
 	// 获取站点
@@ -67,22 +66,12 @@ func (s *riderAgentService) detail(item *ent.Rider) model.AgentRider {
 	subs := item.Edges.Subscribes
 	if len(subs) > 0 {
 		sub := subs[0]
-		res.SubscribeID = sub.ID
 		res.Model = sub.Model
-		ci := sub.Edges.City
-		res.City = &model.City{
-			ID:   ci.ID,
-			Name: ci.Name,
-		}
-		if sub.EndAt != nil {
-			res.EndAt = sub.EndAt.Format(carbon.DateLayout)
-		}
 		if sub.AgentEndAt != nil {
 			res.StopAt = sub.AgentEndAt.Format(carbon.DateLayout)
 		}
 		if sub.StartAt != nil {
 			res.StartAt = sub.StartAt.Format(carbon.DateLayout)
-			res.Used = tools.NewTime().UsedDaysToNow(*sub.StartAt)
 		}
 		switch sub.Status {
 		case model.SubscribeStatusInactive:
@@ -96,11 +85,13 @@ func (s *riderAgentService) detail(item *ent.Rider) model.AgentRider {
 			if sub.AgentEndAt != nil {
 				res.Remaining = silk.Pointer(tools.NewTime().LastDays(*sub.AgentEndAt, today))
 				// 判定当前状态
-				if sub.AgentEndAt.After(today) {
+				if sub.AgentEndAt.After(today) && *res.Remaining > model.WillOverdueNum {
 					// 若代理商处到期日期晚于今天, 则是使用中
 					res.Status = model.AgentRiderStatusUsing
+				} else if *res.Remaining <= model.WillOverdueNum && *res.Remaining > 0 { // 即将到期暂定3天
+					res.Status = model.AgentRiderStatusWillOverdue
 				} else {
-					// 否则是已超期
+					// 否则是已逾期
 					res.Status = model.AgentRiderStatusOverdue
 				}
 			}
@@ -170,6 +161,13 @@ func (s *riderAgentService) List(enterpriseID uint64, req *model.AgentRiderListR
 			rider.HasSubscribesWith(subquery...),
 			rider.Not(rider.HasSubscribesWith(subscribe.StatusIn(model.SubscribeNotUnSubscribed()...))),
 		))
+	case model.AgentRiderStatusWillOverdue:
+		// 将逾期
+		subquery = append(
+			subquery,
+			subscribe.Status(model.SubscribeStatusUsing),
+			subscribe.RemainingLTE(model.WillOverdueNum),
+		)
 	}
 
 	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Rider) model.AgentRider {
@@ -177,7 +175,7 @@ func (s *riderAgentService) List(enterpriseID uint64, req *model.AgentRiderListR
 	})
 }
 
-func (s *riderAgentService) Detail(req *model.IDParamReq, enterpriseID uint64) model.AgentRiderDetail {
+func (s *riderAgentService) Detail(req *model.IDParamReq, enterpriseID uint64) model.AgentRider {
 	item, _ := s.orm.QueryNotDeleted().
 		Where(rider.EnterpriseID(enterpriseID), rider.ID(req.ID)).
 		WithSubscribes(func(query *ent.SubscribeQuery) {
@@ -188,13 +186,7 @@ func (s *riderAgentService) Detail(req *model.IDParamReq, enterpriseID uint64) m
 	if item == nil {
 		snag.Panic("未找到骑手")
 	}
-	return model.AgentRiderDetail{
-		AgentRider: s.detail(item),
-		Logs: s.Log(&model.AgentRiderLogReq{
-			ID:           req.ID,
-			EnterpriseID: enterpriseID,
-		}),
-	}
+	return s.detail(item)
 }
 
 func (s *riderAgentService) Log(req *model.AgentRiderLogReq) (items []model.AgentRiderLog) {

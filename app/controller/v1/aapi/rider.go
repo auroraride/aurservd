@@ -6,10 +6,11 @@
 package aapi
 
 import (
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
-	"github.com/labstack/echo/v4"
 )
 
 type rider struct{}
@@ -70,7 +71,7 @@ func (*rider) Alter(c echo.Context) (err error) {
 // @Produce      json
 // @Param        X-Agent-Token  header  string  true  "代理校验token"
 // @Param        id  path  uint64  true  "骑手ID"
-// @Success      200  {object}  model.AgentRiderDetail  "请求成功"
+// @Success      200  {object}  model.AgentRider  "请求成功"
 func (*rider) Detail(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.IDParamReq](c)
 	return ctx.SendResponse(service.NewRiderAgentWithAgent(ctx.Agent, ctx.Enterprise).Detail(req, ctx.Enterprise.ID))

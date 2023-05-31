@@ -607,7 +607,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.AgentRiderDetail"
+                            "$ref": "#/definitions/model.AgentRider"
                         }
                     }
                 }
@@ -15218,93 +15218,6 @@ const docTemplate = `{
                 "used": {
                     "description": "使用天数",
                     "type": "integer"
-                }
-            }
-        },
-        "model.AgentRiderDetail": {
-            "type": "object",
-            "properties": {
-                "city": {
-                    "description": "城市",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.City"
-                        }
-                    ]
-                },
-                "date": {
-                    "description": "创建日期",
-                    "type": "string"
-                },
-                "endAt": {
-                    "description": "退租日期",
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "logs": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.AgentRiderLog"
-                    }
-                },
-                "model": {
-                    "description": "电池型号",
-                    "type": "string"
-                },
-                "name": {
-                    "description": "姓名",
-                    "type": "string"
-                },
-                "phone": {
-                    "description": "电话",
-                    "type": "string"
-                },
-                "remaining": {
-                    "description": "剩余天数",
-                    "type": "integer"
-                },
-                "startAt": {
-                    "description": "开始日期",
-                    "type": "string"
-                },
-                "station": {
-                    "description": "站点",
-                    "type": "string"
-                },
-                "status": {
-                    "description": "状态",
-                    "type": "string"
-                },
-                "stopAt": {
-                    "description": "到期日期",
-                    "type": "string"
-                },
-                "subscribeId": {
-                    "description": "订阅ID",
-                    "type": "integer"
-                },
-                "used": {
-                    "description": "使用天数",
-                    "type": "integer"
-                }
-            }
-        },
-        "model.AgentRiderLog": {
-            "type": "object",
-            "properties": {
-                "days": {
-                    "description": "延长天数",
-                    "type": "integer"
-                },
-                "name": {
-                    "description": "操作人",
-                    "type": "string"
-                },
-                "time": {
-                    "description": "操作时间",
-                    "type": "string"
                 }
             }
         },
