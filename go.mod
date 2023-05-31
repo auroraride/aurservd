@@ -10,7 +10,7 @@ require (
 	github.com/alibabacloud-go/dysmsapi-20170525/v2 v2.0.18
 	github.com/alibabacloud-go/dyvmsapi-20170525/v2 v2.1.4
 	github.com/alibabacloud-go/tea v1.2.0
-	github.com/aliyun/alibaba-cloud-sdk-go v1.62.352
+	github.com/aliyun/alibaba-cloud-sdk-go v1.62.353
 	github.com/aliyun/aliyun-log-go-sdk v0.1.46
 	github.com/aliyun/aliyun-oss-go-sdk v2.2.7+incompatible
 	github.com/auroraride/adapter v0.0.0-20230522040005-5c5a4ef6603e
@@ -41,13 +41,14 @@ require (
 	github.com/rs/xid v1.5.0
 	github.com/shopspring/decimal v1.3.1
 	github.com/shurcooL/github_flavored_markdown v0.0.0-20210228213109-c3a9aa474629
-	github.com/smartwalle/alipay/v3 v3.2.9
+	github.com/smartwalle/alipay/v3 v3.2.10
 	github.com/sony/sonyflake v1.1.0
 	github.com/speps/go-hashids/v2 v2.0.1
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.16.0
 	github.com/swaggo/echo-swagger v1.4.0
 	github.com/swaggo/swag v1.16.1
+	github.com/wechatpay-apiv3/wechatpay-go v0.2.17-0.20230526061328-84c0b6ea30fe
 	github.com/xuri/excelize/v2 v2.7.1
 	go.uber.org/zap v1.24.0
 	golang.org/x/crypto v0.9.0
@@ -153,7 +154,6 @@ require (
 	github.com/valyala/fasttemplate v1.2.2 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
-	github.com/wechatpay-apiv3/wechatpay-go v0.2.17-0.20230526061328-84c0b6ea30fe // indirect
 	github.com/xuri/efp v0.0.0-20230422071738-01f4e37c47e9 // indirect
 	github.com/xuri/nfp v0.0.0-20230503010013-3f38cdbb0b83 // indirect
 	github.com/zclconf/go-cty v1.13.2 // indirect
@@ -164,7 +164,7 @@ require (
 	golang.org/x/net v0.10.0 // indirect
 	golang.org/x/sys v0.8.0 // indirect
 	golang.org/x/text v0.9.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20230526203410-71b5a4ffd15e // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20230530153820-e85fd2cbaebc // indirect
 	google.golang.org/grpc v1.55.0 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
