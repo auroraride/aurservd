@@ -26,7 +26,7 @@ const docTemplate = `{
                 "tags": [
                     "[A]代理接口"
                 ],
-                "summary": "A1006 电池列表",
+                "summary": "A5001 电池列表",
                 "operationId": "AgentBatteryList",
                 "parameters": [
                     {
@@ -251,41 +251,6 @@ const docTemplate = `{
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.StatusResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/agent/v1/city/list": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "[A]代理接口"
-                ],
-                "summary": "A1005 城市列表",
-                "operationId": "AgentCityList",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "代理校验token",
-                        "name": "X-Agent-Token",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.CityListReq"
-                            }
                         }
                     }
                 }
@@ -760,41 +725,6 @@ const docTemplate = `{
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.AgentSigninRes"
-                        }
-                    }
-                }
-            }
-        },
-        "/agent/v1/site/list": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "[A]代理接口"
-                ],
-                "summary": "A1004 站点列表",
-                "operationId": "AgentAgentname",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "代理校验token",
-                        "name": "X-Agent-Token",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.EnterpriseStation"
-                            }
                         }
                     }
                 }
@@ -18749,17 +18679,6 @@ const docTemplate = `{
                 "open": {
                     "description": "是否启用",
                     "type": "boolean"
-                }
-            }
-        },
-        "model.CityListReq": {
-            "type": "object",
-            "properties": {
-                "status": {
-                    "description": "启用状态 0:全部 1:未启用 2:已启用",
-                    "type": "integer",
-                    "maximum": 2,
-                    "minimum": 0
                 }
             }
         },

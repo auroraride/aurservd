@@ -311,8 +311,8 @@ func (s *subscribeService) QueryAllRidersEffective() []*ent.Subscribe {
 }
 
 // QueryRiderSubscribe 查询骑手订阅信息
-func (s *subscribeService) QueryRiderSubscribe(riderID uint64) []*ent.Subscribe {
-	all, err := ent.Database.Subscribe.QueryNotDeleted().Where(
+func (s *subscribeService) QueryRiderSubscribe(riderID uint64) *ent.Subscribe {
+	first, _ := ent.Database.Subscribe.QueryNotDeleted().Where(
 		subscribe.RiderID(riderID),
 		subscribe.StatusIn(
 			model.SubscribeStatusInactive,
@@ -320,13 +320,8 @@ func (s *subscribeService) QueryRiderSubscribe(riderID uint64) []*ent.Subscribe 
 			model.SubscribeStatusPaused,
 			model.SubscribeStatusOverdue,
 		),
-		// 非企业
-		subscribe.EnterpriseIDIsNil(),
-	).All(s.ctx)
-	if err != nil && !ent.IsNotFound(err) {
-		snag.Panic(err)
-	}
-	return all
+	).Order(ent.Desc(subscribe.FieldCreatedAt)).First(s.ctx)
+	return first
 }
 
 // UpdateStatus 更新订阅状态
