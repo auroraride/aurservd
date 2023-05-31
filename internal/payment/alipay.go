@@ -36,7 +36,7 @@ func newAlipayClient() *alipay.Client {
 	if err != nil {
 		snag.Panic(err)
 	}
-	err = client.LoadAppPublicCertFromFile(cfg.AppPublicCert) // 加载应用公钥证书
+	err = client.LoadAppCertPublicKeyFromFile(cfg.AppPublicCert) // 加载应用公钥证书
 	if err != nil {
 		snag.Panic(err)
 	}
@@ -44,7 +44,7 @@ func newAlipayClient() *alipay.Client {
 	if err != nil {
 		snag.Panic(err)
 	}
-	err = client.LoadAliPayPublicCertFromFile(cfg.PublicCert) // 加载支付宝公钥证书
+	err = client.LoadAlipayCertPublicKeyFromFile(cfg.PublicCert) // 加载支付宝公钥证书
 	if err != nil {
 		snag.Panic(err)
 	}
@@ -58,7 +58,7 @@ func NewAlipay() *alipayClient {
 func (c *alipayClient) loadCerts() {
 	cfg := ar.Config.Payment.Alipay
 
-	err := c.Client.LoadAppPublicCertFromFile(cfg.AppPublicCert) // 加载应用公钥证书
+	err := c.Client.LoadAppCertPublicKeyFromFile(cfg.AppPublicCert) // 加载应用公钥证书
 	if err != nil {
 		snag.Panic(err)
 	}
@@ -66,7 +66,7 @@ func (c *alipayClient) loadCerts() {
 	if err != nil {
 		snag.Panic(err)
 	}
-	err = c.Client.LoadAliPayPublicCertFromFile(cfg.PublicCert) // 加载支付宝公钥证书
+	err = c.Client.LoadAlipayCertPublicKeyFromFile(cfg.PublicCert) // 加载支付宝公钥证书
 	if err != nil {
 		snag.Panic(err)
 	}
@@ -159,7 +159,7 @@ func (c *alipayClient) Refund(req *model.PaymentRefund) {
 
 // Notification 支付宝回调
 func (c *alipayClient) Notification(req *http.Request) *model.PaymentCache {
-	result, err := c.Client.GetTradeNotification(req)
+	result, err := c.Client.DecodeNotification(req)
 	zap.L().Info("支付宝回调", log.JsonData(result), zap.Error(err))
 	if err != nil {
 		return nil
