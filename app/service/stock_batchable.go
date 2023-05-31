@@ -37,10 +37,8 @@ func (s *stockBatchableService) Fetch(target uint8, id uint64, name string) int 
 	switch target {
 	case model.StockTargetStore:
 		idw = stock.StoreID(id)
-		break
 	case model.StockTargetCabinet:
 		idw = stock.CabinetID(id)
-		break
 	}
 	q := s.orm.QueryNotDeleted().
 		Where(stock.Name(name), idw).
@@ -51,7 +49,7 @@ func (s *stockBatchableService) Fetch(target uint8, id uint64, name string) int 
 		snag.Panic("物资数量获取失败")
 	}
 
-	if result == nil || len(result) < 0 {
+	if len(result) == 0 {
 		return 0
 	}
 	return result[0].Sum

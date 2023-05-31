@@ -9,6 +9,8 @@ import (
 	"context"
 	"time"
 
+	"github.com/golang-module/carbon/v2"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
@@ -20,7 +22,6 @@ import (
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
-	"github.com/golang-module/carbon/v2"
 )
 
 type reserveService struct {
@@ -42,14 +43,14 @@ func NewReserve() *reserveService {
 
 func NewReserveWithRider(r *ent.Rider) *reserveService {
 	s := NewReserve()
-	s.ctx = context.WithValue(s.ctx, "rider", r)
+	s.ctx = context.WithValue(s.ctx, model.CtxRiderKey{}, r)
 	s.rider = r
 	return s
 }
 
 func NewReserveWithModifier(m *model.Modifier) *reserveService {
 	s := NewReserve()
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	s.modifier = m
 	return s
 }

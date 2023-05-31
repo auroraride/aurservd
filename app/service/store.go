@@ -11,12 +11,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/jinzhu/copier"
+	"github.com/lithammer/shortuuid/v4"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/pkg/snag"
-	"github.com/jinzhu/copier"
-	"github.com/lithammer/shortuuid/v4"
 )
 
 type storeService struct {
@@ -37,7 +38,7 @@ func NewStore() *storeService {
 func NewStoreWithModifier(m *model.Modifier) *storeService {
 	s := NewStore()
 	s.modifier = m
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	return s
 }
 
@@ -50,7 +51,7 @@ func NewStoreWithEmployee(e *ent.Employee) *storeService {
 			Name:  e.Name,
 			Phone: e.Phone,
 		}
-		s.ctx = context.WithValue(s.ctx, "employee", s.employeeInfo)
+		s.ctx = context.WithValue(s.ctx, model.CtxEmployeeKey{}, s.employeeInfo)
 	}
 	return s
 }

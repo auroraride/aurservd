@@ -62,12 +62,9 @@ func Run() {
 			switch target.Code {
 			case http.StatusNotFound:
 				code = int(snag.StatusNotFound)
-				break
 			default:
 				code = int(snag.StatusBadRequest)
-				break
 			}
-			break
 		}
 		_ = ctx.SendResponse(code, message, data)
 	}

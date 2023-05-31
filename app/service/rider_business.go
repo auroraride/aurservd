@@ -53,7 +53,7 @@ func NewRiderBusiness(rider *ent.Rider) *riderBusinessService {
 		ctx:     context.Background(),
 		maxTime: 180 * time.Second,
 	}
-	s.ctx = context.WithValue(s.ctx, "rider", rider)
+	s.ctx = context.WithValue(s.ctx, model.CtxRiderKey{}, rider)
 	s.rider = rider
 	return s
 }
@@ -139,7 +139,6 @@ func (s *riderBusinessService) preprocess(serial string, bt business.Type) {
 			}
 			s.empty = &model.BinInfo{Index: empty.Index}
 			target = s.empty
-			break
 		case business.TypeActive, business.TypeContinue:
 			if bn < 2 {
 				snag.Panic("电池不足, 无法处理当前业务")
@@ -153,7 +152,6 @@ func (s *riderBusinessService) preprocess(serial string, bt business.Type) {
 				Voltage:     max.Voltage,
 			}
 			target = s.max
-			break
 		}
 
 		jobs := map[business.Type]model.Job{
@@ -233,15 +231,13 @@ func (s *riderBusinessService) putin() (*model.BinInfo, *model.Battery, error) {
 			return s.empty, nil, nil
 		case ec.DoorStatusOpen:
 			ts = model.TaskStatusProcessing
-			break
 		default:
 			s.task.Message = ec.DoorError[ds]
 			ts = model.TaskStatusFail
-			break
 		}
 
 		// 超时标记为任务失败
-		if time.Now().Sub(*s.task.StartAt).Seconds() > s.maxTime.Seconds() && s.task.Message == "" {
+		if time.Since(*s.task.StartAt).Seconds() > s.maxTime.Seconds() && s.task.Message == "" {
 			s.task.Message = "超时"
 			ts = model.TaskStatusFail
 		}
@@ -284,7 +280,7 @@ func (s *riderBusinessService) batteryDetect() (ds ec.DoorStatus) {
 	}
 
 	// 仓门关闭但是检测不到电池的情况下, 继续检测30s
-	if time.Now().Sub(*s.task.StartAt).Seconds() > 30 {
+	if time.Since(*s.task.StartAt).Seconds() > 30 {
 		return ec.DoorStatusBatteryEmpty
 	} else {
 		time.Sleep(1 * time.Second)
@@ -479,7 +475,7 @@ func (s *riderBusinessService) Status(req *model.BusinessCabinetStatusReq) (res 
 			_ = cache.Get(s.ctx, req.UUID).Scan(&res)
 		}
 
-		if res.Stop || time.Now().Sub(start).Seconds() > 30 {
+		if res.Stop || time.Since(start).Seconds() > 30 {
 			return
 		}
 		time.Sleep(1 * time.Second)

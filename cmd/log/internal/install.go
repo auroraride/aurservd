@@ -8,7 +8,6 @@ package internal
 import (
 	_ "embed"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 
@@ -55,7 +54,7 @@ func installService() {
 		FmtFatalln(err)
 	}
 	assetService = fmt.Sprintf(assetService, e)
-	err = ioutil.WriteFile(p, []byte(assetService), 0644)
+	err = os.WriteFile(p, []byte(assetService), 0644)
 	if err != nil {
 		FmtFatalln(err)
 	}
@@ -68,7 +67,7 @@ func installConfig() {
 		FmtFatalln(err)
 	}
 
-	err = ioutil.WriteFile(p, assetConfig, 0644)
+	err = os.WriteFile(p, assetConfig, 0644)
 	if err != nil {
 		FmtFatalln(err)
 	}

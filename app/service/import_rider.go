@@ -14,6 +14,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/golang-module/carbon/v2"
+	"github.com/xuri/excelize/v2"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
@@ -28,8 +31,6 @@ import (
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/tools"
 	"github.com/auroraride/aurservd/pkg/utils"
-	"github.com/golang-module/carbon/v2"
-	"github.com/xuri/excelize/v2"
 )
 
 type importRiderService struct {
@@ -48,7 +49,7 @@ func NewImportRider() *importRiderService {
 
 func NewImportRiderWithModifier(m *model.Modifier) *importRiderService {
 	s := NewImportRider()
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	s.modifier = m
 	return s
 }
@@ -213,7 +214,7 @@ func (s *importRiderService) Create(req *model.ImportRiderCreateReq) error {
 
 		// 查询电车
 		if s.plan.BrandID != nil {
-			bike, err = NewEbike().AllocatableBaseFilter().
+			bike, _ = NewEbike().AllocatableBaseFilter().
 				Where(ebike.Sn(req.EbikeSN), ebike.StoreID(req.StoreID)).
 				WithBrand().
 				First(s.ctx)

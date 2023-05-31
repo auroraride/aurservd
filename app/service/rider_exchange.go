@@ -44,7 +44,7 @@ func NewRiderExchange(r *ent.Rider) *riderExchangeService {
 		maxTime: 180 * time.Second,
 		rider:   r,
 	}
-	s.ctx = context.WithValue(context.Background(), "rider", r)
+	s.ctx = context.WithValue(context.Background(), model.CtxRiderKey{}, r)
 	return s
 }
 
@@ -459,7 +459,7 @@ func (s *riderExchangeService) ProcessDoorBatteryStatus() (ds ec.DoorStatus) {
 		}
 
 		// 仓门关闭但是检测不到电池的情况下, 继续检测30s
-		if time.Now().Sub(step.Time).Seconds() > 30 {
+		if time.Since(step.Time).Seconds() > 30 {
 			return ec.DoorStatusBatteryEmpty
 		} else {
 			time.Sleep(1 * time.Second)
@@ -475,7 +475,7 @@ func (s *riderExchangeService) ProcessDoorBatteryStatus() (ds ec.DoorStatus) {
 		}
 
 		// 仓门关闭, 如果未取走则继续检测10s
-		if time.Now().Sub(step.Time).Seconds() > 10 {
+		if time.Since(step.Time).Seconds() > 10 {
 			return ec.DoorStatusBatteryFull
 		} else {
 			time.Sleep(1 * time.Second)
@@ -505,17 +505,15 @@ func (s *riderExchangeService) ProcessDoorStatus() *riderExchangeService {
 		switch ds {
 		case ec.DoorStatusClose:
 			step.Status = model.TaskStatusSuccess
-			break
 		case ec.DoorStatusOpen:
 			break
 		default:
 			message = ec.DoorError[ds]
 			step.Status = model.TaskStatusFail
-			break
 		}
 
 		// 超时标记为任务失败
-		if time.Now().Sub(start).Seconds() > s.maxTime.Seconds() && message == "" {
+		if time.Since(start).Seconds() > s.maxTime.Seconds() && message == "" {
 			message = "超时"
 			step.Status = model.TaskStatusFail
 			step.Time = time.Now()
@@ -641,22 +639,20 @@ func (s *riderExchangeService) GetProcessStatus(req *model.RiderExchangeProcessS
 	}
 	ticker := time.NewTicker(1 * time.Second)
 	for {
-		select {
-		case <-ticker.C:
-			task := ec.QueryID(uid)
-			if task == nil {
-				snag.Panic("未找到换电操作")
-			}
-			cs := task.Exchange.CurrentStep()
-			res = &model.RiderExchangeProcessRes{
-				Step:    uint8(cs.Step),
-				Status:  uint8(cs.Status),
-				Message: task.Message,
-				Stop:    task.StopAt != nil,
-			}
-			if cs.IsSuccess() || res.Stop || time.Now().Sub(start).Seconds() > 30 {
-				return
-			}
+		<-ticker.C
+		task := ec.QueryID(uid)
+		if task == nil {
+			snag.Panic("未找到换电操作")
+		}
+		cs := task.Exchange.CurrentStep()
+		res = &model.RiderExchangeProcessRes{
+			Step:    uint8(cs.Step),
+			Status:  uint8(cs.Status),
+			Message: task.Message,
+			Stop:    task.StopAt != nil,
+		}
+		if cs.IsSuccess() || res.Stop || time.Since(start).Seconds() > 30 {
+			return
 		}
 	}
 }

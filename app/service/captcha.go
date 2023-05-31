@@ -7,20 +7,16 @@ package service
 
 import (
 	"context"
-	"math/rand"
 	"time"
 
-	"github.com/auroraride/aurservd/pkg/cache"
 	bc "github.com/mojocn/base64Captcha"
+
+	"github.com/auroraride/aurservd/pkg/cache"
 )
 
 type captcha struct {
 	driver *bc.DriverDigit
 	ctx    context.Context
-}
-
-func init() {
-	rand.Seed(time.Now().UnixNano())
 }
 
 func NewCaptcha() *captcha {

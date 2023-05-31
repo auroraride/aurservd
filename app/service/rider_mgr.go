@@ -35,14 +35,14 @@ func NewRiderMgr() *riderMgrService {
 
 func NewRiderMgrWithRider(r *ent.Rider) *riderMgrService {
 	s := NewRiderMgr()
-	s.ctx = context.WithValue(s.ctx, "rider", r)
+	s.ctx = context.WithValue(s.ctx, model.CtxRiderKey{}, r)
 	s.rider = r
 	return s
 }
 
 func NewRiderMgrWithModifier(m *model.Modifier) *riderMgrService {
 	s := NewRiderMgr()
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	s.modifier = m
 	return s
 }
@@ -56,7 +56,7 @@ func NewRiderMgrWithEmployee(e *ent.Employee) *riderMgrService {
 			Name:  e.Name,
 			Phone: e.Phone,
 		}
-		s.ctx = context.WithValue(s.ctx, "employee", s.employeeInfo)
+		s.ctx = context.WithValue(s.ctx, model.CtxEmployeeKey{}, s.employeeInfo)
 	}
 	return s
 }

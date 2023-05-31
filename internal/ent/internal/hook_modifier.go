@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/mixin"
+
 	"github.com/auroraride/aurservd/app/model"
 )
 
@@ -35,12 +36,12 @@ func (HookModifier) Hooks() []ent.Hook {
 			return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
 				ml, ok := m.(HookModifierMutator)
 				if ok {
-					value, _ := ctx.Value("modifier").(*model.Modifier)
+					value, _ := ctx.Value(model.CtxModifierKey{}).(*model.Modifier)
 					if value != nil {
 						switch op := m.Op(); {
 						case op.Is(ent.OpCreate):
 							ml.SetModifier(value)
-						case op.Is(ent.OpUpdateOne | ent.OpUpdate):
+							// case op.Is(ent.OpUpdateOne | ent.OpUpdate):
 							// TODO: 更新?
 						}
 					}

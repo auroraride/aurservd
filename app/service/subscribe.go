@@ -12,6 +12,10 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/golang-module/carbon/v2"
+	"github.com/shopspring/decimal"
+	"go.uber.org/zap"
+
 	"github.com/auroraride/aurservd/app/logging"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/task/reminder"
@@ -26,9 +30,6 @@ import (
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
-	"github.com/golang-module/carbon/v2"
-	"github.com/shopspring/decimal"
-	"go.uber.org/zap"
 )
 
 type subscribeService struct {
@@ -49,14 +50,14 @@ func NewSubscribe() *subscribeService {
 
 func NewSubscribeWithRider(rider *ent.Rider) *subscribeService {
 	s := NewSubscribe()
-	s.ctx = context.WithValue(s.ctx, "rider", rider)
+	s.ctx = context.WithValue(s.ctx, model.CtxRiderKey{}, rider)
 	s.rider = rider
 	return s
 }
 
 func NewSubscribeWithModifier(m *model.Modifier) *subscribeService {
 	s := NewSubscribe()
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	s.modifier = m
 	return s
 }
@@ -605,7 +606,7 @@ func (s *subscribeService) Signed(riderID, subscribeID uint64) (res model.Subscr
 			return
 		}
 
-		if time.Now().Sub(start).Seconds() > 50 {
+		if time.Since(start).Seconds() > 50 {
 			return
 		}
 	}

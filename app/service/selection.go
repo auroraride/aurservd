@@ -26,9 +26,7 @@ import (
 )
 
 type selectionService struct {
-	ctx      context.Context
-	modifier *model.Modifier
-	rider    *ent.Rider
+	ctx context.Context
 }
 
 func NewSelection() *selectionService {
@@ -219,34 +217,6 @@ func cascaderLevel2[T any](res []T, cb cascader[T], params ...any) (items []*mod
 		sort.Slice(items, func(i, j int) bool {
 			return items[i].Value < items[j].Value
 		})
-	}
-
-	return
-}
-
-type cascaderX[T any] func(data T) (parent *model.CascaderOption, item *model.CascaderOption)
-
-func cascaderParser[T any](res []T, cb cascaderX[T]) (items []*model.CascaderOption) {
-	smap := make(map[any]*model.CascaderOption)
-	for _, r := range res {
-		p, c := cb(r)
-
-		ol, ok := smap[p.Value]
-		if !ok {
-			ol = &model.CascaderOption{
-				Value:    p.Value,
-				Label:    p.Label,
-				Children: silk.Pointer(make([]*model.CascaderOption, 0)),
-			}
-			smap[p.Value] = ol
-		}
-
-		*ol.Children = append(*ol.Children, c)
-	}
-
-	items = make([]*model.CascaderOption, 0)
-	for _, m := range smap {
-		items = append(items, m)
 	}
 
 	return

@@ -9,9 +9,10 @@ import (
 	"bytes"
 	"net/http"
 
+	jsoniter "github.com/json-iterator/go"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/pkg/snag"
-	jsoniter "github.com/json-iterator/go"
 )
 
 type Response struct {
@@ -25,14 +26,12 @@ func (r *Response) processParam(param any) {
 	switch v := param.(type) {
 	case string:
 		r.Message = v
-		break
 	case int:
 		r.Code = v
 	default:
 		if v != nil {
 			r.Data = param
 		}
-		break
 	}
 }
 

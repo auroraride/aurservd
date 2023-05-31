@@ -155,7 +155,6 @@ func (c *alipayClient) Refund(req *model.PaymentRefund) {
 		req.Success = true
 		req.Time = time.Now()
 	}
-	return
 }
 
 // Notification 支付宝回调

@@ -56,7 +56,7 @@ func NewCabinet() *cabinetService {
 
 func NewCabinetWithModifier(m *model.Modifier) *cabinetService {
 	s := NewCabinet()
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	s.modifier = m
 	return s
 }
@@ -155,10 +155,8 @@ func (s *cabinetService) List(req *model.CabinetQueryReq) (res *model.Pagination
 		switch req.Online {
 		case 1:
 			q.Where(cabinet.Health(model.CabinetHealthStatusOnline))
-			break
 		case 2:
 			q.Where(cabinet.Health(model.CabinetHealthStatusOffline))
-			break
 		}
 	}
 	if req.Intelligent != 0 {
@@ -404,7 +402,6 @@ func (s *cabinetService) DoorOperate(req *model.CabinetDoorOperateReq, operator 
 		} else {
 			err = errors.New("柜门操作失败")
 		}
-		break
 	}
 	go func() {
 		// 上传日志
@@ -485,7 +482,7 @@ func (s *cabinetService) Businessable(cab *ent.Cabinet) (health bool, maintenanc
 	health = cab.UsingMicroService() ||
 		(model.CabinetStatus(cab.Status) == model.CabinetStatusNormal &&
 			cab.Health == model.CabinetHealthStatusOnline &&
-			time.Now().Sub(cab.UpdatedAt).Minutes() < 5 &&
+			time.Since(cab.UpdatedAt).Minutes() < 5 &&
 			len(cab.Bin) > 0)
 	return
 }
@@ -505,15 +502,12 @@ func (s *cabinetService) Data(req *model.CabinetDataReq) *model.PaginationRes {
 	switch req.Status {
 	case 1:
 		q.Where(cabinet.Health(model.CabinetHealthStatusOnline))
-		break
 	case 2:
 		q.Where(cabinet.Health(model.CabinetHealthStatusOffline))
-		break
 	case 3:
 		q.Modify(func(sel *sql.Selector) {
 			sel.Where(sqljson.ValueContains(sel.C(cabinet.FieldBin), []ar.Map{{"doorHealth": false}}))
 		})
-		break
 	}
 
 	if req.Name != "" {
@@ -629,8 +623,6 @@ func (s *cabinetService) Transfer(req *model.CabinetTransferReq) {
 		Remark:        "电柜初始化",
 	})
 	_, _ = cab.Update().SetTransferred(true).Save(s.ctx)
-	return
-
 }
 
 func (s *cabinetService) Sync(cab *ent.Cabinet) {

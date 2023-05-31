@@ -8,6 +8,9 @@ package service
 import (
 	"time"
 
+	"github.com/golang-module/carbon/v2"
+	"go.uber.org/zap"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/socket"
 	"github.com/auroraride/aurservd/internal/ent"
@@ -16,8 +19,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
-	"github.com/golang-module/carbon/v2"
-	"go.uber.org/zap"
 )
 
 type allocateService struct {
@@ -293,7 +294,7 @@ func (s *allocateService) detail(al *ent.Allocate) model.AllocateDetail {
 		Ebike: NewEbike().Detail(al.Edges.Ebike, al.Edges.Brand),
 	}
 
-	if time.Now().Sub(al.Time).Seconds() > model.AllocateExpiration && res.Status == model.AllocateStatusPending {
+	if time.Since(al.Time).Seconds() > model.AllocateExpiration && res.Status == model.AllocateStatusPending {
 		res.Status = model.AllocateStatusVoid
 	}
 
@@ -343,7 +344,7 @@ func (s *allocateService) LoopStatus(riderID, subscribeID uint64) (res model.All
 			return
 		}
 
-		if time.Now().Sub(start).Seconds() > 50 {
+		if time.Since(start).Seconds() > 50 {
 			return
 		}
 	}

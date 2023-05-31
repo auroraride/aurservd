@@ -6,9 +6,10 @@
 package app
 
 import (
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/pkg/snag"
-	"github.com/labstack/echo/v4"
 )
 
 type BaseContext struct {
@@ -19,17 +20,17 @@ type BaseContext struct {
 
 // Context 获取上下文
 func Context(c echo.Context) *BaseContext {
-	switch c.(type) {
+	switch v := c.(type) {
 	case *ManagerContext:
-		return c.(*ManagerContext).BaseContext
+		return v.BaseContext
 	case *RiderContext:
-		return c.(*RiderContext).BaseContext
+		return v.BaseContext
 	case *BaseContext:
-		return c.(*BaseContext)
+		return v
 	case *EmployeeContext:
-		return c.(*EmployeeContext).BaseContext
+		return v.BaseContext
 	case *AgentContext:
-		return c.(*AgentContext).BaseContext
+		return v.BaseContext
 	default:
 		return nil
 	}

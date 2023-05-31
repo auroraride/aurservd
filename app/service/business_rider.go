@@ -11,6 +11,9 @@ import (
 	"time"
 
 	"github.com/auroraride/adapter/async"
+	"github.com/golang-module/carbon/v2"
+	"go.uber.org/zap"
+
 	"github.com/auroraride/aurservd/app/logging"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
@@ -24,8 +27,6 @@ import (
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
-	"github.com/golang-module/carbon/v2"
-	"go.uber.org/zap"
 )
 
 type businessRiderService struct {
@@ -60,7 +61,7 @@ func NewBusinessRider(r *ent.Rider) *businessRiderService {
 
 func NewBusinessRiderWithModifier(m *model.Modifier) *businessRiderService {
 	s := NewBusinessRider(nil)
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	s.modifier = m
 	return s
 }
@@ -167,7 +168,7 @@ func NewBusinessRiderWithEmployee(e *ent.Employee) *businessRiderService {
 		Name:  e.Name,
 		Phone: e.Phone,
 	}
-	s.ctx = context.WithValue(s.ctx, "employee", s.employeeInfo)
+	s.ctx = context.WithValue(s.ctx, model.CtxEmployeeKey{}, s.employeeInfo)
 	return s
 }
 
@@ -568,7 +569,7 @@ func (s *businessRiderService) Active(sub *ent.Subscribe, allo *ent.Allocate) {
 		// 更新电车
 		if s.ebikeInfo != nil {
 			// 更新电车所属
-			err = tx.Ebike.UpdateOneID(s.ebikeInfo.ID).SetRiderID(sub.RiderID).SetStatus(model.EbikeStatusUsing).Exec(s.ctx)
+			_ = tx.Ebike.UpdateOneID(s.ebikeInfo.ID).SetRiderID(sub.RiderID).SetStatus(model.EbikeStatusUsing).Exec(s.ctx)
 		}
 
 		// 后台操作设置电池编码
@@ -585,7 +586,7 @@ func (s *businessRiderService) Active(sub *ent.Subscribe, allo *ent.Allocate) {
 				if err != nil {
 					return
 				}
-				err = tx.Order.UpdateOneID(of.OrderID).SetStatus(model.OrderStatusPaid).Exec(s.ctx)
+				_ = tx.Order.UpdateOneID(of.OrderID).SetStatus(model.OrderStatusPaid).Exec(s.ctx)
 			}
 		}
 	})

@@ -11,6 +11,8 @@ import (
 	"time"
 
 	"github.com/LucaTheHacker/go-haversine"
+	"github.com/golang-module/carbon/v2"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/workwx"
 	"github.com/auroraride/aurservd/internal/ent"
@@ -19,7 +21,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
-	"github.com/golang-module/carbon/v2"
 )
 
 type attendanceService struct {
@@ -40,14 +41,14 @@ func NewAttendance() *attendanceService {
 
 func NewAttendanceWithRider(r *ent.Rider) *attendanceService {
 	s := NewAttendance()
-	s.ctx = context.WithValue(s.ctx, "rider", r)
+	s.ctx = context.WithValue(s.ctx, model.CtxRiderKey{}, r)
 	s.rider = r
 	return s
 }
 
 func NewAttendanceWithModifier(m *model.Modifier) *attendanceService {
 	s := NewAttendance()
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	s.modifier = m
 	return s
 }
@@ -61,7 +62,7 @@ func NewAttendanceWithEmployee(e *ent.Employee) *attendanceService {
 			Name:  e.Name,
 			Phone: e.Phone,
 		}
-		s.ctx = context.WithValue(s.ctx, "employee", s.employeeInfo)
+		s.ctx = context.WithValue(s.ctx, model.CtxEmployeeKey{}, s.employeeInfo)
 	}
 	return s
 }

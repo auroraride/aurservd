@@ -9,11 +9,12 @@ import (
 	"fmt"
 
 	"github.com/auroraride/adapter/log"
+	"github.com/go-resty/resty/v2"
+	"go.uber.org/zap"
+
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/utils"
-	"github.com/go-resty/resty/v2"
-	"go.uber.org/zap"
 )
 
 const (
@@ -178,7 +179,7 @@ func (b *faceClient) FaceResult(token string) (res *faceprintFaceResp, err error
 
 // AuthenticatorResult 获取实名认证结果
 func (b *faceClient) AuthenticatorResult(token string) (res *faceprintDetailResp, err error) {
-	simple := new(faceprintFaceResp)
+	var simple *faceprintFaceResp
 	simple, err = b.FaceResult(token)
 	if err != nil {
 		return

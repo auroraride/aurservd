@@ -14,11 +14,6 @@ import (
 	"time"
 
 	"github.com/auroraride/adapter/log"
-	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/internal/ar"
-	"github.com/auroraride/aurservd/pkg/cache"
-	"github.com/auroraride/aurservd/pkg/snag"
-	"github.com/auroraride/aurservd/pkg/tools"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/wechatpay-apiv3/wechatpay-go/core"
 	"github.com/wechatpay-apiv3/wechatpay-go/core/auth/verifiers"
@@ -31,6 +26,12 @@ import (
 	"github.com/wechatpay-apiv3/wechatpay-go/services/refunddomestic"
 	"github.com/wechatpay-apiv3/wechatpay-go/utils"
 	"go.uber.org/zap"
+
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ar"
+	"github.com/auroraride/aurservd/pkg/cache"
+	"github.com/auroraride/aurservd/pkg/snag"
+	"github.com/auroraride/aurservd/pkg/tools"
 )
 
 const (
@@ -222,7 +223,6 @@ func (c *wechatClient) Refund(req *model.PaymentRefund) {
 		req.Success = true
 		req.Time = *resp.SuccessTime
 	}
-	return
 }
 
 // Notification 微信支付回调
@@ -258,13 +258,10 @@ func (c *wechatClient) Notification(req *http.Request) *model.PaymentCache {
 	switch pc.CacheType {
 	case model.PaymentCacheTypePlan:
 		pc.Subscribe.TradeNo = *(transaction.TransactionId)
-		break
 	case model.PaymentCacheTypeOverdueFee:
 		pc.OverDueFee.TradeNo = *(transaction.TransactionId)
-		break
 	case model.PaymentCacheTypeAssistance:
 		pc.Assistance.TradeNo = *(transaction.TransactionId)
-		break
 	default:
 		return nil
 	}

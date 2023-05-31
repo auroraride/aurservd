@@ -16,6 +16,9 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/golang-module/carbon/v2"
+	jsoniter "github.com/json-iterator/go"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/assets"
 	"github.com/auroraride/aurservd/internal/ar"
@@ -31,8 +34,6 @@ import (
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
-	"github.com/golang-module/carbon/v2"
-	jsoniter "github.com/json-iterator/go"
 )
 
 type stockService struct {
@@ -53,7 +54,7 @@ func NewStock() *stockService {
 
 func NewStockWithRider(r *ent.Rider) *stockService {
 	s := NewStock()
-	s.ctx = context.WithValue(s.ctx, "rider", r)
+	s.ctx = context.WithValue(s.ctx, model.CtxRiderKey{}, r)
 	s.rider = r
 	return s
 }
@@ -61,7 +62,7 @@ func NewStockWithRider(r *ent.Rider) *stockService {
 func NewStockWithModifier(m *model.Modifier) *stockService {
 	s := NewStock()
 	if m != nil {
-		s.ctx = context.WithValue(s.ctx, "modifier", m)
+		s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 		s.modifier = m
 	}
 	return s
@@ -76,7 +77,7 @@ func NewStockWithEmployee(e *ent.Employee) *stockService {
 			Name:  e.Name,
 			Phone: e.Phone,
 		}
-		s.ctx = context.WithValue(s.ctx, "employee", s.employeeInfo)
+		s.ctx = context.WithValue(s.ctx, model.CtxEmployeeKey{}, s.employeeInfo)
 	}
 	return s
 }
@@ -260,17 +261,14 @@ func (s *stockService) BatteryOverview(req *model.StockOverviewReq) (items []mod
 		} else {
 			extends = append(extends, fmt.Sprintf("AND (%s IS NOT NULL OR (%s IS NULL AND %s IS NULL AND %s > 0))", stock.FieldStoreID, stock.FieldStoreID, stock.FieldCabinetID, stock.FieldType))
 		}
-		break
 	case model.StockGoalCabinet:
 		if req.CabinetID != 0 {
 			extends = append(extends, fmt.Sprintf("AND (%s = %d)", stock.FieldCabinetID, req.StoreID))
 		} else {
 			extends = append(extends, fmt.Sprintf("AND (%s IS NOT NULL)", stock.FieldCabinetID))
 		}
-		break
 	default:
 		extends = append(extends, fmt.Sprintf("AND (%s IS NOT NULL OR %s IS NOT NULL OR %s IS NOT NULL)", stock.FieldStoreID, stock.FieldCabinetID, stock.FieldRiderID))
-		break
 	}
 
 	if req.CityID != 0 {
@@ -632,7 +630,6 @@ func (s *stockService) listFilter(req model.StockDetailFilter) (q *ent.StockQuer
 			stock.StoreIDNotNil(),
 			stock.CabinetIDIsNil(),
 		)
-		break
 	case model.StockGoalCabinet:
 		// 电柜物资
 		info["查询目标"] = "电柜"
@@ -640,7 +637,6 @@ func (s *stockService) listFilter(req model.StockDetailFilter) (q *ent.StockQuer
 			stock.StoreIDIsNil(),
 			stock.CabinetIDNotNil(),
 		)
-		break
 	default:
 		// 门店或电柜物资
 		info["查询目标"] = "电柜或门店"
@@ -650,14 +646,12 @@ func (s *stockService) listFilter(req model.StockDetailFilter) (q *ent.StockQuer
 				stock.CabinetIDNotNil(),
 			),
 		)
-		break
 	}
 
 	// 筛选物资类别
 	if req.Materials == "" {
 		req.Materials = fmt.Sprintf("%s,%s", stock.MaterialBattery, stock.MaterialEbike)
 	} else {
-		strings.ReplaceAll(req.Materials, "frame", stock.MaterialEbike.String())
 		req.Materials = strings.ReplaceAll(req.Materials, " ", "")
 	}
 	materials := strings.Split(req.Materials, ",")
@@ -670,15 +664,12 @@ func (s *stockService) listFilter(req model.StockDetailFilter) (q *ent.StockQuer
 			case stock.MaterialBattery:
 				mtext = append(mtext, "电池")
 				predicates = append(predicates, stock.ModelNotNil())
-				break
 			case stock.MaterialEbike:
 				mtext = append(mtext, "电车")
 				predicates = append(predicates, stock.EbikeIDNotNil())
-				break
 			case stock.MaterialOthers:
 				mtext = append(mtext, "其他")
 				predicates = append(predicates, stock.ModelIsNil())
-				break
 			}
 		}
 		info["物资"] = strings.Join(mtext, ",")
@@ -796,11 +787,9 @@ func (s *stockService) detailInfo(item *ent.Stock) model.StockDetailRes {
 		case model.StockTypeRiderActive, model.StockTypeRiderContinue:
 			res.Inbound = target
 			res.Outbound = s.target(es, ec)
-			break
 		case model.StockTypeRiderPause, model.StockTypeRiderUnSubscribe:
 			res.Inbound = s.target(es, ec)
 			res.Outbound = target
-			break
 		}
 	}
 

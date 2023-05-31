@@ -14,6 +14,9 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/LucaTheHacker/go-haversine"
+	"github.com/jinzhu/copier"
+	"github.com/speps/go-hashids/v2"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/model/battery"
 	"github.com/auroraride/aurservd/internal/ent"
@@ -26,8 +29,6 @@ import (
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
-	"github.com/jinzhu/copier"
-	"github.com/speps/go-hashids/v2"
 )
 
 type branchService struct {
@@ -45,7 +46,7 @@ func NewBranch() *branchService {
 
 func NewBranchWithModifier(m *model.Modifier) *branchService {
 	s := NewBranch()
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	return s
 }
 
@@ -329,10 +330,8 @@ func (s *branchService) ListByDistanceManager(req *model.BranchDistanceListReq) 
 			switch req.Type {
 			case 60:
 				mt = "V60"
-				break
 			case 72:
 				mt = "V72"
-				break
 			}
 		}
 		for _, cab := range cabinets {
@@ -458,7 +457,7 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq) (i
 			}
 			// 获取健康状态
 			// 5分钟未更新视为离线
-			if c.Health == model.CabinetHealthStatusOnline && time.Now().Sub(c.UpdatedAt).Minutes() < 5 {
+			if c.Health == model.CabinetHealthStatusOnline && time.Since(c.UpdatedAt).Minutes() < 5 {
 				fa.State = model.BranchFacilityStateOnline
 			}
 			// 计算可用电池数量
@@ -567,7 +566,6 @@ func (s *branchService) DecodeFacility(fid string) (b *ent.Branch, sto *ent.Stor
 	case 1:
 		sto = NewStore().Query(uint64(arr[1]))
 		b, _ = sto.QueryBranch().First(s.ctx)
-		break
 	case 2:
 		cab, _ := ent.Database.Cabinet.QueryNotDeleted().
 			WithModels().
@@ -591,7 +589,6 @@ func (s *branchService) DecodeFacility(fid string) (b *ent.Branch, sto *ent.Stor
 			).
 			All(s.ctx)
 		cabs = append([]*ent.Cabinet{cab}, items...)
-		break
 	}
 	if b == nil || (sto == nil && len(cabs) == 0) {
 		snag.Panic("查询失败")
@@ -715,15 +712,12 @@ func (s *branchService) Facility(req *model.BranchFacilityReq) (data model.Branc
 				case model.SubscribeStatusInactive:
 					// 未激活时仅能办理激活业务
 					c.Businesses = []string{business.TypeActive.String()}
-					break
 				case model.SubscribeStatusPaused:
 					// 寄存中时仅能办理取消寄存业务
 					c.Businesses = []string{business.TypeContinue.String()}
-					break
 				case model.SubscribeStatusUsing:
 					// 使用中可办理寄存和退租业务
 					c.Businesses = []string{business.TypePause.String(), business.TypeUnsubscribe.String()}
-					break
 				}
 			}
 

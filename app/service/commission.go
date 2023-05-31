@@ -9,13 +9,11 @@ import (
 	"context"
 
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/internal/ent"
 )
 
 type commissionService struct {
 	ctx      context.Context
 	modifier *model.Modifier
-	rider    *ent.Rider
 }
 
 func NewCommission() *commissionService {
@@ -26,7 +24,7 @@ func NewCommission() *commissionService {
 
 func NewCommissionWithModifier(m *model.Modifier) *commissionService {
 	s := NewCommission()
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	s.modifier = m
 	return s
 }

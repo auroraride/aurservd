@@ -29,13 +29,12 @@ func NewRiderPermission() *riderPermissionService {
 func NewRiderPermissionWithRider(r *ent.Rider, params ...any) *riderPermissionService {
 	s := NewRiderPermission()
 	for _, param := range params {
-		switch param.(type) {
+		switch v := param.(type) {
 		case *model.Modifier:
-			s.modifier = param.(*model.Modifier)
-			break
+			s.modifier = v
 		}
 	}
-	s.ctx = context.WithValue(s.ctx, "rider", r)
+	s.ctx = context.WithValue(s.ctx, model.CtxRiderKey{}, r)
 	s.rider = r
 	return s
 }

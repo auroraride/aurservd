@@ -62,7 +62,7 @@ func (a *amap) DirectionRidingPlan(origin, destination string) (seconds int, dis
 	}
 	for _, path := range res.Route.Paths {
 		cost, _ := strconv.Atoi(path.Duration)
-		d, _ := strconv.ParseFloat(path.Distance, 10)
+		d, _ := strconv.ParseFloat(path.Distance, 64)
 		distance += d
 		seconds += cost
 		for _, step := range path.Steps {

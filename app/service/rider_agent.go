@@ -8,6 +8,8 @@ package service
 import (
 	"context"
 
+	"github.com/golang-module/carbon/v2"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -17,13 +19,11 @@ import (
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
-	"github.com/golang-module/carbon/v2"
 )
 
 type riderAgentService struct {
 	ctx        context.Context
 	modifier   *model.Modifier
-	rider      *ent.Rider
 	agent      *ent.Agent
 	enterprise *ent.Enterprise
 	orm        *ent.RiderClient
@@ -45,7 +45,7 @@ func NewRiderAgentWithAgent(ag *ent.Agent, en *ent.Enterprise) *riderAgentServic
 
 func NewRiderAgentWithModifier(m *model.Modifier) *riderAgentService {
 	s := NewRiderAgent()
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	s.modifier = m
 	return s
 }

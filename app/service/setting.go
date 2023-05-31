@@ -12,19 +12,19 @@ import (
 	"strings"
 
 	"github.com/auroraride/adapter"
+	jsoniter "github.com/json-iterator/go"
+	"go.uber.org/zap"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/setting"
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/snag"
-	jsoniter "github.com/json-iterator/go"
-	"go.uber.org/zap"
 )
 
 type settingService struct {
 	ctx      context.Context
 	modifier *model.Modifier
-	rider    *ent.Rider
 	orm      *ent.SettingClient
 }
 
@@ -37,7 +37,7 @@ func NewSetting() *settingService {
 
 func NewSettingWithModifier(m *model.Modifier) *settingService {
 	s := NewSetting()
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	s.modifier = m
 	return s
 }
@@ -57,7 +57,7 @@ func (s *settingService) CacheSettings(sm *ent.Setting) {
 		model.SettingRescueFeeKey,
 		model.SettingReserveDurationKey,
 		model.SettingExchangeMinBatteryKey:
-		f, err := strconv.ParseFloat(strings.ReplaceAll(sm.Content, `"`, ""), 10)
+		f, err := strconv.ParseFloat(strings.ReplaceAll(sm.Content, `"`, ""), 64)
 		if err == nil {
 			cache.Set(s.ctx, sm.Key, f, 0)
 		}
@@ -172,7 +172,7 @@ func (s *settingService) GetSetting(key string) (v any) {
 		return d.Default
 	}
 
-	err = jsoniter.Unmarshal([]byte(set.Content), &d.Default)
+	_ = jsoniter.Unmarshal([]byte(set.Content), &d.Default)
 
 	return d.Default
 }
@@ -221,7 +221,7 @@ func (s *settingService) DailyRent(items map[string]float64, cityID uint64, batt
 	if items == nil {
 		items = s.DailyRentItems()
 	}
-	v, _ = items[key]
+	v = items[key]
 	if v == 0 {
 		v = model.DailyRentDefault
 	}

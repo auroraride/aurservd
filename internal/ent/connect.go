@@ -14,10 +14,11 @@ import (
 
 	"entgo.io/ent/dialect"
 	entsql "entgo.io/ent/dialect/sql"
+	_ "github.com/jackc/pgx/v4/stdlib"
+
 	"github.com/auroraride/aurservd/internal/ent/migrate"
 	_ "github.com/auroraride/aurservd/internal/ent/runtime"
 	"github.com/auroraride/aurservd/pkg/snag"
-	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
 var Database *Client
@@ -66,7 +67,7 @@ func WithTx(ctx context.Context, fn TxFunc) error {
 	}
 	defer func() {
 		if v := recover(); v != nil {
-			tx.Rollback()
+			_ = tx.Rollback()
 			panic(v)
 		}
 	}()

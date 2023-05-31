@@ -30,7 +30,7 @@ func NewRole() *roleService {
 
 func NewRoleWithModifier(m *model.Modifier) *roleService {
 	s := NewRole()
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	s.modifier = m
 	return s
 }

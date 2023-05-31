@@ -13,6 +13,8 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/golang-module/carbon/v2"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
@@ -21,7 +23,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/utils"
-	"github.com/golang-module/carbon/v2"
 )
 
 var couponTaskBusy = atomic.Bool{}
@@ -31,13 +32,11 @@ func init() {
 }
 
 type couponService struct {
-	ctx          context.Context
-	modifier     *model.Modifier
-	rider        *ent.Rider
-	employee     *ent.Employee
-	employeeInfo *model.Employee
-	orm          *ent.CouponClient
-	max          uint64
+	ctx      context.Context
+	modifier *model.Modifier
+	rider    *ent.Rider
+	orm      *ent.CouponClient
+	max      uint64
 }
 
 func NewCoupon() *couponService {
@@ -50,14 +49,14 @@ func NewCoupon() *couponService {
 
 func NewCouponWithRider(r *ent.Rider) *couponService {
 	s := NewCoupon()
-	s.ctx = context.WithValue(s.ctx, "rider", r)
+	s.ctx = context.WithValue(s.ctx, model.CtxRiderKey{}, r)
 	s.rider = r
 	return s
 }
 
 func NewCouponWithModifier(m *model.Modifier) *couponService {
 	s := NewCoupon()
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	s.modifier = m
 	return s
 }

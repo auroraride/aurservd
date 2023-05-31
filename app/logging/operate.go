@@ -56,9 +56,9 @@ func (o *OperateLog) SetInfo(info string) *OperateLog {
 func (o *OperateLog) SetRef(ref model.Table) *OperateLog {
 	o.RefTable = ref.GetTableName()
 	o.RefID = ref.GetID()
-	switch ref.(type) {
+	switch v := ref.(type) {
 	case model.TableSlsInfo:
-		o.Info = ref.(model.TableSlsInfo).GetSLSLogInfo()
+		o.Info = v.GetSLSLogInfo()
 	}
 	return o
 }

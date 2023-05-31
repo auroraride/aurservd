@@ -10,6 +10,8 @@ import (
 	"fmt"
 	"time"
 
+	"go.uber.org/zap"
+
 	"github.com/auroraride/aurservd/app/ec"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ali"
@@ -17,7 +19,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/pkg/snag"
-	"go.uber.org/zap"
 )
 
 type LogCallback func(data any)
@@ -59,7 +60,7 @@ func StartCabinetProvider(providers ...Provider) {
 				dooLoop(times, start, provider)
 
 				// 写入电柜日志
-				provider.Logger().Write(fmt.Sprintf("完成第%d次%s电柜状态轮询, 耗时%.2fs\n\n", times, provider.Brand(), time.Now().Sub(start).Seconds()))
+				provider.Logger().Write(fmt.Sprintf("完成第%d次%s电柜状态轮询, 耗时%.2fs\n\n", times, provider.Brand(), time.Since(start).Seconds()))
 
 				time.Sleep(1 * time.Minute)
 			}
@@ -103,7 +104,7 @@ func dooLoop(times int, start time.Time, provider Provider) {
 				}
 			}
 
-			time.Sleep(time.Duration((60000-int(time.Now().Sub(start).Milliseconds()))/len(items)) * time.Millisecond)
+			time.Sleep(time.Duration((60000-int(time.Since(start).Milliseconds()))/len(items)) * time.Millisecond)
 		}
 	})
 }

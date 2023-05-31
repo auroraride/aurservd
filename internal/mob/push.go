@@ -6,10 +6,11 @@
 package mob
 
 import (
-	"github.com/auroraride/aurservd/internal/ar"
-	"github.com/auroraride/aurservd/pkg/utils"
 	"github.com/go-resty/resty/v2"
 	jsoniter "github.com/json-iterator/go"
+
+	"github.com/auroraride/aurservd/internal/ar"
+	"github.com/auroraride/aurservd/pkg/utils"
 )
 
 const (
@@ -121,9 +122,7 @@ func (m *mobPush) SendMessage(req Req) {
 			VivoExtra:   VivoExtra{Classification: "1"},
 		}
 	}
-	for _, d := range req.MessageData {
-		data.PushNotify.ExtrasMapList = append(data.PushNotify.ExtrasMapList, d)
-	}
+	data.PushNotify.ExtrasMapList = append(data.PushNotify.ExtrasMapList, req.MessageData...)
 	// 排序并转换json字符串
 	b, _ := jsoniter.Marshal(data)
 	s := string(b)

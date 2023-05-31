@@ -8,14 +8,15 @@ package service
 import (
 	"context"
 
+	"github.com/golang-module/carbon/v2"
+	"github.com/jinzhu/copier"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/workwx"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/pkg/snag"
-	"github.com/golang-module/carbon/v2"
-	"github.com/jinzhu/copier"
 )
 
 type cabinetFaultService struct {
@@ -33,7 +34,7 @@ func NewCabinetFault() *cabinetFaultService {
 
 func NewCabinetFaultWithModifier(m *model.Modifier) *cabinetFaultService {
 	s := NewCabinetFault()
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	s.modifier = m
 	return s
 }

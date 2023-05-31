@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 	"entgo.io/ent/schema/mixin"
+
 	"github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -19,9 +20,6 @@ type StoreMixin struct {
 	Optional     bool
 	DisableIndex bool
 	Prefix       string
-
-	field    string
-	edgeName string
 }
 
 func (m StoreMixin) prefield() (string, string) {

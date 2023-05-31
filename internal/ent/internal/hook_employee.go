@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/mixin"
+
 	"github.com/auroraride/aurservd/app/model"
 )
 
@@ -49,12 +50,12 @@ func (h HookEmployee) Hooks() []ent.Hook {
 func (HookEmployee) setEmployeeInfo(ctx context.Context, m ent.Mutation) {
 	ml, ok := m.(HookEmployeeMutator)
 	if ok {
-		value, _ := ctx.Value("employee").(*model.Employee)
+		value, _ := ctx.Value(model.CtxEmployeeKey{}).(*model.Employee)
 		if value != nil {
 			switch op := m.Op(); {
 			case op.Is(ent.OpCreate):
 				ml.SetEmployeeInfo(value)
-			case op.Is(ent.OpUpdateOne | ent.OpUpdate):
+				// case op.Is(ent.OpUpdateOne | ent.OpUpdate):
 				// TODO: 更新?
 			}
 		}
@@ -67,12 +68,12 @@ func (HookEmployee) setEmployeeID(ctx context.Context, m ent.Mutation) {
 	if ok {
 		eid, idOk := ml.EmployeeID()
 		if eid == 0 || !idOk {
-			value, _ := ctx.Value("employee").(*model.Employee)
+			value, _ := ctx.Value(model.CtxEmployeeKey{}).(*model.Employee)
 			if value != nil {
 				switch op := m.Op(); {
 				case op.Is(ent.OpCreate):
 					ml.SetEmployeeID(value.ID)
-				case op.Is(ent.OpUpdateOne | ent.OpUpdate):
+					// case op.Is(ent.OpUpdateOne | ent.OpUpdate):
 					// TODO: 更新?
 				}
 			}

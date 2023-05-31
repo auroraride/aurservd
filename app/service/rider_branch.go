@@ -15,9 +15,8 @@ import (
 )
 
 type riderBranchService struct {
-	ctx      context.Context
-	modifier *model.Modifier
-	rider    *ent.Rider
+	ctx   context.Context
+	rider *ent.Rider
 }
 
 func NewRiderBranch(r *ent.Rider) *riderBranchService {
@@ -25,7 +24,7 @@ func NewRiderBranch(r *ent.Rider) *riderBranchService {
 		ctx:   context.Background(),
 		rider: r,
 	}
-	s.ctx = context.WithValue(s.ctx, "rider", r)
+	s.ctx = context.WithValue(s.ctx, model.CtxRiderKey{}, r)
 	return s
 }
 

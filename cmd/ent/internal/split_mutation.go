@@ -8,21 +8,21 @@ package internal
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
 	"text/template"
 
-	"github.com/auroraride/aurservd/pkg/utils"
 	"golang.org/x/exp/slices"
+
+	"github.com/auroraride/aurservd/pkg/utils"
 )
 
 func DeleteMutations() {
 	p := "internal/ent"
 	// 查找文件夹内所有mutation文件
-	files, _ := ioutil.ReadDir(p)
+	files, _ := os.ReadDir(p)
 	for _, file := range files {
 		if strings.HasPrefix(file.Name(), "mutation_") {
 			_ = os.Remove(filepath.Join(p, file.Name()))
@@ -36,7 +36,7 @@ func SplitMutation() {
 	re := regexp.MustCompile(`(?m)/\*\* (.*)? START \*/\n/\*\n([\s\S]*?)\*/([\s\S]*?)/\*\* .*? END \*/`)
 	mf := filepath.Join(p, "mutation.go")
 
-	b, err := ioutil.ReadFile(mf)
+	b, err := os.ReadFile(mf)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -89,5 +89,5 @@ import (
 
 `)
 	buffer.Write(re.ReplaceAll(b, []byte("$1\n")))
-	_ = ioutil.WriteFile("internal/ent/mutation.go", buffer.Bytes(), 0755)
+	_ = os.WriteFile("internal/ent/mutation.go", buffer.Bytes(), 0755)
 }

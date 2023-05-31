@@ -12,21 +12,19 @@ import (
 	"math"
 	"time"
 
+	"github.com/golang-module/carbon/v2"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/pointlog"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/pkg/cache"
-	"github.com/golang-module/carbon/v2"
 )
 
 type pointService struct {
-	ctx          context.Context
-	modifier     *model.Modifier
-	rider        *ent.Rider
-	employee     *ent.Employee
-	employeeInfo *model.Employee
-	orm          *ent.PointLogClient
+	ctx      context.Context
+	modifier *model.Modifier
+	orm      *ent.PointLogClient
 }
 
 func NewPoint() *pointService {
@@ -38,7 +36,7 @@ func NewPoint() *pointService {
 
 func NewPointWithModifier(m *model.Modifier) *pointService {
 	s := NewPoint()
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	s.modifier = m
 	return s
 }

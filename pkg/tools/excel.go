@@ -9,9 +9,10 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/xuri/excelize/v2"
+
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/utils"
-	"github.com/xuri/excelize/v2"
 )
 
 type excel struct {
@@ -45,7 +46,7 @@ func NewExcel(path string, args ...any) (e *excel) {
 	}
 
 	fe := excelize.NewFile()
-	fe.SetSheetName("Sheet1", sheet)
+	_ = fe.SetSheetName("Sheet1", sheet)
 	return &excel{
 		path:  path,
 		sheet: sheet,

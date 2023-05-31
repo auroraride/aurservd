@@ -35,14 +35,14 @@ func NewRefund() *refundService {
 
 func NewRefundWithRider(r *ent.Rider) *refundService {
 	s := NewRefund()
-	s.ctx = context.WithValue(s.ctx, "rider", r)
+	s.ctx = context.WithValue(s.ctx, model.CtxRiderKey{}, r)
 	s.rider = r
 	return s
 }
 
 func NewRefundWithModifier(m *model.Modifier) *refundService {
 	s := NewRefund()
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	s.modifier = m
 	return s
 }
@@ -56,7 +56,7 @@ func NewRefundWithEmployee(e *ent.Employee) *refundService {
 			Name:  e.Name,
 			Phone: e.Phone,
 		}
-		s.ctx = context.WithValue(s.ctx, "employee", s.employeeInfo)
+		s.ctx = context.WithValue(s.ctx, model.CtxEmployeeKey{}, s.employeeInfo)
 	}
 	return s
 }
@@ -177,10 +177,8 @@ func (s *refundService) RefundAudit(req *model.RefundAuditReq) {
 		switch o.Payway {
 		case model.OrderPaywayAlipay:
 			payment.NewAlipay().Refund(prepay.Refund)
-			break
 		case model.OrderPaywayWechat:
 			payment.NewWechat().Refund(prepay.Refund)
-			break
 		}
 
 		// 原路退款请求是否成功

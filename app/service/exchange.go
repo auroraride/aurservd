@@ -15,6 +15,9 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/adapter"
+	"github.com/golang-module/carbon/v2"
+	"github.com/lithammer/shortuuid/v4"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
@@ -28,8 +31,6 @@ import (
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
-	"github.com/golang-module/carbon/v2"
-	"github.com/lithammer/shortuuid/v4"
 )
 
 type exchangeService struct {
@@ -50,14 +51,14 @@ func NewExchange() *exchangeService {
 
 func NewExchangeWithRider(r *ent.Rider) *exchangeService {
 	s := NewExchange()
-	s.ctx = context.WithValue(s.ctx, "rider", r)
+	s.ctx = context.WithValue(s.ctx, model.CtxRiderKey{}, r)
 	s.rider = r
 	return s
 }
 
 func NewExchangeWithModifier(m *model.Modifier) *exchangeService {
 	s := NewExchange()
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	s.modifier = m
 	return s
 }
@@ -71,7 +72,7 @@ func NewExchangeWithEmployee(e *ent.Employee) *exchangeService {
 			Name:  e.Name,
 			Phone: e.Phone,
 		}
-		s.ctx = context.WithValue(s.ctx, "employee", s.employeeInfo)
+		s.ctx = context.WithValue(s.ctx, model.CtxEmployeeKey{}, s.employeeInfo)
 	}
 	return s
 }
@@ -276,7 +277,6 @@ func (s *exchangeService) Overview(riderID uint64) (res model.ExchangeOverview) 
 			break
 		default:
 			res.Days += item.InitialDays + item.AlterDays + item.OverdueDays + item.RenewalDays + item.PauseDays - item.Remaining + 1 // 已用天数(+1代表当前天数算作1天)
-			break
 		}
 	}
 	return
@@ -363,10 +363,8 @@ func (s *exchangeService) listBasicQuery(req model.ExchangeListBasicFilter) (q *
 	switch req.Aimed {
 	case model.BusinessAimedPersonal:
 		q.Where(exchange.EnterpriseIDIsNil())
-		break
 	case model.BusinessAimedEnterprise:
 		q.Where(exchange.EnterpriseIDNotNil())
-		break
 	}
 
 	return
@@ -425,10 +423,8 @@ func (s *exchangeService) listFilter(req model.ExchangeListFilter) (q *ent.Excha
 	switch req.Target {
 	case 1:
 		q.Where(exchange.CabinetIDNotNil())
-		break
 	case 2:
 		q.Where(exchange.StoreIDNotNil())
-		break
 	}
 
 	info["换电类别"] = []string{"全部", "电柜", "门店"}[req.Target]
@@ -656,5 +652,6 @@ func (s *exchangeService) Export(req *model.ExchangeListExport) model.ExportRes 
 			}
 			rows = append(rows, row)
 		}
+		tools.NewExcel(path).AddValues(rows).Done()
 	})
 }

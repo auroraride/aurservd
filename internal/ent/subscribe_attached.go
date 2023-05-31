@@ -9,9 +9,10 @@ import (
 	"context"
 	"time"
 
+	"github.com/golang-module/carbon/v2"
+
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
 	"github.com/auroraride/aurservd/internal/ent/subscribesuspend"
-	"github.com/golang-module/carbon/v2"
 )
 
 // SubscribeAdditional 订阅额外时间
@@ -152,7 +153,7 @@ type SubscribePauseResult struct {
 // GetAdditionalItems 获取额外时间集
 func (s *Subscribe) GetAdditionalItems() (pr SubscribePauseResult, sr SubscribeSuspendResult) {
 	var (
-		pauses   []*SubscribeAdditionalItem
+		// pauses   []*SubscribeAdditionalItem // TODO: pauses是做啥用的??? 忘记了
 		suspends []*SubscribeAdditionalItem
 	)
 	ctx := context.Background()
@@ -189,7 +190,7 @@ func (s *Subscribe) GetAdditionalItems() (pr SubscribePauseResult, sr SubscribeS
 			pr.CurrentOverdueDays = item.OverdueDays
 			pr.CurrentDuplicateDays = item.DuplicateDays
 		}
-		pauses = append(pauses, item)
+		// pauses = append(pauses, item)
 	}
 	return
 }

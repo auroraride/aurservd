@@ -12,6 +12,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/golang-module/carbon/v2"
+	jsoniter "github.com/json-iterator/go"
+	"golang.org/x/exp/slices"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -20,9 +24,6 @@ import (
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
-	"github.com/golang-module/carbon/v2"
-	jsoniter "github.com/json-iterator/go"
-	"golang.org/x/exp/slices"
 )
 
 type planService struct {
@@ -41,14 +42,14 @@ func NewPlan() *planService {
 
 func NewPlanWithRider(rider *ent.Rider) *planService {
 	s := NewPlan()
-	s.ctx = context.WithValue(s.ctx, "rider", rider)
+	s.ctx = context.WithValue(s.ctx, model.CtxRiderKey{}, rider)
 	s.rider = rider
 	return s
 }
 
 func NewPlanWithModifier(m *model.Modifier) *planService {
 	s := NewPlan()
-	s.ctx = context.WithValue(s.ctx, "modifier", m)
+	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 	s.modifier = m
 	return s
 }

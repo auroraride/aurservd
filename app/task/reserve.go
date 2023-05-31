@@ -28,12 +28,8 @@ func (t *reserveTask) Start() {
 	if ar.Config.Task.Reserve {
 		ticker := time.NewTicker(1 * time.Minute)
 		for {
-			select {
-			case <-ticker.C:
-				service.NewReserve().Timeout()
-				break
-			}
+			<-ticker.C
+			service.NewReserve().Timeout()
 		}
 	}
-
 }

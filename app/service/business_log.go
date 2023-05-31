@@ -17,7 +17,6 @@ import (
 type businessLogService struct {
 	ctx          context.Context
 	modifier     *model.Modifier
-	rider        *ent.Rider
 	employee     *ent.Employee
 	orm          *ent.BusinessClient
 	creator      *ent.BusinessCreate
@@ -37,7 +36,7 @@ func NewBusinessLog(sub *ent.Subscribe) *businessLogService {
 // SetModifier 设置管理员
 func (s *businessLogService) SetModifier(m *model.Modifier) *businessLogService {
 	if m != nil {
-		s.ctx = context.WithValue(s.ctx, "modifier", m)
+		s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
 		s.modifier = m
 		s.creator.SetLastModifier(m)
 	}
@@ -52,7 +51,7 @@ func (s *businessLogService) SetEmployee(e *ent.Employee) *businessLogService {
 			Name:  e.Name,
 			Phone: e.Phone,
 		}
-		s.ctx = context.WithValue(s.ctx, "employee", s.employeeInfo)
+		s.ctx = context.WithValue(s.ctx, model.CtxEmployeeKey{}, s.employeeInfo)
 		s.employee = e
 		s.creator.SetEmployee(e)
 		if e.Edges.Store != nil {
