@@ -580,6 +580,17 @@
                 ],
                 "summary": "A1001 登录",
                 "operationId": "AgentSignin",
+                "parameters": [
+                    {
+                        "description": "登录请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AgentSigninReq"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "请求成功",
@@ -15247,6 +15258,33 @@
                 },
                 "time": {
                     "description": "操作时间",
+                    "type": "string"
+                }
+            }
+        },
+        "model.AgentSigninReq": {
+            "type": "object",
+            "required": [
+                "signinType"
+            ],
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "jsCode": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "signinType": {
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
+                },
+                "smsId": {
                     "type": "string"
                 }
             }
