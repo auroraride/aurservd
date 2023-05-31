@@ -108,26 +108,6 @@ func (au *AgentUpdate) SetPhone(s string) *AgentUpdate {
 	return au
 }
 
-// SetOpenid sets the "openid" field.
-func (au *AgentUpdate) SetOpenid(s string) *AgentUpdate {
-	au.mutation.SetOpenid(s)
-	return au
-}
-
-// SetNillableOpenid sets the "openid" field if the given value is not nil.
-func (au *AgentUpdate) SetNillableOpenid(s *string) *AgentUpdate {
-	if s != nil {
-		au.SetOpenid(*s)
-	}
-	return au
-}
-
-// ClearOpenid clears the value of the "openid" field.
-func (au *AgentUpdate) ClearOpenid() *AgentUpdate {
-	au.mutation.ClearOpenid()
-	return au
-}
-
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
 func (au *AgentUpdate) SetEnterprise(e *Enterprise) *AgentUpdate {
 	return au.SetEnterpriseID(e.ID)
@@ -277,12 +257,6 @@ func (au *AgentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := au.mutation.Phone(); ok {
 		_spec.SetField(agent.FieldPhone, field.TypeString, value)
-	}
-	if value, ok := au.mutation.Openid(); ok {
-		_spec.SetField(agent.FieldOpenid, field.TypeString, value)
-	}
-	if au.mutation.OpenidCleared() {
-		_spec.ClearField(agent.FieldOpenid, field.TypeString)
 	}
 	if au.mutation.EnterpriseCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -453,26 +427,6 @@ func (auo *AgentUpdateOne) SetName(s string) *AgentUpdateOne {
 // SetPhone sets the "phone" field.
 func (auo *AgentUpdateOne) SetPhone(s string) *AgentUpdateOne {
 	auo.mutation.SetPhone(s)
-	return auo
-}
-
-// SetOpenid sets the "openid" field.
-func (auo *AgentUpdateOne) SetOpenid(s string) *AgentUpdateOne {
-	auo.mutation.SetOpenid(s)
-	return auo
-}
-
-// SetNillableOpenid sets the "openid" field if the given value is not nil.
-func (auo *AgentUpdateOne) SetNillableOpenid(s *string) *AgentUpdateOne {
-	if s != nil {
-		auo.SetOpenid(*s)
-	}
-	return auo
-}
-
-// ClearOpenid clears the value of the "openid" field.
-func (auo *AgentUpdateOne) ClearOpenid() *AgentUpdateOne {
-	auo.mutation.ClearOpenid()
 	return auo
 }
 
@@ -655,12 +609,6 @@ func (auo *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error
 	}
 	if value, ok := auo.mutation.Phone(); ok {
 		_spec.SetField(agent.FieldPhone, field.TypeString, value)
-	}
-	if value, ok := auo.mutation.Openid(); ok {
-		_spec.SetField(agent.FieldOpenid, field.TypeString, value)
-	}
-	if auo.mutation.OpenidCleared() {
-		_spec.ClearField(agent.FieldOpenid, field.TypeString)
 	}
 	if auo.mutation.EnterpriseCleared() {
 		edge := &sqlgraph.EdgeSpec{

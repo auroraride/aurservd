@@ -33,8 +33,6 @@ const (
 	FieldName = "name"
 	// FieldPhone holds the string denoting the phone field in the database.
 	FieldPhone = "phone"
-	// FieldOpenid holds the string denoting the openid field in the database.
-	FieldOpenid = "openid"
 	// EdgeEnterprise holds the string denoting the enterprise edge name in mutations.
 	EdgeEnterprise = "enterprise"
 	// EdgeStations holds the string denoting the stations edge name in mutations.
@@ -67,7 +65,6 @@ var Columns = []string{
 	FieldEnterpriseID,
 	FieldName,
 	FieldPhone,
-	FieldOpenid,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "agent"
@@ -153,11 +150,6 @@ func ByName(opts ...sql.OrderTermOption) OrderOption {
 // ByPhone orders the results by the phone field.
 func ByPhone(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPhone, opts...).ToFunc()
-}
-
-// ByOpenid orders the results by the openid field.
-func ByOpenid(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldOpenid, opts...).ToFunc()
 }
 
 // ByEnterpriseField orders the results by enterprise field.

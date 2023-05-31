@@ -86,7 +86,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 			agent.FieldEnterpriseID: {Type: field.TypeUint64, Column: agent.FieldEnterpriseID},
 			agent.FieldName:         {Type: field.TypeString, Column: agent.FieldName},
 			agent.FieldPhone:        {Type: field.TypeString, Column: agent.FieldPhone},
-			agent.FieldOpenid:       {Type: field.TypeString, Column: agent.FieldOpenid},
 		},
 	}
 	graph.Nodes[1] = &sqlgraph.Node{
@@ -4433,11 +4432,6 @@ func (f *AgentFilter) WhereName(p entql.StringP) {
 // WherePhone applies the entql string predicate on the phone field.
 func (f *AgentFilter) WherePhone(p entql.StringP) {
 	f.Where(p.Field(agent.FieldPhone))
-}
-
-// WhereOpenid applies the entql string predicate on the openid field.
-func (f *AgentFilter) WhereOpenid(p entql.StringP) {
-	f.Where(p.Field(agent.FieldOpenid))
 }
 
 // WhereHasEnterprise applies a predicate to check if query has an edge enterprise.
