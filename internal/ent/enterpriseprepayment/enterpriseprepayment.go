@@ -8,6 +8,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/auroraride/aurservd/app/model"
 )
 
 const (
@@ -31,6 +32,8 @@ const (
 	FieldEnterpriseID = "enterprise_id"
 	// FieldAmount holds the string denoting the amount field in the database.
 	FieldAmount = "amount"
+	// FieldPayway holds the string denoting the payway field in the database.
+	FieldPayway = "payway"
 	// EdgeEnterprise holds the string denoting the enterprise edge name in mutations.
 	EdgeEnterprise = "enterprise"
 	// Table holds the table name of the enterpriseprepayment in the database.
@@ -55,6 +58,7 @@ var Columns = []string{
 	FieldRemark,
 	FieldEnterpriseID,
 	FieldAmount,
+	FieldPayway,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -80,6 +84,8 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultPayway holds the default value on creation for the "payway" field.
+	DefaultPayway model.Payway
 )
 
 // OrderOption defines the ordering options for the EnterprisePrepayment queries.
@@ -118,6 +124,11 @@ func ByEnterpriseID(opts ...sql.OrderTermOption) OrderOption {
 // ByAmount orders the results by the amount field.
 func ByAmount(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldAmount, opts...).ToFunc()
+}
+
+// ByPayway orders the results by the payway field.
+func ByPayway(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPayway, opts...).ToFunc()
 }
 
 // ByEnterpriseField orders the results by enterprise field.

@@ -7,6 +7,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
@@ -83,6 +84,11 @@ func EnterpriseID(v uint64) predicate.EnterprisePrepayment {
 // Amount applies equality check predicate on the "amount" field. It's identical to AmountEQ.
 func Amount(v float64) predicate.EnterprisePrepayment {
 	return predicate.EnterprisePrepayment(sql.FieldEQ(FieldAmount, v))
+}
+
+// Payway applies equality check predicate on the "payway" field. It's identical to PaywayEQ.
+func Payway(v model.Payway) predicate.EnterprisePrepayment {
+	return predicate.EnterprisePrepayment(sql.FieldEQ(FieldPayway, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -368,6 +374,46 @@ func AmountLT(v float64) predicate.EnterprisePrepayment {
 // AmountLTE applies the LTE predicate on the "amount" field.
 func AmountLTE(v float64) predicate.EnterprisePrepayment {
 	return predicate.EnterprisePrepayment(sql.FieldLTE(FieldAmount, v))
+}
+
+// PaywayEQ applies the EQ predicate on the "payway" field.
+func PaywayEQ(v model.Payway) predicate.EnterprisePrepayment {
+	return predicate.EnterprisePrepayment(sql.FieldEQ(FieldPayway, v))
+}
+
+// PaywayNEQ applies the NEQ predicate on the "payway" field.
+func PaywayNEQ(v model.Payway) predicate.EnterprisePrepayment {
+	return predicate.EnterprisePrepayment(sql.FieldNEQ(FieldPayway, v))
+}
+
+// PaywayIn applies the In predicate on the "payway" field.
+func PaywayIn(vs ...model.Payway) predicate.EnterprisePrepayment {
+	return predicate.EnterprisePrepayment(sql.FieldIn(FieldPayway, vs...))
+}
+
+// PaywayNotIn applies the NotIn predicate on the "payway" field.
+func PaywayNotIn(vs ...model.Payway) predicate.EnterprisePrepayment {
+	return predicate.EnterprisePrepayment(sql.FieldNotIn(FieldPayway, vs...))
+}
+
+// PaywayGT applies the GT predicate on the "payway" field.
+func PaywayGT(v model.Payway) predicate.EnterprisePrepayment {
+	return predicate.EnterprisePrepayment(sql.FieldGT(FieldPayway, v))
+}
+
+// PaywayGTE applies the GTE predicate on the "payway" field.
+func PaywayGTE(v model.Payway) predicate.EnterprisePrepayment {
+	return predicate.EnterprisePrepayment(sql.FieldGTE(FieldPayway, v))
+}
+
+// PaywayLT applies the LT predicate on the "payway" field.
+func PaywayLT(v model.Payway) predicate.EnterprisePrepayment {
+	return predicate.EnterprisePrepayment(sql.FieldLT(FieldPayway, v))
+}
+
+// PaywayLTE applies the LTE predicate on the "payway" field.
+func PaywayLTE(v model.Payway) predicate.EnterprisePrepayment {
+	return predicate.EnterprisePrepayment(sql.FieldLTE(FieldPayway, v))
 }
 
 // HasEnterprise applies the HasEdge predicate on the "enterprise" edge.
