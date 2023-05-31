@@ -128,7 +128,7 @@ func (c *alipayClient) Native(pc *model.PaymentCache) (string, error) {
 		return "", errors.New("支付宝二维码生成失败")
 	}
 
-	return res.Content.QRCode, nil
+	return res.QRCode, nil
 }
 
 // Refund 退款
@@ -145,13 +145,13 @@ func (c *alipayClient) Refund(req *model.PaymentRefund) {
 		snag.Panic("退款处理失败")
 		return
 	}
-	if !result.Content.Code.IsSuccess() {
-		snag.Panic(result.Content.Msg)
+	if !result.Code.IsSuccess() {
+		snag.Panic(result.Msg)
 		return
 	}
 
 	req.Request = true
-	if result.Content.FundChange == "Y" {
+	if result.FundChange == "Y" {
 		req.Success = true
 		req.Time = time.Now()
 	}
