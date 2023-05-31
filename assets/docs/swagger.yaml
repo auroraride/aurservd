@@ -521,6 +521,24 @@ definitions:
         description: 操作时间
         type: string
     type: object
+  model.AgentSigninReq:
+    properties:
+      code:
+        type: string
+      jsCode:
+        type: string
+      phone:
+        type: string
+      signinType:
+        enum:
+        - 1
+        - 2
+        type: integer
+      smsId:
+        type: string
+    required:
+    - signinType
+    type: object
   model.AgentSigninRes:
     properties:
       profile:
@@ -7647,6 +7665,13 @@ paths:
       consumes:
       - application/json
       operationId: AgentSignin
+      parameters:
+      - description: 登录请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AgentSigninReq'
       produces:
       - application/json
       responses:

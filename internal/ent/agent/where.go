@@ -90,6 +90,11 @@ func Phone(v string) predicate.Agent {
 	return predicate.Agent(sql.FieldEQ(FieldPhone, v))
 }
 
+// Openid applies equality check predicate on the "openid" field. It's identical to OpenidEQ.
+func Openid(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldEQ(FieldOpenid, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Agent {
 	return predicate.Agent(sql.FieldEQ(FieldCreatedAt, v))
@@ -463,6 +468,81 @@ func PhoneEqualFold(v string) predicate.Agent {
 // PhoneContainsFold applies the ContainsFold predicate on the "phone" field.
 func PhoneContainsFold(v string) predicate.Agent {
 	return predicate.Agent(sql.FieldContainsFold(FieldPhone, v))
+}
+
+// OpenidEQ applies the EQ predicate on the "openid" field.
+func OpenidEQ(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldEQ(FieldOpenid, v))
+}
+
+// OpenidNEQ applies the NEQ predicate on the "openid" field.
+func OpenidNEQ(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldNEQ(FieldOpenid, v))
+}
+
+// OpenidIn applies the In predicate on the "openid" field.
+func OpenidIn(vs ...string) predicate.Agent {
+	return predicate.Agent(sql.FieldIn(FieldOpenid, vs...))
+}
+
+// OpenidNotIn applies the NotIn predicate on the "openid" field.
+func OpenidNotIn(vs ...string) predicate.Agent {
+	return predicate.Agent(sql.FieldNotIn(FieldOpenid, vs...))
+}
+
+// OpenidGT applies the GT predicate on the "openid" field.
+func OpenidGT(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldGT(FieldOpenid, v))
+}
+
+// OpenidGTE applies the GTE predicate on the "openid" field.
+func OpenidGTE(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldGTE(FieldOpenid, v))
+}
+
+// OpenidLT applies the LT predicate on the "openid" field.
+func OpenidLT(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldLT(FieldOpenid, v))
+}
+
+// OpenidLTE applies the LTE predicate on the "openid" field.
+func OpenidLTE(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldLTE(FieldOpenid, v))
+}
+
+// OpenidContains applies the Contains predicate on the "openid" field.
+func OpenidContains(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldContains(FieldOpenid, v))
+}
+
+// OpenidHasPrefix applies the HasPrefix predicate on the "openid" field.
+func OpenidHasPrefix(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldHasPrefix(FieldOpenid, v))
+}
+
+// OpenidHasSuffix applies the HasSuffix predicate on the "openid" field.
+func OpenidHasSuffix(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldHasSuffix(FieldOpenid, v))
+}
+
+// OpenidIsNil applies the IsNil predicate on the "openid" field.
+func OpenidIsNil() predicate.Agent {
+	return predicate.Agent(sql.FieldIsNull(FieldOpenid))
+}
+
+// OpenidNotNil applies the NotNil predicate on the "openid" field.
+func OpenidNotNil() predicate.Agent {
+	return predicate.Agent(sql.FieldNotNull(FieldOpenid))
+}
+
+// OpenidEqualFold applies the EqualFold predicate on the "openid" field.
+func OpenidEqualFold(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldEqualFold(FieldOpenid, v))
+}
+
+// OpenidContainsFold applies the ContainsFold predicate on the "openid" field.
+func OpenidContainsFold(v string) predicate.Agent {
+	return predicate.Agent(sql.FieldContainsFold(FieldOpenid, v))
 }
 
 // HasEnterprise applies the HasEdge predicate on the "enterprise" edge.

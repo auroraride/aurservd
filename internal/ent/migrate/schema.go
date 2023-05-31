@@ -20,6 +20,7 @@ var (
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
 		{Name: "name", Type: field.TypeString},
 		{Name: "phone", Type: field.TypeString, Unique: true},
+		{Name: "openid", Type: field.TypeString, Nullable: true},
 		{Name: "enterprise_id", Type: field.TypeUint64, Comment: "企业ID"},
 		{Name: "enterprise_agents", Type: field.TypeUint64, Nullable: true},
 	}
@@ -31,13 +32,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "agent_enterprise_enterprise",
-				Columns:    []*schema.Column{AgentColumns[9]},
+				Columns:    []*schema.Column{AgentColumns[10]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "agent_enterprise_agents",
-				Columns:    []*schema.Column{AgentColumns[10]},
+				Columns:    []*schema.Column{AgentColumns[11]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -56,7 +57,7 @@ var (
 			{
 				Name:    "agent_enterprise_id",
 				Unique:  false,
-				Columns: []*schema.Column{AgentColumns[9]},
+				Columns: []*schema.Column{AgentColumns[10]},
 			},
 			{
 				Name:    "agent_phone",
