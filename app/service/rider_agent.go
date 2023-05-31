@@ -168,6 +168,7 @@ func (s *riderAgentService) List(enterpriseID uint64, req *model.AgentRiderListR
 			subscribe.Status(model.SubscribeStatusUsing),
 			subscribe.RemainingLTE(model.WillOverdueNum),
 		)
+		q.Where(rider.HasSubscribesWith(subquery...))
 	}
 
 	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Rider) model.AgentRider {
