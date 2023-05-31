@@ -10,8 +10,8 @@ require (
 	github.com/alibabacloud-go/dysmsapi-20170525/v2 v2.0.18
 	github.com/alibabacloud-go/dyvmsapi-20170525/v2 v2.1.4
 	github.com/alibabacloud-go/tea v1.2.0
-	github.com/aliyun/alibaba-cloud-sdk-go v1.62.349
-	github.com/aliyun/aliyun-log-go-sdk v0.1.45
+	github.com/aliyun/alibaba-cloud-sdk-go v1.62.352
+	github.com/aliyun/aliyun-log-go-sdk v0.1.46
 	github.com/aliyun/aliyun-oss-go-sdk v2.2.7+incompatible
 	github.com/auroraride/adapter v0.0.0-20230522040005-5c5a4ef6603e
 	github.com/ethereum/go-ethereum v1.12.0
@@ -45,7 +45,7 @@ require (
 	github.com/sony/sonyflake v1.1.0
 	github.com/speps/go-hashids/v2 v2.0.1
 	github.com/spf13/cobra v1.7.0
-	github.com/spf13/viper v1.15.0
+	github.com/spf13/viper v1.16.0
 	github.com/swaggo/echo-swagger v1.4.0
 	github.com/swaggo/swag v1.16.1
 	github.com/wechatpay-apiv3/wechatpay-go v0.2.16
@@ -138,7 +138,7 @@ require (
 	github.com/shurcooL/highlight_go v0.0.0-20191220051317-782971ddf21b // indirect
 	github.com/shurcooL/octicon v0.0.0-20191102190552-cbb32d6a785c // indirect
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
-	github.com/smartwalle/ncrypto v1.0.1 // indirect
+	github.com/smartwalle/ncrypto v1.0.2 // indirect
 	github.com/smartwalle/nsign v0.0.1 // indirect
 	github.com/sourcegraph/annotate v0.0.0-20160123013949-f4cad6c6324d // indirect
 	github.com/sourcegraph/syntaxhighlight v0.0.0-20170531221838-bd320f5d308e // indirect
@@ -164,7 +164,6 @@ require (
 	golang.org/x/net v0.10.0 // indirect
 	golang.org/x/sys v0.8.0 // indirect
 	golang.org/x/text v0.9.0 // indirect
-	google.golang.org/genproto v0.0.0-20230525234025-438c736192d0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230526203410-71b5a4ffd15e // indirect
 	google.golang.org/grpc v1.55.0 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
