@@ -56,6 +56,6 @@ func (*agent) Profile(c echo.Context) (err error) {
 // @Param		code  query  string  true  "微信code"
 // @Success      200  code  string  "请求成功"
 func (*agent) GetOpenid(c echo.Context) (err error) {
-	ctx := app.ContextX[app.AgentContext](c)
-	return ctx.SendResponse(service.NewminiProgram().GetAuth(ctx.Param("code")))
+	ctx, req := app.ContextBinding[model.OpenidReq](c)
+	return ctx.SendResponse(service.NewminiProgram().GetAuth(req.Code))
 }

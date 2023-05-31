@@ -60,3 +60,6 @@ type AgentSigninRes struct {
 	Profile AgentProfile `json:"profile"`
 	Token   string       `json:"token"`
 }
+type OpenidReq struct {
+	Code string `json:"code" query:"code"`
+}
