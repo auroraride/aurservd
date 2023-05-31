@@ -21,7 +21,7 @@ func loadAgentRoutes() {
 	auth := g.Group("", middleware.Agent(), middleware.AgentAuth())
 	auth.GET("/cabinet/:serial", aapi.Cabinet.Detail)
 	auth.GET("/profile", aapi.Agent.Profile)
-
+	auth.GET("/openid", aapi.Agent.GetOpenid)
 	// auth.GET("/rider", aapi.Rider.List)
 	// auth.POST("/rider", aapi.Rider.Create)
 	// auth.POST("/rider/alter", aapi.Rider.Alter)

@@ -7427,6 +7427,32 @@ paths:
       summary: A5002 电柜详情
       tags:
       - '[A]代理接口'
+  /agent/v1/getopenid:
+    get:
+      consumes:
+      - application/json
+      operationId: AgentGetOpenid
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - description: 微信code
+        in: query
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            type: code
+      summary: A1003 获取openid
+      tags:
+      - '[A]代理接口'
   /agent/v1/prepayment:
     get:
       consumes:

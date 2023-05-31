@@ -152,44 +152,22 @@ func (s *agentService) signin(ag *ent.Agent) *model.AgentSigninRes {
 
 // Signin 登录
 func (s *agentService) Signin(req *model.AgentSigninReq) *model.AgentSigninRes {
-	var openid string
 	switch req.SigninType {
-	case model.SigninTypeSms:
+	case model.AgentSigninTypeSms:
 		// 校验短信
 		NewSms().VerifyCodeX(req.Phone, req.SmsId, req.Code)
-	case model.SigninTypeWechat:
-		newProgram := NewminiProgram()
-		// 获取openid
-		openid = newProgram.GetAuth(req.JsCode)
+	case model.AgentSigninTypeWechat:
 		// 获取手机号
 		req.Phone = NewminiProgram().GetPhoneNumber(req.Code)
 	}
 	ag, err := s.orm.QueryNotDeleted().Where(agent.Phone(req.Phone)).WithEnterprise().First(s.ctx)
-	if err != nil {
-		snag.Panic("登录失败")
-	}
-	if ag.Edges.Enterprise == nil {
+	if err != nil || ag.Edges.Enterprise == nil {
 		snag.Panic("登录失败")
 	}
 	en := ag.Edges.Enterprise
 	if !en.Agent {
 		snag.Panic("非代理商")
 	}
-	if openid != "" {
-		// 校验openid是否已经绑定
-		if ag.Openid == "" {
-			// 更新openid
-			_, err = s.orm.UpdateOne(ag).SetOpenid(openid).Save(s.ctx)
-			if err != nil {
-				snag.Panic("登录失败")
-			}
-		} else {
-			if ag.Openid != openid {
-				snag.Panic("该手机号已绑定其他微信号")
-			}
-		}
-	}
-
 	return s.signin(ag)
 }
 

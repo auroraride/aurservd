@@ -44,3 +44,18 @@ func (*agent) Profile(c echo.Context) (err error) {
 	ctx := app.ContextX[app.AgentContext](c)
 	return ctx.SendResponse(service.NewAgent(ctx.Agent, ctx.Enterprise).Profile(ctx.Agent, ctx.Enterprise))
 }
+
+// GetOpenid 获取opienid
+// @ID           AgentGetOpenid
+// @Router       /agent/v1/getopenid [GET]
+// @Summary      A1003 获取openid
+// @Tags         [A]代理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Agent-Token  header  string  true  "代理校验token"
+// @Param		code  query  string  true  "微信code"
+// @Success      200  code  string  "请求成功"
+func (*agent) GetOpenid(c echo.Context) (err error) {
+	ctx := app.ContextX[app.AgentContext](c)
+	return ctx.SendResponse(service.NewminiProgram().GetAuth(ctx.Param("code")))
+}

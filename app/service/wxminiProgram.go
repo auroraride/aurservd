@@ -43,21 +43,17 @@ func NewminiProgram(params ...any) *miniProgramService {
 // GetPhoneNumber 通过code换取手机号码
 func (s *miniProgramService) GetPhoneNumber(code string) string {
 	resultPhone, err := s.MiniProgram.GetAuth().GetPhoneNumber(code)
-	if err != nil {
-		snag.Panic("获取手机号码失败")
-	}
-	if resultPhone.ErrCode != 0 {
+	if err != nil || resultPhone.ErrCode != 0 {
 		snag.Panic("获取手机号码失败")
 	}
 	phoneNumber := resultPhone.PhoneInfo.PhoneNumber
 	return phoneNumber
 }
+
+// GetAuth 通过code换取openid
 func (s *miniProgramService) GetAuth(code string) string {
 	session, err := s.MiniProgram.GetAuth().Code2Session(code)
-	if err != nil {
-		snag.Panic("授权登录失败")
-	}
-	if session.ErrCode != 0 {
+	if err != nil || session.ErrCode != 0 {
 		snag.Panic("授权登录失败")
 	}
 	return session.OpenID
