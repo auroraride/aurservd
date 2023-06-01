@@ -13810,6 +13810,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v1/enterprise/join": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R3015 企业骑手加入团签",
+                "operationId": "RiderEnterpriseJoin",
+                "parameters": [
+                    {
+                        "description": "加入团签请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.RiderJoinEnterpriseReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v1/enterprise/subscribe": {
             "get": {
                 "consumes": [
@@ -13883,6 +13917,130 @@ const docTemplate = `{
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.EnterpriseRiderSubscribeChooseRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/rider/v1/enterprise/subscribe/add": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R3013 骑手申请增加订阅时长",
+                "operationId": "RiderEnterpriseApplyAddSubscribeTime",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "申请增加订阅时长请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.RiderSubscribeAddReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/rider/v1/enterprise/subscribe/alter/list": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R3014 骑手申请列表",
+                "operationId": "RiderEnterpriseApplyList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "关键词",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "审核状态",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.SubscribeAlterApplyListRsp"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -15402,9 +15560,6 @@ const docTemplate = `{
             ],
             "properties": {
                 "code": {
-                    "type": "string"
-                },
-                "jsCode": {
                     "type": "string"
                 },
                 "phone": {
@@ -22969,6 +23124,23 @@ const docTemplate = `{
                 }
             }
         },
+        "model.RiderJoinEnterpriseReq": {
+            "type": "object",
+            "required": [
+                "enterpriseId",
+                "stationId"
+            ],
+            "properties": {
+                "enterpriseId": {
+                    "description": "团签ID",
+                    "type": "integer"
+                },
+                "stationId": {
+                    "description": "站点ID",
+                    "type": "integer"
+                }
+            }
+        },
         "model.RiderListExport": {
             "type": "object",
             "required": [
@@ -23311,6 +23483,18 @@ const docTemplate = `{
                 },
                 "smsId": {
                     "type": "string"
+                }
+            }
+        },
+        "model.RiderSubscribeAddReq": {
+            "type": "object",
+            "required": [
+                "days"
+            ],
+            "properties": {
+                "days": {
+                    "description": "天数",
+                    "type": "integer"
                 }
             }
         },
@@ -24764,6 +24948,39 @@ const docTemplate = `{
                 "reason": {
                     "description": "调整理由",
                     "type": "string"
+                }
+            }
+        },
+        "model.SubscribeAlterApplyListRsp": {
+            "type": "object",
+            "properties": {
+                "applyTime": {
+                    "description": "申请时间",
+                    "type": "string"
+                },
+                "days": {
+                    "description": "天数",
+                    "type": "integer"
+                },
+                "expireTime": {
+                    "description": "到期时间",
+                    "type": "integer"
+                },
+                "reviewTime": {
+                    "description": "审核时间",
+                    "type": "string"
+                },
+                "riderName": {
+                    "description": "骑手姓名",
+                    "type": "string"
+                },
+                "riderPhone": {
+                    "description": "骑手手机号",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "审核状态",
+                    "type": "integer"
                 }
             }
         },

@@ -6,10 +6,11 @@
 package rapi
 
 import (
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
-	"github.com/labstack/echo/v4"
 )
 
 type enterprise struct{}
@@ -59,4 +60,50 @@ func (*enterprise) Subscribe(c echo.Context) (err error) {
 func (*enterprise) SubscribeStatus(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[model.EnterpriseRiderSubscribeStatusReq](c)
 	return ctx.SendResponse(service.NewEnterpriseRiderWithRider(ctx.Rider).SubscribeStatus(req))
+}
+
+// ApplyAddSubscribeTime App骑手申请增加订阅时长
+// @ID           RiderEnterpriseApplyAddSubscribeTime
+// @Router       /rider/v1/enterprise/subscribe/add [POST]
+// @Summary      R3013 骑手申请增加订阅时长
+// @Tags         [R]骑手接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Rider-Token  header  string  true  "骑手校验token"
+// @Param        body  body     model.RiderSubscribeAddReq  true  "申请增加订阅时长请求"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*enterprise) ApplyAddSubscribeTime(c echo.Context) (err error) {
+	ctx, req := app.RiderContextAndBinding[model.RiderSubscribeAddReq](c)
+	service.NewEnterpriseRider().AddSubscribeDays(req, ctx.Rider)
+	return ctx.SendResponse(model.StatusResponse{Status: true})
+}
+
+// ApplyList App申请列表
+// @ID           RiderEnterpriseApplyList
+// @Router       /rider/v1/enterprise/subscribe/alter/list [GET]
+// @Summary      R3014 骑手申请列表
+// @Tags         [R]骑手接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Rider-Token  header  string  true  "骑手校验token"
+// @Param        query  query   model.SubscribeAlterApplyReq  true  "desc"
+// @Success      200  {object}  model.PaginationRes{items=[]model.SubscribeAlterApplyListRsp}  "请求成功"
+func (*enterprise) ApplyList(c echo.Context) (err error) {
+	ctx, req := app.RiderContextAndBinding[model.SubscribeAlterApplyReq](c)
+	return ctx.SendResponse(service.NewEnterpriseRider().SubscribeAlterList(req, ctx.Rider))
+}
+
+// JoinEnterprise 加入团签
+// @ID           RiderEnterpriseJoin
+// @Router       /rider/v1/enterprise/join [POST]
+// @Summary      R3015 企业骑手加入团签
+// @Tags         [R]骑手接口
+// @Accept       json
+// @Produce      json
+// @Param        body  body     model.RiderJoinEnterpriseReq true  "加入团签请求"
+// @Success      200  {object}  bool  "请求成功"
+func (s *enterprise) JoinEnterprise(c echo.Context) error {
+	ctx, req := app.RiderContextAndBinding[model.EnterproseInfoReq](c)
+	service.NewEnterpriseRider().JoinEnterprise(req, ctx.Rider)
+	return ctx.SendResponse(model.StatusResponse{Status: true})
 }

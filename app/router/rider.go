@@ -10,11 +10,12 @@ import (
 
 	"github.com/auroraride/adapter"
 	"github.com/auroraride/adapter/app"
+	"github.com/labstack/echo/v4"
+
 	inapp "github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/controller/v1/rapi"
 	"github.com/auroraride/aurservd/app/middleware"
 	"github.com/auroraride/aurservd/internal/ent"
-	"github.com/labstack/echo/v4"
 )
 
 // rideRoutes 骑手路由
@@ -136,6 +137,13 @@ func loadRideRoutes() {
 	g.GET("/business/pause/info", rapi.Business.PauseInfo)
 	g.GET("/business/allocated/:id", rapi.Business.Allocated)
 	g.GET("/business/subscribe/signed/:id", rapi.Business.SubscribeSigned)
+	// 小程序加入团签
+	g.POST("/enterprise/join", rapi.Enterprise.JoinEnterprise)
+
+	// 申请加时
+	g.POST("/enterprise/subscribe/add", rapi.Enterprise.ApplyAddSubscribeTime)
+	// 申请列表
+	g.GET("/enterprise/subscribe/alter/list", rapi.Enterprise.ApplyList)
 
 	// 电柜
 	cabinet := g.Group("/cabinet")

@@ -261,3 +261,19 @@ type RiderActiveBatteryReq struct {
 	ID        uint64 `json:"id" param:"id" validate:"required"` // 骑手ID
 	BatteryID uint64 `json:"batteryId" validate:"required"`     // 电池ID
 }
+
+// RiderSubscribeRsp 骑手订阅信息
+type RiderSubscribeRsp struct {
+	// 剩余天数
+	LeftDays int `json:"leftDays"`
+	// 到期时间
+	ExpireAt string `json:"expireAt"`
+	// 加时天数列表
+	ExtraDays []int `json:"extraDays"`
+}
+
+// RiderSubscribeAddReq 骑手申请增加订阅时长请求
+type RiderSubscribeAddReq struct {
+	// 天数
+	Days int `json:"days" validate:"required"`
+}
