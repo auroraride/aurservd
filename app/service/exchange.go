@@ -503,7 +503,9 @@ func (s *exchangeService) listFilter(req model.ExchangeListFilter) (q *ent.Excha
 			)
 		})
 	}
-
+	if req.EnterpriseID != 0 {
+		q.Where(exchange.EnterpriseID(req.EnterpriseID))
+	}
 	return
 }
 

@@ -704,6 +704,188 @@ const docTemplate = `{
                 }
             }
         },
+        "/agent/v1/rider/exchange": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A2009 换电列表",
+                "operationId": "AgentExchangeList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "筛选对象 0:全部 1:个签 2:团签",
+                        "name": "aimed",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "description": "换电方案 0:全部 1:满电 2:非满电",
+                        "name": "alternative",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "UNKNOWN",
+                            "KAIXIN",
+                            "YUNDONG",
+                            "TUOBANG",
+                            "XILIULOUSERV"
+                        ],
+                        "type": "string",
+                        "x-enum-comments": {
+                            "CabinetBrandXiliulouServer": "西六楼服务器版"
+                        },
+                        "x-enum-varnames": [
+                            "CabinetBrandUnknown",
+                            "CabinetBrandKaixin",
+                            "CabinetBrandYundong",
+                            "CabinetBrandTuobang",
+                            "CabinetBrandXiliulouServer"
+                        ],
+                        "description": "电柜类型, KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
+                        "name": "brand",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "选择电柜ID",
+                        "name": "cabinetId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "筛选店员(手机号或姓名)",
+                        "name": "employee",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "筛选结束日期, 格式为yyyy-mm-dd, 例如: 2022-06-01",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "团签ID",
+                        "name": "enterpriseId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "筛选骑手姓名或电话",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "电池型号",
+                        "name": "model",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "电柜编号",
+                        "name": "serial",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "筛选开始日期, 格式为yyyy-mm-dd, 例如: 2022-06-01",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "description": "换电状态 0:进行中 1:成功 2:失败 (不携带此参数为全部)",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "选择门店ID",
+                        "name": "storeId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "换电类别 0:全部 1:电柜 2:门店",
+                        "name": "target",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "次数 (所选时间段内最小换电次数)",
+                        "name": "times",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.ExchangeManagerListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/agent/v1/rider/invite": {
             "get": {
                 "consumes": [
@@ -8286,6 +8468,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "筛选结束日期, 格式为yyyy-mm-dd, 例如: 2022-06-01",
                         "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "团签ID",
+                        "name": "enterpriseId",
                         "in": "query"
                     },
                     {
@@ -20880,6 +21068,10 @@ const docTemplate = `{
                 "end": {
                     "description": "筛选结束日期, 格式为yyyy-mm-dd, 例如: 2022-06-01",
                     "type": "string"
+                },
+                "enterpriseId": {
+                    "description": "团签ID",
+                    "type": "integer"
                 },
                 "keyword": {
                     "description": "筛选骑手姓名或电话",
