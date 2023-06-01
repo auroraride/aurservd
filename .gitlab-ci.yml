@@ -1,20 +1,35 @@
 stages:
-  - golint
+  - lint
+  - build
 
-build:
-  stage: golint
+before_script:
+  - go env -w GO111MODULE=on
+  - go env -w GOPROXY=https://goproxy.cn,direct
+  - go mod tidy
+  - export CI_COMMIT=$(git rev-parse HEAD)
+  - export CI_REPO_OWNER=auroraride
+  - export CI_REPO_NAME=aurservd
+  - export REVIEWDOG_INSECURE_SKIP_VERIFY=true
+  - export GITLAB_API="https://gitlab.liasica.com/api/v4"
+
+lint:
+  stage: lint
   only:
     - merge_requests
   tags:
     - shell
-  before_script:
-    - go env -w GO111MODULE=on
-    - go env -w GOPROXY=https://goproxy.cn,direct
-    - go mod tidy
-    - export CI_COMMIT=$(git rev-parse HEAD)
-    - export CI_REPO_OWNER=auroraride
-    - export CI_REPO_NAME=aurservd
-    - export REVIEWDOG_INSECURE_SKIP_VERIFY=true
-    - export GITLAB_API="https://gitlab.liasica.com/api/v4"
   script:
     - reviewdog -reporter=gitlab-mr-discussion
+
+build:
+  stage: build
+  only:
+    - merge_requests
+  tags:
+    - shell
+  script:
+    - echo "TODO BUILD"
+
+after_script:
+  - go clean -cache
+  - go clean -fuzzcache
