@@ -14,13 +14,15 @@ type PrepaymentOverview struct {
 
 type PrepaymentListReq struct {
 	PaginationReq
-
-	EnterpriseID uint64 `json:"enterpriseId" query:"enterpriseId"`
+	Payway Payway `json:"payway" query:"payway" enums:"0,1,2" validate:"lte=3,gte=0"` // 支付方式 0:全部 1:现金 2:微信
+	Start  string `json:"start" query:"start"`                                        // 开始日期
+	End    string `json:"end" query:"end"`                                            // 结束日期
 }
 
 type PrepaymentListRes struct {
-	Amount float64 `json:"amount"` // 金额
-	Name   string  `json:"name"`   // 操作人
-	Time   string  `json:"time"`   // 时间
-	Remark string  `json:"remark"` // 备注信息
+	Amount float64 `json:"amount"`                                    // 金额
+	Name   string  `json:"name"`                                      // 操作人
+	Time   string  `json:"time"`                                      // 时间
+	Remark string  `json:"remark"`                                    // 备注信息
+	Payway Payway  `json:"payway" enums:"1,2" validate:"gte=1,lte=2"` // 支付方式 1:现金 2:微信
 }
