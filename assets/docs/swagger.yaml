@@ -6956,6 +6956,16 @@ definitions:
         description: 审核状态
         type: integer
     type: object
+  model.SubscribeAlterReviewReq:
+    properties:
+      ids:
+        items:
+          type: integer
+        type: array
+      status:
+        description: 审批状态
+        type: integer
+    type: object
   model.SubscribeBusiness:
     properties:
       business:
@@ -7816,6 +7826,84 @@ paths:
               type: integer
             type: array
       summary: A2006 邀请骑手
+      tags:
+      - '[A]代理接口'
+  /agent/v1/rider/subscribe/apply:
+    get:
+      consumes:
+      - application/json
+      operationId: AgentSubscribeApplyList
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 结束时间
+        in: query
+        name: end
+        type: string
+      - description: 关键词
+        in: query
+        name: keyword
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 开始时间
+        in: query
+        name: start
+        type: string
+      - description: 审核状态
+        in: query
+        name: status
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.SubscribeAlterApplyListRsp'
+                  type: array
+              type: object
+      summary: A2008 申请加时列表
+      tags:
+      - '[A]代理接口'
+    post:
+      consumes:
+      - application/json
+      operationId: AgentReviewApply
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - description: 审核请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.SubscribeAlterReviewReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: A2007 审核加时
       tags:
       - '[A]代理接口'
   /agent/v1/signin:

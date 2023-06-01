@@ -93,3 +93,34 @@ func (*rider) Active(c echo.Context) (err error) {
 	service.NewEnterprise().Active(req, ctx.Agent)
 	return ctx.SendResponse(model.StatusResponse{Status: true})
 }
+
+// SubscribeApplyList  申请加时列表
+// @ID           AgentSubscribeApplyList
+// @Router       /agent/v1/rider/subscribe/apply [GET]
+// @Summary      A2008 申请加时列表
+// @Tags         [A]代理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Agent-Token  header  string  true  "代理校验token"
+// @Param        query  query   model.SubscribeAlterApplyReq  true  "查询条件"
+// @Success      200  {object}  model.PaginationRes{items=[]model.SubscribeAlterApplyListRsp}  "请求成功"
+func (*rider) SubscribeApplyList(c echo.Context) (err error) {
+	ctx, req := app.AgentContextAndBinding[model.SubscribeAlterApplyReq](c)
+	return ctx.SendResponse(service.NewEnterpriseWithAgent(ctx.Agent, ctx.Enterprise).SubscribeApplyList(req, ctx.Enterprise))
+}
+
+// ReviewApply  审核加时
+// @ID           AgentReviewApply
+// @Router       /agent/v1/rider/subscribe/apply [POST]
+// @Summary      A2007 审核加时
+// @Tags         [A]代理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Agent-Token  header  string  true  "代理校验token"
+// @Param        body  body   model.SubscribeAlterReviewReq  true  "审核请求"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*rider) ReviewApply(c echo.Context) (err error) {
+	ctx, req := app.AgentContextAndBinding[model.SubscribeAlterReviewReq](c)
+	service.NewEnterpriseWithAgent(ctx.Agent, ctx.Enterprise).SubscribeApplyReviewApply(req)
+	return ctx.SendResponse(model.StatusResponse{Status: true})
+}
