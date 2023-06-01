@@ -1445,26 +1445,26 @@
         },
         "/agent/v1/upload/image": {
             "post": {
-              "consumes": [
-                "application/json"
-              ],
-              "produces": [
-                "application/json"
-              ],
-              "tags": [
-                "[A]代理接口"
-              ],
-              "summary": "A1006 意见反馈上传图片",
-              "operationId": "AgentUploadImage",
-              "parameters": [
-                {
-                  "type": "string",
-                  "description": "代理校验token",
-                  "name": "X-Agent-Token",
-                  "in": "header",
-                  "required": true
-                },
-                {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A1006 意见反馈上传图片",
+                "operationId": "AgentUploadImage",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "type": "file",
                         "description": "图片文件",
                         "name": "images",

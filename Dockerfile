@@ -1,17 +1,20 @@
-FROM alpine:latest
+FROM --platform=linux/amd64 golang as builder
 
-RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories \
-    && mkdir /app \
-    && apk add --no-cache bash tzdata \
-    && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
-    && echo "Asia/Shanghai" > /etc/timezone \
-    && rm -rf /var/cache/apk/* \
-    && rm -rf /var/lib/apt/lists/*
-COPY ./build/release/aurservd /app/
-#COPY ./build/dlv /app/
-COPY ./docker-entrypoint.sh /usr/bin/docker-entrypoint.sh
-RUN chmod +x /usr/bin/docker-entrypoint.sh
+WORKDIR /usr/src/app
 
+COPY . .
+
+RUN git clone https://github.com/liasica/swag.git && cd swag/cmd/swag && go install .
+RUN mkdir -p ./assets/docs && \
+    go get ./... && \
+    swag init -g ./router/docs.go -d ./app --exclude ./app/service,./app/router,./app/middleware,./app/request -o ./assets/docs --md ./wiki --parseDependency && \
+    CGO_ENABLED=0 go build -trimpath -tags=jsoniter,poll_opt -gcflags "all=-N -l" -o /go/bin/aurservd cmd/aurservd/main.go
+
+
+FROM scratch
+COPY --from=builder /go/bin/aurservd /app/aurservd
+COPY --from=builder /usr/share/zoneinfo /usr/share/
+COPY --from=builder /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 WORKDIR /app
-
-ENTRYPOINT ["/usr/bin/docker-entrypoint.sh"]
+ENTRYPOINT ["/app/aurservd", "server"]
