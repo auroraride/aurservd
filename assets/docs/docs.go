@@ -400,7 +400,7 @@ const docTemplate = `{
                 "tags": [
                     "[A]代理接口"
                 ],
-                "summary": "A3001 充值概览",
+                "summary": "A3001 账户详情",
                 "operationId": "AgentPrepaymentOverview",
                 "parameters": [
                     {

@@ -7533,7 +7533,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.PrepaymentOverview'
-      summary: A3001 充值概览
+      summary: A3001 账户详情
       tags:
       - '[A]代理接口'
   /agent/v1/prepayment/pay/wxmp:
