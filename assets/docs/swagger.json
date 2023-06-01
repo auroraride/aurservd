@@ -194,7 +194,7 @@
                                     "$ref": "#/definitions/model.Pagination"
                                 },
                                 {
-                                    "type": "object",
+                                  "type": "object",
                                   "properties": {
                                     "items": {
                                       "type": "array",
@@ -221,7 +221,7 @@
           "tags": [
             "[A]代理接口"
           ],
-          "summary": "A5001 电柜列表",
+          "summary": "A5003 电柜列表",
           "operationId": "AgentCabinetList",
           "parameters": [
             {
@@ -264,6 +264,12 @@
               "type": "integer",
               "description": "当前页, 从1开始, 默认1",
               "name": "current",
+              "in": "query"
+            },
+            {
+              "type": "integer",
+              "description": "团签ID",
+              "name": "enterpriseId",
               "in": "query"
             },
             {
@@ -339,16 +345,16 @@
           "consumes": [
             "application/json"
           ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "[A]代理接口"
-                ],
-                "summary": "A5002 电柜详情",
-                "operationId": "AgentCabinetDetail",
-                "parameters": [
-                    {
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "[A]代理接口"
+          ],
+          "summary": "A5002 电柜详情",
+          "operationId": "AgentCabinetDetail",
+          "parameters": [
+            {
                         "type": "string",
                         "description": "代理校验token",
                         "name": "X-Agent-Token",
@@ -5048,26 +5054,32 @@
                         "in": "query"
                     },
                     {
-                        "type": "integer",
-                        "description": "城市ID",
-                        "name": "cityId",
-                        "in": "query"
+                      "type": "integer",
+                      "description": "城市ID",
+                      "name": "cityId",
+                      "in": "query"
                     },
-                    {
-                        "type": "integer",
-                        "description": "当前页, 从1开始, 默认1",
-                        "name": "current",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "是否智能柜 0:全部 1:是 2:否",
-                        "name": "intelligent",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "电池型号",
+                  {
+                    "type": "integer",
+                    "description": "当前页, 从1开始, 默认1",
+                    "name": "current",
+                    "in": "query"
+                  },
+                  {
+                    "type": "integer",
+                    "description": "团签ID",
+                    "name": "enterpriseId",
+                    "in": "query"
+                  },
+                  {
+                    "type": "integer",
+                    "description": "是否智能柜 0:全部 1:是 2:否",
+                    "name": "intelligent",
+                    "in": "query"
+                  },
+                  {
+                    "type": "string",
+                    "description": "电池型号",
                         "name": "model",
                         "in": "query"
                     },
@@ -15760,16 +15772,16 @@
             "properties": {
                 "enable": {
                     "description": "启用状态",
-                    "type": "boolean"
+                  "type": "boolean"
                 },
-                "id": {
-                    "description": "管理员ID, 不携带此字段是新增, 携带此字段是修改",
-                    "type": "integer"
-                },
-                "name": {
-                  "description": "姓名",
-                  "type": "string"
-                },
+              "id": {
+                "description": "管理员ID, 不携带此字段是新增, 携带此字段是修改",
+                "type": "integer"
+              },
+              "name": {
+                "description": "姓名",
+                "type": "string"
+              },
               "password": {
                 "description": "密码",
                 "type": "string"
@@ -15848,16 +15860,16 @@
           "name",
           "phone"
         ],
-            "properties": {
-                "enterpriseId": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "phone": {
-                    "type": "string"
-                }
+        "properties": {
+          "enterpriseId": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          }
             }
         },
         "model.AgentMeta": {

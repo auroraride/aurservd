@@ -7537,6 +7537,10 @@ paths:
           in: query
           name: current
           type: integer
+        - description: 团签ID
+          in: query
+          name: enterpriseId
+          type: integer
         - description: 是否智能柜 0:全部 1:是 2:否
           in: query
           name: intelligent
@@ -7579,7 +7583,7 @@ paths:
                       $ref: '#/definitions/model.AgentCabinetDetailRes'
                     type: array
                 type: object
-      summary: A5001 电柜列表
+      summary: A5003 电柜列表
       tags:
         - '[A]代理接口'
   /agent/v1/cabinet/{serial}:
@@ -7590,14 +7594,14 @@ paths:
       parameters:
         - description: 代理校验token
           in: header
-        name: X-Agent-Token
-        required: true
-        type: string
-      - description: 电柜编号
-        in: path
-        name: serial
-        required: true
-        type: string
+          name: X-Agent-Token
+          required: true
+          type: string
+        - description: 电柜编号
+          in: path
+          name: serial
+          required: true
+          type: string
       produces:
       - application/json
       responses:
@@ -10679,7 +10683,7 @@ paths:
       - application/json
       operationId: CabinetList
       parameters:
-      - description: 管理员校验token
+        - description: 管理员校验token
         in: header
         name: X-Manager-Token
         required: true
@@ -10697,28 +10701,32 @@ paths:
         x-enum-comments:
           CabinetBrandXiliulouServer: 西六楼服务器版
         x-enum-varnames:
-        - CabinetBrandUnknown
+          - CabinetBrandUnknown
         - CabinetBrandKaixin
-        - CabinetBrandYundong
-        - CabinetBrandTuobang
-        - CabinetBrandXiliulouServer
-      - description: 城市ID
-        in: query
-        name: cityId
-        type: integer
-      - description: 当前页, 从1开始, 默认1
-        in: query
-        name: current
-        type: integer
-      - description: 是否智能柜 0:全部 1:是 2:否
-        in: query
-        name: intelligent
-        type: integer
-      - description: 电池型号
-        in: query
-        name: model
-        type: string
-      - description: 电柜名称
+          - CabinetBrandYundong
+          - CabinetBrandTuobang
+          - CabinetBrandXiliulouServer
+        - description: 城市ID
+          in: query
+          name: cityId
+          type: integer
+        - description: 当前页, 从1开始, 默认1
+          in: query
+          name: current
+          type: integer
+        - description: 团签ID
+          in: query
+          name: enterpriseId
+          type: integer
+        - description: 是否智能柜 0:全部 1:是 2:否
+          in: query
+          name: intelligent
+          type: integer
+        - description: 电池型号
+          in: query
+          name: model
+          type: string
+        - description: 电柜名称
         in: query
         name: name
         type: string

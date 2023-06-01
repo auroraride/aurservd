@@ -101,14 +101,15 @@ type CabinetItem struct {
 type CabinetQueryReq struct {
 	PaginationReq
 
-	Serial      *string               `json:"serial" query:"serial"`           // 电柜编号
-	Name        *string               `json:"name" query:"name"`               // 电柜名称
-	CityID      *uint64               `json:"cityId" query:"cityId"`           // 城市ID
-	Brand       *adapter.CabinetBrand `json:"brand" query:"brand"`             // 电柜型号 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
-	Status      *uint8                `json:"status" query:"status"`           // 电柜状态
-	Model       *string               `json:"model" query:"model"`             // 电池型号
-	Online      uint8                 `json:"online" query:"online"`           // 在线状态
-	Intelligent uint8                 `json:"intelligent" query:"intelligent"` // 是否智能柜 0:全部 1:是 2:否
+	Serial       *string               `json:"serial" query:"serial"`             // 电柜编号
+	Name         *string               `json:"name" query:"name"`                 // 电柜名称
+	CityID       *uint64               `json:"cityId" query:"cityId"`             // 城市ID
+	Brand        *adapter.CabinetBrand `json:"brand" query:"brand"`               // 电柜型号 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
+	Status       *uint8                `json:"status" query:"status"`             // 电柜状态
+	Model        *string               `json:"model" query:"model"`               // 电池型号
+	Online       uint8                 `json:"online" query:"online"`             // 在线状态
+	Intelligent  uint8                 `json:"intelligent" query:"intelligent"`   // 是否智能柜 0:全部 1:是 2:否
+	EnterpriseID *uint64               `json:"enterpriseId" query:"enterpriseId"` // 团签ID
 }
 
 // CabinetModifyReq 电柜修改请求

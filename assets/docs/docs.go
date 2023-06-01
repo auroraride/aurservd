@@ -228,7 +228,7 @@ const docTemplate = `{
                 "tags": [
                     "[A]代理接口"
                 ],
-                "summary": "A5001 电柜列表",
+                "summary": "A5003 电柜列表",
                 "operationId": "AgentCabinetList",
                 "parameters": [
                     {
@@ -271,6 +271,12 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "当前页, 从1开始, 默认1",
                         "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "团签ID",
+                        "name": "enterpriseId",
                         "in": "query"
                     },
                     {
@@ -5064,6 +5070,12 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "当前页, 从1开始, 默认1",
                         "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "团签ID",
+                        "name": "enterpriseId",
                         "in": "query"
                     },
                     {

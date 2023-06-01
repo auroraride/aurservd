@@ -20,7 +20,7 @@ var Cabinet = new(cabinet)
 // List 电柜列表
 // @ID           AgentCabinetList
 // @Router       /agent/v1/cabinet [GET]
-// @Summary      A5001 电柜列表
+// @Summary      A5003 电柜列表
 // @Tags         [A]代理接口
 // @Accept       json
 // @Produce      json
@@ -29,7 +29,18 @@ var Cabinet = new(cabinet)
 // @Success      200  {object}  model.PaginationRes{items=[]model.AgentCabinetDetailRes}  "请求成功"
 func (*cabinet) List(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.CabinetQueryReq](c)
-	return ctx.SendResponse(service.NewAgentCabinet().List(ctx.Agent.EnterpriseID, req))
+	return ctx.SendResponse(service.NewCabinet().List(&model.CabinetQueryReq{
+		PaginationReq: model.PaginationReq{},
+		Serial:        req.Serial,
+		Name:          req.Name,
+		CityID:        req.CityID,
+		Brand:         req.Brand,
+		Status:        req.Status,
+		Model:         req.Model,
+		Online:        req.Online,
+		Intelligent:   req.Intelligent,
+		EnterpriseID:  req.EnterpriseID,
+	}))
 }
 
 // Detail
