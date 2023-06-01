@@ -60,15 +60,30 @@ func (s *prepaymentService) Overview(en *ent.Enterprise) (res model.PrepaymentOv
 	return
 }
 
-func (s *prepaymentService) List(req *model.PrepaymentListReq) *model.PaginationRes {
+func (s *prepaymentService) List(enterpriseID uint64, req *model.PrepaymentListReq) *model.PaginationRes {
 	q := s.orm.QueryNotDeleted().
-		Where(enterpriseprepayment.EnterpriseID(req.EnterpriseID)).
+		Where(enterpriseprepayment.EnterpriseID(enterpriseID)).
 		Order(ent.Desc(enterpriseprepayment.FieldCreatedAt))
+
+	// 筛选时间段
+	if req.Start != "" {
+		q.Where(enterpriseprepayment.CreatedAtGTE(tools.NewTime().ParseDateStringX(req.Start)))
+	}
+	if req.End != "" {
+		q.Where(enterpriseprepayment.CreatedAtLT(tools.NewTime().ParseNextDateStringX(req.End)))
+	}
+
+	// 筛选支付方式
+	if req.Payway != 0 {
+		q.Where(enterpriseprepayment.Payway(req.Payway))
+	}
+
 	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.EnterprisePrepayment) model.PrepaymentListRes {
 		res := model.PrepaymentListRes{
 			Amount: item.Amount,
 			Time:   item.CreatedAt.Format(carbon.DateTimeLayout),
 			Remark: item.Remark,
+			Payway: item.Payway,
 		}
 		res.Name = "平台管理员"
 		return res
