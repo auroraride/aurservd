@@ -40,7 +40,7 @@ func loadAgentRoutes() {
 	// auth.POST("/rider/alter", aapi.Rider.Alter)
 	// auth.GET("/rider/:id", aapi.Rider.Detail)
 
-	// auth.GET("/prepayment/overview", aapi.Prepayment.Overview)
+	auth.GET("/prepayment/overview", aapi.Prepayment.Overview)
 	auth.GET("/prepayment", aapi.Prepayment.List)
 	auth.POST("/prepayment/pay/wxmp", aapi.Prepayment.WechatMiniprogramPay)
 

@@ -20,7 +20,7 @@ var Prepayment = new(prepayment)
 // Overview
 // @ID           AgentPrepaymentOverview
 // @Router       /agent/v1/prepayment/overview [GET]
-// @Summary      A3001 充值概览
+// @Summary      A3001 账户详情
 // @Tags         [A]代理接口
 // @Accept       json
 // @Produce      json
