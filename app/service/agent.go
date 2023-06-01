@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"strconv"
 
+	"entgo.io/ent/dialect/sql"
 	"github.com/golang-module/carbon/v2"
 
 	"github.com/auroraride/aurservd/app/model"
@@ -251,4 +252,47 @@ func (s *agentService) Profile(ag *ent.Agent, en *ent.Enterprise) model.AgentPro
 		Prices:    prices,
 		Days:      en.Days,
 	}
+}
+
+func (s *agentService) Index(ag *ent.Agent, en *ent.Enterprise) *model.AgentIndexRes {
+	var v []model.AgentIndexRes
+	ent.Database.Subscribe.QueryNotDeleted().Where(subscribe.EnterpriseID(en.ID)).Modify(
+		func(s *sql.Selector) {
+			// 统计骑手数量
+			s.Select(
+				// // 新签骑手
+				// sql.As("COUNT(CASE WHEN status IN ("+
+				// 	strconv.FormatUint(uint64(model.SubscribeStatusUsing), 10)+","+
+				// 	strconv.FormatUint(uint64(model.SubscribeStatusUnSubscribed), 10)+
+				// 	") THEN rider_id END)", "new_rental_count"),
+				// 退签骑手
+				sql.As("COUNT(CASE WHEN status="+
+					strconv.FormatUint(uint64(model.SubscribeStatusUnSubscribed), 10)+
+					" THEN rider_id END)", "quitRiderTotal"),
+				// 计费中骑手
+				sql.As("COUNT(CASE WHEN status = "+
+					strconv.FormatUint(uint64(model.SubscribeStatusUsing), 10)+
+					"  THEN rider_id END)", "billingRiderTotal"),
+				// 临期
+				sql.As("COUNT(CASE WHEN remaining > 0 AND remaining <= 3 THEN rider_id END)", "expiringRiderTotal"),
+				// 总数 =计费中+未激活
+				sql.As("COUNT(CASE WHEN status IN ("+
+					strconv.FormatUint(uint64(model.SubscribeStatusUsing), 10)+","+
+					strconv.FormatUint(uint64(model.SubscribeStatusInactive), 10)+
+					") THEN rider_id END)", "riderTotal"),
+			)
+		},
+	).ScanX(s.ctx, &v)
+	if len(v) == 0 {
+		return &model.AgentIndexRes{
+			EnterpriseAmountSummary:  model.EnterpriseAmountSummary{},
+			EnterpriseRiderSummary:   model.EnterpriseRiderSummary{},
+			EnterpriseBatterySummary: model.EnterpriseBatterySummary{},
+		}
+	}
+
+	v[0].Balance = en.Balance
+	// 新签=临期+计费中
+	v[0].NewRiderTotal = v[0].BillingRiderTotal + v[0].ExpiringRiderTotal
+	return &v[0]
 }

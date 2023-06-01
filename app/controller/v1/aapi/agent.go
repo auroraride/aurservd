@@ -90,6 +90,20 @@ func (*rider) Invite(c echo.Context) (err error) {
 	return ctx.SendResponse(service.NewminiProgram().Invite(ctx.Enterprise, req))
 }
 
+// Index 首页数据
+// @ID           AgentIndex
+// @Router       /agent/v1/index [GET]
+// @Summary      A2007 首页数据
+// @Tags         [A]代理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Agent-Token  header  string  true  "代理校验token"
+// @Success      200  {object}  []byte  "请求成功"
+func (*agent) Index(c echo.Context) (err error) {
+	ctx := app.ContextX[app.AgentContext](c)
+	return ctx.SendResponse(service.NewAgent(ctx.Agent, ctx.Enterprise).Index(ctx.Agent, ctx.Enterprise))
+}
+
 // Feedback 意见反馈
 // @ID           AgentFeedback
 // @Router       /agent/v1/feedback [POST]
