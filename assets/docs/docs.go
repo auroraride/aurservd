@@ -704,6 +704,50 @@ const docTemplate = `{
                 }
             }
         },
+        "/agent/v1/rider/invite": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A2006 邀请骑手",
+                "operationId": "AgentRiderInvite",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "邀请骑手",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.EnterpriseRiderInviteReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/agent/v1/rider/{id}": {
             "get": {
                 "consumes": [
@@ -20325,6 +20369,9 @@ const docTemplate = `{
                     "type": "integer"
                 }
             }
+        },
+        "model.EnterpriseRiderInviteReq": {
+            "type": "object"
         },
         "model.EnterpriseRiderSubscribeChooseReq": {
             "type": "object",
