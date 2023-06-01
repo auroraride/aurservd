@@ -3905,6 +3905,8 @@ definitions:
     - phone
     - stationId
     type: object
+  model.EnterpriseRiderInviteReq:
+    type: object
   model.EnterpriseRiderSubscribeChooseReq:
     properties:
       model:
@@ -7686,6 +7688,35 @@ paths:
           schema:
             $ref: '#/definitions/model.RiderItemSubscribe'
       summary: A2003 延长天数
+      tags:
+      - '[A]代理接口'
+  /agent/v1/rider/invite:
+    get:
+      consumes:
+      - application/json
+      operationId: AgentRiderInvite
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - description: 邀请骑手
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.EnterpriseRiderInviteReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              type: integer
+            type: array
+      summary: A2006 邀请骑手
       tags:
       - '[A]代理接口'
   /agent/v1/signin:

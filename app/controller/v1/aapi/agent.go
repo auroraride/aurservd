@@ -74,3 +74,18 @@ func (*agent) BatteryList(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.BatterySearchReq](c)
 	return ctx.SendResponse(service.NewSelection().BatterySerialSearch(req))
 }
+
+// Invite 邀请骑手
+// @ID           AgentRiderInvite
+// @Router       /agent/v1/rider/invite [GET]
+// @Summary      A2006 邀请骑手
+// @Tags         [A]代理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Agent-Token  header  string  true  "代理校验token"
+// @Param        body  body   model.EnterpriseRiderInviteReq  true  "邀请骑手"
+// @Success      200  {object}  []byte  "请求成功"
+func (*rider) Invite(c echo.Context) (err error) {
+	ctx, req := app.AgentContextAndBinding[model.EnterpriseRiderInviteReq](c)
+	return ctx.SendResponse(service.NewminiProgram().Invite(ctx.Enterprise, req))
+}

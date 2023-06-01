@@ -2,13 +2,17 @@ package service
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/silenceper/wechat/v2"
 	"github.com/silenceper/wechat/v2/cache"
 	"github.com/silenceper/wechat/v2/miniprogram"
 	"github.com/silenceper/wechat/v2/miniprogram/config"
+	"github.com/silenceper/wechat/v2/miniprogram/qrcode"
 
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ar"
+	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/pkg/snag"
 )
 
@@ -58,4 +62,15 @@ func (s *miniProgramService) GetAuth(code string) string {
 	}
 	return session.OpenID
 
+}
+
+// Invite 邀请骑手二维码
+func (s *miniProgramService) Invite(enterprise *ent.Enterprise, req *model.EnterpriseRiderInviteReq) []byte {
+	url := fmt.Sprintf("s=%d&e=%d", req.StationID, enterprise.ID)
+	coderParam := qrcode.QRCoder{Scene: url}
+	code, err := s.MiniProgram.GetQRCode().GetWXACodeUnlimit(coderParam)
+	if err != nil {
+		snag.Panic("生成二维码失败")
+	}
+	return code
 }
