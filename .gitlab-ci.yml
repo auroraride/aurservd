@@ -23,6 +23,8 @@ lint:
 
 build:
   stage: build
+  needs:
+    - lint
   only:
     - merge_requests
   tags:
