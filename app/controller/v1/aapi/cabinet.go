@@ -39,7 +39,7 @@ func (*cabinet) List(c echo.Context) (err error) {
 		Model:         req.Model,
 		Online:        req.Online,
 		Intelligent:   req.Intelligent,
-		EnterpriseID:  req.EnterpriseID,
+		EnterpriseID:  &ctx.Enterprise.ID,
 	}))
 }
 

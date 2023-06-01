@@ -355,16 +355,16 @@
           "operationId": "AgentCabinetDetail",
           "parameters": [
             {
-                        "type": "string",
-                        "description": "代理校验token",
-                        "name": "X-Agent-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "电柜编号",
-                        "name": "serial",
+              "type": "string",
+              "description": "代理校验token",
+              "name": "X-Agent-Token",
+              "in": "header",
+              "required": true
+            },
+            {
+              "type": "string",
+              "description": "电柜编号",
+              "name": "serial",
                         "in": "path",
                         "required": true
                     }
@@ -5049,16 +5049,16 @@
                             "CabinetBrandTuobang",
                             "CabinetBrandXiliulouServer"
                         ],
-                        "description": "电柜型号 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
-                        "name": "brand",
-                        "in": "query"
-                    },
-                    {
-                      "type": "integer",
-                      "description": "城市ID",
-                      "name": "cityId",
+                      "description": "电柜型号 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
+                      "name": "brand",
                       "in": "query"
                     },
+                  {
+                    "type": "integer",
+                    "description": "城市ID",
+                    "name": "cityId",
+                    "in": "query"
+                  },
                   {
                     "type": "integer",
                     "description": "当前页, 从1开始, 默认1",
@@ -5080,16 +5080,16 @@
                   {
                     "type": "string",
                     "description": "电池型号",
-                        "name": "model",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "电柜名称",
-                        "name": "name",
-                        "in": "query"
-                    },
-                    {
+                    "name": "model",
+                    "in": "query"
+                  },
+                  {
+                    "type": "string",
+                    "description": "电柜名称",
+                    "name": "name",
+                    "in": "query"
+                  },
+                  {
                         "type": "integer",
                         "description": "在线状态",
                         "name": "online",
@@ -15770,10 +15770,10 @@
         "controller.FJJManagerModifyReq": {
             "type": "object",
             "properties": {
-                "enable": {
-                    "description": "启用状态",
-                  "type": "boolean"
-                },
+              "enable": {
+                "description": "启用状态",
+                "type": "boolean"
+              },
               "id": {
                 "description": "管理员ID, 不携带此字段是新增, 携带此字段是修改",
                 "type": "integer"
@@ -15870,16 +15870,16 @@
           "phone": {
             "type": "string"
           }
-            }
-        },
-        "model.AgentMeta": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
+        }
+      },
+      "model.AgentMeta": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
                 },
                 "phone": {
                     "type": "string"

@@ -10684,17 +10684,17 @@ paths:
       operationId: CabinetList
       parameters:
         - description: 管理员校验token
-        in: header
-        name: X-Manager-Token
-        required: true
-        type: string
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
       - description: 电柜型号 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
         enum:
-        - UNKNOWN
+          - UNKNOWN
         - KAIXIN
         - YUNDONG
-        - TUOBANG
-        - XILIULOUSERV
+          - TUOBANG
+          - XILIULOUSERV
         in: query
         name: brand
         type: string
@@ -10702,7 +10702,7 @@ paths:
           CabinetBrandXiliulouServer: 西六楼服务器版
         x-enum-varnames:
           - CabinetBrandUnknown
-        - CabinetBrandKaixin
+          - CabinetBrandKaixin
           - CabinetBrandYundong
           - CabinetBrandTuobang
           - CabinetBrandXiliulouServer
@@ -10727,16 +10727,16 @@ paths:
           name: model
           type: string
         - description: 电柜名称
-        in: query
-        name: name
-        type: string
-      - description: 在线状态
-        in: query
-        name: online
-        type: integer
-      - description: 每页数据, 默认20
-        in: query
-        name: pageSize
+          in: query
+          name: name
+          type: string
+        - description: 在线状态
+          in: query
+          name: online
+          type: integer
+        - description: 每页数据, 默认20
+          in: query
+          name: pageSize
         type: integer
       - description: 电柜编号
         in: query
