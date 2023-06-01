@@ -308,6 +308,53 @@
                         "name": "X-Agent-Token",
                         "in": "header",
                         "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束日期",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 3,
+                        "minimum": 0,
+                        "enum": [
+                            0,
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "PaywayAgentWxMiniprogram": "代理商小程序",
+                            "PaywayCash": "现金支付",
+                            "PaywayUnknown": "未知"
+                        },
+                        "x-enum-varnames": [
+                            "PaywayUnknown",
+                            "PaywayCash",
+                            "PaywayAgentWxMiniprogram"
+                        ],
+                        "description": "支付方式 0:全部 1:现金 2:微信",
+                        "name": "payway",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始日期",
+                        "name": "start",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -21438,6 +21485,24 @@
                 }
             }
         },
+        "model.Payway": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2
+            ],
+            "x-enum-comments": {
+                "PaywayAgentWxMiniprogram": "代理商小程序",
+                "PaywayCash": "现金支付",
+                "PaywayUnknown": "未知"
+            },
+            "x-enum-varnames": [
+                "PaywayUnknown",
+                "PaywayCash",
+                "PaywayAgentWxMiniprogram"
+            ]
+        },
         "model.Person": {
             "type": "object",
             "properties": {
@@ -22087,6 +22152,20 @@
                 "name": {
                     "description": "操作人",
                     "type": "string"
+                },
+                "payway": {
+                    "description": "支付方式 1:现金 2:微信",
+                    "maximum": 2,
+                    "minimum": 1,
+                    "enum": [
+                        1,
+                        2
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Payway"
+                        }
+                    ]
                 },
                 "remark": {
                     "description": "备注信息",

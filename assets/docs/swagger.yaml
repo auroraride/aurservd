@@ -4671,6 +4671,20 @@ definitions:
         description: 兑换比例(实际抵扣金额 = 兑换比例 × 积分数量)
         type: number
     type: object
+  model.Payway:
+    enum:
+    - 0
+    - 1
+    - 2
+    type: integer
+    x-enum-comments:
+      PaywayAgentWxMiniprogram: 代理商小程序
+      PaywayCash: 现金支付
+      PaywayUnknown: 未知
+    x-enum-varnames:
+    - PaywayUnknown
+    - PaywayCash
+    - PaywayAgentWxMiniprogram
   model.Person:
     properties:
       auth_face:
@@ -5120,6 +5134,15 @@ definitions:
       name:
         description: 操作人
         type: string
+      payway:
+        allOf:
+        - $ref: '#/definitions/model.Payway'
+        description: 支付方式 1:现金 2:微信
+        enum:
+        - 1
+        - 2
+        maximum: 2
+        minimum: 1
       remark:
         description: 备注信息
         type: string
@@ -7440,6 +7463,40 @@ paths:
         in: header
         name: X-Agent-Token
         required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 结束日期
+        in: query
+        name: end
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 支付方式 0:全部 1:现金 2:微信
+        enum:
+        - 0
+        - 1
+        - 2
+        in: query
+        maximum: 3
+        minimum: 0
+        name: payway
+        type: integer
+        x-enum-comments:
+          PaywayAgentWxMiniprogram: 代理商小程序
+          PaywayCash: 现金支付
+          PaywayUnknown: 未知
+        x-enum-varnames:
+        - PaywayUnknown
+        - PaywayCash
+        - PaywayAgentWxMiniprogram
+      - description: 开始日期
+        in: query
+        name: start
         type: string
       produces:
       - application/json
