@@ -95,10 +95,10 @@ func loadRideRoutes() {
 	g.POST("/contact", rapi.Rider.Contact)                // 编辑紧急联系人
 
 	// 检测是否需要实名验证以及补充紧急联系人
-	// g.Use(middleware.RiderRequireAuthAndContact())
+	g.Use(middleware.RiderRequireAuthAndContact())
 
 	// 检测是否需要人脸识别
-	// g.Use(middleware.RiderFaceMiddleware())
+	g.Use(middleware.RiderFaceMiddleware())
 
 	g.GET("/demo", rapi.Rider.Demo)       // 测试空白页面
 	g.GET("/profile", rapi.Rider.Profile) // 获取用户信息
@@ -137,13 +137,9 @@ func loadRideRoutes() {
 	g.GET("/business/pause/info", rapi.Business.PauseInfo)
 	g.GET("/business/allocated/:id", rapi.Business.Allocated)
 	g.GET("/business/subscribe/signed/:id", rapi.Business.SubscribeSigned)
-	// 小程序骑手团签信息
-	g.GET("/enterprise/info", rapi.Enterprise.RiderEnterpriseInfo)
 	// 小程序加入团签
 	g.POST("/enterprise/join", rapi.Enterprise.JoinEnterprise)
 
-	// App申请加时骑手团签信息
-	g.GET("/enterprise/subscribe/info", rapi.Enterprise.GetSubscribeInfo)
 	// 申请加时
 	g.POST("/enterprise/subscribe/add", rapi.Enterprise.ApplyAddSubscribeTime)
 	// 申请列表
