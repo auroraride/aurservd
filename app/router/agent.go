@@ -44,8 +44,10 @@ func loadAgentRoutes() {
 	auth.GET("/rider/exchange", aapi.Rider.ExchangeList)
 	// 电柜列表
 	auth.GET("/cabinet", aapi.Cabinet.List)
-	// auth.POST("/rider/alter", aapi.Rider.Alter)
-	// auth.GET("/rider/:id", aapi.Rider.Detail)
+	// 意见反馈
+	auth.POST("/feedback", aapi.Agent.Feedback)
+	// 上传图片
+	auth.POST("/uploadImage", aapi.Agent.UploadImage)
 
 	auth.GET("/prepayment/overview", aapi.Prepayment.Overview)
 	auth.GET("/prepayment", aapi.Prepayment.List)

@@ -302,3 +302,17 @@ func (*enterprise) AgentDelete(c echo.Context) (err error) {
 	service.NewAgent(ctx.Modifier).Delete(req)
 	return ctx.SendResponse()
 }
+
+// FeedbackList 反馈列表
+// @ID           ManagerEnterpriseFeedbackList
+// @Router       /manager/v1/enterprise/feedback [GET]
+// @Summary      M9030 反馈列表
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        body  body  model.FeedbackListReq true  "反馈列表请求"
+// @Success      200  {object}  model.PaginationRes{items=[]model.FeedbackDetail}
+func (*enterprise) FeedbackList(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[model.FeedbackListReq](c)
+	return ctx.SendResponse(service.NewFeedback().FeedbackList(req))
+}

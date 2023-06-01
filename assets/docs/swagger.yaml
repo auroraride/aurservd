@@ -347,9 +347,9 @@ definitions:
       health:
         description: 健康状态, 0:离线 1:在线 2:故障
         enum:
-          - 0
-          - 1
-          - 2
+        - 0
+        - 1
+        - 2
         type: integer
       name:
         description: 电柜名称
@@ -362,8 +362,8 @@ definitions:
       status:
         description: 投放状态, 1:运营中 2:维护中
         enum:
-          - 1
-          - 2
+        - 1
+        - 2
         type: integer
     type: object
   model.AgentCreateReq:
@@ -375,7 +375,7 @@ definitions:
       phone:
         type: string
     required:
-      - enterpriseId
+    - enterpriseId
     - name
     - phone
     type: object
@@ -4298,6 +4298,79 @@ definitions:
         description: 实名认证跳转链接
         type: string
     type: object
+  model.FeedbackDetail:
+    properties:
+      content:
+        description: 反馈内容
+        type: string
+      createdAt:
+        description: 反馈时间
+        type: string
+      enterpriseContactName:
+        description: 反馈用户团签联系人
+        type: string
+      enterpriseContactPhone:
+        description: 反馈用户团签联系电话
+        type: string
+      enterpriseID:
+        description: 反馈用户团签id
+        type: integer
+      enterpriseName:
+        description: 反馈用户团签名称
+        type: string
+      id:
+        description: 反馈ID
+        type: integer
+      type:
+        description: 反馈类型
+        type: integer
+      url:
+        description: 反馈图片
+        items:
+          type: string
+        type: array
+    type: object
+  model.FeedbackListReq:
+    properties:
+      current:
+        description: 当前页, 从1开始, 默认1
+        type: integer
+      endTime:
+        description: 反馈结束时间
+        type: string
+      enterpriseID:
+        description: 反馈用户团签id
+        type: integer
+      keyword:
+        description: 关键词
+        type: string
+      pageSize:
+        description: 每页数据, 默认20
+        type: integer
+      startTime:
+        description: 反馈开始时间
+        type: string
+      type:
+        description: 反馈类型
+        type: integer
+    type: object
+  model.FeedbackReq:
+    properties:
+      content:
+        description: 反馈内容
+        type: string
+      enterpriseID:
+        description: 反馈用户团签id
+        type: integer
+      type:
+        description: 反馈类型
+        type: integer
+      url:
+        description: 反馈图片
+        items:
+          type: string
+        type: array
+    type: object
   model.IDPostReq:
     properties:
       id:
@@ -7490,118 +7563,118 @@ paths:
           description: 请求成功
           schema:
             allOf:
-              - $ref: '#/definitions/model.Pagination'
-              - properties:
+            - $ref: '#/definitions/model.Pagination'
+            - properties:
+                items:
                   items:
-                    items:
-                      $ref: '#/definitions/model.StatementUsageRes'
-                    type: array
-                type: object
+                    $ref: '#/definitions/model.StatementUsageRes'
+                  type: array
+              type: object
       summary: A4002 使用明细
       tags:
-        - '[A]代理接口'
+      - '[A]代理接口'
   /agent/v1/cabinet:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: AgentCabinetList
       parameters:
-        - description: 代理校验token
-          in: header
-          name: X-Agent-Token
-          required: true
-          type: string
-        - description: 电柜型号 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
-          enum:
-            - UNKNOWN
-            - KAIXIN
-            - YUNDONG
-            - TUOBANG
-            - XILIULOUSERV
-          in: query
-          name: brand
-          type: string
-          x-enum-comments:
-            CabinetBrandXiliulouServer: 西六楼服务器版
-          x-enum-varnames:
-            - CabinetBrandUnknown
-            - CabinetBrandKaixin
-            - CabinetBrandYundong
-            - CabinetBrandTuobang
-            - CabinetBrandXiliulouServer
-        - description: 城市ID
-          in: query
-          name: cityId
-          type: integer
-        - description: 当前页, 从1开始, 默认1
-          in: query
-          name: current
-          type: integer
-        - description: 团签ID
-          in: query
-          name: enterpriseId
-          type: integer
-        - description: 是否智能柜 0:全部 1:是 2:否
-          in: query
-          name: intelligent
-          type: integer
-        - description: 电池型号
-          in: query
-          name: model
-          type: string
-        - description: 电柜名称
-          in: query
-          name: name
-          type: string
-        - description: 在线状态
-          in: query
-          name: online
-          type: integer
-        - description: 每页数据, 默认20
-          in: query
-          name: pageSize
-          type: integer
-        - description: 电柜编号
-          in: query
-          name: serial
-          type: string
-        - description: 电柜状态
-          in: query
-          name: status
-          type: integer
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - description: 电柜型号 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
+        enum:
+        - UNKNOWN
+        - KAIXIN
+        - YUNDONG
+        - TUOBANG
+        - XILIULOUSERV
+        in: query
+        name: brand
+        type: string
+        x-enum-comments:
+          CabinetBrandXiliulouServer: 西六楼服务器版
+        x-enum-varnames:
+        - CabinetBrandUnknown
+        - CabinetBrandKaixin
+        - CabinetBrandYundong
+        - CabinetBrandTuobang
+        - CabinetBrandXiliulouServer
+      - description: 城市ID
+        in: query
+        name: cityId
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 团签ID
+        in: query
+        name: enterpriseId
+        type: integer
+      - description: 是否智能柜 0:全部 1:是 2:否
+        in: query
+        name: intelligent
+        type: integer
+      - description: 电池型号
+        in: query
+        name: model
+        type: string
+      - description: 电柜名称
+        in: query
+        name: name
+        type: string
+      - description: 在线状态
+        in: query
+        name: online
+        type: integer
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 电柜编号
+        in: query
+        name: serial
+        type: string
+      - description: 电柜状态
+        in: query
+        name: status
+        type: integer
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
           schema:
             allOf:
-              - $ref: '#/definitions/model.PaginationRes'
-              - properties:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
                   items:
-                    items:
-                      $ref: '#/definitions/model.AgentCabinetDetailRes'
-                    type: array
-                type: object
+                    $ref: '#/definitions/model.AgentCabinetDetailRes'
+                  type: array
+              type: object
       summary: A5003 电柜列表
       tags:
-        - '[A]代理接口'
+      - '[A]代理接口'
   /agent/v1/cabinet/{serial}:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: AgentCabinetDetail
       parameters:
-        - description: 代理校验token
-          in: header
-          name: X-Agent-Token
-          required: true
-          type: string
-        - description: 电柜编号
-          in: path
-          name: serial
-          required: true
-          type: string
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - description: 电柜编号
+        in: path
+        name: serial
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -7610,6 +7683,33 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: A5002 电柜详情
+      tags:
+      - '[A]代理接口'
+  /agent/v1/feedback:
+    post:
+      consumes:
+      - application/json
+      operationId: AgentFeedback
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - description: 反馈内容
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.FeedbackReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            type: boolean
+      summary: A1005 意见反馈
       tags:
       - '[A]代理接口'
   /agent/v1/getopenid:
@@ -8283,6 +8383,34 @@ paths:
                   type: array
               type: object
       summary: A6001 出入库明细
+      tags:
+      - '[A]代理接口'
+  /agent/v1/upload/image:
+    post:
+      consumes:
+      - application/json
+      operationId: AgentUploadImage
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - description: 图片文件
+        in: formData
+        name: images
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              type: string
+            type: array
+      summary: A1006 意见反馈上传图片
       tags:
       - '[A]代理接口'
   /common/battery/model:
@@ -10683,60 +10811,60 @@ paths:
       - application/json
       operationId: CabinetList
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
       - description: 电柜型号 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
         enum:
-          - UNKNOWN
+        - UNKNOWN
         - KAIXIN
         - YUNDONG
-          - TUOBANG
-          - XILIULOUSERV
+        - TUOBANG
+        - XILIULOUSERV
         in: query
         name: brand
         type: string
         x-enum-comments:
           CabinetBrandXiliulouServer: 西六楼服务器版
         x-enum-varnames:
-          - CabinetBrandUnknown
-          - CabinetBrandKaixin
-          - CabinetBrandYundong
-          - CabinetBrandTuobang
-          - CabinetBrandXiliulouServer
-        - description: 城市ID
-          in: query
-          name: cityId
-          type: integer
-        - description: 当前页, 从1开始, 默认1
-          in: query
-          name: current
-          type: integer
-        - description: 团签ID
-          in: query
-          name: enterpriseId
-          type: integer
-        - description: 是否智能柜 0:全部 1:是 2:否
-          in: query
-          name: intelligent
-          type: integer
-        - description: 电池型号
-          in: query
-          name: model
-          type: string
-        - description: 电柜名称
-          in: query
-          name: name
-          type: string
-        - description: 在线状态
-          in: query
-          name: online
-          type: integer
-        - description: 每页数据, 默认20
-          in: query
-          name: pageSize
+        - CabinetBrandUnknown
+        - CabinetBrandKaixin
+        - CabinetBrandYundong
+        - CabinetBrandTuobang
+        - CabinetBrandXiliulouServer
+      - description: 城市ID
+        in: query
+        name: cityId
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 团签ID
+        in: query
+        name: enterpriseId
+        type: integer
+      - description: 是否智能柜 0:全部 1:是 2:否
+        in: query
+        name: intelligent
+        type: integer
+      - description: 电池型号
+        in: query
+        name: model
+        type: string
+      - description: 电柜名称
+        in: query
+        name: name
+        type: string
+      - description: 在线状态
+        in: query
+        name: online
+        type: integer
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
         type: integer
       - description: 电柜编号
         in: query
@@ -12739,6 +12867,35 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M9019 删除合同
+      tags:
+      - '[M]管理接口'
+  /manager/v1/enterprise/feedback:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerEnterpriseFeedbackList
+      parameters:
+      - description: 反馈列表请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.FeedbackListReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.FeedbackDetail'
+                  type: array
+              type: object
+      summary: M9030 反馈列表
       tags:
       - '[M]管理接口'
   /manager/v1/enterprise/price:

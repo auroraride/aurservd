@@ -386,6 +386,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/agent/v1/feedback": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A1005 意见反馈",
+                "operationId": "AgentFeedback",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "反馈内容",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.FeedbackReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                }
+            }
+        },
         "/agent/v1/getopenid": {
             "get": {
                 "consumes": [
@@ -1404,6 +1445,48 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            }
+        },
+        "/agent/v1/upload/image": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A1006 意见反馈上传图片",
+                "operationId": "AgentUploadImage",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "图片文件",
+                        "name": "images",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
                         }
                     }
                 }
@@ -8040,6 +8123,55 @@ const docTemplate = `{
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/enterprise/feedback": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M9030 反馈列表",
+                "operationId": "ManagerEnterpriseFeedbackList",
+                "parameters": [
+                    {
+                        "description": "反馈列表请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.FeedbackListReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.FeedbackDetail"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -21544,6 +21676,107 @@ const docTemplate = `{
                 "url": {
                     "description": "实名认证跳转链接",
                     "type": "string"
+                }
+            }
+        },
+        "model.FeedbackDetail": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "description": "反馈内容",
+                    "type": "string"
+                },
+                "createdAt": {
+                    "description": "反馈时间",
+                    "type": "string"
+                },
+                "enterpriseContactName": {
+                    "description": "反馈用户团签联系人",
+                    "type": "string"
+                },
+                "enterpriseContactPhone": {
+                    "description": "反馈用户团签联系电话",
+                    "type": "string"
+                },
+                "enterpriseID": {
+                    "description": "反馈用户团签id",
+                    "type": "integer"
+                },
+                "enterpriseName": {
+                    "description": "反馈用户团签名称",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "反馈ID",
+                    "type": "integer"
+                },
+                "type": {
+                    "description": "反馈类型",
+                    "type": "integer"
+                },
+                "url": {
+                    "description": "反馈图片",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "model.FeedbackListReq": {
+            "type": "object",
+            "properties": {
+                "current": {
+                    "description": "当前页, 从1开始, 默认1",
+                    "type": "integer"
+                },
+                "endTime": {
+                    "description": "反馈结束时间",
+                    "type": "string"
+                },
+                "enterpriseID": {
+                    "description": "反馈用户团签id",
+                    "type": "integer"
+                },
+                "keyword": {
+                    "description": "关键词",
+                    "type": "string"
+                },
+                "pageSize": {
+                    "description": "每页数据, 默认20",
+                    "type": "integer"
+                },
+                "startTime": {
+                    "description": "反馈开始时间",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "反馈类型",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.FeedbackReq": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "description": "反馈内容",
+                    "type": "string"
+                },
+                "enterpriseID": {
+                    "description": "反馈用户团签id",
+                    "type": "integer"
+                },
+                "type": {
+                    "description": "反馈类型",
+                    "type": "integer"
+                },
+                "url": {
+                    "description": "反馈图片",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },
