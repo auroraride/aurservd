@@ -105,10 +105,10 @@ func (*agent) Feedback(c echo.Context) (err error) {
 	return ctx.SendResponse(service.NewFeedback().Create(req, ctx.Enterprise))
 }
 
-// UploadImage 上传图片到本地
+// UploadImage 意见反馈上传图片
 // @ID           AgentUploadImage
 // @Router       /agent/v1/upload/image [POST]
-// @Summary      A1006 上传图片到本地
+// @Summary      A1006 意见反馈上传图片
 // @Tags         [A]代理接口
 // @Accept       json
 // @Produce      json

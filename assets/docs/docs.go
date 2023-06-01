@@ -1461,7 +1461,7 @@ const docTemplate = `{
                 "tags": [
                     "[A]代理接口"
                 ],
-                "summary": "A1006 上传图片到本地",
+                "summary": "A1006 意见反馈上传图片",
                 "operationId": "AgentUploadImage",
                 "parameters": [
                     {
