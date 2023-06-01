@@ -57,4 +57,7 @@ func loadAgentRoutes() {
 	auth.GET("/bill/historical", aapi.Bill.Historical)
 
 	auth.GET("/stock", aapi.Stock.Detail)
+
+	// 首页汇总数据
+	auth.GET("/index", aapi.Agent.Index)
 }
