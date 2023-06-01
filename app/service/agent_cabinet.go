@@ -50,7 +50,7 @@ func (s *agentCabinetService) List(enterpriseID uint64, req *model.CabinetQueryR
 			rsp.Station = item.Edges.Station.Name
 		}
 		return rsp
-	})
+	}, NewCabinet().SyncCabinets)
 
 }
 
