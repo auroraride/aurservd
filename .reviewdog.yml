@@ -1,5 +1,5 @@
 runner:
-  golint:
+  lint:
     cmd: golangci-lint run --out-format=line-number --allow-parallel-runners --max-same-issues=0 --timeout=10m ./...
     errorformat:
       - '%E%f:%l:%c: %m'
