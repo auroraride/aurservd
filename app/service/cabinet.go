@@ -127,7 +127,7 @@ func (s *cabinetService) CreateCabinet(req *model.CabinetCreateReq) (res *model.
 
 // List 查询电柜
 func (s *cabinetService) List(req *model.CabinetQueryReq) (res *model.PaginationRes) {
-	q := s.orm.QueryNotDeleted().WithCity().WithModels()
+	q := s.orm.QueryNotDeleted().WithCity().WithModels().WithStation()
 
 	if s.modifier != nil && s.modifier.Phone == "15537112255" {
 		req.CityID = silk.UInt64(410100)
@@ -162,7 +162,9 @@ func (s *cabinetService) List(req *model.CabinetQueryReq) (res *model.Pagination
 	if req.Intelligent != 0 {
 		q.Where(cabinet.Intelligent(req.Intelligent == 1))
 	}
-
+	if req.EnterpriseID != nil {
+		q.Where(cabinet.EnterpriseID(*req.EnterpriseID))
+	}
 	return model.ParsePaginationResponse[model.CabinetItem, ent.Cabinet](q, req.PaginationReq, func(item *ent.Cabinet) (res model.CabinetItem) {
 		_ = copier.Copy(&res, item)
 
