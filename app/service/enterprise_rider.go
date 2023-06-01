@@ -16,8 +16,10 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
+	"github.com/auroraride/aurservd/internal/ent/subscribealter"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
 )
@@ -378,5 +380,136 @@ func (s *enterpriseRiderService) SubscribeStatus(req *model.EnterpriseRiderSubsc
 			return false
 		}
 		time.Sleep(1 * time.Second)
+	}
+}
+
+// GetSubscribeInfo 获取骑手订阅信息
+func (s *enterpriseRiderService) GetSubscribeInfo(u *ent.Rider) *model.RiderSubscribeRsp {
+	riderInfo, _ := ent.Database.Rider.QueryNotDeleted().Where(rider.ID(u.ID)).WithEnterprise().WithSubscribes().Order(ent.Desc(subscribe.FieldCreatedAt)).First(s.ctx)
+	if riderInfo == nil {
+		snag.Panic("未找到骑手信息")
+	}
+	leftDays := 0
+	expireAt := ""
+	// 计算团签剩余天数
+	if len(riderInfo.Edges.Subscribes) > 0 {
+		leftDays = tools.NewTime().LastDays(*riderInfo.Edges.Subscribes[0].AgentEndAt, carbon.Now().StartOfDay().ToStdTime())
+		expireAt = riderInfo.Edges.Subscribes[0].AgentEndAt.Format(carbon.DateLayout)
+	}
+	return &model.RiderSubscribeRsp{
+		LeftDays:  leftDays,
+		ExpireAt:  expireAt,
+		ExtraDays: riderInfo.Edges.Enterprise.Days,
+	}
+}
+
+// AddSubscribeDays 骑手申请增加团签订阅时长
+func (s *enterpriseRiderService) AddSubscribeDays(req *model.RiderSubscribeAddReq, rid *ent.Rider) {
+	// 查询骑手申请是否有未审批的
+	info, _ := ent.Database.SubscribeAlter.QueryNotDeleted().Where(subscribealter.RiderID(rid.ID), subscribealter.StatusNEQ(model.Unreviewed)).First(s.ctx)
+	if info != nil {
+		snag.Panic("存在未审批的申请")
+	}
+
+	// 查询骑手是否有团签
+	first, err := ent.Database.Rider.Query().Where(rider.ID(rid.ID), rider.HasSubscribesWith(subscribe.StatusIn(model.SubscribeNotUnSubscribed()...))).WithSubscribes().First(s.ctx)
+	if err != nil {
+		snag.Panic("团签状态异常")
+	}
+	sid := first.Edges.Subscribes[0].ID
+	// 增加记录
+	_, err = ent.Database.SubscribeAlter.Create().
+		SetRiderID(rid.ID).
+		SetEnterpriseID(*rid.EnterpriseID).
+		SetSubscribeID(sid).
+		SetDays(req.Days).
+		SetStatus(model.Unreviewed).
+		Save(s.ctx)
+	if err != nil {
+		snag.Panic("申请失败")
+	}
+}
+
+// SubscribeAlterList 申请列表
+func (s *enterpriseRiderService) SubscribeAlterList(req *model.ApplyReq, rid *ent.Rider) *model.PaginationRes {
+	q := ent.Database.SubscribeAlter.QueryNotDeleted().Where(subscribealter.RiderID(rid.ID)).Order(ent.Desc(subscribealter.FieldCreatedAt))
+
+	if req.StartTime != nil && req.EndTime != nil {
+		rs := tools.NewTime().ParseDateStringX(*req.StartTime)
+		re := tools.NewTime().ParseDateStringX(*req.EndTime)
+		q = q.Where(subscribealter.CreatedAtGTE(rs), subscribealter.CreatedAtLTE(re))
+	}
+
+	return model.ParsePaginationResponse(
+		q,
+		req.PaginationReq,
+		func(item *ent.SubscribeAlter) model.ApplyListRsp {
+			return model.ApplyListRsp{
+				Days: item.Days,
+				// 申请时间
+				ApplyTime: item.CreatedAt.Format(carbon.DateTimeLayout),
+				// 审批时间
+				ReviewTime: item.UpdatedAt.Format(carbon.DateTimeLayout),
+				// 审批状态
+				Status: item.Status,
+			}
+		})
+}
+
+// RiderEnterpriseInfo 代理商小程序骑手团签信息
+func (s *enterpriseRiderService) RiderEnterpriseInfo(req *model.EnterproseInfoReq, rid *ent.Rider) *model.EnterproseInfoRsp {
+	// 查询订阅信息
+	subscribeInfo := NewSubscribe().QueryEffectiveX(rid.ID)
+	rsp := &model.EnterproseInfoRsp{
+		IsJoin:     true,
+		RiderName:  rid.Name,
+		RiderPhone: rid.Phone,
+	}
+	if subscribeInfo != nil || rid.EnterpriseID == nil {
+		rsp.IsJoin = false
+	}
+	// 查询团签信息
+	enterpriseInfo := NewEnterprise().QueryX(req.EnterpriseId)
+	if enterpriseInfo == nil {
+		snag.Panic("未找到企业信息")
+	}
+	// 查询站点信息
+	stationInfo := ent.Database.EnterpriseStation.Query().Where(enterprisestation.IDEQ(req.StationId),
+		enterprisestation.EnterpriseIDEQ(req.EnterpriseId)).FirstX(s.ctx)
+	if stationInfo == nil {
+		snag.Panic("未找到站点信息")
+	}
+	rsp.StationName = stationInfo.Name
+	rsp.EnterproseName = enterpriseInfo.Name
+	return rsp
+}
+
+// JoinEnterprise 加入团签
+func (s *enterpriseRiderService) JoinEnterprise(req *model.EnterproseInfoReq, rid *ent.Rider) {
+	// 判断骑手是否加入团签
+	if rid.EnterpriseID != nil {
+		snag.Panic("已加入团签")
+	}
+	// 判断团签是否存在或者站点是否存在
+	// 查询团签信息
+	if NewEnterprise().QueryX(req.EnterpriseId) == nil {
+		snag.Panic("未找到企业信息")
+	}
+	// 查询站点信息
+	if ent.Database.EnterpriseStation.Query().Where(enterprisestation.IDEQ(req.StationId),
+		enterprisestation.EnterpriseIDEQ(req.EnterpriseId)).FirstX(s.ctx) == nil {
+		snag.Panic("未找到站点信息")
+	}
+	// 判断骑手是否有未完成的订单
+	// 查询订阅信息
+	if NewSubscribe().QueryEffectiveX(s.rider.ID) != nil {
+		snag.Panic("有未完成的订单")
+	}
+	_, err := ent.Database.Rider.Update().Where(rider.ID(s.rider.ID)).
+		SetEnterpriseID(req.EnterpriseId).
+		SetStationID(req.StationId).
+		Save(s.ctx)
+	if err != nil {
+		snag.Panic("加入团签失败")
 	}
 }
