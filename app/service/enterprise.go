@@ -711,7 +711,7 @@ func (s *enterpriseService) SubscribeApplyList(req *model.SubscribeAlterApplyReq
 }
 
 // SubscribeApplyReviewApply 审批加时申请
-func (s *enterpriseService) SubscribeApplyReviewApply(req *model.SubscribeAlterReviewReq) bool {
+func (s *enterpriseService) SubscribeApplyReviewApply(req *model.SubscribeAlterReviewReq) {
 	// 查找申请记录
 	alter, err := ent.Database.SubscribeAlter.QueryNotDeleted().Where(subscribealter.IDIn(req.Ids...)).All(s.ctx)
 	if err != nil || len(alter) == 0 {
@@ -756,5 +756,4 @@ func (s *enterpriseService) SubscribeApplyReviewApply(req *model.SubscribeAlterR
 			return nil
 		})
 	}
-	return true
 }

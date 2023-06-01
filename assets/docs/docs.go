@@ -820,7 +820,7 @@ const docTemplate = `{
                                         "items": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/model.ApplyListRsp"
+                                                "$ref": "#/definitions/model.SubscribeAlterApplyListRsp"
                                             }
                                         }
                                     }
@@ -856,7 +856,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.ReviewReq"
+                            "$ref": "#/definitions/model.SubscribeAlterReviewReq"
                         }
                     }
                 ],
@@ -864,7 +864,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.StatusResponse"
                         }
                     }
                 }
@@ -22760,21 +22760,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.ReviewReq": {
-            "type": "object",
-            "properties": {
-                "ids": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
-                "status": {
-                    "description": "审批状态",
-                    "type": "integer"
-                }
-            }
-        },
         "model.Rider": {
             "type": "object",
             "properties": {
@@ -25117,6 +25102,21 @@ const docTemplate = `{
                 },
                 "status": {
                     "description": "审核状态",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.SubscribeAlterReviewReq": {
+            "type": "object",
+            "properties": {
+                "ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "status": {
+                    "description": "审批状态",
                     "type": "integer"
                 }
             }

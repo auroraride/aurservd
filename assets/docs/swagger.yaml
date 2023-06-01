@@ -5366,16 +5366,6 @@ definitions:
         description: 预约时间
         type: string
     type: object
-  model.ReviewReq:
-    properties:
-      ids:
-        items:
-          type: integer
-        type: array
-      status:
-        description: 审批状态
-        type: integer
-    type: object
   model.Rider:
     properties:
       id:
@@ -6966,6 +6956,16 @@ definitions:
         description: 审核状态
         type: integer
     type: object
+  model.SubscribeAlterReviewReq:
+    properties:
+      ids:
+        items:
+          type: integer
+        type: array
+      status:
+        description: 审批状态
+        type: integer
+    type: object
   model.SubscribeBusiness:
     properties:
       business:
@@ -7874,7 +7874,7 @@ paths:
             - properties:
                 items:
                   items:
-                    $ref: '#/definitions/model.ApplyListRsp'
+                    $ref: '#/definitions/model.SubscribeAlterApplyListRsp'
                   type: array
               type: object
       summary: A2006 申请加时列表
@@ -7895,14 +7895,14 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/model.ReviewReq'
+          $ref: '#/definitions/model.SubscribeAlterReviewReq'
       produces:
       - application/json
       responses:
         "200":
           description: 请求成功
           schema:
-            type: string
+            $ref: '#/definitions/model.StatusResponse'
       summary: A2007 审核加时
       tags:
       - '[A]代理接口'
