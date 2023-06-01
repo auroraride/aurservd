@@ -244,4 +244,7 @@ func loadManagerRoutes() {
 
 	// 合同
 	g.GET("/contract", mapi.Contract.List)
+
+	// 反馈
+	g.GET("/enterprise/feedback", mapi.Enterprise.FeedbackList)
 }

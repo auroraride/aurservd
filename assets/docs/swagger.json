@@ -194,15 +194,15 @@
                                     "$ref": "#/definitions/model.Pagination"
                                 },
                                 {
-                                  "type": "object",
-                                  "properties": {
-                                    "items": {
-                                      "type": "array",
-                                      "items": {
-                                        "$ref": "#/definitions/model.StatementUsageRes"
-                                      }
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.StatementUsageRes"
+                                            }
+                                        }
                                     }
-                                  }
                                 }
                             ]
                         }
@@ -210,161 +210,161 @@
                 }
             }
         },
-      "/agent/v1/cabinet": {
-        "get": {
-          "consumes": [
-            "application/json"
-          ],
-          "produces": [
-            "application/json"
-          ],
-          "tags": [
-            "[A]代理接口"
-          ],
-          "summary": "A5003 电柜列表",
-          "operationId": "AgentCabinetList",
-          "parameters": [
-            {
-              "type": "string",
-              "description": "代理校验token",
-              "name": "X-Agent-Token",
-              "in": "header",
-              "required": true
-            },
-            {
-              "enum": [
-                "UNKNOWN",
-                "KAIXIN",
-                "YUNDONG",
-                "TUOBANG",
-                "XILIULOUSERV"
-              ],
-              "type": "string",
-              "x-enum-comments": {
-                "CabinetBrandXiliulouServer": "西六楼服务器版"
-              },
-              "x-enum-varnames": [
-                "CabinetBrandUnknown",
-                "CabinetBrandKaixin",
-                "CabinetBrandYundong",
-                "CabinetBrandTuobang",
-                "CabinetBrandXiliulouServer"
-              ],
-              "description": "电柜型号 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
-              "name": "brand",
-              "in": "query"
-            },
-            {
-              "type": "integer",
-              "description": "城市ID",
-              "name": "cityId",
-              "in": "query"
-            },
-            {
-              "type": "integer",
-              "description": "当前页, 从1开始, 默认1",
-              "name": "current",
-              "in": "query"
-            },
-            {
-              "type": "integer",
-              "description": "团签ID",
-              "name": "enterpriseId",
-              "in": "query"
-            },
-            {
-              "type": "integer",
-              "description": "是否智能柜 0:全部 1:是 2:否",
-              "name": "intelligent",
-              "in": "query"
-            },
-            {
-              "type": "string",
-              "description": "电池型号",
-              "name": "model",
-              "in": "query"
-            },
-            {
-              "type": "string",
-              "description": "电柜名称",
-              "name": "name",
-              "in": "query"
-            },
-            {
-              "type": "integer",
-              "description": "在线状态",
-              "name": "online",
-              "in": "query"
-            },
-            {
-              "type": "integer",
-              "description": "每页数据, 默认20",
-              "name": "pageSize",
-              "in": "query"
-            },
-            {
-              "type": "string",
-              "description": "电柜编号",
-              "name": "serial",
-              "in": "query"
-            },
-            {
-              "type": "integer",
-              "description": "电柜状态",
-              "name": "status",
-              "in": "query"
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "请求成功",
-              "schema": {
-                "allOf": [
-                  {
-                    "$ref": "#/definitions/model.PaginationRes"
-                  },
-                  {
-                    "type": "object",
-                    "properties": {
-                      "items": {
-                        "type": "array",
-                        "items": {
-                          "$ref": "#/definitions/model.AgentCabinetDetailRes"
-                        }
-                      }
+        "/agent/v1/cabinet": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A5003 电柜列表",
+                "operationId": "AgentCabinetList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            "UNKNOWN",
+                            "KAIXIN",
+                            "YUNDONG",
+                            "TUOBANG",
+                            "XILIULOUSERV"
+                        ],
+                        "type": "string",
+                        "x-enum-comments": {
+                            "CabinetBrandXiliulouServer": "西六楼服务器版"
+                        },
+                        "x-enum-varnames": [
+                            "CabinetBrandUnknown",
+                            "CabinetBrandKaixin",
+                            "CabinetBrandYundong",
+                            "CabinetBrandTuobang",
+                            "CabinetBrandXiliulouServer"
+                        ],
+                        "description": "电柜型号 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
+                        "name": "brand",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市ID",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "团签ID",
+                        "name": "enterpriseId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "是否智能柜 0:全部 1:是 2:否",
+                        "name": "intelligent",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "电池型号",
+                        "name": "model",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "电柜名称",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "在线状态",
+                        "name": "online",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "电柜编号",
+                        "name": "serial",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "电柜状态",
+                        "name": "status",
+                        "in": "query"
                     }
-                  }
-                ]
-              }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.AgentCabinetDetailRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
             }
-          }
-        }
-      },
-      "/agent/v1/cabinet/{serial}": {
-        "get": {
-          "consumes": [
-            "application/json"
-          ],
-          "produces": [
-            "application/json"
-          ],
-          "tags": [
-            "[A]代理接口"
-          ],
-          "summary": "A5002 电柜详情",
-          "operationId": "AgentCabinetDetail",
-          "parameters": [
-            {
-              "type": "string",
-              "description": "代理校验token",
-              "name": "X-Agent-Token",
-              "in": "header",
-              "required": true
-            },
-            {
-              "type": "string",
-              "description": "电柜编号",
-              "name": "serial",
+        },
+        "/agent/v1/cabinet/{serial}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A5002 电柜详情",
+                "operationId": "AgentCabinetDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "电柜编号",
+                        "name": "serial",
                         "in": "path",
                         "required": true
                     }
@@ -374,6 +374,47 @@
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/agent/v1/feedback": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A1005 意见反馈",
+                "operationId": "AgentFeedback",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "反馈内容",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.FeedbackReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "boolean"
                         }
                     }
                 }
@@ -1397,6 +1438,48 @@
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            }
+        },
+        "/agent/v1/upload/image": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A1006 上传图片到本地",
+                "operationId": "AgentUploadImage",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "图片文件",
+                        "name": "images",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
                         }
                     }
                 }
@@ -5049,47 +5132,47 @@
                             "CabinetBrandTuobang",
                             "CabinetBrandXiliulouServer"
                         ],
-                      "description": "电柜型号 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
-                      "name": "brand",
-                      "in": "query"
+                        "description": "电柜型号 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
+                        "name": "brand",
+                        "in": "query"
                     },
-                  {
-                    "type": "integer",
-                    "description": "城市ID",
-                    "name": "cityId",
-                    "in": "query"
-                  },
-                  {
-                    "type": "integer",
-                    "description": "当前页, 从1开始, 默认1",
-                    "name": "current",
-                    "in": "query"
-                  },
-                  {
-                    "type": "integer",
-                    "description": "团签ID",
-                    "name": "enterpriseId",
-                    "in": "query"
-                  },
-                  {
-                    "type": "integer",
-                    "description": "是否智能柜 0:全部 1:是 2:否",
-                    "name": "intelligent",
-                    "in": "query"
-                  },
-                  {
-                    "type": "string",
-                    "description": "电池型号",
-                    "name": "model",
-                    "in": "query"
-                  },
-                  {
-                    "type": "string",
-                    "description": "电柜名称",
-                    "name": "name",
-                    "in": "query"
-                  },
-                  {
+                    {
+                        "type": "integer",
+                        "description": "城市ID",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "团签ID",
+                        "name": "enterpriseId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "是否智能柜 0:全部 1:是 2:否",
+                        "name": "intelligent",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "电池型号",
+                        "name": "model",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "电柜名称",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "在线状态",
                         "name": "online",
@@ -8033,6 +8116,55 @@
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/enterprise/feedback": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M9030 反馈列表",
+                "operationId": "ManagerEnterpriseFeedbackList",
+                "parameters": [
+                    {
+                        "description": "反馈列表请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.FeedbackListReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.FeedbackDetail"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -15770,116 +15902,116 @@
         "controller.FJJManagerModifyReq": {
             "type": "object",
             "properties": {
-              "enable": {
-                "description": "启用状态",
-                "type": "boolean"
-              },
-              "id": {
-                "description": "管理员ID, 不携带此字段是新增, 携带此字段是修改",
-                "type": "integer"
-              },
-              "name": {
-                "description": "姓名",
-                "type": "string"
-              },
-              "password": {
-                "description": "密码",
-                "type": "string"
-              },
-              "phone": {
-                "description": "电话",
-                "type": "string"
-              }
+                "enable": {
+                    "description": "启用状态",
+                    "type": "boolean"
+                },
+                "id": {
+                    "description": "管理员ID, 不携带此字段是新增, 携带此字段是修改",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "姓名",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "密码",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "电话",
+                    "type": "string"
+                }
             }
         },
-      "model.AgentCabinetBin": {
-        "type": "object",
-        "properties": {
-          "batterySn": {
-            "description": "当前电池编码 (无电池的时候为空)",
-            "type": "string"
-          },
-          "ordinal": {
-            "description": "仓位序号, 从`1`开始",
-            "type": "integer"
-          },
-          "soc": {
-            "description": "当前电量 (无电池时为空)",
-            "type": "number"
-          },
-          "usable": {
-            "description": "是否可用 `false`时,禁止代理操作该仓位",
-            "type": "boolean"
-          }
-        }
-      },
-      "model.AgentCabinetDetailRes": {
-        "type": "object",
-        "properties": {
-          "bins": {
-            "description": "仓位信息",
-            "type": "array",
-            "items": {
-              "$ref": "#/definitions/model.AgentCabinetBin"
+        "model.AgentCabinetBin": {
+            "type": "object",
+            "properties": {
+                "batterySn": {
+                    "description": "当前电池编码 (无电池的时候为空)",
+                    "type": "string"
+                },
+                "ordinal": {
+                    "description": "仓位序号, 从`1`开始",
+                    "type": "integer"
+                },
+                "soc": {
+                    "description": "当前电量 (无电池时为空)",
+                    "type": "number"
+                },
+                "usable": {
+                    "description": "是否可用 `false`时,禁止代理操作该仓位",
+                    "type": "boolean"
+                }
             }
-          },
-          "health": {
-            "description": "健康状态, 0:离线 1:在线 2:故障",
-            "type": "integer",
-            "enum": [
-              0,
-              1,
-              2
-            ]
-          },
-          "name": {
-            "description": "电柜名称",
-            "type": "string"
-          },
-          "serial": {
-            "type": "string"
-          },
-          "station": {
-            "description": "所属站点",
-            "type": "string"
-          },
-          "status": {
-            "description": "投放状态, 1:运营中 2:维护中",
-            "type": "integer",
-            "enum": [
-              1,
-              2
-            ]
-          }
-        }
-      },
-      "model.AgentCreateReq": {
-        "type": "object",
-        "required": [
-          "enterpriseId",
-          "name",
-          "phone"
-        ],
-        "properties": {
-          "enterpriseId": {
-            "type": "integer"
-          },
-          "name": {
-            "type": "string"
-          },
-          "phone": {
-            "type": "string"
-          }
-        }
-      },
-      "model.AgentMeta": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer"
-          },
-          "name": {
-            "type": "string"
+        },
+        "model.AgentCabinetDetailRes": {
+            "type": "object",
+            "properties": {
+                "bins": {
+                    "description": "仓位信息",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.AgentCabinetBin"
+                    }
+                },
+                "health": {
+                    "description": "健康状态, 0:离线 1:在线 2:故障",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1,
+                        2
+                    ]
+                },
+                "name": {
+                    "description": "电柜名称",
+                    "type": "string"
+                },
+                "serial": {
+                    "type": "string"
+                },
+                "station": {
+                    "description": "所属站点",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "投放状态, 1:运营中 2:维护中",
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
+                }
+            }
+        },
+        "model.AgentCreateReq": {
+            "type": "object",
+            "required": [
+                "enterpriseId",
+                "name",
+                "phone"
+            ],
+            "properties": {
+                "enterpriseId": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.AgentMeta": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
                 },
                 "phone": {
                     "type": "string"
@@ -21537,6 +21669,107 @@
                 "url": {
                     "description": "实名认证跳转链接",
                     "type": "string"
+                }
+            }
+        },
+        "model.FeedbackDetail": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "description": "反馈内容",
+                    "type": "string"
+                },
+                "createdAt": {
+                    "description": "反馈时间",
+                    "type": "string"
+                },
+                "enterpriseContactName": {
+                    "description": "反馈用户团签联系人",
+                    "type": "string"
+                },
+                "enterpriseContactPhone": {
+                    "description": "反馈用户团签联系电话",
+                    "type": "string"
+                },
+                "enterpriseID": {
+                    "description": "反馈用户团签id",
+                    "type": "integer"
+                },
+                "enterpriseName": {
+                    "description": "反馈用户团签名称",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "反馈ID",
+                    "type": "integer"
+                },
+                "type": {
+                    "description": "反馈类型",
+                    "type": "integer"
+                },
+                "url": {
+                    "description": "反馈图片",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "model.FeedbackListReq": {
+            "type": "object",
+            "properties": {
+                "current": {
+                    "description": "当前页, 从1开始, 默认1",
+                    "type": "integer"
+                },
+                "endTime": {
+                    "description": "反馈结束时间",
+                    "type": "string"
+                },
+                "enterpriseID": {
+                    "description": "反馈用户团签id",
+                    "type": "integer"
+                },
+                "keyword": {
+                    "description": "关键词",
+                    "type": "string"
+                },
+                "pageSize": {
+                    "description": "每页数据, 默认20",
+                    "type": "integer"
+                },
+                "startTime": {
+                    "description": "反馈开始时间",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "反馈类型",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.FeedbackReq": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "description": "反馈内容",
+                    "type": "string"
+                },
+                "enterpriseID": {
+                    "description": "反馈用户团签id",
+                    "type": "integer"
+                },
+                "type": {
+                    "description": "反馈类型",
+                    "type": "integer"
+                },
+                "url": {
+                    "description": "反馈图片",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },

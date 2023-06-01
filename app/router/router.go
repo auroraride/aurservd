@@ -36,6 +36,7 @@ func Run() {
 	e.Renderer = assets.Templates
 
 	e.Static("/pages", "public/pages")
+	e.Static("/uploads", "./runtime/uploads")
 
 	root = e.Group("/")
 
@@ -118,7 +119,7 @@ func Run() {
 	// 载入路由
 	root.GET("app/version", controller.Version.Get)
 
-	loadDocRoutes()      // 文档
+	loadDocRoutes() // 文档
 	// loadCabinetRoutes()  // 电柜回调
 	loadCommonRoutes()   // 公共API
 	loadRideRoutes()     // 骑手路由

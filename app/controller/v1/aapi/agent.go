@@ -89,3 +89,33 @@ func (*rider) Invite(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.EnterpriseRiderInviteReq](c)
 	return ctx.SendResponse(service.NewminiProgram().Invite(ctx.Enterprise, req))
 }
+
+// Feedback 意见反馈
+// @ID           AgentFeedback
+// @Router       /agent/v1/feedback [POST]
+// @Summary      A1005 意见反馈
+// @Tags         [A]代理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Agent-Token  header  string  true  "代理校验token"
+// @Param        body  body   model.FeedbackReq  true  "反馈内容"
+// @Success      200  {object}  bool  "请求成功"
+func (*agent) Feedback(c echo.Context) (err error) {
+	ctx, req := app.AgentContextAndBinding[model.FeedbackReq](c)
+	return ctx.SendResponse(service.NewFeedback().Create(req, ctx.Enterprise))
+}
+
+// UploadImage 上传图片到本地
+// @ID           AgentUploadImage
+// @Router       /agent/v1/upload/image [POST]
+// @Summary      A1006 上传图片到本地
+// @Tags         [A]代理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Agent-Token  header  string  true  "代理校验token"
+// @Param        images  formData   file  true  "图片文件"
+// @Success      200  {object} []string  "请求成功"
+func (*agent) UploadImage(c echo.Context) (err error) {
+	ctx := app.ContextX[app.AgentContext](c)
+	return ctx.SendResponse(service.NewFeedback().UploadImage(ctx))
+}
