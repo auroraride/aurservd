@@ -7793,7 +7793,7 @@ paths:
         schema:
           $ref: '#/definitions/model.SubscribeAlter'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -7801,146 +7801,146 @@ paths:
             $ref: '#/definitions/model.RiderItemSubscribe'
       summary: A2003 延长天数
       tags:
-        - '[A]代理接口'
+      - '[A]代理接口'
   /agent/v1/rider/exchange:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: AgentExchangeList
       parameters:
-        - description: 代理校验token
-          in: header
-          name: X-Agent-Token
-          required: true
-          type: string
-        - description: 筛选对象 0:全部 1:个签 2:团签
-          in: query
-          name: aimed
-          type: integer
-        - description: 换电方案 0:全部 1:满电 2:非满电
-          enum:
-            - 0
-            - 1
-            - 2
-          in: query
-          name: alternative
-          type: integer
-        - description: 电柜类型, KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
-          enum:
-            - UNKNOWN
-            - KAIXIN
-            - YUNDONG
-            - TUOBANG
-            - XILIULOUSERV
-          in: query
-          name: brand
-          type: string
-          x-enum-comments:
-            CabinetBrandXiliulouServer: 西六楼服务器版
-          x-enum-varnames:
-            - CabinetBrandUnknown
-            - CabinetBrandKaixin
-            - CabinetBrandYundong
-            - CabinetBrandTuobang
-            - CabinetBrandXiliulouServer
-        - description: 选择电柜ID
-          in: query
-          name: cabinetId
-          type: integer
-        - description: 城市
-          in: query
-          name: cityId
-          type: integer
-        - description: 当前页, 从1开始, 默认1
-          in: query
-          name: current
-          type: integer
-        - description: 筛选店员(手机号或姓名)
-          in: query
-          name: employee
-          type: string
-        - description: '筛选结束日期, 格式为yyyy-mm-dd, 例如: 2022-06-01'
-          in: query
-          name: end
-          type: string
-        - description: 团签ID
-          in: query
-          name: enterpriseId
-          type: integer
-        - description: 筛选骑手姓名或电话
-          in: query
-          name: keyword
-          type: string
-        - description: 电池型号
-          in: query
-          name: model
-          type: string
-        - description: 每页数据, 默认20
-          in: query
-          name: pageSize
-          type: integer
-        - description: 电柜编号
-          in: query
-          name: serial
-          type: string
-        - description: '筛选开始日期, 格式为yyyy-mm-dd, 例如: 2022-06-01'
-          in: query
-          name: start
-          type: string
-        - description: 换电状态 0:进行中 1:成功 2:失败 (不携带此参数为全部)
-          enum:
-            - 0
-            - 1
-            - 2
-          in: query
-          name: status
-          type: integer
-        - description: 选择门店ID
-          in: query
-          name: storeId
-          type: integer
-        - description: 换电类别 0:全部 1:电柜 2:门店
-          in: query
-          name: target
-          type: integer
-        - description: 次数 (所选时间段内最小换电次数)
-          in: query
-          name: times
-          type: integer
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - description: 筛选对象 0:全部 1:个签 2:团签
+        in: query
+        name: aimed
+        type: integer
+      - description: 换电方案 0:全部 1:满电 2:非满电
+        enum:
+        - 0
+        - 1
+        - 2
+        in: query
+        name: alternative
+        type: integer
+      - description: 电柜类型, KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
+        enum:
+        - UNKNOWN
+        - KAIXIN
+        - YUNDONG
+        - TUOBANG
+        - XILIULOUSERV
+        in: query
+        name: brand
+        type: string
+        x-enum-comments:
+          CabinetBrandXiliulouServer: 西六楼服务器版
+        x-enum-varnames:
+        - CabinetBrandUnknown
+        - CabinetBrandKaixin
+        - CabinetBrandYundong
+        - CabinetBrandTuobang
+        - CabinetBrandXiliulouServer
+      - description: 选择电柜ID
+        in: query
+        name: cabinetId
+        type: integer
+      - description: 城市
+        in: query
+        name: cityId
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 筛选店员(手机号或姓名)
+        in: query
+        name: employee
+        type: string
+      - description: '筛选结束日期, 格式为yyyy-mm-dd, 例如: 2022-06-01'
+        in: query
+        name: end
+        type: string
+      - description: 团签ID
+        in: query
+        name: enterpriseId
+        type: integer
+      - description: 筛选骑手姓名或电话
+        in: query
+        name: keyword
+        type: string
+      - description: 电池型号
+        in: query
+        name: model
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 电柜编号
+        in: query
+        name: serial
+        type: string
+      - description: '筛选开始日期, 格式为yyyy-mm-dd, 例如: 2022-06-01'
+        in: query
+        name: start
+        type: string
+      - description: 换电状态 0:进行中 1:成功 2:失败 (不携带此参数为全部)
+        enum:
+        - 0
+        - 1
+        - 2
+        in: query
+        name: status
+        type: integer
+      - description: 选择门店ID
+        in: query
+        name: storeId
+        type: integer
+      - description: 换电类别 0:全部 1:电柜 2:门店
+        in: query
+        name: target
+        type: integer
+      - description: 次数 (所选时间段内最小换电次数)
+        in: query
+        name: times
+        type: integer
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
           schema:
             allOf:
-              - $ref: '#/definitions/model.PaginationRes'
-              - properties:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
                   items:
-                    items:
-                      $ref: '#/definitions/model.ExchangeManagerListRes'
-                    type: array
-                type: object
+                    $ref: '#/definitions/model.ExchangeManagerListRes'
+                  type: array
+              type: object
       summary: A2009 换电列表
       tags:
-        - '[A]代理接口'
+      - '[A]代理接口'
   /agent/v1/rider/invite:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: AgentRiderInvite
       parameters:
-        - description: 代理校验token
-          in: header
+      - description: 代理校验token
+        in: header
         name: X-Agent-Token
         required: true
         type: string
-        - description: 邀请骑手
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/model.EnterpriseRiderInviteReq'
+      - description: 邀请骑手
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.EnterpriseRiderInviteReq'
       produces:
       - application/json
       responses:
@@ -12845,7 +12845,7 @@ paths:
       - application/json
       operationId: ManagerExchangeList
       parameters:
-        - description: 管理员校验token
+      - description: 管理员校验token
         in: header
         name: X-Manager-Token
         required: true
@@ -12892,28 +12892,28 @@ paths:
         in: query
         name: current
         type: integer
-          - description: 筛选店员(手机号或姓名)
-            in: query
-            name: employee
-            type: string
-          - description: '筛选结束日期, 格式为yyyy-mm-dd, 例如: 2022-06-01'
-            in: query
-            name: end
-            type: string
-          - description: 团签ID
-            in: query
-            name: enterpriseId
-            type: integer
-          - description: 筛选骑手姓名或电话
-            in: query
-            name: keyword
-            type: string
-          - description: 电池型号
-            in: query
-            name: model
-            type: string
-          - description: 每页数据, 默认20
-            in: query
+      - description: 筛选店员(手机号或姓名)
+        in: query
+        name: employee
+        type: string
+      - description: '筛选结束日期, 格式为yyyy-mm-dd, 例如: 2022-06-01'
+        in: query
+        name: end
+        type: string
+      - description: 团签ID
+        in: query
+        name: enterpriseId
+        type: integer
+      - description: 筛选骑手姓名或电话
+        in: query
+        name: keyword
+        type: string
+      - description: 电池型号
+        in: query
+        name: model
+        type: string
+      - description: 每页数据, 默认20
+        in: query
         name: pageSize
         type: integer
       - description: 电柜编号
