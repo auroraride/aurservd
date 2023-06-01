@@ -383,26 +383,6 @@ func (s *enterpriseRiderService) SubscribeStatus(req *model.EnterpriseRiderSubsc
 	}
 }
 
-// GetSubscribeInfo 获取骑手订阅信息
-func (s *enterpriseRiderService) GetSubscribeInfo(u *ent.Rider) *model.RiderSubscribeRsp {
-	riderInfo, _ := ent.Database.Rider.QueryNotDeleted().Where(rider.ID(u.ID)).WithEnterprise().WithSubscribes().Order(ent.Desc(subscribe.FieldCreatedAt)).First(s.ctx)
-	if riderInfo == nil {
-		snag.Panic("未找到骑手信息")
-	}
-	leftDays := 0
-	expireAt := ""
-	// 计算团签剩余天数
-	if len(riderInfo.Edges.Subscribes) > 0 {
-		leftDays = tools.NewTime().LastDays(*riderInfo.Edges.Subscribes[0].AgentEndAt, carbon.Now().StartOfDay().ToStdTime())
-		expireAt = riderInfo.Edges.Subscribes[0].AgentEndAt.Format(carbon.DateLayout)
-	}
-	return &model.RiderSubscribeRsp{
-		LeftDays:  leftDays,
-		ExpireAt:  expireAt,
-		ExtraDays: riderInfo.Edges.Enterprise.Days,
-	}
-}
-
 // AddSubscribeDays 骑手申请增加团签订阅时长
 func (s *enterpriseRiderService) AddSubscribeDays(req *model.RiderSubscribeAddReq, rid *ent.Rider) {
 	// 查询骑手申请是否有未审批的
@@ -454,34 +434,6 @@ func (s *enterpriseRiderService) SubscribeAlterList(req *model.ApplyReq, rid *en
 				Status: item.Status,
 			}
 		})
-}
-
-// RiderEnterpriseInfo 代理商小程序骑手团签信息
-func (s *enterpriseRiderService) RiderEnterpriseInfo(req *model.EnterproseInfoReq, rid *ent.Rider) *model.EnterproseInfoRsp {
-	// 查询订阅信息
-	subscribeInfo := NewSubscribe().QueryEffectiveX(rid.ID)
-	rsp := &model.EnterproseInfoRsp{
-		IsJoin:     true,
-		RiderName:  rid.Name,
-		RiderPhone: rid.Phone,
-	}
-	if subscribeInfo != nil || rid.EnterpriseID == nil {
-		rsp.IsJoin = false
-	}
-	// 查询团签信息
-	enterpriseInfo := NewEnterprise().QueryX(req.EnterpriseId)
-	if enterpriseInfo == nil {
-		snag.Panic("未找到企业信息")
-	}
-	// 查询站点信息
-	stationInfo := ent.Database.EnterpriseStation.Query().Where(enterprisestation.IDEQ(req.StationId),
-		enterprisestation.EnterpriseIDEQ(req.EnterpriseId)).FirstX(s.ctx)
-	if stationInfo == nil {
-		snag.Panic("未找到站点信息")
-	}
-	rsp.StationName = stationInfo.Name
-	rsp.EnterproseName = enterpriseInfo.Name
-	return rsp
 }
 
 // JoinEnterprise 加入团签

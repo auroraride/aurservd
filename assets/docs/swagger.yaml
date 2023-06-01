@@ -3968,32 +3968,6 @@ definitions:
     required:
     - name
     type: object
-  model.EnterproseInfoReq:
-    properties:
-      enterprise_id:
-        type: integer
-      station_id:
-        description: 站点id
-        type: integer
-    type: object
-  model.EnterproseInfoRsp:
-    properties:
-      enterproseName:
-        description: 团签名称
-        type: string
-      isJoin:
-        description: 是否可以加入团签
-        type: boolean
-      riderName:
-        description: 骑手姓名
-        type: string
-      riderPhone:
-        description: 骑手电话
-        type: string
-      stationName:
-        description: 站点名称
-        type: string
-    type: object
   model.ExceptionEmployeeReq:
     properties:
       attachments:
@@ -5987,20 +5961,6 @@ definitions:
         type: integer
     required:
     - days
-    type: object
-  model.RiderSubscribeRsp:
-    properties:
-      expireAt:
-        description: 到期时间
-        type: string
-      extraDays:
-        description: 加时天数列表
-        items:
-          type: integer
-        type: array
-      leftDays:
-        description: 剩余天数
-        type: integer
     type: object
   model.Role:
     properties:
@@ -16410,33 +16370,6 @@ paths:
       summary: R3010 企业骑手获取可用电池
       tags:
       - '[R]骑手接口'
-  /rider/v1/enterprise/info:
-    get:
-      consumes:
-      - application/json
-      operationId: RiderEnterpriseInfo
-      parameters:
-      - description: 骑手校验token
-        in: header
-        name: X-Rider-Token
-        required: true
-        type: string
-      - description: 团签信息请求
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/model.EnterproseInfoReq'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.EnterproseInfoRsp'
-      summary: R3016 企业骑手团签信息
-      tags:
-      - '[R]骑手接口'
   /rider/v1/enterprise/join:
     post:
       consumes:
@@ -16456,7 +16389,7 @@ paths:
           description: 请求成功
           schema:
             type: boolean
-      summary: R3017 企业骑手加入团签
+      summary: R3015 企业骑手加入团签
       tags:
       - '[R]骑手接口'
   /rider/v1/enterprise/subscribe:
@@ -16535,7 +16468,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: R3014 骑手申请增加订阅时长
+      summary: R3013 骑手申请增加订阅时长
       tags:
       - '[R]骑手接口'
   /rider/v1/enterprise/subscribe/alter/list:
@@ -16587,28 +16520,7 @@ paths:
                     $ref: '#/definitions/model.ApplyListRsp'
                   type: array
               type: object
-      summary: R3015 骑手申请列表
-      tags:
-      - '[R]骑手接口'
-  /rider/v1/enterprise/subscribe/info:
-    get:
-      consumes:
-      - application/json
-      operationId: RiderEnterpriseGetSubscribeInfo
-      parameters:
-      - description: 骑手校验token
-        in: header
-        name: X-Rider-Token
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.RiderSubscribeRsp'
-      summary: R3013 骑手团签信息
+      summary: R3014 骑手申请列表
       tags:
       - '[R]骑手接口'
   /rider/v1/exchange/log:

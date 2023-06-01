@@ -13803,47 +13803,6 @@
                 }
             }
         },
-        "/rider/v1/enterprise/info": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "[R]骑手接口"
-                ],
-                "summary": "R3016 企业骑手团签信息",
-                "operationId": "RiderEnterpriseInfo",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "骑手校验token",
-                        "name": "X-Rider-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "团签信息请求",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.EnterproseInfoReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.EnterproseInfoRsp"
-                        }
-                    }
-                }
-            }
-        },
         "/rider/v1/enterprise/join": {
             "post": {
                 "consumes": [
@@ -13855,7 +13814,7 @@
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R3017 企业骑手加入团签",
+                "summary": "R3015 企业骑手加入团签",
                 "operationId": "RiderEnterpriseJoin",
                 "parameters": [
                     {
@@ -13967,7 +13926,7 @@
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R3014 骑手申请增加订阅时长",
+                "summary": "R3013 骑手申请增加订阅时长",
                 "operationId": "RiderEnterpriseApplyAddSubscribeTime",
                 "parameters": [
                     {
@@ -14008,7 +13967,7 @@
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R3015 骑手申请列表",
+                "summary": "R3014 骑手申请列表",
                 "operationId": "RiderEnterpriseApplyList",
                 "parameters": [
                     {
@@ -14075,38 +14034,6 @@
                                     }
                                 }
                             ]
-                        }
-                    }
-                }
-            }
-        },
-        "/rider/v1/enterprise/subscribe/info": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "[R]骑手接口"
-                ],
-                "summary": "R3013 骑手团签信息",
-                "operationId": "RiderEnterpriseGetSubscribeInfo",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "骑手校验token",
-                        "name": "X-Rider-Token",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.RiderSubscribeRsp"
                         }
                     }
                 }
@@ -20686,43 +20613,6 @@
                 }
             }
         },
-        "model.EnterproseInfoReq": {
-            "type": "object",
-            "properties": {
-                "enterprise_id": {
-                    "type": "integer"
-                },
-                "station_id": {
-                    "description": "站点id",
-                    "type": "integer"
-                }
-            }
-        },
-        "model.EnterproseInfoRsp": {
-            "type": "object",
-            "properties": {
-                "enterproseName": {
-                    "description": "团签名称",
-                    "type": "string"
-                },
-                "isJoin": {
-                    "description": "是否可以加入团签",
-                    "type": "boolean"
-                },
-                "riderName": {
-                    "description": "骑手姓名",
-                    "type": "string"
-                },
-                "riderPhone": {
-                    "description": "骑手电话",
-                    "type": "string"
-                },
-                "stationName": {
-                    "description": "站点名称",
-                    "type": "string"
-                }
-            }
-        },
         "model.ExceptionEmployeeReq": {
             "type": "object",
             "required": [
@@ -23630,26 +23520,6 @@
             "properties": {
                 "days": {
                     "description": "天数",
-                    "type": "integer"
-                }
-            }
-        },
-        "model.RiderSubscribeRsp": {
-            "type": "object",
-            "properties": {
-                "expireAt": {
-                    "description": "到期时间",
-                    "type": "string"
-                },
-                "extraDays": {
-                    "description": "加时天数列表",
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
-                "leftDays": {
-                    "description": "剩余天数",
                     "type": "integer"
                 }
             }
