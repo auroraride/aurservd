@@ -27,12 +27,6 @@ type FeedbackListReq struct {
 	EnterpriseID *uint64 `json:"enterpriseID"`
 }
 
-// FeedbackListRsp 反馈列表
-type FeedbackListRsp struct {
-	Pagination Pagination        `json:"pagination"` // 分页属性
-	List       []*FeedbackDetail `json:"list"`       // 列表
-}
-
 // FeedbackDetail 反馈详情
 type FeedbackDetail struct {
 	// 反馈ID
