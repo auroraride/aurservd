@@ -759,7 +759,7 @@ const docTemplate = `{
                 "tags": [
                     "[A]代理接口"
                 ],
-                "summary": "A2006 申请加时列表",
+                "summary": "A2008 申请加时列表",
                 "operationId": "AgentSubscribeApplyList",
                 "parameters": [
                     {

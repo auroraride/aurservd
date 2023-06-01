@@ -97,7 +97,7 @@ func (*rider) Active(c echo.Context) (err error) {
 // SubscribeApplyList  申请加时列表
 // @ID           AgentSubscribeApplyList
 // @Router       /agent/v1/rider/subscribe/apply [GET]
-// @Summary      A2006 申请加时列表
+// @Summary      A2008 申请加时列表
 // @Tags         [A]代理接口
 // @Accept       json
 // @Produce      json

@@ -7877,7 +7877,7 @@ paths:
                     $ref: '#/definitions/model.SubscribeAlterApplyListRsp'
                   type: array
               type: object
-      summary: A2006 申请加时列表
+      summary: A2008 申请加时列表
       tags:
       - '[A]代理接口'
     post:
