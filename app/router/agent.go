@@ -42,6 +42,8 @@ func loadAgentRoutes() {
 	auth.POST("/subscribe/apply", aapi.Rider.ReviewApply)
 	// 换电记录列表
 	auth.GET("/rider/exchange", aapi.Rider.ExchangeList)
+	// 电柜列表
+	auth.GET("/cabinet", aapi.Cabinet.List)
 	// auth.POST("/rider/alter", aapi.Rider.Alter)
 	// auth.GET("/rider/:id", aapi.Rider.Detail)
 

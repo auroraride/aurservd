@@ -217,6 +217,130 @@ const docTemplate = `{
                 }
             }
         },
+        "/agent/v1/cabinet": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A5001 电柜列表",
+                "operationId": "AgentCabinetList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            "UNKNOWN",
+                            "KAIXIN",
+                            "YUNDONG",
+                            "TUOBANG",
+                            "XILIULOUSERV"
+                        ],
+                        "type": "string",
+                        "x-enum-comments": {
+                            "CabinetBrandXiliulouServer": "西六楼服务器版"
+                        },
+                        "x-enum-varnames": [
+                            "CabinetBrandUnknown",
+                            "CabinetBrandKaixin",
+                            "CabinetBrandYundong",
+                            "CabinetBrandTuobang",
+                            "CabinetBrandXiliulouServer"
+                        ],
+                        "description": "电柜型号 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
+                        "name": "brand",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市ID",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "是否智能柜 0:全部 1:是 2:否",
+                        "name": "intelligent",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "电池型号",
+                        "name": "model",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "电柜名称",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "在线状态",
+                        "name": "online",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "电柜编号",
+                        "name": "serial",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "电柜状态",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.AgentCabinetDetailRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/agent/v1/cabinet/{serial}": {
             "get": {
                 "consumes": [
@@ -15660,6 +15784,67 @@ const docTemplate = `{
                 "phone": {
                     "description": "电话",
                     "type": "string"
+                }
+            }
+        },
+        "model.AgentCabinetBin": {
+            "type": "object",
+            "properties": {
+                "batterySn": {
+                    "description": "当前电池编码 (无电池的时候为空)",
+                    "type": "string"
+                },
+                "ordinal": {
+                    "description": "仓位序号, 从` + "`" + `1` + "`" + `开始",
+                    "type": "integer"
+                },
+                "soc": {
+                    "description": "当前电量 (无电池时为空)",
+                    "type": "number"
+                },
+                "usable": {
+                    "description": "是否可用 ` + "`" + `false` + "`" + `时,禁止代理操作该仓位",
+                    "type": "boolean"
+                }
+            }
+        },
+        "model.AgentCabinetDetailRes": {
+            "type": "object",
+            "properties": {
+                "bins": {
+                    "description": "仓位信息",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.AgentCabinetBin"
+                    }
+                },
+                "health": {
+                    "description": "健康状态, 0:离线 1:在线 2:故障",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1,
+                        2
+                    ]
+                },
+                "name": {
+                    "description": "电柜名称",
+                    "type": "string"
+                },
+                "serial": {
+                    "type": "string"
+                },
+                "station": {
+                    "description": "所属站点",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "投放状态, 1:运营中 2:维护中",
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
                 }
             }
         },

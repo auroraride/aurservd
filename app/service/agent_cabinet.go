@@ -8,6 +8,7 @@ package service
 import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/pkg/snag"
 )
@@ -21,6 +22,36 @@ func NewAgentCabinet(params ...any) *agentCabinetService {
 	return &agentCabinetService{
 		BaseService: newService(params...),
 	}
+}
+
+// List 代理端查询电柜列表
+func (s *agentCabinetService) List(enterpriseID uint64, req *model.CabinetQueryReq) *model.PaginationRes {
+	q := ent.Database.Cabinet.Query().Where(cabinet.EnterpriseID(enterpriseID)).
+		Where(cabinet.StatusNEQ(model.CabinetStatusPending.Value())).
+		WithStation()
+	if req.Serial != nil {
+		q.Where(cabinet.Serial(*req.Serial))
+	}
+	if req.Name != nil {
+		q.Where(cabinet.Name(*req.Name))
+	}
+	if req.Model != nil {
+		q.Where(cabinet.HasModelsWith(batterymodel.Model(*req.Model)))
+	}
+	// 同步电柜并返回电柜列表
+	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Cabinet) model.AgentCabinetDetailRes {
+		rsp := model.AgentCabinetDetailRes{
+			Serial: item.Serial,
+			Name:   item.Name,
+			Status: item.Status,
+			Health: item.Health,
+		}
+		if item.Edges.Station != nil {
+			rsp.Station = item.Edges.Station.Name
+		}
+		return rsp
+	})
+
 }
 
 // Detail 代理端查询电柜详情
