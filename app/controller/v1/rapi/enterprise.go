@@ -86,10 +86,10 @@ func (*enterprise) ApplyAddSubscribeTime(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
-// @Param        query  query   model.ApplyReq  true  "desc"
-// @Success      200  {object}  model.PaginationRes{items=[]model.ApplyListRsp}  "请求成功"
+// @Param        query  query   model.SubscribeAlterApplyReq  true  "desc"
+// @Success      200  {object}  model.PaginationRes{items=[]model.SubscribeAlterApplyListRsp}  "请求成功"
 func (*enterprise) ApplyList(c echo.Context) (err error) {
-	ctx, req := app.RiderContextAndBinding[model.ApplyReq](c)
+	ctx, req := app.RiderContextAndBinding[model.SubscribeAlterApplyReq](c)
 	return ctx.SendResponse(service.NewEnterpriseRider().SubscribeAlterList(req, ctx.Rider))
 }
 

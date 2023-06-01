@@ -14035,7 +14035,7 @@ const docTemplate = `{
                                         "items": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/model.ApplyListRsp"
+                                                "$ref": "#/definitions/model.SubscribeAlterApplyListRsp"
                                             }
                                         }
                                     }
@@ -15700,39 +15700,6 @@ const docTemplate = `{
                 "AllocateStatusSigned",
                 "AllocateStatusVoid"
             ]
-        },
-        "model.ApplyListRsp": {
-            "type": "object",
-            "properties": {
-                "applyTime": {
-                    "description": "申请时间",
-                    "type": "string"
-                },
-                "days": {
-                    "description": "天数",
-                    "type": "integer"
-                },
-                "expireTime": {
-                    "description": "到期时间",
-                    "type": "integer"
-                },
-                "reviewTime": {
-                    "description": "审核时间",
-                    "type": "string"
-                },
-                "riderName": {
-                    "description": "骑手姓名",
-                    "type": "string"
-                },
-                "riderPhone": {
-                    "description": "骑手手机号",
-                    "type": "string"
-                },
-                "status": {
-                    "description": "审核状态",
-                    "type": "integer"
-                }
-            }
         },
         "model.AssistanceAllocateReq": {
             "type": "object",
@@ -24981,6 +24948,39 @@ const docTemplate = `{
                 "reason": {
                     "description": "调整理由",
                     "type": "string"
+                }
+            }
+        },
+        "model.SubscribeAlterApplyListRsp": {
+            "type": "object",
+            "properties": {
+                "applyTime": {
+                    "description": "申请时间",
+                    "type": "string"
+                },
+                "days": {
+                    "description": "天数",
+                    "type": "integer"
+                },
+                "expireTime": {
+                    "description": "到期时间",
+                    "type": "integer"
+                },
+                "reviewTime": {
+                    "description": "审核时间",
+                    "type": "string"
+                },
+                "riderName": {
+                    "description": "骑手姓名",
+                    "type": "string"
+                },
+                "riderPhone": {
+                    "description": "骑手手机号",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "审核状态",
+                    "type": "integer"
                 }
             }
         },

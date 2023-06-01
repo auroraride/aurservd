@@ -1,16 +1,16 @@
 package model
 
 const (
-	// SubscribeUnreviewed 未审核
-	SubscribeUnreviewed = iota
-	// SubscribeNormal 已通过
-	SubscribeNormal
-	// SubscribeUnpass 未通过
-	SubscribeUnpass
+	// SubscribealterUnreviewed 未审核
+	SubscribeAlterUnreviewed = iota
+	// SubscribeAlterNormal 已通过
+	SubscribeAlterNormal
+	// SubscribeAlterUnpass 未通过
+	SubscribeAlterUnpass
 )
 
-// SubscribeApplyReq 申请请求
-type SubscribeApplyReq struct {
+// SubscribeAlterApplyReq 申请请求
+type SubscribeAlterApplyReq struct {
 	PaginationReq
 	// 开始时间
 	StartTime *string `json:"start"`
@@ -24,8 +24,8 @@ type SubscribeApplyReq struct {
 	ID uint64 `json:"id" param:"id"`
 }
 
-// SubscribeApplyListRsp 申请列表返回信息
-type SubscribeApplyListRsp struct {
+// SubscribeAlterApplyListRsp 申请列表返回信息
+type SubscribeAlterApplyListRsp struct {
 	// 天数
 	Days int `json:"days"`
 	// 申请时间
@@ -42,8 +42,8 @@ type SubscribeApplyListRsp struct {
 	RiderPhone string `json:"riderPhone"`
 }
 
-// SubscribeReviewReq 审批订阅申请
-type SubscribeReviewReq struct {
+// SubscribeAlterReviewReq 审批订阅申请
+type SubscribeAlterReviewReq struct {
 	Ids []uint64 `json:"ids"`
 	// 审批状态
 	Status int `json:"status"`

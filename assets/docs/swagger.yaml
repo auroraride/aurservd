@@ -557,30 +557,6 @@ definitions:
     - AllocateStatusPending
     - AllocateStatusSigned
     - AllocateStatusVoid
-  model.ApplyListRsp:
-    properties:
-      applyTime:
-        description: 申请时间
-        type: string
-      days:
-        description: 天数
-        type: integer
-      expireTime:
-        description: 到期时间
-        type: integer
-      reviewTime:
-        description: 审核时间
-        type: string
-      riderName:
-        description: 骑手姓名
-        type: string
-      riderPhone:
-        description: 骑手手机号
-        type: string
-      status:
-        description: 审核状态
-        type: integer
-    type: object
   model.AssistanceAllocateReq:
     properties:
       id:
@@ -6955,6 +6931,30 @@ definitions:
     - days
     - id
     - reason
+    type: object
+  model.SubscribeAlterApplyListRsp:
+    properties:
+      applyTime:
+        description: 申请时间
+        type: string
+      days:
+        description: 天数
+        type: integer
+      expireTime:
+        description: 到期时间
+        type: integer
+      reviewTime:
+        description: 审核时间
+        type: string
+      riderName:
+        description: 骑手姓名
+        type: string
+      riderPhone:
+        description: 骑手手机号
+        type: string
+      status:
+        description: 审核状态
+        type: integer
     type: object
   model.SubscribeBusiness:
     properties:
@@ -16517,7 +16517,7 @@ paths:
             - properties:
                 items:
                   items:
-                    $ref: '#/definitions/model.ApplyListRsp'
+                    $ref: '#/definitions/model.SubscribeAlterApplyListRsp'
                   type: array
               type: object
       summary: R3014 骑手申请列表
