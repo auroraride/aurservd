@@ -124,3 +124,19 @@ func (*rider) ReviewApply(c echo.Context) (err error) {
 	service.NewEnterpriseWithAgent(ctx.Agent, ctx.Enterprise).SubscribeApplyReviewApply(req)
 	return ctx.SendResponse(model.StatusResponse{Status: true})
 }
+
+// ExchangeList  换电列表
+// @ID           AgentExchangeList
+// @Router       /agent/v1/rider/exchange [GET]
+// @Summary      A2009 换电列表
+// @Tags         [A]代理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Agent-Token  header  string  true  "代理校验token"
+// @Param        query  query   model.ExchangeManagerListReq  true  "查询条件"
+// @Success      200  {object}  model.PaginationRes{items=[]model.ExchangeManagerListRes}  "请求成功"
+func (*rider) ExchangeList(c echo.Context) (err error) {
+	ctx, req := app.AgentContextAndBinding[model.ExchangeManagerListReq](c)
+	req.EnterpriseID = ctx.Enterprise.ID
+	return ctx.SendResponse(service.NewExchange().List(req))
+}

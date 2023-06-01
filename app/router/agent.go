@@ -36,7 +36,12 @@ func loadAgentRoutes() {
 	auth.POST("/rider", aapi.Rider.Create)
 	// 邀请骑手二维码
 	auth.POST("/rider/invite", aapi.Rider.Invite)
-
+	// 申请加时列表
+	auth.GET("/subscribe/apply", aapi.Rider.SubscribeApplyList)
+	// 审批加时
+	auth.POST("/subscribe/apply", aapi.Rider.ReviewApply)
+	// 换电记录列表
+	auth.GET("/rider/exchange", aapi.Rider.ExchangeList)
 	// auth.POST("/rider/alter", aapi.Rider.Alter)
 	// auth.GET("/rider/:id", aapi.Rider.Detail)
 
