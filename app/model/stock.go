@@ -45,21 +45,22 @@ func StockNumberOfRiderBusiness(typ uint8) (num int) {
 	switch typ {
 	case StockTypeRiderActive, StockTypeRiderContinue:
 		num = -1
-		break
 	case StockTypeRiderPause, StockTypeRiderUnSubscribe:
 		num = 1
-		break
 	}
-	return
+	return num
 }
 
 type StockTransferLoopper struct {
 	Message string // 错误提示消息
 
-	EbikeID   *uint64 // 电车ID
-	BrandID   *uint64 // 电车型号ID
-	BrandName *string // 电车型号
-	EbikeSN   *string // 车架号
+	EbikeID      *uint64 // 电车ID
+	BrandID      *uint64 // 电车型号ID
+	BrandName    *string // 电车型号
+	EbikeSN      *string // 车架号
+	BatterySN    *string // 电池SN
+	BatteryID    *uint64 // 电池ID
+	BatteryModel string  // 电池型号
 }
 
 type StockTransferReq struct {
@@ -76,8 +77,8 @@ type StockTransferReq struct {
 	InboundID      uint64 `json:"inboundId"`                    // 调入至 0:平台
 	InboundTarget  uint8  `json:"inboundTarget" enums:"0,1,2"`  // 调入目标 0:平台 1:门店 2:电柜 3.站点
 
-	Force     bool   `swaggerignore:"true"` // 是否强制 (忽略电柜初始化)
-	BatterySn string `json:"batterySn"`     // 电池编号
+	Force     bool     `swaggerignore:"true"` // 是否强制 (忽略电柜初始化)
+	BatterySn []string `json:"batterySn"`     // 电池编号
 }
 
 func (req *StockTransferReq) IsToStore() bool {
@@ -122,7 +123,7 @@ func (req *StockTransferReq) ParticipateCabinet() bool {
 
 // RealNumber 获取实际物资数量
 func (req *StockTransferReq) RealNumber() int {
-	if len(req.Ebikes) > 0 || req.BatterySn != "" {
+	if len(req.Ebikes) > 0 || len(req.BatterySn) > 0 {
 		return 1
 	}
 	return req.Num
@@ -131,9 +132,6 @@ func (req *StockTransferReq) RealNumber() int {
 func (req *StockTransferReq) RealName() string {
 	if req.Model != "" {
 		return req.Model
-	}
-	if req.BatterySn != "" {
-		return req.BatterySn
 	}
 	return req.Name
 }
@@ -150,13 +148,9 @@ func (req *StockTransferReq) Validate() error {
 	if req.Name != "" {
 		mo = 1
 	}
-	// 电车
-	if len(req.Ebikes) > 0 {
+	// 电车 团签电池
+	if len(req.Ebikes) > 0 || len(req.BatterySn) > 0 {
 		meb = 1
-	}
-	// 团签电池
-	if req.BatterySn != "" {
-		mbs = 1
 	}
 
 	// 运算判定物资是否正确(互斥不为空)

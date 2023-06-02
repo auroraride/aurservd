@@ -320,7 +320,7 @@ func (*enterprise) BindCabinet(c echo.Context) (err error) {
 
 // UnbindCabinet 团签解绑电柜
 // @ID           ManagerEnterpriseUnbindCabinet
-// @Router       /manager/v1/enterprise/unbind/cabinet [GET]
+// @Router       /manager/v1/enterprise/unbind/cabinet/{id} [GET]
 // @Summary      M9025 团签解绑电柜
 // @Tags         [M]管理接口
 // @Accept       json
@@ -349,7 +349,7 @@ func (*enterprise) RepaymentList(c echo.Context) (err error) {
 
 // SubscribeApplyList 订阅申请列表
 // @ID           ManagerEnterpriseSubscribeApplyList
-// @Router       /manager/v1/enterprise/subscribe/apply [GET]
+// @Router       /manager/v1/enterprise/subscribe/apply/{id} [GET]
 // @Summary      M9027 订阅申请列表
 // @Tags         [M]管理接口
 // @Accept       json

@@ -24,7 +24,6 @@ import (
 	"github.com/auroraride/aurservd/assets"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
-	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -1123,7 +1122,6 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
 	var stationID uint64
 	var stationInfo *ent.EnterpriseStation
 	var enterpriseId uint64
-	var batinfo *ent.Battery
 	// 团签调拨
 	if req.InboundTarget == model.StockTargetStation {
 		stationID = req.InboundID
@@ -1135,11 +1133,6 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
 		stationInfo, _ = ent.Database.EnterpriseStation.QueryNotDeleted().WithEnterprise().Where(enterprisestation.ID(stationID)).First(s.ctx)
 		if stationInfo == nil {
 			snag.Panic("电池调拨站点不存在")
-		}
-		// 查询电池
-		batinfo, _ = ent.Database.Battery.Query().Where(battery.Sn(req.BatterySn)).First(s.ctx)
-		if batinfo == nil {
-			snag.Panic("电池不存在")
 		}
 		if stationInfo.Edges.Enterprise != nil {
 			enterpriseId = stationInfo.Edges.Enterprise.ID
@@ -1166,8 +1159,8 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
 	batchable := req.Batchable()
 
 	// 批量调拨, 调出检查
-	// 跳过电车 跳过团签电池
-	if req.OutboundID > 0 && len(req.Ebikes) == 0 && req.BatterySn == "" && NewStockBatchable().Fetch(req.OutboundTarget, req.OutboundID, name) < req.Num {
+	// 跳过电车
+	if req.OutboundID > 0 && len(req.Ebikes) == 0 && len(req.BatterySn) == 0 && NewStockBatchable().Fetch(req.OutboundTarget, req.OutboundID, name) < req.Num {
 		snag.Panic("操作失败, 调出物资大于库存物资")
 	}
 
@@ -1175,7 +1168,7 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
 		switch true {
 		case len(req.Ebikes) > 0:
 			return stock.MaterialEbike
-		case req.Model != "" || req.BatterySn != "":
+		case req.Model != "" || len(req.BatterySn) > 0:
 			return stock.MaterialBattery
 		}
 		return stock.MaterialOthers
@@ -1197,8 +1190,6 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
 	case model.StockTargetStation:
 		outCreator.SetNillableStationID(out)
 		outCreator.SetEnterpriseID(enterpriseId)
-		outCreator.SetBatteryID(batinfo.ID)
-		outCreator.SetModel(batinfo.Model)
 	}
 
 	inCreator := s.orm.Create().
@@ -1217,8 +1208,6 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
 	case model.StockTargetStation:
 		inCreator.SetNillableStationID(in)
 		inCreator.SetEnterpriseID(enterpriseId)
-		inCreator.SetBatteryID(batinfo.ID)
-		inCreator.SetModel(batinfo.Model)
 	}
 
 	var looppers []model.StockTransferLoopper
@@ -1227,6 +1216,8 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
 	case len(req.Ebikes) > 0:
 		// failed = append(failed, NewStockEbike(s.modifier, s.employee, s.rider).Transfer(cityID, in, out, req)...)
 		looppers, failed = NewStockEbike().Loopers(req)
+	case len(req.BatterySn) > 0:
+		looppers = NewStockBatchable().Loopers(req, enterpriseId)
 	default:
 		looppers = make([]model.StockTransferLoopper, 1)
 	}
@@ -1244,6 +1235,8 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
 				SetName(name).
 				SetNillableEbikeID(l.EbikeID).
 				SetNillableBrandID(l.BrandID).
+				SetModel(l.BatteryModel).
+				SetNillableBatteryID(l.BatteryID).
 				Save(s.ctx)
 			if err != nil {
 				if batchable {
@@ -1258,7 +1251,8 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
 				SetNillableEbikeID(l.EbikeID).
 				SetNillableBrandID(l.BrandID).
 				SetSpouse(spouse).
-				SetNillableEbikeID(l.EbikeID).
+				SetModel(l.BatteryModel).
+				SetNillableBatteryID(l.BatteryID).
 				Save(s.ctx)
 			if err != nil {
 				if batchable {
@@ -1287,8 +1281,8 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
 				}
 			}
 
-			if req.BatterySn != "" {
-				update := tx.Battery.UpdateOneID(batinfo.ID)
+			if l.BatteryID != nil {
+				update := tx.Battery.UpdateOneID(*l.BatteryID)
 				if req.IsToStation() { // 调拨到电站
 					update.SetNillableStationID(in)
 					update.SetEnterpriseID(enterpriseId)
