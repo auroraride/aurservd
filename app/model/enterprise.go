@@ -80,6 +80,7 @@ type EnterpriseDetail struct {
 	Agent        *bool    `json:"agent"`              // 代理商 `true`是 `false`否
 	UseStore     *bool    `json:"useStore,omitempty"` // 可使用门店 `true`允许 `false`不允许 (仅代理商模式生效), 骑手是否可以使用门店进行激活和退租
 	Days         *[]int   `json:"days,omitempty"`     // 代理商时间选项
+	Distance     *uint64  `json:"distance" validate:"required"`
 }
 
 type EnterpriseDetailWithID struct {

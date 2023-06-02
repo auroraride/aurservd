@@ -72,6 +72,7 @@ func Run() {
 
 	// e.Logger.SetHeader(`[time] ${time_rfc3339_nano}` + "\n")
 	cfg := ar.Config.Api
+	// cfg.Bind = "localhost:8081"
 	corsConfig := mw.DefaultCORSConfig
 	corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, []string{
 		app.HeaderContentType,

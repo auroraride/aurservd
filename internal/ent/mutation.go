@@ -33415,6 +33415,9 @@ type EnterpriseMutation struct {
 	stocks              map[uint64]struct{}
 	removedstocks       map[uint64]struct{}
 	clearedstocks       bool
+	prepayments         map[uint64]struct{}
+	removedprepayments  map[uint64]struct{}
+	clearedprepayments  bool
 	done                bool
 	oldValue            func(context.Context) (*Enterprise, error)
 	predicates          []predicate.Enterprise
@@ -35260,6 +35263,60 @@ func (m *EnterpriseMutation) ResetStocks() {
 	m.removedstocks = nil
 }
 
+// AddPrepaymentIDs adds the "prepayments" edge to the EnterprisePrepayment entity by ids.
+func (m *EnterpriseMutation) AddPrepaymentIDs(ids ...uint64) {
+	if m.prepayments == nil {
+		m.prepayments = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.prepayments[ids[i]] = struct{}{}
+	}
+}
+
+// ClearPrepayments clears the "prepayments" edge to the EnterprisePrepayment entity.
+func (m *EnterpriseMutation) ClearPrepayments() {
+	m.clearedprepayments = true
+}
+
+// PrepaymentsCleared reports if the "prepayments" edge to the EnterprisePrepayment entity was cleared.
+func (m *EnterpriseMutation) PrepaymentsCleared() bool {
+	return m.clearedprepayments
+}
+
+// RemovePrepaymentIDs removes the "prepayments" edge to the EnterprisePrepayment entity by IDs.
+func (m *EnterpriseMutation) RemovePrepaymentIDs(ids ...uint64) {
+	if m.removedprepayments == nil {
+		m.removedprepayments = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.prepayments, ids[i])
+		m.removedprepayments[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedPrepayments returns the removed IDs of the "prepayments" edge to the EnterprisePrepayment entity.
+func (m *EnterpriseMutation) RemovedPrepaymentsIDs() (ids []uint64) {
+	for id := range m.removedprepayments {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// PrepaymentsIDs returns the "prepayments" edge IDs in the mutation.
+func (m *EnterpriseMutation) PrepaymentsIDs() (ids []uint64) {
+	for id := range m.prepayments {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetPrepayments resets all changes to the "prepayments" edge.
+func (m *EnterpriseMutation) ResetPrepayments() {
+	m.prepayments = nil
+	m.clearedprepayments = false
+	m.removedprepayments = nil
+}
+
 // Where appends a list predicates to the EnterpriseMutation builder.
 func (m *EnterpriseMutation) Where(ps ...predicate.Enterprise) {
 	m.predicates = append(m.predicates, ps...)
@@ -35893,7 +35950,7 @@ func (m *EnterpriseMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *EnterpriseMutation) AddedEdges() []string {
-	edges := make([]string, 0, 13)
+	edges := make([]string, 0, 14)
 	if m.city != nil {
 		edges = append(edges, enterprise.EdgeCity)
 	}
@@ -35932,6 +35989,9 @@ func (m *EnterpriseMutation) AddedEdges() []string {
 	}
 	if m.stocks != nil {
 		edges = append(edges, enterprise.EdgeStocks)
+	}
+	if m.prepayments != nil {
+		edges = append(edges, enterprise.EdgePrepayments)
 	}
 	return edges
 }
@@ -36016,13 +36076,19 @@ func (m *EnterpriseMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case enterprise.EdgePrepayments:
+		ids := make([]ent.Value, 0, len(m.prepayments))
+		for id := range m.prepayments {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *EnterpriseMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 13)
+	edges := make([]string, 0, 14)
 	if m.removedriders != nil {
 		edges = append(edges, enterprise.EdgeRiders)
 	}
@@ -36058,6 +36124,9 @@ func (m *EnterpriseMutation) RemovedEdges() []string {
 	}
 	if m.removedstocks != nil {
 		edges = append(edges, enterprise.EdgeStocks)
+	}
+	if m.removedprepayments != nil {
+		edges = append(edges, enterprise.EdgePrepayments)
 	}
 	return edges
 }
@@ -36138,13 +36207,19 @@ func (m *EnterpriseMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case enterprise.EdgePrepayments:
+		ids := make([]ent.Value, 0, len(m.removedprepayments))
+		for id := range m.removedprepayments {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *EnterpriseMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 13)
+	edges := make([]string, 0, 14)
 	if m.clearedcity {
 		edges = append(edges, enterprise.EdgeCity)
 	}
@@ -36184,6 +36259,9 @@ func (m *EnterpriseMutation) ClearedEdges() []string {
 	if m.clearedstocks {
 		edges = append(edges, enterprise.EdgeStocks)
 	}
+	if m.clearedprepayments {
+		edges = append(edges, enterprise.EdgePrepayments)
+	}
 	return edges
 }
 
@@ -36217,6 +36295,8 @@ func (m *EnterpriseMutation) EdgeCleared(name string) bool {
 		return m.clearedcabinets
 	case enterprise.EdgeStocks:
 		return m.clearedstocks
+	case enterprise.EdgePrepayments:
+		return m.clearedprepayments
 	}
 	return false
 }
@@ -36274,6 +36354,9 @@ func (m *EnterpriseMutation) ResetEdge(name string) error {
 		return nil
 	case enterprise.EdgeStocks:
 		m.ResetStocks()
+		return nil
+	case enterprise.EdgePrepayments:
+		m.ResetPrepayments()
 		return nil
 	}
 	return fmt.Errorf("unknown Enterprise edge %s", name)

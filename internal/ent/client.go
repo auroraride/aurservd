@@ -4862,6 +4862,22 @@ func (c *EnterpriseClient) QueryStocks(e *Enterprise) *StockQuery {
 	return query
 }
 
+// QueryPrepayments queries the prepayments edge of a Enterprise.
+func (c *EnterpriseClient) QueryPrepayments(e *Enterprise) *EnterprisePrepaymentQuery {
+	query := (&EnterprisePrepaymentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprise.Table, enterprise.FieldID, id),
+			sqlgraph.To(enterpriseprepayment.Table, enterpriseprepayment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprise.PrepaymentsTable, enterprise.PrepaymentsColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *EnterpriseClient) Hooks() []Hook {
 	hooks := c.hooks.Enterprise

@@ -1991,6 +1991,7 @@ var (
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
 		{Name: "amount", Type: field.TypeFloat64, Comment: "预付金额"},
 		{Name: "payway", Type: field.TypeOther, Comment: "支付方式", Default: schema.Expr("1"), SchemaType: map[string]string{"postgres": "smallint"}},
+		{Name: "enterprise_prepayments", Type: field.TypeUint64, Nullable: true},
 		{Name: "enterprise_id", Type: field.TypeUint64, Comment: "企业ID"},
 	}
 	// EnterprisePrepaymentTable holds the schema information for the "enterprise_prepayment" table.
@@ -2000,8 +2001,14 @@ var (
 		PrimaryKey: []*schema.Column{EnterprisePrepaymentColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "enterprise_prepayment_enterprise_enterprise",
+				Symbol:     "enterprise_prepayment_enterprise_prepayments",
 				Columns:    []*schema.Column{EnterprisePrepaymentColumns[9]},
+				RefColumns: []*schema.Column{EnterpriseColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "enterprise_prepayment_enterprise_enterprise",
+				Columns:    []*schema.Column{EnterprisePrepaymentColumns[10]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -2020,7 +2027,7 @@ var (
 			{
 				Name:    "enterpriseprepayment_enterprise_id",
 				Unique:  false,
-				Columns: []*schema.Column{EnterprisePrepaymentColumns[9]},
+				Columns: []*schema.Column{EnterprisePrepaymentColumns[10]},
 			},
 		},
 	}
@@ -4611,6 +4618,7 @@ func init() {
 		Table: "enterprise_contract",
 	}
 	EnterprisePrepaymentTable.ForeignKeys[0].RefTable = EnterpriseTable
+	EnterprisePrepaymentTable.ForeignKeys[1].RefTable = EnterpriseTable
 	EnterprisePrepaymentTable.Annotation = &entsql.Annotation{
 		Table: "enterprise_prepayment",
 	}

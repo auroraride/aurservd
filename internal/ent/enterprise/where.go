@@ -1429,6 +1429,29 @@ func HasStocksWith(preds ...predicate.Stock) predicate.Enterprise {
 	})
 }
 
+// HasPrepayments applies the HasEdge predicate on the "prepayments" edge.
+func HasPrepayments() predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, PrepaymentsTable, PrepaymentsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasPrepaymentsWith applies the HasEdge predicate on the "prepayments" edge with a given conditions (other predicates).
+func HasPrepaymentsWith(preds ...predicate.EnterprisePrepayment) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		step := newPrepaymentsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Enterprise) predicate.Enterprise {
 	return predicate.Enterprise(func(s *sql.Selector) {

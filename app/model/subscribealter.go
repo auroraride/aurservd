@@ -26,6 +26,8 @@ type SubscribeAlterApplyReq struct {
 
 // SubscribeAlterApplyListRsp 申请列表返回信息
 type SubscribeAlterApplyListRsp struct {
+	// id
+	ID uint64 `json:"id"`
 	// 天数
 	Days int `json:"days"`
 	// 申请时间

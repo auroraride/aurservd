@@ -40,8 +40,9 @@ type EnterprisePrepayment struct {
 	Payway model.Payway `json:"payway,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EnterprisePrepaymentQuery when eager-loading is set.
-	Edges        EnterprisePrepaymentEdges `json:"edges"`
-	selectValues sql.SelectValues
+	Edges                  EnterprisePrepaymentEdges `json:"edges"`
+	enterprise_prepayments *uint64
+	selectValues           sql.SelectValues
 }
 
 // EnterprisePrepaymentEdges holds the relations/edges for other nodes in the graph.
@@ -83,6 +84,8 @@ func (*EnterprisePrepayment) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case enterpriseprepayment.FieldCreatedAt, enterpriseprepayment.FieldUpdatedAt, enterpriseprepayment.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
+		case enterpriseprepayment.ForeignKeys[0]: // enterprise_prepayments
+			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -162,6 +165,13 @@ func (ep *EnterprisePrepayment) assignValues(columns []string, values []any) err
 				return fmt.Errorf("unexpected type %T for field payway", values[i])
 			} else if value != nil {
 				ep.Payway = *value
+			}
+		case enterpriseprepayment.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field enterprise_prepayments", value)
+			} else if value.Valid {
+				ep.enterprise_prepayments = new(uint64)
+				*ep.enterprise_prepayments = uint64(value.Int64)
 			}
 		default:
 			ep.selectValues.Set(columns[i], values[i])

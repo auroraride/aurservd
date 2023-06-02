@@ -87,14 +87,16 @@ type CabinetItem struct {
 	ID uint64 `json:"id"` // 电柜ID
 	Sn string `json:"sn"` // 平台编码
 	Cabinet
-	Models      []string `json:"models"`              // 电池型号
-	City        *City    `json:"city,omitempty"`      // 城市
-	CreatedAt   string   `json:"createdAt,omitempty"` // 创建时间
-	SimSn       string   `json:"simSn,omitempty"`     // SIM卡号
-	SimDate     string   `json:"simDate,omitempty"`   // SIM卡到期日期, 例: 2022-06-01
-	Transferred bool     `json:"transferred"`         // 是否初始化过调拨
-	BatteryNum  int      `json:"batteryNum"`          // 电池数量
-	Intelligent bool     `json:"intelligent"`         // 是否智能柜
+	Models         []string `json:"models"`                   // 电池型号
+	City           *City    `json:"city,omitempty"`           // 城市
+	CreatedAt      string   `json:"createdAt,omitempty"`      // 创建时间
+	SimSn          string   `json:"simSn,omitempty"`          // SIM卡号
+	SimDate        string   `json:"simDate,omitempty"`        // SIM卡到期日期, 例: 2022-06-01
+	Transferred    bool     `json:"transferred"`              // 是否初始化过调拨
+	BatteryNum     int      `json:"batteryNum"`               // 电池数量
+	Intelligent    bool     `json:"intelligent"`              // 是否智能柜
+	StationName    string   `json:"stationName,omitempty"`    // 所属站点名称
+	EnterpriseName string   `json:"enterpriseName,omitempty"` // 团签名称
 }
 
 // CabinetQueryReq 电柜查询请求
@@ -110,6 +112,8 @@ type CabinetQueryReq struct {
 	Online       uint8                 `json:"online" query:"online"`             // 在线状态
 	Intelligent  uint8                 `json:"intelligent" query:"intelligent"`   // 是否智能柜 0:全部 1:是 2:否
 	EnterpriseID *uint64               `json:"enterpriseId" query:"enterpriseId"` // 团签ID
+	// 归属类型   1:平台 2:代理商
+	OwnerType *uint8 `json:"ownerType" query:"ownerType"`
 }
 
 // CabinetModifyReq 电柜修改请求
@@ -417,4 +421,24 @@ type CabinetRpcBatchRequestItem struct {
 type CabinetInterruptRequest struct {
 	Serial  string `json:"serial" validate:"required"`  // 电柜编码
 	Message string `json:"message" validate:"required"` // 中断消息
+}
+
+// EnterpriseBindCabinetReq 团签绑定电柜请求
+type EnterpriseBindCabinetReq struct {
+	// ID 电柜ID
+	ID uint64 `json:"id" validate:"required" param:"id"`
+	// 站点id
+	StationID uint64 `json:"station_id" validate:"required"`
+	// 团签id
+	EnterpriseID uint64 `json:"enterprise_id" validate:"required"`
+}
+
+// CabinetAgentEditReq 代理商电柜编辑请求
+type CabinetAgentEditReq struct {
+	// ID 电柜ID
+	ID uint64 `json:"id" validate:"required" param:"id"`
+	// 站点id
+	StationID uint64 `json:"stationId" validate:"required"`
+	// 电柜状态  0未投放 1运营中 2维护中
+	Status uint8 `json:"status" validate:"required,enums=0,1,2"`
 }

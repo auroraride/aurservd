@@ -165,6 +165,14 @@ func (s *cabinetService) List(req *model.CabinetQueryReq) (res *model.Pagination
 	if req.EnterpriseID != nil {
 		q.Where(cabinet.EnterpriseID(*req.EnterpriseID))
 	}
+	if req.OwnerType != nil {
+		switch *req.OwnerType {
+		case 1: // 平台
+			q.Where(cabinet.EnterpriseIDIsNil())
+		case 2: // 代理商
+			q.Where(cabinet.EnterpriseIDNotNil())
+		}
+	}
 	return model.ParsePaginationResponse[model.CabinetItem, ent.Cabinet](q, req.PaginationReq, func(item *ent.Cabinet) (res model.CabinetItem) {
 		_ = copier.Copy(&res, item)
 
@@ -889,4 +897,29 @@ func (s *cabinetService) Interrupt(req *model.CabinetInterruptRequest) *pb.Cabin
 	}
 	items := make([]*pb.CabinetBiz, cnt)
 	return &pb.CabinetBizResponse{Items: items}
+}
+
+// BindCabinet 团签绑定电柜
+func (s *cabinetService) BindCabinet(req *model.EnterpriseBindCabinetReq) {
+	// 判断电柜是否被绑定
+	cab := s.QueryOne(req.ID)
+	if cab == nil {
+		snag.Panic("电柜不存在")
+	}
+	if cab.EnterpriseID != nil || cab.StationID != nil {
+		snag.Panic("电柜已被绑定")
+	}
+	// 电柜绑定
+	s.orm.UpdateOneID(req.ID).SetEnterpriseID(req.EnterpriseID).SetStationID(req.StationID).SaveX(s.ctx)
+}
+
+// EditAgentCabinet 编辑代理商电柜
+func (s *cabinetService) EditAgentCabinet(req *model.CabinetAgentEditReq) {
+	// 判断电柜是是否存在
+	cab := s.QueryOne(req.ID)
+	if cab == nil {
+		snag.Panic("电柜不存在")
+	}
+	// 电柜编辑
+	s.orm.UpdateOneID(req.ID).SetStationID(req.StationID).SetStatus(req.Status).SaveX(s.ctx)
 }

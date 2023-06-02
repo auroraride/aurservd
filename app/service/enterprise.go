@@ -662,8 +662,8 @@ func (s *enterpriseService) NameFromID(id uint64) string {
 }
 
 // SubscribeApplyList 骑手订阅申请加时列表
-func (s *enterpriseService) SubscribeApplyList(req *model.SubscribeAlterApplyReq, enter *ent.Enterprise) *model.PaginationRes {
-	q := ent.Database.SubscribeAlter.QueryNotDeleted().Where(subscribealter.EnterpriseID(enter.ID)).
+func (s *enterpriseService) SubscribeApplyList(req *model.SubscribeAlterApplyReq, enterpriseId uint64) *model.PaginationRes {
+	q := ent.Database.SubscribeAlter.QueryNotDeleted().Where(subscribealter.EnterpriseID(enterpriseId)).
 		Order(ent.Desc(subscribealter.FieldCreatedAt)).WithRider().WithSubscribe()
 
 	if req.StartTime != nil && req.EndTime != nil {
@@ -685,6 +685,7 @@ func (s *enterpriseService) SubscribeApplyList(req *model.SubscribeAlterApplyReq
 		req.PaginationReq,
 		func(item *ent.SubscribeAlter) model.SubscribeAlterApplyListRsp {
 			rsp := model.SubscribeAlterApplyListRsp{
+				ID:   item.ID,
 				Days: item.Days,
 				// 申请时间
 				ApplyTime: item.CreatedAt.Format(carbon.DateTimeLayout),

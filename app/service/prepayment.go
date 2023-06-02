@@ -62,7 +62,7 @@ func (s *prepaymentService) Overview(en *ent.Enterprise) (res model.PrepaymentOv
 
 func (s *prepaymentService) List(enterpriseID uint64, req *model.PrepaymentListReq) *model.PaginationRes {
 	q := s.orm.QueryNotDeleted().
-		Where(enterpriseprepayment.EnterpriseID(enterpriseID)).
+		Where(enterpriseprepayment.EnterpriseID(enterpriseID)).WithEnterprise().
 		Order(ent.Desc(enterpriseprepayment.FieldCreatedAt))
 
 	// 筛选时间段
@@ -85,7 +85,11 @@ func (s *prepaymentService) List(enterpriseID uint64, req *model.PrepaymentListR
 			Remark: item.Remark,
 			Payway: item.Payway,
 		}
-		res.Name = "平台管理员"
+		res.Name = item.Edges.Enterprise.Name
+		if item.Payway == model.PaywayCash {
+			res.Name = "平台管理员"
+		}
+
 		return res
 	})
 }

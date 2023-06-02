@@ -2781,6 +2781,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Stock",
 	)
 	graph.MustAddE(
+		"prepayments",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.PrepaymentsTable,
+			Columns: []string{enterprise.PrepaymentsColumn},
+			Bidi:    false,
+		},
+		"Enterprise",
+		"EnterprisePrepayment",
+	)
+	graph.MustAddE(
 		"rider",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -8400,6 +8412,20 @@ func (f *EnterpriseFilter) WhereHasStocks() {
 // WhereHasStocksWith applies a predicate to check if query has an edge stocks with a given conditions (other predicates).
 func (f *EnterpriseFilter) WhereHasStocksWith(preds ...predicate.Stock) {
 	f.Where(entql.HasEdgeWith("stocks", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasPrepayments applies a predicate to check if query has an edge prepayments.
+func (f *EnterpriseFilter) WhereHasPrepayments() {
+	f.Where(entql.HasEdge("prepayments"))
+}
+
+// WhereHasPrepaymentsWith applies a predicate to check if query has an edge prepayments with a given conditions (other predicates).
+func (f *EnterpriseFilter) WhereHasPrepaymentsWith(preds ...predicate.EnterprisePrepayment) {
+	f.Where(entql.HasEdgeWith("prepayments", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
