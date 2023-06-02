@@ -15,8 +15,13 @@ RUN go get ./... && \
 
 FROM alpine
 COPY --from=builder /go/bin/aurservd /app/aurservd
-COPY --from=builder /usr/share/zoneinfo /usr/share/
-COPY --from=builder /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
-COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+#COPY --from=builder /usr/share/zoneinfo /usr/share/
+#COPY --from=builder /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+#COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+RUN  apk add --no-cache bash tzdata \
+     && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+     && echo "Asia/Shanghai" > /etc/timezone \
+     && rm -rf /var/cache/apk/* \
+     && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 ENTRYPOINT ["/app/aurservd", "server"]
