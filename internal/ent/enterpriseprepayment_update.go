@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprepayment"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -95,6 +96,26 @@ func (epu *EnterprisePrepaymentUpdate) SetEnterpriseID(u uint64) *EnterprisePrep
 	return epu
 }
 
+// SetAgentID sets the "agent_id" field.
+func (epu *EnterprisePrepaymentUpdate) SetAgentID(u uint64) *EnterprisePrepaymentUpdate {
+	epu.mutation.SetAgentID(u)
+	return epu
+}
+
+// SetNillableAgentID sets the "agent_id" field if the given value is not nil.
+func (epu *EnterprisePrepaymentUpdate) SetNillableAgentID(u *uint64) *EnterprisePrepaymentUpdate {
+	if u != nil {
+		epu.SetAgentID(*u)
+	}
+	return epu
+}
+
+// ClearAgentID clears the value of the "agent_id" field.
+func (epu *EnterprisePrepaymentUpdate) ClearAgentID() *EnterprisePrepaymentUpdate {
+	epu.mutation.ClearAgentID()
+	return epu
+}
+
 // SetPayway sets the "payway" field.
 func (epu *EnterprisePrepaymentUpdate) SetPayway(m model.Payway) *EnterprisePrepaymentUpdate {
 	epu.mutation.SetPayway(m)
@@ -114,6 +135,11 @@ func (epu *EnterprisePrepaymentUpdate) SetEnterprise(e *Enterprise) *EnterpriseP
 	return epu.SetEnterpriseID(e.ID)
 }
 
+// SetAgent sets the "agent" edge to the Agent entity.
+func (epu *EnterprisePrepaymentUpdate) SetAgent(a *Agent) *EnterprisePrepaymentUpdate {
+	return epu.SetAgentID(a.ID)
+}
+
 // Mutation returns the EnterprisePrepaymentMutation object of the builder.
 func (epu *EnterprisePrepaymentUpdate) Mutation() *EnterprisePrepaymentMutation {
 	return epu.mutation
@@ -122,6 +148,12 @@ func (epu *EnterprisePrepaymentUpdate) Mutation() *EnterprisePrepaymentMutation 
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
 func (epu *EnterprisePrepaymentUpdate) ClearEnterprise() *EnterprisePrepaymentUpdate {
 	epu.mutation.ClearEnterprise()
+	return epu
+}
+
+// ClearAgent clears the "agent" edge to the Agent entity.
+func (epu *EnterprisePrepaymentUpdate) ClearAgent() *EnterprisePrepaymentUpdate {
+	epu.mutation.ClearAgent()
 	return epu
 }
 
@@ -249,6 +281,35 @@ func (epu *EnterprisePrepaymentUpdate) sqlSave(ctx context.Context) (n int, err 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if epu.mutation.AgentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   enterpriseprepayment.AgentTable,
+			Columns: []string{enterpriseprepayment.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := epu.mutation.AgentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   enterpriseprepayment.AgentTable,
+			Columns: []string{enterpriseprepayment.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(epu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, epu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -335,6 +396,26 @@ func (epuo *EnterprisePrepaymentUpdateOne) SetEnterpriseID(u uint64) *Enterprise
 	return epuo
 }
 
+// SetAgentID sets the "agent_id" field.
+func (epuo *EnterprisePrepaymentUpdateOne) SetAgentID(u uint64) *EnterprisePrepaymentUpdateOne {
+	epuo.mutation.SetAgentID(u)
+	return epuo
+}
+
+// SetNillableAgentID sets the "agent_id" field if the given value is not nil.
+func (epuo *EnterprisePrepaymentUpdateOne) SetNillableAgentID(u *uint64) *EnterprisePrepaymentUpdateOne {
+	if u != nil {
+		epuo.SetAgentID(*u)
+	}
+	return epuo
+}
+
+// ClearAgentID clears the value of the "agent_id" field.
+func (epuo *EnterprisePrepaymentUpdateOne) ClearAgentID() *EnterprisePrepaymentUpdateOne {
+	epuo.mutation.ClearAgentID()
+	return epuo
+}
+
 // SetPayway sets the "payway" field.
 func (epuo *EnterprisePrepaymentUpdateOne) SetPayway(m model.Payway) *EnterprisePrepaymentUpdateOne {
 	epuo.mutation.SetPayway(m)
@@ -354,6 +435,11 @@ func (epuo *EnterprisePrepaymentUpdateOne) SetEnterprise(e *Enterprise) *Enterpr
 	return epuo.SetEnterpriseID(e.ID)
 }
 
+// SetAgent sets the "agent" edge to the Agent entity.
+func (epuo *EnterprisePrepaymentUpdateOne) SetAgent(a *Agent) *EnterprisePrepaymentUpdateOne {
+	return epuo.SetAgentID(a.ID)
+}
+
 // Mutation returns the EnterprisePrepaymentMutation object of the builder.
 func (epuo *EnterprisePrepaymentUpdateOne) Mutation() *EnterprisePrepaymentMutation {
 	return epuo.mutation
@@ -362,6 +448,12 @@ func (epuo *EnterprisePrepaymentUpdateOne) Mutation() *EnterprisePrepaymentMutat
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
 func (epuo *EnterprisePrepaymentUpdateOne) ClearEnterprise() *EnterprisePrepaymentUpdateOne {
 	epuo.mutation.ClearEnterprise()
+	return epuo
+}
+
+// ClearAgent clears the "agent" edge to the Agent entity.
+func (epuo *EnterprisePrepaymentUpdateOne) ClearAgent() *EnterprisePrepaymentUpdateOne {
+	epuo.mutation.ClearAgent()
 	return epuo
 }
 
@@ -512,6 +604,35 @@ func (epuo *EnterprisePrepaymentUpdateOne) sqlSave(ctx context.Context) (_node *
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if epuo.mutation.AgentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   enterpriseprepayment.AgentTable,
+			Columns: []string{enterpriseprepayment.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := epuo.mutation.AgentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   enterpriseprepayment.AgentTable,
+			Columns: []string{enterpriseprepayment.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

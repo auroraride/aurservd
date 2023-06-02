@@ -5347,6 +5347,22 @@ func (c *EnterprisePrepaymentClient) QueryEnterprise(ep *EnterprisePrepayment) *
 	return query
 }
 
+// QueryAgent queries the agent edge of a EnterprisePrepayment.
+func (c *EnterprisePrepaymentClient) QueryAgent(ep *EnterprisePrepayment) *AgentQuery {
+	query := (&AgentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ep.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterpriseprepayment.Table, enterpriseprepayment.FieldID, id),
+			sqlgraph.To(agent.Table, agent.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, enterpriseprepayment.AgentTable, enterpriseprepayment.AgentColumn),
+		)
+		fromV = sqlgraph.Neighbors(ep.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *EnterprisePrepaymentClient) Hooks() []Hook {
 	hooks := c.hooks.EnterprisePrepayment
