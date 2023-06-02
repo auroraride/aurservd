@@ -39049,6 +39049,8 @@ type EnterprisePrepaymentMutation struct {
 	clearedFields     map[string]struct{}
 	enterprise        *uint64
 	clearedenterprise bool
+	agent             *uint64
+	clearedagent      bool
 	done              bool
 	oldValue          func(context.Context) (*EnterprisePrepayment, error)
 	predicates        []predicate.EnterprisePrepayment
@@ -39456,6 +39458,55 @@ func (m *EnterprisePrepaymentMutation) ResetEnterpriseID() {
 	m.enterprise = nil
 }
 
+// SetAgentID sets the "agent_id" field.
+func (m *EnterprisePrepaymentMutation) SetAgentID(u uint64) {
+	m.agent = &u
+}
+
+// AgentID returns the value of the "agent_id" field in the mutation.
+func (m *EnterprisePrepaymentMutation) AgentID() (r uint64, exists bool) {
+	v := m.agent
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAgentID returns the old "agent_id" field's value of the EnterprisePrepayment entity.
+// If the EnterprisePrepayment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterprisePrepaymentMutation) OldAgentID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAgentID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAgentID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAgentID: %w", err)
+	}
+	return oldValue.AgentID, nil
+}
+
+// ClearAgentID clears the value of the "agent_id" field.
+func (m *EnterprisePrepaymentMutation) ClearAgentID() {
+	m.agent = nil
+	m.clearedFields[enterpriseprepayment.FieldAgentID] = struct{}{}
+}
+
+// AgentIDCleared returns if the "agent_id" field was cleared in this mutation.
+func (m *EnterprisePrepaymentMutation) AgentIDCleared() bool {
+	_, ok := m.clearedFields[enterpriseprepayment.FieldAgentID]
+	return ok
+}
+
+// ResetAgentID resets all changes to the "agent_id" field.
+func (m *EnterprisePrepaymentMutation) ResetAgentID() {
+	m.agent = nil
+	delete(m.clearedFields, enterpriseprepayment.FieldAgentID)
+}
+
 // SetAmount sets the "amount" field.
 func (m *EnterprisePrepaymentMutation) SetAmount(f float64) {
 	m.amount = &f
@@ -39574,6 +39625,32 @@ func (m *EnterprisePrepaymentMutation) ResetEnterprise() {
 	m.clearedenterprise = false
 }
 
+// ClearAgent clears the "agent" edge to the Agent entity.
+func (m *EnterprisePrepaymentMutation) ClearAgent() {
+	m.clearedagent = true
+}
+
+// AgentCleared reports if the "agent" edge to the Agent entity was cleared.
+func (m *EnterprisePrepaymentMutation) AgentCleared() bool {
+	return m.AgentIDCleared() || m.clearedagent
+}
+
+// AgentIDs returns the "agent" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// AgentID instead. It exists only for internal usage by the builders.
+func (m *EnterprisePrepaymentMutation) AgentIDs() (ids []uint64) {
+	if id := m.agent; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetAgent resets all changes to the "agent" edge.
+func (m *EnterprisePrepaymentMutation) ResetAgent() {
+	m.agent = nil
+	m.clearedagent = false
+}
+
 // Where appends a list predicates to the EnterprisePrepaymentMutation builder.
 func (m *EnterprisePrepaymentMutation) Where(ps ...predicate.EnterprisePrepayment) {
 	m.predicates = append(m.predicates, ps...)
@@ -39608,7 +39685,7 @@ func (m *EnterprisePrepaymentMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EnterprisePrepaymentMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 10)
 	if m.created_at != nil {
 		fields = append(fields, enterpriseprepayment.FieldCreatedAt)
 	}
@@ -39629,6 +39706,9 @@ func (m *EnterprisePrepaymentMutation) Fields() []string {
 	}
 	if m.enterprise != nil {
 		fields = append(fields, enterpriseprepayment.FieldEnterpriseID)
+	}
+	if m.agent != nil {
+		fields = append(fields, enterpriseprepayment.FieldAgentID)
 	}
 	if m.amount != nil {
 		fields = append(fields, enterpriseprepayment.FieldAmount)
@@ -39658,6 +39738,8 @@ func (m *EnterprisePrepaymentMutation) Field(name string) (ent.Value, bool) {
 		return m.Remark()
 	case enterpriseprepayment.FieldEnterpriseID:
 		return m.EnterpriseID()
+	case enterpriseprepayment.FieldAgentID:
+		return m.AgentID()
 	case enterpriseprepayment.FieldAmount:
 		return m.Amount()
 	case enterpriseprepayment.FieldPayway:
@@ -39685,6 +39767,8 @@ func (m *EnterprisePrepaymentMutation) OldField(ctx context.Context, name string
 		return m.OldRemark(ctx)
 	case enterpriseprepayment.FieldEnterpriseID:
 		return m.OldEnterpriseID(ctx)
+	case enterpriseprepayment.FieldAgentID:
+		return m.OldAgentID(ctx)
 	case enterpriseprepayment.FieldAmount:
 		return m.OldAmount(ctx)
 	case enterpriseprepayment.FieldPayway:
@@ -39746,6 +39830,13 @@ func (m *EnterprisePrepaymentMutation) SetField(name string, value ent.Value) er
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetEnterpriseID(v)
+		return nil
+	case enterpriseprepayment.FieldAgentID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAgentID(v)
 		return nil
 	case enterpriseprepayment.FieldAmount:
 		v, ok := value.(float64)
@@ -39818,6 +39909,9 @@ func (m *EnterprisePrepaymentMutation) ClearedFields() []string {
 	if m.FieldCleared(enterpriseprepayment.FieldRemark) {
 		fields = append(fields, enterpriseprepayment.FieldRemark)
 	}
+	if m.FieldCleared(enterpriseprepayment.FieldAgentID) {
+		fields = append(fields, enterpriseprepayment.FieldAgentID)
+	}
 	return fields
 }
 
@@ -39843,6 +39937,9 @@ func (m *EnterprisePrepaymentMutation) ClearField(name string) error {
 		return nil
 	case enterpriseprepayment.FieldRemark:
 		m.ClearRemark()
+		return nil
+	case enterpriseprepayment.FieldAgentID:
+		m.ClearAgentID()
 		return nil
 	}
 	return fmt.Errorf("unknown EnterprisePrepayment nullable field %s", name)
@@ -39873,6 +39970,9 @@ func (m *EnterprisePrepaymentMutation) ResetField(name string) error {
 	case enterpriseprepayment.FieldEnterpriseID:
 		m.ResetEnterpriseID()
 		return nil
+	case enterpriseprepayment.FieldAgentID:
+		m.ResetAgentID()
+		return nil
 	case enterpriseprepayment.FieldAmount:
 		m.ResetAmount()
 		return nil
@@ -39885,9 +39985,12 @@ func (m *EnterprisePrepaymentMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *EnterprisePrepaymentMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.enterprise != nil {
 		edges = append(edges, enterpriseprepayment.EdgeEnterprise)
+	}
+	if m.agent != nil {
+		edges = append(edges, enterpriseprepayment.EdgeAgent)
 	}
 	return edges
 }
@@ -39900,13 +40003,17 @@ func (m *EnterprisePrepaymentMutation) AddedIDs(name string) []ent.Value {
 		if id := m.enterprise; id != nil {
 			return []ent.Value{*id}
 		}
+	case enterpriseprepayment.EdgeAgent:
+		if id := m.agent; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *EnterprisePrepaymentMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	return edges
 }
 
@@ -39918,9 +40025,12 @@ func (m *EnterprisePrepaymentMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *EnterprisePrepaymentMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.clearedenterprise {
 		edges = append(edges, enterpriseprepayment.EdgeEnterprise)
+	}
+	if m.clearedagent {
+		edges = append(edges, enterpriseprepayment.EdgeAgent)
 	}
 	return edges
 }
@@ -39931,6 +40041,8 @@ func (m *EnterprisePrepaymentMutation) EdgeCleared(name string) bool {
 	switch name {
 	case enterpriseprepayment.EdgeEnterprise:
 		return m.clearedenterprise
+	case enterpriseprepayment.EdgeAgent:
+		return m.clearedagent
 	}
 	return false
 }
@@ -39942,6 +40054,9 @@ func (m *EnterprisePrepaymentMutation) ClearEdge(name string) error {
 	case enterpriseprepayment.EdgeEnterprise:
 		m.ClearEnterprise()
 		return nil
+	case enterpriseprepayment.EdgeAgent:
+		m.ClearAgent()
+		return nil
 	}
 	return fmt.Errorf("unknown EnterprisePrepayment unique edge %s", name)
 }
@@ -39952,6 +40067,9 @@ func (m *EnterprisePrepaymentMutation) ResetEdge(name string) error {
 	switch name {
 	case enterpriseprepayment.EdgeEnterprise:
 		m.ResetEnterprise()
+		return nil
+	case enterpriseprepayment.EdgeAgent:
+		m.ResetAgent()
 		return nil
 	}
 	return fmt.Errorf("unknown EnterprisePrepayment edge %s", name)

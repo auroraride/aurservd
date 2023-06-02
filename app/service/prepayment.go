@@ -128,7 +128,7 @@ func (s *prepaymentService) Paid(data *model.PaymentAgentPrepay) {
 func (s *prepaymentService) UpdateAmount(req *model.AgentPrepay) (balance float64, err error) {
 	// 获取团签
 	var e *ent.Enterprise
-	e, err = NewEnterprise().Query(req.ID)
+	e, err = NewEnterprise().Query(req.EnterpriseID)
 	if err != nil {
 		return
 	}
@@ -142,7 +142,11 @@ func (s *prepaymentService) UpdateAmount(req *model.AgentPrepay) (balance float6
 	// 事务处理
 	err = ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
 		// 创建预付费记录
-		_, err = tx.EnterprisePrepayment.Create().SetEnterpriseID(req.ID).SetAmount(req.Amount).SetRemark(req.Remark).Save(s.ctx)
+		creator := tx.EnterprisePrepayment.Create().SetEnterpriseID(req.EnterpriseID).SetAmount(req.Amount).SetRemark(req.Remark)
+		if req.ID > 0 {
+			creator.SetAgentID(req.ID)
+		}
+		_, err = creator.Save(s.ctx)
 		if err != nil {
 			return
 		}

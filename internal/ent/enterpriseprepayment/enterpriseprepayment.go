@@ -30,12 +30,16 @@ const (
 	FieldRemark = "remark"
 	// FieldEnterpriseID holds the string denoting the enterprise_id field in the database.
 	FieldEnterpriseID = "enterprise_id"
+	// FieldAgentID holds the string denoting the agent_id field in the database.
+	FieldAgentID = "agent_id"
 	// FieldAmount holds the string denoting the amount field in the database.
 	FieldAmount = "amount"
 	// FieldPayway holds the string denoting the payway field in the database.
 	FieldPayway = "payway"
 	// EdgeEnterprise holds the string denoting the enterprise edge name in mutations.
 	EdgeEnterprise = "enterprise"
+	// EdgeAgent holds the string denoting the agent edge name in mutations.
+	EdgeAgent = "agent"
 	// Table holds the table name of the enterpriseprepayment in the database.
 	Table = "enterprise_prepayment"
 	// EnterpriseTable is the table that holds the enterprise relation/edge.
@@ -45,6 +49,13 @@ const (
 	EnterpriseInverseTable = "enterprise"
 	// EnterpriseColumn is the table column denoting the enterprise relation/edge.
 	EnterpriseColumn = "enterprise_id"
+	// AgentTable is the table that holds the agent relation/edge.
+	AgentTable = "enterprise_prepayment"
+	// AgentInverseTable is the table name for the Agent entity.
+	// It exists in this package in order to avoid circular dependency with the "agent" package.
+	AgentInverseTable = "agent"
+	// AgentColumn is the table column denoting the agent relation/edge.
+	AgentColumn = "agent_id"
 )
 
 // Columns holds all SQL columns for enterpriseprepayment fields.
@@ -57,6 +68,7 @@ var Columns = []string{
 	FieldLastModifier,
 	FieldRemark,
 	FieldEnterpriseID,
+	FieldAgentID,
 	FieldAmount,
 	FieldPayway,
 }
@@ -132,6 +144,11 @@ func ByEnterpriseID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldEnterpriseID, opts...).ToFunc()
 }
 
+// ByAgentID orders the results by the agent_id field.
+func ByAgentID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAgentID, opts...).ToFunc()
+}
+
 // ByAmount orders the results by the amount field.
 func ByAmount(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldAmount, opts...).ToFunc()
@@ -148,10 +165,24 @@ func ByEnterpriseField(field string, opts ...sql.OrderTermOption) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newEnterpriseStep(), sql.OrderByField(field, opts...))
 	}
 }
+
+// ByAgentField orders the results by agent field.
+func ByAgentField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newAgentStep(), sql.OrderByField(field, opts...))
+	}
+}
 func newEnterpriseStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(EnterpriseInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, false, EnterpriseTable, EnterpriseColumn),
+	)
+}
+func newAgentStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(AgentInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, AgentTable, AgentColumn),
 	)
 }

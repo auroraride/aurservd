@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprepayment"
 )
@@ -98,6 +99,20 @@ func (epc *EnterprisePrepaymentCreate) SetEnterpriseID(u uint64) *EnterprisePrep
 	return epc
 }
 
+// SetAgentID sets the "agent_id" field.
+func (epc *EnterprisePrepaymentCreate) SetAgentID(u uint64) *EnterprisePrepaymentCreate {
+	epc.mutation.SetAgentID(u)
+	return epc
+}
+
+// SetNillableAgentID sets the "agent_id" field if the given value is not nil.
+func (epc *EnterprisePrepaymentCreate) SetNillableAgentID(u *uint64) *EnterprisePrepaymentCreate {
+	if u != nil {
+		epc.SetAgentID(*u)
+	}
+	return epc
+}
+
 // SetAmount sets the "amount" field.
 func (epc *EnterprisePrepaymentCreate) SetAmount(f float64) *EnterprisePrepaymentCreate {
 	epc.mutation.SetAmount(f)
@@ -121,6 +136,11 @@ func (epc *EnterprisePrepaymentCreate) SetNillablePayway(m *model.Payway) *Enter
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
 func (epc *EnterprisePrepaymentCreate) SetEnterprise(e *Enterprise) *EnterprisePrepaymentCreate {
 	return epc.SetEnterpriseID(e.ID)
+}
+
+// SetAgent sets the "agent" edge to the Agent entity.
+func (epc *EnterprisePrepaymentCreate) SetAgent(a *Agent) *EnterprisePrepaymentCreate {
+	return epc.SetAgentID(a.ID)
 }
 
 // Mutation returns the EnterprisePrepaymentMutation object of the builder.
@@ -274,6 +294,23 @@ func (epc *EnterprisePrepaymentCreate) createSpec() (*EnterprisePrepayment, *sql
 		_node.EnterpriseID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := epc.mutation.AgentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   enterpriseprepayment.AgentTable,
+			Columns: []string{enterpriseprepayment.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.AgentID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	return _node, _spec
 }
 
@@ -401,6 +438,24 @@ func (u *EnterprisePrepaymentUpsert) SetEnterpriseID(v uint64) *EnterprisePrepay
 // UpdateEnterpriseID sets the "enterprise_id" field to the value that was provided on create.
 func (u *EnterprisePrepaymentUpsert) UpdateEnterpriseID() *EnterprisePrepaymentUpsert {
 	u.SetExcluded(enterpriseprepayment.FieldEnterpriseID)
+	return u
+}
+
+// SetAgentID sets the "agent_id" field.
+func (u *EnterprisePrepaymentUpsert) SetAgentID(v uint64) *EnterprisePrepaymentUpsert {
+	u.Set(enterpriseprepayment.FieldAgentID, v)
+	return u
+}
+
+// UpdateAgentID sets the "agent_id" field to the value that was provided on create.
+func (u *EnterprisePrepaymentUpsert) UpdateAgentID() *EnterprisePrepaymentUpsert {
+	u.SetExcluded(enterpriseprepayment.FieldAgentID)
+	return u
+}
+
+// ClearAgentID clears the value of the "agent_id" field.
+func (u *EnterprisePrepaymentUpsert) ClearAgentID() *EnterprisePrepaymentUpsert {
+	u.SetNull(enterpriseprepayment.FieldAgentID)
 	return u
 }
 
@@ -555,6 +610,27 @@ func (u *EnterprisePrepaymentUpsertOne) SetEnterpriseID(v uint64) *EnterprisePre
 func (u *EnterprisePrepaymentUpsertOne) UpdateEnterpriseID() *EnterprisePrepaymentUpsertOne {
 	return u.Update(func(s *EnterprisePrepaymentUpsert) {
 		s.UpdateEnterpriseID()
+	})
+}
+
+// SetAgentID sets the "agent_id" field.
+func (u *EnterprisePrepaymentUpsertOne) SetAgentID(v uint64) *EnterprisePrepaymentUpsertOne {
+	return u.Update(func(s *EnterprisePrepaymentUpsert) {
+		s.SetAgentID(v)
+	})
+}
+
+// UpdateAgentID sets the "agent_id" field to the value that was provided on create.
+func (u *EnterprisePrepaymentUpsertOne) UpdateAgentID() *EnterprisePrepaymentUpsertOne {
+	return u.Update(func(s *EnterprisePrepaymentUpsert) {
+		s.UpdateAgentID()
+	})
+}
+
+// ClearAgentID clears the value of the "agent_id" field.
+func (u *EnterprisePrepaymentUpsertOne) ClearAgentID() *EnterprisePrepaymentUpsertOne {
+	return u.Update(func(s *EnterprisePrepaymentUpsert) {
+		s.ClearAgentID()
 	})
 }
 
@@ -873,6 +949,27 @@ func (u *EnterprisePrepaymentUpsertBulk) SetEnterpriseID(v uint64) *EnterprisePr
 func (u *EnterprisePrepaymentUpsertBulk) UpdateEnterpriseID() *EnterprisePrepaymentUpsertBulk {
 	return u.Update(func(s *EnterprisePrepaymentUpsert) {
 		s.UpdateEnterpriseID()
+	})
+}
+
+// SetAgentID sets the "agent_id" field.
+func (u *EnterprisePrepaymentUpsertBulk) SetAgentID(v uint64) *EnterprisePrepaymentUpsertBulk {
+	return u.Update(func(s *EnterprisePrepaymentUpsert) {
+		s.SetAgentID(v)
+	})
+}
+
+// UpdateAgentID sets the "agent_id" field to the value that was provided on create.
+func (u *EnterprisePrepaymentUpsertBulk) UpdateAgentID() *EnterprisePrepaymentUpsertBulk {
+	return u.Update(func(s *EnterprisePrepaymentUpsert) {
+		s.UpdateAgentID()
+	})
+}
+
+// ClearAgentID clears the value of the "agent_id" field.
+func (u *EnterprisePrepaymentUpsertBulk) ClearAgentID() *EnterprisePrepaymentUpsertBulk {
+	return u.Update(func(s *EnterprisePrepaymentUpsert) {
+		s.ClearAgentID()
 	})
 }
 

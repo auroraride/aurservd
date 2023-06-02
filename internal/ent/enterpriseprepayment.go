@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprepayment"
 )
@@ -34,6 +35,8 @@ type EnterprisePrepayment struct {
 	Remark string `json:"remark,omitempty"`
 	// 企业ID
 	EnterpriseID uint64 `json:"enterprise_id,omitempty"`
+	// AgentID holds the value of the "agent_id" field.
+	AgentID *uint64 `json:"agent_id,omitempty"`
 	// 预付金额
 	Amount float64 `json:"amount,omitempty"`
 	// 支付方式
@@ -49,9 +52,11 @@ type EnterprisePrepayment struct {
 type EnterprisePrepaymentEdges struct {
 	// Enterprise holds the value of the enterprise edge.
 	Enterprise *Enterprise `json:"enterprise,omitempty"`
+	// Agent holds the value of the agent edge.
+	Agent *Agent `json:"agent,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // EnterpriseOrErr returns the Enterprise value or an error if the edge
@@ -67,6 +72,19 @@ func (e EnterprisePrepaymentEdges) EnterpriseOrErr() (*Enterprise, error) {
 	return nil, &NotLoadedError{edge: "enterprise"}
 }
 
+// AgentOrErr returns the Agent value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e EnterprisePrepaymentEdges) AgentOrErr() (*Agent, error) {
+	if e.loadedTypes[1] {
+		if e.Agent == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: agent.Label}
+		}
+		return e.Agent, nil
+	}
+	return nil, &NotLoadedError{edge: "agent"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*EnterprisePrepayment) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -78,7 +96,7 @@ func (*EnterprisePrepayment) scanValues(columns []string) ([]any, error) {
 			values[i] = new(model.Payway)
 		case enterpriseprepayment.FieldAmount:
 			values[i] = new(sql.NullFloat64)
-		case enterpriseprepayment.FieldID, enterpriseprepayment.FieldEnterpriseID:
+		case enterpriseprepayment.FieldID, enterpriseprepayment.FieldEnterpriseID, enterpriseprepayment.FieldAgentID:
 			values[i] = new(sql.NullInt64)
 		case enterpriseprepayment.FieldRemark:
 			values[i] = new(sql.NullString)
@@ -154,6 +172,13 @@ func (ep *EnterprisePrepayment) assignValues(columns []string, values []any) err
 			} else if value.Valid {
 				ep.EnterpriseID = uint64(value.Int64)
 			}
+		case enterpriseprepayment.FieldAgentID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field agent_id", values[i])
+			} else if value.Valid {
+				ep.AgentID = new(uint64)
+				*ep.AgentID = uint64(value.Int64)
+			}
 		case enterpriseprepayment.FieldAmount:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
 				return fmt.Errorf("unexpected type %T for field amount", values[i])
@@ -189,6 +214,11 @@ func (ep *EnterprisePrepayment) Value(name string) (ent.Value, error) {
 // QueryEnterprise queries the "enterprise" edge of the EnterprisePrepayment entity.
 func (ep *EnterprisePrepayment) QueryEnterprise() *EnterpriseQuery {
 	return NewEnterprisePrepaymentClient(ep.config).QueryEnterprise(ep)
+}
+
+// QueryAgent queries the "agent" edge of the EnterprisePrepayment entity.
+func (ep *EnterprisePrepayment) QueryAgent() *AgentQuery {
+	return NewEnterprisePrepaymentClient(ep.config).QueryAgent(ep)
 }
 
 // Update returns a builder for updating this EnterprisePrepayment.
@@ -236,6 +266,11 @@ func (ep *EnterprisePrepayment) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("enterprise_id=")
 	builder.WriteString(fmt.Sprintf("%v", ep.EnterpriseID))
+	builder.WriteString(", ")
+	if v := ep.AgentID; v != nil {
+		builder.WriteString("agent_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", ")
 	builder.WriteString("amount=")
 	builder.WriteString(fmt.Sprintf("%v", ep.Amount))

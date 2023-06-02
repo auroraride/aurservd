@@ -47,6 +47,7 @@ func (EnterprisePrepayment) Mixin() []ent.Mixin {
 		internal.Modifier{},
 
 		EnterpriseMixin{},
+		AgentMixin{Optional: true},
 	}
 }
 
