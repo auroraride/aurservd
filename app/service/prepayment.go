@@ -62,7 +62,7 @@ func (s *prepaymentService) Overview(en *ent.Enterprise) (res model.PrepaymentOv
 
 func (s *prepaymentService) List(enterpriseID uint64, req *model.PrepaymentListReq) *model.PaginationRes {
 	q := s.orm.QueryNotDeleted().
-		Where(enterpriseprepayment.EnterpriseID(enterpriseID)).
+		Where(enterpriseprepayment.EnterpriseID(enterpriseID)).WithAgent().
 		Order(ent.Desc(enterpriseprepayment.FieldCreatedAt))
 
 	// 筛选时间段
@@ -84,8 +84,14 @@ func (s *prepaymentService) List(enterpriseID uint64, req *model.PrepaymentListR
 			Time:   item.CreatedAt.Format(carbon.DateTimeLayout),
 			Remark: item.Remark,
 			Payway: item.Payway,
+			Name:   "-",
 		}
-		res.Name = "平台管理员"
+		if item.Creator != nil {
+			res.Name = item.Creator.Name + "-" + item.Creator.Phone
+		}
+		if item.Edges.Agent != nil {
+			res.Name = item.Edges.Agent.Name + "-" + item.Edges.Agent.Phone
+		}
 		return res
 	})
 }
@@ -124,7 +130,7 @@ func (s *prepaymentService) Paid(data *model.PaymentAgentPrepay) {
 func (s *prepaymentService) UpdateAmount(req *model.AgentPrepay) (balance float64, err error) {
 	// 获取团签
 	var e *ent.Enterprise
-	e, err = NewEnterprise().Query(req.ID)
+	e, err = NewEnterprise().Query(req.EnterpriseID)
 	if err != nil {
 		return
 	}
@@ -138,7 +144,11 @@ func (s *prepaymentService) UpdateAmount(req *model.AgentPrepay) (balance float6
 	// 事务处理
 	err = ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
 		// 创建预付费记录
-		_, err = tx.EnterprisePrepayment.Create().SetEnterpriseID(req.ID).SetAmount(req.Amount).SetRemark(req.Remark).Save(s.ctx)
+		creator := tx.EnterprisePrepayment.Create().SetEnterpriseID(req.EnterpriseID).SetAmount(req.Amount).SetRemark(req.Remark)
+		if req.ID > 0 {
+			creator.SetAgentID(req.ID)
+		}
+		_, err = creator.Save(s.ctx)
 		if err != nil {
 			return
 		}

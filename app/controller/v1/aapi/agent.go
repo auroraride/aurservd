@@ -47,7 +47,7 @@ func (*agent) Profile(c echo.Context) (err error) {
 
 // GetOpenid 获取opienid
 // @ID           AgentGetOpenid
-// @Router       /agent/v1/getopenid [GET]
+// @Router       /agent/v1/openid [GET]
 // @Summary      A1003 获取openid
 // @Tags         [A]代理接口
 // @Accept       json
@@ -93,7 +93,7 @@ func (*rider) Invite(c echo.Context) (err error) {
 // Index 首页数据
 // @ID           AgentIndex
 // @Router       /agent/v1/index [GET]
-// @Summary      A2007 首页数据
+// @Summary      A1007 首页数据
 // @Tags         [A]代理接口
 // @Accept       json
 // @Produce      json

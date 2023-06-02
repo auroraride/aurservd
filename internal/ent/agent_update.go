@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterpriseprepayment"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
@@ -128,6 +129,21 @@ func (au *AgentUpdate) AddStations(e ...*EnterpriseStation) *AgentUpdate {
 	return au.AddStationIDs(ids...)
 }
 
+// AddPrepaymentIDs adds the "prepayments" edge to the EnterprisePrepayment entity by IDs.
+func (au *AgentUpdate) AddPrepaymentIDs(ids ...uint64) *AgentUpdate {
+	au.mutation.AddPrepaymentIDs(ids...)
+	return au
+}
+
+// AddPrepayments adds the "prepayments" edges to the EnterprisePrepayment entity.
+func (au *AgentUpdate) AddPrepayments(e ...*EnterprisePrepayment) *AgentUpdate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return au.AddPrepaymentIDs(ids...)
+}
+
 // Mutation returns the AgentMutation object of the builder.
 func (au *AgentUpdate) Mutation() *AgentMutation {
 	return au.mutation
@@ -158,6 +174,27 @@ func (au *AgentUpdate) RemoveStations(e ...*EnterpriseStation) *AgentUpdate {
 		ids[i] = e[i].ID
 	}
 	return au.RemoveStationIDs(ids...)
+}
+
+// ClearPrepayments clears all "prepayments" edges to the EnterprisePrepayment entity.
+func (au *AgentUpdate) ClearPrepayments() *AgentUpdate {
+	au.mutation.ClearPrepayments()
+	return au
+}
+
+// RemovePrepaymentIDs removes the "prepayments" edge to EnterprisePrepayment entities by IDs.
+func (au *AgentUpdate) RemovePrepaymentIDs(ids ...uint64) *AgentUpdate {
+	au.mutation.RemovePrepaymentIDs(ids...)
+	return au
+}
+
+// RemovePrepayments removes "prepayments" edges to EnterprisePrepayment entities.
+func (au *AgentUpdate) RemovePrepayments(e ...*EnterprisePrepayment) *AgentUpdate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return au.RemovePrepaymentIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -332,6 +369,51 @@ func (au *AgentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if au.mutation.PrepaymentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   agent.PrepaymentsTable,
+			Columns: []string{agent.PrepaymentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterpriseprepayment.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.RemovedPrepaymentsIDs(); len(nodes) > 0 && !au.mutation.PrepaymentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   agent.PrepaymentsTable,
+			Columns: []string{agent.PrepaymentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterpriseprepayment.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.PrepaymentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   agent.PrepaymentsTable,
+			Columns: []string{agent.PrepaymentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterpriseprepayment.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(au.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, au.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -450,6 +532,21 @@ func (auo *AgentUpdateOne) AddStations(e ...*EnterpriseStation) *AgentUpdateOne 
 	return auo.AddStationIDs(ids...)
 }
 
+// AddPrepaymentIDs adds the "prepayments" edge to the EnterprisePrepayment entity by IDs.
+func (auo *AgentUpdateOne) AddPrepaymentIDs(ids ...uint64) *AgentUpdateOne {
+	auo.mutation.AddPrepaymentIDs(ids...)
+	return auo
+}
+
+// AddPrepayments adds the "prepayments" edges to the EnterprisePrepayment entity.
+func (auo *AgentUpdateOne) AddPrepayments(e ...*EnterprisePrepayment) *AgentUpdateOne {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return auo.AddPrepaymentIDs(ids...)
+}
+
 // Mutation returns the AgentMutation object of the builder.
 func (auo *AgentUpdateOne) Mutation() *AgentMutation {
 	return auo.mutation
@@ -480,6 +577,27 @@ func (auo *AgentUpdateOne) RemoveStations(e ...*EnterpriseStation) *AgentUpdateO
 		ids[i] = e[i].ID
 	}
 	return auo.RemoveStationIDs(ids...)
+}
+
+// ClearPrepayments clears all "prepayments" edges to the EnterprisePrepayment entity.
+func (auo *AgentUpdateOne) ClearPrepayments() *AgentUpdateOne {
+	auo.mutation.ClearPrepayments()
+	return auo
+}
+
+// RemovePrepaymentIDs removes the "prepayments" edge to EnterprisePrepayment entities by IDs.
+func (auo *AgentUpdateOne) RemovePrepaymentIDs(ids ...uint64) *AgentUpdateOne {
+	auo.mutation.RemovePrepaymentIDs(ids...)
+	return auo
+}
+
+// RemovePrepayments removes "prepayments" edges to EnterprisePrepayment entities.
+func (auo *AgentUpdateOne) RemovePrepayments(e ...*EnterprisePrepayment) *AgentUpdateOne {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return auo.RemovePrepaymentIDs(ids...)
 }
 
 // Where appends a list predicates to the AgentUpdate builder.
@@ -677,6 +795,51 @@ func (auo *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.PrepaymentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   agent.PrepaymentsTable,
+			Columns: []string{agent.PrepaymentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterpriseprepayment.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.RemovedPrepaymentsIDs(); len(nodes) > 0 && !auo.mutation.PrepaymentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   agent.PrepaymentsTable,
+			Columns: []string{agent.PrepaymentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterpriseprepayment.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.PrepaymentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   agent.PrepaymentsTable,
+			Columns: []string{agent.PrepaymentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterpriseprepayment.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

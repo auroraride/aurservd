@@ -20,6 +20,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
+	"github.com/auroraride/aurservd/internal/ent/subscribealter"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
 	"github.com/auroraride/aurservd/pkg/utils"
@@ -294,5 +295,7 @@ func (s *agentService) Index(ag *ent.Agent, en *ent.Enterprise) *model.AgentInde
 	v[0].Balance = en.Balance
 	// 新签=临期+计费中
 	v[0].NewRiderTotal = v[0].BillingRiderTotal + v[0].ExpiringRiderTotal
+	// 骑手加时审核数
+	v[0].OverTimeRiderTotal = ent.Database.SubscribeAlter.Query().Where(subscribealter.EnterpriseID(en.ID), subscribealter.StatusEQ(model.SubscribeAlterUnreviewed)).CountX(s.ctx)
 	return &v[0]
 }

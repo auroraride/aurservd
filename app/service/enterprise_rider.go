@@ -425,6 +425,7 @@ func (s *enterpriseRiderService) SubscribeAlterList(req *model.SubscribeAlterApp
 		req.PaginationReq,
 		func(item *ent.SubscribeAlter) model.SubscribeAlterApplyListRsp {
 			return model.SubscribeAlterApplyListRsp{
+				ID:   item.ID,
 				Days: item.Days,
 				// 申请时间
 				ApplyTime: item.CreatedAt.Format(carbon.DateTimeLayout),

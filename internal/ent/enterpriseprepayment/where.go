@@ -81,6 +81,11 @@ func EnterpriseID(v uint64) predicate.EnterprisePrepayment {
 	return predicate.EnterprisePrepayment(sql.FieldEQ(FieldEnterpriseID, v))
 }
 
+// AgentID applies equality check predicate on the "agent_id" field. It's identical to AgentIDEQ.
+func AgentID(v uint64) predicate.EnterprisePrepayment {
+	return predicate.EnterprisePrepayment(sql.FieldEQ(FieldAgentID, v))
+}
+
 // Amount applies equality check predicate on the "amount" field. It's identical to AmountEQ.
 func Amount(v float64) predicate.EnterprisePrepayment {
 	return predicate.EnterprisePrepayment(sql.FieldEQ(FieldAmount, v))
@@ -336,6 +341,36 @@ func EnterpriseIDNotIn(vs ...uint64) predicate.EnterprisePrepayment {
 	return predicate.EnterprisePrepayment(sql.FieldNotIn(FieldEnterpriseID, vs...))
 }
 
+// AgentIDEQ applies the EQ predicate on the "agent_id" field.
+func AgentIDEQ(v uint64) predicate.EnterprisePrepayment {
+	return predicate.EnterprisePrepayment(sql.FieldEQ(FieldAgentID, v))
+}
+
+// AgentIDNEQ applies the NEQ predicate on the "agent_id" field.
+func AgentIDNEQ(v uint64) predicate.EnterprisePrepayment {
+	return predicate.EnterprisePrepayment(sql.FieldNEQ(FieldAgentID, v))
+}
+
+// AgentIDIn applies the In predicate on the "agent_id" field.
+func AgentIDIn(vs ...uint64) predicate.EnterprisePrepayment {
+	return predicate.EnterprisePrepayment(sql.FieldIn(FieldAgentID, vs...))
+}
+
+// AgentIDNotIn applies the NotIn predicate on the "agent_id" field.
+func AgentIDNotIn(vs ...uint64) predicate.EnterprisePrepayment {
+	return predicate.EnterprisePrepayment(sql.FieldNotIn(FieldAgentID, vs...))
+}
+
+// AgentIDIsNil applies the IsNil predicate on the "agent_id" field.
+func AgentIDIsNil() predicate.EnterprisePrepayment {
+	return predicate.EnterprisePrepayment(sql.FieldIsNull(FieldAgentID))
+}
+
+// AgentIDNotNil applies the NotNil predicate on the "agent_id" field.
+func AgentIDNotNil() predicate.EnterprisePrepayment {
+	return predicate.EnterprisePrepayment(sql.FieldNotNull(FieldAgentID))
+}
+
 // AmountEQ applies the EQ predicate on the "amount" field.
 func AmountEQ(v float64) predicate.EnterprisePrepayment {
 	return predicate.EnterprisePrepayment(sql.FieldEQ(FieldAmount, v))
@@ -431,6 +466,29 @@ func HasEnterprise() predicate.EnterprisePrepayment {
 func HasEnterpriseWith(preds ...predicate.Enterprise) predicate.EnterprisePrepayment {
 	return predicate.EnterprisePrepayment(func(s *sql.Selector) {
 		step := newEnterpriseStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasAgent applies the HasEdge predicate on the "agent" edge.
+func HasAgent() predicate.EnterprisePrepayment {
+	return predicate.EnterprisePrepayment(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, AgentTable, AgentColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasAgentWith applies the HasEdge predicate on the "agent" edge with a given conditions (other predicates).
+func HasAgentWith(preds ...predicate.Agent) predicate.EnterprisePrepayment {
+	return predicate.EnterprisePrepayment(func(s *sql.Selector) {
+		step := newAgentStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

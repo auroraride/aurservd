@@ -58,7 +58,7 @@ func (s *miniProgramService) GetPhoneNumber(code string) string {
 func (s *miniProgramService) GetAuth(code string) string {
 	session, err := s.MiniProgram.GetAuth().Code2Session(code)
 	if err != nil || session.ErrCode != 0 {
-		snag.Panic("授权登录失败")
+		snag.Panic("获取openid失败")
 	}
 	return session.OpenID
 

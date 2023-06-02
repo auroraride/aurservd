@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprepayment"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -23,6 +24,8 @@ type EnterprisePrepaymentQuery struct {
 	inters         []Interceptor
 	predicates     []predicate.EnterprisePrepayment
 	withEnterprise *EnterpriseQuery
+	withAgent      *AgentQuery
+	withFKs        bool
 	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -75,6 +78,28 @@ func (epq *EnterprisePrepaymentQuery) QueryEnterprise() *EnterpriseQuery {
 			sqlgraph.From(enterpriseprepayment.Table, enterpriseprepayment.FieldID, selector),
 			sqlgraph.To(enterprise.Table, enterprise.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, enterpriseprepayment.EnterpriseTable, enterpriseprepayment.EnterpriseColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(epq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryAgent chains the current query on the "agent" edge.
+func (epq *EnterprisePrepaymentQuery) QueryAgent() *AgentQuery {
+	query := (&AgentClient{config: epq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := epq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := epq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterpriseprepayment.Table, enterpriseprepayment.FieldID, selector),
+			sqlgraph.To(agent.Table, agent.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, enterpriseprepayment.AgentTable, enterpriseprepayment.AgentColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(epq.driver.Dialect(), step)
 		return fromU, nil
@@ -275,6 +300,7 @@ func (epq *EnterprisePrepaymentQuery) Clone() *EnterprisePrepaymentQuery {
 		inters:         append([]Interceptor{}, epq.inters...),
 		predicates:     append([]predicate.EnterprisePrepayment{}, epq.predicates...),
 		withEnterprise: epq.withEnterprise.Clone(),
+		withAgent:      epq.withAgent.Clone(),
 		// clone intermediate query.
 		sql:  epq.sql.Clone(),
 		path: epq.path,
@@ -289,6 +315,17 @@ func (epq *EnterprisePrepaymentQuery) WithEnterprise(opts ...func(*EnterpriseQue
 		opt(query)
 	}
 	epq.withEnterprise = query
+	return epq
+}
+
+// WithAgent tells the query-builder to eager-load the nodes that are connected to
+// the "agent" edge. The optional arguments are used to configure the query builder of the edge.
+func (epq *EnterprisePrepaymentQuery) WithAgent(opts ...func(*AgentQuery)) *EnterprisePrepaymentQuery {
+	query := (&AgentClient{config: epq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	epq.withAgent = query
 	return epq
 }
 
@@ -369,11 +406,16 @@ func (epq *EnterprisePrepaymentQuery) prepareQuery(ctx context.Context) error {
 func (epq *EnterprisePrepaymentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*EnterprisePrepayment, error) {
 	var (
 		nodes       = []*EnterprisePrepayment{}
+		withFKs     = epq.withFKs
 		_spec       = epq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			epq.withEnterprise != nil,
+			epq.withAgent != nil,
 		}
 	)
+	if withFKs {
+		_spec.Node.Columns = append(_spec.Node.Columns, enterpriseprepayment.ForeignKeys...)
+	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*EnterprisePrepayment).scanValues(nil, columns)
 	}
@@ -398,6 +440,12 @@ func (epq *EnterprisePrepaymentQuery) sqlAll(ctx context.Context, hooks ...query
 	if query := epq.withEnterprise; query != nil {
 		if err := epq.loadEnterprise(ctx, query, nodes, nil,
 			func(n *EnterprisePrepayment, e *Enterprise) { n.Edges.Enterprise = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := epq.withAgent; query != nil {
+		if err := epq.loadAgent(ctx, query, nodes, nil,
+			func(n *EnterprisePrepayment, e *Agent) { n.Edges.Agent = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -426,6 +474,38 @@ func (epq *EnterprisePrepaymentQuery) loadEnterprise(ctx context.Context, query 
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "enterprise_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (epq *EnterprisePrepaymentQuery) loadAgent(ctx context.Context, query *AgentQuery, nodes []*EnterprisePrepayment, init func(*EnterprisePrepayment), assign func(*EnterprisePrepayment, *Agent)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*EnterprisePrepayment)
+	for i := range nodes {
+		if nodes[i].AgentID == nil {
+			continue
+		}
+		fk := *nodes[i].AgentID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(agent.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "agent_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -464,6 +544,9 @@ func (epq *EnterprisePrepaymentQuery) querySpec() *sqlgraph.QuerySpec {
 		}
 		if epq.withEnterprise != nil {
 			_spec.Node.AddColumnOnce(enterpriseprepayment.FieldEnterpriseID)
+		}
+		if epq.withAgent != nil {
+			_spec.Node.AddColumnOnce(enterpriseprepayment.FieldAgentID)
 		}
 	}
 	if ps := epq.predicates; len(ps) > 0 {
@@ -534,6 +617,7 @@ type EnterprisePrepaymentQueryWith string
 
 var (
 	EnterprisePrepaymentQueryWithEnterprise EnterprisePrepaymentQueryWith = "Enterprise"
+	EnterprisePrepaymentQueryWithAgent      EnterprisePrepaymentQueryWith = "Agent"
 )
 
 func (epq *EnterprisePrepaymentQuery) With(withEdges ...EnterprisePrepaymentQueryWith) *EnterprisePrepaymentQuery {
@@ -541,6 +625,8 @@ func (epq *EnterprisePrepaymentQuery) With(withEdges ...EnterprisePrepaymentQuer
 		switch v {
 		case EnterprisePrepaymentQueryWithEnterprise:
 			epq.WithEnterprise()
+		case EnterprisePrepaymentQueryWithAgent:
+			epq.WithAgent()
 		}
 	}
 	return epq

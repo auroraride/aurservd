@@ -51,9 +51,11 @@ type AgentEdges struct {
 	Enterprise *Enterprise `json:"enterprise,omitempty"`
 	// Stations holds the value of the stations edge.
 	Stations []*EnterpriseStation `json:"stations,omitempty"`
+	// Prepayments holds the value of the prepayments edge.
+	Prepayments []*EnterprisePrepayment `json:"prepayments,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // EnterpriseOrErr returns the Enterprise value or an error if the edge
@@ -76,6 +78,15 @@ func (e AgentEdges) StationsOrErr() ([]*EnterpriseStation, error) {
 		return e.Stations, nil
 	}
 	return nil, &NotLoadedError{edge: "stations"}
+}
+
+// PrepaymentsOrErr returns the Prepayments value or an error if the edge
+// was not loaded in eager-loading.
+func (e AgentEdges) PrepaymentsOrErr() ([]*EnterprisePrepayment, error) {
+	if e.loadedTypes[2] {
+		return e.Prepayments, nil
+	}
+	return nil, &NotLoadedError{edge: "prepayments"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -201,6 +212,11 @@ func (a *Agent) QueryEnterprise() *EnterpriseQuery {
 // QueryStations queries the "stations" edge of the Agent entity.
 func (a *Agent) QueryStations() *EnterpriseStationQuery {
 	return NewAgentClient(a.config).QueryStations(a)
+}
+
+// QueryPrepayments queries the "prepayments" edge of the Agent entity.
+func (a *Agent) QueryPrepayments() *EnterprisePrepaymentQuery {
+	return NewAgentClient(a.config).QueryPrepayments(a)
 }
 
 // Update returns a builder for updating this Agent.

@@ -303,6 +303,79 @@ func (*enterprise) AgentDelete(c echo.Context) (err error) {
 	return ctx.SendResponse()
 }
 
+// BindCabinet 团签绑定电柜
+// @ID           ManagerEnterpriseBindCabinet
+// @Router       /manager/v1/enterprise/cabinet [POST]
+// @Summary      M9024 团签绑定电柜
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        body  body     model.EnterpriseBindCabinetReq true  "绑定电柜请求"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*enterprise) BindCabinet(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[model.EnterpriseBindCabinetReq](c)
+	service.NewCabinetWithModifier(ctx.Modifier).BindCabinet(req)
+	return ctx.SendResponse(model.StatusResponse{Status: true})
+}
+
+// UnbindCabinet 团签解绑电柜
+// @ID           ManagerEnterpriseUnbindCabinet
+// @Router       /manager/v1/enterprise/unbind/cabinet [GET]
+// @Summary      M9025 团签解绑电柜
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        body  body     model.IDParamReq true  "解绑电柜请求"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*enterprise) UnbindCabinet(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
+	service.NewCabinetWithModifier(ctx.Modifier).UnbindCabinet(req)
+	return ctx.SendResponse(model.StatusResponse{Status: true})
+}
+
+// RepaymentList 充值记录
+// @ID           ManagerEnterpriseRepaymentList
+// @Router       /manager/v1/enterprise/repayment [GET]
+// @Summary      M9026 充值记录
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        query  query  model.PrepaymentListReq  true  "请求参数"
+// @Success      200  {object}  model.PaginationRes{items=[]model.PrepaymentListRes}  "请求成功"
+func (*enterprise) RepaymentList(c echo.Context) (err error) {
+	ctx, req := app.AgentContextAndBinding[model.PrepaymentListReq](c)
+	return ctx.SendResponse(service.NewPrepayment(ctx.Agent, ctx.Enterprise).List(req.EnterpriseID, req))
+}
+
+// SubscribeApplyList 订阅申请列表
+// @ID           ManagerEnterpriseSubscribeApplyList
+// @Router       /manager/v1/enterprise/subscribe/apply [GET]
+// @Summary      M9027 订阅申请列表
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        id  query  uint64  true  "团签ID"
+// @Success      200  {object}  []model.ApplyListRsp
+func (*enterprise) SubscribeApplyList(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[model.SubscribeAlterApplyReq](c)
+	return ctx.SendResponse(service.NewEnterpriseWithModifier(ctx.Modifier).SubscribeApplyList(req, req.ID))
+}
+
+// SubscribeApply 审批订阅申请
+// @ID           ManagerEnterpriseSubscribeApply
+// @Router       /manager/v1/enterprise/subscribe/apply [PUT]
+// @Summary      M9028 审批订阅申请
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        body  body  model.ReviewReq true  "审批请求"
+// @Success      200  {object}  model.StatusResponse
+func (*enterprise) SubscribeApply(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[model.SubscribeAlterReviewReq](c)
+	service.NewEnterpriseWithModifier(ctx.Modifier).SubscribeApplyReviewApply(req)
+	return ctx.SendResponse()
+}
+
 // FeedbackList 反馈列表
 // @ID           ManagerEnterpriseFeedbackList
 // @Router       /manager/v1/enterprise/feedback [GET]

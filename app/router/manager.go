@@ -152,6 +152,16 @@ func loadManagerRoutes() {
 	g.POST("/enterprise/agent", mapi.Enterprise.AgentCreate)
 	g.PUT("/enterprise/agent/:id", mapi.Enterprise.AgentModify)
 	g.DELETE("/enterprise/agent/:id", mapi.Enterprise.AgentDelete)
+	// 充值列表
+	g.GET("/enterprise/repayment", mapi.Enterprise.RepaymentList)
+	// 绑定电柜
+	g.POST("/enterprise/bind/cabinet", mapi.Enterprise.BindCabinet)
+	// 解绑电柜
+	g.GET("/enterprise/unbind/cabinet/:id", mapi.Enterprise.UnbindCabinet)
+	// 申请列表
+	g.GET("/enterprise/subscribe/apply/:id", mapi.Enterprise.SubscribeApplyList)
+	// 申请审核
+	g.PUT("/enterprise/subscribe/apply", mapi.Enterprise.SubscribeApply)
 
 	// 店员
 	g.POST("/employee", mapi.Employee.Create)

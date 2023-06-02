@@ -771,6 +771,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			enterpriseprepayment.FieldLastModifier: {Type: field.TypeJSON, Column: enterpriseprepayment.FieldLastModifier},
 			enterpriseprepayment.FieldRemark:       {Type: field.TypeString, Column: enterpriseprepayment.FieldRemark},
 			enterpriseprepayment.FieldEnterpriseID: {Type: field.TypeUint64, Column: enterpriseprepayment.FieldEnterpriseID},
+			enterpriseprepayment.FieldAgentID:      {Type: field.TypeUint64, Column: enterpriseprepayment.FieldAgentID},
 			enterpriseprepayment.FieldAmount:       {Type: field.TypeFloat64, Column: enterpriseprepayment.FieldAmount},
 			enterpriseprepayment.FieldPayway:       {Type: field.TypeOther, Column: enterpriseprepayment.FieldPayway},
 		},
@@ -1567,6 +1568,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Agent",
 		"EnterpriseStation",
+	)
+	graph.MustAddE(
+		"prepayments",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   agent.PrepaymentsTable,
+			Columns: []string{agent.PrepaymentsColumn},
+			Bidi:    false,
+		},
+		"Agent",
+		"EnterprisePrepayment",
 	)
 	graph.MustAddE(
 		"rider",
@@ -2875,6 +2888,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"EnterprisePrepayment",
 		"Enterprise",
+	)
+	graph.MustAddE(
+		"agent",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   enterpriseprepayment.AgentTable,
+			Columns: []string{enterpriseprepayment.AgentColumn},
+			Bidi:    false,
+		},
+		"EnterprisePrepayment",
+		"Agent",
 	)
 	graph.MustAddE(
 		"city",
@@ -4456,6 +4481,20 @@ func (f *AgentFilter) WhereHasStations() {
 // WhereHasStationsWith applies a predicate to check if query has an edge stations with a given conditions (other predicates).
 func (f *AgentFilter) WhereHasStationsWith(preds ...predicate.EnterpriseStation) {
 	f.Where(entql.HasEdgeWith("stations", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasPrepayments applies a predicate to check if query has an edge prepayments.
+func (f *AgentFilter) WhereHasPrepayments() {
+	f.Where(entql.HasEdge("prepayments"))
+}
+
+// WhereHasPrepaymentsWith applies a predicate to check if query has an edge prepayments with a given conditions (other predicates).
+func (f *AgentFilter) WhereHasPrepaymentsWith(preds ...predicate.EnterprisePrepayment) {
+	f.Where(entql.HasEdgeWith("prepayments", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -8799,6 +8838,11 @@ func (f *EnterprisePrepaymentFilter) WhereEnterpriseID(p entql.Uint64P) {
 	f.Where(p.Field(enterpriseprepayment.FieldEnterpriseID))
 }
 
+// WhereAgentID applies the entql uint64 predicate on the agent_id field.
+func (f *EnterprisePrepaymentFilter) WhereAgentID(p entql.Uint64P) {
+	f.Where(p.Field(enterpriseprepayment.FieldAgentID))
+}
+
 // WhereAmount applies the entql float64 predicate on the amount field.
 func (f *EnterprisePrepaymentFilter) WhereAmount(p entql.Float64P) {
 	f.Where(p.Field(enterpriseprepayment.FieldAmount))
@@ -8817,6 +8861,20 @@ func (f *EnterprisePrepaymentFilter) WhereHasEnterprise() {
 // WhereHasEnterpriseWith applies a predicate to check if query has an edge enterprise with a given conditions (other predicates).
 func (f *EnterprisePrepaymentFilter) WhereHasEnterpriseWith(preds ...predicate.Enterprise) {
 	f.Where(entql.HasEdgeWith("enterprise", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasAgent applies a predicate to check if query has an edge agent.
+func (f *EnterprisePrepaymentFilter) WhereHasAgent() {
+	f.Where(entql.HasEdge("agent"))
+}
+
+// WhereHasAgentWith applies a predicate to check if query has an edge agent with a given conditions (other predicates).
+func (f *EnterprisePrepaymentFilter) WhereHasAgentWith(preds ...predicate.Agent) {
+	f.Where(entql.HasEdgeWith("agent", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
