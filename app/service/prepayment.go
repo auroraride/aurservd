@@ -89,7 +89,7 @@ func (s *prepaymentService) List(enterpriseID uint64, req *model.PrepaymentListR
 		if item.Payway == model.PaywayAgentWxMiniprogram && item.Edges.Agent != nil {
 			res.Name = item.Edges.Agent.Name + "-" + item.Edges.Agent.Phone
 		}
-		if item.Payway == model.PaywayCash && item.Edges.Agent != nil {
+		if item.Payway == model.PaywayCash && item.Creator != nil {
 			res.Name = item.Creator.Name + "-" + item.Creator.Phone
 		}
 		return res
