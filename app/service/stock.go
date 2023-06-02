@@ -20,10 +20,6 @@ import (
 	"github.com/golang-module/carbon/v2"
 	jsoniter "github.com/json-iterator/go"
 
-	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/assets"
-	"github.com/auroraride/aurservd/internal/ar"
-	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -34,6 +30,11 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
+
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/assets"
+	"github.com/auroraride/aurservd/internal/ar"
+	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
@@ -667,7 +668,7 @@ func (s *stockService) listFilter(req model.StockDetailFilter) (q *ent.StockQuer
 		WithEmployee().
 		WithCity().
 		WithEbike().
-		WithStations()
+		WithStation()
 	// 排序
 	if req.Positive {
 		q.Order(ent.Asc(stock.FieldSn))
@@ -814,7 +815,7 @@ func (s *stockService) detailInfo(item *ent.Stock) model.StockDetailRes {
 	es := item.Edges.Store
 	ec := item.Edges.Cabinet
 
-	st := item.Edges.Stations
+	st := item.Edges.Station
 	if item.Type == model.StockTypeTransfer {
 		// 平台调拨记录
 		res.Type = "平台调拨"
@@ -827,7 +828,7 @@ func (s *stockService) detailInfo(item *ent.Stock) model.StockDetailRes {
 		if sp != nil {
 			ses = sp.Edges.Store
 			sec = sp.Edges.Cabinet
-			sst = sp.Edges.Stations
+			sst = sp.Edges.Station
 		}
 
 		// 出入库对象判定
