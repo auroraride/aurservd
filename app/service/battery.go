@@ -210,7 +210,7 @@ func (s *batteryService) Modify(req *model.BatteryModifyReq) {
 }
 
 func (s *batteryService) listFilter(req model.BatteryFilter) (q *ent.BatteryQuery, info ar.Map) {
-	q = s.orm.Query().WithRider().WithCity().WithCabinet().Order(ent.Desc(battery.FieldCreatedAt))
+	q = s.orm.Query().WithRider().WithCity().WithCabinet().WithStation().Order(ent.Desc(battery.FieldCreatedAt))
 	info = make(ar.Map)
 
 	var (
@@ -249,19 +249,19 @@ func (s *batteryService) listFilter(req model.BatteryFilter) (q *ent.BatteryQuer
 		info["型号"] = m
 		q.Where(battery.Model(m))
 	}
-	// 团签相关电池搜索
 	if req.EnterpriseID != nil {
-		q.Where(battery.EnterpriseID(*req.EnterpriseID)).WithStation()
-		if req.StationID != nil {
-			q.Where(battery.StationID(*req.StationID))
-		}
-		if req.CabinetName != nil {
-			q.Where(battery.HasCabinetWith(cabinet.Name(*req.CabinetName)))
-		}
-		if req.Keyword != nil {
-			q.Where(battery.HasRiderWith(rider.NameContainsFold(*req.Keyword)))
-		}
+		q.Where(battery.EnterpriseID(*req.EnterpriseID))
 	}
+	if req.StationID != nil {
+		q.Where(battery.StationID(*req.StationID))
+	}
+	if req.CabinetName != nil {
+		q.Where(battery.HasCabinetWith(cabinet.Name(*req.CabinetName)))
+	}
+	if req.Keyword != nil {
+		q.Where(battery.HasRiderWith(rider.NameContainsFold(*req.Keyword)))
+	}
+
 	if req.OwnerType != nil {
 		switch *req.OwnerType {
 		case 1: // 平台
