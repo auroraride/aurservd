@@ -280,11 +280,13 @@ func (s *batteryService) List(req *model.BatteryListReq) (res *model.PaginationR
 	res = model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Battery) (res *model.BatteryListRes) {
 		snmap[item.Brand] = append(snmap[item.Brand], item.Sn)
 		res = &model.BatteryListRes{
-			ID:     item.ID,
-			Brand:  item.Brand,
-			Model:  item.Model,
-			Enable: item.Enable,
-			SN:     item.Sn,
+			ID:             item.ID,
+			Brand:          item.Brand,
+			Model:          item.Model,
+			Enable:         item.Enable,
+			SN:             item.Sn,
+			StationName:    "-",
+			EnterpriseName: "-",
 		}
 
 		c := item.Edges.City
