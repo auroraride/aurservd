@@ -95,7 +95,7 @@ func (*stock) Detail(c echo.Context) (err error) {
 // EnterpriseList 团签物资列表
 // @ID           ManagerStockEnterpriseList
 // @Router       /manager/v1/stock/enterprise/list [GET]
-// @Summary      ME004 团签物资列表
+// @Summary      ME006 团签物资列表
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
