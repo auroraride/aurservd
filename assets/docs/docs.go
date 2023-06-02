@@ -305,6 +305,12 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "description": "归属类型   1:平台 2:代理商",
+                        "name": "ownerType",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
                         "description": "每页数据, 默认20",
                         "name": "pageSize",
                         "in": "query"
@@ -427,7 +433,42 @@ const docTemplate = `{
                 }
             }
         },
-        "/agent/v1/getopenid": {
+        "/agent/v1/index": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A1007 首页数据",
+                "operationId": "AgentIndex",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/agent/v1/openid": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -466,41 +507,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/agent/v1/index": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "[A]代理接口"
-                ],
-                "summary": "A2007 首页数据",
-                "operationId": "AgentIndex",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "代理校验token",
-                        "name": "X-Agent-Token",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "integer"
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/agent/v1/prepayment": {
             "get": {
                 "consumes": [
@@ -532,6 +538,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "结束日期",
                         "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "团签ID",
+                        "name": "enterprises_id",
                         "in": "query"
                     },
                     {
@@ -3681,6 +3693,12 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "type": "string",
+                        "description": "电柜名称",
+                        "name": "cabinetName",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "城市",
                         "name": "cityId",
@@ -3693,9 +3711,27 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "integer",
+                        "description": "团签id",
+                        "name": "enterpriseId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "关键词",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "description": "型号",
                         "name": "model",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "归属类型   1:平台 2:代理商",
+                        "name": "ownerType",
                         "in": "query"
                     },
                     {
@@ -3708,6 +3744,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "编号",
                         "name": "sn",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "站点id",
+                        "name": "stationId",
                         "in": "query"
                     },
                     {
@@ -5218,6 +5260,12 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "在线状态",
                         "name": "online",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "归属类型   1:平台 2:代理商",
+                        "name": "ownerType",
                         "in": "query"
                     },
                     {
@@ -8083,6 +8131,40 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/enterprise/cabinet": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M9024 团签绑定电柜",
+                "operationId": "ManagerEnterpriseBindCabinet",
+                "parameters": [
+                    {
+                        "description": "绑定电柜请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.EnterpriseBindCabinetReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/enterprise/contract": {
             "post": {
                 "consumes": [
@@ -8287,6 +8369,99 @@ const docTemplate = `{
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/enterprise/repayment": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M9026 充值记录",
+                "operationId": "ManagerEnterpriseRepaymentList",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束日期",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "团签ID",
+                        "name": "enterprises_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 3,
+                        "minimum": 0,
+                        "enum": [
+                            0,
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "PaywayAgentWxMiniprogram": "代理商小程序",
+                            "PaywayCash": "现金支付",
+                            "PaywayUnknown": "未知"
+                        },
+                        "x-enum-varnames": [
+                            "PaywayUnknown",
+                            "PaywayCash",
+                            "PaywayAgentWxMiniprogram"
+                        ],
+                        "description": "支付方式 0:全部 1:现金 2:微信",
+                        "name": "payway",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始日期",
+                        "name": "start",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.PrepaymentListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -8551,6 +8726,155 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/enterprise/subscribe/apply": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M9027 订阅申请列表",
+                "operationId": "ManagerEnterpriseSubscribeApplyList",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "团签ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "关键词",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "审核状态",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.SubscribeAlterApplyListRsp"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M9028 审批订阅申请",
+                "operationId": "ManagerEnterpriseSubscribeApply",
+                "parameters": [
+                    {
+                        "description": "审批请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.SubscribeAlterReviewReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/enterprise/unbind/cabinet": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M9025 团签解绑电柜",
+                "operationId": "ManagerEnterpriseUnbindCabinet",
+                "parameters": [
+                    {
+                        "description": "解绑电柜请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.IDParamReq"
+                        }
                     }
                 ],
                 "responses": {
@@ -17511,6 +17835,10 @@ const docTemplate = `{
                     "description": "是否启用",
                     "type": "boolean"
                 },
+                "enterpriseName": {
+                    "description": "团签名称",
+                    "type": "string"
+                },
                 "faults": {
                     "description": "故障列表, ` + "`" + `0` + "`" + `:总压低, ` + "`" + `1` + "`" + `:总压高, ` + "`" + `2` + "`" + `:单体低, ` + "`" + `3` + "`" + `:单体高, ` + "`" + `6` + "`" + `:放电过流, ` + "`" + `7` + "`" + `:充电过流, ` + "`" + `8` + "`" + `:SOC低, ` + "`" + `11` + "`" + `:充电高温, ` + "`" + `12` + "`" + `:充电低温, ` + "`" + `13` + "`" + `:放电高温, ` + "`" + `14` + "`" + `:放电低温, ` + "`" + `15` + "`" + `:短路, ` + "`" + `16` + "`" + `:MOS高温",
                     "type": "array",
@@ -17540,6 +17868,10 @@ const docTemplate = `{
                 "soc": {
                     "description": "剩余容量, 单位1%",
                     "type": "integer"
+                },
+                "stationName": {
+                    "description": "站点名称",
+                    "type": "string"
                 },
                 "status": {
                     "description": "状态, 0:静置 1:充电 2:放电 3:异常(此时faults字段存在)",
@@ -19027,6 +19359,14 @@ const docTemplate = `{
                     "description": "柜门数量",
                     "type": "integer"
                 },
+                "enterpriseId": {
+                    "description": "团签id",
+                    "type": "integer"
+                },
+                "enterpriseName": {
+                    "description": "团签名称",
+                    "type": "string"
+                },
                 "health": {
                     "description": "在线状态 0离线 1在线 2故障",
                     "type": "integer"
@@ -19072,6 +19412,14 @@ const docTemplate = `{
                 },
                 "sn": {
                     "description": "平台编码",
+                    "type": "string"
+                },
+                "stationId": {
+                    "description": "站点id",
+                    "type": "integer"
+                },
+                "stationName": {
+                    "description": "所属站点名称",
                     "type": "string"
                 },
                 "status": {
@@ -19339,6 +19687,14 @@ const docTemplate = `{
                     "description": "柜门数量",
                     "type": "integer"
                 },
+                "enterpriseId": {
+                    "description": "团签id",
+                    "type": "integer"
+                },
+                "enterpriseName": {
+                    "description": "团签名称",
+                    "type": "string"
+                },
                 "health": {
                     "description": "在线状态 0离线 1在线 2故障",
                     "type": "integer"
@@ -19377,6 +19733,14 @@ const docTemplate = `{
                 },
                 "sn": {
                     "description": "平台编码",
+                    "type": "string"
+                },
+                "stationId": {
+                    "description": "站点id",
+                    "type": "integer"
+                },
+                "stationName": {
+                    "description": "所属站点名称",
                     "type": "string"
                 },
                 "status": {
@@ -20705,6 +21069,23 @@ const docTemplate = `{
                 }
             }
         },
+        "model.EnterpriseBindCabinetReq": {
+            "type": "object",
+            "required": [
+                "enterprise_id",
+                "station_id"
+            ],
+            "properties": {
+                "enterprise_id": {
+                    "description": "团签id",
+                    "type": "integer"
+                },
+                "station_id": {
+                    "description": "站点id",
+                    "type": "integer"
+                }
+            }
+        },
         "model.EnterpriseContact": {
             "type": "object",
             "properties": {
@@ -20777,6 +21158,7 @@ const docTemplate = `{
                 "contactName",
                 "contactPhone",
                 "deposit",
+                "distance",
                 "idcardNumber",
                 "name",
                 "payment",
@@ -20811,6 +21193,9 @@ const docTemplate = `{
                 },
                 "deposit": {
                     "type": "number"
+                },
+                "distance": {
+                    "type": "integer"
                 },
                 "idcardNumber": {
                     "type": "string"
@@ -20854,6 +21239,7 @@ const docTemplate = `{
                 "contactName",
                 "contactPhone",
                 "deposit",
+                "distance",
                 "idcardNumber",
                 "name",
                 "payment",
@@ -20888,6 +21274,9 @@ const docTemplate = `{
                 },
                 "deposit": {
                     "type": "number"
+                },
+                "distance": {
+                    "type": "integer"
                 },
                 "idcardNumber": {
                     "type": "string"
@@ -21814,6 +22203,9 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "model.IDParamReq": {
+            "type": "object"
         },
         "model.IDPostReq": {
             "type": "object",
@@ -25743,6 +26135,9 @@ const docTemplate = `{
                 },
                 "expireTime": {
                     "description": "到期时间",
+                    "type": "integer"
+                },
+                "id": {
                     "type": "integer"
                 },
                 "reviewTime": {

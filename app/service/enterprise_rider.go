@@ -414,9 +414,9 @@ func (s *enterpriseRiderService) AddSubscribeDays(req *model.RiderSubscribeAddRe
 func (s *enterpriseRiderService) SubscribeAlterList(req *model.SubscribeAlterApplyReq, rid *ent.Rider) *model.PaginationRes {
 	q := ent.Database.SubscribeAlter.QueryNotDeleted().Where(subscribealter.RiderID(rid.ID)).Order(ent.Desc(subscribealter.FieldCreatedAt))
 
-	if req.StartTime != nil && req.EndTime != nil {
-		rs := tools.NewTime().ParseDateStringX(*req.StartTime)
-		re := tools.NewTime().ParseDateStringX(*req.EndTime)
+	if req.Start != nil && req.End != nil {
+		rs := tools.NewTime().ParseDateStringX(*req.Start)
+		re := tools.NewTime().ParseDateStringX(*req.End)
 		q = q.Where(subscribealter.CreatedAtGTE(rs), subscribealter.CreatedAtLTE(re))
 	}
 
@@ -425,14 +425,11 @@ func (s *enterpriseRiderService) SubscribeAlterList(req *model.SubscribeAlterApp
 		req.PaginationReq,
 		func(item *ent.SubscribeAlter) model.SubscribeAlterApplyListRsp {
 			return model.SubscribeAlterApplyListRsp{
-				ID:   item.ID,
-				Days: item.Days,
-				// 申请时间
-				ApplyTime: item.CreatedAt.Format(carbon.DateTimeLayout),
-				// 审批时间
-				ReviewTime: item.UpdatedAt.Format(carbon.DateTimeLayout),
-				// 审批状态
-				Status: item.Status,
+				ID:         item.ID,
+				Days:       item.Days,
+				ApplyTime:  item.CreatedAt.Format(carbon.DateTimeLayout), // 申请时间
+				ReviewTime: item.UpdatedAt.Format(carbon.DateTimeLayout), // 审批时间
+				Status:     item.Status,                                  // 审批状态
 			}
 		})
 }

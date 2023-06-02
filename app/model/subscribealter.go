@@ -1,32 +1,23 @@
 package model
 
 const (
-	// SubscribealterUnreviewed 未审核
-	SubscribeAlterUnreviewed = iota
-	// SubscribeAlterNormal 已通过
-	SubscribeAlterNormal
-	// SubscribeAlterUnpass 未通过
-	SubscribeAlterUnpass
+	SubscribeAlterUnreviewed = iota // 未审核
+	SubscribeAlterNormal            // 已通过
+	SubscribeAlterUnpass            // 未通过
 )
 
 // SubscribeAlterApplyReq 申请请求
 type SubscribeAlterApplyReq struct {
 	PaginationReq
-	// 开始时间
-	StartTime *string `json:"start"`
-	// 结束时间
-	EndTime *string `json:"end"`
-	// 关键词
-	Keyword *string `json:"keyword"`
-	// 审核状态
-	Status *int `json:"status"`
-	// 团签id
-	ID uint64 `json:"id" param:"id"`
+	Start   *string `json:"start" query:"start"`     // 开始时间
+	End     *string `json:"end" query:"end"`         // 结束时间
+	Keyword *string `json:"keyword" query:"keyword"` // 关键词
+	Status  *int    `json:"status" query:"status"`   // 审核状态
+	ID      uint64  `json:"id" param:"id"`           // 团签id
 }
 
 // SubscribeAlterApplyListRsp 申请列表返回信息
 type SubscribeAlterApplyListRsp struct {
-	// id
 	ID uint64 `json:"id"`
 	// 天数
 	Days int `json:"days"`

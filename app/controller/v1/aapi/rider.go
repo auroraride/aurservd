@@ -106,7 +106,7 @@ func (*rider) Active(c echo.Context) (err error) {
 // @Success      200  {object}  model.PaginationRes{items=[]model.SubscribeAlterApplyListRsp}  "请求成功"
 func (*rider) SubscribeApplyList(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.SubscribeAlterApplyReq](c)
-	return ctx.SendResponse(service.NewEnterpriseWithAgent(ctx.Agent, ctx.Enterprise).SubscribeApplyList(req, ctx.Enterprise))
+	return ctx.SendResponse(service.NewEnterpriseWithAgent(ctx.Agent, ctx.Enterprise).SubscribeApplyList(req, ctx.Agent.ID))
 }
 
 // ReviewApply  审核加时

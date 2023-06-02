@@ -355,7 +355,8 @@ func (*enterprise) RepaymentList(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        id  query  uint64  true  "团签ID"
-// @Success      200  {object}  []model.ApplyListRsp
+// @Param        query  query  model.SubscribeAlterApplyReq  false  "请求参数"
+// @Success      200  {object}  model.PaginationRes{items=[]model.SubscribeAlterApplyListRsp}
 func (*enterprise) SubscribeApplyList(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.SubscribeAlterApplyReq](c)
 	return ctx.SendResponse(service.NewEnterpriseWithModifier(ctx.Modifier).SubscribeApplyList(req, req.ID))
@@ -368,7 +369,7 @@ func (*enterprise) SubscribeApplyList(c echo.Context) (err error) {
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
-// @Param        body  body  model.ReviewReq true  "审批请求"
+// @Param        body  body  model.SubscribeAlterReviewReq true  "审批请求"
 // @Success      200  {object}  model.StatusResponse
 func (*enterprise) SubscribeApply(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.SubscribeAlterReviewReq](c)

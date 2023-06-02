@@ -1375,6 +1375,9 @@ definitions:
       enable:
         description: 是否启用
         type: boolean
+      enterpriseName:
+        description: 团签名称
+        type: string
       faults:
         description: 故障列表, `0`:总压低, `1`:总压高, `2`:单体低, `3`:单体高, `6`:放电过流, `7`:充电过流,
           `8`:SOC低, `11`:充电高温, `12`:充电低温, `13`:放电高温, `14`:放电低温, `15`:短路, `16`:MOS高温
@@ -1396,6 +1399,9 @@ definitions:
       soc:
         description: 剩余容量, 单位1%
         type: integer
+      stationName:
+        description: 站点名称
+        type: string
       status:
         allOf:
         - $ref: '#/definitions/model.BatteryStatus'
@@ -2423,6 +2429,12 @@ definitions:
       doors:
         description: 柜门数量
         type: integer
+      enterpriseId:
+        description: 团签id
+        type: integer
+      enterpriseName:
+        description: 团签名称
+        type: string
       health:
         description: 在线状态 0离线 1在线 2故障
         type: integer
@@ -2456,6 +2468,12 @@ definitions:
         type: string
       sn:
         description: 平台编码
+        type: string
+      stationId:
+        description: 站点id
+        type: integer
+      stationName:
+        description: 所属站点名称
         type: string
       status:
         allOf:
@@ -2637,6 +2655,12 @@ definitions:
       doors:
         description: 柜门数量
         type: integer
+      enterpriseId:
+        description: 团签id
+        type: integer
+      enterpriseName:
+        description: 团签名称
+        type: string
       health:
         description: 在线状态 0离线 1在线 2故障
         type: integer
@@ -2665,6 +2689,12 @@ definitions:
         type: string
       sn:
         description: 平台编码
+        type: string
+      stationId:
+        description: 站点id
+        type: integer
+      stationName:
+        description: 所属站点名称
         type: string
       status:
         allOf:
@@ -3594,6 +3624,18 @@ definitions:
         description: 企业名称
         type: string
     type: object
+  model.EnterpriseBindCabinetReq:
+    properties:
+      enterprise_id:
+        description: 团签id
+        type: integer
+      station_id:
+        description: 站点id
+        type: integer
+    required:
+    - enterprise_id
+    - station_id
+    type: object
   model.EnterpriseContact:
     properties:
       name:
@@ -3660,6 +3702,8 @@ definitions:
         type: array
       deposit:
         type: number
+      distance:
+        type: integer
       idcardNumber:
         type: string
       name:
@@ -3691,6 +3735,7 @@ definitions:
     - contactName
     - contactPhone
     - deposit
+    - distance
     - idcardNumber
     - name
     - payment
@@ -3718,6 +3763,8 @@ definitions:
         type: array
       deposit:
         type: number
+      distance:
+        type: integer
       idcardNumber:
         type: string
       name:
@@ -3749,6 +3796,7 @@ definitions:
     - contactName
     - contactPhone
     - deposit
+    - distance
     - idcardNumber
     - name
     - payment
@@ -4370,6 +4418,8 @@ definitions:
         items:
           type: string
         type: array
+    type: object
+  model.IDParamReq:
     type: object
   model.IDPostReq:
     properties:
@@ -7063,6 +7113,8 @@ definitions:
       expireTime:
         description: 到期时间
         type: integer
+      id:
+        type: integer
       reviewTime:
         description: 审核时间
         type: string
@@ -7630,6 +7682,10 @@ paths:
         in: query
         name: online
         type: integer
+      - description: 归属类型   1:平台 2:代理商
+        in: query
+        name: ownerType
+        type: integer
       - description: 每页数据, 默认20
         in: query
         name: pageSize
@@ -7712,7 +7768,30 @@ paths:
       summary: A1005 意见反馈
       tags:
       - '[A]代理接口'
-  /agent/v1/getopenid:
+  /agent/v1/index:
+    get:
+      consumes:
+      - application/json
+      operationId: AgentIndex
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              type: integer
+            type: array
+      summary: A1007 首页数据
+      tags:
+      - '[A]代理接口'
+  /agent/v1/openid:
     get:
       consumes:
       - application/json
@@ -7738,29 +7817,6 @@ paths:
       summary: A1003 获取openid
       tags:
       - '[A]代理接口'
-  /agent/v1/index:
-    get:
-      consumes:
-      - application/json
-      operationId: AgentIndex
-      parameters:
-      - description: 代理校验token
-        in: header
-        name: X-Agent-Token
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            items:
-              type: integer
-            type: array
-      summary: A2007 首页数据
-      tags:
-      - '[A]代理接口'
   /agent/v1/prepayment:
     get:
       consumes:
@@ -7780,6 +7836,10 @@ paths:
         in: query
         name: end
         type: string
+      - description: 团签ID
+        in: query
+        name: enterprises_id
+        type: integer
       - description: 每页数据, 默认20
         in: query
         name: pageSize
@@ -9871,6 +9931,10 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
+      - description: 电柜名称
+        in: query
+        name: cabinetName
+        type: string
       - description: 城市
         in: query
         name: cityId
@@ -9879,10 +9943,22 @@ paths:
         in: query
         name: current
         type: integer
+      - description: 团签id
+        in: query
+        name: enterpriseId
+        type: integer
+      - description: 关键词
+        in: query
+        name: keyword
+        type: string
       - description: 型号
         in: query
         name: model
         type: string
+      - description: 归属类型   1:平台 2:代理商
+        in: query
+        name: ownerType
+        type: integer
       - description: 每页数据, 默认20
         in: query
         name: pageSize
@@ -9891,6 +9967,10 @@ paths:
         in: query
         name: sn
         type: string
+      - description: 站点id
+        in: query
+        name: stationId
+        type: integer
       - description: 状态 0:全部 1:启用(不携带默认为启用) 2:禁用
         in: query
         name: status
@@ -10884,6 +10964,10 @@ paths:
       - description: 在线状态
         in: query
         name: online
+        type: integer
+      - description: 归属类型   1:平台 2:代理商
+        in: query
+        name: ownerType
         type: integer
       - description: 每页数据, 默认20
         in: query
@@ -12839,6 +12923,28 @@ paths:
       summary: M9015 使用明细
       tags:
       - '[M]管理接口'
+  /manager/v1/enterprise/cabinet:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerEnterpriseBindCabinet
+      parameters:
+      - description: 绑定电柜请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.EnterpriseBindCabinetReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M9024 团签绑定电柜
+      tags:
+      - '[M]管理接口'
   /manager/v1/enterprise/contract:
     post:
       consumes:
@@ -12972,6 +13078,67 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M9017 删除价格
+      tags:
+      - '[M]管理接口'
+  /manager/v1/enterprise/repayment:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerEnterpriseRepaymentList
+      parameters:
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 结束日期
+        in: query
+        name: end
+        type: string
+      - description: 团签ID
+        in: query
+        name: enterprises_id
+        type: integer
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 支付方式 0:全部 1:现金 2:微信
+        enum:
+        - 0
+        - 1
+        - 2
+        in: query
+        maximum: 3
+        minimum: 0
+        name: payway
+        type: integer
+        x-enum-comments:
+          PaywayAgentWxMiniprogram: 代理商小程序
+          PaywayCash: 现金支付
+          PaywayUnknown: 未知
+        x-enum-varnames:
+        - PaywayUnknown
+        - PaywayCash
+        - PaywayAgentWxMiniprogram
+      - description: 开始日期
+        in: query
+        name: start
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.PrepaymentListRes'
+                  type: array
+              type: object
+      summary: M9026 充值记录
       tags:
       - '[M]管理接口'
   /manager/v1/enterprise/rider:
@@ -13151,6 +13318,101 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M9007 编辑站点
+      tags:
+      - '[M]管理接口'
+  /manager/v1/enterprise/subscribe/apply:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerEnterpriseSubscribeApplyList
+      parameters:
+      - description: 团签ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 结束时间
+        in: query
+        name: end
+        type: string
+      - description: 关键词
+        in: query
+        name: keyword
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 开始时间
+        in: query
+        name: start
+        type: string
+      - description: 审核状态
+        in: query
+        name: status
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.SubscribeAlterApplyListRsp'
+                  type: array
+              type: object
+      summary: M9027 订阅申请列表
+      tags:
+      - '[M]管理接口'
+    put:
+      consumes:
+      - application/json
+      operationId: ManagerEnterpriseSubscribeApply
+      parameters:
+      - description: 审批请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.SubscribeAlterReviewReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M9028 审批订阅申请
+      tags:
+      - '[M]管理接口'
+  /manager/v1/enterprise/unbind/cabinet:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerEnterpriseUnbindCabinet
+      parameters:
+      - description: 解绑电柜请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.IDParamReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M9025 团签解绑电柜
       tags:
       - '[M]管理接口'
   /manager/v1/exchange:

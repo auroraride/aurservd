@@ -666,9 +666,9 @@ func (s *enterpriseService) SubscribeApplyList(req *model.SubscribeAlterApplyReq
 	q := ent.Database.SubscribeAlter.QueryNotDeleted().Where(subscribealter.EnterpriseID(enterpriseId)).
 		Order(ent.Desc(subscribealter.FieldCreatedAt)).WithRider().WithSubscribe()
 
-	if req.StartTime != nil && req.EndTime != nil {
-		rs := tools.NewTime().ParseDateStringX(*req.StartTime)
-		re := tools.NewTime().ParseDateStringX(*req.EndTime)
+	if req.Start != nil && req.End != nil {
+		rs := tools.NewTime().ParseDateStringX(*req.Start)
+		re := tools.NewTime().ParseDateStringX(*req.End)
 		q.Where(subscribealter.CreatedAtGTE(rs), subscribealter.CreatedAtLTE(re))
 	}
 	if req.Status != nil {
