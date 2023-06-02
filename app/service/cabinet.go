@@ -193,6 +193,14 @@ func (s *cabinetService) List(req *model.CabinetQueryReq) (res *model.Pagination
 		for _, bm := range bms {
 			res.Models = append(res.Models, bm.Model)
 		}
+		if item.Edges.Station != nil {
+			res.StationName = item.Edges.Station.Name
+			res.StationID = &item.Edges.Station.ID
+		}
+		if item.Edges.Enterprise != nil {
+			res.EnterpriseName = item.Edges.Enterprise.Name
+			res.EnterpriseID = &item.Edges.Enterprise.ID
+		}
 		return res
 	}, s.SyncCabinets)
 }
@@ -915,4 +923,14 @@ func (s *cabinetService) BindCabinet(req *model.EnterpriseBindCabinetReq) {
 	}
 	// 电柜绑定
 	s.orm.UpdateOneID(req.ID).SetEnterpriseID(req.EnterpriseID).SetStationID(req.StationID).SaveX(s.ctx)
+}
+
+// UnbindCabinet 解绑电柜
+func (s *cabinetService) UnbindCabinet(req *model.IDParamReq) {
+	cab, _ := ent.Database.Cabinet.Query().Where(cabinet.IDEQ(req.ID), cabinet.Status(model.CabinetHealthStatusOffline)).First(s.ctx)
+	if cab == nil {
+		snag.Panic("电柜不存在,或者电柜不是离线状态")
+	}
+	// 电柜解绑
+	s.orm.UpdateOneID(req.ID).ClearStationID().ClearEnterpriseID().SaveX(s.ctx)
 }

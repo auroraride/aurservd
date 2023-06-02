@@ -86,11 +86,11 @@ func (s *prepaymentService) List(enterpriseID uint64, req *model.PrepaymentListR
 			Payway: item.Payway,
 			Name:   "-",
 		}
-		if item.Payway == model.PaywayAgentWxMiniprogram && item.Edges.Agent != nil {
-			res.Name = item.Edges.Agent.Name + "-" + item.Edges.Agent.Phone
-		}
-		if item.Payway == model.PaywayCash && item.Creator != nil {
+		if item.Creator != nil {
 			res.Name = item.Creator.Name + "-" + item.Creator.Phone
+		}
+		if item.Edges.Agent != nil {
+			res.Name = item.Edges.Agent.Name + "-" + item.Edges.Agent.Phone
 		}
 		return res
 	})

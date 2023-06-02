@@ -318,6 +318,21 @@ func (*enterprise) BindCabinet(c echo.Context) (err error) {
 	return ctx.SendResponse(model.StatusResponse{Status: true})
 }
 
+// UnbindCabinet 团签解绑电柜
+// @ID           ManagerEnterpriseUnbindCabinet
+// @Router       /manager/v1/enterprise/unbind/cabinet [GET]
+// @Summary      M9025 团签解绑电柜
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        body  body     model.IDParamReq true  "解绑电柜请求"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*enterprise) UnbindCabinet(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
+	service.NewCabinetWithModifier(ctx.Modifier).UnbindCabinet(req)
+	return ctx.SendResponse(model.StatusResponse{Status: true})
+}
+
 // RepaymentList 充值记录
 // @ID           ManagerEnterpriseRepaymentList
 // @Router       /manager/v1/enterprise/repayment [GET]

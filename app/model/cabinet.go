@@ -96,7 +96,9 @@ type CabinetItem struct {
 	BatteryNum     int      `json:"batteryNum"`               // 电池数量
 	Intelligent    bool     `json:"intelligent"`              // 是否智能柜
 	StationName    string   `json:"stationName,omitempty"`    // 所属站点名称
+	StationID      *uint64  `json:"stationId,omitempty"`      // 站点id
 	EnterpriseName string   `json:"enterpriseName,omitempty"` // 团签名称
+	EnterpriseID   *uint64  `json:"enterpriseId,omitempty"`   // 团签id
 }
 
 // CabinetQueryReq 电柜查询请求
