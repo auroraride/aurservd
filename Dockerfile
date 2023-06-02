@@ -13,7 +13,7 @@ RUN go get ./... && \
     CGO_ENABLED=0 go build -trimpath -tags=jsoniter,poll_opt -gcflags "all=-N -l" -o /go/bin/aurservd cmd/aurservd/main.go
 
 
-FROM scratch
+FROM alpine
 COPY --from=builder /go/bin/aurservd /app/aurservd
 COPY --from=builder /usr/share/zoneinfo /usr/share/
 COPY --from=builder /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
