@@ -749,6 +749,22 @@ func (c *AgentClient) QueryStations(a *Agent) *EnterpriseStationQuery {
 	return query
 }
 
+// QueryPrepayments queries the prepayments edge of a Agent.
+func (c *AgentClient) QueryPrepayments(a *Agent) *EnterprisePrepaymentQuery {
+	query := (&EnterprisePrepaymentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(agent.Table, agent.FieldID, id),
+			sqlgraph.To(enterpriseprepayment.Table, enterpriseprepayment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, agent.PrepaymentsTable, agent.PrepaymentsColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *AgentClient) Hooks() []Hook {
 	hooks := c.hooks.Agent
@@ -4855,22 +4871,6 @@ func (c *EnterpriseClient) QueryStocks(e *Enterprise) *StockQuery {
 			sqlgraph.From(enterprise.Table, enterprise.FieldID, id),
 			sqlgraph.To(stock.Table, stock.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, enterprise.StocksTable, enterprise.StocksColumn),
-		)
-		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryPrepayments queries the prepayments edge of a Enterprise.
-func (c *EnterpriseClient) QueryPrepayments(e *Enterprise) *EnterprisePrepaymentQuery {
-	query := (&EnterprisePrepaymentClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := e.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(enterprise.Table, enterprise.FieldID, id),
-			sqlgraph.To(enterpriseprepayment.Table, enterpriseprepayment.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, enterprise.PrepaymentsTable, enterprise.PrepaymentsColumn),
 		)
 		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
 		return fromV, nil

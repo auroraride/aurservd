@@ -318,21 +318,6 @@ func (*enterprise) BindCabinet(c echo.Context) (err error) {
 	return ctx.SendResponse(model.StatusResponse{Status: true})
 }
 
-// ModifyCabinet 编辑团签电柜
-// @ID           ManagerEnterpriseModifyCabinet
-// @Router       /manager/v1/enterprise/cabinet [PUT]
-// @Summary      M9025 编辑团签电柜
-// @Tags         [M]管理接口
-// @Accept       json
-// @Produce      json
-// @Param        body  body     model.CabinetAgentEditReq true  "编辑电柜请求"
-// @Success      200  {object}  model.StatusResponse  "请求成功"
-func (*enterprise) ModifyCabinet(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[model.CabinetAgentEditReq](c)
-	service.NewCabinetWithModifier(ctx.Modifier).EditAgentCabinet(req)
-	return ctx.SendResponse(model.StatusResponse{Status: true})
-}
-
 // RepaymentList 充值记录
 // @ID           ManagerEnterpriseRepaymentList
 // @Router       /manager/v1/enterprise/repayment [GET]

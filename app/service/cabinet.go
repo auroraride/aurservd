@@ -270,6 +270,10 @@ func (s *cabinetService) Modify(req *model.CabinetModifyReq) {
 			q.SetIntelligent(*req.Intelligent)
 		}
 
+		if req.StationID != nil {
+			q.SetStationID(*req.StationID)
+		}
+
 		cab, err = q.Save(s.ctx)
 		if err != nil {
 			return
@@ -911,15 +915,4 @@ func (s *cabinetService) BindCabinet(req *model.EnterpriseBindCabinetReq) {
 	}
 	// 电柜绑定
 	s.orm.UpdateOneID(req.ID).SetEnterpriseID(req.EnterpriseID).SetStationID(req.StationID).SaveX(s.ctx)
-}
-
-// EditAgentCabinet 编辑代理商电柜
-func (s *cabinetService) EditAgentCabinet(req *model.CabinetAgentEditReq) {
-	// 判断电柜是是否存在
-	cab := s.QueryOne(req.ID)
-	if cab == nil {
-		snag.Panic("电柜不存在")
-	}
-	// 电柜编辑
-	s.orm.UpdateOneID(req.ID).SetStationID(req.StationID).SetStatus(req.Status).SaveX(s.ctx)
 }

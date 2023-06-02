@@ -25,6 +25,7 @@ type EnterprisePrepaymentQuery struct {
 	predicates     []predicate.EnterprisePrepayment
 	withEnterprise *EnterpriseQuery
 	withAgent      *AgentQuery
+	withFKs        bool
 	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -405,12 +406,16 @@ func (epq *EnterprisePrepaymentQuery) prepareQuery(ctx context.Context) error {
 func (epq *EnterprisePrepaymentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*EnterprisePrepayment, error) {
 	var (
 		nodes       = []*EnterprisePrepayment{}
+		withFKs     = epq.withFKs
 		_spec       = epq.querySpec()
 		loadedTypes = [2]bool{
 			epq.withEnterprise != nil,
 			epq.withAgent != nil,
 		}
 	)
+	if withFKs {
+		_spec.Node.Columns = append(_spec.Node.Columns, enterpriseprepayment.ForeignKeys...)
+	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*EnterprisePrepayment).scanValues(nil, columns)
 	}

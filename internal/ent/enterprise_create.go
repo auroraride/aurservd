@@ -19,7 +19,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
 	"github.com/auroraride/aurservd/internal/ent/enterprisecontract"
-	"github.com/auroraride/aurservd/internal/ent/enterpriseprepayment"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
@@ -454,21 +453,6 @@ func (ec *EnterpriseCreate) AddStocks(s ...*Stock) *EnterpriseCreate {
 		ids[i] = s[i].ID
 	}
 	return ec.AddStockIDs(ids...)
-}
-
-// AddPrepaymentIDs adds the "prepayments" edge to the EnterprisePrepayment entity by IDs.
-func (ec *EnterpriseCreate) AddPrepaymentIDs(ids ...uint64) *EnterpriseCreate {
-	ec.mutation.AddPrepaymentIDs(ids...)
-	return ec
-}
-
-// AddPrepayments adds the "prepayments" edges to the EnterprisePrepayment entity.
-func (ec *EnterpriseCreate) AddPrepayments(e ...*EnterprisePrepayment) *EnterpriseCreate {
-	ids := make([]uint64, len(e))
-	for i := range e {
-		ids[i] = e[i].ID
-	}
-	return ec.AddPrepaymentIDs(ids...)
 }
 
 // Mutation returns the EnterpriseMutation object of the builder.
@@ -916,22 +900,6 @@ func (ec *EnterpriseCreate) createSpec() (*Enterprise, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := ec.mutation.PrepaymentsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   enterprise.PrepaymentsTable,
-			Columns: []string{enterprise.PrepaymentsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(enterpriseprepayment.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

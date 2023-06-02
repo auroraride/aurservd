@@ -18,7 +18,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
 	"github.com/auroraride/aurservd/internal/ent/enterprisecontract"
-	"github.com/auroraride/aurservd/internal/ent/enterpriseprepayment"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
@@ -32,25 +31,24 @@ import (
 // EnterpriseQuery is the builder for querying Enterprise entities.
 type EnterpriseQuery struct {
 	config
-	ctx             *QueryContext
-	order           []enterprise.OrderOption
-	inters          []Interceptor
-	predicates      []predicate.Enterprise
-	withCity        *CityQuery
-	withRiders      *RiderQuery
-	withContracts   *EnterpriseContractQuery
-	withPrices      *EnterprisePriceQuery
-	withSubscribes  *SubscribeQuery
-	withStatements  *EnterpriseStatementQuery
-	withStations    *EnterpriseStationQuery
-	withBills       *EnterpriseBillQuery
-	withBattery     *BatteryQuery
-	withFeedback    *FeedbackQuery
-	withAgents      *AgentQuery
-	withCabinets    *CabinetQuery
-	withStocks      *StockQuery
-	withPrepayments *EnterprisePrepaymentQuery
-	modifiers       []func(*sql.Selector)
+	ctx            *QueryContext
+	order          []enterprise.OrderOption
+	inters         []Interceptor
+	predicates     []predicate.Enterprise
+	withCity       *CityQuery
+	withRiders     *RiderQuery
+	withContracts  *EnterpriseContractQuery
+	withPrices     *EnterprisePriceQuery
+	withSubscribes *SubscribeQuery
+	withStatements *EnterpriseStatementQuery
+	withStations   *EnterpriseStationQuery
+	withBills      *EnterpriseBillQuery
+	withBattery    *BatteryQuery
+	withFeedback   *FeedbackQuery
+	withAgents     *AgentQuery
+	withCabinets   *CabinetQuery
+	withStocks     *StockQuery
+	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -373,28 +371,6 @@ func (eq *EnterpriseQuery) QueryStocks() *StockQuery {
 	return query
 }
 
-// QueryPrepayments chains the current query on the "prepayments" edge.
-func (eq *EnterpriseQuery) QueryPrepayments() *EnterprisePrepaymentQuery {
-	query := (&EnterprisePrepaymentClient{config: eq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := eq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := eq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(enterprise.Table, enterprise.FieldID, selector),
-			sqlgraph.To(enterpriseprepayment.Table, enterpriseprepayment.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, enterprise.PrepaymentsTable, enterprise.PrepaymentsColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
 // First returns the first Enterprise entity from the query.
 // Returns a *NotFoundError when no Enterprise was found.
 func (eq *EnterpriseQuery) First(ctx context.Context) (*Enterprise, error) {
@@ -582,25 +558,24 @@ func (eq *EnterpriseQuery) Clone() *EnterpriseQuery {
 		return nil
 	}
 	return &EnterpriseQuery{
-		config:          eq.config,
-		ctx:             eq.ctx.Clone(),
-		order:           append([]enterprise.OrderOption{}, eq.order...),
-		inters:          append([]Interceptor{}, eq.inters...),
-		predicates:      append([]predicate.Enterprise{}, eq.predicates...),
-		withCity:        eq.withCity.Clone(),
-		withRiders:      eq.withRiders.Clone(),
-		withContracts:   eq.withContracts.Clone(),
-		withPrices:      eq.withPrices.Clone(),
-		withSubscribes:  eq.withSubscribes.Clone(),
-		withStatements:  eq.withStatements.Clone(),
-		withStations:    eq.withStations.Clone(),
-		withBills:       eq.withBills.Clone(),
-		withBattery:     eq.withBattery.Clone(),
-		withFeedback:    eq.withFeedback.Clone(),
-		withAgents:      eq.withAgents.Clone(),
-		withCabinets:    eq.withCabinets.Clone(),
-		withStocks:      eq.withStocks.Clone(),
-		withPrepayments: eq.withPrepayments.Clone(),
+		config:         eq.config,
+		ctx:            eq.ctx.Clone(),
+		order:          append([]enterprise.OrderOption{}, eq.order...),
+		inters:         append([]Interceptor{}, eq.inters...),
+		predicates:     append([]predicate.Enterprise{}, eq.predicates...),
+		withCity:       eq.withCity.Clone(),
+		withRiders:     eq.withRiders.Clone(),
+		withContracts:  eq.withContracts.Clone(),
+		withPrices:     eq.withPrices.Clone(),
+		withSubscribes: eq.withSubscribes.Clone(),
+		withStatements: eq.withStatements.Clone(),
+		withStations:   eq.withStations.Clone(),
+		withBills:      eq.withBills.Clone(),
+		withBattery:    eq.withBattery.Clone(),
+		withFeedback:   eq.withFeedback.Clone(),
+		withAgents:     eq.withAgents.Clone(),
+		withCabinets:   eq.withCabinets.Clone(),
+		withStocks:     eq.withStocks.Clone(),
 		// clone intermediate query.
 		sql:  eq.sql.Clone(),
 		path: eq.path,
@@ -750,17 +725,6 @@ func (eq *EnterpriseQuery) WithStocks(opts ...func(*StockQuery)) *EnterpriseQuer
 	return eq
 }
 
-// WithPrepayments tells the query-builder to eager-load the nodes that are connected to
-// the "prepayments" edge. The optional arguments are used to configure the query builder of the edge.
-func (eq *EnterpriseQuery) WithPrepayments(opts ...func(*EnterprisePrepaymentQuery)) *EnterpriseQuery {
-	query := (&EnterprisePrepaymentClient{config: eq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	eq.withPrepayments = query
-	return eq
-}
-
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -839,7 +803,7 @@ func (eq *EnterpriseQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*E
 	var (
 		nodes       = []*Enterprise{}
 		_spec       = eq.querySpec()
-		loadedTypes = [14]bool{
+		loadedTypes = [13]bool{
 			eq.withCity != nil,
 			eq.withRiders != nil,
 			eq.withContracts != nil,
@@ -853,7 +817,6 @@ func (eq *EnterpriseQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*E
 			eq.withAgents != nil,
 			eq.withCabinets != nil,
 			eq.withStocks != nil,
-			eq.withPrepayments != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -964,13 +927,6 @@ func (eq *EnterpriseQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*E
 		if err := eq.loadStocks(ctx, query, nodes,
 			func(n *Enterprise) { n.Edges.Stocks = []*Stock{} },
 			func(n *Enterprise, e *Stock) { n.Edges.Stocks = append(n.Edges.Stocks, e) }); err != nil {
-			return nil, err
-		}
-	}
-	if query := eq.withPrepayments; query != nil {
-		if err := eq.loadPrepayments(ctx, query, nodes,
-			func(n *Enterprise) { n.Edges.Prepayments = []*EnterprisePrepayment{} },
-			func(n *Enterprise, e *EnterprisePrepayment) { n.Edges.Prepayments = append(n.Edges.Prepayments, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -1386,37 +1342,6 @@ func (eq *EnterpriseQuery) loadStocks(ctx context.Context, query *StockQuery, no
 	}
 	return nil
 }
-func (eq *EnterpriseQuery) loadPrepayments(ctx context.Context, query *EnterprisePrepaymentQuery, nodes []*Enterprise, init func(*Enterprise), assign func(*Enterprise, *EnterprisePrepayment)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[uint64]*Enterprise)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
-		}
-	}
-	query.withFKs = true
-	query.Where(predicate.EnterprisePrepayment(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(enterprise.PrepaymentsColumn), fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		fk := n.enterprise_prepayments
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "enterprise_prepayments" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
-		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "enterprise_prepayments" returned %v for node %v`, *fk, n.ID)
-		}
-		assign(node, n)
-	}
-	return nil
-}
 
 func (eq *EnterpriseQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := eq.querySpec()
@@ -1517,20 +1442,19 @@ func (eq *EnterpriseQuery) Modify(modifiers ...func(s *sql.Selector)) *Enterpris
 type EnterpriseQueryWith string
 
 var (
-	EnterpriseQueryWithCity        EnterpriseQueryWith = "City"
-	EnterpriseQueryWithRiders      EnterpriseQueryWith = "Riders"
-	EnterpriseQueryWithContracts   EnterpriseQueryWith = "Contracts"
-	EnterpriseQueryWithPrices      EnterpriseQueryWith = "Prices"
-	EnterpriseQueryWithSubscribes  EnterpriseQueryWith = "Subscribes"
-	EnterpriseQueryWithStatements  EnterpriseQueryWith = "Statements"
-	EnterpriseQueryWithStations    EnterpriseQueryWith = "Stations"
-	EnterpriseQueryWithBills       EnterpriseQueryWith = "Bills"
-	EnterpriseQueryWithBattery     EnterpriseQueryWith = "Battery"
-	EnterpriseQueryWithFeedback    EnterpriseQueryWith = "Feedback"
-	EnterpriseQueryWithAgents      EnterpriseQueryWith = "Agents"
-	EnterpriseQueryWithCabinets    EnterpriseQueryWith = "Cabinets"
-	EnterpriseQueryWithStocks      EnterpriseQueryWith = "Stocks"
-	EnterpriseQueryWithPrepayments EnterpriseQueryWith = "Prepayments"
+	EnterpriseQueryWithCity       EnterpriseQueryWith = "City"
+	EnterpriseQueryWithRiders     EnterpriseQueryWith = "Riders"
+	EnterpriseQueryWithContracts  EnterpriseQueryWith = "Contracts"
+	EnterpriseQueryWithPrices     EnterpriseQueryWith = "Prices"
+	EnterpriseQueryWithSubscribes EnterpriseQueryWith = "Subscribes"
+	EnterpriseQueryWithStatements EnterpriseQueryWith = "Statements"
+	EnterpriseQueryWithStations   EnterpriseQueryWith = "Stations"
+	EnterpriseQueryWithBills      EnterpriseQueryWith = "Bills"
+	EnterpriseQueryWithBattery    EnterpriseQueryWith = "Battery"
+	EnterpriseQueryWithFeedback   EnterpriseQueryWith = "Feedback"
+	EnterpriseQueryWithAgents     EnterpriseQueryWith = "Agents"
+	EnterpriseQueryWithCabinets   EnterpriseQueryWith = "Cabinets"
+	EnterpriseQueryWithStocks     EnterpriseQueryWith = "Stocks"
 )
 
 func (eq *EnterpriseQuery) With(withEdges ...EnterpriseQueryWith) *EnterpriseQuery {
@@ -1562,8 +1486,6 @@ func (eq *EnterpriseQuery) With(withEdges ...EnterpriseQueryWith) *EnterpriseQue
 			eq.WithCabinets()
 		case EnterpriseQueryWithStocks:
 			eq.WithStocks()
-		case EnterpriseQueryWithPrepayments:
-			eq.WithPrepayments()
 		}
 	}
 	return eq

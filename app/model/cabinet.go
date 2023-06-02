@@ -130,6 +130,7 @@ type CabinetModifyReq struct {
 	SimSn       *string               `json:"simSn,omitempty"`       // SIM卡号
 	SimDate     *string               `json:"simDate,omitempty"`     // SIM卡到期日期, 例: 2022-06-01
 	Intelligent *bool                 `json:"intelligent,omitempty"` // 是否智能柜
+	StationID   *uint64               `json:"stationId,omitempty"`   // 站点id
 }
 
 // CabinetDeleteReq 电柜删除请求

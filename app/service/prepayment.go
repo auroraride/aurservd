@@ -62,7 +62,7 @@ func (s *prepaymentService) Overview(en *ent.Enterprise) (res model.PrepaymentOv
 
 func (s *prepaymentService) List(enterpriseID uint64, req *model.PrepaymentListReq) *model.PaginationRes {
 	q := s.orm.QueryNotDeleted().
-		Where(enterpriseprepayment.EnterpriseID(enterpriseID)).WithEnterprise().
+		Where(enterpriseprepayment.EnterpriseID(enterpriseID)).WithAgent().
 		Order(ent.Desc(enterpriseprepayment.FieldCreatedAt))
 
 	// 筛选时间段
@@ -84,12 +84,14 @@ func (s *prepaymentService) List(enterpriseID uint64, req *model.PrepaymentListR
 			Time:   item.CreatedAt.Format(carbon.DateTimeLayout),
 			Remark: item.Remark,
 			Payway: item.Payway,
+			Name:   "-",
 		}
-		res.Name = item.Edges.Enterprise.Name
-		if item.Payway == model.PaywayCash {
-			res.Name = "平台管理员"
+		if item.Payway == model.PaywayAgentWxMiniprogram && item.Edges.Agent != nil {
+			res.Name = item.Edges.Agent.Name + "-" + item.Edges.Agent.Phone
 		}
-
+		if item.Payway == model.PaywayCash && item.Edges.Agent != nil {
+			res.Name = item.Creator.Name + "-" + item.Creator.Phone
+		}
 		return res
 	})
 }

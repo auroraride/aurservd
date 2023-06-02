@@ -66,6 +66,7 @@ func (Agent) Fields() []ent.Field {
 func (Agent) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("stations", EnterpriseStation.Type),
+		edge.To("prepayments", EnterprisePrepayment.Type),
 	}
 }
 

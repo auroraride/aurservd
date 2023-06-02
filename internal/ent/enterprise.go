@@ -100,11 +100,9 @@ type EnterpriseEdges struct {
 	Cabinets []*Cabinet `json:"cabinets,omitempty"`
 	// Stocks holds the value of the stocks edge.
 	Stocks []*Stock `json:"stocks,omitempty"`
-	// Prepayments holds the value of the prepayments edge.
-	Prepayments []*EnterprisePrepayment `json:"prepayments,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [14]bool
+	loadedTypes [13]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -226,15 +224,6 @@ func (e EnterpriseEdges) StocksOrErr() ([]*Stock, error) {
 		return e.Stocks, nil
 	}
 	return nil, &NotLoadedError{edge: "stocks"}
-}
-
-// PrepaymentsOrErr returns the Prepayments value or an error if the edge
-// was not loaded in eager-loading.
-func (e EnterpriseEdges) PrepaymentsOrErr() ([]*EnterprisePrepayment, error) {
-	if e.loadedTypes[13] {
-		return e.Prepayments, nil
-	}
-	return nil, &NotLoadedError{edge: "prepayments"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -497,11 +486,6 @@ func (e *Enterprise) QueryCabinets() *CabinetQuery {
 // QueryStocks queries the "stocks" edge of the Enterprise entity.
 func (e *Enterprise) QueryStocks() *StockQuery {
 	return NewEnterpriseClient(e.config).QueryStocks(e)
-}
-
-// QueryPrepayments queries the "prepayments" edge of the Enterprise entity.
-func (e *Enterprise) QueryPrepayments() *EnterprisePrepaymentQuery {
-	return NewEnterpriseClient(e.config).QueryPrepayments(e)
 }
 
 // Update returns a builder for updating this Enterprise.

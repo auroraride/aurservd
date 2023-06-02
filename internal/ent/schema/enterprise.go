@@ -92,7 +92,6 @@ func (Enterprise) Edges() []ent.Edge {
 		edge.To("agents", Agent.Type),
 		edge.To("cabinets", Cabinet.Type),
 		edge.To("stocks", Stock.Type),
-		edge.To("prepayments", EnterprisePrepayment.Type),
 	}
 }
 

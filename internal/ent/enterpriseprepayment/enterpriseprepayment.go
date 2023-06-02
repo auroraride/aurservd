@@ -76,7 +76,7 @@ var Columns = []string{
 // ForeignKeys holds the SQL foreign-keys that are owned by the "enterprise_prepayment"
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
-	"enterprise_prepayments",
+	"agent_prepayments",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
