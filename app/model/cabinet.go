@@ -114,8 +114,7 @@ type CabinetQueryReq struct {
 	Online       uint8                 `json:"online" query:"online"`             // 在线状态
 	Intelligent  uint8                 `json:"intelligent" query:"intelligent"`   // 是否智能柜 0:全部 1:是 2:否
 	EnterpriseID *uint64               `json:"enterpriseId" query:"enterpriseId"` // 团签ID
-	// 归属类型   1:平台 2:代理商
-	OwnerType *uint8 `json:"ownerType" query:"ownerType"`
+	OwnerType    *uint8                `json:"ownerType" query:"ownerType"`       // 归属类型   1:平台 2:代理商
 }
 
 // CabinetModifyReq 电柜修改请求
