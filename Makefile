@@ -4,9 +4,9 @@
 # swag init -g ./router/docs.go -d ./app,../adapter --exclude ./app/service,./app/router,./app/middleware,./app/request -o ./assets/docs --md ./wiki
 
 define deploy
-	mkdir -p ./assets/docs && swag init -g ./router/docs.go -d ./app,../adapter --exclude ./app/service,./app/router,./app/middleware,./app/request -o ./assets/docs --md ./wiki
+	swag init -g ./router/docs.go -d ./app,../adapter --exclude ./app/service,./app/router,./app/middleware,./app/request -o ./assets/docs --md ./wiki
 	GO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -tags=jsoniter,poll_opt -gcflags "all=-N -l" -o build/release/aurservd cmd/aurservd/main.go
-	docker build --platform=linux/amd64 -t registry.cn-beijing.aliyuncs.com/liasica/aurservd:$(1) .
+	docker build --platform=linux/amd64 -t registry.cn-beijing.aliyuncs.com/liasica/aurservd:$(1) -f images/manual/Dockerfile .
 	docker push registry.cn-beijing.aliyuncs.com/liasica/aurservd:$(1)
 endef
 

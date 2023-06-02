@@ -4,9 +4,9 @@ WORKDIR /usr/src/app
 
 COPY . .
 
+#RUN wget -O - -q https://github.com/liasica/swag/releases/download/v1.16.1-733b9ee/swag_1.16.1-733b9ee_Linux_x86_64.tar.gz | tar -xz -C /go/bin/
 RUN git clone https://github.com/liasica/swag.git && cd swag/cmd/swag && go install .
-RUN mkdir -p ./assets/docs && \
-    go get ./... && \
+RUN go get ./... && \
     swag init -g ./router/docs.go -d ./app --exclude ./app/service,./app/router,./app/middleware,./app/request -o ./assets/docs --md ./wiki --parseDependency && \
     CGO_ENABLED=0 go build -trimpath -tags=jsoniter,poll_opt -gcflags "all=-N -l" -o /go/bin/aurservd cmd/aurservd/main.go
 

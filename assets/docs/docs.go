@@ -466,6 +466,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/agent/v1/index": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A2007 首页数据",
+                "operationId": "AgentIndex",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/agent/v1/prepayment": {
             "get": {
                 "consumes": [

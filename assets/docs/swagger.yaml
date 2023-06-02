@@ -7738,6 +7738,29 @@ paths:
       summary: A1003 获取openid
       tags:
       - '[A]代理接口'
+  /agent/v1/index:
+    get:
+      consumes:
+      - application/json
+      operationId: AgentIndex
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              type: integer
+            type: array
+      summary: A2007 首页数据
+      tags:
+      - '[A]代理接口'
   /agent/v1/prepayment:
     get:
       consumes:
