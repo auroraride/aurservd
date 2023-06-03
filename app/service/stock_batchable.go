@@ -71,6 +71,7 @@ func (s *stockBatchableService) Loopers(req *model.StockTransferReq, enterpriseI
 		// 站点调拨到站点 只能同一团签
 		if req.InboundTarget == model.StockTargetStation && req.OutboundTarget == model.StockTargetStation && *bat.EnterpriseID != enterpriseId {
 			failed = append(failed, fmt.Sprintf("电池调拨失败，电池[%s]不属于当前团签", bat.Sn))
+			continue
 		}
 		brandName := bat.Brand.String()
 		Loopers = append(Loopers, model.StockTransferLoopper{
