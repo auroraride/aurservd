@@ -6,6 +6,7 @@
 package service
 
 import (
+	"fmt"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/battery"
@@ -56,7 +57,8 @@ func (s *stockBatchableService) Fetch(target uint8, id uint64, name string) int 
 	return result[0].Sum
 }
 
-func (s *stockBatchableService) Loopers(req *model.StockTransferReq, enterpriseId uint64) []model.StockTransferLoopper {
+func (s *stockBatchableService) Loopers(req *model.StockTransferReq, enterpriseId uint64) ([]model.StockTransferLoopper, []string) {
+	failed := make([]string, 0)
 	// 查询电池信息 只有未启用的电池才能调拨
 	q := ent.Database.Battery.Query().Where(battery.SnIn(req.BatterySn...), battery.Enable(false))
 
@@ -68,7 +70,7 @@ func (s *stockBatchableService) Loopers(req *model.StockTransferReq, enterpriseI
 	for _, bat := range all {
 		// 站点调拨到站点 只能同一团签
 		if req.InboundTarget == model.StockTargetStation && req.OutboundTarget == model.StockTargetStation && *bat.EnterpriseID != enterpriseId {
-			snag.Panic("电池调拨失败，电池不属于当前团签" + bat.Sn)
+			failed = append(failed, fmt.Sprintf("电池调拨失败，电池[%s]不属于当前团签", bat.Sn))
 		}
 		brandName := bat.Brand.String()
 		Loopers = append(Loopers, model.StockTransferLoopper{
@@ -78,5 +80,5 @@ func (s *stockBatchableService) Loopers(req *model.StockTransferReq, enterpriseI
 			BrandName:    &brandName,
 		})
 	}
-	return Loopers
+	return Loopers, failed
 }

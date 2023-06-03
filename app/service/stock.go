@@ -1218,7 +1218,7 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
 		// failed = append(failed, NewStockEbike(s.modifier, s.employee, s.rider).Transfer(cityID, in, out, req)...)
 		looppers, failed = NewStockEbike().Loopers(req)
 	case len(req.BatterySn) > 0:
-		looppers = NewStockBatchable().Loopers(req, enterpriseId)
+		looppers, failed = NewStockBatchable().Loopers(req, enterpriseId)
 	default:
 		looppers = make([]model.StockTransferLoopper, 1)
 	}
@@ -1293,7 +1293,7 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
 					update.ClearEnterpriseID()
 				}
 				if update.Exec(s.ctx) != nil {
-					return fmt.Errorf("电池更新失败: %s", l.Message)
+					return fmt.Errorf("电池更新失败: %s", *l.BatterySN)
 				}
 			}
 
