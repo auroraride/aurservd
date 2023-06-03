@@ -98,7 +98,7 @@ func (*rider) Invite(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Agent-Token  header  string  true  "代理校验token"
-// @Success      200  {object}  *model.AgentIndexRes  "请求成功"
+// @Success      200  {object}  model.AgentIndexRes  "请求成功"
 func (*agent) Index(c echo.Context) (err error) {
 	ctx := app.ContextX[app.AgentContext](c)
 	return ctx.SendResponse(service.NewAgent(ctx.Agent, ctx.Enterprise).Index(ctx.Agent, ctx.Enterprise))
