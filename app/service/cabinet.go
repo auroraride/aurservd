@@ -17,17 +17,14 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqljson"
-	"github.com/auroraride/adapter"
 	"github.com/auroraride/adapter/rpc/pb"
 	"github.com/golang-module/carbon/v2"
 	"github.com/jinzhu/copier"
 	"github.com/lithammer/shortuuid/v4"
 	"golang.org/x/exp/slices"
 
-	"github.com/auroraride/aurservd/app/ec"
 	"github.com/auroraride/aurservd/app/logging"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/app/provider"
 	"github.com/auroraride/aurservd/app/rpc"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
@@ -300,32 +297,6 @@ func (s *cabinetService) Delete(req *model.CabinetDeleteReq) {
 	s.orm.SoftDeleteOneID(req.ID).SaveX(s.ctx)
 }
 
-// UpdateStatus 立即更新电柜状态
-func (s *cabinetService) UpdateStatus(item *ent.Cabinet) (err error) {
-	err = provider.NewUpdater(item).DoUpdate()
-	// 如果返回失败, 则延迟2秒后重新请求一次
-	if err != nil {
-		time.Sleep(2 * time.Second)
-	}
-	return provider.NewUpdater(item).DoUpdate()
-}
-
-// DoorOpenStatus 获取柜门状态
-func (s *cabinetService) DoorOpenStatus(item *ent.Cabinet, index int) ec.DoorStatus {
-	_ = s.UpdateStatus(item)
-	if len(item.Bin) == 0 || len(item.Bin) < index {
-		return ec.DoorStatusUnknown
-	}
-	bin := item.Bin[index]
-	if !bin.DoorHealth {
-		return ec.DoorStatusFail
-	}
-	if bin.OpenStatus {
-		return ec.DoorStatusOpen
-	}
-	return ec.DoorStatusClose
-}
-
 // DetailFromID 电柜详细信息
 func (s *cabinetService) DetailFromID(id uint64) *model.CabinetDetailRes {
 	item, _ := s.orm.QueryNotDeleted().
@@ -376,74 +347,6 @@ func (s *cabinetService) Detail(item *ent.Cabinet) *model.CabinetDetailRes {
 	}
 
 	return res
-}
-
-// DoorOperate 操作柜门
-func (s *cabinetService) DoorOperate(req *model.CabinetDoorOperateReq, operator model.CabinetDoorOperator) (state bool, err error) {
-	opId := shortuuid.New()
-	now := time.Now()
-	// 查找柜子和仓位
-	item := s.QueryOne(req.ID)
-	if len(item.Bin) < *req.Index {
-		err = errors.New("柜门不存在")
-		return
-	}
-
-	brand := item.Brand
-	op, ok := req.Operation.Value(brand)
-	if !ok {
-		err = errors.New("操作方式错误")
-		return
-	}
-	if *req.Operation == model.CabinetDoorOperateLock {
-		if req.Remark == "" {
-			err = errors.New("该操作必须携带操作原因")
-			return
-		}
-	}
-	switch brand {
-	case adapter.CabinetBrandYundong:
-		// TODO 云动 - 开启柜门
-		break
-	case adapter.CabinetBrandKaixin:
-		// 请求开启柜门
-		state = provider.NewKaixin().DoorOperate(operator.Name+"-"+opId, item.Serial, op, *req.Index)
-		// 如果成功, 重新获取状态更新数据
-		if state {
-			// 更新一次电柜状态
-			err = provider.NewUpdater(item).DoUpdate()
-			// 如果是锁仓, 需要更新仓位备注
-			if *req.Operation == model.CabinetDoorOperateLock {
-				item.Bin[*req.Index].Remark = req.Remark
-			}
-			// 如果是解锁, 需要清除仓位备注
-			if *req.Operation == model.CabinetDoorOperateUnlock {
-				item.Bin[*req.Index].Remark = ""
-			}
-			_, _ = item.Update().SetBin(item.Bin).Save(s.ctx)
-		} else {
-			err = errors.New("柜门操作失败")
-		}
-	}
-	go func() {
-		// 上传日志
-		dlog := &logging.DoorOperateLog{
-			ID:            opId,
-			Brand:         brand.String(),
-			OperatorName:  operator.Name,
-			OperatorID:    operator.ID,
-			OperatorPhone: operator.Phone,
-			Serial:        item.Serial,
-			Name:          item.Bin[*req.Index].Name,
-			Operation:     req.Operation.String(),
-			OperatorRole:  operator.Role,
-			Success:       state,
-			Remark:        req.Remark,
-			Time:          now.Format(carbon.DateTimeLayout),
-		}
-		dlog.Send()
-	}()
-	return
 }
 
 // ModelInclude 电柜是否可用指定型号电池
@@ -627,9 +530,9 @@ func (s *cabinetService) Transfer(req *model.CabinetTransferReq) {
 	if cab.Transferred {
 		snag.Panic("电柜已初始化过")
 	}
-	if cab.UsingMicroService() {
-		s.Sync(cab)
-	}
+
+	// 同步一次电柜信息
+	s.Sync(cab)
 	if cab.Health != model.CabinetHealthStatusOnline {
 		snag.Panic("电柜不在线")
 	}
@@ -647,6 +550,8 @@ func (s *cabinetService) Transfer(req *model.CabinetTransferReq) {
 	_, _ = cab.Update().SetTransferred(true).Save(s.ctx)
 }
 
+// Sync 同步电柜信息
+// TODO 使用rpc直接获取电柜状态而不是使用表数据
 func (s *cabinetService) Sync(cab *ent.Cabinet) {
 	// 满电电量
 	fs := model.IntelligentBatteryFullSoc
