@@ -60,7 +60,7 @@ func (s *stockBatchableService) Fetch(target uint8, id uint64, name string) int 
 func (s *stockBatchableService) Loopers(req *model.StockTransferReq, enterpriseId uint64) ([]model.StockTransferLoopper, []string) {
 	failed := make([]string, 0)
 	// 查询电池信息 只有未启用的电池才能调拨
-	q := ent.Database.Battery.Query().Where(battery.SnIn(req.BatterySn...), battery.Enable(false))
+	q := ent.Database.Battery.Query().Where(battery.SnIn(req.BatterySn...), battery.RiderIDIsNil())
 
 	all, _ := q.All(s.ctx)
 	if len(all) == 0 {
