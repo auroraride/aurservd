@@ -92,90 +92,23 @@ func (s *riderBusinessService) preprocess(serial string, bt business.Type) {
 	// 查询电柜是否可使用
 	NewCabinet().BusinessableX(cab)
 
-	// 判定是否智能电柜
-	if cab.UsingMicroService() {
-		bus, _ := NewBusiness().Convert(bt)
+	// 转换业务
+	bus, _ := NewBusiness().Convert(bt)
 
-		// 验证是否可以办理业务
-		s.battery = NewIntelligentCabinet(s.rider).BusinessCensorX(bus, sub, cab)
+	// 查询电柜业务是否可被允许
+	// 代理商管理的电柜只允许非本代理商骑手进行换电业务
+	if cab.EnterpriseID != nil && cab.EnterpriseID != sub.EnterpriseID && bus != adapter.BusinessExchange {
+		snag.Panic("该电柜无法办理业务, 请前往其他电柜进行")
+	}
 
-		// 获取仓位信息
-		var err error
-		s.response.UUID, s.response.Index, err = NewIntelligentCabinet(s.rider).BusinessUsable(cab, bus, sub.Model)
-		if err != nil {
-			snag.Panic(err)
-		}
-	} else {
-		ec.BusyX(serial)
-		err := NewCabinet().UpdateStatus(cab)
-		if err != nil {
-			snag.Panic(err)
-		}
+	// 验证是否可以办理业务
+	s.battery = NewIntelligentCabinet(s.rider).BusinessCensorX(bus, sub, cab)
 
-		max, empty := cab.Bin.MaxEmpty()
-		var bn, en int
-		for _, bin := range cab.Bin {
-			// 仓位锁仓跳过计算
-			if !bin.DoorHealth {
-				continue
-			}
-			if bin.Battery {
-				// 有电池
-				bn += 1
-			} else {
-				// 无电池
-				en += 1
-			}
-		}
-
-		var target *model.BinInfo
-		switch bt {
-		case business.TypePause, business.TypeUnsubscribe:
-			if en < 2 {
-				snag.Panic("仓位不足, 无法处理当前业务")
-			}
-			if empty == nil {
-				snag.Panic("电柜异常")
-			}
-			s.empty = &model.BinInfo{Index: empty.Index}
-			target = s.empty
-		case business.TypeActive, business.TypeContinue:
-			if bn < 2 {
-				snag.Panic("电池不足, 无法处理当前业务")
-			}
-			if max == nil {
-				snag.Panic("电柜异常")
-			}
-			s.max = &model.BinInfo{
-				Index:       max.Index,
-				Electricity: max.Electricity,
-				Voltage:     max.Voltage,
-			}
-			target = s.max
-		}
-
-		jobs := map[business.Type]model.Job{
-			business.TypeActive:      model.JobRiderActive,
-			business.TypeUnsubscribe: model.JobRiderUnSubscribe,
-			business.TypePause:       model.JobPause,
-			business.TypeContinue:    model.JobContinue,
-		}
-
-		task := &ec.Task{
-			Job:       jobs[bt],
-			Serial:    cab.Serial,
-			CabinetID: cab.ID,
-			Cabinet:   cab.GetTaskInfo(),
-			Rider: &ec.Rider{
-				ID:    s.rider.ID,
-				Name:  s.rider.Name,
-				Phone: s.rider.Phone,
-			},
-		}
-		s.task = task.Create()
-
-		s.response.UUID = s.task.ID
-		s.response.Index = target.Index
+	// 获取仓位信息
+	var err error
+	s.response.UUID, s.response.Index, err = NewIntelligentCabinet(s.rider).BusinessUsable(cab, bus, sub.Model)
+	if err != nil {
+		snag.Panic(err)
 	}
 }
 
