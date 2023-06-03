@@ -100,6 +100,11 @@ func BatteryID(v uint64) predicate.Stock {
 	return predicate.Stock(sql.FieldEQ(FieldBatteryID, v))
 }
 
+// StationID applies equality check predicate on the "station_id" field. It's identical to StationIDEQ.
+func StationID(v uint64) predicate.Stock {
+	return predicate.Stock(sql.FieldEQ(FieldStationID, v))
+}
+
 // ParentID applies equality check predicate on the "parent_id" field. It's identical to ParentIDEQ.
 func ParentID(v uint64) predicate.Stock {
 	return predicate.Stock(sql.FieldEQ(FieldParentID, v))
@@ -133,11 +138,6 @@ func RiderID(v uint64) predicate.Stock {
 // EmployeeID applies equality check predicate on the "employee_id" field. It's identical to EmployeeIDEQ.
 func EmployeeID(v uint64) predicate.Stock {
 	return predicate.Stock(sql.FieldEQ(FieldEmployeeID, v))
-}
-
-// StationID applies equality check predicate on the "station_id" field. It's identical to StationIDEQ.
-func StationID(v uint64) predicate.Stock {
-	return predicate.Stock(sql.FieldEQ(FieldStationID, v))
 }
 
 // EnterpriseID applies equality check predicate on the "enterprise_id" field. It's identical to EnterpriseIDEQ.
@@ -535,6 +535,36 @@ func BatteryIDNotNil() predicate.Stock {
 	return predicate.Stock(sql.FieldNotNull(FieldBatteryID))
 }
 
+// StationIDEQ applies the EQ predicate on the "station_id" field.
+func StationIDEQ(v uint64) predicate.Stock {
+	return predicate.Stock(sql.FieldEQ(FieldStationID, v))
+}
+
+// StationIDNEQ applies the NEQ predicate on the "station_id" field.
+func StationIDNEQ(v uint64) predicate.Stock {
+	return predicate.Stock(sql.FieldNEQ(FieldStationID, v))
+}
+
+// StationIDIn applies the In predicate on the "station_id" field.
+func StationIDIn(vs ...uint64) predicate.Stock {
+	return predicate.Stock(sql.FieldIn(FieldStationID, vs...))
+}
+
+// StationIDNotIn applies the NotIn predicate on the "station_id" field.
+func StationIDNotIn(vs ...uint64) predicate.Stock {
+	return predicate.Stock(sql.FieldNotIn(FieldStationID, vs...))
+}
+
+// StationIDIsNil applies the IsNil predicate on the "station_id" field.
+func StationIDIsNil() predicate.Stock {
+	return predicate.Stock(sql.FieldIsNull(FieldStationID))
+}
+
+// StationIDNotNil applies the NotNil predicate on the "station_id" field.
+func StationIDNotNil() predicate.Stock {
+	return predicate.Stock(sql.FieldNotNull(FieldStationID))
+}
+
 // ParentIDEQ applies the EQ predicate on the "parent_id" field.
 func ParentIDEQ(v uint64) predicate.Stock {
 	return predicate.Stock(sql.FieldEQ(FieldParentID, v))
@@ -788,36 +818,6 @@ func EmployeeIDIsNil() predicate.Stock {
 // EmployeeIDNotNil applies the NotNil predicate on the "employee_id" field.
 func EmployeeIDNotNil() predicate.Stock {
 	return predicate.Stock(sql.FieldNotNull(FieldEmployeeID))
-}
-
-// StationIDEQ applies the EQ predicate on the "station_id" field.
-func StationIDEQ(v uint64) predicate.Stock {
-	return predicate.Stock(sql.FieldEQ(FieldStationID, v))
-}
-
-// StationIDNEQ applies the NEQ predicate on the "station_id" field.
-func StationIDNEQ(v uint64) predicate.Stock {
-	return predicate.Stock(sql.FieldNEQ(FieldStationID, v))
-}
-
-// StationIDIn applies the In predicate on the "station_id" field.
-func StationIDIn(vs ...uint64) predicate.Stock {
-	return predicate.Stock(sql.FieldIn(FieldStationID, vs...))
-}
-
-// StationIDNotIn applies the NotIn predicate on the "station_id" field.
-func StationIDNotIn(vs ...uint64) predicate.Stock {
-	return predicate.Stock(sql.FieldNotIn(FieldStationID, vs...))
-}
-
-// StationIDIsNil applies the IsNil predicate on the "station_id" field.
-func StationIDIsNil() predicate.Stock {
-	return predicate.Stock(sql.FieldIsNull(FieldStationID))
-}
-
-// StationIDNotNil applies the NotNil predicate on the "station_id" field.
-func StationIDNotNil() predicate.Stock {
-	return predicate.Stock(sql.FieldNotNull(FieldStationID))
 }
 
 // EnterpriseIDEQ applies the EQ predicate on the "enterprise_id" field.
@@ -1165,6 +1165,29 @@ func HasBatteryWith(preds ...predicate.Battery) predicate.Stock {
 	})
 }
 
+// HasStation applies the HasEdge predicate on the "station" edge.
+func HasStation() predicate.Stock {
+	return predicate.Stock(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, StationTable, StationColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasStationWith applies the HasEdge predicate on the "station" edge with a given conditions (other predicates).
+func HasStationWith(preds ...predicate.EnterpriseStation) predicate.Stock {
+	return predicate.Stock(func(s *sql.Selector) {
+		step := newStationStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasStore applies the HasEdge predicate on the "store" edge.
 func HasStore() predicate.Stock {
 	return predicate.Stock(func(s *sql.Selector) {
@@ -1341,29 +1364,6 @@ func HasEnterprise() predicate.Stock {
 func HasEnterpriseWith(preds ...predicate.Enterprise) predicate.Stock {
 	return predicate.Stock(func(s *sql.Selector) {
 		step := newEnterpriseStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasStations applies the HasEdge predicate on the "stations" edge.
-func HasStations() predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, StationsTable, StationsColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasStationsWith applies the HasEdge predicate on the "stations" edge with a given conditions (other predicates).
-func HasStationsWith(preds ...predicate.EnterpriseStation) predicate.Stock {
-	return predicate.Stock(func(s *sql.Selector) {
-		step := newStationsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

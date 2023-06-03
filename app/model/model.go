@@ -15,6 +15,7 @@ const (
 	StockGoalAll StoreCabiletGoal = iota
 	StockGoalStore
 	StockGoalCabinet
+	StockGoalStation
 )
 
 func (sg StoreCabiletGoal) String() string {
@@ -23,6 +24,8 @@ func (sg StoreCabiletGoal) String() string {
 		return "门店"
 	case StockGoalCabinet:
 		return "电柜"
+	case StockGoalStation:
+		return "站点"
 	default:
 		return ""
 	}

@@ -38,6 +38,7 @@ type StockQuery struct {
 	withEbike      *EbikeQuery
 	withBrand      *EbikeBrandQuery
 	withBattery    *BatteryQuery
+	withStation    *EnterpriseStationQuery
 	withStore      *StoreQuery
 	withCabinet    *CabinetQuery
 	withRider      *RiderQuery
@@ -46,7 +47,6 @@ type StockQuery struct {
 	withParent     *StockQuery
 	withChildren   *StockQuery
 	withEnterprise *EnterpriseQuery
-	withStations   *EnterpriseStationQuery
 	withFKs        bool
 	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
@@ -188,6 +188,28 @@ func (sq *StockQuery) QueryBattery() *BatteryQuery {
 			sqlgraph.From(stock.Table, stock.FieldID, selector),
 			sqlgraph.To(battery.Table, battery.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, stock.BatteryTable, stock.BatteryColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryStation chains the current query on the "station" edge.
+func (sq *StockQuery) QueryStation() *EnterpriseStationQuery {
+	query := (&EnterpriseStationClient{config: sq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := sq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := sq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, selector),
+			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, stock.StationTable, stock.StationColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
 		return fromU, nil
@@ -364,28 +386,6 @@ func (sq *StockQuery) QueryEnterprise() *EnterpriseQuery {
 			sqlgraph.From(stock.Table, stock.FieldID, selector),
 			sqlgraph.To(enterprise.Table, enterprise.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, stock.EnterpriseTable, stock.EnterpriseColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryStations chains the current query on the "stations" edge.
-func (sq *StockQuery) QueryStations() *EnterpriseStationQuery {
-	query := (&EnterpriseStationClient{config: sq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := sq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := sq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(stock.Table, stock.FieldID, selector),
-			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, stock.StationsTable, stock.StationsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
 		return fromU, nil
@@ -590,6 +590,7 @@ func (sq *StockQuery) Clone() *StockQuery {
 		withEbike:      sq.withEbike.Clone(),
 		withBrand:      sq.withBrand.Clone(),
 		withBattery:    sq.withBattery.Clone(),
+		withStation:    sq.withStation.Clone(),
 		withStore:      sq.withStore.Clone(),
 		withCabinet:    sq.withCabinet.Clone(),
 		withRider:      sq.withRider.Clone(),
@@ -598,7 +599,6 @@ func (sq *StockQuery) Clone() *StockQuery {
 		withParent:     sq.withParent.Clone(),
 		withChildren:   sq.withChildren.Clone(),
 		withEnterprise: sq.withEnterprise.Clone(),
-		withStations:   sq.withStations.Clone(),
 		// clone intermediate query.
 		sql:  sq.sql.Clone(),
 		path: sq.path,
@@ -657,6 +657,17 @@ func (sq *StockQuery) WithBattery(opts ...func(*BatteryQuery)) *StockQuery {
 		opt(query)
 	}
 	sq.withBattery = query
+	return sq
+}
+
+// WithStation tells the query-builder to eager-load the nodes that are connected to
+// the "station" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *StockQuery) WithStation(opts ...func(*EnterpriseStationQuery)) *StockQuery {
+	query := (&EnterpriseStationClient{config: sq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	sq.withStation = query
 	return sq
 }
 
@@ -748,17 +759,6 @@ func (sq *StockQuery) WithEnterprise(opts ...func(*EnterpriseQuery)) *StockQuery
 	return sq
 }
 
-// WithStations tells the query-builder to eager-load the nodes that are connected to
-// the "stations" edge. The optional arguments are used to configure the query builder of the edge.
-func (sq *StockQuery) WithStations(opts ...func(*EnterpriseStationQuery)) *StockQuery {
-	query := (&EnterpriseStationClient{config: sq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	sq.withStations = query
-	return sq
-}
-
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -844,6 +844,7 @@ func (sq *StockQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Stock,
 			sq.withEbike != nil,
 			sq.withBrand != nil,
 			sq.withBattery != nil,
+			sq.withStation != nil,
 			sq.withStore != nil,
 			sq.withCabinet != nil,
 			sq.withRider != nil,
@@ -852,7 +853,6 @@ func (sq *StockQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Stock,
 			sq.withParent != nil,
 			sq.withChildren != nil,
 			sq.withEnterprise != nil,
-			sq.withStations != nil,
 		}
 	)
 	if sq.withSpouse != nil {
@@ -912,6 +912,12 @@ func (sq *StockQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Stock,
 			return nil, err
 		}
 	}
+	if query := sq.withStation; query != nil {
+		if err := sq.loadStation(ctx, query, nodes, nil,
+			func(n *Stock, e *EnterpriseStation) { n.Edges.Station = e }); err != nil {
+			return nil, err
+		}
+	}
 	if query := sq.withStore; query != nil {
 		if err := sq.loadStore(ctx, query, nodes, nil,
 			func(n *Stock, e *Store) { n.Edges.Store = e }); err != nil {
@@ -958,12 +964,6 @@ func (sq *StockQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Stock,
 	if query := sq.withEnterprise; query != nil {
 		if err := sq.loadEnterprise(ctx, query, nodes, nil,
 			func(n *Stock, e *Enterprise) { n.Edges.Enterprise = e }); err != nil {
-			return nil, err
-		}
-	}
-	if query := sq.withStations; query != nil {
-		if err := sq.loadStations(ctx, query, nodes, nil,
-			func(n *Stock, e *EnterpriseStation) { n.Edges.Stations = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -1123,6 +1123,38 @@ func (sq *StockQuery) loadBattery(ctx context.Context, query *BatteryQuery, node
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "battery_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (sq *StockQuery) loadStation(ctx context.Context, query *EnterpriseStationQuery, nodes []*Stock, init func(*Stock), assign func(*Stock, *EnterpriseStation)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Stock)
+	for i := range nodes {
+		if nodes[i].StationID == nil {
+			continue
+		}
+		fk := *nodes[i].StationID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(enterprisestation.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "station_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -1388,38 +1420,6 @@ func (sq *StockQuery) loadEnterprise(ctx context.Context, query *EnterpriseQuery
 	}
 	return nil
 }
-func (sq *StockQuery) loadStations(ctx context.Context, query *EnterpriseStationQuery, nodes []*Stock, init func(*Stock), assign func(*Stock, *EnterpriseStation)) error {
-	ids := make([]uint64, 0, len(nodes))
-	nodeids := make(map[uint64][]*Stock)
-	for i := range nodes {
-		if nodes[i].StationID == nil {
-			continue
-		}
-		fk := *nodes[i].StationID
-		if _, ok := nodeids[fk]; !ok {
-			ids = append(ids, fk)
-		}
-		nodeids[fk] = append(nodeids[fk], nodes[i])
-	}
-	if len(ids) == 0 {
-		return nil
-	}
-	query.Where(enterprisestation.IDIn(ids...))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		nodes, ok := nodeids[n.ID]
-		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "station_id" returned %v`, n.ID)
-		}
-		for i := range nodes {
-			assign(nodes[i], n)
-		}
-	}
-	return nil
-}
 
 func (sq *StockQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := sq.querySpec()
@@ -1464,6 +1464,9 @@ func (sq *StockQuery) querySpec() *sqlgraph.QuerySpec {
 		if sq.withBattery != nil {
 			_spec.Node.AddColumnOnce(stock.FieldBatteryID)
 		}
+		if sq.withStation != nil {
+			_spec.Node.AddColumnOnce(stock.FieldStationID)
+		}
 		if sq.withStore != nil {
 			_spec.Node.AddColumnOnce(stock.FieldStoreID)
 		}
@@ -1481,9 +1484,6 @@ func (sq *StockQuery) querySpec() *sqlgraph.QuerySpec {
 		}
 		if sq.withEnterprise != nil {
 			_spec.Node.AddColumnOnce(stock.FieldEnterpriseID)
-		}
-		if sq.withStations != nil {
-			_spec.Node.AddColumnOnce(stock.FieldStationID)
 		}
 	}
 	if ps := sq.predicates; len(ps) > 0 {
@@ -1558,6 +1558,7 @@ var (
 	StockQueryWithEbike      StockQueryWith = "Ebike"
 	StockQueryWithBrand      StockQueryWith = "Brand"
 	StockQueryWithBattery    StockQueryWith = "Battery"
+	StockQueryWithStation    StockQueryWith = "Station"
 	StockQueryWithStore      StockQueryWith = "Store"
 	StockQueryWithCabinet    StockQueryWith = "Cabinet"
 	StockQueryWithRider      StockQueryWith = "Rider"
@@ -1566,7 +1567,6 @@ var (
 	StockQueryWithParent     StockQueryWith = "Parent"
 	StockQueryWithChildren   StockQueryWith = "Children"
 	StockQueryWithEnterprise StockQueryWith = "Enterprise"
-	StockQueryWithStations   StockQueryWith = "Stations"
 )
 
 func (sq *StockQuery) With(withEdges ...StockQueryWith) *StockQuery {
@@ -1582,6 +1582,8 @@ func (sq *StockQuery) With(withEdges ...StockQueryWith) *StockQuery {
 			sq.WithBrand()
 		case StockQueryWithBattery:
 			sq.WithBattery()
+		case StockQueryWithStation:
+			sq.WithStation()
 		case StockQueryWithStore:
 			sq.WithStore()
 		case StockQueryWithCabinet:
@@ -1598,8 +1600,6 @@ func (sq *StockQuery) With(withEdges ...StockQueryWith) *StockQuery {
 			sq.WithChildren()
 		case StockQueryWithEnterprise:
 			sq.WithEnterprise()
-		case StockQueryWithStations:
-			sq.WithStations()
 		}
 	}
 	return sq

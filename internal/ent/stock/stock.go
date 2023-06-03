@@ -38,6 +38,8 @@ const (
 	FieldBrandID = "brand_id"
 	// FieldBatteryID holds the string denoting the battery_id field in the database.
 	FieldBatteryID = "battery_id"
+	// FieldStationID holds the string denoting the station_id field in the database.
+	FieldStationID = "station_id"
 	// FieldParentID holds the string denoting the parent_id field in the database.
 	FieldParentID = "parent_id"
 	// FieldSn holds the string denoting the sn field in the database.
@@ -52,8 +54,6 @@ const (
 	FieldRiderID = "rider_id"
 	// FieldEmployeeID holds the string denoting the employee_id field in the database.
 	FieldEmployeeID = "employee_id"
-	// FieldStationID holds the string denoting the station_id field in the database.
-	FieldStationID = "station_id"
 	// FieldEnterpriseID holds the string denoting the enterprise_id field in the database.
 	FieldEnterpriseID = "enterprise_id"
 	// FieldName holds the string denoting the name field in the database.
@@ -74,6 +74,8 @@ const (
 	EdgeBrand = "brand"
 	// EdgeBattery holds the string denoting the battery edge name in mutations.
 	EdgeBattery = "battery"
+	// EdgeStation holds the string denoting the station edge name in mutations.
+	EdgeStation = "station"
 	// EdgeStore holds the string denoting the store edge name in mutations.
 	EdgeStore = "store"
 	// EdgeCabinet holds the string denoting the cabinet edge name in mutations.
@@ -90,8 +92,6 @@ const (
 	EdgeChildren = "children"
 	// EdgeEnterprise holds the string denoting the enterprise edge name in mutations.
 	EdgeEnterprise = "enterprise"
-	// EdgeStations holds the string denoting the stations edge name in mutations.
-	EdgeStations = "stations"
 	// Table holds the table name of the stock in the database.
 	Table = "stock"
 	// CityTable is the table that holds the city relation/edge.
@@ -129,6 +129,13 @@ const (
 	BatteryInverseTable = "battery"
 	// BatteryColumn is the table column denoting the battery relation/edge.
 	BatteryColumn = "battery_id"
+	// StationTable is the table that holds the station relation/edge.
+	StationTable = "stock"
+	// StationInverseTable is the table name for the EnterpriseStation entity.
+	// It exists in this package in order to avoid circular dependency with the "enterprisestation" package.
+	StationInverseTable = "enterprise_station"
+	// StationColumn is the table column denoting the station relation/edge.
+	StationColumn = "station_id"
 	// StoreTable is the table that holds the store relation/edge.
 	StoreTable = "stock"
 	// StoreInverseTable is the table name for the Store entity.
@@ -176,13 +183,6 @@ const (
 	EnterpriseInverseTable = "enterprise"
 	// EnterpriseColumn is the table column denoting the enterprise relation/edge.
 	EnterpriseColumn = "enterprise_id"
-	// StationsTable is the table that holds the stations relation/edge.
-	StationsTable = "stock"
-	// StationsInverseTable is the table name for the EnterpriseStation entity.
-	// It exists in this package in order to avoid circular dependency with the "enterprisestation" package.
-	StationsInverseTable = "enterprise_station"
-	// StationsColumn is the table column denoting the stations relation/edge.
-	StationsColumn = "station_id"
 )
 
 // Columns holds all SQL columns for stock fields.
@@ -199,6 +199,7 @@ var Columns = []string{
 	FieldEbikeID,
 	FieldBrandID,
 	FieldBatteryID,
+	FieldStationID,
 	FieldParentID,
 	FieldSn,
 	FieldType,
@@ -206,7 +207,6 @@ var Columns = []string{
 	FieldCabinetID,
 	FieldRiderID,
 	FieldEmployeeID,
-	FieldStationID,
 	FieldEnterpriseID,
 	FieldName,
 	FieldModel,
@@ -217,6 +217,7 @@ var Columns = []string{
 // ForeignKeys holds the SQL foreign-keys that are owned by the "stock"
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
+	"enterprise_station_stocks",
 	"stock_spouse",
 }
 
@@ -329,6 +330,11 @@ func ByBatteryID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldBatteryID, opts...).ToFunc()
 }
 
+// ByStationID orders the results by the station_id field.
+func ByStationID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldStationID, opts...).ToFunc()
+}
+
 // ByParentID orders the results by the parent_id field.
 func ByParentID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldParentID, opts...).ToFunc()
@@ -362,11 +368,6 @@ func ByRiderID(opts ...sql.OrderTermOption) OrderOption {
 // ByEmployeeID orders the results by the employee_id field.
 func ByEmployeeID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldEmployeeID, opts...).ToFunc()
-}
-
-// ByStationID orders the results by the station_id field.
-func ByStationID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldStationID, opts...).ToFunc()
 }
 
 // ByEnterpriseID orders the results by the enterprise_id field.
@@ -426,6 +427,13 @@ func ByBrandField(field string, opts ...sql.OrderTermOption) OrderOption {
 func ByBatteryField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newBatteryStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByStationField orders the results by station field.
+func ByStationField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newStationStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -491,13 +499,6 @@ func ByEnterpriseField(field string, opts ...sql.OrderTermOption) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newEnterpriseStep(), sql.OrderByField(field, opts...))
 	}
 }
-
-// ByStationsField orders the results by stations field.
-func ByStationsField(field string, opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newStationsStep(), sql.OrderByField(field, opts...))
-	}
-}
 func newCityStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -531,6 +532,13 @@ func newBatteryStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(BatteryInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, false, BatteryTable, BatteryColumn),
+	)
+}
+func newStationStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(StationInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, StationTable, StationColumn),
 	)
 }
 func newStoreStep() *sqlgraph.Step {
@@ -587,12 +595,5 @@ func newEnterpriseStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(EnterpriseInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, true, EnterpriseTable, EnterpriseColumn),
-	)
-}
-func newStationsStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(StationsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, true, StationsTable, StationsColumn),
 	)
 }

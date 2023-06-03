@@ -8963,6 +8963,22 @@ func (c *StockClient) QueryBattery(s *Stock) *BatteryQuery {
 	return query
 }
 
+// QueryStation queries the station edge of a Stock.
+func (c *StockClient) QueryStation(s *Stock) *EnterpriseStationQuery {
+	query := (&EnterpriseStationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, id),
+			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, stock.StationTable, stock.StationColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryStore queries the store edge of a Stock.
 func (c *StockClient) QueryStore(s *Stock) *StoreQuery {
 	query := (&StoreClient{config: c.config}).Query()
@@ -9084,22 +9100,6 @@ func (c *StockClient) QueryEnterprise(s *Stock) *EnterpriseQuery {
 			sqlgraph.From(stock.Table, stock.FieldID, id),
 			sqlgraph.To(enterprise.Table, enterprise.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, stock.EnterpriseTable, stock.EnterpriseColumn),
-		)
-		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryStations queries the stations edge of a Stock.
-func (c *StockClient) QueryStations(s *Stock) *EnterpriseStationQuery {
-	query := (&EnterpriseStationClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := s.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(stock.Table, stock.FieldID, id),
-			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, stock.StationsTable, stock.StationsColumn),
 		)
 		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
 		return fromV, nil

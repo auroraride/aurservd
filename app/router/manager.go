@@ -172,6 +172,8 @@ func loadManagerRoutes() {
 	g.POST("/employee/enable", mapi.Employee.Enable)
 	g.GET("/employee/attendance", mapi.Attendance.List)
 	g.POST("/employee/offwork", mapi.Employee.OffWork)
+	// 团签物资列表
+	g.GET("/stock/enterprise/list", mapi.Stock.EnterpriseList)
 
 	// 物资
 	g.POST("/stock", mapi.Stock.Create)

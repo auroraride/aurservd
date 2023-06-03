@@ -140,12 +140,12 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 func (s *enterpriseRiderService) CreateByAgent(req *model.EnterpriseRiderCreateReq, ag *ent.Agent, sts ent.EnterpriseStations) {
 	req.EnterpriseID = ag.EnterpriseID
 	riderInfo, _ := ent.Database.Rider.Query().Where(rider.Phone(req.Phone)).First(s.ctx)
-	if riderInfo != nil {
+	if riderInfo == nil {
 		snag.Panic("查询骑手失败")
 	}
 	// 查询订阅信息
 	subscribeInfo, _ := NewSubscribe().QueryEffective(riderInfo.ID)
-	if subscribeInfo != nil {
+	if subscribeInfo == nil {
 		snag.Panic("该骑手不能绑定,已有团签或者已有未完成的订单")
 	}
 

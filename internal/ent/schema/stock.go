@@ -39,7 +39,6 @@ func (Stock) Fields() []ent.Field {
 		field.Uint64("cabinet_id").Optional().Nillable().Comment("入库至 或 出库自 电柜ID"),
 		field.Uint64("rider_id").Optional().Nillable().Comment("对应骑手ID"),
 		field.Uint64("employee_id").Optional().Nillable().Comment("操作店员ID"),
-		field.Uint64("station_id").Optional().Nillable().Comment("入库至 或 出库自     站点ID"),
 		field.Uint64("enterprise_id").Optional().Nillable().Comment("团签id"),
 		field.String("name").Comment("物资名称"),
 		field.String("model").Optional().Nillable().Comment("电池型号"),
@@ -60,7 +59,6 @@ func (Stock) Edges() []ent.Edge {
 
 		edge.To("children", Stock.Type).From("parent").Field("parent_id").Unique(),
 		edge.From("enterprise", Enterprise.Type).Unique().Ref("stocks").Field("enterprise_id"),
-		edge.From("stations", EnterpriseStation.Type).Unique().Ref("stocks").Field("station_id"),
 	}
 }
 
@@ -80,6 +78,8 @@ func (Stock) Mixin() []ent.Mixin {
 
 		// 电池
 		BatteryMixin{Optional: true},
+
+		StationMixin{Optional: true},
 	}
 }
 

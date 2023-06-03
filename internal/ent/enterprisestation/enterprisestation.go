@@ -70,7 +70,7 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "stock" package.
 	StocksInverseTable = "stock"
 	// StocksColumn is the table column denoting the stocks relation/edge.
-	StocksColumn = "station_id"
+	StocksColumn = "enterprise_station_stocks"
 	// AgentsTable is the table that holds the agents relation/edge. The primary key declared below.
 	AgentsTable = "agent_stations"
 	// AgentsInverseTable is the table name for the Agent entity.

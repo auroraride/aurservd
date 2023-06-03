@@ -68430,6 +68430,8 @@ type StockMutation struct {
 	clearedbrand      bool
 	battery           *uint64
 	clearedbattery    bool
+	station           *uint64
+	clearedstation    bool
 	store             *uint64
 	clearedstore      bool
 	cabinet           *uint64
@@ -68447,8 +68449,6 @@ type StockMutation struct {
 	clearedchildren   bool
 	enterprise        *uint64
 	clearedenterprise bool
-	stations          *uint64
-	clearedstations   bool
 	done              bool
 	oldValue          func(context.Context) (*Stock, error)
 	predicates        []predicate.Stock
@@ -69065,6 +69065,55 @@ func (m *StockMutation) ResetBatteryID() {
 	delete(m.clearedFields, stock.FieldBatteryID)
 }
 
+// SetStationID sets the "station_id" field.
+func (m *StockMutation) SetStationID(u uint64) {
+	m.station = &u
+}
+
+// StationID returns the value of the "station_id" field in the mutation.
+func (m *StockMutation) StationID() (r uint64, exists bool) {
+	v := m.station
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStationID returns the old "station_id" field's value of the Stock entity.
+// If the Stock object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StockMutation) OldStationID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStationID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStationID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStationID: %w", err)
+	}
+	return oldValue.StationID, nil
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (m *StockMutation) ClearStationID() {
+	m.station = nil
+	m.clearedFields[stock.FieldStationID] = struct{}{}
+}
+
+// StationIDCleared returns if the "station_id" field was cleared in this mutation.
+func (m *StockMutation) StationIDCleared() bool {
+	_, ok := m.clearedFields[stock.FieldStationID]
+	return ok
+}
+
+// ResetStationID resets all changes to the "station_id" field.
+func (m *StockMutation) ResetStationID() {
+	m.station = nil
+	delete(m.clearedFields, stock.FieldStationID)
+}
+
 // SetParentID sets the "parent_id" field.
 func (m *StockMutation) SetParentID(u uint64) {
 	m.parent = &u
@@ -69400,55 +69449,6 @@ func (m *StockMutation) EmployeeIDCleared() bool {
 func (m *StockMutation) ResetEmployeeID() {
 	m.employee = nil
 	delete(m.clearedFields, stock.FieldEmployeeID)
-}
-
-// SetStationID sets the "station_id" field.
-func (m *StockMutation) SetStationID(u uint64) {
-	m.stations = &u
-}
-
-// StationID returns the value of the "station_id" field in the mutation.
-func (m *StockMutation) StationID() (r uint64, exists bool) {
-	v := m.stations
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldStationID returns the old "station_id" field's value of the Stock entity.
-// If the Stock object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *StockMutation) OldStationID(ctx context.Context) (v *uint64, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldStationID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldStationID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldStationID: %w", err)
-	}
-	return oldValue.StationID, nil
-}
-
-// ClearStationID clears the value of the "station_id" field.
-func (m *StockMutation) ClearStationID() {
-	m.stations = nil
-	m.clearedFields[stock.FieldStationID] = struct{}{}
-}
-
-// StationIDCleared returns if the "station_id" field was cleared in this mutation.
-func (m *StockMutation) StationIDCleared() bool {
-	_, ok := m.clearedFields[stock.FieldStationID]
-	return ok
-}
-
-// ResetStationID resets all changes to the "station_id" field.
-func (m *StockMutation) ResetStationID() {
-	m.stations = nil
-	delete(m.clearedFields, stock.FieldStationID)
 }
 
 // SetEnterpriseID sets the "enterprise_id" field.
@@ -69807,6 +69807,32 @@ func (m *StockMutation) ResetBattery() {
 	m.clearedbattery = false
 }
 
+// ClearStation clears the "station" edge to the EnterpriseStation entity.
+func (m *StockMutation) ClearStation() {
+	m.clearedstation = true
+}
+
+// StationCleared reports if the "station" edge to the EnterpriseStation entity was cleared.
+func (m *StockMutation) StationCleared() bool {
+	return m.StationIDCleared() || m.clearedstation
+}
+
+// StationIDs returns the "station" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// StationID instead. It exists only for internal usage by the builders.
+func (m *StockMutation) StationIDs() (ids []uint64) {
+	if id := m.station; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetStation resets all changes to the "station" edge.
+func (m *StockMutation) ResetStation() {
+	m.station = nil
+	m.clearedstation = false
+}
+
 // ClearStore clears the "store" edge to the Store entity.
 func (m *StockMutation) ClearStore() {
 	m.clearedstore = true
@@ -70056,45 +70082,6 @@ func (m *StockMutation) ResetEnterprise() {
 	m.clearedenterprise = false
 }
 
-// SetStationsID sets the "stations" edge to the EnterpriseStation entity by id.
-func (m *StockMutation) SetStationsID(id uint64) {
-	m.stations = &id
-}
-
-// ClearStations clears the "stations" edge to the EnterpriseStation entity.
-func (m *StockMutation) ClearStations() {
-	m.clearedstations = true
-}
-
-// StationsCleared reports if the "stations" edge to the EnterpriseStation entity was cleared.
-func (m *StockMutation) StationsCleared() bool {
-	return m.StationIDCleared() || m.clearedstations
-}
-
-// StationsID returns the "stations" edge ID in the mutation.
-func (m *StockMutation) StationsID() (id uint64, exists bool) {
-	if m.stations != nil {
-		return *m.stations, true
-	}
-	return
-}
-
-// StationsIDs returns the "stations" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// StationsID instead. It exists only for internal usage by the builders.
-func (m *StockMutation) StationsIDs() (ids []uint64) {
-	if id := m.stations; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetStations resets all changes to the "stations" edge.
-func (m *StockMutation) ResetStations() {
-	m.stations = nil
-	m.clearedstations = false
-}
-
 // Where appends a list predicates to the StockMutation builder.
 func (m *StockMutation) Where(ps ...predicate.Stock) {
 	m.predicates = append(m.predicates, ps...)
@@ -70163,6 +70150,9 @@ func (m *StockMutation) Fields() []string {
 	if m.battery != nil {
 		fields = append(fields, stock.FieldBatteryID)
 	}
+	if m.station != nil {
+		fields = append(fields, stock.FieldStationID)
+	}
 	if m.parent != nil {
 		fields = append(fields, stock.FieldParentID)
 	}
@@ -70183,9 +70173,6 @@ func (m *StockMutation) Fields() []string {
 	}
 	if m.employee != nil {
 		fields = append(fields, stock.FieldEmployeeID)
-	}
-	if m.stations != nil {
-		fields = append(fields, stock.FieldStationID)
 	}
 	if m.enterprise != nil {
 		fields = append(fields, stock.FieldEnterpriseID)
@@ -70232,6 +70219,8 @@ func (m *StockMutation) Field(name string) (ent.Value, bool) {
 		return m.BrandID()
 	case stock.FieldBatteryID:
 		return m.BatteryID()
+	case stock.FieldStationID:
+		return m.StationID()
 	case stock.FieldParentID:
 		return m.ParentID()
 	case stock.FieldSn:
@@ -70246,8 +70235,6 @@ func (m *StockMutation) Field(name string) (ent.Value, bool) {
 		return m.RiderID()
 	case stock.FieldEmployeeID:
 		return m.EmployeeID()
-	case stock.FieldStationID:
-		return m.StationID()
 	case stock.FieldEnterpriseID:
 		return m.EnterpriseID()
 	case stock.FieldName:
@@ -70289,6 +70276,8 @@ func (m *StockMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldBrandID(ctx)
 	case stock.FieldBatteryID:
 		return m.OldBatteryID(ctx)
+	case stock.FieldStationID:
+		return m.OldStationID(ctx)
 	case stock.FieldParentID:
 		return m.OldParentID(ctx)
 	case stock.FieldSn:
@@ -70303,8 +70292,6 @@ func (m *StockMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldRiderID(ctx)
 	case stock.FieldEmployeeID:
 		return m.OldEmployeeID(ctx)
-	case stock.FieldStationID:
-		return m.OldStationID(ctx)
 	case stock.FieldEnterpriseID:
 		return m.OldEnterpriseID(ctx)
 	case stock.FieldName:
@@ -70401,6 +70388,13 @@ func (m *StockMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetBatteryID(v)
 		return nil
+	case stock.FieldStationID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStationID(v)
+		return nil
 	case stock.FieldParentID:
 		v, ok := value.(uint64)
 		if !ok {
@@ -70449,13 +70443,6 @@ func (m *StockMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetEmployeeID(v)
-		return nil
-	case stock.FieldStationID:
-		v, ok := value.(uint64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetStationID(v)
 		return nil
 	case stock.FieldEnterpriseID:
 		v, ok := value.(uint64)
@@ -70576,6 +70563,9 @@ func (m *StockMutation) ClearedFields() []string {
 	if m.FieldCleared(stock.FieldBatteryID) {
 		fields = append(fields, stock.FieldBatteryID)
 	}
+	if m.FieldCleared(stock.FieldStationID) {
+		fields = append(fields, stock.FieldStationID)
+	}
 	if m.FieldCleared(stock.FieldParentID) {
 		fields = append(fields, stock.FieldParentID)
 	}
@@ -70590,9 +70580,6 @@ func (m *StockMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(stock.FieldEmployeeID) {
 		fields = append(fields, stock.FieldEmployeeID)
-	}
-	if m.FieldCleared(stock.FieldStationID) {
-		fields = append(fields, stock.FieldStationID)
 	}
 	if m.FieldCleared(stock.FieldEnterpriseID) {
 		fields = append(fields, stock.FieldEnterpriseID)
@@ -70641,6 +70628,9 @@ func (m *StockMutation) ClearField(name string) error {
 	case stock.FieldBatteryID:
 		m.ClearBatteryID()
 		return nil
+	case stock.FieldStationID:
+		m.ClearStationID()
+		return nil
 	case stock.FieldParentID:
 		m.ClearParentID()
 		return nil
@@ -70655,9 +70645,6 @@ func (m *StockMutation) ClearField(name string) error {
 		return nil
 	case stock.FieldEmployeeID:
 		m.ClearEmployeeID()
-		return nil
-	case stock.FieldStationID:
-		m.ClearStationID()
 		return nil
 	case stock.FieldEnterpriseID:
 		m.ClearEnterpriseID()
@@ -70706,6 +70693,9 @@ func (m *StockMutation) ResetField(name string) error {
 	case stock.FieldBatteryID:
 		m.ResetBatteryID()
 		return nil
+	case stock.FieldStationID:
+		m.ResetStationID()
+		return nil
 	case stock.FieldParentID:
 		m.ResetParentID()
 		return nil
@@ -70726,9 +70716,6 @@ func (m *StockMutation) ResetField(name string) error {
 		return nil
 	case stock.FieldEmployeeID:
 		m.ResetEmployeeID()
-		return nil
-	case stock.FieldStationID:
-		m.ResetStationID()
 		return nil
 	case stock.FieldEnterpriseID:
 		m.ResetEnterpriseID()
@@ -70767,6 +70754,9 @@ func (m *StockMutation) AddedEdges() []string {
 	if m.battery != nil {
 		edges = append(edges, stock.EdgeBattery)
 	}
+	if m.station != nil {
+		edges = append(edges, stock.EdgeStation)
+	}
 	if m.store != nil {
 		edges = append(edges, stock.EdgeStore)
 	}
@@ -70790,9 +70780,6 @@ func (m *StockMutation) AddedEdges() []string {
 	}
 	if m.enterprise != nil {
 		edges = append(edges, stock.EdgeEnterprise)
-	}
-	if m.stations != nil {
-		edges = append(edges, stock.EdgeStations)
 	}
 	return edges
 }
@@ -70819,6 +70806,10 @@ func (m *StockMutation) AddedIDs(name string) []ent.Value {
 		}
 	case stock.EdgeBattery:
 		if id := m.battery; id != nil {
+			return []ent.Value{*id}
+		}
+	case stock.EdgeStation:
+		if id := m.station; id != nil {
 			return []ent.Value{*id}
 		}
 	case stock.EdgeStore:
@@ -70853,10 +70844,6 @@ func (m *StockMutation) AddedIDs(name string) []ent.Value {
 		return ids
 	case stock.EdgeEnterprise:
 		if id := m.enterprise; id != nil {
-			return []ent.Value{*id}
-		}
-	case stock.EdgeStations:
-		if id := m.stations; id != nil {
 			return []ent.Value{*id}
 		}
 	}
@@ -70904,6 +70891,9 @@ func (m *StockMutation) ClearedEdges() []string {
 	if m.clearedbattery {
 		edges = append(edges, stock.EdgeBattery)
 	}
+	if m.clearedstation {
+		edges = append(edges, stock.EdgeStation)
+	}
 	if m.clearedstore {
 		edges = append(edges, stock.EdgeStore)
 	}
@@ -70928,9 +70918,6 @@ func (m *StockMutation) ClearedEdges() []string {
 	if m.clearedenterprise {
 		edges = append(edges, stock.EdgeEnterprise)
 	}
-	if m.clearedstations {
-		edges = append(edges, stock.EdgeStations)
-	}
 	return edges
 }
 
@@ -70948,6 +70935,8 @@ func (m *StockMutation) EdgeCleared(name string) bool {
 		return m.clearedbrand
 	case stock.EdgeBattery:
 		return m.clearedbattery
+	case stock.EdgeStation:
+		return m.clearedstation
 	case stock.EdgeStore:
 		return m.clearedstore
 	case stock.EdgeCabinet:
@@ -70964,8 +70953,6 @@ func (m *StockMutation) EdgeCleared(name string) bool {
 		return m.clearedchildren
 	case stock.EdgeEnterprise:
 		return m.clearedenterprise
-	case stock.EdgeStations:
-		return m.clearedstations
 	}
 	return false
 }
@@ -70989,6 +70976,9 @@ func (m *StockMutation) ClearEdge(name string) error {
 	case stock.EdgeBattery:
 		m.ClearBattery()
 		return nil
+	case stock.EdgeStation:
+		m.ClearStation()
+		return nil
 	case stock.EdgeStore:
 		m.ClearStore()
 		return nil
@@ -71009,9 +70999,6 @@ func (m *StockMutation) ClearEdge(name string) error {
 		return nil
 	case stock.EdgeEnterprise:
 		m.ClearEnterprise()
-		return nil
-	case stock.EdgeStations:
-		m.ClearStations()
 		return nil
 	}
 	return fmt.Errorf("unknown Stock unique edge %s", name)
@@ -71036,6 +71023,9 @@ func (m *StockMutation) ResetEdge(name string) error {
 	case stock.EdgeBattery:
 		m.ResetBattery()
 		return nil
+	case stock.EdgeStation:
+		m.ResetStation()
+		return nil
 	case stock.EdgeStore:
 		m.ResetStore()
 		return nil
@@ -71059,9 +71049,6 @@ func (m *StockMutation) ResetEdge(name string) error {
 		return nil
 	case stock.EdgeEnterprise:
 		m.ResetEnterprise()
-		return nil
-	case stock.EdgeStations:
-		m.ResetStations()
 		return nil
 	}
 	return fmt.Errorf("unknown Stock edge %s", name)
