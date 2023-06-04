@@ -172,20 +172,6 @@ func (sc *StockCreate) SetNillableBatteryID(u *uint64) *StockCreate {
 	return sc
 }
 
-// SetStationID sets the "station_id" field.
-func (sc *StockCreate) SetStationID(u uint64) *StockCreate {
-	sc.mutation.SetStationID(u)
-	return sc
-}
-
-// SetNillableStationID sets the "station_id" field if the given value is not nil.
-func (sc *StockCreate) SetNillableStationID(u *uint64) *StockCreate {
-	if u != nil {
-		sc.SetStationID(*u)
-	}
-	return sc
-}
-
 // SetParentID sets the "parent_id" field.
 func (sc *StockCreate) SetParentID(u uint64) *StockCreate {
 	sc.mutation.SetParentID(u)
@@ -290,6 +276,20 @@ func (sc *StockCreate) SetNillableEnterpriseID(u *uint64) *StockCreate {
 	return sc
 }
 
+// SetStationID sets the "station_id" field.
+func (sc *StockCreate) SetStationID(u uint64) *StockCreate {
+	sc.mutation.SetStationID(u)
+	return sc
+}
+
+// SetNillableStationID sets the "station_id" field if the given value is not nil.
+func (sc *StockCreate) SetNillableStationID(u *uint64) *StockCreate {
+	if u != nil {
+		sc.SetStationID(*u)
+	}
+	return sc
+}
+
 // SetName sets the "name" field.
 func (sc *StockCreate) SetName(s string) *StockCreate {
 	sc.mutation.SetName(s)
@@ -345,11 +345,6 @@ func (sc *StockCreate) SetBrand(e *EbikeBrand) *StockCreate {
 // SetBattery sets the "battery" edge to the Battery entity.
 func (sc *StockCreate) SetBattery(b *Battery) *StockCreate {
 	return sc.SetBatteryID(b.ID)
-}
-
-// SetStation sets the "station" edge to the EnterpriseStation entity.
-func (sc *StockCreate) SetStation(e *EnterpriseStation) *StockCreate {
-	return sc.SetStationID(e.ID)
 }
 
 // SetStore sets the "store" edge to the Store entity.
@@ -414,6 +409,11 @@ func (sc *StockCreate) AddChildren(s ...*Stock) *StockCreate {
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
 func (sc *StockCreate) SetEnterprise(e *Enterprise) *StockCreate {
 	return sc.SetEnterpriseID(e.ID)
+}
+
+// SetStation sets the "station" edge to the EnterpriseStation entity.
+func (sc *StockCreate) SetStation(e *EnterpriseStation) *StockCreate {
+	return sc.SetStationID(e.ID)
 }
 
 // Mutation returns the StockMutation object of the builder.
@@ -662,23 +662,6 @@ func (sc *StockCreate) createSpec() (*Stock, *sqlgraph.CreateSpec) {
 		_node.BatteryID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := sc.mutation.StationIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   stock.StationTable,
-			Columns: []string{stock.StationColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.StationID = &nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
 	if nodes := sc.mutation.StoreIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -812,6 +795,23 @@ func (sc *StockCreate) createSpec() (*Stock, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.EnterpriseID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := sc.mutation.StationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   stock.StationTable,
+			Columns: []string{stock.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.StationID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -1022,24 +1022,6 @@ func (u *StockUpsert) ClearBatteryID() *StockUpsert {
 	return u
 }
 
-// SetStationID sets the "station_id" field.
-func (u *StockUpsert) SetStationID(v uint64) *StockUpsert {
-	u.Set(stock.FieldStationID, v)
-	return u
-}
-
-// UpdateStationID sets the "station_id" field to the value that was provided on create.
-func (u *StockUpsert) UpdateStationID() *StockUpsert {
-	u.SetExcluded(stock.FieldStationID)
-	return u
-}
-
-// ClearStationID clears the value of the "station_id" field.
-func (u *StockUpsert) ClearStationID() *StockUpsert {
-	u.SetNull(stock.FieldStationID)
-	return u
-}
-
 // SetParentID sets the "parent_id" field.
 func (u *StockUpsert) SetParentID(v uint64) *StockUpsert {
 	u.Set(stock.FieldParentID, v)
@@ -1175,6 +1157,24 @@ func (u *StockUpsert) UpdateEnterpriseID() *StockUpsert {
 // ClearEnterpriseID clears the value of the "enterprise_id" field.
 func (u *StockUpsert) ClearEnterpriseID() *StockUpsert {
 	u.SetNull(stock.FieldEnterpriseID)
+	return u
+}
+
+// SetStationID sets the "station_id" field.
+func (u *StockUpsert) SetStationID(v uint64) *StockUpsert {
+	u.Set(stock.FieldStationID, v)
+	return u
+}
+
+// UpdateStationID sets the "station_id" field to the value that was provided on create.
+func (u *StockUpsert) UpdateStationID() *StockUpsert {
+	u.SetExcluded(stock.FieldStationID)
+	return u
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (u *StockUpsert) ClearStationID() *StockUpsert {
+	u.SetNull(stock.FieldStationID)
 	return u
 }
 
@@ -1453,27 +1453,6 @@ func (u *StockUpsertOne) ClearBatteryID() *StockUpsertOne {
 	})
 }
 
-// SetStationID sets the "station_id" field.
-func (u *StockUpsertOne) SetStationID(v uint64) *StockUpsertOne {
-	return u.Update(func(s *StockUpsert) {
-		s.SetStationID(v)
-	})
-}
-
-// UpdateStationID sets the "station_id" field to the value that was provided on create.
-func (u *StockUpsertOne) UpdateStationID() *StockUpsertOne {
-	return u.Update(func(s *StockUpsert) {
-		s.UpdateStationID()
-	})
-}
-
-// ClearStationID clears the value of the "station_id" field.
-func (u *StockUpsertOne) ClearStationID() *StockUpsertOne {
-	return u.Update(func(s *StockUpsert) {
-		s.ClearStationID()
-	})
-}
-
 // SetParentID sets the "parent_id" field.
 func (u *StockUpsertOne) SetParentID(v uint64) *StockUpsertOne {
 	return u.Update(func(s *StockUpsert) {
@@ -1632,6 +1611,27 @@ func (u *StockUpsertOne) UpdateEnterpriseID() *StockUpsertOne {
 func (u *StockUpsertOne) ClearEnterpriseID() *StockUpsertOne {
 	return u.Update(func(s *StockUpsert) {
 		s.ClearEnterpriseID()
+	})
+}
+
+// SetStationID sets the "station_id" field.
+func (u *StockUpsertOne) SetStationID(v uint64) *StockUpsertOne {
+	return u.Update(func(s *StockUpsert) {
+		s.SetStationID(v)
+	})
+}
+
+// UpdateStationID sets the "station_id" field to the value that was provided on create.
+func (u *StockUpsertOne) UpdateStationID() *StockUpsertOne {
+	return u.Update(func(s *StockUpsert) {
+		s.UpdateStationID()
+	})
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (u *StockUpsertOne) ClearStationID() *StockUpsertOne {
+	return u.Update(func(s *StockUpsert) {
+		s.ClearStationID()
 	})
 }
 
@@ -2079,27 +2079,6 @@ func (u *StockUpsertBulk) ClearBatteryID() *StockUpsertBulk {
 	})
 }
 
-// SetStationID sets the "station_id" field.
-func (u *StockUpsertBulk) SetStationID(v uint64) *StockUpsertBulk {
-	return u.Update(func(s *StockUpsert) {
-		s.SetStationID(v)
-	})
-}
-
-// UpdateStationID sets the "station_id" field to the value that was provided on create.
-func (u *StockUpsertBulk) UpdateStationID() *StockUpsertBulk {
-	return u.Update(func(s *StockUpsert) {
-		s.UpdateStationID()
-	})
-}
-
-// ClearStationID clears the value of the "station_id" field.
-func (u *StockUpsertBulk) ClearStationID() *StockUpsertBulk {
-	return u.Update(func(s *StockUpsert) {
-		s.ClearStationID()
-	})
-}
-
 // SetParentID sets the "parent_id" field.
 func (u *StockUpsertBulk) SetParentID(v uint64) *StockUpsertBulk {
 	return u.Update(func(s *StockUpsert) {
@@ -2258,6 +2237,27 @@ func (u *StockUpsertBulk) UpdateEnterpriseID() *StockUpsertBulk {
 func (u *StockUpsertBulk) ClearEnterpriseID() *StockUpsertBulk {
 	return u.Update(func(s *StockUpsert) {
 		s.ClearEnterpriseID()
+	})
+}
+
+// SetStationID sets the "station_id" field.
+func (u *StockUpsertBulk) SetStationID(v uint64) *StockUpsertBulk {
+	return u.Update(func(s *StockUpsert) {
+		s.SetStationID(v)
+	})
+}
+
+// UpdateStationID sets the "station_id" field to the value that was provided on create.
+func (u *StockUpsertBulk) UpdateStationID() *StockUpsertBulk {
+	return u.Update(func(s *StockUpsert) {
+		s.UpdateStationID()
+	})
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (u *StockUpsertBulk) ClearStationID() *StockUpsertBulk {
+	return u.Update(func(s *StockUpsert) {
+		s.ClearStationID()
 	})
 }
 

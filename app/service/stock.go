@@ -56,13 +56,6 @@ func NewStock() *stockService {
 	}
 }
 
-func NewStockWithRider(r *ent.Rider) *stockService {
-	s := NewStock()
-	s.ctx = context.WithValue(s.ctx, model.CtxRiderKey{}, r)
-	s.rider = r
-	return s
-}
-
 func NewStockWithModifier(m *model.Modifier) *stockService {
 	s := NewStock()
 	if m != nil {
@@ -221,34 +214,39 @@ func (s *stockService) EnterpriseList(req *model.StockListReq) *model.Pagination
 	q := ent.Database.EnterpriseStation.QueryNotDeleted().WithEnterprise(func(query *ent.EnterpriseQuery) {
 		query.WithStations().WithCity()
 	}).WithStocks()
+
 	if req.CityID != nil {
 		q.Where(
 			enterprisestation.HasEnterpriseWith(enterprise.HasCityWith(city.ID(*req.CityID))),
 		)
 	}
+
 	if req.EnterpriseID != nil {
 		q.Where(
 			enterprisestation.HasEnterpriseWith(enterprise.ID(*req.EnterpriseID)),
 		)
 	}
+
 	if req.StationID != nil {
 		q.Where(enterprisestation.ID(*req.StationID))
 	}
 
-	if req.Start != nil && req.End != nil {
-		start := carbon.Parse(*req.Start).StartOfDay().Carbon2Time()
-		end := carbon.Parse(*req.End).EndOfDay().Carbon2Time()
-		q.Where(
-			enterprisestation.HasEnterpriseWith(
-				enterprise.Or(
-					enterprise.HasStocksWith(stock.CreatedAtGTE(start)),
-					enterprise.HasStocksWith(stock.CreatedAtLTE(end)),
-				)),
-		)
+	if req.Start != nil {
+		q.Where(enterprisestation.HasStocksWith(
+			stock.CreatedAtGTE(tools.NewTime().ParseDateStringX(*req.Start)),
+		))
 	}
+
+	if req.End != nil {
+		q.Where(enterprisestation.HasStocksWith(
+			stock.CreatedAtLT(tools.NewTime().ParseNextDateStringX(*req.Start)),
+		))
+	}
+
 	if req.Model != "" {
 		q.Where(enterprisestation.HasEnterpriseWith(enterprise.HasStocksWith(stock.Model(req.Model))))
 	}
+
 	return model.ParsePaginationResponse(
 		q,
 		req.PaginationReq,
@@ -1283,16 +1281,16 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
 			}
 
 			if l.BatteryID != nil {
-				update := tx.Battery.UpdateOneID(*l.BatteryID)
+				updater := tx.Battery.UpdateOneID(*l.BatteryID)
 				switch req.InboundTarget {
 				case model.StockTargetStation:
 					// 调拨到站点
-					update.SetNillableStationID(in).SetEnterpriseID(enterpriseId)
+					updater.SetNillableStationID(in).SetEnterpriseID(enterpriseId)
 				case model.StockTargetPlaform:
 					// 调拨到平台
-					update.ClearStationID().ClearEnterpriseID()
+					updater.ClearStationID().ClearEnterpriseID()
 				}
-				if update.Exec(s.ctx) != nil {
+				if updater.Exec(s.ctx) != nil {
 					return fmt.Errorf("电池更新失败: %s", *l.BatterySN)
 				}
 			}

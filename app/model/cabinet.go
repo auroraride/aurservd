@@ -98,7 +98,7 @@ type CabinetItem struct {
 	StationName    string   `json:"stationName,omitempty"`    // 所属站点名称
 	StationID      *uint64  `json:"stationId,omitempty"`      // 站点id
 	EnterpriseName string   `json:"enterpriseName,omitempty"` // 团签名称
-	EnterpriseID   *uint64  `json:"enterpriseId,omitempty"`   // 团签id
+	EnterpriseID   *uint64  `json:"enterpriseId,omitempty"`   // 团签ID
 }
 
 // CabinetQueryReq 电柜查询请求
@@ -431,7 +431,7 @@ type EnterpriseBindCabinetReq struct {
 	ID uint64 `json:"id" validate:"required" param:"id"`
 	// 站点id
 	StationID uint64 `json:"station_id" validate:"required"`
-	// 团签id
+	// 团签ID
 	EnterpriseID uint64 `json:"enterprise_id" validate:"required"`
 }
 

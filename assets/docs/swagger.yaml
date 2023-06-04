@@ -2430,7 +2430,7 @@ definitions:
         description: 柜门数量
         type: integer
       enterpriseId:
-        description: 团签id
+        description: 团签ID
         type: integer
       enterpriseName:
         description: 团签名称
@@ -2656,7 +2656,7 @@ definitions:
         description: 柜门数量
         type: integer
       enterpriseId:
-        description: 团签id
+        description: 团签ID
         type: integer
       enterpriseName:
         description: 团签名称
@@ -3627,7 +3627,7 @@ definitions:
   model.EnterpriseBindCabinetReq:
     properties:
       enterprise_id:
-        description: 团签id
+        description: 团签ID
         type: integer
       station_id:
         description: 站点id
@@ -9943,7 +9943,7 @@ paths:
         in: query
         name: current
         type: integer
-      - description: 团签id
+      - description: 团签ID
         in: query
         name: enterpriseId
         type: integer
