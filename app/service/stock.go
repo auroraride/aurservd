@@ -1284,13 +1284,13 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
 
 			if l.BatteryID != nil {
 				update := tx.Battery.UpdateOneID(*l.BatteryID)
-				if req.IsToStation() { // 调拨到电站
-					update.SetNillableStationID(in)
-					update.SetEnterpriseID(enterpriseId)
-				}
-				if req.IsToPlaform() { // 调拨到平台
-					update.ClearStationID()
-					update.ClearEnterpriseID()
+				switch req.InboundTarget {
+				case model.StockTargetStation:
+					// 调拨到站点
+					update.SetNillableStationID(in).SetEnterpriseID(enterpriseId)
+				case model.StockTargetPlaform:
+					// 调拨到平台
+					update.ClearStationID().ClearEnterpriseID()
 				}
 				if update.Exec(s.ctx) != nil {
 					return fmt.Errorf("电池更新失败: %s", *l.BatterySN)

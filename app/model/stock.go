@@ -104,6 +104,7 @@ func (req *StockTransferReq) IsToPlaform() bool {
 func (req *StockTransferReq) IsFromPlaform() bool {
 	return req.OutboundTarget == StockTargetPlaform
 }
+
 func (req *StockTransferReq) IsToStation() bool {
 	return req.InboundTarget == StockTargetStation
 }
