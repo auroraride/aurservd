@@ -228,7 +228,7 @@ type StockListReq struct {
 	StoreID *uint64 `json:"storeId" query:"storeId"` // 门店ID
 
 	StationID    *uint64 `json:"stationId" query:"stationId"`         // 站点id
-	EnterpriseID *uint64 `json:"enterprise_id" query:"enterprise_id"` // 团签id
+	EnterpriseID *uint64 `json:"enterprise_id" query:"enterprise_id"` // 团签ID
 
 	EbikeBrandID uint64 `json:"ebikeBrandId" query:"ebikeBrandId"` // 电车型号ID
 	Model        string `json:"model" query:"model"`               // 电池型号

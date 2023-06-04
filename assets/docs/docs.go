@@ -3712,7 +3712,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "团签id",
+                        "description": "团签ID",
                         "name": "enterpriseId",
                         "in": "query"
                     },
@@ -19360,7 +19360,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "enterpriseId": {
-                    "description": "团签id",
+                    "description": "团签ID",
                     "type": "integer"
                 },
                 "enterpriseName": {
@@ -19688,7 +19688,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "enterpriseId": {
-                    "description": "团签id",
+                    "description": "团签ID",
                     "type": "integer"
                 },
                 "enterpriseName": {
@@ -21077,7 +21077,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "enterprise_id": {
-                    "description": "团签id",
+                    "description": "团签ID",
                     "type": "integer"
                 },
                 "station_id": {

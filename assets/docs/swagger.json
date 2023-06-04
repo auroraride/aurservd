@@ -3705,7 +3705,7 @@
                     },
                     {
                         "type": "integer",
-                        "description": "团签id",
+                        "description": "团签ID",
                         "name": "enterpriseId",
                         "in": "query"
                     },
@@ -19353,7 +19353,7 @@
                     "type": "integer"
                 },
                 "enterpriseId": {
-                    "description": "团签id",
+                    "description": "团签ID",
                     "type": "integer"
                 },
                 "enterpriseName": {
@@ -19681,7 +19681,7 @@
                     "type": "integer"
                 },
                 "enterpriseId": {
-                    "description": "团签id",
+                    "description": "团签ID",
                     "type": "integer"
                 },
                 "enterpriseName": {
@@ -21070,7 +21070,7 @@
             ],
             "properties": {
                 "enterprise_id": {
-                    "description": "团签id",
+                    "description": "团签ID",
                     "type": "integer"
                 },
                 "station_id": {

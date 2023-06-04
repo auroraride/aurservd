@@ -13,7 +13,7 @@ type SubscribeAlterApplyReq struct {
 	End     *string `json:"end" query:"end"`         // 结束时间
 	Keyword *string `json:"keyword" query:"keyword"` // 关键词
 	Status  *int    `json:"status" query:"status"`   // 审核状态
-	ID      uint64  `json:"id" query:"id"`           // 团签id
+	ID      uint64  `json:"id" query:"id"`           // 团签ID
 }
 
 // SubscribeAlterApplyListRsp 申请列表返回信息

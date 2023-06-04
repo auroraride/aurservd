@@ -25,7 +25,7 @@ type BatteryFilter struct {
 	Model        string  `json:"model" query:"model"`               // 型号
 	CityID       uint64  `json:"cityId" query:"cityId"`             // 城市
 	Status       *int    `json:"status" query:"status"`             // 状态 0:全部 1:启用(不携带默认为启用) 2:禁用
-	EnterpriseID *uint64 `json:"enterpriseId" query:"enterpriseId"` // 团签id
+	EnterpriseID *uint64 `json:"enterpriseId" query:"enterpriseId"` // 团签ID
 	StationID    *uint64 `json:"stationId" query:"stationId"`       // 站点id
 	CabinetName  *string `json:"cabinetName" query:"cabinetName"`   // 电柜名称
 	Keyword      *string `json:"keyword" query:"keyword"`           // 关键词

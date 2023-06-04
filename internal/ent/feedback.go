@@ -42,7 +42,7 @@ type Feedback struct {
 	Name string `json:"name,omitempty"`
 	// 电话
 	Phone string `json:"phone,omitempty"`
-	// 团签id
+	// 团签ID
 	EnterpriseID *uint64 `json:"enterprise_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the FeedbackQuery when eager-loading is set.

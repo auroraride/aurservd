@@ -687,6 +687,9 @@ func (esq *EnterpriseStationQuery) loadStocks(ctx context.Context, query *StockQ
 		}
 	}
 	query.withFKs = true
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(stock.FieldStationID)
+	}
 	query.Where(predicate.Stock(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(enterprisestation.StocksColumn), fks...))
 	}))
@@ -695,13 +698,13 @@ func (esq *EnterpriseStationQuery) loadStocks(ctx context.Context, query *StockQ
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.enterprise_station_stocks
+		fk := n.StationID
 		if fk == nil {
-			return fmt.Errorf(`foreign-key "enterprise_station_stocks" is nil for node %v`, n.ID)
+			return fmt.Errorf(`foreign-key "station_id" is nil for node %v`, n.ID)
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "enterprise_station_stocks" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "station_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

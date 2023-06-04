@@ -27,8 +27,8 @@ func (Feedback) Fields() []ent.Field {
 		field.String("name").Optional().Comment("姓名"),
 		// 电话
 		field.String("phone").Optional().Comment("电话"),
-		// 团签id
-		field.Uint64("enterprise_id").Optional().Nillable().Comment("团签id"),
+		// 团签ID
+		field.Uint64("enterprise_id").Optional().Nillable().Comment("团签ID"),
 	}
 }
 

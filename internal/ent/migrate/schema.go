@@ -3455,15 +3455,14 @@ var (
 		{Name: "material", Type: field.TypeEnum, Comment: "物资种类", Enums: []string{"battery", "ebike", "others"}},
 		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true, Comment: "入库至 或 出库自 电柜ID"},
 		{Name: "employee_id", Type: field.TypeUint64, Nullable: true, Comment: "操作店员ID"},
-		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true, Comment: "团签id"},
-		{Name: "enterprise_station_stocks", Type: field.TypeUint64, Nullable: true},
+		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true, Comment: "团签ID"},
+		{Name: "station_id", Type: field.TypeUint64, Nullable: true, Comment: "站点ID"},
 		{Name: "rider_id", Type: field.TypeUint64, Nullable: true, Comment: "对应骑手ID"},
 		{Name: "city_id", Type: field.TypeUint64, Nullable: true, Comment: "城市ID"},
 		{Name: "subscribe_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "ebike_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "brand_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "battery_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "station_id", Type: field.TypeUint64, Nullable: true, Comment: "站点ID"},
 		{Name: "stock_spouse", Type: field.TypeUint64, Unique: true, Nullable: true},
 		{Name: "parent_id", Type: field.TypeUint64, Nullable: true, Comment: "父级"},
 		{Name: "store_id", Type: field.TypeUint64, Nullable: true, Comment: "入库至 或 出库自 门店ID"},
@@ -3535,26 +3534,20 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "stock_enterprise_station_station",
-				Columns:    []*schema.Column{StockColumns[23]},
-				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
 				Symbol:     "stock_stock_spouse",
-				Columns:    []*schema.Column{StockColumns[24]},
+				Columns:    []*schema.Column{StockColumns[23]},
 				RefColumns: []*schema.Column{StockColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "stock_stock_children",
-				Columns:    []*schema.Column{StockColumns[25]},
+				Columns:    []*schema.Column{StockColumns[24]},
 				RefColumns: []*schema.Column{StockColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "stock_store_stocks",
-				Columns:    []*schema.Column{StockColumns[26]},
+				Columns:    []*schema.Column{StockColumns[25]},
 				RefColumns: []*schema.Column{StoreColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -3606,14 +3599,9 @@ var (
 				Columns: []*schema.Column{StockColumns[22]},
 			},
 			{
-				Name:    "stock_station_id",
-				Unique:  false,
-				Columns: []*schema.Column{StockColumns[23]},
-			},
-			{
 				Name:    "stock_store_id",
 				Unique:  false,
-				Columns: []*schema.Column{StockColumns[26]},
+				Columns: []*schema.Column{StockColumns[25]},
 			},
 			{
 				Name:    "stock_cabinet_id",
@@ -3643,7 +3631,7 @@ var (
 			{
 				Name:    "stock_parent_id",
 				Unique:  false,
-				Columns: []*schema.Column{StockColumns[25]},
+				Columns: []*schema.Column{StockColumns[24]},
 			},
 			{
 				Name:    "stock_name",
@@ -4757,10 +4745,9 @@ func init() {
 	StockTable.ForeignKeys[7].RefTable = EbikeTable
 	StockTable.ForeignKeys[8].RefTable = EbikeBrandTable
 	StockTable.ForeignKeys[9].RefTable = BatteryTable
-	StockTable.ForeignKeys[10].RefTable = EnterpriseStationTable
+	StockTable.ForeignKeys[10].RefTable = StockTable
 	StockTable.ForeignKeys[11].RefTable = StockTable
-	StockTable.ForeignKeys[12].RefTable = StockTable
-	StockTable.ForeignKeys[13].RefTable = StoreTable
+	StockTable.ForeignKeys[12].RefTable = StoreTable
 	StockTable.Annotation = &entsql.Annotation{
 		Table: "stock",
 	}
