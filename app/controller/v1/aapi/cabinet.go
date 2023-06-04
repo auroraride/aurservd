@@ -52,7 +52,7 @@ func (*cabinet) List(c echo.Context) (err error) {
 // @Produce      json
 // @Param        X-Agent-Token  header  string  true  "代理校验token"
 // @Param        serial  path  string  true  "电柜编号"
-// @Success      200  {object}  model.StatusResponse  "请求成功"
+// @Success      200  {object}  model.AgentCabinetDetailRes  "请求成功"
 func (*cabinet) Detail(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.AgentCabinetDetailReq](c)
 	return ctx.SendResponse(service.NewAgentCabinet().Detail(req.Serial, ctx.Agent, ctx.Stations))
