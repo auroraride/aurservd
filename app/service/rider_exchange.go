@@ -306,24 +306,10 @@ func (s *riderExchangeService) Start(req *model.RiderExchangeProcessReq) {
 		snag.Panic("换电失败")
 	}
 
-	if cab.UsingMicroService() {
-		go async.WithTask(func() {
-			NewIntelligentCabinet(s.rider).Exchange(req.UUID, s.exchange, sub, bat, cab)
-		})
-	} else {
-		// 开始任务
-		t.Start(func(task *ec.Task) {
-			task.Exchange.ExchangeID = s.exchange.ID
-			task.Exchange.Steps = []*model.ExchangeStepInfo{
-				{Step: model.ExchangeStepOpenEmpty, Time: time.Now()},
-			}
-		})
-
-		// 处理换电流程
-		go async.WithTask(func() {
-			s.ProcessByStep()
-		})
-	}
+	// 异步进行换电任务并存储换电任务
+	go async.WithTask(func() {
+		NewIntelligentCabinet(s.rider).Exchange(req.UUID, s.exchange, sub, bat, cab)
+	})
 }
 
 // ProcessNextStep 开始下一个步骤

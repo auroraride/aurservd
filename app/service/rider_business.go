@@ -7,7 +7,6 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/auroraride/adapter"
@@ -22,7 +21,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
 	"github.com/auroraride/aurservd/pkg/cache"
-	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
 )
 
@@ -36,10 +34,6 @@ type riderBusinessService struct {
 
 	cabinet   *ent.Cabinet
 	subscribe *ent.Subscribe
-
-	task  *ec.Task
-	max   *model.BinInfo
-	empty *model.BinInfo
 
 	bt business.Type
 
@@ -112,134 +106,6 @@ func (s *riderBusinessService) preprocess(serial string, bt business.Type) {
 	}
 }
 
-// 非智能电柜 - 开仓
-func (s *riderBusinessService) open(bin *model.BinInfo, remark string) (status bool, err error) {
-	s.task.Start()
-	s.task.BussinessBinInfo = bin
-
-	operation := model.CabinetDoorOperateOpen
-
-	status, err = NewCabinet().DoorOperate(&model.CabinetDoorOperateReq{
-		ID:        s.cabinet.ID,
-		Index:     silk.Pointer(bin.Index),
-		Remark:    fmt.Sprintf("%s - %s", s.task.Job.Label(), remark),
-		Operation: &operation,
-	}, model.CabinetDoorOperator{
-		ID:    s.rider.ID,
-		Role:  model.CabinetDoorOperatorRoleRider,
-		Name:  s.rider.Name,
-		Phone: s.rider.Phone,
-	})
-
-	return
-}
-
-// 非智能电柜 - 放入电池
-func (s *riderBusinessService) putin() (*model.BinInfo, *model.Battery, error) {
-	status, err := s.open(s.empty, model.RiderCabinetOperateReasonEmpty)
-	ts := s.task.Status
-
-	defer func() {
-		s.task.Stop(ts)
-	}()
-
-	if !status {
-		snag.Panic("仓门开启失败")
-	}
-
-	if err != nil {
-		snag.Panic(err)
-	}
-
-	for {
-		ds := s.batteryDetect()
-		if ds == ec.DoorStatusClose {
-			// 强制睡眠两秒: 原因是有可能柜门会晃动导致似关非关, 延时来获取正确状态
-			time.Sleep(2 * time.Second)
-			ds = s.batteryDetect()
-		}
-		switch ds {
-		case ec.DoorStatusClose:
-			ts = model.TaskStatusSuccess
-			return s.empty, nil, nil
-		case ec.DoorStatusOpen:
-			ts = model.TaskStatusProcessing
-		default:
-			s.task.Message = ec.DoorError[ds]
-			ts = model.TaskStatusFail
-		}
-
-		// 超时标记为任务失败
-		if time.Since(*s.task.StartAt).Seconds() > s.maxTime.Seconds() && s.task.Message == "" {
-			s.task.Message = "超时"
-			ts = model.TaskStatusFail
-		}
-
-		if ts != model.TaskStatusProcessing {
-			if s.task.Message == "" {
-				s.task.Message = "操作失败"
-			}
-			snag.Panic(s.task.Message)
-		}
-
-		time.Sleep(1 * time.Second)
-	}
-}
-
-// 非智能电柜 - 电池检测
-func (s *riderBusinessService) batteryDetect() (ds ec.DoorStatus) {
-	ds = NewCabinet().DoorOpenStatus(s.cabinet, s.empty.Index)
-	cbin := s.cabinet.Bin[s.empty.Index]
-	pe := cbin.Electricity
-	pv := cbin.Voltage
-
-	// 当仓门未关闭时跳过
-	if ds != ec.DoorStatusClose {
-		return
-	}
-
-	// 获取骑手放入电池信息, 验证是否放入旧电池
-	if s.empty.Electricity == 0 {
-		s.empty.Electricity = pe
-	}
-
-	if s.empty.Voltage < 40 {
-		s.empty.Voltage = pv
-	}
-
-	// 曹博文说: 判断是否 有电池 并且 (电压大于40 或 电量大于0)
-	if cbin.Battery && (pv > 45 || pe > 0) {
-		return ec.DoorStatusClose
-	}
-
-	// 仓门关闭但是检测不到电池的情况下, 继续检测30s
-	if time.Since(*s.task.StartAt).Seconds() > 30 {
-		return ec.DoorStatusBatteryEmpty
-	} else {
-		time.Sleep(1 * time.Second)
-		return s.batteryDetect()
-	}
-}
-
-// 非智能电柜 - 取走电池
-func (s *riderBusinessService) putout() (*model.BinInfo, *model.Battery, error) {
-	status, err := s.open(s.max, model.RiderCabinetOperateReasonFull)
-
-	defer func() {
-		ts := model.TaskStatusSuccess
-		if !status {
-			ts = model.TaskStatusFail
-		}
-		s.task.Stop(ts)
-	}()
-
-	if err != nil {
-		snag.Panic(err)
-	}
-
-	return s.max, nil, nil
-}
-
 // Active 骑手自主激活
 // TODO 分配信息是否需要记录电池编号
 func (s *riderBusinessService) Active(req *model.BusinessCabinetReq) model.BusinessCabinetStatus {
@@ -293,10 +159,7 @@ func (s *riderBusinessService) Active(req *model.BusinessCabinetReq) model.Busin
 		SetTask(func() (*model.BinInfo, *model.Battery, error) {
 			// 更新分配信息
 			_ = allo.Update().SetStatus(model.AllocateStatusSigned.Value()).SetCabinetID(s.cabinet.ID).Exec(s.ctx)
-			if s.cabinet.UsingMicroService() {
-				return NewIntelligentCabinet(s.rider).DoBusiness(s.response.UUID, adapter.BusinessActive, s.subscribe, nil, s.cabinet)
-			}
-			return s.putout()
+			return NewIntelligentCabinet(s.rider).DoBusiness(s.response.UUID, adapter.BusinessActive, s.subscribe, nil, s.cabinet)
 		}).
 		Active(s.subscribe, allo)
 
@@ -316,10 +179,7 @@ func (s *riderBusinessService) Continue(req *model.BusinessCabinetReq) model.Bus
 			NewBusinessRider(s.rider).
 				SetCabinet(s.cabinet).
 				SetTask(func() (*model.BinInfo, *model.Battery, error) {
-					if s.cabinet.UsingMicroService() {
-						return NewIntelligentCabinet(s.rider).DoBusiness(s.response.UUID, adapter.BusinessContinue, s.subscribe, nil, s.cabinet)
-					}
-					return s.putout()
+					return NewIntelligentCabinet(s.rider).DoBusiness(s.response.UUID, adapter.BusinessContinue, s.subscribe, nil, s.cabinet)
 				}).
 				Continue(req.ID)
 			// ↓ 2023-01-02 添加了异步操作
@@ -345,10 +205,7 @@ func (s *riderBusinessService) Unsubscribe(req *model.BusinessCabinetReq) model.
 			NewBusinessRider(s.rider).
 				SetCabinet(s.cabinet).
 				SetTask(func() (*model.BinInfo, *model.Battery, error) {
-					if s.cabinet.UsingMicroService() {
-						return NewIntelligentCabinet(s.rider).DoBusiness(s.response.UUID, adapter.BusinessUnsubscribe, s.subscribe, s.battery, s.cabinet)
-					}
-					return s.putin()
+					return NewIntelligentCabinet(s.rider).DoBusiness(s.response.UUID, adapter.BusinessUnsubscribe, s.subscribe, s.battery, s.cabinet)
 				}).
 				UnSubscribe(req.ID)
 		})
@@ -371,10 +228,7 @@ func (s *riderBusinessService) Pause(req *model.BusinessCabinetReq) model.Busine
 		err := snag.WithPanic(func() {
 			NewBusinessRider(s.rider).
 				SetTask(func() (*model.BinInfo, *model.Battery, error) {
-					if s.cabinet.UsingMicroService() {
-						return NewIntelligentCabinet(s.rider).DoBusiness(s.response.UUID, adapter.BusinessPause, s.subscribe, s.battery, s.cabinet)
-					}
-					return s.putin()
+					return NewIntelligentCabinet(s.rider).DoBusiness(s.response.UUID, adapter.BusinessPause, s.subscribe, s.battery, s.cabinet)
 				}).
 				SetCabinet(s.cabinet).
 				Pause(req.ID)
