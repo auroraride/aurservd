@@ -1,6 +1,9 @@
 # 安装 pre-commit: pip install pre-commit 或 brew install pre-commit (参见 https://pre-commit.com/#install)
 # 安装触发器: pre-commit install
 
+# https://pre-commit.com/#regular-expressions
+exclude: ^assets/docs
+
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
