@@ -127,7 +127,7 @@ func (s *cabinetService) CreateCabinet(req *model.CabinetCreateReq) (res *model.
 
 // List 查询电柜
 func (s *cabinetService) List(req *model.CabinetQueryReq) (res *model.PaginationRes) {
-	q := s.orm.QueryNotDeleted().WithCity().WithModels().WithStation()
+	q := s.orm.QueryNotDeleted().WithCity().WithModels().WithStation().WithEnterprise()
 
 	if s.modifier != nil && s.modifier.Phone == "15537112255" {
 		req.CityID = silk.UInt64(410100)
