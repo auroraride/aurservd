@@ -9,7 +9,7 @@ COPY . .
 RUN apk --no-cache add tzdata git
 RUN wget -O - -q https://github.com/liasica/swag/releases/download/v1.16.1-733b9ee/swag_1.16.1-733b9ee_Linux_x86_64.tar.gz | tar -xz -C /go/bin/
 RUN go get ./... && \
-    make doc && \
+    sh ./generate_doc.sh && \
     CGO_ENABLED=0 go build -trimpath -tags=jsoniter,poll_opt -gcflags "all=-N -l" -o /go/bin/aurservd cmd/aurservd/main.go
 
 
