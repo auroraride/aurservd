@@ -251,6 +251,7 @@ func (s *stockService) EnterpriseList(req *model.StockListReq) *model.Pagination
 		func(item *ent.EnterpriseStation) model.StockListRes {
 			rsp := model.StockListRes{
 				StationName: item.Name,
+				StationID:   item.ID,
 			}
 			if item.Edges.Enterprise != nil && item.Edges.Enterprise.Edges.City != nil {
 				rsp.City = model.City{
