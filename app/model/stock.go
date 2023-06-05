@@ -258,6 +258,7 @@ type StockListRes struct {
 	EbikeTotal     int              `json:"ebikeTotal"`               // 电车总数
 	Ebikes         []*StockMaterial `json:"ebikes"`                   // 电车
 	StationName    string           `json:"stationName,omitempty"`    // 站点名称
+	StationID      uint64           `json:"stationID,omitempty"`      // 站点id
 	EnterpriseName string           `json:"enterpriseName,omitempty"` // 团签名称
 }
 
