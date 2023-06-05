@@ -915,9 +915,6 @@ func (s *cabinetService) Interrupt(req *model.CabinetInterruptRequest) *pb.Cabin
 func (s *cabinetService) BindCabinet(req *model.EnterpriseBindCabinetReq) {
 	// 判断电柜是否被绑定
 	cab := s.QueryOne(req.ID)
-	if cab == nil {
-		snag.Panic("电柜不存在")
-	}
 	if cab.EnterpriseID != nil || cab.StationID != nil {
 		snag.Panic("电柜已被绑定")
 	}
@@ -927,7 +924,7 @@ func (s *cabinetService) BindCabinet(req *model.EnterpriseBindCabinetReq) {
 
 // UnbindCabinet 解绑电柜
 func (s *cabinetService) UnbindCabinet(req *model.IDParamReq) {
-	cab, _ := ent.Database.Cabinet.Query().Where(cabinet.IDEQ(req.ID), cabinet.Status(model.CabinetHealthStatusOffline)).First(s.ctx)
+	cab, _ := ent.Database.Cabinet.Query().Where(cabinet.IDEQ(req.ID)).First(s.ctx)
 	if cab == nil {
 		snag.Panic("电柜不存在,或者电柜不是离线状态")
 	}

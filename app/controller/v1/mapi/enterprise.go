@@ -305,7 +305,7 @@ func (*enterprise) AgentDelete(c echo.Context) (err error) {
 
 // BindCabinet 团签绑定电柜
 // @ID           ManagerEnterpriseBindCabinet
-// @Router       /manager/v1/enterprise/cabinet [POST]
+// @Router       /manager/v1/enterprise/bind/cabinet [POST]
 // @Summary      M9024 团签绑定电柜
 // @Tags         [M]管理接口
 // @Accept       json
@@ -330,7 +330,7 @@ func (*enterprise) BindCabinet(c echo.Context) (err error) {
 func (*enterprise) UnbindCabinet(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
 	service.NewCabinetWithModifier(ctx.Modifier).UnbindCabinet(req)
-	return ctx.SendResponse(model.StatusResponse{Status: true})
+	return ctx.SendResponse()
 }
 
 // RepaymentList 充值记录
@@ -343,8 +343,8 @@ func (*enterprise) UnbindCabinet(c echo.Context) (err error) {
 // @Param        query  query  model.PrepaymentListReq  true  "请求参数"
 // @Success      200  {object}  model.PaginationRes{items=[]model.PrepaymentListRes}  "请求成功"
 func (*enterprise) RepaymentList(c echo.Context) (err error) {
-	ctx, req := app.AgentContextAndBinding[model.PrepaymentListReq](c)
-	return ctx.SendResponse(service.NewPrepayment(ctx.Agent, ctx.Enterprise).List(req.EnterpriseID, req))
+	ctx, req := app.ManagerContextAndBinding[model.PrepaymentListReq](c)
+	return ctx.SendResponse(service.NewPrepayment().List(req.EnterpriseID, req))
 }
 
 // SubscribeApplyList 订阅申请列表

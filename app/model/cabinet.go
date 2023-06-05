@@ -430,9 +430,9 @@ type EnterpriseBindCabinetReq struct {
 	// ID 电柜ID
 	ID uint64 `json:"id" validate:"required" param:"id"`
 	// 站点id
-	StationID uint64 `json:"station_id" validate:"required"`
+	StationID uint64 `json:"stationID" validate:"required"`
 	// 团签ID
-	EnterpriseID uint64 `json:"enterprise_id" validate:"required"`
+	EnterpriseID uint64 `json:"enterpriseID" validate:"required"`
 }
 
 // CabinetAgentEditReq 代理商电柜编辑请求
@@ -440,7 +440,7 @@ type CabinetAgentEditReq struct {
 	// ID 电柜ID
 	ID uint64 `json:"id" validate:"required" param:"id"`
 	// 站点id
-	StationID uint64 `json:"stationId" validate:"required"`
+	StationID uint64 `json:"stationID" validate:"required"`
 	// 电柜状态  0未投放 1运营中 2维护中
 	Status uint8 `json:"status" validate:"required,enums=0,1,2"`
 }
