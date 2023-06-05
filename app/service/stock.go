@@ -5,7 +5,6 @@
 
 package service
 
-import "C"
 import (
 	"context"
 	stdsql "database/sql"
@@ -43,7 +42,6 @@ import (
 type stockService struct {
 	ctx          context.Context
 	modifier     *model.Modifier
-	rider        *ent.Rider
 	employee     *ent.Employee
 	orm          *ent.StockClient
 	employeeInfo *model.Employee
