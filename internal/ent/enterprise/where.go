@@ -1429,6 +1429,52 @@ func HasStocksWith(preds ...predicate.Stock) predicate.Enterprise {
 	})
 }
 
+// HasSwapPutinBatteries applies the HasEdge predicate on the "swap_putin_batteries" edge.
+func HasSwapPutinBatteries() predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, SwapPutinBatteriesTable, SwapPutinBatteriesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasSwapPutinBatteriesWith applies the HasEdge predicate on the "swap_putin_batteries" edge with a given conditions (other predicates).
+func HasSwapPutinBatteriesWith(preds ...predicate.EnterpriseBatterySwap) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		step := newSwapPutinBatteriesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasSwapPutoutBatteries applies the HasEdge predicate on the "swap_putout_batteries" edge.
+func HasSwapPutoutBatteries() predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, SwapPutoutBatteriesTable, SwapPutoutBatteriesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasSwapPutoutBatteriesWith applies the HasEdge predicate on the "swap_putout_batteries" edge with a given conditions (other predicates).
+func HasSwapPutoutBatteriesWith(preds ...predicate.EnterpriseBatterySwap) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		step := newSwapPutoutBatteriesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Enterprise) predicate.Enterprise {
 	return predicate.Enterprise(func(s *sql.Selector) {

@@ -262,6 +262,16 @@ func (e *Enterprise) GetName() string {
 	return e.Name
 }
 
+// GetTableName returns table name for EnterpriseBatterySwap.
+func (ebs *EnterpriseBatterySwap) GetTableName() string {
+	return "enterprise_battery_swap"
+}
+
+// GetID returns id for EnterpriseBatterySwap.
+func (ebs *EnterpriseBatterySwap) GetID() uint64 {
+	return ebs.ID
+}
+
 // GetTableName returns table name for EnterpriseBill.
 func (eb *EnterpriseBill) GetTableName() string {
 	return "enterprise_bill"

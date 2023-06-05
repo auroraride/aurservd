@@ -100,9 +100,13 @@ type EnterpriseEdges struct {
 	Cabinets []*Cabinet `json:"cabinets,omitempty"`
 	// Stocks holds the value of the stocks edge.
 	Stocks []*Stock `json:"stocks,omitempty"`
+	// SwapPutinBatteries holds the value of the swap_putin_batteries edge.
+	SwapPutinBatteries []*EnterpriseBatterySwap `json:"swap_putin_batteries,omitempty"`
+	// SwapPutoutBatteries holds the value of the swap_putout_batteries edge.
+	SwapPutoutBatteries []*EnterpriseBatterySwap `json:"swap_putout_batteries,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [13]bool
+	loadedTypes [15]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -224,6 +228,24 @@ func (e EnterpriseEdges) StocksOrErr() ([]*Stock, error) {
 		return e.Stocks, nil
 	}
 	return nil, &NotLoadedError{edge: "stocks"}
+}
+
+// SwapPutinBatteriesOrErr returns the SwapPutinBatteries value or an error if the edge
+// was not loaded in eager-loading.
+func (e EnterpriseEdges) SwapPutinBatteriesOrErr() ([]*EnterpriseBatterySwap, error) {
+	if e.loadedTypes[13] {
+		return e.SwapPutinBatteries, nil
+	}
+	return nil, &NotLoadedError{edge: "swap_putin_batteries"}
+}
+
+// SwapPutoutBatteriesOrErr returns the SwapPutoutBatteries value or an error if the edge
+// was not loaded in eager-loading.
+func (e EnterpriseEdges) SwapPutoutBatteriesOrErr() ([]*EnterpriseBatterySwap, error) {
+	if e.loadedTypes[14] {
+		return e.SwapPutoutBatteries, nil
+	}
+	return nil, &NotLoadedError{edge: "swap_putout_batteries"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -486,6 +508,16 @@ func (e *Enterprise) QueryCabinets() *CabinetQuery {
 // QueryStocks queries the "stocks" edge of the Enterprise entity.
 func (e *Enterprise) QueryStocks() *StockQuery {
 	return NewEnterpriseClient(e.config).QueryStocks(e)
+}
+
+// QuerySwapPutinBatteries queries the "swap_putin_batteries" edge of the Enterprise entity.
+func (e *Enterprise) QuerySwapPutinBatteries() *EnterpriseBatterySwapQuery {
+	return NewEnterpriseClient(e.config).QuerySwapPutinBatteries(e)
+}
+
+// QuerySwapPutoutBatteries queries the "swap_putout_batteries" edge of the Enterprise entity.
+func (e *Enterprise) QuerySwapPutoutBatteries() *EnterpriseBatterySwapQuery {
+	return NewEnterpriseClient(e.config).QuerySwapPutoutBatteries(e)
 }
 
 // Update returns a builder for updating this Enterprise.

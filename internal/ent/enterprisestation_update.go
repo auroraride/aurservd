@@ -16,6 +16,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisebatteryswap"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/stock"
@@ -170,6 +171,36 @@ func (esu *EnterpriseStationUpdate) AddAgents(a ...*Agent) *EnterpriseStationUpd
 	return esu.AddAgentIDs(ids...)
 }
 
+// AddSwapPutinBatteryIDs adds the "swap_putin_batteries" edge to the EnterpriseBatterySwap entity by IDs.
+func (esu *EnterpriseStationUpdate) AddSwapPutinBatteryIDs(ids ...uint64) *EnterpriseStationUpdate {
+	esu.mutation.AddSwapPutinBatteryIDs(ids...)
+	return esu
+}
+
+// AddSwapPutinBatteries adds the "swap_putin_batteries" edges to the EnterpriseBatterySwap entity.
+func (esu *EnterpriseStationUpdate) AddSwapPutinBatteries(e ...*EnterpriseBatterySwap) *EnterpriseStationUpdate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return esu.AddSwapPutinBatteryIDs(ids...)
+}
+
+// AddSwapPutoutBatteryIDs adds the "swap_putout_batteries" edge to the EnterpriseBatterySwap entity by IDs.
+func (esu *EnterpriseStationUpdate) AddSwapPutoutBatteryIDs(ids ...uint64) *EnterpriseStationUpdate {
+	esu.mutation.AddSwapPutoutBatteryIDs(ids...)
+	return esu
+}
+
+// AddSwapPutoutBatteries adds the "swap_putout_batteries" edges to the EnterpriseBatterySwap entity.
+func (esu *EnterpriseStationUpdate) AddSwapPutoutBatteries(e ...*EnterpriseBatterySwap) *EnterpriseStationUpdate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return esu.AddSwapPutoutBatteryIDs(ids...)
+}
+
 // Mutation returns the EnterpriseStationMutation object of the builder.
 func (esu *EnterpriseStationUpdate) Mutation() *EnterpriseStationMutation {
 	return esu.mutation
@@ -263,6 +294,48 @@ func (esu *EnterpriseStationUpdate) RemoveAgents(a ...*Agent) *EnterpriseStation
 		ids[i] = a[i].ID
 	}
 	return esu.RemoveAgentIDs(ids...)
+}
+
+// ClearSwapPutinBatteries clears all "swap_putin_batteries" edges to the EnterpriseBatterySwap entity.
+func (esu *EnterpriseStationUpdate) ClearSwapPutinBatteries() *EnterpriseStationUpdate {
+	esu.mutation.ClearSwapPutinBatteries()
+	return esu
+}
+
+// RemoveSwapPutinBatteryIDs removes the "swap_putin_batteries" edge to EnterpriseBatterySwap entities by IDs.
+func (esu *EnterpriseStationUpdate) RemoveSwapPutinBatteryIDs(ids ...uint64) *EnterpriseStationUpdate {
+	esu.mutation.RemoveSwapPutinBatteryIDs(ids...)
+	return esu
+}
+
+// RemoveSwapPutinBatteries removes "swap_putin_batteries" edges to EnterpriseBatterySwap entities.
+func (esu *EnterpriseStationUpdate) RemoveSwapPutinBatteries(e ...*EnterpriseBatterySwap) *EnterpriseStationUpdate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return esu.RemoveSwapPutinBatteryIDs(ids...)
+}
+
+// ClearSwapPutoutBatteries clears all "swap_putout_batteries" edges to the EnterpriseBatterySwap entity.
+func (esu *EnterpriseStationUpdate) ClearSwapPutoutBatteries() *EnterpriseStationUpdate {
+	esu.mutation.ClearSwapPutoutBatteries()
+	return esu
+}
+
+// RemoveSwapPutoutBatteryIDs removes the "swap_putout_batteries" edge to EnterpriseBatterySwap entities by IDs.
+func (esu *EnterpriseStationUpdate) RemoveSwapPutoutBatteryIDs(ids ...uint64) *EnterpriseStationUpdate {
+	esu.mutation.RemoveSwapPutoutBatteryIDs(ids...)
+	return esu
+}
+
+// RemoveSwapPutoutBatteries removes "swap_putout_batteries" edges to EnterpriseBatterySwap entities.
+func (esu *EnterpriseStationUpdate) RemoveSwapPutoutBatteries(e ...*EnterpriseBatterySwap) *EnterpriseStationUpdate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return esu.RemoveSwapPutoutBatteryIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -569,6 +642,96 @@ func (esu *EnterpriseStationUpdate) sqlSave(ctx context.Context) (n int, err err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if esu.mutation.SwapPutinBatteriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestation.SwapPutinBatteriesTable,
+			Columns: []string{enterprisestation.SwapPutinBatteriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisebatteryswap.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := esu.mutation.RemovedSwapPutinBatteriesIDs(); len(nodes) > 0 && !esu.mutation.SwapPutinBatteriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestation.SwapPutinBatteriesTable,
+			Columns: []string{enterprisestation.SwapPutinBatteriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisebatteryswap.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := esu.mutation.SwapPutinBatteriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestation.SwapPutinBatteriesTable,
+			Columns: []string{enterprisestation.SwapPutinBatteriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisebatteryswap.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if esu.mutation.SwapPutoutBatteriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestation.SwapPutoutBatteriesTable,
+			Columns: []string{enterprisestation.SwapPutoutBatteriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisebatteryswap.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := esu.mutation.RemovedSwapPutoutBatteriesIDs(); len(nodes) > 0 && !esu.mutation.SwapPutoutBatteriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestation.SwapPutoutBatteriesTable,
+			Columns: []string{enterprisestation.SwapPutoutBatteriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisebatteryswap.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := esu.mutation.SwapPutoutBatteriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestation.SwapPutoutBatteriesTable,
+			Columns: []string{enterprisestation.SwapPutoutBatteriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisebatteryswap.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(esu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, esu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -726,6 +889,36 @@ func (esuo *EnterpriseStationUpdateOne) AddAgents(a ...*Agent) *EnterpriseStatio
 	return esuo.AddAgentIDs(ids...)
 }
 
+// AddSwapPutinBatteryIDs adds the "swap_putin_batteries" edge to the EnterpriseBatterySwap entity by IDs.
+func (esuo *EnterpriseStationUpdateOne) AddSwapPutinBatteryIDs(ids ...uint64) *EnterpriseStationUpdateOne {
+	esuo.mutation.AddSwapPutinBatteryIDs(ids...)
+	return esuo
+}
+
+// AddSwapPutinBatteries adds the "swap_putin_batteries" edges to the EnterpriseBatterySwap entity.
+func (esuo *EnterpriseStationUpdateOne) AddSwapPutinBatteries(e ...*EnterpriseBatterySwap) *EnterpriseStationUpdateOne {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return esuo.AddSwapPutinBatteryIDs(ids...)
+}
+
+// AddSwapPutoutBatteryIDs adds the "swap_putout_batteries" edge to the EnterpriseBatterySwap entity by IDs.
+func (esuo *EnterpriseStationUpdateOne) AddSwapPutoutBatteryIDs(ids ...uint64) *EnterpriseStationUpdateOne {
+	esuo.mutation.AddSwapPutoutBatteryIDs(ids...)
+	return esuo
+}
+
+// AddSwapPutoutBatteries adds the "swap_putout_batteries" edges to the EnterpriseBatterySwap entity.
+func (esuo *EnterpriseStationUpdateOne) AddSwapPutoutBatteries(e ...*EnterpriseBatterySwap) *EnterpriseStationUpdateOne {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return esuo.AddSwapPutoutBatteryIDs(ids...)
+}
+
 // Mutation returns the EnterpriseStationMutation object of the builder.
 func (esuo *EnterpriseStationUpdateOne) Mutation() *EnterpriseStationMutation {
 	return esuo.mutation
@@ -819,6 +1012,48 @@ func (esuo *EnterpriseStationUpdateOne) RemoveAgents(a ...*Agent) *EnterpriseSta
 		ids[i] = a[i].ID
 	}
 	return esuo.RemoveAgentIDs(ids...)
+}
+
+// ClearSwapPutinBatteries clears all "swap_putin_batteries" edges to the EnterpriseBatterySwap entity.
+func (esuo *EnterpriseStationUpdateOne) ClearSwapPutinBatteries() *EnterpriseStationUpdateOne {
+	esuo.mutation.ClearSwapPutinBatteries()
+	return esuo
+}
+
+// RemoveSwapPutinBatteryIDs removes the "swap_putin_batteries" edge to EnterpriseBatterySwap entities by IDs.
+func (esuo *EnterpriseStationUpdateOne) RemoveSwapPutinBatteryIDs(ids ...uint64) *EnterpriseStationUpdateOne {
+	esuo.mutation.RemoveSwapPutinBatteryIDs(ids...)
+	return esuo
+}
+
+// RemoveSwapPutinBatteries removes "swap_putin_batteries" edges to EnterpriseBatterySwap entities.
+func (esuo *EnterpriseStationUpdateOne) RemoveSwapPutinBatteries(e ...*EnterpriseBatterySwap) *EnterpriseStationUpdateOne {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return esuo.RemoveSwapPutinBatteryIDs(ids...)
+}
+
+// ClearSwapPutoutBatteries clears all "swap_putout_batteries" edges to the EnterpriseBatterySwap entity.
+func (esuo *EnterpriseStationUpdateOne) ClearSwapPutoutBatteries() *EnterpriseStationUpdateOne {
+	esuo.mutation.ClearSwapPutoutBatteries()
+	return esuo
+}
+
+// RemoveSwapPutoutBatteryIDs removes the "swap_putout_batteries" edge to EnterpriseBatterySwap entities by IDs.
+func (esuo *EnterpriseStationUpdateOne) RemoveSwapPutoutBatteryIDs(ids ...uint64) *EnterpriseStationUpdateOne {
+	esuo.mutation.RemoveSwapPutoutBatteryIDs(ids...)
+	return esuo
+}
+
+// RemoveSwapPutoutBatteries removes "swap_putout_batteries" edges to EnterpriseBatterySwap entities.
+func (esuo *EnterpriseStationUpdateOne) RemoveSwapPutoutBatteries(e ...*EnterpriseBatterySwap) *EnterpriseStationUpdateOne {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return esuo.RemoveSwapPutoutBatteryIDs(ids...)
 }
 
 // Where appends a list predicates to the EnterpriseStationUpdate builder.
@@ -1148,6 +1383,96 @@ func (esuo *EnterpriseStationUpdateOne) sqlSave(ctx context.Context) (_node *Ent
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if esuo.mutation.SwapPutinBatteriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestation.SwapPutinBatteriesTable,
+			Columns: []string{enterprisestation.SwapPutinBatteriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisebatteryswap.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := esuo.mutation.RemovedSwapPutinBatteriesIDs(); len(nodes) > 0 && !esuo.mutation.SwapPutinBatteriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestation.SwapPutinBatteriesTable,
+			Columns: []string{enterprisestation.SwapPutinBatteriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisebatteryswap.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := esuo.mutation.SwapPutinBatteriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestation.SwapPutinBatteriesTable,
+			Columns: []string{enterprisestation.SwapPutinBatteriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisebatteryswap.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if esuo.mutation.SwapPutoutBatteriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestation.SwapPutoutBatteriesTable,
+			Columns: []string{enterprisestation.SwapPutoutBatteriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisebatteryswap.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := esuo.mutation.RemovedSwapPutoutBatteriesIDs(); len(nodes) > 0 && !esuo.mutation.SwapPutoutBatteriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestation.SwapPutoutBatteriesTable,
+			Columns: []string{enterprisestation.SwapPutoutBatteriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisebatteryswap.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := esuo.mutation.SwapPutoutBatteriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestation.SwapPutoutBatteriesTable,
+			Columns: []string{enterprisestation.SwapPutoutBatteriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisebatteryswap.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
