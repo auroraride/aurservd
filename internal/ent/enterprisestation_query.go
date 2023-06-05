@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisebatteryswap"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/stock"
@@ -23,16 +24,18 @@ import (
 // EnterpriseStationQuery is the builder for querying EnterpriseStation entities.
 type EnterpriseStationQuery struct {
 	config
-	ctx            *QueryContext
-	order          []enterprisestation.OrderOption
-	inters         []Interceptor
-	predicates     []predicate.EnterpriseStation
-	withEnterprise *EnterpriseQuery
-	withCabinets   *CabinetQuery
-	withBattery    *BatteryQuery
-	withStocks     *StockQuery
-	withAgents     *AgentQuery
-	modifiers      []func(*sql.Selector)
+	ctx                     *QueryContext
+	order                   []enterprisestation.OrderOption
+	inters                  []Interceptor
+	predicates              []predicate.EnterpriseStation
+	withEnterprise          *EnterpriseQuery
+	withCabinets            *CabinetQuery
+	withBattery             *BatteryQuery
+	withStocks              *StockQuery
+	withAgents              *AgentQuery
+	withSwapPutinBatteries  *EnterpriseBatterySwapQuery
+	withSwapPutoutBatteries *EnterpriseBatterySwapQuery
+	modifiers               []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -172,6 +175,50 @@ func (esq *EnterpriseStationQuery) QueryAgents() *AgentQuery {
 			sqlgraph.From(enterprisestation.Table, enterprisestation.FieldID, selector),
 			sqlgraph.To(agent.Table, agent.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, true, enterprisestation.AgentsTable, enterprisestation.AgentsPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(esq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QuerySwapPutinBatteries chains the current query on the "swap_putin_batteries" edge.
+func (esq *EnterpriseStationQuery) QuerySwapPutinBatteries() *EnterpriseBatterySwapQuery {
+	query := (&EnterpriseBatterySwapClient{config: esq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := esq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := esq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisestation.Table, enterprisestation.FieldID, selector),
+			sqlgraph.To(enterprisebatteryswap.Table, enterprisebatteryswap.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprisestation.SwapPutinBatteriesTable, enterprisestation.SwapPutinBatteriesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(esq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QuerySwapPutoutBatteries chains the current query on the "swap_putout_batteries" edge.
+func (esq *EnterpriseStationQuery) QuerySwapPutoutBatteries() *EnterpriseBatterySwapQuery {
+	query := (&EnterpriseBatterySwapClient{config: esq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := esq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := esq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisestation.Table, enterprisestation.FieldID, selector),
+			sqlgraph.To(enterprisebatteryswap.Table, enterprisebatteryswap.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprisestation.SwapPutoutBatteriesTable, enterprisestation.SwapPutoutBatteriesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(esq.driver.Dialect(), step)
 		return fromU, nil
@@ -366,16 +413,18 @@ func (esq *EnterpriseStationQuery) Clone() *EnterpriseStationQuery {
 		return nil
 	}
 	return &EnterpriseStationQuery{
-		config:         esq.config,
-		ctx:            esq.ctx.Clone(),
-		order:          append([]enterprisestation.OrderOption{}, esq.order...),
-		inters:         append([]Interceptor{}, esq.inters...),
-		predicates:     append([]predicate.EnterpriseStation{}, esq.predicates...),
-		withEnterprise: esq.withEnterprise.Clone(),
-		withCabinets:   esq.withCabinets.Clone(),
-		withBattery:    esq.withBattery.Clone(),
-		withStocks:     esq.withStocks.Clone(),
-		withAgents:     esq.withAgents.Clone(),
+		config:                  esq.config,
+		ctx:                     esq.ctx.Clone(),
+		order:                   append([]enterprisestation.OrderOption{}, esq.order...),
+		inters:                  append([]Interceptor{}, esq.inters...),
+		predicates:              append([]predicate.EnterpriseStation{}, esq.predicates...),
+		withEnterprise:          esq.withEnterprise.Clone(),
+		withCabinets:            esq.withCabinets.Clone(),
+		withBattery:             esq.withBattery.Clone(),
+		withStocks:              esq.withStocks.Clone(),
+		withAgents:              esq.withAgents.Clone(),
+		withSwapPutinBatteries:  esq.withSwapPutinBatteries.Clone(),
+		withSwapPutoutBatteries: esq.withSwapPutoutBatteries.Clone(),
 		// clone intermediate query.
 		sql:  esq.sql.Clone(),
 		path: esq.path,
@@ -434,6 +483,28 @@ func (esq *EnterpriseStationQuery) WithAgents(opts ...func(*AgentQuery)) *Enterp
 		opt(query)
 	}
 	esq.withAgents = query
+	return esq
+}
+
+// WithSwapPutinBatteries tells the query-builder to eager-load the nodes that are connected to
+// the "swap_putin_batteries" edge. The optional arguments are used to configure the query builder of the edge.
+func (esq *EnterpriseStationQuery) WithSwapPutinBatteries(opts ...func(*EnterpriseBatterySwapQuery)) *EnterpriseStationQuery {
+	query := (&EnterpriseBatterySwapClient{config: esq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	esq.withSwapPutinBatteries = query
+	return esq
+}
+
+// WithSwapPutoutBatteries tells the query-builder to eager-load the nodes that are connected to
+// the "swap_putout_batteries" edge. The optional arguments are used to configure the query builder of the edge.
+func (esq *EnterpriseStationQuery) WithSwapPutoutBatteries(opts ...func(*EnterpriseBatterySwapQuery)) *EnterpriseStationQuery {
+	query := (&EnterpriseBatterySwapClient{config: esq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	esq.withSwapPutoutBatteries = query
 	return esq
 }
 
@@ -515,12 +586,14 @@ func (esq *EnterpriseStationQuery) sqlAll(ctx context.Context, hooks ...queryHoo
 	var (
 		nodes       = []*EnterpriseStation{}
 		_spec       = esq.querySpec()
-		loadedTypes = [5]bool{
+		loadedTypes = [7]bool{
 			esq.withEnterprise != nil,
 			esq.withCabinets != nil,
 			esq.withBattery != nil,
 			esq.withStocks != nil,
 			esq.withAgents != nil,
+			esq.withSwapPutinBatteries != nil,
+			esq.withSwapPutoutBatteries != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -575,6 +648,24 @@ func (esq *EnterpriseStationQuery) sqlAll(ctx context.Context, hooks ...queryHoo
 		if err := esq.loadAgents(ctx, query, nodes,
 			func(n *EnterpriseStation) { n.Edges.Agents = []*Agent{} },
 			func(n *EnterpriseStation, e *Agent) { n.Edges.Agents = append(n.Edges.Agents, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := esq.withSwapPutinBatteries; query != nil {
+		if err := esq.loadSwapPutinBatteries(ctx, query, nodes,
+			func(n *EnterpriseStation) { n.Edges.SwapPutinBatteries = []*EnterpriseBatterySwap{} },
+			func(n *EnterpriseStation, e *EnterpriseBatterySwap) {
+				n.Edges.SwapPutinBatteries = append(n.Edges.SwapPutinBatteries, e)
+			}); err != nil {
+			return nil, err
+		}
+	}
+	if query := esq.withSwapPutoutBatteries; query != nil {
+		if err := esq.loadSwapPutoutBatteries(ctx, query, nodes,
+			func(n *EnterpriseStation) { n.Edges.SwapPutoutBatteries = []*EnterpriseBatterySwap{} },
+			func(n *EnterpriseStation, e *EnterpriseBatterySwap) {
+				n.Edges.SwapPutoutBatteries = append(n.Edges.SwapPutoutBatteries, e)
+			}); err != nil {
 			return nil, err
 		}
 	}
@@ -771,6 +862,72 @@ func (esq *EnterpriseStationQuery) loadAgents(ctx context.Context, query *AgentQ
 	}
 	return nil
 }
+func (esq *EnterpriseStationQuery) loadSwapPutinBatteries(ctx context.Context, query *EnterpriseBatterySwapQuery, nodes []*EnterpriseStation, init func(*EnterpriseStation), assign func(*EnterpriseStation, *EnterpriseBatterySwap)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uint64]*EnterpriseStation)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(enterprisebatteryswap.FieldPutinStationID)
+	}
+	query.Where(predicate.EnterpriseBatterySwap(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(enterprisestation.SwapPutinBatteriesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.PutinStationID
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "putin_station_id" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "putin_station_id" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (esq *EnterpriseStationQuery) loadSwapPutoutBatteries(ctx context.Context, query *EnterpriseBatterySwapQuery, nodes []*EnterpriseStation, init func(*EnterpriseStation), assign func(*EnterpriseStation, *EnterpriseBatterySwap)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uint64]*EnterpriseStation)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(enterprisebatteryswap.FieldPutoutStationID)
+	}
+	query.Where(predicate.EnterpriseBatterySwap(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(enterprisestation.SwapPutoutBatteriesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.PutoutStationID
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "putout_station_id" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "putout_station_id" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
 
 func (esq *EnterpriseStationQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := esq.querySpec()
@@ -871,11 +1028,13 @@ func (esq *EnterpriseStationQuery) Modify(modifiers ...func(s *sql.Selector)) *E
 type EnterpriseStationQueryWith string
 
 var (
-	EnterpriseStationQueryWithEnterprise EnterpriseStationQueryWith = "Enterprise"
-	EnterpriseStationQueryWithCabinets   EnterpriseStationQueryWith = "Cabinets"
-	EnterpriseStationQueryWithBattery    EnterpriseStationQueryWith = "Battery"
-	EnterpriseStationQueryWithStocks     EnterpriseStationQueryWith = "Stocks"
-	EnterpriseStationQueryWithAgents     EnterpriseStationQueryWith = "Agents"
+	EnterpriseStationQueryWithEnterprise          EnterpriseStationQueryWith = "Enterprise"
+	EnterpriseStationQueryWithCabinets            EnterpriseStationQueryWith = "Cabinets"
+	EnterpriseStationQueryWithBattery             EnterpriseStationQueryWith = "Battery"
+	EnterpriseStationQueryWithStocks              EnterpriseStationQueryWith = "Stocks"
+	EnterpriseStationQueryWithAgents              EnterpriseStationQueryWith = "Agents"
+	EnterpriseStationQueryWithSwapPutinBatteries  EnterpriseStationQueryWith = "SwapPutinBatteries"
+	EnterpriseStationQueryWithSwapPutoutBatteries EnterpriseStationQueryWith = "SwapPutoutBatteries"
 )
 
 func (esq *EnterpriseStationQuery) With(withEdges ...EnterpriseStationQueryWith) *EnterpriseStationQuery {
@@ -891,6 +1050,10 @@ func (esq *EnterpriseStationQuery) With(withEdges ...EnterpriseStationQueryWith)
 			esq.WithStocks()
 		case EnterpriseStationQueryWithAgents:
 			esq.WithAgents()
+		case EnterpriseStationQueryWithSwapPutinBatteries:
+			esq.WithSwapPutinBatteries()
+		case EnterpriseStationQueryWithSwapPutoutBatteries:
+			esq.WithSwapPutoutBatteries()
 		}
 	}
 	return esq

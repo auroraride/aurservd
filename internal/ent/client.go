@@ -36,6 +36,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisebatteryswap"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
 	"github.com/auroraride/aurservd/internal/ent/enterprisecontract"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprepayment"
@@ -119,6 +120,8 @@ type Client struct {
 	Employee *EmployeeClient
 	// Enterprise is the client for interacting with the Enterprise builders.
 	Enterprise *EnterpriseClient
+	// EnterpriseBatterySwap is the client for interacting with the EnterpriseBatterySwap builders.
+	EnterpriseBatterySwap *EnterpriseBatterySwapClient
 	// EnterpriseBill is the client for interacting with the EnterpriseBill builders.
 	EnterpriseBill *EnterpriseBillClient
 	// EnterpriseContract is the client for interacting with the EnterpriseContract builders.
@@ -214,6 +217,7 @@ func (c *Client) init() {
 	c.EbikeBrand = NewEbikeBrandClient(c.config)
 	c.Employee = NewEmployeeClient(c.config)
 	c.Enterprise = NewEnterpriseClient(c.config)
+	c.EnterpriseBatterySwap = NewEnterpriseBatterySwapClient(c.config)
 	c.EnterpriseBill = NewEnterpriseBillClient(c.config)
 	c.EnterpriseContract = NewEnterpriseContractClient(c.config)
 	c.EnterprisePrepayment = NewEnterprisePrepaymentClient(c.config)
@@ -324,60 +328,61 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:                  ctx,
-		config:               cfg,
-		Agent:                NewAgentClient(cfg),
-		Allocate:             NewAllocateClient(cfg),
-		Assistance:           NewAssistanceClient(cfg),
-		Attendance:           NewAttendanceClient(cfg),
-		Battery:              NewBatteryClient(cfg),
-		BatteryFlow:          NewBatteryFlowClient(cfg),
-		BatteryModel:         NewBatteryModelClient(cfg),
-		Branch:               NewBranchClient(cfg),
-		BranchContract:       NewBranchContractClient(cfg),
-		Business:             NewBusinessClient(cfg),
-		Cabinet:              NewCabinetClient(cfg),
-		CabinetFault:         NewCabinetFaultClient(cfg),
-		City:                 NewCityClient(cfg),
-		Commission:           NewCommissionClient(cfg),
-		Contract:             NewContractClient(cfg),
-		Coupon:               NewCouponClient(cfg),
-		CouponAssembly:       NewCouponAssemblyClient(cfg),
-		CouponTemplate:       NewCouponTemplateClient(cfg),
-		Ebike:                NewEbikeClient(cfg),
-		EbikeBrand:           NewEbikeBrandClient(cfg),
-		Employee:             NewEmployeeClient(cfg),
-		Enterprise:           NewEnterpriseClient(cfg),
-		EnterpriseBill:       NewEnterpriseBillClient(cfg),
-		EnterpriseContract:   NewEnterpriseContractClient(cfg),
-		EnterprisePrepayment: NewEnterprisePrepaymentClient(cfg),
-		EnterprisePrice:      NewEnterprisePriceClient(cfg),
-		EnterpriseStatement:  NewEnterpriseStatementClient(cfg),
-		EnterpriseStation:    NewEnterpriseStationClient(cfg),
-		Exception:            NewExceptionClient(cfg),
-		Exchange:             NewExchangeClient(cfg),
-		Export:               NewExportClient(cfg),
-		Feedback:             NewFeedbackClient(cfg),
-		Inventory:            NewInventoryClient(cfg),
-		Manager:              NewManagerClient(cfg),
-		Order:                NewOrderClient(cfg),
-		OrderRefund:          NewOrderRefundClient(cfg),
-		Person:               NewPersonClient(cfg),
-		Plan:                 NewPlanClient(cfg),
-		PlanIntroduce:        NewPlanIntroduceClient(cfg),
-		PointLog:             NewPointLogClient(cfg),
-		Reserve:              NewReserveClient(cfg),
-		Rider:                NewRiderClient(cfg),
-		RiderFollowUp:        NewRiderFollowUpClient(cfg),
-		Role:                 NewRoleClient(cfg),
-		Setting:              NewSettingClient(cfg),
-		Stock:                NewStockClient(cfg),
-		Store:                NewStoreClient(cfg),
-		Subscribe:            NewSubscribeClient(cfg),
-		SubscribeAlter:       NewSubscribeAlterClient(cfg),
-		SubscribePause:       NewSubscribePauseClient(cfg),
-		SubscribeReminder:    NewSubscribeReminderClient(cfg),
-		SubscribeSuspend:     NewSubscribeSuspendClient(cfg),
+		ctx:                   ctx,
+		config:                cfg,
+		Agent:                 NewAgentClient(cfg),
+		Allocate:              NewAllocateClient(cfg),
+		Assistance:            NewAssistanceClient(cfg),
+		Attendance:            NewAttendanceClient(cfg),
+		Battery:               NewBatteryClient(cfg),
+		BatteryFlow:           NewBatteryFlowClient(cfg),
+		BatteryModel:          NewBatteryModelClient(cfg),
+		Branch:                NewBranchClient(cfg),
+		BranchContract:        NewBranchContractClient(cfg),
+		Business:              NewBusinessClient(cfg),
+		Cabinet:               NewCabinetClient(cfg),
+		CabinetFault:          NewCabinetFaultClient(cfg),
+		City:                  NewCityClient(cfg),
+		Commission:            NewCommissionClient(cfg),
+		Contract:              NewContractClient(cfg),
+		Coupon:                NewCouponClient(cfg),
+		CouponAssembly:        NewCouponAssemblyClient(cfg),
+		CouponTemplate:        NewCouponTemplateClient(cfg),
+		Ebike:                 NewEbikeClient(cfg),
+		EbikeBrand:            NewEbikeBrandClient(cfg),
+		Employee:              NewEmployeeClient(cfg),
+		Enterprise:            NewEnterpriseClient(cfg),
+		EnterpriseBatterySwap: NewEnterpriseBatterySwapClient(cfg),
+		EnterpriseBill:        NewEnterpriseBillClient(cfg),
+		EnterpriseContract:    NewEnterpriseContractClient(cfg),
+		EnterprisePrepayment:  NewEnterprisePrepaymentClient(cfg),
+		EnterprisePrice:       NewEnterprisePriceClient(cfg),
+		EnterpriseStatement:   NewEnterpriseStatementClient(cfg),
+		EnterpriseStation:     NewEnterpriseStationClient(cfg),
+		Exception:             NewExceptionClient(cfg),
+		Exchange:              NewExchangeClient(cfg),
+		Export:                NewExportClient(cfg),
+		Feedback:              NewFeedbackClient(cfg),
+		Inventory:             NewInventoryClient(cfg),
+		Manager:               NewManagerClient(cfg),
+		Order:                 NewOrderClient(cfg),
+		OrderRefund:           NewOrderRefundClient(cfg),
+		Person:                NewPersonClient(cfg),
+		Plan:                  NewPlanClient(cfg),
+		PlanIntroduce:         NewPlanIntroduceClient(cfg),
+		PointLog:              NewPointLogClient(cfg),
+		Reserve:               NewReserveClient(cfg),
+		Rider:                 NewRiderClient(cfg),
+		RiderFollowUp:         NewRiderFollowUpClient(cfg),
+		Role:                  NewRoleClient(cfg),
+		Setting:               NewSettingClient(cfg),
+		Stock:                 NewStockClient(cfg),
+		Store:                 NewStoreClient(cfg),
+		Subscribe:             NewSubscribeClient(cfg),
+		SubscribeAlter:        NewSubscribeAlterClient(cfg),
+		SubscribePause:        NewSubscribePauseClient(cfg),
+		SubscribeReminder:     NewSubscribeReminderClient(cfg),
+		SubscribeSuspend:      NewSubscribeSuspendClient(cfg),
 	}, nil
 }
 
@@ -395,60 +400,61 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:                  ctx,
-		config:               cfg,
-		Agent:                NewAgentClient(cfg),
-		Allocate:             NewAllocateClient(cfg),
-		Assistance:           NewAssistanceClient(cfg),
-		Attendance:           NewAttendanceClient(cfg),
-		Battery:              NewBatteryClient(cfg),
-		BatteryFlow:          NewBatteryFlowClient(cfg),
-		BatteryModel:         NewBatteryModelClient(cfg),
-		Branch:               NewBranchClient(cfg),
-		BranchContract:       NewBranchContractClient(cfg),
-		Business:             NewBusinessClient(cfg),
-		Cabinet:              NewCabinetClient(cfg),
-		CabinetFault:         NewCabinetFaultClient(cfg),
-		City:                 NewCityClient(cfg),
-		Commission:           NewCommissionClient(cfg),
-		Contract:             NewContractClient(cfg),
-		Coupon:               NewCouponClient(cfg),
-		CouponAssembly:       NewCouponAssemblyClient(cfg),
-		CouponTemplate:       NewCouponTemplateClient(cfg),
-		Ebike:                NewEbikeClient(cfg),
-		EbikeBrand:           NewEbikeBrandClient(cfg),
-		Employee:             NewEmployeeClient(cfg),
-		Enterprise:           NewEnterpriseClient(cfg),
-		EnterpriseBill:       NewEnterpriseBillClient(cfg),
-		EnterpriseContract:   NewEnterpriseContractClient(cfg),
-		EnterprisePrepayment: NewEnterprisePrepaymentClient(cfg),
-		EnterprisePrice:      NewEnterprisePriceClient(cfg),
-		EnterpriseStatement:  NewEnterpriseStatementClient(cfg),
-		EnterpriseStation:    NewEnterpriseStationClient(cfg),
-		Exception:            NewExceptionClient(cfg),
-		Exchange:             NewExchangeClient(cfg),
-		Export:               NewExportClient(cfg),
-		Feedback:             NewFeedbackClient(cfg),
-		Inventory:            NewInventoryClient(cfg),
-		Manager:              NewManagerClient(cfg),
-		Order:                NewOrderClient(cfg),
-		OrderRefund:          NewOrderRefundClient(cfg),
-		Person:               NewPersonClient(cfg),
-		Plan:                 NewPlanClient(cfg),
-		PlanIntroduce:        NewPlanIntroduceClient(cfg),
-		PointLog:             NewPointLogClient(cfg),
-		Reserve:              NewReserveClient(cfg),
-		Rider:                NewRiderClient(cfg),
-		RiderFollowUp:        NewRiderFollowUpClient(cfg),
-		Role:                 NewRoleClient(cfg),
-		Setting:              NewSettingClient(cfg),
-		Stock:                NewStockClient(cfg),
-		Store:                NewStoreClient(cfg),
-		Subscribe:            NewSubscribeClient(cfg),
-		SubscribeAlter:       NewSubscribeAlterClient(cfg),
-		SubscribePause:       NewSubscribePauseClient(cfg),
-		SubscribeReminder:    NewSubscribeReminderClient(cfg),
-		SubscribeSuspend:     NewSubscribeSuspendClient(cfg),
+		ctx:                   ctx,
+		config:                cfg,
+		Agent:                 NewAgentClient(cfg),
+		Allocate:              NewAllocateClient(cfg),
+		Assistance:            NewAssistanceClient(cfg),
+		Attendance:            NewAttendanceClient(cfg),
+		Battery:               NewBatteryClient(cfg),
+		BatteryFlow:           NewBatteryFlowClient(cfg),
+		BatteryModel:          NewBatteryModelClient(cfg),
+		Branch:                NewBranchClient(cfg),
+		BranchContract:        NewBranchContractClient(cfg),
+		Business:              NewBusinessClient(cfg),
+		Cabinet:               NewCabinetClient(cfg),
+		CabinetFault:          NewCabinetFaultClient(cfg),
+		City:                  NewCityClient(cfg),
+		Commission:            NewCommissionClient(cfg),
+		Contract:              NewContractClient(cfg),
+		Coupon:                NewCouponClient(cfg),
+		CouponAssembly:        NewCouponAssemblyClient(cfg),
+		CouponTemplate:        NewCouponTemplateClient(cfg),
+		Ebike:                 NewEbikeClient(cfg),
+		EbikeBrand:            NewEbikeBrandClient(cfg),
+		Employee:              NewEmployeeClient(cfg),
+		Enterprise:            NewEnterpriseClient(cfg),
+		EnterpriseBatterySwap: NewEnterpriseBatterySwapClient(cfg),
+		EnterpriseBill:        NewEnterpriseBillClient(cfg),
+		EnterpriseContract:    NewEnterpriseContractClient(cfg),
+		EnterprisePrepayment:  NewEnterprisePrepaymentClient(cfg),
+		EnterprisePrice:       NewEnterprisePriceClient(cfg),
+		EnterpriseStatement:   NewEnterpriseStatementClient(cfg),
+		EnterpriseStation:     NewEnterpriseStationClient(cfg),
+		Exception:             NewExceptionClient(cfg),
+		Exchange:              NewExchangeClient(cfg),
+		Export:                NewExportClient(cfg),
+		Feedback:              NewFeedbackClient(cfg),
+		Inventory:             NewInventoryClient(cfg),
+		Manager:               NewManagerClient(cfg),
+		Order:                 NewOrderClient(cfg),
+		OrderRefund:           NewOrderRefundClient(cfg),
+		Person:                NewPersonClient(cfg),
+		Plan:                  NewPlanClient(cfg),
+		PlanIntroduce:         NewPlanIntroduceClient(cfg),
+		PointLog:              NewPointLogClient(cfg),
+		Reserve:               NewReserveClient(cfg),
+		Rider:                 NewRiderClient(cfg),
+		RiderFollowUp:         NewRiderFollowUpClient(cfg),
+		Role:                  NewRoleClient(cfg),
+		Setting:               NewSettingClient(cfg),
+		Stock:                 NewStockClient(cfg),
+		Store:                 NewStoreClient(cfg),
+		Subscribe:             NewSubscribeClient(cfg),
+		SubscribeAlter:        NewSubscribeAlterClient(cfg),
+		SubscribePause:        NewSubscribePauseClient(cfg),
+		SubscribeReminder:     NewSubscribeReminderClient(cfg),
+		SubscribeSuspend:      NewSubscribeSuspendClient(cfg),
 	}, nil
 }
 
@@ -482,12 +488,13 @@ func (c *Client) Use(hooks ...Hook) {
 		c.BatteryModel, c.Branch, c.BranchContract, c.Business, c.Cabinet,
 		c.CabinetFault, c.City, c.Commission, c.Contract, c.Coupon, c.CouponAssembly,
 		c.CouponTemplate, c.Ebike, c.EbikeBrand, c.Employee, c.Enterprise,
-		c.EnterpriseBill, c.EnterpriseContract, c.EnterprisePrepayment,
-		c.EnterprisePrice, c.EnterpriseStatement, c.EnterpriseStation, c.Exception,
-		c.Exchange, c.Export, c.Feedback, c.Inventory, c.Manager, c.Order,
-		c.OrderRefund, c.Person, c.Plan, c.PlanIntroduce, c.PointLog, c.Reserve,
-		c.Rider, c.RiderFollowUp, c.Role, c.Setting, c.Stock, c.Store, c.Subscribe,
-		c.SubscribeAlter, c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend,
+		c.EnterpriseBatterySwap, c.EnterpriseBill, c.EnterpriseContract,
+		c.EnterprisePrepayment, c.EnterprisePrice, c.EnterpriseStatement,
+		c.EnterpriseStation, c.Exception, c.Exchange, c.Export, c.Feedback,
+		c.Inventory, c.Manager, c.Order, c.OrderRefund, c.Person, c.Plan,
+		c.PlanIntroduce, c.PointLog, c.Reserve, c.Rider, c.RiderFollowUp, c.Role,
+		c.Setting, c.Stock, c.Store, c.Subscribe, c.SubscribeAlter, c.SubscribePause,
+		c.SubscribeReminder, c.SubscribeSuspend,
 	} {
 		n.Use(hooks...)
 	}
@@ -501,12 +508,13 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.BatteryModel, c.Branch, c.BranchContract, c.Business, c.Cabinet,
 		c.CabinetFault, c.City, c.Commission, c.Contract, c.Coupon, c.CouponAssembly,
 		c.CouponTemplate, c.Ebike, c.EbikeBrand, c.Employee, c.Enterprise,
-		c.EnterpriseBill, c.EnterpriseContract, c.EnterprisePrepayment,
-		c.EnterprisePrice, c.EnterpriseStatement, c.EnterpriseStation, c.Exception,
-		c.Exchange, c.Export, c.Feedback, c.Inventory, c.Manager, c.Order,
-		c.OrderRefund, c.Person, c.Plan, c.PlanIntroduce, c.PointLog, c.Reserve,
-		c.Rider, c.RiderFollowUp, c.Role, c.Setting, c.Stock, c.Store, c.Subscribe,
-		c.SubscribeAlter, c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend,
+		c.EnterpriseBatterySwap, c.EnterpriseBill, c.EnterpriseContract,
+		c.EnterprisePrepayment, c.EnterprisePrice, c.EnterpriseStatement,
+		c.EnterpriseStation, c.Exception, c.Exchange, c.Export, c.Feedback,
+		c.Inventory, c.Manager, c.Order, c.OrderRefund, c.Person, c.Plan,
+		c.PlanIntroduce, c.PointLog, c.Reserve, c.Rider, c.RiderFollowUp, c.Role,
+		c.Setting, c.Stock, c.Store, c.Subscribe, c.SubscribeAlter, c.SubscribePause,
+		c.SubscribeReminder, c.SubscribeSuspend,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -559,6 +567,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Employee.mutate(ctx, m)
 	case *EnterpriseMutation:
 		return c.Enterprise.mutate(ctx, m)
+	case *EnterpriseBatterySwapMutation:
+		return c.EnterpriseBatterySwap.mutate(ctx, m)
 	case *EnterpriseBillMutation:
 		return c.EnterpriseBill.mutate(ctx, m)
 	case *EnterpriseContractMutation:
@@ -4878,6 +4888,38 @@ func (c *EnterpriseClient) QueryStocks(e *Enterprise) *StockQuery {
 	return query
 }
 
+// QuerySwapPutinBatteries queries the swap_putin_batteries edge of a Enterprise.
+func (c *EnterpriseClient) QuerySwapPutinBatteries(e *Enterprise) *EnterpriseBatterySwapQuery {
+	query := (&EnterpriseBatterySwapClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprise.Table, enterprise.FieldID, id),
+			sqlgraph.To(enterprisebatteryswap.Table, enterprisebatteryswap.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprise.SwapPutinBatteriesTable, enterprise.SwapPutinBatteriesColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QuerySwapPutoutBatteries queries the swap_putout_batteries edge of a Enterprise.
+func (c *EnterpriseClient) QuerySwapPutoutBatteries(e *Enterprise) *EnterpriseBatterySwapQuery {
+	query := (&EnterpriseBatterySwapClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprise.Table, enterprise.FieldID, id),
+			sqlgraph.To(enterprisebatteryswap.Table, enterprisebatteryswap.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprise.SwapPutoutBatteriesTable, enterprise.SwapPutoutBatteriesColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *EnterpriseClient) Hooks() []Hook {
 	hooks := c.hooks.Enterprise
@@ -4901,6 +4943,252 @@ func (c *EnterpriseClient) mutate(ctx context.Context, m *EnterpriseMutation) (V
 		return (&EnterpriseDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Enterprise mutation op: %q", m.Op())
+	}
+}
+
+// EnterpriseBatterySwapClient is a client for the EnterpriseBatterySwap schema.
+type EnterpriseBatterySwapClient struct {
+	config
+}
+
+// NewEnterpriseBatterySwapClient returns a client for the EnterpriseBatterySwap from the given config.
+func NewEnterpriseBatterySwapClient(c config) *EnterpriseBatterySwapClient {
+	return &EnterpriseBatterySwapClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `enterprisebatteryswap.Hooks(f(g(h())))`.
+func (c *EnterpriseBatterySwapClient) Use(hooks ...Hook) {
+	c.hooks.EnterpriseBatterySwap = append(c.hooks.EnterpriseBatterySwap, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `enterprisebatteryswap.Intercept(f(g(h())))`.
+func (c *EnterpriseBatterySwapClient) Intercept(interceptors ...Interceptor) {
+	c.inters.EnterpriseBatterySwap = append(c.inters.EnterpriseBatterySwap, interceptors...)
+}
+
+// Create returns a builder for creating a EnterpriseBatterySwap entity.
+func (c *EnterpriseBatterySwapClient) Create() *EnterpriseBatterySwapCreate {
+	mutation := newEnterpriseBatterySwapMutation(c.config, OpCreate)
+	return &EnterpriseBatterySwapCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of EnterpriseBatterySwap entities.
+func (c *EnterpriseBatterySwapClient) CreateBulk(builders ...*EnterpriseBatterySwapCreate) *EnterpriseBatterySwapCreateBulk {
+	return &EnterpriseBatterySwapCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for EnterpriseBatterySwap.
+func (c *EnterpriseBatterySwapClient) Update() *EnterpriseBatterySwapUpdate {
+	mutation := newEnterpriseBatterySwapMutation(c.config, OpUpdate)
+	return &EnterpriseBatterySwapUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *EnterpriseBatterySwapClient) UpdateOne(ebs *EnterpriseBatterySwap) *EnterpriseBatterySwapUpdateOne {
+	mutation := newEnterpriseBatterySwapMutation(c.config, OpUpdateOne, withEnterpriseBatterySwap(ebs))
+	return &EnterpriseBatterySwapUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *EnterpriseBatterySwapClient) UpdateOneID(id uint64) *EnterpriseBatterySwapUpdateOne {
+	mutation := newEnterpriseBatterySwapMutation(c.config, OpUpdateOne, withEnterpriseBatterySwapID(id))
+	return &EnterpriseBatterySwapUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for EnterpriseBatterySwap.
+func (c *EnterpriseBatterySwapClient) Delete() *EnterpriseBatterySwapDelete {
+	mutation := newEnterpriseBatterySwapMutation(c.config, OpDelete)
+	return &EnterpriseBatterySwapDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *EnterpriseBatterySwapClient) DeleteOne(ebs *EnterpriseBatterySwap) *EnterpriseBatterySwapDeleteOne {
+	return c.DeleteOneID(ebs.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *EnterpriseBatterySwapClient) DeleteOneID(id uint64) *EnterpriseBatterySwapDeleteOne {
+	builder := c.Delete().Where(enterprisebatteryswap.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &EnterpriseBatterySwapDeleteOne{builder}
+}
+
+// Query returns a query builder for EnterpriseBatterySwap.
+func (c *EnterpriseBatterySwapClient) Query() *EnterpriseBatterySwapQuery {
+	return &EnterpriseBatterySwapQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeEnterpriseBatterySwap},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a EnterpriseBatterySwap entity by its id.
+func (c *EnterpriseBatterySwapClient) Get(ctx context.Context, id uint64) (*EnterpriseBatterySwap, error) {
+	return c.Query().Where(enterprisebatteryswap.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *EnterpriseBatterySwapClient) GetX(ctx context.Context, id uint64) *EnterpriseBatterySwap {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryExchange queries the exchange edge of a EnterpriseBatterySwap.
+func (c *EnterpriseBatterySwapClient) QueryExchange(ebs *EnterpriseBatterySwap) *ExchangeQuery {
+	query := (&ExchangeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ebs.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisebatteryswap.Table, enterprisebatteryswap.FieldID, id),
+			sqlgraph.To(exchange.Table, exchange.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, enterprisebatteryswap.ExchangeTable, enterprisebatteryswap.ExchangeColumn),
+		)
+		fromV = sqlgraph.Neighbors(ebs.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCabinet queries the cabinet edge of a EnterpriseBatterySwap.
+func (c *EnterpriseBatterySwapClient) QueryCabinet(ebs *EnterpriseBatterySwap) *CabinetQuery {
+	query := (&CabinetClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ebs.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisebatteryswap.Table, enterprisebatteryswap.FieldID, id),
+			sqlgraph.To(cabinet.Table, cabinet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, enterprisebatteryswap.CabinetTable, enterprisebatteryswap.CabinetColumn),
+		)
+		fromV = sqlgraph.Neighbors(ebs.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPutinBattery queries the putin_battery edge of a EnterpriseBatterySwap.
+func (c *EnterpriseBatterySwapClient) QueryPutinBattery(ebs *EnterpriseBatterySwap) *BatteryQuery {
+	query := (&BatteryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ebs.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisebatteryswap.Table, enterprisebatteryswap.FieldID, id),
+			sqlgraph.To(battery.Table, battery.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, enterprisebatteryswap.PutinBatteryTable, enterprisebatteryswap.PutinBatteryColumn),
+		)
+		fromV = sqlgraph.Neighbors(ebs.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPutinEnterprise queries the putin_enterprise edge of a EnterpriseBatterySwap.
+func (c *EnterpriseBatterySwapClient) QueryPutinEnterprise(ebs *EnterpriseBatterySwap) *EnterpriseQuery {
+	query := (&EnterpriseClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ebs.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisebatteryswap.Table, enterprisebatteryswap.FieldID, id),
+			sqlgraph.To(enterprise.Table, enterprise.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, enterprisebatteryswap.PutinEnterpriseTable, enterprisebatteryswap.PutinEnterpriseColumn),
+		)
+		fromV = sqlgraph.Neighbors(ebs.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPutinStation queries the putin_station edge of a EnterpriseBatterySwap.
+func (c *EnterpriseBatterySwapClient) QueryPutinStation(ebs *EnterpriseBatterySwap) *EnterpriseStationQuery {
+	query := (&EnterpriseStationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ebs.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisebatteryswap.Table, enterprisebatteryswap.FieldID, id),
+			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, enterprisebatteryswap.PutinStationTable, enterprisebatteryswap.PutinStationColumn),
+		)
+		fromV = sqlgraph.Neighbors(ebs.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPutoutBattery queries the putout_battery edge of a EnterpriseBatterySwap.
+func (c *EnterpriseBatterySwapClient) QueryPutoutBattery(ebs *EnterpriseBatterySwap) *BatteryQuery {
+	query := (&BatteryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ebs.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisebatteryswap.Table, enterprisebatteryswap.FieldID, id),
+			sqlgraph.To(battery.Table, battery.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, enterprisebatteryswap.PutoutBatteryTable, enterprisebatteryswap.PutoutBatteryColumn),
+		)
+		fromV = sqlgraph.Neighbors(ebs.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPutoutEnterprise queries the putout_enterprise edge of a EnterpriseBatterySwap.
+func (c *EnterpriseBatterySwapClient) QueryPutoutEnterprise(ebs *EnterpriseBatterySwap) *EnterpriseQuery {
+	query := (&EnterpriseClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ebs.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisebatteryswap.Table, enterprisebatteryswap.FieldID, id),
+			sqlgraph.To(enterprise.Table, enterprise.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, enterprisebatteryswap.PutoutEnterpriseTable, enterprisebatteryswap.PutoutEnterpriseColumn),
+		)
+		fromV = sqlgraph.Neighbors(ebs.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPutoutStation queries the putout_station edge of a EnterpriseBatterySwap.
+func (c *EnterpriseBatterySwapClient) QueryPutoutStation(ebs *EnterpriseBatterySwap) *EnterpriseStationQuery {
+	query := (&EnterpriseStationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ebs.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisebatteryswap.Table, enterprisebatteryswap.FieldID, id),
+			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, enterprisebatteryswap.PutoutStationTable, enterprisebatteryswap.PutoutStationColumn),
+		)
+		fromV = sqlgraph.Neighbors(ebs.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *EnterpriseBatterySwapClient) Hooks() []Hook {
+	return c.hooks.EnterpriseBatterySwap
+}
+
+// Interceptors returns the client interceptors.
+func (c *EnterpriseBatterySwapClient) Interceptors() []Interceptor {
+	return c.inters.EnterpriseBatterySwap
+}
+
+func (c *EnterpriseBatterySwapClient) mutate(ctx context.Context, m *EnterpriseBatterySwapMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&EnterpriseBatterySwapCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&EnterpriseBatterySwapUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&EnterpriseBatterySwapUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&EnterpriseBatterySwapDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown EnterpriseBatterySwap mutation op: %q", m.Op())
 	}
 }
 
@@ -5873,6 +6161,38 @@ func (c *EnterpriseStationClient) QueryAgents(es *EnterpriseStation) *AgentQuery
 			sqlgraph.From(enterprisestation.Table, enterprisestation.FieldID, id),
 			sqlgraph.To(agent.Table, agent.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, true, enterprisestation.AgentsTable, enterprisestation.AgentsPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(es.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QuerySwapPutinBatteries queries the swap_putin_batteries edge of a EnterpriseStation.
+func (c *EnterpriseStationClient) QuerySwapPutinBatteries(es *EnterpriseStation) *EnterpriseBatterySwapQuery {
+	query := (&EnterpriseBatterySwapClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := es.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisestation.Table, enterprisestation.FieldID, id),
+			sqlgraph.To(enterprisebatteryswap.Table, enterprisebatteryswap.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprisestation.SwapPutinBatteriesTable, enterprisestation.SwapPutinBatteriesColumn),
+		)
+		fromV = sqlgraph.Neighbors(es.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QuerySwapPutoutBatteries queries the swap_putout_batteries edge of a EnterpriseStation.
+func (c *EnterpriseStationClient) QuerySwapPutoutBatteries(es *EnterpriseStation) *EnterpriseBatterySwapQuery {
+	query := (&EnterpriseBatterySwapClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := es.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisestation.Table, enterprisestation.FieldID, id),
+			sqlgraph.To(enterprisebatteryswap.Table, enterprisebatteryswap.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprisestation.SwapPutoutBatteriesTable, enterprisestation.SwapPutoutBatteriesColumn),
 		)
 		fromV = sqlgraph.Neighbors(es.driver.Dialect(), step)
 		return fromV, nil
@@ -10572,23 +10892,23 @@ type (
 		Agent, Allocate, Assistance, Attendance, Battery, BatteryFlow, BatteryModel,
 		Branch, BranchContract, Business, Cabinet, CabinetFault, City, Commission,
 		Contract, Coupon, CouponAssembly, CouponTemplate, Ebike, EbikeBrand, Employee,
-		Enterprise, EnterpriseBill, EnterpriseContract, EnterprisePrepayment,
-		EnterprisePrice, EnterpriseStatement, EnterpriseStation, Exception, Exchange,
-		Export, Feedback, Inventory, Manager, Order, OrderRefund, Person, Plan,
-		PlanIntroduce, PointLog, Reserve, Rider, RiderFollowUp, Role, Setting, Stock,
-		Store, Subscribe, SubscribeAlter, SubscribePause, SubscribeReminder,
-		SubscribeSuspend []ent.Hook
+		Enterprise, EnterpriseBatterySwap, EnterpriseBill, EnterpriseContract,
+		EnterprisePrepayment, EnterprisePrice, EnterpriseStatement, EnterpriseStation,
+		Exception, Exchange, Export, Feedback, Inventory, Manager, Order, OrderRefund,
+		Person, Plan, PlanIntroduce, PointLog, Reserve, Rider, RiderFollowUp, Role,
+		Setting, Stock, Store, Subscribe, SubscribeAlter, SubscribePause,
+		SubscribeReminder, SubscribeSuspend []ent.Hook
 	}
 	inters struct {
 		Agent, Allocate, Assistance, Attendance, Battery, BatteryFlow, BatteryModel,
 		Branch, BranchContract, Business, Cabinet, CabinetFault, City, Commission,
 		Contract, Coupon, CouponAssembly, CouponTemplate, Ebike, EbikeBrand, Employee,
-		Enterprise, EnterpriseBill, EnterpriseContract, EnterprisePrepayment,
-		EnterprisePrice, EnterpriseStatement, EnterpriseStation, Exception, Exchange,
-		Export, Feedback, Inventory, Manager, Order, OrderRefund, Person, Plan,
-		PlanIntroduce, PointLog, Reserve, Rider, RiderFollowUp, Role, Setting, Stock,
-		Store, Subscribe, SubscribeAlter, SubscribePause, SubscribeReminder,
-		SubscribeSuspend []ent.Interceptor
+		Enterprise, EnterpriseBatterySwap, EnterpriseBill, EnterpriseContract,
+		EnterprisePrepayment, EnterprisePrice, EnterpriseStatement, EnterpriseStation,
+		Exception, Exchange, Export, Feedback, Inventory, Manager, Order, OrderRefund,
+		Person, Plan, PlanIntroduce, PointLog, Reserve, Rider, RiderFollowUp, Role,
+		Setting, Stock, Store, Subscribe, SubscribeAlter, SubscribePause,
+		SubscribeReminder, SubscribeSuspend []ent.Interceptor
 	}
 )
 

@@ -17,6 +17,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisebatteryswap"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
 	"github.com/auroraride/aurservd/internal/ent/enterprisecontract"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
@@ -453,6 +454,36 @@ func (ec *EnterpriseCreate) AddStocks(s ...*Stock) *EnterpriseCreate {
 		ids[i] = s[i].ID
 	}
 	return ec.AddStockIDs(ids...)
+}
+
+// AddSwapPutinBatteryIDs adds the "swap_putin_batteries" edge to the EnterpriseBatterySwap entity by IDs.
+func (ec *EnterpriseCreate) AddSwapPutinBatteryIDs(ids ...uint64) *EnterpriseCreate {
+	ec.mutation.AddSwapPutinBatteryIDs(ids...)
+	return ec
+}
+
+// AddSwapPutinBatteries adds the "swap_putin_batteries" edges to the EnterpriseBatterySwap entity.
+func (ec *EnterpriseCreate) AddSwapPutinBatteries(e ...*EnterpriseBatterySwap) *EnterpriseCreate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return ec.AddSwapPutinBatteryIDs(ids...)
+}
+
+// AddSwapPutoutBatteryIDs adds the "swap_putout_batteries" edge to the EnterpriseBatterySwap entity by IDs.
+func (ec *EnterpriseCreate) AddSwapPutoutBatteryIDs(ids ...uint64) *EnterpriseCreate {
+	ec.mutation.AddSwapPutoutBatteryIDs(ids...)
+	return ec
+}
+
+// AddSwapPutoutBatteries adds the "swap_putout_batteries" edges to the EnterpriseBatterySwap entity.
+func (ec *EnterpriseCreate) AddSwapPutoutBatteries(e ...*EnterpriseBatterySwap) *EnterpriseCreate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return ec.AddSwapPutoutBatteryIDs(ids...)
 }
 
 // Mutation returns the EnterpriseMutation object of the builder.
@@ -900,6 +931,38 @@ func (ec *EnterpriseCreate) createSpec() (*Enterprise, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ec.mutation.SwapPutinBatteriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.SwapPutinBatteriesTable,
+			Columns: []string{enterprise.SwapPutinBatteriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisebatteryswap.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ec.mutation.SwapPutoutBatteriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.SwapPutoutBatteriesTable,
+			Columns: []string{enterprise.SwapPutoutBatteriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisebatteryswap.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

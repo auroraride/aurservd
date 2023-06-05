@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/adapter/log"
 	"github.com/auroraride/adapter/rpc/pb"
 	"github.com/jackc/pgconn"
+	jsoniter "github.com/json-iterator/go"
 	"github.com/labstack/echo/v4"
 	"go.uber.org/zap"
 
@@ -482,4 +483,67 @@ func (s *batteryService) Allocate(buo *ent.BatteryUpdateOne, bat *ent.Battery, s
 // Unallocate 清除骑手信息
 func (s *batteryService) Unallocate(bat *ent.Battery) (err error) {
 	return bat.Update().ClearSubscribeID().ClearRiderID().Exec(s.ctx)
+}
+
+// StationBusinessTransfer 站点之间业务自动调拨
+// 目前仅有换电业务
+// 骑手从电柜中取出电池, 并将自己的电池放入电柜中, 因此:
+// sub.StationID / sub.EnterpriseID 被用作放入的代理商信息
+// cab.StationID / cab.EnterpriseID 被用作取出的代理商信息
+// 需要记录流转信息
+func (s *batteryService) StationBusinessTransfer(cabinetID, exchangeID uint64, putin, putout *model.BatteryEnterpriseTransfer) {
+	// 放入电池
+	in, _ := NewBattery().QuerySn(putin.Sn)
+
+	// 取出电池
+	out, _ := NewBattery().QuerySn(putout.Sn)
+	// 进行站点对比, 放入 == 取出, 直接跳过
+	if putin.StationID == out.StationID {
+		return
+	}
+
+	// 若非站点骑手取出站点电池, 需要更新
+	// 若放入是其他站点的电池, 其本质是两个站点(代理)的电池互换
+
+	// 放入到该站点的电池
+	s.updateStation(in, putout.StationID, putout.EnterpriseID)
+
+	// 从该站点取出的电池
+	s.updateStation(out, putin.StationID, putin.EnterpriseID)
+
+	// 记录
+	err := ent.Database.EnterpriseBatterySwap.Create().
+		SetCabinetID(cabinetID).
+		SetExchangeID(exchangeID).
+		SetPutinBatteryID(in.ID).
+		SetPutinBatterySn(in.Sn).
+		SetNillablePutinEnterpriseID(putin.EnterpriseID).
+		SetNillablePutinStationID(putin.StationID).
+		SetPutoutBatteryID(out.ID).
+		SetPutoutBatterySn(out.Sn).
+		SetNillablePutoutEnterpriseID(putout.EnterpriseID).
+		SetNillablePutoutStationID(putout.StationID).
+		Exec(s.ctx)
+	if err != nil {
+		inb, _ := jsoniter.Marshal(putin)
+		outb, _ := jsoniter.Marshal(putout)
+		zap.L().Error("电池交换记录失败", zap.Error(err), zap.ByteString("putin", inb), zap.ByteString("putout", outb))
+	}
+}
+
+// 更新电池站点信息
+func (s *batteryService) updateStation(bat *ent.Battery, stationID, enterpriseID *uint64) {
+	updater := s.orm.UpdateOne(bat)
+	switch {
+	default:
+		// 非站点电池, 清除站点和团签信息
+		updater.ClearStationID().ClearEnterpriseID()
+	case stationID != nil:
+		// 站点电池, 记录站点和团签信息
+		updater.SetNillableStationID(stationID).SetNillableEnterpriseID(enterpriseID)
+	}
+	err := updater.Exec(s.ctx)
+	if err != nil {
+		zap.L().Error("电池流转更新失败", zap.Error(err))
+	}
 }

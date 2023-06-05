@@ -35,6 +35,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisebatteryswap"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
 	"github.com/auroraride/aurservd/internal/ent/enterprisecontract"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprepayment"
@@ -78,58 +79,59 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeAgent                = "Agent"
-	TypeAllocate             = "Allocate"
-	TypeAssistance           = "Assistance"
-	TypeAttendance           = "Attendance"
-	TypeBattery              = "Battery"
-	TypeBatteryFlow          = "BatteryFlow"
-	TypeBatteryModel         = "BatteryModel"
-	TypeBranch               = "Branch"
-	TypeBranchContract       = "BranchContract"
-	TypeBusiness             = "Business"
-	TypeCabinet              = "Cabinet"
-	TypeCabinetFault         = "CabinetFault"
-	TypeCity                 = "City"
-	TypeCommission           = "Commission"
-	TypeContract             = "Contract"
-	TypeCoupon               = "Coupon"
-	TypeCouponAssembly       = "CouponAssembly"
-	TypeCouponTemplate       = "CouponTemplate"
-	TypeEbike                = "Ebike"
-	TypeEbikeBrand           = "EbikeBrand"
-	TypeEmployee             = "Employee"
-	TypeEnterprise           = "Enterprise"
-	TypeEnterpriseBill       = "EnterpriseBill"
-	TypeEnterpriseContract   = "EnterpriseContract"
-	TypeEnterprisePrepayment = "EnterprisePrepayment"
-	TypeEnterprisePrice      = "EnterprisePrice"
-	TypeEnterpriseStatement  = "EnterpriseStatement"
-	TypeEnterpriseStation    = "EnterpriseStation"
-	TypeException            = "Exception"
-	TypeExchange             = "Exchange"
-	TypeExport               = "Export"
-	TypeFeedback             = "Feedback"
-	TypeInventory            = "Inventory"
-	TypeManager              = "Manager"
-	TypeOrder                = "Order"
-	TypeOrderRefund          = "OrderRefund"
-	TypePerson               = "Person"
-	TypePlan                 = "Plan"
-	TypePlanIntroduce        = "PlanIntroduce"
-	TypePointLog             = "PointLog"
-	TypeReserve              = "Reserve"
-	TypeRider                = "Rider"
-	TypeRiderFollowUp        = "RiderFollowUp"
-	TypeRole                 = "Role"
-	TypeSetting              = "Setting"
-	TypeStock                = "Stock"
-	TypeStore                = "Store"
-	TypeSubscribe            = "Subscribe"
-	TypeSubscribeAlter       = "SubscribeAlter"
-	TypeSubscribePause       = "SubscribePause"
-	TypeSubscribeReminder    = "SubscribeReminder"
-	TypeSubscribeSuspend     = "SubscribeSuspend"
+	TypeAgent                 = "Agent"
+	TypeAllocate              = "Allocate"
+	TypeAssistance            = "Assistance"
+	TypeAttendance            = "Attendance"
+	TypeBattery               = "Battery"
+	TypeBatteryFlow           = "BatteryFlow"
+	TypeBatteryModel          = "BatteryModel"
+	TypeBranch                = "Branch"
+	TypeBranchContract        = "BranchContract"
+	TypeBusiness              = "Business"
+	TypeCabinet               = "Cabinet"
+	TypeCabinetFault          = "CabinetFault"
+	TypeCity                  = "City"
+	TypeCommission            = "Commission"
+	TypeContract              = "Contract"
+	TypeCoupon                = "Coupon"
+	TypeCouponAssembly        = "CouponAssembly"
+	TypeCouponTemplate        = "CouponTemplate"
+	TypeEbike                 = "Ebike"
+	TypeEbikeBrand            = "EbikeBrand"
+	TypeEmployee              = "Employee"
+	TypeEnterprise            = "Enterprise"
+	TypeEnterpriseBatterySwap = "EnterpriseBatterySwap"
+	TypeEnterpriseBill        = "EnterpriseBill"
+	TypeEnterpriseContract    = "EnterpriseContract"
+	TypeEnterprisePrepayment  = "EnterprisePrepayment"
+	TypeEnterprisePrice       = "EnterprisePrice"
+	TypeEnterpriseStatement   = "EnterpriseStatement"
+	TypeEnterpriseStation     = "EnterpriseStation"
+	TypeException             = "Exception"
+	TypeExchange              = "Exchange"
+	TypeExport                = "Export"
+	TypeFeedback              = "Feedback"
+	TypeInventory             = "Inventory"
+	TypeManager               = "Manager"
+	TypeOrder                 = "Order"
+	TypeOrderRefund           = "OrderRefund"
+	TypePerson                = "Person"
+	TypePlan                  = "Plan"
+	TypePlanIntroduce         = "PlanIntroduce"
+	TypePointLog              = "PointLog"
+	TypeReserve               = "Reserve"
+	TypeRider                 = "Rider"
+	TypeRiderFollowUp         = "RiderFollowUp"
+	TypeRole                  = "Role"
+	TypeSetting               = "Setting"
+	TypeStock                 = "Stock"
+	TypeStore                 = "Store"
+	TypeSubscribe             = "Subscribe"
+	TypeSubscribeAlter        = "SubscribeAlter"
+	TypeSubscribePause        = "SubscribePause"
+	TypeSubscribeReminder     = "SubscribeReminder"
+	TypeSubscribeSuspend      = "SubscribeSuspend"
 )
 
 // AgentMutation represents an operation that mutates the Agent nodes in the graph.
@@ -33427,80 +33429,86 @@ func (m *EmployeeMutation) ResetEdge(name string) error {
 // EnterpriseMutation represents an operation that mutates the Enterprise nodes in the graph.
 type EnterpriseMutation struct {
 	config
-	op                  Op
-	typ                 string
-	id                  *uint64
-	created_at          *time.Time
-	updated_at          *time.Time
-	deleted_at          *time.Time
-	creator             **model.Modifier
-	last_modifier       **model.Modifier
-	remark              *string
-	name                *string
-	company_name        *string
-	status              *uint8
-	addstatus           *int8
-	contact_name        *string
-	contact_phone       *string
-	idcard_number       *string
-	address             *string
-	payment             *uint8
-	addpayment          *int8
-	deposit             *float64
-	adddeposit          *float64
-	balance             *float64
-	addbalance          *float64
-	prepayment_total    *float64
-	addprepayment_total *float64
-	suspensed_at        *time.Time
-	agent               *bool
-	use_store           *bool
-	days                *[]int
-	appenddays          []int
-	distance            *float64
-	adddistance         *float64
-	clearedFields       map[string]struct{}
-	city                *uint64
-	clearedcity         bool
-	riders              map[uint64]struct{}
-	removedriders       map[uint64]struct{}
-	clearedriders       bool
-	contracts           map[uint64]struct{}
-	removedcontracts    map[uint64]struct{}
-	clearedcontracts    bool
-	prices              map[uint64]struct{}
-	removedprices       map[uint64]struct{}
-	clearedprices       bool
-	subscribes          map[uint64]struct{}
-	removedsubscribes   map[uint64]struct{}
-	clearedsubscribes   bool
-	statements          map[uint64]struct{}
-	removedstatements   map[uint64]struct{}
-	clearedstatements   bool
-	stations            map[uint64]struct{}
-	removedstations     map[uint64]struct{}
-	clearedstations     bool
-	bills               map[uint64]struct{}
-	removedbills        map[uint64]struct{}
-	clearedbills        bool
-	battery             map[uint64]struct{}
-	removedbattery      map[uint64]struct{}
-	clearedbattery      bool
-	feedback            map[uint64]struct{}
-	removedfeedback     map[uint64]struct{}
-	clearedfeedback     bool
-	agents              map[uint64]struct{}
-	removedagents       map[uint64]struct{}
-	clearedagents       bool
-	cabinets            map[uint64]struct{}
-	removedcabinets     map[uint64]struct{}
-	clearedcabinets     bool
-	stocks              map[uint64]struct{}
-	removedstocks       map[uint64]struct{}
-	clearedstocks       bool
-	done                bool
-	oldValue            func(context.Context) (*Enterprise, error)
-	predicates          []predicate.Enterprise
+	op                           Op
+	typ                          string
+	id                           *uint64
+	created_at                   *time.Time
+	updated_at                   *time.Time
+	deleted_at                   *time.Time
+	creator                      **model.Modifier
+	last_modifier                **model.Modifier
+	remark                       *string
+	name                         *string
+	company_name                 *string
+	status                       *uint8
+	addstatus                    *int8
+	contact_name                 *string
+	contact_phone                *string
+	idcard_number                *string
+	address                      *string
+	payment                      *uint8
+	addpayment                   *int8
+	deposit                      *float64
+	adddeposit                   *float64
+	balance                      *float64
+	addbalance                   *float64
+	prepayment_total             *float64
+	addprepayment_total          *float64
+	suspensed_at                 *time.Time
+	agent                        *bool
+	use_store                    *bool
+	days                         *[]int
+	appenddays                   []int
+	distance                     *float64
+	adddistance                  *float64
+	clearedFields                map[string]struct{}
+	city                         *uint64
+	clearedcity                  bool
+	riders                       map[uint64]struct{}
+	removedriders                map[uint64]struct{}
+	clearedriders                bool
+	contracts                    map[uint64]struct{}
+	removedcontracts             map[uint64]struct{}
+	clearedcontracts             bool
+	prices                       map[uint64]struct{}
+	removedprices                map[uint64]struct{}
+	clearedprices                bool
+	subscribes                   map[uint64]struct{}
+	removedsubscribes            map[uint64]struct{}
+	clearedsubscribes            bool
+	statements                   map[uint64]struct{}
+	removedstatements            map[uint64]struct{}
+	clearedstatements            bool
+	stations                     map[uint64]struct{}
+	removedstations              map[uint64]struct{}
+	clearedstations              bool
+	bills                        map[uint64]struct{}
+	removedbills                 map[uint64]struct{}
+	clearedbills                 bool
+	battery                      map[uint64]struct{}
+	removedbattery               map[uint64]struct{}
+	clearedbattery               bool
+	feedback                     map[uint64]struct{}
+	removedfeedback              map[uint64]struct{}
+	clearedfeedback              bool
+	agents                       map[uint64]struct{}
+	removedagents                map[uint64]struct{}
+	clearedagents                bool
+	cabinets                     map[uint64]struct{}
+	removedcabinets              map[uint64]struct{}
+	clearedcabinets              bool
+	stocks                       map[uint64]struct{}
+	removedstocks                map[uint64]struct{}
+	clearedstocks                bool
+	swap_putin_batteries         map[uint64]struct{}
+	removedswap_putin_batteries  map[uint64]struct{}
+	clearedswap_putin_batteries  bool
+	swap_putout_batteries        map[uint64]struct{}
+	removedswap_putout_batteries map[uint64]struct{}
+	clearedswap_putout_batteries bool
+	done                         bool
+	oldValue                     func(context.Context) (*Enterprise, error)
+	predicates                   []predicate.Enterprise
 }
 
 var _ ent.Mutation = (*EnterpriseMutation)(nil)
@@ -35343,6 +35351,114 @@ func (m *EnterpriseMutation) ResetStocks() {
 	m.removedstocks = nil
 }
 
+// AddSwapPutinBatteryIDs adds the "swap_putin_batteries" edge to the EnterpriseBatterySwap entity by ids.
+func (m *EnterpriseMutation) AddSwapPutinBatteryIDs(ids ...uint64) {
+	if m.swap_putin_batteries == nil {
+		m.swap_putin_batteries = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.swap_putin_batteries[ids[i]] = struct{}{}
+	}
+}
+
+// ClearSwapPutinBatteries clears the "swap_putin_batteries" edge to the EnterpriseBatterySwap entity.
+func (m *EnterpriseMutation) ClearSwapPutinBatteries() {
+	m.clearedswap_putin_batteries = true
+}
+
+// SwapPutinBatteriesCleared reports if the "swap_putin_batteries" edge to the EnterpriseBatterySwap entity was cleared.
+func (m *EnterpriseMutation) SwapPutinBatteriesCleared() bool {
+	return m.clearedswap_putin_batteries
+}
+
+// RemoveSwapPutinBatteryIDs removes the "swap_putin_batteries" edge to the EnterpriseBatterySwap entity by IDs.
+func (m *EnterpriseMutation) RemoveSwapPutinBatteryIDs(ids ...uint64) {
+	if m.removedswap_putin_batteries == nil {
+		m.removedswap_putin_batteries = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.swap_putin_batteries, ids[i])
+		m.removedswap_putin_batteries[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedSwapPutinBatteries returns the removed IDs of the "swap_putin_batteries" edge to the EnterpriseBatterySwap entity.
+func (m *EnterpriseMutation) RemovedSwapPutinBatteriesIDs() (ids []uint64) {
+	for id := range m.removedswap_putin_batteries {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// SwapPutinBatteriesIDs returns the "swap_putin_batteries" edge IDs in the mutation.
+func (m *EnterpriseMutation) SwapPutinBatteriesIDs() (ids []uint64) {
+	for id := range m.swap_putin_batteries {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetSwapPutinBatteries resets all changes to the "swap_putin_batteries" edge.
+func (m *EnterpriseMutation) ResetSwapPutinBatteries() {
+	m.swap_putin_batteries = nil
+	m.clearedswap_putin_batteries = false
+	m.removedswap_putin_batteries = nil
+}
+
+// AddSwapPutoutBatteryIDs adds the "swap_putout_batteries" edge to the EnterpriseBatterySwap entity by ids.
+func (m *EnterpriseMutation) AddSwapPutoutBatteryIDs(ids ...uint64) {
+	if m.swap_putout_batteries == nil {
+		m.swap_putout_batteries = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.swap_putout_batteries[ids[i]] = struct{}{}
+	}
+}
+
+// ClearSwapPutoutBatteries clears the "swap_putout_batteries" edge to the EnterpriseBatterySwap entity.
+func (m *EnterpriseMutation) ClearSwapPutoutBatteries() {
+	m.clearedswap_putout_batteries = true
+}
+
+// SwapPutoutBatteriesCleared reports if the "swap_putout_batteries" edge to the EnterpriseBatterySwap entity was cleared.
+func (m *EnterpriseMutation) SwapPutoutBatteriesCleared() bool {
+	return m.clearedswap_putout_batteries
+}
+
+// RemoveSwapPutoutBatteryIDs removes the "swap_putout_batteries" edge to the EnterpriseBatterySwap entity by IDs.
+func (m *EnterpriseMutation) RemoveSwapPutoutBatteryIDs(ids ...uint64) {
+	if m.removedswap_putout_batteries == nil {
+		m.removedswap_putout_batteries = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.swap_putout_batteries, ids[i])
+		m.removedswap_putout_batteries[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedSwapPutoutBatteries returns the removed IDs of the "swap_putout_batteries" edge to the EnterpriseBatterySwap entity.
+func (m *EnterpriseMutation) RemovedSwapPutoutBatteriesIDs() (ids []uint64) {
+	for id := range m.removedswap_putout_batteries {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// SwapPutoutBatteriesIDs returns the "swap_putout_batteries" edge IDs in the mutation.
+func (m *EnterpriseMutation) SwapPutoutBatteriesIDs() (ids []uint64) {
+	for id := range m.swap_putout_batteries {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetSwapPutoutBatteries resets all changes to the "swap_putout_batteries" edge.
+func (m *EnterpriseMutation) ResetSwapPutoutBatteries() {
+	m.swap_putout_batteries = nil
+	m.clearedswap_putout_batteries = false
+	m.removedswap_putout_batteries = nil
+}
+
 // Where appends a list predicates to the EnterpriseMutation builder.
 func (m *EnterpriseMutation) Where(ps ...predicate.Enterprise) {
 	m.predicates = append(m.predicates, ps...)
@@ -35976,7 +36092,7 @@ func (m *EnterpriseMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *EnterpriseMutation) AddedEdges() []string {
-	edges := make([]string, 0, 13)
+	edges := make([]string, 0, 15)
 	if m.city != nil {
 		edges = append(edges, enterprise.EdgeCity)
 	}
@@ -36015,6 +36131,12 @@ func (m *EnterpriseMutation) AddedEdges() []string {
 	}
 	if m.stocks != nil {
 		edges = append(edges, enterprise.EdgeStocks)
+	}
+	if m.swap_putin_batteries != nil {
+		edges = append(edges, enterprise.EdgeSwapPutinBatteries)
+	}
+	if m.swap_putout_batteries != nil {
+		edges = append(edges, enterprise.EdgeSwapPutoutBatteries)
 	}
 	return edges
 }
@@ -36099,13 +36221,25 @@ func (m *EnterpriseMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case enterprise.EdgeSwapPutinBatteries:
+		ids := make([]ent.Value, 0, len(m.swap_putin_batteries))
+		for id := range m.swap_putin_batteries {
+			ids = append(ids, id)
+		}
+		return ids
+	case enterprise.EdgeSwapPutoutBatteries:
+		ids := make([]ent.Value, 0, len(m.swap_putout_batteries))
+		for id := range m.swap_putout_batteries {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *EnterpriseMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 13)
+	edges := make([]string, 0, 15)
 	if m.removedriders != nil {
 		edges = append(edges, enterprise.EdgeRiders)
 	}
@@ -36141,6 +36275,12 @@ func (m *EnterpriseMutation) RemovedEdges() []string {
 	}
 	if m.removedstocks != nil {
 		edges = append(edges, enterprise.EdgeStocks)
+	}
+	if m.removedswap_putin_batteries != nil {
+		edges = append(edges, enterprise.EdgeSwapPutinBatteries)
+	}
+	if m.removedswap_putout_batteries != nil {
+		edges = append(edges, enterprise.EdgeSwapPutoutBatteries)
 	}
 	return edges
 }
@@ -36221,13 +36361,25 @@ func (m *EnterpriseMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case enterprise.EdgeSwapPutinBatteries:
+		ids := make([]ent.Value, 0, len(m.removedswap_putin_batteries))
+		for id := range m.removedswap_putin_batteries {
+			ids = append(ids, id)
+		}
+		return ids
+	case enterprise.EdgeSwapPutoutBatteries:
+		ids := make([]ent.Value, 0, len(m.removedswap_putout_batteries))
+		for id := range m.removedswap_putout_batteries {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *EnterpriseMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 13)
+	edges := make([]string, 0, 15)
 	if m.clearedcity {
 		edges = append(edges, enterprise.EdgeCity)
 	}
@@ -36267,6 +36419,12 @@ func (m *EnterpriseMutation) ClearedEdges() []string {
 	if m.clearedstocks {
 		edges = append(edges, enterprise.EdgeStocks)
 	}
+	if m.clearedswap_putin_batteries {
+		edges = append(edges, enterprise.EdgeSwapPutinBatteries)
+	}
+	if m.clearedswap_putout_batteries {
+		edges = append(edges, enterprise.EdgeSwapPutoutBatteries)
+	}
 	return edges
 }
 
@@ -36300,6 +36458,10 @@ func (m *EnterpriseMutation) EdgeCleared(name string) bool {
 		return m.clearedcabinets
 	case enterprise.EdgeStocks:
 		return m.clearedstocks
+	case enterprise.EdgeSwapPutinBatteries:
+		return m.clearedswap_putin_batteries
+	case enterprise.EdgeSwapPutoutBatteries:
+		return m.clearedswap_putout_batteries
 	}
 	return false
 }
@@ -36358,8 +36520,1384 @@ func (m *EnterpriseMutation) ResetEdge(name string) error {
 	case enterprise.EdgeStocks:
 		m.ResetStocks()
 		return nil
+	case enterprise.EdgeSwapPutinBatteries:
+		m.ResetSwapPutinBatteries()
+		return nil
+	case enterprise.EdgeSwapPutoutBatteries:
+		m.ResetSwapPutoutBatteries()
+		return nil
 	}
 	return fmt.Errorf("unknown Enterprise edge %s", name)
+}
+
+// EnterpriseBatterySwapMutation represents an operation that mutates the EnterpriseBatterySwap nodes in the graph.
+type EnterpriseBatterySwapMutation struct {
+	config
+	op                       Op
+	typ                      string
+	id                       *uint64
+	created_at               *time.Time
+	updated_at               *time.Time
+	putin_battery_sn         *string
+	putout_battery_sn        *string
+	clearedFields            map[string]struct{}
+	exchange                 *uint64
+	clearedexchange          bool
+	cabinet                  *uint64
+	clearedcabinet           bool
+	putin_battery            *uint64
+	clearedputin_battery     bool
+	putin_enterprise         *uint64
+	clearedputin_enterprise  bool
+	putin_station            *uint64
+	clearedputin_station     bool
+	putout_battery           *uint64
+	clearedputout_battery    bool
+	putout_enterprise        *uint64
+	clearedputout_enterprise bool
+	putout_station           *uint64
+	clearedputout_station    bool
+	done                     bool
+	oldValue                 func(context.Context) (*EnterpriseBatterySwap, error)
+	predicates               []predicate.EnterpriseBatterySwap
+}
+
+var _ ent.Mutation = (*EnterpriseBatterySwapMutation)(nil)
+
+// enterprisebatteryswapOption allows management of the mutation configuration using functional options.
+type enterprisebatteryswapOption func(*EnterpriseBatterySwapMutation)
+
+// newEnterpriseBatterySwapMutation creates new mutation for the EnterpriseBatterySwap entity.
+func newEnterpriseBatterySwapMutation(c config, op Op, opts ...enterprisebatteryswapOption) *EnterpriseBatterySwapMutation {
+	m := &EnterpriseBatterySwapMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeEnterpriseBatterySwap,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withEnterpriseBatterySwapID sets the ID field of the mutation.
+func withEnterpriseBatterySwapID(id uint64) enterprisebatteryswapOption {
+	return func(m *EnterpriseBatterySwapMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *EnterpriseBatterySwap
+		)
+		m.oldValue = func(ctx context.Context) (*EnterpriseBatterySwap, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().EnterpriseBatterySwap.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withEnterpriseBatterySwap sets the old EnterpriseBatterySwap of the mutation.
+func withEnterpriseBatterySwap(node *EnterpriseBatterySwap) enterprisebatteryswapOption {
+	return func(m *EnterpriseBatterySwapMutation) {
+		m.oldValue = func(context.Context) (*EnterpriseBatterySwap, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m EnterpriseBatterySwapMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m EnterpriseBatterySwapMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *EnterpriseBatterySwapMutation) ID() (id uint64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *EnterpriseBatterySwapMutation) IDs(ctx context.Context) ([]uint64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uint64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().EnterpriseBatterySwap.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *EnterpriseBatterySwapMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *EnterpriseBatterySwapMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the EnterpriseBatterySwap entity.
+// If the EnterpriseBatterySwap object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseBatterySwapMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *EnterpriseBatterySwapMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *EnterpriseBatterySwapMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *EnterpriseBatterySwapMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the EnterpriseBatterySwap entity.
+// If the EnterpriseBatterySwap object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseBatterySwapMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *EnterpriseBatterySwapMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetExchangeID sets the "exchange_id" field.
+func (m *EnterpriseBatterySwapMutation) SetExchangeID(u uint64) {
+	m.exchange = &u
+}
+
+// ExchangeID returns the value of the "exchange_id" field in the mutation.
+func (m *EnterpriseBatterySwapMutation) ExchangeID() (r uint64, exists bool) {
+	v := m.exchange
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldExchangeID returns the old "exchange_id" field's value of the EnterpriseBatterySwap entity.
+// If the EnterpriseBatterySwap object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseBatterySwapMutation) OldExchangeID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldExchangeID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldExchangeID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldExchangeID: %w", err)
+	}
+	return oldValue.ExchangeID, nil
+}
+
+// ResetExchangeID resets all changes to the "exchange_id" field.
+func (m *EnterpriseBatterySwapMutation) ResetExchangeID() {
+	m.exchange = nil
+}
+
+// SetCabinetID sets the "cabinet_id" field.
+func (m *EnterpriseBatterySwapMutation) SetCabinetID(u uint64) {
+	m.cabinet = &u
+}
+
+// CabinetID returns the value of the "cabinet_id" field in the mutation.
+func (m *EnterpriseBatterySwapMutation) CabinetID() (r uint64, exists bool) {
+	v := m.cabinet
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCabinetID returns the old "cabinet_id" field's value of the EnterpriseBatterySwap entity.
+// If the EnterpriseBatterySwap object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseBatterySwapMutation) OldCabinetID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCabinetID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCabinetID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCabinetID: %w", err)
+	}
+	return oldValue.CabinetID, nil
+}
+
+// ResetCabinetID resets all changes to the "cabinet_id" field.
+func (m *EnterpriseBatterySwapMutation) ResetCabinetID() {
+	m.cabinet = nil
+}
+
+// SetPutinBatteryID sets the "putin_battery_id" field.
+func (m *EnterpriseBatterySwapMutation) SetPutinBatteryID(u uint64) {
+	m.putin_battery = &u
+}
+
+// PutinBatteryID returns the value of the "putin_battery_id" field in the mutation.
+func (m *EnterpriseBatterySwapMutation) PutinBatteryID() (r uint64, exists bool) {
+	v := m.putin_battery
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPutinBatteryID returns the old "putin_battery_id" field's value of the EnterpriseBatterySwap entity.
+// If the EnterpriseBatterySwap object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseBatterySwapMutation) OldPutinBatteryID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPutinBatteryID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPutinBatteryID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPutinBatteryID: %w", err)
+	}
+	return oldValue.PutinBatteryID, nil
+}
+
+// ResetPutinBatteryID resets all changes to the "putin_battery_id" field.
+func (m *EnterpriseBatterySwapMutation) ResetPutinBatteryID() {
+	m.putin_battery = nil
+}
+
+// SetPutinBatterySn sets the "putin_battery_sn" field.
+func (m *EnterpriseBatterySwapMutation) SetPutinBatterySn(s string) {
+	m.putin_battery_sn = &s
+}
+
+// PutinBatterySn returns the value of the "putin_battery_sn" field in the mutation.
+func (m *EnterpriseBatterySwapMutation) PutinBatterySn() (r string, exists bool) {
+	v := m.putin_battery_sn
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPutinBatterySn returns the old "putin_battery_sn" field's value of the EnterpriseBatterySwap entity.
+// If the EnterpriseBatterySwap object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseBatterySwapMutation) OldPutinBatterySn(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPutinBatterySn is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPutinBatterySn requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPutinBatterySn: %w", err)
+	}
+	return oldValue.PutinBatterySn, nil
+}
+
+// ResetPutinBatterySn resets all changes to the "putin_battery_sn" field.
+func (m *EnterpriseBatterySwapMutation) ResetPutinBatterySn() {
+	m.putin_battery_sn = nil
+}
+
+// SetPutinEnterpriseID sets the "putin_enterprise_id" field.
+func (m *EnterpriseBatterySwapMutation) SetPutinEnterpriseID(u uint64) {
+	m.putin_enterprise = &u
+}
+
+// PutinEnterpriseID returns the value of the "putin_enterprise_id" field in the mutation.
+func (m *EnterpriseBatterySwapMutation) PutinEnterpriseID() (r uint64, exists bool) {
+	v := m.putin_enterprise
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPutinEnterpriseID returns the old "putin_enterprise_id" field's value of the EnterpriseBatterySwap entity.
+// If the EnterpriseBatterySwap object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseBatterySwapMutation) OldPutinEnterpriseID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPutinEnterpriseID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPutinEnterpriseID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPutinEnterpriseID: %w", err)
+	}
+	return oldValue.PutinEnterpriseID, nil
+}
+
+// ClearPutinEnterpriseID clears the value of the "putin_enterprise_id" field.
+func (m *EnterpriseBatterySwapMutation) ClearPutinEnterpriseID() {
+	m.putin_enterprise = nil
+	m.clearedFields[enterprisebatteryswap.FieldPutinEnterpriseID] = struct{}{}
+}
+
+// PutinEnterpriseIDCleared returns if the "putin_enterprise_id" field was cleared in this mutation.
+func (m *EnterpriseBatterySwapMutation) PutinEnterpriseIDCleared() bool {
+	_, ok := m.clearedFields[enterprisebatteryswap.FieldPutinEnterpriseID]
+	return ok
+}
+
+// ResetPutinEnterpriseID resets all changes to the "putin_enterprise_id" field.
+func (m *EnterpriseBatterySwapMutation) ResetPutinEnterpriseID() {
+	m.putin_enterprise = nil
+	delete(m.clearedFields, enterprisebatteryswap.FieldPutinEnterpriseID)
+}
+
+// SetPutinStationID sets the "putin_station_id" field.
+func (m *EnterpriseBatterySwapMutation) SetPutinStationID(u uint64) {
+	m.putin_station = &u
+}
+
+// PutinStationID returns the value of the "putin_station_id" field in the mutation.
+func (m *EnterpriseBatterySwapMutation) PutinStationID() (r uint64, exists bool) {
+	v := m.putin_station
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPutinStationID returns the old "putin_station_id" field's value of the EnterpriseBatterySwap entity.
+// If the EnterpriseBatterySwap object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseBatterySwapMutation) OldPutinStationID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPutinStationID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPutinStationID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPutinStationID: %w", err)
+	}
+	return oldValue.PutinStationID, nil
+}
+
+// ClearPutinStationID clears the value of the "putin_station_id" field.
+func (m *EnterpriseBatterySwapMutation) ClearPutinStationID() {
+	m.putin_station = nil
+	m.clearedFields[enterprisebatteryswap.FieldPutinStationID] = struct{}{}
+}
+
+// PutinStationIDCleared returns if the "putin_station_id" field was cleared in this mutation.
+func (m *EnterpriseBatterySwapMutation) PutinStationIDCleared() bool {
+	_, ok := m.clearedFields[enterprisebatteryswap.FieldPutinStationID]
+	return ok
+}
+
+// ResetPutinStationID resets all changes to the "putin_station_id" field.
+func (m *EnterpriseBatterySwapMutation) ResetPutinStationID() {
+	m.putin_station = nil
+	delete(m.clearedFields, enterprisebatteryswap.FieldPutinStationID)
+}
+
+// SetPutoutBatteryID sets the "putout_battery_id" field.
+func (m *EnterpriseBatterySwapMutation) SetPutoutBatteryID(u uint64) {
+	m.putout_battery = &u
+}
+
+// PutoutBatteryID returns the value of the "putout_battery_id" field in the mutation.
+func (m *EnterpriseBatterySwapMutation) PutoutBatteryID() (r uint64, exists bool) {
+	v := m.putout_battery
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPutoutBatteryID returns the old "putout_battery_id" field's value of the EnterpriseBatterySwap entity.
+// If the EnterpriseBatterySwap object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseBatterySwapMutation) OldPutoutBatteryID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPutoutBatteryID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPutoutBatteryID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPutoutBatteryID: %w", err)
+	}
+	return oldValue.PutoutBatteryID, nil
+}
+
+// ResetPutoutBatteryID resets all changes to the "putout_battery_id" field.
+func (m *EnterpriseBatterySwapMutation) ResetPutoutBatteryID() {
+	m.putout_battery = nil
+}
+
+// SetPutoutBatterySn sets the "putout_battery_sn" field.
+func (m *EnterpriseBatterySwapMutation) SetPutoutBatterySn(s string) {
+	m.putout_battery_sn = &s
+}
+
+// PutoutBatterySn returns the value of the "putout_battery_sn" field in the mutation.
+func (m *EnterpriseBatterySwapMutation) PutoutBatterySn() (r string, exists bool) {
+	v := m.putout_battery_sn
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPutoutBatterySn returns the old "putout_battery_sn" field's value of the EnterpriseBatterySwap entity.
+// If the EnterpriseBatterySwap object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseBatterySwapMutation) OldPutoutBatterySn(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPutoutBatterySn is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPutoutBatterySn requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPutoutBatterySn: %w", err)
+	}
+	return oldValue.PutoutBatterySn, nil
+}
+
+// ResetPutoutBatterySn resets all changes to the "putout_battery_sn" field.
+func (m *EnterpriseBatterySwapMutation) ResetPutoutBatterySn() {
+	m.putout_battery_sn = nil
+}
+
+// SetPutoutEnterpriseID sets the "putout_enterprise_id" field.
+func (m *EnterpriseBatterySwapMutation) SetPutoutEnterpriseID(u uint64) {
+	m.putout_enterprise = &u
+}
+
+// PutoutEnterpriseID returns the value of the "putout_enterprise_id" field in the mutation.
+func (m *EnterpriseBatterySwapMutation) PutoutEnterpriseID() (r uint64, exists bool) {
+	v := m.putout_enterprise
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPutoutEnterpriseID returns the old "putout_enterprise_id" field's value of the EnterpriseBatterySwap entity.
+// If the EnterpriseBatterySwap object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseBatterySwapMutation) OldPutoutEnterpriseID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPutoutEnterpriseID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPutoutEnterpriseID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPutoutEnterpriseID: %w", err)
+	}
+	return oldValue.PutoutEnterpriseID, nil
+}
+
+// ClearPutoutEnterpriseID clears the value of the "putout_enterprise_id" field.
+func (m *EnterpriseBatterySwapMutation) ClearPutoutEnterpriseID() {
+	m.putout_enterprise = nil
+	m.clearedFields[enterprisebatteryswap.FieldPutoutEnterpriseID] = struct{}{}
+}
+
+// PutoutEnterpriseIDCleared returns if the "putout_enterprise_id" field was cleared in this mutation.
+func (m *EnterpriseBatterySwapMutation) PutoutEnterpriseIDCleared() bool {
+	_, ok := m.clearedFields[enterprisebatteryswap.FieldPutoutEnterpriseID]
+	return ok
+}
+
+// ResetPutoutEnterpriseID resets all changes to the "putout_enterprise_id" field.
+func (m *EnterpriseBatterySwapMutation) ResetPutoutEnterpriseID() {
+	m.putout_enterprise = nil
+	delete(m.clearedFields, enterprisebatteryswap.FieldPutoutEnterpriseID)
+}
+
+// SetPutoutStationID sets the "putout_station_id" field.
+func (m *EnterpriseBatterySwapMutation) SetPutoutStationID(u uint64) {
+	m.putout_station = &u
+}
+
+// PutoutStationID returns the value of the "putout_station_id" field in the mutation.
+func (m *EnterpriseBatterySwapMutation) PutoutStationID() (r uint64, exists bool) {
+	v := m.putout_station
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPutoutStationID returns the old "putout_station_id" field's value of the EnterpriseBatterySwap entity.
+// If the EnterpriseBatterySwap object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseBatterySwapMutation) OldPutoutStationID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPutoutStationID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPutoutStationID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPutoutStationID: %w", err)
+	}
+	return oldValue.PutoutStationID, nil
+}
+
+// ClearPutoutStationID clears the value of the "putout_station_id" field.
+func (m *EnterpriseBatterySwapMutation) ClearPutoutStationID() {
+	m.putout_station = nil
+	m.clearedFields[enterprisebatteryswap.FieldPutoutStationID] = struct{}{}
+}
+
+// PutoutStationIDCleared returns if the "putout_station_id" field was cleared in this mutation.
+func (m *EnterpriseBatterySwapMutation) PutoutStationIDCleared() bool {
+	_, ok := m.clearedFields[enterprisebatteryswap.FieldPutoutStationID]
+	return ok
+}
+
+// ResetPutoutStationID resets all changes to the "putout_station_id" field.
+func (m *EnterpriseBatterySwapMutation) ResetPutoutStationID() {
+	m.putout_station = nil
+	delete(m.clearedFields, enterprisebatteryswap.FieldPutoutStationID)
+}
+
+// ClearExchange clears the "exchange" edge to the Exchange entity.
+func (m *EnterpriseBatterySwapMutation) ClearExchange() {
+	m.clearedexchange = true
+}
+
+// ExchangeCleared reports if the "exchange" edge to the Exchange entity was cleared.
+func (m *EnterpriseBatterySwapMutation) ExchangeCleared() bool {
+	return m.clearedexchange
+}
+
+// ExchangeIDs returns the "exchange" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ExchangeID instead. It exists only for internal usage by the builders.
+func (m *EnterpriseBatterySwapMutation) ExchangeIDs() (ids []uint64) {
+	if id := m.exchange; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetExchange resets all changes to the "exchange" edge.
+func (m *EnterpriseBatterySwapMutation) ResetExchange() {
+	m.exchange = nil
+	m.clearedexchange = false
+}
+
+// ClearCabinet clears the "cabinet" edge to the Cabinet entity.
+func (m *EnterpriseBatterySwapMutation) ClearCabinet() {
+	m.clearedcabinet = true
+}
+
+// CabinetCleared reports if the "cabinet" edge to the Cabinet entity was cleared.
+func (m *EnterpriseBatterySwapMutation) CabinetCleared() bool {
+	return m.clearedcabinet
+}
+
+// CabinetIDs returns the "cabinet" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CabinetID instead. It exists only for internal usage by the builders.
+func (m *EnterpriseBatterySwapMutation) CabinetIDs() (ids []uint64) {
+	if id := m.cabinet; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCabinet resets all changes to the "cabinet" edge.
+func (m *EnterpriseBatterySwapMutation) ResetCabinet() {
+	m.cabinet = nil
+	m.clearedcabinet = false
+}
+
+// ClearPutinBattery clears the "putin_battery" edge to the Battery entity.
+func (m *EnterpriseBatterySwapMutation) ClearPutinBattery() {
+	m.clearedputin_battery = true
+}
+
+// PutinBatteryCleared reports if the "putin_battery" edge to the Battery entity was cleared.
+func (m *EnterpriseBatterySwapMutation) PutinBatteryCleared() bool {
+	return m.clearedputin_battery
+}
+
+// PutinBatteryIDs returns the "putin_battery" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// PutinBatteryID instead. It exists only for internal usage by the builders.
+func (m *EnterpriseBatterySwapMutation) PutinBatteryIDs() (ids []uint64) {
+	if id := m.putin_battery; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetPutinBattery resets all changes to the "putin_battery" edge.
+func (m *EnterpriseBatterySwapMutation) ResetPutinBattery() {
+	m.putin_battery = nil
+	m.clearedputin_battery = false
+}
+
+// ClearPutinEnterprise clears the "putin_enterprise" edge to the Enterprise entity.
+func (m *EnterpriseBatterySwapMutation) ClearPutinEnterprise() {
+	m.clearedputin_enterprise = true
+}
+
+// PutinEnterpriseCleared reports if the "putin_enterprise" edge to the Enterprise entity was cleared.
+func (m *EnterpriseBatterySwapMutation) PutinEnterpriseCleared() bool {
+	return m.PutinEnterpriseIDCleared() || m.clearedputin_enterprise
+}
+
+// PutinEnterpriseIDs returns the "putin_enterprise" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// PutinEnterpriseID instead. It exists only for internal usage by the builders.
+func (m *EnterpriseBatterySwapMutation) PutinEnterpriseIDs() (ids []uint64) {
+	if id := m.putin_enterprise; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetPutinEnterprise resets all changes to the "putin_enterprise" edge.
+func (m *EnterpriseBatterySwapMutation) ResetPutinEnterprise() {
+	m.putin_enterprise = nil
+	m.clearedputin_enterprise = false
+}
+
+// ClearPutinStation clears the "putin_station" edge to the EnterpriseStation entity.
+func (m *EnterpriseBatterySwapMutation) ClearPutinStation() {
+	m.clearedputin_station = true
+}
+
+// PutinStationCleared reports if the "putin_station" edge to the EnterpriseStation entity was cleared.
+func (m *EnterpriseBatterySwapMutation) PutinStationCleared() bool {
+	return m.PutinStationIDCleared() || m.clearedputin_station
+}
+
+// PutinStationIDs returns the "putin_station" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// PutinStationID instead. It exists only for internal usage by the builders.
+func (m *EnterpriseBatterySwapMutation) PutinStationIDs() (ids []uint64) {
+	if id := m.putin_station; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetPutinStation resets all changes to the "putin_station" edge.
+func (m *EnterpriseBatterySwapMutation) ResetPutinStation() {
+	m.putin_station = nil
+	m.clearedputin_station = false
+}
+
+// ClearPutoutBattery clears the "putout_battery" edge to the Battery entity.
+func (m *EnterpriseBatterySwapMutation) ClearPutoutBattery() {
+	m.clearedputout_battery = true
+}
+
+// PutoutBatteryCleared reports if the "putout_battery" edge to the Battery entity was cleared.
+func (m *EnterpriseBatterySwapMutation) PutoutBatteryCleared() bool {
+	return m.clearedputout_battery
+}
+
+// PutoutBatteryIDs returns the "putout_battery" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// PutoutBatteryID instead. It exists only for internal usage by the builders.
+func (m *EnterpriseBatterySwapMutation) PutoutBatteryIDs() (ids []uint64) {
+	if id := m.putout_battery; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetPutoutBattery resets all changes to the "putout_battery" edge.
+func (m *EnterpriseBatterySwapMutation) ResetPutoutBattery() {
+	m.putout_battery = nil
+	m.clearedputout_battery = false
+}
+
+// ClearPutoutEnterprise clears the "putout_enterprise" edge to the Enterprise entity.
+func (m *EnterpriseBatterySwapMutation) ClearPutoutEnterprise() {
+	m.clearedputout_enterprise = true
+}
+
+// PutoutEnterpriseCleared reports if the "putout_enterprise" edge to the Enterprise entity was cleared.
+func (m *EnterpriseBatterySwapMutation) PutoutEnterpriseCleared() bool {
+	return m.PutoutEnterpriseIDCleared() || m.clearedputout_enterprise
+}
+
+// PutoutEnterpriseIDs returns the "putout_enterprise" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// PutoutEnterpriseID instead. It exists only for internal usage by the builders.
+func (m *EnterpriseBatterySwapMutation) PutoutEnterpriseIDs() (ids []uint64) {
+	if id := m.putout_enterprise; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetPutoutEnterprise resets all changes to the "putout_enterprise" edge.
+func (m *EnterpriseBatterySwapMutation) ResetPutoutEnterprise() {
+	m.putout_enterprise = nil
+	m.clearedputout_enterprise = false
+}
+
+// ClearPutoutStation clears the "putout_station" edge to the EnterpriseStation entity.
+func (m *EnterpriseBatterySwapMutation) ClearPutoutStation() {
+	m.clearedputout_station = true
+}
+
+// PutoutStationCleared reports if the "putout_station" edge to the EnterpriseStation entity was cleared.
+func (m *EnterpriseBatterySwapMutation) PutoutStationCleared() bool {
+	return m.PutoutStationIDCleared() || m.clearedputout_station
+}
+
+// PutoutStationIDs returns the "putout_station" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// PutoutStationID instead. It exists only for internal usage by the builders.
+func (m *EnterpriseBatterySwapMutation) PutoutStationIDs() (ids []uint64) {
+	if id := m.putout_station; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetPutoutStation resets all changes to the "putout_station" edge.
+func (m *EnterpriseBatterySwapMutation) ResetPutoutStation() {
+	m.putout_station = nil
+	m.clearedputout_station = false
+}
+
+// Where appends a list predicates to the EnterpriseBatterySwapMutation builder.
+func (m *EnterpriseBatterySwapMutation) Where(ps ...predicate.EnterpriseBatterySwap) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the EnterpriseBatterySwapMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *EnterpriseBatterySwapMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.EnterpriseBatterySwap, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *EnterpriseBatterySwapMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *EnterpriseBatterySwapMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (EnterpriseBatterySwap).
+func (m *EnterpriseBatterySwapMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *EnterpriseBatterySwapMutation) Fields() []string {
+	fields := make([]string, 0, 12)
+	if m.created_at != nil {
+		fields = append(fields, enterprisebatteryswap.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, enterprisebatteryswap.FieldUpdatedAt)
+	}
+	if m.exchange != nil {
+		fields = append(fields, enterprisebatteryswap.FieldExchangeID)
+	}
+	if m.cabinet != nil {
+		fields = append(fields, enterprisebatteryswap.FieldCabinetID)
+	}
+	if m.putin_battery != nil {
+		fields = append(fields, enterprisebatteryswap.FieldPutinBatteryID)
+	}
+	if m.putin_battery_sn != nil {
+		fields = append(fields, enterprisebatteryswap.FieldPutinBatterySn)
+	}
+	if m.putin_enterprise != nil {
+		fields = append(fields, enterprisebatteryswap.FieldPutinEnterpriseID)
+	}
+	if m.putin_station != nil {
+		fields = append(fields, enterprisebatteryswap.FieldPutinStationID)
+	}
+	if m.putout_battery != nil {
+		fields = append(fields, enterprisebatteryswap.FieldPutoutBatteryID)
+	}
+	if m.putout_battery_sn != nil {
+		fields = append(fields, enterprisebatteryswap.FieldPutoutBatterySn)
+	}
+	if m.putout_enterprise != nil {
+		fields = append(fields, enterprisebatteryswap.FieldPutoutEnterpriseID)
+	}
+	if m.putout_station != nil {
+		fields = append(fields, enterprisebatteryswap.FieldPutoutStationID)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *EnterpriseBatterySwapMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case enterprisebatteryswap.FieldCreatedAt:
+		return m.CreatedAt()
+	case enterprisebatteryswap.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case enterprisebatteryswap.FieldExchangeID:
+		return m.ExchangeID()
+	case enterprisebatteryswap.FieldCabinetID:
+		return m.CabinetID()
+	case enterprisebatteryswap.FieldPutinBatteryID:
+		return m.PutinBatteryID()
+	case enterprisebatteryswap.FieldPutinBatterySn:
+		return m.PutinBatterySn()
+	case enterprisebatteryswap.FieldPutinEnterpriseID:
+		return m.PutinEnterpriseID()
+	case enterprisebatteryswap.FieldPutinStationID:
+		return m.PutinStationID()
+	case enterprisebatteryswap.FieldPutoutBatteryID:
+		return m.PutoutBatteryID()
+	case enterprisebatteryswap.FieldPutoutBatterySn:
+		return m.PutoutBatterySn()
+	case enterprisebatteryswap.FieldPutoutEnterpriseID:
+		return m.PutoutEnterpriseID()
+	case enterprisebatteryswap.FieldPutoutStationID:
+		return m.PutoutStationID()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *EnterpriseBatterySwapMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case enterprisebatteryswap.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case enterprisebatteryswap.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case enterprisebatteryswap.FieldExchangeID:
+		return m.OldExchangeID(ctx)
+	case enterprisebatteryswap.FieldCabinetID:
+		return m.OldCabinetID(ctx)
+	case enterprisebatteryswap.FieldPutinBatteryID:
+		return m.OldPutinBatteryID(ctx)
+	case enterprisebatteryswap.FieldPutinBatterySn:
+		return m.OldPutinBatterySn(ctx)
+	case enterprisebatteryswap.FieldPutinEnterpriseID:
+		return m.OldPutinEnterpriseID(ctx)
+	case enterprisebatteryswap.FieldPutinStationID:
+		return m.OldPutinStationID(ctx)
+	case enterprisebatteryswap.FieldPutoutBatteryID:
+		return m.OldPutoutBatteryID(ctx)
+	case enterprisebatteryswap.FieldPutoutBatterySn:
+		return m.OldPutoutBatterySn(ctx)
+	case enterprisebatteryswap.FieldPutoutEnterpriseID:
+		return m.OldPutoutEnterpriseID(ctx)
+	case enterprisebatteryswap.FieldPutoutStationID:
+		return m.OldPutoutStationID(ctx)
+	}
+	return nil, fmt.Errorf("unknown EnterpriseBatterySwap field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *EnterpriseBatterySwapMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case enterprisebatteryswap.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case enterprisebatteryswap.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case enterprisebatteryswap.FieldExchangeID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetExchangeID(v)
+		return nil
+	case enterprisebatteryswap.FieldCabinetID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCabinetID(v)
+		return nil
+	case enterprisebatteryswap.FieldPutinBatteryID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPutinBatteryID(v)
+		return nil
+	case enterprisebatteryswap.FieldPutinBatterySn:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPutinBatterySn(v)
+		return nil
+	case enterprisebatteryswap.FieldPutinEnterpriseID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPutinEnterpriseID(v)
+		return nil
+	case enterprisebatteryswap.FieldPutinStationID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPutinStationID(v)
+		return nil
+	case enterprisebatteryswap.FieldPutoutBatteryID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPutoutBatteryID(v)
+		return nil
+	case enterprisebatteryswap.FieldPutoutBatterySn:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPutoutBatterySn(v)
+		return nil
+	case enterprisebatteryswap.FieldPutoutEnterpriseID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPutoutEnterpriseID(v)
+		return nil
+	case enterprisebatteryswap.FieldPutoutStationID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPutoutStationID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown EnterpriseBatterySwap field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *EnterpriseBatterySwapMutation) AddedFields() []string {
+	var fields []string
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *EnterpriseBatterySwapMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *EnterpriseBatterySwapMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown EnterpriseBatterySwap numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *EnterpriseBatterySwapMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(enterprisebatteryswap.FieldPutinEnterpriseID) {
+		fields = append(fields, enterprisebatteryswap.FieldPutinEnterpriseID)
+	}
+	if m.FieldCleared(enterprisebatteryswap.FieldPutinStationID) {
+		fields = append(fields, enterprisebatteryswap.FieldPutinStationID)
+	}
+	if m.FieldCleared(enterprisebatteryswap.FieldPutoutEnterpriseID) {
+		fields = append(fields, enterprisebatteryswap.FieldPutoutEnterpriseID)
+	}
+	if m.FieldCleared(enterprisebatteryswap.FieldPutoutStationID) {
+		fields = append(fields, enterprisebatteryswap.FieldPutoutStationID)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *EnterpriseBatterySwapMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *EnterpriseBatterySwapMutation) ClearField(name string) error {
+	switch name {
+	case enterprisebatteryswap.FieldPutinEnterpriseID:
+		m.ClearPutinEnterpriseID()
+		return nil
+	case enterprisebatteryswap.FieldPutinStationID:
+		m.ClearPutinStationID()
+		return nil
+	case enterprisebatteryswap.FieldPutoutEnterpriseID:
+		m.ClearPutoutEnterpriseID()
+		return nil
+	case enterprisebatteryswap.FieldPutoutStationID:
+		m.ClearPutoutStationID()
+		return nil
+	}
+	return fmt.Errorf("unknown EnterpriseBatterySwap nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *EnterpriseBatterySwapMutation) ResetField(name string) error {
+	switch name {
+	case enterprisebatteryswap.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case enterprisebatteryswap.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case enterprisebatteryswap.FieldExchangeID:
+		m.ResetExchangeID()
+		return nil
+	case enterprisebatteryswap.FieldCabinetID:
+		m.ResetCabinetID()
+		return nil
+	case enterprisebatteryswap.FieldPutinBatteryID:
+		m.ResetPutinBatteryID()
+		return nil
+	case enterprisebatteryswap.FieldPutinBatterySn:
+		m.ResetPutinBatterySn()
+		return nil
+	case enterprisebatteryswap.FieldPutinEnterpriseID:
+		m.ResetPutinEnterpriseID()
+		return nil
+	case enterprisebatteryswap.FieldPutinStationID:
+		m.ResetPutinStationID()
+		return nil
+	case enterprisebatteryswap.FieldPutoutBatteryID:
+		m.ResetPutoutBatteryID()
+		return nil
+	case enterprisebatteryswap.FieldPutoutBatterySn:
+		m.ResetPutoutBatterySn()
+		return nil
+	case enterprisebatteryswap.FieldPutoutEnterpriseID:
+		m.ResetPutoutEnterpriseID()
+		return nil
+	case enterprisebatteryswap.FieldPutoutStationID:
+		m.ResetPutoutStationID()
+		return nil
+	}
+	return fmt.Errorf("unknown EnterpriseBatterySwap field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *EnterpriseBatterySwapMutation) AddedEdges() []string {
+	edges := make([]string, 0, 8)
+	if m.exchange != nil {
+		edges = append(edges, enterprisebatteryswap.EdgeExchange)
+	}
+	if m.cabinet != nil {
+		edges = append(edges, enterprisebatteryswap.EdgeCabinet)
+	}
+	if m.putin_battery != nil {
+		edges = append(edges, enterprisebatteryswap.EdgePutinBattery)
+	}
+	if m.putin_enterprise != nil {
+		edges = append(edges, enterprisebatteryswap.EdgePutinEnterprise)
+	}
+	if m.putin_station != nil {
+		edges = append(edges, enterprisebatteryswap.EdgePutinStation)
+	}
+	if m.putout_battery != nil {
+		edges = append(edges, enterprisebatteryswap.EdgePutoutBattery)
+	}
+	if m.putout_enterprise != nil {
+		edges = append(edges, enterprisebatteryswap.EdgePutoutEnterprise)
+	}
+	if m.putout_station != nil {
+		edges = append(edges, enterprisebatteryswap.EdgePutoutStation)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *EnterpriseBatterySwapMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case enterprisebatteryswap.EdgeExchange:
+		if id := m.exchange; id != nil {
+			return []ent.Value{*id}
+		}
+	case enterprisebatteryswap.EdgeCabinet:
+		if id := m.cabinet; id != nil {
+			return []ent.Value{*id}
+		}
+	case enterprisebatteryswap.EdgePutinBattery:
+		if id := m.putin_battery; id != nil {
+			return []ent.Value{*id}
+		}
+	case enterprisebatteryswap.EdgePutinEnterprise:
+		if id := m.putin_enterprise; id != nil {
+			return []ent.Value{*id}
+		}
+	case enterprisebatteryswap.EdgePutinStation:
+		if id := m.putin_station; id != nil {
+			return []ent.Value{*id}
+		}
+	case enterprisebatteryswap.EdgePutoutBattery:
+		if id := m.putout_battery; id != nil {
+			return []ent.Value{*id}
+		}
+	case enterprisebatteryswap.EdgePutoutEnterprise:
+		if id := m.putout_enterprise; id != nil {
+			return []ent.Value{*id}
+		}
+	case enterprisebatteryswap.EdgePutoutStation:
+		if id := m.putout_station; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *EnterpriseBatterySwapMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 8)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *EnterpriseBatterySwapMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *EnterpriseBatterySwapMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 8)
+	if m.clearedexchange {
+		edges = append(edges, enterprisebatteryswap.EdgeExchange)
+	}
+	if m.clearedcabinet {
+		edges = append(edges, enterprisebatteryswap.EdgeCabinet)
+	}
+	if m.clearedputin_battery {
+		edges = append(edges, enterprisebatteryswap.EdgePutinBattery)
+	}
+	if m.clearedputin_enterprise {
+		edges = append(edges, enterprisebatteryswap.EdgePutinEnterprise)
+	}
+	if m.clearedputin_station {
+		edges = append(edges, enterprisebatteryswap.EdgePutinStation)
+	}
+	if m.clearedputout_battery {
+		edges = append(edges, enterprisebatteryswap.EdgePutoutBattery)
+	}
+	if m.clearedputout_enterprise {
+		edges = append(edges, enterprisebatteryswap.EdgePutoutEnterprise)
+	}
+	if m.clearedputout_station {
+		edges = append(edges, enterprisebatteryswap.EdgePutoutStation)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *EnterpriseBatterySwapMutation) EdgeCleared(name string) bool {
+	switch name {
+	case enterprisebatteryswap.EdgeExchange:
+		return m.clearedexchange
+	case enterprisebatteryswap.EdgeCabinet:
+		return m.clearedcabinet
+	case enterprisebatteryswap.EdgePutinBattery:
+		return m.clearedputin_battery
+	case enterprisebatteryswap.EdgePutinEnterprise:
+		return m.clearedputin_enterprise
+	case enterprisebatteryswap.EdgePutinStation:
+		return m.clearedputin_station
+	case enterprisebatteryswap.EdgePutoutBattery:
+		return m.clearedputout_battery
+	case enterprisebatteryswap.EdgePutoutEnterprise:
+		return m.clearedputout_enterprise
+	case enterprisebatteryswap.EdgePutoutStation:
+		return m.clearedputout_station
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *EnterpriseBatterySwapMutation) ClearEdge(name string) error {
+	switch name {
+	case enterprisebatteryswap.EdgeExchange:
+		m.ClearExchange()
+		return nil
+	case enterprisebatteryswap.EdgeCabinet:
+		m.ClearCabinet()
+		return nil
+	case enterprisebatteryswap.EdgePutinBattery:
+		m.ClearPutinBattery()
+		return nil
+	case enterprisebatteryswap.EdgePutinEnterprise:
+		m.ClearPutinEnterprise()
+		return nil
+	case enterprisebatteryswap.EdgePutinStation:
+		m.ClearPutinStation()
+		return nil
+	case enterprisebatteryswap.EdgePutoutBattery:
+		m.ClearPutoutBattery()
+		return nil
+	case enterprisebatteryswap.EdgePutoutEnterprise:
+		m.ClearPutoutEnterprise()
+		return nil
+	case enterprisebatteryswap.EdgePutoutStation:
+		m.ClearPutoutStation()
+		return nil
+	}
+	return fmt.Errorf("unknown EnterpriseBatterySwap unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *EnterpriseBatterySwapMutation) ResetEdge(name string) error {
+	switch name {
+	case enterprisebatteryswap.EdgeExchange:
+		m.ResetExchange()
+		return nil
+	case enterprisebatteryswap.EdgeCabinet:
+		m.ResetCabinet()
+		return nil
+	case enterprisebatteryswap.EdgePutinBattery:
+		m.ResetPutinBattery()
+		return nil
+	case enterprisebatteryswap.EdgePutinEnterprise:
+		m.ResetPutinEnterprise()
+		return nil
+	case enterprisebatteryswap.EdgePutinStation:
+		m.ResetPutinStation()
+		return nil
+	case enterprisebatteryswap.EdgePutoutBattery:
+		m.ResetPutoutBattery()
+		return nil
+	case enterprisebatteryswap.EdgePutoutEnterprise:
+		m.ResetPutoutEnterprise()
+		return nil
+	case enterprisebatteryswap.EdgePutoutStation:
+		m.ResetPutoutStation()
+		return nil
+	}
+	return fmt.Errorf("unknown EnterpriseBatterySwap edge %s", name)
 }
 
 // EnterpriseBillMutation represents an operation that mutates the EnterpriseBill nodes in the graph.
@@ -42561,34 +44099,40 @@ func (m *EnterpriseStatementMutation) ResetEdge(name string) error {
 // EnterpriseStationMutation represents an operation that mutates the EnterpriseStation nodes in the graph.
 type EnterpriseStationMutation struct {
 	config
-	op                Op
-	typ               string
-	id                *uint64
-	created_at        *time.Time
-	updated_at        *time.Time
-	deleted_at        *time.Time
-	creator           **model.Modifier
-	last_modifier     **model.Modifier
-	remark            *string
-	name              *string
-	clearedFields     map[string]struct{}
-	enterprise        *uint64
-	clearedenterprise bool
-	cabinets          map[uint64]struct{}
-	removedcabinets   map[uint64]struct{}
-	clearedcabinets   bool
-	battery           map[uint64]struct{}
-	removedbattery    map[uint64]struct{}
-	clearedbattery    bool
-	stocks            map[uint64]struct{}
-	removedstocks     map[uint64]struct{}
-	clearedstocks     bool
-	agents            map[uint64]struct{}
-	removedagents     map[uint64]struct{}
-	clearedagents     bool
-	done              bool
-	oldValue          func(context.Context) (*EnterpriseStation, error)
-	predicates        []predicate.EnterpriseStation
+	op                           Op
+	typ                          string
+	id                           *uint64
+	created_at                   *time.Time
+	updated_at                   *time.Time
+	deleted_at                   *time.Time
+	creator                      **model.Modifier
+	last_modifier                **model.Modifier
+	remark                       *string
+	name                         *string
+	clearedFields                map[string]struct{}
+	enterprise                   *uint64
+	clearedenterprise            bool
+	cabinets                     map[uint64]struct{}
+	removedcabinets              map[uint64]struct{}
+	clearedcabinets              bool
+	battery                      map[uint64]struct{}
+	removedbattery               map[uint64]struct{}
+	clearedbattery               bool
+	stocks                       map[uint64]struct{}
+	removedstocks                map[uint64]struct{}
+	clearedstocks                bool
+	agents                       map[uint64]struct{}
+	removedagents                map[uint64]struct{}
+	clearedagents                bool
+	swap_putin_batteries         map[uint64]struct{}
+	removedswap_putin_batteries  map[uint64]struct{}
+	clearedswap_putin_batteries  bool
+	swap_putout_batteries        map[uint64]struct{}
+	removedswap_putout_batteries map[uint64]struct{}
+	clearedswap_putout_batteries bool
+	done                         bool
+	oldValue                     func(context.Context) (*EnterpriseStation, error)
+	predicates                   []predicate.EnterpriseStation
 }
 
 var _ ent.Mutation = (*EnterpriseStationMutation)(nil)
@@ -43271,6 +44815,114 @@ func (m *EnterpriseStationMutation) ResetAgents() {
 	m.removedagents = nil
 }
 
+// AddSwapPutinBatteryIDs adds the "swap_putin_batteries" edge to the EnterpriseBatterySwap entity by ids.
+func (m *EnterpriseStationMutation) AddSwapPutinBatteryIDs(ids ...uint64) {
+	if m.swap_putin_batteries == nil {
+		m.swap_putin_batteries = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.swap_putin_batteries[ids[i]] = struct{}{}
+	}
+}
+
+// ClearSwapPutinBatteries clears the "swap_putin_batteries" edge to the EnterpriseBatterySwap entity.
+func (m *EnterpriseStationMutation) ClearSwapPutinBatteries() {
+	m.clearedswap_putin_batteries = true
+}
+
+// SwapPutinBatteriesCleared reports if the "swap_putin_batteries" edge to the EnterpriseBatterySwap entity was cleared.
+func (m *EnterpriseStationMutation) SwapPutinBatteriesCleared() bool {
+	return m.clearedswap_putin_batteries
+}
+
+// RemoveSwapPutinBatteryIDs removes the "swap_putin_batteries" edge to the EnterpriseBatterySwap entity by IDs.
+func (m *EnterpriseStationMutation) RemoveSwapPutinBatteryIDs(ids ...uint64) {
+	if m.removedswap_putin_batteries == nil {
+		m.removedswap_putin_batteries = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.swap_putin_batteries, ids[i])
+		m.removedswap_putin_batteries[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedSwapPutinBatteries returns the removed IDs of the "swap_putin_batteries" edge to the EnterpriseBatterySwap entity.
+func (m *EnterpriseStationMutation) RemovedSwapPutinBatteriesIDs() (ids []uint64) {
+	for id := range m.removedswap_putin_batteries {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// SwapPutinBatteriesIDs returns the "swap_putin_batteries" edge IDs in the mutation.
+func (m *EnterpriseStationMutation) SwapPutinBatteriesIDs() (ids []uint64) {
+	for id := range m.swap_putin_batteries {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetSwapPutinBatteries resets all changes to the "swap_putin_batteries" edge.
+func (m *EnterpriseStationMutation) ResetSwapPutinBatteries() {
+	m.swap_putin_batteries = nil
+	m.clearedswap_putin_batteries = false
+	m.removedswap_putin_batteries = nil
+}
+
+// AddSwapPutoutBatteryIDs adds the "swap_putout_batteries" edge to the EnterpriseBatterySwap entity by ids.
+func (m *EnterpriseStationMutation) AddSwapPutoutBatteryIDs(ids ...uint64) {
+	if m.swap_putout_batteries == nil {
+		m.swap_putout_batteries = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.swap_putout_batteries[ids[i]] = struct{}{}
+	}
+}
+
+// ClearSwapPutoutBatteries clears the "swap_putout_batteries" edge to the EnterpriseBatterySwap entity.
+func (m *EnterpriseStationMutation) ClearSwapPutoutBatteries() {
+	m.clearedswap_putout_batteries = true
+}
+
+// SwapPutoutBatteriesCleared reports if the "swap_putout_batteries" edge to the EnterpriseBatterySwap entity was cleared.
+func (m *EnterpriseStationMutation) SwapPutoutBatteriesCleared() bool {
+	return m.clearedswap_putout_batteries
+}
+
+// RemoveSwapPutoutBatteryIDs removes the "swap_putout_batteries" edge to the EnterpriseBatterySwap entity by IDs.
+func (m *EnterpriseStationMutation) RemoveSwapPutoutBatteryIDs(ids ...uint64) {
+	if m.removedswap_putout_batteries == nil {
+		m.removedswap_putout_batteries = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.swap_putout_batteries, ids[i])
+		m.removedswap_putout_batteries[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedSwapPutoutBatteries returns the removed IDs of the "swap_putout_batteries" edge to the EnterpriseBatterySwap entity.
+func (m *EnterpriseStationMutation) RemovedSwapPutoutBatteriesIDs() (ids []uint64) {
+	for id := range m.removedswap_putout_batteries {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// SwapPutoutBatteriesIDs returns the "swap_putout_batteries" edge IDs in the mutation.
+func (m *EnterpriseStationMutation) SwapPutoutBatteriesIDs() (ids []uint64) {
+	for id := range m.swap_putout_batteries {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetSwapPutoutBatteries resets all changes to the "swap_putout_batteries" edge.
+func (m *EnterpriseStationMutation) ResetSwapPutoutBatteries() {
+	m.swap_putout_batteries = nil
+	m.clearedswap_putout_batteries = false
+	m.removedswap_putout_batteries = nil
+}
+
 // Where appends a list predicates to the EnterpriseStationMutation builder.
 func (m *EnterpriseStationMutation) Where(ps ...predicate.EnterpriseStation) {
 	m.predicates = append(m.predicates, ps...)
@@ -43553,7 +45205,7 @@ func (m *EnterpriseStationMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *EnterpriseStationMutation) AddedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 7)
 	if m.enterprise != nil {
 		edges = append(edges, enterprisestation.EdgeEnterprise)
 	}
@@ -43568,6 +45220,12 @@ func (m *EnterpriseStationMutation) AddedEdges() []string {
 	}
 	if m.agents != nil {
 		edges = append(edges, enterprisestation.EdgeAgents)
+	}
+	if m.swap_putin_batteries != nil {
+		edges = append(edges, enterprisestation.EdgeSwapPutinBatteries)
+	}
+	if m.swap_putout_batteries != nil {
+		edges = append(edges, enterprisestation.EdgeSwapPutoutBatteries)
 	}
 	return edges
 }
@@ -43604,13 +45262,25 @@ func (m *EnterpriseStationMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case enterprisestation.EdgeSwapPutinBatteries:
+		ids := make([]ent.Value, 0, len(m.swap_putin_batteries))
+		for id := range m.swap_putin_batteries {
+			ids = append(ids, id)
+		}
+		return ids
+	case enterprisestation.EdgeSwapPutoutBatteries:
+		ids := make([]ent.Value, 0, len(m.swap_putout_batteries))
+		for id := range m.swap_putout_batteries {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *EnterpriseStationMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 7)
 	if m.removedcabinets != nil {
 		edges = append(edges, enterprisestation.EdgeCabinets)
 	}
@@ -43622,6 +45292,12 @@ func (m *EnterpriseStationMutation) RemovedEdges() []string {
 	}
 	if m.removedagents != nil {
 		edges = append(edges, enterprisestation.EdgeAgents)
+	}
+	if m.removedswap_putin_batteries != nil {
+		edges = append(edges, enterprisestation.EdgeSwapPutinBatteries)
+	}
+	if m.removedswap_putout_batteries != nil {
+		edges = append(edges, enterprisestation.EdgeSwapPutoutBatteries)
 	}
 	return edges
 }
@@ -43654,13 +45330,25 @@ func (m *EnterpriseStationMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case enterprisestation.EdgeSwapPutinBatteries:
+		ids := make([]ent.Value, 0, len(m.removedswap_putin_batteries))
+		for id := range m.removedswap_putin_batteries {
+			ids = append(ids, id)
+		}
+		return ids
+	case enterprisestation.EdgeSwapPutoutBatteries:
+		ids := make([]ent.Value, 0, len(m.removedswap_putout_batteries))
+		for id := range m.removedswap_putout_batteries {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *EnterpriseStationMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 7)
 	if m.clearedenterprise {
 		edges = append(edges, enterprisestation.EdgeEnterprise)
 	}
@@ -43675,6 +45363,12 @@ func (m *EnterpriseStationMutation) ClearedEdges() []string {
 	}
 	if m.clearedagents {
 		edges = append(edges, enterprisestation.EdgeAgents)
+	}
+	if m.clearedswap_putin_batteries {
+		edges = append(edges, enterprisestation.EdgeSwapPutinBatteries)
+	}
+	if m.clearedswap_putout_batteries {
+		edges = append(edges, enterprisestation.EdgeSwapPutoutBatteries)
 	}
 	return edges
 }
@@ -43693,6 +45387,10 @@ func (m *EnterpriseStationMutation) EdgeCleared(name string) bool {
 		return m.clearedstocks
 	case enterprisestation.EdgeAgents:
 		return m.clearedagents
+	case enterprisestation.EdgeSwapPutinBatteries:
+		return m.clearedswap_putin_batteries
+	case enterprisestation.EdgeSwapPutoutBatteries:
+		return m.clearedswap_putout_batteries
 	}
 	return false
 }
@@ -43726,6 +45424,12 @@ func (m *EnterpriseStationMutation) ResetEdge(name string) error {
 		return nil
 	case enterprisestation.EdgeAgents:
 		m.ResetAgents()
+		return nil
+	case enterprisestation.EdgeSwapPutinBatteries:
+		m.ResetSwapPutinBatteries()
+		return nil
+	case enterprisestation.EdgeSwapPutoutBatteries:
+		m.ResetSwapPutoutBatteries()
 		return nil
 	}
 	return fmt.Errorf("unknown EnterpriseStation edge %s", name)

@@ -70,6 +70,9 @@ func (EnterpriseStation) Edges() []ent.Edge {
 		edge.To("battery", Battery.Type),
 		edge.To("stocks", Stock.Type),
 		edge.From("agents", Agent.Type).Ref("stations"),
+
+		edge.To("swap_putin_batteries", EnterpriseBatterySwap.Type),
+		edge.To("swap_putout_batteries", EnterpriseBatterySwap.Type),
 	}
 }
 

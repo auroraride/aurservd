@@ -100,3 +100,10 @@ type BatteryBatchQueryRequest struct {
 type BatteryQueryRequest struct {
 	ID uint64 `json:"id" validate:"required"`
 }
+
+// BatteryEnterpriseTransfer 代理商电池转移信息
+type BatteryEnterpriseTransfer struct {
+	Sn           string  `json:"sn"`           // 电池编码
+	StationID    *uint64 `json:"stationId"`    // 站点ID
+	EnterpriseID *uint64 `json:"enterpriseId"` // 团签ID
+}

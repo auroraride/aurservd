@@ -87,6 +87,10 @@ const (
 	EdgeCabinets = "cabinets"
 	// EdgeStocks holds the string denoting the stocks edge name in mutations.
 	EdgeStocks = "stocks"
+	// EdgeSwapPutinBatteries holds the string denoting the swap_putin_batteries edge name in mutations.
+	EdgeSwapPutinBatteries = "swap_putin_batteries"
+	// EdgeSwapPutoutBatteries holds the string denoting the swap_putout_batteries edge name in mutations.
+	EdgeSwapPutoutBatteries = "swap_putout_batteries"
 	// Table holds the table name of the enterprise in the database.
 	Table = "enterprise"
 	// CityTable is the table that holds the city relation/edge.
@@ -180,6 +184,20 @@ const (
 	StocksInverseTable = "stock"
 	// StocksColumn is the table column denoting the stocks relation/edge.
 	StocksColumn = "enterprise_id"
+	// SwapPutinBatteriesTable is the table that holds the swap_putin_batteries relation/edge.
+	SwapPutinBatteriesTable = "enterprise_battery_swap"
+	// SwapPutinBatteriesInverseTable is the table name for the EnterpriseBatterySwap entity.
+	// It exists in this package in order to avoid circular dependency with the "enterprisebatteryswap" package.
+	SwapPutinBatteriesInverseTable = "enterprise_battery_swap"
+	// SwapPutinBatteriesColumn is the table column denoting the swap_putin_batteries relation/edge.
+	SwapPutinBatteriesColumn = "putin_enterprise_id"
+	// SwapPutoutBatteriesTable is the table that holds the swap_putout_batteries relation/edge.
+	SwapPutoutBatteriesTable = "enterprise_battery_swap"
+	// SwapPutoutBatteriesInverseTable is the table name for the EnterpriseBatterySwap entity.
+	// It exists in this package in order to avoid circular dependency with the "enterprisebatteryswap" package.
+	SwapPutoutBatteriesInverseTable = "enterprise_battery_swap"
+	// SwapPutoutBatteriesColumn is the table column denoting the swap_putout_batteries relation/edge.
+	SwapPutoutBatteriesColumn = "putout_enterprise_id"
 )
 
 // Columns holds all SQL columns for enterprise fields.
@@ -529,6 +547,34 @@ func ByStocks(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newStocksStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// BySwapPutinBatteriesCount orders the results by swap_putin_batteries count.
+func BySwapPutinBatteriesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newSwapPutinBatteriesStep(), opts...)
+	}
+}
+
+// BySwapPutinBatteries orders the results by swap_putin_batteries terms.
+func BySwapPutinBatteries(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newSwapPutinBatteriesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// BySwapPutoutBatteriesCount orders the results by swap_putout_batteries count.
+func BySwapPutoutBatteriesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newSwapPutoutBatteriesStep(), opts...)
+	}
+}
+
+// BySwapPutoutBatteries orders the results by swap_putout_batteries terms.
+func BySwapPutoutBatteries(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newSwapPutoutBatteriesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newCityStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -618,5 +664,19 @@ func newStocksStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(StocksInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, StocksTable, StocksColumn),
+	)
+}
+func newSwapPutinBatteriesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(SwapPutinBatteriesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, SwapPutinBatteriesTable, SwapPutinBatteriesColumn),
+	)
+}
+func newSwapPutoutBatteriesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(SwapPutoutBatteriesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, SwapPutoutBatteriesTable, SwapPutoutBatteriesColumn),
 	)
 }

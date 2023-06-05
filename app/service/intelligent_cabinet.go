@@ -198,9 +198,25 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 		}
 	}
 
+	success = v.Success
+
 	// 若换电成功 直接返回
-	if v.Success {
-		success = true
+	if success {
+		// 换电成功后需要查询放入和取走的电池是否代理商电池并更新
+		NewBattery().StationBusinessTransfer(
+			cab.ID,
+			ex.ID,
+			&model.BatteryEnterpriseTransfer{
+				Sn:           v.PutinBattery,
+				StationID:    sub.StationID,
+				EnterpriseID: sub.EnterpriseID,
+			},
+			&model.BatteryEnterpriseTransfer{
+				Sn:           v.PutoutBattery,
+				StationID:    cab.StationID,
+				EnterpriseID: cab.EnterpriseID,
+			},
+		)
 		return
 	}
 
@@ -228,10 +244,7 @@ func (s *intelligentCabinetService) ExchangeStepSync(items []*cabdef.ExchangeSte
 			return a.Step <= b.Step
 		})
 
-		err := cache.Set(s.ctx, key, c, 10*time.Minute).Err()
-		if err != nil {
-			return
-		}
+		cache.Set(s.ctx, key, c, 10*time.Minute)
 	}
 }
 

@@ -273,6 +273,18 @@ func (f EnterpriseFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, 
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EnterpriseMutation", m)
 }
 
+// The EnterpriseBatterySwapFunc type is an adapter to allow the use of ordinary
+// function as EnterpriseBatterySwap mutator.
+type EnterpriseBatterySwapFunc func(context.Context, *ent.EnterpriseBatterySwapMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f EnterpriseBatterySwapFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.EnterpriseBatterySwapMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EnterpriseBatterySwapMutation", m)
+}
+
 // The EnterpriseBillFunc type is an adapter to allow the use of ordinary
 // function as EnterpriseBill mutator.
 type EnterpriseBillFunc func(context.Context, *ent.EnterpriseBillMutation) (ent.Value, error)

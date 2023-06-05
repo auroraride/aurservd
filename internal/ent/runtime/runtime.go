@@ -29,6 +29,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisebatteryswap"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
 	"github.com/auroraride/aurservd/internal/ent/enterprisecontract"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprepayment"
@@ -597,6 +598,21 @@ func init() {
 	enterpriseDescDistance := enterpriseFields[15].Descriptor()
 	// enterprise.DefaultDistance holds the default value on creation for the distance field.
 	enterprise.DefaultDistance = enterpriseDescDistance.Default.(float64)
+	enterprisebatteryswapMixin := schema.EnterpriseBatterySwap{}.Mixin()
+	enterprisebatteryswapMixinFields0 := enterprisebatteryswapMixin[0].Fields()
+	_ = enterprisebatteryswapMixinFields0
+	enterprisebatteryswapFields := schema.EnterpriseBatterySwap{}.Fields()
+	_ = enterprisebatteryswapFields
+	// enterprisebatteryswapDescCreatedAt is the schema descriptor for created_at field.
+	enterprisebatteryswapDescCreatedAt := enterprisebatteryswapMixinFields0[0].Descriptor()
+	// enterprisebatteryswap.DefaultCreatedAt holds the default value on creation for the created_at field.
+	enterprisebatteryswap.DefaultCreatedAt = enterprisebatteryswapDescCreatedAt.Default.(func() time.Time)
+	// enterprisebatteryswapDescUpdatedAt is the schema descriptor for updated_at field.
+	enterprisebatteryswapDescUpdatedAt := enterprisebatteryswapMixinFields0[1].Descriptor()
+	// enterprisebatteryswap.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	enterprisebatteryswap.DefaultUpdatedAt = enterprisebatteryswapDescUpdatedAt.Default.(func() time.Time)
+	// enterprisebatteryswap.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	enterprisebatteryswap.UpdateDefaultUpdatedAt = enterprisebatteryswapDescUpdatedAt.UpdateDefault.(func() time.Time)
 	enterprisebillMixin := schema.EnterpriseBill{}.Mixin()
 	enterprisebillMixinHooks2 := enterprisebillMixin[2].Hooks()
 	enterprisebill.Hooks[0] = enterprisebillMixinHooks2[0]

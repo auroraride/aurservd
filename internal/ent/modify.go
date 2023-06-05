@@ -205,6 +205,13 @@ func (c *EnterpriseClient) ModifyOne(old *Enterprise, data any) *EnterpriseUpdat
 	return EntitySetAttributes[EnterpriseUpdateOne, Enterprise](up, old, data)
 }
 
+// ModifyOne returns an update with pointer struct builder for EnterpriseBatterySwap.
+func (c *EnterpriseBatterySwapClient) ModifyOne(old *EnterpriseBatterySwap, data any) *EnterpriseBatterySwapUpdateOne {
+	mutation := newEnterpriseBatterySwapMutation(c.config, OpUpdateOne, withEnterpriseBatterySwap(old))
+	up := &EnterpriseBatterySwapUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[EnterpriseBatterySwapUpdateOne, EnterpriseBatterySwap](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for EnterpriseBill.
 func (c *EnterpriseBillClient) ModifyOne(old *EnterpriseBill, data any) *EnterpriseBillUpdateOne {
 	mutation := newEnterpriseBillMutation(c.config, OpUpdateOne, withEnterpriseBill(old))

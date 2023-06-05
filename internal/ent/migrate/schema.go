@@ -1812,6 +1812,135 @@ var (
 			},
 		},
 	}
+	// EnterpriseBatterySwapColumns holds the columns for the "enterprise_battery_swap" table.
+	EnterpriseBatterySwapColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "putin_battery_sn", Type: field.TypeString, Comment: "放入的电池编码"},
+		{Name: "putout_battery_sn", Type: field.TypeString, Comment: "取出的电池编码"},
+		{Name: "putin_enterprise_id", Type: field.TypeUint64, Nullable: true, Comment: "放入归属团签ID, 空值是平台骑手放入"},
+		{Name: "putout_enterprise_id", Type: field.TypeUint64, Nullable: true, Comment: "取出归属团签ID, 空值是从平台电柜取出"},
+		{Name: "exchange_id", Type: field.TypeUint64},
+		{Name: "cabinet_id", Type: field.TypeUint64, Comment: "电柜ID"},
+		{Name: "putin_battery_id", Type: field.TypeUint64, Comment: "放入的电池ID"},
+		{Name: "putout_battery_id", Type: field.TypeUint64, Comment: "取出的电池ID"},
+		{Name: "putin_station_id", Type: field.TypeUint64, Nullable: true, Comment: "放入归属站点ID, 空值是平台骑手放入"},
+		{Name: "putout_station_id", Type: field.TypeUint64, Nullable: true, Comment: "取出归属站点ID, 空值是从平台电柜取出"},
+	}
+	// EnterpriseBatterySwapTable holds the schema information for the "enterprise_battery_swap" table.
+	EnterpriseBatterySwapTable = &schema.Table{
+		Name:       "enterprise_battery_swap",
+		Columns:    EnterpriseBatterySwapColumns,
+		PrimaryKey: []*schema.Column{EnterpriseBatterySwapColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "enterprise_battery_swap_enterprise_swap_putin_batteries",
+				Columns:    []*schema.Column{EnterpriseBatterySwapColumns[5]},
+				RefColumns: []*schema.Column{EnterpriseColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "enterprise_battery_swap_enterprise_swap_putout_batteries",
+				Columns:    []*schema.Column{EnterpriseBatterySwapColumns[6]},
+				RefColumns: []*schema.Column{EnterpriseColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "enterprise_battery_swap_exchange_exchange",
+				Columns:    []*schema.Column{EnterpriseBatterySwapColumns[7]},
+				RefColumns: []*schema.Column{ExchangeColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "enterprise_battery_swap_cabinet_cabinet",
+				Columns:    []*schema.Column{EnterpriseBatterySwapColumns[8]},
+				RefColumns: []*schema.Column{CabinetColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "enterprise_battery_swap_battery_putin_battery",
+				Columns:    []*schema.Column{EnterpriseBatterySwapColumns[9]},
+				RefColumns: []*schema.Column{BatteryColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "enterprise_battery_swap_battery_putout_battery",
+				Columns:    []*schema.Column{EnterpriseBatterySwapColumns[10]},
+				RefColumns: []*schema.Column{BatteryColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "enterprise_battery_swap_enterprise_station_swap_putin_batteries",
+				Columns:    []*schema.Column{EnterpriseBatterySwapColumns[11]},
+				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "enterprise_battery_swap_enterprise_station_swap_putout_batteries",
+				Columns:    []*schema.Column{EnterpriseBatterySwapColumns[12]},
+				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "enterprisebatteryswap_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{EnterpriseBatterySwapColumns[1]},
+			},
+			{
+				Name:    "enterprisebatteryswap_exchange_id",
+				Unique:  false,
+				Columns: []*schema.Column{EnterpriseBatterySwapColumns[7]},
+			},
+			{
+				Name:    "enterprisebatteryswap_cabinet_id",
+				Unique:  false,
+				Columns: []*schema.Column{EnterpriseBatterySwapColumns[8]},
+			},
+			{
+				Name:    "enterprisebatteryswap_putin_battery_id",
+				Unique:  false,
+				Columns: []*schema.Column{EnterpriseBatterySwapColumns[9]},
+			},
+			{
+				Name:    "enterprisebatteryswap_putin_battery_sn",
+				Unique:  false,
+				Columns: []*schema.Column{EnterpriseBatterySwapColumns[3]},
+			},
+			{
+				Name:    "enterprisebatteryswap_putin_enterprise_id",
+				Unique:  false,
+				Columns: []*schema.Column{EnterpriseBatterySwapColumns[5]},
+			},
+			{
+				Name:    "enterprisebatteryswap_putin_station_id",
+				Unique:  false,
+				Columns: []*schema.Column{EnterpriseBatterySwapColumns[11]},
+			},
+			{
+				Name:    "enterprisebatteryswap_putout_battery_id",
+				Unique:  false,
+				Columns: []*schema.Column{EnterpriseBatterySwapColumns[10]},
+			},
+			{
+				Name:    "enterprisebatteryswap_putout_battery_sn",
+				Unique:  false,
+				Columns: []*schema.Column{EnterpriseBatterySwapColumns[4]},
+			},
+			{
+				Name:    "enterprisebatteryswap_putout_enterprise_id",
+				Unique:  false,
+				Columns: []*schema.Column{EnterpriseBatterySwapColumns[6]},
+			},
+			{
+				Name:    "enterprisebatteryswap_putout_station_id",
+				Unique:  false,
+				Columns: []*schema.Column{EnterpriseBatterySwapColumns[12]},
+			},
+		},
+	}
 	// EnterpriseBillColumns holds the columns for the "enterprise_bill" table.
 	EnterpriseBillColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -4444,6 +4573,7 @@ var (
 		EbikeBrandTable,
 		EmployeeTable,
 		EnterpriseTable,
+		EnterpriseBatterySwapTable,
 		EnterpriseBillTable,
 		EnterpriseContractTable,
 		EnterprisePrepaymentTable,
@@ -4615,6 +4745,17 @@ func init() {
 	EnterpriseTable.ForeignKeys[0].RefTable = CityTable
 	EnterpriseTable.Annotation = &entsql.Annotation{
 		Table: "enterprise",
+	}
+	EnterpriseBatterySwapTable.ForeignKeys[0].RefTable = EnterpriseTable
+	EnterpriseBatterySwapTable.ForeignKeys[1].RefTable = EnterpriseTable
+	EnterpriseBatterySwapTable.ForeignKeys[2].RefTable = ExchangeTable
+	EnterpriseBatterySwapTable.ForeignKeys[3].RefTable = CabinetTable
+	EnterpriseBatterySwapTable.ForeignKeys[4].RefTable = BatteryTable
+	EnterpriseBatterySwapTable.ForeignKeys[5].RefTable = BatteryTable
+	EnterpriseBatterySwapTable.ForeignKeys[6].RefTable = EnterpriseStationTable
+	EnterpriseBatterySwapTable.ForeignKeys[7].RefTable = EnterpriseStationTable
+	EnterpriseBatterySwapTable.Annotation = &entsql.Annotation{
+		Table: "enterprise_battery_swap",
 	}
 	EnterpriseBillTable.ForeignKeys[0].RefTable = EnterpriseTable
 	EnterpriseBillTable.ForeignKeys[1].RefTable = RiderTable

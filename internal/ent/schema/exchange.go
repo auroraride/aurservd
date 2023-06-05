@@ -7,9 +7,42 @@ import (
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
+	"entgo.io/ent/schema/mixin"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/internal"
 )
+
+type ExchangeMixin struct {
+	mixin.Schema
+	Optional     bool
+	DisableIndex bool
+}
+
+func (m ExchangeMixin) Fields() []ent.Field {
+	relate := field.Uint64("exchange_id")
+	if m.Optional {
+		relate.Optional().Nillable()
+	}
+	return []ent.Field{
+		relate,
+	}
+}
+
+func (m ExchangeMixin) Edges() []ent.Edge {
+	e := edge.To("exchange", Exchange.Type).Unique().Field("exchange_id")
+	if !m.Optional {
+		e.Required()
+	}
+	return []ent.Edge{e}
+}
+
+func (m ExchangeMixin) Indexes() (arr []ent.Index) {
+	if !m.DisableIndex {
+		arr = append(arr, index.Fields("exchange_id"))
+	}
+	return
+}
 
 // Exchange holds the schema definition for the Exchange entity.
 type Exchange struct {

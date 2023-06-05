@@ -691,6 +691,37 @@ func (eq *EnterpriseQuery) PaginationResult(req model.PaginationReq) model.Pagin
 	}
 }
 
+// Pagination returns pagination query builder for EnterpriseBatterySwapQuery.
+func (ebsq *EnterpriseBatterySwapQuery) Pagination(req model.PaginationReq) *EnterpriseBatterySwapQuery {
+	ebsq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return ebsq
+}
+
+// PaginationItems returns pagination query builder for EnterpriseBatterySwapQuery.
+func (ebsq *EnterpriseBatterySwapQuery) PaginationItemsX(req model.PaginationReq) any {
+	return ebsq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for EnterpriseBatterySwapQuery.
+func (ebsq *EnterpriseBatterySwapQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := ebsq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for EnterpriseBillQuery.
 func (ebq *EnterpriseBillQuery) Pagination(req model.PaginationReq) *EnterpriseBillQuery {
 	ebq.Offset(req.GetOffset()).Limit(req.GetLimit())
