@@ -9,6 +9,7 @@ import (
 	"github.com/silenceper/wechat/v2/miniprogram"
 	"github.com/silenceper/wechat/v2/miniprogram/config"
 	"github.com/silenceper/wechat/v2/miniprogram/qrcode"
+	"go.uber.org/zap"
 
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ar"
@@ -48,6 +49,7 @@ func NewminiProgram(params ...any) *miniProgramService {
 func (s *miniProgramService) GetPhoneNumber(code string) string {
 	resultPhone, err := s.MiniProgram.GetAuth().GetPhoneNumber(code)
 	if err != nil || resultPhone.ErrCode != 0 {
+		zap.L().Error("获取手机号码失败"+ar.Config.WechatMiniprogram.Agent.AppID+" "+"ar.Config.WechatMiniprogram.Agent.AppSecret", zap.Error(err))
 		snag.Panic("获取手机号码失败")
 	}
 	phoneNumber := resultPhone.PhoneInfo.PhoneNumber

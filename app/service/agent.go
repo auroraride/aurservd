@@ -164,7 +164,7 @@ func (s *agentService) Signin(req *model.AgentSigninReq) *model.AgentSigninRes {
 	}
 	ag, err := s.orm.QueryNotDeleted().Where(agent.Phone(req.Phone)).WithEnterprise().First(s.ctx)
 	if err != nil || ag.Edges.Enterprise == nil {
-		snag.Panic("登录失败")
+		snag.Panic("账号不存在")
 	}
 	en := ag.Edges.Enterprise
 	if !en.Agent {
@@ -255,7 +255,7 @@ func (s *agentService) Profile(ag *ent.Agent, en *ent.Enterprise) model.AgentPro
 	}
 }
 
-func (s *agentService) Index(ag *ent.Agent, en *ent.Enterprise) *model.AgentIndexRes {
+func (s *agentService) Index(en *ent.Enterprise) *model.AgentIndexRes {
 	var v []model.AgentIndexRes
 	ent.Database.Subscribe.QueryNotDeleted().Where(subscribe.EnterpriseID(en.ID)).Modify(
 		func(s *sql.Selector) {

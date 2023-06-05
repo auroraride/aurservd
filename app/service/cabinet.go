@@ -915,9 +915,6 @@ func (s *cabinetService) Interrupt(req *model.CabinetInterruptRequest) *pb.Cabin
 func (s *cabinetService) BindCabinet(req *model.EnterpriseBindCabinetReq) {
 	// 判断电柜是否被绑定
 	cab := s.QueryOne(req.ID)
-	if cab == nil {
-		snag.Panic("电柜不存在")
-	}
 	if cab.EnterpriseID != nil || cab.StationID != nil {
 		snag.Panic("电柜已被绑定")
 	}
