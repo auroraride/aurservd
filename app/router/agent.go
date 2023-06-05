@@ -47,7 +47,7 @@ func loadAgentRoutes() {
 	// 意见反馈
 	auth.POST("/feedback", aapi.Agent.Feedback)
 	// 上传图片
-	auth.POST("/uploadImage", aapi.Agent.UploadImage)
+	auth.POST("/upload/image", aapi.Agent.UploadImage)
 
 	auth.GET("/prepayment/overview", aapi.Prepayment.Overview)
 	auth.GET("/prepayment", aapi.Prepayment.List)
