@@ -96,7 +96,7 @@ func (*rider) Active(c echo.Context) (err error) {
 
 // SubscribeApplyList  申请加时列表
 // @ID           AgentSubscribeApplyList
-// @Router       /agent/v1/rider/subscribe/apply [GET]
+// @Router       /agent/v1/subscribe/apply [GET]
 // @Summary      A2008 申请加时列表
 // @Tags         [A]代理接口
 // @Accept       json
@@ -111,7 +111,7 @@ func (*rider) SubscribeApplyList(c echo.Context) (err error) {
 
 // ReviewApply  审核加时
 // @ID           AgentReviewApply
-// @Router       /agent/v1/rider/subscribe/apply [POST]
+// @Router       /agent/v1/subscribe/apply [POST]
 // @Summary      A2007 审核加时
 // @Tags         [A]代理接口
 // @Accept       json
