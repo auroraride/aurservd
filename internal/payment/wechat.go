@@ -146,12 +146,12 @@ func (c *wechatClient) Native(pc *model.PaymentCache) (string, error) {
 	return *resp.CodeUrl, nil
 }
 
-func (c *wechatClient) Miniprogram(appID, openID string, pc *model.PaymentCache) (string, error) {
+func (c *wechatClient) Miniprogram(appID, openID string, pc *model.PaymentCache) (*jsapi.PrepayWithRequestPaymentResponse, error) {
 	amount, subject, no := pc.GetPaymentArgs()
 	cfg := ar.Config.Payment.Wechat
 
 	svc := jsapi.JsapiApiService{Client: c.Client}
-	resp, _, err := svc.Prepay(context.Background(), jsapi.PrepayRequest{
+	resp, _, err := svc.PrepayWithRequestPayment(context.Background(), jsapi.PrepayRequest{
 		Appid:       core.String(appID),
 		Mchid:       core.String(cfg.MchID),
 		Description: core.String(subject),
@@ -167,14 +167,14 @@ func (c *wechatClient) Miniprogram(appID, openID string, pc *model.PaymentCache)
 
 	if err != nil {
 		zap.L().Error("微信Miniprogram支付调用失败", zap.Error(err))
-		return "", err
+		return nil, err
 	}
 
 	if resp.PrepayId == nil {
-		return "", errors.New("支付二维码获取失败")
+		return nil, errors.New("支付二维码获取失败")
 	}
 
-	return *resp.PrepayId, nil
+	return resp, nil
 }
 
 type WechatPayResponse struct {

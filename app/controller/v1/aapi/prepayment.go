@@ -55,7 +55,7 @@ func (*prepayment) List(c echo.Context) (err error) {
 // @Produce      json
 // @Param        X-Agent-Token  header  string  true  "代理校验token"
 // @Param        body  body  model.AgentPrepayReq  true  "请求参数"
-// @Success      200  {object}  model.AgentPrepayRes  "请求成功"
+// @Success      200  {object} jsapi.PrepayWithRequestPaymentResponse  "请求成功"
 func (*prepayment) WechatMiniprogramPay(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.AgentPrepayReq](c)
 	return ctx.SendResponse(service.NewPrepayment().WechatMiniprogramPay(ctx.Agent, req))

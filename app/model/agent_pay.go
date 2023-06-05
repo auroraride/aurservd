@@ -7,10 +7,6 @@ type AgentPrepayReq struct {
 	OpenID string  `json:"openId" validate:"required"` // 微信openid
 }
 
-type AgentPrepayRes struct {
-	PrepayID string `json:"prepayId"`
-}
-
 type AgentPrepay struct {
 	EnterpriseID uint64  `json:"enterpriseID,omitempty"` // 企业ID
 	Remark       string  `json:"remark,omitempty"`       // 充值备注
