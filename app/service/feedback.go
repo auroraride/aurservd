@@ -2,22 +2,21 @@ package service
 
 import (
 	"fmt"
-	"io"
 	"log"
 	"math/rand"
-	"os"
 	"path/filepath"
 	"time"
 
 	"github.com/golang-module/carbon/v2"
 	"github.com/labstack/echo/v4"
+	"go.uber.org/zap"
 
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ali"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/feedback"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
-	"github.com/auroraride/aurservd/pkg/utils"
 )
 
 type feedbackService struct {
@@ -123,20 +122,10 @@ func (s *feedbackService) UploadImage(c echo.Context) []string {
 		}
 		// 生成相对路径
 		randomNum := rand.Intn(1000) // 生成一个随机数，用于防止同一秒钟上传多个文件时的冲突
-		r := filepath.Join("runtime", "uploads", fmt.Sprintf("%s%d%s", time.Now().
+		r := filepath.Join("agent", "feedback", fmt.Sprintf("%s%d%s", time.Now().
 			Format(carbon.ShortDateTimeLayout), randomNum, ext))
-		if utils.NewFile(r).CreateDirectoryIfNotExist() != nil {
-			snag.Panic("上传图片失败")
-		}
-		// 创建目标文件
-		dst, err := os.Create(r)
-		if err != nil {
-			snag.Panic("上传图片失败")
-		}
-		defer dst.Close()
-
-		// 将源文件内容复制到目标文件
-		if _, err = io.Copy(dst, src); err != nil {
+		if err = ali.NewOss().Bucket.PutObject(r, src); err != nil {
+			zap.L().Error("上传图片失败", zap.Error(err))
 			snag.Panic("上传图片失败")
 		}
 		paths = append(paths, r)
