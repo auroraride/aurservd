@@ -386,7 +386,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
+                            "$ref": "#/definitions/model.AgentCabinetDetailRes"
                         }
                     }
                 }
@@ -459,10 +459,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "integer"
-                            }
+                            "$ref": "#/definitions/model.AgentIndexRes"
                         }
                     }
                 }
@@ -501,7 +498,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "type": "code"
+                            "type": "string"
                         }
                     }
                 }
@@ -1139,10 +1136,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "integer"
-                            }
+                            "type": "string"
                         }
                     }
                 }
@@ -1179,6 +1173,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "结束时间",
                         "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "团签ID",
+                        "name": "id",
                         "in": "query"
                     },
                     {
@@ -1398,15 +1398,17 @@ const docTemplate = `{
                         "enum": [
                             0,
                             1,
-                            2
+                            2,
+                            3
                         ],
                         "type": "integer",
                         "x-enum-varnames": [
                             "StockGoalAll",
                             "StockGoalStore",
-                            "StockGoalCabinet"
+                            "StockGoalCabinet",
+                            "StockGoalStation"
                         ],
-                        "description": "查询目标 0:不筛选 1:门店(默认) 2:电柜 3:平台",
+                        "description": "查询目标 0:不筛选 1:门店(默认) 2:电柜 3:站点",
                         "name": "goal",
                         "in": "query"
                     },
@@ -2278,13 +2280,15 @@ const docTemplate = `{
                         "enum": [
                             0,
                             1,
-                            2
+                            2,
+                            3
                         ],
                         "type": "integer",
                         "x-enum-varnames": [
                             "StockGoalAll",
                             "StockGoalStore",
-                            "StockGoalCabinet"
+                            "StockGoalCabinet",
+                            "StockGoalStation"
                         ],
                         "description": "查询目标, 0:不筛选 1:门店 2:电柜",
                         "name": "goal",
@@ -4771,13 +4775,15 @@ const docTemplate = `{
                         "enum": [
                             0,
                             1,
-                            2
+                            2,
+                            3
                         ],
                         "type": "integer",
                         "x-enum-varnames": [
                             "StockGoalAll",
                             "StockGoalStore",
-                            "StockGoalCabinet"
+                            "StockGoalCabinet",
+                            "StockGoalStation"
                         ],
                         "description": "查询目标, 0:不筛选 1:门店 2:电柜",
                         "name": "goal",
@@ -8739,6 +8745,40 @@ const docTemplate = `{
             }
         },
         "/manager/v1/enterprise/subscribe/apply": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M9028 审批订阅申请",
+                "operationId": "ManagerEnterpriseSubscribeApply",
+                "parameters": [
+                    {
+                        "description": "审批请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.SubscribeAlterReviewReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/enterprise/subscribe/apply/{id}": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -8769,6 +8809,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "结束时间",
                         "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "团签ID",
+                        "name": "id",
                         "in": "query"
                     },
                     {
@@ -8819,41 +8865,9 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
-            "put": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "[M]管理接口"
-                ],
-                "summary": "M9028 审批订阅申请",
-                "operationId": "ManagerEnterpriseSubscribeApply",
-                "parameters": [
-                    {
-                        "description": "审批请求",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.SubscribeAlterReviewReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
-                        }
-                    }
-                }
             }
         },
-        "/manager/v1/enterprise/unbind/cabinet": {
+        "/manager/v1/enterprise/unbind/cabinet/{id}": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -12179,13 +12193,15 @@ const docTemplate = `{
                         "enum": [
                             0,
                             1,
-                            2
+                            2,
+                            3
                         ],
                         "type": "integer",
                         "x-enum-varnames": [
                             "StockGoalAll",
                             "StockGoalStore",
-                            "StockGoalCabinet"
+                            "StockGoalCabinet",
+                            "StockGoalStation"
                         ],
                         "description": "查询目标, 0:不筛选 1:门店(默认) 2:电柜",
                         "name": "goal",
@@ -12358,15 +12374,17 @@ const docTemplate = `{
                         "enum": [
                             0,
                             1,
-                            2
+                            2,
+                            3
                         ],
                         "type": "integer",
                         "x-enum-varnames": [
                             "StockGoalAll",
                             "StockGoalStore",
-                            "StockGoalCabinet"
+                            "StockGoalCabinet",
+                            "StockGoalStation"
                         ],
-                        "description": "查询目标 0:不筛选 1:门店(默认) 2:电柜 3:平台",
+                        "description": "查询目标 0:不筛选 1:门店(默认) 2:电柜 3:站点",
                         "name": "goal",
                         "in": "query"
                     },
@@ -12457,6 +12475,125 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/stock/enterprise/list": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "ME006 团签物资列表",
+                "operationId": "ManagerStockEnterpriseList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市ID",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "电车型号ID",
+                        "name": "ebikeBrandId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "团签ID",
+                        "name": "enterprise_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "其他物资名称",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "电池型号",
+                        "name": "model",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "门店名称",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "站点id",
+                        "name": "stationId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "门店ID",
+                        "name": "storeId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.StockListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/stock/store": {
             "get": {
                 "consumes": [
@@ -12503,6 +12640,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "integer",
+                        "description": "团签ID",
+                        "name": "enterprise_id",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "description": "其他物资名称",
                         "name": "keyword",
@@ -12530,6 +12673,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "开始时间",
                         "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "站点id",
+                        "name": "stationId",
                         "in": "query"
                     },
                     {
@@ -14934,6 +15083,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "integer",
+                        "description": "团签ID",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "description": "关键词",
                         "name": "keyword",
@@ -16367,6 +16522,63 @@ const docTemplate = `{
                 },
                 "phone": {
                     "type": "string"
+                }
+            }
+        },
+        "model.AgentIndexRes": {
+            "type": "object",
+            "properties": {
+                "averageDeduction": {
+                    "description": "日均扣费",
+                    "type": "number"
+                },
+                "balance": {
+                    "description": "余额",
+                    "type": "number"
+                },
+                "batteryTotal": {
+                    "description": "电池总数",
+                    "type": "integer"
+                },
+                "billingRiderTotal": {
+                    "description": "计费骑手数",
+                    "type": "integer"
+                },
+                "cabinetBatteryTotal": {
+                    "description": "电柜电池数",
+                    "type": "integer"
+                },
+                "expiringRiderTotal": {
+                    "description": "临期骑手数",
+                    "type": "integer"
+                },
+                "newRiderTotal": {
+                    "description": "新签骑手数",
+                    "type": "integer"
+                },
+                "overTimeRiderTotal": {
+                    "description": "骑手加时审核数",
+                    "type": "integer"
+                },
+                "quitRiderTotal": {
+                    "description": "退租骑手数",
+                    "type": "integer"
+                },
+                "riderBatteryTotal": {
+                    "description": "骑手电池数",
+                    "type": "integer"
+                },
+                "riderTotal": {
+                    "description": "骑手总数",
+                    "type": "integer"
+                },
+                "stationBatteryTotal": {
+                    "description": "站点电池数",
+                    "type": "integer"
+                },
+                "yesterdayDeduction": {
+                    "description": "昨日扣费",
+                    "type": "number"
                 }
             }
         },
@@ -25350,7 +25562,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "goal": {
-                    "description": "查询目标 0:不筛选 1:门店(默认) 2:电柜 3:平台",
+                    "description": "查询目标 0:不筛选 1:门店(默认) 2:电柜 3:站点",
                     "enum": [
                         0,
                         1,
@@ -25598,12 +25810,20 @@ const docTemplate = `{
                         "$ref": "#/definitions/model.StockMaterial"
                     }
                 },
+                "enterpriseName": {
+                    "description": "团签名称",
+                    "type": "string"
+                },
                 "materials": {
                     "description": "非电池物资详情",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.StockMaterial"
                     }
+                },
+                "stationName": {
+                    "description": "站点名称",
+                    "type": "string"
                 },
                 "store": {
                     "description": "门店",
@@ -25663,6 +25883,13 @@ const docTemplate = `{
                 "remark"
             ],
             "properties": {
+                "batterySn": {
+                    "description": "电池编号",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "ebikes": {
                     "description": "车架编号 (和 ` + "`" + `物资名称` + "`" + ` / ` + "`" + `车架` + "`" + ` 不能同时存在, 也不能同时为空)",
                     "type": "array",
@@ -25675,7 +25902,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "inboundTarget": {
-                    "description": "调入目标 0:平台 1:门店 2:电柜",
+                    "description": "调入目标 0:平台 1:门店 2:电柜 3.站点",
                     "type": "integer",
                     "enum": [
                         0,
@@ -25700,7 +25927,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "outboundTarget": {
-                    "description": "调出目标 0:平台 1:门店 2:电柜",
+                    "description": "调出目标 0:平台 1:门店 2:电柜 3.站点",
                     "type": "integer",
                     "enum": [
                         0,
@@ -25730,12 +25957,14 @@ const docTemplate = `{
             "enum": [
                 0,
                 1,
-                2
+                2,
+                3
             ],
             "x-enum-varnames": [
                 "StockGoalAll",
                 "StockGoalStore",
-                "StockGoalCabinet"
+                "StockGoalCabinet",
+                "StockGoalStation"
             ]
         },
         "model.StoreCreateReq": {
