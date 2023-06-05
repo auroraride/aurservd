@@ -924,7 +924,7 @@ func (s *cabinetService) BindCabinet(req *model.EnterpriseBindCabinetReq) {
 
 // UnbindCabinet 解绑电柜
 func (s *cabinetService) UnbindCabinet(req *model.IDParamReq) {
-	cab, _ := ent.Database.Cabinet.Query().Where(cabinet.IDEQ(req.ID), cabinet.Status(model.CabinetHealthStatusOffline)).First(s.ctx)
+	cab, _ := ent.Database.Cabinet.Query().Where(cabinet.IDEQ(req.ID), cabinet.Health(model.CabinetHealthStatusOffline)).First(s.ctx)
 	if cab == nil {
 		snag.Panic("电柜不存在,或者电柜不是离线状态")
 	}
