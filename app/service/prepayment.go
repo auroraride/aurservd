@@ -10,7 +10,6 @@ import (
 	"fmt"
 
 	"github.com/golang-module/carbon/v2"
-	"github.com/wechatpay-apiv3/wechatpay-go/services/payments/jsapi"
 
 	"github.com/auroraride/aurservd/app/logging"
 	"github.com/auroraride/aurservd/app/model"
@@ -98,7 +97,7 @@ func (s *prepaymentService) List(enterpriseID uint64, req *model.PrepaymentListR
 }
 
 // WechatMiniprogramPay 小程序储值
-func (s *prepaymentService) WechatMiniprogramPay(ag *ent.Agent, req *model.AgentPrepayReq) *jsapi.PrepayWithRequestPaymentResponse {
+func (s *prepaymentService) WechatMiniprogramPay(ag *ent.Agent, req *model.AgentPrepayReq) model.AgentPrepayRes {
 	pc := &model.PaymentCache{
 		CacheType: model.PaymentCacheTypeAgentPrepay,
 		AgentPrepay: &model.PaymentAgentPrepay{
@@ -122,7 +121,15 @@ func (s *prepaymentService) WechatMiniprogramPay(ag *ent.Agent, req *model.Agent
 	}
 
 	// 生成随机字符串并签名
-	return res
+	return model.AgentPrepayRes{
+		PrepayId:  res.PrepayId,
+		Appid:     res.Appid,
+		TimeStamp: res.TimeStamp,
+		NonceStr:  res.NonceStr,
+		Package:   res.Package,
+		SignType:  res.SignType,
+		PaySign:   res.PaySign,
+	}
 }
 
 // Paid 支付成功回调方法

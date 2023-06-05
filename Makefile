@@ -4,7 +4,7 @@
 # swag init -g ./router/docs.go -d ./app,../adapter --exclude ./app/service,./app/router,./app/middleware,./app/request -o ./assets/docs --md ./wiki
 
 define deploy
-	swag init -g ./router/docs.go -d ./app --exclude ./app/service,./app/router,./app/middleware,./app/request -o ./assets/docs --md ./wiki --parseDependency
+	sh ./generate_doc.sh
 	GO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -tags=jsoniter,poll_opt -gcflags "all=-N -l" -o build/release/aurservd cmd/aurservd/main.go
 	docker build --platform=linux/amd64 -t registry.cn-beijing.aliyuncs.com/liasica/aurservd:$(1) -f images/manual/Dockerfile .
 	docker push registry.cn-beijing.aliyuncs.com/liasica/aurservd:$(1)
@@ -30,4 +30,9 @@ permission:
 
 .PHONY: doc
 doc:
-	swag init -g ./router/docs.go -d ./app --exclude ./app/service,./app/router,./app/middleware,./app/request -o ./assets/docs --md ./wiki --parseDependency
+	sh ./generate_doc.sh
+
+.PHONY: path
+path:
+	version=`cat go.mod | sed $'/^require ($/,/^)$/!d; /^require ($/d;/^)$/d; /\\/\\/ indirect$/d; s/^\t+//g' | grep github.com/auroraride/adapter | cut -d' ' -f2`
+	echo version

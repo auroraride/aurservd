@@ -671,7 +671,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/jsapi.PrepayWithRequestPaymentResponse"
+                            "$ref": "#/definitions/model.AgentPrepayRes"
                         }
                     }
                 }
@@ -8137,7 +8137,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/manager/v1/enterprise/cabinet": {
+        "/manager/v1/enterprise/bind/cabinet": {
             "post": {
                 "consumes": [
                     "application/json"
@@ -16445,39 +16445,6 @@ const docTemplate = `{
                 }
             }
         },
-        "jsapi.PrepayWithRequestPaymentResponse": {
-            "type": "object",
-            "properties": {
-                "appId": {
-                    "description": "应用ID",
-                    "type": "string"
-                },
-                "nonceStr": {
-                    "description": "随机字符串",
-                    "type": "string"
-                },
-                "package": {
-                    "description": "订单详情扩展字符串",
-                    "type": "string"
-                },
-                "paySign": {
-                    "description": "签名",
-                    "type": "string"
-                },
-                "prepay_id": {
-                    "description": "预支付交易会话标识",
-                    "type": "string"
-                },
-                "signType": {
-                    "description": "签名方式",
-                    "type": "string"
-                },
-                "timeStamp": {
-                    "description": "时间戳",
-                    "type": "string"
-                }
-            }
-        },
         "model.AgentCabinetBin": {
             "type": "object",
             "properties": {
@@ -16655,6 +16622,39 @@ const docTemplate = `{
                 },
                 "openId": {
                     "description": "微信openid",
+                    "type": "string"
+                }
+            }
+        },
+        "model.AgentPrepayRes": {
+            "type": "object",
+            "properties": {
+                "appId": {
+                    "description": "应用ID",
+                    "type": "string"
+                },
+                "nonceStr": {
+                    "description": "随机字符串",
+                    "type": "string"
+                },
+                "package": {
+                    "description": "订单详情扩展字符串",
+                    "type": "string"
+                },
+                "paySign": {
+                    "description": "签名",
+                    "type": "string"
+                },
+                "prepay_id": {
+                    "description": "预支付交易会话标识",
+                    "type": "string"
+                },
+                "signType": {
+                    "description": "签名方式",
+                    "type": "string"
+                },
+                "timeStamp": {
+                    "description": "时间戳",
                     "type": "string"
                 }
             }
@@ -21309,15 +21309,15 @@ const docTemplate = `{
         "model.EnterpriseBindCabinetReq": {
             "type": "object",
             "required": [
-                "enterprise_id",
-                "station_id"
+                "enterpriseID",
+                "stationID"
             ],
             "properties": {
-                "enterprise_id": {
+                "enterpriseID": {
                     "description": "团签ID",
                     "type": "integer"
                 },
-                "station_id": {
+                "stationID": {
                     "description": "站点id",
                     "type": "integer"
                 }
