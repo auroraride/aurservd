@@ -25,7 +25,7 @@ lint:
   tags:
     - shell
   script:
-    - swag init -g ./router/docs.go -d ./app --exclude ./app/service,./app/router,./app/middleware,./app/request -o ./assets/docs --md ./wiki --parseDependency
+    - sh ./generate_doc.sh
     - reviewdog -reporter=gitlab-mr-discussion
 
 # build:
