@@ -253,15 +253,15 @@ func (s *stockService) EnterpriseList(req *model.StockListReq) *model.Pagination
 				StationName: item.Name,
 				StationID:   item.ID,
 			}
-			if item.Edges.Enterprise != nil && item.Edges.Enterprise.Edges.City != nil {
+			if item.Edges.Enterprise != nil {
+				rsp.EnterpriseName = item.Edges.Enterprise.Name
+				rsp.EnterpriseID = item.Edges.Enterprise.ID
+			}
+			if item.Edges.Enterprise.Edges.City != nil {
 				rsp.City = model.City{
 					ID:   item.Edges.Enterprise.Edges.City.ID,
 					Name: item.Edges.Enterprise.Edges.City.Name,
 				}
-			}
-			if item.Edges.Enterprise.Edges.Stations != nil {
-				rsp.EnterpriseName = item.Edges.Enterprise.Name
-				rsp.EnterpriseID = item.Edges.Enterprise.ID
 			}
 			// 电池总数
 			rsp.BatteryTotal = 0
