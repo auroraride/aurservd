@@ -29,10 +29,12 @@ var Bill = new(bill)
 // @Param        query  query   model.PaginationReq  true  "请求数据"
 // @Success      200  {object}  model.PaginationRes{items=[]model.StatementBillHistoricalListRes}  "请求成功"
 func (*bill) Historical(c echo.Context) (err error) {
-	ctx, req := app.AgentContextAndBinding[model.PaginationReq](c)
+	ctx, req := app.AgentContextAndBinding[model.StatementBillHistoricalListReq](c)
 	return ctx.SendResponse(service.NewEnterpriseStatement().Historical(&model.StatementBillHistoricalListReq{
-		PaginationReq: *req,
+		PaginationReq: req.PaginationReq,
 		EnterpriseID:  ctx.Agent.EnterpriseID,
+		End:           req.End,
+		Start:         req.Start,
 	}))
 }
 

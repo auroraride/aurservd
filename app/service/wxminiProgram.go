@@ -72,6 +72,7 @@ func (s *miniProgramService) Invite(enterprise *ent.Enterprise, req *model.Enter
 	coderParam := qrcode.QRCoder{Scene: url, Path: "pages/rider-login/index"}
 	code, err := s.MiniProgram.GetQRCode().GetWXACodeUnlimit(coderParam)
 	if err != nil {
+		zap.L().Error("生成二维码失败", zap.Error(err))
 		snag.Panic("生成二维码失败")
 	}
 	return code
