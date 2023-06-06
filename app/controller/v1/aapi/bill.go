@@ -22,7 +22,6 @@ var Bill = new(bill)
 // @Router       /agent/v1/bill/historical [GET]
 // @Summary      A4001 历史账单
 // @Tags         [A]代理接口
-// @Descript     该接口无需日期筛选
 // @Accept       json
 // @Produce      json
 // @Param        X-Agent-Token  header  string  true  "代理校验token"

@@ -250,10 +250,10 @@ func (s *enterpriseStatementService) Historical(req *model.StatementBillHistoric
 		).Order(ent.Desc(enterprisestatement.FieldSettledAt))
 	tt := tools.NewTime()
 	if req.Start != nil {
-		q.Where(enterprisestatement.CreatedAtGTE(tt.ParseDateStringX(*req.Start)))
+		q.Where(enterprisestatement.SettledAt(tt.ParseDateStringX(*req.Start)))
 	}
 	if req.End != nil {
-		q.Where(enterprisestatement.CreatedAtLT(tt.ParseNextDateStringX(*req.End)))
+		q.Where(enterprisestatement.SettledAt(tt.ParseNextDateStringX(*req.End)))
 	}
 	return model.ParsePaginationResponse(
 		q,

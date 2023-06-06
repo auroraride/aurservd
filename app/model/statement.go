@@ -70,7 +70,7 @@ type StatementBillHistoricalListReq struct {
 	PaginationReq
 	Start        *string `json:"start" query:"start"` // 账单开始日期
 	End          *string `json:"end" query:"end"`     // 账单结束日期
-	EnterpriseID uint64  `json:"enterpriseId" query:"enterpriseId" validate:"required" trans:"企业ID"`
+	EnterpriseID uint64  `json:"enterpriseId" query:"enterpriseId" trans:"企业ID"`
 }
 
 type StatementBillHistoricalListRes struct {
