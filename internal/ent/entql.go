@@ -697,7 +697,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			enterprise.FieldAgent:           {Type: field.TypeBool, Column: enterprise.FieldAgent},
 			enterprise.FieldUseStore:        {Type: field.TypeBool, Column: enterprise.FieldUseStore},
 			enterprise.FieldDays:            {Type: field.TypeJSON, Column: enterprise.FieldDays},
-			enterprise.FieldDistance:        {Type: field.TypeFloat64, Column: enterprise.FieldDistance},
+			enterprise.FieldDistance:        {Type: field.TypeUint64, Column: enterprise.FieldDistance},
 			enterprise.FieldRechargeAmount:  {Type: field.TypeJSON, Column: enterprise.FieldRechargeAmount},
 		},
 	}
@@ -8429,8 +8429,8 @@ func (f *EnterpriseFilter) WhereDays(p entql.BytesP) {
 	f.Where(p.Field(enterprise.FieldDays))
 }
 
-// WhereDistance applies the entql float64 predicate on the distance field.
-func (f *EnterpriseFilter) WhereDistance(p entql.Float64P) {
+// WhereDistance applies the entql uint64 predicate on the distance field.
+func (f *EnterpriseFilter) WhereDistance(p entql.Uint64P) {
 	f.Where(p.Field(enterprise.FieldDistance))
 }
 

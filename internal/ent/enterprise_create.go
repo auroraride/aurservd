@@ -258,15 +258,15 @@ func (ec *EnterpriseCreate) SetDays(i []int) *EnterpriseCreate {
 }
 
 // SetDistance sets the "distance" field.
-func (ec *EnterpriseCreate) SetDistance(f float64) *EnterpriseCreate {
-	ec.mutation.SetDistance(f)
+func (ec *EnterpriseCreate) SetDistance(u uint64) *EnterpriseCreate {
+	ec.mutation.SetDistance(u)
 	return ec
 }
 
 // SetNillableDistance sets the "distance" field if the given value is not nil.
-func (ec *EnterpriseCreate) SetNillableDistance(f *float64) *EnterpriseCreate {
-	if f != nil {
-		ec.SetDistance(*f)
+func (ec *EnterpriseCreate) SetNillableDistance(u *uint64) *EnterpriseCreate {
+	if u != nil {
+		ec.SetDistance(*u)
 	}
 	return ec
 }
@@ -732,7 +732,7 @@ func (ec *EnterpriseCreate) createSpec() (*Enterprise, *sqlgraph.CreateSpec) {
 		_node.Days = value
 	}
 	if value, ok := ec.mutation.Distance(); ok {
-		_spec.SetField(enterprise.FieldDistance, field.TypeFloat64, value)
+		_spec.SetField(enterprise.FieldDistance, field.TypeUint64, value)
 		_node.Distance = value
 	}
 	if value, ok := ec.mutation.RechargeAmount(); ok {
@@ -1345,7 +1345,7 @@ func (u *EnterpriseUpsert) ClearDays() *EnterpriseUpsert {
 }
 
 // SetDistance sets the "distance" field.
-func (u *EnterpriseUpsert) SetDistance(v float64) *EnterpriseUpsert {
+func (u *EnterpriseUpsert) SetDistance(v uint64) *EnterpriseUpsert {
 	u.Set(enterprise.FieldDistance, v)
 	return u
 }
@@ -1357,7 +1357,7 @@ func (u *EnterpriseUpsert) UpdateDistance() *EnterpriseUpsert {
 }
 
 // AddDistance adds v to the "distance" field.
-func (u *EnterpriseUpsert) AddDistance(v float64) *EnterpriseUpsert {
+func (u *EnterpriseUpsert) AddDistance(v uint64) *EnterpriseUpsert {
 	u.Add(enterprise.FieldDistance, v)
 	return u
 }
@@ -1793,14 +1793,14 @@ func (u *EnterpriseUpsertOne) ClearDays() *EnterpriseUpsertOne {
 }
 
 // SetDistance sets the "distance" field.
-func (u *EnterpriseUpsertOne) SetDistance(v float64) *EnterpriseUpsertOne {
+func (u *EnterpriseUpsertOne) SetDistance(v uint64) *EnterpriseUpsertOne {
 	return u.Update(func(s *EnterpriseUpsert) {
 		s.SetDistance(v)
 	})
 }
 
 // AddDistance adds v to the "distance" field.
-func (u *EnterpriseUpsertOne) AddDistance(v float64) *EnterpriseUpsertOne {
+func (u *EnterpriseUpsertOne) AddDistance(v uint64) *EnterpriseUpsertOne {
 	return u.Update(func(s *EnterpriseUpsert) {
 		s.AddDistance(v)
 	})
@@ -2409,14 +2409,14 @@ func (u *EnterpriseUpsertBulk) ClearDays() *EnterpriseUpsertBulk {
 }
 
 // SetDistance sets the "distance" field.
-func (u *EnterpriseUpsertBulk) SetDistance(v float64) *EnterpriseUpsertBulk {
+func (u *EnterpriseUpsertBulk) SetDistance(v uint64) *EnterpriseUpsertBulk {
 	return u.Update(func(s *EnterpriseUpsert) {
 		s.SetDistance(v)
 	})
 }
 
 // AddDistance adds v to the "distance" field.
-func (u *EnterpriseUpsertBulk) AddDistance(v float64) *EnterpriseUpsertBulk {
+func (u *EnterpriseUpsertBulk) AddDistance(v uint64) *EnterpriseUpsertBulk {
 	return u.Update(func(s *EnterpriseUpsert) {
 		s.AddDistance(v)
 	})

@@ -597,7 +597,7 @@ func init() {
 	// enterpriseDescDistance is the schema descriptor for distance field.
 	enterpriseDescDistance := enterpriseFields[15].Descriptor()
 	// enterprise.DefaultDistance holds the default value on creation for the distance field.
-	enterprise.DefaultDistance = enterpriseDescDistance.Default.(float64)
+	enterprise.DefaultDistance = enterpriseDescDistance.Default.(uint64)
 	enterprisebatteryswapMixin := schema.EnterpriseBatterySwap{}.Mixin()
 	enterprisebatteryswapMixinFields0 := enterprisebatteryswapMixin[0].Fields()
 	_ = enterprisebatteryswapMixinFields0

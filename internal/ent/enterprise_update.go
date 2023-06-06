@@ -321,23 +321,23 @@ func (eu *EnterpriseUpdate) ClearDays() *EnterpriseUpdate {
 }
 
 // SetDistance sets the "distance" field.
-func (eu *EnterpriseUpdate) SetDistance(f float64) *EnterpriseUpdate {
+func (eu *EnterpriseUpdate) SetDistance(u uint64) *EnterpriseUpdate {
 	eu.mutation.ResetDistance()
-	eu.mutation.SetDistance(f)
+	eu.mutation.SetDistance(u)
 	return eu
 }
 
 // SetNillableDistance sets the "distance" field if the given value is not nil.
-func (eu *EnterpriseUpdate) SetNillableDistance(f *float64) *EnterpriseUpdate {
-	if f != nil {
-		eu.SetDistance(*f)
+func (eu *EnterpriseUpdate) SetNillableDistance(u *uint64) *EnterpriseUpdate {
+	if u != nil {
+		eu.SetDistance(*u)
 	}
 	return eu
 }
 
-// AddDistance adds f to the "distance" field.
-func (eu *EnterpriseUpdate) AddDistance(f float64) *EnterpriseUpdate {
-	eu.mutation.AddDistance(f)
+// AddDistance adds u to the "distance" field.
+func (eu *EnterpriseUpdate) AddDistance(u int64) *EnterpriseUpdate {
+	eu.mutation.AddDistance(u)
 	return eu
 }
 
@@ -1049,10 +1049,10 @@ func (eu *EnterpriseUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.ClearField(enterprise.FieldDays, field.TypeJSON)
 	}
 	if value, ok := eu.mutation.Distance(); ok {
-		_spec.SetField(enterprise.FieldDistance, field.TypeFloat64, value)
+		_spec.SetField(enterprise.FieldDistance, field.TypeUint64, value)
 	}
 	if value, ok := eu.mutation.AddedDistance(); ok {
-		_spec.AddField(enterprise.FieldDistance, field.TypeFloat64, value)
+		_spec.AddField(enterprise.FieldDistance, field.TypeUint64, value)
 	}
 	if value, ok := eu.mutation.RechargeAmount(); ok {
 		_spec.SetField(enterprise.FieldRechargeAmount, field.TypeJSON, value)
@@ -2022,23 +2022,23 @@ func (euo *EnterpriseUpdateOne) ClearDays() *EnterpriseUpdateOne {
 }
 
 // SetDistance sets the "distance" field.
-func (euo *EnterpriseUpdateOne) SetDistance(f float64) *EnterpriseUpdateOne {
+func (euo *EnterpriseUpdateOne) SetDistance(u uint64) *EnterpriseUpdateOne {
 	euo.mutation.ResetDistance()
-	euo.mutation.SetDistance(f)
+	euo.mutation.SetDistance(u)
 	return euo
 }
 
 // SetNillableDistance sets the "distance" field if the given value is not nil.
-func (euo *EnterpriseUpdateOne) SetNillableDistance(f *float64) *EnterpriseUpdateOne {
-	if f != nil {
-		euo.SetDistance(*f)
+func (euo *EnterpriseUpdateOne) SetNillableDistance(u *uint64) *EnterpriseUpdateOne {
+	if u != nil {
+		euo.SetDistance(*u)
 	}
 	return euo
 }
 
-// AddDistance adds f to the "distance" field.
-func (euo *EnterpriseUpdateOne) AddDistance(f float64) *EnterpriseUpdateOne {
-	euo.mutation.AddDistance(f)
+// AddDistance adds u to the "distance" field.
+func (euo *EnterpriseUpdateOne) AddDistance(u int64) *EnterpriseUpdateOne {
+	euo.mutation.AddDistance(u)
 	return euo
 }
 
@@ -2780,10 +2780,10 @@ func (euo *EnterpriseUpdateOne) sqlSave(ctx context.Context) (_node *Enterprise,
 		_spec.ClearField(enterprise.FieldDays, field.TypeJSON)
 	}
 	if value, ok := euo.mutation.Distance(); ok {
-		_spec.SetField(enterprise.FieldDistance, field.TypeFloat64, value)
+		_spec.SetField(enterprise.FieldDistance, field.TypeUint64, value)
 	}
 	if value, ok := euo.mutation.AddedDistance(); ok {
-		_spec.AddField(enterprise.FieldDistance, field.TypeFloat64, value)
+		_spec.AddField(enterprise.FieldDistance, field.TypeUint64, value)
 	}
 	if value, ok := euo.mutation.RechargeAmount(); ok {
 		_spec.SetField(enterprise.FieldRechargeAmount, field.TypeJSON, value)
