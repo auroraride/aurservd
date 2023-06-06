@@ -33,7 +33,7 @@ func loadAgentRoutes() {
 	// 骑手详情
 	auth.GET("/rider/:id", aapi.Rider.Detail)
 	// 激活骑手
-	auth.POST("/rider/activate", aapi.Rider.Active)
+	auth.POST("/rider/active", aapi.Rider.Active)
 	// 添加骑手
 	auth.POST("/rider", aapi.Rider.Create)
 	// 邀请骑手二维码
