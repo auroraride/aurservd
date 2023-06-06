@@ -261,6 +261,7 @@ func (s *stockService) EnterpriseList(req *model.StockListReq) *model.Pagination
 			}
 			if item.Edges.Enterprise.Edges.Stations != nil {
 				rsp.EnterpriseName = item.Edges.Enterprise.Name
+				rsp.EnterpriseID = item.Edges.Enterprise.ID
 			}
 			// 电池总数
 			rsp.BatteryTotal = 0
