@@ -321,23 +321,41 @@ func (eu *EnterpriseUpdate) ClearDays() *EnterpriseUpdate {
 }
 
 // SetDistance sets the "distance" field.
-func (eu *EnterpriseUpdate) SetDistance(f float64) *EnterpriseUpdate {
+func (eu *EnterpriseUpdate) SetDistance(u uint64) *EnterpriseUpdate {
 	eu.mutation.ResetDistance()
-	eu.mutation.SetDistance(f)
+	eu.mutation.SetDistance(u)
 	return eu
 }
 
 // SetNillableDistance sets the "distance" field if the given value is not nil.
-func (eu *EnterpriseUpdate) SetNillableDistance(f *float64) *EnterpriseUpdate {
-	if f != nil {
-		eu.SetDistance(*f)
+func (eu *EnterpriseUpdate) SetNillableDistance(u *uint64) *EnterpriseUpdate {
+	if u != nil {
+		eu.SetDistance(*u)
 	}
 	return eu
 }
 
-// AddDistance adds f to the "distance" field.
-func (eu *EnterpriseUpdate) AddDistance(f float64) *EnterpriseUpdate {
-	eu.mutation.AddDistance(f)
+// AddDistance adds u to the "distance" field.
+func (eu *EnterpriseUpdate) AddDistance(u int64) *EnterpriseUpdate {
+	eu.mutation.AddDistance(u)
+	return eu
+}
+
+// SetRechargeAmount sets the "recharge_amount" field.
+func (eu *EnterpriseUpdate) SetRechargeAmount(i []int) *EnterpriseUpdate {
+	eu.mutation.SetRechargeAmount(i)
+	return eu
+}
+
+// AppendRechargeAmount appends i to the "recharge_amount" field.
+func (eu *EnterpriseUpdate) AppendRechargeAmount(i []int) *EnterpriseUpdate {
+	eu.mutation.AppendRechargeAmount(i)
+	return eu
+}
+
+// ClearRechargeAmount clears the value of the "recharge_amount" field.
+func (eu *EnterpriseUpdate) ClearRechargeAmount() *EnterpriseUpdate {
+	eu.mutation.ClearRechargeAmount()
 	return eu
 }
 
@@ -1031,10 +1049,21 @@ func (eu *EnterpriseUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.ClearField(enterprise.FieldDays, field.TypeJSON)
 	}
 	if value, ok := eu.mutation.Distance(); ok {
-		_spec.SetField(enterprise.FieldDistance, field.TypeFloat64, value)
+		_spec.SetField(enterprise.FieldDistance, field.TypeUint64, value)
 	}
 	if value, ok := eu.mutation.AddedDistance(); ok {
-		_spec.AddField(enterprise.FieldDistance, field.TypeFloat64, value)
+		_spec.AddField(enterprise.FieldDistance, field.TypeUint64, value)
+	}
+	if value, ok := eu.mutation.RechargeAmount(); ok {
+		_spec.SetField(enterprise.FieldRechargeAmount, field.TypeJSON, value)
+	}
+	if value, ok := eu.mutation.AppendedRechargeAmount(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, enterprise.FieldRechargeAmount, value)
+		})
+	}
+	if eu.mutation.RechargeAmountCleared() {
+		_spec.ClearField(enterprise.FieldRechargeAmount, field.TypeJSON)
 	}
 	if eu.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1993,23 +2022,41 @@ func (euo *EnterpriseUpdateOne) ClearDays() *EnterpriseUpdateOne {
 }
 
 // SetDistance sets the "distance" field.
-func (euo *EnterpriseUpdateOne) SetDistance(f float64) *EnterpriseUpdateOne {
+func (euo *EnterpriseUpdateOne) SetDistance(u uint64) *EnterpriseUpdateOne {
 	euo.mutation.ResetDistance()
-	euo.mutation.SetDistance(f)
+	euo.mutation.SetDistance(u)
 	return euo
 }
 
 // SetNillableDistance sets the "distance" field if the given value is not nil.
-func (euo *EnterpriseUpdateOne) SetNillableDistance(f *float64) *EnterpriseUpdateOne {
-	if f != nil {
-		euo.SetDistance(*f)
+func (euo *EnterpriseUpdateOne) SetNillableDistance(u *uint64) *EnterpriseUpdateOne {
+	if u != nil {
+		euo.SetDistance(*u)
 	}
 	return euo
 }
 
-// AddDistance adds f to the "distance" field.
-func (euo *EnterpriseUpdateOne) AddDistance(f float64) *EnterpriseUpdateOne {
-	euo.mutation.AddDistance(f)
+// AddDistance adds u to the "distance" field.
+func (euo *EnterpriseUpdateOne) AddDistance(u int64) *EnterpriseUpdateOne {
+	euo.mutation.AddDistance(u)
+	return euo
+}
+
+// SetRechargeAmount sets the "recharge_amount" field.
+func (euo *EnterpriseUpdateOne) SetRechargeAmount(i []int) *EnterpriseUpdateOne {
+	euo.mutation.SetRechargeAmount(i)
+	return euo
+}
+
+// AppendRechargeAmount appends i to the "recharge_amount" field.
+func (euo *EnterpriseUpdateOne) AppendRechargeAmount(i []int) *EnterpriseUpdateOne {
+	euo.mutation.AppendRechargeAmount(i)
+	return euo
+}
+
+// ClearRechargeAmount clears the value of the "recharge_amount" field.
+func (euo *EnterpriseUpdateOne) ClearRechargeAmount() *EnterpriseUpdateOne {
+	euo.mutation.ClearRechargeAmount()
 	return euo
 }
 
@@ -2733,10 +2780,21 @@ func (euo *EnterpriseUpdateOne) sqlSave(ctx context.Context) (_node *Enterprise,
 		_spec.ClearField(enterprise.FieldDays, field.TypeJSON)
 	}
 	if value, ok := euo.mutation.Distance(); ok {
-		_spec.SetField(enterprise.FieldDistance, field.TypeFloat64, value)
+		_spec.SetField(enterprise.FieldDistance, field.TypeUint64, value)
 	}
 	if value, ok := euo.mutation.AddedDistance(); ok {
-		_spec.AddField(enterprise.FieldDistance, field.TypeFloat64, value)
+		_spec.AddField(enterprise.FieldDistance, field.TypeUint64, value)
+	}
+	if value, ok := euo.mutation.RechargeAmount(); ok {
+		_spec.SetField(enterprise.FieldRechargeAmount, field.TypeJSON, value)
+	}
+	if value, ok := euo.mutation.AppendedRechargeAmount(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, enterprise.FieldRechargeAmount, value)
+		})
+	}
+	if euo.mutation.RechargeAmountCleared() {
+		_spec.ClearField(enterprise.FieldRechargeAmount, field.TypeJSON)
 	}
 	if euo.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{

@@ -22,17 +22,18 @@ var Bill = new(bill)
 // @Router       /agent/v1/bill/historical [GET]
 // @Summary      A4001 历史账单
 // @Tags         [A]代理接口
-// @Descript     该接口无需日期筛选
 // @Accept       json
 // @Produce      json
 // @Param        X-Agent-Token  header  string  true  "代理校验token"
-// @Param        query  query   model.PaginationReq  true  "请求数据"
+// @Param        query  query   model.StatementBillHistoricalListReq  true  "请求数据"
 // @Success      200  {object}  model.PaginationRes{items=[]model.StatementBillHistoricalListRes}  "请求成功"
 func (*bill) Historical(c echo.Context) (err error) {
-	ctx, req := app.AgentContextAndBinding[model.PaginationReq](c)
+	ctx, req := app.AgentContextAndBinding[model.StatementBillHistoricalListReq](c)
 	return ctx.SendResponse(service.NewEnterpriseStatement().Historical(&model.StatementBillHistoricalListReq{
-		PaginationReq: *req,
+		PaginationReq: req.PaginationReq,
 		EnterpriseID:  ctx.Agent.EnterpriseID,
+		End:           req.End,
+		Start:         req.Start,
 	}))
 }
 

@@ -248,7 +248,13 @@ func (s *enterpriseStatementService) Historical(req *model.StatementBillHistoric
 			enterprisestatement.EnterpriseID(req.EnterpriseID),
 			enterprisestatement.SettledAtNotNil(),
 		).Order(ent.Desc(enterprisestatement.FieldSettledAt))
-
+	tt := tools.NewTime()
+	if req.Start != nil {
+		q.Where(enterprisestatement.SettledAtGTE(tt.ParseDateStringX(*req.Start)))
+	}
+	if req.End != nil {
+		q.Where(enterprisestatement.SettledAtLT(tt.ParseNextDateStringX(*req.End)))
+	}
 	return model.ParsePaginationResponse(
 		q,
 		req.PaginationReq,

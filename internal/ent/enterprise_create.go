@@ -258,16 +258,22 @@ func (ec *EnterpriseCreate) SetDays(i []int) *EnterpriseCreate {
 }
 
 // SetDistance sets the "distance" field.
-func (ec *EnterpriseCreate) SetDistance(f float64) *EnterpriseCreate {
-	ec.mutation.SetDistance(f)
+func (ec *EnterpriseCreate) SetDistance(u uint64) *EnterpriseCreate {
+	ec.mutation.SetDistance(u)
 	return ec
 }
 
 // SetNillableDistance sets the "distance" field if the given value is not nil.
-func (ec *EnterpriseCreate) SetNillableDistance(f *float64) *EnterpriseCreate {
-	if f != nil {
-		ec.SetDistance(*f)
+func (ec *EnterpriseCreate) SetNillableDistance(u *uint64) *EnterpriseCreate {
+	if u != nil {
+		ec.SetDistance(*u)
 	}
+	return ec
+}
+
+// SetRechargeAmount sets the "recharge_amount" field.
+func (ec *EnterpriseCreate) SetRechargeAmount(i []int) *EnterpriseCreate {
+	ec.mutation.SetRechargeAmount(i)
 	return ec
 }
 
@@ -726,8 +732,12 @@ func (ec *EnterpriseCreate) createSpec() (*Enterprise, *sqlgraph.CreateSpec) {
 		_node.Days = value
 	}
 	if value, ok := ec.mutation.Distance(); ok {
-		_spec.SetField(enterprise.FieldDistance, field.TypeFloat64, value)
+		_spec.SetField(enterprise.FieldDistance, field.TypeUint64, value)
 		_node.Distance = value
+	}
+	if value, ok := ec.mutation.RechargeAmount(); ok {
+		_spec.SetField(enterprise.FieldRechargeAmount, field.TypeJSON, value)
+		_node.RechargeAmount = value
 	}
 	if nodes := ec.mutation.CityIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1335,7 +1345,7 @@ func (u *EnterpriseUpsert) ClearDays() *EnterpriseUpsert {
 }
 
 // SetDistance sets the "distance" field.
-func (u *EnterpriseUpsert) SetDistance(v float64) *EnterpriseUpsert {
+func (u *EnterpriseUpsert) SetDistance(v uint64) *EnterpriseUpsert {
 	u.Set(enterprise.FieldDistance, v)
 	return u
 }
@@ -1347,8 +1357,26 @@ func (u *EnterpriseUpsert) UpdateDistance() *EnterpriseUpsert {
 }
 
 // AddDistance adds v to the "distance" field.
-func (u *EnterpriseUpsert) AddDistance(v float64) *EnterpriseUpsert {
+func (u *EnterpriseUpsert) AddDistance(v uint64) *EnterpriseUpsert {
 	u.Add(enterprise.FieldDistance, v)
+	return u
+}
+
+// SetRechargeAmount sets the "recharge_amount" field.
+func (u *EnterpriseUpsert) SetRechargeAmount(v []int) *EnterpriseUpsert {
+	u.Set(enterprise.FieldRechargeAmount, v)
+	return u
+}
+
+// UpdateRechargeAmount sets the "recharge_amount" field to the value that was provided on create.
+func (u *EnterpriseUpsert) UpdateRechargeAmount() *EnterpriseUpsert {
+	u.SetExcluded(enterprise.FieldRechargeAmount)
+	return u
+}
+
+// ClearRechargeAmount clears the value of the "recharge_amount" field.
+func (u *EnterpriseUpsert) ClearRechargeAmount() *EnterpriseUpsert {
+	u.SetNull(enterprise.FieldRechargeAmount)
 	return u
 }
 
@@ -1765,14 +1793,14 @@ func (u *EnterpriseUpsertOne) ClearDays() *EnterpriseUpsertOne {
 }
 
 // SetDistance sets the "distance" field.
-func (u *EnterpriseUpsertOne) SetDistance(v float64) *EnterpriseUpsertOne {
+func (u *EnterpriseUpsertOne) SetDistance(v uint64) *EnterpriseUpsertOne {
 	return u.Update(func(s *EnterpriseUpsert) {
 		s.SetDistance(v)
 	})
 }
 
 // AddDistance adds v to the "distance" field.
-func (u *EnterpriseUpsertOne) AddDistance(v float64) *EnterpriseUpsertOne {
+func (u *EnterpriseUpsertOne) AddDistance(v uint64) *EnterpriseUpsertOne {
 	return u.Update(func(s *EnterpriseUpsert) {
 		s.AddDistance(v)
 	})
@@ -1782,6 +1810,27 @@ func (u *EnterpriseUpsertOne) AddDistance(v float64) *EnterpriseUpsertOne {
 func (u *EnterpriseUpsertOne) UpdateDistance() *EnterpriseUpsertOne {
 	return u.Update(func(s *EnterpriseUpsert) {
 		s.UpdateDistance()
+	})
+}
+
+// SetRechargeAmount sets the "recharge_amount" field.
+func (u *EnterpriseUpsertOne) SetRechargeAmount(v []int) *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.SetRechargeAmount(v)
+	})
+}
+
+// UpdateRechargeAmount sets the "recharge_amount" field to the value that was provided on create.
+func (u *EnterpriseUpsertOne) UpdateRechargeAmount() *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.UpdateRechargeAmount()
+	})
+}
+
+// ClearRechargeAmount clears the value of the "recharge_amount" field.
+func (u *EnterpriseUpsertOne) ClearRechargeAmount() *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.ClearRechargeAmount()
 	})
 }
 
@@ -2360,14 +2409,14 @@ func (u *EnterpriseUpsertBulk) ClearDays() *EnterpriseUpsertBulk {
 }
 
 // SetDistance sets the "distance" field.
-func (u *EnterpriseUpsertBulk) SetDistance(v float64) *EnterpriseUpsertBulk {
+func (u *EnterpriseUpsertBulk) SetDistance(v uint64) *EnterpriseUpsertBulk {
 	return u.Update(func(s *EnterpriseUpsert) {
 		s.SetDistance(v)
 	})
 }
 
 // AddDistance adds v to the "distance" field.
-func (u *EnterpriseUpsertBulk) AddDistance(v float64) *EnterpriseUpsertBulk {
+func (u *EnterpriseUpsertBulk) AddDistance(v uint64) *EnterpriseUpsertBulk {
 	return u.Update(func(s *EnterpriseUpsert) {
 		s.AddDistance(v)
 	})
@@ -2377,6 +2426,27 @@ func (u *EnterpriseUpsertBulk) AddDistance(v float64) *EnterpriseUpsertBulk {
 func (u *EnterpriseUpsertBulk) UpdateDistance() *EnterpriseUpsertBulk {
 	return u.Update(func(s *EnterpriseUpsert) {
 		s.UpdateDistance()
+	})
+}
+
+// SetRechargeAmount sets the "recharge_amount" field.
+func (u *EnterpriseUpsertBulk) SetRechargeAmount(v []int) *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.SetRechargeAmount(v)
+	})
+}
+
+// UpdateRechargeAmount sets the "recharge_amount" field to the value that was provided on create.
+func (u *EnterpriseUpsertBulk) UpdateRechargeAmount() *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.UpdateRechargeAmount()
+	})
+}
+
+// ClearRechargeAmount clears the value of the "recharge_amount" field.
+func (u *EnterpriseUpsertBulk) ClearRechargeAmount() *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.ClearRechargeAmount()
 	})
 }
 

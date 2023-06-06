@@ -151,7 +151,7 @@ func UseStore(v bool) predicate.Enterprise {
 }
 
 // Distance applies equality check predicate on the "distance" field. It's identical to DistanceEQ.
-func Distance(v float64) predicate.Enterprise {
+func Distance(v uint64) predicate.Enterprise {
 	return predicate.Enterprise(sql.FieldEQ(FieldDistance, v))
 }
 
@@ -1091,43 +1091,53 @@ func DaysNotNil() predicate.Enterprise {
 }
 
 // DistanceEQ applies the EQ predicate on the "distance" field.
-func DistanceEQ(v float64) predicate.Enterprise {
+func DistanceEQ(v uint64) predicate.Enterprise {
 	return predicate.Enterprise(sql.FieldEQ(FieldDistance, v))
 }
 
 // DistanceNEQ applies the NEQ predicate on the "distance" field.
-func DistanceNEQ(v float64) predicate.Enterprise {
+func DistanceNEQ(v uint64) predicate.Enterprise {
 	return predicate.Enterprise(sql.FieldNEQ(FieldDistance, v))
 }
 
 // DistanceIn applies the In predicate on the "distance" field.
-func DistanceIn(vs ...float64) predicate.Enterprise {
+func DistanceIn(vs ...uint64) predicate.Enterprise {
 	return predicate.Enterprise(sql.FieldIn(FieldDistance, vs...))
 }
 
 // DistanceNotIn applies the NotIn predicate on the "distance" field.
-func DistanceNotIn(vs ...float64) predicate.Enterprise {
+func DistanceNotIn(vs ...uint64) predicate.Enterprise {
 	return predicate.Enterprise(sql.FieldNotIn(FieldDistance, vs...))
 }
 
 // DistanceGT applies the GT predicate on the "distance" field.
-func DistanceGT(v float64) predicate.Enterprise {
+func DistanceGT(v uint64) predicate.Enterprise {
 	return predicate.Enterprise(sql.FieldGT(FieldDistance, v))
 }
 
 // DistanceGTE applies the GTE predicate on the "distance" field.
-func DistanceGTE(v float64) predicate.Enterprise {
+func DistanceGTE(v uint64) predicate.Enterprise {
 	return predicate.Enterprise(sql.FieldGTE(FieldDistance, v))
 }
 
 // DistanceLT applies the LT predicate on the "distance" field.
-func DistanceLT(v float64) predicate.Enterprise {
+func DistanceLT(v uint64) predicate.Enterprise {
 	return predicate.Enterprise(sql.FieldLT(FieldDistance, v))
 }
 
 // DistanceLTE applies the LTE predicate on the "distance" field.
-func DistanceLTE(v float64) predicate.Enterprise {
+func DistanceLTE(v uint64) predicate.Enterprise {
 	return predicate.Enterprise(sql.FieldLTE(FieldDistance, v))
+}
+
+// RechargeAmountIsNil applies the IsNil predicate on the "recharge_amount" field.
+func RechargeAmountIsNil() predicate.Enterprise {
+	return predicate.Enterprise(sql.FieldIsNull(FieldRechargeAmount))
+}
+
+// RechargeAmountNotNil applies the NotNil predicate on the "recharge_amount" field.
+func RechargeAmountNotNil() predicate.Enterprise {
+	return predicate.Enterprise(sql.FieldNotNull(FieldRechargeAmount))
 }
 
 // HasCity applies the HasEdge predicate on the "city" edge.

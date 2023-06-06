@@ -33459,8 +33459,10 @@ type EnterpriseMutation struct {
 	use_store                    *bool
 	days                         *[]int
 	appenddays                   []int
-	distance                     *float64
-	adddistance                  *float64
+	distance                     *uint64
+	adddistance                  *int64
+	recharge_amount              *[]int
+	appendrecharge_amount        []int
 	clearedFields                map[string]struct{}
 	city                         *uint64
 	clearedcity                  bool
@@ -34622,13 +34624,13 @@ func (m *EnterpriseMutation) ResetDays() {
 }
 
 // SetDistance sets the "distance" field.
-func (m *EnterpriseMutation) SetDistance(f float64) {
-	m.distance = &f
+func (m *EnterpriseMutation) SetDistance(u uint64) {
+	m.distance = &u
 	m.adddistance = nil
 }
 
 // Distance returns the value of the "distance" field in the mutation.
-func (m *EnterpriseMutation) Distance() (r float64, exists bool) {
+func (m *EnterpriseMutation) Distance() (r uint64, exists bool) {
 	v := m.distance
 	if v == nil {
 		return
@@ -34639,7 +34641,7 @@ func (m *EnterpriseMutation) Distance() (r float64, exists bool) {
 // OldDistance returns the old "distance" field's value of the Enterprise entity.
 // If the Enterprise object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EnterpriseMutation) OldDistance(ctx context.Context) (v float64, err error) {
+func (m *EnterpriseMutation) OldDistance(ctx context.Context) (v uint64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDistance is only allowed on UpdateOne operations")
 	}
@@ -34653,17 +34655,17 @@ func (m *EnterpriseMutation) OldDistance(ctx context.Context) (v float64, err er
 	return oldValue.Distance, nil
 }
 
-// AddDistance adds f to the "distance" field.
-func (m *EnterpriseMutation) AddDistance(f float64) {
+// AddDistance adds u to the "distance" field.
+func (m *EnterpriseMutation) AddDistance(u int64) {
 	if m.adddistance != nil {
-		*m.adddistance += f
+		*m.adddistance += u
 	} else {
-		m.adddistance = &f
+		m.adddistance = &u
 	}
 }
 
 // AddedDistance returns the value that was added to the "distance" field in this mutation.
-func (m *EnterpriseMutation) AddedDistance() (r float64, exists bool) {
+func (m *EnterpriseMutation) AddedDistance() (r int64, exists bool) {
 	v := m.adddistance
 	if v == nil {
 		return
@@ -34675,6 +34677,71 @@ func (m *EnterpriseMutation) AddedDistance() (r float64, exists bool) {
 func (m *EnterpriseMutation) ResetDistance() {
 	m.distance = nil
 	m.adddistance = nil
+}
+
+// SetRechargeAmount sets the "recharge_amount" field.
+func (m *EnterpriseMutation) SetRechargeAmount(i []int) {
+	m.recharge_amount = &i
+	m.appendrecharge_amount = nil
+}
+
+// RechargeAmount returns the value of the "recharge_amount" field in the mutation.
+func (m *EnterpriseMutation) RechargeAmount() (r []int, exists bool) {
+	v := m.recharge_amount
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRechargeAmount returns the old "recharge_amount" field's value of the Enterprise entity.
+// If the Enterprise object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseMutation) OldRechargeAmount(ctx context.Context) (v []int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRechargeAmount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRechargeAmount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRechargeAmount: %w", err)
+	}
+	return oldValue.RechargeAmount, nil
+}
+
+// AppendRechargeAmount adds i to the "recharge_amount" field.
+func (m *EnterpriseMutation) AppendRechargeAmount(i []int) {
+	m.appendrecharge_amount = append(m.appendrecharge_amount, i...)
+}
+
+// AppendedRechargeAmount returns the list of values that were appended to the "recharge_amount" field in this mutation.
+func (m *EnterpriseMutation) AppendedRechargeAmount() ([]int, bool) {
+	if len(m.appendrecharge_amount) == 0 {
+		return nil, false
+	}
+	return m.appendrecharge_amount, true
+}
+
+// ClearRechargeAmount clears the value of the "recharge_amount" field.
+func (m *EnterpriseMutation) ClearRechargeAmount() {
+	m.recharge_amount = nil
+	m.appendrecharge_amount = nil
+	m.clearedFields[enterprise.FieldRechargeAmount] = struct{}{}
+}
+
+// RechargeAmountCleared returns if the "recharge_amount" field was cleared in this mutation.
+func (m *EnterpriseMutation) RechargeAmountCleared() bool {
+	_, ok := m.clearedFields[enterprise.FieldRechargeAmount]
+	return ok
+}
+
+// ResetRechargeAmount resets all changes to the "recharge_amount" field.
+func (m *EnterpriseMutation) ResetRechargeAmount() {
+	m.recharge_amount = nil
+	m.appendrecharge_amount = nil
+	delete(m.clearedFields, enterprise.FieldRechargeAmount)
 }
 
 // ClearCity clears the "city" edge to the City entity.
@@ -35493,7 +35560,7 @@ func (m *EnterpriseMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EnterpriseMutation) Fields() []string {
-	fields := make([]string, 0, 23)
+	fields := make([]string, 0, 24)
 	if m.created_at != nil {
 		fields = append(fields, enterprise.FieldCreatedAt)
 	}
@@ -35563,6 +35630,9 @@ func (m *EnterpriseMutation) Fields() []string {
 	if m.distance != nil {
 		fields = append(fields, enterprise.FieldDistance)
 	}
+	if m.recharge_amount != nil {
+		fields = append(fields, enterprise.FieldRechargeAmount)
+	}
 	return fields
 }
 
@@ -35617,6 +35687,8 @@ func (m *EnterpriseMutation) Field(name string) (ent.Value, bool) {
 		return m.Days()
 	case enterprise.FieldDistance:
 		return m.Distance()
+	case enterprise.FieldRechargeAmount:
+		return m.RechargeAmount()
 	}
 	return nil, false
 }
@@ -35672,6 +35744,8 @@ func (m *EnterpriseMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldDays(ctx)
 	case enterprise.FieldDistance:
 		return m.OldDistance(ctx)
+	case enterprise.FieldRechargeAmount:
+		return m.OldRechargeAmount(ctx)
 	}
 	return nil, fmt.Errorf("unknown Enterprise field %s", name)
 }
@@ -35836,11 +35910,18 @@ func (m *EnterpriseMutation) SetField(name string, value ent.Value) error {
 		m.SetDays(v)
 		return nil
 	case enterprise.FieldDistance:
-		v, ok := value.(float64)
+		v, ok := value.(uint64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDistance(v)
+		return nil
+	case enterprise.FieldRechargeAmount:
+		v, ok := value.([]int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRechargeAmount(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Enterprise field %s", name)
@@ -35933,7 +36014,7 @@ func (m *EnterpriseMutation) AddField(name string, value ent.Value) error {
 		m.AddPrepaymentTotal(v)
 		return nil
 	case enterprise.FieldDistance:
-		v, ok := value.(float64)
+		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -35970,6 +36051,9 @@ func (m *EnterpriseMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(enterprise.FieldDays) {
 		fields = append(fields, enterprise.FieldDays)
+	}
+	if m.FieldCleared(enterprise.FieldRechargeAmount) {
+		fields = append(fields, enterprise.FieldRechargeAmount)
 	}
 	return fields
 }
@@ -36008,6 +36092,9 @@ func (m *EnterpriseMutation) ClearField(name string) error {
 		return nil
 	case enterprise.FieldDays:
 		m.ClearDays()
+		return nil
+	case enterprise.FieldRechargeAmount:
+		m.ClearRechargeAmount()
 		return nil
 	}
 	return fmt.Errorf("unknown Enterprise nullable field %s", name)
@@ -36085,6 +36172,9 @@ func (m *EnterpriseMutation) ResetField(name string) error {
 		return nil
 	case enterprise.FieldDistance:
 		m.ResetDistance()
+		return nil
+	case enterprise.FieldRechargeAmount:
+		m.ResetRechargeAmount()
 		return nil
 	}
 	return fmt.Errorf("unknown Enterprise field %s", name)

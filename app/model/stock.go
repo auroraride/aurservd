@@ -260,6 +260,7 @@ type StockListRes struct {
 	StationName    string           `json:"stationName,omitempty"`    // 站点名称
 	StationID      uint64           `json:"stationID,omitempty"`      // 站点id
 	EnterpriseName string           `json:"enterpriseName,omitempty"` // 团签名称
+	EnterpriseID   uint64           `json:"enterpriseID,omitempty"`   // 团签id
 }
 
 // StockBusinessReq 业务库存调整请求

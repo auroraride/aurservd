@@ -26,12 +26,14 @@ func loadAgentRoutes() {
 	auth.POST("/rider", aapi.Rider.Create)
 	// 电池搜索列表
 	auth.GET("/battery/list", aapi.Agent.BatteryList)
+	// 电池型号列表
+	auth.GET("/battery/model", aapi.Agent.BatteryModels)
 	// 骑手列表
 	auth.GET("/rider", aapi.Rider.List)
 	// 骑手详情
 	auth.GET("/rider/:id", aapi.Rider.Detail)
 	// 激活骑手
-	auth.POST("/rider/activate", aapi.Rider.Active)
+	auth.POST("/rider/active", aapi.Rider.Active)
 	// 添加骑手
 	auth.POST("/rider", aapi.Rider.Create)
 	// 邀请骑手二维码

@@ -75,15 +75,29 @@ func (*agent) BatteryList(c echo.Context) (err error) {
 	return ctx.SendResponse(service.NewSelection().BatterySerialSearch(req))
 }
 
+// BatteryModels 电池列表
+// @ID           AgentBatteryModels
+// @Router       /agent/v1/battery/model [GET]
+// @Summary      A5002 电池型号列表
+// @Tags         [A]代理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Agent-Token  header  string  true  "代理校验token"
+// @Success      200  {object}  model.ItemListRes
+func (*agent) BatteryModels(c echo.Context) (err error) {
+	ctx := app.ContextX[app.ManagerContext](c)
+	return ctx.SendResponse(service.NewBatteryModel().List())
+}
+
 // Invite 邀请骑手
 // @ID           AgentRiderInvite
-// @Router       /agent/v1/rider/invite [GET]
+// @Router       /agent/v1/rider/invite [POST]
 // @Summary      A2006 邀请骑手
 // @Tags         [A]代理接口
 // @Accept       json
 // @Produce      json
 // @Param        X-Agent-Token  header  string  true  "代理校验token"
-// @Param        body  body   model.EnterpriseRiderInviteReq  true  "邀请骑手"
+// @Param        body  body   model.EnterpriseRiderInviteReq  true "邀请骑手"
 // @Success      200  {object}  string  "请求成功"
 func (*rider) Invite(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.EnterpriseRiderInviteReq](c)

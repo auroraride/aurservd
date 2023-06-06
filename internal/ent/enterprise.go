@@ -65,7 +65,9 @@ type Enterprise struct {
 	// 代理商时间选项
 	Days []int `json:"days,omitempty"`
 	// 可控制电柜距离
-	Distance float64 `json:"distance,omitempty"`
+	Distance uint64 `json:"distance,omitempty"`
+	// 充值金额选项
+	RechargeAmount []int `json:"recharge_amount,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EnterpriseQuery when eager-loading is set.
 	Edges        EnterpriseEdges `json:"edges"`
@@ -253,13 +255,13 @@ func (*Enterprise) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case enterprise.FieldCreator, enterprise.FieldLastModifier, enterprise.FieldDays:
+		case enterprise.FieldCreator, enterprise.FieldLastModifier, enterprise.FieldDays, enterprise.FieldRechargeAmount:
 			values[i] = new([]byte)
 		case enterprise.FieldAgent, enterprise.FieldUseStore:
 			values[i] = new(sql.NullBool)
-		case enterprise.FieldDeposit, enterprise.FieldBalance, enterprise.FieldPrepaymentTotal, enterprise.FieldDistance:
+		case enterprise.FieldDeposit, enterprise.FieldBalance, enterprise.FieldPrepaymentTotal:
 			values[i] = new(sql.NullFloat64)
-		case enterprise.FieldID, enterprise.FieldCityID, enterprise.FieldStatus, enterprise.FieldPayment:
+		case enterprise.FieldID, enterprise.FieldCityID, enterprise.FieldStatus, enterprise.FieldPayment, enterprise.FieldDistance:
 			values[i] = new(sql.NullInt64)
 		case enterprise.FieldRemark, enterprise.FieldName, enterprise.FieldCompanyName, enterprise.FieldContactName, enterprise.FieldContactPhone, enterprise.FieldIdcardNumber, enterprise.FieldAddress:
 			values[i] = new(sql.NullString)
@@ -427,10 +429,18 @@ func (e *Enterprise) assignValues(columns []string, values []any) error {
 				}
 			}
 		case enterprise.FieldDistance:
-			if value, ok := values[i].(*sql.NullFloat64); !ok {
+			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field distance", values[i])
 			} else if value.Valid {
-				e.Distance = value.Float64
+				e.Distance = uint64(value.Int64)
+			}
+		case enterprise.FieldRechargeAmount:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field recharge_amount", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &e.RechargeAmount); err != nil {
+					return fmt.Errorf("unmarshal field recharge_amount: %w", err)
+				}
 			}
 		default:
 			e.selectValues.Set(columns[i], values[i])
@@ -615,6 +625,9 @@ func (e *Enterprise) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("distance=")
 	builder.WriteString(fmt.Sprintf("%v", e.Distance))
+	builder.WriteString(", ")
+	builder.WriteString("recharge_amount=")
+	builder.WriteString(fmt.Sprintf("%v", e.RechargeAmount))
 	builder.WriteByte(')')
 	return builder.String()
 }
