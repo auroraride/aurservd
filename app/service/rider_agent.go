@@ -19,7 +19,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
-	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
 )
@@ -54,7 +53,7 @@ func NewRiderAgentWithModifier(m *model.Modifier) *riderAgentService {
 }
 
 func (s *riderAgentService) detail(item *ent.Rider) model.AgentRider {
-	today := carbon.Now().StartOfDay().Carbon2Time()
+	// today := carbon.Now().StartOfDay().Carbon2Time()
 	res := model.AgentRider{
 		ID:    item.ID,
 		Phone: item.Phone,
@@ -66,6 +65,8 @@ func (s *riderAgentService) detail(item *ent.Rider) model.AgentRider {
 	if st != nil {
 		res.Station = st.Name
 	}
+	// 默认未激活
+	res.Status = model.AgentRiderStatusInactive
 	// 获取订阅信息
 	subs := item.Edges.Subscribes
 	if len(subs) > 0 {
@@ -95,20 +96,21 @@ func (s *riderAgentService) detail(item *ent.Rider) model.AgentRider {
 			// 已退租
 			res.Status = model.AgentRiderStatusUnsubscribed
 		case model.SubscribeStatusUsing:
-			// 计算剩余日期
-			if sub.AgentEndAt != nil {
-				res.Remaining = silk.Pointer(tools.NewTime().LastDays(*sub.AgentEndAt, today))
-				// 判定当前状态
-				if sub.AgentEndAt.After(today) && *res.Remaining > model.WillOverdueNum {
-					// 若代理商处到期日期晚于今天, 则是使用中
-					res.Status = model.AgentRiderStatusUsing
-				} else if *res.Remaining <= model.WillOverdueNum && *res.Remaining > 0 { // 即将到期暂定3天
-					res.Status = model.AgentRiderStatusWillOverdue
-				} else {
-					// 否则是已逾期
-					res.Status = model.AgentRiderStatusOverdue
-				}
-			}
+			res.Status = model.AgentRiderStatusUsing
+			// // 计算剩余日期
+			// if sub.AgentEndAt != nil {
+			// 	res.Remaining = silk.Pointer(tools.NewTime().LastDays(*sub.AgentEndAt, today))
+			// 	// 判定当前状态
+			// 	if sub.AgentEndAt.After(today) && *res.Remaining > model.WillOverdueNum {
+			// 		// 若代理商处到期日期晚于今天, 则是使用中
+			// 		res.Status = model.AgentRiderStatusUsing
+			// 	} else if *res.Remaining <= model.WillOverdueNum && *res.Remaining > 0 { // 即将到期暂定3天
+			// 		res.Status = model.AgentRiderStatusWillOverdue
+			// 	} else {
+			// 		// 否则是已逾期
+			// 		res.Status = model.AgentRiderStatusOverdue
+			// 	}
+			// }
 		}
 	}
 	return res
@@ -147,9 +149,9 @@ func (s *riderAgentService) List(enterpriseID uint64, req *model.AgentRiderListR
 
 	switch req.Status {
 	case model.AgentRiderStatusInactive:
-		// 未激活
+		// 未激活 也要查询未使用的
 		subquery = append(subquery, subscribe.Status(model.SubscribeStatusInactive))
-		q.Where(rider.HasSubscribesWith(subquery...))
+		q.Where(rider.Or(rider.HasSubscribesWith(subquery...), rider.Not(rider.HasSubscribes())))
 	case model.AgentRiderStatusUsing:
 		// 使用中
 		subquery = append(subquery, subscribe.Status(model.SubscribeStatusUsing))

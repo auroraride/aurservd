@@ -25,7 +25,7 @@ var Bill = new(bill)
 // @Accept       json
 // @Produce      json
 // @Param        X-Agent-Token  header  string  true  "代理校验token"
-// @Param        query  query   model.PaginationReq  true  "请求数据"
+// @Param        query  query   model.StatementBillHistoricalListReq  true  "请求数据"
 // @Success      200  {object}  model.PaginationRes{items=[]model.StatementBillHistoricalListRes}  "请求成功"
 func (*bill) Historical(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.StatementBillHistoricalListReq](c)
