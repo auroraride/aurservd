@@ -85,7 +85,7 @@ func (*agent) BatteryList(c echo.Context) (err error) {
 // @Param        X-Agent-Token  header  string  true  "代理校验token"
 // @Success      200  {object}  model.ItemListRes
 func (*agent) BatteryModels(c echo.Context) (err error) {
-	ctx := app.ContextX[app.ManagerContext](c)
+	ctx := app.ContextX[app.AgentContext](c)
 	return ctx.SendResponse(service.NewBatteryModel().List())
 }
 
