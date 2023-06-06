@@ -74,6 +74,7 @@ func (Enterprise) Fields() []ent.Field {
 		field.Bool("use_store").Default(true).Optional().Comment("是否可以使用门店, 只有代理商模式生效"),
 		field.Ints("days").Optional().Comment("代理商时间选项"),
 		field.Float("distance").Default(0).Comment("可控制电柜距离"),
+		field.Ints("recharge_amount").Optional().Comment("充值金额选项"),
 	}
 }
 

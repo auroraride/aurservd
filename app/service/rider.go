@@ -935,6 +935,7 @@ func (s *riderService) Profile(u *ent.Rider, device *model.Device, token string)
 			ID:    en.ID,
 			Name:  en.Name,
 			Agent: en.Agent,
+			Days:  en.Days,
 		}
 		profile.UseStore = !en.Agent || en.UseStore
 		if en.Agent {

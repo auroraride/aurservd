@@ -69,7 +69,7 @@ func (s *miniProgramService) GetAuth(code string) string {
 // Invite 邀请骑手二维码
 func (s *miniProgramService) Invite(enterprise *ent.Enterprise, req *model.EnterpriseRiderInviteReq) []byte {
 	url := fmt.Sprintf("s=%d&e=%d", req.StationID, enterprise.ID)
-	coderParam := qrcode.QRCoder{Scene: url}
+	coderParam := qrcode.QRCoder{Scene: url, Path: "pages/rider-login/index"}
 	code, err := s.MiniProgram.GetQRCode().GetWXACodeUnlimit(coderParam)
 	if err != nil {
 		snag.Panic("生成二维码失败")

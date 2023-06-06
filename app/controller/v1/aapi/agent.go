@@ -83,7 +83,7 @@ func (*agent) BatteryList(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Agent-Token  header  string  true  "代理校验token"
-// @Param        body  body   model.EnterpriseRiderInviteReq  true  "邀请骑手"
+// @Param        query  query   model.EnterpriseRiderInviteReq  true  "邀请骑手"
 // @Success      200  {object}  string  "请求成功"
 func (*rider) Invite(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.EnterpriseRiderInviteReq](c)

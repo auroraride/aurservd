@@ -1130,6 +1130,16 @@ func DistanceLTE(v float64) predicate.Enterprise {
 	return predicate.Enterprise(sql.FieldLTE(FieldDistance, v))
 }
 
+// RechargeAmountIsNil applies the IsNil predicate on the "recharge_amount" field.
+func RechargeAmountIsNil() predicate.Enterprise {
+	return predicate.Enterprise(sql.FieldIsNull(FieldRechargeAmount))
+}
+
+// RechargeAmountNotNil applies the NotNil predicate on the "recharge_amount" field.
+func RechargeAmountNotNil() predicate.Enterprise {
+	return predicate.Enterprise(sql.FieldNotNull(FieldRechargeAmount))
+}
+
 // HasCity applies the HasEdge predicate on the "city" edge.
 func HasCity() predicate.Enterprise {
 	return predicate.Enterprise(func(s *sql.Selector) {

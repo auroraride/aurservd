@@ -341,6 +341,24 @@ func (eu *EnterpriseUpdate) AddDistance(f float64) *EnterpriseUpdate {
 	return eu
 }
 
+// SetRechargeAmount sets the "recharge_amount" field.
+func (eu *EnterpriseUpdate) SetRechargeAmount(i []int) *EnterpriseUpdate {
+	eu.mutation.SetRechargeAmount(i)
+	return eu
+}
+
+// AppendRechargeAmount appends i to the "recharge_amount" field.
+func (eu *EnterpriseUpdate) AppendRechargeAmount(i []int) *EnterpriseUpdate {
+	eu.mutation.AppendRechargeAmount(i)
+	return eu
+}
+
+// ClearRechargeAmount clears the value of the "recharge_amount" field.
+func (eu *EnterpriseUpdate) ClearRechargeAmount() *EnterpriseUpdate {
+	eu.mutation.ClearRechargeAmount()
+	return eu
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (eu *EnterpriseUpdate) SetCity(c *City) *EnterpriseUpdate {
 	return eu.SetCityID(c.ID)
@@ -1035,6 +1053,17 @@ func (eu *EnterpriseUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := eu.mutation.AddedDistance(); ok {
 		_spec.AddField(enterprise.FieldDistance, field.TypeFloat64, value)
+	}
+	if value, ok := eu.mutation.RechargeAmount(); ok {
+		_spec.SetField(enterprise.FieldRechargeAmount, field.TypeJSON, value)
+	}
+	if value, ok := eu.mutation.AppendedRechargeAmount(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, enterprise.FieldRechargeAmount, value)
+		})
+	}
+	if eu.mutation.RechargeAmountCleared() {
+		_spec.ClearField(enterprise.FieldRechargeAmount, field.TypeJSON)
 	}
 	if eu.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -2013,6 +2042,24 @@ func (euo *EnterpriseUpdateOne) AddDistance(f float64) *EnterpriseUpdateOne {
 	return euo
 }
 
+// SetRechargeAmount sets the "recharge_amount" field.
+func (euo *EnterpriseUpdateOne) SetRechargeAmount(i []int) *EnterpriseUpdateOne {
+	euo.mutation.SetRechargeAmount(i)
+	return euo
+}
+
+// AppendRechargeAmount appends i to the "recharge_amount" field.
+func (euo *EnterpriseUpdateOne) AppendRechargeAmount(i []int) *EnterpriseUpdateOne {
+	euo.mutation.AppendRechargeAmount(i)
+	return euo
+}
+
+// ClearRechargeAmount clears the value of the "recharge_amount" field.
+func (euo *EnterpriseUpdateOne) ClearRechargeAmount() *EnterpriseUpdateOne {
+	euo.mutation.ClearRechargeAmount()
+	return euo
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (euo *EnterpriseUpdateOne) SetCity(c *City) *EnterpriseUpdateOne {
 	return euo.SetCityID(c.ID)
@@ -2737,6 +2784,17 @@ func (euo *EnterpriseUpdateOne) sqlSave(ctx context.Context) (_node *Enterprise,
 	}
 	if value, ok := euo.mutation.AddedDistance(); ok {
 		_spec.AddField(enterprise.FieldDistance, field.TypeFloat64, value)
+	}
+	if value, ok := euo.mutation.RechargeAmount(); ok {
+		_spec.SetField(enterprise.FieldRechargeAmount, field.TypeJSON, value)
+	}
+	if value, ok := euo.mutation.AppendedRechargeAmount(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, enterprise.FieldRechargeAmount, value)
+		})
+	}
+	if euo.mutation.RechargeAmountCleared() {
+		_spec.ClearField(enterprise.FieldRechargeAmount, field.TypeJSON)
 	}
 	if euo.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{

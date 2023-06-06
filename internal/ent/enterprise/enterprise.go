@@ -61,6 +61,8 @@ const (
 	FieldDays = "days"
 	// FieldDistance holds the string denoting the distance field in the database.
 	FieldDistance = "distance"
+	// FieldRechargeAmount holds the string denoting the recharge_amount field in the database.
+	FieldRechargeAmount = "recharge_amount"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
 	// EdgeRiders holds the string denoting the riders edge name in mutations.
@@ -226,6 +228,7 @@ var Columns = []string{
 	FieldUseStore,
 	FieldDays,
 	FieldDistance,
+	FieldRechargeAmount,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
