@@ -233,7 +233,7 @@ func (s *riderAgentService) Log(req *model.AgentRiderLogReq) (items []model.Agen
 func (s *enterpriseService) Active(req *model.RiderActiveBatteryReq, ag *ent.Agent) {
 	// 不是自己骑手的不能激活
 	riderInfo, _ := ent.Database.Rider.QueryNotDeleted().Where(rider.ID(req.ID), rider.EnterpriseID(ag.EnterpriseID)).First(s.ctx)
-	if riderInfo != nil {
+	if riderInfo == nil {
 		snag.Panic("未找到有效骑手")
 	}
 
