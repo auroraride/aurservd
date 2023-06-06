@@ -166,7 +166,11 @@ func (s *enterpriseRiderService) CreateByAgent(req *model.EnterpriseRiderCreateR
 	}
 
 	// 创建rider
-	if ent.Database.Rider.Create().SetPhone(req.Phone).SetEnterpriseID(req.EnterpriseID).SetStationID(req.StationID).Exec(s.ctx) != nil {
+	if ent.Database.Rider.Create().SetPhone(req.Phone).
+		SetEnterpriseID(req.EnterpriseID).
+		SetStationID(req.StationID).
+		SetName(req.Name).
+		Exec(s.ctx) != nil {
 		snag.Panic("创建骑手失败")
 	}
 }
