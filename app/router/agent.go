@@ -26,6 +26,8 @@ func loadAgentRoutes() {
 	auth.POST("/rider", aapi.Rider.Create)
 	// 电池搜索列表
 	auth.GET("/battery/list", aapi.Agent.BatteryList)
+	// 电池型号列表
+	auth.GET("/battery/model", aapi.Agent.BatteryModels)
 	// 骑手列表
 	auth.GET("/rider", aapi.Rider.List)
 	// 骑手详情
