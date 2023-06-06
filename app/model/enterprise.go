@@ -78,11 +78,11 @@ type EnterpriseDetail struct {
 	Address        *string    `json:"address" validate:"required" trans:"企业地址"`
 	Payment        *uint8     `json:"payment" validate:"required,min=1,max=2" enums:"1,2" trans:"付费方式"` // 1:预付费 2:后付费
 	Deposit        *float64   `json:"deposit" validate:"required" trans:"押金"`
-	Agent          *bool      `json:"agent"`                              // 代理商 `true`是 `false`否
-	UseStore       *bool      `json:"useStore,omitempty"`                 // 可使用门店 `true`允许 `false`不允许 (仅代理商模式生效), 骑手是否可以使用门店进行激活和退租
-	Days           *[]int     `json:"days,omitempty"`                     // 代理商时间选项
-	Distance       *uint64    `json:"distance" validate:"required"`       // 电柜距离
-	RechargeAmount *[]float64 `json:"rechargeAmount" validate:"required"` // 充值金额选项
+	Agent          *bool      `json:"agent"`              // 代理商 `true`是 `false`否
+	UseStore       *bool      `json:"useStore,omitempty"` // 可使用门店 `true`允许 `false`不允许 (仅代理商模式生效), 骑手是否可以使用门店进行激活和退租
+	Days           *[]int     `json:"days,omitempty"`     // 代理商时间选项
+	Distance       *uint64    `json:"distance"`           // 电柜距离
+	RechargeAmount *[]float64 `json:"rechargeAmount"`     // 充值金额选项
 }
 
 type EnterpriseDetailWithID struct {
