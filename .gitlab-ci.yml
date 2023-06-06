@@ -22,7 +22,7 @@ lint:
     - export GITLAB_API="https://gitlab.liasica.com/api/v4"
   script:
     - ls go.mod
-    - sh ./generate_doc.sh
+    - bash ./generate_doc.sh
     - reviewdog -reporter=gitlab-mr-discussion
   after_script:
     - go clean -cache
