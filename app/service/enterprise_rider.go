@@ -441,7 +441,8 @@ func (s *enterpriseRiderService) RiderEnterpriseInfo(req *model.EnterproseInfoRe
 		IsJoin: true,
 	}
 	// 查询订阅信息
-	if NewSubscribe().QueryEffectiveX(riderID) != nil {
+	sub, _ := NewSubscribe().QueryEffective(riderID)
+	if sub == nil {
 		rsp.IsJoin = false
 	}
 	// 查询团签信息
@@ -474,10 +475,11 @@ func (s *enterpriseRiderService) JoinEnterprise(req *model.EnterproseInfoReq, ri
 	}
 	// 判断骑手是否有未完成的订单
 	// 查询订阅信息
-	if NewSubscribe().QueryEffectiveX(s.rider.ID) != nil {
+	sub, _ := NewSubscribe().QueryEffective(rid.ID)
+	if sub != nil {
 		snag.Panic("有未完成的订单")
 	}
-	_, err := ent.Database.Rider.Update().Where(rider.ID(s.rider.ID)).
+	_, err := ent.Database.Rider.Update().Where(rider.ID(rid.ID)).
 		SetEnterpriseID(req.EnterpriseId).
 		SetStationID(req.StationId).
 		Save(s.ctx)

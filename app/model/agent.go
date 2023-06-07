@@ -64,3 +64,6 @@ type AgentSigninRes struct {
 type OpenidReq struct {
 	Code string `json:"code" query:"code"`
 }
+type OpenidRes struct {
+	Openid string `json:"openid"`
+}

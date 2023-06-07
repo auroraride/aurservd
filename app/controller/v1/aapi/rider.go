@@ -91,7 +91,7 @@ func (*rider) Detail(c echo.Context) (err error) {
 func (*rider) Active(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.RiderActiveBatteryReq](c)
 	service.NewEnterprise().Active(req, ctx.Agent)
-	return ctx.SendResponse(model.StatusResponse{Status: true})
+	return ctx.SendResponse()
 }
 
 // SubscribeApplyList  申请加时列表

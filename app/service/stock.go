@@ -660,13 +660,15 @@ func (s *stockService) listFilter(req model.StockDetailFilter) (q *ent.StockQuer
 		WithCabinet().
 		WithStore().
 		WithSpouse(func(sq *ent.StockQuery) {
-			sq.WithStore().WithCabinet().WithRider()
+			sq.WithStore().WithCabinet().WithRider().WithStation().WithBattery().WithEnterprise()
 		}).
 		WithRider().
 		WithEmployee().
 		WithCity().
 		WithEbike().
-		WithStation()
+		WithStation().
+		WithBattery().
+		WithEnterprise()
 	// 排序
 	if req.Positive {
 		q.Order(ent.Asc(stock.FieldSn))
@@ -713,6 +715,7 @@ func (s *stockService) listFilter(req model.StockDetailFilter) (q *ent.StockQuer
 		)
 	case model.StockGoalStation:
 		// 站点
+		info["查询目标"] = "站点"
 		q.Where(
 			stock.StoreIDIsNil(),
 			stock.CabinetIDIsNil(),
@@ -778,7 +781,12 @@ func (s *stockService) listFilter(req model.StockDetailFilter) (q *ent.StockQuer
 	})
 
 	if req.EnterpriseID != 0 {
+		info["团签"] = ent.NewExportInfo(req.EnterpriseID, enterprise.Table)
 		q.Where(stock.EnterpriseID(req.EnterpriseID))
+	}
+	if req.StationID != 0 {
+		info["站点"] = ent.NewExportInfo(req.StationID, enterprisestation.Table)
+		q.Where(stock.StationID(req.StationID))
 	}
 
 	return
@@ -812,30 +820,39 @@ func (s *stockService) detailInfo(item *ent.Stock) model.StockDetailRes {
 	ee := item.Edges.Employee
 	es := item.Edges.Store
 	ec := item.Edges.Cabinet
-
+	en := item.Edges.Enterprise
 	st := item.Edges.Station
+	battery := item.Edges.Battery
+	// 站点调拨电池
+	if battery != nil {
+		res.Name = fmt.Sprintf("[%s] %s", *item.Model, battery.Sn)
+	}
 	if item.Type == model.StockTypeTransfer {
 		// 平台调拨记录
 		res.Type = "平台调拨"
-		res.Operator = fmt.Sprintf("后台 - %s", em.Name)
-
+		res.Operator = "后台"
+		if em != nil {
+			res.Operator = fmt.Sprintf("后台 - %s", em.Name)
+		}
 		var ses *ent.Store
 		var sec *ent.Cabinet
 		var sst *ent.EnterpriseStation
+		var sen *ent.Enterprise
 		sp := item.Edges.Spouse
 		if sp != nil {
 			ses = sp.Edges.Store
 			sec = sp.Edges.Cabinet
 			sst = sp.Edges.Station
+			sen = sp.Edges.Enterprise
 		}
 
 		// 出入库对象判定
 		if item.Num > 0 {
-			res.Inbound = s.target(es, ec, st)
-			res.Outbound = s.target(ses, sec, sst)
+			res.Inbound = s.target(es, ec, st, en)
+			res.Outbound = s.target(ses, sec, sst, sen)
 		} else {
-			res.Inbound = s.target(ses, sec, sst)
-			res.Outbound = s.target(es, ec, st)
+			res.Inbound = s.target(ses, sec, sst, sen)
+			res.Outbound = s.target(es, ec, st, en)
 		}
 	} else {
 		// 业务调拨记录
@@ -865,8 +882,8 @@ func (s *stockService) detailInfo(item *ent.Stock) model.StockDetailRes {
 				tmr = "后台"
 				res.Operator = fmt.Sprintf("后台 - %s", item.Creator.Name)
 			} else if st != nil {
-				tmr = "站点"
-				res.Operator = fmt.Sprintf("站点 - %s", st.Name)
+				tmr = "代理商站点"
+				res.Operator = fmt.Sprintf("代理商站点 - %s", st.Name)
 			}
 		}
 
@@ -877,9 +894,9 @@ func (s *stockService) detailInfo(item *ent.Stock) model.StockDetailRes {
 		switch item.Type {
 		case model.StockTypeRiderActive, model.StockTypeRiderContinue:
 			res.Inbound = target
-			res.Outbound = s.target(es, ec, st)
+			res.Outbound = s.target(es, ec, st, en)
 		case model.StockTypeRiderPause, model.StockTypeRiderUnSubscribe:
-			res.Inbound = s.target(es, ec, st)
+			res.Inbound = s.target(es, ec, st, en)
 			res.Outbound = target
 		}
 	}
@@ -888,7 +905,7 @@ func (s *stockService) detailInfo(item *ent.Stock) model.StockDetailRes {
 }
 
 // target 出入库对象
-func (s *stockService) target(es *ent.Store, ec *ent.Cabinet, st *ent.EnterpriseStation) (target string) {
+func (s *stockService) target(es *ent.Store, ec *ent.Cabinet, st *ent.EnterpriseStation, en *ent.Enterprise) (target string) {
 	target = "平台"
 	if es != nil {
 		target = fmt.Sprintf("[门店] %s", es.Name)
@@ -897,7 +914,7 @@ func (s *stockService) target(es *ent.Store, ec *ent.Cabinet, st *ent.Enterprise
 		target = fmt.Sprintf("[电柜] %s - %s", ec.Name, ec.Serial)
 	}
 	if st != nil {
-		target = fmt.Sprintf("[站点] %s", st.Name)
+		target = fmt.Sprintf("[代理商站点] %s - %s", en.Name, st.Name)
 	}
 	return
 }

@@ -44,13 +44,13 @@ func (s *feedbackService) QueryX(id uint64) *ent.Feedback {
 }
 
 // Create 创建反馈
-func (s *feedbackService) Create(req *model.FeedbackReq, enterprise *ent.Enterprise) bool {
-	_, err := s.orm.Create().SetEnterpriseID(enterprise.ID).
+func (s *feedbackService) Create(req *model.FeedbackReq, ag *ent.Agent) bool {
+	_, err := s.orm.Create().SetEnterpriseID(ag.EnterpriseID).
 		SetContent(req.Content).
 		SetType(req.Type).
 		SetURL(req.Url).
-		SetName(enterprise.Name).
-		SetPhone(enterprise.ContactPhone).
+		SetName(ag.Name).
+		SetPhone(ag.Phone).
 		Save(s.ctx)
 	if err != nil {
 		snag.Panic("添加失败")
@@ -68,9 +68,13 @@ func (s *feedbackService) FeedbackList(req *model.FeedbackListReq) *model.Pagina
 	if req.Type != nil {
 		q.Where(feedback.TypeEQ(*req.Type))
 	}
-	if req.StartTime != nil && req.EndTime != nil {
-		q.Where(feedback.CreatedAtGTE(tools.NewTime().ParseDateStringX(*req.StartTime)), feedback.CreatedAtLT(tools.NewTime().ParseNextDateStringX(*req.EndTime)))
+	if req.Start != nil {
+		q.Where(feedback.CreatedAtGTE(tools.NewTime().ParseDateStringX(*req.Start)))
 	}
+	if req.End != nil {
+		q.Where(feedback.CreatedAtLT(tools.NewTime().ParseNextDateStringX(*req.End)))
+	}
+
 	if req.EnterpriseID != nil {
 		q.Where(feedback.EnterpriseID(*req.EnterpriseID))
 	}
@@ -80,9 +84,9 @@ func (s *feedbackService) FeedbackList(req *model.FeedbackListReq) *model.Pagina
 			Content:                item.Content,
 			Url:                    item.URL,
 			Type:                   item.Type,
-			EnterpriseName:         item.Name,
-			EnterpriseContactName:  item.Edges.Enterprise.Name,
-			EnterpriseContactPhone: item.Edges.Enterprise.ContactPhone,
+			EnterpriseName:         item.Edges.Enterprise.Name,
+			EnterpriseContactName:  item.Name,
+			EnterpriseContactPhone: item.Phone,
 			CreatedAt:              item.CreatedAt.Format(carbon.DateTimeLayout),
 		}
 		return rsp
