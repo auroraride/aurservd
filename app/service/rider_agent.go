@@ -250,7 +250,11 @@ func (s *enterpriseService) Active(req *model.RiderActiveBatteryReq, ag *ent.Age
 		snag.Panic("电柜中的电池无法手动绑定骑手")
 	}
 
-	if *batteryInfo.EnterpriseID != ag.EnterpriseID && batteryInfo.StationID != riderInfo.StationID {
+	if batteryInfo.EnterpriseID == nil || batteryInfo.StationID == nil {
+		snag.Panic("电池未绑定企业或者站点")
+	}
+
+	if *batteryInfo.EnterpriseID != ag.EnterpriseID || *batteryInfo.StationID != *riderInfo.StationID {
 		snag.Panic("电池不属于当前企业或者骑手所在站点")
 	}
 
