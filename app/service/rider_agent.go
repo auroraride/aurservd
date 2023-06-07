@@ -65,6 +65,13 @@ func (s *riderAgentService) detail(item *ent.Rider) model.AgentRider {
 	if st != nil {
 		res.Station = st.Name
 	}
+
+	// 获取电池sn
+	bat := item.Edges.Battery
+	if bat != nil {
+		res.BatterySN = bat.Sn
+	}
+
 	// 默认未激活
 	res.Status = model.AgentRiderStatusInactive
 	// 获取订阅信息
@@ -242,6 +249,11 @@ func (s *enterpriseService) Active(req *model.RiderActiveBatteryReq, ag *ent.Age
 	if batteryInfo.CabinetID != nil {
 		snag.Panic("电柜中的电池无法手动绑定骑手")
 	}
+
+	if *batteryInfo.EnterpriseID != ag.EnterpriseID && batteryInfo.StationID != riderInfo.StationID {
+		snag.Panic("电池不属于当前企业或者骑手所在站点")
+	}
+
 	if batteryInfo.RiderID != nil || batteryInfo.SubscribeID != nil {
 		snag.Panic("电池已被绑定")
 	}
@@ -279,6 +291,11 @@ func (s *enterpriseService) Active(req *model.RiderActiveBatteryReq, ag *ent.Age
 			zap.L().Error("电池流水记录失败", zap.Error(err))
 			snag.Panic("电池流水记录失败")
 		}
+		// // 更新物资表
+		// if err := tx.Stock.Create().SetEnterpriseID(ag.EnterpriseID).SetRiderID(req.ID).SetBatteryID(batteryInfo.ID).SetNum(1).Exec(s.ctx); err != nil {
+		//
+		// }
+
 		return nil
 	})
 }

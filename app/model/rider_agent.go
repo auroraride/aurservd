@@ -38,6 +38,7 @@ type AgentRider struct {
 	StartAt     string `json:"startAt"`             // 开始日期
 	SubscribeID uint64 `json:"subscribeId"`         // 订阅ID
 	Model       string `json:"model"`               // 电池型号
+	BatterySN   string `json:"batterySn"`           // 电池sn
 	Used        int    `json:"used"`                // 使用天数
 }
 

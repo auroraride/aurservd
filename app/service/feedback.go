@@ -44,13 +44,13 @@ func (s *feedbackService) QueryX(id uint64) *ent.Feedback {
 }
 
 // Create 创建反馈
-func (s *feedbackService) Create(req *model.FeedbackReq, enterprise *ent.Enterprise) bool {
-	_, err := s.orm.Create().SetEnterpriseID(enterprise.ID).
+func (s *feedbackService) Create(req *model.FeedbackReq, ag *ent.Agent) bool {
+	_, err := s.orm.Create().SetEnterpriseID(ag.EnterpriseID).
 		SetContent(req.Content).
 		SetType(req.Type).
 		SetURL(req.Url).
-		SetName(enterprise.Name).
-		SetPhone(enterprise.ContactPhone).
+		SetName(ag.Name).
+		SetPhone(ag.Phone).
 		Save(s.ctx)
 	if err != nil {
 		snag.Panic("添加失败")
@@ -80,9 +80,9 @@ func (s *feedbackService) FeedbackList(req *model.FeedbackListReq) *model.Pagina
 			Content:                item.Content,
 			Url:                    item.URL,
 			Type:                   item.Type,
-			EnterpriseName:         item.Name,
-			EnterpriseContactName:  item.Edges.Enterprise.Name,
-			EnterpriseContactPhone: item.Edges.Enterprise.ContactPhone,
+			EnterpriseName:         item.Edges.Enterprise.Name,
+			EnterpriseContactName:  item.Name,
+			EnterpriseContactPhone: item.Phone,
 			CreatedAt:              item.CreatedAt.Format(carbon.DateTimeLayout),
 		}
 		return rsp

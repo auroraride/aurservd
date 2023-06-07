@@ -715,6 +715,7 @@ func (s *stockService) listFilter(req model.StockDetailFilter) (q *ent.StockQuer
 		)
 	case model.StockGoalStation:
 		// 站点
+		info["查询目标"] = "站点"
 		q.Where(
 			stock.StoreIDIsNil(),
 			stock.CabinetIDIsNil(),
@@ -780,7 +781,12 @@ func (s *stockService) listFilter(req model.StockDetailFilter) (q *ent.StockQuer
 	})
 
 	if req.EnterpriseID != 0 {
+		info["团签"] = ent.NewExportInfo(req.EnterpriseID, enterprise.Table)
 		q.Where(stock.EnterpriseID(req.EnterpriseID))
+	}
+	if req.StationID != 0 {
+		info["站点"] = ent.NewExportInfo(req.StationID, enterprisestation.Table)
+		q.Where(stock.StationID(req.StationID))
 	}
 
 	return
