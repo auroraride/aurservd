@@ -45,7 +45,7 @@ func (*rider) List(c echo.Context) (err error) {
 func (*rider) Create(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.EnterpriseRiderCreateReq](c)
 	service.NewEnterpriseRider().CreateByAgent(req, ctx.Agent, ctx.Stations)
-	return ctx.SendResponse(model.StatusResponse{Status: true})
+	return ctx.SendResponse()
 }
 
 // Alter
