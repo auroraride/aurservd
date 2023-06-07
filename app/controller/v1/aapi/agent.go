@@ -53,10 +53,10 @@ func (*agent) Profile(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Agent-Token  header  string  true  "代理校验token"
-// @Param		code  query  string  true  "微信code"
-// @Success      200  {object}  string  "请求成功"
+// @Param		 code  query  string  true  "微信code"
+// @Success      200  {object}  model.OpenidRes  "请求成功"
 func (*agent) GetOpenid(c echo.Context) (err error) {
-	ctx, req := app.ContextBinding[model.OpenidReq](c)
+	ctx, req := app.AgentContextAndBinding[model.OpenidReq](c)
 	return ctx.SendResponse(service.NewminiProgram().GetAuth(req.Code))
 }
 

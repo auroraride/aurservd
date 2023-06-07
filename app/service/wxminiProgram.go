@@ -57,14 +57,13 @@ func (s *miniProgramService) GetPhoneNumber(code string) string {
 }
 
 // GetAuth 通过code换取openid
-func (s *miniProgramService) GetAuth(code string) string {
+func (s *miniProgramService) GetAuth(code string) model.OpenidRes {
 	session, err := s.MiniProgram.GetAuth().Code2Session(code)
 	if err != nil || session.ErrCode != 0 {
 		zap.L().Error("获取openid失败", zap.Error(err))
 		snag.Panic("获取openid失败")
 	}
-	return session.OpenID
-
+	return model.OpenidRes{Openid: session.OpenID}
 }
 
 // Invite 邀请骑手二维码
