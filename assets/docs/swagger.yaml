@@ -488,6 +488,9 @@ definitions:
         items:
           type: integer
         type: array
+      distance:
+        description: 距离
+        type: integer
       enterprise:
         allOf:
         - $ref: '#/definitions/model.Enterprise'
@@ -504,6 +507,11 @@ definitions:
         description: 价格列表
         items:
           $ref: '#/definitions/model.EnterprisePrice'
+        type: array
+      rechargeAmount:
+        description: 充值金额选项
+        items:
+          type: integer
         type: array
       riders:
         description: 骑手数量
@@ -522,6 +530,9 @@ definitions:
     type: object
   model.AgentRider:
     properties:
+      batterySn:
+        description: 电池sn
+        type: string
       city:
         allOf:
         - $ref: '#/definitions/model.City'
@@ -3678,6 +3689,11 @@ definitions:
       agent:
         description: 是否代理商模式
         type: boolean
+      days:
+        description: 代理商时间选项
+        items:
+          type: integer
+        type: array
       id:
         description: 企业ID
         type: integer
@@ -3764,6 +3780,7 @@ definitions:
       deposit:
         type: number
       distance:
+        description: 电柜距离
         type: integer
       idcardNumber:
         type: string
@@ -3777,6 +3794,11 @@ definitions:
         maximum: 2
         minimum: 1
         type: integer
+      rechargeAmount:
+        description: 充值金额选项
+        items:
+          type: integer
+        type: array
       status:
         description: 0:未合作 1:合作中 2:已暂停
         enum:
@@ -3796,7 +3818,6 @@ definitions:
     - contactName
     - contactPhone
     - deposit
-    - distance
     - idcardNumber
     - name
     - payment
@@ -3825,6 +3846,7 @@ definitions:
       deposit:
         type: number
       distance:
+        description: 电柜距离
         type: integer
       idcardNumber:
         type: string
@@ -3838,6 +3860,11 @@ definitions:
         maximum: 2
         minimum: 1
         type: integer
+      rechargeAmount:
+        description: 充值金额选项
+        items:
+          type: integer
+        type: array
       status:
         description: 0:未合作 1:合作中 2:已暂停
         enum:
@@ -3857,7 +3884,6 @@ definitions:
     - contactName
     - contactPhone
     - deposit
-    - distance
     - idcardNumber
     - name
     - payment
@@ -3964,6 +3990,9 @@ definitions:
       deposit:
         description: 押金
         type: number
+      distance:
+        description: 电柜距离
+        type: integer
       id:
         description: 企业ID
         type: integer
@@ -3980,6 +4009,11 @@ definitions:
         description: 价格列表
         items:
           $ref: '#/definitions/model.EnterprisePriceWithCity'
+        type: array
+      rechargeAmount:
+        description: 充值金额选项
+        items:
+          type: integer
         type: array
       riders:
         description: 骑手数量
@@ -4096,6 +4130,29 @@ definitions:
         type: string
     required:
     - name
+    type: object
+  model.EnterproseInfoReq:
+    properties:
+      enterpriseId:
+        type: integer
+      stationId:
+        description: 站点id
+        type: integer
+    required:
+    - enterpriseId
+    - stationId
+    type: object
+  model.EnterproseInfoRsp:
+    properties:
+      enterproseName:
+        description: 团签名称
+        type: string
+      isJoin:
+        description: 是否可以加入团签
+        type: boolean
+      stationName:
+        description: 站点名称
+        type: string
     type: object
   model.ExceptionEmployeeReq:
     properties:
@@ -4444,7 +4501,7 @@ definitions:
       current:
         description: 当前页, 从1开始, 默认1
         type: integer
-      endTime:
+      end:
         description: 反馈结束时间
         type: string
       enterpriseID:
@@ -4456,7 +4513,7 @@ definitions:
       pageSize:
         description: 每页数据, 默认20
         type: integer
-      startTime:
+      start:
         description: 反馈开始时间
         type: string
       type:
@@ -4686,6 +4743,11 @@ definitions:
       name:
         type: string
       phone:
+        type: string
+    type: object
+  model.OpenidRes:
+    properties:
+      openid:
         type: string
     type: object
   model.Order:
@@ -5912,18 +5974,6 @@ definitions:
         description: 订阅类型 battery:单电 ebike:车电
         type: string
     type: object
-  model.RiderJoinEnterpriseReq:
-    properties:
-      enterpriseId:
-        description: 团签ID
-        type: integer
-      stationId:
-        description: 站点ID
-        type: integer
-    required:
-    - enterpriseId
-    - stationId
-    type: object
   model.RiderListExport:
     properties:
       authStatus:
@@ -6809,6 +6859,9 @@ definitions:
         items:
           $ref: '#/definitions/model.StockMaterial'
         type: array
+      enterpriseID:
+        description: 团签id
+        type: integer
       enterpriseName:
         description: 团签名称
         type: string
@@ -6817,6 +6870,9 @@ definitions:
         items:
           $ref: '#/definitions/model.StockMaterial'
         type: array
+      stationID:
+        description: 站点id
+        type: integer
       stationName:
         description: 站点名称
         type: string
@@ -7599,6 +7655,27 @@ paths:
       summary: A5001 电池列表
       tags:
       - '[A]代理接口'
+  /agent/v1/battery/model:
+    get:
+      consumes:
+      - application/json
+      operationId: AgentBatteryModels
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.ItemListRes'
+      summary: A5002 电池型号列表
+      tags:
+      - '[A]代理接口'
   /agent/v1/bill/historical:
     get:
       consumes:
@@ -7614,10 +7691,21 @@ paths:
         in: query
         name: current
         type: integer
+      - description: 账单结束日期
+        in: query
+        name: end
+        type: string
+      - in: query
+        name: enterpriseId
+        type: integer
       - description: 每页数据, 默认20
         in: query
         name: pageSize
         type: integer
+      - description: 账单开始日期
+        in: query
+        name: start
+        type: string
       produces:
       - application/json
       responses:
@@ -7885,7 +7973,7 @@ paths:
         "200":
           description: 请求成功
           schema:
-            type: string
+            $ref: '#/definitions/model.OpenidRes'
       summary: A1003 获取openid
       tags:
       - '[A]代理接口'
@@ -8055,12 +8143,13 @@ paths:
         in: query
         name: stationId
         type: integer
-      - description: inactive:未激活 using:计费中 overdue:已超期 unsubscribed:已退租
+      - description: inactive:未激活 using:计费中 overdue:已超期 unsubscribed:已退租 willOverdue:即将超期
         enum:
         - inactive
         - using
         - overdue
         - unsubscribed
+        - willOverdue
         in: query
         name: status
         type: string
@@ -8310,7 +8399,7 @@ paths:
       tags:
       - '[A]代理接口'
   /agent/v1/rider/invite:
-    get:
+    post:
       consumes:
       - application/json
       operationId: AgentRiderInvite
@@ -12889,14 +12978,21 @@ paths:
         in: query
         name: current
         type: integer
+      - description: 账单结束日期
+        in: query
+        name: end
+        type: string
       - in: query
         name: enterpriseId
-        required: true
         type: integer
       - description: 每页数据, 默认20
         in: query
         name: pageSize
         type: integer
+      - description: 账单开始日期
+        in: query
+        name: start
+        type: string
       produces:
       - application/json
       responses:
@@ -17336,6 +17432,36 @@ paths:
       summary: R3010 企业骑手获取可用电池
       tags:
       - '[R]骑手接口'
+  /rider/v1/enterprise/info:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderEnterpriseInfo
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - in: query
+        name: enterpriseId
+        required: true
+        type: integer
+      - description: 站点id
+        in: query
+        name: stationId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.EnterproseInfoRsp'
+      summary: R3016 骑手团签信息
+      tags:
+      - '[R]骑手接口'
   /rider/v1/enterprise/join:
     post:
       consumes:
@@ -17347,7 +17473,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/model.RiderJoinEnterpriseReq'
+          $ref: '#/definitions/model.EnterproseInfoReq'
       produces:
       - application/json
       responses:

@@ -53,20 +53,6 @@ func (epc *EnterprisePrepaymentCreate) SetNillableUpdatedAt(t *time.Time) *Enter
 	return epc
 }
 
-// SetDeletedAt sets the "deleted_at" field.
-func (epc *EnterprisePrepaymentCreate) SetDeletedAt(t time.Time) *EnterprisePrepaymentCreate {
-	epc.mutation.SetDeletedAt(t)
-	return epc
-}
-
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (epc *EnterprisePrepaymentCreate) SetNillableDeletedAt(t *time.Time) *EnterprisePrepaymentCreate {
-	if t != nil {
-		epc.SetDeletedAt(*t)
-	}
-	return epc
-}
-
 // SetCreator sets the "creator" field.
 func (epc *EnterprisePrepaymentCreate) SetCreator(m *model.Modifier) *EnterprisePrepaymentCreate {
 	epc.mutation.SetCreator(m)
@@ -253,10 +239,6 @@ func (epc *EnterprisePrepaymentCreate) createSpec() (*EnterprisePrepayment, *sql
 		_spec.SetField(enterpriseprepayment.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
-	if value, ok := epc.mutation.DeletedAt(); ok {
-		_spec.SetField(enterpriseprepayment.FieldDeletedAt, field.TypeTime, value)
-		_node.DeletedAt = &value
-	}
 	if value, ok := epc.mutation.Creator(); ok {
 		_spec.SetField(enterpriseprepayment.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
@@ -372,24 +354,6 @@ func (u *EnterprisePrepaymentUpsert) SetUpdatedAt(v time.Time) *EnterprisePrepay
 // UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
 func (u *EnterprisePrepaymentUpsert) UpdateUpdatedAt() *EnterprisePrepaymentUpsert {
 	u.SetExcluded(enterpriseprepayment.FieldUpdatedAt)
-	return u
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (u *EnterprisePrepaymentUpsert) SetDeletedAt(v time.Time) *EnterprisePrepaymentUpsert {
-	u.Set(enterpriseprepayment.FieldDeletedAt, v)
-	return u
-}
-
-// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
-func (u *EnterprisePrepaymentUpsert) UpdateDeletedAt() *EnterprisePrepaymentUpsert {
-	u.SetExcluded(enterpriseprepayment.FieldDeletedAt)
-	return u
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (u *EnterprisePrepaymentUpsert) ClearDeletedAt() *EnterprisePrepaymentUpsert {
-	u.SetNull(enterpriseprepayment.FieldDeletedAt)
 	return u
 }
 
@@ -533,27 +497,6 @@ func (u *EnterprisePrepaymentUpsertOne) SetUpdatedAt(v time.Time) *EnterprisePre
 func (u *EnterprisePrepaymentUpsertOne) UpdateUpdatedAt() *EnterprisePrepaymentUpsertOne {
 	return u.Update(func(s *EnterprisePrepaymentUpsert) {
 		s.UpdateUpdatedAt()
-	})
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (u *EnterprisePrepaymentUpsertOne) SetDeletedAt(v time.Time) *EnterprisePrepaymentUpsertOne {
-	return u.Update(func(s *EnterprisePrepaymentUpsert) {
-		s.SetDeletedAt(v)
-	})
-}
-
-// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
-func (u *EnterprisePrepaymentUpsertOne) UpdateDeletedAt() *EnterprisePrepaymentUpsertOne {
-	return u.Update(func(s *EnterprisePrepaymentUpsert) {
-		s.UpdateDeletedAt()
-	})
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (u *EnterprisePrepaymentUpsertOne) ClearDeletedAt() *EnterprisePrepaymentUpsertOne {
-	return u.Update(func(s *EnterprisePrepaymentUpsert) {
-		s.ClearDeletedAt()
 	})
 }
 
@@ -872,27 +815,6 @@ func (u *EnterprisePrepaymentUpsertBulk) SetUpdatedAt(v time.Time) *EnterprisePr
 func (u *EnterprisePrepaymentUpsertBulk) UpdateUpdatedAt() *EnterprisePrepaymentUpsertBulk {
 	return u.Update(func(s *EnterprisePrepaymentUpsert) {
 		s.UpdateUpdatedAt()
-	})
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (u *EnterprisePrepaymentUpsertBulk) SetDeletedAt(v time.Time) *EnterprisePrepaymentUpsertBulk {
-	return u.Update(func(s *EnterprisePrepaymentUpsert) {
-		s.SetDeletedAt(v)
-	})
-}
-
-// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
-func (u *EnterprisePrepaymentUpsertBulk) UpdateDeletedAt() *EnterprisePrepaymentUpsertBulk {
-	return u.Update(func(s *EnterprisePrepaymentUpsert) {
-		s.UpdateDeletedAt()
-	})
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (u *EnterprisePrepaymentUpsertBulk) ClearDeletedAt() *EnterprisePrepaymentUpsertBulk {
-	return u.Update(func(s *EnterprisePrepaymentUpsert) {
-		s.ClearDeletedAt()
 	})
 }
 

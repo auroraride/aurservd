@@ -6,11 +6,15 @@
 package router
 
 import (
+	"github.com/auroraride/adapter/app"
+
 	"github.com/auroraride/aurservd/app/controller/v1/aapi"
 	"github.com/auroraride/aurservd/app/middleware"
 )
 
 func loadAgentRoutes() {
+	rawDump := app.NewDumpLoggerMiddleware().WithConfig(&app.DumpConfig{})
+
 	g := root.Group("agent/v1")
 
 	// 无须校验
@@ -53,7 +57,7 @@ func loadAgentRoutes() {
 
 	auth.GET("/prepayment/overview", aapi.Prepayment.Overview)
 	auth.GET("/prepayment", aapi.Prepayment.List)
-	auth.POST("/prepayment/pay/wxmp", aapi.Prepayment.WechatMiniprogramPay)
+	auth.POST("/prepayment/pay/wxmp", aapi.Prepayment.WechatMiniprogramPay, rawDump)
 
 	auth.GET("/bill/usage", aapi.Bill.Usage)
 	auth.GET("/bill/historical", aapi.Bill.Historical)

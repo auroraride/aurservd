@@ -2115,13 +2115,11 @@ var (
 		{Name: "id", Type: field.TypeUint64, Increment: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
 		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
 		{Name: "amount", Type: field.TypeFloat64, Comment: "预付金额"},
 		{Name: "payway", Type: field.TypeOther, Comment: "支付方式", Default: schema.Expr("1"), SchemaType: map[string]string{"postgres": "smallint"}},
-		{Name: "agent_prepayments", Type: field.TypeUint64, Nullable: true},
 		{Name: "enterprise_id", Type: field.TypeUint64, Comment: "企业ID"},
 		{Name: "agent_id", Type: field.TypeUint64, Nullable: true},
 	}
@@ -2132,20 +2130,14 @@ var (
 		PrimaryKey: []*schema.Column{EnterprisePrepaymentColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "enterprise_prepayment_agent_prepayments",
-				Columns:    []*schema.Column{EnterprisePrepaymentColumns[9]},
-				RefColumns: []*schema.Column{AgentColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
 				Symbol:     "enterprise_prepayment_enterprise_enterprise",
-				Columns:    []*schema.Column{EnterprisePrepaymentColumns[10]},
+				Columns:    []*schema.Column{EnterprisePrepaymentColumns[8]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "enterprise_prepayment_agent_agent",
-				Columns:    []*schema.Column{EnterprisePrepaymentColumns[11]},
+				Columns:    []*schema.Column{EnterprisePrepaymentColumns[9]},
 				RefColumns: []*schema.Column{AgentColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -2157,19 +2149,14 @@ var (
 				Columns: []*schema.Column{EnterprisePrepaymentColumns[1]},
 			},
 			{
-				Name:    "enterpriseprepayment_deleted_at",
-				Unique:  false,
-				Columns: []*schema.Column{EnterprisePrepaymentColumns[3]},
-			},
-			{
 				Name:    "enterpriseprepayment_enterprise_id",
 				Unique:  false,
-				Columns: []*schema.Column{EnterprisePrepaymentColumns[10]},
+				Columns: []*schema.Column{EnterprisePrepaymentColumns[8]},
 			},
 			{
 				Name:    "enterpriseprepayment_agent_id",
 				Unique:  false,
-				Columns: []*schema.Column{EnterprisePrepaymentColumns[11]},
+				Columns: []*schema.Column{EnterprisePrepaymentColumns[9]},
 			},
 		},
 	}
@@ -4771,9 +4758,8 @@ func init() {
 	EnterpriseContractTable.Annotation = &entsql.Annotation{
 		Table: "enterprise_contract",
 	}
-	EnterprisePrepaymentTable.ForeignKeys[0].RefTable = AgentTable
-	EnterprisePrepaymentTable.ForeignKeys[1].RefTable = EnterpriseTable
-	EnterprisePrepaymentTable.ForeignKeys[2].RefTable = AgentTable
+	EnterprisePrepaymentTable.ForeignKeys[0].RefTable = EnterpriseTable
+	EnterprisePrepaymentTable.ForeignKeys[1].RefTable = AgentTable
 	EnterprisePrepaymentTable.Annotation = &entsql.Annotation{
 		Table: "enterprise_prepayment",
 	}

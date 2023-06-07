@@ -137,29 +137,26 @@ const (
 // AgentMutation represents an operation that mutates the Agent nodes in the graph.
 type AgentMutation struct {
 	config
-	op                 Op
-	typ                string
-	id                 *uint64
-	created_at         *time.Time
-	updated_at         *time.Time
-	deleted_at         *time.Time
-	creator            **model.Modifier
-	last_modifier      **model.Modifier
-	remark             *string
-	name               *string
-	phone              *string
-	clearedFields      map[string]struct{}
-	enterprise         *uint64
-	clearedenterprise  bool
-	stations           map[uint64]struct{}
-	removedstations    map[uint64]struct{}
-	clearedstations    bool
-	prepayments        map[uint64]struct{}
-	removedprepayments map[uint64]struct{}
-	clearedprepayments bool
-	done               bool
-	oldValue           func(context.Context) (*Agent, error)
-	predicates         []predicate.Agent
+	op                Op
+	typ               string
+	id                *uint64
+	created_at        *time.Time
+	updated_at        *time.Time
+	deleted_at        *time.Time
+	creator           **model.Modifier
+	last_modifier     **model.Modifier
+	remark            *string
+	name              *string
+	phone             *string
+	clearedFields     map[string]struct{}
+	enterprise        *uint64
+	clearedenterprise bool
+	stations          map[uint64]struct{}
+	removedstations   map[uint64]struct{}
+	clearedstations   bool
+	done              bool
+	oldValue          func(context.Context) (*Agent, error)
+	predicates        []predicate.Agent
 }
 
 var _ ent.Mutation = (*AgentMutation)(nil)
@@ -716,60 +713,6 @@ func (m *AgentMutation) ResetStations() {
 	m.removedstations = nil
 }
 
-// AddPrepaymentIDs adds the "prepayments" edge to the EnterprisePrepayment entity by ids.
-func (m *AgentMutation) AddPrepaymentIDs(ids ...uint64) {
-	if m.prepayments == nil {
-		m.prepayments = make(map[uint64]struct{})
-	}
-	for i := range ids {
-		m.prepayments[ids[i]] = struct{}{}
-	}
-}
-
-// ClearPrepayments clears the "prepayments" edge to the EnterprisePrepayment entity.
-func (m *AgentMutation) ClearPrepayments() {
-	m.clearedprepayments = true
-}
-
-// PrepaymentsCleared reports if the "prepayments" edge to the EnterprisePrepayment entity was cleared.
-func (m *AgentMutation) PrepaymentsCleared() bool {
-	return m.clearedprepayments
-}
-
-// RemovePrepaymentIDs removes the "prepayments" edge to the EnterprisePrepayment entity by IDs.
-func (m *AgentMutation) RemovePrepaymentIDs(ids ...uint64) {
-	if m.removedprepayments == nil {
-		m.removedprepayments = make(map[uint64]struct{})
-	}
-	for i := range ids {
-		delete(m.prepayments, ids[i])
-		m.removedprepayments[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedPrepayments returns the removed IDs of the "prepayments" edge to the EnterprisePrepayment entity.
-func (m *AgentMutation) RemovedPrepaymentsIDs() (ids []uint64) {
-	for id := range m.removedprepayments {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// PrepaymentsIDs returns the "prepayments" edge IDs in the mutation.
-func (m *AgentMutation) PrepaymentsIDs() (ids []uint64) {
-	for id := range m.prepayments {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// ResetPrepayments resets all changes to the "prepayments" edge.
-func (m *AgentMutation) ResetPrepayments() {
-	m.prepayments = nil
-	m.clearedprepayments = false
-	m.removedprepayments = nil
-}
-
 // Where appends a list predicates to the AgentMutation builder.
 func (m *AgentMutation) Where(ps ...predicate.Agent) {
 	m.predicates = append(m.predicates, ps...)
@@ -1069,15 +1012,12 @@ func (m *AgentMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *AgentMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 2)
 	if m.enterprise != nil {
 		edges = append(edges, agent.EdgeEnterprise)
 	}
 	if m.stations != nil {
 		edges = append(edges, agent.EdgeStations)
-	}
-	if m.prepayments != nil {
-		edges = append(edges, agent.EdgePrepayments)
 	}
 	return edges
 }
@@ -1096,24 +1036,15 @@ func (m *AgentMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case agent.EdgePrepayments:
-		ids := make([]ent.Value, 0, len(m.prepayments))
-		for id := range m.prepayments {
-			ids = append(ids, id)
-		}
-		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *AgentMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 2)
 	if m.removedstations != nil {
 		edges = append(edges, agent.EdgeStations)
-	}
-	if m.removedprepayments != nil {
-		edges = append(edges, agent.EdgePrepayments)
 	}
 	return edges
 }
@@ -1128,27 +1059,18 @@ func (m *AgentMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case agent.EdgePrepayments:
-		ids := make([]ent.Value, 0, len(m.removedprepayments))
-		for id := range m.removedprepayments {
-			ids = append(ids, id)
-		}
-		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *AgentMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 2)
 	if m.clearedenterprise {
 		edges = append(edges, agent.EdgeEnterprise)
 	}
 	if m.clearedstations {
 		edges = append(edges, agent.EdgeStations)
-	}
-	if m.clearedprepayments {
-		edges = append(edges, agent.EdgePrepayments)
 	}
 	return edges
 }
@@ -1161,8 +1083,6 @@ func (m *AgentMutation) EdgeCleared(name string) bool {
 		return m.clearedenterprise
 	case agent.EdgeStations:
 		return m.clearedstations
-	case agent.EdgePrepayments:
-		return m.clearedprepayments
 	}
 	return false
 }
@@ -1187,9 +1107,6 @@ func (m *AgentMutation) ResetEdge(name string) error {
 		return nil
 	case agent.EdgeStations:
 		m.ResetStations()
-		return nil
-	case agent.EdgePrepayments:
-		m.ResetPrepayments()
 		return nil
 	}
 	return fmt.Errorf("unknown Agent edge %s", name)
@@ -40667,7 +40584,6 @@ type EnterprisePrepaymentMutation struct {
 	id                *uint64
 	created_at        *time.Time
 	updated_at        *time.Time
-	deleted_at        *time.Time
 	creator           **model.Modifier
 	last_modifier     **model.Modifier
 	remark            *string
@@ -40852,55 +40768,6 @@ func (m *EnterprisePrepaymentMutation) OldUpdatedAt(ctx context.Context) (v time
 // ResetUpdatedAt resets all changes to the "updated_at" field.
 func (m *EnterprisePrepaymentMutation) ResetUpdatedAt() {
 	m.updated_at = nil
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (m *EnterprisePrepaymentMutation) SetDeletedAt(t time.Time) {
-	m.deleted_at = &t
-}
-
-// DeletedAt returns the value of the "deleted_at" field in the mutation.
-func (m *EnterprisePrepaymentMutation) DeletedAt() (r time.Time, exists bool) {
-	v := m.deleted_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldDeletedAt returns the old "deleted_at" field's value of the EnterprisePrepayment entity.
-// If the EnterprisePrepayment object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EnterprisePrepaymentMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
-	}
-	return oldValue.DeletedAt, nil
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (m *EnterprisePrepaymentMutation) ClearDeletedAt() {
-	m.deleted_at = nil
-	m.clearedFields[enterpriseprepayment.FieldDeletedAt] = struct{}{}
-}
-
-// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
-func (m *EnterprisePrepaymentMutation) DeletedAtCleared() bool {
-	_, ok := m.clearedFields[enterpriseprepayment.FieldDeletedAt]
-	return ok
-}
-
-// ResetDeletedAt resets all changes to the "deleted_at" field.
-func (m *EnterprisePrepaymentMutation) ResetDeletedAt() {
-	m.deleted_at = nil
-	delete(m.clearedFields, enterpriseprepayment.FieldDeletedAt)
 }
 
 // SetCreator sets the "creator" field.
@@ -41313,15 +41180,12 @@ func (m *EnterprisePrepaymentMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EnterprisePrepaymentMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 9)
 	if m.created_at != nil {
 		fields = append(fields, enterpriseprepayment.FieldCreatedAt)
 	}
 	if m.updated_at != nil {
 		fields = append(fields, enterpriseprepayment.FieldUpdatedAt)
-	}
-	if m.deleted_at != nil {
-		fields = append(fields, enterpriseprepayment.FieldDeletedAt)
 	}
 	if m.creator != nil {
 		fields = append(fields, enterpriseprepayment.FieldCreator)
@@ -41356,8 +41220,6 @@ func (m *EnterprisePrepaymentMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case enterpriseprepayment.FieldUpdatedAt:
 		return m.UpdatedAt()
-	case enterpriseprepayment.FieldDeletedAt:
-		return m.DeletedAt()
 	case enterpriseprepayment.FieldCreator:
 		return m.Creator()
 	case enterpriseprepayment.FieldLastModifier:
@@ -41385,8 +41247,6 @@ func (m *EnterprisePrepaymentMutation) OldField(ctx context.Context, name string
 		return m.OldCreatedAt(ctx)
 	case enterpriseprepayment.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
-	case enterpriseprepayment.FieldDeletedAt:
-		return m.OldDeletedAt(ctx)
 	case enterpriseprepayment.FieldCreator:
 		return m.OldCreator(ctx)
 	case enterpriseprepayment.FieldLastModifier:
@@ -41423,13 +41283,6 @@ func (m *EnterprisePrepaymentMutation) SetField(name string, value ent.Value) er
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUpdatedAt(v)
-		return nil
-	case enterpriseprepayment.FieldDeletedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetDeletedAt(v)
 		return nil
 	case enterpriseprepayment.FieldCreator:
 		v, ok := value.(*model.Modifier)
@@ -41525,9 +41378,6 @@ func (m *EnterprisePrepaymentMutation) AddField(name string, value ent.Value) er
 // mutation.
 func (m *EnterprisePrepaymentMutation) ClearedFields() []string {
 	var fields []string
-	if m.FieldCleared(enterpriseprepayment.FieldDeletedAt) {
-		fields = append(fields, enterpriseprepayment.FieldDeletedAt)
-	}
 	if m.FieldCleared(enterpriseprepayment.FieldCreator) {
 		fields = append(fields, enterpriseprepayment.FieldCreator)
 	}
@@ -41554,9 +41404,6 @@ func (m *EnterprisePrepaymentMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *EnterprisePrepaymentMutation) ClearField(name string) error {
 	switch name {
-	case enterpriseprepayment.FieldDeletedAt:
-		m.ClearDeletedAt()
-		return nil
 	case enterpriseprepayment.FieldCreator:
 		m.ClearCreator()
 		return nil
@@ -41582,9 +41429,6 @@ func (m *EnterprisePrepaymentMutation) ResetField(name string) error {
 		return nil
 	case enterpriseprepayment.FieldUpdatedAt:
 		m.ResetUpdatedAt()
-		return nil
-	case enterpriseprepayment.FieldDeletedAt:
-		m.ResetDeletedAt()
 		return nil
 	case enterpriseprepayment.FieldCreator:
 		m.ResetCreator()

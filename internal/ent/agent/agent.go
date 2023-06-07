@@ -37,8 +37,6 @@ const (
 	EdgeEnterprise = "enterprise"
 	// EdgeStations holds the string denoting the stations edge name in mutations.
 	EdgeStations = "stations"
-	// EdgePrepayments holds the string denoting the prepayments edge name in mutations.
-	EdgePrepayments = "prepayments"
 	// Table holds the table name of the agent in the database.
 	Table = "agent"
 	// EnterpriseTable is the table that holds the enterprise relation/edge.
@@ -53,13 +51,6 @@ const (
 	// StationsInverseTable is the table name for the EnterpriseStation entity.
 	// It exists in this package in order to avoid circular dependency with the "enterprisestation" package.
 	StationsInverseTable = "enterprise_station"
-	// PrepaymentsTable is the table that holds the prepayments relation/edge.
-	PrepaymentsTable = "enterprise_prepayment"
-	// PrepaymentsInverseTable is the table name for the EnterprisePrepayment entity.
-	// It exists in this package in order to avoid circular dependency with the "enterpriseprepayment" package.
-	PrepaymentsInverseTable = "enterprise_prepayment"
-	// PrepaymentsColumn is the table column denoting the prepayments relation/edge.
-	PrepaymentsColumn = "agent_prepayments"
 )
 
 // Columns holds all SQL columns for agent fields.
@@ -181,20 +172,6 @@ func ByStations(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newStationsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
-
-// ByPrepaymentsCount orders the results by prepayments count.
-func ByPrepaymentsCount(opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newPrepaymentsStep(), opts...)
-	}
-}
-
-// ByPrepayments orders the results by prepayments terms.
-func ByPrepayments(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newPrepaymentsStep(), append([]sql.OrderTerm{term}, terms...)...)
-	}
-}
 func newEnterpriseStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -207,12 +184,5 @@ func newStationsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(StationsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2M, false, StationsTable, StationsPrimaryKey...),
-	)
-}
-func newPrepaymentsStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(PrepaymentsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, PrepaymentsTable, PrepaymentsColumn),
 	)
 }

@@ -23,7 +23,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
 	"github.com/auroraride/aurservd/internal/ent/enterprisecontract"
-	"github.com/auroraride/aurservd/internal/ent/enterpriseprepayment"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
@@ -720,46 +719,6 @@ func (c *EnterpriseContractClient) GetNotDeleted(ctx context.Context, id uint64)
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *EnterpriseContractClient) GetNotDeletedX(ctx context.Context, id uint64) *EnterpriseContract {
-	obj, err := c.GetNotDeleted(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// SoftDelete returns an soft delete builder for EnterprisePrepayment.
-func (c *EnterprisePrepaymentClient) SoftDelete() *EnterprisePrepaymentUpdate {
-	mutation := newEnterprisePrepaymentMutation(c.config, OpUpdate)
-	mutation.SetDeletedAt(time.Now())
-	return &EnterprisePrepaymentUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// SoftDeleteOne returns an soft delete builder for the given entity.
-func (c *EnterprisePrepaymentClient) SoftDeleteOne(ep *EnterprisePrepayment) *EnterprisePrepaymentUpdateOne {
-	mutation := newEnterprisePrepaymentMutation(c.config, OpUpdateOne, withEnterprisePrepayment(ep))
-	mutation.SetDeletedAt(time.Now())
-	return &EnterprisePrepaymentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// SoftDeleteOneID returns an soft delete builder for the given id.
-func (c *EnterprisePrepaymentClient) SoftDeleteOneID(id uint64) *EnterprisePrepaymentUpdateOne {
-	mutation := newEnterprisePrepaymentMutation(c.config, OpUpdateOne, withEnterprisePrepaymentID(id))
-	mutation.SetDeletedAt(time.Now())
-	return &EnterprisePrepaymentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// QueryNotDeleted returns a query not deleted builder for EnterprisePrepayment.
-func (c *EnterprisePrepaymentClient) QueryNotDeleted() *EnterprisePrepaymentQuery {
-	return c.Query().Where(enterpriseprepayment.DeletedAtIsNil())
-}
-
-// GetNotDeleted returns a EnterprisePrepayment not deleted entity by its id.
-func (c *EnterprisePrepaymentClient) GetNotDeleted(ctx context.Context, id uint64) (*EnterprisePrepayment, error) {
-	return c.Query().Where(enterpriseprepayment.ID(id), enterpriseprepayment.DeletedAtIsNil()).Only(ctx)
-}
-
-// GetNotDeletedX is like Get, but panics if an error occurs.
-func (c *EnterprisePrepaymentClient) GetNotDeletedX(ctx context.Context, id uint64) *EnterprisePrepayment {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)

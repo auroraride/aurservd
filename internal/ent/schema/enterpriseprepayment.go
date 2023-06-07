@@ -43,7 +43,6 @@ func (EnterprisePrepayment) Edges() []ent.Edge {
 func (EnterprisePrepayment) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		internal.TimeMixin{},
-		internal.DeleteMixin{},
 		internal.Modifier{},
 
 		EnterpriseMixin{},

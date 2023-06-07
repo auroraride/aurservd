@@ -14,7 +14,6 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
-	"github.com/auroraride/aurservd/internal/ent/enterpriseprepayment"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 )
 
@@ -130,21 +129,6 @@ func (ac *AgentCreate) AddStations(e ...*EnterpriseStation) *AgentCreate {
 		ids[i] = e[i].ID
 	}
 	return ac.AddStationIDs(ids...)
-}
-
-// AddPrepaymentIDs adds the "prepayments" edge to the EnterprisePrepayment entity by IDs.
-func (ac *AgentCreate) AddPrepaymentIDs(ids ...uint64) *AgentCreate {
-	ac.mutation.AddPrepaymentIDs(ids...)
-	return ac
-}
-
-// AddPrepayments adds the "prepayments" edges to the EnterprisePrepayment entity.
-func (ac *AgentCreate) AddPrepayments(e ...*EnterprisePrepayment) *AgentCreate {
-	ids := make([]uint64, len(e))
-	for i := range e {
-		ids[i] = e[i].ID
-	}
-	return ac.AddPrepaymentIDs(ids...)
 }
 
 // Mutation returns the AgentMutation object of the builder.
@@ -306,22 +290,6 @@ func (ac *AgentCreate) createSpec() (*Agent, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := ac.mutation.PrepaymentsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   agent.PrepaymentsTable,
-			Columns: []string{agent.PrepaymentsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(enterpriseprepayment.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

@@ -648,8 +648,8 @@ func init() {
 	// enterprisecontract.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	enterprisecontract.UpdateDefaultUpdatedAt = enterprisecontractDescUpdatedAt.UpdateDefault.(func() time.Time)
 	enterpriseprepaymentMixin := schema.EnterprisePrepayment{}.Mixin()
-	enterpriseprepaymentMixinHooks2 := enterpriseprepaymentMixin[2].Hooks()
-	enterpriseprepayment.Hooks[0] = enterpriseprepaymentMixinHooks2[0]
+	enterpriseprepaymentMixinHooks1 := enterpriseprepaymentMixin[1].Hooks()
+	enterpriseprepayment.Hooks[0] = enterpriseprepaymentMixinHooks1[0]
 	enterpriseprepaymentMixinFields0 := enterpriseprepaymentMixin[0].Fields()
 	_ = enterpriseprepaymentMixinFields0
 	enterpriseprepaymentFields := schema.EnterprisePrepayment{}.Fields()

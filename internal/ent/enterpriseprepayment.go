@@ -25,8 +25,6 @@ type EnterprisePrepayment struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
-	// DeletedAt holds the value of the "deleted_at" field.
-	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// 创建人
 	Creator *model.Modifier `json:"creator,omitempty"`
 	// 最后修改人
@@ -43,9 +41,8 @@ type EnterprisePrepayment struct {
 	Payway model.Payway `json:"payway,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EnterprisePrepaymentQuery when eager-loading is set.
-	Edges             EnterprisePrepaymentEdges `json:"edges"`
-	agent_prepayments *uint64
-	selectValues      sql.SelectValues
+	Edges        EnterprisePrepaymentEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // EnterprisePrepaymentEdges holds the relations/edges for other nodes in the graph.
@@ -100,10 +97,8 @@ func (*EnterprisePrepayment) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case enterpriseprepayment.FieldRemark:
 			values[i] = new(sql.NullString)
-		case enterpriseprepayment.FieldCreatedAt, enterpriseprepayment.FieldUpdatedAt, enterpriseprepayment.FieldDeletedAt:
+		case enterpriseprepayment.FieldCreatedAt, enterpriseprepayment.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case enterpriseprepayment.ForeignKeys[0]: // agent_prepayments
-			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -136,13 +131,6 @@ func (ep *EnterprisePrepayment) assignValues(columns []string, values []any) err
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
 				ep.UpdatedAt = value.Time
-			}
-		case enterpriseprepayment.FieldDeletedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
-			} else if value.Valid {
-				ep.DeletedAt = new(time.Time)
-				*ep.DeletedAt = value.Time
 			}
 		case enterpriseprepayment.FieldCreator:
 			if value, ok := values[i].(*[]byte); !ok {
@@ -190,13 +178,6 @@ func (ep *EnterprisePrepayment) assignValues(columns []string, values []any) err
 				return fmt.Errorf("unexpected type %T for field payway", values[i])
 			} else if value != nil {
 				ep.Payway = *value
-			}
-		case enterpriseprepayment.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field agent_prepayments", value)
-			} else if value.Valid {
-				ep.agent_prepayments = new(uint64)
-				*ep.agent_prepayments = uint64(value.Int64)
 			}
 		default:
 			ep.selectValues.Set(columns[i], values[i])
@@ -249,11 +230,6 @@ func (ep *EnterprisePrepayment) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
 	builder.WriteString(ep.UpdatedAt.Format(time.ANSIC))
-	builder.WriteString(", ")
-	if v := ep.DeletedAt; v != nil {
-		builder.WriteString("deleted_at=")
-		builder.WriteString(v.Format(time.ANSIC))
-	}
 	builder.WriteString(", ")
 	builder.WriteString("creator=")
 	builder.WriteString(fmt.Sprintf("%v", ep.Creator))

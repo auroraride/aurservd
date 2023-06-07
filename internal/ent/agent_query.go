@@ -13,7 +13,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
-	"github.com/auroraride/aurservd/internal/ent/enterpriseprepayment"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
@@ -21,15 +20,14 @@ import (
 // AgentQuery is the builder for querying Agent entities.
 type AgentQuery struct {
 	config
-	ctx             *QueryContext
-	order           []agent.OrderOption
-	inters          []Interceptor
-	predicates      []predicate.Agent
-	withEnterprise  *EnterpriseQuery
-	withStations    *EnterpriseStationQuery
-	withPrepayments *EnterprisePrepaymentQuery
-	withFKs         bool
-	modifiers       []func(*sql.Selector)
+	ctx            *QueryContext
+	order          []agent.OrderOption
+	inters         []Interceptor
+	predicates     []predicate.Agent
+	withEnterprise *EnterpriseQuery
+	withStations   *EnterpriseStationQuery
+	withFKs        bool
+	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -103,28 +101,6 @@ func (aq *AgentQuery) QueryStations() *EnterpriseStationQuery {
 			sqlgraph.From(agent.Table, agent.FieldID, selector),
 			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, false, agent.StationsTable, agent.StationsPrimaryKey...),
-		)
-		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryPrepayments chains the current query on the "prepayments" edge.
-func (aq *AgentQuery) QueryPrepayments() *EnterprisePrepaymentQuery {
-	query := (&EnterprisePrepaymentClient{config: aq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := aq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := aq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(agent.Table, agent.FieldID, selector),
-			sqlgraph.To(enterpriseprepayment.Table, enterpriseprepayment.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, agent.PrepaymentsTable, agent.PrepaymentsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
@@ -319,14 +295,13 @@ func (aq *AgentQuery) Clone() *AgentQuery {
 		return nil
 	}
 	return &AgentQuery{
-		config:          aq.config,
-		ctx:             aq.ctx.Clone(),
-		order:           append([]agent.OrderOption{}, aq.order...),
-		inters:          append([]Interceptor{}, aq.inters...),
-		predicates:      append([]predicate.Agent{}, aq.predicates...),
-		withEnterprise:  aq.withEnterprise.Clone(),
-		withStations:    aq.withStations.Clone(),
-		withPrepayments: aq.withPrepayments.Clone(),
+		config:         aq.config,
+		ctx:            aq.ctx.Clone(),
+		order:          append([]agent.OrderOption{}, aq.order...),
+		inters:         append([]Interceptor{}, aq.inters...),
+		predicates:     append([]predicate.Agent{}, aq.predicates...),
+		withEnterprise: aq.withEnterprise.Clone(),
+		withStations:   aq.withStations.Clone(),
 		// clone intermediate query.
 		sql:  aq.sql.Clone(),
 		path: aq.path,
@@ -352,17 +327,6 @@ func (aq *AgentQuery) WithStations(opts ...func(*EnterpriseStationQuery)) *Agent
 		opt(query)
 	}
 	aq.withStations = query
-	return aq
-}
-
-// WithPrepayments tells the query-builder to eager-load the nodes that are connected to
-// the "prepayments" edge. The optional arguments are used to configure the query builder of the edge.
-func (aq *AgentQuery) WithPrepayments(opts ...func(*EnterprisePrepaymentQuery)) *AgentQuery {
-	query := (&EnterprisePrepaymentClient{config: aq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	aq.withPrepayments = query
 	return aq
 }
 
@@ -445,10 +409,9 @@ func (aq *AgentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Agent,
 		nodes       = []*Agent{}
 		withFKs     = aq.withFKs
 		_spec       = aq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [2]bool{
 			aq.withEnterprise != nil,
 			aq.withStations != nil,
-			aq.withPrepayments != nil,
 		}
 	)
 	if withFKs {
@@ -485,13 +448,6 @@ func (aq *AgentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Agent,
 		if err := aq.loadStations(ctx, query, nodes,
 			func(n *Agent) { n.Edges.Stations = []*EnterpriseStation{} },
 			func(n *Agent, e *EnterpriseStation) { n.Edges.Stations = append(n.Edges.Stations, e) }); err != nil {
-			return nil, err
-		}
-	}
-	if query := aq.withPrepayments; query != nil {
-		if err := aq.loadPrepayments(ctx, query, nodes,
-			func(n *Agent) { n.Edges.Prepayments = []*EnterprisePrepayment{} },
-			func(n *Agent, e *EnterprisePrepayment) { n.Edges.Prepayments = append(n.Edges.Prepayments, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -585,37 +541,6 @@ func (aq *AgentQuery) loadStations(ctx context.Context, query *EnterpriseStation
 		for kn := range nodes {
 			assign(kn, n)
 		}
-	}
-	return nil
-}
-func (aq *AgentQuery) loadPrepayments(ctx context.Context, query *EnterprisePrepaymentQuery, nodes []*Agent, init func(*Agent), assign func(*Agent, *EnterprisePrepayment)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[uint64]*Agent)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
-		}
-	}
-	query.withFKs = true
-	query.Where(predicate.EnterprisePrepayment(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(agent.PrepaymentsColumn), fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		fk := n.agent_prepayments
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "agent_prepayments" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
-		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "agent_prepayments" returned %v for node %v`, *fk, n.ID)
-		}
-		assign(node, n)
 	}
 	return nil
 }
@@ -719,9 +644,8 @@ func (aq *AgentQuery) Modify(modifiers ...func(s *sql.Selector)) *AgentSelect {
 type AgentQueryWith string
 
 var (
-	AgentQueryWithEnterprise  AgentQueryWith = "Enterprise"
-	AgentQueryWithStations    AgentQueryWith = "Stations"
-	AgentQueryWithPrepayments AgentQueryWith = "Prepayments"
+	AgentQueryWithEnterprise AgentQueryWith = "Enterprise"
+	AgentQueryWithStations   AgentQueryWith = "Stations"
 )
 
 func (aq *AgentQuery) With(withEdges ...AgentQueryWith) *AgentQuery {
@@ -731,8 +655,6 @@ func (aq *AgentQuery) With(withEdges ...AgentQueryWith) *AgentQuery {
 			aq.WithEnterprise()
 		case AgentQueryWithStations:
 			aq.WithStations()
-		case AgentQueryWithPrepayments:
-			aq.WithPrepayments()
 		}
 	}
 	return aq

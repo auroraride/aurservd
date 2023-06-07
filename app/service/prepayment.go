@@ -8,8 +8,12 @@ package service
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/golang-module/carbon/v2"
+	jsoniter "github.com/json-iterator/go"
+	"github.com/wechatpay-apiv3/wechatpay-go/services/payments/jsapi"
+	"go.uber.org/zap"
 
 	"github.com/auroraride/aurservd/app/logging"
 	"github.com/auroraride/aurservd/app/model"
@@ -17,6 +21,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprepayment"
 	"github.com/auroraride/aurservd/internal/payment"
+	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
 )
@@ -43,7 +48,7 @@ func (s *prepaymentService) Overview(en *ent.Enterprise) (res model.PrepaymentOv
 		Times        int     `json:"times"`
 	}
 	_ = ent.Database.EnterprisePrepayment.
-		QueryNotDeleted().
+		Query().
 		Where(enterpriseprepayment.EnterpriseID(en.ID)).
 		GroupBy(enterpriseprepayment.FieldEnterpriseID).
 		Aggregate(
@@ -61,8 +66,9 @@ func (s *prepaymentService) Overview(en *ent.Enterprise) (res model.PrepaymentOv
 }
 
 func (s *prepaymentService) List(enterpriseID uint64, req *model.PrepaymentListReq) *model.PaginationRes {
-	q := s.orm.QueryNotDeleted().
-		Where(enterpriseprepayment.EnterpriseID(enterpriseID)).WithAgent().
+	q := s.orm.Query().
+		Where(enterpriseprepayment.EnterpriseID(enterpriseID)).
+		WithAgent().
 		Order(ent.Desc(enterpriseprepayment.FieldCreatedAt))
 
 	// 筛选时间段
@@ -97,14 +103,27 @@ func (s *prepaymentService) List(enterpriseID uint64, req *model.PrepaymentListR
 }
 
 // WechatMiniprogramPay 小程序储值
-func (s *prepaymentService) WechatMiniprogramPay(ag *ent.Agent, req *model.AgentPrepayReq) model.AgentPrepayRes {
+func (s *prepaymentService) WechatMiniprogramPay(ag *ent.Agent, req *model.AgentPrepayReq) (data *model.AgentPrepayRes) {
+	defer func() {
+		go func() {
+			b, _ := jsoniter.Marshal(data)
+			zap.L().Info("代理商小程序充值", zap.ByteString("data", b))
+		}()
+	}()
+
+	amount := req.Amount
+	// Development模式支付一分钱
+	if ar.Config.Environment.IsDevelopment() {
+		amount = 0.01
+	}
+
 	pc := &model.PaymentCache{
 		CacheType: model.PaymentCacheTypeAgentPrepay,
 		AgentPrepay: &model.PaymentAgentPrepay{
 			AgentPrepay: &model.AgentPrepay{
 				EnterpriseID: ag.EnterpriseID,
 				Remark:       "代理商小程序储值",
-				Amount:       req.Amount,
+				Amount:       amount,
 				ID:           ag.ID,
 				Name:         ag.Name,
 				Phone:        ag.Phone,
@@ -114,14 +133,23 @@ func (s *prepaymentService) WechatMiniprogramPay(ag *ent.Agent, req *model.Agent
 		},
 	}
 
-	// 生成预支付订单
-	res, err := payment.NewWechat().Miniprogram(ar.Config.WechatMiniprogram.Agent.AppID, req.OpenID, pc)
+	// 缓存支付信息
+	err := cache.Set(s.ctx, pc.AgentPrepay.OutTradeNo, pc, 20*time.Minute).Err()
 	if err != nil {
 		snag.Panic(err)
+		zap.L().Error("代理商小程序支付缓存失败", zap.Error(err))
+	}
+
+	// 生成预支付订单
+	var res *jsapi.PrepayWithRequestPaymentResponse
+	res, err = payment.NewWechat().Miniprogram(ar.Config.WechatMiniprogram.Agent.AppID, req.OpenID, pc)
+	if err != nil {
+		snag.Panic(err)
+		zap.L().Error("代理商小程序支付订单生成失败", zap.Error(err))
 	}
 
 	// 生成随机字符串并签名
-	return model.AgentPrepayRes{
+	data = &model.AgentPrepayRes{
 		PrepayId:  res.PrepayId,
 		Appid:     res.Appid,
 		TimeStamp: res.TimeStamp,
@@ -130,14 +158,18 @@ func (s *prepaymentService) WechatMiniprogramPay(ag *ent.Agent, req *model.Agent
 		SignType:  res.SignType,
 		PaySign:   res.PaySign,
 	}
+
+	return
 }
 
-// Paid 支付成功回调方法
-func (s *prepaymentService) Paid(data *model.PaymentAgentPrepay) {
-	_, _ = s.UpdateAmount(data.AgentPrepay)
-}
+// UpdateBalance 更新代理商余额
+func (s *prepaymentService) UpdateBalance(req *model.AgentPrepay) (balance float64, err error) {
+	defer func() {
+		if err != nil {
+			zap.L().Error("更新代理商金额失败", zap.Error(err))
+		}
+	}()
 
-func (s *prepaymentService) UpdateAmount(req *model.AgentPrepay) (balance float64, err error) {
 	// 获取团签
 	var e *ent.Enterprise
 	e, err = NewEnterprise().Query(req.EnterpriseID)

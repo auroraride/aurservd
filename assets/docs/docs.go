@@ -57,6 +57,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/agent/v1/battery/model": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A5002 电池型号列表",
+                "operationId": "AgentBatteryModels",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.ItemListRes"
+                        }
+                    }
+                }
+            }
+        },
         "/agent/v1/bill/historical": {
             "get": {
                 "consumes": [
@@ -85,9 +117,26 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "description": "账单结束日期",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "enterpriseId",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "每页数据, 默认20",
                         "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "账单开始日期",
+                        "name": "start",
                         "in": "query"
                     }
                 ],
@@ -498,7 +547,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.OpenidRes"
                         }
                     }
                 }
@@ -765,10 +814,11 @@ const docTemplate = `{
                             "inactive",
                             "using",
                             "overdue",
-                            "unsubscribed"
+                            "unsubscribed",
+                            "willOverdue"
                         ],
                         "type": "string",
-                        "description": "inactive:未激活 using:计费中 overdue:已超期 unsubscribed:已退租",
+                        "description": "inactive:未激活 using:计费中 overdue:已超期 unsubscribed:已退租 willOverdue:即将超期",
                         "name": "status",
                         "in": "query"
                     }
@@ -1102,7 +1152,7 @@ const docTemplate = `{
             }
         },
         "/agent/v1/rider/invite": {
-            "get": {
+            "post": {
                 "consumes": [
                     "application/json"
                 ],
@@ -7961,15 +8011,26 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "description": "账单结束日期",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "name": "enterpriseId",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "type": "integer",
                         "description": "每页数据, 默认20",
                         "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "账单开始日期",
+                        "name": "start",
                         "in": "query"
                     }
                 ],
@@ -14896,6 +14957,51 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v1/enterprise/info": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R3016 骑手团签信息",
+                "operationId": "RiderEnterpriseInfo",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "name": "enterpriseId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "站点id",
+                        "name": "stationId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.EnterproseInfoRsp"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v1/enterprise/join": {
             "post": {
                 "consumes": [
@@ -14916,7 +15022,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.RiderJoinEnterpriseReq"
+                            "$ref": "#/definitions/model.EnterproseInfoReq"
                         }
                     }
                 ],
@@ -16677,6 +16783,10 @@ const docTemplate = `{
                         "type": "integer"
                     }
                 },
+                "distance": {
+                    "description": "距离",
+                    "type": "integer"
+                },
                 "enterprise": {
                     "description": "企业",
                     "allOf": [
@@ -16703,6 +16813,13 @@ const docTemplate = `{
                         "$ref": "#/definitions/model.EnterprisePrice"
                     }
                 },
+                "rechargeAmount": {
+                    "description": "充值金额选项",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
                 "riders": {
                     "description": "骑手数量",
                     "type": "integer"
@@ -16727,6 +16844,10 @@ const docTemplate = `{
         "model.AgentRider": {
             "type": "object",
             "properties": {
+                "batterySn": {
+                    "description": "电池sn",
+                    "type": "string"
+                },
                 "city": {
                     "description": "城市",
                     "allOf": [
@@ -21296,6 +21417,13 @@ const docTemplate = `{
                     "description": "是否代理商模式",
                     "type": "boolean"
                 },
+                "days": {
+                    "description": "代理商时间选项",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
                 "id": {
                     "description": "企业ID",
                     "type": "integer"
@@ -21395,7 +21523,6 @@ const docTemplate = `{
                 "contactName",
                 "contactPhone",
                 "deposit",
-                "distance",
                 "idcardNumber",
                 "name",
                 "payment",
@@ -21432,6 +21559,7 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "distance": {
+                    "description": "电柜距离",
                     "type": "integer"
                 },
                 "idcardNumber": {
@@ -21449,6 +21577,13 @@ const docTemplate = `{
                         1,
                         2
                     ]
+                },
+                "rechargeAmount": {
+                    "description": "充值金额选项",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "status": {
                     "description": "0:未合作 1:合作中 2:已暂停",
@@ -21476,7 +21611,6 @@ const docTemplate = `{
                 "contactName",
                 "contactPhone",
                 "deposit",
-                "distance",
                 "idcardNumber",
                 "name",
                 "payment",
@@ -21513,6 +21647,7 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "distance": {
+                    "description": "电柜距离",
                     "type": "integer"
                 },
                 "idcardNumber": {
@@ -21530,6 +21665,13 @@ const docTemplate = `{
                         1,
                         2
                     ]
+                },
+                "rechargeAmount": {
+                    "description": "充值金额选项",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "status": {
                     "description": "0:未合作 1:合作中 2:已暂停",
@@ -21696,6 +21838,10 @@ const docTemplate = `{
                     "description": "押金",
                     "type": "number"
                 },
+                "distance": {
+                    "description": "电柜距离",
+                    "type": "integer"
+                },
                 "id": {
                     "description": "企业ID",
                     "type": "integer"
@@ -21717,6 +21863,13 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.EnterprisePriceWithCity"
+                    }
+                },
+                "rechargeAmount": {
+                    "description": "充值金额选项",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
                     }
                 },
                 "riders": {
@@ -21883,6 +22036,39 @@ const docTemplate = `{
             ],
             "properties": {
                 "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.EnterproseInfoReq": {
+            "type": "object",
+            "required": [
+                "enterpriseId",
+                "stationId"
+            ],
+            "properties": {
+                "enterpriseId": {
+                    "type": "integer"
+                },
+                "stationId": {
+                    "description": "站点id",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.EnterproseInfoRsp": {
+            "type": "object",
+            "properties": {
+                "enterproseName": {
+                    "description": "团签名称",
+                    "type": "string"
+                },
+                "isJoin": {
+                    "description": "是否可以加入团签",
+                    "type": "boolean"
+                },
+                "stationName": {
+                    "description": "站点名称",
                     "type": "string"
                 }
             }
@@ -22391,7 +22577,7 @@ const docTemplate = `{
                     "description": "当前页, 从1开始, 默认1",
                     "type": "integer"
                 },
-                "endTime": {
+                "end": {
                     "description": "反馈结束时间",
                     "type": "string"
                 },
@@ -22407,7 +22593,7 @@ const docTemplate = `{
                     "description": "每页数据, 默认20",
                     "type": "integer"
                 },
-                "startTime": {
+                "start": {
                     "description": "反馈开始时间",
                     "type": "string"
                 },
@@ -22739,6 +22925,14 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "phone": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.OpenidRes": {
+            "type": "object",
+            "properties": {
+                "openid": {
                     "type": "string"
                 }
             }
@@ -24532,23 +24726,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.RiderJoinEnterpriseReq": {
-            "type": "object",
-            "required": [
-                "enterpriseId",
-                "stationId"
-            ],
-            "properties": {
-                "enterpriseId": {
-                    "description": "团签ID",
-                    "type": "integer"
-                },
-                "stationId": {
-                    "description": "站点ID",
-                    "type": "integer"
-                }
-            }
-        },
         "model.RiderListExport": {
             "type": "object",
             "required": [
@@ -25835,6 +26012,10 @@ const docTemplate = `{
                         "$ref": "#/definitions/model.StockMaterial"
                     }
                 },
+                "enterpriseID": {
+                    "description": "团签id",
+                    "type": "integer"
+                },
                 "enterpriseName": {
                     "description": "团签名称",
                     "type": "string"
@@ -25845,6 +26026,10 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/model.StockMaterial"
                     }
+                },
+                "stationID": {
+                    "description": "站点id",
+                    "type": "integer"
                 },
                 "stationName": {
                     "description": "站点名称",

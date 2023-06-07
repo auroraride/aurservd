@@ -38,26 +38,6 @@ func (epu *EnterprisePrepaymentUpdate) SetUpdatedAt(t time.Time) *EnterprisePrep
 	return epu
 }
 
-// SetDeletedAt sets the "deleted_at" field.
-func (epu *EnterprisePrepaymentUpdate) SetDeletedAt(t time.Time) *EnterprisePrepaymentUpdate {
-	epu.mutation.SetDeletedAt(t)
-	return epu
-}
-
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (epu *EnterprisePrepaymentUpdate) SetNillableDeletedAt(t *time.Time) *EnterprisePrepaymentUpdate {
-	if t != nil {
-		epu.SetDeletedAt(*t)
-	}
-	return epu
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (epu *EnterprisePrepaymentUpdate) ClearDeletedAt() *EnterprisePrepaymentUpdate {
-	epu.mutation.ClearDeletedAt()
-	return epu
-}
-
 // SetLastModifier sets the "last_modifier" field.
 func (epu *EnterprisePrepaymentUpdate) SetLastModifier(m *model.Modifier) *EnterprisePrepaymentUpdate {
 	epu.mutation.SetLastModifier(m)
@@ -228,12 +208,6 @@ func (epu *EnterprisePrepaymentUpdate) sqlSave(ctx context.Context) (n int, err 
 	if value, ok := epu.mutation.UpdatedAt(); ok {
 		_spec.SetField(enterpriseprepayment.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := epu.mutation.DeletedAt(); ok {
-		_spec.SetField(enterpriseprepayment.FieldDeletedAt, field.TypeTime, value)
-	}
-	if epu.mutation.DeletedAtCleared() {
-		_spec.ClearField(enterpriseprepayment.FieldDeletedAt, field.TypeTime)
-	}
 	if epu.mutation.CreatorCleared() {
 		_spec.ClearField(enterpriseprepayment.FieldCreator, field.TypeJSON)
 	}
@@ -335,26 +309,6 @@ type EnterprisePrepaymentUpdateOne struct {
 // SetUpdatedAt sets the "updated_at" field.
 func (epuo *EnterprisePrepaymentUpdateOne) SetUpdatedAt(t time.Time) *EnterprisePrepaymentUpdateOne {
 	epuo.mutation.SetUpdatedAt(t)
-	return epuo
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (epuo *EnterprisePrepaymentUpdateOne) SetDeletedAt(t time.Time) *EnterprisePrepaymentUpdateOne {
-	epuo.mutation.SetDeletedAt(t)
-	return epuo
-}
-
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (epuo *EnterprisePrepaymentUpdateOne) SetNillableDeletedAt(t *time.Time) *EnterprisePrepaymentUpdateOne {
-	if t != nil {
-		epuo.SetDeletedAt(*t)
-	}
-	return epuo
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (epuo *EnterprisePrepaymentUpdateOne) ClearDeletedAt() *EnterprisePrepaymentUpdateOne {
-	epuo.mutation.ClearDeletedAt()
 	return epuo
 }
 
@@ -557,12 +511,6 @@ func (epuo *EnterprisePrepaymentUpdateOne) sqlSave(ctx context.Context) (_node *
 	}
 	if value, ok := epuo.mutation.UpdatedAt(); ok {
 		_spec.SetField(enterpriseprepayment.FieldUpdatedAt, field.TypeTime, value)
-	}
-	if value, ok := epuo.mutation.DeletedAt(); ok {
-		_spec.SetField(enterpriseprepayment.FieldDeletedAt, field.TypeTime, value)
-	}
-	if epuo.mutation.DeletedAtCleared() {
-		_spec.ClearField(enterpriseprepayment.FieldDeletedAt, field.TypeTime)
 	}
 	if epuo.mutation.CreatorCleared() {
 		_spec.ClearField(enterpriseprepayment.FieldCreator, field.TypeJSON)

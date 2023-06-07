@@ -793,7 +793,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 		Fields: map[string]*sqlgraph.FieldSpec{
 			enterpriseprepayment.FieldCreatedAt:    {Type: field.TypeTime, Column: enterpriseprepayment.FieldCreatedAt},
 			enterpriseprepayment.FieldUpdatedAt:    {Type: field.TypeTime, Column: enterpriseprepayment.FieldUpdatedAt},
-			enterpriseprepayment.FieldDeletedAt:    {Type: field.TypeTime, Column: enterpriseprepayment.FieldDeletedAt},
 			enterpriseprepayment.FieldCreator:      {Type: field.TypeJSON, Column: enterpriseprepayment.FieldCreator},
 			enterpriseprepayment.FieldLastModifier: {Type: field.TypeJSON, Column: enterpriseprepayment.FieldLastModifier},
 			enterpriseprepayment.FieldRemark:       {Type: field.TypeString, Column: enterpriseprepayment.FieldRemark},
@@ -1595,18 +1594,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Agent",
 		"EnterpriseStation",
-	)
-	graph.MustAddE(
-		"prepayments",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   agent.PrepaymentsTable,
-			Columns: []string{agent.PrepaymentsColumn},
-			Bidi:    false,
-		},
-		"Agent",
-		"EnterprisePrepayment",
 	)
 	graph.MustAddE(
 		"rider",
@@ -4652,20 +4639,6 @@ func (f *AgentFilter) WhereHasStations() {
 // WhereHasStationsWith applies a predicate to check if query has an edge stations with a given conditions (other predicates).
 func (f *AgentFilter) WhereHasStationsWith(preds ...predicate.EnterpriseStation) {
 	f.Where(entql.HasEdgeWith("stations", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// WhereHasPrepayments applies a predicate to check if query has an edge prepayments.
-func (f *AgentFilter) WhereHasPrepayments() {
-	f.Where(entql.HasEdge("prepayments"))
-}
-
-// WhereHasPrepaymentsWith applies a predicate to check if query has an edge prepayments with a given conditions (other predicates).
-func (f *AgentFilter) WhereHasPrepaymentsWith(preds ...predicate.EnterprisePrepayment) {
-	f.Where(entql.HasEdgeWith("prepayments", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -9227,11 +9200,6 @@ func (f *EnterprisePrepaymentFilter) WhereCreatedAt(p entql.TimeP) {
 // WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
 func (f *EnterprisePrepaymentFilter) WhereUpdatedAt(p entql.TimeP) {
 	f.Where(p.Field(enterpriseprepayment.FieldUpdatedAt))
-}
-
-// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
-func (f *EnterprisePrepaymentFilter) WhereDeletedAt(p entql.TimeP) {
-	f.Where(p.Field(enterpriseprepayment.FieldDeletedAt))
 }
 
 // WhereCreator applies the entql json.RawMessage predicate on the creator field.
