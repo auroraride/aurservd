@@ -68,9 +68,13 @@ func (s *feedbackService) FeedbackList(req *model.FeedbackListReq) *model.Pagina
 	if req.Type != nil {
 		q.Where(feedback.TypeEQ(*req.Type))
 	}
-	if req.StartTime != nil && req.EndTime != nil {
-		q.Where(feedback.CreatedAtGTE(tools.NewTime().ParseDateStringX(*req.StartTime)), feedback.CreatedAtLT(tools.NewTime().ParseNextDateStringX(*req.EndTime)))
+	if req.Start != nil {
+		q.Where(feedback.CreatedAtGTE(tools.NewTime().ParseDateStringX(*req.Start)))
 	}
+	if req.End != nil {
+		q.Where(feedback.CreatedAtLT(tools.NewTime().ParseNextDateStringX(*req.End)))
+	}
+
 	if req.EnterpriseID != nil {
 		q.Where(feedback.EnterpriseID(*req.EnterpriseID))
 	}

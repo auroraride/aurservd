@@ -16,15 +16,15 @@ type FeedbackReq struct {
 type FeedbackListReq struct {
 	PaginationReq
 	// 反馈类型
-	Type *uint8 `json:"type"`
+	Type *uint8 `json:"type" query:"type"`
 	// 关键词
-	Keyword string `json:"keyword"`
+	Keyword string `json:"keyword" query:"keyword"`
 	// 反馈开始时间
-	StartTime *string `json:"startTime"`
+	Start *string `json:"start" query:"start"`
 	// 反馈结束时间
-	EndTime *string `json:"endTime"`
+	End *string `json:"end" query:"end"`
 	// 反馈用户团签id
-	EnterpriseID *uint64 `json:"enterpriseID"`
+	EnterpriseID *uint64 `json:"enterpriseID" query:"enterpriseId"`
 }
 
 // FeedbackDetail 反馈详情
