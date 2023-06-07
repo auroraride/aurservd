@@ -435,12 +435,33 @@ func (s *enterpriseRiderService) SubscribeAlterList(req *model.SubscribeAlterApp
 		})
 }
 
+// RiderEnterpriseInfo 骑手团签信息
+func (s *enterpriseRiderService) RiderEnterpriseInfo(req *model.EnterproseInfoReq, riderID uint64) *model.EnterproseInfoRsp {
+	rsp := &model.EnterproseInfoRsp{
+		IsJoin: true,
+	}
+	// 查询订阅信息
+	if NewSubscribe().QueryEffectiveX(riderID) != nil {
+		rsp.IsJoin = false
+	}
+	// 查询团签信息
+	enterpriseInfo := NewEnterprise().QueryX(req.EnterpriseId)
+	if enterpriseInfo == nil {
+		snag.Panic("未找到企业信息")
+	}
+	// 查询站点信息
+	stationInfo := ent.Database.EnterpriseStation.Query().Where(enterprisestation.IDEQ(req.StationId),
+		enterprisestation.EnterpriseIDEQ(req.EnterpriseId)).FirstX(s.ctx)
+	if stationInfo == nil {
+		snag.Panic("未找到站点信息")
+	}
+	rsp.StationName = stationInfo.Name
+	rsp.EnterproseName = enterpriseInfo.Name
+	return rsp
+}
+
 // JoinEnterprise 加入团签
 func (s *enterpriseRiderService) JoinEnterprise(req *model.EnterproseInfoReq, rid *ent.Rider) {
-	// 判断骑手是否加入团签
-	if rid.EnterpriseID != nil {
-		snag.Panic("已加入团签")
-	}
 	// 判断团签是否存在或者站点是否存在
 	// 查询团签信息
 	if NewEnterprise().QueryX(req.EnterpriseId) == nil {

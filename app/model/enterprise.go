@@ -172,31 +172,19 @@ type EnterpriseRiderSubscribeStatusReq struct {
 
 // EnterproseInfoReq 团签信息请求
 type EnterproseInfoReq struct {
-	EnterpriseId uint64 `json:"enterprise_id"`
+	EnterpriseId uint64 `json:"enterpriseId" query:"enterpriseId" validate:"required" `
 	// 站点id
-	StationId uint64 `json:"station_id"`
+	StationId uint64 `json:"stationId" query:"stationId" validate:"required"`
 }
 
 // EnterproseInfoRsp 团签信息返回
 type EnterproseInfoRsp struct {
-	// 骑手姓名
-	RiderName string `json:"riderName"`
-	// 骑手电话
-	RiderPhone string `json:"riderPhone"`
 	// 团签名称
 	EnterproseName string `json:"enterproseName"`
 	// 站点名称
 	StationName string `json:"stationName"`
 	// 是否可以加入团签
 	IsJoin bool `json:"isJoin"`
-}
-
-// RiderJoinEnterpriseReq 加入团签请求
-type RiderJoinEnterpriseReq struct {
-	// 团签ID
-	EnterpriseId uint64 `json:"enterpriseId" validate:"required"`
-	// 站点ID
-	StationId uint64 `json:"stationId" validate:"required"`
 }
 
 // AgentIndexRes 代理商小程序首页数据
