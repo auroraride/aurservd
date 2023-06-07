@@ -22,7 +22,7 @@ type ModifierLogger interface {
 }
 
 func GetModifierFromContext(ctx context.Context) *Modifier {
-	v, ok := ctx.Value("modifier").(*Modifier)
+	v, ok := ctx.Value(CtxModifierKey{}).(*Modifier)
 	if ok {
 		return v
 	}
