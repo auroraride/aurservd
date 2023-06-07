@@ -111,7 +111,7 @@ func (s *enterprise) JoinEnterprise(c echo.Context) error {
 // RiderEnterpriseInfo 骑手团签信息
 // @ID           RiderEnterpriseInfo
 // @Router       /rider/v1/enterprise/info [GET]
-// @Summary      R3016 企业骑手团签信息
+// @Summary      R3016 骑手团签信息
 // @Tags         [R]骑手接口
 // @Accept       json
 // @Produce      json
