@@ -18,10 +18,10 @@ const WillOverdueNum = 3
 type AgentRiderListReq struct {
 	PaginationReq
 
-	CityID    uint64 `json:"cityId" query:"cityId"`                                             // 城市
-	Keyword   string `json:"keyword" query:"keyword"`                                           // 关键词
-	StationID uint64 `json:"stationId" query:"stationId"`                                       // 站点ID
-	Status    string `json:"status" query:"status" enums:"inactive,using,overdue,unsubscribed"` // inactive:未激活 using:计费中 overdue:已超期 unsubscribed:已退租
+	CityID    uint64 `json:"cityId" query:"cityId"`                                                         // 城市
+	Keyword   string `json:"keyword" query:"keyword"`                                                       // 关键词
+	StationID uint64 `json:"stationId" query:"stationId"`                                                   // 站点ID
+	Status    string `json:"status" query:"status" enums:"inactive,using,overdue,unsubscribed,willOverdue"` // inactive:未激活 using:计费中 overdue:已超期 unsubscribed:已退租 willOverdue:即将超期
 }
 
 type AgentRider struct {
