@@ -90,7 +90,7 @@ func (*rider) Detail(c echo.Context) (err error) {
 // @Success      200  {object}  string  "请求成功"
 func (*rider) Active(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.RiderActiveBatteryReq](c)
-	service.NewEnterprise().Active(req, ctx.Agent)
+	service.NewEnterprise().Active(req, ctx.Enterprise.ID)
 	return ctx.SendResponse()
 }
 

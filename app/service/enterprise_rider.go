@@ -422,6 +422,12 @@ func (s *enterpriseRiderService) RiderEnterpriseInfo(req *model.EnterproseInfoRe
 	}
 	rsp.StationName = stationInfo.Name
 	rsp.EnterproseName = enterpriseInfo.Name
+
+	price := NewEnterprise().PriceList(req.EnterpriseId)
+	rsp.PriceList = price
+	if enterpriseInfo.Days != nil {
+		rsp.Days = enterpriseInfo.Days
+	}
 	return rsp
 }
 
@@ -443,11 +449,33 @@ func (s *enterpriseRiderService) JoinEnterprise(req *model.EnterproseInfoReq, ri
 	if sub != nil {
 		snag.Panic("有未完成的订单")
 	}
-	_, err := ent.Database.Rider.Update().Where(rider.ID(rid.ID)).
-		SetEnterpriseID(req.EnterpriseId).
-		SetStationID(req.StationId).
-		Save(s.ctx)
-	if err != nil {
-		snag.Panic("加入团签失败")
+	ep, _ := ent.Database.EnterprisePrice.QueryNotDeleted().Where(enterpriseprice.EnterpriseID(req.EnterpriseId), enterpriseprice.ID(req.PriceID)).First(s.ctx)
+	if ep == nil {
+		snag.Panic("未找到价格信息")
 	}
+	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
+		_, err = ent.Database.Rider.Update().Where(rider.ID(rid.ID)).
+			SetEnterpriseID(req.EnterpriseId).
+			SetStationID(req.StationId).
+			Save(s.ctx)
+		if err != nil {
+			snag.Panic("加入团签失败")
+		}
+		_, err = tx.Subscribe.Create().
+			SetType(model.OrderTypeNewly).
+			SetRiderID(rid.ID).
+			SetModel(ep.Model).
+			SetIntelligent(ep.Intelligent).
+			SetRemaining(0).
+			SetInitialDays(req.Days).
+			SetStatus(model.SubscribeStatusInactive).
+			SetCityID(ep.CityID).
+			SetNeedContract(false).
+			SetEnterpriseID(req.EnterpriseId).
+			SetStationID(req.StationId).
+			SetAgentEndAt(tools.NewTime().WillEnd(time.Now(), req.Days)).
+			Save(s.ctx)
+		return
+	})
+
 }

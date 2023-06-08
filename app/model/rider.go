@@ -260,8 +260,9 @@ type RiderAgentList struct {
 }
 
 type RiderActiveBatteryReq struct {
-	ID        uint64 `json:"id" param:"id" validate:"required"` // 骑手ID
-	BatteryID uint64 `json:"batteryId" validate:"required"`     // 电池ID
+	ID           uint64 `json:"id" param:"id" validate:"required"` // 骑手ID
+	BatteryID    uint64 `json:"batteryId" validate:"required"`     // 电池ID
+	EnterpriseID uint64 `json:"enterpriseId"`                      // 团签id
 }
 
 // RiderSubscribeRsp 骑手订阅信息

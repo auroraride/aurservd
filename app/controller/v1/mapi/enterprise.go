@@ -390,3 +390,18 @@ func (*enterprise) FeedbackList(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.FeedbackListReq](c)
 	return ctx.SendResponse(service.NewFeedback().FeedbackList(req))
 }
+
+// Active 团签激活骑手
+// @ID           ManagerRiderActive
+// @Router       /manager/v1/rider/active [POST]
+// @Summary      M7026 激活骑手
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        body  body  model.RiderActiveReq
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*enterprise) Active(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[model.RiderActiveBatteryReq](c)
+	service.NewEnterprise().Active(req, req.EnterpriseID)
+	return ctx.SendResponse()
+}

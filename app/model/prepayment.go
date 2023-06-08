@@ -17,7 +17,7 @@ type PrepaymentListReq struct {
 	Payway       Payway `json:"payway" query:"payway" enums:"0,1,2" validate:"lte=3,gte=0"` // 支付方式 0:全部 1:现金 2:微信
 	Start        string `json:"start" query:"start"`                                        // 开始日期
 	End          string `json:"end" query:"end"`                                            // 结束日期
-	EnterpriseID uint64 `json:"enterprises_id" query:"enterprises_id"`                      // 团签ID
+	EnterpriseID uint64 `json:"enterpriseId" query:"enterpriseId"`                          // 团签ID
 }
 
 type PrepaymentListRes struct {

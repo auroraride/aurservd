@@ -239,9 +239,9 @@ func (s *riderAgentService) Log(req *model.AgentRiderLogReq) (items []model.Agen
 }
 
 // Active 激活骑手电池
-func (s *enterpriseService) Active(req *model.RiderActiveBatteryReq, ag *ent.Agent) {
+func (s *enterpriseService) Active(req *model.RiderActiveBatteryReq, enterpriseID uint64) {
 	// 不是自己骑手的不能激活
-	riderInfo, _ := ent.Database.Rider.QueryNotDeleted().Where(rider.ID(req.ID), rider.EnterpriseID(ag.EnterpriseID)).First(s.ctx)
+	riderInfo, _ := ent.Database.Rider.QueryNotDeleted().Where(rider.ID(req.ID), rider.EnterpriseID(enterpriseID)).First(s.ctx)
 	if riderInfo == nil {
 		snag.Panic("未找到有效骑手")
 	}
@@ -256,20 +256,25 @@ func (s *enterpriseService) Active(req *model.RiderActiveBatteryReq, ag *ent.Age
 		snag.Panic("电池未绑定企业或者站点")
 	}
 
-	if *batteryInfo.EnterpriseID != ag.EnterpriseID || *batteryInfo.StationID != *riderInfo.StationID {
+	if *batteryInfo.EnterpriseID != enterpriseID || *batteryInfo.StationID != *riderInfo.StationID {
 		snag.Panic("电池不属于当前企业或者骑手所在站点")
 	}
 
 	if batteryInfo.RiderID != nil || batteryInfo.SubscribeID != nil {
 		snag.Panic("电池已被绑定")
 	}
-
 	// 查询骑手订阅信息
-	subscribeInfo := NewSubscribe().QueryEffectiveX(req.ID)
-	if subscribeInfo.Status != model.SubscribeStatusInactive {
-		snag.Panic("订阅状态异常")
+	effective, _ := NewSubscribe().QueryUsing(req.ID)
+	if effective != nil {
+		snag.Panic("已有正在使用订单,无法绑定电池")
 	}
-
+	subscribeInfo, _ := ent.Database.Subscribe.
+		QueryNotDeleted().
+		Where(subscribe.RiderID(req.ID), subscribe.Status(model.SubscribeStatusInactive)).
+		First(s.ctx)
+	if subscribeInfo == nil {
+		snag.Panic("未找到未激活订单")
+	}
 	// 绑定电池
 	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) error {
 		// 激活订阅

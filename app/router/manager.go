@@ -162,6 +162,8 @@ func loadManagerRoutes() {
 	g.GET("/enterprise/subscribe/apply/:id", mapi.Enterprise.SubscribeApplyList)
 	// 申请审核
 	g.PUT("/enterprise/subscribe/apply", mapi.Enterprise.SubscribeApply)
+	// 激活骑手
+	g.POST("/rider/active", mapi.Enterprise.Active)
 
 	// 店员
 	g.POST("/employee", mapi.Employee.Create)
