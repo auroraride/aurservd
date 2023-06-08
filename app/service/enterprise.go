@@ -482,7 +482,7 @@ func (s *enterpriseService) UpdateStatement(e *ent.Enterprise) {
 
 // Prepayment 后台修改预付费
 func (s *enterpriseService) Prepayment(req *model.EnterprisePrepaymentReq) float64 {
-	balance, err := NewPrepayment(s.modifier).UpdateBalance(model.PaywayAgentWxMiniprogram, &model.AgentPrepay{
+	balance, err := NewPrepayment(s.modifier).UpdateBalance(model.PaywayCash, &model.AgentPrepay{
 		EnterpriseID: req.ID,
 		Remark:       req.Remark,
 		Amount:       req.Amount,
