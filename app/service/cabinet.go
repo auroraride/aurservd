@@ -177,7 +177,7 @@ func (s *cabinetService) List(req *model.CabinetQueryReq) (res *model.Pagination
 		q.Where(cabinet.StationID(*req.StationID))
 	}
 	if req.Keyword != nil {
-		q.Where(cabinet.Or(cabinet.SerialContainsFold(*req.Serial), cabinet.NameContainsFold(*req.Name)))
+		q.Where(cabinet.Or(cabinet.SerialContainsFold(*req.Keyword), cabinet.NameContainsFold(*req.Keyword)))
 	}
 
 	return model.ParsePaginationResponse[model.CabinetItem, ent.Cabinet](q, req.PaginationReq, func(item *ent.Cabinet) (res model.CabinetItem) {

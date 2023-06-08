@@ -54,6 +54,8 @@ func loadAgentRoutes() {
 	auth.GET("/cabinet", aapi.Cabinet.List)
 	// 筛选电柜
 	auth.GET("/cabinet/filter", aapi.Cabinet.CabinetFilter)
+	// 价格列表
+	auth.GET("/price/list", aapi.Agent.PriceList)
 
 	// 意见反馈
 	auth.POST("/feedback", aapi.Agent.Feedback)

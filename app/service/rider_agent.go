@@ -297,10 +297,6 @@ func (s *enterpriseService) Active(req *model.RiderActiveBatteryReq, ag *ent.Age
 			zap.L().Error("电池流水记录失败", zap.Error(err))
 			snag.Panic("电池流水记录失败")
 		}
-		// // 更新物资表
-		// if err := tx.Stock.Create().SetEnterpriseID(ag.EnterpriseID).SetRiderID(req.ID).SetBatteryID(batteryInfo.ID).SetNum(1).Exec(s.ctx); err != nil {
-		//
-		// }
 
 		return nil
 	})

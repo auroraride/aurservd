@@ -44,7 +44,7 @@ func (*rider) List(c echo.Context) (err error) {
 // @Success      200  {object}  model.EnterpriseRider  "请求成功"
 func (*rider) Create(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.EnterpriseRiderCreateReq](c)
-	service.NewEnterpriseRider().CreateByAgent(req, ctx.Agent, ctx.Stations)
+	service.NewEnterpriseRider().Create(req)
 	return ctx.SendResponse()
 }
 

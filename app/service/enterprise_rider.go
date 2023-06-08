@@ -137,43 +137,43 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 }
 
 // CreateByAgent 代理商小程序新增骑手
-func (s *enterpriseRiderService) CreateByAgent(req *model.EnterpriseRiderCreateReq, ag *ent.Agent, sts ent.EnterpriseStations) {
-	req.EnterpriseID = ag.EnterpriseID
-	riderInfo, _ := ent.Database.Rider.QueryNotDeleted().Where(rider.Phone(req.Phone)).First(s.ctx)
-
-	// 判断代理商是否有该站点
-	for _, v := range sts {
-		if v.ID == req.StationID {
-			break
-		}
-		snag.Panic("代理商没有绑定该站点")
-	}
-
-	if riderInfo != nil {
-		// 查询订阅信息
-		subscribeInfo, _ := NewSubscribe().QueryEffective(riderInfo.ID)
-		if subscribeInfo != nil {
-			snag.Panic("该骑手不能绑定,已有未完成的订单")
-		}
-		// 更新rider
-		if ent.Database.Rider.UpdateOne(riderInfo).
-			SetEnterpriseID(req.EnterpriseID).
-			SetStationID(req.StationID).
-			Exec(s.ctx) != nil {
-			snag.Panic("更新骑手失败")
-		}
-		return
-	}
-
-	// 创建rider
-	if ent.Database.Rider.Create().SetPhone(req.Phone).
-		SetEnterpriseID(req.EnterpriseID).
-		SetStationID(req.StationID).
-		SetName(req.Name).
-		Exec(s.ctx) != nil {
-		snag.Panic("创建骑手失败")
-	}
-}
+// func (s *enterpriseRiderService) CreateByAgent(req *model.EnterpriseRiderCreateReq, ag *ent.Agent, sts ent.EnterpriseStations) {
+// 	req.EnterpriseID = ag.EnterpriseID
+// 	riderInfo, _ := ent.Database.Rider.QueryNotDeleted().Where(rider.Phone(req.Phone)).First(s.ctx)
+//
+// 	// 判断代理商是否有该站点
+// 	for _, v := range sts {
+// 		if v.ID == req.StationID {
+// 			break
+// 		}
+// 		snag.Panic("代理商没有绑定该站点")
+// 	}
+//
+// 	if riderInfo != nil {
+// 		// 查询订阅信息
+// 		subscribeInfo, _ := NewSubscribe().QueryEffective(riderInfo.ID)
+// 		if subscribeInfo != nil {
+// 			snag.Panic("该骑手不能绑定,已有未完成的订单")
+// 		}
+// 		// 更新rider
+// 		if ent.Database.Rider.UpdateOne(riderInfo).
+// 			SetEnterpriseID(req.EnterpriseID).
+// 			SetStationID(req.StationID).
+// 			Exec(s.ctx) != nil {
+// 			snag.Panic("更新骑手失败")
+// 		}
+// 		return
+// 	}
+//
+// 	// 创建rider
+// 	if ent.Database.Rider.Create().SetPhone(req.Phone).
+// 		SetEnterpriseID(req.EnterpriseID).
+// 		SetStationID(req.StationID).
+// 		SetName(req.Name).
+// 		Exec(s.ctx) != nil {
+// 		snag.Panic("创建骑手失败")
+// 	}
+// }
 
 // List 列举骑手
 func (s *enterpriseRiderService) List(req *model.EnterpriseRiderListReq) *model.PaginationRes {
