@@ -318,9 +318,9 @@ func (s *enterpriseRiderService) ChooseBatteryModel(req *model.EnterpriseRiderSu
 	if e == nil {
 		snag.Panic("非团签骑手")
 	}
-	if e.Agent {
-		snag.Panic("代理骑手无法使用该功能")
-	}
+	// if e.Agent {
+	// 	snag.Panic("代理骑手无法使用该功能")
+	// }
 
 	ep, _ := ent.Database.EnterprisePrice.QueryNotDeleted().Where(enterpriseprice.EnterpriseID(e.ID), enterpriseprice.Model(req.Model)).First(s.ctx)
 	if ep == nil {
