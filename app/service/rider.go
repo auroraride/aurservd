@@ -395,6 +395,7 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
 			cq.Where(contract.DeletedAtIsNil(), contract.Status(model.ContractStatusSuccess.Value())).Order(ent.Desc(contract.FieldCreatedAt))
 		}).
 		WithEnterprise().
+		WithStation().
 		WithBattery().
 		Order(ent.Desc(rider.FieldCreatedAt))
 	if req.Keyword != nil {
@@ -620,6 +621,14 @@ func (s *riderService) detailRiderItem(item *ent.Rider) model.RiderItem {
 			ID:    e.ID,
 			Name:  e.Name,
 			Agent: e.Agent,
+		}
+	}
+
+	st := item.Edges.Station
+	if st != nil {
+		ri.Station = &model.EnterpriseStation{
+			ID:   st.ID,
+			Name: st.Name,
 		}
 	}
 
