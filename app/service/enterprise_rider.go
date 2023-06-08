@@ -305,6 +305,7 @@ func (s *enterpriseRiderService) BatteryModels(req *model.EnterprisePriceBattery
 	for i, item := range items {
 		m := item.Model
 		if item.Intelligent {
+			// TODO 使用别的方式进行区分智能非智能而不是直接修改电池型号名称
 			m += "「智能」"
 		}
 		res[i] = m
@@ -318,10 +319,12 @@ func (s *enterpriseRiderService) ChooseBatteryModel(req *model.EnterpriseRiderSu
 	if e == nil {
 		snag.Panic("非团签骑手")
 	}
-	// if e.Agent {
-	// 	snag.Panic("代理骑手无法使用该功能")
-	// }
 
+	if e.Agent {
+		snag.Panic("请联系代理激活")
+	}
+
+	// TODO 使用别的方式进行区分智能非智能而不是直接修改电池型号名称
 	ep, _ := ent.Database.EnterprisePrice.QueryNotDeleted().Where(enterpriseprice.EnterpriseID(e.ID), enterpriseprice.Model(req.Model)).First(s.ctx)
 	if ep == nil {
 		snag.Panic("未找到电池")

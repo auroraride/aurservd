@@ -351,6 +351,11 @@ definitions:
         - 1
         - 2
         type: integer
+      models:
+        description: 电池型号
+        items:
+          type: string
+        type: array
       name:
         description: 电柜名称
         type: string
@@ -3694,6 +3699,15 @@ definitions:
         items:
           type: integer
         type: array
+      enterpriseContactName:
+        description: 团签联系人
+        type: string
+      enterpriseContactPhone:
+        description: 团签联系电话
+        type: string
+      enterpriseName:
+        description: 团签名称
+        type: string
       id:
         description: 企业ID
         type: integer
@@ -7901,6 +7915,29 @@ paths:
           schema:
             $ref: '#/definitions/model.AgentCabinetDetailRes'
       summary: A5002 电柜详情
+      tags:
+      - '[A]代理接口'
+  /agent/v1/cabinet/filter:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerCabinetFilter
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.CascaderOptionLevel2'
+            type: array
+      summary: A5004 筛选电柜
       tags:
       - '[A]代理接口'
   /agent/v1/feedback:

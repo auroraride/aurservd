@@ -402,6 +402,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/agent/v1/cabinet/filter": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A5004 筛选电柜",
+                "operationId": "ManagerCabinetFilter",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.CascaderOptionLevel2"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/agent/v1/cabinet/{serial}": {
             "get": {
                 "consumes": [
@@ -16591,6 +16626,13 @@ const docTemplate = `{
                         2
                     ]
                 },
+                "models": {
+                    "description": "电池型号",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "name": {
                     "description": "电柜名称",
                     "type": "string"
@@ -21423,6 +21465,18 @@ const docTemplate = `{
                     "items": {
                         "type": "integer"
                     }
+                },
+                "enterpriseContactName": {
+                    "description": "团签联系人",
+                    "type": "string"
+                },
+                "enterpriseContactPhone": {
+                    "description": "团签联系电话",
+                    "type": "string"
+                },
+                "enterpriseName": {
+                    "description": "团签名称",
+                    "type": "string"
                 },
                 "id": {
                     "description": "企业ID",
