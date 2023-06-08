@@ -197,13 +197,8 @@ func (s *riderBusinessService) Continue(req *model.BusinessCabinetReq) model.Bus
 func (s *riderBusinessService) Unsubscribe(req *model.BusinessCabinetReq) model.BusinessCabinetStatus {
 	s.preprocess(req.Serial, business.TypeUnsubscribe)
 
-	// 校验代理商站点
-	if s.rider.StationID != nil && *s.rider.StationID != *s.cabinet.StationID {
-		snag.Panic("请到指定站点退租")
-	}
-
 	if s.subscribe.Status != model.SubscribeStatusUsing {
-		snag.Panic("骑士卡未在计费中")
+		snag.Panic("骑士卡状态异常")
 	}
 
 	go func() {

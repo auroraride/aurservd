@@ -6,10 +6,11 @@
 package mapi
 
 import (
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
-	"github.com/labstack/echo/v4"
 )
 
 type selection struct {
@@ -125,10 +126,11 @@ func (*selection) Enterprise(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        query  query  model.CabinetSelectionReq  false  "筛选参数"
 // @Success      200  {object}  []model.CascaderOptionLevel2  "请求成功"
 func (*selection) Cabinet(c echo.Context) (err error) {
-	ctx := app.ContextX[app.ManagerContext](c)
-	return ctx.SendResponse(service.NewSelection().Cabinet())
+	ctx, req := app.ManagerContextAndBinding[model.CabinetSelectionReq](c)
+	return ctx.SendResponse(service.NewSelection().Cabinet(req))
 }
 
 // Role

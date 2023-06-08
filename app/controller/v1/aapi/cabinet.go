@@ -71,5 +71,5 @@ func (*cabinet) Detail(c echo.Context) (err error) {
 // @Success      200  {object}  []model.CascaderOptionLevel2  "请求成功"
 func (*cabinet) CabinetFilter(c echo.Context) (err error) {
 	ctx := app.ContextX[app.AgentContext](c)
-	return ctx.SendResponse(service.NewSelection().EnterpriseCabinet(ctx.Enterprise.ID))
+	return ctx.SendResponse(service.NewSelection().Cabinet(&model.CabinetSelectionReq{EnterpriseID: ctx.Agent.EnterpriseID}))
 }

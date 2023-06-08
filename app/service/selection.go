@@ -293,8 +293,18 @@ func (s *selectionService) Enterprise() (items []*model.CascaderOptionLevel2) {
 }
 
 // Cabinet 筛选电柜
-func (s *selectionService) Cabinet() (items []*model.CascaderOptionLevel2) {
-	res, _ := ent.Database.Cabinet.QueryNotDeleted().WithCity().All(s.ctx)
+func (s *selectionService) Cabinet(req *model.CabinetSelectionReq) (items []*model.CascaderOptionLevel2) {
+	q := ent.Database.Cabinet.QueryNotDeleted().WithCity()
+
+	if req.EnterpriseID > 0 {
+		q.Where(cabinet.EnterpriseID(req.EnterpriseID))
+	}
+
+	if req.StationID > 0 {
+		q.Where(cabinet.StationID(req.StationID))
+	}
+
+	res, _ := q.All(s.ctx)
 
 	return cascaderLevel2IDName(res, func(r *ent.Cabinet) model.IDName {
 		return s.nilableCity(r.Edges.City)
@@ -453,13 +463,4 @@ func (s *selectionService) BatterySerialSearch(req *model.BatterySearchReq) (res
 	}
 
 	return
-}
-
-// EnterpriseCabinet 团签电柜筛选
-func (s *selectionService) EnterpriseCabinet(enterpriseID uint64) (items []*model.CascaderOptionLevel2) {
-	res, _ := ent.Database.Cabinet.QueryNotDeleted().Where(cabinet.EnterpriseID(enterpriseID)).WithCity().All(s.ctx)
-
-	return cascaderLevel2IDName(res, func(r *ent.Cabinet) model.IDName {
-		return s.nilableCity(r.Edges.City)
-	}, "未选择网点", true)
 }

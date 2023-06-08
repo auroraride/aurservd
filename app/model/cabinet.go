@@ -446,3 +446,8 @@ type CabinetAgentEditReq struct {
 	// 电柜状态  0未投放 1运营中 2维护中
 	Status uint8 `json:"status" validate:"required,enums=0,1,2"`
 }
+
+type CabinetSelectionReq struct {
+	EnterpriseID uint64 `json:"enterpriseId" query:"enterpriseId"` // 团签ID
+	StationID    uint64 `json:"stationId" query:"stationId"`       // 站点ID
+}

@@ -7846,6 +7846,10 @@ paths:
         in: query
         name: intelligent
         type: integer
+      - description: 关键字
+        in: query
+        name: keyword
+        type: string
       - description: 电池型号
         in: query
         name: model
@@ -7870,6 +7874,10 @@ paths:
         in: query
         name: serial
         type: string
+      - description: 站点ID
+        in: query
+        name: stationId
+        type: integer
       - description: 电柜状态
         in: query
         name: status
@@ -8126,6 +8134,29 @@ paths:
           schema:
             $ref: '#/definitions/model.AgentPrepayRes'
       summary: A3003 小程序储值
+      tags:
+      - '[A]代理接口'
+  /agent/v1/price/list:
+    get:
+      consumes:
+      - application/json
+      operationId: AgentPriceList
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.EnterprisePriceWithCity'
+            type: array
+      summary: A1008 团签价格列表
       tags:
       - '[A]代理接口'
   /agent/v1/profile:
@@ -8433,6 +8464,27 @@ paths:
                   type: array
               type: object
       summary: A2009 换电列表
+      tags:
+      - '[A]代理接口'
+  /agent/v1/rider/info:
+    get:
+      consumes:
+      - application/json
+      operationId: AgentRiderInfo
+      parameters:
+      - description: 二维码
+        in: query
+        name: qrcode
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.RiderSampleInfo'
+      summary: A2010 通过二维码换取骑手信息
       tags:
       - '[A]代理接口'
   /agent/v1/rider/invite:
@@ -11159,6 +11211,10 @@ paths:
         in: query
         name: intelligent
         type: integer
+      - description: 关键字
+        in: query
+        name: keyword
+        type: string
       - description: 电池型号
         in: query
         name: model
@@ -11183,6 +11239,10 @@ paths:
         in: query
         name: serial
         type: string
+      - description: 站点ID
+        in: query
+        name: stationId
+        type: integer
       - description: 电柜状态
         in: query
         name: status
@@ -15272,6 +15332,10 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
+      - description: 团签ID
+        in: query
+        name: enterpriseId
+        type: integer
       produces:
       - application/json
       responses:

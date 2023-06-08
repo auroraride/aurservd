@@ -336,6 +336,12 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "关键字",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
                         "description": "电池型号",
                         "name": "model",
                         "in": "query"
@@ -368,6 +374,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "电柜编号",
                         "name": "serial",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "站点ID",
+                        "name": "stationId",
                         "in": "query"
                     },
                     {
@@ -756,6 +768,41 @@ const docTemplate = `{
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.AgentPrepayRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/agent/v1/price/list": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A1008 团签价格列表",
+                "operationId": "AgentPriceList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.EnterprisePriceWithCity"
+                            }
                         }
                     }
                 }
@@ -1181,6 +1228,38 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            }
+        },
+        "/agent/v1/rider/info": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A2010 通过二维码换取骑手信息",
+                "operationId": "AgentRiderInfo",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "二维码",
+                        "name": "qrcode",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.RiderSampleInfo"
                         }
                     }
                 }
@@ -5337,6 +5416,12 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "关键字",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
                         "description": "电池型号",
                         "name": "model",
                         "in": "query"
@@ -5369,6 +5454,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "电柜编号",
                         "name": "serial",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "站点ID",
+                        "name": "stationId",
                         "in": "query"
                     },
                     {
@@ -11607,6 +11698,12 @@ const docTemplate = `{
                         "name": "X-Manager-Token",
                         "in": "header",
                         "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "团签ID",
+                        "name": "enterpriseId",
+                        "in": "query"
                     }
                 ],
                 "responses": {

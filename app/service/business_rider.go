@@ -625,6 +625,11 @@ func (s *businessRiderService) UnSubscribe(subscribeID uint64, fns ...func(sub *
 		}
 	}
 
+	// 校验代理商站点
+	if s.rider.StationID != nil && s.cabinet != nil && *s.rider.StationID != *s.cabinet.StationID {
+		snag.Panic("请到指定站点退租")
+	}
+
 	s.do(business.TypeUnsubscribe, func(tx *ent.Tx) {
 		var reason string
 		if s.cabinet != nil {
