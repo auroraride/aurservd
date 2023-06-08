@@ -40,6 +40,8 @@ func (*cabinet) List(c echo.Context) (err error) {
 		Online:        req.Online,
 		Intelligent:   req.Intelligent,
 		EnterpriseID:  &ctx.Enterprise.ID,
+		StationID:     req.StationID,
+		Keyword:       req.Keyword,
 	}))
 }
 

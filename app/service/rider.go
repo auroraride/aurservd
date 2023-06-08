@@ -1102,3 +1102,20 @@ func (s *riderService) ExchangeFrequency(req *model.RiderExchangeFrequencyReq) {
 		SetDiff(r.ExchangeFrequency.String(), req.ExchangeFrequency.String()).
 		Send()
 }
+
+// GetRiderNameById 根据ID获取骑手信息
+func (s *riderService) GetRiderNameById(id uint64) *model.RiderSampleInfo {
+	ri, _ := ent.Database.Rider.
+		QueryNotDeleted().
+		Where(rider.ID(id)).
+		First(s.ctx)
+	if ri == nil {
+		snag.Panic("未找到骑手")
+	}
+	return &model.RiderSampleInfo{
+		ID:    ri.ID,
+		Name:  ri.Name,
+		Phone: ri.Phone,
+	}
+
+}

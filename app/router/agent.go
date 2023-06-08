@@ -40,6 +40,8 @@ func loadAgentRoutes() {
 	auth.POST("/rider/active", aapi.Rider.Active)
 	// 添加骑手
 	auth.POST("/rider", aapi.Rider.Create)
+	// 通过二维码获取骑手信息
+	auth.GET("/rider/info", aapi.Rider.RiderInfo)
 	// 邀请骑手二维码
 	auth.POST("/rider/invite", aapi.Rider.Invite)
 	// 申请加时列表

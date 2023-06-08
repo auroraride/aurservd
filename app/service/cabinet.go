@@ -173,6 +173,13 @@ func (s *cabinetService) List(req *model.CabinetQueryReq) (res *model.Pagination
 			q.Where(cabinet.EnterpriseIDNotNil())
 		}
 	}
+	if req.StationID != nil {
+		q.Where(cabinet.StationID(*req.StationID))
+	}
+	if req.Keyword != nil {
+		q.Where(cabinet.Or(cabinet.SerialContainsFold(*req.Serial), cabinet.NameContainsFold(*req.Name)))
+	}
+
 	return model.ParsePaginationResponse[model.CabinetItem, ent.Cabinet](q, req.PaginationReq, func(item *ent.Cabinet) (res model.CabinetItem) {
 		_ = copier.Copy(&res, item)
 
