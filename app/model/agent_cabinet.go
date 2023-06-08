@@ -15,6 +15,7 @@ type AgentCabinetDetailRes struct {
 	Health  uint8              `json:"health" enums:"0,1,2"` // 健康状态, 0:离线 1:在线 2:故障
 	Station string             `json:"station"`              // 所属站点
 	Bins    []*AgentCabinetBin `json:"bins"`                 // 仓位信息
+	Models  []string           `json:"models"`               // 电池型号
 }
 
 type AgentCabinetBin struct {

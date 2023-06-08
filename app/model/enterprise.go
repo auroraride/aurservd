@@ -59,6 +59,12 @@ type Enterprise struct {
 	Name  string `json:"name"`  // 企业名称
 	Agent bool   `json:"agent"` // 是否代理商模式
 	Days  []int  `json:"days"`  // 代理商时间选项
+	// 团签名称
+	EnterpriseName string `json:"enterpriseName"` // 企业名称
+	// 团签联系人
+	EnterpriseContactName string `json:"enterpriseContactName"` // 企业联系人
+	// 团签联系电话
+	EnterpriseContactPhone string `json:"enterpriseContactPhone"` // 企业联系电话
 }
 
 type EnterpriseContact struct {

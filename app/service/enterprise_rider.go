@@ -139,7 +139,7 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 // CreateByAgent 代理商小程序新增骑手
 func (s *enterpriseRiderService) CreateByAgent(req *model.EnterpriseRiderCreateReq, ag *ent.Agent, sts ent.EnterpriseStations) {
 	req.EnterpriseID = ag.EnterpriseID
-	riderInfo, _ := ent.Database.Rider.Query().Where(rider.Phone(req.Phone)).First(s.ctx)
+	riderInfo, _ := ent.Database.Rider.QueryNotDeleted().Where(rider.Phone(req.Phone)).First(s.ctx)
 
 	// 判断代理商是否有该站点
 	for _, v := range sts {
@@ -152,8 +152,8 @@ func (s *enterpriseRiderService) CreateByAgent(req *model.EnterpriseRiderCreateR
 	if riderInfo != nil {
 		// 查询订阅信息
 		subscribeInfo, _ := NewSubscribe().QueryEffective(riderInfo.ID)
-		if subscribeInfo != nil || riderInfo.EnterpriseID != nil {
-			snag.Panic("该骑手不能绑定,已有团签或者已有未完成的订单")
+		if subscribeInfo != nil {
+			snag.Panic("该骑手不能绑定,已有未完成的订单")
 		}
 		// 更新rider
 		if ent.Database.Rider.UpdateOne(riderInfo).

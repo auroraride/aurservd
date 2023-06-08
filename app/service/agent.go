@@ -237,9 +237,12 @@ func (s *agentService) Profile(ag *ent.Agent, en *ent.Enterprise) model.AgentPro
 
 	return model.AgentProfile{
 		Enterprise: model.Enterprise{
-			ID:    en.ID,
-			Name:  en.Name,
-			Agent: true,
+			ID:                     en.ID,
+			Name:                   en.Name,
+			Agent:                  true,
+			EnterpriseName:         en.CompanyName,
+			EnterpriseContactPhone: en.ContactPhone,
+			EnterpriseContactName:  en.ContactName,
 		},
 		ID:             ag.ID,
 		Phone:          ag.Phone,

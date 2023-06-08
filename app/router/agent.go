@@ -50,6 +50,9 @@ func loadAgentRoutes() {
 	auth.GET("/rider/exchange", aapi.Rider.ExchangeList)
 	// 电柜列表
 	auth.GET("/cabinet", aapi.Cabinet.List)
+	// 筛选电柜
+	auth.GET("/cabinet/filter", aapi.Cabinet.CabinetFilter)
+
 	// 意见反馈
 	auth.POST("/feedback", aapi.Agent.Feedback)
 	// 上传图片
