@@ -11704,6 +11704,12 @@ const docTemplate = `{
                         "description": "团签ID",
                         "name": "enterpriseId",
                         "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "站点ID",
+                        "name": "stationId",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -24813,6 +24819,14 @@ const docTemplate = `{
                 "remark": {
                     "description": "账户备注",
                     "type": "string"
+                },
+                "station": {
+                    "description": "团签代理信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EnterpriseStation"
+                        }
+                    ]
                 },
                 "status": {
                     "description": "用户状态, 优先显示状态值大的 1:正常 2:已禁用 3:黑名单",

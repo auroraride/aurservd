@@ -5945,6 +5945,10 @@ definitions:
       remark:
         description: 账户备注
         type: string
+      station:
+        allOf:
+        - $ref: '#/definitions/model.EnterpriseStation'
+        description: 团签代理信息
       status:
         description: 用户状态, 优先显示状态值大的 1:正常 2:已禁用 3:黑名单
         type: integer
@@ -15335,6 +15339,10 @@ paths:
       - description: 团签ID
         in: query
         name: enterpriseId
+        type: integer
+      - description: 站点ID
+        in: query
+        name: stationId
         type: integer
       produces:
       - application/json

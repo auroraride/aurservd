@@ -6,7 +6,6 @@
 package service
 
 import (
-	"context"
 	"fmt"
 	"time"
 
@@ -28,14 +27,12 @@ import (
 
 type prepaymentService struct {
 	*BaseService
-	ctx context.Context
 	orm *ent.EnterprisePrepaymentClient
 }
 
 func NewPrepayment(params ...any) *prepaymentService {
 	return &prepaymentService{
 		BaseService: newService(params...),
-		ctx:         context.Background(),
 		orm:         ent.Database.EnterprisePrepayment,
 	}
 }
