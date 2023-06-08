@@ -87,9 +87,9 @@ func (s *prepaymentService) List(enterpriseID uint64, req *model.PrepaymentListR
 			Time:   item.CreatedAt.Format(carbon.DateTimeLayout),
 			Remark: item.Remark,
 			Payway: item.Payway,
-			Name:   "-",
+			Name:   "",
 		}
-		if item.Creator != nil {
+		if item.Creator != nil && s.modifier != nil {
 			res.Name = item.Creator.Name + "-" + item.Creator.Phone
 		}
 		if item.Edges.Agent != nil {

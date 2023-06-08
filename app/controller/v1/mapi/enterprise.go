@@ -344,7 +344,7 @@ func (*enterprise) UnbindCabinet(c echo.Context) (err error) {
 // @Success      200  {object}  model.PaginationRes{items=[]model.PrepaymentListRes}  "请求成功"
 func (*enterprise) RepaymentList(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.PrepaymentListReq](c)
-	return ctx.SendResponse(service.NewPrepayment().List(req.EnterpriseID, req))
+	return ctx.SendResponse(service.NewPrepayment(ctx.Modifier).List(req.EnterpriseID, req))
 }
 
 // SubscribeApplyList 订阅申请列表
