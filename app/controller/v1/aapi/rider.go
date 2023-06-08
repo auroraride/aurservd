@@ -44,7 +44,7 @@ func (*rider) List(c echo.Context) (err error) {
 // @Success      200  {object}  model.EnterpriseRider  "请求成功"
 func (*rider) Create(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.EnterpriseRiderCreateReq](c)
-	service.NewEnterpriseRider().CreateByAgent(req, ctx.Agent, ctx.Stations)
+	service.NewEnterpriseRider().Create(req)
 	return ctx.SendResponse()
 }
 
@@ -139,4 +139,19 @@ func (*rider) ExchangeList(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.ExchangeManagerListReq](c)
 	req.EnterpriseID = ctx.Enterprise.ID
 	return ctx.SendResponse(service.NewExchange().List(req))
+}
+
+// RiderInfo 通过二维码换取骑手信息
+// @ID           AgentRiderInfo
+// @Router       /agent/v1/rider/info [GET]
+// @Summary      A2010 通过二维码换取骑手信息
+// @Tags         [A]代理接口
+// @Accept       json
+// @Produce      json
+// @Param        qrcode  query   string  true  "二维码"
+// @Success      200  {object}  model.RiderSampleInfo  "请求成功"
+func (*rider) RiderInfo(c echo.Context) (err error) {
+	ctx, req := app.AgentContextAndBinding[model.QRQueryReq](c)
+	id := service.NewRider().ParseQrcode(req.Qrcode)
+	return ctx.SendResponse(service.NewRider().GetRiderNameById(id))
 }

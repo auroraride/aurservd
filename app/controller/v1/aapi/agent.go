@@ -147,3 +147,17 @@ func (*agent) UploadImage(c echo.Context) (err error) {
 	ctx := app.ContextX[app.AgentContext](c)
 	return ctx.SendResponse(service.NewFeedback().UploadImage(ctx))
 }
+
+// PriceList 团签价格列表
+// @ID           AgentPriceList
+// @Router       /agent/v1/price/list [GET]
+// @Summary      A1008 团签价格列表
+// @Tags         [A]代理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Agent-Token  header  string  true  "代理校验token"
+// @Success      200  {object}  []model.EnterprisePriceWithCity
+func (*agent) PriceList(c echo.Context) (err error) {
+	ctx := app.ContextX[app.AgentContext](c)
+	return ctx.SendResponse(service.NewEnterprise().PriceList(ctx.Enterprise.ID))
+}
