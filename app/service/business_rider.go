@@ -600,7 +600,7 @@ func (s *businessRiderService) Active(sub *ent.Subscribe, allo *ent.Allocate) {
 // UnSubscribe 退租
 // 会抹去欠费情况
 func (s *businessRiderService) UnSubscribe(subscribeID uint64, fns ...func(sub *ent.Subscribe)) {
-
+	// 预处理业务信息
 	s.preprocess(business.TypeUnsubscribe, s.QuerySubscribeWithRider(subscribeID))
 
 	if len(fns) > 0 {
