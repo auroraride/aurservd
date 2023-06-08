@@ -480,9 +480,9 @@ func (s *enterpriseService) UpdateStatement(e *ent.Enterprise) {
 		", 出账日期: " + now.Format(carbon.DateLayout))
 }
 
-// Prepayment 预付费
+// Prepayment 后台修改预付费
 func (s *enterpriseService) Prepayment(req *model.EnterprisePrepaymentReq) float64 {
-	balance, err := NewPrepayment(s.modifier).UpdateBalance(&model.AgentPrepay{
+	balance, err := NewPrepayment(s.modifier).UpdateBalance(model.PaywayAgentWxMiniprogram, &model.AgentPrepay{
 		EnterpriseID: req.ID,
 		Remark:       req.Remark,
 		Amount:       req.Amount,

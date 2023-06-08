@@ -163,7 +163,7 @@ func (s *prepaymentService) WechatMiniprogramPay(ag *ent.Agent, req *model.Agent
 }
 
 // UpdateBalance 更新代理商余额
-func (s *prepaymentService) UpdateBalance(req *model.AgentPrepay) (balance float64, err error) {
+func (s *prepaymentService) UpdateBalance(payway model.Payway, req *model.AgentPrepay) (balance float64, err error) {
 	defer func() {
 		if err != nil {
 			zap.L().Error("更新代理商金额失败", zap.Error(err))
@@ -186,7 +186,7 @@ func (s *prepaymentService) UpdateBalance(req *model.AgentPrepay) (balance float
 	// 事务处理
 	err = ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
 		// 创建预付费记录
-		creator := tx.EnterprisePrepayment.Create().SetEnterpriseID(req.EnterpriseID).SetAmount(req.Amount).SetRemark(req.Remark)
+		creator := tx.EnterprisePrepayment.Create().SetEnterpriseID(req.EnterpriseID).SetAmount(req.Amount).SetRemark(req.Remark).SetPayway(payway)
 		if req.ID > 0 {
 			creator.SetAgentID(req.ID)
 		}
