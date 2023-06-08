@@ -14,7 +14,6 @@ import (
 
 type agentCabinetService struct {
 	*BaseService
-	orm *ent.CabinetClient
 }
 
 func NewAgentCabinet(params ...any) *agentCabinetService {
@@ -26,14 +25,14 @@ func NewAgentCabinet(params ...any) *agentCabinetService {
 // Detail 代理端查询电柜详情
 func (s *agentCabinetService) Detail(serial string, ag *ent.Agent, sts ent.EnterpriseStations) *model.AgentCabinetDetailRes {
 	// 查找电柜
-	q := s.orm.QueryNotDeleted().WithStation().Where(
+	q := ent.Database.Cabinet.QueryNotDeleted().WithStation().WithModels().Where(
 		cabinet.EnterpriseID(ag.EnterpriseID),
 		cabinet.Serial(serial),
 		cabinet.StatusNEQ(model.CabinetStatusPending.Value()),
 	)
 
 	// 如果站点不为空, 则只查询站点有权限的电柜
-	if sts != nil {
+	if len(sts) != 0 {
 		ids := make([]uint64, len(sts))
 		for i, st := range sts {
 			ids[i] = st.ID
@@ -43,7 +42,7 @@ func (s *agentCabinetService) Detail(serial string, ag *ent.Agent, sts ent.Enter
 
 	// 查询唯一电柜
 	cab, _ := q.First(s.ctx)
-	if cab != nil {
+	if cab == nil {
 		snag.Panic("未找到有效电柜")
 	}
 
@@ -59,6 +58,14 @@ func (s *agentCabinetService) Detail(serial string, ag *ent.Agent, sts ent.Enter
 
 	if cab.Edges.Station != nil {
 		res.Station = cab.Edges.Station.Name
+	}
+
+	bms := cab.Edges.Models
+	if bms == nil {
+		bms, _ = cab.QueryModels().All(s.ctx)
+	}
+	for _, bm := range bms {
+		res.Models = append(res.Models, bm.Model)
 	}
 
 	for i, cb := range cab.Bin {

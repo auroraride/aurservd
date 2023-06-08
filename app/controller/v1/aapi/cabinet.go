@@ -57,3 +57,17 @@ func (*cabinet) Detail(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.AgentCabinetDetailReq](c)
 	return ctx.SendResponse(service.NewAgentCabinet().Detail(req.Serial, ctx.Agent, ctx.Stations))
 }
+
+// CabinetFilter
+// @ID           ManagerCabinetFilter
+// @Router       /agent/v1/cabinet/filter [GET]
+// @Summary      A5004 筛选电柜
+// @Tags         [A]代理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Agent-Token  header  string  true  "代理校验token"
+// @Success      200  {object}  []model.CascaderOptionLevel2  "请求成功"
+func (*cabinet) CabinetFilter(c echo.Context) (err error) {
+	ctx := app.ContextX[app.AgentContext](c)
+	return ctx.SendResponse(service.NewSelection().EnterpriseCabinet(ctx.Enterprise.ID))
+}

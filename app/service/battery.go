@@ -211,7 +211,7 @@ func (s *batteryService) Modify(req *model.BatteryModifyReq) {
 }
 
 func (s *batteryService) listFilter(req model.BatteryFilter) (q *ent.BatteryQuery, info ar.Map) {
-	q = s.orm.Query().WithRider().WithCity().WithCabinet().WithStation().Order(ent.Desc(battery.FieldCreatedAt))
+	q = s.orm.Query().WithRider().WithCity().WithCabinet().WithStation().WithEnterprise().Order(ent.Desc(battery.FieldCreatedAt))
 	info = make(ar.Map)
 
 	var (
