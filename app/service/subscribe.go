@@ -266,18 +266,6 @@ func (s *subscribeService) QueryEffective(riderID uint64, edges ...ent.Subscribe
 		First(s.ctx)
 }
 
-// QueryUsing 查询正在使用中订阅
-func (s *subscribeService) QueryUsing(riderID uint64, edges ...ent.SubscribeQueryWith) (*ent.Subscribe, error) {
-	return ent.Database.Subscribe.QueryNotDeleted().
-		Where(
-			subscribe.RiderID(riderID),
-			subscribe.StatusIn(model.SubscribeStatusUsing,
-				model.SubscribeStatusPaused,
-				model.SubscribeStatusOverdue)).
-		With(edges...).
-		First(s.ctx)
-}
-
 func (s *subscribeService) QueryEffectiveX(riderID uint64, edges ...ent.SubscribeQueryWith) *ent.Subscribe {
 	sub, _ := s.QueryEffective(riderID, edges...)
 	if sub == nil {
