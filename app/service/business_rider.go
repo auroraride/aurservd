@@ -324,7 +324,10 @@ func (s *businessRiderService) preprocess(bt business.Type, sub *ent.Subscribe) 
 		s.cabinetID = silk.Pointer(s.cabinet.ID)
 	}
 
-	if s.store == nil && s.cabinet == nil {
+	// 判定是否满足业务调键
+	// 代理站点的骑手无需门店或电柜
+	// 反之则必须门店或电柜
+	if sub.StationID == nil && s.store == nil && s.cabinet == nil {
 		snag.Panic("条件不满足")
 	}
 
@@ -434,29 +437,32 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
 		ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
 			cb(tx)
 
-			sk, err = NewStockWithModifier(s.modifier).RiderBusiness(
-				tx,
-				&model.StockBusinessReq{
-					RiderID:   s.subscribe.RiderID,
-					Model:     s.subscribe.Model,
-					CityID:    s.subscribe.CityID,
-					StockType: sts[bt],
+			// 若电柜或门店不为空
+			if s.cabinetID != nil || s.storeID != nil {
+				sk, err = NewStockWithModifier(s.modifier).RiderBusiness(
+					tx,
+					&model.StockBusinessReq{
+						RiderID:   s.subscribe.RiderID,
+						Model:     s.subscribe.Model,
+						CityID:    s.subscribe.CityID,
+						StockType: sts[bt],
 
-					StoreID:     s.storeID,
-					EmployeeID:  s.employeeID,
-					CabinetID:   s.cabinetID,
-					SubscribeID: s.subscribeID,
+						StoreID:     s.storeID,
+						EmployeeID:  s.employeeID,
+						CabinetID:   s.cabinetID,
+						SubscribeID: s.subscribeID,
 
-					Ebike:   s.ebikeInfo,
-					Battery: bat,
-				},
-			)
+						Ebike:   s.ebikeInfo,
+						Battery: bat,
+					},
+				)
 
-			if err != nil {
-				zap.L().Error("骑手业务出入库失败: "+bt.String(), zap.Error(err))
+				if err != nil {
+					zap.L().Error("骑手业务出入库失败: "+bt.String(), zap.Error(err))
+				}
 			}
 
-			return err
+			return
 		})
 
 		// 取出电池滞后执行
