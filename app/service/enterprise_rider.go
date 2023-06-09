@@ -482,7 +482,6 @@ func (s *enterpriseRiderService) JoinEnterprise(req *model.EnterproseInfoReq, ri
 			SetNeedContract(false).
 			SetEnterpriseID(req.EnterpriseId).
 			SetStationID(req.StationId).
-			SetAgentEndAt(tools.NewTime().WillEnd(time.Now(), req.Days)).
 			Save(s.ctx)
 		return
 	})
