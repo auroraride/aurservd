@@ -40,6 +40,7 @@ type AgentRider struct {
 	Model       string `json:"model"`               // 电池型号
 	BatterySN   string `json:"batterySn"`           // 电池sn
 	Used        int    `json:"used"`                // 使用天数
+	IsAuthed    bool   `json:"isAuthed"`            // 是否实名认证
 }
 
 type AgentRiderLogReq struct {

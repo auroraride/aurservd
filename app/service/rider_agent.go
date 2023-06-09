@@ -56,10 +56,11 @@ func NewRiderAgentWithModifier(m *model.Modifier) *riderAgentService {
 func (s *riderAgentService) detail(item *ent.Rider) model.AgentRider {
 	today := carbon.Now().StartOfDay().Carbon2Time()
 	res := model.AgentRider{
-		ID:    item.ID,
-		Phone: item.Phone,
-		Date:  item.CreatedAt.Format(carbon.DateLayout),
-		Name:  item.Name,
+		ID:       item.ID,
+		Phone:    item.Phone,
+		Date:     item.CreatedAt.Format(carbon.DateLayout),
+		Name:     item.Name,
+		IsAuthed: NewRider().IsAuthed(item),
 	}
 	// 获取站点
 	st := item.Edges.Station
@@ -266,8 +267,8 @@ func (s *enterpriseService) Active(req *model.RiderActiveBatteryReq, enterpriseI
 		snag.Panic("电池已被绑定")
 	}
 	// 查询骑手订阅信息
-	effective, _ := NewSubscribe().QueryUsing(req.ID)
-	if effective != nil {
+	sub, _ := NewSubscribe().QueryEffective(req.ID)
+	if sub != nil && (sub.EnterpriseID == nil || (sub.EnterpriseID != nil && sub.Status != model.SubscribeStatusInactive)) {
 		snag.Panic("已有正在使用订单,无法绑定电池")
 	}
 	subscribeInfo, _ := ent.Database.Subscribe.

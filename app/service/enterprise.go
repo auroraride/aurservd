@@ -663,7 +663,9 @@ func (s *enterpriseService) NameFromID(id uint64) string {
 
 // SubscribeApplyList 骑手订阅申请加时列表
 func (s *enterpriseService) SubscribeApplyList(req *model.SubscribeAlterApplyReq, enterpriseId uint64) *model.PaginationRes {
-	q := ent.Database.SubscribeAlter.QueryNotDeleted().Where(subscribealter.EnterpriseID(enterpriseId)).Where(subscribealter.HasRiderWith(rider.DeletedAtIsNil())).
+	q := ent.Database.SubscribeAlter.QueryNotDeleted().Where(subscribealter.EnterpriseID(enterpriseId)).
+		Where(subscribealter.HasRiderWith(rider.DeletedAtIsNil())).
+		Where(subscribealter.HasSubscribeWith(subscribe.StatusNotIn(model.SubscribeStatusUnSubscribed))).
 		Order(ent.Desc(subscribealter.FieldCreatedAt)).WithRider().WithSubscribe()
 
 	tt := tools.NewTime()
@@ -694,7 +696,7 @@ func (s *enterpriseService) SubscribeApplyList(req *model.SubscribeAlterApplyReq
 				Status: item.Status,
 			}
 			if item.ExpireTime != nil {
-				rsp.ReviewTime = item.ExpireTime.Format(carbon.DateTimeLayout)
+				rsp.ExpireTime = item.ExpireTime.Format(carbon.DateTimeLayout)
 			}
 			if item.ReviewTime != nil {
 				rsp.ReviewTime = item.ReviewTime.Format(carbon.DateTimeLayout)
@@ -712,7 +714,9 @@ func (s *enterpriseService) SubscribeApplyList(req *model.SubscribeAlterApplyReq
 // SubscribeApplyReviewApply 审批加时申请
 func (s *enterpriseService) SubscribeApplyReviewApply(req *model.SubscribeAlterReviewReq) {
 	// 查找申请记录
-	q := ent.Database.SubscribeAlter.QueryNotDeleted().Where(subscribealter.IDIn(req.Ids...)).Where(subscribealter.HasRiderWith(rider.DeletedAtIsNil()))
+	q := ent.Database.SubscribeAlter.QueryNotDeleted().Where(subscribealter.IDIn(req.Ids...)).
+		Where(subscribealter.HasRiderWith(rider.DeletedAtIsNil())).
+		Where(subscribealter.HasSubscribeWith(subscribe.StatusNotIn(model.SubscribeStatusUnSubscribed)))
 	if req.EnterpriseID != nil {
 		q.Where(subscribealter.EnterpriseID(*req.EnterpriseID))
 	}
@@ -737,6 +741,11 @@ func (s *enterpriseService) SubscribeApplyReviewApply(req *model.SubscribeAlterR
 				zap.L().Log(zap.ErrorLevel, "审批加时申请失败", zap.Error(err))
 				return err
 			}
+			// 审批不通过不继续
+			if req.Status == model.SubscribeAlterUnpass {
+				return nil
+			}
+
 			// 剩余天数
 			before := tools.NewTime().LastDaysToNow(*sub.AgentEndAt)
 			// 加时后的结束时间

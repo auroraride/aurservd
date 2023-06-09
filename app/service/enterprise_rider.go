@@ -416,7 +416,7 @@ func (s *enterpriseRiderService) RiderEnterpriseInfo(req *model.EnterproseInfoRe
 	}
 	// 查询订阅信息
 	sub, _ := NewSubscribe().QueryEffective(riderID)
-	if sub != nil {
+	if sub != nil && (sub.EnterpriseID == nil || (sub.EnterpriseID != nil && sub.Status != model.SubscribeStatusInactive)) {
 		rsp.IsJoin = false
 	}
 	// 查询团签信息
@@ -442,7 +442,7 @@ func (s *enterpriseRiderService) RiderEnterpriseInfo(req *model.EnterproseInfoRe
 }
 
 // JoinEnterprise 加入团签
-func (s *enterpriseRiderService) JoinEnterprise(req *model.EnterproseInfoReq, rid *ent.Rider) {
+func (s *enterpriseRiderService) JoinEnterprise(req *model.EnterpriseJoinReq, rid *ent.Rider) {
 	// 判断团签是否存在或者站点是否存在
 	// 查询团签信息
 	if NewEnterprise().QueryX(req.EnterpriseId) == nil {
@@ -456,7 +456,7 @@ func (s *enterpriseRiderService) JoinEnterprise(req *model.EnterproseInfoReq, ri
 	// 判断骑手是否有未完成的订单
 	// 查询订阅信息
 	sub, _ := NewSubscribe().QueryEffective(rid.ID)
-	if sub != nil {
+	if sub != nil && (sub.EnterpriseID == nil || (sub.EnterpriseID != nil && sub.Status != model.SubscribeStatusInactive)) {
 		snag.Panic("有未完成的订单")
 	}
 	ep, _ := ent.Database.EnterprisePrice.QueryNotDeleted().Where(enterpriseprice.EnterpriseID(req.EnterpriseId), enterpriseprice.ID(req.PriceID)).First(s.ctx)
