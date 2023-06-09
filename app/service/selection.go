@@ -453,7 +453,15 @@ func (s *selectionService) BatterySerialSearch(req *model.BatterySearchReq) (res
 		return
 	}
 
-	items, _ := ent.Database.Battery.Query().Where(battery.SnHasSuffix(req.Serial)).All(s.ctx)
+	q := ent.Database.Battery.Query().Where(battery.SnHasSuffix(req.Serial))
+	if req.EnterpriseID > 0 {
+		q.Where(battery.EnterpriseID(req.EnterpriseID))
+	}
+
+	if req.StationID > 0 {
+		q.Where(battery.StationID(req.StationID))
+	}
+	items, _ := q.All(s.ctx)
 	for _, item := range items {
 		res = append(res, &model.Battery{
 			ID:    item.ID,

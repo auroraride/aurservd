@@ -75,7 +75,7 @@ func (*enterprise) SubscribeStatus(c echo.Context) (err error) {
 func (*enterprise) ApplyAddSubscribeTime(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[model.RiderSubscribeAddReq](c)
 	service.NewEnterpriseRider().AddSubscribeDays(req, ctx.Rider)
-	return ctx.SendResponse(model.StatusResponse{Status: true})
+	return ctx.SendResponse()
 }
 
 // ApplyList App申请列表
@@ -103,9 +103,9 @@ func (*enterprise) ApplyList(c echo.Context) (err error) {
 // @Param        body  body     model.EnterproseInfoReq true  "加入团签请求"
 // @Success      200  {object}  bool  "请求成功"
 func (s *enterprise) JoinEnterprise(c echo.Context) error {
-	ctx, req := app.RiderContextAndBinding[model.EnterproseInfoReq](c)
+	ctx, req := app.RiderContextAndBinding[model.EnterpriseJoinReq](c)
 	service.NewEnterpriseRider().JoinEnterprise(req, ctx.Rider)
-	return ctx.SendResponse(model.StatusResponse{Status: true})
+	return ctx.SendResponse()
 }
 
 // RiderEnterpriseInfo 骑手团签信息

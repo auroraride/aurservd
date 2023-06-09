@@ -170,6 +170,34 @@ func (sac *SubscribeAlterCreate) SetNillableStatus(i *int) *SubscribeAlterCreate
 	return sac
 }
 
+// SetExpireTime sets the "expire_time" field.
+func (sac *SubscribeAlterCreate) SetExpireTime(t time.Time) *SubscribeAlterCreate {
+	sac.mutation.SetExpireTime(t)
+	return sac
+}
+
+// SetNillableExpireTime sets the "expire_time" field if the given value is not nil.
+func (sac *SubscribeAlterCreate) SetNillableExpireTime(t *time.Time) *SubscribeAlterCreate {
+	if t != nil {
+		sac.SetExpireTime(*t)
+	}
+	return sac
+}
+
+// SetReviewTime sets the "review_time" field.
+func (sac *SubscribeAlterCreate) SetReviewTime(t time.Time) *SubscribeAlterCreate {
+	sac.mutation.SetReviewTime(t)
+	return sac
+}
+
+// SetNillableReviewTime sets the "review_time" field if the given value is not nil.
+func (sac *SubscribeAlterCreate) SetNillableReviewTime(t *time.Time) *SubscribeAlterCreate {
+	if t != nil {
+		sac.SetReviewTime(*t)
+	}
+	return sac
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (sac *SubscribeAlterCreate) SetRider(r *Rider) *SubscribeAlterCreate {
 	return sac.SetRiderID(r.ID)
@@ -337,6 +365,14 @@ func (sac *SubscribeAlterCreate) createSpec() (*SubscribeAlter, *sqlgraph.Create
 	if value, ok := sac.mutation.Status(); ok {
 		_spec.SetField(subscribealter.FieldStatus, field.TypeInt, value)
 		_node.Status = value
+	}
+	if value, ok := sac.mutation.ExpireTime(); ok {
+		_spec.SetField(subscribealter.FieldExpireTime, field.TypeTime, value)
+		_node.ExpireTime = &value
+	}
+	if value, ok := sac.mutation.ReviewTime(); ok {
+		_spec.SetField(subscribealter.FieldReviewTime, field.TypeTime, value)
+		_node.ReviewTime = &value
 	}
 	if nodes := sac.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -655,6 +691,42 @@ func (u *SubscribeAlterUpsert) AddStatus(v int) *SubscribeAlterUpsert {
 	return u
 }
 
+// SetExpireTime sets the "expire_time" field.
+func (u *SubscribeAlterUpsert) SetExpireTime(v time.Time) *SubscribeAlterUpsert {
+	u.Set(subscribealter.FieldExpireTime, v)
+	return u
+}
+
+// UpdateExpireTime sets the "expire_time" field to the value that was provided on create.
+func (u *SubscribeAlterUpsert) UpdateExpireTime() *SubscribeAlterUpsert {
+	u.SetExcluded(subscribealter.FieldExpireTime)
+	return u
+}
+
+// ClearExpireTime clears the value of the "expire_time" field.
+func (u *SubscribeAlterUpsert) ClearExpireTime() *SubscribeAlterUpsert {
+	u.SetNull(subscribealter.FieldExpireTime)
+	return u
+}
+
+// SetReviewTime sets the "review_time" field.
+func (u *SubscribeAlterUpsert) SetReviewTime(v time.Time) *SubscribeAlterUpsert {
+	u.Set(subscribealter.FieldReviewTime, v)
+	return u
+}
+
+// UpdateReviewTime sets the "review_time" field to the value that was provided on create.
+func (u *SubscribeAlterUpsert) UpdateReviewTime() *SubscribeAlterUpsert {
+	u.SetExcluded(subscribealter.FieldReviewTime)
+	return u
+}
+
+// ClearReviewTime clears the value of the "review_time" field.
+func (u *SubscribeAlterUpsert) ClearReviewTime() *SubscribeAlterUpsert {
+	u.SetNull(subscribealter.FieldReviewTime)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -910,6 +982,48 @@ func (u *SubscribeAlterUpsertOne) AddStatus(v int) *SubscribeAlterUpsertOne {
 func (u *SubscribeAlterUpsertOne) UpdateStatus() *SubscribeAlterUpsertOne {
 	return u.Update(func(s *SubscribeAlterUpsert) {
 		s.UpdateStatus()
+	})
+}
+
+// SetExpireTime sets the "expire_time" field.
+func (u *SubscribeAlterUpsertOne) SetExpireTime(v time.Time) *SubscribeAlterUpsertOne {
+	return u.Update(func(s *SubscribeAlterUpsert) {
+		s.SetExpireTime(v)
+	})
+}
+
+// UpdateExpireTime sets the "expire_time" field to the value that was provided on create.
+func (u *SubscribeAlterUpsertOne) UpdateExpireTime() *SubscribeAlterUpsertOne {
+	return u.Update(func(s *SubscribeAlterUpsert) {
+		s.UpdateExpireTime()
+	})
+}
+
+// ClearExpireTime clears the value of the "expire_time" field.
+func (u *SubscribeAlterUpsertOne) ClearExpireTime() *SubscribeAlterUpsertOne {
+	return u.Update(func(s *SubscribeAlterUpsert) {
+		s.ClearExpireTime()
+	})
+}
+
+// SetReviewTime sets the "review_time" field.
+func (u *SubscribeAlterUpsertOne) SetReviewTime(v time.Time) *SubscribeAlterUpsertOne {
+	return u.Update(func(s *SubscribeAlterUpsert) {
+		s.SetReviewTime(v)
+	})
+}
+
+// UpdateReviewTime sets the "review_time" field to the value that was provided on create.
+func (u *SubscribeAlterUpsertOne) UpdateReviewTime() *SubscribeAlterUpsertOne {
+	return u.Update(func(s *SubscribeAlterUpsert) {
+		s.UpdateReviewTime()
+	})
+}
+
+// ClearReviewTime clears the value of the "review_time" field.
+func (u *SubscribeAlterUpsertOne) ClearReviewTime() *SubscribeAlterUpsertOne {
+	return u.Update(func(s *SubscribeAlterUpsert) {
+		s.ClearReviewTime()
 	})
 }
 
@@ -1330,6 +1444,48 @@ func (u *SubscribeAlterUpsertBulk) AddStatus(v int) *SubscribeAlterUpsertBulk {
 func (u *SubscribeAlterUpsertBulk) UpdateStatus() *SubscribeAlterUpsertBulk {
 	return u.Update(func(s *SubscribeAlterUpsert) {
 		s.UpdateStatus()
+	})
+}
+
+// SetExpireTime sets the "expire_time" field.
+func (u *SubscribeAlterUpsertBulk) SetExpireTime(v time.Time) *SubscribeAlterUpsertBulk {
+	return u.Update(func(s *SubscribeAlterUpsert) {
+		s.SetExpireTime(v)
+	})
+}
+
+// UpdateExpireTime sets the "expire_time" field to the value that was provided on create.
+func (u *SubscribeAlterUpsertBulk) UpdateExpireTime() *SubscribeAlterUpsertBulk {
+	return u.Update(func(s *SubscribeAlterUpsert) {
+		s.UpdateExpireTime()
+	})
+}
+
+// ClearExpireTime clears the value of the "expire_time" field.
+func (u *SubscribeAlterUpsertBulk) ClearExpireTime() *SubscribeAlterUpsertBulk {
+	return u.Update(func(s *SubscribeAlterUpsert) {
+		s.ClearExpireTime()
+	})
+}
+
+// SetReviewTime sets the "review_time" field.
+func (u *SubscribeAlterUpsertBulk) SetReviewTime(v time.Time) *SubscribeAlterUpsertBulk {
+	return u.Update(func(s *SubscribeAlterUpsert) {
+		s.SetReviewTime(v)
+	})
+}
+
+// UpdateReviewTime sets the "review_time" field to the value that was provided on create.
+func (u *SubscribeAlterUpsertBulk) UpdateReviewTime() *SubscribeAlterUpsertBulk {
+	return u.Update(func(s *SubscribeAlterUpsert) {
+		s.UpdateReviewTime()
+	})
+}
+
+// ClearReviewTime clears the value of the "review_time" field.
+func (u *SubscribeAlterUpsertBulk) ClearReviewTime() *SubscribeAlterUpsertBulk {
+	return u.Update(func(s *SubscribeAlterUpsert) {
+		s.ClearReviewTime()
 	})
 }
 

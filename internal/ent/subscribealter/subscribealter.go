@@ -41,6 +41,10 @@ const (
 	FieldDays = "days"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
+	// FieldExpireTime holds the string denoting the expire_time field in the database.
+	FieldExpireTime = "expire_time"
+	// FieldReviewTime holds the string denoting the review_time field in the database.
+	FieldReviewTime = "review_time"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
 	// EdgeManager holds the string denoting the manager edge name in mutations.
@@ -106,6 +110,8 @@ var Columns = []string{
 	FieldSubscribeID,
 	FieldDays,
 	FieldStatus,
+	FieldExpireTime,
+	FieldReviewTime,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -196,6 +202,16 @@ func ByDays(opts ...sql.OrderTermOption) OrderOption {
 // ByStatus orders the results by the status field.
 func ByStatus(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldStatus, opts...).ToFunc()
+}
+
+// ByExpireTime orders the results by the expire_time field.
+func ByExpireTime(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldExpireTime, opts...).ToFunc()
+}
+
+// ByReviewTime orders the results by the review_time field.
+func ByReviewTime(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldReviewTime, opts...).ToFunc()
 }
 
 // ByRiderField orders the results by rider field.

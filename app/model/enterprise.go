@@ -176,11 +176,18 @@ type EnterpriseRiderSubscribeStatusReq struct {
 	ID uint64 `json:"id" validate:"required" query:"id" trans:"订阅ID"`
 }
 
+// EnterpriseJoinReq 加入团签请求
+type EnterpriseJoinReq struct {
+	EnterpriseId uint64 `json:"enterpriseId" query:"enterpriseId" validate:"required" ` // 团签id
+	StationId    uint64 `json:"stationId" query:"stationId" validate:"required"`        // 站点id
+	Days         int    `json:"days" validate:"required"`                               // 天数
+	PriceID      uint64 `json:"priceId" validate:"required"`                            // 价格ID
+}
+
 // EnterproseInfoReq 团签信息请求
 type EnterproseInfoReq struct {
-	EnterpriseId uint64 `json:"enterpriseId" query:"enterpriseId" validate:"required" `
-	// 站点id
-	StationId uint64 `json:"stationId" query:"stationId" validate:"required"`
+	EnterpriseId uint64 `json:"enterpriseId" query:"enterpriseId" validate:"required" ` // 团签id
+	StationId    uint64 `json:"stationId" query:"stationId" validate:"required"`        // 站点id
 }
 
 // EnterproseInfoRsp 团签信息返回
@@ -191,6 +198,10 @@ type EnterproseInfoRsp struct {
 	StationName string `json:"stationName"`
 	// 是否可以加入团签
 	IsJoin bool `json:"isJoin"`
+	// 价格
+	PriceList []EnterprisePriceWithCity
+	// 天数
+	Days []int `json:"days"`
 }
 
 // AgentIndexRes 代理商小程序首页数据

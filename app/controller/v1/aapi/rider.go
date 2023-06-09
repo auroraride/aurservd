@@ -90,7 +90,7 @@ func (*rider) Detail(c echo.Context) (err error) {
 // @Success      200  {object}  string  "请求成功"
 func (*rider) Active(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.RiderActiveBatteryReq](c)
-	service.NewEnterprise().Active(req, ctx.Agent)
+	service.NewEnterprise().Active(req, ctx.Enterprise.ID)
 	return ctx.SendResponse()
 }
 
@@ -106,7 +106,7 @@ func (*rider) Active(c echo.Context) (err error) {
 // @Success      200  {object}  model.PaginationRes{items=[]model.SubscribeAlterApplyListRsp}  "请求成功"
 func (*rider) SubscribeApplyList(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.SubscribeAlterApplyReq](c)
-	return ctx.SendResponse(service.NewEnterpriseWithAgent(ctx.Agent, ctx.Enterprise).SubscribeApplyList(req, ctx.Agent.ID))
+	return ctx.SendResponse(service.NewEnterpriseWithAgent(ctx.Agent, ctx.Enterprise).SubscribeApplyList(req, ctx.Enterprise.ID))
 }
 
 // ReviewApply  审核加时
@@ -121,8 +121,12 @@ func (*rider) SubscribeApplyList(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*rider) ReviewApply(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.SubscribeAlterReviewReq](c)
-	service.NewEnterpriseWithAgent(ctx.Agent, ctx.Enterprise).SubscribeApplyReviewApply(req)
-	return ctx.SendResponse(model.StatusResponse{Status: true})
+	service.NewEnterpriseWithAgent(ctx.Agent, ctx.Enterprise).SubscribeApplyReviewApply(&model.SubscribeAlterReviewReq{
+		Ids:          req.Ids,
+		Status:       req.Status,
+		EnterpriseID: &ctx.Enterprise.ID,
+	})
+	return ctx.SendResponse()
 }
 
 // ExchangeList  换电列表

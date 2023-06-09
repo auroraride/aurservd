@@ -72,7 +72,11 @@ func (*agent) GetOpenid(c echo.Context) (err error) {
 // @Success      200  {object}  []model.Battery
 func (*agent) BatteryList(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.BatterySearchReq](c)
-	return ctx.SendResponse(service.NewSelection().BatterySerialSearch(req))
+	// TODO 子代理
+	return ctx.SendResponse(service.NewSelection().BatterySerialSearch(&model.BatterySearchReq{
+		Serial:       req.Serial,
+		EnterpriseID: ctx.Enterprise.ID,
+	}))
 }
 
 // BatteryModels 电池列表

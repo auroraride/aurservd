@@ -69,21 +69,16 @@ func (s *stockBatchableService) Loopers(req *model.StockTransferReq, enterpriseI
 	}
 	Loopers := make([]model.StockTransferLoopper, 0)
 	for _, bat := range all {
-		if bat.EnterpriseID == nil || bat.StationID == nil { // 电池未绑定团签，归属于平台不能调拨
-			failed = append(failed, fmt.Sprintf("电池调拨失败，电池[%s]未绑定团签，归属于平台不能调拨", bat.Sn))
-			continue
-		}
 		// 站点调拨到站点 只能同一团签
 		if req.InboundTarget == model.StockTargetStation && req.OutboundTarget == model.StockTargetStation && *bat.EnterpriseID != enterpriseId {
 			failed = append(failed, fmt.Sprintf("电池调拨失败，电池[%s]不属于当前团签", bat.Sn))
 			continue
 		}
-		brandName := bat.Brand.String()
 		Loopers = append(Loopers, model.StockTransferLoopper{
 			BatterySN:    &bat.Sn,
 			BatteryID:    &bat.ID,
 			BatteryModel: bat.Model,
-			BrandName:    &brandName,
+			BrandName:    &bat.Model,
 		})
 	}
 	return Loopers, failed

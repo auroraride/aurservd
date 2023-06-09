@@ -1482,6 +1482,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribealter.FieldSubscribeID:  {Type: field.TypeUint64, Column: subscribealter.FieldSubscribeID},
 			subscribealter.FieldDays:         {Type: field.TypeInt, Column: subscribealter.FieldDays},
 			subscribealter.FieldStatus:       {Type: field.TypeInt, Column: subscribealter.FieldStatus},
+			subscribealter.FieldExpireTime:   {Type: field.TypeTime, Column: subscribealter.FieldExpireTime},
+			subscribealter.FieldReviewTime:   {Type: field.TypeTime, Column: subscribealter.FieldReviewTime},
 		},
 	}
 	graph.Nodes[50] = &sqlgraph.Node{
@@ -13501,6 +13503,16 @@ func (f *SubscribeAlterFilter) WhereDays(p entql.IntP) {
 // WhereStatus applies the entql int predicate on the status field.
 func (f *SubscribeAlterFilter) WhereStatus(p entql.IntP) {
 	f.Where(p.Field(subscribealter.FieldStatus))
+}
+
+// WhereExpireTime applies the entql time.Time predicate on the expire_time field.
+func (f *SubscribeAlterFilter) WhereExpireTime(p entql.TimeP) {
+	f.Where(p.Field(subscribealter.FieldExpireTime))
+}
+
+// WhereReviewTime applies the entql time.Time predicate on the review_time field.
+func (f *SubscribeAlterFilter) WhereReviewTime(p entql.TimeP) {
+	f.Where(p.Field(subscribealter.FieldReviewTime))
 }
 
 // WhereHasRider applies a predicate to check if query has an edge rider.

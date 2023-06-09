@@ -109,6 +109,12 @@ func RiderRequireAuthAndContact() echo.MiddlewareFunc {
 			ctx := c.(*app.RiderContext)
 
 			p, _ := ctx.Rider.QueryPerson().First(context.Background())
+
+			// 代理小程序骑手 加入团签和查询团签信息 不用验证实名和紧急联系人
+			if url == "/rider/v1/enterprise/info" || url == "/rider/v1/enterprise/join" {
+				return next(ctx)
+			}
+
 			if ctx.Rider.Contact == nil && url != "/rider/contact" {
 				snag.Panic(snag.StatusRequireContact)
 			}
