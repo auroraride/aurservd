@@ -75,7 +75,7 @@ func (*enterprise) SubscribeStatus(c echo.Context) (err error) {
 func (*enterprise) ApplyAddSubscribeTime(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[model.RiderSubscribeAddReq](c)
 	service.NewEnterpriseRider().AddSubscribeDays(req, ctx.Rider)
-	return ctx.SendResponse(model.StatusResponse{Status: true})
+	return ctx.SendResponse()
 }
 
 // ApplyList App申请列表

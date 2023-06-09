@@ -378,8 +378,14 @@ func (s *enterpriseRiderService) SubscribeStatus(req *model.EnterpriseRiderSubsc
 // AddSubscribeDays 骑手申请增加团签订阅时长
 func (s *enterpriseRiderService) AddSubscribeDays(req *model.RiderSubscribeAddReq, rid *ent.Rider) {
 	// 查询骑手申请是否有未审批的
-	info, _ := ent.Database.SubscribeAlter.QueryNotDeleted().Where(subscribealter.RiderID(rid.ID),
-		subscribealter.Status(model.SubscribeAlterUnreviewed), subscribealter.EnterpriseID(*rid.EnterpriseID)).First(s.ctx)
+	q := ent.Database.SubscribeAlter.QueryNotDeleted().Where(subscribealter.RiderID(rid.ID),
+		subscribealter.Status(model.SubscribeAlterUnreviewed))
+
+	if rid.EnterpriseID != nil {
+		subscribealter.EnterpriseID(*rid.EnterpriseID)
+	}
+
+	info, _ := q.First(s.ctx)
 	if info != nil {
 		snag.Panic("存在未审批的申请")
 	}
@@ -406,8 +412,12 @@ func (s *enterpriseRiderService) AddSubscribeDays(req *model.RiderSubscribeAddRe
 
 // SubscribeAlterList 申请列表
 func (s *enterpriseRiderService) SubscribeAlterList(req *model.SubscribeAlterApplyReq, rid *ent.Rider) *model.PaginationRes {
-	q := ent.Database.SubscribeAlter.QueryNotDeleted().Where(subscribealter.RiderID(rid.ID), subscribealter.EnterpriseID(*rid.EnterpriseID)).Order(ent.Desc(subscribealter.FieldCreatedAt))
+	q := ent.Database.SubscribeAlter.QueryNotDeleted().Where(subscribealter.RiderID(rid.ID)).
+		Order(ent.Desc(subscribealter.FieldCreatedAt))
 
+	if rid.EnterpriseID != nil {
+		subscribealter.EnterpriseID(*rid.EnterpriseID)
+	}
 	if req.Start != nil && req.End != nil {
 		rs := tools.NewTime().ParseDateStringX(*req.Start)
 		re := tools.NewTime().ParseDateStringX(*req.End)
