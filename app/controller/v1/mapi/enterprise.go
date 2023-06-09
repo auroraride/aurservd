@@ -364,7 +364,7 @@ func (*enterprise) SubscribeApplyList(c echo.Context) (err error) {
 
 // SubscribeApply 审批订阅申请
 // @ID           ManagerEnterpriseSubscribeApply
-// @Router       /manager/v1/enterprise/subscribe/apply [PUT]
+// @Router       /manager/v1/enterprise/subscribe/apply [POST]
 // @Summary      M9028 审批订阅申请
 // @Tags         [M]管理接口
 // @Accept       json
@@ -398,7 +398,7 @@ func (*enterprise) FeedbackList(c echo.Context) (err error) {
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
-// @Param        body  body  model.RiderActiveReq
+// @Param        body  body  model.RiderActiveBatteryReq true  "激活骑手请求"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*enterprise) Active(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.RiderActiveBatteryReq](c)

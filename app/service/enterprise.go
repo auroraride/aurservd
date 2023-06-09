@@ -666,19 +666,20 @@ func (s *enterpriseService) SubscribeApplyList(req *model.SubscribeAlterApplyReq
 	q := ent.Database.SubscribeAlter.QueryNotDeleted().Where(subscribealter.EnterpriseID(enterpriseId)).
 		Order(ent.Desc(subscribealter.FieldCreatedAt)).WithRider().WithSubscribe()
 
-	if req.Start != nil && req.End != nil {
-		rs := tools.NewTime().ParseDateStringX(*req.Start)
-		re := tools.NewTime().ParseDateStringX(*req.End)
-		q.Where(subscribealter.CreatedAtGTE(rs), subscribealter.CreatedAtLTE(re))
+	tt := tools.NewTime()
+	if req.Start != nil {
+		q.Where(subscribealter.CreatedAtGTE(tt.ParseDateStringX(*req.Start)))
 	}
+	if req.End != nil {
+		q.Where(subscribealter.CreatedAtLT(tt.ParseNextDateStringX(*req.End)))
+	}
+
 	if req.Status != nil {
 		q.Where(subscribealter.Status(*req.Status))
 	}
 	if req.Keyword != nil {
-		q.Where(subscribealter.Or(
-			subscribealter.HasRiderWith(rider.Or(rider.NameContainsFold(*req.Keyword),
-				rider.NameContainsFold(*req.Keyword))),
-		))
+		q.Where(subscribealter.HasRiderWith(rider.Or(rider.NameContainsFold(*req.Keyword),
+			rider.PhoneContainsFold(*req.Keyword))))
 	}
 	return model.ParsePaginationResponse(
 		q,
@@ -689,23 +690,20 @@ func (s *enterpriseService) SubscribeApplyList(req *model.SubscribeAlterApplyReq
 				Days: item.Days,
 				// 申请时间
 				ApplyTime: item.CreatedAt.Format(carbon.DateTimeLayout),
-				// 审批时间
-				ReviewTime: item.UpdatedAt.Format(carbon.DateTimeLayout),
 				// 审批状态
-				Status:     item.Status,
-				RiderName:  "",
-				RiderPhone: "",
-				ExpireTime: 0,
+				Status: item.Status,
+			}
+			if item.ExpireTime != nil {
+				rsp.ReviewTime = item.ExpireTime.Format(carbon.DateTimeLayout)
+			}
+			if item.ReviewTime != nil {
+				rsp.ReviewTime = item.ReviewTime.Format(carbon.DateTimeLayout)
 			}
 			if item.Edges.Rider != nil {
 				// 骑手姓名
 				rsp.RiderName = item.Edges.Rider.Name
 				// 骑手手机号
 				rsp.RiderPhone = item.Edges.Rider.Phone
-			}
-			if item.Edges.Subscribe != nil {
-				// 到期天数
-				rsp.ExpireTime = tools.NewTime().LastDays(*item.Edges.Subscribe.AgentEndAt, carbon.Now().StartOfDay().ToStdTime())
 			}
 			return rsp
 		})
@@ -726,11 +724,11 @@ func (s *enterpriseService) SubscribeApplyReviewApply(req *model.SubscribeAlterR
 		ent.WithTxPanic(s.ctx, func(tx *ent.Tx) error {
 			// 查询订阅信息
 			sub, _ := tx.Subscribe.Query().Where(subscribe.ID(v.SubscribeID)).First(s.ctx)
-			if sub == nil {
+			if sub == nil || sub.Status == model.SubscribeStatusUnSubscribed || sub.Status == model.SubscribeStatusCanceled {
 				zap.L().Log(zap.ErrorLevel, "订阅信息不存在")
 				return nil
 			}
-			err = tx.SubscribeAlter.UpdateOne(v).SetStatus(req.Status).Exec(s.ctx)
+			err = tx.SubscribeAlter.UpdateOne(v).SetStatus(req.Status).SetReviewTime(time.Now()).Exec(s.ctx)
 			if err != nil {
 				zap.L().Log(zap.ErrorLevel, "审批加时申请失败", zap.Error(err))
 				return err

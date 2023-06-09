@@ -50,6 +50,10 @@ type SubscribeAlter struct {
 	Days int `json:"days,omitempty"`
 	// 状态
 	Status int `json:"status,omitempty"`
+	// 到期时间
+	ExpireTime *time.Time `json:"expire_time,omitempty"`
+	// 审批时间
+	ReviewTime *time.Time `json:"review_time,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the SubscribeAlterQuery when eager-loading is set.
 	Edges        SubscribeAlterEdges `json:"edges"`
@@ -149,7 +153,7 @@ func (*SubscribeAlter) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case subscribealter.FieldRemark:
 			values[i] = new(sql.NullString)
-		case subscribealter.FieldCreatedAt, subscribealter.FieldUpdatedAt, subscribealter.FieldDeletedAt:
+		case subscribealter.FieldCreatedAt, subscribealter.FieldUpdatedAt, subscribealter.FieldDeletedAt, subscribealter.FieldExpireTime, subscribealter.FieldReviewTime:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -258,6 +262,20 @@ func (sa *SubscribeAlter) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				sa.Status = int(value.Int64)
 			}
+		case subscribealter.FieldExpireTime:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field expire_time", values[i])
+			} else if value.Valid {
+				sa.ExpireTime = new(time.Time)
+				*sa.ExpireTime = value.Time
+			}
+		case subscribealter.FieldReviewTime:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field review_time", values[i])
+			} else if value.Valid {
+				sa.ReviewTime = new(time.Time)
+				*sa.ReviewTime = value.Time
+			}
 		default:
 			sa.selectValues.Set(columns[i], values[i])
 		}
@@ -365,6 +383,16 @@ func (sa *SubscribeAlter) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("status=")
 	builder.WriteString(fmt.Sprintf("%v", sa.Status))
+	builder.WriteString(", ")
+	if v := sa.ExpireTime; v != nil {
+		builder.WriteString("expire_time=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
+	if v := sa.ReviewTime; v != nil {
+		builder.WriteString("review_time=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

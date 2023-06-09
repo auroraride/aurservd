@@ -4058,6 +4058,8 @@ var (
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
 		{Name: "days", Type: field.TypeInt, Comment: "更改天数"},
 		{Name: "status", Type: field.TypeInt, Comment: "状态", Default: 0},
+		{Name: "expire_time", Type: field.TypeTime, Nullable: true, Comment: "到期时间"},
+		{Name: "review_time", Type: field.TypeTime, Nullable: true, Comment: "审批时间"},
 		{Name: "subscribe_id", Type: field.TypeUint64, Comment: "订阅ID"},
 		{Name: "rider_id", Type: field.TypeUint64, Comment: "骑手ID"},
 		{Name: "manager_id", Type: field.TypeUint64, Nullable: true, Comment: "管理人ID"},
@@ -4072,31 +4074,31 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "subscribe_alter_subscribe_alters",
-				Columns:    []*schema.Column{SubscribeAlterColumns[9]},
+				Columns:    []*schema.Column{SubscribeAlterColumns[11]},
 				RefColumns: []*schema.Column{SubscribeColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "subscribe_alter_rider_rider",
-				Columns:    []*schema.Column{SubscribeAlterColumns[10]},
+				Columns:    []*schema.Column{SubscribeAlterColumns[12]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "subscribe_alter_manager_manager",
-				Columns:    []*schema.Column{SubscribeAlterColumns[11]},
+				Columns:    []*schema.Column{SubscribeAlterColumns[13]},
 				RefColumns: []*schema.Column{ManagerColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "subscribe_alter_enterprise_enterprise",
-				Columns:    []*schema.Column{SubscribeAlterColumns[12]},
+				Columns:    []*schema.Column{SubscribeAlterColumns[14]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "subscribe_alter_agent_agent",
-				Columns:    []*schema.Column{SubscribeAlterColumns[13]},
+				Columns:    []*schema.Column{SubscribeAlterColumns[15]},
 				RefColumns: []*schema.Column{AgentColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -4115,27 +4117,27 @@ var (
 			{
 				Name:    "subscribealter_rider_id",
 				Unique:  false,
-				Columns: []*schema.Column{SubscribeAlterColumns[10]},
+				Columns: []*schema.Column{SubscribeAlterColumns[12]},
 			},
 			{
 				Name:    "subscribealter_manager_id",
 				Unique:  false,
-				Columns: []*schema.Column{SubscribeAlterColumns[11]},
+				Columns: []*schema.Column{SubscribeAlterColumns[13]},
 			},
 			{
 				Name:    "subscribealter_enterprise_id",
 				Unique:  false,
-				Columns: []*schema.Column{SubscribeAlterColumns[12]},
+				Columns: []*schema.Column{SubscribeAlterColumns[14]},
 			},
 			{
 				Name:    "subscribealter_agent_id",
 				Unique:  false,
-				Columns: []*schema.Column{SubscribeAlterColumns[13]},
+				Columns: []*schema.Column{SubscribeAlterColumns[15]},
 			},
 			{
 				Name:    "subscribealter_subscribe_id",
 				Unique:  false,
-				Columns: []*schema.Column{SubscribeAlterColumns[9]},
+				Columns: []*schema.Column{SubscribeAlterColumns[11]},
 			},
 		},
 	}

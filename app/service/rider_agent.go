@@ -132,6 +132,7 @@ func (s *riderAgentService) List(enterpriseID uint64, req *model.AgentRiderListR
 			query.Order(ent.Desc(subscribe.FieldCreatedAt)).WithCity()
 		}).
 		WithStation().
+		WithBattery().
 		Order(ent.Desc(rider.FieldCreatedAt))
 
 	today := carbon.Now().StartOfDay().Carbon2Time()
@@ -190,8 +191,8 @@ func (s *riderAgentService) List(enterpriseID uint64, req *model.AgentRiderListR
 		subquery = append(
 			subquery,
 			subscribe.Status(model.SubscribeStatusUsing),
-			subscribe.RemainingLTE(model.WillOverdueNum),
-			subscribe.RemainingGTE(0),
+			subscribe.AgentEndAtGTE(today),
+			subscribe.AgentEndAtLTE(tools.NewTime().WillEnd(today, model.WillOverdueNum)),
 		)
 		q.Where(rider.HasSubscribesWith(subquery...))
 	}
@@ -208,6 +209,7 @@ func (s *riderAgentService) Detail(req *model.IDParamReq, enterpriseID uint64) m
 			query.Order(ent.Desc(subscribe.FieldCreatedAt)).WithCity()
 		}).
 		WithStation().
+		WithBattery().
 		First(s.ctx)
 	if item == nil {
 		snag.Panic("未找到骑手")

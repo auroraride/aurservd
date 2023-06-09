@@ -110,6 +110,16 @@ func Status(v int) predicate.SubscribeAlter {
 	return predicate.SubscribeAlter(sql.FieldEQ(FieldStatus, v))
 }
 
+// ExpireTime applies equality check predicate on the "expire_time" field. It's identical to ExpireTimeEQ.
+func ExpireTime(v time.Time) predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(sql.FieldEQ(FieldExpireTime, v))
+}
+
+// ReviewTime applies equality check predicate on the "review_time" field. It's identical to ReviewTimeEQ.
+func ReviewTime(v time.Time) predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(sql.FieldEQ(FieldReviewTime, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.SubscribeAlter {
 	return predicate.SubscribeAlter(sql.FieldEQ(FieldCreatedAt, v))
@@ -543,6 +553,106 @@ func StatusLT(v int) predicate.SubscribeAlter {
 // StatusLTE applies the LTE predicate on the "status" field.
 func StatusLTE(v int) predicate.SubscribeAlter {
 	return predicate.SubscribeAlter(sql.FieldLTE(FieldStatus, v))
+}
+
+// ExpireTimeEQ applies the EQ predicate on the "expire_time" field.
+func ExpireTimeEQ(v time.Time) predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(sql.FieldEQ(FieldExpireTime, v))
+}
+
+// ExpireTimeNEQ applies the NEQ predicate on the "expire_time" field.
+func ExpireTimeNEQ(v time.Time) predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(sql.FieldNEQ(FieldExpireTime, v))
+}
+
+// ExpireTimeIn applies the In predicate on the "expire_time" field.
+func ExpireTimeIn(vs ...time.Time) predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(sql.FieldIn(FieldExpireTime, vs...))
+}
+
+// ExpireTimeNotIn applies the NotIn predicate on the "expire_time" field.
+func ExpireTimeNotIn(vs ...time.Time) predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(sql.FieldNotIn(FieldExpireTime, vs...))
+}
+
+// ExpireTimeGT applies the GT predicate on the "expire_time" field.
+func ExpireTimeGT(v time.Time) predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(sql.FieldGT(FieldExpireTime, v))
+}
+
+// ExpireTimeGTE applies the GTE predicate on the "expire_time" field.
+func ExpireTimeGTE(v time.Time) predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(sql.FieldGTE(FieldExpireTime, v))
+}
+
+// ExpireTimeLT applies the LT predicate on the "expire_time" field.
+func ExpireTimeLT(v time.Time) predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(sql.FieldLT(FieldExpireTime, v))
+}
+
+// ExpireTimeLTE applies the LTE predicate on the "expire_time" field.
+func ExpireTimeLTE(v time.Time) predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(sql.FieldLTE(FieldExpireTime, v))
+}
+
+// ExpireTimeIsNil applies the IsNil predicate on the "expire_time" field.
+func ExpireTimeIsNil() predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(sql.FieldIsNull(FieldExpireTime))
+}
+
+// ExpireTimeNotNil applies the NotNil predicate on the "expire_time" field.
+func ExpireTimeNotNil() predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(sql.FieldNotNull(FieldExpireTime))
+}
+
+// ReviewTimeEQ applies the EQ predicate on the "review_time" field.
+func ReviewTimeEQ(v time.Time) predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(sql.FieldEQ(FieldReviewTime, v))
+}
+
+// ReviewTimeNEQ applies the NEQ predicate on the "review_time" field.
+func ReviewTimeNEQ(v time.Time) predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(sql.FieldNEQ(FieldReviewTime, v))
+}
+
+// ReviewTimeIn applies the In predicate on the "review_time" field.
+func ReviewTimeIn(vs ...time.Time) predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(sql.FieldIn(FieldReviewTime, vs...))
+}
+
+// ReviewTimeNotIn applies the NotIn predicate on the "review_time" field.
+func ReviewTimeNotIn(vs ...time.Time) predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(sql.FieldNotIn(FieldReviewTime, vs...))
+}
+
+// ReviewTimeGT applies the GT predicate on the "review_time" field.
+func ReviewTimeGT(v time.Time) predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(sql.FieldGT(FieldReviewTime, v))
+}
+
+// ReviewTimeGTE applies the GTE predicate on the "review_time" field.
+func ReviewTimeGTE(v time.Time) predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(sql.FieldGTE(FieldReviewTime, v))
+}
+
+// ReviewTimeLT applies the LT predicate on the "review_time" field.
+func ReviewTimeLT(v time.Time) predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(sql.FieldLT(FieldReviewTime, v))
+}
+
+// ReviewTimeLTE applies the LTE predicate on the "review_time" field.
+func ReviewTimeLTE(v time.Time) predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(sql.FieldLTE(FieldReviewTime, v))
+}
+
+// ReviewTimeIsNil applies the IsNil predicate on the "review_time" field.
+func ReviewTimeIsNil() predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(sql.FieldIsNull(FieldReviewTime))
+}
+
+// ReviewTimeNotNil applies the NotNil predicate on the "review_time" field.
+func ReviewTimeNotNil() predicate.SubscribeAlter {
+	return predicate.SubscribeAlter(sql.FieldNotNull(FieldReviewTime))
 }
 
 // HasRider applies the HasEdge predicate on the "rider" edge.

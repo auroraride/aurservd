@@ -261,6 +261,8 @@ func (s *agentService) Profile(ag *ent.Agent, en *ent.Enterprise) model.AgentPro
 }
 
 func (s *agentService) Index(en *ent.Enterprise) *model.AgentIndexRes {
+	start := carbon.Now().StartOfDay().Carbon2Time()
+	endtime := tools.NewTime().WillEnd(start, model.WillOverdueNum)
 	var v []model.AgentIndexRes
 	ent.Database.Subscribe.QueryNotDeleted().Where(subscribe.EnterpriseID(en.ID)).Modify(
 		func(s *sql.Selector) {
@@ -280,7 +282,7 @@ func (s *agentService) Index(en *ent.Enterprise) *model.AgentIndexRes {
 					strconv.FormatUint(uint64(model.SubscribeStatusUsing), 10)+
 					"  THEN rider_id END)", "billingRiderTotal"),
 				// 临期
-				sql.As("COUNT(CASE WHEN remaining > 0 AND remaining <= 3 THEN rider_id END)", "expiringRiderTotal"),
+				sql.As("COUNT(CASE WHEN agent_end_at <= '"+endtime.Format(carbon.DateLayout)+"' AND agent_end_at >= '"+start.Format(carbon.DateLayout)+"' THEN rider_id END)", "expiringRiderTotal"),
 				// 总数 =计费中+未激活
 				sql.As("COUNT(CASE WHEN status IN ("+
 					strconv.FormatUint(uint64(model.SubscribeStatusUsing), 10)+","+

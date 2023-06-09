@@ -9,11 +9,11 @@ const (
 // SubscribeAlterApplyReq 申请请求
 type SubscribeAlterApplyReq struct {
 	PaginationReq
-	Start   *string `json:"start" query:"start"`     // 开始时间
-	End     *string `json:"end" query:"end"`         // 结束时间
-	Keyword *string `json:"keyword" query:"keyword"` // 关键词
-	Status  *int    `json:"status" query:"status"`   // 审核状态
-	ID      uint64  `json:"id" query:"id"`           // 团签ID
+	Start   *string `json:"start" query:"start"`      // 开始时间
+	End     *string `json:"end" query:"end"`          // 结束时间
+	Keyword *string `json:"keyword" query:"keyword"`  // 关键词
+	Status  *int    `json:"status" query:"status"`    // 审核状态
+	ID      uint64  `json:"id" query:"id" param:"id"` // 团签ID
 }
 
 // SubscribeAlterApplyListRsp 申请列表返回信息
@@ -28,7 +28,7 @@ type SubscribeAlterApplyListRsp struct {
 	// 审核状态
 	Status int `json:"status"`
 	// 到期时间
-	ExpireTime int `json:"expireTime"`
+	ExpireTime string `json:"expireTime"`
 	// 骑手姓名
 	RiderName string `json:"riderName"`
 	// 骑手手机号

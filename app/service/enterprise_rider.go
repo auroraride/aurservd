@@ -72,33 +72,42 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 		}
 	}
 
-	// 查询是否存在
-	if ent.Database.Rider.QueryNotDeleted().Where(rider.Phone(req.Phone)).ExistX(s.ctx) {
-		snag.Panic("此手机号已存在")
-	}
-
 	stat := NewEnterpriseStation().Query(req.StationID)
 	var r *ent.Rider
-
+	r, _ = ent.Database.Rider.QueryNotDeleted().Where(rider.Phone(req.Phone)).First(s.ctx)
 	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
-		var per *ent.Person
-		// 创建person
-		per, err = tx.Person.Create().SetName(req.Name).Save(s.ctx)
-		if err != nil {
-			return
-		}
+		if r != nil {
+			// 查询订阅信息
+			subscribeInfo, _ := NewSubscribe().QueryEffective(r.ID)
+			if subscribeInfo != nil {
+				snag.Panic("该骑手不能绑定,已有未完成的订单")
+				return
+			}
+			if ent.Database.Rider.UpdateOne(r).
+				SetEnterpriseID(req.EnterpriseID).
+				SetStationID(req.StationID).
+				Exec(s.ctx) != nil {
+				snag.Panic("更新骑手失败")
+				return
+			}
+		} else {
+			var per *ent.Person
+			// 创建person
+			per, err = tx.Person.Create().SetName(req.Name).Save(s.ctx)
+			if err != nil {
+				return
+			}
 
-		// 创建rider
-		r, err = tx.Rider.Create().SetPhone(req.Phone).SetEnterpriseID(req.EnterpriseID).SetStationID(req.StationID).SetPerson(per).Save(s.ctx)
-		if err != nil {
-			return
+			// 创建rider
+			r, err = tx.Rider.Create().SetPhone(req.Phone).SetEnterpriseID(req.EnterpriseID).SetStationID(req.StationID).SetPerson(per).Save(s.ctx)
+			if err != nil {
+				return
+			}
 		}
-
 		// 如果是代理, 创建待激活骑士卡
 		// 代理商添加骑手订阅强制为新签
 		if e.Agent {
 			_, err = tx.Subscribe.Create().
-				SetType(model.OrderTypeNewly).
 				SetRiderID(r.ID).
 				SetModel(ep.Model).
 				SetIntelligent(ep.Intelligent).
@@ -351,7 +360,7 @@ func (s *enterpriseRiderService) SubscribeStatus(req *model.EnterpriseRiderSubsc
 // AddSubscribeDays 骑手申请增加团签订阅时长
 func (s *enterpriseRiderService) AddSubscribeDays(req *model.RiderSubscribeAddReq, rid *ent.Rider) {
 	// 查询骑手申请是否有未审批的
-	info, _ := ent.Database.SubscribeAlter.QueryNotDeleted().Where(subscribealter.RiderID(rid.ID), subscribealter.StatusNEQ(model.SubscribeAlterUnreviewed)).First(s.ctx)
+	info, _ := ent.Database.SubscribeAlter.QueryNotDeleted().Where(subscribealter.RiderID(rid.ID), subscribealter.Status(model.SubscribeAlterUnreviewed)).First(s.ctx)
 	if info != nil {
 		snag.Panic("存在未审批的申请")
 	}
@@ -361,14 +370,15 @@ func (s *enterpriseRiderService) AddSubscribeDays(req *model.RiderSubscribeAddRe
 	if err != nil {
 		snag.Panic("团签状态异常")
 	}
-	sid := first.Edges.Subscribes[0].ID
+	sub := first.Edges.Subscribes[0]
 	// 增加记录
 	_, err = ent.Database.SubscribeAlter.Create().
 		SetRiderID(rid.ID).
 		SetEnterpriseID(*rid.EnterpriseID).
-		SetSubscribeID(sid).
+		SetSubscribeID(sub.ID).
 		SetDays(req.Days).
 		SetStatus(model.SubscribeAlterUnreviewed).
+		SetNillableExpireTime(sub.AgentEndAt).
 		Save(s.ctx)
 	if err != nil {
 		snag.Panic("申请失败")
@@ -406,7 +416,7 @@ func (s *enterpriseRiderService) RiderEnterpriseInfo(req *model.EnterproseInfoRe
 	}
 	// 查询订阅信息
 	sub, _ := NewSubscribe().QueryEffective(riderID)
-	if sub == nil {
+	if sub != nil {
 		rsp.IsJoin = false
 	}
 	// 查询团签信息
@@ -462,7 +472,6 @@ func (s *enterpriseRiderService) JoinEnterprise(req *model.EnterproseInfoReq, ri
 			snag.Panic("加入团签失败")
 		}
 		_, err = tx.Subscribe.Create().
-			SetType(model.OrderTypeNewly).
 			SetRiderID(rid.ID).
 			SetModel(ep.Model).
 			SetIntelligent(ep.Intelligent).

@@ -281,13 +281,11 @@ func (s *batteryService) List(req *model.BatteryListReq) (res *model.PaginationR
 	res = model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Battery) (res *model.BatteryListRes) {
 		snmap[item.Brand] = append(snmap[item.Brand], item.Sn)
 		res = &model.BatteryListRes{
-			ID:             item.ID,
-			Brand:          item.Brand,
-			Model:          item.Model,
-			Enable:         item.Enable,
-			SN:             item.Sn,
-			StationName:    "-",
-			EnterpriseName: "-",
+			ID:     item.ID,
+			Brand:  item.Brand,
+			Model:  item.Model,
+			Enable: item.Enable,
+			SN:     item.Sn,
 		}
 
 		c := item.Edges.City
@@ -455,7 +453,12 @@ func (s *batteryService) Unbind(req *model.BatteryUnbindRequest) {
 
 // Allocate 将电池分配给骑手
 func (s *batteryService) Allocate(buo *ent.BatteryUpdateOne, bat *ent.Battery, sub *ent.Subscribe, ignoreError bool) (err error) {
-	err = buo.SetSubscribeID(sub.ID).SetRiderID(sub.RiderID).Exec(s.ctx)
+	q := buo.SetSubscribeID(sub.ID).SetRiderID(sub.RiderID)
+	if sub.EnterpriseID != nil && sub.StationID != nil {
+		q.SetEnterpriseID(*sub.EnterpriseID).SetStationID(*sub.StationID)
+	}
+	err = q.Exec(s.ctx)
+
 	if err != nil && ent.IsConstraintError(err) {
 		switch v := err.(*ent.ConstraintError).Unwrap().(type) {
 		case *pgconn.PgError:
@@ -465,7 +468,11 @@ func (s *batteryService) Allocate(buo *ent.BatteryUpdateOne, bat *ent.Battery, s
 				if err != nil {
 					return
 				}
-				err = buo.SetSubscribeID(sub.ID).SetRiderID(sub.RiderID).Exec(s.ctx)
+				q = buo.SetSubscribeID(sub.ID).SetRiderID(sub.RiderID)
+				if sub.EnterpriseID != nil && sub.StationID != nil {
+					q.SetEnterpriseID(*sub.EnterpriseID).SetStationID(*sub.StationID)
+				}
+				err = q.Exec(s.ctx)
 			}
 		}
 	}
