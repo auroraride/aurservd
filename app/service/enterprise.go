@@ -663,7 +663,7 @@ func (s *enterpriseService) NameFromID(id uint64) string {
 
 // SubscribeApplyList 骑手订阅申请加时列表
 func (s *enterpriseService) SubscribeApplyList(req *model.SubscribeAlterApplyReq, enterpriseId uint64) *model.PaginationRes {
-	q := ent.Database.SubscribeAlter.QueryNotDeleted().Where(subscribealter.EnterpriseID(enterpriseId)).
+	q := ent.Database.SubscribeAlter.QueryNotDeleted().Where(subscribealter.EnterpriseID(enterpriseId)).Where(subscribealter.HasRiderWith(rider.DeletedAtIsNil())).
 		Order(ent.Desc(subscribealter.FieldCreatedAt)).WithRider().WithSubscribe()
 
 	tt := tools.NewTime()
@@ -712,7 +712,11 @@ func (s *enterpriseService) SubscribeApplyList(req *model.SubscribeAlterApplyReq
 // SubscribeApplyReviewApply 审批加时申请
 func (s *enterpriseService) SubscribeApplyReviewApply(req *model.SubscribeAlterReviewReq) {
 	// 查找申请记录
-	alter, err := ent.Database.SubscribeAlter.QueryNotDeleted().Where(subscribealter.IDIn(req.Ids...)).All(s.ctx)
+	q := ent.Database.SubscribeAlter.QueryNotDeleted().Where(subscribealter.IDIn(req.Ids...)).Where(subscribealter.HasRiderWith(rider.DeletedAtIsNil()))
+	if req.EnterpriseID != nil {
+		q.Where(subscribealter.EnterpriseID(*req.EnterpriseID))
+	}
+	alter, err := q.All(s.ctx)
 	if err != nil || len(alter) == 0 {
 		snag.Panic("申请记录不存在")
 	}
@@ -726,7 +730,7 @@ func (s *enterpriseService) SubscribeApplyReviewApply(req *model.SubscribeAlterR
 			sub, _ := tx.Subscribe.Query().Where(subscribe.ID(v.SubscribeID)).First(s.ctx)
 			if sub == nil || sub.Status == model.SubscribeStatusUnSubscribed || sub.Status == model.SubscribeStatusCanceled {
 				zap.L().Log(zap.ErrorLevel, "订阅信息不存在")
-				return nil
+				return errors.New("订阅信息不存在")
 			}
 			err = tx.SubscribeAlter.UpdateOne(v).SetStatus(req.Status).SetReviewTime(time.Now()).Exec(s.ctx)
 			if err != nil {

@@ -81,27 +81,27 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 			subscribeInfo, _ := NewSubscribe().QueryEffective(r.ID)
 			if subscribeInfo != nil {
 				snag.Panic("该骑手不能绑定,已有未完成的订单")
-				return
+				return fmt.Errorf("该骑手不能绑定,已有未完成的订单")
 			}
 			if ent.Database.Rider.UpdateOne(r).
 				SetEnterpriseID(req.EnterpriseID).
 				SetStationID(req.StationID).
 				Exec(s.ctx) != nil {
 				snag.Panic("更新骑手失败")
-				return
+				return fmt.Errorf("更新骑手失败")
 			}
 		} else {
 			var per *ent.Person
 			// 创建person
 			per, err = tx.Person.Create().SetName(req.Name).Save(s.ctx)
 			if err != nil {
-				return
+				return err
 			}
 
 			// 创建rider
 			r, err = tx.Rider.Create().SetPhone(req.Phone).SetEnterpriseID(req.EnterpriseID).SetStationID(req.StationID).SetPerson(per).Save(s.ctx)
 			if err != nil {
-				return
+				return err
 			}
 		}
 		// 如果是代理, 创建待激活骑士卡

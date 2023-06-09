@@ -39,5 +39,6 @@ type SubscribeAlterApplyListRsp struct {
 type SubscribeAlterReviewReq struct {
 	Ids []uint64 `json:"ids"`
 	// 审批状态
-	Status int `json:"status"`
+	Status       int     `json:"status"`
+	EnterpriseID *uint64 `json:"EnterpriseID"` // 团签ID
 }
