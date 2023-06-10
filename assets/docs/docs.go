@@ -37,11 +37,23 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "type": "integer",
+                        "description": "团签ID",
+                        "name": "enterpriseId",
+                        "in": "query"
+                    },
+                    {
                         "minLength": 4,
                         "type": "string",
                         "name": "serial",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "站点ID",
+                        "name": "stationId",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -636,7 +648,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "团签ID",
-                        "name": "enterprises_id",
+                        "name": "enterpriseId",
                         "in": "query"
                     },
                     {
@@ -1535,7 +1547,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/agent/v1/subscribe/apply": {
+        "/agent/v1/subscribe/alter": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -1546,8 +1558,8 @@ const docTemplate = `{
                 "tags": [
                     "[A]代理接口"
                 ],
-                "summary": "A2008 申请加时列表",
-                "operationId": "AgentSubscribeApplyList",
+                "summary": "A7001 申请加时列表",
+                "operationId": "AgentAlterList",
                 "parameters": [
                     {
                         "type": "string",
@@ -1566,12 +1578,6 @@ const docTemplate = `{
                         "type": "string",
                         "description": "结束时间",
                         "name": "end",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "团签ID",
-                        "name": "id",
                         "in": "query"
                     },
                     {
@@ -1622,7 +1628,9 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
+            }
+        },
+        "/agent/v1/subscribe/review": {
             "post": {
                 "consumes": [
                     "application/json"
@@ -1633,8 +1641,8 @@ const docTemplate = `{
                 "tags": [
                     "[A]代理接口"
                 ],
-                "summary": "A2007 审核加时",
-                "operationId": "AgentReviewApply",
+                "summary": "A7002 审核加时",
+                "operationId": "AgentAlterReivew",
                 "parameters": [
                     {
                         "type": "string",
@@ -8596,7 +8604,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "团签ID",
-                        "name": "enterprises_id",
+                        "name": "enterpriseId",
                         "in": "query"
                     },
                     {
@@ -8931,8 +8939,8 @@ const docTemplate = `{
                 }
             }
         },
-        "/manager/v1/enterprise/subscribe/apply": {
-            "put": {
+        "/manager/v1/enterprise/subscribe/alter": {
+            "post": {
                 "consumes": [
                     "application/json"
                 ],
@@ -8965,7 +8973,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/manager/v1/enterprise/subscribe/apply/{id}": {
+        "/manager/v1/enterprise/subscribe/alter/{enterpriseId}": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -8976,16 +8984,9 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M9027 订阅申请列表",
+                "summary": "M9027 加时申请列表",
                 "operationId": "ManagerEnterpriseSubscribeApplyList",
                 "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "团签ID",
-                        "name": "id",
-                        "in": "query",
-                        "required": true
-                    },
                     {
                         "type": "integer",
                         "description": "当前页, 从1开始, 默认1",
@@ -8996,12 +8997,6 @@ const docTemplate = `{
                         "type": "string",
                         "description": "结束时间",
                         "name": "end",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "团签ID",
-                        "name": "id",
                         "in": "query"
                     },
                     {
@@ -11170,6 +11165,40 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/rider/active": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M7026 激活骑手",
+                "operationId": "ManagerRiderActive",
+                "parameters": [
+                    {
+                        "description": "激活骑手请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.RiderActiveBatteryReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
                         }
                     }
                 }
@@ -15118,6 +15147,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "description": "团签id",
                         "name": "enterpriseId",
                         "in": "query",
                         "required": true
@@ -15324,12 +15354,6 @@ const docTemplate = `{
                         "type": "string",
                         "description": "结束时间",
                         "name": "end",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "团签ID",
-                        "name": "id",
                         "in": "query"
                     },
                     {
@@ -17011,6 +17035,10 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "integer"
+                },
+                "isAuthed": {
+                    "description": "是否实名认证",
+                    "type": "boolean"
                 },
                 "model": {
                     "description": "电池型号",
@@ -22205,6 +22233,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "enterpriseId": {
+                    "description": "团签id",
                     "type": "integer"
                 },
                 "stationId": {
@@ -22216,6 +22245,13 @@ const docTemplate = `{
         "model.EnterproseInfoRsp": {
             "type": "object",
             "properties": {
+                "days": {
+                    "description": "天数",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
                 "enterproseName": {
                     "description": "团签名称",
                     "type": "string"
@@ -22223,6 +22259,13 @@ const docTemplate = `{
                 "isJoin": {
                     "description": "是否可以加入团签",
                     "type": "boolean"
+                },
+                "priceList": {
+                    "description": "价格",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.EnterprisePriceWithCity"
+                    }
                 },
                 "stationName": {
                     "description": "站点名称",
@@ -24421,6 +24464,10 @@ const docTemplate = `{
             "properties": {
                 "batteryId": {
                     "description": "电池ID",
+                    "type": "integer"
+                },
+                "enterpriseId": {
+                    "description": "团签id",
                     "type": "integer"
                 }
             }
@@ -26739,7 +26786,7 @@ const docTemplate = `{
                 },
                 "expireTime": {
                     "description": "到期时间",
-                    "type": "integer"
+                    "type": "string"
                 },
                 "id": {
                     "type": "integer"
@@ -26764,6 +26811,9 @@ const docTemplate = `{
         },
         "model.SubscribeAlterReviewReq": {
             "type": "object",
+            "required": [
+                "status"
+            ],
             "properties": {
                 "ids": {
                     "type": "array",
@@ -26772,8 +26822,12 @@ const docTemplate = `{
                     }
                 },
                 "status": {
-                    "description": "审批状态",
-                    "type": "integer"
+                    "description": "审批状态 1:通过 2:拒绝",
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
                 }
             }
         },

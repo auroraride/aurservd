@@ -1,19 +1,23 @@
 package model
 
 const (
-	SubscribeAlterUnreviewed = iota // 未审核
-	SubscribeAlterNormal            // 已通过
-	SubscribeAlterUnpass            // 未通过
+	SubscribeAlterStatusPending = iota // 未审核
+	SubscribeAlterStatusAgree          // 已通过
+	SubscribeAlterStatusRefuse         // 拒绝申请
 )
 
 // SubscribeAlterApplyReq 申请请求
 type SubscribeAlterApplyReq struct {
 	PaginationReq
-	Start   *string `json:"start" query:"start"`      // 开始时间
-	End     *string `json:"end" query:"end"`          // 结束时间
-	Keyword *string `json:"keyword" query:"keyword"`  // 关键词
-	Status  *int    `json:"status" query:"status"`    // 审核状态
-	ID      uint64  `json:"id" query:"id" param:"id"` // 团签ID
+	Start   *string `json:"start" query:"start"`     // 开始时间
+	End     *string `json:"end" query:"end"`         // 结束时间
+	Keyword *string `json:"keyword" query:"keyword"` // 关键词
+	Status  *int    `json:"status" query:"status"`   // 审核状态
+}
+
+type SubscribeAlterApplyManagerReq struct {
+	SubscribeAlterApplyReq
+	EnterpriseID uint64 `json:"enterpriseId" query:"enterpriseId" param:"enterpriseId"` // 团签ID
 }
 
 // SubscribeAlterApplyListRsp 申请列表返回信息
@@ -37,8 +41,6 @@ type SubscribeAlterApplyListRsp struct {
 
 // SubscribeAlterReviewReq 审批订阅申请
 type SubscribeAlterReviewReq struct {
-	Ids []uint64 `json:"ids"`
-	// 审批状态
-	Status       int     `json:"status"`
-	EnterpriseID *uint64 `json:"EnterpriseID"` // 团签ID
+	Ids    []uint64 `json:"ids"`
+	Status int      `json:"status" validate:"required" enums:"1,2"` // 审批状态 1:通过 2:拒绝
 }

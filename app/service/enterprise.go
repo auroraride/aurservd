@@ -28,7 +28,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
-	"github.com/auroraride/aurservd/internal/ent/subscribealter"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
 )
@@ -659,115 +658,6 @@ func (s *enterpriseService) NameFromID(id uint64) string {
 		return "-"
 	}
 	return p.Name
-}
-
-// SubscribeApplyList 骑手订阅申请加时列表
-func (s *enterpriseService) SubscribeApplyList(req *model.SubscribeAlterApplyReq, enterpriseId uint64) *model.PaginationRes {
-	q := ent.Database.SubscribeAlter.QueryNotDeleted().Where(subscribealter.EnterpriseID(enterpriseId)).
-		Where(subscribealter.HasRiderWith(rider.DeletedAtIsNil())).
-		Where(subscribealter.HasSubscribeWith(subscribe.StatusNotIn(model.SubscribeStatusUnSubscribed))).
-		Order(ent.Desc(subscribealter.FieldCreatedAt)).WithRider().WithSubscribe()
-
-	tt := tools.NewTime()
-	if req.Start != nil {
-		q.Where(subscribealter.CreatedAtGTE(tt.ParseDateStringX(*req.Start)))
-	}
-	if req.End != nil {
-		q.Where(subscribealter.CreatedAtLT(tt.ParseNextDateStringX(*req.End)))
-	}
-
-	if req.Status != nil {
-		q.Where(subscribealter.Status(*req.Status))
-	}
-	if req.Keyword != nil {
-		q.Where(subscribealter.HasRiderWith(rider.Or(rider.NameContainsFold(*req.Keyword),
-			rider.PhoneContainsFold(*req.Keyword))))
-	}
-	return model.ParsePaginationResponse(
-		q,
-		req.PaginationReq,
-		func(item *ent.SubscribeAlter) model.SubscribeAlterApplyListRsp {
-			rsp := model.SubscribeAlterApplyListRsp{
-				ID:   item.ID,
-				Days: item.Days,
-				// 申请时间
-				ApplyTime: item.CreatedAt.Format(carbon.DateTimeLayout),
-				// 审批状态
-				Status: item.Status,
-			}
-			if item.ExpireTime != nil {
-				rsp.ExpireTime = item.ExpireTime.Format(carbon.DateTimeLayout)
-			}
-			if item.ReviewTime != nil {
-				rsp.ReviewTime = item.ReviewTime.Format(carbon.DateTimeLayout)
-			}
-			if item.Edges.Rider != nil {
-				// 骑手姓名
-				rsp.RiderName = item.Edges.Rider.Name
-				// 骑手手机号
-				rsp.RiderPhone = item.Edges.Rider.Phone
-			}
-			return rsp
-		})
-}
-
-// SubscribeApplyReviewApply 审批加时申请
-func (s *enterpriseService) SubscribeApplyReviewApply(req *model.SubscribeAlterReviewReq) {
-	// 查找申请记录
-	q := ent.Database.SubscribeAlter.QueryNotDeleted().Where(subscribealter.IDIn(req.Ids...)).
-		Where(subscribealter.HasRiderWith(rider.DeletedAtIsNil())).
-		Where(subscribealter.HasSubscribeWith(subscribe.StatusNotIn(model.SubscribeStatusUnSubscribed)))
-	if req.EnterpriseID != nil {
-		q.Where(subscribealter.EnterpriseID(*req.EnterpriseID))
-	}
-	alter, err := q.All(s.ctx)
-	if err != nil || len(alter) == 0 {
-		snag.Panic("申请记录不存在")
-	}
-	for _, v := range alter {
-		if v.Status != model.SubscribeAlterUnreviewed {
-			snag.Panic("申请已审批")
-		}
-		// 事务
-		ent.WithTxPanic(s.ctx, func(tx *ent.Tx) error {
-			// 查询订阅信息
-			sub, _ := tx.Subscribe.Query().Where(subscribe.ID(v.SubscribeID)).First(s.ctx)
-			if sub == nil || sub.Status == model.SubscribeStatusUnSubscribed || sub.Status == model.SubscribeStatusCanceled {
-				zap.L().Log(zap.ErrorLevel, "订阅信息不存在")
-				return errors.New("订阅信息不存在")
-			}
-			err = tx.SubscribeAlter.UpdateOne(v).SetStatus(req.Status).SetReviewTime(time.Now()).Exec(s.ctx)
-			if err != nil {
-				zap.L().Log(zap.ErrorLevel, "审批加时申请失败", zap.Error(err))
-				return err
-			}
-			// 审批不通过不继续
-			if req.Status == model.SubscribeAlterUnpass {
-				return nil
-			}
-
-			// 剩余天数
-			before := tools.NewTime().LastDaysToNow(*sub.AgentEndAt)
-			// 加时后的结束时间
-			after := before + v.Days
-
-			if after > 0 && sub.Status == model.SubscribeStatusOverdue {
-				sub.Status = model.SubscribeStatusUsing
-			}
-			if after < 0 {
-				sub.Status = model.SubscribeStatusOverdue
-			}
-			// 更新订阅时间
-			if err = tx.Subscribe.UpdateOne(sub).AddAlterDays(v.Days).
-				SetAgentEndAt(tools.NewTime().WillEnd(*sub.AgentEndAt, v.Days, true)).
-				SetStatus(sub.Status).
-				Exec(s.ctx); err != nil {
-				zap.L().Log(zap.ErrorLevel, "更新订阅时间失败", zap.Error(err))
-				return err
-			}
-			return nil
-		})
-	}
 }
 
 // PriceList 团签价格列表

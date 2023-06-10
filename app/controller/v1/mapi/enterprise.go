@@ -347,24 +347,23 @@ func (*enterprise) RepaymentList(c echo.Context) (err error) {
 	return ctx.SendResponse(service.NewPrepayment(ctx.Modifier).List(req.EnterpriseID, req))
 }
 
-// SubscribeApplyList 订阅申请列表
+// SubscribeApplyList
 // @ID           ManagerEnterpriseSubscribeApplyList
-// @Router       /manager/v1/enterprise/subscribe/apply/{id} [GET]
-// @Summary      M9027 订阅申请列表
+// @Router       /manager/v1/enterprise/subscribe/alter/{enterpriseId} [GET]
+// @Summary      M9027 加时申请列表
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
-// @Param        id  query  uint64  true  "团签ID"
-// @Param        query  query  model.SubscribeAlterApplyReq  false  "请求参数"
+// @Param        query  query  model.SubscribeAlterApplyManagerReq  false  "请求参数"
 // @Success      200  {object}  model.PaginationRes{items=[]model.SubscribeAlterApplyListRsp}
 func (*enterprise) SubscribeApplyList(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[model.SubscribeAlterApplyReq](c)
-	return ctx.SendResponse(service.NewEnterpriseWithModifier(ctx.Modifier).SubscribeApplyList(req, req.ID))
+	ctx, req := app.ManagerContextAndBinding[model.SubscribeAlterApplyManagerReq](c)
+	return ctx.SendResponse(service.NewSubscribeAgent(ctx.Modifier).AlterList(req.EnterpriseID, &req.SubscribeAlterApplyReq))
 }
 
-// SubscribeApply 审批订阅申请
+// SubscribeApply
 // @ID           ManagerEnterpriseSubscribeApply
-// @Router       /manager/v1/enterprise/subscribe/apply [POST]
+// @Router       /manager/v1/enterprise/subscribe/alter [POST]
 // @Summary      M9028 审批订阅申请
 // @Tags         [M]管理接口
 // @Accept       json
@@ -373,7 +372,7 @@ func (*enterprise) SubscribeApplyList(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse
 func (*enterprise) SubscribeApply(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.SubscribeAlterReviewReq](c)
-	service.NewEnterpriseWithModifier(ctx.Modifier).SubscribeApplyReviewApply(req)
+	service.NewSubscribeAgent(ctx.Modifier).AlterReview(req)
 	return ctx.SendResponse()
 }
 

@@ -159,7 +159,7 @@ func loadManagerRoutes() {
 	// 解绑电柜
 	g.GET("/enterprise/unbind/cabinet/:id", mapi.Enterprise.UnbindCabinet)
 	// 申请列表
-	g.GET("/enterprise/subscribe/apply/:id", mapi.Enterprise.SubscribeApplyList)
+	g.GET("/enterprise/subscribe/apply/:enterpriseId", mapi.Enterprise.SubscribeApplyList)
 	// 申请审核
 	g.POST("/enterprise/subscribe/apply", mapi.Enterprise.SubscribeApply)
 	// 激活骑手

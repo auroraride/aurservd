@@ -78,7 +78,7 @@ func (*rider) Detail(c echo.Context) (err error) {
 	return ctx.SendResponse(service.NewRiderAgentWithAgent(ctx.Agent, ctx.Enterprise).Detail(req, ctx.Enterprise.ID))
 }
 
-// Active 激活骑手
+// Active
 // @ID           AgentRiderActive
 // @Router       /agent/v1/rider/active [POST]
 // @Summary      A2005 激活骑手
@@ -91,41 +91,6 @@ func (*rider) Detail(c echo.Context) (err error) {
 func (*rider) Active(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.RiderActiveBatteryReq](c)
 	service.NewEnterprise().Active(req, ctx.Enterprise.ID)
-	return ctx.SendResponse()
-}
-
-// SubscribeApplyList  申请加时列表
-// @ID           AgentSubscribeApplyList
-// @Router       /agent/v1/subscribe/apply [GET]
-// @Summary      A2008 申请加时列表
-// @Tags         [A]代理接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Agent-Token  header  string  true  "代理校验token"
-// @Param        query  query   model.SubscribeAlterApplyReq  true  "查询条件"
-// @Success      200  {object}  model.PaginationRes{items=[]model.SubscribeAlterApplyListRsp}  "请求成功"
-func (*rider) SubscribeApplyList(c echo.Context) (err error) {
-	ctx, req := app.AgentContextAndBinding[model.SubscribeAlterApplyReq](c)
-	return ctx.SendResponse(service.NewEnterpriseWithAgent(ctx.Agent, ctx.Enterprise).SubscribeApplyList(req, ctx.Enterprise.ID))
-}
-
-// ReviewApply  审核加时
-// @ID           AgentReviewApply
-// @Router       /agent/v1/subscribe/apply [POST]
-// @Summary      A2007 审核加时
-// @Tags         [A]代理接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Agent-Token  header  string  true  "代理校验token"
-// @Param        body  body   model.SubscribeAlterReviewReq  true  "审核请求"
-// @Success      200  {object}  model.StatusResponse  "请求成功"
-func (*rider) ReviewApply(c echo.Context) (err error) {
-	ctx, req := app.AgentContextAndBinding[model.SubscribeAlterReviewReq](c)
-	service.NewEnterpriseWithAgent(ctx.Agent, ctx.Enterprise).SubscribeApplyReviewApply(&model.SubscribeAlterReviewReq{
-		Ids:          req.Ids,
-		Status:       req.Status,
-		EnterpriseID: &ctx.Enterprise.ID,
-	})
 	return ctx.SendResponse()
 }
 

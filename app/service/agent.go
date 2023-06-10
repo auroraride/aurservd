@@ -303,6 +303,6 @@ func (s *agentService) Index(en *ent.Enterprise) *model.AgentIndexRes {
 	// 新签=临期+计费中
 	v[0].NewRiderTotal = v[0].BillingRiderTotal + v[0].ExpiringRiderTotal
 	// 骑手加时审核数
-	v[0].OverTimeRiderTotal = ent.Database.SubscribeAlter.Query().Where(subscribealter.EnterpriseID(en.ID), subscribealter.StatusEQ(model.SubscribeAlterUnreviewed)).CountX(s.ctx)
+	v[0].OverTimeRiderTotal = ent.Database.SubscribeAlter.Query().Where(subscribealter.EnterpriseID(en.ID), subscribealter.StatusEQ(model.SubscribeAlterStatusPending)).CountX(s.ctx)
 	return &v[0]
 }

@@ -431,22 +431,21 @@ func (s *subscribeService) AlterDays(req *model.SubscribeAlter) (res model.Rider
 
 	u := sub.Edges.Rider
 
-	se := sub.Edges.Enterprise
-	// 团签用户禁止修改
-	if sub.EnterpriseID != nil {
+	// 团签(代理)骑手禁止修改
+	if sub.Edges.Enterprise != nil {
 		snag.Panic("团签用户无法修改")
 	}
 
 	// 剩余天数
 	before := sub.Remaining
 
-	if se != nil && se.Agent {
-		if sub.AgentEndAt == nil {
-			snag.Panic("骑手订阅异常")
-		}
-		// 计算剩余天数
-		before = tools.NewTime().LastDaysToNow(*sub.AgentEndAt)
-	}
+	// if se != nil && se.Agent {
+	// 	if sub.AgentEndAt == nil {
+	// 		snag.Panic("骑手订阅异常")
+	// 	}
+	// 	// 计算剩余天数
+	// 	before = tools.NewTime().LastDaysToNow(*sub.AgentEndAt)
+	// }
 	after := before + req.Days
 	status := sub.Status
 
@@ -462,7 +461,8 @@ func (s *subscribeService) AlterDays(req *model.SubscribeAlter) (res model.Rider
 			SetRiderID(sub.RiderID).
 			SetSubscribeID(sub.ID).
 			SetDays(req.Days).
-			SetRemark(req.Reason)
+			SetRemark(req.Reason).
+			SetStatus(model.SubscribeAlterStatusAgree)
 		if s.agent != nil {
 			tsa.SetAgentID(s.agent.ID).SetEnterpriseID(s.agent.EnterpriseID)
 		}
@@ -486,12 +486,15 @@ func (s *subscribeService) AlterDays(req *model.SubscribeAlter) (res model.Rider
 			UpdateOneID(sub.ID).
 			AddAlterDays(req.Days).
 			SetStatus(status)
+
 		// 计算代理商处到期日期
-		if se != nil && se.Agent {
-			ts.SetAgentEndAt(tools.NewTime().WillEnd(*sub.AgentEndAt, req.Days, true))
-		} else {
-			ts.AddRemaining(req.Days)
-		}
+		// if se != nil && se.Agent {
+		// 	ts.SetAgentEndAt(tools.NewTime().WillEnd(*sub.AgentEndAt, req.Days, true))
+		// } else {
+		// 	ts.AddRemaining(req.Days)
+		// }
+		ts.AddRemaining(req.Days)
+
 		sub, err = ts.Save(s.ctx)
 		if err != nil {
 			snag.Panic("时间修改失败")

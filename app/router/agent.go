@@ -43,9 +43,9 @@ func loadAgentRoutes() {
 	// 邀请骑手二维码
 	auth.POST("/rider/invite", aapi.Rider.Invite)
 	// 申请加时列表
-	auth.GET("/subscribe/apply", aapi.Rider.SubscribeApplyList)
+	auth.GET("/subscribe/alter", aapi.Subscribe.AlterList)
 	// 审批加时
-	auth.POST("/subscribe/apply", aapi.Rider.ReviewApply)
+	auth.POST("/subscribe/alter/review", aapi.Subscribe.AlterReivew)
 	// 换电记录列表
 	auth.GET("/rider/exchange", aapi.Rider.ExchangeList)
 	// 电柜列表

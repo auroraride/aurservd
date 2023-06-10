@@ -379,7 +379,7 @@ func (s *enterpriseRiderService) SubscribeStatus(req *model.EnterpriseRiderSubsc
 func (s *enterpriseRiderService) AddSubscribeDays(req *model.RiderSubscribeAddReq, rid *ent.Rider) {
 	// 查询骑手申请是否有未审批的
 	q := ent.Database.SubscribeAlter.QueryNotDeleted().Where(subscribealter.RiderID(rid.ID),
-		subscribealter.Status(model.SubscribeAlterUnreviewed))
+		subscribealter.Status(model.SubscribeAlterStatusPending))
 
 	if rid.EnterpriseID != nil {
 		subscribealter.EnterpriseID(*rid.EnterpriseID)
@@ -402,7 +402,7 @@ func (s *enterpriseRiderService) AddSubscribeDays(req *model.RiderSubscribeAddRe
 		SetEnterpriseID(*rid.EnterpriseID).
 		SetSubscribeID(sub.ID).
 		SetDays(req.Days).
-		SetStatus(model.SubscribeAlterUnreviewed).
+		SetStatus(model.SubscribeAlterStatusPending).
 		SetNillableExpireTime(sub.AgentEndAt).
 		Save(s.ctx)
 	if err != nil {

@@ -550,6 +550,9 @@ definitions:
         type: string
       id:
         type: integer
+      isAuthed:
+        description: 是否实名认证
+        type: boolean
       model:
         description: 电池型号
         type: string
@@ -4148,6 +4151,7 @@ definitions:
   model.EnterproseInfoReq:
     properties:
       enterpriseId:
+        description: 团签id
         type: integer
       stationId:
         description: 站点id
@@ -4158,12 +4162,22 @@ definitions:
     type: object
   model.EnterproseInfoRsp:
     properties:
+      days:
+        description: 天数
+        items:
+          type: integer
+        type: array
       enterproseName:
         description: 团签名称
         type: string
       isJoin:
         description: 是否可以加入团签
         type: boolean
+      priceList:
+        description: 价格
+        items:
+          $ref: '#/definitions/model.EnterprisePriceWithCity'
+        type: array
       stationName:
         description: 站点名称
         type: string
@@ -5688,6 +5702,9 @@ definitions:
     properties:
       batteryId:
         description: 电池ID
+        type: integer
+      enterpriseId:
+        description: 团签id
         type: integer
     required:
     - batteryId
@@ -7260,7 +7277,7 @@ definitions:
         type: integer
       expireTime:
         description: 到期时间
-        type: integer
+        type: string
       id:
         type: integer
       reviewTime:
@@ -7283,8 +7300,13 @@ definitions:
           type: integer
         type: array
       status:
-        description: 审批状态
+        description: 审批状态 1:通过 2:拒绝
+        enum:
+        - 1
+        - 2
         type: integer
+    required:
+    - status
     type: object
   model.SubscribeBusiness:
     properties:
@@ -7656,11 +7678,19 @@ paths:
         name: X-Agent-Token
         required: true
         type: string
+      - description: 团签ID
+        in: query
+        name: enterpriseId
+        type: integer
       - in: query
         minLength: 4
         name: serial
         required: true
         type: string
+      - description: 站点ID
+        in: query
+        name: stationId
+        type: integer
       produces:
       - application/json
       responses:
@@ -8047,7 +8077,7 @@ paths:
         type: string
       - description: 团签ID
         in: query
-        name: enterprises_id
+        name: enterpriseId
         type: integer
       - description: 每页数据, 默认20
         in: query
@@ -8644,11 +8674,11 @@ paths:
       summary: A6001 出入库明细
       tags:
       - '[A]代理接口'
-  /agent/v1/subscribe/apply:
+  /agent/v1/subscribe/alter:
     get:
       consumes:
       - application/json
-      operationId: AgentSubscribeApplyList
+      operationId: AgentAlterList
       parameters:
       - description: 代理校验token
         in: header
@@ -8663,10 +8693,6 @@ paths:
         in: query
         name: end
         type: string
-      - description: 团签ID
-        in: query
-        name: id
-        type: integer
       - description: 关键词
         in: query
         name: keyword
@@ -8697,13 +8723,14 @@ paths:
                     $ref: '#/definitions/model.SubscribeAlterApplyListRsp'
                   type: array
               type: object
-      summary: A2008 申请加时列表
+      summary: A7001 申请加时列表
       tags:
       - '[A]代理接口'
+  /agent/v1/subscribe/review:
     post:
       consumes:
       - application/json
-      operationId: AgentReviewApply
+      operationId: AgentAlterReivew
       parameters:
       - description: 代理校验token
         in: header
@@ -8723,7 +8750,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: A2007 审核加时
+      summary: A7002 审核加时
       tags:
       - '[A]代理接口'
   /agent/v1/upload/image:
@@ -13373,7 +13400,7 @@ paths:
         type: string
       - description: 团签ID
         in: query
-        name: enterprises_id
+        name: enterpriseId
         type: integer
       - description: 每页数据, 默认20
         in: query
@@ -13597,8 +13624,8 @@ paths:
       summary: M9007 编辑站点
       tags:
       - '[M]管理接口'
-  /manager/v1/enterprise/subscribe/apply:
-    put:
+  /manager/v1/enterprise/subscribe/alter:
+    post:
       consumes:
       - application/json
       operationId: ManagerEnterpriseSubscribeApply
@@ -13619,17 +13646,12 @@ paths:
       summary: M9028 审批订阅申请
       tags:
       - '[M]管理接口'
-  /manager/v1/enterprise/subscribe/apply/{id}:
+  /manager/v1/enterprise/subscribe/alter/{enterpriseId}:
     get:
       consumes:
       - application/json
       operationId: ManagerEnterpriseSubscribeApplyList
       parameters:
-      - description: 团签ID
-        in: query
-        name: id
-        required: true
-        type: integer
       - description: 当前页, 从1开始, 默认1
         in: query
         name: current
@@ -13638,10 +13660,6 @@ paths:
         in: query
         name: end
         type: string
-      - description: 团签ID
-        in: query
-        name: id
-        type: integer
       - description: 关键词
         in: query
         name: keyword
@@ -13672,7 +13690,7 @@ paths:
                     $ref: '#/definitions/model.SubscribeAlterApplyListRsp'
                   type: array
               type: object
-      summary: M9027 订阅申请列表
+      summary: M9027 加时申请列表
       tags:
       - '[M]管理接口'
   /manager/v1/enterprise/unbind/cabinet/{id}:
@@ -15021,6 +15039,28 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M7011 删除骑手
+      tags:
+      - '[M]管理接口'
+  /manager/v1/rider/active:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerRiderActive
+      parameters:
+      - description: 激活骑手请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.RiderActiveBatteryReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M7026 激活骑手
       tags:
       - '[M]管理接口'
   /manager/v1/rider/ban:
@@ -17552,7 +17592,8 @@ paths:
         name: X-Rider-Token
         required: true
         type: string
-      - in: query
+      - description: 团签id
+        in: query
         name: enterpriseId
         required: true
         type: integer
@@ -17691,10 +17732,6 @@ paths:
         in: query
         name: end
         type: string
-      - description: 团签ID
-        in: query
-        name: id
-        type: integer
       - description: 关键词
         in: query
         name: keyword
