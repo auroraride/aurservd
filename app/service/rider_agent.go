@@ -124,6 +124,7 @@ func (s *riderAgentService) List(enterpriseID uint64, req *model.AgentRiderListR
 		}).
 		WithStation().
 		WithBattery().
+		WithPerson().
 		Order(ent.Desc(rider.FieldCreatedAt))
 
 	today := carbon.Now().StartOfDay().Carbon2Time()
@@ -268,6 +269,11 @@ func (s *enterpriseService) Active(req *model.RiderActiveBatteryReq, enterpriseI
 	if subscribeInfo == nil {
 		snag.Panic("未找到未激活订单")
 	}
+
+	if batteryInfo.Model != sub.Model {
+		snag.Panic("激活电池型号与订阅电池型号不符")
+	}
+
 	// 绑定电池
 	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) error {
 		// 激活订阅
