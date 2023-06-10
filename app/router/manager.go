@@ -159,9 +159,9 @@ func loadManagerRoutes() {
 	// 解绑电柜
 	g.GET("/enterprise/unbind/cabinet/:id", mapi.Enterprise.UnbindCabinet)
 	// 申请列表
-	g.GET("/enterprise/subscribe/apply/:enterpriseId", mapi.Enterprise.SubscribeApplyList)
+	g.GET("/enterprise/subscribe/alter/:enterpriseId", mapi.Enterprise.SubscribeApplyList)
 	// 申请审核
-	g.POST("/enterprise/subscribe/apply", mapi.Enterprise.SubscribeApply)
+	g.POST("/enterprise/subscribe/alter", mapi.Enterprise.SubscribeApply)
 	// 激活骑手
 	g.POST("/rider/active", mapi.Enterprise.Active)
 
