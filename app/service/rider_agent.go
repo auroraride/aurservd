@@ -119,8 +119,8 @@ func (s *riderAgentService) detail(item *ent.Rider) model.AgentRider {
 func (s *riderAgentService) List(enterpriseID uint64, req *model.AgentRiderListReq) *model.PaginationRes {
 	q := s.orm.QueryNotDeleted().
 		Where(rider.EnterpriseID(enterpriseID)).
-		WithSubscribes(func(query *ent.SubscribeQuery) {
-			query.Order(ent.Desc(subscribe.FieldCreatedAt)).WithCity()
+		WithSubscribes(func(sq *ent.SubscribeQuery) {
+			sq.Order(ent.Desc(subscribe.FieldCreatedAt)).WithCity()
 		}).
 		WithStation().
 		WithBattery().
