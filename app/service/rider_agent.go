@@ -235,9 +235,20 @@ func (s *riderAgentService) Log(req *model.AgentRiderLogReq) (items []model.Agen
 // Active 激活骑手电池
 func (s *enterpriseService) Active(req *model.RiderActiveBatteryReq, enterpriseID uint64) {
 	// 不是自己骑手的不能激活
-	riderInfo, _ := ent.Database.Rider.QueryNotDeleted().Where(rider.ID(req.ID), rider.EnterpriseID(enterpriseID)).First(s.ctx)
+	riderInfo, _ := ent.Database.Rider.
+		QueryNotDeleted().
+		Where(
+			rider.ID(req.ID),
+			rider.EnterpriseID(enterpriseID),
+		).
+		WithPerson().
+		First(s.ctx)
 	if riderInfo == nil {
 		snag.Panic("未找到有效骑手")
+	}
+
+	if !NewRider().IsAuthed(riderInfo) {
+		snag.Panic("骑手未实名认证")
 	}
 
 	// 查询电池是否存在

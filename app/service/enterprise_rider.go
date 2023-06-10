@@ -428,13 +428,19 @@ func (s *enterpriseRiderService) SubscribeAlterList(req *model.SubscribeAlterApp
 		q,
 		req.PaginationReq,
 		func(item *ent.SubscribeAlter) model.SubscribeAlterApplyListRsp {
-			return model.SubscribeAlterApplyListRsp{
-				ID:         item.ID,
-				Days:       item.Days,
-				ApplyTime:  item.CreatedAt.Format(carbon.DateTimeLayout), // 申请时间
-				ReviewTime: item.UpdatedAt.Format(carbon.DateTimeLayout), // 审批时间
-				Status:     item.Status,                                  // 审批状态
+			rsp := model.SubscribeAlterApplyListRsp{
+				ID:        item.ID,
+				Days:      item.Days,
+				ApplyTime: item.CreatedAt.Format(carbon.DateTimeLayout), // 申请时间
+				Status:    item.Status,                                  // 审批状态
 			}
+			if item.ExpireTime != nil {
+				rsp.ExpireTime = item.ExpireTime.Format(carbon.DateTimeLayout)
+			}
+			if item.ReviewTime != nil {
+				rsp.ReviewTime = item.ReviewTime.Format(carbon.DateTimeLayout)
+			}
+			return rsp
 		})
 }
 
