@@ -61,7 +61,6 @@ func (s *riderAgentService) detail(item *ent.Rider) model.AgentRider {
 		Date:     item.CreatedAt.Format(carbon.DateLayout),
 		Name:     item.Name,
 		IsAuthed: NewRider().IsAuthed(item),
-		Status:   model.AgentRiderStatusInactive,
 	}
 	// 获取站点
 	st := item.Edges.Station
@@ -110,6 +109,8 @@ func (s *riderAgentService) detail(item *ent.Rider) model.AgentRider {
 				res.Remaining = silk.Pointer(tools.NewTime().LastDays(*sub.AgentEndAt, today))
 			}
 		}
+	} else {
+		res.Status = model.AgentRiderStatusInactive
 	}
 	return res
 }
