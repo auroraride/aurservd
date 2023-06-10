@@ -25,22 +25,22 @@ type AgentRiderListReq struct {
 }
 
 type AgentRider struct {
-	ID          uint64 `json:"id"`
-	Name        string `json:"name"`                // 姓名
-	Phone       string `json:"phone"`               // 电话
-	Status      string `json:"status"`              // 状态
-	Remaining   *int   `json:"remaining,omitempty"` // 剩余天数
-	City        *City  `json:"city,omitempty"`      // 城市
-	Date        string `json:"date"`                // 创建日期
-	Station     string `json:"station"`             // 站点
-	EndAt       string `json:"endAt"`               // 退租日期
-	StopAt      string `json:"stopAt"`              // 到期日期
-	StartAt     string `json:"startAt"`             // 开始日期
-	SubscribeID uint64 `json:"subscribeId"`         // 订阅ID
-	Model       string `json:"model"`               // 电池型号
-	BatterySN   string `json:"batterySn"`           // 电池sn
-	Used        int    `json:"used"`                // 使用天数
-	IsAuthed    bool   `json:"isAuthed"`            // 是否实名认证
+	ID          uint64 `json:"id,omitempty"`
+	Name        string `json:"name,omitempty"`        // 姓名
+	Phone       string `json:"phone,omitempty"`       // 电话
+	Status      string `json:"status,omitempty"`      // 状态
+	Remaining   *int   `json:"remaining,omitempty"`   // 剩余天数
+	City        *City  `json:"city,omitempty"`        // 城市
+	Date        string `json:"date,omitempty"`        // 创建日期
+	Station     string `json:"station,omitempty"`     // 站点
+	EndAt       string `json:"endAt,omitempty"`       // 退租日期
+	StopAt      string `json:"stopAt,omitempty"`      // 到期日期
+	StartAt     string `json:"startAt,omitempty"`     // 开始日期
+	SubscribeID uint64 `json:"subscribeId,omitempty"` // 订阅ID
+	Model       string `json:"model,omitempty"`       // 电池型号
+	BatterySN   string `json:"batterySn,omitempty"`   // 电池sn
+	Used        int    `json:"used,omitempty"`        // 使用天数
+	IsAuthed    bool   `json:"isAuthed,omitempty"`    // 是否实名认证
 }
 
 type AgentRiderLogReq struct {

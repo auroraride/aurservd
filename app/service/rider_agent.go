@@ -61,6 +61,7 @@ func (s *riderAgentService) detail(item *ent.Rider) model.AgentRider {
 		Date:     item.CreatedAt.Format(carbon.DateLayout),
 		Name:     item.Name,
 		IsAuthed: NewRider().IsAuthed(item),
+		Status:   model.AgentRiderStatusInactive,
 	}
 	// 获取站点
 	st := item.Edges.Station
@@ -74,8 +75,6 @@ func (s *riderAgentService) detail(item *ent.Rider) model.AgentRider {
 		res.BatterySN = bat.Sn
 	}
 
-	// 默认未激活
-	res.Status = model.AgentRiderStatusInactive
 	// 获取订阅信息
 	subs := item.Edges.Subscribes
 	if len(subs) > 0 {
@@ -106,19 +105,9 @@ func (s *riderAgentService) detail(item *ent.Rider) model.AgentRider {
 			res.Status = model.AgentRiderStatusUnsubscribed
 		case model.SubscribeStatusUsing:
 			res.Status = model.AgentRiderStatusUsing
-			// // 计算剩余日期
+			// 计算剩余日期
 			if sub.AgentEndAt != nil {
 				res.Remaining = silk.Pointer(tools.NewTime().LastDays(*sub.AgentEndAt, today))
-				// 	// 判定当前状态
-				// 	if sub.AgentEndAt.After(today) && *res.Remaining > model.WillOverdueNum {
-				// 		// 若代理商处到期日期晚于今天, 则是使用中
-				// 		res.Status = model.AgentRiderStatusUsing
-				// 	} else if *res.Remaining <= model.WillOverdueNum && *res.Remaining > 0 { // 即将到期暂定3天
-				// 		res.Status = model.AgentRiderStatusWillOverdue
-				// 	} else {
-				// 		// 否则是已逾期
-				// 		res.Status = model.AgentRiderStatusOverdue
-				// 	}
 			}
 		}
 	}
@@ -130,7 +119,7 @@ func (s *riderAgentService) List(enterpriseID uint64, req *model.AgentRiderListR
 	q := s.orm.QueryNotDeleted().
 		Where(rider.EnterpriseID(enterpriseID)).
 		WithSubscribes(func(query *ent.SubscribeQuery) {
-			query.Order(ent.Desc(subscribe.FieldCreatedAt)).WithCity()
+			query.Order(ent.Desc(subscribe.FieldCreatedAt)).WithCity().Limit(1)
 		}).
 		WithStation().
 		WithBattery().
