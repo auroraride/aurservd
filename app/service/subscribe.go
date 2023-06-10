@@ -432,8 +432,8 @@ func (s *subscribeService) AlterDays(req *model.SubscribeAlter) (res model.Rider
 	u := sub.Edges.Rider
 
 	se := sub.Edges.Enterprise
-	// 团签用户禁止修改 (只允许个签和代理用户修改)
-	if sub.EnterpriseID != nil && (se != nil && !se.Agent) {
+	// 团签用户禁止修改
+	if sub.EnterpriseID != nil {
 		snag.Panic("团签用户无法修改")
 	}
 
