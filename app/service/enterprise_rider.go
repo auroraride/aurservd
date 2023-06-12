@@ -8,6 +8,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"go.uber.org/zap"
 	"time"
 
 	"github.com/golang-module/carbon/v2"
@@ -82,30 +83,20 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 			// 查询订阅信息
 			sub, _ = NewSubscribe().QueryEffective(r.ID)
 			if sub != nil && (sub.EnterpriseID == nil || (sub.EnterpriseID != nil && sub.Status != model.SubscribeStatusInactive)) {
-				snag.Panic("该骑手不能绑定,已有未完成的订单")
+				zap.L().Error("该骑手不能绑定,已有未完成的订单")
 				return fmt.Errorf("该骑手不能绑定,已有未完成的订单")
 			}
-			// 更新骑手信息
-			if ent.Database.Rider.UpdateOne(r).
-				SetEnterpriseID(req.EnterpriseID).
-				SetStationID(req.StationID).
-				Exec(s.ctx) != nil {
-				snag.Panic("更新骑手失败")
-				return fmt.Errorf("更新骑手失败")
-			}
 
-			// 如果有是团签并且未激活的订阅信息 修改订阅信息
-			if sub != nil && sub.EnterpriseID != nil && sub.Status == model.SubscribeStatusInactive {
-				_, err = tx.Subscribe.UpdateOne(sub).
-					SetRiderID(r.ID).
-					SetEnterpriseID(req.EnterpriseID).
-					SetStationID(req.StationID).
-					SetInitialDays(req.Days).
-					SetAgentEndAt(tools.NewTime().WillEnd(time.Now(), req.Days)).
-					Save(s.ctx)
-				if err != nil {
-					return err
-				}
+			// 删除之前骑手信息
+			_, err = tx.Rider.SoftDeleteOne(r).SetRemark("骑手退出团签").Save(s.ctx)
+			if err != nil {
+				zap.L().Error("删除骑手失败", zap.Error(err))
+				return
+			}
+			// 新增骑手信息
+			err = s.CopyAndCreateRider(*r)
+			if err != nil {
+				zap.L().Error("新增骑手失败", zap.Error(err))
 				return
 			}
 		} else {
@@ -144,22 +135,6 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 			Save(s.ctx)
 		return
 	})
-
-	// // 业务记录
-	// var b *ent.Business
-	// b, err := NewBusinessLog(sub).
-	// 	SetModifier(s.modifier).
-	// 	SetEmployee(s.employee).
-	// 	SetCabinet(s.cabinet).
-	// 	SetStore(s.store).
-	// 	SetBinInfo(bin).
-	// 	SetStock(sk).
-	// 	SetBattery(bat).
-	// 	Save(bt)
-	// if err != nil {
-	// 	return err
-	// }
-
 	// 记录日志
 	go logging.NewOperateLog().
 		SetRef(r).
@@ -553,4 +528,59 @@ func (s *enterpriseRiderService) JoinEnterprise(req *model.EnterpriseJoinReq, ri
 		return
 	})
 
+}
+
+// ExitEnterprise 退出团签
+func (s *enterpriseRiderService) ExitEnterprise(r *ent.Rider) {
+	// 查询订阅
+	sub, _ := ent.Database.Subscribe.QueryNotDeleted().
+		Where(subscribe.RiderID(r.ID),
+			subscribe.StatusIn(model.SubscribeStatusInactive, model.SubscribeStatusUnSubscribed),
+		).First(s.ctx)
+	if sub == nil {
+		snag.Panic("未找到订阅")
+	}
+	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
+		// 删除之前骑手信息
+		_, err = tx.Rider.SoftDeleteOne(r).SetRemark("骑手退出团签").Save(s.ctx)
+		if err != nil {
+			zap.L().Error("删除骑手失败", zap.Error(err))
+			return
+		}
+		// 新增骑手信息
+		err = s.CopyAndCreateRider(*r)
+		if err != nil {
+			zap.L().Error("新增骑手失败", zap.Error(err))
+			return
+		}
+		return
+	})
+}
+
+// CopyAndCreateRider 复制并创建骑手信息
+func (s *enterpriseRiderService) CopyAndCreateRider(ri ent.Rider) error {
+	_, err := ent.Database.Rider.Create().
+		SetCreator(ri.Creator).
+		SetLastModifier(ri.LastModifier).
+		SetRemark(ri.Remark).
+		SetPhone(ri.Phone).
+		SetContact(ri.Contact).
+		SetDeviceType(ri.DeviceType).
+		SetLastDevice(ri.LastDevice).
+		SetIsNewDevice(ri.IsNewDevice).
+		SetNillableLastFace(ri.LastFace).
+		SetPushID(ri.PushID).
+		SetNillableLastSigninAt(ri.LastSigninAt).
+		SetBlocked(ri.Blocked).
+		SetNillablePersonID(ri.PersonID).
+		SetPoints(ri.Points).
+		SetName(ri.Name).
+		SetIDCardNumber(ri.IDCardNumber).
+		SetExchangeLimit(ri.ExchangeLimit).
+		SetExchangeFrequency(ri.ExchangeFrequency).
+		Save(s.ctx)
+	if err != nil {
+		return err
+	}
+	return nil
 }

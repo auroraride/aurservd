@@ -134,6 +134,6 @@ func (*enterprise) RiderEnterpriseInfo(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*enterprise) ExitEnterprise(c echo.Context) (err error) {
 	ctx := app.ContextX[app.RiderContext](c)
-	service.NewEnterprise().ExitEnterprise(ctx.Rider)
+	service.NewEnterpriseRider().ExitEnterprise(ctx.Rider)
 	return ctx.SendResponse()
 }
