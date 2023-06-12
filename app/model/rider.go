@@ -57,6 +57,7 @@ type RiderSigninRes struct {
 	UseStore          bool               `json:"useStore"`                    // 是否可使用门店办理业务
 	CabinetBusiness   bool               `json:"cabinetBusiness"`             // 是否可以自主使用电柜办理业务
 	EnterpriseContact *EnterpriseContact `json:"enterpriseContact,omitempty"` // 团签联系方式
+	ExitEnterprise    bool               `json:"exitEnterprise"`              // 判断能否退出团签
 }
 
 // RiderContact 紧急联系人

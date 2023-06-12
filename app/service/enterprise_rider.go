@@ -7,6 +7,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -74,37 +75,29 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 
 	stat := NewEnterpriseStation().Query(req.StationID)
 	var r *ent.Rider
+	var sub *ent.Subscribe
+
 	r, _ = ent.Database.Rider.QueryNotDeleted().Where(rider.Phone(req.Phone)).First(s.ctx)
 	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
-		if r != nil { // 已存在骑手
+		// 查询骑手和团签
+		// 若骑手存在则删除原骑手信息并且新增骑手
+		if r != nil {
 			// 查询订阅信息
-			sub, _ := NewSubscribe().QueryEffective(r.ID)
+			sub, _ = NewSubscribe().QueryEffective(r.ID)
 			if sub != nil && (sub.EnterpriseID == nil || (sub.EnterpriseID != nil && sub.Status != model.SubscribeStatusInactive)) {
-				snag.Panic("该骑手不能绑定,已有未完成的订单")
-				return fmt.Errorf("该骑手不能绑定,已有未完成的订单")
-			}
-			// 更新骑手信息
-			if ent.Database.Rider.UpdateOne(r).
-				SetEnterpriseID(req.EnterpriseID).
-				SetStationID(req.StationID).
-				Exec(s.ctx) != nil {
-				snag.Panic("更新骑手失败")
-				return fmt.Errorf("更新骑手失败")
+				return errors.New("该骑手不能绑定,已有未完成的订单")
 			}
 
-			// 如果有是团签并且未激活的订阅信息 修改订阅信息
-			if sub != nil && sub.EnterpriseID != nil && sub.Status == model.SubscribeStatusInactive {
-				_, err = tx.Subscribe.UpdateOne(sub).
-					SetRiderID(r.ID).
-					SetEnterpriseID(req.EnterpriseID).
-					SetStationID(req.StationID).
-					SetInitialDays(req.Days).
-					SetAgentEndAt(tools.NewTime().WillEnd(time.Now(), req.Days)).
-					Save(s.ctx)
-				if err != nil {
-					return err
-				}
-				return
+			// 删除之前骑手信息
+			_, err = tx.Rider.SoftDeleteOne(r).SetRemark("更改团签").Save(s.ctx)
+			if err != nil {
+				return errors.New("删除骑手失败")
+			}
+
+			// 新增骑手信息
+			err = s.CopyAndCreateRider(tx, r)
+			if err != nil {
+				return errors.New("新增骑手失败")
 			}
 		} else {
 			// 未存在骑手创建骑手 并创建团签订阅信息
@@ -127,7 +120,7 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 			}
 		}
 		// 创建订阅信息
-		_, err = tx.Subscribe.Create().
+		sub, err = tx.Subscribe.Create().
 			SetRiderID(r.ID).
 			SetModel(ep.Model).
 			SetIntelligent(ep.Intelligent).
@@ -536,4 +529,51 @@ func (s *enterpriseRiderService) JoinEnterprise(req *model.EnterpriseJoinReq, ri
 		return
 	})
 
+}
+
+// ExitEnterprise 退出团签
+func (s *enterpriseRiderService) ExitEnterprise(r *ent.Rider) {
+	if r.EnterpriseID == nil {
+		snag.Panic("非团签骑手")
+	}
+
+	// 查询订阅
+	sub, _ := NewSubscribe().QueryEffective(r.ID)
+
+	if sub != nil && sub.Status != model.SubscribeStatusInactive {
+		snag.Panic("未找到订阅")
+	}
+
+	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
+		// 删除之前骑手信息
+		_, err = tx.Rider.SoftDeleteOne(r).SetRemark("骑手退出团签").Save(s.ctx)
+		if err != nil {
+			return errors.New("删除骑手失败")
+		}
+
+		// 新增骑手信息
+		return s.CopyAndCreateRider(tx, r)
+	})
+}
+
+// CopyAndCreateRider 复制并创建骑手信息
+func (s *enterpriseRiderService) CopyAndCreateRider(tx *ent.Tx, ri *ent.Rider) error {
+	return tx.Rider.Create().
+		SetRemark("骑手操作团签转为个签").
+		SetPhone(ri.Phone).
+		SetContact(ri.Contact).
+		SetDeviceType(ri.DeviceType).
+		SetLastDevice(ri.LastDevice).
+		SetIsNewDevice(ri.IsNewDevice).
+		SetNillableLastFace(ri.LastFace).
+		SetPushID(ri.PushID).
+		SetNillableLastSigninAt(ri.LastSigninAt).
+		SetBlocked(ri.Blocked).
+		SetNillablePersonID(ri.PersonID).
+		SetPoints(ri.Points).
+		SetName(ri.Name).
+		SetIDCardNumber(ri.IDCardNumber).
+		SetExchangeLimit(ri.ExchangeLimit).
+		SetExchangeFrequency(ri.ExchangeFrequency).
+		Exec(s.ctx)
 }

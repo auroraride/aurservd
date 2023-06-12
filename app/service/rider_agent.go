@@ -7,6 +7,7 @@ package service
 
 import (
 	"context"
+	"github.com/auroraride/aurservd/internal/ent/business"
 	"time"
 
 	"github.com/golang-module/carbon/v2"
@@ -202,6 +203,7 @@ func (s *riderAgentService) Detail(req *model.IDParamReq, enterpriseID uint64) m
 		}).
 		WithStation().
 		WithBattery().
+		WithPerson().
 		First(s.ctx)
 	if item == nil {
 		snag.Panic("未找到骑手")
@@ -311,6 +313,18 @@ func (s *enterpriseService) Active(req *model.AgentSubscribeActiveReq, enterpris
 			SetNillableSubscribeID(&subscribeInfo.ID).Exec(s.ctx); err != nil {
 			zap.L().Error("电池流水记录失败", zap.Error(err))
 			snag.Panic("电池流水记录失败")
+		}
+
+		ba := &model.Battery{
+			ID:    batteryInfo.ID,
+			SN:    batteryInfo.Sn,
+			Model: batteryInfo.Model,
+		}
+
+		// 记录业务日志
+		_, err := NewBusinessLog(sub).SetBattery(ba).SetModifier(s.modifier).Save(business.TypeActive)
+		if err != nil {
+			snag.Panic("记录业务日志失败")
 		}
 
 		return nil

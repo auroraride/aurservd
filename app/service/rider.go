@@ -953,6 +953,11 @@ func (s *riderService) Profile(u *ent.Rider, device *model.Device, token string)
 				Phone: en.ContactPhone,
 			}
 		}
+		// 判断是否能退出团签
+		if subd != nil && (subd.Status == model.SubscribeStatusInactive || subd.Status == model.SubscribeStatusUnSubscribed) {
+			profile.ExitEnterprise = true
+		}
+
 	} else {
 		profile.OrderNotActived = silk.Bool(subd != nil && subd.Status == model.SubscribeStatusInactive)
 		profile.Deposit = s.Deposit(u.ID)
