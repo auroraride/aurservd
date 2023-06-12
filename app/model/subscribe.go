@@ -10,13 +10,16 @@ const (
 	SubscribeTypeEbike   = "ebike"
 )
 
+// 订阅状态说明:
+// 个签拥有所有状态
+// 代理骑手只有两种状态, 计费中 / 已退订
 const (
-	SubscribeStatusInactive     uint8 = iota // 未激活
+	SubscribeStatusInactive     uint8 = iota // 未激活, 仅个签
 	SubscribeStatusUsing                     // 计费中
-	SubscribeStatusPaused                    // 寄存中
-	SubscribeStatusOverdue                   // 已逾期
-	SubscribeStatusUnSubscribed              // 已退订, 已过期, 已归还电池
-	SubscribeStatusCanceled                  // 已取消, 已退款
+	SubscribeStatusPaused                    // 寄存中, 仅个签
+	SubscribeStatusOverdue                   // 已逾期, 仅个签
+	SubscribeStatusUnSubscribed              // 已退订
+	SubscribeStatusCanceled                  // 已取消(已退款), 仅个签
 )
 
 func SubscribeNotUnSubscribed() []uint8 {
