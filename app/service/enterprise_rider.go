@@ -7,8 +7,8 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"go.uber.org/zap"
 	"time"
 
 	"github.com/golang-module/carbon/v2"
@@ -83,21 +83,17 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 			// 查询订阅信息
 			sub, _ = NewSubscribe().QueryEffective(r.ID)
 			if sub != nil && (sub.EnterpriseID == nil || (sub.EnterpriseID != nil && sub.Status != model.SubscribeStatusInactive)) {
-				zap.L().Error("该骑手不能绑定,已有未完成的订单")
-				return fmt.Errorf("该骑手不能绑定,已有未完成的订单")
+				return errors.New("该骑手不能绑定,已有未完成的订单")
 			}
-
 			// 删除之前骑手信息
-			_, err = tx.Rider.SoftDeleteOne(r).SetRemark("骑手退出团签").Save(s.ctx)
+			_, err = tx.Rider.SoftDeleteOne(r).SetRemark("更改团签").Save(s.ctx)
 			if err != nil {
-				zap.L().Error("删除骑手失败", zap.Error(err))
-				return
+				return errors.New("删除骑手失败")
 			}
 			// 新增骑手信息
-			err = s.CopyAndCreateRider(*r)
+			err = s.CopyAndCreateRider(*r, tx)
 			if err != nil {
-				zap.L().Error("新增骑手失败", zap.Error(err))
-				return
+				return errors.New("新增骑手失败")
 			}
 		} else {
 			// 未存在骑手创建骑手 并创建团签订阅信息
@@ -544,22 +540,20 @@ func (s *enterpriseRiderService) ExitEnterprise(r *ent.Rider) {
 		// 删除之前骑手信息
 		_, err = tx.Rider.SoftDeleteOne(r).SetRemark("骑手退出团签").Save(s.ctx)
 		if err != nil {
-			zap.L().Error("删除骑手失败", zap.Error(err))
-			return
+			return errors.New("删除骑手失败")
 		}
 		// 新增骑手信息
-		err = s.CopyAndCreateRider(*r)
+		err = s.CopyAndCreateRider(*r, tx)
 		if err != nil {
-			zap.L().Error("新增骑手失败", zap.Error(err))
-			return
+			return errors.New("新增骑手失败")
 		}
 		return
 	})
 }
 
 // CopyAndCreateRider 复制并创建骑手信息
-func (s *enterpriseRiderService) CopyAndCreateRider(ri ent.Rider) error {
-	_, err := ent.Database.Rider.Create().
+func (s *enterpriseRiderService) CopyAndCreateRider(ri ent.Rider, tx *ent.Tx) error {
+	_, err := tx.Rider.Create().
 		SetCreator(ri.Creator).
 		SetLastModifier(ri.LastModifier).
 		SetRemark(ri.Remark).
