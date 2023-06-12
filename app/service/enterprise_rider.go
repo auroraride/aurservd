@@ -79,19 +79,23 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 
 	r, _ = ent.Database.Rider.QueryNotDeleted().Where(rider.Phone(req.Phone)).First(s.ctx)
 	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
-		if r != nil { // 已存在骑手
+		// 查询骑手和团签
+		// 若骑手存在则删除原骑手信息并且新增骑手
+		if r != nil {
 			// 查询订阅信息
 			sub, _ = NewSubscribe().QueryEffective(r.ID)
 			if sub != nil && (sub.EnterpriseID == nil || (sub.EnterpriseID != nil && sub.Status != model.SubscribeStatusInactive)) {
 				return errors.New("该骑手不能绑定,已有未完成的订单")
 			}
+
 			// 删除之前骑手信息
 			_, err = tx.Rider.SoftDeleteOne(r).SetRemark("更改团签").Save(s.ctx)
 			if err != nil {
 				return errors.New("删除骑手失败")
 			}
+
 			// 新增骑手信息
-			err = s.CopyAndCreateRider(*r, tx)
+			err = s.CopyAndCreateRider(tx, r)
 			if err != nil {
 				return errors.New("新增骑手失败")
 			}
@@ -131,6 +135,7 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 			Save(s.ctx)
 		return
 	})
+
 	// 记录日志
 	go logging.NewOperateLog().
 		SetRef(r).
@@ -528,35 +533,33 @@ func (s *enterpriseRiderService) JoinEnterprise(req *model.EnterpriseJoinReq, ri
 
 // ExitEnterprise 退出团签
 func (s *enterpriseRiderService) ExitEnterprise(r *ent.Rider) {
+	if r.EnterpriseID == nil {
+		snag.Panic("非团签骑手")
+	}
+
 	// 查询订阅
-	sub, _ := ent.Database.Subscribe.QueryNotDeleted().
-		Where(subscribe.RiderID(r.ID),
-			subscribe.StatusIn(model.SubscribeStatusInactive, model.SubscribeStatusUnSubscribed),
-		).First(s.ctx)
-	if sub == nil {
+	sub, _ := NewSubscribe().QueryEffective(r.ID)
+
+	if sub != nil && sub.Status != model.SubscribeStatusInactive {
 		snag.Panic("未找到订阅")
 	}
+
 	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
 		// 删除之前骑手信息
 		_, err = tx.Rider.SoftDeleteOne(r).SetRemark("骑手退出团签").Save(s.ctx)
 		if err != nil {
 			return errors.New("删除骑手失败")
 		}
+
 		// 新增骑手信息
-		err = s.CopyAndCreateRider(*r, tx)
-		if err != nil {
-			return errors.New("新增骑手失败")
-		}
-		return
+		return s.CopyAndCreateRider(tx, r)
 	})
 }
 
 // CopyAndCreateRider 复制并创建骑手信息
-func (s *enterpriseRiderService) CopyAndCreateRider(ri ent.Rider, tx *ent.Tx) error {
-	_, err := tx.Rider.Create().
-		SetCreator(ri.Creator).
-		SetLastModifier(ri.LastModifier).
-		SetRemark(ri.Remark).
+func (s *enterpriseRiderService) CopyAndCreateRider(tx *ent.Tx, ri *ent.Rider) error {
+	return tx.Rider.Create().
+		SetRemark("骑手操作团签转为个签").
 		SetPhone(ri.Phone).
 		SetContact(ri.Contact).
 		SetDeviceType(ri.DeviceType).
@@ -572,9 +575,5 @@ func (s *enterpriseRiderService) CopyAndCreateRider(ri ent.Rider, tx *ent.Tx) er
 		SetIDCardNumber(ri.IDCardNumber).
 		SetExchangeLimit(ri.ExchangeLimit).
 		SetExchangeFrequency(ri.ExchangeFrequency).
-		Save(s.ctx)
-	if err != nil {
-		return err
-	}
-	return nil
+		Exec(s.ctx)
 }
