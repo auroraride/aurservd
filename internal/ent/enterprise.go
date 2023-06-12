@@ -92,10 +92,8 @@ type EnterpriseEdges struct {
 	Stations []*EnterpriseStation `json:"stations,omitempty"`
 	// Bills holds the value of the bills edge.
 	Bills []*EnterpriseBill `json:"bills,omitempty"`
-	// Battery holds the value of the battery edge.
-	Battery []*Battery `json:"battery,omitempty"`
-	// Feedback holds the value of the feedback edge.
-	Feedback []*Feedback `json:"feedback,omitempty"`
+	// Batteries holds the value of the batteries edge.
+	Batteries []*Battery `json:"batteries,omitempty"`
 	// Agents holds the value of the agents edge.
 	Agents []*Agent `json:"agents,omitempty"`
 	// Cabinets holds the value of the cabinets edge.
@@ -108,7 +106,7 @@ type EnterpriseEdges struct {
 	SwapPutoutBatteries []*EnterpriseBatterySwap `json:"swap_putout_batteries,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [15]bool
+	loadedTypes [14]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -187,28 +185,19 @@ func (e EnterpriseEdges) BillsOrErr() ([]*EnterpriseBill, error) {
 	return nil, &NotLoadedError{edge: "bills"}
 }
 
-// BatteryOrErr returns the Battery value or an error if the edge
+// BatteriesOrErr returns the Batteries value or an error if the edge
 // was not loaded in eager-loading.
-func (e EnterpriseEdges) BatteryOrErr() ([]*Battery, error) {
+func (e EnterpriseEdges) BatteriesOrErr() ([]*Battery, error) {
 	if e.loadedTypes[8] {
-		return e.Battery, nil
+		return e.Batteries, nil
 	}
-	return nil, &NotLoadedError{edge: "battery"}
-}
-
-// FeedbackOrErr returns the Feedback value or an error if the edge
-// was not loaded in eager-loading.
-func (e EnterpriseEdges) FeedbackOrErr() ([]*Feedback, error) {
-	if e.loadedTypes[9] {
-		return e.Feedback, nil
-	}
-	return nil, &NotLoadedError{edge: "feedback"}
+	return nil, &NotLoadedError{edge: "batteries"}
 }
 
 // AgentsOrErr returns the Agents value or an error if the edge
 // was not loaded in eager-loading.
 func (e EnterpriseEdges) AgentsOrErr() ([]*Agent, error) {
-	if e.loadedTypes[10] {
+	if e.loadedTypes[9] {
 		return e.Agents, nil
 	}
 	return nil, &NotLoadedError{edge: "agents"}
@@ -217,7 +206,7 @@ func (e EnterpriseEdges) AgentsOrErr() ([]*Agent, error) {
 // CabinetsOrErr returns the Cabinets value or an error if the edge
 // was not loaded in eager-loading.
 func (e EnterpriseEdges) CabinetsOrErr() ([]*Cabinet, error) {
-	if e.loadedTypes[11] {
+	if e.loadedTypes[10] {
 		return e.Cabinets, nil
 	}
 	return nil, &NotLoadedError{edge: "cabinets"}
@@ -226,7 +215,7 @@ func (e EnterpriseEdges) CabinetsOrErr() ([]*Cabinet, error) {
 // StocksOrErr returns the Stocks value or an error if the edge
 // was not loaded in eager-loading.
 func (e EnterpriseEdges) StocksOrErr() ([]*Stock, error) {
-	if e.loadedTypes[12] {
+	if e.loadedTypes[11] {
 		return e.Stocks, nil
 	}
 	return nil, &NotLoadedError{edge: "stocks"}
@@ -235,7 +224,7 @@ func (e EnterpriseEdges) StocksOrErr() ([]*Stock, error) {
 // SwapPutinBatteriesOrErr returns the SwapPutinBatteries value or an error if the edge
 // was not loaded in eager-loading.
 func (e EnterpriseEdges) SwapPutinBatteriesOrErr() ([]*EnterpriseBatterySwap, error) {
-	if e.loadedTypes[13] {
+	if e.loadedTypes[12] {
 		return e.SwapPutinBatteries, nil
 	}
 	return nil, &NotLoadedError{edge: "swap_putin_batteries"}
@@ -244,7 +233,7 @@ func (e EnterpriseEdges) SwapPutinBatteriesOrErr() ([]*EnterpriseBatterySwap, er
 // SwapPutoutBatteriesOrErr returns the SwapPutoutBatteries value or an error if the edge
 // was not loaded in eager-loading.
 func (e EnterpriseEdges) SwapPutoutBatteriesOrErr() ([]*EnterpriseBatterySwap, error) {
-	if e.loadedTypes[14] {
+	if e.loadedTypes[13] {
 		return e.SwapPutoutBatteries, nil
 	}
 	return nil, &NotLoadedError{edge: "swap_putout_batteries"}
@@ -495,14 +484,9 @@ func (e *Enterprise) QueryBills() *EnterpriseBillQuery {
 	return NewEnterpriseClient(e.config).QueryBills(e)
 }
 
-// QueryBattery queries the "battery" edge of the Enterprise entity.
-func (e *Enterprise) QueryBattery() *BatteryQuery {
-	return NewEnterpriseClient(e.config).QueryBattery(e)
-}
-
-// QueryFeedback queries the "feedback" edge of the Enterprise entity.
-func (e *Enterprise) QueryFeedback() *FeedbackQuery {
-	return NewEnterpriseClient(e.config).QueryFeedback(e)
+// QueryBatteries queries the "batteries" edge of the Enterprise entity.
+func (e *Enterprise) QueryBatteries() *BatteryQuery {
+	return NewEnterpriseClient(e.config).QueryBatteries(e)
 }
 
 // QueryAgents queries the "agents" edge of the Enterprise entity.

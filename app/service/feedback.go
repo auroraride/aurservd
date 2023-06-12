@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"mime/multipart"
 	"path/filepath"
 	"time"
 
 	"github.com/golang-module/carbon/v2"
 	"github.com/labstack/echo/v4"
-	"go.uber.org/zap"
 
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ali"
@@ -32,7 +32,7 @@ func NewFeedback(params ...any) *feedbackService {
 }
 
 func (s *feedbackService) Query(id uint64) (*ent.Feedback, error) {
-	return s.orm.QueryNotDeleted().Where(feedback.ID(id)).WithEnterprise().First(s.ctx)
+	return s.orm.Query().Where(feedback.ID(id)).WithEnterprise().First(s.ctx)
 }
 
 func (s *feedbackService) QueryX(id uint64) *ent.Feedback {
@@ -94,7 +94,7 @@ func (s *feedbackService) FeedbackList(req *model.FeedbackListReq) *model.Pagina
 
 }
 
-// UploadImage 上传照片本地文件夹
+// UploadImage 上传照片
 func (s *feedbackService) UploadImage(c echo.Context) []string {
 	const maxUploadSize = 50 * 1024 * 1024
 	if c.Request().ParseMultipartForm(maxUploadSize) != nil {
@@ -106,30 +106,9 @@ func (s *feedbackService) UploadImage(c echo.Context) []string {
 		snag.Panic("最多上传5张图片")
 	}
 	var paths []string
-	for _, file := range files {
-		// 限制单张图片大小为10M以下
-		if file.Size > 10<<20 {
-			snag.Panic("单张图片大小不能超过10M")
-		}
-
-		src, err := file.Open()
+	for _, f := range files {
+		r, err := s.doFile(f)
 		if err != nil {
-			log.Println(err)
-			snag.Panic("上传图片失败")
-		}
-		defer src.Close()
-
-		// 确保只接受指定的图片格式
-		ext := filepath.Ext(file.Filename)
-		if !IsValidImageExtension(ext) {
-			snag.Panic("只接受jpg、jpeg、png、svg格式的图片")
-		}
-		// 生成相对路径
-		randomNum := rand.Intn(1000) // 生成一个随机数，用于防止同一秒钟上传多个文件时的冲突
-		r := filepath.Join("agent", "feedback", fmt.Sprintf("%s%d%s", time.Now().
-			Format(carbon.ShortDateTimeLayout), randomNum, ext))
-		if err = ali.NewOss().Bucket.PutObject(r, src); err != nil {
-			zap.L().Error("上传图片失败", zap.Error(err))
 			snag.Panic("上传图片失败")
 		}
 		paths = append(paths, r)
@@ -137,7 +116,36 @@ func (s *feedbackService) UploadImage(c echo.Context) []string {
 	return paths
 }
 
-func IsValidImageExtension(ext string) bool {
+func (s *feedbackService) doFile(f *multipart.FileHeader) (string, error) {
+	// 限制单张图片大小为10M以下
+	if f.Size > 10<<20 {
+		snag.Panic("单张图片大小不能超过10M")
+	}
+
+	src, err := f.Open()
+	if err != nil {
+		log.Println(err)
+		snag.Panic("上传图片失败")
+	}
+	defer func(src multipart.File) {
+		_ = src.Close()
+	}(src)
+
+	// 确保只接受指定的图片格式
+	ext := filepath.Ext(f.Filename)
+	if !s.isValidImageExtension(ext) {
+		snag.Panic("只接受jpg、jpeg、png、svg格式的图片")
+	}
+
+	// 生成相对路径
+	randomNum := rand.Intn(1000) // 生成一个随机数，用于防止同一秒钟上传多个文件时的冲突
+	r := filepath.Join("agent", "feedback", fmt.Sprintf("%s%d%s", time.Now().
+		Format(carbon.ShortDateTimeLayout), randomNum, ext))
+
+	return r, ali.NewOss().Bucket.PutObject(r, src)
+}
+
+func (*feedbackService) isValidImageExtension(ext string) bool {
 	validExtensions := []string{".jpg", ".jpeg", ".png", ".svg"}
 	for _, validExt := range validExtensions {
 		if ext == validExt {

@@ -22,7 +22,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
-	"github.com/auroraride/aurservd/internal/ent/feedback"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/stock"
@@ -44,8 +43,7 @@ type EnterpriseQuery struct {
 	withStatements          *EnterpriseStatementQuery
 	withStations            *EnterpriseStationQuery
 	withBills               *EnterpriseBillQuery
-	withBattery             *BatteryQuery
-	withFeedback            *FeedbackQuery
+	withBatteries           *BatteryQuery
 	withAgents              *AgentQuery
 	withCabinets            *CabinetQuery
 	withStocks              *StockQuery
@@ -264,8 +262,8 @@ func (eq *EnterpriseQuery) QueryBills() *EnterpriseBillQuery {
 	return query
 }
 
-// QueryBattery chains the current query on the "battery" edge.
-func (eq *EnterpriseQuery) QueryBattery() *BatteryQuery {
+// QueryBatteries chains the current query on the "batteries" edge.
+func (eq *EnterpriseQuery) QueryBatteries() *BatteryQuery {
 	query := (&BatteryClient{config: eq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := eq.prepareQuery(ctx); err != nil {
@@ -278,29 +276,7 @@ func (eq *EnterpriseQuery) QueryBattery() *BatteryQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(enterprise.Table, enterprise.FieldID, selector),
 			sqlgraph.To(battery.Table, battery.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, enterprise.BatteryTable, enterprise.BatteryColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryFeedback chains the current query on the "feedback" edge.
-func (eq *EnterpriseQuery) QueryFeedback() *FeedbackQuery {
-	query := (&FeedbackClient{config: eq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := eq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := eq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(enterprise.Table, enterprise.FieldID, selector),
-			sqlgraph.To(feedback.Table, feedback.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, enterprise.FeedbackTable, enterprise.FeedbackColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprise.BatteriesTable, enterprise.BatteriesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
 		return fromU, nil
@@ -618,8 +594,7 @@ func (eq *EnterpriseQuery) Clone() *EnterpriseQuery {
 		withStatements:          eq.withStatements.Clone(),
 		withStations:            eq.withStations.Clone(),
 		withBills:               eq.withBills.Clone(),
-		withBattery:             eq.withBattery.Clone(),
-		withFeedback:            eq.withFeedback.Clone(),
+		withBatteries:           eq.withBatteries.Clone(),
 		withAgents:              eq.withAgents.Clone(),
 		withCabinets:            eq.withCabinets.Clone(),
 		withStocks:              eq.withStocks.Clone(),
@@ -719,25 +694,14 @@ func (eq *EnterpriseQuery) WithBills(opts ...func(*EnterpriseBillQuery)) *Enterp
 	return eq
 }
 
-// WithBattery tells the query-builder to eager-load the nodes that are connected to
-// the "battery" edge. The optional arguments are used to configure the query builder of the edge.
-func (eq *EnterpriseQuery) WithBattery(opts ...func(*BatteryQuery)) *EnterpriseQuery {
+// WithBatteries tells the query-builder to eager-load the nodes that are connected to
+// the "batteries" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EnterpriseQuery) WithBatteries(opts ...func(*BatteryQuery)) *EnterpriseQuery {
 	query := (&BatteryClient{config: eq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	eq.withBattery = query
-	return eq
-}
-
-// WithFeedback tells the query-builder to eager-load the nodes that are connected to
-// the "feedback" edge. The optional arguments are used to configure the query builder of the edge.
-func (eq *EnterpriseQuery) WithFeedback(opts ...func(*FeedbackQuery)) *EnterpriseQuery {
-	query := (&FeedbackClient{config: eq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	eq.withFeedback = query
+	eq.withBatteries = query
 	return eq
 }
 
@@ -874,7 +838,7 @@ func (eq *EnterpriseQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*E
 	var (
 		nodes       = []*Enterprise{}
 		_spec       = eq.querySpec()
-		loadedTypes = [15]bool{
+		loadedTypes = [14]bool{
 			eq.withCity != nil,
 			eq.withRiders != nil,
 			eq.withContracts != nil,
@@ -883,8 +847,7 @@ func (eq *EnterpriseQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*E
 			eq.withStatements != nil,
 			eq.withStations != nil,
 			eq.withBills != nil,
-			eq.withBattery != nil,
-			eq.withFeedback != nil,
+			eq.withBatteries != nil,
 			eq.withAgents != nil,
 			eq.withCabinets != nil,
 			eq.withStocks != nil,
@@ -968,17 +931,10 @@ func (eq *EnterpriseQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*E
 			return nil, err
 		}
 	}
-	if query := eq.withBattery; query != nil {
-		if err := eq.loadBattery(ctx, query, nodes,
-			func(n *Enterprise) { n.Edges.Battery = []*Battery{} },
-			func(n *Enterprise, e *Battery) { n.Edges.Battery = append(n.Edges.Battery, e) }); err != nil {
-			return nil, err
-		}
-	}
-	if query := eq.withFeedback; query != nil {
-		if err := eq.loadFeedback(ctx, query, nodes,
-			func(n *Enterprise) { n.Edges.Feedback = []*Feedback{} },
-			func(n *Enterprise, e *Feedback) { n.Edges.Feedback = append(n.Edges.Feedback, e) }); err != nil {
+	if query := eq.withBatteries; query != nil {
+		if err := eq.loadBatteries(ctx, query, nodes,
+			func(n *Enterprise) { n.Edges.Batteries = []*Battery{} },
+			func(n *Enterprise, e *Battery) { n.Edges.Batteries = append(n.Edges.Batteries, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -1269,7 +1225,7 @@ func (eq *EnterpriseQuery) loadBills(ctx context.Context, query *EnterpriseBillQ
 	}
 	return nil
 }
-func (eq *EnterpriseQuery) loadBattery(ctx context.Context, query *BatteryQuery, nodes []*Enterprise, init func(*Enterprise), assign func(*Enterprise, *Battery)) error {
+func (eq *EnterpriseQuery) loadBatteries(ctx context.Context, query *BatteryQuery, nodes []*Enterprise, init func(*Enterprise), assign func(*Enterprise, *Battery)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[uint64]*Enterprise)
 	for i := range nodes {
@@ -1283,40 +1239,7 @@ func (eq *EnterpriseQuery) loadBattery(ctx context.Context, query *BatteryQuery,
 		query.ctx.AppendFieldOnce(battery.FieldEnterpriseID)
 	}
 	query.Where(predicate.Battery(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(enterprise.BatteryColumn), fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		fk := n.EnterpriseID
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "enterprise_id" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
-		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "enterprise_id" returned %v for node %v`, *fk, n.ID)
-		}
-		assign(node, n)
-	}
-	return nil
-}
-func (eq *EnterpriseQuery) loadFeedback(ctx context.Context, query *FeedbackQuery, nodes []*Enterprise, init func(*Enterprise), assign func(*Enterprise, *Feedback)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[uint64]*Enterprise)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
-		}
-	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(feedback.FieldEnterpriseID)
-	}
-	query.Where(predicate.Feedback(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(enterprise.FeedbackColumn), fks...))
+		s.Where(sql.InValues(s.C(enterprise.BatteriesColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1607,8 +1530,7 @@ var (
 	EnterpriseQueryWithStatements          EnterpriseQueryWith = "Statements"
 	EnterpriseQueryWithStations            EnterpriseQueryWith = "Stations"
 	EnterpriseQueryWithBills               EnterpriseQueryWith = "Bills"
-	EnterpriseQueryWithBattery             EnterpriseQueryWith = "Battery"
-	EnterpriseQueryWithFeedback            EnterpriseQueryWith = "Feedback"
+	EnterpriseQueryWithBatteries           EnterpriseQueryWith = "Batteries"
 	EnterpriseQueryWithAgents              EnterpriseQueryWith = "Agents"
 	EnterpriseQueryWithCabinets            EnterpriseQueryWith = "Cabinets"
 	EnterpriseQueryWithStocks              EnterpriseQueryWith = "Stocks"
@@ -1635,10 +1557,8 @@ func (eq *EnterpriseQuery) With(withEdges ...EnterpriseQueryWith) *EnterpriseQue
 			eq.WithStations()
 		case EnterpriseQueryWithBills:
 			eq.WithBills()
-		case EnterpriseQueryWithBattery:
-			eq.WithBattery()
-		case EnterpriseQueryWithFeedback:
-			eq.WithFeedback()
+		case EnterpriseQueryWithBatteries:
+			eq.WithBatteries()
 		case EnterpriseQueryWithAgents:
 			eq.WithAgents()
 		case EnterpriseQueryWithCabinets:

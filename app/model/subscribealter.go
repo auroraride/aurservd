@@ -22,21 +22,14 @@ type SubscribeAlterApplyManagerReq struct {
 
 // SubscribeAlterApplyListRsp 申请列表返回信息
 type SubscribeAlterApplyListRsp struct {
-	ID uint64 `json:"id"`
-	// 天数
-	Days int `json:"days"`
-	// 申请时间
-	ApplyTime string `json:"applyTime"`
-	// 审核时间
-	ReviewTime string `json:"reviewTime"`
-	// 审核状态
-	Status int `json:"status"`
-	// 到期时间
-	ExpireTime string `json:"expireTime,omitempty"`
-	// 骑手姓名
-	RiderName string `json:"riderName,omitempty"`
-	// 骑手手机号
-	RiderPhone string `json:"riderPhone,omitempty"`
+	ID         uint64 `json:"id"`
+	Days       int    `json:"days"`                 // 天数
+	ApplyTime  string `json:"applyTime"`            // 申请时间
+	ReviewTime string `json:"reviewTime"`           // 审核时间
+	Status     int    `json:"status"`               // 审核状态
+	ExpireTime string `json:"expireTime,omitempty"` // 到期时间
+	RiderName  string `json:"riderName,omitempty"`  // 骑手姓名
+	RiderPhone string `json:"riderPhone,omitempty"` // 骑手手机号
 }
 
 // SubscribeAlterReviewReq 审批订阅申请

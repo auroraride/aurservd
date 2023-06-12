@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
-	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/feedback"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -38,55 +38,43 @@ func (fu *FeedbackUpdate) SetUpdatedAt(t time.Time) *FeedbackUpdate {
 	return fu
 }
 
-// SetDeletedAt sets the "deleted_at" field.
-func (fu *FeedbackUpdate) SetDeletedAt(t time.Time) *FeedbackUpdate {
-	fu.mutation.SetDeletedAt(t)
+// SetEnterpriseID sets the "enterprise_id" field.
+func (fu *FeedbackUpdate) SetEnterpriseID(u uint64) *FeedbackUpdate {
+	fu.mutation.SetEnterpriseID(u)
 	return fu
 }
 
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (fu *FeedbackUpdate) SetNillableDeletedAt(t *time.Time) *FeedbackUpdate {
-	if t != nil {
-		fu.SetDeletedAt(*t)
+// SetNillableEnterpriseID sets the "enterprise_id" field if the given value is not nil.
+func (fu *FeedbackUpdate) SetNillableEnterpriseID(u *uint64) *FeedbackUpdate {
+	if u != nil {
+		fu.SetEnterpriseID(*u)
 	}
 	return fu
 }
 
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (fu *FeedbackUpdate) ClearDeletedAt() *FeedbackUpdate {
-	fu.mutation.ClearDeletedAt()
+// ClearEnterpriseID clears the value of the "enterprise_id" field.
+func (fu *FeedbackUpdate) ClearEnterpriseID() *FeedbackUpdate {
+	fu.mutation.ClearEnterpriseID()
 	return fu
 }
 
-// SetLastModifier sets the "last_modifier" field.
-func (fu *FeedbackUpdate) SetLastModifier(m *model.Modifier) *FeedbackUpdate {
-	fu.mutation.SetLastModifier(m)
+// SetAgentID sets the "agent_id" field.
+func (fu *FeedbackUpdate) SetAgentID(u uint64) *FeedbackUpdate {
+	fu.mutation.SetAgentID(u)
 	return fu
 }
 
-// ClearLastModifier clears the value of the "last_modifier" field.
-func (fu *FeedbackUpdate) ClearLastModifier() *FeedbackUpdate {
-	fu.mutation.ClearLastModifier()
-	return fu
-}
-
-// SetRemark sets the "remark" field.
-func (fu *FeedbackUpdate) SetRemark(s string) *FeedbackUpdate {
-	fu.mutation.SetRemark(s)
-	return fu
-}
-
-// SetNillableRemark sets the "remark" field if the given value is not nil.
-func (fu *FeedbackUpdate) SetNillableRemark(s *string) *FeedbackUpdate {
-	if s != nil {
-		fu.SetRemark(*s)
+// SetNillableAgentID sets the "agent_id" field if the given value is not nil.
+func (fu *FeedbackUpdate) SetNillableAgentID(u *uint64) *FeedbackUpdate {
+	if u != nil {
+		fu.SetAgentID(*u)
 	}
 	return fu
 }
 
-// ClearRemark clears the value of the "remark" field.
-func (fu *FeedbackUpdate) ClearRemark() *FeedbackUpdate {
-	fu.mutation.ClearRemark()
+// ClearAgentID clears the value of the "agent_id" field.
+func (fu *FeedbackUpdate) ClearAgentID() *FeedbackUpdate {
+	fu.mutation.ClearAgentID()
 	return fu
 }
 
@@ -175,29 +163,14 @@ func (fu *FeedbackUpdate) ClearPhone() *FeedbackUpdate {
 	return fu
 }
 
-// SetEnterpriseID sets the "enterprise_id" field.
-func (fu *FeedbackUpdate) SetEnterpriseID(u uint64) *FeedbackUpdate {
-	fu.mutation.SetEnterpriseID(u)
-	return fu
-}
-
-// SetNillableEnterpriseID sets the "enterprise_id" field if the given value is not nil.
-func (fu *FeedbackUpdate) SetNillableEnterpriseID(u *uint64) *FeedbackUpdate {
-	if u != nil {
-		fu.SetEnterpriseID(*u)
-	}
-	return fu
-}
-
-// ClearEnterpriseID clears the value of the "enterprise_id" field.
-func (fu *FeedbackUpdate) ClearEnterpriseID() *FeedbackUpdate {
-	fu.mutation.ClearEnterpriseID()
-	return fu
-}
-
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
 func (fu *FeedbackUpdate) SetEnterprise(e *Enterprise) *FeedbackUpdate {
 	return fu.SetEnterpriseID(e.ID)
+}
+
+// SetAgent sets the "agent" edge to the Agent entity.
+func (fu *FeedbackUpdate) SetAgent(a *Agent) *FeedbackUpdate {
+	return fu.SetAgentID(a.ID)
 }
 
 // Mutation returns the FeedbackMutation object of the builder.
@@ -211,11 +184,15 @@ func (fu *FeedbackUpdate) ClearEnterprise() *FeedbackUpdate {
 	return fu
 }
 
+// ClearAgent clears the "agent" edge to the Agent entity.
+func (fu *FeedbackUpdate) ClearAgent() *FeedbackUpdate {
+	fu.mutation.ClearAgent()
+	return fu
+}
+
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (fu *FeedbackUpdate) Save(ctx context.Context) (int, error) {
-	if err := fu.defaults(); err != nil {
-		return 0, err
-	}
+	fu.defaults()
 	return withHooks(ctx, fu.sqlSave, fu.mutation, fu.hooks)
 }
 
@@ -242,15 +219,11 @@ func (fu *FeedbackUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (fu *FeedbackUpdate) defaults() error {
+func (fu *FeedbackUpdate) defaults() {
 	if _, ok := fu.mutation.UpdatedAt(); !ok {
-		if feedback.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized feedback.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
 		v := feedback.UpdateDefaultUpdatedAt()
 		fu.mutation.SetUpdatedAt(v)
 	}
-	return nil
 }
 
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
@@ -270,27 +243,6 @@ func (fu *FeedbackUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := fu.mutation.UpdatedAt(); ok {
 		_spec.SetField(feedback.FieldUpdatedAt, field.TypeTime, value)
-	}
-	if value, ok := fu.mutation.DeletedAt(); ok {
-		_spec.SetField(feedback.FieldDeletedAt, field.TypeTime, value)
-	}
-	if fu.mutation.DeletedAtCleared() {
-		_spec.ClearField(feedback.FieldDeletedAt, field.TypeTime)
-	}
-	if fu.mutation.CreatorCleared() {
-		_spec.ClearField(feedback.FieldCreator, field.TypeJSON)
-	}
-	if value, ok := fu.mutation.LastModifier(); ok {
-		_spec.SetField(feedback.FieldLastModifier, field.TypeJSON, value)
-	}
-	if fu.mutation.LastModifierCleared() {
-		_spec.ClearField(feedback.FieldLastModifier, field.TypeJSON)
-	}
-	if value, ok := fu.mutation.Remark(); ok {
-		_spec.SetField(feedback.FieldRemark, field.TypeString, value)
-	}
-	if fu.mutation.RemarkCleared() {
-		_spec.ClearField(feedback.FieldRemark, field.TypeString)
 	}
 	if value, ok := fu.mutation.Content(); ok {
 		_spec.SetField(feedback.FieldContent, field.TypeString, value)
@@ -327,7 +279,7 @@ func (fu *FeedbackUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if fu.mutation.EnterpriseCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   feedback.EnterpriseTable,
 			Columns: []string{feedback.EnterpriseColumn},
 			Bidi:    false,
@@ -340,12 +292,41 @@ func (fu *FeedbackUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if nodes := fu.mutation.EnterpriseIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   feedback.EnterpriseTable,
 			Columns: []string{feedback.EnterpriseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if fu.mutation.AgentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   feedback.AgentTable,
+			Columns: []string{feedback.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := fu.mutation.AgentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   feedback.AgentTable,
+			Columns: []string{feedback.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -381,55 +362,43 @@ func (fuo *FeedbackUpdateOne) SetUpdatedAt(t time.Time) *FeedbackUpdateOne {
 	return fuo
 }
 
-// SetDeletedAt sets the "deleted_at" field.
-func (fuo *FeedbackUpdateOne) SetDeletedAt(t time.Time) *FeedbackUpdateOne {
-	fuo.mutation.SetDeletedAt(t)
+// SetEnterpriseID sets the "enterprise_id" field.
+func (fuo *FeedbackUpdateOne) SetEnterpriseID(u uint64) *FeedbackUpdateOne {
+	fuo.mutation.SetEnterpriseID(u)
 	return fuo
 }
 
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (fuo *FeedbackUpdateOne) SetNillableDeletedAt(t *time.Time) *FeedbackUpdateOne {
-	if t != nil {
-		fuo.SetDeletedAt(*t)
+// SetNillableEnterpriseID sets the "enterprise_id" field if the given value is not nil.
+func (fuo *FeedbackUpdateOne) SetNillableEnterpriseID(u *uint64) *FeedbackUpdateOne {
+	if u != nil {
+		fuo.SetEnterpriseID(*u)
 	}
 	return fuo
 }
 
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (fuo *FeedbackUpdateOne) ClearDeletedAt() *FeedbackUpdateOne {
-	fuo.mutation.ClearDeletedAt()
+// ClearEnterpriseID clears the value of the "enterprise_id" field.
+func (fuo *FeedbackUpdateOne) ClearEnterpriseID() *FeedbackUpdateOne {
+	fuo.mutation.ClearEnterpriseID()
 	return fuo
 }
 
-// SetLastModifier sets the "last_modifier" field.
-func (fuo *FeedbackUpdateOne) SetLastModifier(m *model.Modifier) *FeedbackUpdateOne {
-	fuo.mutation.SetLastModifier(m)
+// SetAgentID sets the "agent_id" field.
+func (fuo *FeedbackUpdateOne) SetAgentID(u uint64) *FeedbackUpdateOne {
+	fuo.mutation.SetAgentID(u)
 	return fuo
 }
 
-// ClearLastModifier clears the value of the "last_modifier" field.
-func (fuo *FeedbackUpdateOne) ClearLastModifier() *FeedbackUpdateOne {
-	fuo.mutation.ClearLastModifier()
-	return fuo
-}
-
-// SetRemark sets the "remark" field.
-func (fuo *FeedbackUpdateOne) SetRemark(s string) *FeedbackUpdateOne {
-	fuo.mutation.SetRemark(s)
-	return fuo
-}
-
-// SetNillableRemark sets the "remark" field if the given value is not nil.
-func (fuo *FeedbackUpdateOne) SetNillableRemark(s *string) *FeedbackUpdateOne {
-	if s != nil {
-		fuo.SetRemark(*s)
+// SetNillableAgentID sets the "agent_id" field if the given value is not nil.
+func (fuo *FeedbackUpdateOne) SetNillableAgentID(u *uint64) *FeedbackUpdateOne {
+	if u != nil {
+		fuo.SetAgentID(*u)
 	}
 	return fuo
 }
 
-// ClearRemark clears the value of the "remark" field.
-func (fuo *FeedbackUpdateOne) ClearRemark() *FeedbackUpdateOne {
-	fuo.mutation.ClearRemark()
+// ClearAgentID clears the value of the "agent_id" field.
+func (fuo *FeedbackUpdateOne) ClearAgentID() *FeedbackUpdateOne {
+	fuo.mutation.ClearAgentID()
 	return fuo
 }
 
@@ -518,29 +487,14 @@ func (fuo *FeedbackUpdateOne) ClearPhone() *FeedbackUpdateOne {
 	return fuo
 }
 
-// SetEnterpriseID sets the "enterprise_id" field.
-func (fuo *FeedbackUpdateOne) SetEnterpriseID(u uint64) *FeedbackUpdateOne {
-	fuo.mutation.SetEnterpriseID(u)
-	return fuo
-}
-
-// SetNillableEnterpriseID sets the "enterprise_id" field if the given value is not nil.
-func (fuo *FeedbackUpdateOne) SetNillableEnterpriseID(u *uint64) *FeedbackUpdateOne {
-	if u != nil {
-		fuo.SetEnterpriseID(*u)
-	}
-	return fuo
-}
-
-// ClearEnterpriseID clears the value of the "enterprise_id" field.
-func (fuo *FeedbackUpdateOne) ClearEnterpriseID() *FeedbackUpdateOne {
-	fuo.mutation.ClearEnterpriseID()
-	return fuo
-}
-
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
 func (fuo *FeedbackUpdateOne) SetEnterprise(e *Enterprise) *FeedbackUpdateOne {
 	return fuo.SetEnterpriseID(e.ID)
+}
+
+// SetAgent sets the "agent" edge to the Agent entity.
+func (fuo *FeedbackUpdateOne) SetAgent(a *Agent) *FeedbackUpdateOne {
+	return fuo.SetAgentID(a.ID)
 }
 
 // Mutation returns the FeedbackMutation object of the builder.
@@ -551,6 +505,12 @@ func (fuo *FeedbackUpdateOne) Mutation() *FeedbackMutation {
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
 func (fuo *FeedbackUpdateOne) ClearEnterprise() *FeedbackUpdateOne {
 	fuo.mutation.ClearEnterprise()
+	return fuo
+}
+
+// ClearAgent clears the "agent" edge to the Agent entity.
+func (fuo *FeedbackUpdateOne) ClearAgent() *FeedbackUpdateOne {
+	fuo.mutation.ClearAgent()
 	return fuo
 }
 
@@ -569,9 +529,7 @@ func (fuo *FeedbackUpdateOne) Select(field string, fields ...string) *FeedbackUp
 
 // Save executes the query and returns the updated Feedback entity.
 func (fuo *FeedbackUpdateOne) Save(ctx context.Context) (*Feedback, error) {
-	if err := fuo.defaults(); err != nil {
-		return nil, err
-	}
+	fuo.defaults()
 	return withHooks(ctx, fuo.sqlSave, fuo.mutation, fuo.hooks)
 }
 
@@ -598,15 +556,11 @@ func (fuo *FeedbackUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (fuo *FeedbackUpdateOne) defaults() error {
+func (fuo *FeedbackUpdateOne) defaults() {
 	if _, ok := fuo.mutation.UpdatedAt(); !ok {
-		if feedback.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized feedback.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
 		v := feedback.UpdateDefaultUpdatedAt()
 		fuo.mutation.SetUpdatedAt(v)
 	}
-	return nil
 }
 
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
@@ -644,27 +598,6 @@ func (fuo *FeedbackUpdateOne) sqlSave(ctx context.Context) (_node *Feedback, err
 	if value, ok := fuo.mutation.UpdatedAt(); ok {
 		_spec.SetField(feedback.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := fuo.mutation.DeletedAt(); ok {
-		_spec.SetField(feedback.FieldDeletedAt, field.TypeTime, value)
-	}
-	if fuo.mutation.DeletedAtCleared() {
-		_spec.ClearField(feedback.FieldDeletedAt, field.TypeTime)
-	}
-	if fuo.mutation.CreatorCleared() {
-		_spec.ClearField(feedback.FieldCreator, field.TypeJSON)
-	}
-	if value, ok := fuo.mutation.LastModifier(); ok {
-		_spec.SetField(feedback.FieldLastModifier, field.TypeJSON, value)
-	}
-	if fuo.mutation.LastModifierCleared() {
-		_spec.ClearField(feedback.FieldLastModifier, field.TypeJSON)
-	}
-	if value, ok := fuo.mutation.Remark(); ok {
-		_spec.SetField(feedback.FieldRemark, field.TypeString, value)
-	}
-	if fuo.mutation.RemarkCleared() {
-		_spec.ClearField(feedback.FieldRemark, field.TypeString)
-	}
 	if value, ok := fuo.mutation.Content(); ok {
 		_spec.SetField(feedback.FieldContent, field.TypeString, value)
 	}
@@ -700,7 +633,7 @@ func (fuo *FeedbackUpdateOne) sqlSave(ctx context.Context) (_node *Feedback, err
 	if fuo.mutation.EnterpriseCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   feedback.EnterpriseTable,
 			Columns: []string{feedback.EnterpriseColumn},
 			Bidi:    false,
@@ -713,12 +646,41 @@ func (fuo *FeedbackUpdateOne) sqlSave(ctx context.Context) (_node *Feedback, err
 	if nodes := fuo.mutation.EnterpriseIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   feedback.EnterpriseTable,
 			Columns: []string{feedback.EnterpriseColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if fuo.mutation.AgentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   feedback.AgentTable,
+			Columns: []string{feedback.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := fuo.mutation.AgentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   feedback.AgentTable,
+			Columns: []string{feedback.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

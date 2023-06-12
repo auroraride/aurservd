@@ -5,7 +5,6 @@ package feedback
 import (
 	"time"
 
-	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 )
@@ -19,14 +18,10 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
-	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
-	FieldDeletedAt = "deleted_at"
-	// FieldCreator holds the string denoting the creator field in the database.
-	FieldCreator = "creator"
-	// FieldLastModifier holds the string denoting the last_modifier field in the database.
-	FieldLastModifier = "last_modifier"
-	// FieldRemark holds the string denoting the remark field in the database.
-	FieldRemark = "remark"
+	// FieldEnterpriseID holds the string denoting the enterprise_id field in the database.
+	FieldEnterpriseID = "enterprise_id"
+	// FieldAgentID holds the string denoting the agent_id field in the database.
+	FieldAgentID = "agent_id"
 	// FieldContent holds the string denoting the content field in the database.
 	FieldContent = "content"
 	// FieldType holds the string denoting the type field in the database.
@@ -37,10 +32,10 @@ const (
 	FieldName = "name"
 	// FieldPhone holds the string denoting the phone field in the database.
 	FieldPhone = "phone"
-	// FieldEnterpriseID holds the string denoting the enterprise_id field in the database.
-	FieldEnterpriseID = "enterprise_id"
 	// EdgeEnterprise holds the string denoting the enterprise edge name in mutations.
 	EdgeEnterprise = "enterprise"
+	// EdgeAgent holds the string denoting the agent edge name in mutations.
+	EdgeAgent = "agent"
 	// Table holds the table name of the feedback in the database.
 	Table = "feedback"
 	// EnterpriseTable is the table that holds the enterprise relation/edge.
@@ -50,6 +45,13 @@ const (
 	EnterpriseInverseTable = "enterprise"
 	// EnterpriseColumn is the table column denoting the enterprise relation/edge.
 	EnterpriseColumn = "enterprise_id"
+	// AgentTable is the table that holds the agent relation/edge.
+	AgentTable = "feedback"
+	// AgentInverseTable is the table name for the Agent entity.
+	// It exists in this package in order to avoid circular dependency with the "agent" package.
+	AgentInverseTable = "agent"
+	// AgentColumn is the table column denoting the agent relation/edge.
+	AgentColumn = "agent_id"
 )
 
 // Columns holds all SQL columns for feedback fields.
@@ -57,16 +59,13 @@ var Columns = []string{
 	FieldID,
 	FieldCreatedAt,
 	FieldUpdatedAt,
-	FieldDeletedAt,
-	FieldCreator,
-	FieldLastModifier,
-	FieldRemark,
+	FieldEnterpriseID,
+	FieldAgentID,
 	FieldContent,
 	FieldType,
 	FieldURL,
 	FieldName,
 	FieldPhone,
-	FieldEnterpriseID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -79,13 +78,7 @@ func ValidColumn(column string) bool {
 	return false
 }
 
-// Note that the variables below are initialized by the runtime
-// package on the initialization of the application. Therefore,
-// it should be imported in the main as follows:
-//
-//	import _ "github.com/auroraride/aurservd/internal/ent/runtime"
 var (
-	Hooks [1]ent.Hook
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
@@ -114,14 +107,14 @@ func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
 }
 
-// ByDeletedAt orders the results by the deleted_at field.
-func ByDeletedAt(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldDeletedAt, opts...).ToFunc()
+// ByEnterpriseID orders the results by the enterprise_id field.
+func ByEnterpriseID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldEnterpriseID, opts...).ToFunc()
 }
 
-// ByRemark orders the results by the remark field.
-func ByRemark(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldRemark, opts...).ToFunc()
+// ByAgentID orders the results by the agent_id field.
+func ByAgentID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAgentID, opts...).ToFunc()
 }
 
 // ByContent orders the results by the content field.
@@ -144,21 +137,30 @@ func ByPhone(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPhone, opts...).ToFunc()
 }
 
-// ByEnterpriseID orders the results by the enterprise_id field.
-func ByEnterpriseID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldEnterpriseID, opts...).ToFunc()
-}
-
 // ByEnterpriseField orders the results by enterprise field.
 func ByEnterpriseField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newEnterpriseStep(), sql.OrderByField(field, opts...))
 	}
 }
+
+// ByAgentField orders the results by agent field.
+func ByAgentField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newAgentStep(), sql.OrderByField(field, opts...))
+	}
+}
 func newEnterpriseStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(EnterpriseInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, true, EnterpriseTable, EnterpriseColumn),
+		sqlgraph.Edge(sqlgraph.M2O, false, EnterpriseTable, EnterpriseColumn),
+	)
+}
+func newAgentStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(AgentInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, AgentTable, AgentColumn),
 	)
 }

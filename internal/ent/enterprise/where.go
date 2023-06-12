@@ -1324,44 +1324,21 @@ func HasBillsWith(preds ...predicate.EnterpriseBill) predicate.Enterprise {
 	})
 }
 
-// HasBattery applies the HasEdge predicate on the "battery" edge.
-func HasBattery() predicate.Enterprise {
+// HasBatteries applies the HasEdge predicate on the "batteries" edge.
+func HasBatteries() predicate.Enterprise {
 	return predicate.Enterprise(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, BatteryTable, BatteryColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, BatteriesTable, BatteriesColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasBatteryWith applies the HasEdge predicate on the "battery" edge with a given conditions (other predicates).
-func HasBatteryWith(preds ...predicate.Battery) predicate.Enterprise {
+// HasBatteriesWith applies the HasEdge predicate on the "batteries" edge with a given conditions (other predicates).
+func HasBatteriesWith(preds ...predicate.Battery) predicate.Enterprise {
 	return predicate.Enterprise(func(s *sql.Selector) {
-		step := newBatteryStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasFeedback applies the HasEdge predicate on the "feedback" edge.
-func HasFeedback() predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, FeedbackTable, FeedbackColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasFeedbackWith applies the HasEdge predicate on the "feedback" edge with a given conditions (other predicates).
-func HasFeedbackWith(preds ...predicate.Feedback) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		step := newFeedbackStep()
+		step := newBatteriesStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

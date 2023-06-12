@@ -805,8 +805,6 @@ func init() {
 	// export.DefaultStatus holds the default value on creation for the status field.
 	export.DefaultStatus = exportDescStatus.Default.(uint8)
 	feedbackMixin := schema.Feedback{}.Mixin()
-	feedbackMixinHooks2 := feedbackMixin[2].Hooks()
-	feedback.Hooks[0] = feedbackMixinHooks2[0]
 	feedbackMixinFields0 := feedbackMixin[0].Fields()
 	_ = feedbackMixinFields0
 	feedbackFields := schema.Feedback{}.Fields()

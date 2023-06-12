@@ -45,7 +45,7 @@ func (*agent) Profile(c echo.Context) (err error) {
 	return ctx.SendResponse(service.NewAgent(ctx.Agent, ctx.Enterprise).Profile(ctx.Agent, ctx.Enterprise))
 }
 
-// GetOpenid 获取opienid
+// GetOpenid
 // @ID           AgentGetOpenid
 // @Router       /agent/v1/openid [GET]
 // @Summary      A1003 获取openid
@@ -58,110 +58,4 @@ func (*agent) Profile(c echo.Context) (err error) {
 func (*agent) GetOpenid(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.OpenidReq](c)
 	return ctx.SendResponse(service.NewminiProgram().GetAuth(req.Code))
-}
-
-// BatteryList 电池列表
-// @ID           AgentBatteryList
-// @Router       /agent/v1/battery/list [GET]
-// @Summary      A5001 电池列表
-// @Tags         [A]代理接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Agent-Token  header  string  true  "代理校验token"
-// @Param        query  query   model.BatterySearchReq  true  "筛选项"
-// @Success      200  {object}  []model.Battery
-func (*agent) BatteryList(c echo.Context) (err error) {
-	ctx, req := app.AgentContextAndBinding[model.BatterySearchReq](c)
-	// TODO 子代理
-	return ctx.SendResponse(service.NewSelection().BatterySerialSearch(&model.BatterySearchReq{
-		Serial:       req.Serial,
-		EnterpriseID: ctx.Enterprise.ID,
-	}))
-}
-
-// BatteryModels 电池列表
-// @ID           AgentBatteryModels
-// @Router       /agent/v1/battery/model [GET]
-// @Summary      A5002 电池型号列表
-// @Tags         [A]代理接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Agent-Token  header  string  true  "代理校验token"
-// @Success      200  {object}  model.ItemListRes
-func (*agent) BatteryModels(c echo.Context) (err error) {
-	ctx := app.ContextX[app.AgentContext](c)
-	return ctx.SendResponse(service.NewBatteryModel().List())
-}
-
-// Invite 邀请骑手
-// @ID           AgentRiderInvite
-// @Router       /agent/v1/rider/invite [POST]
-// @Summary      A2006 邀请骑手
-// @Tags         [A]代理接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Agent-Token  header  string  true  "代理校验token"
-// @Param        body  body   model.EnterpriseRiderInviteReq  true "邀请骑手"
-// @Success      200  {object}  string  "请求成功"
-func (*rider) Invite(c echo.Context) (err error) {
-	ctx, req := app.AgentContextAndBinding[model.EnterpriseRiderInviteReq](c)
-	return ctx.SendResponse(service.NewminiProgram().Invite(ctx.Enterprise, req))
-}
-
-// Index 首页数据
-// @ID           AgentIndex
-// @Router       /agent/v1/index [GET]
-// @Summary      A1007 首页数据
-// @Tags         [A]代理接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Agent-Token  header  string  true  "代理校验token"
-// @Success      200  {object}  model.AgentIndexRes  "请求成功"
-func (*agent) Index(c echo.Context) (err error) {
-	ctx := app.ContextX[app.AgentContext](c)
-	return ctx.SendResponse(service.NewAgent().Index(ctx.Enterprise))
-}
-
-// Feedback 意见反馈
-// @ID           AgentFeedback
-// @Router       /agent/v1/feedback [POST]
-// @Summary      A1005 意见反馈
-// @Tags         [A]代理接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Agent-Token  header  string  true  "代理校验token"
-// @Param        body  body   model.FeedbackReq  true  "反馈内容"
-// @Success      200  {object}  bool  "请求成功"
-func (*agent) Feedback(c echo.Context) (err error) {
-	ctx, req := app.AgentContextAndBinding[model.FeedbackReq](c)
-	return ctx.SendResponse(service.NewFeedback().Create(req, ctx.Agent))
-}
-
-// UploadImage 意见反馈上传图片
-// @ID           AgentUploadImage
-// @Router       /agent/v1/upload/image [POST]
-// @Summary      A1006 意见反馈上传图片
-// @Tags         [A]代理接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Agent-Token  header  string  true  "代理校验token"
-// @Param        images  formData   file  true  "图片文件"
-// @Success      200  {object} []string  "请求成功"
-func (*agent) UploadImage(c echo.Context) (err error) {
-	ctx := app.ContextX[app.AgentContext](c)
-	return ctx.SendResponse(service.NewFeedback().UploadImage(ctx))
-}
-
-// PriceList 团签价格列表
-// @ID           AgentPriceList
-// @Router       /agent/v1/price/list [GET]
-// @Summary      A1008 团签价格列表
-// @Tags         [A]代理接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Agent-Token  header  string  true  "代理校验token"
-// @Success      200  {object}  []model.EnterprisePriceWithCity
-func (*agent) PriceList(c echo.Context) (err error) {
-	ctx := app.ContextX[app.AgentContext](c)
-	return ctx.SendResponse(service.NewEnterprise().PriceList(ctx.Enterprise.ID))
 }

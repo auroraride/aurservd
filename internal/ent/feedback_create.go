@@ -11,7 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/feedback"
 )
@@ -52,42 +52,30 @@ func (fc *FeedbackCreate) SetNillableUpdatedAt(t *time.Time) *FeedbackCreate {
 	return fc
 }
 
-// SetDeletedAt sets the "deleted_at" field.
-func (fc *FeedbackCreate) SetDeletedAt(t time.Time) *FeedbackCreate {
-	fc.mutation.SetDeletedAt(t)
+// SetEnterpriseID sets the "enterprise_id" field.
+func (fc *FeedbackCreate) SetEnterpriseID(u uint64) *FeedbackCreate {
+	fc.mutation.SetEnterpriseID(u)
 	return fc
 }
 
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (fc *FeedbackCreate) SetNillableDeletedAt(t *time.Time) *FeedbackCreate {
-	if t != nil {
-		fc.SetDeletedAt(*t)
+// SetNillableEnterpriseID sets the "enterprise_id" field if the given value is not nil.
+func (fc *FeedbackCreate) SetNillableEnterpriseID(u *uint64) *FeedbackCreate {
+	if u != nil {
+		fc.SetEnterpriseID(*u)
 	}
 	return fc
 }
 
-// SetCreator sets the "creator" field.
-func (fc *FeedbackCreate) SetCreator(m *model.Modifier) *FeedbackCreate {
-	fc.mutation.SetCreator(m)
+// SetAgentID sets the "agent_id" field.
+func (fc *FeedbackCreate) SetAgentID(u uint64) *FeedbackCreate {
+	fc.mutation.SetAgentID(u)
 	return fc
 }
 
-// SetLastModifier sets the "last_modifier" field.
-func (fc *FeedbackCreate) SetLastModifier(m *model.Modifier) *FeedbackCreate {
-	fc.mutation.SetLastModifier(m)
-	return fc
-}
-
-// SetRemark sets the "remark" field.
-func (fc *FeedbackCreate) SetRemark(s string) *FeedbackCreate {
-	fc.mutation.SetRemark(s)
-	return fc
-}
-
-// SetNillableRemark sets the "remark" field if the given value is not nil.
-func (fc *FeedbackCreate) SetNillableRemark(s *string) *FeedbackCreate {
-	if s != nil {
-		fc.SetRemark(*s)
+// SetNillableAgentID sets the "agent_id" field if the given value is not nil.
+func (fc *FeedbackCreate) SetNillableAgentID(u *uint64) *FeedbackCreate {
+	if u != nil {
+		fc.SetAgentID(*u)
 	}
 	return fc
 }
@@ -146,23 +134,14 @@ func (fc *FeedbackCreate) SetNillablePhone(s *string) *FeedbackCreate {
 	return fc
 }
 
-// SetEnterpriseID sets the "enterprise_id" field.
-func (fc *FeedbackCreate) SetEnterpriseID(u uint64) *FeedbackCreate {
-	fc.mutation.SetEnterpriseID(u)
-	return fc
-}
-
-// SetNillableEnterpriseID sets the "enterprise_id" field if the given value is not nil.
-func (fc *FeedbackCreate) SetNillableEnterpriseID(u *uint64) *FeedbackCreate {
-	if u != nil {
-		fc.SetEnterpriseID(*u)
-	}
-	return fc
-}
-
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
 func (fc *FeedbackCreate) SetEnterprise(e *Enterprise) *FeedbackCreate {
 	return fc.SetEnterpriseID(e.ID)
+}
+
+// SetAgent sets the "agent" edge to the Agent entity.
+func (fc *FeedbackCreate) SetAgent(a *Agent) *FeedbackCreate {
+	return fc.SetAgentID(a.ID)
 }
 
 // Mutation returns the FeedbackMutation object of the builder.
@@ -172,9 +151,7 @@ func (fc *FeedbackCreate) Mutation() *FeedbackMutation {
 
 // Save creates the Feedback in the database.
 func (fc *FeedbackCreate) Save(ctx context.Context) (*Feedback, error) {
-	if err := fc.defaults(); err != nil {
-		return nil, err
-	}
+	fc.defaults()
 	return withHooks(ctx, fc.sqlSave, fc.mutation, fc.hooks)
 }
 
@@ -201,18 +178,12 @@ func (fc *FeedbackCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (fc *FeedbackCreate) defaults() error {
+func (fc *FeedbackCreate) defaults() {
 	if _, ok := fc.mutation.CreatedAt(); !ok {
-		if feedback.DefaultCreatedAt == nil {
-			return fmt.Errorf("ent: uninitialized feedback.DefaultCreatedAt (forgotten import ent/runtime?)")
-		}
 		v := feedback.DefaultCreatedAt()
 		fc.mutation.SetCreatedAt(v)
 	}
 	if _, ok := fc.mutation.UpdatedAt(); !ok {
-		if feedback.DefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized feedback.DefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
 		v := feedback.DefaultUpdatedAt()
 		fc.mutation.SetUpdatedAt(v)
 	}
@@ -220,7 +191,6 @@ func (fc *FeedbackCreate) defaults() error {
 		v := feedback.DefaultType
 		fc.mutation.SetType(v)
 	}
-	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -272,22 +242,6 @@ func (fc *FeedbackCreate) createSpec() (*Feedback, *sqlgraph.CreateSpec) {
 		_spec.SetField(feedback.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
-	if value, ok := fc.mutation.DeletedAt(); ok {
-		_spec.SetField(feedback.FieldDeletedAt, field.TypeTime, value)
-		_node.DeletedAt = &value
-	}
-	if value, ok := fc.mutation.Creator(); ok {
-		_spec.SetField(feedback.FieldCreator, field.TypeJSON, value)
-		_node.Creator = value
-	}
-	if value, ok := fc.mutation.LastModifier(); ok {
-		_spec.SetField(feedback.FieldLastModifier, field.TypeJSON, value)
-		_node.LastModifier = value
-	}
-	if value, ok := fc.mutation.Remark(); ok {
-		_spec.SetField(feedback.FieldRemark, field.TypeString, value)
-		_node.Remark = value
-	}
 	if value, ok := fc.mutation.Content(); ok {
 		_spec.SetField(feedback.FieldContent, field.TypeString, value)
 		_node.Content = value
@@ -311,7 +265,7 @@ func (fc *FeedbackCreate) createSpec() (*Feedback, *sqlgraph.CreateSpec) {
 	if nodes := fc.mutation.EnterpriseIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   feedback.EnterpriseTable,
 			Columns: []string{feedback.EnterpriseColumn},
 			Bidi:    false,
@@ -323,6 +277,23 @@ func (fc *FeedbackCreate) createSpec() (*Feedback, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.EnterpriseID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := fc.mutation.AgentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   feedback.AgentTable,
+			Columns: []string{feedback.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.AgentID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -389,57 +360,39 @@ func (u *FeedbackUpsert) UpdateUpdatedAt() *FeedbackUpsert {
 	return u
 }
 
-// SetDeletedAt sets the "deleted_at" field.
-func (u *FeedbackUpsert) SetDeletedAt(v time.Time) *FeedbackUpsert {
-	u.Set(feedback.FieldDeletedAt, v)
+// SetEnterpriseID sets the "enterprise_id" field.
+func (u *FeedbackUpsert) SetEnterpriseID(v uint64) *FeedbackUpsert {
+	u.Set(feedback.FieldEnterpriseID, v)
 	return u
 }
 
-// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
-func (u *FeedbackUpsert) UpdateDeletedAt() *FeedbackUpsert {
-	u.SetExcluded(feedback.FieldDeletedAt)
+// UpdateEnterpriseID sets the "enterprise_id" field to the value that was provided on create.
+func (u *FeedbackUpsert) UpdateEnterpriseID() *FeedbackUpsert {
+	u.SetExcluded(feedback.FieldEnterpriseID)
 	return u
 }
 
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (u *FeedbackUpsert) ClearDeletedAt() *FeedbackUpsert {
-	u.SetNull(feedback.FieldDeletedAt)
+// ClearEnterpriseID clears the value of the "enterprise_id" field.
+func (u *FeedbackUpsert) ClearEnterpriseID() *FeedbackUpsert {
+	u.SetNull(feedback.FieldEnterpriseID)
 	return u
 }
 
-// SetLastModifier sets the "last_modifier" field.
-func (u *FeedbackUpsert) SetLastModifier(v *model.Modifier) *FeedbackUpsert {
-	u.Set(feedback.FieldLastModifier, v)
+// SetAgentID sets the "agent_id" field.
+func (u *FeedbackUpsert) SetAgentID(v uint64) *FeedbackUpsert {
+	u.Set(feedback.FieldAgentID, v)
 	return u
 }
 
-// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
-func (u *FeedbackUpsert) UpdateLastModifier() *FeedbackUpsert {
-	u.SetExcluded(feedback.FieldLastModifier)
+// UpdateAgentID sets the "agent_id" field to the value that was provided on create.
+func (u *FeedbackUpsert) UpdateAgentID() *FeedbackUpsert {
+	u.SetExcluded(feedback.FieldAgentID)
 	return u
 }
 
-// ClearLastModifier clears the value of the "last_modifier" field.
-func (u *FeedbackUpsert) ClearLastModifier() *FeedbackUpsert {
-	u.SetNull(feedback.FieldLastModifier)
-	return u
-}
-
-// SetRemark sets the "remark" field.
-func (u *FeedbackUpsert) SetRemark(v string) *FeedbackUpsert {
-	u.Set(feedback.FieldRemark, v)
-	return u
-}
-
-// UpdateRemark sets the "remark" field to the value that was provided on create.
-func (u *FeedbackUpsert) UpdateRemark() *FeedbackUpsert {
-	u.SetExcluded(feedback.FieldRemark)
-	return u
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (u *FeedbackUpsert) ClearRemark() *FeedbackUpsert {
-	u.SetNull(feedback.FieldRemark)
+// ClearAgentID clears the value of the "agent_id" field.
+func (u *FeedbackUpsert) ClearAgentID() *FeedbackUpsert {
+	u.SetNull(feedback.FieldAgentID)
 	return u
 }
 
@@ -527,24 +480,6 @@ func (u *FeedbackUpsert) ClearPhone() *FeedbackUpsert {
 	return u
 }
 
-// SetEnterpriseID sets the "enterprise_id" field.
-func (u *FeedbackUpsert) SetEnterpriseID(v uint64) *FeedbackUpsert {
-	u.Set(feedback.FieldEnterpriseID, v)
-	return u
-}
-
-// UpdateEnterpriseID sets the "enterprise_id" field to the value that was provided on create.
-func (u *FeedbackUpsert) UpdateEnterpriseID() *FeedbackUpsert {
-	u.SetExcluded(feedback.FieldEnterpriseID)
-	return u
-}
-
-// ClearEnterpriseID clears the value of the "enterprise_id" field.
-func (u *FeedbackUpsert) ClearEnterpriseID() *FeedbackUpsert {
-	u.SetNull(feedback.FieldEnterpriseID)
-	return u
-}
-
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -558,9 +493,6 @@ func (u *FeedbackUpsertOne) UpdateNewValues() *FeedbackUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(feedback.FieldCreatedAt)
-		}
-		if _, exists := u.create.mutation.Creator(); exists {
-			s.SetIgnore(feedback.FieldCreator)
 		}
 	}))
 	return u
@@ -607,66 +539,45 @@ func (u *FeedbackUpsertOne) UpdateUpdatedAt() *FeedbackUpsertOne {
 	})
 }
 
-// SetDeletedAt sets the "deleted_at" field.
-func (u *FeedbackUpsertOne) SetDeletedAt(v time.Time) *FeedbackUpsertOne {
+// SetEnterpriseID sets the "enterprise_id" field.
+func (u *FeedbackUpsertOne) SetEnterpriseID(v uint64) *FeedbackUpsertOne {
 	return u.Update(func(s *FeedbackUpsert) {
-		s.SetDeletedAt(v)
+		s.SetEnterpriseID(v)
 	})
 }
 
-// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
-func (u *FeedbackUpsertOne) UpdateDeletedAt() *FeedbackUpsertOne {
+// UpdateEnterpriseID sets the "enterprise_id" field to the value that was provided on create.
+func (u *FeedbackUpsertOne) UpdateEnterpriseID() *FeedbackUpsertOne {
 	return u.Update(func(s *FeedbackUpsert) {
-		s.UpdateDeletedAt()
+		s.UpdateEnterpriseID()
 	})
 }
 
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (u *FeedbackUpsertOne) ClearDeletedAt() *FeedbackUpsertOne {
+// ClearEnterpriseID clears the value of the "enterprise_id" field.
+func (u *FeedbackUpsertOne) ClearEnterpriseID() *FeedbackUpsertOne {
 	return u.Update(func(s *FeedbackUpsert) {
-		s.ClearDeletedAt()
+		s.ClearEnterpriseID()
 	})
 }
 
-// SetLastModifier sets the "last_modifier" field.
-func (u *FeedbackUpsertOne) SetLastModifier(v *model.Modifier) *FeedbackUpsertOne {
+// SetAgentID sets the "agent_id" field.
+func (u *FeedbackUpsertOne) SetAgentID(v uint64) *FeedbackUpsertOne {
 	return u.Update(func(s *FeedbackUpsert) {
-		s.SetLastModifier(v)
+		s.SetAgentID(v)
 	})
 }
 
-// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
-func (u *FeedbackUpsertOne) UpdateLastModifier() *FeedbackUpsertOne {
+// UpdateAgentID sets the "agent_id" field to the value that was provided on create.
+func (u *FeedbackUpsertOne) UpdateAgentID() *FeedbackUpsertOne {
 	return u.Update(func(s *FeedbackUpsert) {
-		s.UpdateLastModifier()
+		s.UpdateAgentID()
 	})
 }
 
-// ClearLastModifier clears the value of the "last_modifier" field.
-func (u *FeedbackUpsertOne) ClearLastModifier() *FeedbackUpsertOne {
+// ClearAgentID clears the value of the "agent_id" field.
+func (u *FeedbackUpsertOne) ClearAgentID() *FeedbackUpsertOne {
 	return u.Update(func(s *FeedbackUpsert) {
-		s.ClearLastModifier()
-	})
-}
-
-// SetRemark sets the "remark" field.
-func (u *FeedbackUpsertOne) SetRemark(v string) *FeedbackUpsertOne {
-	return u.Update(func(s *FeedbackUpsert) {
-		s.SetRemark(v)
-	})
-}
-
-// UpdateRemark sets the "remark" field to the value that was provided on create.
-func (u *FeedbackUpsertOne) UpdateRemark() *FeedbackUpsertOne {
-	return u.Update(func(s *FeedbackUpsert) {
-		s.UpdateRemark()
-	})
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (u *FeedbackUpsertOne) ClearRemark() *FeedbackUpsertOne {
-	return u.Update(func(s *FeedbackUpsert) {
-		s.ClearRemark()
+		s.ClearAgentID()
 	})
 }
 
@@ -765,27 +676,6 @@ func (u *FeedbackUpsertOne) UpdatePhone() *FeedbackUpsertOne {
 func (u *FeedbackUpsertOne) ClearPhone() *FeedbackUpsertOne {
 	return u.Update(func(s *FeedbackUpsert) {
 		s.ClearPhone()
-	})
-}
-
-// SetEnterpriseID sets the "enterprise_id" field.
-func (u *FeedbackUpsertOne) SetEnterpriseID(v uint64) *FeedbackUpsertOne {
-	return u.Update(func(s *FeedbackUpsert) {
-		s.SetEnterpriseID(v)
-	})
-}
-
-// UpdateEnterpriseID sets the "enterprise_id" field to the value that was provided on create.
-func (u *FeedbackUpsertOne) UpdateEnterpriseID() *FeedbackUpsertOne {
-	return u.Update(func(s *FeedbackUpsert) {
-		s.UpdateEnterpriseID()
-	})
-}
-
-// ClearEnterpriseID clears the value of the "enterprise_id" field.
-func (u *FeedbackUpsertOne) ClearEnterpriseID() *FeedbackUpsertOne {
-	return u.Update(func(s *FeedbackUpsert) {
-		s.ClearEnterpriseID()
 	})
 }
 
@@ -964,9 +854,6 @@ func (u *FeedbackUpsertBulk) UpdateNewValues() *FeedbackUpsertBulk {
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(feedback.FieldCreatedAt)
 			}
-			if _, exists := b.mutation.Creator(); exists {
-				s.SetIgnore(feedback.FieldCreator)
-			}
 		}
 	}))
 	return u
@@ -1013,66 +900,45 @@ func (u *FeedbackUpsertBulk) UpdateUpdatedAt() *FeedbackUpsertBulk {
 	})
 }
 
-// SetDeletedAt sets the "deleted_at" field.
-func (u *FeedbackUpsertBulk) SetDeletedAt(v time.Time) *FeedbackUpsertBulk {
+// SetEnterpriseID sets the "enterprise_id" field.
+func (u *FeedbackUpsertBulk) SetEnterpriseID(v uint64) *FeedbackUpsertBulk {
 	return u.Update(func(s *FeedbackUpsert) {
-		s.SetDeletedAt(v)
+		s.SetEnterpriseID(v)
 	})
 }
 
-// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
-func (u *FeedbackUpsertBulk) UpdateDeletedAt() *FeedbackUpsertBulk {
+// UpdateEnterpriseID sets the "enterprise_id" field to the value that was provided on create.
+func (u *FeedbackUpsertBulk) UpdateEnterpriseID() *FeedbackUpsertBulk {
 	return u.Update(func(s *FeedbackUpsert) {
-		s.UpdateDeletedAt()
+		s.UpdateEnterpriseID()
 	})
 }
 
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (u *FeedbackUpsertBulk) ClearDeletedAt() *FeedbackUpsertBulk {
+// ClearEnterpriseID clears the value of the "enterprise_id" field.
+func (u *FeedbackUpsertBulk) ClearEnterpriseID() *FeedbackUpsertBulk {
 	return u.Update(func(s *FeedbackUpsert) {
-		s.ClearDeletedAt()
+		s.ClearEnterpriseID()
 	})
 }
 
-// SetLastModifier sets the "last_modifier" field.
-func (u *FeedbackUpsertBulk) SetLastModifier(v *model.Modifier) *FeedbackUpsertBulk {
+// SetAgentID sets the "agent_id" field.
+func (u *FeedbackUpsertBulk) SetAgentID(v uint64) *FeedbackUpsertBulk {
 	return u.Update(func(s *FeedbackUpsert) {
-		s.SetLastModifier(v)
+		s.SetAgentID(v)
 	})
 }
 
-// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
-func (u *FeedbackUpsertBulk) UpdateLastModifier() *FeedbackUpsertBulk {
+// UpdateAgentID sets the "agent_id" field to the value that was provided on create.
+func (u *FeedbackUpsertBulk) UpdateAgentID() *FeedbackUpsertBulk {
 	return u.Update(func(s *FeedbackUpsert) {
-		s.UpdateLastModifier()
+		s.UpdateAgentID()
 	})
 }
 
-// ClearLastModifier clears the value of the "last_modifier" field.
-func (u *FeedbackUpsertBulk) ClearLastModifier() *FeedbackUpsertBulk {
+// ClearAgentID clears the value of the "agent_id" field.
+func (u *FeedbackUpsertBulk) ClearAgentID() *FeedbackUpsertBulk {
 	return u.Update(func(s *FeedbackUpsert) {
-		s.ClearLastModifier()
-	})
-}
-
-// SetRemark sets the "remark" field.
-func (u *FeedbackUpsertBulk) SetRemark(v string) *FeedbackUpsertBulk {
-	return u.Update(func(s *FeedbackUpsert) {
-		s.SetRemark(v)
-	})
-}
-
-// UpdateRemark sets the "remark" field to the value that was provided on create.
-func (u *FeedbackUpsertBulk) UpdateRemark() *FeedbackUpsertBulk {
-	return u.Update(func(s *FeedbackUpsert) {
-		s.UpdateRemark()
-	})
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (u *FeedbackUpsertBulk) ClearRemark() *FeedbackUpsertBulk {
-	return u.Update(func(s *FeedbackUpsert) {
-		s.ClearRemark()
+		s.ClearAgentID()
 	})
 }
 
@@ -1171,27 +1037,6 @@ func (u *FeedbackUpsertBulk) UpdatePhone() *FeedbackUpsertBulk {
 func (u *FeedbackUpsertBulk) ClearPhone() *FeedbackUpsertBulk {
 	return u.Update(func(s *FeedbackUpsert) {
 		s.ClearPhone()
-	})
-}
-
-// SetEnterpriseID sets the "enterprise_id" field.
-func (u *FeedbackUpsertBulk) SetEnterpriseID(v uint64) *FeedbackUpsertBulk {
-	return u.Update(func(s *FeedbackUpsert) {
-		s.SetEnterpriseID(v)
-	})
-}
-
-// UpdateEnterpriseID sets the "enterprise_id" field to the value that was provided on create.
-func (u *FeedbackUpsertBulk) UpdateEnterpriseID() *FeedbackUpsertBulk {
-	return u.Update(func(s *FeedbackUpsert) {
-		s.UpdateEnterpriseID()
-	})
-}
-
-// ClearEnterpriseID clears the value of the "enterprise_id" field.
-func (u *FeedbackUpsertBulk) ClearEnterpriseID() *FeedbackUpsertBulk {
-	return u.Update(func(s *FeedbackUpsert) {
-		s.ClearEnterpriseID()
 	})
 }
 

@@ -29,7 +29,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/exception"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/export"
-	"github.com/auroraride/aurservd/internal/ent/feedback"
 	"github.com/auroraride/aurservd/internal/ent/inventory"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/order"
@@ -959,46 +958,6 @@ func (c *ExportClient) GetNotDeleted(ctx context.Context, id uint64) (*Export, e
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *ExportClient) GetNotDeletedX(ctx context.Context, id uint64) *Export {
-	obj, err := c.GetNotDeleted(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// SoftDelete returns an soft delete builder for Feedback.
-func (c *FeedbackClient) SoftDelete() *FeedbackUpdate {
-	mutation := newFeedbackMutation(c.config, OpUpdate)
-	mutation.SetDeletedAt(time.Now())
-	return &FeedbackUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// SoftDeleteOne returns an soft delete builder for the given entity.
-func (c *FeedbackClient) SoftDeleteOne(f *Feedback) *FeedbackUpdateOne {
-	mutation := newFeedbackMutation(c.config, OpUpdateOne, withFeedback(f))
-	mutation.SetDeletedAt(time.Now())
-	return &FeedbackUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// SoftDeleteOneID returns an soft delete builder for the given id.
-func (c *FeedbackClient) SoftDeleteOneID(id uint64) *FeedbackUpdateOne {
-	mutation := newFeedbackMutation(c.config, OpUpdateOne, withFeedbackID(id))
-	mutation.SetDeletedAt(time.Now())
-	return &FeedbackUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// QueryNotDeleted returns a query not deleted builder for Feedback.
-func (c *FeedbackClient) QueryNotDeleted() *FeedbackQuery {
-	return c.Query().Where(feedback.DeletedAtIsNil())
-}
-
-// GetNotDeleted returns a Feedback not deleted entity by its id.
-func (c *FeedbackClient) GetNotDeleted(ctx context.Context, id uint64) (*Feedback, error) {
-	return c.Query().Where(feedback.ID(id), feedback.DeletedAtIsNil()).Only(ctx)
-}
-
-// GetNotDeletedX is like Get, but panics if an error occurs.
-func (c *FeedbackClient) GetNotDeletedX(ctx context.Context, id uint64) *Feedback {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)

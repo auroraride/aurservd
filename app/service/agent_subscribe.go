@@ -1,6 +1,6 @@
 // Copyright (C) liasica. 2023-present.
 //
-// Created at 2023-06-10
+// Created at 2023-06-12
 // Based on aurservd by liasica, magicrolan@qq.com.
 
 package service
@@ -22,18 +22,18 @@ import (
 	"github.com/auroraride/aurservd/pkg/tools"
 )
 
-type subscribeAgentService struct {
+type agentSubscribeService struct {
 	*BaseService
 }
 
-func NewSubscribeAgent(params ...any) *subscribeAgentService {
-	return &subscribeAgentService{
+func NewAgentSubscribe(params ...any) *agentSubscribeService {
+	return &agentSubscribeService{
 		BaseService: newService(params...),
 	}
 }
 
 // AlterList 加时申请列表
-func (s *subscribeAgentService) AlterList(enterpriseId uint64, req *model.SubscribeAlterApplyReq) *model.PaginationRes {
+func (s *agentSubscribeService) AlterList(enterpriseId uint64, req *model.SubscribeAlterApplyReq) *model.PaginationRes {
 	q := ent.Database.SubscribeAlter.QueryNotDeleted().
 		Where(
 			subscribealter.EnterpriseID(enterpriseId),
@@ -88,7 +88,7 @@ func (s *subscribeAgentService) AlterList(enterpriseId uint64, req *model.Subscr
 }
 
 // AlterReview 审批加时申请
-func (s *subscribeAgentService) AlterReview(req *model.SubscribeAlterReviewReq) {
+func (s *agentSubscribeService) AlterReview(req *model.SubscribeAlterReviewReq) {
 	// 查找申请记录
 	q := ent.Database.SubscribeAlter.QueryNotDeleted().
 		Where(

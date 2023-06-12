@@ -358,7 +358,7 @@ func (*enterprise) RepaymentList(c echo.Context) (err error) {
 // @Success      200  {object}  model.PaginationRes{items=[]model.SubscribeAlterApplyListRsp}
 func (*enterprise) SubscribeApplyList(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.SubscribeAlterApplyManagerReq](c)
-	return ctx.SendResponse(service.NewSubscribeAgent(ctx.Modifier).AlterList(req.EnterpriseID, &req.SubscribeAlterApplyReq))
+	return ctx.SendResponse(service.NewAgentSubscribe(ctx.Modifier).AlterList(req.EnterpriseID, &req.SubscribeAlterApplyReq))
 }
 
 // SubscribeApply
@@ -372,7 +372,7 @@ func (*enterprise) SubscribeApplyList(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse
 func (*enterprise) SubscribeApply(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.SubscribeAlterReviewReq](c)
-	service.NewSubscribeAgent(ctx.Modifier).AlterReview(req)
+	service.NewAgentSubscribe(ctx.Modifier).AlterReview(req)
 	return ctx.SendResponse()
 }
 
@@ -392,15 +392,15 @@ func (*enterprise) FeedbackList(c echo.Context) (err error) {
 
 // Active 团签激活骑手
 // @ID           ManagerRiderActive
-// @Router       /manager/v1/rider/active [POST]
-// @Summary      M7026 激活骑手
+// @Router       /manager/v1/enterprise/subscribe/active [POST]
+// @Summary      M9031 激活骑手
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
-// @Param        body  body  model.RiderActiveBatteryReq true  "激活骑手请求"
+// @Param        body  body  model.AgentSubscribeActiveReq true  "激活骑手请求"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*enterprise) Active(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[model.RiderActiveBatteryReq](c)
+	ctx, req := app.ManagerContextAndBinding[model.AgentSubscribeActiveReq](c)
 	service.NewEnterprise().Active(req, req.EnterpriseID)
 	return ctx.SendResponse()
 }

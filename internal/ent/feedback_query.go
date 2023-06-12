@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/feedback"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -23,6 +24,7 @@ type FeedbackQuery struct {
 	inters         []Interceptor
 	predicates     []predicate.Feedback
 	withEnterprise *EnterpriseQuery
+	withAgent      *AgentQuery
 	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -74,7 +76,29 @@ func (fq *FeedbackQuery) QueryEnterprise() *EnterpriseQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(feedback.Table, feedback.FieldID, selector),
 			sqlgraph.To(enterprise.Table, enterprise.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, feedback.EnterpriseTable, feedback.EnterpriseColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, feedback.EnterpriseTable, feedback.EnterpriseColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(fq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryAgent chains the current query on the "agent" edge.
+func (fq *FeedbackQuery) QueryAgent() *AgentQuery {
+	query := (&AgentClient{config: fq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := fq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := fq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(feedback.Table, feedback.FieldID, selector),
+			sqlgraph.To(agent.Table, agent.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, feedback.AgentTable, feedback.AgentColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(fq.driver.Dialect(), step)
 		return fromU, nil
@@ -275,6 +299,7 @@ func (fq *FeedbackQuery) Clone() *FeedbackQuery {
 		inters:         append([]Interceptor{}, fq.inters...),
 		predicates:     append([]predicate.Feedback{}, fq.predicates...),
 		withEnterprise: fq.withEnterprise.Clone(),
+		withAgent:      fq.withAgent.Clone(),
 		// clone intermediate query.
 		sql:  fq.sql.Clone(),
 		path: fq.path,
@@ -289,6 +314,17 @@ func (fq *FeedbackQuery) WithEnterprise(opts ...func(*EnterpriseQuery)) *Feedbac
 		opt(query)
 	}
 	fq.withEnterprise = query
+	return fq
+}
+
+// WithAgent tells the query-builder to eager-load the nodes that are connected to
+// the "agent" edge. The optional arguments are used to configure the query builder of the edge.
+func (fq *FeedbackQuery) WithAgent(opts ...func(*AgentQuery)) *FeedbackQuery {
+	query := (&AgentClient{config: fq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	fq.withAgent = query
 	return fq
 }
 
@@ -370,8 +406,9 @@ func (fq *FeedbackQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Fee
 	var (
 		nodes       = []*Feedback{}
 		_spec       = fq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			fq.withEnterprise != nil,
+			fq.withAgent != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -398,6 +435,12 @@ func (fq *FeedbackQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Fee
 	if query := fq.withEnterprise; query != nil {
 		if err := fq.loadEnterprise(ctx, query, nodes, nil,
 			func(n *Feedback, e *Enterprise) { n.Edges.Enterprise = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := fq.withAgent; query != nil {
+		if err := fq.loadAgent(ctx, query, nodes, nil,
+			func(n *Feedback, e *Agent) { n.Edges.Agent = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -436,6 +479,38 @@ func (fq *FeedbackQuery) loadEnterprise(ctx context.Context, query *EnterpriseQu
 	}
 	return nil
 }
+func (fq *FeedbackQuery) loadAgent(ctx context.Context, query *AgentQuery, nodes []*Feedback, init func(*Feedback), assign func(*Feedback, *Agent)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Feedback)
+	for i := range nodes {
+		if nodes[i].AgentID == nil {
+			continue
+		}
+		fk := *nodes[i].AgentID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(agent.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "agent_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 
 func (fq *FeedbackQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := fq.querySpec()
@@ -467,6 +542,9 @@ func (fq *FeedbackQuery) querySpec() *sqlgraph.QuerySpec {
 		}
 		if fq.withEnterprise != nil {
 			_spec.Node.AddColumnOnce(feedback.FieldEnterpriseID)
+		}
+		if fq.withAgent != nil {
+			_spec.Node.AddColumnOnce(feedback.FieldAgentID)
 		}
 	}
 	if ps := fq.predicates; len(ps) > 0 {
@@ -537,6 +615,7 @@ type FeedbackQueryWith string
 
 var (
 	FeedbackQueryWithEnterprise FeedbackQueryWith = "Enterprise"
+	FeedbackQueryWithAgent      FeedbackQueryWith = "Agent"
 )
 
 func (fq *FeedbackQuery) With(withEdges ...FeedbackQueryWith) *FeedbackQuery {
@@ -544,6 +623,8 @@ func (fq *FeedbackQuery) With(withEdges ...FeedbackQueryWith) *FeedbackQuery {
 		switch v {
 		case FeedbackQueryWithEnterprise:
 			fq.WithEnterprise()
+		case FeedbackQueryWithAgent:
+			fq.WithAgent()
 		}
 	}
 	return fq

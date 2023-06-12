@@ -233,7 +233,7 @@ func (s *riderAgentService) Log(req *model.AgentRiderLogReq) (items []model.Agen
 }
 
 // Active 激活骑手电池
-func (s *enterpriseService) Active(req *model.RiderActiveBatteryReq, enterpriseID uint64) {
+func (s *enterpriseService) Active(req *model.AgentSubscribeActiveReq, enterpriseID uint64) {
 	// 不是自己骑手的不能激活
 	riderInfo, _ := ent.Database.Rider.
 		QueryNotDeleted().

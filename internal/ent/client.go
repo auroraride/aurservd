@@ -4792,31 +4792,15 @@ func (c *EnterpriseClient) QueryBills(e *Enterprise) *EnterpriseBillQuery {
 	return query
 }
 
-// QueryBattery queries the battery edge of a Enterprise.
-func (c *EnterpriseClient) QueryBattery(e *Enterprise) *BatteryQuery {
+// QueryBatteries queries the batteries edge of a Enterprise.
+func (c *EnterpriseClient) QueryBatteries(e *Enterprise) *BatteryQuery {
 	query := (&BatteryClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := e.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(enterprise.Table, enterprise.FieldID, id),
 			sqlgraph.To(battery.Table, battery.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, enterprise.BatteryTable, enterprise.BatteryColumn),
-		)
-		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryFeedback queries the feedback edge of a Enterprise.
-func (c *EnterpriseClient) QueryFeedback(e *Enterprise) *FeedbackQuery {
-	query := (&FeedbackClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := e.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(enterprise.Table, enterprise.FieldID, id),
-			sqlgraph.To(feedback.Table, feedback.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, enterprise.FeedbackTable, enterprise.FeedbackColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprise.BatteriesTable, enterprise.BatteriesColumn),
 		)
 		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
 		return fromV, nil
@@ -6088,54 +6072,6 @@ func (c *EnterpriseStationClient) QueryEnterprise(es *EnterpriseStation) *Enterp
 	return query
 }
 
-// QueryCabinets queries the cabinets edge of a EnterpriseStation.
-func (c *EnterpriseStationClient) QueryCabinets(es *EnterpriseStation) *CabinetQuery {
-	query := (&CabinetClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := es.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(enterprisestation.Table, enterprisestation.FieldID, id),
-			sqlgraph.To(cabinet.Table, cabinet.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, enterprisestation.CabinetsTable, enterprisestation.CabinetsColumn),
-		)
-		fromV = sqlgraph.Neighbors(es.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryBattery queries the battery edge of a EnterpriseStation.
-func (c *EnterpriseStationClient) QueryBattery(es *EnterpriseStation) *BatteryQuery {
-	query := (&BatteryClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := es.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(enterprisestation.Table, enterprisestation.FieldID, id),
-			sqlgraph.To(battery.Table, battery.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, enterprisestation.BatteryTable, enterprisestation.BatteryColumn),
-		)
-		fromV = sqlgraph.Neighbors(es.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryStocks queries the stocks edge of a EnterpriseStation.
-func (c *EnterpriseStationClient) QueryStocks(es *EnterpriseStation) *StockQuery {
-	query := (&StockClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := es.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(enterprisestation.Table, enterprisestation.FieldID, id),
-			sqlgraph.To(stock.Table, stock.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, enterprisestation.StocksTable, enterprisestation.StocksColumn),
-		)
-		fromV = sqlgraph.Neighbors(es.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // QueryAgents queries the agents edge of a EnterpriseStation.
 func (c *EnterpriseStationClient) QueryAgents(es *EnterpriseStation) *AgentQuery {
 	query := (&AgentClient{config: c.config}).Query()
@@ -6177,6 +6113,54 @@ func (c *EnterpriseStationClient) QuerySwapPutoutBatteries(es *EnterpriseStation
 			sqlgraph.From(enterprisestation.Table, enterprisestation.FieldID, id),
 			sqlgraph.To(enterprisebatteryswap.Table, enterprisebatteryswap.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, enterprisestation.SwapPutoutBatteriesTable, enterprisestation.SwapPutoutBatteriesColumn),
+		)
+		fromV = sqlgraph.Neighbors(es.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCabinets queries the cabinets edge of a EnterpriseStation.
+func (c *EnterpriseStationClient) QueryCabinets(es *EnterpriseStation) *CabinetQuery {
+	query := (&CabinetClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := es.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisestation.Table, enterprisestation.FieldID, id),
+			sqlgraph.To(cabinet.Table, cabinet.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprisestation.CabinetsTable, enterprisestation.CabinetsColumn),
+		)
+		fromV = sqlgraph.Neighbors(es.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryBatteries queries the batteries edge of a EnterpriseStation.
+func (c *EnterpriseStationClient) QueryBatteries(es *EnterpriseStation) *BatteryQuery {
+	query := (&BatteryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := es.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisestation.Table, enterprisestation.FieldID, id),
+			sqlgraph.To(battery.Table, battery.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprisestation.BatteriesTable, enterprisestation.BatteriesColumn),
+		)
+		fromV = sqlgraph.Neighbors(es.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStocks queries the stocks edge of a EnterpriseStation.
+func (c *EnterpriseStationClient) QueryStocks(es *EnterpriseStation) *StockQuery {
+	query := (&StockClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := es.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisestation.Table, enterprisestation.FieldID, id),
+			sqlgraph.To(stock.Table, stock.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprisestation.StocksTable, enterprisestation.StocksColumn),
 		)
 		fromV = sqlgraph.Neighbors(es.driver.Dialect(), step)
 		return fromV, nil
@@ -6859,7 +6843,23 @@ func (c *FeedbackClient) QueryEnterprise(f *Feedback) *EnterpriseQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(feedback.Table, feedback.FieldID, id),
 			sqlgraph.To(enterprise.Table, enterprise.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, feedback.EnterpriseTable, feedback.EnterpriseColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, feedback.EnterpriseTable, feedback.EnterpriseColumn),
+		)
+		fromV = sqlgraph.Neighbors(f.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryAgent queries the agent edge of a Feedback.
+func (c *FeedbackClient) QueryAgent(f *Feedback) *AgentQuery {
+	query := (&AgentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := f.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(feedback.Table, feedback.FieldID, id),
+			sqlgraph.To(agent.Table, agent.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, feedback.AgentTable, feedback.AgentColumn),
 		)
 		fromV = sqlgraph.Neighbors(f.driver.Dialect(), step)
 		return fromV, nil
@@ -6869,8 +6869,7 @@ func (c *FeedbackClient) QueryEnterprise(f *Feedback) *EnterpriseQuery {
 
 // Hooks returns the client hooks.
 func (c *FeedbackClient) Hooks() []Hook {
-	hooks := c.hooks.Feedback
-	return append(hooks[:len(hooks):len(hooks)], feedback.Hooks[:]...)
+	return c.hooks.Feedback
 }
 
 // Interceptors returns the client interceptors.

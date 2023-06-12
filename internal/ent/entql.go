@@ -985,16 +985,13 @@ var schemaGraph = func() *sqlgraph.Schema {
 		Fields: map[string]*sqlgraph.FieldSpec{
 			feedback.FieldCreatedAt:    {Type: field.TypeTime, Column: feedback.FieldCreatedAt},
 			feedback.FieldUpdatedAt:    {Type: field.TypeTime, Column: feedback.FieldUpdatedAt},
-			feedback.FieldDeletedAt:    {Type: field.TypeTime, Column: feedback.FieldDeletedAt},
-			feedback.FieldCreator:      {Type: field.TypeJSON, Column: feedback.FieldCreator},
-			feedback.FieldLastModifier: {Type: field.TypeJSON, Column: feedback.FieldLastModifier},
-			feedback.FieldRemark:       {Type: field.TypeString, Column: feedback.FieldRemark},
+			feedback.FieldEnterpriseID: {Type: field.TypeUint64, Column: feedback.FieldEnterpriseID},
+			feedback.FieldAgentID:      {Type: field.TypeUint64, Column: feedback.FieldAgentID},
 			feedback.FieldContent:      {Type: field.TypeString, Column: feedback.FieldContent},
 			feedback.FieldType:         {Type: field.TypeUint8, Column: feedback.FieldType},
 			feedback.FieldURL:          {Type: field.TypeJSON, Column: feedback.FieldURL},
 			feedback.FieldName:         {Type: field.TypeString, Column: feedback.FieldName},
 			feedback.FieldPhone:        {Type: field.TypeString, Column: feedback.FieldPhone},
-			feedback.FieldEnterpriseID: {Type: field.TypeUint64, Column: feedback.FieldEnterpriseID},
 		},
 	}
 	graph.Nodes[33] = &sqlgraph.Node{
@@ -2750,28 +2747,16 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"EnterpriseBill",
 	)
 	graph.MustAddE(
-		"battery",
+		"batteries",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   enterprise.BatteryTable,
-			Columns: []string{enterprise.BatteryColumn},
+			Table:   enterprise.BatteriesTable,
+			Columns: []string{enterprise.BatteriesColumn},
 			Bidi:    false,
 		},
 		"Enterprise",
 		"Battery",
-	)
-	graph.MustAddE(
-		"feedback",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   enterprise.FeedbackTable,
-			Columns: []string{enterprise.FeedbackColumn},
-			Bidi:    false,
-		},
-		"Enterprise",
-		"Feedback",
 	)
 	graph.MustAddE(
 		"agents",
@@ -3098,42 +3083,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Enterprise",
 	)
 	graph.MustAddE(
-		"cabinets",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   enterprisestation.CabinetsTable,
-			Columns: []string{enterprisestation.CabinetsColumn},
-			Bidi:    false,
-		},
-		"EnterpriseStation",
-		"Cabinet",
-	)
-	graph.MustAddE(
-		"battery",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   enterprisestation.BatteryTable,
-			Columns: []string{enterprisestation.BatteryColumn},
-			Bidi:    false,
-		},
-		"EnterpriseStation",
-		"Battery",
-	)
-	graph.MustAddE(
-		"stocks",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   enterprisestation.StocksTable,
-			Columns: []string{enterprisestation.StocksColumn},
-			Bidi:    false,
-		},
-		"EnterpriseStation",
-		"Stock",
-	)
-	graph.MustAddE(
 		"agents",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
@@ -3168,6 +3117,42 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"EnterpriseStation",
 		"EnterpriseBatterySwap",
+	)
+	graph.MustAddE(
+		"cabinets",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestation.CabinetsTable,
+			Columns: []string{enterprisestation.CabinetsColumn},
+			Bidi:    false,
+		},
+		"EnterpriseStation",
+		"Cabinet",
+	)
+	graph.MustAddE(
+		"batteries",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestation.BatteriesTable,
+			Columns: []string{enterprisestation.BatteriesColumn},
+			Bidi:    false,
+		},
+		"EnterpriseStation",
+		"Battery",
+	)
+	graph.MustAddE(
+		"stocks",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestation.StocksTable,
+			Columns: []string{enterprisestation.StocksColumn},
+			Bidi:    false,
+		},
+		"EnterpriseStation",
+		"Stock",
 	)
 	graph.MustAddE(
 		"city",
@@ -3317,13 +3302,25 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"enterprise",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   feedback.EnterpriseTable,
 			Columns: []string{feedback.EnterpriseColumn},
 			Bidi:    false,
 		},
 		"Feedback",
 		"Enterprise",
+	)
+	graph.MustAddE(
+		"agent",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   feedback.AgentTable,
+			Columns: []string{feedback.AgentColumn},
+			Bidi:    false,
+		},
+		"Feedback",
+		"Agent",
 	)
 	graph.MustAddE(
 		"role",
@@ -8526,28 +8523,14 @@ func (f *EnterpriseFilter) WhereHasBillsWith(preds ...predicate.EnterpriseBill) 
 	})))
 }
 
-// WhereHasBattery applies a predicate to check if query has an edge battery.
-func (f *EnterpriseFilter) WhereHasBattery() {
-	f.Where(entql.HasEdge("battery"))
+// WhereHasBatteries applies a predicate to check if query has an edge batteries.
+func (f *EnterpriseFilter) WhereHasBatteries() {
+	f.Where(entql.HasEdge("batteries"))
 }
 
-// WhereHasBatteryWith applies a predicate to check if query has an edge battery with a given conditions (other predicates).
-func (f *EnterpriseFilter) WhereHasBatteryWith(preds ...predicate.Battery) {
-	f.Where(entql.HasEdgeWith("battery", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// WhereHasFeedback applies a predicate to check if query has an edge feedback.
-func (f *EnterpriseFilter) WhereHasFeedback() {
-	f.Where(entql.HasEdge("feedback"))
-}
-
-// WhereHasFeedbackWith applies a predicate to check if query has an edge feedback with a given conditions (other predicates).
-func (f *EnterpriseFilter) WhereHasFeedbackWith(preds ...predicate.Feedback) {
-	f.Where(entql.HasEdgeWith("feedback", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasBatteriesWith applies a predicate to check if query has an edge batteries with a given conditions (other predicates).
+func (f *EnterpriseFilter) WhereHasBatteriesWith(preds ...predicate.Battery) {
+	f.Where(entql.HasEdgeWith("batteries", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -9622,48 +9605,6 @@ func (f *EnterpriseStationFilter) WhereHasEnterpriseWith(preds ...predicate.Ente
 	})))
 }
 
-// WhereHasCabinets applies a predicate to check if query has an edge cabinets.
-func (f *EnterpriseStationFilter) WhereHasCabinets() {
-	f.Where(entql.HasEdge("cabinets"))
-}
-
-// WhereHasCabinetsWith applies a predicate to check if query has an edge cabinets with a given conditions (other predicates).
-func (f *EnterpriseStationFilter) WhereHasCabinetsWith(preds ...predicate.Cabinet) {
-	f.Where(entql.HasEdgeWith("cabinets", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// WhereHasBattery applies a predicate to check if query has an edge battery.
-func (f *EnterpriseStationFilter) WhereHasBattery() {
-	f.Where(entql.HasEdge("battery"))
-}
-
-// WhereHasBatteryWith applies a predicate to check if query has an edge battery with a given conditions (other predicates).
-func (f *EnterpriseStationFilter) WhereHasBatteryWith(preds ...predicate.Battery) {
-	f.Where(entql.HasEdgeWith("battery", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// WhereHasStocks applies a predicate to check if query has an edge stocks.
-func (f *EnterpriseStationFilter) WhereHasStocks() {
-	f.Where(entql.HasEdge("stocks"))
-}
-
-// WhereHasStocksWith applies a predicate to check if query has an edge stocks with a given conditions (other predicates).
-func (f *EnterpriseStationFilter) WhereHasStocksWith(preds ...predicate.Stock) {
-	f.Where(entql.HasEdgeWith("stocks", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
 // WhereHasAgents applies a predicate to check if query has an edge agents.
 func (f *EnterpriseStationFilter) WhereHasAgents() {
 	f.Where(entql.HasEdge("agents"))
@@ -9700,6 +9641,48 @@ func (f *EnterpriseStationFilter) WhereHasSwapPutoutBatteries() {
 // WhereHasSwapPutoutBatteriesWith applies a predicate to check if query has an edge swap_putout_batteries with a given conditions (other predicates).
 func (f *EnterpriseStationFilter) WhereHasSwapPutoutBatteriesWith(preds ...predicate.EnterpriseBatterySwap) {
 	f.Where(entql.HasEdgeWith("swap_putout_batteries", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasCabinets applies a predicate to check if query has an edge cabinets.
+func (f *EnterpriseStationFilter) WhereHasCabinets() {
+	f.Where(entql.HasEdge("cabinets"))
+}
+
+// WhereHasCabinetsWith applies a predicate to check if query has an edge cabinets with a given conditions (other predicates).
+func (f *EnterpriseStationFilter) WhereHasCabinetsWith(preds ...predicate.Cabinet) {
+	f.Where(entql.HasEdgeWith("cabinets", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasBatteries applies a predicate to check if query has an edge batteries.
+func (f *EnterpriseStationFilter) WhereHasBatteries() {
+	f.Where(entql.HasEdge("batteries"))
+}
+
+// WhereHasBatteriesWith applies a predicate to check if query has an edge batteries with a given conditions (other predicates).
+func (f *EnterpriseStationFilter) WhereHasBatteriesWith(preds ...predicate.Battery) {
+	f.Where(entql.HasEdgeWith("batteries", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasStocks applies a predicate to check if query has an edge stocks.
+func (f *EnterpriseStationFilter) WhereHasStocks() {
+	f.Where(entql.HasEdge("stocks"))
+}
+
+// WhereHasStocksWith applies a predicate to check if query has an edge stocks with a given conditions (other predicates).
+func (f *EnterpriseStationFilter) WhereHasStocksWith(preds ...predicate.Stock) {
+	f.Where(entql.HasEdgeWith("stocks", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -10339,24 +10322,14 @@ func (f *FeedbackFilter) WhereUpdatedAt(p entql.TimeP) {
 	f.Where(p.Field(feedback.FieldUpdatedAt))
 }
 
-// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
-func (f *FeedbackFilter) WhereDeletedAt(p entql.TimeP) {
-	f.Where(p.Field(feedback.FieldDeletedAt))
+// WhereEnterpriseID applies the entql uint64 predicate on the enterprise_id field.
+func (f *FeedbackFilter) WhereEnterpriseID(p entql.Uint64P) {
+	f.Where(p.Field(feedback.FieldEnterpriseID))
 }
 
-// WhereCreator applies the entql json.RawMessage predicate on the creator field.
-func (f *FeedbackFilter) WhereCreator(p entql.BytesP) {
-	f.Where(p.Field(feedback.FieldCreator))
-}
-
-// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
-func (f *FeedbackFilter) WhereLastModifier(p entql.BytesP) {
-	f.Where(p.Field(feedback.FieldLastModifier))
-}
-
-// WhereRemark applies the entql string predicate on the remark field.
-func (f *FeedbackFilter) WhereRemark(p entql.StringP) {
-	f.Where(p.Field(feedback.FieldRemark))
+// WhereAgentID applies the entql uint64 predicate on the agent_id field.
+func (f *FeedbackFilter) WhereAgentID(p entql.Uint64P) {
+	f.Where(p.Field(feedback.FieldAgentID))
 }
 
 // WhereContent applies the entql string predicate on the content field.
@@ -10384,11 +10357,6 @@ func (f *FeedbackFilter) WherePhone(p entql.StringP) {
 	f.Where(p.Field(feedback.FieldPhone))
 }
 
-// WhereEnterpriseID applies the entql uint64 predicate on the enterprise_id field.
-func (f *FeedbackFilter) WhereEnterpriseID(p entql.Uint64P) {
-	f.Where(p.Field(feedback.FieldEnterpriseID))
-}
-
 // WhereHasEnterprise applies a predicate to check if query has an edge enterprise.
 func (f *FeedbackFilter) WhereHasEnterprise() {
 	f.Where(entql.HasEdge("enterprise"))
@@ -10397,6 +10365,20 @@ func (f *FeedbackFilter) WhereHasEnterprise() {
 // WhereHasEnterpriseWith applies a predicate to check if query has an edge enterprise with a given conditions (other predicates).
 func (f *FeedbackFilter) WhereHasEnterpriseWith(preds ...predicate.Enterprise) {
 	f.Where(entql.HasEdgeWith("enterprise", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasAgent applies a predicate to check if query has an edge agent.
+func (f *FeedbackFilter) WhereHasAgent() {
+	f.Where(entql.HasEdge("agent"))
+}
+
+// WhereHasAgentWith applies a predicate to check if query has an edge agent with a given conditions (other predicates).
+func (f *FeedbackFilter) WhereHasAgentWith(preds ...predicate.Agent) {
+	f.Where(entql.HasEdgeWith("agent", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

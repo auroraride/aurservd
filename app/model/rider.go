@@ -259,12 +259,6 @@ type RiderAgentList struct {
 	CityID  uint64 `json:"cityId"`  // 城市筛选
 }
 
-type RiderActiveBatteryReq struct {
-	ID           uint64 `json:"id" param:"id" validate:"required"` // 骑手ID
-	BatteryID    uint64 `json:"batteryId" validate:"required"`     // 电池ID
-	EnterpriseID uint64 `json:"enterpriseId"`                      // 团签id
-}
-
 // RiderSubscribeRsp 骑手订阅信息
 type RiderSubscribeRsp struct {
 	// 剩余天数

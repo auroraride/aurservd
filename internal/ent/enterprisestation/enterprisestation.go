@@ -33,18 +33,18 @@ const (
 	FieldName = "name"
 	// EdgeEnterprise holds the string denoting the enterprise edge name in mutations.
 	EdgeEnterprise = "enterprise"
-	// EdgeCabinets holds the string denoting the cabinets edge name in mutations.
-	EdgeCabinets = "cabinets"
-	// EdgeBattery holds the string denoting the battery edge name in mutations.
-	EdgeBattery = "battery"
-	// EdgeStocks holds the string denoting the stocks edge name in mutations.
-	EdgeStocks = "stocks"
 	// EdgeAgents holds the string denoting the agents edge name in mutations.
 	EdgeAgents = "agents"
 	// EdgeSwapPutinBatteries holds the string denoting the swap_putin_batteries edge name in mutations.
 	EdgeSwapPutinBatteries = "swap_putin_batteries"
 	// EdgeSwapPutoutBatteries holds the string denoting the swap_putout_batteries edge name in mutations.
 	EdgeSwapPutoutBatteries = "swap_putout_batteries"
+	// EdgeCabinets holds the string denoting the cabinets edge name in mutations.
+	EdgeCabinets = "cabinets"
+	// EdgeBatteries holds the string denoting the batteries edge name in mutations.
+	EdgeBatteries = "batteries"
+	// EdgeStocks holds the string denoting the stocks edge name in mutations.
+	EdgeStocks = "stocks"
 	// Table holds the table name of the enterprisestation in the database.
 	Table = "enterprise_station"
 	// EnterpriseTable is the table that holds the enterprise relation/edge.
@@ -54,27 +54,6 @@ const (
 	EnterpriseInverseTable = "enterprise"
 	// EnterpriseColumn is the table column denoting the enterprise relation/edge.
 	EnterpriseColumn = "enterprise_id"
-	// CabinetsTable is the table that holds the cabinets relation/edge.
-	CabinetsTable = "cabinet"
-	// CabinetsInverseTable is the table name for the Cabinet entity.
-	// It exists in this package in order to avoid circular dependency with the "cabinet" package.
-	CabinetsInverseTable = "cabinet"
-	// CabinetsColumn is the table column denoting the cabinets relation/edge.
-	CabinetsColumn = "station_id"
-	// BatteryTable is the table that holds the battery relation/edge.
-	BatteryTable = "battery"
-	// BatteryInverseTable is the table name for the Battery entity.
-	// It exists in this package in order to avoid circular dependency with the "battery" package.
-	BatteryInverseTable = "battery"
-	// BatteryColumn is the table column denoting the battery relation/edge.
-	BatteryColumn = "station_id"
-	// StocksTable is the table that holds the stocks relation/edge.
-	StocksTable = "stock"
-	// StocksInverseTable is the table name for the Stock entity.
-	// It exists in this package in order to avoid circular dependency with the "stock" package.
-	StocksInverseTable = "stock"
-	// StocksColumn is the table column denoting the stocks relation/edge.
-	StocksColumn = "station_id"
 	// AgentsTable is the table that holds the agents relation/edge. The primary key declared below.
 	AgentsTable = "agent_stations"
 	// AgentsInverseTable is the table name for the Agent entity.
@@ -94,6 +73,27 @@ const (
 	SwapPutoutBatteriesInverseTable = "enterprise_battery_swap"
 	// SwapPutoutBatteriesColumn is the table column denoting the swap_putout_batteries relation/edge.
 	SwapPutoutBatteriesColumn = "putout_station_id"
+	// CabinetsTable is the table that holds the cabinets relation/edge.
+	CabinetsTable = "cabinet"
+	// CabinetsInverseTable is the table name for the Cabinet entity.
+	// It exists in this package in order to avoid circular dependency with the "cabinet" package.
+	CabinetsInverseTable = "cabinet"
+	// CabinetsColumn is the table column denoting the cabinets relation/edge.
+	CabinetsColumn = "station_id"
+	// BatteriesTable is the table that holds the batteries relation/edge.
+	BatteriesTable = "battery"
+	// BatteriesInverseTable is the table name for the Battery entity.
+	// It exists in this package in order to avoid circular dependency with the "battery" package.
+	BatteriesInverseTable = "battery"
+	// BatteriesColumn is the table column denoting the batteries relation/edge.
+	BatteriesColumn = "station_id"
+	// StocksTable is the table that holds the stocks relation/edge.
+	StocksTable = "stock"
+	// StocksInverseTable is the table name for the Stock entity.
+	// It exists in this package in order to avoid circular dependency with the "stock" package.
+	StocksInverseTable = "stock"
+	// StocksColumn is the table column denoting the stocks relation/edge.
+	StocksColumn = "station_id"
 )
 
 // Columns holds all SQL columns for enterprisestation fields.
@@ -185,48 +185,6 @@ func ByEnterpriseField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
-// ByCabinetsCount orders the results by cabinets count.
-func ByCabinetsCount(opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newCabinetsStep(), opts...)
-	}
-}
-
-// ByCabinets orders the results by cabinets terms.
-func ByCabinets(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newCabinetsStep(), append([]sql.OrderTerm{term}, terms...)...)
-	}
-}
-
-// ByBatteryCount orders the results by battery count.
-func ByBatteryCount(opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newBatteryStep(), opts...)
-	}
-}
-
-// ByBattery orders the results by battery terms.
-func ByBattery(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newBatteryStep(), append([]sql.OrderTerm{term}, terms...)...)
-	}
-}
-
-// ByStocksCount orders the results by stocks count.
-func ByStocksCount(opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newStocksStep(), opts...)
-	}
-}
-
-// ByStocks orders the results by stocks terms.
-func ByStocks(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newStocksStep(), append([]sql.OrderTerm{term}, terms...)...)
-	}
-}
-
 // ByAgentsCount orders the results by agents count.
 func ByAgentsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -268,32 +226,53 @@ func BySwapPutoutBatteries(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOpti
 		sqlgraph.OrderByNeighborTerms(s, newSwapPutoutBatteriesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByCabinetsCount orders the results by cabinets count.
+func ByCabinetsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newCabinetsStep(), opts...)
+	}
+}
+
+// ByCabinets orders the results by cabinets terms.
+func ByCabinets(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCabinetsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByBatteriesCount orders the results by batteries count.
+func ByBatteriesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newBatteriesStep(), opts...)
+	}
+}
+
+// ByBatteries orders the results by batteries terms.
+func ByBatteries(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newBatteriesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByStocksCount orders the results by stocks count.
+func ByStocksCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newStocksStep(), opts...)
+	}
+}
+
+// ByStocks orders the results by stocks terms.
+func ByStocks(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newStocksStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newEnterpriseStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(EnterpriseInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, true, EnterpriseTable, EnterpriseColumn),
-	)
-}
-func newCabinetsStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(CabinetsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, CabinetsTable, CabinetsColumn),
-	)
-}
-func newBatteryStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(BatteryInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, BatteryTable, BatteryColumn),
-	)
-}
-func newStocksStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(StocksInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, StocksTable, StocksColumn),
 	)
 }
 func newAgentsStep() *sqlgraph.Step {
@@ -315,5 +294,26 @@ func newSwapPutoutBatteriesStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(SwapPutoutBatteriesInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, SwapPutoutBatteriesTable, SwapPutoutBatteriesColumn),
+	)
+}
+func newCabinetsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CabinetsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, CabinetsTable, CabinetsColumn),
+	)
+}
+func newBatteriesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(BatteriesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, BatteriesTable, BatteriesColumn),
+	)
+}
+func newStocksStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(StocksInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, StocksTable, StocksColumn),
 	)
 }

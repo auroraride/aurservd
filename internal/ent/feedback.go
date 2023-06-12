@@ -10,7 +10,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/feedback"
 )
@@ -24,14 +24,10 @@ type Feedback struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
-	// DeletedAt holds the value of the "deleted_at" field.
-	DeletedAt *time.Time `json:"deleted_at,omitempty"`
-	// 创建人
-	Creator *model.Modifier `json:"creator,omitempty"`
-	// 最后修改人
-	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
-	// 管理员改动原因/备注
-	Remark string `json:"remark,omitempty"`
+	// 企业ID
+	EnterpriseID *uint64 `json:"enterprise_id,omitempty"`
+	// AgentID holds the value of the "agent_id" field.
+	AgentID *uint64 `json:"agent_id,omitempty"`
 	// 反馈内容
 	Content string `json:"content,omitempty"`
 	// 反馈类型
@@ -42,8 +38,6 @@ type Feedback struct {
 	Name string `json:"name,omitempty"`
 	// 电话
 	Phone string `json:"phone,omitempty"`
-	// 团签ID
-	EnterpriseID *uint64 `json:"enterprise_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the FeedbackQuery when eager-loading is set.
 	Edges        FeedbackEdges `json:"edges"`
@@ -54,9 +48,11 @@ type Feedback struct {
 type FeedbackEdges struct {
 	// Enterprise holds the value of the enterprise edge.
 	Enterprise *Enterprise `json:"enterprise,omitempty"`
+	// Agent holds the value of the agent edge.
+	Agent *Agent `json:"agent,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // EnterpriseOrErr returns the Enterprise value or an error if the edge
@@ -72,18 +68,31 @@ func (e FeedbackEdges) EnterpriseOrErr() (*Enterprise, error) {
 	return nil, &NotLoadedError{edge: "enterprise"}
 }
 
+// AgentOrErr returns the Agent value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e FeedbackEdges) AgentOrErr() (*Agent, error) {
+	if e.loadedTypes[1] {
+		if e.Agent == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: agent.Label}
+		}
+		return e.Agent, nil
+	}
+	return nil, &NotLoadedError{edge: "agent"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Feedback) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case feedback.FieldCreator, feedback.FieldLastModifier, feedback.FieldURL:
+		case feedback.FieldURL:
 			values[i] = new([]byte)
-		case feedback.FieldID, feedback.FieldType, feedback.FieldEnterpriseID:
+		case feedback.FieldID, feedback.FieldEnterpriseID, feedback.FieldAgentID, feedback.FieldType:
 			values[i] = new(sql.NullInt64)
-		case feedback.FieldRemark, feedback.FieldContent, feedback.FieldName, feedback.FieldPhone:
+		case feedback.FieldContent, feedback.FieldName, feedback.FieldPhone:
 			values[i] = new(sql.NullString)
-		case feedback.FieldCreatedAt, feedback.FieldUpdatedAt, feedback.FieldDeletedAt:
+		case feedback.FieldCreatedAt, feedback.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -118,34 +127,19 @@ func (f *Feedback) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				f.UpdatedAt = value.Time
 			}
-		case feedback.FieldDeletedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
+		case feedback.FieldEnterpriseID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field enterprise_id", values[i])
 			} else if value.Valid {
-				f.DeletedAt = new(time.Time)
-				*f.DeletedAt = value.Time
+				f.EnterpriseID = new(uint64)
+				*f.EnterpriseID = uint64(value.Int64)
 			}
-		case feedback.FieldCreator:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field creator", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &f.Creator); err != nil {
-					return fmt.Errorf("unmarshal field creator: %w", err)
-				}
-			}
-		case feedback.FieldLastModifier:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field last_modifier", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &f.LastModifier); err != nil {
-					return fmt.Errorf("unmarshal field last_modifier: %w", err)
-				}
-			}
-		case feedback.FieldRemark:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field remark", values[i])
+		case feedback.FieldAgentID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field agent_id", values[i])
 			} else if value.Valid {
-				f.Remark = value.String
+				f.AgentID = new(uint64)
+				*f.AgentID = uint64(value.Int64)
 			}
 		case feedback.FieldContent:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -179,13 +173,6 @@ func (f *Feedback) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				f.Phone = value.String
 			}
-		case feedback.FieldEnterpriseID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field enterprise_id", values[i])
-			} else if value.Valid {
-				f.EnterpriseID = new(uint64)
-				*f.EnterpriseID = uint64(value.Int64)
-			}
 		default:
 			f.selectValues.Set(columns[i], values[i])
 		}
@@ -202,6 +189,11 @@ func (f *Feedback) Value(name string) (ent.Value, error) {
 // QueryEnterprise queries the "enterprise" edge of the Feedback entity.
 func (f *Feedback) QueryEnterprise() *EnterpriseQuery {
 	return NewFeedbackClient(f.config).QueryEnterprise(f)
+}
+
+// QueryAgent queries the "agent" edge of the Feedback entity.
+func (f *Feedback) QueryAgent() *AgentQuery {
+	return NewFeedbackClient(f.config).QueryAgent(f)
 }
 
 // Update returns a builder for updating this Feedback.
@@ -233,19 +225,15 @@ func (f *Feedback) String() string {
 	builder.WriteString("updated_at=")
 	builder.WriteString(f.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	if v := f.DeletedAt; v != nil {
-		builder.WriteString("deleted_at=")
-		builder.WriteString(v.Format(time.ANSIC))
+	if v := f.EnterpriseID; v != nil {
+		builder.WriteString("enterprise_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	builder.WriteString("creator=")
-	builder.WriteString(fmt.Sprintf("%v", f.Creator))
-	builder.WriteString(", ")
-	builder.WriteString("last_modifier=")
-	builder.WriteString(fmt.Sprintf("%v", f.LastModifier))
-	builder.WriteString(", ")
-	builder.WriteString("remark=")
-	builder.WriteString(f.Remark)
+	if v := f.AgentID; v != nil {
+		builder.WriteString("agent_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", ")
 	builder.WriteString("content=")
 	builder.WriteString(f.Content)
@@ -261,11 +249,6 @@ func (f *Feedback) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("phone=")
 	builder.WriteString(f.Phone)
-	builder.WriteString(", ")
-	if v := f.EnterpriseID; v != nil {
-		builder.WriteString("enterprise_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
 	builder.WriteByte(')')
 	return builder.String()
 }

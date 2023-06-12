@@ -65,14 +65,14 @@ func UpdatedAt(v time.Time) predicate.Feedback {
 	return predicate.Feedback(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
-// DeletedAt applies equality check predicate on the "deleted_at" field. It's identical to DeletedAtEQ.
-func DeletedAt(v time.Time) predicate.Feedback {
-	return predicate.Feedback(sql.FieldEQ(FieldDeletedAt, v))
+// EnterpriseID applies equality check predicate on the "enterprise_id" field. It's identical to EnterpriseIDEQ.
+func EnterpriseID(v uint64) predicate.Feedback {
+	return predicate.Feedback(sql.FieldEQ(FieldEnterpriseID, v))
 }
 
-// Remark applies equality check predicate on the "remark" field. It's identical to RemarkEQ.
-func Remark(v string) predicate.Feedback {
-	return predicate.Feedback(sql.FieldEQ(FieldRemark, v))
+// AgentID applies equality check predicate on the "agent_id" field. It's identical to AgentIDEQ.
+func AgentID(v uint64) predicate.Feedback {
+	return predicate.Feedback(sql.FieldEQ(FieldAgentID, v))
 }
 
 // Content applies equality check predicate on the "content" field. It's identical to ContentEQ.
@@ -93,11 +93,6 @@ func Name(v string) predicate.Feedback {
 // Phone applies equality check predicate on the "phone" field. It's identical to PhoneEQ.
 func Phone(v string) predicate.Feedback {
 	return predicate.Feedback(sql.FieldEQ(FieldPhone, v))
-}
-
-// EnterpriseID applies equality check predicate on the "enterprise_id" field. It's identical to EnterpriseIDEQ.
-func EnterpriseID(v uint64) predicate.Feedback {
-	return predicate.Feedback(sql.FieldEQ(FieldEnterpriseID, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -180,149 +175,64 @@ func UpdatedAtLTE(v time.Time) predicate.Feedback {
 	return predicate.Feedback(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
-// DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
-func DeletedAtEQ(v time.Time) predicate.Feedback {
-	return predicate.Feedback(sql.FieldEQ(FieldDeletedAt, v))
+// EnterpriseIDEQ applies the EQ predicate on the "enterprise_id" field.
+func EnterpriseIDEQ(v uint64) predicate.Feedback {
+	return predicate.Feedback(sql.FieldEQ(FieldEnterpriseID, v))
 }
 
-// DeletedAtNEQ applies the NEQ predicate on the "deleted_at" field.
-func DeletedAtNEQ(v time.Time) predicate.Feedback {
-	return predicate.Feedback(sql.FieldNEQ(FieldDeletedAt, v))
+// EnterpriseIDNEQ applies the NEQ predicate on the "enterprise_id" field.
+func EnterpriseIDNEQ(v uint64) predicate.Feedback {
+	return predicate.Feedback(sql.FieldNEQ(FieldEnterpriseID, v))
 }
 
-// DeletedAtIn applies the In predicate on the "deleted_at" field.
-func DeletedAtIn(vs ...time.Time) predicate.Feedback {
-	return predicate.Feedback(sql.FieldIn(FieldDeletedAt, vs...))
+// EnterpriseIDIn applies the In predicate on the "enterprise_id" field.
+func EnterpriseIDIn(vs ...uint64) predicate.Feedback {
+	return predicate.Feedback(sql.FieldIn(FieldEnterpriseID, vs...))
 }
 
-// DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
-func DeletedAtNotIn(vs ...time.Time) predicate.Feedback {
-	return predicate.Feedback(sql.FieldNotIn(FieldDeletedAt, vs...))
+// EnterpriseIDNotIn applies the NotIn predicate on the "enterprise_id" field.
+func EnterpriseIDNotIn(vs ...uint64) predicate.Feedback {
+	return predicate.Feedback(sql.FieldNotIn(FieldEnterpriseID, vs...))
 }
 
-// DeletedAtGT applies the GT predicate on the "deleted_at" field.
-func DeletedAtGT(v time.Time) predicate.Feedback {
-	return predicate.Feedback(sql.FieldGT(FieldDeletedAt, v))
+// EnterpriseIDIsNil applies the IsNil predicate on the "enterprise_id" field.
+func EnterpriseIDIsNil() predicate.Feedback {
+	return predicate.Feedback(sql.FieldIsNull(FieldEnterpriseID))
 }
 
-// DeletedAtGTE applies the GTE predicate on the "deleted_at" field.
-func DeletedAtGTE(v time.Time) predicate.Feedback {
-	return predicate.Feedback(sql.FieldGTE(FieldDeletedAt, v))
+// EnterpriseIDNotNil applies the NotNil predicate on the "enterprise_id" field.
+func EnterpriseIDNotNil() predicate.Feedback {
+	return predicate.Feedback(sql.FieldNotNull(FieldEnterpriseID))
 }
 
-// DeletedAtLT applies the LT predicate on the "deleted_at" field.
-func DeletedAtLT(v time.Time) predicate.Feedback {
-	return predicate.Feedback(sql.FieldLT(FieldDeletedAt, v))
+// AgentIDEQ applies the EQ predicate on the "agent_id" field.
+func AgentIDEQ(v uint64) predicate.Feedback {
+	return predicate.Feedback(sql.FieldEQ(FieldAgentID, v))
 }
 
-// DeletedAtLTE applies the LTE predicate on the "deleted_at" field.
-func DeletedAtLTE(v time.Time) predicate.Feedback {
-	return predicate.Feedback(sql.FieldLTE(FieldDeletedAt, v))
+// AgentIDNEQ applies the NEQ predicate on the "agent_id" field.
+func AgentIDNEQ(v uint64) predicate.Feedback {
+	return predicate.Feedback(sql.FieldNEQ(FieldAgentID, v))
 }
 
-// DeletedAtIsNil applies the IsNil predicate on the "deleted_at" field.
-func DeletedAtIsNil() predicate.Feedback {
-	return predicate.Feedback(sql.FieldIsNull(FieldDeletedAt))
+// AgentIDIn applies the In predicate on the "agent_id" field.
+func AgentIDIn(vs ...uint64) predicate.Feedback {
+	return predicate.Feedback(sql.FieldIn(FieldAgentID, vs...))
 }
 
-// DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
-func DeletedAtNotNil() predicate.Feedback {
-	return predicate.Feedback(sql.FieldNotNull(FieldDeletedAt))
+// AgentIDNotIn applies the NotIn predicate on the "agent_id" field.
+func AgentIDNotIn(vs ...uint64) predicate.Feedback {
+	return predicate.Feedback(sql.FieldNotIn(FieldAgentID, vs...))
 }
 
-// CreatorIsNil applies the IsNil predicate on the "creator" field.
-func CreatorIsNil() predicate.Feedback {
-	return predicate.Feedback(sql.FieldIsNull(FieldCreator))
+// AgentIDIsNil applies the IsNil predicate on the "agent_id" field.
+func AgentIDIsNil() predicate.Feedback {
+	return predicate.Feedback(sql.FieldIsNull(FieldAgentID))
 }
 
-// CreatorNotNil applies the NotNil predicate on the "creator" field.
-func CreatorNotNil() predicate.Feedback {
-	return predicate.Feedback(sql.FieldNotNull(FieldCreator))
-}
-
-// LastModifierIsNil applies the IsNil predicate on the "last_modifier" field.
-func LastModifierIsNil() predicate.Feedback {
-	return predicate.Feedback(sql.FieldIsNull(FieldLastModifier))
-}
-
-// LastModifierNotNil applies the NotNil predicate on the "last_modifier" field.
-func LastModifierNotNil() predicate.Feedback {
-	return predicate.Feedback(sql.FieldNotNull(FieldLastModifier))
-}
-
-// RemarkEQ applies the EQ predicate on the "remark" field.
-func RemarkEQ(v string) predicate.Feedback {
-	return predicate.Feedback(sql.FieldEQ(FieldRemark, v))
-}
-
-// RemarkNEQ applies the NEQ predicate on the "remark" field.
-func RemarkNEQ(v string) predicate.Feedback {
-	return predicate.Feedback(sql.FieldNEQ(FieldRemark, v))
-}
-
-// RemarkIn applies the In predicate on the "remark" field.
-func RemarkIn(vs ...string) predicate.Feedback {
-	return predicate.Feedback(sql.FieldIn(FieldRemark, vs...))
-}
-
-// RemarkNotIn applies the NotIn predicate on the "remark" field.
-func RemarkNotIn(vs ...string) predicate.Feedback {
-	return predicate.Feedback(sql.FieldNotIn(FieldRemark, vs...))
-}
-
-// RemarkGT applies the GT predicate on the "remark" field.
-func RemarkGT(v string) predicate.Feedback {
-	return predicate.Feedback(sql.FieldGT(FieldRemark, v))
-}
-
-// RemarkGTE applies the GTE predicate on the "remark" field.
-func RemarkGTE(v string) predicate.Feedback {
-	return predicate.Feedback(sql.FieldGTE(FieldRemark, v))
-}
-
-// RemarkLT applies the LT predicate on the "remark" field.
-func RemarkLT(v string) predicate.Feedback {
-	return predicate.Feedback(sql.FieldLT(FieldRemark, v))
-}
-
-// RemarkLTE applies the LTE predicate on the "remark" field.
-func RemarkLTE(v string) predicate.Feedback {
-	return predicate.Feedback(sql.FieldLTE(FieldRemark, v))
-}
-
-// RemarkContains applies the Contains predicate on the "remark" field.
-func RemarkContains(v string) predicate.Feedback {
-	return predicate.Feedback(sql.FieldContains(FieldRemark, v))
-}
-
-// RemarkHasPrefix applies the HasPrefix predicate on the "remark" field.
-func RemarkHasPrefix(v string) predicate.Feedback {
-	return predicate.Feedback(sql.FieldHasPrefix(FieldRemark, v))
-}
-
-// RemarkHasSuffix applies the HasSuffix predicate on the "remark" field.
-func RemarkHasSuffix(v string) predicate.Feedback {
-	return predicate.Feedback(sql.FieldHasSuffix(FieldRemark, v))
-}
-
-// RemarkIsNil applies the IsNil predicate on the "remark" field.
-func RemarkIsNil() predicate.Feedback {
-	return predicate.Feedback(sql.FieldIsNull(FieldRemark))
-}
-
-// RemarkNotNil applies the NotNil predicate on the "remark" field.
-func RemarkNotNil() predicate.Feedback {
-	return predicate.Feedback(sql.FieldNotNull(FieldRemark))
-}
-
-// RemarkEqualFold applies the EqualFold predicate on the "remark" field.
-func RemarkEqualFold(v string) predicate.Feedback {
-	return predicate.Feedback(sql.FieldEqualFold(FieldRemark, v))
-}
-
-// RemarkContainsFold applies the ContainsFold predicate on the "remark" field.
-func RemarkContainsFold(v string) predicate.Feedback {
-	return predicate.Feedback(sql.FieldContainsFold(FieldRemark, v))
+// AgentIDNotNil applies the NotNil predicate on the "agent_id" field.
+func AgentIDNotNil() predicate.Feedback {
+	return predicate.Feedback(sql.FieldNotNull(FieldAgentID))
 }
 
 // ContentEQ applies the EQ predicate on the "content" field.
@@ -590,42 +500,12 @@ func PhoneContainsFold(v string) predicate.Feedback {
 	return predicate.Feedback(sql.FieldContainsFold(FieldPhone, v))
 }
 
-// EnterpriseIDEQ applies the EQ predicate on the "enterprise_id" field.
-func EnterpriseIDEQ(v uint64) predicate.Feedback {
-	return predicate.Feedback(sql.FieldEQ(FieldEnterpriseID, v))
-}
-
-// EnterpriseIDNEQ applies the NEQ predicate on the "enterprise_id" field.
-func EnterpriseIDNEQ(v uint64) predicate.Feedback {
-	return predicate.Feedback(sql.FieldNEQ(FieldEnterpriseID, v))
-}
-
-// EnterpriseIDIn applies the In predicate on the "enterprise_id" field.
-func EnterpriseIDIn(vs ...uint64) predicate.Feedback {
-	return predicate.Feedback(sql.FieldIn(FieldEnterpriseID, vs...))
-}
-
-// EnterpriseIDNotIn applies the NotIn predicate on the "enterprise_id" field.
-func EnterpriseIDNotIn(vs ...uint64) predicate.Feedback {
-	return predicate.Feedback(sql.FieldNotIn(FieldEnterpriseID, vs...))
-}
-
-// EnterpriseIDIsNil applies the IsNil predicate on the "enterprise_id" field.
-func EnterpriseIDIsNil() predicate.Feedback {
-	return predicate.Feedback(sql.FieldIsNull(FieldEnterpriseID))
-}
-
-// EnterpriseIDNotNil applies the NotNil predicate on the "enterprise_id" field.
-func EnterpriseIDNotNil() predicate.Feedback {
-	return predicate.Feedback(sql.FieldNotNull(FieldEnterpriseID))
-}
-
 // HasEnterprise applies the HasEdge predicate on the "enterprise" edge.
 func HasEnterprise() predicate.Feedback {
 	return predicate.Feedback(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, EnterpriseTable, EnterpriseColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, EnterpriseTable, EnterpriseColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -635,6 +515,29 @@ func HasEnterprise() predicate.Feedback {
 func HasEnterpriseWith(preds ...predicate.Enterprise) predicate.Feedback {
 	return predicate.Feedback(func(s *sql.Selector) {
 		step := newEnterpriseStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasAgent applies the HasEdge predicate on the "agent" edge.
+func HasAgent() predicate.Feedback {
+	return predicate.Feedback(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, AgentTable, AgentColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasAgentWith applies the HasEdge predicate on the "agent" edge with a given conditions (other predicates).
+func HasAgentWith(preds ...predicate.Agent) predicate.Feedback {
+	return predicate.Feedback(func(s *sql.Selector) {
+		step := newAgentStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

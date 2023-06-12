@@ -78,42 +78,10 @@ func (*rider) Detail(c echo.Context) (err error) {
 	return ctx.SendResponse(service.NewRiderAgentWithAgent(ctx.Agent, ctx.Enterprise).Detail(req, ctx.Enterprise.ID))
 }
 
-// Active
-// @ID           AgentRiderActive
-// @Router       /agent/v1/rider/active [POST]
-// @Summary      A2005 激活骑手
-// @Tags         [A]代理接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Agent-Token  header  string  true  "代理校验token"
-// @Param        body  body     model.RiderActiveBatteryReq  true  "请求详情"
-// @Success      200  {object}  string  "请求成功"
-func (*rider) Active(c echo.Context) (err error) {
-	ctx, req := app.AgentContextAndBinding[model.RiderActiveBatteryReq](c)
-	service.NewEnterprise().Active(req, ctx.Enterprise.ID)
-	return ctx.SendResponse()
-}
-
-// ExchangeList  换电列表
-// @ID           AgentExchangeList
-// @Router       /agent/v1/rider/exchange [GET]
-// @Summary      A2009 换电列表
-// @Tags         [A]代理接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Agent-Token  header  string  true  "代理校验token"
-// @Param        query  query   model.ExchangeManagerListReq  true  "查询条件"
-// @Success      200  {object}  model.PaginationRes{items=[]model.ExchangeManagerListRes}  "请求成功"
-func (*rider) ExchangeList(c echo.Context) (err error) {
-	ctx, req := app.AgentContextAndBinding[model.ExchangeManagerListReq](c)
-	req.EnterpriseID = ctx.Enterprise.ID
-	return ctx.SendResponse(service.NewExchange().List(req))
-}
-
-// RiderInfo 通过二维码换取骑手信息
+// RiderInfo
 // @ID           AgentRiderInfo
 // @Router       /agent/v1/rider/info [GET]
-// @Summary      A2010 通过二维码换取骑手信息
+// @Summary      A2005 通过二维码换取骑手信息
 // @Tags         [A]代理接口
 // @Accept       json
 // @Produce      json
@@ -123,4 +91,19 @@ func (*rider) RiderInfo(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.QRQueryReq](c)
 	id := service.NewRider().ParseQrcode(req.Qrcode)
 	return ctx.SendResponse(service.NewRider().GetRiderNameById(id))
+}
+
+// Invite 邀请骑手
+// @ID           AgentRiderInvite
+// @Router       /agent/v1/rider/invite [POST]
+// @Summary      A2006 邀请骑手
+// @Tags         [A]代理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Agent-Token  header  string  true  "代理校验token"
+// @Param        body  body   model.EnterpriseRiderInviteReq  true "邀请骑手"
+// @Success      200  {object}  string  "请求成功"
+func (*rider) Invite(c echo.Context) (err error) {
+	ctx, req := app.AgentContextAndBinding[model.EnterpriseRiderInviteReq](c)
+	return ctx.SendResponse(service.NewminiProgram().Invite(ctx.Enterprise, req))
 }

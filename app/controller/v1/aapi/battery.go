@@ -1,0 +1,51 @@
+// Copyright (C) liasica. 2023-present.
+//
+// Created at 2023-06-12
+// Based on aurservd by liasica, magicrolan@qq.com.
+
+package aapi
+
+import (
+	"github.com/labstack/echo/v4"
+
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/service"
+)
+
+type battery struct{}
+
+var Battery = new(battery)
+
+// Section
+// @ID           AgentBatterySearch
+// @Router       /agent/v1/battery/section [GET]
+// @Summary      AA001 电池选择搜索
+// @Tags         [A]代理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Agent-Token  header  string  true  "代理校验token"
+// @Param        query  query   model.BatterySearchReq  true  "筛选项"
+// @Success      200  {object}  []model.Battery
+func (*battery) Section(c echo.Context) (err error) {
+	ctx, req := app.AgentContextAndBinding[model.BatterySearchReq](c)
+	// TODO 子代理
+	return ctx.SendResponse(service.NewSelection().BatterySerialSearch(&model.BatterySearchReq{
+		Serial:       req.Serial,
+		EnterpriseID: ctx.Enterprise.ID,
+	}))
+}
+
+// Model
+// @ID           AgentBatteryModel
+// @Router       /agent/v1/battery/model [GET]
+// @Summary      AA002 电池型号列表
+// @Tags         [A]代理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Agent-Token  header  string  true  "代理校验token"
+// @Success      200  {object}  model.ItemListRes
+func (*battery) Model(c echo.Context) (err error) {
+	ctx := app.ContextX[app.AgentContext](c)
+	return ctx.SendResponse(service.NewBatteryModel().List())
+}

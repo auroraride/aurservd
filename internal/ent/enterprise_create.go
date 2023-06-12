@@ -23,7 +23,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
-	"github.com/auroraride/aurservd/internal/ent/feedback"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
@@ -387,34 +386,19 @@ func (ec *EnterpriseCreate) AddBills(e ...*EnterpriseBill) *EnterpriseCreate {
 	return ec.AddBillIDs(ids...)
 }
 
-// AddBatteryIDs adds the "battery" edge to the Battery entity by IDs.
+// AddBatteryIDs adds the "batteries" edge to the Battery entity by IDs.
 func (ec *EnterpriseCreate) AddBatteryIDs(ids ...uint64) *EnterpriseCreate {
 	ec.mutation.AddBatteryIDs(ids...)
 	return ec
 }
 
-// AddBattery adds the "battery" edges to the Battery entity.
-func (ec *EnterpriseCreate) AddBattery(b ...*Battery) *EnterpriseCreate {
+// AddBatteries adds the "batteries" edges to the Battery entity.
+func (ec *EnterpriseCreate) AddBatteries(b ...*Battery) *EnterpriseCreate {
 	ids := make([]uint64, len(b))
 	for i := range b {
 		ids[i] = b[i].ID
 	}
 	return ec.AddBatteryIDs(ids...)
-}
-
-// AddFeedbackIDs adds the "feedback" edge to the Feedback entity by IDs.
-func (ec *EnterpriseCreate) AddFeedbackIDs(ids ...uint64) *EnterpriseCreate {
-	ec.mutation.AddFeedbackIDs(ids...)
-	return ec
-}
-
-// AddFeedback adds the "feedback" edges to the Feedback entity.
-func (ec *EnterpriseCreate) AddFeedback(f ...*Feedback) *EnterpriseCreate {
-	ids := make([]uint64, len(f))
-	for i := range f {
-		ids[i] = f[i].ID
-	}
-	return ec.AddFeedbackIDs(ids...)
 }
 
 // AddAgentIDs adds the "agents" edge to the Agent entity by IDs.
@@ -868,31 +852,15 @@ func (ec *EnterpriseCreate) createSpec() (*Enterprise, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := ec.mutation.BatteryIDs(); len(nodes) > 0 {
+	if nodes := ec.mutation.BatteriesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   enterprise.BatteryTable,
-			Columns: []string{enterprise.BatteryColumn},
+			Table:   enterprise.BatteriesTable,
+			Columns: []string{enterprise.BatteriesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := ec.mutation.FeedbackIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   enterprise.FeedbackTable,
-			Columns: []string{enterprise.FeedbackColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(feedback.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

@@ -415,13 +415,13 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "battery_enterprise_battery",
+				Symbol:     "battery_enterprise_batteries",
 				Columns:    []*schema.Column{BatteryColumns[14]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "battery_enterprise_station_battery",
+				Symbol:     "battery_enterprise_station_batteries",
 				Columns:    []*schema.Column{BatteryColumns[15]},
 				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
 				OnDelete:   schema.SetNull,
@@ -2642,16 +2642,13 @@ var (
 		{Name: "id", Type: field.TypeUint64, Increment: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "creator", Type: field.TypeJSON, Nullable: true},
-		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true},
-		{Name: "remark", Type: field.TypeString, Nullable: true},
 		{Name: "content", Type: field.TypeString},
 		{Name: "type", Type: field.TypeUint8, Default: 0},
 		{Name: "url", Type: field.TypeJSON, Nullable: true},
 		{Name: "name", Type: field.TypeString, Nullable: true},
 		{Name: "phone", Type: field.TypeString, Nullable: true},
 		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "agent_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// FeedbackTable holds the schema information for the "feedback" table.
 	FeedbackTable = &schema.Table{
@@ -2660,9 +2657,15 @@ var (
 		PrimaryKey: []*schema.Column{FeedbackColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "feedback_enterprise_feedback",
-				Columns:    []*schema.Column{FeedbackColumns[12]},
+				Symbol:     "feedback_enterprise_enterprise",
+				Columns:    []*schema.Column{FeedbackColumns[8]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "feedback_agent_agent",
+				Columns:    []*schema.Column{FeedbackColumns[9]},
+				RefColumns: []*schema.Column{AgentColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -2673,9 +2676,14 @@ var (
 				Columns: []*schema.Column{FeedbackColumns[1]},
 			},
 			{
-				Name:    "feedback_deleted_at",
+				Name:    "feedback_enterprise_id",
 				Unique:  false,
-				Columns: []*schema.Column{FeedbackColumns[3]},
+				Columns: []*schema.Column{FeedbackColumns[8]},
+			},
+			{
+				Name:    "feedback_agent_id",
+				Unique:  false,
+				Columns: []*schema.Column{FeedbackColumns[9]},
 			},
 		},
 	}
@@ -4800,6 +4808,7 @@ func init() {
 		Table: "export",
 	}
 	FeedbackTable.ForeignKeys[0].RefTable = EnterpriseTable
+	FeedbackTable.ForeignKeys[1].RefTable = AgentTable
 	FeedbackTable.Annotation = &entsql.Annotation{
 		Table: "feedback",
 	}

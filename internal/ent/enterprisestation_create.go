@@ -114,51 +114,6 @@ func (esc *EnterpriseStationCreate) SetEnterprise(e *Enterprise) *EnterpriseStat
 	return esc.SetEnterpriseID(e.ID)
 }
 
-// AddCabinetIDs adds the "cabinets" edge to the Cabinet entity by IDs.
-func (esc *EnterpriseStationCreate) AddCabinetIDs(ids ...uint64) *EnterpriseStationCreate {
-	esc.mutation.AddCabinetIDs(ids...)
-	return esc
-}
-
-// AddCabinets adds the "cabinets" edges to the Cabinet entity.
-func (esc *EnterpriseStationCreate) AddCabinets(c ...*Cabinet) *EnterpriseStationCreate {
-	ids := make([]uint64, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
-	}
-	return esc.AddCabinetIDs(ids...)
-}
-
-// AddBatteryIDs adds the "battery" edge to the Battery entity by IDs.
-func (esc *EnterpriseStationCreate) AddBatteryIDs(ids ...uint64) *EnterpriseStationCreate {
-	esc.mutation.AddBatteryIDs(ids...)
-	return esc
-}
-
-// AddBattery adds the "battery" edges to the Battery entity.
-func (esc *EnterpriseStationCreate) AddBattery(b ...*Battery) *EnterpriseStationCreate {
-	ids := make([]uint64, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
-	}
-	return esc.AddBatteryIDs(ids...)
-}
-
-// AddStockIDs adds the "stocks" edge to the Stock entity by IDs.
-func (esc *EnterpriseStationCreate) AddStockIDs(ids ...uint64) *EnterpriseStationCreate {
-	esc.mutation.AddStockIDs(ids...)
-	return esc
-}
-
-// AddStocks adds the "stocks" edges to the Stock entity.
-func (esc *EnterpriseStationCreate) AddStocks(s ...*Stock) *EnterpriseStationCreate {
-	ids := make([]uint64, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
-	}
-	return esc.AddStockIDs(ids...)
-}
-
 // AddAgentIDs adds the "agents" edge to the Agent entity by IDs.
 func (esc *EnterpriseStationCreate) AddAgentIDs(ids ...uint64) *EnterpriseStationCreate {
 	esc.mutation.AddAgentIDs(ids...)
@@ -202,6 +157,51 @@ func (esc *EnterpriseStationCreate) AddSwapPutoutBatteries(e ...*EnterpriseBatte
 		ids[i] = e[i].ID
 	}
 	return esc.AddSwapPutoutBatteryIDs(ids...)
+}
+
+// AddCabinetIDs adds the "cabinets" edge to the Cabinet entity by IDs.
+func (esc *EnterpriseStationCreate) AddCabinetIDs(ids ...uint64) *EnterpriseStationCreate {
+	esc.mutation.AddCabinetIDs(ids...)
+	return esc
+}
+
+// AddCabinets adds the "cabinets" edges to the Cabinet entity.
+func (esc *EnterpriseStationCreate) AddCabinets(c ...*Cabinet) *EnterpriseStationCreate {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return esc.AddCabinetIDs(ids...)
+}
+
+// AddBatteryIDs adds the "batteries" edge to the Battery entity by IDs.
+func (esc *EnterpriseStationCreate) AddBatteryIDs(ids ...uint64) *EnterpriseStationCreate {
+	esc.mutation.AddBatteryIDs(ids...)
+	return esc
+}
+
+// AddBatteries adds the "batteries" edges to the Battery entity.
+func (esc *EnterpriseStationCreate) AddBatteries(b ...*Battery) *EnterpriseStationCreate {
+	ids := make([]uint64, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return esc.AddBatteryIDs(ids...)
+}
+
+// AddStockIDs adds the "stocks" edge to the Stock entity by IDs.
+func (esc *EnterpriseStationCreate) AddStockIDs(ids ...uint64) *EnterpriseStationCreate {
+	esc.mutation.AddStockIDs(ids...)
+	return esc
+}
+
+// AddStocks adds the "stocks" edges to the Stock entity.
+func (esc *EnterpriseStationCreate) AddStocks(s ...*Stock) *EnterpriseStationCreate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return esc.AddStockIDs(ids...)
 }
 
 // Mutation returns the EnterpriseStationMutation object of the builder.
@@ -347,54 +347,6 @@ func (esc *EnterpriseStationCreate) createSpec() (*EnterpriseStation, *sqlgraph.
 		_node.EnterpriseID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := esc.mutation.CabinetsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   enterprisestation.CabinetsTable,
-			Columns: []string{enterprisestation.CabinetsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := esc.mutation.BatteryIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   enterprisestation.BatteryTable,
-			Columns: []string{enterprisestation.BatteryColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := esc.mutation.StocksIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   enterprisestation.StocksTable,
-			Columns: []string{enterprisestation.StocksColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
 	if nodes := esc.mutation.AgentsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
@@ -436,6 +388,54 @@ func (esc *EnterpriseStationCreate) createSpec() (*EnterpriseStation, *sqlgraph.
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(enterprisebatteryswap.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := esc.mutation.CabinetsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestation.CabinetsTable,
+			Columns: []string{enterprisestation.CabinetsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cabinet.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := esc.mutation.BatteriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestation.BatteriesTable,
+			Columns: []string{enterprisestation.BatteriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := esc.mutation.StocksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestation.StocksTable,
+			Columns: []string{enterprisestation.StocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(stock.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

@@ -83,11 +83,11 @@ func (Battery) Edges() []ent.Edge {
 		edge.From("rider", Rider.Type).Ref("battery").Unique().Field("rider_id").Comment("所属骑手"),
 		edge.From("cabinet", Cabinet.Type).Ref("batteries").Unique().Field("cabinet_id").Comment("所属电柜"),
 		edge.From("subscribe", Subscribe.Type).Ref("battery").Unique().Field("subscribe_id").Comment("所属订阅"),
-		edge.From("enterprise", Enterprise.Type).Ref("battery").Unique().Field("enterprise_id").Comment("所属企业"),
+		edge.From("enterprise", Enterprise.Type).Ref("batteries").Unique().Field("enterprise_id").Comment("所属企业"),
 		edge.To("flows", BatteryFlow.Type).Annotations(
 			entsql.WithComments(true),
 		).Comment("流转记录"),
-		edge.From("station", EnterpriseStation.Type).Ref("battery").Unique().Field("station_id").Comment("所属站点"),
+		edge.From("station", EnterpriseStation.Type).Ref("batteries").Unique().Field("station_id").Comment("所属站点"),
 	}
 }
 
