@@ -74,11 +74,13 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 
 	stat := NewEnterpriseStation().Query(req.StationID)
 	var r *ent.Rider
+	var sub *ent.Subscribe
+
 	r, _ = ent.Database.Rider.QueryNotDeleted().Where(rider.Phone(req.Phone)).First(s.ctx)
 	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
 		if r != nil { // 已存在骑手
 			// 查询订阅信息
-			sub, _ := NewSubscribe().QueryEffective(r.ID)
+			sub, _ = NewSubscribe().QueryEffective(r.ID)
 			if sub != nil && (sub.EnterpriseID == nil || (sub.EnterpriseID != nil && sub.Status != model.SubscribeStatusInactive)) {
 				snag.Panic("该骑手不能绑定,已有未完成的订单")
 				return fmt.Errorf("该骑手不能绑定,已有未完成的订单")
@@ -127,7 +129,7 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 			}
 		}
 		// 创建订阅信息
-		_, err = tx.Subscribe.Create().
+		sub, err = tx.Subscribe.Create().
 			SetRiderID(r.ID).
 			SetModel(ep.Model).
 			SetIntelligent(ep.Intelligent).
@@ -142,6 +144,21 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 			Save(s.ctx)
 		return
 	})
+
+	// // 业务记录
+	// var b *ent.Business
+	// b, err := NewBusinessLog(sub).
+	// 	SetModifier(s.modifier).
+	// 	SetEmployee(s.employee).
+	// 	SetCabinet(s.cabinet).
+	// 	SetStore(s.store).
+	// 	SetBinInfo(bin).
+	// 	SetStock(sk).
+	// 	SetBattery(bat).
+	// 	Save(bt)
+	// if err != nil {
+	// 	return err
+	// }
 
 	// 记录日志
 	go logging.NewOperateLog().

@@ -682,26 +682,3 @@ func (s *enterpriseService) PriceList(enterpriseId uint64) (rsp []model.Enterpri
 	}
 	return
 }
-
-func (s *enterpriseService) ExitEnterprise(r *ent.Rider) {
-	// 查询订阅
-	sub, _ := ent.Database.Subscribe.QueryNotDeleted().
-		Where(subscribe.RiderID(r.ID),
-			subscribe.StatusIn(model.SubscribeStatusInactive, model.SubscribeStatusUnSubscribed),
-		).First(s.ctx)
-	if sub == nil {
-		snag.Panic("未找到订阅")
-	}
-	// 如果是未激活删除订阅
-	if sub.Status == model.SubscribeStatusUnSubscribed {
-		err := ent.Database.Subscribe.SoftDeleteOne(sub).Exec(s.ctx)
-		if err != nil {
-			snag.Panic("订阅信息删除失败")
-		}
-	}
-	// 清除团签信息
-	err := ent.Database.Rider.UpdateOne(r).ClearEnterpriseID().ClearStationID().Exec(s.ctx)
-	if err != nil {
-		snag.Panic("骑手团签信息清除失败")
-	}
-}

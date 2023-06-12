@@ -202,6 +202,7 @@ func (s *riderAgentService) Detail(req *model.IDParamReq, enterpriseID uint64) m
 		}).
 		WithStation().
 		WithBattery().
+		WithPerson().
 		First(s.ctx)
 	if item == nil {
 		snag.Panic("未找到骑手")
@@ -315,4 +316,41 @@ func (s *enterpriseService) Active(req *model.AgentSubscribeActiveReq, enterpris
 
 		return nil
 	})
+}
+
+func (s *enterpriseService) ExitEnterprise(r *ent.Rider) {
+	// 查询订阅
+	sub, _ := ent.Database.Subscribe.QueryNotDeleted().
+		Where(subscribe.RiderID(r.ID),
+			subscribe.StatusIn(model.SubscribeStatusInactive, model.SubscribeStatusUnSubscribed),
+		).First(s.ctx)
+	if sub == nil {
+		snag.Panic("未找到订阅")
+	}
+	// 如果是未激活删除订阅
+	if sub.Status == model.SubscribeStatusUnSubscribed {
+		_, err := ent.Database.Subscribe.SoftDeleteOne(sub).Save(s.ctx)
+		if err != nil {
+			snag.Panic("订阅信息删除失败")
+		}
+	}
+	//
+	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) error {
+		// 删除之前骑手信息
+		_, err := tx.Rider.SoftDeleteOne(r).SetRemark("骑手退出团签").Save(s.ctx)
+		if err != nil {
+			return err
+		}
+		// 新增骑手信息
+		_, err = tx.Rider.Create().SetPhone(r.Phone).Save(s.ctx)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	// 清除团签信息
+	// err := ent.Database.Rider.UpdateOne(r).ClearEnterpriseID().ClearStationID().Exec(s.ctx)
+	// if err != nil {
+	// 	snag.Panic("骑手团签信息清除失败")
+	// }
 }
