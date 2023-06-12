@@ -142,6 +142,10 @@ func loadRideRoutes() {
 
 	// 小程序加入团签信息
 	g.GET("/enterprise/info", rapi.Enterprise.RiderEnterpriseInfo)
+	// 退出团签
+	g.POST("/enterprise/exit", rapi.Enterprise.ExitEnterprise)
+	// 是否能退出团签
+	g.GET("/enterprise/canexit", rapi.Enterprise.CanExitEnterprise)
 	// 申请加时
 	g.POST("/enterprise/subscribe/add", rapi.Enterprise.ApplyAddSubscribeTime)
 	// 申请列表

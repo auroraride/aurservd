@@ -45,3 +45,8 @@ type EnterpriseRiderInviteReq struct {
 	// 站点id
 	StationID uint64 `json:"stationID" param:"stationID"  validate:"required"`
 }
+
+// CanExitEnterpriseRsp 能否退出团签返回
+type CanExitEnterpriseRsp struct {
+	IsExit bool `json:"isExit"` // 能否退出
+}

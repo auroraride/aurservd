@@ -122,3 +122,33 @@ func (*enterprise) RiderEnterpriseInfo(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[model.EnterproseInfoReq](c)
 	return ctx.SendResponse(service.NewEnterpriseRiderWithRider(ctx.Rider).RiderEnterpriseInfo(req, ctx.Rider.ID))
 }
+
+// ExitEnterprise
+// @ID           RiderEnterpriseExit
+// @Router       /rider/v1/enterprise/exit [POST]
+// @Summary      R3017 退出团签
+// @Tags         [R]骑手接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Rider-Token  header  string  true  "骑手校验token"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*enterprise) ExitEnterprise(c echo.Context) (err error) {
+	ctx := app.ContextX[app.RiderContext](c)
+	service.NewEnterprise().ExitEnterprise(ctx.Rider)
+	return ctx.SendResponse()
+}
+
+// CanExitEnterprise
+// @ID           RiderCanExitEnterprise
+// @Router       /rider/v1/enterprise/canexit [GET]
+// @Summary      R3018 能否退出团签
+// @Tags         [R]骑手接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Rider-Token  header  string  true  "骑手校验token"
+// @Success      200  {object}  model.CanExitEnterpriseRsp  "请求成功"
+func (*enterprise) CanExitEnterprise(c echo.Context) (err error) {
+	ctx := app.ContextX[app.RiderContext](c)
+	service.NewEnterprise().CanExitEnterprise(ctx.Rider)
+	return ctx.SendResponse()
+}
