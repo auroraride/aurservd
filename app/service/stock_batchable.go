@@ -34,6 +34,7 @@ func (s *stockBatchableService) Fetch(target uint8, id uint64, name string) int 
 		Sum       int    `json:"sum"`
 		StoreID   uint64 `json:"store_id"`
 		CabinetID uint64 `json:"cabinet_id"`
+		StationID uint64 `json:"station_id"`
 	}
 	q := s.orm.QueryNotDeleted()
 	var idw predicate.Stock
