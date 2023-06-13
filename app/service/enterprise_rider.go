@@ -95,7 +95,7 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 			}
 
 			// 新增骑手信息
-			err = s.CopyAndCreateRider(tx, r)
+			err = s.CopyAndCreateRider(tx, r, "代理转化骑手")
 			if err != nil {
 				return errors.New("新增骑手失败")
 			}
@@ -551,14 +551,14 @@ func (s *enterpriseRiderService) ExitEnterprise(r *ent.Rider) {
 		}
 
 		// 新增骑手信息
-		return s.CopyAndCreateRider(tx, r)
+		return s.CopyAndCreateRider(tx, r, "骑手退出团签")
 	})
 }
 
 // CopyAndCreateRider 复制并创建骑手信息
-func (s *enterpriseRiderService) CopyAndCreateRider(tx *ent.Tx, ri *ent.Rider) error {
+func (s *enterpriseRiderService) CopyAndCreateRider(tx *ent.Tx, ri *ent.Rider, remark string) error {
 	return tx.Rider.Create().
-		SetRemark("骑手操作团签转为个签").
+		SetRemark(remark).
 		SetPhone(ri.Phone).
 		SetContact(ri.Contact).
 		SetDeviceType(ri.DeviceType).
