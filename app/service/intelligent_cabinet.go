@@ -202,21 +202,23 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 
 	// 若换电成功 直接返回
 	if success {
-		// 换电成功后需要查询放入和取走的电池是否代理商电池并更新
-		NewBattery().StationBusinessTransfer(
-			cab.ID,
-			ex.ID,
-			&model.BatteryEnterpriseTransfer{
-				Sn:           v.PutinBattery,
-				StationID:    sub.StationID,
-				EnterpriseID: sub.EnterpriseID,
-			},
-			&model.BatteryEnterpriseTransfer{
-				Sn:           v.PutoutBattery,
-				StationID:    cab.StationID,
-				EnterpriseID: cab.EnterpriseID,
-			},
-		)
+		if cab.Intelligent {
+			// 换电成功后需要查询放入和取走的电池是否代理商电池并更新
+			NewBattery().StationBusinessTransfer(
+				cab.ID,
+				ex.ID,
+				&model.BatteryEnterpriseTransfer{
+					Sn:           v.PutinBattery,
+					StationID:    sub.StationID,
+					EnterpriseID: sub.EnterpriseID,
+				},
+				&model.BatteryEnterpriseTransfer{
+					Sn:           v.PutoutBattery,
+					StationID:    cab.StationID,
+					EnterpriseID: cab.EnterpriseID,
+				},
+			)
+		}
 		return
 	}
 

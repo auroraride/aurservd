@@ -26,7 +26,7 @@ func NewminiProgram(params ...any) *miniProgramService {
 	redisOpts := &cache.RedisOpts{
 		Host:     ar.Config.Redis.Address,
 		Password: ar.Config.Redis.Password,
-		Database: ar.Config.Redis.DB,
+		Database: 0,
 	}
 	wc := wechat.NewWechat()
 	redisCache := cache.NewRedis(context.Background(), redisOpts)
@@ -69,7 +69,7 @@ func (s *miniProgramService) GetAuth(code string) model.OpenidRes {
 // Invite 邀请骑手二维码
 func (s *miniProgramService) Invite(enterprise *ent.Enterprise, req *model.EnterpriseRiderInviteReq) []byte {
 	url := fmt.Sprintf("s=%d&e=%d", req.StationID, enterprise.ID)
-	coderParam := qrcode.QRCoder{Scene: url, Path: "pages/rider-login/index"}
+	coderParam := qrcode.QRCoder{Scene: url, Page: "pages/rider-login/index"}
 	code, err := s.MiniProgram.GetQRCode().GetWXACodeUnlimit(coderParam)
 	if err != nil {
 		zap.L().Error("生成二维码失败", zap.Error(err))

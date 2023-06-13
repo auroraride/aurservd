@@ -490,13 +490,19 @@ func (s *batteryService) Unallocate(bat *ent.Battery) (err error) {
 // cab.StationID / cab.EnterpriseID 被用作取出的代理商信息
 // 需要记录流转信息
 func (s *batteryService) StationBusinessTransfer(cabinetID, exchangeID uint64, putin, putout *model.BatteryEnterpriseTransfer) {
+	// 进行站点对比, 放入 == 取出, 直接跳过
+	if putin.StationID == putout.StationID {
+		return
+	}
+
 	// 放入电池
 	in, _ := NewBattery().QuerySn(putin.Sn)
 
 	// 取出电池
 	out, _ := NewBattery().QuerySn(putout.Sn)
-	// 进行站点对比, 放入 == 取出, 直接跳过
-	if putin.StationID == out.StationID {
+
+	// 未找到电池跳过
+	if in == nil || out == nil {
 		return
 	}
 

@@ -91,13 +91,13 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 			// 删除之前骑手信息
 			_, err = tx.Rider.SoftDeleteOne(r).SetRemark("更改团签").Save(s.ctx)
 			if err != nil {
-				return errors.New("删除骑手失败")
+				return errors.New("更改骑手失败")
 			}
 
 			// 新增骑手信息
-			err = s.CopyAndCreateRider(tx, r)
+			err = s.CopyAndCreateRider(tx, r, "代理转化骑手")
 			if err != nil {
-				return errors.New("新增骑手失败")
+				return errors.New("转化骑手失败")
 			}
 		} else {
 			// 未存在骑手创建骑手 并创建团签订阅信息
@@ -551,14 +551,14 @@ func (s *enterpriseRiderService) ExitEnterprise(r *ent.Rider) {
 		}
 
 		// 新增骑手信息
-		return s.CopyAndCreateRider(tx, r)
+		return s.CopyAndCreateRider(tx, r, "骑手退出团签")
 	})
 }
 
 // CopyAndCreateRider 复制并创建骑手信息
-func (s *enterpriseRiderService) CopyAndCreateRider(tx *ent.Tx, ri *ent.Rider) error {
+func (s *enterpriseRiderService) CopyAndCreateRider(tx *ent.Tx, ri *ent.Rider, remark string) error {
 	return tx.Rider.Create().
-		SetRemark("骑手操作团签转为个签").
+		SetRemark(remark).
 		SetPhone(ri.Phone).
 		SetContact(ri.Contact).
 		SetDeviceType(ri.DeviceType).
