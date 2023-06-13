@@ -79,7 +79,7 @@ func (s *riderPermissionService) SubscribeX(typ model.RiderPermissionType, sub *
 	}
 	// 判断代理是否到期
 	if sub.AgentEndAt != nil && sub.AgentEndAt.Before(time.Now()) {
-		snag.Panic("骑士卡已到期")
+		snag.Panic("骑士卡已超期")
 	}
 	// 当骑士卡暂停时无法办理任何业务
 	if sub.SuspendAt != nil {
