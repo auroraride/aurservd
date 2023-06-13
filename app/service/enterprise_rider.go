@@ -91,13 +91,13 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 			// 删除之前骑手信息
 			_, err = tx.Rider.SoftDeleteOne(r).SetRemark("更改团签").Save(s.ctx)
 			if err != nil {
-				return errors.New("删除骑手失败")
+				return errors.New("更改骑手失败")
 			}
 
 			// 新增骑手信息
 			err = s.CopyAndCreateRider(tx, r, "代理转化骑手")
 			if err != nil {
-				return errors.New("新增骑手失败")
+				return errors.New("转化骑手失败")
 			}
 		} else {
 			// 未存在骑手创建骑手 并创建团签订阅信息
