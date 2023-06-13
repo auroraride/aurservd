@@ -13,6 +13,8 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
+	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
 )
@@ -38,6 +40,10 @@ type Ebike struct {
 	RiderID *uint64 `json:"rider_id,omitempty"`
 	// 门店ID
 	StoreID *uint64 `json:"store_id,omitempty"`
+	// 企业ID
+	EnterpriseID *uint64 `json:"enterprise_id,omitempty"`
+	// 站点ID
+	StationID *uint64 `json:"station_id,omitempty"`
 	// 状态
 	Status model.EbikeStatus `json:"status,omitempty"`
 	// 是否启用
@@ -68,9 +74,13 @@ type EbikeEdges struct {
 	Rider *Rider `json:"rider,omitempty"`
 	// Store holds the value of the store edge.
 	Store *Store `json:"store,omitempty"`
+	// Enterprise holds the value of the enterprise edge.
+	Enterprise *Enterprise `json:"enterprise,omitempty"`
+	// Station holds the value of the station edge.
+	Station *EnterpriseStation `json:"station,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [5]bool
 }
 
 // BrandOrErr returns the Brand value or an error if the edge
@@ -112,6 +122,32 @@ func (e EbikeEdges) StoreOrErr() (*Store, error) {
 	return nil, &NotLoadedError{edge: "store"}
 }
 
+// EnterpriseOrErr returns the Enterprise value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e EbikeEdges) EnterpriseOrErr() (*Enterprise, error) {
+	if e.loadedTypes[3] {
+		if e.Enterprise == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: enterprise.Label}
+		}
+		return e.Enterprise, nil
+	}
+	return nil, &NotLoadedError{edge: "enterprise"}
+}
+
+// StationOrErr returns the Station value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e EbikeEdges) StationOrErr() (*EnterpriseStation, error) {
+	if e.loadedTypes[4] {
+		if e.Station == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: enterprisestation.Label}
+		}
+		return e.Station, nil
+	}
+	return nil, &NotLoadedError{edge: "station"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Ebike) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -123,7 +159,7 @@ func (*Ebike) scanValues(columns []string) ([]any, error) {
 			values[i] = new(model.EbikeStatus)
 		case ebike.FieldEnable:
 			values[i] = new(sql.NullBool)
-		case ebike.FieldID, ebike.FieldBrandID, ebike.FieldRiderID, ebike.FieldStoreID:
+		case ebike.FieldID, ebike.FieldBrandID, ebike.FieldRiderID, ebike.FieldStoreID, ebike.FieldEnterpriseID, ebike.FieldStationID:
 			values[i] = new(sql.NullInt64)
 		case ebike.FieldRemark, ebike.FieldSn, ebike.FieldPlate, ebike.FieldMachine, ebike.FieldSim, ebike.FieldColor, ebike.FieldExFactory:
 			values[i] = new(sql.NullString)
@@ -204,6 +240,20 @@ func (e *Ebike) assignValues(columns []string, values []any) error {
 				e.StoreID = new(uint64)
 				*e.StoreID = uint64(value.Int64)
 			}
+		case ebike.FieldEnterpriseID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field enterprise_id", values[i])
+			} else if value.Valid {
+				e.EnterpriseID = new(uint64)
+				*e.EnterpriseID = uint64(value.Int64)
+			}
+		case ebike.FieldStationID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field station_id", values[i])
+			} else if value.Valid {
+				e.StationID = new(uint64)
+				*e.StationID = uint64(value.Int64)
+			}
 		case ebike.FieldStatus:
 			if value, ok := values[i].(*model.EbikeStatus); !ok {
 				return fmt.Errorf("unexpected type %T for field status", values[i])
@@ -283,6 +333,16 @@ func (e *Ebike) QueryStore() *StoreQuery {
 	return NewEbikeClient(e.config).QueryStore(e)
 }
 
+// QueryEnterprise queries the "enterprise" edge of the Ebike entity.
+func (e *Ebike) QueryEnterprise() *EnterpriseQuery {
+	return NewEbikeClient(e.config).QueryEnterprise(e)
+}
+
+// QueryStation queries the "station" edge of the Ebike entity.
+func (e *Ebike) QueryStation() *EnterpriseStationQuery {
+	return NewEbikeClient(e.config).QueryStation(e)
+}
+
 // Update returns a builder for updating this Ebike.
 // Note that you need to call Ebike.Unwrap() before calling this method if this Ebike
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -331,6 +391,16 @@ func (e *Ebike) String() string {
 	builder.WriteString(", ")
 	if v := e.StoreID; v != nil {
 		builder.WriteString("store_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := e.EnterpriseID; v != nil {
+		builder.WriteString("enterprise_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := e.StationID; v != nil {
+		builder.WriteString("station_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")

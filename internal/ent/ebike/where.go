@@ -86,6 +86,16 @@ func StoreID(v uint64) predicate.Ebike {
 	return predicate.Ebike(sql.FieldEQ(FieldStoreID, v))
 }
 
+// EnterpriseID applies equality check predicate on the "enterprise_id" field. It's identical to EnterpriseIDEQ.
+func EnterpriseID(v uint64) predicate.Ebike {
+	return predicate.Ebike(sql.FieldEQ(FieldEnterpriseID, v))
+}
+
+// StationID applies equality check predicate on the "station_id" field. It's identical to StationIDEQ.
+func StationID(v uint64) predicate.Ebike {
+	return predicate.Ebike(sql.FieldEQ(FieldStationID, v))
+}
+
 // Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
 func Status(v model.EbikeStatus) predicate.Ebike {
 	return predicate.Ebike(sql.FieldEQ(FieldStatus, v))
@@ -379,6 +389,66 @@ func StoreIDIsNil() predicate.Ebike {
 // StoreIDNotNil applies the NotNil predicate on the "store_id" field.
 func StoreIDNotNil() predicate.Ebike {
 	return predicate.Ebike(sql.FieldNotNull(FieldStoreID))
+}
+
+// EnterpriseIDEQ applies the EQ predicate on the "enterprise_id" field.
+func EnterpriseIDEQ(v uint64) predicate.Ebike {
+	return predicate.Ebike(sql.FieldEQ(FieldEnterpriseID, v))
+}
+
+// EnterpriseIDNEQ applies the NEQ predicate on the "enterprise_id" field.
+func EnterpriseIDNEQ(v uint64) predicate.Ebike {
+	return predicate.Ebike(sql.FieldNEQ(FieldEnterpriseID, v))
+}
+
+// EnterpriseIDIn applies the In predicate on the "enterprise_id" field.
+func EnterpriseIDIn(vs ...uint64) predicate.Ebike {
+	return predicate.Ebike(sql.FieldIn(FieldEnterpriseID, vs...))
+}
+
+// EnterpriseIDNotIn applies the NotIn predicate on the "enterprise_id" field.
+func EnterpriseIDNotIn(vs ...uint64) predicate.Ebike {
+	return predicate.Ebike(sql.FieldNotIn(FieldEnterpriseID, vs...))
+}
+
+// EnterpriseIDIsNil applies the IsNil predicate on the "enterprise_id" field.
+func EnterpriseIDIsNil() predicate.Ebike {
+	return predicate.Ebike(sql.FieldIsNull(FieldEnterpriseID))
+}
+
+// EnterpriseIDNotNil applies the NotNil predicate on the "enterprise_id" field.
+func EnterpriseIDNotNil() predicate.Ebike {
+	return predicate.Ebike(sql.FieldNotNull(FieldEnterpriseID))
+}
+
+// StationIDEQ applies the EQ predicate on the "station_id" field.
+func StationIDEQ(v uint64) predicate.Ebike {
+	return predicate.Ebike(sql.FieldEQ(FieldStationID, v))
+}
+
+// StationIDNEQ applies the NEQ predicate on the "station_id" field.
+func StationIDNEQ(v uint64) predicate.Ebike {
+	return predicate.Ebike(sql.FieldNEQ(FieldStationID, v))
+}
+
+// StationIDIn applies the In predicate on the "station_id" field.
+func StationIDIn(vs ...uint64) predicate.Ebike {
+	return predicate.Ebike(sql.FieldIn(FieldStationID, vs...))
+}
+
+// StationIDNotIn applies the NotIn predicate on the "station_id" field.
+func StationIDNotIn(vs ...uint64) predicate.Ebike {
+	return predicate.Ebike(sql.FieldNotIn(FieldStationID, vs...))
+}
+
+// StationIDIsNil applies the IsNil predicate on the "station_id" field.
+func StationIDIsNil() predicate.Ebike {
+	return predicate.Ebike(sql.FieldIsNull(FieldStationID))
+}
+
+// StationIDNotNil applies the NotNil predicate on the "station_id" field.
+func StationIDNotNil() predicate.Ebike {
+	return predicate.Ebike(sql.FieldNotNull(FieldStationID))
 }
 
 // StatusEQ applies the EQ predicate on the "status" field.
@@ -912,6 +982,52 @@ func HasStore() predicate.Ebike {
 func HasStoreWith(preds ...predicate.Store) predicate.Ebike {
 	return predicate.Ebike(func(s *sql.Selector) {
 		step := newStoreStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasEnterprise applies the HasEdge predicate on the "enterprise" edge.
+func HasEnterprise() predicate.Ebike {
+	return predicate.Ebike(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, EnterpriseTable, EnterpriseColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasEnterpriseWith applies the HasEdge predicate on the "enterprise" edge with a given conditions (other predicates).
+func HasEnterpriseWith(preds ...predicate.Enterprise) predicate.Ebike {
+	return predicate.Ebike(func(s *sql.Selector) {
+		step := newEnterpriseStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasStation applies the HasEdge predicate on the "station" edge.
+func HasStation() predicate.Ebike {
+	return predicate.Ebike(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, StationTable, StationColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasStationWith applies the HasEdge predicate on the "station" edge with a given conditions (other predicates).
+func HasStationWith(preds ...predicate.EnterpriseStation) predicate.Ebike {
+	return predicate.Ebike(func(s *sql.Selector) {
+		step := newStationStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

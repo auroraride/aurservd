@@ -1232,7 +1232,7 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
 	switch true {
 	case len(req.Ebikes) > 0:
 		// failed = append(failed, NewStockEbike(s.modifier, s.employee, s.rider).Transfer(cityID, in, out, req)...)
-		looppers, failed = NewStockEbike().Loopers(req)
+		looppers, failed = NewStockEbike().Loopers(req, enterpriseId)
 	case len(req.BatterySn) > 0:
 		looppers, failed = NewStockBatchable().Loopers(req, enterpriseId)
 	default:
@@ -1290,9 +1290,16 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
 				if req.IsToStore() {
 					updater.SetNillableStoreID(in)
 				}
+				// 调拨到平台 清空所有关联
 				if req.IsToPlaform() {
-					updater.ClearStoreID()
+					updater.ClearStoreID().ClearStationID().ClearEnterpriseID()
 				}
+				// 调拨到站点
+				if req.IsToStation() {
+					updater.SetNillableStationID(in)
+					updater.SetEnterpriseID(enterpriseId)
+				}
+
 				if updater.Exec(s.ctx) != nil {
 					return fmt.Errorf("电车更新失败: %s", l.Message)
 				}

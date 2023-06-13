@@ -35,19 +35,23 @@ func (s *stockBatchableService) Fetch(target uint8, id uint64, name string) int 
 		StoreID   uint64 `json:"store_id"`
 		CabinetID uint64 `json:"cabinet_id"`
 	}
-
+	q := s.orm.QueryNotDeleted()
 	var idw predicate.Stock
 	switch target {
 	case model.StockTargetStore:
 		idw = stock.StoreID(id)
 	case model.StockTargetCabinet:
 		idw = stock.CabinetID(id)
+	case model.StockTargetStation:
+		idw = stock.StationID(id)
+		// 对于非智能电池的查询 非智能电池没有电池id
+		q.Where(stock.BatteryIDIsNil())
 	}
-	q := s.orm.QueryNotDeleted().
-		Where(stock.Name(name), idw).
-		GroupBy(stock.FieldStoreID, stock.FieldCabinetID).
-		Aggregate(ent.Sum(stock.FieldNum))
-	err := q.Scan(s.ctx, &result)
+	err := q.Where(stock.Name(name), idw).
+		GroupBy(stock.FieldStoreID, stock.FieldCabinetID, stock.FieldStationID).
+		Aggregate(ent.Sum(stock.FieldNum)).
+		Scan(s.ctx, &result)
+
 	if err != nil {
 		snag.Panic("物资数量获取失败")
 	}
@@ -74,6 +78,7 @@ func (s *stockBatchableService) Loopers(req *model.StockTransferReq, enterpriseI
 			failed = append(failed, fmt.Sprintf("电池调拨失败，电池[%s]不属于当前团签", bat.Sn))
 			continue
 		}
+
 		Loopers = append(Loopers, model.StockTransferLoopper{
 			BatterySN:    &bat.Sn,
 			BatteryID:    &bat.ID,

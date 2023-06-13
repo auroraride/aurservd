@@ -1538,6 +1538,8 @@ var (
 		{Name: "brand_id", Type: field.TypeUint64},
 		{Name: "rider_id", Type: field.TypeUint64, Nullable: true, Comment: "骑手ID"},
 		{Name: "store_id", Type: field.TypeUint64, Nullable: true, Comment: "门店ID"},
+		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true, Comment: "企业ID"},
+		{Name: "station_id", Type: field.TypeUint64, Nullable: true, Comment: "站点ID"},
 	}
 	// EbikeTable holds the schema information for the "ebike" table.
 	EbikeTable = &schema.Table{
@@ -1563,6 +1565,18 @@ var (
 				RefColumns: []*schema.Column{StoreColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
+			{
+				Symbol:     "ebike_enterprise_enterprise",
+				Columns:    []*schema.Column{EbikeColumns[17]},
+				RefColumns: []*schema.Column{EnterpriseColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "ebike_enterprise_station_station",
+				Columns:    []*schema.Column{EbikeColumns[18]},
+				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
 		},
 		Indexes: []*schema.Index{
 			{
@@ -1584,6 +1598,16 @@ var (
 				Name:    "ebike_store_id",
 				Unique:  false,
 				Columns: []*schema.Column{EbikeColumns[16]},
+			},
+			{
+				Name:    "ebike_enterprise_id",
+				Unique:  false,
+				Columns: []*schema.Column{EbikeColumns[17]},
+			},
+			{
+				Name:    "ebike_station_id",
+				Unique:  false,
+				Columns: []*schema.Column{EbikeColumns[18]},
 			},
 			{
 				Name:    "ebike_status",
@@ -4736,6 +4760,8 @@ func init() {
 	EbikeTable.ForeignKeys[0].RefTable = EbikeBrandTable
 	EbikeTable.ForeignKeys[1].RefTable = RiderTable
 	EbikeTable.ForeignKeys[2].RefTable = StoreTable
+	EbikeTable.ForeignKeys[3].RefTable = EnterpriseTable
+	EbikeTable.ForeignKeys[4].RefTable = EnterpriseStationTable
 	EbikeTable.Annotation = &entsql.Annotation{
 		Table: "ebike",
 	}

@@ -178,6 +178,11 @@ func (req *StockTransferReq) Validate() error {
 		return errors.New("电柜之间无法调拨")
 	}
 
+	// 团签站点物资无法调入门店
+	if req.IsFromStation() && req.IsToStore() {
+		return errors.New("团签站点物资无法调入门店")
+	}
+
 	if ((req.IsToStore() || req.IsToCabinet() || req.IsToStation()) && req.InboundID == 0) || (req.IsToPlaform() && req.InboundID != 0) {
 		return errors.New("调入参数错误")
 	}

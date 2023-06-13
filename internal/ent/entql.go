@@ -609,6 +609,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 			ebike.FieldBrandID:      {Type: field.TypeUint64, Column: ebike.FieldBrandID},
 			ebike.FieldRiderID:      {Type: field.TypeUint64, Column: ebike.FieldRiderID},
 			ebike.FieldStoreID:      {Type: field.TypeUint64, Column: ebike.FieldStoreID},
+			ebike.FieldEnterpriseID: {Type: field.TypeUint64, Column: ebike.FieldEnterpriseID},
+			ebike.FieldStationID:    {Type: field.TypeUint64, Column: ebike.FieldStationID},
 			ebike.FieldStatus:       {Type: field.TypeOther, Column: ebike.FieldStatus},
 			ebike.FieldEnable:       {Type: field.TypeBool, Column: ebike.FieldEnable},
 			ebike.FieldSn:           {Type: field.TypeString, Column: ebike.FieldSn},
@@ -2565,6 +2567,30 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Ebike",
 		"Store",
+	)
+	graph.MustAddE(
+		"enterprise",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   ebike.EnterpriseTable,
+			Columns: []string{ebike.EnterpriseColumn},
+			Bidi:    false,
+		},
+		"Ebike",
+		"Enterprise",
+	)
+	graph.MustAddE(
+		"station",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   ebike.StationTable,
+			Columns: []string{ebike.StationColumn},
+			Bidi:    false,
+		},
+		"Ebike",
+		"EnterpriseStation",
 	)
 	graph.MustAddE(
 		"city",
@@ -7908,6 +7934,16 @@ func (f *EbikeFilter) WhereStoreID(p entql.Uint64P) {
 	f.Where(p.Field(ebike.FieldStoreID))
 }
 
+// WhereEnterpriseID applies the entql uint64 predicate on the enterprise_id field.
+func (f *EbikeFilter) WhereEnterpriseID(p entql.Uint64P) {
+	f.Where(p.Field(ebike.FieldEnterpriseID))
+}
+
+// WhereStationID applies the entql uint64 predicate on the station_id field.
+func (f *EbikeFilter) WhereStationID(p entql.Uint64P) {
+	f.Where(p.Field(ebike.FieldStationID))
+}
+
 // WhereStatus applies the entql other predicate on the status field.
 func (f *EbikeFilter) WhereStatus(p entql.OtherP) {
 	f.Where(p.Field(ebike.FieldStatus))
@@ -7984,6 +8020,34 @@ func (f *EbikeFilter) WhereHasStore() {
 // WhereHasStoreWith applies a predicate to check if query has an edge store with a given conditions (other predicates).
 func (f *EbikeFilter) WhereHasStoreWith(preds ...predicate.Store) {
 	f.Where(entql.HasEdgeWith("store", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasEnterprise applies a predicate to check if query has an edge enterprise.
+func (f *EbikeFilter) WhereHasEnterprise() {
+	f.Where(entql.HasEdge("enterprise"))
+}
+
+// WhereHasEnterpriseWith applies a predicate to check if query has an edge enterprise with a given conditions (other predicates).
+func (f *EbikeFilter) WhereHasEnterpriseWith(preds ...predicate.Enterprise) {
+	f.Where(entql.HasEdgeWith("enterprise", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasStation applies a predicate to check if query has an edge station.
+func (f *EbikeFilter) WhereHasStation() {
+	f.Where(entql.HasEdge("station"))
+}
+
+// WhereHasStationWith applies a predicate to check if query has an edge station with a given conditions (other predicates).
+func (f *EbikeFilter) WhereHasStationWith(preds ...predicate.EnterpriseStation) {
+	f.Where(entql.HasEdgeWith("station", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
