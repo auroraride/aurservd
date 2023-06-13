@@ -499,7 +499,7 @@ func (s *enterpriseRiderService) JoinEnterprise(req *model.EnterpriseJoinReq, ri
 		if err != nil {
 			snag.Panic("加入团签失败")
 		}
-
+		today := carbon.Now().StartOfDay().Carbon2Time()
 		// 判断如果是团签未激活的订单，更新订阅信息
 		if sub != nil && sub.EnterpriseID != nil && sub.Status == model.SubscribeStatusInactive {
 			_, err = tx.Subscribe.UpdateOne(sub).
@@ -507,7 +507,7 @@ func (s *enterpriseRiderService) JoinEnterprise(req *model.EnterpriseJoinReq, ri
 				SetEnterpriseID(req.EnterpriseId).
 				SetStationID(req.StationId).
 				SetInitialDays(req.Days).
-				SetAgentEndAt(tools.NewTime().WillEnd(time.Now(), req.Days)).
+				SetAgentEndAt(tools.NewTime().WillEnd(today, req.Days)).
 				Save(s.ctx)
 			if err != nil {
 				return err

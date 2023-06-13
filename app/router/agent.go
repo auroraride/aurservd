@@ -45,9 +45,9 @@ func loadAgentRoutes() {
 	auth.GET("/bill/historical", aapi.Bill.Historical)
 
 	// A5 电柜
-	auth.GET("/cabinet", aapi.Cabinet.List)           // 电柜列表
-	auth.GET("/cabinet/:serial", aapi.Cabinet.Detail) // 电柜详情
-	auth.GET("/cabinet/filter", aapi.Cabinet.Section) // 选择电柜
+	auth.GET("/cabinet", aapi.Cabinet.List)                  // 电柜列表
+	auth.GET("/cabinet/detail/:serial", aapi.Cabinet.Detail) // 电柜详情
+	auth.GET("/cabinet/section", aapi.Cabinet.Section)       // 选择电柜
 
 	// A6 出入库
 	auth.GET("/stock", aapi.Stock.Detail)
