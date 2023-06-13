@@ -26,7 +26,7 @@ func NewminiProgram(params ...any) *miniProgramService {
 	redisOpts := &cache.RedisOpts{
 		Host:     ar.Config.Redis.Address,
 		Password: ar.Config.Redis.Password,
-		Database: ar.Config.Redis.DB,
+		Database: 0,
 	}
 	wc := wechat.NewWechat()
 	redisCache := cache.NewRedis(context.Background(), redisOpts)
