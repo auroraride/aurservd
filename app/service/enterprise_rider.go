@@ -499,7 +499,6 @@ func (s *enterpriseRiderService) JoinEnterprise(req *model.EnterpriseJoinReq, ri
 		if err != nil {
 			snag.Panic("加入团签失败")
 		}
-
 		// 判断如果是团签未激活的订单，更新订阅信息
 		if sub != nil && sub.EnterpriseID != nil && sub.Status == model.SubscribeStatusInactive {
 			_, err = tx.Subscribe.UpdateOne(sub).
