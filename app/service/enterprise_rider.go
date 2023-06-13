@@ -369,30 +369,28 @@ func (s *enterpriseRiderService) SubscribeStatus(req *model.EnterpriseRiderSubsc
 }
 
 // AddSubscribeDays 骑手申请增加团签订阅时长
-func (s *enterpriseRiderService) AddSubscribeDays(req *model.RiderSubscribeAddReq, rid *ent.Rider) {
+func (s *enterpriseRiderService) AddSubscribeDays(req *model.RiderSubscribeAddReq, r *ent.Rider) {
 	// 查询骑手申请是否有未审批的
-	q := ent.Database.SubscribeAlter.QueryNotDeleted().Where(subscribealter.RiderID(rid.ID),
-		subscribealter.Status(model.SubscribeAlterStatusPending))
+	q := ent.Database.SubscribeAlter.QueryNotDeleted().Where(
+		subscribealter.RiderID(r.ID),
+		subscribealter.Status(model.SubscribeAlterStatusPending),
+	)
 
-	if rid.EnterpriseID != nil {
-		subscribealter.EnterpriseID(*rid.EnterpriseID)
-	}
-
-	info, _ := q.First(s.ctx)
-	if info != nil {
+	exists, _ := q.Exist(s.ctx)
+	if exists {
 		snag.Panic("存在未审批的申请")
 	}
 
-	// 查询骑手是否有团签
-	first, err := ent.Database.Rider.Query().Where(rider.ID(rid.ID), rider.HasSubscribesWith(subscribe.StatusIn(model.SubscribeNotUnSubscribed()...))).WithSubscribes().First(s.ctx)
-	if err != nil {
-		snag.Panic("团签状态异常")
+	// 查询骑手团签
+	sub, _ := NewSubscribe().QueryEffective(r.ID)
+	if sub == nil {
+		snag.Panic("订阅状态异常")
 	}
-	sub := first.Edges.Subscribes[0]
+
 	// 增加记录
-	_, err = ent.Database.SubscribeAlter.Create().
-		SetRiderID(rid.ID).
-		SetEnterpriseID(*rid.EnterpriseID).
+	_, err := ent.Database.SubscribeAlter.Create().
+		SetRiderID(r.ID).
+		SetEnterpriseID(*r.EnterpriseID).
 		SetSubscribeID(sub.ID).
 		SetDays(req.Days).
 		SetStatus(model.SubscribeAlterStatusPending).
