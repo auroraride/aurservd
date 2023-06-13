@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 )
@@ -32,6 +33,8 @@ type EnterpriseStation struct {
 	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
 	// 管理员改动原因/备注
 	Remark string `json:"remark,omitempty"`
+	// 城市ID
+	CityID *uint64 `json:"city_id,omitempty"`
 	// 企业ID
 	EnterpriseID uint64 `json:"enterprise_id,omitempty"`
 	// 站点名称
@@ -44,6 +47,8 @@ type EnterpriseStation struct {
 
 // EnterpriseStationEdges holds the relations/edges for other nodes in the graph.
 type EnterpriseStationEdges struct {
+	// City holds the value of the city edge.
+	City *City `json:"city,omitempty"`
 	// Enterprise holds the value of the enterprise edge.
 	Enterprise *Enterprise `json:"enterprise,omitempty"`
 	// Agents holds the value of the agents edge.
@@ -60,13 +65,26 @@ type EnterpriseStationEdges struct {
 	Stocks []*Stock `json:"stocks,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [7]bool
+	loadedTypes [8]bool
+}
+
+// CityOrErr returns the City value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e EnterpriseStationEdges) CityOrErr() (*City, error) {
+	if e.loadedTypes[0] {
+		if e.City == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: city.Label}
+		}
+		return e.City, nil
+	}
+	return nil, &NotLoadedError{edge: "city"}
 }
 
 // EnterpriseOrErr returns the Enterprise value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e EnterpriseStationEdges) EnterpriseOrErr() (*Enterprise, error) {
-	if e.loadedTypes[0] {
+	if e.loadedTypes[1] {
 		if e.Enterprise == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: enterprise.Label}
@@ -79,7 +97,7 @@ func (e EnterpriseStationEdges) EnterpriseOrErr() (*Enterprise, error) {
 // AgentsOrErr returns the Agents value or an error if the edge
 // was not loaded in eager-loading.
 func (e EnterpriseStationEdges) AgentsOrErr() ([]*Agent, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[2] {
 		return e.Agents, nil
 	}
 	return nil, &NotLoadedError{edge: "agents"}
@@ -88,7 +106,7 @@ func (e EnterpriseStationEdges) AgentsOrErr() ([]*Agent, error) {
 // SwapPutinBatteriesOrErr returns the SwapPutinBatteries value or an error if the edge
 // was not loaded in eager-loading.
 func (e EnterpriseStationEdges) SwapPutinBatteriesOrErr() ([]*EnterpriseBatterySwap, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[3] {
 		return e.SwapPutinBatteries, nil
 	}
 	return nil, &NotLoadedError{edge: "swap_putin_batteries"}
@@ -97,7 +115,7 @@ func (e EnterpriseStationEdges) SwapPutinBatteriesOrErr() ([]*EnterpriseBatteryS
 // SwapPutoutBatteriesOrErr returns the SwapPutoutBatteries value or an error if the edge
 // was not loaded in eager-loading.
 func (e EnterpriseStationEdges) SwapPutoutBatteriesOrErr() ([]*EnterpriseBatterySwap, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[4] {
 		return e.SwapPutoutBatteries, nil
 	}
 	return nil, &NotLoadedError{edge: "swap_putout_batteries"}
@@ -106,7 +124,7 @@ func (e EnterpriseStationEdges) SwapPutoutBatteriesOrErr() ([]*EnterpriseBattery
 // CabinetsOrErr returns the Cabinets value or an error if the edge
 // was not loaded in eager-loading.
 func (e EnterpriseStationEdges) CabinetsOrErr() ([]*Cabinet, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[5] {
 		return e.Cabinets, nil
 	}
 	return nil, &NotLoadedError{edge: "cabinets"}
@@ -115,7 +133,7 @@ func (e EnterpriseStationEdges) CabinetsOrErr() ([]*Cabinet, error) {
 // BatteriesOrErr returns the Batteries value or an error if the edge
 // was not loaded in eager-loading.
 func (e EnterpriseStationEdges) BatteriesOrErr() ([]*Battery, error) {
-	if e.loadedTypes[5] {
+	if e.loadedTypes[6] {
 		return e.Batteries, nil
 	}
 	return nil, &NotLoadedError{edge: "batteries"}
@@ -124,7 +142,7 @@ func (e EnterpriseStationEdges) BatteriesOrErr() ([]*Battery, error) {
 // StocksOrErr returns the Stocks value or an error if the edge
 // was not loaded in eager-loading.
 func (e EnterpriseStationEdges) StocksOrErr() ([]*Stock, error) {
-	if e.loadedTypes[6] {
+	if e.loadedTypes[7] {
 		return e.Stocks, nil
 	}
 	return nil, &NotLoadedError{edge: "stocks"}
@@ -137,7 +155,7 @@ func (*EnterpriseStation) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case enterprisestation.FieldCreator, enterprisestation.FieldLastModifier:
 			values[i] = new([]byte)
-		case enterprisestation.FieldID, enterprisestation.FieldEnterpriseID:
+		case enterprisestation.FieldID, enterprisestation.FieldCityID, enterprisestation.FieldEnterpriseID:
 			values[i] = new(sql.NullInt64)
 		case enterprisestation.FieldRemark, enterprisestation.FieldName:
 			values[i] = new(sql.NullString)
@@ -205,6 +223,13 @@ func (es *EnterpriseStation) assignValues(columns []string, values []any) error 
 			} else if value.Valid {
 				es.Remark = value.String
 			}
+		case enterprisestation.FieldCityID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field city_id", values[i])
+			} else if value.Valid {
+				es.CityID = new(uint64)
+				*es.CityID = uint64(value.Int64)
+			}
 		case enterprisestation.FieldEnterpriseID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field enterprise_id", values[i])
@@ -228,6 +253,11 @@ func (es *EnterpriseStation) assignValues(columns []string, values []any) error 
 // This includes values selected through modifiers, order, etc.
 func (es *EnterpriseStation) Value(name string) (ent.Value, error) {
 	return es.selectValues.Get(name)
+}
+
+// QueryCity queries the "city" edge of the EnterpriseStation entity.
+func (es *EnterpriseStation) QueryCity() *CityQuery {
+	return NewEnterpriseStationClient(es.config).QueryCity(es)
 }
 
 // QueryEnterprise queries the "enterprise" edge of the EnterpriseStation entity.
@@ -307,6 +337,11 @@ func (es *EnterpriseStation) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("remark=")
 	builder.WriteString(es.Remark)
+	builder.WriteString(", ")
+	if v := es.CityID; v != nil {
+		builder.WriteString("city_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", ")
 	builder.WriteString("enterprise_id=")
 	builder.WriteString(fmt.Sprintf("%v", es.EnterpriseID))

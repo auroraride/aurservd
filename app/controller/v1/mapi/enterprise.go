@@ -138,7 +138,7 @@ func (*enterprise) ModifyStation(c echo.Context) (err error) {
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Param        enterpriseId  query  uint64  true  "企业ID"
-// @Success      200  {object}  model.StatusResponse  "请求成功"
+// @Success      200  {object}  []model.EnterpriseStationListRes  "请求成功"
 func (*enterprise) ListStation(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.EnterpriseStationListReq](c)
 	return ctx.SendResponse(

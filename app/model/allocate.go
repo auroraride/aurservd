@@ -45,6 +45,7 @@ type AllocateCreateReq struct {
 	StoreID    *uint64 `swaggerignore:"true"`
 	EmployeeID *uint64 `swaggerignore:"true"`
 	CabinetID  *uint64 `swaggerignore:"true"`
+	StationID  *uint64 `swaggerignore:"true"`
 
 	BatteryID *uint64 `json:"batteryId" swaggerignore:"true"` // 电池编码
 }

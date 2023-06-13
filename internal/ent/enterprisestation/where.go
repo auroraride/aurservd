@@ -75,6 +75,11 @@ func Remark(v string) predicate.EnterpriseStation {
 	return predicate.EnterpriseStation(sql.FieldEQ(FieldRemark, v))
 }
 
+// CityID applies equality check predicate on the "city_id" field. It's identical to CityIDEQ.
+func CityID(v uint64) predicate.EnterpriseStation {
+	return predicate.EnterpriseStation(sql.FieldEQ(FieldCityID, v))
+}
+
 // EnterpriseID applies equality check predicate on the "enterprise_id" field. It's identical to EnterpriseIDEQ.
 func EnterpriseID(v uint64) predicate.EnterpriseStation {
 	return predicate.EnterpriseStation(sql.FieldEQ(FieldEnterpriseID, v))
@@ -310,6 +315,36 @@ func RemarkContainsFold(v string) predicate.EnterpriseStation {
 	return predicate.EnterpriseStation(sql.FieldContainsFold(FieldRemark, v))
 }
 
+// CityIDEQ applies the EQ predicate on the "city_id" field.
+func CityIDEQ(v uint64) predicate.EnterpriseStation {
+	return predicate.EnterpriseStation(sql.FieldEQ(FieldCityID, v))
+}
+
+// CityIDNEQ applies the NEQ predicate on the "city_id" field.
+func CityIDNEQ(v uint64) predicate.EnterpriseStation {
+	return predicate.EnterpriseStation(sql.FieldNEQ(FieldCityID, v))
+}
+
+// CityIDIn applies the In predicate on the "city_id" field.
+func CityIDIn(vs ...uint64) predicate.EnterpriseStation {
+	return predicate.EnterpriseStation(sql.FieldIn(FieldCityID, vs...))
+}
+
+// CityIDNotIn applies the NotIn predicate on the "city_id" field.
+func CityIDNotIn(vs ...uint64) predicate.EnterpriseStation {
+	return predicate.EnterpriseStation(sql.FieldNotIn(FieldCityID, vs...))
+}
+
+// CityIDIsNil applies the IsNil predicate on the "city_id" field.
+func CityIDIsNil() predicate.EnterpriseStation {
+	return predicate.EnterpriseStation(sql.FieldIsNull(FieldCityID))
+}
+
+// CityIDNotNil applies the NotNil predicate on the "city_id" field.
+func CityIDNotNil() predicate.EnterpriseStation {
+	return predicate.EnterpriseStation(sql.FieldNotNull(FieldCityID))
+}
+
 // EnterpriseIDEQ applies the EQ predicate on the "enterprise_id" field.
 func EnterpriseIDEQ(v uint64) predicate.EnterpriseStation {
 	return predicate.EnterpriseStation(sql.FieldEQ(FieldEnterpriseID, v))
@@ -393,6 +428,29 @@ func NameEqualFold(v string) predicate.EnterpriseStation {
 // NameContainsFold applies the ContainsFold predicate on the "name" field.
 func NameContainsFold(v string) predicate.EnterpriseStation {
 	return predicate.EnterpriseStation(sql.FieldContainsFold(FieldName, v))
+}
+
+// HasCity applies the HasEdge predicate on the "city" edge.
+func HasCity() predicate.EnterpriseStation {
+	return predicate.EnterpriseStation(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCityWith applies the HasEdge predicate on the "city" edge with a given conditions (other predicates).
+func HasCityWith(preds ...predicate.City) predicate.EnterpriseStation {
+	return predicate.EnterpriseStation(func(s *sql.Selector) {
+		step := newCityStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
 }
 
 // HasEnterprise applies the HasEdge predicate on the "enterprise" edge.

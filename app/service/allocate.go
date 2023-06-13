@@ -103,6 +103,8 @@ func (s *allocateService) UnallocatedEbikeInfo(keyword string) model.Ebike {
 
 // Create 订单激活分配
 func (s *allocateService) Create(req *model.AllocateCreateReq) model.AllocateCreateRes {
+	// 判定条件
+	// 必须有 门店 / 电柜 / 站点其一
 	if req.StoreID == nil && req.CabinetID == nil {
 		snag.Panic("必须由门店或电柜参与")
 	}
@@ -129,14 +131,13 @@ func (s *allocateService) Create(req *model.AllocateCreateReq) model.AllocateCre
 
 	e := sub.Edges.Enterprise
 	if e != nil {
-		// if e.Agent && !e.UseStore && s.employee != nil {
-		// 就算使用门店也禁止门店端激活
+		// 禁止门店端激活 --by 曹博文 2023-10-25
 		if e.Agent && s.employee != nil {
-			snag.Panic("代理骑手无法分配")
+			snag.Panic("无法使用门店激活")
 		}
 
-		if e.Payment == model.EnterprisePaymentPrepay && e.Balance < 0 {
-			snag.Panic("企业已欠费")
+		if e.Payment == model.EnterprisePaymentPrepay && e.Balance <= 0 {
+			snag.Panic("余额不足")
 		}
 	}
 
@@ -144,18 +145,27 @@ func (s *allocateService) Create(req *model.AllocateCreateReq) model.AllocateCre
 		cityID     uint64
 		entStore   *ent.Store
 		entCabinet *ent.Cabinet
+		entStation *ent.EnterpriseStation
 	)
 
+	// 门店
 	if req.StoreID != nil {
 		entStore = NewStore().Query(*req.StoreID)
 		cityID = entStore.CityID
 	}
 
+	// 电柜
 	if req.CabinetID != nil {
 		entCabinet = NewCabinet().QueryOne(*req.CabinetID)
 		if entCabinet.CityID != nil {
 			cityID = *entCabinet.CityID
 		}
+	}
+
+	// 站点
+	if req.StationID != nil {
+		entStation = NewEnterpriseStation().QueryX(*req.StationID)
+		cityID = *entStation.CityID
 	}
 
 	if sub.CityID != cityID {

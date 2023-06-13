@@ -82,6 +82,8 @@ func (EnterpriseStation) Mixin() []ent.Mixin {
 		internal.TimeMixin{},
 		internal.DeleteMixin{},
 		internal.Modifier{},
+
+		CityMixin{Optional: true},
 	}
 }
 

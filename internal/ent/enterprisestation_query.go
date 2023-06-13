@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebatteryswap"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
@@ -28,6 +29,7 @@ type EnterpriseStationQuery struct {
 	order                   []enterprisestation.OrderOption
 	inters                  []Interceptor
 	predicates              []predicate.EnterpriseStation
+	withCity                *CityQuery
 	withEnterprise          *EnterpriseQuery
 	withAgents              *AgentQuery
 	withSwapPutinBatteries  *EnterpriseBatterySwapQuery
@@ -70,6 +72,28 @@ func (esq *EnterpriseStationQuery) Unique(unique bool) *EnterpriseStationQuery {
 func (esq *EnterpriseStationQuery) Order(o ...enterprisestation.OrderOption) *EnterpriseStationQuery {
 	esq.order = append(esq.order, o...)
 	return esq
+}
+
+// QueryCity chains the current query on the "city" edge.
+func (esq *EnterpriseStationQuery) QueryCity() *CityQuery {
+	query := (&CityClient{config: esq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := esq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := esq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisestation.Table, enterprisestation.FieldID, selector),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, enterprisestation.CityTable, enterprisestation.CityColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(esq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // QueryEnterprise chains the current query on the "enterprise" edge.
@@ -418,6 +442,7 @@ func (esq *EnterpriseStationQuery) Clone() *EnterpriseStationQuery {
 		order:                   append([]enterprisestation.OrderOption{}, esq.order...),
 		inters:                  append([]Interceptor{}, esq.inters...),
 		predicates:              append([]predicate.EnterpriseStation{}, esq.predicates...),
+		withCity:                esq.withCity.Clone(),
 		withEnterprise:          esq.withEnterprise.Clone(),
 		withAgents:              esq.withAgents.Clone(),
 		withSwapPutinBatteries:  esq.withSwapPutinBatteries.Clone(),
@@ -429,6 +454,17 @@ func (esq *EnterpriseStationQuery) Clone() *EnterpriseStationQuery {
 		sql:  esq.sql.Clone(),
 		path: esq.path,
 	}
+}
+
+// WithCity tells the query-builder to eager-load the nodes that are connected to
+// the "city" edge. The optional arguments are used to configure the query builder of the edge.
+func (esq *EnterpriseStationQuery) WithCity(opts ...func(*CityQuery)) *EnterpriseStationQuery {
+	query := (&CityClient{config: esq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	esq.withCity = query
+	return esq
 }
 
 // WithEnterprise tells the query-builder to eager-load the nodes that are connected to
@@ -586,7 +622,8 @@ func (esq *EnterpriseStationQuery) sqlAll(ctx context.Context, hooks ...queryHoo
 	var (
 		nodes       = []*EnterpriseStation{}
 		_spec       = esq.querySpec()
-		loadedTypes = [7]bool{
+		loadedTypes = [8]bool{
+			esq.withCity != nil,
 			esq.withEnterprise != nil,
 			esq.withAgents != nil,
 			esq.withSwapPutinBatteries != nil,
@@ -616,6 +653,12 @@ func (esq *EnterpriseStationQuery) sqlAll(ctx context.Context, hooks ...queryHoo
 	}
 	if len(nodes) == 0 {
 		return nodes, nil
+	}
+	if query := esq.withCity; query != nil {
+		if err := esq.loadCity(ctx, query, nodes, nil,
+			func(n *EnterpriseStation, e *City) { n.Edges.City = e }); err != nil {
+			return nil, err
+		}
 	}
 	if query := esq.withEnterprise; query != nil {
 		if err := esq.loadEnterprise(ctx, query, nodes, nil,
@@ -672,6 +715,38 @@ func (esq *EnterpriseStationQuery) sqlAll(ctx context.Context, hooks ...queryHoo
 	return nodes, nil
 }
 
+func (esq *EnterpriseStationQuery) loadCity(ctx context.Context, query *CityQuery, nodes []*EnterpriseStation, init func(*EnterpriseStation), assign func(*EnterpriseStation, *City)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*EnterpriseStation)
+	for i := range nodes {
+		if nodes[i].CityID == nil {
+			continue
+		}
+		fk := *nodes[i].CityID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(city.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "city_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 func (esq *EnterpriseStationQuery) loadEnterprise(ctx context.Context, query *EnterpriseQuery, nodes []*EnterpriseStation, init func(*EnterpriseStation), assign func(*EnterpriseStation, *Enterprise)) error {
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*EnterpriseStation)
@@ -957,6 +1032,9 @@ func (esq *EnterpriseStationQuery) querySpec() *sqlgraph.QuerySpec {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
 		}
+		if esq.withCity != nil {
+			_spec.Node.AddColumnOnce(enterprisestation.FieldCityID)
+		}
 		if esq.withEnterprise != nil {
 			_spec.Node.AddColumnOnce(enterprisestation.FieldEnterpriseID)
 		}
@@ -1028,6 +1106,7 @@ func (esq *EnterpriseStationQuery) Modify(modifiers ...func(s *sql.Selector)) *E
 type EnterpriseStationQueryWith string
 
 var (
+	EnterpriseStationQueryWithCity                EnterpriseStationQueryWith = "City"
 	EnterpriseStationQueryWithEnterprise          EnterpriseStationQueryWith = "Enterprise"
 	EnterpriseStationQueryWithAgents              EnterpriseStationQueryWith = "Agents"
 	EnterpriseStationQueryWithSwapPutinBatteries  EnterpriseStationQueryWith = "SwapPutinBatteries"
@@ -1040,6 +1119,8 @@ var (
 func (esq *EnterpriseStationQuery) With(withEdges ...EnterpriseStationQueryWith) *EnterpriseStationQuery {
 	for _, v := range withEdges {
 		switch v {
+		case EnterpriseStationQueryWithCity:
+			esq.WithCity()
 		case EnterpriseStationQueryWithEnterprise:
 			esq.WithEnterprise()
 		case EnterpriseStationQueryWithAgents:

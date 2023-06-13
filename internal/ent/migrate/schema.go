@@ -2292,6 +2292,7 @@ var (
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
 		{Name: "name", Type: field.TypeString, Comment: "站点名称"},
 		{Name: "enterprise_id", Type: field.TypeUint64, Comment: "企业ID"},
+		{Name: "city_id", Type: field.TypeUint64, Nullable: true, Comment: "城市ID"},
 	}
 	// EnterpriseStationTable holds the schema information for the "enterprise_station" table.
 	EnterpriseStationTable = &schema.Table{
@@ -2305,6 +2306,12 @@ var (
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
+			{
+				Symbol:     "enterprise_station_city_city",
+				Columns:    []*schema.Column{EnterpriseStationColumns[9]},
+				RefColumns: []*schema.Column{CityColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
 		},
 		Indexes: []*schema.Index{
 			{
@@ -2316,6 +2323,11 @@ var (
 				Name:    "enterprisestation_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{EnterpriseStationColumns[3]},
+			},
+			{
+				Name:    "enterprisestation_city_id",
+				Unique:  false,
+				Columns: []*schema.Column{EnterpriseStationColumns[9]},
 			},
 			{
 				Name:    "enterprisestation_enterprise_id",
@@ -4783,6 +4795,7 @@ func init() {
 		Table: "enterprise_statement",
 	}
 	EnterpriseStationTable.ForeignKeys[0].RefTable = EnterpriseTable
+	EnterpriseStationTable.ForeignKeys[1].RefTable = CityTable
 	EnterpriseStationTable.Annotation = &entsql.Annotation{
 		Table: "enterprise_station",
 	}

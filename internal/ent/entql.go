@@ -870,6 +870,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			enterprisestation.FieldCreator:      {Type: field.TypeJSON, Column: enterprisestation.FieldCreator},
 			enterprisestation.FieldLastModifier: {Type: field.TypeJSON, Column: enterprisestation.FieldLastModifier},
 			enterprisestation.FieldRemark:       {Type: field.TypeString, Column: enterprisestation.FieldRemark},
+			enterprisestation.FieldCityID:       {Type: field.TypeUint64, Column: enterprisestation.FieldCityID},
 			enterprisestation.FieldEnterpriseID: {Type: field.TypeUint64, Column: enterprisestation.FieldEnterpriseID},
 			enterprisestation.FieldName:         {Type: field.TypeString, Column: enterprisestation.FieldName},
 		},
@@ -3069,6 +3070,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"EnterpriseStatement",
 		"EnterpriseBill",
+	)
+	graph.MustAddE(
+		"city",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   enterprisestation.CityTable,
+			Columns: []string{enterprisestation.CityColumn},
+			Bidi:    false,
+		},
+		"EnterpriseStation",
+		"City",
 	)
 	graph.MustAddE(
 		"enterprise",
@@ -9581,6 +9594,11 @@ func (f *EnterpriseStationFilter) WhereRemark(p entql.StringP) {
 	f.Where(p.Field(enterprisestation.FieldRemark))
 }
 
+// WhereCityID applies the entql uint64 predicate on the city_id field.
+func (f *EnterpriseStationFilter) WhereCityID(p entql.Uint64P) {
+	f.Where(p.Field(enterprisestation.FieldCityID))
+}
+
 // WhereEnterpriseID applies the entql uint64 predicate on the enterprise_id field.
 func (f *EnterpriseStationFilter) WhereEnterpriseID(p entql.Uint64P) {
 	f.Where(p.Field(enterprisestation.FieldEnterpriseID))
@@ -9589,6 +9607,20 @@ func (f *EnterpriseStationFilter) WhereEnterpriseID(p entql.Uint64P) {
 // WhereName applies the entql string predicate on the name field.
 func (f *EnterpriseStationFilter) WhereName(p entql.StringP) {
 	f.Where(p.Field(enterprisestation.FieldName))
+}
+
+// WhereHasCity applies a predicate to check if query has an edge city.
+func (f *EnterpriseStationFilter) WhereHasCity() {
+	f.Where(entql.HasEdge("city"))
+}
+
+// WhereHasCityWith applies a predicate to check if query has an edge city with a given conditions (other predicates).
+func (f *EnterpriseStationFilter) WhereHasCityWith(preds ...predicate.City) {
+	f.Where(entql.HasEdgeWith("city", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
 }
 
 // WhereHasEnterprise applies a predicate to check if query has an edge enterprise.

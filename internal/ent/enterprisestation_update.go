@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebatteryswap"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
@@ -94,6 +95,26 @@ func (esu *EnterpriseStationUpdate) ClearRemark() *EnterpriseStationUpdate {
 	return esu
 }
 
+// SetCityID sets the "city_id" field.
+func (esu *EnterpriseStationUpdate) SetCityID(u uint64) *EnterpriseStationUpdate {
+	esu.mutation.SetCityID(u)
+	return esu
+}
+
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (esu *EnterpriseStationUpdate) SetNillableCityID(u *uint64) *EnterpriseStationUpdate {
+	if u != nil {
+		esu.SetCityID(*u)
+	}
+	return esu
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (esu *EnterpriseStationUpdate) ClearCityID() *EnterpriseStationUpdate {
+	esu.mutation.ClearCityID()
+	return esu
+}
+
 // SetEnterpriseID sets the "enterprise_id" field.
 func (esu *EnterpriseStationUpdate) SetEnterpriseID(u uint64) *EnterpriseStationUpdate {
 	esu.mutation.SetEnterpriseID(u)
@@ -104,6 +125,11 @@ func (esu *EnterpriseStationUpdate) SetEnterpriseID(u uint64) *EnterpriseStation
 func (esu *EnterpriseStationUpdate) SetName(s string) *EnterpriseStationUpdate {
 	esu.mutation.SetName(s)
 	return esu
+}
+
+// SetCity sets the "city" edge to the City entity.
+func (esu *EnterpriseStationUpdate) SetCity(c *City) *EnterpriseStationUpdate {
+	return esu.SetCityID(c.ID)
 }
 
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
@@ -204,6 +230,12 @@ func (esu *EnterpriseStationUpdate) AddStocks(s ...*Stock) *EnterpriseStationUpd
 // Mutation returns the EnterpriseStationMutation object of the builder.
 func (esu *EnterpriseStationUpdate) Mutation() *EnterpriseStationMutation {
 	return esu.mutation
+}
+
+// ClearCity clears the "city" edge to the City entity.
+func (esu *EnterpriseStationUpdate) ClearCity() *EnterpriseStationUpdate {
+	esu.mutation.ClearCity()
+	return esu
 }
 
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
@@ -432,6 +464,35 @@ func (esu *EnterpriseStationUpdate) sqlSave(ctx context.Context) (n int, err err
 	}
 	if value, ok := esu.mutation.Name(); ok {
 		_spec.SetField(enterprisestation.FieldName, field.TypeString, value)
+	}
+	if esu.mutation.CityCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   enterprisestation.CityTable,
+			Columns: []string{enterprisestation.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := esu.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   enterprisestation.CityTable,
+			Columns: []string{enterprisestation.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if esu.mutation.EnterpriseCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -812,6 +873,26 @@ func (esuo *EnterpriseStationUpdateOne) ClearRemark() *EnterpriseStationUpdateOn
 	return esuo
 }
 
+// SetCityID sets the "city_id" field.
+func (esuo *EnterpriseStationUpdateOne) SetCityID(u uint64) *EnterpriseStationUpdateOne {
+	esuo.mutation.SetCityID(u)
+	return esuo
+}
+
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (esuo *EnterpriseStationUpdateOne) SetNillableCityID(u *uint64) *EnterpriseStationUpdateOne {
+	if u != nil {
+		esuo.SetCityID(*u)
+	}
+	return esuo
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (esuo *EnterpriseStationUpdateOne) ClearCityID() *EnterpriseStationUpdateOne {
+	esuo.mutation.ClearCityID()
+	return esuo
+}
+
 // SetEnterpriseID sets the "enterprise_id" field.
 func (esuo *EnterpriseStationUpdateOne) SetEnterpriseID(u uint64) *EnterpriseStationUpdateOne {
 	esuo.mutation.SetEnterpriseID(u)
@@ -822,6 +903,11 @@ func (esuo *EnterpriseStationUpdateOne) SetEnterpriseID(u uint64) *EnterpriseSta
 func (esuo *EnterpriseStationUpdateOne) SetName(s string) *EnterpriseStationUpdateOne {
 	esuo.mutation.SetName(s)
 	return esuo
+}
+
+// SetCity sets the "city" edge to the City entity.
+func (esuo *EnterpriseStationUpdateOne) SetCity(c *City) *EnterpriseStationUpdateOne {
+	return esuo.SetCityID(c.ID)
 }
 
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
@@ -922,6 +1008,12 @@ func (esuo *EnterpriseStationUpdateOne) AddStocks(s ...*Stock) *EnterpriseStatio
 // Mutation returns the EnterpriseStationMutation object of the builder.
 func (esuo *EnterpriseStationUpdateOne) Mutation() *EnterpriseStationMutation {
 	return esuo.mutation
+}
+
+// ClearCity clears the "city" edge to the City entity.
+func (esuo *EnterpriseStationUpdateOne) ClearCity() *EnterpriseStationUpdateOne {
+	esuo.mutation.ClearCity()
+	return esuo
 }
 
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
@@ -1180,6 +1272,35 @@ func (esuo *EnterpriseStationUpdateOne) sqlSave(ctx context.Context) (_node *Ent
 	}
 	if value, ok := esuo.mutation.Name(); ok {
 		_spec.SetField(enterprisestation.FieldName, field.TypeString, value)
+	}
+	if esuo.mutation.CityCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   enterprisestation.CityTable,
+			Columns: []string{enterprisestation.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := esuo.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   enterprisestation.CityTable,
+			Columns: []string{enterprisestation.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if esuo.mutation.EnterpriseCleared() {
 		edge := &sqlgraph.EdgeSpec{

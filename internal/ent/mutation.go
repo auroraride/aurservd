@@ -43961,6 +43961,8 @@ type EnterpriseStationMutation struct {
 	remark                       *string
 	name                         *string
 	clearedFields                map[string]struct{}
+	city                         *uint64
+	clearedcity                  bool
 	enterprise                   *uint64
 	clearedenterprise            bool
 	agents                       map[uint64]struct{}
@@ -44352,6 +44354,55 @@ func (m *EnterpriseStationMutation) ResetRemark() {
 	delete(m.clearedFields, enterprisestation.FieldRemark)
 }
 
+// SetCityID sets the "city_id" field.
+func (m *EnterpriseStationMutation) SetCityID(u uint64) {
+	m.city = &u
+}
+
+// CityID returns the value of the "city_id" field in the mutation.
+func (m *EnterpriseStationMutation) CityID() (r uint64, exists bool) {
+	v := m.city
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCityID returns the old "city_id" field's value of the EnterpriseStation entity.
+// If the EnterpriseStation object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseStationMutation) OldCityID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCityID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCityID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCityID: %w", err)
+	}
+	return oldValue.CityID, nil
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (m *EnterpriseStationMutation) ClearCityID() {
+	m.city = nil
+	m.clearedFields[enterprisestation.FieldCityID] = struct{}{}
+}
+
+// CityIDCleared returns if the "city_id" field was cleared in this mutation.
+func (m *EnterpriseStationMutation) CityIDCleared() bool {
+	_, ok := m.clearedFields[enterprisestation.FieldCityID]
+	return ok
+}
+
+// ResetCityID resets all changes to the "city_id" field.
+func (m *EnterpriseStationMutation) ResetCityID() {
+	m.city = nil
+	delete(m.clearedFields, enterprisestation.FieldCityID)
+}
+
 // SetEnterpriseID sets the "enterprise_id" field.
 func (m *EnterpriseStationMutation) SetEnterpriseID(u uint64) {
 	m.enterprise = &u
@@ -44422,6 +44473,32 @@ func (m *EnterpriseStationMutation) OldName(ctx context.Context) (v string, err 
 // ResetName resets all changes to the "name" field.
 func (m *EnterpriseStationMutation) ResetName() {
 	m.name = nil
+}
+
+// ClearCity clears the "city" edge to the City entity.
+func (m *EnterpriseStationMutation) ClearCity() {
+	m.clearedcity = true
+}
+
+// CityCleared reports if the "city" edge to the City entity was cleared.
+func (m *EnterpriseStationMutation) CityCleared() bool {
+	return m.CityIDCleared() || m.clearedcity
+}
+
+// CityIDs returns the "city" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CityID instead. It exists only for internal usage by the builders.
+func (m *EnterpriseStationMutation) CityIDs() (ids []uint64) {
+	if id := m.city; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCity resets all changes to the "city" edge.
+func (m *EnterpriseStationMutation) ResetCity() {
+	m.city = nil
+	m.clearedcity = false
 }
 
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
@@ -44808,7 +44885,7 @@ func (m *EnterpriseStationMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EnterpriseStationMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 9)
 	if m.created_at != nil {
 		fields = append(fields, enterprisestation.FieldCreatedAt)
 	}
@@ -44826,6 +44903,9 @@ func (m *EnterpriseStationMutation) Fields() []string {
 	}
 	if m.remark != nil {
 		fields = append(fields, enterprisestation.FieldRemark)
+	}
+	if m.city != nil {
+		fields = append(fields, enterprisestation.FieldCityID)
 	}
 	if m.enterprise != nil {
 		fields = append(fields, enterprisestation.FieldEnterpriseID)
@@ -44853,6 +44933,8 @@ func (m *EnterpriseStationMutation) Field(name string) (ent.Value, bool) {
 		return m.LastModifier()
 	case enterprisestation.FieldRemark:
 		return m.Remark()
+	case enterprisestation.FieldCityID:
+		return m.CityID()
 	case enterprisestation.FieldEnterpriseID:
 		return m.EnterpriseID()
 	case enterprisestation.FieldName:
@@ -44878,6 +44960,8 @@ func (m *EnterpriseStationMutation) OldField(ctx context.Context, name string) (
 		return m.OldLastModifier(ctx)
 	case enterprisestation.FieldRemark:
 		return m.OldRemark(ctx)
+	case enterprisestation.FieldCityID:
+		return m.OldCityID(ctx)
 	case enterprisestation.FieldEnterpriseID:
 		return m.OldEnterpriseID(ctx)
 	case enterprisestation.FieldName:
@@ -44932,6 +45016,13 @@ func (m *EnterpriseStationMutation) SetField(name string, value ent.Value) error
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetRemark(v)
+		return nil
+	case enterprisestation.FieldCityID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCityID(v)
 		return nil
 	case enterprisestation.FieldEnterpriseID:
 		v, ok := value.(uint64)
@@ -44992,6 +45083,9 @@ func (m *EnterpriseStationMutation) ClearedFields() []string {
 	if m.FieldCleared(enterprisestation.FieldRemark) {
 		fields = append(fields, enterprisestation.FieldRemark)
 	}
+	if m.FieldCleared(enterprisestation.FieldCityID) {
+		fields = append(fields, enterprisestation.FieldCityID)
+	}
 	return fields
 }
 
@@ -45017,6 +45111,9 @@ func (m *EnterpriseStationMutation) ClearField(name string) error {
 		return nil
 	case enterprisestation.FieldRemark:
 		m.ClearRemark()
+		return nil
+	case enterprisestation.FieldCityID:
+		m.ClearCityID()
 		return nil
 	}
 	return fmt.Errorf("unknown EnterpriseStation nullable field %s", name)
@@ -45044,6 +45141,9 @@ func (m *EnterpriseStationMutation) ResetField(name string) error {
 	case enterprisestation.FieldRemark:
 		m.ResetRemark()
 		return nil
+	case enterprisestation.FieldCityID:
+		m.ResetCityID()
+		return nil
 	case enterprisestation.FieldEnterpriseID:
 		m.ResetEnterpriseID()
 		return nil
@@ -45056,7 +45156,10 @@ func (m *EnterpriseStationMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *EnterpriseStationMutation) AddedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 8)
+	if m.city != nil {
+		edges = append(edges, enterprisestation.EdgeCity)
+	}
 	if m.enterprise != nil {
 		edges = append(edges, enterprisestation.EdgeEnterprise)
 	}
@@ -45085,6 +45188,10 @@ func (m *EnterpriseStationMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *EnterpriseStationMutation) AddedIDs(name string) []ent.Value {
 	switch name {
+	case enterprisestation.EdgeCity:
+		if id := m.city; id != nil {
+			return []ent.Value{*id}
+		}
 	case enterprisestation.EdgeEnterprise:
 		if id := m.enterprise; id != nil {
 			return []ent.Value{*id}
@@ -45131,7 +45238,7 @@ func (m *EnterpriseStationMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *EnterpriseStationMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 8)
 	if m.removedagents != nil {
 		edges = append(edges, enterprisestation.EdgeAgents)
 	}
@@ -45199,7 +45306,10 @@ func (m *EnterpriseStationMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *EnterpriseStationMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 8)
+	if m.clearedcity {
+		edges = append(edges, enterprisestation.EdgeCity)
+	}
 	if m.clearedenterprise {
 		edges = append(edges, enterprisestation.EdgeEnterprise)
 	}
@@ -45228,6 +45338,8 @@ func (m *EnterpriseStationMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *EnterpriseStationMutation) EdgeCleared(name string) bool {
 	switch name {
+	case enterprisestation.EdgeCity:
+		return m.clearedcity
 	case enterprisestation.EdgeEnterprise:
 		return m.clearedenterprise
 	case enterprisestation.EdgeAgents:
@@ -45250,6 +45362,9 @@ func (m *EnterpriseStationMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *EnterpriseStationMutation) ClearEdge(name string) error {
 	switch name {
+	case enterprisestation.EdgeCity:
+		m.ClearCity()
+		return nil
 	case enterprisestation.EdgeEnterprise:
 		m.ClearEnterprise()
 		return nil
@@ -45261,6 +45376,9 @@ func (m *EnterpriseStationMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *EnterpriseStationMutation) ResetEdge(name string) error {
 	switch name {
+	case enterprisestation.EdgeCity:
+		m.ResetCity()
+		return nil
 	case enterprisestation.EdgeEnterprise:
 		m.ResetEnterprise()
 		return nil

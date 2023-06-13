@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/agent/v1/battery/list": {
+        "/agent/v1/battery/model": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -26,8 +26,40 @@ const docTemplate = `{
                 "tags": [
                     "[A]代理接口"
                 ],
-                "summary": "A5001 电池列表",
-                "operationId": "AgentBatteryList",
+                "summary": "AA002 电池型号列表",
+                "operationId": "AgentBatteryModel",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.ItemListRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/agent/v1/battery/section": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "AA001 电池选择搜索",
+                "operationId": "AgentBatterySearch",
                 "parameters": [
                     {
                         "type": "string",
@@ -64,38 +96,6 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/model.Battery"
                             }
-                        }
-                    }
-                }
-            }
-        },
-        "/agent/v1/battery/model": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "[A]代理接口"
-                ],
-                "summary": "A5002 电池型号列表",
-                "operationId": "AgentBatteryModels",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "代理校验token",
-                        "name": "X-Agent-Token",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.ItemListRes"
                         }
                     }
                 }
@@ -278,6 +278,130 @@ const docTemplate = `{
                 }
             }
         },
+        "/agent/v1/business/exchange": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A8001 换电列表",
+                "operationId": "AgentExchangeList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "选择电柜ID",
+                        "name": "cabinetId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "筛选结束日期, 格式为yyyy-mm-dd, 例如: 2022-06-01",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "筛选骑手姓名或电话",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "电池型号",
+                        "name": "model",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "筛选开始日期, 格式为yyyy-mm-dd, 例如: 2022-06-01",
+                        "name": "start",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.ExchangeManagerListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/agent/v1/business/price": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A8002 价格列表",
+                "operationId": "AgentBusinessPrice",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.EnterprisePriceWithCity"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/agent/v1/cabinet": {
             "get": {
                 "consumes": [
@@ -289,7 +413,7 @@ const docTemplate = `{
                 "tags": [
                     "[A]代理接口"
                 ],
-                "summary": "A5003 电柜列表",
+                "summary": "A5001 电柜列表",
                 "operationId": "AgentCabinetList",
                 "parameters": [
                     {
@@ -426,7 +550,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/agent/v1/cabinet/filter": {
+        "/agent/v1/cabinet/section": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -437,8 +561,8 @@ const docTemplate = `{
                 "tags": [
                     "[A]代理接口"
                 ],
-                "summary": "A5004 筛选电柜",
-                "operationId": "ManagerCabinetFilter",
+                "summary": "A5003 选择电柜",
+                "operationId": "AgentCabinetSection",
                 "parameters": [
                     {
                         "type": "string",
@@ -500,7 +624,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/agent/v1/feedback": {
+        "/agent/v1/misc/feedback": {
             "post": {
                 "consumes": [
                     "application/json"
@@ -511,8 +635,8 @@ const docTemplate = `{
                 "tags": [
                     "[A]代理接口"
                 ],
-                "summary": "A1005 意见反馈",
-                "operationId": "AgentFeedback",
+                "summary": "AZ001 意见反馈",
+                "operationId": "AgentMiscFeedback",
                 "parameters": [
                     {
                         "type": "string",
@@ -541,8 +665,8 @@ const docTemplate = `{
                 }
             }
         },
-        "/agent/v1/index": {
-            "get": {
+        "/agent/v1/misc/feedback/image": {
+            "post": {
                 "consumes": [
                     "application/json"
                 ],
@@ -552,8 +676,8 @@ const docTemplate = `{
                 "tags": [
                     "[A]代理接口"
                 ],
-                "summary": "A1007 首页数据",
-                "operationId": "AgentIndex",
+                "summary": "AZ002 意见反馈上传图片",
+                "operationId": "AgentMiscFeedbackImage",
                 "parameters": [
                     {
                         "type": "string",
@@ -561,13 +685,23 @@ const docTemplate = `{
                         "name": "X-Agent-Token",
                         "in": "header",
                         "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "图片文件",
+                        "name": "images",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.AgentIndexRes"
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
                         }
                     }
                 }
@@ -785,41 +919,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/agent/v1/price/list": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "[A]代理接口"
-                ],
-                "summary": "A1008 团签价格列表",
-                "operationId": "AgentPriceList",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "代理校验token",
-                        "name": "X-Agent-Token",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.EnterprisePriceWithCity"
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/agent/v1/profile": {
             "get": {
                 "consumes": [
@@ -981,47 +1080,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/agent/v1/rider/active": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "[A]代理接口"
-                ],
-                "summary": "A2005 激活骑手",
-                "operationId": "AgentRiderActive",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "代理校验token",
-                        "name": "X-Agent-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "请求详情",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.RiderActiveBatteryReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
         "/agent/v1/rider/alter": {
             "post": {
                 "consumes": [
@@ -1063,188 +1121,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/agent/v1/rider/exchange": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "[A]代理接口"
-                ],
-                "summary": "A2009 换电列表",
-                "operationId": "AgentExchangeList",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "代理校验token",
-                        "name": "X-Agent-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "筛选对象 0:全部 1:个签 2:团签",
-                        "name": "aimed",
-                        "in": "query"
-                    },
-                    {
-                        "enum": [
-                            0,
-                            1,
-                            2
-                        ],
-                        "type": "integer",
-                        "description": "换电方案 0:全部 1:满电 2:非满电",
-                        "name": "alternative",
-                        "in": "query"
-                    },
-                    {
-                        "enum": [
-                            "UNKNOWN",
-                            "KAIXIN",
-                            "YUNDONG",
-                            "TUOBANG",
-                            "XILIULOUSERV"
-                        ],
-                        "type": "string",
-                        "x-enum-comments": {
-                            "CabinetBrandXiliulouServer": "西六楼服务器版"
-                        },
-                        "x-enum-varnames": [
-                            "CabinetBrandUnknown",
-                            "CabinetBrandKaixin",
-                            "CabinetBrandYundong",
-                            "CabinetBrandTuobang",
-                            "CabinetBrandXiliulouServer"
-                        ],
-                        "description": "电柜类型, KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
-                        "name": "brand",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "选择电柜ID",
-                        "name": "cabinetId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "城市",
-                        "name": "cityId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "当前页, 从1开始, 默认1",
-                        "name": "current",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "筛选店员(手机号或姓名)",
-                        "name": "employee",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "筛选结束日期, 格式为yyyy-mm-dd, 例如: 2022-06-01",
-                        "name": "end",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "团签ID",
-                        "name": "enterpriseId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "筛选骑手姓名或电话",
-                        "name": "keyword",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "电池型号",
-                        "name": "model",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "每页数据, 默认20",
-                        "name": "pageSize",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "电柜编号",
-                        "name": "serial",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "筛选开始日期, 格式为yyyy-mm-dd, 例如: 2022-06-01",
-                        "name": "start",
-                        "in": "query"
-                    },
-                    {
-                        "enum": [
-                            0,
-                            1,
-                            2
-                        ],
-                        "type": "integer",
-                        "description": "换电状态 0:进行中 1:成功 2:失败 (不携带此参数为全部)",
-                        "name": "status",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "选择门店ID",
-                        "name": "storeId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "换电类别 0:全部 1:电柜 2:门店",
-                        "name": "target",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "次数 (所选时间段内最小换电次数)",
-                        "name": "times",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/model.PaginationRes"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "items": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/model.ExchangeManagerListRes"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
         "/agent/v1/rider/info": {
             "get": {
                 "consumes": [
@@ -1256,7 +1132,7 @@ const docTemplate = `{
                 "tags": [
                     "[A]代理接口"
                 ],
-                "summary": "A2010 通过二维码换取骑手信息",
+                "summary": "A2005 通过二维码换取骑手信息",
                 "operationId": "AgentRiderInfo",
                 "parameters": [
                     {
@@ -1386,6 +1262,38 @@ const docTemplate = `{
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.AgentSigninRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/agent/v1/statistics/overview": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A9001 统计概览",
+                "operationId": "AgentStatisticsOverview",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.AgentStatisticsOverviewRes"
                         }
                     }
                 }
@@ -1547,6 +1455,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/agent/v1/subscribe/active": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A7001 激活订阅",
+                "operationId": "AgentSubscribeActive",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求详情",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AgentSubscribeActiveReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/agent/v1/subscribe/alter": {
             "get": {
                 "consumes": [
@@ -1558,8 +1507,8 @@ const docTemplate = `{
                 "tags": [
                     "[A]代理接口"
                 ],
-                "summary": "A7001 申请加时列表",
-                "operationId": "AgentAlterList",
+                "summary": "A7002 申请加时列表",
+                "operationId": "AgentSubscribeAlterList",
                 "parameters": [
                     {
                         "type": "string",
@@ -1641,8 +1590,8 @@ const docTemplate = `{
                 "tags": [
                     "[A]代理接口"
                 ],
-                "summary": "A7002 审核加时",
-                "operationId": "AgentAlterReivew",
+                "summary": "A7003 审核加时",
+                "operationId": "AgentSubscribeAlterReivew",
                 "parameters": [
                     {
                         "type": "string",
@@ -1666,48 +1615,6 @@ const docTemplate = `{
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.StatusResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/agent/v1/upload/image": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "[A]代理接口"
-                ],
-                "summary": "A1006 意见反馈上传图片",
-                "operationId": "AgentUploadImage",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "代理校验token",
-                        "name": "X-Agent-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "file",
-                        "description": "图片文件",
-                        "name": "images",
-                        "in": "formData",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
                         }
                     }
                 }
@@ -8846,7 +8753,10 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.EnterpriseStationListRes"
+                            }
                         }
                     }
                 }
@@ -8927,6 +8837,40 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/enterprise/subscribe/active": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M9031 激活骑手",
+                "operationId": "ManagerRiderActive",
+                "parameters": [
+                    {
+                        "description": "激活骑手请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AgentSubscribeActiveReq"
+                        }
                     }
                 ],
                 "responses": {
@@ -11165,40 +11109,6 @@ const docTemplate = `{
                                     }
                                 }
                             ]
-                        }
-                    }
-                }
-            }
-        },
-        "/manager/v1/rider/active": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "[M]管理接口"
-                ],
-                "summary": "M7026 激活骑手",
-                "operationId": "ManagerRiderActive",
-                "parameters": [
-                    {
-                        "description": "激活骑手请求",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.RiderActiveBatteryReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
                         }
                     }
                 }
@@ -15124,6 +15034,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v1/enterprise/exit": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R3017 退出团签",
+                "operationId": "RiderEnterpriseExit",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v1/enterprise/info": {
             "get": {
                 "consumes": [
@@ -16800,63 +16742,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.AgentIndexRes": {
-            "type": "object",
-            "properties": {
-                "averageDeduction": {
-                    "description": "日均扣费",
-                    "type": "number"
-                },
-                "balance": {
-                    "description": "余额",
-                    "type": "number"
-                },
-                "batteryTotal": {
-                    "description": "电池总数",
-                    "type": "integer"
-                },
-                "billingRiderTotal": {
-                    "description": "计费骑手数",
-                    "type": "integer"
-                },
-                "cabinetBatteryTotal": {
-                    "description": "电柜电池数",
-                    "type": "integer"
-                },
-                "expiringRiderTotal": {
-                    "description": "临期骑手数",
-                    "type": "integer"
-                },
-                "newRiderTotal": {
-                    "description": "新签骑手数",
-                    "type": "integer"
-                },
-                "overTimeRiderTotal": {
-                    "description": "骑手加时审核数",
-                    "type": "integer"
-                },
-                "quitRiderTotal": {
-                    "description": "退租骑手数",
-                    "type": "integer"
-                },
-                "riderBatteryTotal": {
-                    "description": "骑手电池数",
-                    "type": "integer"
-                },
-                "riderTotal": {
-                    "description": "骑手总数",
-                    "type": "integer"
-                },
-                "stationBatteryTotal": {
-                    "description": "站点电池数",
-                    "type": "integer"
-                },
-                "yesterdayDeduction": {
-                    "description": "昨日扣费",
-                    "type": "number"
-                }
-            }
-        },
         "model.AgentMeta": {
             "type": "object",
             "properties": {
@@ -17037,7 +16922,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "isAuthed": {
-                    "description": "是否实名认证",
+                    "description": "是否实名认证 ture已实名 false未实名",
                     "type": "boolean"
                 },
                 "model": {
@@ -17114,6 +16999,76 @@ const docTemplate = `{
                 },
                 "token": {
                     "type": "string"
+                }
+            }
+        },
+        "model.AgentStatisticsOverviewRes": {
+            "type": "object",
+            "properties": {
+                "averageDeduction": {
+                    "description": "日均扣费",
+                    "type": "number"
+                },
+                "balance": {
+                    "description": "余额",
+                    "type": "number"
+                },
+                "batteryTotal": {
+                    "description": "电池总数",
+                    "type": "integer"
+                },
+                "billingRiderTotal": {
+                    "description": "计费骑手数",
+                    "type": "integer"
+                },
+                "cabinetBatteryTotal": {
+                    "description": "电柜电池数",
+                    "type": "integer"
+                },
+                "expiringRiderTotal": {
+                    "description": "临期骑手数",
+                    "type": "integer"
+                },
+                "newRiderTotal": {
+                    "description": "新签骑手数",
+                    "type": "integer"
+                },
+                "overTimeRiderTotal": {
+                    "description": "骑手加时审核数",
+                    "type": "integer"
+                },
+                "quitRiderTotal": {
+                    "description": "退租骑手数",
+                    "type": "integer"
+                },
+                "riderBatteryTotal": {
+                    "description": "骑手电池数",
+                    "type": "integer"
+                },
+                "riderTotal": {
+                    "description": "骑手总数",
+                    "type": "integer"
+                },
+                "stationBatteryTotal": {
+                    "description": "站点电池数",
+                    "type": "integer"
+                },
+                "yesterdayDeduction": {
+                    "description": "昨日扣费",
+                    "type": "number"
+                }
+            }
+        },
+        "model.AgentSubscribeActiveReq": {
+            "type": "object",
+            "properties": {
+                "batteryId": {
+                    "description": "电池ID",
+                    "type": "integer"
+                },
+                "enterpriseId": {
+                    "description": "团签id",
+                    "type": "integer"
                 }
             }
         },
@@ -22202,10 +22157,14 @@ const docTemplate = `{
         "model.EnterpriseStationCreateReq": {
             "type": "object",
             "required": [
+                "cityId",
                 "enterpriseId",
                 "name"
             ],
             "properties": {
+                "cityId": {
+                    "type": "integer"
+                },
                 "enterpriseId": {
                     "type": "integer"
                 },
@@ -22214,12 +22173,37 @@ const docTemplate = `{
                 }
             }
         },
+        "model.EnterpriseStationListRes": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "description": "城市",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.City"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "站点ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "站点名称",
+                    "type": "string"
+                }
+            }
+        },
         "model.EnterpriseStationModifyReq": {
             "type": "object",
             "required": [
+                "cityId",
                 "name"
             ],
             "properties": {
+                "cityId": {
+                    "type": "integer"
+                },
                 "name": {
                     "type": "string"
                 }
@@ -24456,22 +24440,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.RiderActiveBatteryReq": {
-            "type": "object",
-            "required": [
-                "batteryId"
-            ],
-            "properties": {
-                "batteryId": {
-                    "description": "电池ID",
-                    "type": "integer"
-                },
-                "enterpriseId": {
-                    "description": "团签id",
-                    "type": "integer"
-                }
-            }
-        },
         "model.RiderBlockReq": {
             "type": "object",
             "properties": {
@@ -25211,6 +25179,10 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.EnterpriseContact"
                         }
                     ]
+                },
+                "exitEnterprise": {
+                    "description": "判断能否退出团签",
+                    "type": "boolean"
                 },
                 "id": {
                     "type": "integer"

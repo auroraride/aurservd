@@ -6056,6 +6056,22 @@ func (c *EnterpriseStationClient) GetX(ctx context.Context, id uint64) *Enterpri
 	return obj
 }
 
+// QueryCity queries the city edge of a EnterpriseStation.
+func (c *EnterpriseStationClient) QueryCity(es *EnterpriseStation) *CityQuery {
+	query := (&CityClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := es.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisestation.Table, enterprisestation.FieldID, id),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, enterprisestation.CityTable, enterprisestation.CityColumn),
+		)
+		fromV = sqlgraph.Neighbors(es.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryEnterprise queries the enterprise edge of a EnterpriseStation.
 func (c *EnterpriseStationClient) QueryEnterprise(es *EnterpriseStation) *EnterpriseQuery {
 	query := (&EnterpriseClient{config: c.config}).Query()

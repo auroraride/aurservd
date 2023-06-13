@@ -73,7 +73,7 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 		}
 	}
 
-	stat := NewEnterpriseStation().Query(req.StationID)
+	stat := NewEnterpriseStation().QueryX(req.StationID)
 	var r *ent.Rider
 	var sub *ent.Subscribe
 
