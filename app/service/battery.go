@@ -490,8 +490,8 @@ func (s *batteryService) Unallocate(bat *ent.Battery) (err error) {
 // cab.StationID / cab.EnterpriseID 被用作取出的代理商信息
 // 需要记录流转信息
 func (s *batteryService) StationBusinessTransfer(cabinetID, exchangeID uint64, putin, putout *model.BatteryEnterpriseTransfer) {
-	// 非智能电池跳过
-	if putin.Sn == "" || putout.Sn == "" {
+	// 进行站点对比, 放入 == 取出, 直接跳过
+	if putin.StationID == putout.StationID {
 		return
 	}
 
@@ -503,17 +503,6 @@ func (s *batteryService) StationBusinessTransfer(cabinetID, exchangeID uint64, p
 
 	// 未找到电池跳过
 	if in == nil || out == nil {
-		v := map[string]any{
-			"putin":  putin,
-			"putout": putout,
-		}
-		b, _ := jsoniter.Marshal(v)
-		zap.L().Error("StationBusinessTransfer: 未找到电池", zap.ByteString("data", b))
-		return
-	}
-
-	// 进行站点对比, 放入 == 取出, 直接跳过
-	if putin.StationID == out.StationID {
 		return
 	}
 
