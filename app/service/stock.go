@@ -1152,6 +1152,7 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
 		}
 		if stationInfo.Edges.Enterprise != nil {
 			enterpriseId = stationInfo.Edges.Enterprise.ID
+			cityID = stationInfo.Edges.Enterprise.CityID
 		}
 	}
 
