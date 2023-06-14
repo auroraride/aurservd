@@ -20,7 +20,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
-	"github.com/auroraride/aurservd/internal/ent/subscribealter"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
 )
@@ -368,73 +367,6 @@ func (s *enterpriseRiderService) SubscribeStatus(req *model.EnterpriseRiderSubsc
 	}
 }
 
-// AddSubscribeDays 骑手申请增加团签订阅时长
-func (s *enterpriseRiderService) AddSubscribeDays(req *model.RiderSubscribeAddReq, r *ent.Rider) {
-	// 查询骑手申请是否有未审批的
-	q := ent.Database.SubscribeAlter.QueryNotDeleted().Where(
-		subscribealter.RiderID(r.ID),
-		subscribealter.Status(model.SubscribeAlterStatusPending),
-	)
-
-	exists, _ := q.Exist(s.ctx)
-	if exists {
-		snag.Panic("存在未审批的申请")
-	}
-
-	// 查询骑手团签
-	sub, _ := NewSubscribe().QueryEffective(r.ID)
-	if sub == nil {
-		snag.Panic("订阅状态异常")
-	}
-
-	// 增加记录
-	_, err := ent.Database.SubscribeAlter.Create().
-		SetRiderID(r.ID).
-		SetEnterpriseID(*r.EnterpriseID).
-		SetSubscribeID(sub.ID).
-		SetDays(req.Days).
-		SetStatus(model.SubscribeAlterStatusPending).
-		SetNillableExpireTime(sub.AgentEndAt).
-		Save(s.ctx)
-	if err != nil {
-		snag.Panic("申请失败")
-	}
-}
-
-// SubscribeAlterList 申请列表
-func (s *enterpriseRiderService) SubscribeAlterList(req *model.SubscribeAlterApplyReq, rid *ent.Rider) *model.PaginationRes {
-	q := ent.Database.SubscribeAlter.QueryNotDeleted().Where(subscribealter.RiderID(rid.ID)).
-		Order(ent.Desc(subscribealter.FieldCreatedAt))
-
-	if rid.EnterpriseID != nil {
-		subscribealter.EnterpriseID(*rid.EnterpriseID)
-	}
-	if req.Start != nil && req.End != nil {
-		rs := tools.NewTime().ParseDateStringX(*req.Start)
-		re := tools.NewTime().ParseDateStringX(*req.End)
-		q = q.Where(subscribealter.CreatedAtGTE(rs), subscribealter.CreatedAtLTE(re))
-	}
-
-	return model.ParsePaginationResponse(
-		q,
-		req.PaginationReq,
-		func(item *ent.SubscribeAlter) model.SubscribeAlterApplyListRsp {
-			rsp := model.SubscribeAlterApplyListRsp{
-				ID:        item.ID,
-				Days:      item.Days,
-				ApplyTime: item.CreatedAt.Format(carbon.DateTimeLayout), // 申请时间
-				Status:    item.Status,                                  // 审批状态
-			}
-			if item.ExpireTime != nil {
-				rsp.ExpireTime = item.ExpireTime.Format(carbon.DateTimeLayout)
-			}
-			if item.ReviewTime != nil {
-				rsp.ReviewTime = item.ReviewTime.Format(carbon.DateTimeLayout)
-			}
-			return rsp
-		})
-}
-
 // RiderEnterpriseInfo 骑手团签信息
 func (s *enterpriseRiderService) RiderEnterpriseInfo(req *model.EnterproseInfoReq, riderID uint64) *model.EnterproseInfoRsp {
 	rsp := &model.EnterproseInfoRsp{
@@ -499,12 +431,13 @@ func (s *enterpriseRiderService) JoinEnterprise(req *model.EnterpriseJoinReq, ri
 		}
 		// 判断如果是团签未激活的订单，更新订阅信息
 		if sub != nil && sub.EnterpriseID != nil && sub.Status == model.SubscribeStatusInactive {
+			aendTime := tools.NewTime().WillEnd(carbon.Now().StartOfDay().Carbon2Time(), req.Days)
 			_, err = tx.Subscribe.UpdateOne(sub).
 				SetRiderID(rid.ID).
 				SetEnterpriseID(req.EnterpriseId).
 				SetStationID(req.StationId).
 				SetInitialDays(req.Days).
-				SetAgentEndAt(tools.NewTime().WillEnd(time.Now(), req.Days)).
+				SetAgentEndAt(aendTime).
 				Save(s.ctx)
 			if err != nil {
 				return err

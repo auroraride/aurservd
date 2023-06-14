@@ -1467,21 +1467,20 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "SubscribeAlter",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			subscribealter.FieldCreatedAt:    {Type: field.TypeTime, Column: subscribealter.FieldCreatedAt},
-			subscribealter.FieldUpdatedAt:    {Type: field.TypeTime, Column: subscribealter.FieldUpdatedAt},
-			subscribealter.FieldDeletedAt:    {Type: field.TypeTime, Column: subscribealter.FieldDeletedAt},
-			subscribealter.FieldCreator:      {Type: field.TypeJSON, Column: subscribealter.FieldCreator},
-			subscribealter.FieldLastModifier: {Type: field.TypeJSON, Column: subscribealter.FieldLastModifier},
-			subscribealter.FieldRemark:       {Type: field.TypeString, Column: subscribealter.FieldRemark},
-			subscribealter.FieldRiderID:      {Type: field.TypeUint64, Column: subscribealter.FieldRiderID},
-			subscribealter.FieldManagerID:    {Type: field.TypeUint64, Column: subscribealter.FieldManagerID},
-			subscribealter.FieldEnterpriseID: {Type: field.TypeUint64, Column: subscribealter.FieldEnterpriseID},
-			subscribealter.FieldAgentID:      {Type: field.TypeUint64, Column: subscribealter.FieldAgentID},
-			subscribealter.FieldSubscribeID:  {Type: field.TypeUint64, Column: subscribealter.FieldSubscribeID},
-			subscribealter.FieldDays:         {Type: field.TypeInt, Column: subscribealter.FieldDays},
-			subscribealter.FieldStatus:       {Type: field.TypeInt, Column: subscribealter.FieldStatus},
-			subscribealter.FieldExpireTime:   {Type: field.TypeTime, Column: subscribealter.FieldExpireTime},
-			subscribealter.FieldReviewTime:   {Type: field.TypeTime, Column: subscribealter.FieldReviewTime},
+			subscribealter.FieldCreatedAt:      {Type: field.TypeTime, Column: subscribealter.FieldCreatedAt},
+			subscribealter.FieldUpdatedAt:      {Type: field.TypeTime, Column: subscribealter.FieldUpdatedAt},
+			subscribealter.FieldCreator:        {Type: field.TypeJSON, Column: subscribealter.FieldCreator},
+			subscribealter.FieldLastModifier:   {Type: field.TypeJSON, Column: subscribealter.FieldLastModifier},
+			subscribealter.FieldRemark:         {Type: field.TypeString, Column: subscribealter.FieldRemark},
+			subscribealter.FieldRiderID:        {Type: field.TypeUint64, Column: subscribealter.FieldRiderID},
+			subscribealter.FieldManagerID:      {Type: field.TypeUint64, Column: subscribealter.FieldManagerID},
+			subscribealter.FieldEnterpriseID:   {Type: field.TypeUint64, Column: subscribealter.FieldEnterpriseID},
+			subscribealter.FieldAgentID:        {Type: field.TypeUint64, Column: subscribealter.FieldAgentID},
+			subscribealter.FieldSubscribeID:    {Type: field.TypeUint64, Column: subscribealter.FieldSubscribeID},
+			subscribealter.FieldDays:           {Type: field.TypeInt, Column: subscribealter.FieldDays},
+			subscribealter.FieldStatus:         {Type: field.TypeInt, Column: subscribealter.FieldStatus},
+			subscribealter.FieldReviewTime:     {Type: field.TypeTime, Column: subscribealter.FieldReviewTime},
+			subscribealter.FieldSubscribeEndAt: {Type: field.TypeTime, Column: subscribealter.FieldSubscribeEndAt},
 		},
 	}
 	graph.Nodes[50] = &sqlgraph.Node{
@@ -13464,11 +13463,6 @@ func (f *SubscribeAlterFilter) WhereUpdatedAt(p entql.TimeP) {
 	f.Where(p.Field(subscribealter.FieldUpdatedAt))
 }
 
-// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
-func (f *SubscribeAlterFilter) WhereDeletedAt(p entql.TimeP) {
-	f.Where(p.Field(subscribealter.FieldDeletedAt))
-}
-
 // WhereCreator applies the entql json.RawMessage predicate on the creator field.
 func (f *SubscribeAlterFilter) WhereCreator(p entql.BytesP) {
 	f.Where(p.Field(subscribealter.FieldCreator))
@@ -13519,14 +13513,14 @@ func (f *SubscribeAlterFilter) WhereStatus(p entql.IntP) {
 	f.Where(p.Field(subscribealter.FieldStatus))
 }
 
-// WhereExpireTime applies the entql time.Time predicate on the expire_time field.
-func (f *SubscribeAlterFilter) WhereExpireTime(p entql.TimeP) {
-	f.Where(p.Field(subscribealter.FieldExpireTime))
-}
-
 // WhereReviewTime applies the entql time.Time predicate on the review_time field.
 func (f *SubscribeAlterFilter) WhereReviewTime(p entql.TimeP) {
 	f.Where(p.Field(subscribealter.FieldReviewTime))
+}
+
+// WhereSubscribeEndAt applies the entql time.Time predicate on the subscribe_end_at field.
+func (f *SubscribeAlterFilter) WhereSubscribeEndAt(p entql.TimeP) {
+	f.Where(p.Field(subscribealter.FieldSubscribeEndAt))
 }
 
 // WhereHasRider applies a predicate to check if query has an edge rider.

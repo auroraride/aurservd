@@ -145,9 +145,9 @@ func loadRideRoutes() {
 	// 退出团签
 	g.POST("/enterprise/exit", rapi.Enterprise.ExitEnterprise)
 	// 申请加时
-	g.POST("/enterprise/subscribe/add", rapi.Enterprise.ApplyAddSubscribeTime)
+	g.POST("/enterprise/subscribe/alter", rapi.Enterprise.SubscribeAlter)
 	// 申请列表
-	g.GET("/enterprise/subscribe/alter/list", rapi.Enterprise.ApplyList)
+	g.GET("/enterprise/subscribe/alter/list", rapi.Enterprise.SubscribeAlterList)
 
 	// 电柜
 	cabinet := g.Group("/cabinet")

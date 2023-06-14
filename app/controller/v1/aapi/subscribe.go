@@ -41,11 +41,14 @@ func (*subscribe) Active(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Agent-Token  header  string  true  "代理校验token"
-// @Param        query  query   model.SubscribeAlterApplyReq  true  "查询条件"
-// @Success      200  {object}  model.PaginationRes{items=[]model.SubscribeAlterApplyListRsp}  "请求成功"
+// @Param        query  query   model.SubscribeAlterFilter  true  "查询条件"
+// @Success      200  {object}  model.PaginationRes{items=[]model.SubscribeAlterApplyListRes}  "请求成功"
 func (*subscribe) AlterList(c echo.Context) (err error) {
-	ctx, req := app.AgentContextAndBinding[model.SubscribeAlterApplyReq](c)
-	return ctx.SendResponse(service.NewAgentSubscribe(ctx.Agent, ctx.Enterprise).AlterList(ctx.Enterprise.ID, req))
+	ctx, req := app.AgentContextAndBinding[model.SubscribeAlterFilter](c)
+	return ctx.SendResponse(service.NewSubscribeAlter(ctx.Agent, ctx.Enterprise).List(&model.SubscribeAlterListReq{
+		SubscribeAlterFilter: *req,
+		EnterpriseID:         ctx.Agent.EnterpriseID,
+	}))
 }
 
 // AlterReivew

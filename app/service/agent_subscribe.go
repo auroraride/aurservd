@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/golang-module/carbon/v2"
 	"go.uber.org/zap"
 
 	"github.com/auroraride/aurservd/app/logging"
@@ -32,65 +31,10 @@ func NewAgentSubscribe(params ...any) *agentSubscribeService {
 	}
 }
 
-// AlterList 加时申请列表
-func (s *agentSubscribeService) AlterList(enterpriseId uint64, req *model.SubscribeAlterApplyReq) *model.PaginationRes {
-	q := ent.Database.SubscribeAlter.QueryNotDeleted().
-		Where(
-			subscribealter.EnterpriseID(enterpriseId),
-			subscribealter.HasRiderWith(rider.DeletedAtIsNil()),
-			subscribealter.HasSubscribeWith(subscribe.StatusNotIn(model.SubscribeStatusUnSubscribed)),
-		).
-		Order(ent.Desc(subscribealter.FieldCreatedAt)).
-		WithRider().
-		WithSubscribe()
-
-	tt := tools.NewTime()
-	if req.Start != nil {
-		q.Where(subscribealter.CreatedAtGTE(tt.ParseDateStringX(*req.Start)))
-	}
-	if req.End != nil {
-		q.Where(subscribealter.CreatedAtLT(tt.ParseNextDateStringX(*req.End)))
-	}
-
-	if req.Status != nil {
-		q.Where(subscribealter.Status(*req.Status))
-	}
-	if req.Keyword != nil {
-		q.Where(subscribealter.HasRiderWith(rider.Or(rider.NameContainsFold(*req.Keyword),
-			rider.PhoneContainsFold(*req.Keyword))))
-	}
-	return model.ParsePaginationResponse(
-		q,
-		req.PaginationReq,
-		func(item *ent.SubscribeAlter) model.SubscribeAlterApplyListRsp {
-			rsp := model.SubscribeAlterApplyListRsp{
-				ID:   item.ID,
-				Days: item.Days,
-				// 申请时间
-				ApplyTime: item.CreatedAt.Format(carbon.DateTimeLayout),
-				// 审批状态
-				Status: item.Status,
-			}
-			if item.ExpireTime != nil {
-				rsp.ExpireTime = item.ExpireTime.Format(carbon.DateTimeLayout)
-			}
-			if item.ReviewTime != nil {
-				rsp.ReviewTime = item.ReviewTime.Format(carbon.DateTimeLayout)
-			}
-			if item.Edges.Rider != nil {
-				// 骑手姓名
-				rsp.RiderName = item.Edges.Rider.Name
-				// 骑手手机号
-				rsp.RiderPhone = item.Edges.Rider.Phone
-			}
-			return rsp
-		})
-}
-
 // AlterReview 审批加时申请
 func (s *agentSubscribeService) AlterReview(req *model.SubscribeAlterReviewReq) {
 	// 查找申请记录
-	q := ent.Database.SubscribeAlter.QueryNotDeleted().
+	q := ent.Database.SubscribeAlter.Query().
 		Where(
 			subscribealter.IDIn(req.Ids...),
 			subscribealter.HasRiderWith(rider.DeletedAtIsNil()),

@@ -253,25 +253,3 @@ type RiderFollowUpListRes struct {
 	Remark  string   `json:"remark"`  // 跟进信息
 	Time    string   `json:"time"`    // 跟进时间
 }
-
-type RiderAgentList struct {
-	Keyword string `json:"keyword"` // 筛选关键词
-	Status  uint8  `json:"status"`  // 状态 0:全部 1:未激活 2:计费中 3:已超期 4:已退租
-	CityID  uint64 `json:"cityId"`  // 城市筛选
-}
-
-// RiderSubscribeRsp 骑手订阅信息
-type RiderSubscribeRsp struct {
-	// 剩余天数
-	LeftDays int `json:"leftDays"`
-	// 到期时间
-	ExpireAt string `json:"expireAt"`
-	// 加时天数列表
-	ExtraDays []int `json:"extraDays"`
-}
-
-// RiderSubscribeAddReq 骑手申请增加订阅时长请求
-type RiderSubscribeAddReq struct {
-	// 天数
-	Days int `json:"days" validate:"required"`
-}

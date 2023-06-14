@@ -347,18 +347,18 @@ func (*enterprise) RepaymentList(c echo.Context) (err error) {
 	return ctx.SendResponse(service.NewPrepayment(ctx.Modifier).List(req.EnterpriseID, req))
 }
 
-// SubscribeApplyList
-// @ID           ManagerEnterpriseSubscribeApplyList
+// SubscribeAlterList
+// @ID           ManagerEnterpriseSubscribeAlterList
 // @Router       /manager/v1/enterprise/subscribe/alter/{enterpriseId} [GET]
 // @Summary      M9027 加时申请列表
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
-// @Param        query  query  model.SubscribeAlterApplyManagerReq  false  "请求参数"
-// @Success      200  {object}  model.PaginationRes{items=[]model.SubscribeAlterApplyListRsp}
-func (*enterprise) SubscribeApplyList(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[model.SubscribeAlterApplyManagerReq](c)
-	return ctx.SendResponse(service.NewAgentSubscribe(ctx.Modifier).AlterList(req.EnterpriseID, &req.SubscribeAlterApplyReq))
+// @Param        query  query  model.SubscribeAlterListManagerReq  false  "请求参数"
+// @Success      200  {object}  model.PaginationRes{items=[]model.SubscribeAlterApplyListRes}
+func (*enterprise) SubscribeAlterList(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[model.SubscribeAlterListReq](c)
+	return ctx.SendResponse(service.NewSubscribeAlter(ctx.Modifier).List(req))
 }
 
 // SubscribeApply

@@ -78443,7 +78443,6 @@ type SubscribeAlterMutation struct {
 	id                *uint64
 	created_at        *time.Time
 	updated_at        *time.Time
-	deleted_at        *time.Time
 	creator           **model.Modifier
 	last_modifier     **model.Modifier
 	remark            *string
@@ -78451,8 +78450,8 @@ type SubscribeAlterMutation struct {
 	adddays           *int
 	status            *int
 	addstatus         *int
-	expire_time       *time.Time
 	review_time       *time.Time
+	subscribe_end_at  *time.Time
 	clearedFields     map[string]struct{}
 	rider             *uint64
 	clearedrider      bool
@@ -78637,55 +78636,6 @@ func (m *SubscribeAlterMutation) OldUpdatedAt(ctx context.Context) (v time.Time,
 // ResetUpdatedAt resets all changes to the "updated_at" field.
 func (m *SubscribeAlterMutation) ResetUpdatedAt() {
 	m.updated_at = nil
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (m *SubscribeAlterMutation) SetDeletedAt(t time.Time) {
-	m.deleted_at = &t
-}
-
-// DeletedAt returns the value of the "deleted_at" field in the mutation.
-func (m *SubscribeAlterMutation) DeletedAt() (r time.Time, exists bool) {
-	v := m.deleted_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldDeletedAt returns the old "deleted_at" field's value of the SubscribeAlter entity.
-// If the SubscribeAlter object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SubscribeAlterMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
-	}
-	return oldValue.DeletedAt, nil
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (m *SubscribeAlterMutation) ClearDeletedAt() {
-	m.deleted_at = nil
-	m.clearedFields[subscribealter.FieldDeletedAt] = struct{}{}
-}
-
-// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
-func (m *SubscribeAlterMutation) DeletedAtCleared() bool {
-	_, ok := m.clearedFields[subscribealter.FieldDeletedAt]
-	return ok
-}
-
-// ResetDeletedAt resets all changes to the "deleted_at" field.
-func (m *SubscribeAlterMutation) ResetDeletedAt() {
-	m.deleted_at = nil
-	delete(m.clearedFields, subscribealter.FieldDeletedAt)
 }
 
 // SetCreator sets the "creator" field.
@@ -79166,55 +79116,6 @@ func (m *SubscribeAlterMutation) ResetStatus() {
 	m.addstatus = nil
 }
 
-// SetExpireTime sets the "expire_time" field.
-func (m *SubscribeAlterMutation) SetExpireTime(t time.Time) {
-	m.expire_time = &t
-}
-
-// ExpireTime returns the value of the "expire_time" field in the mutation.
-func (m *SubscribeAlterMutation) ExpireTime() (r time.Time, exists bool) {
-	v := m.expire_time
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldExpireTime returns the old "expire_time" field's value of the SubscribeAlter entity.
-// If the SubscribeAlter object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SubscribeAlterMutation) OldExpireTime(ctx context.Context) (v *time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldExpireTime is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldExpireTime requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldExpireTime: %w", err)
-	}
-	return oldValue.ExpireTime, nil
-}
-
-// ClearExpireTime clears the value of the "expire_time" field.
-func (m *SubscribeAlterMutation) ClearExpireTime() {
-	m.expire_time = nil
-	m.clearedFields[subscribealter.FieldExpireTime] = struct{}{}
-}
-
-// ExpireTimeCleared returns if the "expire_time" field was cleared in this mutation.
-func (m *SubscribeAlterMutation) ExpireTimeCleared() bool {
-	_, ok := m.clearedFields[subscribealter.FieldExpireTime]
-	return ok
-}
-
-// ResetExpireTime resets all changes to the "expire_time" field.
-func (m *SubscribeAlterMutation) ResetExpireTime() {
-	m.expire_time = nil
-	delete(m.clearedFields, subscribealter.FieldExpireTime)
-}
-
 // SetReviewTime sets the "review_time" field.
 func (m *SubscribeAlterMutation) SetReviewTime(t time.Time) {
 	m.review_time = &t
@@ -79262,6 +79163,55 @@ func (m *SubscribeAlterMutation) ReviewTimeCleared() bool {
 func (m *SubscribeAlterMutation) ResetReviewTime() {
 	m.review_time = nil
 	delete(m.clearedFields, subscribealter.FieldReviewTime)
+}
+
+// SetSubscribeEndAt sets the "subscribe_end_at" field.
+func (m *SubscribeAlterMutation) SetSubscribeEndAt(t time.Time) {
+	m.subscribe_end_at = &t
+}
+
+// SubscribeEndAt returns the value of the "subscribe_end_at" field in the mutation.
+func (m *SubscribeAlterMutation) SubscribeEndAt() (r time.Time, exists bool) {
+	v := m.subscribe_end_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSubscribeEndAt returns the old "subscribe_end_at" field's value of the SubscribeAlter entity.
+// If the SubscribeAlter object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscribeAlterMutation) OldSubscribeEndAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSubscribeEndAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSubscribeEndAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSubscribeEndAt: %w", err)
+	}
+	return oldValue.SubscribeEndAt, nil
+}
+
+// ClearSubscribeEndAt clears the value of the "subscribe_end_at" field.
+func (m *SubscribeAlterMutation) ClearSubscribeEndAt() {
+	m.subscribe_end_at = nil
+	m.clearedFields[subscribealter.FieldSubscribeEndAt] = struct{}{}
+}
+
+// SubscribeEndAtCleared returns if the "subscribe_end_at" field was cleared in this mutation.
+func (m *SubscribeAlterMutation) SubscribeEndAtCleared() bool {
+	_, ok := m.clearedFields[subscribealter.FieldSubscribeEndAt]
+	return ok
+}
+
+// ResetSubscribeEndAt resets all changes to the "subscribe_end_at" field.
+func (m *SubscribeAlterMutation) ResetSubscribeEndAt() {
+	m.subscribe_end_at = nil
+	delete(m.clearedFields, subscribealter.FieldSubscribeEndAt)
 }
 
 // ClearRider clears the "rider" edge to the Rider entity.
@@ -79428,15 +79378,12 @@ func (m *SubscribeAlterMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SubscribeAlterMutation) Fields() []string {
-	fields := make([]string, 0, 15)
+	fields := make([]string, 0, 14)
 	if m.created_at != nil {
 		fields = append(fields, subscribealter.FieldCreatedAt)
 	}
 	if m.updated_at != nil {
 		fields = append(fields, subscribealter.FieldUpdatedAt)
-	}
-	if m.deleted_at != nil {
-		fields = append(fields, subscribealter.FieldDeletedAt)
 	}
 	if m.creator != nil {
 		fields = append(fields, subscribealter.FieldCreator)
@@ -79468,11 +79415,11 @@ func (m *SubscribeAlterMutation) Fields() []string {
 	if m.status != nil {
 		fields = append(fields, subscribealter.FieldStatus)
 	}
-	if m.expire_time != nil {
-		fields = append(fields, subscribealter.FieldExpireTime)
-	}
 	if m.review_time != nil {
 		fields = append(fields, subscribealter.FieldReviewTime)
+	}
+	if m.subscribe_end_at != nil {
+		fields = append(fields, subscribealter.FieldSubscribeEndAt)
 	}
 	return fields
 }
@@ -79486,8 +79433,6 @@ func (m *SubscribeAlterMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case subscribealter.FieldUpdatedAt:
 		return m.UpdatedAt()
-	case subscribealter.FieldDeletedAt:
-		return m.DeletedAt()
 	case subscribealter.FieldCreator:
 		return m.Creator()
 	case subscribealter.FieldLastModifier:
@@ -79508,10 +79453,10 @@ func (m *SubscribeAlterMutation) Field(name string) (ent.Value, bool) {
 		return m.Days()
 	case subscribealter.FieldStatus:
 		return m.Status()
-	case subscribealter.FieldExpireTime:
-		return m.ExpireTime()
 	case subscribealter.FieldReviewTime:
 		return m.ReviewTime()
+	case subscribealter.FieldSubscribeEndAt:
+		return m.SubscribeEndAt()
 	}
 	return nil, false
 }
@@ -79525,8 +79470,6 @@ func (m *SubscribeAlterMutation) OldField(ctx context.Context, name string) (ent
 		return m.OldCreatedAt(ctx)
 	case subscribealter.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
-	case subscribealter.FieldDeletedAt:
-		return m.OldDeletedAt(ctx)
 	case subscribealter.FieldCreator:
 		return m.OldCreator(ctx)
 	case subscribealter.FieldLastModifier:
@@ -79547,10 +79490,10 @@ func (m *SubscribeAlterMutation) OldField(ctx context.Context, name string) (ent
 		return m.OldDays(ctx)
 	case subscribealter.FieldStatus:
 		return m.OldStatus(ctx)
-	case subscribealter.FieldExpireTime:
-		return m.OldExpireTime(ctx)
 	case subscribealter.FieldReviewTime:
 		return m.OldReviewTime(ctx)
+	case subscribealter.FieldSubscribeEndAt:
+		return m.OldSubscribeEndAt(ctx)
 	}
 	return nil, fmt.Errorf("unknown SubscribeAlter field %s", name)
 }
@@ -79573,13 +79516,6 @@ func (m *SubscribeAlterMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUpdatedAt(v)
-		return nil
-	case subscribealter.FieldDeletedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetDeletedAt(v)
 		return nil
 	case subscribealter.FieldCreator:
 		v, ok := value.(*model.Modifier)
@@ -79651,19 +79587,19 @@ func (m *SubscribeAlterMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetStatus(v)
 		return nil
-	case subscribealter.FieldExpireTime:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetExpireTime(v)
-		return nil
 	case subscribealter.FieldReviewTime:
 		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetReviewTime(v)
+		return nil
+	case subscribealter.FieldSubscribeEndAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSubscribeEndAt(v)
 		return nil
 	}
 	return fmt.Errorf("unknown SubscribeAlter field %s", name)
@@ -79722,9 +79658,6 @@ func (m *SubscribeAlterMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *SubscribeAlterMutation) ClearedFields() []string {
 	var fields []string
-	if m.FieldCleared(subscribealter.FieldDeletedAt) {
-		fields = append(fields, subscribealter.FieldDeletedAt)
-	}
 	if m.FieldCleared(subscribealter.FieldCreator) {
 		fields = append(fields, subscribealter.FieldCreator)
 	}
@@ -79743,11 +79676,11 @@ func (m *SubscribeAlterMutation) ClearedFields() []string {
 	if m.FieldCleared(subscribealter.FieldAgentID) {
 		fields = append(fields, subscribealter.FieldAgentID)
 	}
-	if m.FieldCleared(subscribealter.FieldExpireTime) {
-		fields = append(fields, subscribealter.FieldExpireTime)
-	}
 	if m.FieldCleared(subscribealter.FieldReviewTime) {
 		fields = append(fields, subscribealter.FieldReviewTime)
+	}
+	if m.FieldCleared(subscribealter.FieldSubscribeEndAt) {
+		fields = append(fields, subscribealter.FieldSubscribeEndAt)
 	}
 	return fields
 }
@@ -79763,9 +79696,6 @@ func (m *SubscribeAlterMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *SubscribeAlterMutation) ClearField(name string) error {
 	switch name {
-	case subscribealter.FieldDeletedAt:
-		m.ClearDeletedAt()
-		return nil
 	case subscribealter.FieldCreator:
 		m.ClearCreator()
 		return nil
@@ -79784,11 +79714,11 @@ func (m *SubscribeAlterMutation) ClearField(name string) error {
 	case subscribealter.FieldAgentID:
 		m.ClearAgentID()
 		return nil
-	case subscribealter.FieldExpireTime:
-		m.ClearExpireTime()
-		return nil
 	case subscribealter.FieldReviewTime:
 		m.ClearReviewTime()
+		return nil
+	case subscribealter.FieldSubscribeEndAt:
+		m.ClearSubscribeEndAt()
 		return nil
 	}
 	return fmt.Errorf("unknown SubscribeAlter nullable field %s", name)
@@ -79803,9 +79733,6 @@ func (m *SubscribeAlterMutation) ResetField(name string) error {
 		return nil
 	case subscribealter.FieldUpdatedAt:
 		m.ResetUpdatedAt()
-		return nil
-	case subscribealter.FieldDeletedAt:
-		m.ResetDeletedAt()
 		return nil
 	case subscribealter.FieldCreator:
 		m.ResetCreator()
@@ -79837,11 +79764,11 @@ func (m *SubscribeAlterMutation) ResetField(name string) error {
 	case subscribealter.FieldStatus:
 		m.ResetStatus()
 		return nil
-	case subscribealter.FieldExpireTime:
-		m.ResetExpireTime()
-		return nil
 	case subscribealter.FieldReviewTime:
 		m.ResetReviewTime()
+		return nil
+	case subscribealter.FieldSubscribeEndAt:
+		m.ResetSubscribeEndAt()
 		return nil
 	}
 	return fmt.Errorf("unknown SubscribeAlter field %s", name)

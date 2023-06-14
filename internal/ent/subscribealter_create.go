@@ -56,20 +56,6 @@ func (sac *SubscribeAlterCreate) SetNillableUpdatedAt(t *time.Time) *SubscribeAl
 	return sac
 }
 
-// SetDeletedAt sets the "deleted_at" field.
-func (sac *SubscribeAlterCreate) SetDeletedAt(t time.Time) *SubscribeAlterCreate {
-	sac.mutation.SetDeletedAt(t)
-	return sac
-}
-
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (sac *SubscribeAlterCreate) SetNillableDeletedAt(t *time.Time) *SubscribeAlterCreate {
-	if t != nil {
-		sac.SetDeletedAt(*t)
-	}
-	return sac
-}
-
 // SetCreator sets the "creator" field.
 func (sac *SubscribeAlterCreate) SetCreator(m *model.Modifier) *SubscribeAlterCreate {
 	sac.mutation.SetCreator(m)
@@ -170,20 +156,6 @@ func (sac *SubscribeAlterCreate) SetNillableStatus(i *int) *SubscribeAlterCreate
 	return sac
 }
 
-// SetExpireTime sets the "expire_time" field.
-func (sac *SubscribeAlterCreate) SetExpireTime(t time.Time) *SubscribeAlterCreate {
-	sac.mutation.SetExpireTime(t)
-	return sac
-}
-
-// SetNillableExpireTime sets the "expire_time" field if the given value is not nil.
-func (sac *SubscribeAlterCreate) SetNillableExpireTime(t *time.Time) *SubscribeAlterCreate {
-	if t != nil {
-		sac.SetExpireTime(*t)
-	}
-	return sac
-}
-
 // SetReviewTime sets the "review_time" field.
 func (sac *SubscribeAlterCreate) SetReviewTime(t time.Time) *SubscribeAlterCreate {
 	sac.mutation.SetReviewTime(t)
@@ -194,6 +166,20 @@ func (sac *SubscribeAlterCreate) SetReviewTime(t time.Time) *SubscribeAlterCreat
 func (sac *SubscribeAlterCreate) SetNillableReviewTime(t *time.Time) *SubscribeAlterCreate {
 	if t != nil {
 		sac.SetReviewTime(*t)
+	}
+	return sac
+}
+
+// SetSubscribeEndAt sets the "subscribe_end_at" field.
+func (sac *SubscribeAlterCreate) SetSubscribeEndAt(t time.Time) *SubscribeAlterCreate {
+	sac.mutation.SetSubscribeEndAt(t)
+	return sac
+}
+
+// SetNillableSubscribeEndAt sets the "subscribe_end_at" field if the given value is not nil.
+func (sac *SubscribeAlterCreate) SetNillableSubscribeEndAt(t *time.Time) *SubscribeAlterCreate {
+	if t != nil {
+		sac.SetSubscribeEndAt(*t)
 	}
 	return sac
 }
@@ -342,10 +328,6 @@ func (sac *SubscribeAlterCreate) createSpec() (*SubscribeAlter, *sqlgraph.Create
 		_spec.SetField(subscribealter.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
-	if value, ok := sac.mutation.DeletedAt(); ok {
-		_spec.SetField(subscribealter.FieldDeletedAt, field.TypeTime, value)
-		_node.DeletedAt = &value
-	}
 	if value, ok := sac.mutation.Creator(); ok {
 		_spec.SetField(subscribealter.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
@@ -366,13 +348,13 @@ func (sac *SubscribeAlterCreate) createSpec() (*SubscribeAlter, *sqlgraph.Create
 		_spec.SetField(subscribealter.FieldStatus, field.TypeInt, value)
 		_node.Status = value
 	}
-	if value, ok := sac.mutation.ExpireTime(); ok {
-		_spec.SetField(subscribealter.FieldExpireTime, field.TypeTime, value)
-		_node.ExpireTime = &value
-	}
 	if value, ok := sac.mutation.ReviewTime(); ok {
 		_spec.SetField(subscribealter.FieldReviewTime, field.TypeTime, value)
 		_node.ReviewTime = &value
+	}
+	if value, ok := sac.mutation.SubscribeEndAt(); ok {
+		_spec.SetField(subscribealter.FieldSubscribeEndAt, field.TypeTime, value)
+		_node.SubscribeEndAt = &value
 	}
 	if nodes := sac.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -520,24 +502,6 @@ func (u *SubscribeAlterUpsert) SetUpdatedAt(v time.Time) *SubscribeAlterUpsert {
 // UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
 func (u *SubscribeAlterUpsert) UpdateUpdatedAt() *SubscribeAlterUpsert {
 	u.SetExcluded(subscribealter.FieldUpdatedAt)
-	return u
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (u *SubscribeAlterUpsert) SetDeletedAt(v time.Time) *SubscribeAlterUpsert {
-	u.Set(subscribealter.FieldDeletedAt, v)
-	return u
-}
-
-// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
-func (u *SubscribeAlterUpsert) UpdateDeletedAt() *SubscribeAlterUpsert {
-	u.SetExcluded(subscribealter.FieldDeletedAt)
-	return u
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (u *SubscribeAlterUpsert) ClearDeletedAt() *SubscribeAlterUpsert {
-	u.SetNull(subscribealter.FieldDeletedAt)
 	return u
 }
 
@@ -691,24 +655,6 @@ func (u *SubscribeAlterUpsert) AddStatus(v int) *SubscribeAlterUpsert {
 	return u
 }
 
-// SetExpireTime sets the "expire_time" field.
-func (u *SubscribeAlterUpsert) SetExpireTime(v time.Time) *SubscribeAlterUpsert {
-	u.Set(subscribealter.FieldExpireTime, v)
-	return u
-}
-
-// UpdateExpireTime sets the "expire_time" field to the value that was provided on create.
-func (u *SubscribeAlterUpsert) UpdateExpireTime() *SubscribeAlterUpsert {
-	u.SetExcluded(subscribealter.FieldExpireTime)
-	return u
-}
-
-// ClearExpireTime clears the value of the "expire_time" field.
-func (u *SubscribeAlterUpsert) ClearExpireTime() *SubscribeAlterUpsert {
-	u.SetNull(subscribealter.FieldExpireTime)
-	return u
-}
-
 // SetReviewTime sets the "review_time" field.
 func (u *SubscribeAlterUpsert) SetReviewTime(v time.Time) *SubscribeAlterUpsert {
 	u.Set(subscribealter.FieldReviewTime, v)
@@ -724,6 +670,24 @@ func (u *SubscribeAlterUpsert) UpdateReviewTime() *SubscribeAlterUpsert {
 // ClearReviewTime clears the value of the "review_time" field.
 func (u *SubscribeAlterUpsert) ClearReviewTime() *SubscribeAlterUpsert {
 	u.SetNull(subscribealter.FieldReviewTime)
+	return u
+}
+
+// SetSubscribeEndAt sets the "subscribe_end_at" field.
+func (u *SubscribeAlterUpsert) SetSubscribeEndAt(v time.Time) *SubscribeAlterUpsert {
+	u.Set(subscribealter.FieldSubscribeEndAt, v)
+	return u
+}
+
+// UpdateSubscribeEndAt sets the "subscribe_end_at" field to the value that was provided on create.
+func (u *SubscribeAlterUpsert) UpdateSubscribeEndAt() *SubscribeAlterUpsert {
+	u.SetExcluded(subscribealter.FieldSubscribeEndAt)
+	return u
+}
+
+// ClearSubscribeEndAt clears the value of the "subscribe_end_at" field.
+func (u *SubscribeAlterUpsert) ClearSubscribeEndAt() *SubscribeAlterUpsert {
+	u.SetNull(subscribealter.FieldSubscribeEndAt)
 	return u
 }
 
@@ -786,27 +750,6 @@ func (u *SubscribeAlterUpsertOne) SetUpdatedAt(v time.Time) *SubscribeAlterUpser
 func (u *SubscribeAlterUpsertOne) UpdateUpdatedAt() *SubscribeAlterUpsertOne {
 	return u.Update(func(s *SubscribeAlterUpsert) {
 		s.UpdateUpdatedAt()
-	})
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (u *SubscribeAlterUpsertOne) SetDeletedAt(v time.Time) *SubscribeAlterUpsertOne {
-	return u.Update(func(s *SubscribeAlterUpsert) {
-		s.SetDeletedAt(v)
-	})
-}
-
-// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
-func (u *SubscribeAlterUpsertOne) UpdateDeletedAt() *SubscribeAlterUpsertOne {
-	return u.Update(func(s *SubscribeAlterUpsert) {
-		s.UpdateDeletedAt()
-	})
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (u *SubscribeAlterUpsertOne) ClearDeletedAt() *SubscribeAlterUpsertOne {
-	return u.Update(func(s *SubscribeAlterUpsert) {
-		s.ClearDeletedAt()
 	})
 }
 
@@ -985,27 +928,6 @@ func (u *SubscribeAlterUpsertOne) UpdateStatus() *SubscribeAlterUpsertOne {
 	})
 }
 
-// SetExpireTime sets the "expire_time" field.
-func (u *SubscribeAlterUpsertOne) SetExpireTime(v time.Time) *SubscribeAlterUpsertOne {
-	return u.Update(func(s *SubscribeAlterUpsert) {
-		s.SetExpireTime(v)
-	})
-}
-
-// UpdateExpireTime sets the "expire_time" field to the value that was provided on create.
-func (u *SubscribeAlterUpsertOne) UpdateExpireTime() *SubscribeAlterUpsertOne {
-	return u.Update(func(s *SubscribeAlterUpsert) {
-		s.UpdateExpireTime()
-	})
-}
-
-// ClearExpireTime clears the value of the "expire_time" field.
-func (u *SubscribeAlterUpsertOne) ClearExpireTime() *SubscribeAlterUpsertOne {
-	return u.Update(func(s *SubscribeAlterUpsert) {
-		s.ClearExpireTime()
-	})
-}
-
 // SetReviewTime sets the "review_time" field.
 func (u *SubscribeAlterUpsertOne) SetReviewTime(v time.Time) *SubscribeAlterUpsertOne {
 	return u.Update(func(s *SubscribeAlterUpsert) {
@@ -1024,6 +946,27 @@ func (u *SubscribeAlterUpsertOne) UpdateReviewTime() *SubscribeAlterUpsertOne {
 func (u *SubscribeAlterUpsertOne) ClearReviewTime() *SubscribeAlterUpsertOne {
 	return u.Update(func(s *SubscribeAlterUpsert) {
 		s.ClearReviewTime()
+	})
+}
+
+// SetSubscribeEndAt sets the "subscribe_end_at" field.
+func (u *SubscribeAlterUpsertOne) SetSubscribeEndAt(v time.Time) *SubscribeAlterUpsertOne {
+	return u.Update(func(s *SubscribeAlterUpsert) {
+		s.SetSubscribeEndAt(v)
+	})
+}
+
+// UpdateSubscribeEndAt sets the "subscribe_end_at" field to the value that was provided on create.
+func (u *SubscribeAlterUpsertOne) UpdateSubscribeEndAt() *SubscribeAlterUpsertOne {
+	return u.Update(func(s *SubscribeAlterUpsert) {
+		s.UpdateSubscribeEndAt()
+	})
+}
+
+// ClearSubscribeEndAt clears the value of the "subscribe_end_at" field.
+func (u *SubscribeAlterUpsertOne) ClearSubscribeEndAt() *SubscribeAlterUpsertOne {
+	return u.Update(func(s *SubscribeAlterUpsert) {
+		s.ClearSubscribeEndAt()
 	})
 }
 
@@ -1251,27 +1194,6 @@ func (u *SubscribeAlterUpsertBulk) UpdateUpdatedAt() *SubscribeAlterUpsertBulk {
 	})
 }
 
-// SetDeletedAt sets the "deleted_at" field.
-func (u *SubscribeAlterUpsertBulk) SetDeletedAt(v time.Time) *SubscribeAlterUpsertBulk {
-	return u.Update(func(s *SubscribeAlterUpsert) {
-		s.SetDeletedAt(v)
-	})
-}
-
-// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
-func (u *SubscribeAlterUpsertBulk) UpdateDeletedAt() *SubscribeAlterUpsertBulk {
-	return u.Update(func(s *SubscribeAlterUpsert) {
-		s.UpdateDeletedAt()
-	})
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (u *SubscribeAlterUpsertBulk) ClearDeletedAt() *SubscribeAlterUpsertBulk {
-	return u.Update(func(s *SubscribeAlterUpsert) {
-		s.ClearDeletedAt()
-	})
-}
-
 // SetLastModifier sets the "last_modifier" field.
 func (u *SubscribeAlterUpsertBulk) SetLastModifier(v *model.Modifier) *SubscribeAlterUpsertBulk {
 	return u.Update(func(s *SubscribeAlterUpsert) {
@@ -1447,27 +1369,6 @@ func (u *SubscribeAlterUpsertBulk) UpdateStatus() *SubscribeAlterUpsertBulk {
 	})
 }
 
-// SetExpireTime sets the "expire_time" field.
-func (u *SubscribeAlterUpsertBulk) SetExpireTime(v time.Time) *SubscribeAlterUpsertBulk {
-	return u.Update(func(s *SubscribeAlterUpsert) {
-		s.SetExpireTime(v)
-	})
-}
-
-// UpdateExpireTime sets the "expire_time" field to the value that was provided on create.
-func (u *SubscribeAlterUpsertBulk) UpdateExpireTime() *SubscribeAlterUpsertBulk {
-	return u.Update(func(s *SubscribeAlterUpsert) {
-		s.UpdateExpireTime()
-	})
-}
-
-// ClearExpireTime clears the value of the "expire_time" field.
-func (u *SubscribeAlterUpsertBulk) ClearExpireTime() *SubscribeAlterUpsertBulk {
-	return u.Update(func(s *SubscribeAlterUpsert) {
-		s.ClearExpireTime()
-	})
-}
-
 // SetReviewTime sets the "review_time" field.
 func (u *SubscribeAlterUpsertBulk) SetReviewTime(v time.Time) *SubscribeAlterUpsertBulk {
 	return u.Update(func(s *SubscribeAlterUpsert) {
@@ -1486,6 +1387,27 @@ func (u *SubscribeAlterUpsertBulk) UpdateReviewTime() *SubscribeAlterUpsertBulk 
 func (u *SubscribeAlterUpsertBulk) ClearReviewTime() *SubscribeAlterUpsertBulk {
 	return u.Update(func(s *SubscribeAlterUpsert) {
 		s.ClearReviewTime()
+	})
+}
+
+// SetSubscribeEndAt sets the "subscribe_end_at" field.
+func (u *SubscribeAlterUpsertBulk) SetSubscribeEndAt(v time.Time) *SubscribeAlterUpsertBulk {
+	return u.Update(func(s *SubscribeAlterUpsert) {
+		s.SetSubscribeEndAt(v)
+	})
+}
+
+// UpdateSubscribeEndAt sets the "subscribe_end_at" field to the value that was provided on create.
+func (u *SubscribeAlterUpsertBulk) UpdateSubscribeEndAt() *SubscribeAlterUpsertBulk {
+	return u.Update(func(s *SubscribeAlterUpsert) {
+		s.UpdateSubscribeEndAt()
+	})
+}
+
+// ClearSubscribeEndAt clears the value of the "subscribe_end_at" field.
+func (u *SubscribeAlterUpsertBulk) ClearSubscribeEndAt() *SubscribeAlterUpsertBulk {
+	return u.Update(func(s *SubscribeAlterUpsert) {
+		s.ClearSubscribeEndAt()
 	})
 }
 
