@@ -1531,7 +1531,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "关键词",
+                        "description": "骑手关键词 (姓名或手机号)",
                         "name": "keyword",
                         "in": "query"
                     },
@@ -1539,6 +1539,12 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "每页数据, 默认20",
                         "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "骑手ID",
+                        "name": "riderId",
                         "in": "query"
                     },
                     {
@@ -1568,7 +1574,7 @@ const docTemplate = `{
                                         "items": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/model.SubscribeAlterApplyListRsp"
+                                                "$ref": "#/definitions/model.SubscribeAlterApplyListRes"
                                             }
                                         }
                                     }
@@ -8929,7 +8935,7 @@ const docTemplate = `{
                     "[M]管理接口"
                 ],
                 "summary": "M9027 加时申请列表",
-                "operationId": "ManagerEnterpriseSubscribeApplyList",
+                "operationId": "ManagerEnterpriseSubscribeAlterList",
                 "parameters": [
                     {
                         "type": "integer",
@@ -8945,7 +8951,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "关键词",
+                        "description": "骑手关键词 (姓名或手机号)",
                         "name": "keyword",
                         "in": "query"
                     },
@@ -8953,6 +8959,12 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "每页数据, 默认20",
                         "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "骑手ID",
+                        "name": "riderId",
                         "in": "query"
                     },
                     {
@@ -8982,7 +8994,7 @@ const docTemplate = `{
                                         "items": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/model.SubscribeAlterApplyListRsp"
+                                                "$ref": "#/definitions/model.SubscribeAlterApplyListRes"
                                             }
                                         }
                                     }
@@ -15224,7 +15236,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/rider/v1/enterprise/subscribe/add": {
+        "/rider/v1/enterprise/subscribe/alter": {
             "post": {
                 "consumes": [
                     "application/json"
@@ -15235,8 +15247,8 @@ const docTemplate = `{
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R3013 骑手申请增加订阅时长",
-                "operationId": "RiderEnterpriseApplyAddSubscribeTime",
+                "summary": "R3013 加时申请",
+                "operationId": "RiderEnterpriseSubscribeAlter",
                 "parameters": [
                     {
                         "type": "string",
@@ -15251,7 +15263,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.RiderSubscribeAddReq"
+                            "$ref": "#/definitions/model.SubscribeAlterRiderReq"
                         }
                     }
                 ],
@@ -15276,8 +15288,8 @@ const docTemplate = `{
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R3014 骑手申请列表",
-                "operationId": "RiderEnterpriseApplyList",
+                "summary": "R3014 加时申请列表",
+                "operationId": "RiderEnterpriseSubscribeAlterList",
                 "parameters": [
                     {
                         "type": "string",
@@ -15296,12 +15308,6 @@ const docTemplate = `{
                         "type": "string",
                         "description": "结束时间",
                         "name": "end",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "关键词",
-                        "name": "keyword",
                         "in": "query"
                     },
                     {
@@ -15337,7 +15343,7 @@ const docTemplate = `{
                                         "items": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/model.SubscribeAlterApplyListRsp"
+                                                "$ref": "#/definitions/model.SubscribeAlterApplyListRes"
                                             }
                                         }
                                     }
@@ -25255,18 +25261,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.RiderSubscribeAddReq": {
-            "type": "object",
-            "required": [
-                "days"
-            ],
-            "properties": {
-                "days": {
-                    "description": "天数",
-                    "type": "integer"
-                }
-            }
-        },
         "model.Role": {
             "type": "object",
             "properties": {
@@ -26745,7 +26739,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.SubscribeAlterApplyListRsp": {
+        "model.SubscribeAlterApplyListRes": {
             "type": "object",
             "properties": {
                 "applyTime": {
@@ -26756,10 +26750,6 @@ const docTemplate = `{
                     "description": "天数",
                     "type": "integer"
                 },
-                "expireTime": {
-                    "description": "到期时间",
-                    "type": "string"
-                },
                 "id": {
                     "type": "integer"
                 },
@@ -26767,17 +26757,21 @@ const docTemplate = `{
                     "description": "审核时间",
                     "type": "string"
                 },
-                "riderName": {
-                    "description": "骑手姓名",
-                    "type": "string"
-                },
-                "riderPhone": {
-                    "description": "骑手手机号",
-                    "type": "string"
+                "rider": {
+                    "description": "骑手",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Rider"
+                        }
+                    ]
                 },
                 "status": {
                     "description": "审核状态",
                     "type": "integer"
+                },
+                "subscribeEndAt": {
+                    "description": "团签到期时间",
+                    "type": "string"
                 }
             }
         },
@@ -26794,12 +26788,23 @@ const docTemplate = `{
                     }
                 },
                 "status": {
-                    "description": "审批状态 1:通过 2:拒绝",
+                    "description": "1:通过 2:拒绝",
                     "type": "integer",
                     "enum": [
                         1,
                         2
                     ]
+                }
+            }
+        },
+        "model.SubscribeAlterRiderReq": {
+            "type": "object",
+            "required": [
+                "days"
+            ],
+            "properties": {
+                "days": {
+                    "type": "integer"
                 }
             }
         },

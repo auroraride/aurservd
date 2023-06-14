@@ -354,7 +354,7 @@ func (*enterprise) RepaymentList(c echo.Context) (err error) {
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
-// @Param        query  query  model.SubscribeAlterListManagerReq  false  "请求参数"
+// @Param        query  query  model.SubscribeAlterListReq  false  "请求参数"
 // @Success      200  {object}  model.PaginationRes{items=[]model.SubscribeAlterApplyListRes}
 func (*enterprise) SubscribeAlterList(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.SubscribeAlterListReq](c)
