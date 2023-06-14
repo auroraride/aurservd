@@ -246,4 +246,5 @@ type RiderConvert struct {
 	EnterpriseID *uint64 `json:"enterpriseId"`
 	StationID    *uint64 `json:"stationId"`
 	Remark       string  `json:"remark"`
+	Name         string  `json:"name"`
 }

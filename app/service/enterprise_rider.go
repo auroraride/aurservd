@@ -102,6 +102,7 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 				EnterpriseID: &req.EnterpriseID,
 				StationID:    &req.StationID,
 				Remark:       "代理转化骑手",
+				Name:         req.Name,
 			})
 			if err != nil {
 				return errors.New("转化骑手失败")
@@ -499,6 +500,7 @@ func (s *enterpriseRiderService) ExitEnterprise(r *ent.Rider) {
 
 // CopyAndCreateRider 复制并创建骑手信息
 func (s *enterpriseRiderService) CopyAndCreateRider(tx *ent.Tx, r *ent.Rider, params *model.RiderConvert) (*ent.Rider, error) {
+
 	return tx.Rider.Create().
 		SetRemark(params.Remark).
 		SetPhone(r.Phone).
