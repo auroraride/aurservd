@@ -1255,8 +1255,8 @@ func init() {
 	// subscribe.DefaultIntelligent holds the default value on creation for the intelligent field.
 	subscribe.DefaultIntelligent = subscribeDescIntelligent.Default.(bool)
 	subscribealterMixin := schema.SubscribeAlter{}.Mixin()
-	subscribealterMixinHooks2 := subscribealterMixin[2].Hooks()
-	subscribealter.Hooks[0] = subscribealterMixinHooks2[0]
+	subscribealterMixinHooks1 := subscribealterMixin[1].Hooks()
+	subscribealter.Hooks[0] = subscribealterMixinHooks1[0]
 	subscribealterMixinFields0 := subscribealterMixin[0].Fields()
 	_ = subscribealterMixinFields0
 	subscribealterFields := schema.SubscribeAlter{}.Fields()

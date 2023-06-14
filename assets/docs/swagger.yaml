@@ -6266,14 +6266,6 @@ definitions:
     - smsCode
     - smsId
     type: object
-  model.RiderSubscribeAddReq:
-    properties:
-      days:
-        description: 天数
-        type: integer
-    required:
-    - days
-    type: object
   model.Role:
     properties:
       builtin:
@@ -7287,7 +7279,7 @@ definitions:
     - id
     - reason
     type: object
-  model.SubscribeAlterApplyListRsp:
+  model.SubscribeAlterApplyListRes:
     properties:
       applyTime:
         description: 申请时间
@@ -7295,23 +7287,21 @@ definitions:
       days:
         description: 天数
         type: integer
-      expireTime:
-        description: 到期时间
-        type: string
       id:
         type: integer
       reviewTime:
         description: 审核时间
         type: string
-      riderName:
-        description: 骑手姓名
-        type: string
-      riderPhone:
-        description: 骑手手机号
-        type: string
+      rider:
+        allOf:
+        - $ref: '#/definitions/model.Rider'
+        description: 骑手
       status:
         description: 审核状态
         type: integer
+      subscribeEndAt:
+        description: 团签到期时间
+        type: string
     type: object
   model.SubscribeAlterReviewReq:
     properties:
@@ -7320,13 +7310,20 @@ definitions:
           type: integer
         type: array
       status:
-        description: 审批状态 1:通过 2:拒绝
+        description: 1:通过 2:拒绝
         enum:
         - 1
         - 2
         type: integer
     required:
     - status
+    type: object
+  model.SubscribeAlterRiderReq:
+    properties:
+      days:
+        type: integer
+    required:
+    - days
     type: object
   model.SubscribeBusiness:
     properties:
@@ -8675,13 +8672,17 @@ paths:
         in: query
         name: end
         type: string
-      - description: 关键词
+      - description: 骑手关键词 (姓名或手机号)
         in: query
         name: keyword
         type: string
       - description: 每页数据, 默认20
         in: query
         name: pageSize
+        type: integer
+      - description: 骑手ID
+        in: query
+        name: riderId
         type: integer
       - description: 开始时间
         in: query
@@ -8702,7 +8703,7 @@ paths:
             - properties:
                 items:
                   items:
-                    $ref: '#/definitions/model.SubscribeAlterApplyListRsp'
+                    $ref: '#/definitions/model.SubscribeAlterApplyListRes'
                   type: array
               type: object
       summary: A7002 申请加时列表
@@ -13628,7 +13629,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: ManagerEnterpriseSubscribeApplyList
+      operationId: ManagerEnterpriseSubscribeAlterList
       parameters:
       - description: 当前页, 从1开始, 默认1
         in: query
@@ -13638,13 +13639,17 @@ paths:
         in: query
         name: end
         type: string
-      - description: 关键词
+      - description: 骑手关键词 (姓名或手机号)
         in: query
         name: keyword
         type: string
       - description: 每页数据, 默认20
         in: query
         name: pageSize
+        type: integer
+      - description: 骑手ID
+        in: query
+        name: riderId
         type: integer
       - description: 开始时间
         in: query
@@ -13665,7 +13670,7 @@ paths:
             - properties:
                 items:
                   items:
-                    $ref: '#/definitions/model.SubscribeAlterApplyListRsp'
+                    $ref: '#/definitions/model.SubscribeAlterApplyListRes'
                   type: array
               type: object
       summary: M9027 加时申请列表
@@ -17663,11 +17668,11 @@ paths:
       summary: R3011 企业骑手选择电池
       tags:
       - '[R]骑手接口'
-  /rider/v1/enterprise/subscribe/add:
+  /rider/v1/enterprise/subscribe/alter:
     post:
       consumes:
       - application/json
-      operationId: RiderEnterpriseApplyAddSubscribeTime
+      operationId: RiderEnterpriseSubscribeAlter
       parameters:
       - description: 骑手校验token
         in: header
@@ -17679,7 +17684,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/model.RiderSubscribeAddReq'
+          $ref: '#/definitions/model.SubscribeAlterRiderReq'
       produces:
       - application/json
       responses:
@@ -17687,14 +17692,14 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: R3013 骑手申请增加订阅时长
+      summary: R3013 加时申请
       tags:
       - '[R]骑手接口'
   /rider/v1/enterprise/subscribe/alter/list:
     get:
       consumes:
       - application/json
-      operationId: RiderEnterpriseApplyList
+      operationId: RiderEnterpriseSubscribeAlterList
       parameters:
       - description: 骑手校验token
         in: header
@@ -17708,10 +17713,6 @@ paths:
       - description: 结束时间
         in: query
         name: end
-        type: string
-      - description: 关键词
-        in: query
-        name: keyword
         type: string
       - description: 每页数据, 默认20
         in: query
@@ -17736,10 +17737,10 @@ paths:
             - properties:
                 items:
                   items:
-                    $ref: '#/definitions/model.SubscribeAlterApplyListRsp'
+                    $ref: '#/definitions/model.SubscribeAlterApplyListRes'
                   type: array
               type: object
-      summary: R3014 骑手申请列表
+      summary: R3014 加时申请列表
       tags:
       - '[R]骑手接口'
   /rider/v1/exchange/log:

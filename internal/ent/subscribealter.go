@@ -28,8 +28,6 @@ type SubscribeAlter struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
-	// DeletedAt holds the value of the "deleted_at" field.
-	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// 创建人
 	Creator *model.Modifier `json:"creator,omitempty"`
 	// 最后修改人
@@ -50,10 +48,10 @@ type SubscribeAlter struct {
 	Days int `json:"days,omitempty"`
 	// 状态
 	Status int `json:"status,omitempty"`
-	// 到期时间
-	ExpireTime *time.Time `json:"expire_time,omitempty"`
 	// 审批时间
 	ReviewTime *time.Time `json:"review_time,omitempty"`
+	// 订阅预期到期时间
+	SubscribeEndAt *time.Time `json:"subscribe_end_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the SubscribeAlterQuery when eager-loading is set.
 	Edges        SubscribeAlterEdges `json:"edges"`
@@ -153,7 +151,7 @@ func (*SubscribeAlter) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case subscribealter.FieldRemark:
 			values[i] = new(sql.NullString)
-		case subscribealter.FieldCreatedAt, subscribealter.FieldUpdatedAt, subscribealter.FieldDeletedAt, subscribealter.FieldExpireTime, subscribealter.FieldReviewTime:
+		case subscribealter.FieldCreatedAt, subscribealter.FieldUpdatedAt, subscribealter.FieldReviewTime, subscribealter.FieldSubscribeEndAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -187,13 +185,6 @@ func (sa *SubscribeAlter) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
 				sa.UpdatedAt = value.Time
-			}
-		case subscribealter.FieldDeletedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
-			} else if value.Valid {
-				sa.DeletedAt = new(time.Time)
-				*sa.DeletedAt = value.Time
 			}
 		case subscribealter.FieldCreator:
 			if value, ok := values[i].(*[]byte); !ok {
@@ -262,19 +253,19 @@ func (sa *SubscribeAlter) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				sa.Status = int(value.Int64)
 			}
-		case subscribealter.FieldExpireTime:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field expire_time", values[i])
-			} else if value.Valid {
-				sa.ExpireTime = new(time.Time)
-				*sa.ExpireTime = value.Time
-			}
 		case subscribealter.FieldReviewTime:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field review_time", values[i])
 			} else if value.Valid {
 				sa.ReviewTime = new(time.Time)
 				*sa.ReviewTime = value.Time
+			}
+		case subscribealter.FieldSubscribeEndAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field subscribe_end_at", values[i])
+			} else if value.Valid {
+				sa.SubscribeEndAt = new(time.Time)
+				*sa.SubscribeEndAt = value.Time
 			}
 		default:
 			sa.selectValues.Set(columns[i], values[i])
@@ -343,11 +334,6 @@ func (sa *SubscribeAlter) String() string {
 	builder.WriteString("updated_at=")
 	builder.WriteString(sa.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	if v := sa.DeletedAt; v != nil {
-		builder.WriteString("deleted_at=")
-		builder.WriteString(v.Format(time.ANSIC))
-	}
-	builder.WriteString(", ")
 	builder.WriteString("creator=")
 	builder.WriteString(fmt.Sprintf("%v", sa.Creator))
 	builder.WriteString(", ")
@@ -384,13 +370,13 @@ func (sa *SubscribeAlter) String() string {
 	builder.WriteString("status=")
 	builder.WriteString(fmt.Sprintf("%v", sa.Status))
 	builder.WriteString(", ")
-	if v := sa.ExpireTime; v != nil {
-		builder.WriteString("expire_time=")
+	if v := sa.ReviewTime; v != nil {
+		builder.WriteString("review_time=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteString(", ")
-	if v := sa.ReviewTime; v != nil {
-		builder.WriteString("review_time=")
+	if v := sa.SubscribeEndAt; v != nil {
+		builder.WriteString("subscribe_end_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteByte(')')

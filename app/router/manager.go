@@ -152,18 +152,12 @@ func loadManagerRoutes() {
 	g.POST("/enterprise/agent", mapi.Enterprise.AgentCreate)
 	g.PUT("/enterprise/agent/:id", mapi.Enterprise.AgentModify)
 	g.DELETE("/enterprise/agent/:id", mapi.Enterprise.AgentDelete)
-	// 充值列表
-	g.GET("/enterprise/repayment", mapi.Enterprise.RepaymentList)
-	// 绑定电柜
-	g.POST("/enterprise/bind/cabinet", mapi.Enterprise.BindCabinet)
-	// 解绑电柜
-	g.GET("/enterprise/unbind/cabinet/:id", mapi.Enterprise.UnbindCabinet)
-	// 申请列表
-	g.GET("/enterprise/subscribe/alter/:enterpriseId", mapi.Enterprise.SubscribeApplyList)
-	// 申请审核
-	g.POST("/enterprise/subscribe/alter", mapi.Enterprise.SubscribeApply)
-	// 激活骑手
-	g.POST("/rider/active", mapi.Enterprise.Active)
+	g.GET("/enterprise/repayment", mapi.Enterprise.RepaymentList)                          // 充值列表
+	g.POST("/enterprise/bind/cabinet", mapi.Enterprise.BindCabinet)                        // 绑定电柜
+	g.GET("/enterprise/unbind/cabinet/:id", mapi.Enterprise.UnbindCabinet)                 // 解绑电柜
+	g.GET("/enterprise/subscribe/alter/:enterpriseId", mapi.Enterprise.SubscribeAlterList) // 申请列表
+	g.POST("/enterprise/subscribe/alter", mapi.Enterprise.SubscribeApply)                  // 申请审核
+	g.POST("/rider/active", mapi.Enterprise.Active)                                        // 激活骑手
 
 	// 店员
 	g.POST("/employee", mapi.Employee.Create)

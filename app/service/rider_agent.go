@@ -7,8 +7,9 @@ package service
 
 import (
 	"context"
-	"github.com/auroraride/aurservd/internal/ent/business"
 	"time"
+
+	"github.com/auroraride/aurservd/internal/ent/business"
 
 	"github.com/golang-module/carbon/v2"
 	"go.uber.org/zap"
@@ -19,7 +20,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
-	"github.com/auroraride/aurservd/internal/ent/subscribealter"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
@@ -211,29 +211,6 @@ func (s *riderAgentService) Detail(req *model.IDParamReq, enterpriseID uint64) m
 	return s.detail(item)
 }
 
-func (s *riderAgentService) Log(req *model.AgentRiderLogReq) (items []model.AgentRiderLog) {
-	logs, _ := ent.Database.SubscribeAlter.
-		QueryNotDeleted().
-		Where(subscribealter.RiderID(req.ID), subscribealter.EnterpriseID(req.EnterpriseID)).
-		WithAgent().
-		Order(ent.Desc(subscribealter.FieldCreatedAt)).
-		All(s.ctx)
-	items = make([]model.AgentRiderLog, len(logs))
-	for i, log := range logs {
-		items[i] = model.AgentRiderLog{
-			Days: log.Days,
-			Time: log.CreatedAt.Format(carbon.DateTimeLayout),
-		}
-		ag := log.Edges.Agent
-		if ag != nil {
-			items[i].Name = ag.Name
-		} else {
-			items[i].Name = "平台"
-		}
-	}
-	return
-}
-
 // Active 激活骑手电池
 func (s *enterpriseService) Active(req *model.AgentSubscribeActiveReq, enterpriseID uint64) {
 	// 不是自己骑手的不能激活
@@ -290,7 +267,7 @@ func (s *enterpriseService) Active(req *model.AgentSubscribeActiveReq, enterpris
 	// 绑定电池
 	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) error {
 		// 激活订阅
-		aendTime := tools.NewTime().WillEnd(time.Now(), subscribeInfo.InitialDays)
+		aendTime := tools.NewTime().WillEnd(carbon.Now().StartOfDay().Carbon2Time(), subscribeInfo.InitialDays)
 		if err := tx.Subscribe.UpdateOneID(subscribeInfo.ID).SetStatus(model.SubscribeStatusUsing).SetStartAt(time.Now()).
 			SetNillableAgentEndAt(&aendTime).Exec(s.ctx); err != nil {
 			zap.L().Error("激活订阅失败", zap.Error(err))

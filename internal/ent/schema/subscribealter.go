@@ -31,8 +31,8 @@ func (SubscribeAlter) Fields() []ent.Field {
 		field.Int("days").Comment("更改天数"),
 		// 状态 0未审批  1 同意 2 不同意
 		field.Int("status").Default(0).Comment("状态"),
-		field.Time("expire_time").Optional().Nillable().Comment("到期时间"),
 		field.Time("review_time").Optional().Nillable().Comment("审批时间"),
+		field.Time("subscribe_end_at").Optional().Nillable().Comment("订阅预期到期时间"),
 	}
 }
 
@@ -46,8 +46,8 @@ func (SubscribeAlter) Edges() []ent.Edge {
 func (SubscribeAlter) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		internal.TimeMixin{},
-		internal.DeleteMixin{},
 		internal.Modifier{},
+
 		RiderMixin{},
 		ManagerMixin{Optional: true},
 		EnterpriseMixin{Optional: true},

@@ -41,26 +41,6 @@ func (sau *SubscribeAlterUpdate) SetUpdatedAt(t time.Time) *SubscribeAlterUpdate
 	return sau
 }
 
-// SetDeletedAt sets the "deleted_at" field.
-func (sau *SubscribeAlterUpdate) SetDeletedAt(t time.Time) *SubscribeAlterUpdate {
-	sau.mutation.SetDeletedAt(t)
-	return sau
-}
-
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (sau *SubscribeAlterUpdate) SetNillableDeletedAt(t *time.Time) *SubscribeAlterUpdate {
-	if t != nil {
-		sau.SetDeletedAt(*t)
-	}
-	return sau
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (sau *SubscribeAlterUpdate) ClearDeletedAt() *SubscribeAlterUpdate {
-	sau.mutation.ClearDeletedAt()
-	return sau
-}
-
 // SetLastModifier sets the "last_modifier" field.
 func (sau *SubscribeAlterUpdate) SetLastModifier(m *model.Modifier) *SubscribeAlterUpdate {
 	sau.mutation.SetLastModifier(m)
@@ -199,26 +179,6 @@ func (sau *SubscribeAlterUpdate) AddStatus(i int) *SubscribeAlterUpdate {
 	return sau
 }
 
-// SetExpireTime sets the "expire_time" field.
-func (sau *SubscribeAlterUpdate) SetExpireTime(t time.Time) *SubscribeAlterUpdate {
-	sau.mutation.SetExpireTime(t)
-	return sau
-}
-
-// SetNillableExpireTime sets the "expire_time" field if the given value is not nil.
-func (sau *SubscribeAlterUpdate) SetNillableExpireTime(t *time.Time) *SubscribeAlterUpdate {
-	if t != nil {
-		sau.SetExpireTime(*t)
-	}
-	return sau
-}
-
-// ClearExpireTime clears the value of the "expire_time" field.
-func (sau *SubscribeAlterUpdate) ClearExpireTime() *SubscribeAlterUpdate {
-	sau.mutation.ClearExpireTime()
-	return sau
-}
-
 // SetReviewTime sets the "review_time" field.
 func (sau *SubscribeAlterUpdate) SetReviewTime(t time.Time) *SubscribeAlterUpdate {
 	sau.mutation.SetReviewTime(t)
@@ -236,6 +196,26 @@ func (sau *SubscribeAlterUpdate) SetNillableReviewTime(t *time.Time) *SubscribeA
 // ClearReviewTime clears the value of the "review_time" field.
 func (sau *SubscribeAlterUpdate) ClearReviewTime() *SubscribeAlterUpdate {
 	sau.mutation.ClearReviewTime()
+	return sau
+}
+
+// SetSubscribeEndAt sets the "subscribe_end_at" field.
+func (sau *SubscribeAlterUpdate) SetSubscribeEndAt(t time.Time) *SubscribeAlterUpdate {
+	sau.mutation.SetSubscribeEndAt(t)
+	return sau
+}
+
+// SetNillableSubscribeEndAt sets the "subscribe_end_at" field if the given value is not nil.
+func (sau *SubscribeAlterUpdate) SetNillableSubscribeEndAt(t *time.Time) *SubscribeAlterUpdate {
+	if t != nil {
+		sau.SetSubscribeEndAt(*t)
+	}
+	return sau
+}
+
+// ClearSubscribeEndAt clears the value of the "subscribe_end_at" field.
+func (sau *SubscribeAlterUpdate) ClearSubscribeEndAt() *SubscribeAlterUpdate {
+	sau.mutation.ClearSubscribeEndAt()
 	return sau
 }
 
@@ -373,12 +353,6 @@ func (sau *SubscribeAlterUpdate) sqlSave(ctx context.Context) (n int, err error)
 	if value, ok := sau.mutation.UpdatedAt(); ok {
 		_spec.SetField(subscribealter.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := sau.mutation.DeletedAt(); ok {
-		_spec.SetField(subscribealter.FieldDeletedAt, field.TypeTime, value)
-	}
-	if sau.mutation.DeletedAtCleared() {
-		_spec.ClearField(subscribealter.FieldDeletedAt, field.TypeTime)
-	}
 	if sau.mutation.CreatorCleared() {
 		_spec.ClearField(subscribealter.FieldCreator, field.TypeJSON)
 	}
@@ -406,17 +380,17 @@ func (sau *SubscribeAlterUpdate) sqlSave(ctx context.Context) (n int, err error)
 	if value, ok := sau.mutation.AddedStatus(); ok {
 		_spec.AddField(subscribealter.FieldStatus, field.TypeInt, value)
 	}
-	if value, ok := sau.mutation.ExpireTime(); ok {
-		_spec.SetField(subscribealter.FieldExpireTime, field.TypeTime, value)
-	}
-	if sau.mutation.ExpireTimeCleared() {
-		_spec.ClearField(subscribealter.FieldExpireTime, field.TypeTime)
-	}
 	if value, ok := sau.mutation.ReviewTime(); ok {
 		_spec.SetField(subscribealter.FieldReviewTime, field.TypeTime, value)
 	}
 	if sau.mutation.ReviewTimeCleared() {
 		_spec.ClearField(subscribealter.FieldReviewTime, field.TypeTime)
+	}
+	if value, ok := sau.mutation.SubscribeEndAt(); ok {
+		_spec.SetField(subscribealter.FieldSubscribeEndAt, field.TypeTime, value)
+	}
+	if sau.mutation.SubscribeEndAtCleared() {
+		_spec.ClearField(subscribealter.FieldSubscribeEndAt, field.TypeTime)
 	}
 	if sau.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -591,26 +565,6 @@ func (sauo *SubscribeAlterUpdateOne) SetUpdatedAt(t time.Time) *SubscribeAlterUp
 	return sauo
 }
 
-// SetDeletedAt sets the "deleted_at" field.
-func (sauo *SubscribeAlterUpdateOne) SetDeletedAt(t time.Time) *SubscribeAlterUpdateOne {
-	sauo.mutation.SetDeletedAt(t)
-	return sauo
-}
-
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (sauo *SubscribeAlterUpdateOne) SetNillableDeletedAt(t *time.Time) *SubscribeAlterUpdateOne {
-	if t != nil {
-		sauo.SetDeletedAt(*t)
-	}
-	return sauo
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (sauo *SubscribeAlterUpdateOne) ClearDeletedAt() *SubscribeAlterUpdateOne {
-	sauo.mutation.ClearDeletedAt()
-	return sauo
-}
-
 // SetLastModifier sets the "last_modifier" field.
 func (sauo *SubscribeAlterUpdateOne) SetLastModifier(m *model.Modifier) *SubscribeAlterUpdateOne {
 	sauo.mutation.SetLastModifier(m)
@@ -749,26 +703,6 @@ func (sauo *SubscribeAlterUpdateOne) AddStatus(i int) *SubscribeAlterUpdateOne {
 	return sauo
 }
 
-// SetExpireTime sets the "expire_time" field.
-func (sauo *SubscribeAlterUpdateOne) SetExpireTime(t time.Time) *SubscribeAlterUpdateOne {
-	sauo.mutation.SetExpireTime(t)
-	return sauo
-}
-
-// SetNillableExpireTime sets the "expire_time" field if the given value is not nil.
-func (sauo *SubscribeAlterUpdateOne) SetNillableExpireTime(t *time.Time) *SubscribeAlterUpdateOne {
-	if t != nil {
-		sauo.SetExpireTime(*t)
-	}
-	return sauo
-}
-
-// ClearExpireTime clears the value of the "expire_time" field.
-func (sauo *SubscribeAlterUpdateOne) ClearExpireTime() *SubscribeAlterUpdateOne {
-	sauo.mutation.ClearExpireTime()
-	return sauo
-}
-
 // SetReviewTime sets the "review_time" field.
 func (sauo *SubscribeAlterUpdateOne) SetReviewTime(t time.Time) *SubscribeAlterUpdateOne {
 	sauo.mutation.SetReviewTime(t)
@@ -786,6 +720,26 @@ func (sauo *SubscribeAlterUpdateOne) SetNillableReviewTime(t *time.Time) *Subscr
 // ClearReviewTime clears the value of the "review_time" field.
 func (sauo *SubscribeAlterUpdateOne) ClearReviewTime() *SubscribeAlterUpdateOne {
 	sauo.mutation.ClearReviewTime()
+	return sauo
+}
+
+// SetSubscribeEndAt sets the "subscribe_end_at" field.
+func (sauo *SubscribeAlterUpdateOne) SetSubscribeEndAt(t time.Time) *SubscribeAlterUpdateOne {
+	sauo.mutation.SetSubscribeEndAt(t)
+	return sauo
+}
+
+// SetNillableSubscribeEndAt sets the "subscribe_end_at" field if the given value is not nil.
+func (sauo *SubscribeAlterUpdateOne) SetNillableSubscribeEndAt(t *time.Time) *SubscribeAlterUpdateOne {
+	if t != nil {
+		sauo.SetSubscribeEndAt(*t)
+	}
+	return sauo
+}
+
+// ClearSubscribeEndAt clears the value of the "subscribe_end_at" field.
+func (sauo *SubscribeAlterUpdateOne) ClearSubscribeEndAt() *SubscribeAlterUpdateOne {
+	sauo.mutation.ClearSubscribeEndAt()
 	return sauo
 }
 
@@ -953,12 +907,6 @@ func (sauo *SubscribeAlterUpdateOne) sqlSave(ctx context.Context) (_node *Subscr
 	if value, ok := sauo.mutation.UpdatedAt(); ok {
 		_spec.SetField(subscribealter.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := sauo.mutation.DeletedAt(); ok {
-		_spec.SetField(subscribealter.FieldDeletedAt, field.TypeTime, value)
-	}
-	if sauo.mutation.DeletedAtCleared() {
-		_spec.ClearField(subscribealter.FieldDeletedAt, field.TypeTime)
-	}
 	if sauo.mutation.CreatorCleared() {
 		_spec.ClearField(subscribealter.FieldCreator, field.TypeJSON)
 	}
@@ -986,17 +934,17 @@ func (sauo *SubscribeAlterUpdateOne) sqlSave(ctx context.Context) (_node *Subscr
 	if value, ok := sauo.mutation.AddedStatus(); ok {
 		_spec.AddField(subscribealter.FieldStatus, field.TypeInt, value)
 	}
-	if value, ok := sauo.mutation.ExpireTime(); ok {
-		_spec.SetField(subscribealter.FieldExpireTime, field.TypeTime, value)
-	}
-	if sauo.mutation.ExpireTimeCleared() {
-		_spec.ClearField(subscribealter.FieldExpireTime, field.TypeTime)
-	}
 	if value, ok := sauo.mutation.ReviewTime(); ok {
 		_spec.SetField(subscribealter.FieldReviewTime, field.TypeTime, value)
 	}
 	if sauo.mutation.ReviewTimeCleared() {
 		_spec.ClearField(subscribealter.FieldReviewTime, field.TypeTime)
+	}
+	if value, ok := sauo.mutation.SubscribeEndAt(); ok {
+		_spec.SetField(subscribealter.FieldSubscribeEndAt, field.TypeTime, value)
+	}
+	if sauo.mutation.SubscribeEndAtCleared() {
+		_spec.ClearField(subscribealter.FieldSubscribeEndAt, field.TypeTime)
 	}
 	if sauo.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{

@@ -41,7 +41,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
-	"github.com/auroraride/aurservd/internal/ent/subscribealter"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
 )
 
@@ -1438,46 +1437,6 @@ func (c *SubscribeClient) GetNotDeleted(ctx context.Context, id uint64) (*Subscr
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *SubscribeClient) GetNotDeletedX(ctx context.Context, id uint64) *Subscribe {
-	obj, err := c.GetNotDeleted(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// SoftDelete returns an soft delete builder for SubscribeAlter.
-func (c *SubscribeAlterClient) SoftDelete() *SubscribeAlterUpdate {
-	mutation := newSubscribeAlterMutation(c.config, OpUpdate)
-	mutation.SetDeletedAt(time.Now())
-	return &SubscribeAlterUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// SoftDeleteOne returns an soft delete builder for the given entity.
-func (c *SubscribeAlterClient) SoftDeleteOne(sa *SubscribeAlter) *SubscribeAlterUpdateOne {
-	mutation := newSubscribeAlterMutation(c.config, OpUpdateOne, withSubscribeAlter(sa))
-	mutation.SetDeletedAt(time.Now())
-	return &SubscribeAlterUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// SoftDeleteOneID returns an soft delete builder for the given id.
-func (c *SubscribeAlterClient) SoftDeleteOneID(id uint64) *SubscribeAlterUpdateOne {
-	mutation := newSubscribeAlterMutation(c.config, OpUpdateOne, withSubscribeAlterID(id))
-	mutation.SetDeletedAt(time.Now())
-	return &SubscribeAlterUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// QueryNotDeleted returns a query not deleted builder for SubscribeAlter.
-func (c *SubscribeAlterClient) QueryNotDeleted() *SubscribeAlterQuery {
-	return c.Query().Where(subscribealter.DeletedAtIsNil())
-}
-
-// GetNotDeleted returns a SubscribeAlter not deleted entity by its id.
-func (c *SubscribeAlterClient) GetNotDeleted(ctx context.Context, id uint64) (*SubscribeAlter, error) {
-	return c.Query().Where(subscribealter.ID(id), subscribealter.DeletedAtIsNil()).Only(ctx)
-}
-
-// GetNotDeletedX is like Get, but panics if an error occurs.
-func (c *SubscribeAlterClient) GetNotDeletedX(ctx context.Context, id uint64) *SubscribeAlter {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)
