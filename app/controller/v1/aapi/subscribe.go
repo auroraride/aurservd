@@ -53,7 +53,7 @@ func (*subscribe) AlterList(c echo.Context) (err error) {
 
 // AlterReivew
 // @ID           AgentSubscribeAlterReivew
-// @Router       /agent/v1/subscribe/review [POST]
+// @Router       /agent/v1/subscribe/alter/review [POST]
 // @Summary      A7003 审核加时
 // @Tags         [A]代理接口
 // @Accept       json

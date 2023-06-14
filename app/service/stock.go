@@ -412,6 +412,12 @@ func (s *stockService) RiderBusiness(tx *ent.Tx, req *model.StockBusinessReq) (s
 		}
 	}
 
+	// 团签
+	if req.EnterpriseID != nil && req.StationID != nil {
+		creator.SetEnterpriseID(*req.EnterpriseID)
+		creator.SetStationID(*req.StationID)
+	}
+
 	// 主出入库
 	creator.SetNillableEmployeeID(req.EmployeeID).
 		SetRiderID(req.RiderID).
