@@ -92,7 +92,7 @@ func (s *managerService) Signin(req *model.ManagerSigninReq) (res *model.Manager
 		return nil, errors.New(ar.UserAuthenticationFailed)
 	}
 
-	token := xid.New().String() + utils.RandTokenString()
+	token := xid.New().String() + "/" + utils.NewEcdsaToken()
 	key := fmt.Sprintf("%s%d", s.cacheKeyPrefix, u.ID)
 
 	// 删除旧的token

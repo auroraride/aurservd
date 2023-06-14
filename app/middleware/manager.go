@@ -22,9 +22,8 @@ import (
 
 var (
 	managerSkipper = map[string]bool{
-		"/manager/v1/permission":          true,
-		"/manager/v1/user/signin":         true,
-		"/manager/v1/export/download/:sn": true,
+		"/manager/v1/permission":  true,
+		"/manager/v1/user/signin": true,
 	}
 )
 
