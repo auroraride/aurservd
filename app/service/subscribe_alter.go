@@ -64,7 +64,6 @@ func (s *subscribeAlterService) AlterDays(r *ent.Rider, req *model.SubscribeAlte
 func (s *subscribeAlterService) List(req *model.SubscribeAlterListReq) *model.PaginationRes {
 	q := ent.Database.SubscribeAlter.Query().
 		Where(
-			subscribealter.EnterpriseID(req.EnterpriseID),
 			subscribealter.HasRiderWith(rider.DeletedAtIsNil()),
 			subscribealter.HasSubscribeWith(subscribe.StatusNotIn(model.SubscribeStatusUnSubscribed)),
 		).
@@ -97,6 +96,10 @@ func (s *subscribeAlterService) List(req *model.SubscribeAlterListReq) *model.Pa
 		q.Where(subscribealter.RiderID(*req.RiderID))
 	}
 
+	if req.EnterpriseID > 0 {
+		q.Where(subscribealter.EnterpriseID(req.EnterpriseID))
+	}
+
 	return model.ParsePaginationResponse(
 		q,
 		req.PaginationReq,
@@ -108,7 +111,7 @@ func (s *subscribeAlterService) List(req *model.SubscribeAlterListReq) *model.Pa
 				Status:    item.Status,
 			}
 			if item.SubscribeEndAt != nil {
-				res.SubscribeEndAt = carbon.Time2Carbon(*item.SubscribeEndAt).EndOfDay().Format(carbon.DateTimeLayout)
+				res.SubscribeEndAt = item.SubscribeEndAt.Format(carbon.DateTimeLayout)
 			}
 			if item.ReviewTime != nil {
 				res.ReviewTime = item.ReviewTime.Format(carbon.DateTimeLayout)

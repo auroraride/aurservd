@@ -9,6 +9,8 @@ import (
 	"context"
 	"strings"
 
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/permission"
@@ -16,14 +18,13 @@ import (
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/snag"
-	"github.com/labstack/echo/v4"
 )
 
 var (
 	managerSkipper = map[string]bool{
-		"/manager/v1/permission":      true,
-		"/manager/v1/user/signin":     true,
-		"/manager/v1/export/download": true,
+		"/manager/v1/permission":          true,
+		"/manager/v1/user/signin":         true,
+		"/manager/v1/export/download/:sn": true,
 	}
 )
 
