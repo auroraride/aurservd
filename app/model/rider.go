@@ -6,7 +6,6 @@
 package model
 
 import (
-	"errors"
 	"fmt"
 )
 
@@ -221,17 +220,6 @@ type RiderPermissionError struct {
 	ForceSignout bool // 是否强制退出
 }
 
-func NewRiderPermissionError(message string, params ...bool) *RiderPermissionError {
-	err := &RiderPermissionError{
-		error:        errors.New(message),
-		ForceSignout: false,
-	}
-	if len(params) > 0 {
-		err.ForceSignout = params[0]
-	}
-	return err
-}
-
 type RiderDepositRes struct {
 	Deposit float64 `json:"deposit"`
 }
@@ -252,4 +240,10 @@ type RiderFollowUpListRes struct {
 	Manager Modifier `json:"manager"` // 管理员信息
 	Remark  string   `json:"remark"`  // 跟进信息
 	Time    string   `json:"time"`    // 跟进时间
+}
+
+type RiderConvert struct {
+	EnterpriseID *uint64 `json:"enterpriseId"`
+	StationID    *uint64 `json:"stationId"`
+	Remark       string  `json:"remark"`
 }

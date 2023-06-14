@@ -73,10 +73,14 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 	}
 
 	stat := NewEnterpriseStation().QueryX(req.StationID)
-	var r *ent.Rider
-	var sub *ent.Subscribe
+
+	var (
+		r   *ent.Rider
+		sub *ent.Subscribe
+	)
 
 	r, _ = ent.Database.Rider.QueryNotDeleted().Where(rider.Phone(req.Phone)).First(s.ctx)
+
 	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
 		// 查询骑手和团签
 		// 若骑手存在则删除原骑手信息并且新增骑手
@@ -94,7 +98,11 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 			}
 
 			// 新增骑手信息
-			err = s.CopyAndCreateRider(tx, r, "代理转化骑手")
+			r, err = s.CopyAndCreateRider(tx, r, &model.RiderConvert{
+				EnterpriseID: &req.EnterpriseID,
+				StationID:    &req.StationID,
+				Remark:       "代理转化骑手",
+			})
 			if err != nil {
 				return errors.New("转化骑手失败")
 			}
@@ -127,7 +135,7 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 			SetInitialDays(req.Days).
 			SetStatus(model.SubscribeStatusInactive).
 			SetCityID(ep.CityID).
-			// 团签骑手无须签合同 (2022-10-25)
+			// 团签骑手无须签合同
 			SetNeedContract(false).
 			SetEnterpriseID(req.EnterpriseID).
 			SetStationID(req.StationID).
@@ -482,28 +490,33 @@ func (s *enterpriseRiderService) ExitEnterprise(r *ent.Rider) {
 		}
 
 		// 新增骑手信息
-		return s.CopyAndCreateRider(tx, r, "骑手退出团签")
+		_, err = s.CopyAndCreateRider(tx, r, &model.RiderConvert{
+			Remark: "骑手退出团签",
+		})
+		return err
 	})
 }
 
 // CopyAndCreateRider 复制并创建骑手信息
-func (s *enterpriseRiderService) CopyAndCreateRider(tx *ent.Tx, ri *ent.Rider, remark string) error {
+func (s *enterpriseRiderService) CopyAndCreateRider(tx *ent.Tx, r *ent.Rider, params *model.RiderConvert) (*ent.Rider, error) {
 	return tx.Rider.Create().
-		SetRemark(remark).
-		SetPhone(ri.Phone).
-		SetContact(ri.Contact).
-		SetDeviceType(ri.DeviceType).
-		SetLastDevice(ri.LastDevice).
-		SetIsNewDevice(ri.IsNewDevice).
-		SetNillableLastFace(ri.LastFace).
-		SetPushID(ri.PushID).
-		SetNillableLastSigninAt(ri.LastSigninAt).
-		SetBlocked(ri.Blocked).
-		SetNillablePersonID(ri.PersonID).
-		SetPoints(ri.Points).
-		SetName(ri.Name).
-		SetIDCardNumber(ri.IDCardNumber).
-		SetExchangeLimit(ri.ExchangeLimit).
-		SetExchangeFrequency(ri.ExchangeFrequency).
-		Exec(s.ctx)
+		SetRemark(params.Remark).
+		SetPhone(r.Phone).
+		SetContact(r.Contact).
+		SetDeviceType(r.DeviceType).
+		SetLastDevice(r.LastDevice).
+		SetIsNewDevice(r.IsNewDevice).
+		SetNillableLastFace(r.LastFace).
+		SetPushID(r.PushID).
+		SetNillableLastSigninAt(r.LastSigninAt).
+		SetBlocked(r.Blocked).
+		SetNillablePersonID(r.PersonID).
+		SetPoints(r.Points).
+		SetName(r.Name).
+		SetIDCardNumber(r.IDCardNumber).
+		SetExchangeLimit(r.ExchangeLimit).
+		SetExchangeFrequency(r.ExchangeFrequency).
+		SetNillableEnterpriseID(params.EnterpriseID).
+		SetNillableStationID(params.StationID).
+		Save(s.ctx)
 }
