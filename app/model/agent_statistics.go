@@ -22,11 +22,11 @@ type AgentStatisticsOverviewAmount struct {
 // AgentStatisticsOverviewRider 团签骑手数据汇总
 type AgentStatisticsOverviewRider struct {
 	RiderTotal         int `json:"riderTotal"`         // 骑手总数
-	NewRiderTotal      int `json:"newRiderTotal"`      // 新签骑手数
-	QuitRiderTotal     int `json:"quitRiderTotal"`     // 退租骑手数
 	BillingRiderTotal  int `json:"billingRiderTotal"`  // 计费骑手数
 	ExpiringRiderTotal int `json:"expiringRiderTotal"` // 临期骑手数
 	OverTimeRiderTotal int `json:"overTimeRiderTotal"` // 骑手加时审核数
+	ActivationTotal    int `json:"activationTotal"`    // 累计激活
+	UnSubscribeTotal   int `json:"unSubscribeTotal"`   // 累计退租
 }
 
 // AgentStatisticsOverviewBattery 团签电池汇总

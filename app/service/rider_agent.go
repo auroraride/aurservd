@@ -56,13 +56,20 @@ func NewRiderAgentWithModifier(m *model.Modifier) *riderAgentService {
 
 func (s *riderAgentService) detail(item *ent.Rider) model.AgentRider {
 	today := carbon.Now().StartOfDay().Carbon2Time()
+	isAuthed := NewRider().IsAuthed(item)
 	res := model.AgentRider{
 		ID:       item.ID,
 		Phone:    item.Phone,
 		Date:     item.CreatedAt.Format(carbon.DateLayout),
 		Name:     item.Name,
-		IsAuthed: NewRider().IsAuthed(item),
+		IsAuthed: isAuthed,
 	}
+
+	// 已实名认证的显示实名姓名
+	if isAuthed && item.Edges.Person != nil {
+		res.Name = item.Edges.Person.Name
+	}
+
 	// 获取站点
 	st := item.Edges.Station
 	if st != nil {
