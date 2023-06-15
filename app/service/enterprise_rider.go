@@ -500,7 +500,10 @@ func (s *enterpriseRiderService) ExitEnterprise(r *ent.Rider) {
 
 // CopyAndCreateRider 复制并创建骑手信息
 func (s *enterpriseRiderService) CopyAndCreateRider(tx *ent.Tx, r *ent.Rider, params *model.RiderConvert) (*ent.Rider, error) {
-
+	name := params.Name
+	if r.Name != "" {
+		name = r.Name
+	}
 	return tx.Rider.Create().
 		SetRemark(params.Remark).
 		SetPhone(r.Phone).
@@ -514,7 +517,7 @@ func (s *enterpriseRiderService) CopyAndCreateRider(tx *ent.Tx, r *ent.Rider, pa
 		SetBlocked(r.Blocked).
 		SetNillablePersonID(r.PersonID).
 		SetPoints(r.Points).
-		SetName(r.Name).
+		SetName(name).
 		SetIDCardNumber(r.IDCardNumber).
 		SetExchangeLimit(r.ExchangeLimit).
 		SetExchangeFrequency(r.ExchangeFrequency).
