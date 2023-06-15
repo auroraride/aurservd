@@ -416,6 +416,11 @@ func (s *stockService) RiderBusiness(tx *ent.Tx, req *model.StockBusinessReq) (s
 	if req.EnterpriseID != nil && req.StationID != nil {
 		creator.SetEnterpriseID(*req.EnterpriseID)
 		creator.SetStationID(*req.StationID)
+		// 判断团签非智能电池库存是否足够
+		if req.Battery == nil && num < 0 && !s.CheckStation(*req.StationID, req.Model, int(math.Round(math.Abs(float64(num))))) {
+			err = errors.New("电池库存不足")
+			return
+		}
 	}
 
 	// 主出入库
@@ -1345,4 +1350,9 @@ func (s *stockService) CheckCabinet(cabinetID uint64, m string, num int) bool {
 // CheckStore 检查门店电池库存
 func (s *stockService) CheckStore(storeID uint64, m string, num int) bool {
 	return NewStockBatchable().Fetch(model.StockTargetStore, storeID, m) >= num
+}
+
+// CheckStation 检查站点电池库存
+func (s *stockService) CheckStation(stationID uint64, m string, num int) bool {
+	return NewStockBatchable().Fetch(model.StockTargetStation, stationID, m) >= num
 }
