@@ -14,6 +14,8 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
+	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
 )
@@ -110,6 +112,34 @@ func (ec *EbikeCreate) SetStoreID(u uint64) *EbikeCreate {
 func (ec *EbikeCreate) SetNillableStoreID(u *uint64) *EbikeCreate {
 	if u != nil {
 		ec.SetStoreID(*u)
+	}
+	return ec
+}
+
+// SetEnterpriseID sets the "enterprise_id" field.
+func (ec *EbikeCreate) SetEnterpriseID(u uint64) *EbikeCreate {
+	ec.mutation.SetEnterpriseID(u)
+	return ec
+}
+
+// SetNillableEnterpriseID sets the "enterprise_id" field if the given value is not nil.
+func (ec *EbikeCreate) SetNillableEnterpriseID(u *uint64) *EbikeCreate {
+	if u != nil {
+		ec.SetEnterpriseID(*u)
+	}
+	return ec
+}
+
+// SetStationID sets the "station_id" field.
+func (ec *EbikeCreate) SetStationID(u uint64) *EbikeCreate {
+	ec.mutation.SetStationID(u)
+	return ec
+}
+
+// SetNillableStationID sets the "station_id" field if the given value is not nil.
+func (ec *EbikeCreate) SetNillableStationID(u *uint64) *EbikeCreate {
+	if u != nil {
+		ec.SetStationID(*u)
 	}
 	return ec
 }
@@ -223,6 +253,16 @@ func (ec *EbikeCreate) SetRider(r *Rider) *EbikeCreate {
 // SetStore sets the "store" edge to the Store entity.
 func (ec *EbikeCreate) SetStore(s *Store) *EbikeCreate {
 	return ec.SetStoreID(s.ID)
+}
+
+// SetEnterprise sets the "enterprise" edge to the Enterprise entity.
+func (ec *EbikeCreate) SetEnterprise(e *Enterprise) *EbikeCreate {
+	return ec.SetEnterpriseID(e.ID)
+}
+
+// SetStation sets the "station" edge to the EnterpriseStation entity.
+func (ec *EbikeCreate) SetStation(e *EnterpriseStation) *EbikeCreate {
+	return ec.SetStationID(e.ID)
 }
 
 // Mutation returns the EbikeMutation object of the builder.
@@ -450,6 +490,40 @@ func (ec *EbikeCreate) createSpec() (*Ebike, *sqlgraph.CreateSpec) {
 		_node.StoreID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := ec.mutation.EnterpriseIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   ebike.EnterpriseTable,
+			Columns: []string{ebike.EnterpriseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.EnterpriseID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ec.mutation.StationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   ebike.StationTable,
+			Columns: []string{ebike.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.StationID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	return _node, _spec
 }
 
@@ -595,6 +669,42 @@ func (u *EbikeUpsert) UpdateStoreID() *EbikeUpsert {
 // ClearStoreID clears the value of the "store_id" field.
 func (u *EbikeUpsert) ClearStoreID() *EbikeUpsert {
 	u.SetNull(ebike.FieldStoreID)
+	return u
+}
+
+// SetEnterpriseID sets the "enterprise_id" field.
+func (u *EbikeUpsert) SetEnterpriseID(v uint64) *EbikeUpsert {
+	u.Set(ebike.FieldEnterpriseID, v)
+	return u
+}
+
+// UpdateEnterpriseID sets the "enterprise_id" field to the value that was provided on create.
+func (u *EbikeUpsert) UpdateEnterpriseID() *EbikeUpsert {
+	u.SetExcluded(ebike.FieldEnterpriseID)
+	return u
+}
+
+// ClearEnterpriseID clears the value of the "enterprise_id" field.
+func (u *EbikeUpsert) ClearEnterpriseID() *EbikeUpsert {
+	u.SetNull(ebike.FieldEnterpriseID)
+	return u
+}
+
+// SetStationID sets the "station_id" field.
+func (u *EbikeUpsert) SetStationID(v uint64) *EbikeUpsert {
+	u.Set(ebike.FieldStationID, v)
+	return u
+}
+
+// UpdateStationID sets the "station_id" field to the value that was provided on create.
+func (u *EbikeUpsert) UpdateStationID() *EbikeUpsert {
+	u.SetExcluded(ebike.FieldStationID)
+	return u
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (u *EbikeUpsert) ClearStationID() *EbikeUpsert {
+	u.SetNull(ebike.FieldStationID)
 	return u
 }
 
@@ -869,6 +979,48 @@ func (u *EbikeUpsertOne) UpdateStoreID() *EbikeUpsertOne {
 func (u *EbikeUpsertOne) ClearStoreID() *EbikeUpsertOne {
 	return u.Update(func(s *EbikeUpsert) {
 		s.ClearStoreID()
+	})
+}
+
+// SetEnterpriseID sets the "enterprise_id" field.
+func (u *EbikeUpsertOne) SetEnterpriseID(v uint64) *EbikeUpsertOne {
+	return u.Update(func(s *EbikeUpsert) {
+		s.SetEnterpriseID(v)
+	})
+}
+
+// UpdateEnterpriseID sets the "enterprise_id" field to the value that was provided on create.
+func (u *EbikeUpsertOne) UpdateEnterpriseID() *EbikeUpsertOne {
+	return u.Update(func(s *EbikeUpsert) {
+		s.UpdateEnterpriseID()
+	})
+}
+
+// ClearEnterpriseID clears the value of the "enterprise_id" field.
+func (u *EbikeUpsertOne) ClearEnterpriseID() *EbikeUpsertOne {
+	return u.Update(func(s *EbikeUpsert) {
+		s.ClearEnterpriseID()
+	})
+}
+
+// SetStationID sets the "station_id" field.
+func (u *EbikeUpsertOne) SetStationID(v uint64) *EbikeUpsertOne {
+	return u.Update(func(s *EbikeUpsert) {
+		s.SetStationID(v)
+	})
+}
+
+// UpdateStationID sets the "station_id" field to the value that was provided on create.
+func (u *EbikeUpsertOne) UpdateStationID() *EbikeUpsertOne {
+	return u.Update(func(s *EbikeUpsert) {
+		s.UpdateStationID()
+	})
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (u *EbikeUpsertOne) ClearStationID() *EbikeUpsertOne {
+	return u.Update(func(s *EbikeUpsert) {
+		s.ClearStationID()
 	})
 }
 
@@ -1324,6 +1476,48 @@ func (u *EbikeUpsertBulk) UpdateStoreID() *EbikeUpsertBulk {
 func (u *EbikeUpsertBulk) ClearStoreID() *EbikeUpsertBulk {
 	return u.Update(func(s *EbikeUpsert) {
 		s.ClearStoreID()
+	})
+}
+
+// SetEnterpriseID sets the "enterprise_id" field.
+func (u *EbikeUpsertBulk) SetEnterpriseID(v uint64) *EbikeUpsertBulk {
+	return u.Update(func(s *EbikeUpsert) {
+		s.SetEnterpriseID(v)
+	})
+}
+
+// UpdateEnterpriseID sets the "enterprise_id" field to the value that was provided on create.
+func (u *EbikeUpsertBulk) UpdateEnterpriseID() *EbikeUpsertBulk {
+	return u.Update(func(s *EbikeUpsert) {
+		s.UpdateEnterpriseID()
+	})
+}
+
+// ClearEnterpriseID clears the value of the "enterprise_id" field.
+func (u *EbikeUpsertBulk) ClearEnterpriseID() *EbikeUpsertBulk {
+	return u.Update(func(s *EbikeUpsert) {
+		s.ClearEnterpriseID()
+	})
+}
+
+// SetStationID sets the "station_id" field.
+func (u *EbikeUpsertBulk) SetStationID(v uint64) *EbikeUpsertBulk {
+	return u.Update(func(s *EbikeUpsert) {
+		s.SetStationID(v)
+	})
+}
+
+// UpdateStationID sets the "station_id" field to the value that was provided on create.
+func (u *EbikeUpsertBulk) UpdateStationID() *EbikeUpsertBulk {
+	return u.Update(func(s *EbikeUpsert) {
+		s.UpdateStationID()
+	})
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (u *EbikeUpsertBulk) ClearStationID() *EbikeUpsertBulk {
+	return u.Update(func(s *EbikeUpsert) {
+		s.ClearStationID()
 	})
 }
 

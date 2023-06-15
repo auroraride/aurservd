@@ -388,7 +388,7 @@ func (s *stockService) RiderBusiness(tx *ent.Tx, req *model.StockBusinessReq) (s
 		return
 	}
 
-	if req.StoreID == nil && req.CabinetID == nil {
+	if req.StoreID == nil && req.CabinetID == nil && req.EnterpriseID == nil && req.StationID == nil {
 		err = errors.New("参数校验错误")
 		return
 	}
@@ -407,6 +407,17 @@ func (s *stockService) RiderBusiness(tx *ent.Tx, req *model.StockBusinessReq) (s
 	if req.CabinetID != nil {
 		creator.SetCabinetID(*req.CabinetID)
 		if num < 0 && !s.CheckCabinet(*req.CabinetID, req.Model, int(math.Round(math.Abs(float64(num))))) {
+			err = errors.New("电池库存不足")
+			return
+		}
+	}
+
+	// 团签
+	if req.EnterpriseID != nil && req.StationID != nil {
+		creator.SetEnterpriseID(*req.EnterpriseID)
+		creator.SetStationID(*req.StationID)
+		// 判断团签非智能电池库存是否足够
+		if req.Battery == nil && num < 0 && !s.CheckStation(*req.StationID, req.Model, int(math.Round(math.Abs(float64(num))))) {
 			err = errors.New("电池库存不足")
 			return
 		}
@@ -1232,7 +1243,7 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
 	switch true {
 	case len(req.Ebikes) > 0:
 		// failed = append(failed, NewStockEbike(s.modifier, s.employee, s.rider).Transfer(cityID, in, out, req)...)
-		looppers, failed = NewStockEbike().Loopers(req)
+		looppers, failed = NewStockEbike().Loopers(req, enterpriseId)
 	case len(req.BatterySn) > 0:
 		looppers, failed = NewStockBatchable().Loopers(req, enterpriseId)
 	default:
@@ -1290,9 +1301,16 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
 				if req.IsToStore() {
 					updater.SetNillableStoreID(in)
 				}
+				// 调拨到平台 清空所有关联
 				if req.IsToPlaform() {
-					updater.ClearStoreID()
+					updater.ClearStoreID().ClearStationID().ClearEnterpriseID()
 				}
+				// 调拨到站点
+				if req.IsToStation() {
+					updater.SetNillableStationID(in)
+					updater.SetEnterpriseID(enterpriseId)
+				}
+
 				if updater.Exec(s.ctx) != nil {
 					return fmt.Errorf("电车更新失败: %s", l.Message)
 				}
@@ -1332,4 +1350,9 @@ func (s *stockService) CheckCabinet(cabinetID uint64, m string, num int) bool {
 // CheckStore 检查门店电池库存
 func (s *stockService) CheckStore(storeID uint64, m string, num int) bool {
 	return NewStockBatchable().Fetch(model.StockTargetStore, storeID, m) >= num
+}
+
+// CheckStation 检查站点电池库存
+func (s *stockService) CheckStation(stationID uint64, m string, num int) bool {
+	return NewStockBatchable().Fetch(model.StockTargetStation, stationID, m) >= num
 }

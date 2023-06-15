@@ -14,6 +14,8 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
+	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
@@ -114,6 +116,46 @@ func (eu *EbikeUpdate) SetNillableStoreID(u *uint64) *EbikeUpdate {
 // ClearStoreID clears the value of the "store_id" field.
 func (eu *EbikeUpdate) ClearStoreID() *EbikeUpdate {
 	eu.mutation.ClearStoreID()
+	return eu
+}
+
+// SetEnterpriseID sets the "enterprise_id" field.
+func (eu *EbikeUpdate) SetEnterpriseID(u uint64) *EbikeUpdate {
+	eu.mutation.SetEnterpriseID(u)
+	return eu
+}
+
+// SetNillableEnterpriseID sets the "enterprise_id" field if the given value is not nil.
+func (eu *EbikeUpdate) SetNillableEnterpriseID(u *uint64) *EbikeUpdate {
+	if u != nil {
+		eu.SetEnterpriseID(*u)
+	}
+	return eu
+}
+
+// ClearEnterpriseID clears the value of the "enterprise_id" field.
+func (eu *EbikeUpdate) ClearEnterpriseID() *EbikeUpdate {
+	eu.mutation.ClearEnterpriseID()
+	return eu
+}
+
+// SetStationID sets the "station_id" field.
+func (eu *EbikeUpdate) SetStationID(u uint64) *EbikeUpdate {
+	eu.mutation.SetStationID(u)
+	return eu
+}
+
+// SetNillableStationID sets the "station_id" field if the given value is not nil.
+func (eu *EbikeUpdate) SetNillableStationID(u *uint64) *EbikeUpdate {
+	if u != nil {
+		eu.SetStationID(*u)
+	}
+	return eu
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (eu *EbikeUpdate) ClearStationID() *EbikeUpdate {
+	eu.mutation.ClearStationID()
 	return eu
 }
 
@@ -246,6 +288,16 @@ func (eu *EbikeUpdate) SetStore(s *Store) *EbikeUpdate {
 	return eu.SetStoreID(s.ID)
 }
 
+// SetEnterprise sets the "enterprise" edge to the Enterprise entity.
+func (eu *EbikeUpdate) SetEnterprise(e *Enterprise) *EbikeUpdate {
+	return eu.SetEnterpriseID(e.ID)
+}
+
+// SetStation sets the "station" edge to the EnterpriseStation entity.
+func (eu *EbikeUpdate) SetStation(e *EnterpriseStation) *EbikeUpdate {
+	return eu.SetStationID(e.ID)
+}
+
 // Mutation returns the EbikeMutation object of the builder.
 func (eu *EbikeUpdate) Mutation() *EbikeMutation {
 	return eu.mutation
@@ -266,6 +318,18 @@ func (eu *EbikeUpdate) ClearRider() *EbikeUpdate {
 // ClearStore clears the "store" edge to the Store entity.
 func (eu *EbikeUpdate) ClearStore() *EbikeUpdate {
 	eu.mutation.ClearStore()
+	return eu
+}
+
+// ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
+func (eu *EbikeUpdate) ClearEnterprise() *EbikeUpdate {
+	eu.mutation.ClearEnterprise()
+	return eu
+}
+
+// ClearStation clears the "station" edge to the EnterpriseStation entity.
+func (eu *EbikeUpdate) ClearStation() *EbikeUpdate {
+	eu.mutation.ClearStation()
 	return eu
 }
 
@@ -475,6 +539,64 @@ func (eu *EbikeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if eu.mutation.EnterpriseCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   ebike.EnterpriseTable,
+			Columns: []string{ebike.EnterpriseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.EnterpriseIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   ebike.EnterpriseTable,
+			Columns: []string{ebike.EnterpriseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if eu.mutation.StationCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   ebike.StationTable,
+			Columns: []string{ebike.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.StationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   ebike.StationTable,
+			Columns: []string{ebike.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(eu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, eu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -578,6 +700,46 @@ func (euo *EbikeUpdateOne) SetNillableStoreID(u *uint64) *EbikeUpdateOne {
 // ClearStoreID clears the value of the "store_id" field.
 func (euo *EbikeUpdateOne) ClearStoreID() *EbikeUpdateOne {
 	euo.mutation.ClearStoreID()
+	return euo
+}
+
+// SetEnterpriseID sets the "enterprise_id" field.
+func (euo *EbikeUpdateOne) SetEnterpriseID(u uint64) *EbikeUpdateOne {
+	euo.mutation.SetEnterpriseID(u)
+	return euo
+}
+
+// SetNillableEnterpriseID sets the "enterprise_id" field if the given value is not nil.
+func (euo *EbikeUpdateOne) SetNillableEnterpriseID(u *uint64) *EbikeUpdateOne {
+	if u != nil {
+		euo.SetEnterpriseID(*u)
+	}
+	return euo
+}
+
+// ClearEnterpriseID clears the value of the "enterprise_id" field.
+func (euo *EbikeUpdateOne) ClearEnterpriseID() *EbikeUpdateOne {
+	euo.mutation.ClearEnterpriseID()
+	return euo
+}
+
+// SetStationID sets the "station_id" field.
+func (euo *EbikeUpdateOne) SetStationID(u uint64) *EbikeUpdateOne {
+	euo.mutation.SetStationID(u)
+	return euo
+}
+
+// SetNillableStationID sets the "station_id" field if the given value is not nil.
+func (euo *EbikeUpdateOne) SetNillableStationID(u *uint64) *EbikeUpdateOne {
+	if u != nil {
+		euo.SetStationID(*u)
+	}
+	return euo
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (euo *EbikeUpdateOne) ClearStationID() *EbikeUpdateOne {
+	euo.mutation.ClearStationID()
 	return euo
 }
 
@@ -710,6 +872,16 @@ func (euo *EbikeUpdateOne) SetStore(s *Store) *EbikeUpdateOne {
 	return euo.SetStoreID(s.ID)
 }
 
+// SetEnterprise sets the "enterprise" edge to the Enterprise entity.
+func (euo *EbikeUpdateOne) SetEnterprise(e *Enterprise) *EbikeUpdateOne {
+	return euo.SetEnterpriseID(e.ID)
+}
+
+// SetStation sets the "station" edge to the EnterpriseStation entity.
+func (euo *EbikeUpdateOne) SetStation(e *EnterpriseStation) *EbikeUpdateOne {
+	return euo.SetStationID(e.ID)
+}
+
 // Mutation returns the EbikeMutation object of the builder.
 func (euo *EbikeUpdateOne) Mutation() *EbikeMutation {
 	return euo.mutation
@@ -730,6 +902,18 @@ func (euo *EbikeUpdateOne) ClearRider() *EbikeUpdateOne {
 // ClearStore clears the "store" edge to the Store entity.
 func (euo *EbikeUpdateOne) ClearStore() *EbikeUpdateOne {
 	euo.mutation.ClearStore()
+	return euo
+}
+
+// ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
+func (euo *EbikeUpdateOne) ClearEnterprise() *EbikeUpdateOne {
+	euo.mutation.ClearEnterprise()
+	return euo
+}
+
+// ClearStation clears the "station" edge to the EnterpriseStation entity.
+func (euo *EbikeUpdateOne) ClearStation() *EbikeUpdateOne {
+	euo.mutation.ClearStation()
 	return euo
 }
 
@@ -962,6 +1146,64 @@ func (euo *EbikeUpdateOne) sqlSave(ctx context.Context) (_node *Ebike, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(store.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if euo.mutation.EnterpriseCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   ebike.EnterpriseTable,
+			Columns: []string{ebike.EnterpriseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.EnterpriseIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   ebike.EnterpriseTable,
+			Columns: []string{ebike.EnterpriseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprise.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if euo.mutation.StationCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   ebike.StationTable,
+			Columns: []string{ebike.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.StationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   ebike.StationTable,
+			Columns: []string{ebike.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

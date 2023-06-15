@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 	"entgo.io/ent/schema/mixin"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/internal"
 )
@@ -88,6 +89,10 @@ func (Ebike) Mixin() []ent.Mixin {
 
 		RiderMixin{Optional: true},
 		StoreMixin{Optional: true},
+
+		// 电车绑定团签和站点
+		EnterpriseMixin{Optional: true},
+		StationMixin{Optional: true},
 	}
 }
 

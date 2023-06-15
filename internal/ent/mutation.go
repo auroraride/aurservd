@@ -29630,32 +29630,36 @@ func (m *CouponTemplateMutation) ResetEdge(name string) error {
 // EbikeMutation represents an operation that mutates the Ebike nodes in the graph.
 type EbikeMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *uint64
-	created_at    *time.Time
-	updated_at    *time.Time
-	creator       **model.Modifier
-	last_modifier **model.Modifier
-	remark        *string
-	status        *model.EbikeStatus
-	enable        *bool
-	sn            *string
-	plate         *string
-	machine       *string
-	sim           *string
-	color         *string
-	ex_factory    *string
-	clearedFields map[string]struct{}
-	brand         *uint64
-	clearedbrand  bool
-	rider         *uint64
-	clearedrider  bool
-	store         *uint64
-	clearedstore  bool
-	done          bool
-	oldValue      func(context.Context) (*Ebike, error)
-	predicates    []predicate.Ebike
+	op                Op
+	typ               string
+	id                *uint64
+	created_at        *time.Time
+	updated_at        *time.Time
+	creator           **model.Modifier
+	last_modifier     **model.Modifier
+	remark            *string
+	status            *model.EbikeStatus
+	enable            *bool
+	sn                *string
+	plate             *string
+	machine           *string
+	sim               *string
+	color             *string
+	ex_factory        *string
+	clearedFields     map[string]struct{}
+	brand             *uint64
+	clearedbrand      bool
+	rider             *uint64
+	clearedrider      bool
+	store             *uint64
+	clearedstore      bool
+	enterprise        *uint64
+	clearedenterprise bool
+	station           *uint64
+	clearedstation    bool
+	done              bool
+	oldValue          func(context.Context) (*Ebike, error)
+	predicates        []predicate.Ebike
 }
 
 var _ ent.Mutation = (*EbikeMutation)(nil)
@@ -30109,6 +30113,104 @@ func (m *EbikeMutation) ResetStoreID() {
 	delete(m.clearedFields, ebike.FieldStoreID)
 }
 
+// SetEnterpriseID sets the "enterprise_id" field.
+func (m *EbikeMutation) SetEnterpriseID(u uint64) {
+	m.enterprise = &u
+}
+
+// EnterpriseID returns the value of the "enterprise_id" field in the mutation.
+func (m *EbikeMutation) EnterpriseID() (r uint64, exists bool) {
+	v := m.enterprise
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEnterpriseID returns the old "enterprise_id" field's value of the Ebike entity.
+// If the Ebike object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EbikeMutation) OldEnterpriseID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEnterpriseID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEnterpriseID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEnterpriseID: %w", err)
+	}
+	return oldValue.EnterpriseID, nil
+}
+
+// ClearEnterpriseID clears the value of the "enterprise_id" field.
+func (m *EbikeMutation) ClearEnterpriseID() {
+	m.enterprise = nil
+	m.clearedFields[ebike.FieldEnterpriseID] = struct{}{}
+}
+
+// EnterpriseIDCleared returns if the "enterprise_id" field was cleared in this mutation.
+func (m *EbikeMutation) EnterpriseIDCleared() bool {
+	_, ok := m.clearedFields[ebike.FieldEnterpriseID]
+	return ok
+}
+
+// ResetEnterpriseID resets all changes to the "enterprise_id" field.
+func (m *EbikeMutation) ResetEnterpriseID() {
+	m.enterprise = nil
+	delete(m.clearedFields, ebike.FieldEnterpriseID)
+}
+
+// SetStationID sets the "station_id" field.
+func (m *EbikeMutation) SetStationID(u uint64) {
+	m.station = &u
+}
+
+// StationID returns the value of the "station_id" field in the mutation.
+func (m *EbikeMutation) StationID() (r uint64, exists bool) {
+	v := m.station
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStationID returns the old "station_id" field's value of the Ebike entity.
+// If the Ebike object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EbikeMutation) OldStationID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStationID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStationID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStationID: %w", err)
+	}
+	return oldValue.StationID, nil
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (m *EbikeMutation) ClearStationID() {
+	m.station = nil
+	m.clearedFields[ebike.FieldStationID] = struct{}{}
+}
+
+// StationIDCleared returns if the "station_id" field was cleared in this mutation.
+func (m *EbikeMutation) StationIDCleared() bool {
+	_, ok := m.clearedFields[ebike.FieldStationID]
+	return ok
+}
+
+// ResetStationID resets all changes to the "station_id" field.
+func (m *EbikeMutation) ResetStationID() {
+	m.station = nil
+	delete(m.clearedFields, ebike.FieldStationID)
+}
+
 // SetStatus sets the "status" field.
 func (m *EbikeMutation) SetStatus(ms model.EbikeStatus) {
 	m.status = &ms
@@ -30514,6 +30616,58 @@ func (m *EbikeMutation) ResetStore() {
 	m.clearedstore = false
 }
 
+// ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
+func (m *EbikeMutation) ClearEnterprise() {
+	m.clearedenterprise = true
+}
+
+// EnterpriseCleared reports if the "enterprise" edge to the Enterprise entity was cleared.
+func (m *EbikeMutation) EnterpriseCleared() bool {
+	return m.EnterpriseIDCleared() || m.clearedenterprise
+}
+
+// EnterpriseIDs returns the "enterprise" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// EnterpriseID instead. It exists only for internal usage by the builders.
+func (m *EbikeMutation) EnterpriseIDs() (ids []uint64) {
+	if id := m.enterprise; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetEnterprise resets all changes to the "enterprise" edge.
+func (m *EbikeMutation) ResetEnterprise() {
+	m.enterprise = nil
+	m.clearedenterprise = false
+}
+
+// ClearStation clears the "station" edge to the EnterpriseStation entity.
+func (m *EbikeMutation) ClearStation() {
+	m.clearedstation = true
+}
+
+// StationCleared reports if the "station" edge to the EnterpriseStation entity was cleared.
+func (m *EbikeMutation) StationCleared() bool {
+	return m.StationIDCleared() || m.clearedstation
+}
+
+// StationIDs returns the "station" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// StationID instead. It exists only for internal usage by the builders.
+func (m *EbikeMutation) StationIDs() (ids []uint64) {
+	if id := m.station; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetStation resets all changes to the "station" edge.
+func (m *EbikeMutation) ResetStation() {
+	m.station = nil
+	m.clearedstation = false
+}
+
 // Where appends a list predicates to the EbikeMutation builder.
 func (m *EbikeMutation) Where(ps ...predicate.Ebike) {
 	m.predicates = append(m.predicates, ps...)
@@ -30548,7 +30702,7 @@ func (m *EbikeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EbikeMutation) Fields() []string {
-	fields := make([]string, 0, 16)
+	fields := make([]string, 0, 18)
 	if m.created_at != nil {
 		fields = append(fields, ebike.FieldCreatedAt)
 	}
@@ -30572,6 +30726,12 @@ func (m *EbikeMutation) Fields() []string {
 	}
 	if m.store != nil {
 		fields = append(fields, ebike.FieldStoreID)
+	}
+	if m.enterprise != nil {
+		fields = append(fields, ebike.FieldEnterpriseID)
+	}
+	if m.station != nil {
+		fields = append(fields, ebike.FieldStationID)
 	}
 	if m.status != nil {
 		fields = append(fields, ebike.FieldStatus)
@@ -30621,6 +30781,10 @@ func (m *EbikeMutation) Field(name string) (ent.Value, bool) {
 		return m.RiderID()
 	case ebike.FieldStoreID:
 		return m.StoreID()
+	case ebike.FieldEnterpriseID:
+		return m.EnterpriseID()
+	case ebike.FieldStationID:
+		return m.StationID()
 	case ebike.FieldStatus:
 		return m.Status()
 	case ebike.FieldEnable:
@@ -30662,6 +30826,10 @@ func (m *EbikeMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldRiderID(ctx)
 	case ebike.FieldStoreID:
 		return m.OldStoreID(ctx)
+	case ebike.FieldEnterpriseID:
+		return m.OldEnterpriseID(ctx)
+	case ebike.FieldStationID:
+		return m.OldStationID(ctx)
 	case ebike.FieldStatus:
 		return m.OldStatus(ctx)
 	case ebike.FieldEnable:
@@ -30742,6 +30910,20 @@ func (m *EbikeMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetStoreID(v)
+		return nil
+	case ebike.FieldEnterpriseID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEnterpriseID(v)
+		return nil
+	case ebike.FieldStationID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStationID(v)
 		return nil
 	case ebike.FieldStatus:
 		v, ok := value.(model.EbikeStatus)
@@ -30847,6 +31029,12 @@ func (m *EbikeMutation) ClearedFields() []string {
 	if m.FieldCleared(ebike.FieldStoreID) {
 		fields = append(fields, ebike.FieldStoreID)
 	}
+	if m.FieldCleared(ebike.FieldEnterpriseID) {
+		fields = append(fields, ebike.FieldEnterpriseID)
+	}
+	if m.FieldCleared(ebike.FieldStationID) {
+		fields = append(fields, ebike.FieldStationID)
+	}
 	if m.FieldCleared(ebike.FieldPlate) {
 		fields = append(fields, ebike.FieldPlate)
 	}
@@ -30884,6 +31072,12 @@ func (m *EbikeMutation) ClearField(name string) error {
 		return nil
 	case ebike.FieldStoreID:
 		m.ClearStoreID()
+		return nil
+	case ebike.FieldEnterpriseID:
+		m.ClearEnterpriseID()
+		return nil
+	case ebike.FieldStationID:
+		m.ClearStationID()
 		return nil
 	case ebike.FieldPlate:
 		m.ClearPlate()
@@ -30926,6 +31120,12 @@ func (m *EbikeMutation) ResetField(name string) error {
 	case ebike.FieldStoreID:
 		m.ResetStoreID()
 		return nil
+	case ebike.FieldEnterpriseID:
+		m.ResetEnterpriseID()
+		return nil
+	case ebike.FieldStationID:
+		m.ResetStationID()
+		return nil
 	case ebike.FieldStatus:
 		m.ResetStatus()
 		return nil
@@ -30956,7 +31156,7 @@ func (m *EbikeMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *EbikeMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 5)
 	if m.brand != nil {
 		edges = append(edges, ebike.EdgeBrand)
 	}
@@ -30965,6 +31165,12 @@ func (m *EbikeMutation) AddedEdges() []string {
 	}
 	if m.store != nil {
 		edges = append(edges, ebike.EdgeStore)
+	}
+	if m.enterprise != nil {
+		edges = append(edges, ebike.EdgeEnterprise)
+	}
+	if m.station != nil {
+		edges = append(edges, ebike.EdgeStation)
 	}
 	return edges
 }
@@ -30985,13 +31191,21 @@ func (m *EbikeMutation) AddedIDs(name string) []ent.Value {
 		if id := m.store; id != nil {
 			return []ent.Value{*id}
 		}
+	case ebike.EdgeEnterprise:
+		if id := m.enterprise; id != nil {
+			return []ent.Value{*id}
+		}
+	case ebike.EdgeStation:
+		if id := m.station; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *EbikeMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 5)
 	return edges
 }
 
@@ -31003,7 +31217,7 @@ func (m *EbikeMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *EbikeMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 5)
 	if m.clearedbrand {
 		edges = append(edges, ebike.EdgeBrand)
 	}
@@ -31012,6 +31226,12 @@ func (m *EbikeMutation) ClearedEdges() []string {
 	}
 	if m.clearedstore {
 		edges = append(edges, ebike.EdgeStore)
+	}
+	if m.clearedenterprise {
+		edges = append(edges, ebike.EdgeEnterprise)
+	}
+	if m.clearedstation {
+		edges = append(edges, ebike.EdgeStation)
 	}
 	return edges
 }
@@ -31026,6 +31246,10 @@ func (m *EbikeMutation) EdgeCleared(name string) bool {
 		return m.clearedrider
 	case ebike.EdgeStore:
 		return m.clearedstore
+	case ebike.EdgeEnterprise:
+		return m.clearedenterprise
+	case ebike.EdgeStation:
+		return m.clearedstation
 	}
 	return false
 }
@@ -31043,6 +31267,12 @@ func (m *EbikeMutation) ClearEdge(name string) error {
 	case ebike.EdgeStore:
 		m.ClearStore()
 		return nil
+	case ebike.EdgeEnterprise:
+		m.ClearEnterprise()
+		return nil
+	case ebike.EdgeStation:
+		m.ClearStation()
+		return nil
 	}
 	return fmt.Errorf("unknown Ebike unique edge %s", name)
 }
@@ -31059,6 +31289,12 @@ func (m *EbikeMutation) ResetEdge(name string) error {
 		return nil
 	case ebike.EdgeStore:
 		m.ResetStore()
+		return nil
+	case ebike.EdgeEnterprise:
+		m.ResetEnterprise()
+		return nil
+	case ebike.EdgeStation:
+		m.ResetStation()
 		return nil
 	}
 	return fmt.Errorf("unknown Ebike edge %s", name)

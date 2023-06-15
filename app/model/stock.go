@@ -178,6 +178,11 @@ func (req *StockTransferReq) Validate() error {
 		return errors.New("电柜之间无法调拨")
 	}
 
+	// 团签站点物资无法调入门店
+	if req.IsFromStation() && req.IsToStore() {
+		return errors.New("团签站点物资无法调入门店")
+	}
+
 	if ((req.IsToStore() || req.IsToCabinet() || req.IsToStation()) && req.InboundID == 0) || (req.IsToPlaform() && req.InboundID != 0) {
 		return errors.New("调入参数错误")
 	}
@@ -270,10 +275,12 @@ type StockBusinessReq struct {
 	StockType uint8  `json:"stockType"` // 出入库类型
 	CityID    uint64 `json:"cityId"`    // 城市
 
-	StoreID     *uint64 `json:"storeId"`     // 门店ID
-	EmployeeID  *uint64 `json:"employeeId"`  // 店员ID
-	CabinetID   *uint64 `json:"cabinetId"`   // 电柜ID
-	SubscribeID *uint64 `json:"subscribeId"` // 订阅ID
+	StoreID      *uint64 `json:"storeId"`      // 门店ID
+	EmployeeID   *uint64 `json:"employeeId"`   // 店员ID
+	CabinetID    *uint64 `json:"cabinetId"`    // 电柜ID
+	SubscribeID  *uint64 `json:"subscribeId"`  // 订阅ID
+	EnterpriseID *uint64 `json:"enterpriseId"` // 团签id
+	StationID    *uint64 `json:"stationId"`    // 站点id
 
 	Ebike   *EbikeBusinessInfo `json:"ebike"`   // 电车信息
 	Battery *Battery           `json:"battery"` // 电池信息

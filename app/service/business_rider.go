@@ -438,7 +438,7 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
 			cb(tx)
 
 			// 若电柜或门店不为空
-			if s.cabinetID != nil || s.storeID != nil {
+			if s.cabinetID != nil || s.storeID != nil || (s.subscribe.StationID != nil && s.subscribe.EnterpriseID != nil) {
 				sk, err = NewStockWithModifier(s.modifier).RiderBusiness(
 					tx,
 					&model.StockBusinessReq{
@@ -447,10 +447,12 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
 						CityID:    s.subscribe.CityID,
 						StockType: sts[bt],
 
-						StoreID:     s.storeID,
-						EmployeeID:  s.employeeID,
-						CabinetID:   s.cabinetID,
-						SubscribeID: s.subscribeID,
+						StoreID:      s.storeID,
+						EmployeeID:   s.employeeID,
+						CabinetID:    s.cabinetID,
+						SubscribeID:  s.subscribeID,
+						StationID:    s.subscribe.StationID,
+						EnterpriseID: s.subscribe.EnterpriseID,
 
 						Ebike:   s.ebikeInfo,
 						Battery: bat,
