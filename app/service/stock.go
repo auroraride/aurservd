@@ -388,7 +388,7 @@ func (s *stockService) RiderBusiness(tx *ent.Tx, req *model.StockBusinessReq) (s
 		return
 	}
 
-	if req.StoreID == nil && req.CabinetID == nil {
+	if req.StoreID == nil && req.CabinetID == nil && req.EnterpriseID == nil && req.StationID == nil {
 		err = errors.New("参数校验错误")
 		return
 	}
