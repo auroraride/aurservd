@@ -86,13 +86,6 @@ type Subscribe struct {
 	Ebike *Ebike `json:"ebike,omitempty"` // 电车属性
 }
 
-// SubscribeAlter 订阅天数调整请求
-type SubscribeAlter struct {
-	ID     uint64 `json:"id" validate:"required"`     // 订阅ID
-	Days   int    `json:"days" validate:"required"`   // 调整天数, 正加负减
-	Reason string `json:"reason" validate:"required"` // 调整理由
-}
-
 type SubscribeActiveInfo struct {
 	ID           uint64              `json:"id"`                     // 订阅ID
 	Model        string              `json:"model"`                  // 电池型号

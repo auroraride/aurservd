@@ -60,7 +60,10 @@ func (*rider) Create(c echo.Context) (err error) {
 // @Success      200  {object}  model.RiderItemSubscribe  "请求成功"
 func (*rider) Alter(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.SubscribeAlter](c)
-	return ctx.SendResponse(service.NewSubscribeWithAgent(ctx.Agent, ctx.Enterprise).AlterDays(req))
+	return ctx.SendResponse(service.NewSubscribeWithAgent(ctx.Agent, ctx.Enterprise).AlterDays(&model.SubscribeAlterReq{
+		SubscribeAlter: *req,
+		EnterpriseID:   ctx.Agent.EnterpriseID,
+	}))
 }
 
 // Detail
