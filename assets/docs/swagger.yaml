@@ -3956,8 +3956,11 @@ definitions:
       price:
         type: number
     type: object
-  model.EnterprisePriceModifyReq:
+  model.EnterprisePriceReq:
     properties:
+      brandId:
+        description: 电车型号
+        type: integer
       cityId:
         type: integer
       enterpriseId:
@@ -13396,7 +13399,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: ManagerEnterpriseModifyPrice
+      operationId: ManagerEnterprisePrice
       parameters:
       - description: 管理员校验token
         in: header
@@ -13408,7 +13411,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/model.EnterprisePriceModifyReq'
+          $ref: '#/definitions/model.EnterprisePriceReq'
       produces:
       - application/json
       responses:
@@ -13416,7 +13419,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.EnterprisePriceWithCity'
-      summary: M9016 编辑价格
+      summary: M9016 团签单价设定
       tags:
       - '[M]管理接口'
   /manager/v1/enterprise/price/{id}:

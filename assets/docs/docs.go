@@ -8553,8 +8553,8 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M9016 编辑价格",
-                "operationId": "ManagerEnterpriseModifyPrice",
+                "summary": "M9016 团签单价设定",
+                "operationId": "ManagerEnterprisePrice",
                 "parameters": [
                     {
                         "type": "string",
@@ -8569,7 +8569,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.EnterprisePriceModifyReq"
+                            "$ref": "#/definitions/model.EnterprisePriceReq"
                         }
                     }
                 ],
@@ -21920,7 +21920,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.EnterprisePriceModifyReq": {
+        "model.EnterprisePriceReq": {
             "type": "object",
             "required": [
                 "cityId",
@@ -21929,6 +21929,10 @@ const docTemplate = `{
                 "price"
             ],
             "properties": {
+                "brandId": {
+                    "description": "电车型号",
+                    "type": "integer"
+                },
                 "cityId": {
                     "type": "integer"
                 },

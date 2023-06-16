@@ -7,6 +7,7 @@ import (
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
+
 	"github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -51,6 +52,7 @@ func (EnterprisePrice) Mixin() []ent.Mixin {
 		internal.Modifier{},
 
 		CityMixin{Optional: false},
+		EbikeBrandMixin{Optional: true},
 	}
 }
 

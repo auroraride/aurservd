@@ -2222,6 +2222,7 @@ var (
 		{Name: "intelligent", Type: field.TypeBool, Comment: "是否智能电池", Default: false},
 		{Name: "enterprise_id", Type: field.TypeUint64},
 		{Name: "city_id", Type: field.TypeUint64, Comment: "城市ID"},
+		{Name: "brand_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// EnterprisePriceTable holds the schema information for the "enterprise_price" table.
 	EnterprisePriceTable = &schema.Table{
@@ -2241,6 +2242,12 @@ var (
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
+			{
+				Symbol:     "enterprise_price_ebike_brand_brand",
+				Columns:    []*schema.Column{EnterprisePriceColumns[12]},
+				RefColumns: []*schema.Column{EbikeBrandColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
 		},
 		Indexes: []*schema.Index{
 			{
@@ -2257,6 +2264,11 @@ var (
 				Name:    "enterpriseprice_city_id",
 				Unique:  false,
 				Columns: []*schema.Column{EnterprisePriceColumns[11]},
+			},
+			{
+				Name:    "enterpriseprice_brand_id",
+				Unique:  false,
+				Columns: []*schema.Column{EnterprisePriceColumns[12]},
 			},
 			{
 				Name:    "enterpriseprice_model",
@@ -4833,6 +4845,7 @@ func init() {
 	}
 	EnterprisePriceTable.ForeignKeys[0].RefTable = EnterpriseTable
 	EnterprisePriceTable.ForeignKeys[1].RefTable = CityTable
+	EnterprisePriceTable.ForeignKeys[2].RefTable = EbikeBrandTable
 	EnterprisePriceTable.Annotation = &entsql.Annotation{
 		Table: "enterprise_price",
 	}

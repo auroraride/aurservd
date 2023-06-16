@@ -41955,6 +41955,8 @@ type EnterprisePriceMutation struct {
 	clearedFields     map[string]struct{}
 	city              *uint64
 	clearedcity       bool
+	brand             *uint64
+	clearedbrand      bool
 	enterprise        *uint64
 	clearedenterprise bool
 	done              bool
@@ -42364,6 +42366,55 @@ func (m *EnterprisePriceMutation) ResetCityID() {
 	m.city = nil
 }
 
+// SetBrandID sets the "brand_id" field.
+func (m *EnterprisePriceMutation) SetBrandID(u uint64) {
+	m.brand = &u
+}
+
+// BrandID returns the value of the "brand_id" field in the mutation.
+func (m *EnterprisePriceMutation) BrandID() (r uint64, exists bool) {
+	v := m.brand
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBrandID returns the old "brand_id" field's value of the EnterprisePrice entity.
+// If the EnterprisePrice object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterprisePriceMutation) OldBrandID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBrandID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBrandID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBrandID: %w", err)
+	}
+	return oldValue.BrandID, nil
+}
+
+// ClearBrandID clears the value of the "brand_id" field.
+func (m *EnterprisePriceMutation) ClearBrandID() {
+	m.brand = nil
+	m.clearedFields[enterpriseprice.FieldBrandID] = struct{}{}
+}
+
+// BrandIDCleared returns if the "brand_id" field was cleared in this mutation.
+func (m *EnterprisePriceMutation) BrandIDCleared() bool {
+	_, ok := m.clearedFields[enterpriseprice.FieldBrandID]
+	return ok
+}
+
+// ResetBrandID resets all changes to the "brand_id" field.
+func (m *EnterprisePriceMutation) ResetBrandID() {
+	m.brand = nil
+	delete(m.clearedFields, enterpriseprice.FieldBrandID)
+}
+
 // SetEnterpriseID sets the "enterprise_id" field.
 func (m *EnterprisePriceMutation) SetEnterpriseID(u uint64) {
 	m.enterprise = &u
@@ -42554,6 +42605,32 @@ func (m *EnterprisePriceMutation) ResetCity() {
 	m.clearedcity = false
 }
 
+// ClearBrand clears the "brand" edge to the EbikeBrand entity.
+func (m *EnterprisePriceMutation) ClearBrand() {
+	m.clearedbrand = true
+}
+
+// BrandCleared reports if the "brand" edge to the EbikeBrand entity was cleared.
+func (m *EnterprisePriceMutation) BrandCleared() bool {
+	return m.BrandIDCleared() || m.clearedbrand
+}
+
+// BrandIDs returns the "brand" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// BrandID instead. It exists only for internal usage by the builders.
+func (m *EnterprisePriceMutation) BrandIDs() (ids []uint64) {
+	if id := m.brand; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetBrand resets all changes to the "brand" edge.
+func (m *EnterprisePriceMutation) ResetBrand() {
+	m.brand = nil
+	m.clearedbrand = false
+}
+
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
 func (m *EnterprisePriceMutation) ClearEnterprise() {
 	m.clearedenterprise = true
@@ -42614,7 +42691,7 @@ func (m *EnterprisePriceMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EnterprisePriceMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 12)
 	if m.created_at != nil {
 		fields = append(fields, enterpriseprice.FieldCreatedAt)
 	}
@@ -42635,6 +42712,9 @@ func (m *EnterprisePriceMutation) Fields() []string {
 	}
 	if m.city != nil {
 		fields = append(fields, enterpriseprice.FieldCityID)
+	}
+	if m.brand != nil {
+		fields = append(fields, enterpriseprice.FieldBrandID)
 	}
 	if m.enterprise != nil {
 		fields = append(fields, enterpriseprice.FieldEnterpriseID)
@@ -42670,6 +42750,8 @@ func (m *EnterprisePriceMutation) Field(name string) (ent.Value, bool) {
 		return m.Remark()
 	case enterpriseprice.FieldCityID:
 		return m.CityID()
+	case enterpriseprice.FieldBrandID:
+		return m.BrandID()
 	case enterpriseprice.FieldEnterpriseID:
 		return m.EnterpriseID()
 	case enterpriseprice.FieldPrice:
@@ -42701,6 +42783,8 @@ func (m *EnterprisePriceMutation) OldField(ctx context.Context, name string) (en
 		return m.OldRemark(ctx)
 	case enterpriseprice.FieldCityID:
 		return m.OldCityID(ctx)
+	case enterpriseprice.FieldBrandID:
+		return m.OldBrandID(ctx)
 	case enterpriseprice.FieldEnterpriseID:
 		return m.OldEnterpriseID(ctx)
 	case enterpriseprice.FieldPrice:
@@ -42766,6 +42850,13 @@ func (m *EnterprisePriceMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCityID(v)
+		return nil
+	case enterpriseprice.FieldBrandID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBrandID(v)
 		return nil
 	case enterpriseprice.FieldEnterpriseID:
 		v, ok := value.(uint64)
@@ -42852,6 +42943,9 @@ func (m *EnterprisePriceMutation) ClearedFields() []string {
 	if m.FieldCleared(enterpriseprice.FieldRemark) {
 		fields = append(fields, enterpriseprice.FieldRemark)
 	}
+	if m.FieldCleared(enterpriseprice.FieldBrandID) {
+		fields = append(fields, enterpriseprice.FieldBrandID)
+	}
 	return fields
 }
 
@@ -42877,6 +42971,9 @@ func (m *EnterprisePriceMutation) ClearField(name string) error {
 		return nil
 	case enterpriseprice.FieldRemark:
 		m.ClearRemark()
+		return nil
+	case enterpriseprice.FieldBrandID:
+		m.ClearBrandID()
 		return nil
 	}
 	return fmt.Errorf("unknown EnterprisePrice nullable field %s", name)
@@ -42907,6 +43004,9 @@ func (m *EnterprisePriceMutation) ResetField(name string) error {
 	case enterpriseprice.FieldCityID:
 		m.ResetCityID()
 		return nil
+	case enterpriseprice.FieldBrandID:
+		m.ResetBrandID()
+		return nil
 	case enterpriseprice.FieldEnterpriseID:
 		m.ResetEnterpriseID()
 		return nil
@@ -42925,9 +43025,12 @@ func (m *EnterprisePriceMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *EnterprisePriceMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.city != nil {
 		edges = append(edges, enterpriseprice.EdgeCity)
+	}
+	if m.brand != nil {
+		edges = append(edges, enterpriseprice.EdgeBrand)
 	}
 	if m.enterprise != nil {
 		edges = append(edges, enterpriseprice.EdgeEnterprise)
@@ -42943,6 +43046,10 @@ func (m *EnterprisePriceMutation) AddedIDs(name string) []ent.Value {
 		if id := m.city; id != nil {
 			return []ent.Value{*id}
 		}
+	case enterpriseprice.EdgeBrand:
+		if id := m.brand; id != nil {
+			return []ent.Value{*id}
+		}
 	case enterpriseprice.EdgeEnterprise:
 		if id := m.enterprise; id != nil {
 			return []ent.Value{*id}
@@ -42953,7 +43060,7 @@ func (m *EnterprisePriceMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *EnterprisePriceMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	return edges
 }
 
@@ -42965,9 +43072,12 @@ func (m *EnterprisePriceMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *EnterprisePriceMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.clearedcity {
 		edges = append(edges, enterpriseprice.EdgeCity)
+	}
+	if m.clearedbrand {
+		edges = append(edges, enterpriseprice.EdgeBrand)
 	}
 	if m.clearedenterprise {
 		edges = append(edges, enterpriseprice.EdgeEnterprise)
@@ -42981,6 +43091,8 @@ func (m *EnterprisePriceMutation) EdgeCleared(name string) bool {
 	switch name {
 	case enterpriseprice.EdgeCity:
 		return m.clearedcity
+	case enterpriseprice.EdgeBrand:
+		return m.clearedbrand
 	case enterpriseprice.EdgeEnterprise:
 		return m.clearedenterprise
 	}
@@ -42993,6 +43105,9 @@ func (m *EnterprisePriceMutation) ClearEdge(name string) error {
 	switch name {
 	case enterpriseprice.EdgeCity:
 		m.ClearCity()
+		return nil
+	case enterpriseprice.EdgeBrand:
+		m.ClearBrand()
 		return nil
 	case enterpriseprice.EdgeEnterprise:
 		m.ClearEnterprise()
@@ -43007,6 +43122,9 @@ func (m *EnterprisePriceMutation) ResetEdge(name string) error {
 	switch name {
 	case enterpriseprice.EdgeCity:
 		m.ResetCity()
+		return nil
+	case enterpriseprice.EdgeBrand:
+		m.ResetBrand()
 		return nil
 	case enterpriseprice.EdgeEnterprise:
 		m.ResetEnterprise()

@@ -176,19 +176,19 @@ func (*enterprise) ListRider(c echo.Context) (err error) {
 	return ctx.SendResponse(service.NewEnterpriseRiderWithModifier(ctx.Modifier).List(req))
 }
 
-// ModifyPrice
-// @ID           ManagerEnterpriseModifyPrice
+// Price
+// @ID           ManagerEnterprisePrice
 // @Router       /manager/v1/enterprise/price [POST]
-// @Summary      M9016 编辑价格
+// @Summary      M9016 团签单价设定
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        body  body     model.EnterprisePriceModifyReq  true  "价格详情"
+// @Param        body  body     model.EnterprisePriceReq  true  "价格详情"
 // @Success      200  {object}  model.EnterprisePriceWithCity  "请求成功"
-func (*enterprise) ModifyPrice(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[model.EnterprisePriceModifyReq](c)
-	return ctx.SendResponse(service.NewEnterpriseWithModifier(ctx.Modifier).ModifyPrice(req))
+func (*enterprise) Price(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[model.EnterprisePriceReq](c)
+	return ctx.SendResponse(service.NewEnterpriseWithModifier(ctx.Modifier).Price(req))
 }
 
 // DeletePrice

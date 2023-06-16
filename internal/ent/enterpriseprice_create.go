@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
 )
@@ -99,6 +100,20 @@ func (epc *EnterprisePriceCreate) SetCityID(u uint64) *EnterprisePriceCreate {
 	return epc
 }
 
+// SetBrandID sets the "brand_id" field.
+func (epc *EnterprisePriceCreate) SetBrandID(u uint64) *EnterprisePriceCreate {
+	epc.mutation.SetBrandID(u)
+	return epc
+}
+
+// SetNillableBrandID sets the "brand_id" field if the given value is not nil.
+func (epc *EnterprisePriceCreate) SetNillableBrandID(u *uint64) *EnterprisePriceCreate {
+	if u != nil {
+		epc.SetBrandID(*u)
+	}
+	return epc
+}
+
 // SetEnterpriseID sets the "enterprise_id" field.
 func (epc *EnterprisePriceCreate) SetEnterpriseID(u uint64) *EnterprisePriceCreate {
 	epc.mutation.SetEnterpriseID(u)
@@ -134,6 +149,11 @@ func (epc *EnterprisePriceCreate) SetNillableIntelligent(b *bool) *EnterprisePri
 // SetCity sets the "city" edge to the City entity.
 func (epc *EnterprisePriceCreate) SetCity(c *City) *EnterprisePriceCreate {
 	return epc.SetCityID(c.ID)
+}
+
+// SetBrand sets the "brand" edge to the EbikeBrand entity.
+func (epc *EnterprisePriceCreate) SetBrand(e *EbikeBrand) *EnterprisePriceCreate {
+	return epc.SetBrandID(e.ID)
 }
 
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
@@ -308,6 +328,23 @@ func (epc *EnterprisePriceCreate) createSpec() (*EnterprisePrice, *sqlgraph.Crea
 		_node.CityID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := epc.mutation.BrandIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   enterpriseprice.BrandTable,
+			Columns: []string{enterpriseprice.BrandColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ebikebrand.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.BrandID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := epc.mutation.EnterpriseIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -452,6 +489,24 @@ func (u *EnterprisePriceUpsert) SetCityID(v uint64) *EnterprisePriceUpsert {
 // UpdateCityID sets the "city_id" field to the value that was provided on create.
 func (u *EnterprisePriceUpsert) UpdateCityID() *EnterprisePriceUpsert {
 	u.SetExcluded(enterpriseprice.FieldCityID)
+	return u
+}
+
+// SetBrandID sets the "brand_id" field.
+func (u *EnterprisePriceUpsert) SetBrandID(v uint64) *EnterprisePriceUpsert {
+	u.Set(enterpriseprice.FieldBrandID, v)
+	return u
+}
+
+// UpdateBrandID sets the "brand_id" field to the value that was provided on create.
+func (u *EnterprisePriceUpsert) UpdateBrandID() *EnterprisePriceUpsert {
+	u.SetExcluded(enterpriseprice.FieldBrandID)
+	return u
+}
+
+// ClearBrandID clears the value of the "brand_id" field.
+func (u *EnterprisePriceUpsert) ClearBrandID() *EnterprisePriceUpsert {
+	u.SetNull(enterpriseprice.FieldBrandID)
 	return u
 }
 
@@ -645,6 +700,27 @@ func (u *EnterprisePriceUpsertOne) SetCityID(v uint64) *EnterprisePriceUpsertOne
 func (u *EnterprisePriceUpsertOne) UpdateCityID() *EnterprisePriceUpsertOne {
 	return u.Update(func(s *EnterprisePriceUpsert) {
 		s.UpdateCityID()
+	})
+}
+
+// SetBrandID sets the "brand_id" field.
+func (u *EnterprisePriceUpsertOne) SetBrandID(v uint64) *EnterprisePriceUpsertOne {
+	return u.Update(func(s *EnterprisePriceUpsert) {
+		s.SetBrandID(v)
+	})
+}
+
+// UpdateBrandID sets the "brand_id" field to the value that was provided on create.
+func (u *EnterprisePriceUpsertOne) UpdateBrandID() *EnterprisePriceUpsertOne {
+	return u.Update(func(s *EnterprisePriceUpsert) {
+		s.UpdateBrandID()
+	})
+}
+
+// ClearBrandID clears the value of the "brand_id" field.
+func (u *EnterprisePriceUpsertOne) ClearBrandID() *EnterprisePriceUpsertOne {
+	return u.Update(func(s *EnterprisePriceUpsert) {
+		s.ClearBrandID()
 	})
 }
 
@@ -1009,6 +1085,27 @@ func (u *EnterprisePriceUpsertBulk) SetCityID(v uint64) *EnterprisePriceUpsertBu
 func (u *EnterprisePriceUpsertBulk) UpdateCityID() *EnterprisePriceUpsertBulk {
 	return u.Update(func(s *EnterprisePriceUpsert) {
 		s.UpdateCityID()
+	})
+}
+
+// SetBrandID sets the "brand_id" field.
+func (u *EnterprisePriceUpsertBulk) SetBrandID(v uint64) *EnterprisePriceUpsertBulk {
+	return u.Update(func(s *EnterprisePriceUpsert) {
+		s.SetBrandID(v)
+	})
+}
+
+// UpdateBrandID sets the "brand_id" field to the value that was provided on create.
+func (u *EnterprisePriceUpsertBulk) UpdateBrandID() *EnterprisePriceUpsertBulk {
+	return u.Update(func(s *EnterprisePriceUpsert) {
+		s.UpdateBrandID()
+	})
+}
+
+// ClearBrandID clears the value of the "brand_id" field.
+func (u *EnterprisePriceUpsertBulk) ClearBrandID() *EnterprisePriceUpsertBulk {
+	return u.Update(func(s *EnterprisePriceUpsert) {
+		s.ClearBrandID()
 	})
 }
 

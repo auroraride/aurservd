@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -24,6 +25,7 @@ type EnterprisePriceQuery struct {
 	inters         []Interceptor
 	predicates     []predicate.EnterprisePrice
 	withCity       *CityQuery
+	withBrand      *EbikeBrandQuery
 	withEnterprise *EnterpriseQuery
 	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
@@ -77,6 +79,28 @@ func (epq *EnterprisePriceQuery) QueryCity() *CityQuery {
 			sqlgraph.From(enterpriseprice.Table, enterpriseprice.FieldID, selector),
 			sqlgraph.To(city.Table, city.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, enterpriseprice.CityTable, enterpriseprice.CityColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(epq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryBrand chains the current query on the "brand" edge.
+func (epq *EnterprisePriceQuery) QueryBrand() *EbikeBrandQuery {
+	query := (&EbikeBrandClient{config: epq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := epq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := epq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterpriseprice.Table, enterpriseprice.FieldID, selector),
+			sqlgraph.To(ebikebrand.Table, ebikebrand.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, enterpriseprice.BrandTable, enterpriseprice.BrandColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(epq.driver.Dialect(), step)
 		return fromU, nil
@@ -299,6 +323,7 @@ func (epq *EnterprisePriceQuery) Clone() *EnterprisePriceQuery {
 		inters:         append([]Interceptor{}, epq.inters...),
 		predicates:     append([]predicate.EnterprisePrice{}, epq.predicates...),
 		withCity:       epq.withCity.Clone(),
+		withBrand:      epq.withBrand.Clone(),
 		withEnterprise: epq.withEnterprise.Clone(),
 		// clone intermediate query.
 		sql:  epq.sql.Clone(),
@@ -314,6 +339,17 @@ func (epq *EnterprisePriceQuery) WithCity(opts ...func(*CityQuery)) *EnterpriseP
 		opt(query)
 	}
 	epq.withCity = query
+	return epq
+}
+
+// WithBrand tells the query-builder to eager-load the nodes that are connected to
+// the "brand" edge. The optional arguments are used to configure the query builder of the edge.
+func (epq *EnterprisePriceQuery) WithBrand(opts ...func(*EbikeBrandQuery)) *EnterprisePriceQuery {
+	query := (&EbikeBrandClient{config: epq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	epq.withBrand = query
 	return epq
 }
 
@@ -406,8 +442,9 @@ func (epq *EnterprisePriceQuery) sqlAll(ctx context.Context, hooks ...queryHook)
 	var (
 		nodes       = []*EnterprisePrice{}
 		_spec       = epq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			epq.withCity != nil,
+			epq.withBrand != nil,
 			epq.withEnterprise != nil,
 		}
 	)
@@ -435,6 +472,12 @@ func (epq *EnterprisePriceQuery) sqlAll(ctx context.Context, hooks ...queryHook)
 	if query := epq.withCity; query != nil {
 		if err := epq.loadCity(ctx, query, nodes, nil,
 			func(n *EnterprisePrice, e *City) { n.Edges.City = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := epq.withBrand; query != nil {
+		if err := epq.loadBrand(ctx, query, nodes, nil,
+			func(n *EnterprisePrice, e *EbikeBrand) { n.Edges.Brand = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -469,6 +512,38 @@ func (epq *EnterprisePriceQuery) loadCity(ctx context.Context, query *CityQuery,
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "city_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (epq *EnterprisePriceQuery) loadBrand(ctx context.Context, query *EbikeBrandQuery, nodes []*EnterprisePrice, init func(*EnterprisePrice), assign func(*EnterprisePrice, *EbikeBrand)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*EnterprisePrice)
+	for i := range nodes {
+		if nodes[i].BrandID == nil {
+			continue
+		}
+		fk := *nodes[i].BrandID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(ebikebrand.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "brand_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -536,6 +611,9 @@ func (epq *EnterprisePriceQuery) querySpec() *sqlgraph.QuerySpec {
 		}
 		if epq.withCity != nil {
 			_spec.Node.AddColumnOnce(enterpriseprice.FieldCityID)
+		}
+		if epq.withBrand != nil {
+			_spec.Node.AddColumnOnce(enterpriseprice.FieldBrandID)
 		}
 		if epq.withEnterprise != nil {
 			_spec.Node.AddColumnOnce(enterpriseprice.FieldEnterpriseID)
@@ -609,6 +687,7 @@ type EnterprisePriceQueryWith string
 
 var (
 	EnterprisePriceQueryWithCity       EnterprisePriceQueryWith = "City"
+	EnterprisePriceQueryWithBrand      EnterprisePriceQueryWith = "Brand"
 	EnterprisePriceQueryWithEnterprise EnterprisePriceQueryWith = "Enterprise"
 )
 
@@ -617,6 +696,8 @@ func (epq *EnterprisePriceQuery) With(withEdges ...EnterprisePriceQueryWith) *En
 		switch v {
 		case EnterprisePriceQueryWithCity:
 			epq.WithCity()
+		case EnterprisePriceQueryWithBrand:
+			epq.WithBrand()
 		case EnterprisePriceQueryWithEnterprise:
 			epq.WithEnterprise()
 		}

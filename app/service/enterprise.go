@@ -26,6 +26,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprisecontract"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
+	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/pkg/snag"
@@ -509,8 +510,8 @@ func (s *enterpriseService) Business(e *ent.Enterprise) error {
 	return nil
 }
 
-// QueryPrice 查找价格设置
-func (s *enterpriseService) QueryPrice(id uint64) *ent.EnterprisePrice {
+// QueryPriceX 查找价格设置
+func (s *enterpriseService) QueryPriceX(id uint64) *ent.EnterprisePrice {
 	p, _ := ent.Database.EnterprisePrice.QueryNotDeleted().Where(enterpriseprice.ID(id)).First(s.ctx)
 	if p == nil {
 		snag.Panic("未找到价格信息")
@@ -518,38 +519,14 @@ func (s *enterpriseService) QueryPrice(id uint64) *ent.EnterprisePrice {
 	return p
 }
 
-// ModifyPrice 修改价格
-func (s *enterpriseService) ModifyPrice(req *model.EnterprisePriceModifyReq) model.EnterprisePriceWithCity {
+// Price 编辑或创建团签日租价
+func (s *enterpriseService) Price(req *model.EnterprisePriceReq) model.EnterprisePriceWithCity {
 	c := NewCity().Query(req.CityID)
 
 	var p *ent.EnterprisePrice
 	var err error
-	if req.ID != 0 {
-		p = s.QueryPrice(req.ID)
-		if p.CityID != req.CityID {
-			snag.Panic("城市无法修改")
-		}
-		if p.Model != req.Model {
-			snag.Panic("电池型号无法修改")
-		}
-		if p.Price != req.Price {
-			// 自动轧账
-			srv := NewEnterpriseStatementWithModifier(s.modifier)
-			// 获取账单信息
-			info := srv.GetBill(&model.StatementBillReq{
-				End:   carbon.Now().Yesterday().StartOfDay().Format("Y-m-d"),
-				ID:    req.EnterpriseID,
-				Force: true,
-			})
-			// 轧账
-			srv.Bill(&model.StatementClearBillReq{
-				UUID:   info.UUID,
-				Remark: "修改价格自动轧账",
-			})
-			p, err = p.Update().SetPrice(req.Price).Save(s.ctx)
-			s.UpdateStatementByID(req.EnterpriseID)
-		}
-	} else {
+
+	if req.ID == 0 {
 		client := ent.Database.EnterprisePrice
 		// 判定价格是否重复
 		if exist, _ := client.QueryNotDeleted().
@@ -564,11 +541,16 @@ func (s *enterpriseService) ModifyPrice(req *model.EnterprisePriceModifyReq) mod
 			SetModel(req.Model).
 			SetPrice(req.Price).
 			SetIntelligent(req.Intelligent).
+			SetNillableBrandID(req.BrandID).
 			Save(s.ctx)
+	} else {
+		p, err = s.PriceModify(req)
 	}
+
 	if err != nil {
 		snag.Panic("企业价格操作失败")
 	}
+
 	return model.EnterprisePriceWithCity{
 		ID:    p.ID,
 		Model: p.Model,
@@ -580,18 +562,63 @@ func (s *enterpriseService) ModifyPrice(req *model.EnterprisePriceModifyReq) mod
 	}
 }
 
+// PriceModify 修改团签日租价
+func (s *enterpriseService) PriceModify(req *model.EnterprisePriceReq) (p *ent.EnterprisePrice, err error) {
+	p = s.QueryPriceX(req.ID)
+
+	if p.CityID != req.CityID {
+		snag.Panic("城市无法修改")
+	}
+
+	if p.Model != req.Model {
+		snag.Panic("电池型号无法修改")
+	}
+
+	if p.BrandID != req.BrandID {
+		snag.Panic("电车型号无法修改")
+	}
+
+	// 修改价格自动轧账
+	if p.Price != req.Price {
+		srv := NewEnterpriseStatementWithModifier(s.modifier)
+		// 获取账单信息
+		info := srv.GetBill(&model.StatementBillReq{
+			End:   carbon.Now().Yesterday().StartOfDay().Format("Y-m-d"),
+			ID:    req.EnterpriseID,
+			Force: true,
+		})
+		// 轧账
+		srv.Bill(&model.StatementClearBillReq{
+			UUID:   info.UUID,
+			Remark: "修改价格自动轧账",
+		})
+		p, err = p.Update().SetPrice(req.Price).Save(s.ctx)
+		s.UpdateStatementByID(req.EnterpriseID)
+	}
+	return
+}
+
 // DeletePrice 删除价格
 func (s *enterpriseService) DeletePrice(req *model.IDParamReq) {
 	// 判断是否有进行中的订阅
-	p := s.QueryPrice(req.ID)
-	if exist, _ := ent.Database.Subscribe.QueryNotDeleted().Where(
+	p := s.QueryPriceX(req.ID)
+
+	ps := []predicate.Subscribe{
 		subscribe.EnterpriseID(p.EnterpriseID),
 		subscribe.Status(model.SubscribeStatusUsing),
 		subscribe.CityID(p.CityID),
 		subscribe.Model(p.Model),
-	).Exist(s.ctx); exist {
-		snag.Panic("计费中, 无法删除")
 	}
+
+	// 电车判定条件
+	if p.BrandID != nil {
+		ps = append(ps, subscribe.BrandID(*p.BrandID))
+	}
+
+	if exist, _ := ent.Database.Subscribe.QueryNotDeleted().Where(ps...).Exist(s.ctx); exist {
+		snag.Panic("使用中, 无法删除")
+	}
+
 	err := ent.Database.EnterprisePrice.SoftDeleteOne(p).Exec(s.ctx)
 	if err != nil {
 		snag.Panic("价格删除失败")

@@ -824,6 +824,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			enterpriseprice.FieldLastModifier: {Type: field.TypeJSON, Column: enterpriseprice.FieldLastModifier},
 			enterpriseprice.FieldRemark:       {Type: field.TypeString, Column: enterpriseprice.FieldRemark},
 			enterpriseprice.FieldCityID:       {Type: field.TypeUint64, Column: enterpriseprice.FieldCityID},
+			enterpriseprice.FieldBrandID:      {Type: field.TypeUint64, Column: enterpriseprice.FieldBrandID},
 			enterpriseprice.FieldEnterpriseID: {Type: field.TypeUint64, Column: enterpriseprice.FieldEnterpriseID},
 			enterpriseprice.FieldPrice:        {Type: field.TypeFloat64, Column: enterpriseprice.FieldPrice},
 			enterpriseprice.FieldModel:        {Type: field.TypeString, Column: enterpriseprice.FieldModel},
@@ -3085,6 +3086,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"EnterprisePrice",
 		"City",
+	)
+	graph.MustAddE(
+		"brand",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   enterpriseprice.BrandTable,
+			Columns: []string{enterpriseprice.BrandColumn},
+			Bidi:    false,
+		},
+		"EnterprisePrice",
+		"EbikeBrand",
 	)
 	graph.MustAddE(
 		"enterprise",
@@ -9465,6 +9478,11 @@ func (f *EnterprisePriceFilter) WhereCityID(p entql.Uint64P) {
 	f.Where(p.Field(enterpriseprice.FieldCityID))
 }
 
+// WhereBrandID applies the entql uint64 predicate on the brand_id field.
+func (f *EnterprisePriceFilter) WhereBrandID(p entql.Uint64P) {
+	f.Where(p.Field(enterpriseprice.FieldBrandID))
+}
+
 // WhereEnterpriseID applies the entql uint64 predicate on the enterprise_id field.
 func (f *EnterprisePriceFilter) WhereEnterpriseID(p entql.Uint64P) {
 	f.Where(p.Field(enterpriseprice.FieldEnterpriseID))
@@ -9493,6 +9511,20 @@ func (f *EnterprisePriceFilter) WhereHasCity() {
 // WhereHasCityWith applies a predicate to check if query has an edge city with a given conditions (other predicates).
 func (f *EnterprisePriceFilter) WhereHasCityWith(preds ...predicate.City) {
 	f.Where(entql.HasEdgeWith("city", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasBrand applies a predicate to check if query has an edge brand.
+func (f *EnterprisePriceFilter) WhereHasBrand() {
+	f.Where(entql.HasEdge("brand"))
+}
+
+// WhereHasBrandWith applies a predicate to check if query has an edge brand with a given conditions (other predicates).
+func (f *EnterprisePriceFilter) WhereHasBrandWith(preds ...predicate.EbikeBrand) {
+	f.Where(entql.HasEdgeWith("brand", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

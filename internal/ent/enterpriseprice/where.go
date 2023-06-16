@@ -80,6 +80,11 @@ func CityID(v uint64) predicate.EnterprisePrice {
 	return predicate.EnterprisePrice(sql.FieldEQ(FieldCityID, v))
 }
 
+// BrandID applies equality check predicate on the "brand_id" field. It's identical to BrandIDEQ.
+func BrandID(v uint64) predicate.EnterprisePrice {
+	return predicate.EnterprisePrice(sql.FieldEQ(FieldBrandID, v))
+}
+
 // EnterpriseID applies equality check predicate on the "enterprise_id" field. It's identical to EnterpriseIDEQ.
 func EnterpriseID(v uint64) predicate.EnterprisePrice {
 	return predicate.EnterprisePrice(sql.FieldEQ(FieldEnterpriseID, v))
@@ -345,6 +350,36 @@ func CityIDNotIn(vs ...uint64) predicate.EnterprisePrice {
 	return predicate.EnterprisePrice(sql.FieldNotIn(FieldCityID, vs...))
 }
 
+// BrandIDEQ applies the EQ predicate on the "brand_id" field.
+func BrandIDEQ(v uint64) predicate.EnterprisePrice {
+	return predicate.EnterprisePrice(sql.FieldEQ(FieldBrandID, v))
+}
+
+// BrandIDNEQ applies the NEQ predicate on the "brand_id" field.
+func BrandIDNEQ(v uint64) predicate.EnterprisePrice {
+	return predicate.EnterprisePrice(sql.FieldNEQ(FieldBrandID, v))
+}
+
+// BrandIDIn applies the In predicate on the "brand_id" field.
+func BrandIDIn(vs ...uint64) predicate.EnterprisePrice {
+	return predicate.EnterprisePrice(sql.FieldIn(FieldBrandID, vs...))
+}
+
+// BrandIDNotIn applies the NotIn predicate on the "brand_id" field.
+func BrandIDNotIn(vs ...uint64) predicate.EnterprisePrice {
+	return predicate.EnterprisePrice(sql.FieldNotIn(FieldBrandID, vs...))
+}
+
+// BrandIDIsNil applies the IsNil predicate on the "brand_id" field.
+func BrandIDIsNil() predicate.EnterprisePrice {
+	return predicate.EnterprisePrice(sql.FieldIsNull(FieldBrandID))
+}
+
+// BrandIDNotNil applies the NotNil predicate on the "brand_id" field.
+func BrandIDNotNil() predicate.EnterprisePrice {
+	return predicate.EnterprisePrice(sql.FieldNotNull(FieldBrandID))
+}
+
 // EnterpriseIDEQ applies the EQ predicate on the "enterprise_id" field.
 func EnterpriseIDEQ(v uint64) predicate.EnterprisePrice {
 	return predicate.EnterprisePrice(sql.FieldEQ(FieldEnterpriseID, v))
@@ -495,6 +530,29 @@ func HasCity() predicate.EnterprisePrice {
 func HasCityWith(preds ...predicate.City) predicate.EnterprisePrice {
 	return predicate.EnterprisePrice(func(s *sql.Selector) {
 		step := newCityStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasBrand applies the HasEdge predicate on the "brand" edge.
+func HasBrand() predicate.EnterprisePrice {
+	return predicate.EnterprisePrice(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, BrandTable, BrandColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasBrandWith applies the HasEdge predicate on the "brand" edge with a given conditions (other predicates).
+func HasBrandWith(preds ...predicate.EbikeBrand) predicate.EnterprisePrice {
+	return predicate.EnterprisePrice(func(s *sql.Selector) {
+		step := newBrandStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

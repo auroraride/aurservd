@@ -5834,6 +5834,22 @@ func (c *EnterprisePriceClient) QueryCity(ep *EnterprisePrice) *CityQuery {
 	return query
 }
 
+// QueryBrand queries the brand edge of a EnterprisePrice.
+func (c *EnterprisePriceClient) QueryBrand(ep *EnterprisePrice) *EbikeBrandQuery {
+	query := (&EbikeBrandClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ep.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterpriseprice.Table, enterpriseprice.FieldID, id),
+			sqlgraph.To(ebikebrand.Table, ebikebrand.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, enterpriseprice.BrandTable, enterpriseprice.BrandColumn),
+		)
+		fromV = sqlgraph.Neighbors(ep.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryEnterprise queries the enterprise edge of a EnterprisePrice.
 func (c *EnterprisePriceClient) QueryEnterprise(ep *EnterprisePrice) *EnterpriseQuery {
 	query := (&EnterpriseClient{config: c.config}).Query()
