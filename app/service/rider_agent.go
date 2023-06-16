@@ -83,6 +83,7 @@ func (s *riderAgentService) detail(item *ent.Rider) model.AgentRider {
 		sub := subs[0]
 		res.SubscribeID = sub.ID
 		res.Model = sub.Model
+		res.Intelligent = sub.Intelligent
 		ci := sub.Edges.City
 		res.City = &model.City{
 			ID:   ci.ID,
