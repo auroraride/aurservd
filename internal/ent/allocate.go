@@ -12,11 +12,13 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
+	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
@@ -51,6 +53,10 @@ type Allocate struct {
 	EbikeID *uint64 `json:"ebike_id,omitempty"`
 	// BrandID holds the value of the "brand_id" field.
 	BrandID *uint64 `json:"brand_id,omitempty"`
+	// BatteryID holds the value of the "battery_id" field.
+	BatteryID *uint64 `json:"battery_id,omitempty"`
+	// 站点ID
+	StationID *uint64 `json:"station_id,omitempty"`
 	// 分配类型
 	Type allocate.Type `json:"type,omitempty"`
 	// 分配状态
@@ -81,11 +87,15 @@ type AllocateEdges struct {
 	Ebike *Ebike `json:"ebike,omitempty"`
 	// Brand holds the value of the brand edge.
 	Brand *EbikeBrand `json:"brand,omitempty"`
+	// Battery holds the value of the battery edge.
+	Battery *Battery `json:"battery,omitempty"`
+	// Station holds the value of the station edge.
+	Station *EnterpriseStation `json:"station,omitempty"`
 	// Contract holds the value of the contract edge.
 	Contract *Contract `json:"contract,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [8]bool
+	loadedTypes [10]bool
 }
 
 // RiderOrErr returns the Rider value or an error if the edge
@@ -179,10 +189,36 @@ func (e AllocateEdges) BrandOrErr() (*EbikeBrand, error) {
 	return nil, &NotLoadedError{edge: "brand"}
 }
 
+// BatteryOrErr returns the Battery value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AllocateEdges) BatteryOrErr() (*Battery, error) {
+	if e.loadedTypes[7] {
+		if e.Battery == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: battery.Label}
+		}
+		return e.Battery, nil
+	}
+	return nil, &NotLoadedError{edge: "battery"}
+}
+
+// StationOrErr returns the Station value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AllocateEdges) StationOrErr() (*EnterpriseStation, error) {
+	if e.loadedTypes[8] {
+		if e.Station == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: enterprisestation.Label}
+		}
+		return e.Station, nil
+	}
+	return nil, &NotLoadedError{edge: "station"}
+}
+
 // ContractOrErr returns the Contract value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e AllocateEdges) ContractOrErr() (*Contract, error) {
-	if e.loadedTypes[7] {
+	if e.loadedTypes[9] {
 		if e.Contract == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: contract.Label}
@@ -199,7 +235,7 @@ func (*Allocate) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case allocate.FieldCreator, allocate.FieldLastModifier:
 			values[i] = new([]byte)
-		case allocate.FieldID, allocate.FieldRiderID, allocate.FieldSubscribeID, allocate.FieldEmployeeID, allocate.FieldCabinetID, allocate.FieldStoreID, allocate.FieldEbikeID, allocate.FieldBrandID, allocate.FieldStatus:
+		case allocate.FieldID, allocate.FieldRiderID, allocate.FieldSubscribeID, allocate.FieldEmployeeID, allocate.FieldCabinetID, allocate.FieldStoreID, allocate.FieldEbikeID, allocate.FieldBrandID, allocate.FieldBatteryID, allocate.FieldStationID, allocate.FieldStatus:
 			values[i] = new(sql.NullInt64)
 		case allocate.FieldRemark, allocate.FieldType, allocate.FieldModel:
 			values[i] = new(sql.NullString)
@@ -309,6 +345,20 @@ func (a *Allocate) assignValues(columns []string, values []any) error {
 				a.BrandID = new(uint64)
 				*a.BrandID = uint64(value.Int64)
 			}
+		case allocate.FieldBatteryID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field battery_id", values[i])
+			} else if value.Valid {
+				a.BatteryID = new(uint64)
+				*a.BatteryID = uint64(value.Int64)
+			}
+		case allocate.FieldStationID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field station_id", values[i])
+			} else if value.Valid {
+				a.StationID = new(uint64)
+				*a.StationID = uint64(value.Int64)
+			}
 		case allocate.FieldType:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field type", values[i])
@@ -379,6 +429,16 @@ func (a *Allocate) QueryEbike() *EbikeQuery {
 // QueryBrand queries the "brand" edge of the Allocate entity.
 func (a *Allocate) QueryBrand() *EbikeBrandQuery {
 	return NewAllocateClient(a.config).QueryBrand(a)
+}
+
+// QueryBattery queries the "battery" edge of the Allocate entity.
+func (a *Allocate) QueryBattery() *BatteryQuery {
+	return NewAllocateClient(a.config).QueryBattery(a)
+}
+
+// QueryStation queries the "station" edge of the Allocate entity.
+func (a *Allocate) QueryStation() *EnterpriseStationQuery {
+	return NewAllocateClient(a.config).QueryStation(a)
 }
 
 // QueryContract queries the "contract" edge of the Allocate entity.
@@ -456,6 +516,16 @@ func (a *Allocate) String() string {
 	builder.WriteString(", ")
 	if v := a.BrandID; v != nil {
 		builder.WriteString("brand_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := a.BatteryID; v != nil {
+		builder.WriteString("battery_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := a.StationID; v != nil {
+		builder.WriteString("station_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")

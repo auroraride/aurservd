@@ -3,7 +3,7 @@
 package model
 
 type AgentSubscribeActiveReq struct {
-	ID           uint64 `json:"id" param:"id" validate:"required"` // 骑手ID
-	BatteryID    uint64 `json:"batteryId"`                         // 电池ID
-	EnterpriseID uint64 `json:"enterpriseId"`                      // 团签id
+	ID        *uint64 `json:"id" validate:"required" trans:"订阅ID"`
+	BatteryID *uint64 `json:"batteryId"` // 电池ID
+	EbikeID   *uint64 `json:"ebikeId"`   // 电车ID
 }

@@ -17,6 +17,7 @@ import (
 	"github.com/auroraride/aurservd/app/logging"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/contract"
@@ -41,7 +42,7 @@ type businessRiderService struct {
 	subscribe    *ent.Subscribe
 	reserve      *ent.Reserve
 
-	task func() (*model.BinInfo, *model.Battery, error) // 电柜任务
+	cabTask func() (*model.BinInfo, *model.Battery, error) // 电柜任务
 
 	storeID, employeeID, cabinetID, subscribeID *uint64
 
@@ -59,10 +60,11 @@ func NewBusinessRider(r *ent.Rider) *businessRiderService {
 	}
 }
 
-func NewBusinessRiderWithModifier(m *model.Modifier) *businessRiderService {
-	s := NewBusinessRider(nil)
-	s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
-	s.modifier = m
+func (s *businessRiderService) SetModifier(m *model.Modifier) *businessRiderService {
+	if m != nil {
+		s.modifier = m
+		s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, m)
+	}
 	return s
 }
 
@@ -88,7 +90,7 @@ func (s *businessRiderService) SetCabinetID(id *uint64) *businessRiderService {
 	return s
 }
 
-// SetStoreID 设置门店
+// SetStoreID 设置门店ID
 func (s *businessRiderService) SetStoreID(id *uint64) *businessRiderService {
 	if id != nil {
 		s.store = NewStore().Query(*id)
@@ -111,8 +113,8 @@ func (s *businessRiderService) SetEmployeeID(id *uint64) *businessRiderService {
 	return s
 }
 
-// SetBattery 设置电池
-func (s *businessRiderService) SetBattery(id *uint64) *businessRiderService {
+// SetBatteryID 设置电池
+func (s *businessRiderService) SetBatteryID(id *uint64) *businessRiderService {
 	if id == nil {
 		return s
 	}
@@ -145,9 +147,43 @@ func (s *businessRiderService) SetEbike(info *model.EbikeBusinessInfo) *business
 	return s
 }
 
-func (s *businessRiderService) SetTask(task func() (*model.BinInfo, *model.Battery, error)) *businessRiderService {
+func (s *businessRiderService) SetCabinetTask(task func() (*model.BinInfo, *model.Battery, error)) *businessRiderService {
 	if task != nil {
-		s.task = task
+		s.cabTask = task
+	}
+	return s
+}
+
+// NewBusinessRiderWithParams 设置参数并初始化
+func NewBusinessRiderWithParams(params ...any) *businessRiderService {
+	s := &businessRiderService{
+		ctx: context.Background(),
+	}
+	for _, param := range params {
+		switch v := param.(type) {
+		case *model.Modifier:
+			s.modifier = v
+			s.ctx = context.WithValue(s.ctx, model.CtxModifierKey{}, v)
+		case *ent.Rider:
+			s.rider = v
+		case *ent.Store:
+			s.store = v
+		case *ent.Battery:
+			s.battery = v
+		case *ent.Subscribe:
+			s.subscribe = v
+		case *ent.Cabinet:
+			s.cabinet = v
+		case *ent.Employee:
+			s.employee = v
+			s.employeeInfo = &model.Employee{
+				ID:    v.ID,
+				Name:  v.Name,
+				Phone: v.Phone,
+			}
+		case *model.EbikeBusinessInfo:
+			s.ebikeInfo = v
+		}
 	}
 	return s
 }
@@ -335,7 +371,7 @@ func (s *businessRiderService) preprocess(bt business.Type, sub *ent.Subscribe) 
 		s.employeeID = silk.Pointer(s.employee.ID)
 	}
 
-	if s.employee == nil && s.store == nil && s.modifier == nil && s.cabinet == nil {
+	if s.employee == nil && s.store == nil && s.modifier == nil && s.cabinet == nil && sub.StationID == nil {
 		snag.Panic("操作权限校验失败")
 	}
 
@@ -378,7 +414,7 @@ func (s *businessRiderService) doTask() (bin *model.BinInfo, bat *model.Battery,
 		}
 	}()
 
-	bin, bat, err = s.task()
+	bin, bat, err = s.cabTask()
 	return
 }
 
@@ -418,7 +454,16 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
 
 		// 放入电池优先执行
 		var bat *model.Battery
-		if s.task != nil && (bt == business.TypePause || bt == business.TypeUnsubscribe) {
+		if s.battery != nil {
+			bat = &model.Battery{
+				ID:    s.battery.ID,
+				SN:    s.battery.Sn,
+				Model: s.battery.Model,
+			}
+		}
+
+		// 放入电池优先执行电柜任务
+		if s.cabTask != nil && (bt == business.TypePause || bt == business.TypeUnsubscribe) {
 			bin, bat, err = s.doTask()
 			if err != nil {
 				snag.Panic(err)
@@ -437,8 +482,8 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
 		ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
 			cb(tx)
 
-			// 若电柜或门店不为空
-			if s.cabinetID != nil || s.storeID != nil || (s.subscribe.StationID != nil && s.subscribe.EnterpriseID != nil) {
+			// 需要进行业务出入库
+			if s.cabinetID != nil || s.storeID != nil || s.subscribe.StationID != nil {
 				sk, err = NewStockWithModifier(s.modifier).RiderBusiness(
 					tx,
 					&model.StockBusinessReq{
@@ -467,8 +512,8 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
 			return
 		})
 
-		// 取出电池滞后执行
-		if s.task != nil && (bt == business.TypeActive || bt == business.TypeContinue) {
+		// 取出电池滞后执行电柜任务
+		if s.cabTask != nil && (bt == business.TypeActive || bt == business.TypeContinue) {
 			bin, bat, err = s.doTask()
 			if err != nil {
 				zap.L().Error("骑手业务取出电池后任务执行失败: "+bt.String(), zap.Error(err))
@@ -577,16 +622,19 @@ func (s *businessRiderService) Active(sub *ent.Subscribe, allo *ent.Allocate) {
 		// 更新电车
 		if s.ebikeInfo != nil {
 			// 更新电车所属
-			_ = tx.Ebike.UpdateOneID(s.ebikeInfo.ID).SetRiderID(sub.RiderID).SetStatus(model.EbikeStatusUsing).Exec(s.ctx)
+			snag.PanicIfError(
+				tx.Ebike.UpdateOneID(s.ebikeInfo.ID).SetRiderID(sub.RiderID).SetStatus(model.EbikeStatusUsing).Exec(s.ctx),
+			)
 		}
 
 		// 后台操作设置电池编码
-		// TODO: 更好的骑手获取方式?
-		if s.battery != nil && s.modifier != nil {
-			NewBattery(s.modifier).Bind(s.battery, s.subscribe, s.subscribe.QueryRider().FirstX(s.ctx))
+		if s.battery != nil && s.cabinet == nil {
+			snag.PanicIfError(
+				NewBattery(s.modifier).Allocate(tx.Battery.UpdateOne(s.battery), s.battery, s.subscribe, false),
+			)
 		}
 
-		// 更新退款失效
+		// 若有退款, 则标记更新状态为失败
 		if sub.EnterpriseID == nil && sub.InitialOrderID != 0 {
 			of, _ := tx.OrderRefund.QueryNotDeleted().Where(orderrefund.OrderID(sub.InitialOrderID)).First(s.ctx)
 			if of != nil {
@@ -616,6 +664,9 @@ func (s *businessRiderService) UnSubscribe(subscribeID uint64, fns ...func(sub *
 	}
 
 	sub := s.subscribe
+
+	// 查找电池
+	bat, _ := ent.Database.Battery.Query().Where(battery.SubscribeID(sub.ID)).First(s.ctx)
 
 	err := NewSubscribe().UpdateStatus(sub, false)
 	if err != nil {
@@ -673,9 +724,8 @@ func (s *businessRiderService) UnSubscribe(subscribeID uint64, fns ...func(sub *
 		}
 
 		// 删除电池
-		if bat, _ := sub.QueryBattery().First(s.ctx); bat != nil {
-			err = NewBattery().Unallocate(bat)
-			snag.PanicIfError(err)
+		if bat != nil {
+			snag.PanicIfError(NewBattery().Unallocate(tx.Battery.UpdateOne(bat)))
 		}
 	})
 

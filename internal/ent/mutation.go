@@ -1143,6 +1143,10 @@ type AllocateMutation struct {
 	clearedebike     bool
 	brand            *uint64
 	clearedbrand     bool
+	battery          *uint64
+	clearedbattery   bool
+	station          *uint64
+	clearedstation   bool
 	contract         *uint64
 	clearedcontract  bool
 	done             bool
@@ -1810,6 +1814,104 @@ func (m *AllocateMutation) ResetBrandID() {
 	delete(m.clearedFields, allocate.FieldBrandID)
 }
 
+// SetBatteryID sets the "battery_id" field.
+func (m *AllocateMutation) SetBatteryID(u uint64) {
+	m.battery = &u
+}
+
+// BatteryID returns the value of the "battery_id" field in the mutation.
+func (m *AllocateMutation) BatteryID() (r uint64, exists bool) {
+	v := m.battery
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBatteryID returns the old "battery_id" field's value of the Allocate entity.
+// If the Allocate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AllocateMutation) OldBatteryID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBatteryID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBatteryID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBatteryID: %w", err)
+	}
+	return oldValue.BatteryID, nil
+}
+
+// ClearBatteryID clears the value of the "battery_id" field.
+func (m *AllocateMutation) ClearBatteryID() {
+	m.battery = nil
+	m.clearedFields[allocate.FieldBatteryID] = struct{}{}
+}
+
+// BatteryIDCleared returns if the "battery_id" field was cleared in this mutation.
+func (m *AllocateMutation) BatteryIDCleared() bool {
+	_, ok := m.clearedFields[allocate.FieldBatteryID]
+	return ok
+}
+
+// ResetBatteryID resets all changes to the "battery_id" field.
+func (m *AllocateMutation) ResetBatteryID() {
+	m.battery = nil
+	delete(m.clearedFields, allocate.FieldBatteryID)
+}
+
+// SetStationID sets the "station_id" field.
+func (m *AllocateMutation) SetStationID(u uint64) {
+	m.station = &u
+}
+
+// StationID returns the value of the "station_id" field in the mutation.
+func (m *AllocateMutation) StationID() (r uint64, exists bool) {
+	v := m.station
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStationID returns the old "station_id" field's value of the Allocate entity.
+// If the Allocate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AllocateMutation) OldStationID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStationID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStationID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStationID: %w", err)
+	}
+	return oldValue.StationID, nil
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (m *AllocateMutation) ClearStationID() {
+	m.station = nil
+	m.clearedFields[allocate.FieldStationID] = struct{}{}
+}
+
+// StationIDCleared returns if the "station_id" field was cleared in this mutation.
+func (m *AllocateMutation) StationIDCleared() bool {
+	_, ok := m.clearedFields[allocate.FieldStationID]
+	return ok
+}
+
+// ResetStationID resets all changes to the "station_id" field.
+func (m *AllocateMutation) ResetStationID() {
+	m.station = nil
+	delete(m.clearedFields, allocate.FieldStationID)
+}
+
 // SetType sets the "type" field.
 func (m *AllocateMutation) SetType(a allocate.Type) {
 	m._type = &a
@@ -2156,6 +2258,58 @@ func (m *AllocateMutation) ResetBrand() {
 	m.clearedbrand = false
 }
 
+// ClearBattery clears the "battery" edge to the Battery entity.
+func (m *AllocateMutation) ClearBattery() {
+	m.clearedbattery = true
+}
+
+// BatteryCleared reports if the "battery" edge to the Battery entity was cleared.
+func (m *AllocateMutation) BatteryCleared() bool {
+	return m.BatteryIDCleared() || m.clearedbattery
+}
+
+// BatteryIDs returns the "battery" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// BatteryID instead. It exists only for internal usage by the builders.
+func (m *AllocateMutation) BatteryIDs() (ids []uint64) {
+	if id := m.battery; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetBattery resets all changes to the "battery" edge.
+func (m *AllocateMutation) ResetBattery() {
+	m.battery = nil
+	m.clearedbattery = false
+}
+
+// ClearStation clears the "station" edge to the EnterpriseStation entity.
+func (m *AllocateMutation) ClearStation() {
+	m.clearedstation = true
+}
+
+// StationCleared reports if the "station" edge to the EnterpriseStation entity was cleared.
+func (m *AllocateMutation) StationCleared() bool {
+	return m.StationIDCleared() || m.clearedstation
+}
+
+// StationIDs returns the "station" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// StationID instead. It exists only for internal usage by the builders.
+func (m *AllocateMutation) StationIDs() (ids []uint64) {
+	if id := m.station; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetStation resets all changes to the "station" edge.
+func (m *AllocateMutation) ResetStation() {
+	m.station = nil
+	m.clearedstation = false
+}
+
 // SetContractID sets the "contract" edge to the Contract entity by id.
 func (m *AllocateMutation) SetContractID(id uint64) {
 	m.contract = &id
@@ -2229,7 +2383,7 @@ func (m *AllocateMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AllocateMutation) Fields() []string {
-	fields := make([]string, 0, 16)
+	fields := make([]string, 0, 18)
 	if m.created_at != nil {
 		fields = append(fields, allocate.FieldCreatedAt)
 	}
@@ -2265,6 +2419,12 @@ func (m *AllocateMutation) Fields() []string {
 	}
 	if m.brand != nil {
 		fields = append(fields, allocate.FieldBrandID)
+	}
+	if m.battery != nil {
+		fields = append(fields, allocate.FieldBatteryID)
+	}
+	if m.station != nil {
+		fields = append(fields, allocate.FieldStationID)
 	}
 	if m._type != nil {
 		fields = append(fields, allocate.FieldType)
@@ -2310,6 +2470,10 @@ func (m *AllocateMutation) Field(name string) (ent.Value, bool) {
 		return m.EbikeID()
 	case allocate.FieldBrandID:
 		return m.BrandID()
+	case allocate.FieldBatteryID:
+		return m.BatteryID()
+	case allocate.FieldStationID:
+		return m.StationID()
 	case allocate.FieldType:
 		return m.GetType()
 	case allocate.FieldStatus:
@@ -2351,6 +2515,10 @@ func (m *AllocateMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldEbikeID(ctx)
 	case allocate.FieldBrandID:
 		return m.OldBrandID(ctx)
+	case allocate.FieldBatteryID:
+		return m.OldBatteryID(ctx)
+	case allocate.FieldStationID:
+		return m.OldStationID(ctx)
 	case allocate.FieldType:
 		return m.OldType(ctx)
 	case allocate.FieldStatus:
@@ -2451,6 +2619,20 @@ func (m *AllocateMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetBrandID(v)
+		return nil
+	case allocate.FieldBatteryID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBatteryID(v)
+		return nil
+	case allocate.FieldStationID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStationID(v)
 		return nil
 	case allocate.FieldType:
 		v, ok := value.(allocate.Type)
@@ -2555,6 +2737,12 @@ func (m *AllocateMutation) ClearedFields() []string {
 	if m.FieldCleared(allocate.FieldBrandID) {
 		fields = append(fields, allocate.FieldBrandID)
 	}
+	if m.FieldCleared(allocate.FieldBatteryID) {
+		fields = append(fields, allocate.FieldBatteryID)
+	}
+	if m.FieldCleared(allocate.FieldStationID) {
+		fields = append(fields, allocate.FieldStationID)
+	}
 	return fields
 }
 
@@ -2598,6 +2786,12 @@ func (m *AllocateMutation) ClearField(name string) error {
 		return nil
 	case allocate.FieldBrandID:
 		m.ClearBrandID()
+		return nil
+	case allocate.FieldBatteryID:
+		m.ClearBatteryID()
+		return nil
+	case allocate.FieldStationID:
+		m.ClearStationID()
 		return nil
 	}
 	return fmt.Errorf("unknown Allocate nullable field %s", name)
@@ -2643,6 +2837,12 @@ func (m *AllocateMutation) ResetField(name string) error {
 	case allocate.FieldBrandID:
 		m.ResetBrandID()
 		return nil
+	case allocate.FieldBatteryID:
+		m.ResetBatteryID()
+		return nil
+	case allocate.FieldStationID:
+		m.ResetStationID()
+		return nil
 	case allocate.FieldType:
 		m.ResetType()
 		return nil
@@ -2661,7 +2861,7 @@ func (m *AllocateMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *AllocateMutation) AddedEdges() []string {
-	edges := make([]string, 0, 8)
+	edges := make([]string, 0, 10)
 	if m.rider != nil {
 		edges = append(edges, allocate.EdgeRider)
 	}
@@ -2682,6 +2882,12 @@ func (m *AllocateMutation) AddedEdges() []string {
 	}
 	if m.brand != nil {
 		edges = append(edges, allocate.EdgeBrand)
+	}
+	if m.battery != nil {
+		edges = append(edges, allocate.EdgeBattery)
+	}
+	if m.station != nil {
+		edges = append(edges, allocate.EdgeStation)
 	}
 	if m.contract != nil {
 		edges = append(edges, allocate.EdgeContract)
@@ -2721,6 +2927,14 @@ func (m *AllocateMutation) AddedIDs(name string) []ent.Value {
 		if id := m.brand; id != nil {
 			return []ent.Value{*id}
 		}
+	case allocate.EdgeBattery:
+		if id := m.battery; id != nil {
+			return []ent.Value{*id}
+		}
+	case allocate.EdgeStation:
+		if id := m.station; id != nil {
+			return []ent.Value{*id}
+		}
 	case allocate.EdgeContract:
 		if id := m.contract; id != nil {
 			return []ent.Value{*id}
@@ -2731,7 +2945,7 @@ func (m *AllocateMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *AllocateMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 8)
+	edges := make([]string, 0, 10)
 	return edges
 }
 
@@ -2743,7 +2957,7 @@ func (m *AllocateMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *AllocateMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 8)
+	edges := make([]string, 0, 10)
 	if m.clearedrider {
 		edges = append(edges, allocate.EdgeRider)
 	}
@@ -2764,6 +2978,12 @@ func (m *AllocateMutation) ClearedEdges() []string {
 	}
 	if m.clearedbrand {
 		edges = append(edges, allocate.EdgeBrand)
+	}
+	if m.clearedbattery {
+		edges = append(edges, allocate.EdgeBattery)
+	}
+	if m.clearedstation {
+		edges = append(edges, allocate.EdgeStation)
 	}
 	if m.clearedcontract {
 		edges = append(edges, allocate.EdgeContract)
@@ -2789,6 +3009,10 @@ func (m *AllocateMutation) EdgeCleared(name string) bool {
 		return m.clearedebike
 	case allocate.EdgeBrand:
 		return m.clearedbrand
+	case allocate.EdgeBattery:
+		return m.clearedbattery
+	case allocate.EdgeStation:
+		return m.clearedstation
 	case allocate.EdgeContract:
 		return m.clearedcontract
 	}
@@ -2819,6 +3043,12 @@ func (m *AllocateMutation) ClearEdge(name string) error {
 		return nil
 	case allocate.EdgeBrand:
 		m.ClearBrand()
+		return nil
+	case allocate.EdgeBattery:
+		m.ClearBattery()
+		return nil
+	case allocate.EdgeStation:
+		m.ClearStation()
 		return nil
 	case allocate.EdgeContract:
 		m.ClearContract()
@@ -2851,6 +3081,12 @@ func (m *AllocateMutation) ResetEdge(name string) error {
 		return nil
 	case allocate.EdgeBrand:
 		m.ResetBrand()
+		return nil
+	case allocate.EdgeBattery:
+		m.ResetBattery()
+		return nil
+	case allocate.EdgeStation:
+		m.ResetStation()
 		return nil
 	case allocate.EdgeContract:
 		m.ResetContract()

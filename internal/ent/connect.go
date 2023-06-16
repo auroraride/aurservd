@@ -61,7 +61,8 @@ func autoMigrate(c *Client) {
 type TxFunc func(tx *Tx) (err error)
 
 func WithTx(ctx context.Context, fn TxFunc) error {
-	tx, err := Database.Tx(ctx)
+	tx, err := Database.BeginTx(ctx, &sql.TxOptions{Isolation: sql.LevelRepeatableRead})
+	// tx, err := Database.Tx(ctx)
 	if err != nil {
 		return err
 	}

@@ -990,6 +990,38 @@ func (c *AllocateClient) QueryBrand(a *Allocate) *EbikeBrandQuery {
 	return query
 }
 
+// QueryBattery queries the battery edge of a Allocate.
+func (c *AllocateClient) QueryBattery(a *Allocate) *BatteryQuery {
+	query := (&BatteryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(allocate.Table, allocate.FieldID, id),
+			sqlgraph.To(battery.Table, battery.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, allocate.BatteryTable, allocate.BatteryColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStation queries the station edge of a Allocate.
+func (c *AllocateClient) QueryStation(a *Allocate) *EnterpriseStationQuery {
+	query := (&EnterpriseStationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(allocate.Table, allocate.FieldID, id),
+			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, allocate.StationTable, allocate.StationColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryContract queries the contract edge of a Allocate.
 func (c *AllocateClient) QueryContract(a *Allocate) *ContractQuery {
 	query := (&ContractClient{config: c.config}).Query()

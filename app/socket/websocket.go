@@ -10,10 +10,12 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/auroraride/aurservd/app/model"
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo/v4"
 	"github.com/lithammer/shortuuid/v4"
+	"go.uber.org/zap"
+
+	"github.com/auroraride/aurservd/app/model"
 )
 
 type Websocket interface {
@@ -43,7 +45,10 @@ func (hub *WebsocketHub) SendMessage(message model.SocketBinaryMessage) {
 		return
 	}
 	b := message.Bytes()
-	_ = hub.WriteMessage(websocket.TextMessage, b)
+	err := hub.WriteMessage(websocket.TextMessage, b)
+	if err != nil {
+		zap.L().Error("骑手端消息发送失败", zap.Error(err))
+	}
 }
 
 // DisConnect 断开连接

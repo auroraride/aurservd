@@ -105,6 +105,16 @@ func BrandID(v uint64) predicate.Allocate {
 	return predicate.Allocate(sql.FieldEQ(FieldBrandID, v))
 }
 
+// BatteryID applies equality check predicate on the "battery_id" field. It's identical to BatteryIDEQ.
+func BatteryID(v uint64) predicate.Allocate {
+	return predicate.Allocate(sql.FieldEQ(FieldBatteryID, v))
+}
+
+// StationID applies equality check predicate on the "station_id" field. It's identical to StationIDEQ.
+func StationID(v uint64) predicate.Allocate {
+	return predicate.Allocate(sql.FieldEQ(FieldStationID, v))
+}
+
 // Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
 func Status(v uint8) predicate.Allocate {
 	return predicate.Allocate(sql.FieldEQ(FieldStatus, v))
@@ -505,6 +515,66 @@ func BrandIDNotNil() predicate.Allocate {
 	return predicate.Allocate(sql.FieldNotNull(FieldBrandID))
 }
 
+// BatteryIDEQ applies the EQ predicate on the "battery_id" field.
+func BatteryIDEQ(v uint64) predicate.Allocate {
+	return predicate.Allocate(sql.FieldEQ(FieldBatteryID, v))
+}
+
+// BatteryIDNEQ applies the NEQ predicate on the "battery_id" field.
+func BatteryIDNEQ(v uint64) predicate.Allocate {
+	return predicate.Allocate(sql.FieldNEQ(FieldBatteryID, v))
+}
+
+// BatteryIDIn applies the In predicate on the "battery_id" field.
+func BatteryIDIn(vs ...uint64) predicate.Allocate {
+	return predicate.Allocate(sql.FieldIn(FieldBatteryID, vs...))
+}
+
+// BatteryIDNotIn applies the NotIn predicate on the "battery_id" field.
+func BatteryIDNotIn(vs ...uint64) predicate.Allocate {
+	return predicate.Allocate(sql.FieldNotIn(FieldBatteryID, vs...))
+}
+
+// BatteryIDIsNil applies the IsNil predicate on the "battery_id" field.
+func BatteryIDIsNil() predicate.Allocate {
+	return predicate.Allocate(sql.FieldIsNull(FieldBatteryID))
+}
+
+// BatteryIDNotNil applies the NotNil predicate on the "battery_id" field.
+func BatteryIDNotNil() predicate.Allocate {
+	return predicate.Allocate(sql.FieldNotNull(FieldBatteryID))
+}
+
+// StationIDEQ applies the EQ predicate on the "station_id" field.
+func StationIDEQ(v uint64) predicate.Allocate {
+	return predicate.Allocate(sql.FieldEQ(FieldStationID, v))
+}
+
+// StationIDNEQ applies the NEQ predicate on the "station_id" field.
+func StationIDNEQ(v uint64) predicate.Allocate {
+	return predicate.Allocate(sql.FieldNEQ(FieldStationID, v))
+}
+
+// StationIDIn applies the In predicate on the "station_id" field.
+func StationIDIn(vs ...uint64) predicate.Allocate {
+	return predicate.Allocate(sql.FieldIn(FieldStationID, vs...))
+}
+
+// StationIDNotIn applies the NotIn predicate on the "station_id" field.
+func StationIDNotIn(vs ...uint64) predicate.Allocate {
+	return predicate.Allocate(sql.FieldNotIn(FieldStationID, vs...))
+}
+
+// StationIDIsNil applies the IsNil predicate on the "station_id" field.
+func StationIDIsNil() predicate.Allocate {
+	return predicate.Allocate(sql.FieldIsNull(FieldStationID))
+}
+
+// StationIDNotNil applies the NotNil predicate on the "station_id" field.
+func StationIDNotNil() predicate.Allocate {
+	return predicate.Allocate(sql.FieldNotNull(FieldStationID))
+}
+
 // TypeEQ applies the EQ predicate on the "type" field.
 func TypeEQ(v Type) predicate.Allocate {
 	return predicate.Allocate(sql.FieldEQ(FieldType, v))
@@ -823,6 +893,52 @@ func HasBrand() predicate.Allocate {
 func HasBrandWith(preds ...predicate.EbikeBrand) predicate.Allocate {
 	return predicate.Allocate(func(s *sql.Selector) {
 		step := newBrandStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasBattery applies the HasEdge predicate on the "battery" edge.
+func HasBattery() predicate.Allocate {
+	return predicate.Allocate(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, BatteryTable, BatteryColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasBatteryWith applies the HasEdge predicate on the "battery" edge with a given conditions (other predicates).
+func HasBatteryWith(preds ...predicate.Battery) predicate.Allocate {
+	return predicate.Allocate(func(s *sql.Selector) {
+		step := newBatteryStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasStation applies the HasEdge predicate on the "station" edge.
+func HasStation() predicate.Allocate {
+	return predicate.Allocate(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, StationTable, StationColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasStationWith applies the HasEdge predicate on the "station" edge with a given conditions (other predicates).
+func HasStationWith(preds ...predicate.EnterpriseStation) predicate.Allocate {
+	return predicate.Allocate(func(s *sql.Selector) {
+		step := newStationStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

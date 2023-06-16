@@ -177,7 +177,7 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 				}
 
 				// 清除旧电池分配信息
-				_ = NewBattery().Unallocate(old)
+				_ = NewBattery().Unallocate(old.Update())
 
 				go bs.RiderBusiness(true, putin, s.rider, cab, after.Ordinal)
 			}
