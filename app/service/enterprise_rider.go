@@ -97,6 +97,9 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 				return errors.New("更改骑手失败")
 			}
 
+			// 删除旧的骑手登录信息
+			NewRider().Signout(r)
+
 			// 新增骑手信息
 			r, err = s.CopyAndCreateRider(tx, r, &model.RiderConvert{
 				EnterpriseID: &req.EnterpriseID,
@@ -107,6 +110,7 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 			if err != nil {
 				return errors.New("转化骑手失败")
 			}
+
 		} else {
 			// 未存在骑手创建骑手 并创建团签订阅信息
 			var per *ent.Person
@@ -496,6 +500,9 @@ func (s *enterpriseRiderService) ExitEnterprise(r *ent.Rider) {
 		})
 		return err
 	})
+
+	// 删除旧的骑手登录信息
+	NewRider().Signout(r)
 }
 
 // CopyAndCreateRider 复制并创建骑手信息

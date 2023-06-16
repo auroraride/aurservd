@@ -161,6 +161,7 @@ func (s *businessService) listFilter(req model.BusinessFilter) (q *ent.BusinessQ
 		QueryNotDeleted().
 		WithRider().
 		WithEnterprise().
+		WithStation().
 		WithPlan().
 		WithCity().
 		Order(ent.Desc(business.FieldCreatedAt))
@@ -268,6 +269,13 @@ func (s *businessService) basicDetail(item *ent.Business) (res model.BusinessEmp
 		}
 	}
 
+	es := item.Edges.Station
+	if es != nil {
+		res.EnterpriseStation = &model.EnterpriseStation{
+			ID:   es.ID,
+			Name: es.Name,
+		}
+	}
 	return
 }
 
