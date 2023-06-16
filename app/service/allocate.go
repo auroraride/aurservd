@@ -225,6 +225,11 @@ func (s *allocateService) Create(req *model.AllocateCreateReq) model.AllocateCre
 		if bat.RiderID != nil || bat.SubscribeID != nil {
 			snag.Panic("电池无法重复绑定")
 		}
+
+		// 判定电池型号是否正确
+		if bat.Model != sub.Model {
+			snag.Panic("电池型号不符")
+		}
 	}
 
 	// 判定智能和非智能电池
