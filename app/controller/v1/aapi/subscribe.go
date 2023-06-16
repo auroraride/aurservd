@@ -73,3 +73,19 @@ func (*subscribe) AlterReivew(c echo.Context) (err error) {
 	})
 	return ctx.SendResponse()
 }
+
+// Halt 强制退租
+// @ID           AgentSubscribeHalt
+// @Router       /agent/v1/subscribe/halt [POST]
+// @Summary      A7004 强制退租
+// @Tags         [A]代理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Agent-Token  header  string  true  "代理校验token"
+// @Param        body  body   model.BusinessSubscribeReq  true  "请求详情"
+// @Success      200  {object}  string  "请求成功"
+func (*subscribe) Halt(c echo.Context) (err error) {
+	ctx, req := app.AgentContextAndBinding[model.BusinessSubscribeReq](c)
+	service.NewBusinessRiderWithModifier(nil).SetCabinetID(req.CabinetID).SetStoreID(req.StoreID).UnSubscribe(req.ID)
+	return ctx.SendResponse()
+}

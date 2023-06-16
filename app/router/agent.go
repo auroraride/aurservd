@@ -57,6 +57,7 @@ func loadAgentRoutes() {
 	auth.POST("/subscribe/active", aapi.Subscribe.Active)            // 激活骑手
 	auth.GET("/subscribe/alter", aapi.Subscribe.AlterList)           // 申请加时列表
 	auth.POST("/subscribe/alter/review", aapi.Subscribe.AlterReivew) // 审批加时
+	auth.POST("/subscribe/halt", aapi.Subscribe.Halt)                // 强制退租
 
 	// A8 业务
 	auth.GET("/business/exchange", aapi.Business.Exchange) // 换电列表
