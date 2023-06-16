@@ -52,6 +52,8 @@ type EnterprisePriceWithCity struct {
 	Price       float64 `json:"price"`       // 单价(元/天)
 	City        City    `json:"city"`        // 城市
 	Intelligent bool    `json:"intelligent"` // 是否智能电池
+
+	EbikeBrand *EbikeBrand `json:"ebikeBrand,omitempty"` // 车辆型号
 }
 
 // Enterprise 企业基础字段

@@ -21966,6 +21966,14 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "ebikeBrand": {
+                    "description": "车辆型号",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EbikeBrand"
+                        }
+                    ]
+                },
                 "id": {
                     "description": "价格ID",
                     "type": "integer"

@@ -118,7 +118,7 @@ func (s *enterpriseService) PriceKey(cityID uint64, model string) string {
 func (s *enterpriseService) DetailQuery() *ent.EnterpriseQuery {
 	return s.orm.QueryNotDeleted().WithCity().
 		WithPrices(func(ep *ent.EnterprisePriceQuery) {
-			ep.Where(enterpriseprice.DeletedAtIsNil()).WithCity()
+			ep.Where(enterpriseprice.DeletedAtIsNil()).WithCity().WithBrand()
 		}).
 		WithContracts(func(ecq *ent.EnterpriseContractQuery) {
 			ecq.Where(enterprisecontract.DeletedAtIsNil()).Order(ent.Desc(enterprisecontract.FieldEnd))
@@ -218,6 +218,16 @@ func (s *enterpriseService) Detail(item *ent.Enterprise) (res model.EnterpriseRe
 					ID:   ep.Edges.City.ID,
 					Name: ep.Edges.City.Name,
 				},
+			}
+
+			// 车辆型号
+			eb := ep.Edges.Brand
+			if eb != nil {
+				res.Prices[i].EbikeBrand = &model.EbikeBrand{
+					ID:    eb.ID,
+					Name:  eb.Name,
+					Cover: eb.Cover,
+				}
 			}
 		}
 	}

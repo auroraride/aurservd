@@ -3987,6 +3987,10 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.City'
         description: 城市
+      ebikeBrand:
+        allOf:
+        - $ref: '#/definitions/model.EbikeBrand'
+        description: 车辆型号
       id:
         description: 价格ID
         type: integer
