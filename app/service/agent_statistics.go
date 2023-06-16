@@ -60,7 +60,7 @@ func (s *agentStatisticsService) Overview(en *ent.Enterprise) *model.AgentStatis
 	// 累计激活骑手 = 计费中骑手 + 累计退订骑手
 	rsp.ActivationTotal = rsp.UnSubscribeTotal + rsp.BillingRiderTotal
 	// 加时审核数
-	rsp.OverTimeRiderTotal = ent.Database.SubscribeAlter.Query().Where(
+	rsp.SubscribeAlterTotal = ent.Database.SubscribeAlter.Query().Where(
 		subscribealter.EnterpriseID(en.ID),
 		subscribealter.StatusEQ(model.SubscribeAlterStatusPending),
 		subscribealter.HasRiderWith(rider.DeletedAtIsNil()),
