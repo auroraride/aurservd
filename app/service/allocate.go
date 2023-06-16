@@ -17,6 +17,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/allocate"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/ebike"
+	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
 )
@@ -103,14 +104,9 @@ func (s *allocateService) UnallocatedEbikeInfo(keyword string) model.Ebike {
 
 // Create 订单激活分配
 func (s *allocateService) Create(req *model.AllocateCreateReq) model.AllocateCreateRes {
-	// 判定条件
-	// 必须有 门店 / 电柜 / 站点其一
-	if req.StoreID == nil && req.CabinetID == nil {
-		snag.Panic("必须由门店或电柜参与")
-	}
-
-	if req.StoreID != nil && req.CabinetID != nil {
-		snag.Panic("门店和电柜不能同时存在")
+	// 禁止骑手请求
+	if s.rider != nil {
+		snag.Panic("请求方式错误")
 	}
 
 	// 查找订阅
@@ -120,6 +116,37 @@ func (s *allocateService) Create(req *model.AllocateCreateReq) model.AllocateCre
 		snag.Panic("未找到订阅信息")
 	}
 
+	// 判定非智能约束
+	if !sub.Intelligent && req.BatteryID != nil {
+		snag.Panic("非智能订阅无法绑定电池")
+	}
+
+	// 判定条件
+	// 必须有 门店 / 电柜 / 站点其一
+	if req.StoreID == nil && sub.StationID == nil {
+		snag.Panic("必须由门店或站点激活")
+	}
+
+	if req.StoreID != nil && sub.StationID != nil {
+		snag.Panic("门店和站点不能同时存在")
+	}
+
+	// 是否需要分配电车
+	if sub.BrandID != nil && req.EbikeID == nil {
+		snag.Panic("需要分配电车")
+	}
+
+	// 获取骑手
+	r := sub.Edges.Rider
+	if r == nil {
+		snag.Panic("骑手查询失败")
+	}
+
+	// 判定骑手是否实名认证
+	if exists, _ := r.QueryPerson().Where(person.Status(model.PersonAuthenticated.Value())).Exist(s.ctx); !exists {
+		snag.Panic("骑手未实名认证")
+	}
+
 	// 查询是否已签约
 	if exists, _ := ent.Database.Contract.QueryNotDeleted().Where(
 		contract.SubscribeID(sub.ID),
@@ -127,6 +154,17 @@ func (s *allocateService) Create(req *model.AllocateCreateReq) model.AllocateCre
 		contract.Effective(true),
 	).Exist(s.ctx); exists {
 		snag.Panic("已签约, 无法重新分配")
+	}
+
+	// 是否被分配过
+	if exists, _ := s.orm.Query().
+		Where(
+			allocate.SubscribeID(*req.SubscribeID),
+			allocate.TimeGT(carbon.Now().SubSeconds(model.AllocateExpiration).Carbon2Time()),
+			allocate.StatusIn(model.AllocateStatusPending.Value(), model.AllocateStatusSigned.Value()),
+		).
+		Exist(s.ctx); exists {
+		snag.Panic("已被分配过")
 	}
 
 	e := sub.Edges.Enterprise
@@ -144,7 +182,6 @@ func (s *allocateService) Create(req *model.AllocateCreateReq) model.AllocateCre
 	var (
 		cityID     uint64
 		entStore   *ent.Store
-		entCabinet *ent.Cabinet
 		entStation *ent.EnterpriseStation
 	)
 
@@ -152,42 +189,47 @@ func (s *allocateService) Create(req *model.AllocateCreateReq) model.AllocateCre
 	if req.StoreID != nil {
 		entStore = NewStore().Query(*req.StoreID)
 		cityID = entStore.CityID
-	}
 
-	// 电柜
-	if req.CabinetID != nil {
-		entCabinet = NewCabinet().QueryOne(*req.CabinetID)
-		if entCabinet.CityID != nil {
-			cityID = *entCabinet.CityID
+		// 判定门店非智能电池库存
+		if req.BatteryID == nil && !NewStock().CheckStore(*req.StoreID, sub.Model, 1) {
+			snag.Panic("电池库存不足")
 		}
 	}
 
 	// 站点
-	if req.StationID != nil {
-		entStation = NewEnterpriseStation().QueryX(*req.StationID)
+	if sub.StationID != nil {
+		entStation = NewEnterpriseStation().QueryX(*sub.StationID)
 		cityID = *entStation.CityID
+		// TODO 判定站点非智能电池库存
 	}
 
+	// 判定城市
 	if sub.CityID != cityID {
 		snag.Panic("无法跨城市操作")
 	}
 
-	if sub.BrandID != nil && req.EbikeID == nil {
-		snag.Panic("需要分配电车")
-	}
-
-	// 查找骑手
-	r := sub.Edges.Rider
-	if r == nil {
-		snag.Panic("骑手查询失败")
-	}
-
-	// 是否被分配过
-	exists, _ := s.orm.Query().Where(allocate.SubscribeID(*req.SubscribeID)).First(s.ctx)
-	if exists != nil {
-		if exists.Time.After(carbon.Now().SubSeconds(model.AllocateExpiration).Carbon2Time()) {
-			snag.Panic("已被分配过")
+	// 获取并判定电池
+	var bat *ent.Battery
+	if req.BatteryID != nil {
+		bat = NewBattery().QueryIDX(*req.BatteryID)
+		if !silk.Compare(bat.StationID, sub.StationID) {
+			snag.Panic("电池站点不符")
 		}
+
+		// TODO 是否有必要限制电柜中的电池?
+		if bat.CabinetID != nil {
+			snag.Panic("电池在电柜中无法使用")
+		}
+
+		// 电池已被绑定
+		if bat.RiderID != nil || bat.SubscribeID != nil {
+			snag.Panic("电池无法重复绑定")
+		}
+	}
+
+	// 判定智能和非智能电池
+	if sub.Intelligent && bat == nil {
+		snag.Panic("请绑定电池")
 	}
 
 	// 查找电车
@@ -196,8 +238,8 @@ func (s *allocateService) Create(req *model.AllocateCreateReq) model.AllocateCre
 	typ := allocate.TypeBattery
 	if req.EbikeID != nil {
 		typ = allocate.TypeEbike
-		if req.StoreID == nil {
-			snag.Panic("车电必须由门店参与")
+		if req.StoreID == nil && sub.StationID == nil {
+			snag.Panic("车电套餐调键判定不足")
 		}
 		bike := NewEbike().QueryAllocatableX(*req.EbikeID, *req.StoreID)
 
@@ -221,13 +263,6 @@ func (s *allocateService) Create(req *model.AllocateCreateReq) model.AllocateCre
 		}
 	}
 
-	// 判定电池库存
-	if req.StoreID != nil {
-		if !NewStock().CheckStore(*req.StoreID, sub.Model, 1) {
-			snag.Panic("电池库存不足")
-		}
-	}
-
 	// 存储分配信息
 	status := model.AllocateStatusPending.Value()
 	if !sub.NeedContract {
@@ -237,12 +272,26 @@ func (s *allocateService) Create(req *model.AllocateCreateReq) model.AllocateCre
 	// 强制删除原有分配信息
 	s.SubscribeDeleteIfExists(sub.ID)
 
+	var err error
+
+	// 分配信息
+	var allo *ent.Allocate
+
+	// 激活失败作废分配信息
+	defer func() {
+		if v := recover(); v != nil {
+			_ = allo.Update().SetStatus(model.AllocateStatusVoid.Value()).Exec(s.ctx)
+			panic(v)
+		}
+	}()
+
 	// 保存分配信息
-	allo, err := s.orm.Create().
+	allo, err = s.orm.Create().
 		SetType(typ).
 		SetNillableEmployeeID(req.EmployeeID).
 		SetNillableStoreID(req.StoreID).
-		SetNillableCabinetID(req.CabinetID).
+		SetNillableStationID(sub.StationID).
+		SetNillableBatteryID(req.BatteryID).
 		SetNillableEbikeID(bikeID).
 		SetNillableBrandID(brandID).
 		SetSubscribe(sub).
@@ -257,29 +306,39 @@ func (s *allocateService) Create(req *model.AllocateCreateReq) model.AllocateCre
 		snag.Panic("分配失败")
 	}
 
-	if sub.NeedContract {
+	switch sub.NeedContract {
+	case true:
 		// 需要签约, 推送签约消息
 		socket.SendMessage(NewRiderSocket(), r.ID, &model.RiderSocketMessage{ContractSign: &model.ContractSignReq{
 			SubscribeID: sub.ID,
 		}})
-	} else {
+	default:
 		// 无须签约, 直接激活
-		var srv *businessRiderService
-		// 直接激活
-		if s.modifier != nil {
-			srv = NewBusinessRiderWithModifier(s.modifier)
-		} else {
-			srv = NewBusinessRider(r)
-		}
-		srv.SetStoreID(allo.StoreID).
-			SetCabinetID(allo.CabinetID).
-			SetEmployeeID(allo.EmployeeID)
-		// TODO 电车直接激活?
-		if bikeID != nil || brandID != nil {
-			snag.Panic("暂不支持此业务")
-			srv.SetEbike(bikeInfo)
-		}
-		srv.SetBattery(req.BatteryID).Active(sub, allo)
+
+		// var srv *businessRiderService
+		// // 直接激活
+		// if s.modifier != nil {
+		// 	srv = NewBusinessRiderWithModifier(s.modifier)
+		// } else {
+		// 	srv = NewBusinessRider(r)
+		// }
+		// // TODO 电车直接激活?
+		// if bikeID != nil || brandID != nil {
+		// 	snag.Panic("暂不支持此业务")
+		// 	srv.SetEbike(bikeInfo)
+		// }
+		// srv.SetBatteryID(req.BatteryID).Active(sub, allo)
+
+		NewBusinessRiderWithParams(
+			s.modifier,
+			r,
+			entStore,
+			entStation,
+			bikeInfo,
+			bat,
+		).
+			SetEmployeeID(allo.EmployeeID).
+			Active(sub, allo)
 	}
 
 	return model.AllocateCreateRes{

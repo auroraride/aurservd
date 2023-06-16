@@ -7,16 +7,11 @@ package service
 
 import (
 	"context"
-	"time"
-
-	"github.com/auroraride/aurservd/internal/ent/business"
 
 	"github.com/golang-module/carbon/v2"
-	"go.uber.org/zap"
 
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
-	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
@@ -216,101 +211,4 @@ func (s *riderAgentService) Detail(req *model.IDParamReq, enterpriseID uint64) m
 		snag.Panic("未找到骑手")
 	}
 	return s.detail(item)
-}
-
-// Active 激活骑手电池
-func (s *enterpriseService) Active(req *model.AgentSubscribeActiveReq, enterpriseID uint64) {
-	// 不是自己骑手的不能激活
-	riderInfo, _ := ent.Database.Rider.
-		QueryNotDeleted().
-		Where(
-			rider.ID(req.ID),
-			rider.EnterpriseID(enterpriseID),
-		).
-		WithPerson().
-		First(s.ctx)
-	if riderInfo == nil {
-		snag.Panic("未找到有效骑手")
-	}
-
-	if !NewRider().IsAuthed(riderInfo) {
-		snag.Panic("骑手未实名认证")
-	}
-
-	// 查询电池是否存在
-	batteryInfo := NewBattery(s.ctx).QueryIDX(req.BatteryID)
-	if batteryInfo.CabinetID != nil {
-		snag.Panic("电柜中的电池无法手动绑定骑手")
-	}
-
-	if batteryInfo.EnterpriseID == nil || batteryInfo.StationID == nil {
-		snag.Panic("电池未绑定企业或者站点")
-	}
-
-	if *batteryInfo.EnterpriseID != enterpriseID || *batteryInfo.StationID != *riderInfo.StationID {
-		snag.Panic("电池不属于当前企业或者骑手所在站点")
-	}
-
-	if batteryInfo.RiderID != nil || batteryInfo.SubscribeID != nil {
-		snag.Panic("电池已被绑定")
-	}
-	// 查询骑手订阅信息
-	sub, _ := NewSubscribe().QueryEffective(req.ID)
-	if sub != nil && (sub.EnterpriseID == nil || (sub.EnterpriseID != nil && sub.Status != model.SubscribeStatusInactive)) {
-		snag.Panic("已有正在使用订单,无法绑定电池")
-	}
-	subscribeInfo, _ := ent.Database.Subscribe.
-		QueryNotDeleted().
-		Where(subscribe.RiderID(req.ID), subscribe.Status(model.SubscribeStatusInactive)).
-		First(s.ctx)
-	if subscribeInfo == nil {
-		snag.Panic("未找到未激活订单")
-	}
-
-	if batteryInfo.Model != sub.Model {
-		snag.Panic("激活电池型号与订阅电池型号不符")
-	}
-
-	// 绑定电池
-	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) error {
-		// 激活订阅
-		aendTime := tools.NewTime().WillEnd(carbon.Now().StartOfDay().Carbon2Time(), subscribeInfo.InitialDays)
-		if err := tx.Subscribe.UpdateOneID(subscribeInfo.ID).SetStatus(model.SubscribeStatusUsing).SetStartAt(time.Now()).
-			SetNillableAgentEndAt(&aendTime).Exec(s.ctx); err != nil {
-			zap.L().Error("激活订阅失败", zap.Error(err))
-			snag.Panic("激活订阅失败")
-		}
-		// 删除原有信息
-		if err := tx.Battery.Update().Where(battery.SubscribeID(subscribeInfo.ID)).ClearRiderID().ClearSubscribeID().Exec(s.ctx); err != nil {
-			zap.L().Error("电池解绑失败", zap.Error(err))
-			snag.Panic("电池解绑失败")
-		}
-		// 绑定电池
-		if err := tx.Battery.Update().Where(battery.Sn(batteryInfo.Sn)).
-			SetRiderID(req.ID).SetSubscribeID(subscribeInfo.ID).Exec(s.ctx); err != nil {
-			zap.L().Error("电池绑定失败", zap.Error(err))
-			snag.Panic("电池绑定失败")
-		}
-		// 更新电池流水记录表
-		if err := tx.BatteryFlow.Create().SetSn(batteryInfo.Sn).SetRiderID(req.ID).
-			SetBatteryID(batteryInfo.ID).
-			SetNillableSubscribeID(&subscribeInfo.ID).Exec(s.ctx); err != nil {
-			zap.L().Error("电池流水记录失败", zap.Error(err))
-			snag.Panic("电池流水记录失败")
-		}
-
-		ba := &model.Battery{
-			ID:    batteryInfo.ID,
-			SN:    batteryInfo.Sn,
-			Model: batteryInfo.Model,
-		}
-
-		// 记录业务日志
-		_, err := NewBusinessLog(sub).SetBattery(ba).SetModifier(s.modifier).Save(business.TypeActive)
-		if err != nil {
-			snag.Panic("记录业务日志失败")
-		}
-
-		return nil
-	})
 }

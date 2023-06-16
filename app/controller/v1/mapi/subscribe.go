@@ -44,7 +44,7 @@ func (*subscribe) Alter(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*subscribe) Pause(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.BusinessSubscribeReq](c)
-	service.NewBusinessRiderWithModifier(ctx.Modifier).SetCabinetID(req.CabinetID).SetStoreID(req.StoreID).Pause(req.ID)
+	service.NewBusinessRider(nil).SetModifier(ctx.Modifier).SetCabinetID(req.CabinetID).SetStoreID(req.StoreID).Pause(req.ID)
 	return ctx.SendResponse()
 }
 
@@ -60,7 +60,7 @@ func (*subscribe) Pause(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*subscribe) Continue(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.BusinessSubscribeReq](c)
-	service.NewBusinessRiderWithModifier(ctx.Modifier).SetCabinetID(req.CabinetID).SetStoreID(req.StoreID).Continue(req.ID)
+	service.NewBusinessRider(nil).SetModifier(ctx.Modifier).SetCabinetID(req.CabinetID).SetStoreID(req.StoreID).Continue(req.ID)
 	return ctx.SendResponse()
 }
 
@@ -76,14 +76,14 @@ func (*subscribe) Continue(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*subscribe) Halt(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.BusinessSubscribeReq](c)
-	service.NewBusinessRiderWithModifier(ctx.Modifier).SetCabinetID(req.CabinetID).SetStoreID(req.StoreID).UnSubscribe(req.ID)
+	service.NewBusinessRider(nil).SetModifier(ctx.Modifier).SetCabinetID(req.CabinetID).SetStoreID(req.StoreID).UnSubscribe(req.ID)
 	return ctx.SendResponse()
 }
 
 // Active
 // @ID           ManagerSubscribeActive
 // @Router       /manager/v1/subscribe/active [POST]
-// @Summary      M7009 激活
+// @Summary      M7009 激活订阅
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json

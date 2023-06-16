@@ -438,7 +438,7 @@ func (s *batteryService) Unbind(req *model.BatteryUnbindRequest) {
 		snag.Panic("未找到绑定的电池")
 	}
 
-	err := s.Unallocate(bat)
+	err := s.Unallocate(bat.Update())
 	if err != nil {
 		snag.Panic(err)
 	}
@@ -479,8 +479,8 @@ func (s *batteryService) Allocate(buo *ent.BatteryUpdateOne, bat *ent.Battery, s
 }
 
 // Unallocate 清除骑手信息
-func (s *batteryService) Unallocate(bat *ent.Battery) (err error) {
-	return bat.Update().ClearSubscribeID().ClearRiderID().Exec(s.ctx)
+func (s *batteryService) Unallocate(updater *ent.BatteryUpdateOne) (err error) {
+	return updater.ClearSubscribeID().ClearRiderID().Exec(s.ctx)
 }
 
 // StationBusinessTransfer 站点之间业务自动调拨

@@ -13,11 +13,13 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
+	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/employee"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
@@ -167,6 +169,34 @@ func (ac *AllocateCreate) SetNillableBrandID(u *uint64) *AllocateCreate {
 	return ac
 }
 
+// SetBatteryID sets the "battery_id" field.
+func (ac *AllocateCreate) SetBatteryID(u uint64) *AllocateCreate {
+	ac.mutation.SetBatteryID(u)
+	return ac
+}
+
+// SetNillableBatteryID sets the "battery_id" field if the given value is not nil.
+func (ac *AllocateCreate) SetNillableBatteryID(u *uint64) *AllocateCreate {
+	if u != nil {
+		ac.SetBatteryID(*u)
+	}
+	return ac
+}
+
+// SetStationID sets the "station_id" field.
+func (ac *AllocateCreate) SetStationID(u uint64) *AllocateCreate {
+	ac.mutation.SetStationID(u)
+	return ac
+}
+
+// SetNillableStationID sets the "station_id" field if the given value is not nil.
+func (ac *AllocateCreate) SetNillableStationID(u *uint64) *AllocateCreate {
+	if u != nil {
+		ac.SetStationID(*u)
+	}
+	return ac
+}
+
 // SetType sets the "type" field.
 func (ac *AllocateCreate) SetType(a allocate.Type) *AllocateCreate {
 	ac.mutation.SetType(a)
@@ -224,6 +254,16 @@ func (ac *AllocateCreate) SetEbike(e *Ebike) *AllocateCreate {
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
 func (ac *AllocateCreate) SetBrand(e *EbikeBrand) *AllocateCreate {
 	return ac.SetBrandID(e.ID)
+}
+
+// SetBattery sets the "battery" edge to the Battery entity.
+func (ac *AllocateCreate) SetBattery(b *Battery) *AllocateCreate {
+	return ac.SetBatteryID(b.ID)
+}
+
+// SetStation sets the "station" edge to the EnterpriseStation entity.
+func (ac *AllocateCreate) SetStation(e *EnterpriseStation) *AllocateCreate {
+	return ac.SetStationID(e.ID)
 }
 
 // SetContractID sets the "contract" edge to the Contract entity by ID.
@@ -512,6 +552,40 @@ func (ac *AllocateCreate) createSpec() (*Allocate, *sqlgraph.CreateSpec) {
 		_node.BrandID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := ac.mutation.BatteryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   allocate.BatteryTable,
+			Columns: []string{allocate.BatteryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.BatteryID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ac.mutation.StationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   allocate.StationTable,
+			Columns: []string{allocate.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.StationID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := ac.mutation.ContractIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
@@ -745,6 +819,42 @@ func (u *AllocateUpsert) UpdateBrandID() *AllocateUpsert {
 // ClearBrandID clears the value of the "brand_id" field.
 func (u *AllocateUpsert) ClearBrandID() *AllocateUpsert {
 	u.SetNull(allocate.FieldBrandID)
+	return u
+}
+
+// SetBatteryID sets the "battery_id" field.
+func (u *AllocateUpsert) SetBatteryID(v uint64) *AllocateUpsert {
+	u.Set(allocate.FieldBatteryID, v)
+	return u
+}
+
+// UpdateBatteryID sets the "battery_id" field to the value that was provided on create.
+func (u *AllocateUpsert) UpdateBatteryID() *AllocateUpsert {
+	u.SetExcluded(allocate.FieldBatteryID)
+	return u
+}
+
+// ClearBatteryID clears the value of the "battery_id" field.
+func (u *AllocateUpsert) ClearBatteryID() *AllocateUpsert {
+	u.SetNull(allocate.FieldBatteryID)
+	return u
+}
+
+// SetStationID sets the "station_id" field.
+func (u *AllocateUpsert) SetStationID(v uint64) *AllocateUpsert {
+	u.Set(allocate.FieldStationID, v)
+	return u
+}
+
+// UpdateStationID sets the "station_id" field to the value that was provided on create.
+func (u *AllocateUpsert) UpdateStationID() *AllocateUpsert {
+	u.SetExcluded(allocate.FieldStationID)
+	return u
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (u *AllocateUpsert) ClearStationID() *AllocateUpsert {
+	u.SetNull(allocate.FieldStationID)
 	return u
 }
 
@@ -1043,6 +1153,48 @@ func (u *AllocateUpsertOne) UpdateBrandID() *AllocateUpsertOne {
 func (u *AllocateUpsertOne) ClearBrandID() *AllocateUpsertOne {
 	return u.Update(func(s *AllocateUpsert) {
 		s.ClearBrandID()
+	})
+}
+
+// SetBatteryID sets the "battery_id" field.
+func (u *AllocateUpsertOne) SetBatteryID(v uint64) *AllocateUpsertOne {
+	return u.Update(func(s *AllocateUpsert) {
+		s.SetBatteryID(v)
+	})
+}
+
+// UpdateBatteryID sets the "battery_id" field to the value that was provided on create.
+func (u *AllocateUpsertOne) UpdateBatteryID() *AllocateUpsertOne {
+	return u.Update(func(s *AllocateUpsert) {
+		s.UpdateBatteryID()
+	})
+}
+
+// ClearBatteryID clears the value of the "battery_id" field.
+func (u *AllocateUpsertOne) ClearBatteryID() *AllocateUpsertOne {
+	return u.Update(func(s *AllocateUpsert) {
+		s.ClearBatteryID()
+	})
+}
+
+// SetStationID sets the "station_id" field.
+func (u *AllocateUpsertOne) SetStationID(v uint64) *AllocateUpsertOne {
+	return u.Update(func(s *AllocateUpsert) {
+		s.SetStationID(v)
+	})
+}
+
+// UpdateStationID sets the "station_id" field to the value that was provided on create.
+func (u *AllocateUpsertOne) UpdateStationID() *AllocateUpsertOne {
+	return u.Update(func(s *AllocateUpsert) {
+		s.UpdateStationID()
+	})
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (u *AllocateUpsertOne) ClearStationID() *AllocateUpsertOne {
+	return u.Update(func(s *AllocateUpsert) {
+		s.ClearStationID()
 	})
 }
 
@@ -1512,6 +1664,48 @@ func (u *AllocateUpsertBulk) UpdateBrandID() *AllocateUpsertBulk {
 func (u *AllocateUpsertBulk) ClearBrandID() *AllocateUpsertBulk {
 	return u.Update(func(s *AllocateUpsert) {
 		s.ClearBrandID()
+	})
+}
+
+// SetBatteryID sets the "battery_id" field.
+func (u *AllocateUpsertBulk) SetBatteryID(v uint64) *AllocateUpsertBulk {
+	return u.Update(func(s *AllocateUpsert) {
+		s.SetBatteryID(v)
+	})
+}
+
+// UpdateBatteryID sets the "battery_id" field to the value that was provided on create.
+func (u *AllocateUpsertBulk) UpdateBatteryID() *AllocateUpsertBulk {
+	return u.Update(func(s *AllocateUpsert) {
+		s.UpdateBatteryID()
+	})
+}
+
+// ClearBatteryID clears the value of the "battery_id" field.
+func (u *AllocateUpsertBulk) ClearBatteryID() *AllocateUpsertBulk {
+	return u.Update(func(s *AllocateUpsert) {
+		s.ClearBatteryID()
+	})
+}
+
+// SetStationID sets the "station_id" field.
+func (u *AllocateUpsertBulk) SetStationID(v uint64) *AllocateUpsertBulk {
+	return u.Update(func(s *AllocateUpsert) {
+		s.SetStationID(v)
+	})
+}
+
+// UpdateStationID sets the "station_id" field to the value that was provided on create.
+func (u *AllocateUpsertBulk) UpdateStationID() *AllocateUpsertBulk {
+	return u.Update(func(s *AllocateUpsert) {
+		s.UpdateStationID()
+	})
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (u *AllocateUpsertBulk) ClearStationID() *AllocateUpsertBulk {
+	return u.Update(func(s *AllocateUpsert) {
+		s.ClearStationID()
 	})
 }
 

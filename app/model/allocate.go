@@ -40,14 +40,12 @@ type AllocateCreateReq struct {
 	Qrcode      *string `json:"qrcode" validate:"required_without=SubscribeID" trans:"二维码"`
 	SubscribeID *uint64 `json:"subscribeId" validate:"required_without=Qrcode" trans:"订阅ID"`
 
-	EbikeID *uint64 `json:"ebikeId"` // 电车ID
+	// 选择激活对象
+	StoreID    *uint64 `swaggerignore:"true"` // 门店ID
+	EmployeeID *uint64 `swaggerignore:"true"` // 店员ID
 
-	StoreID    *uint64 `swaggerignore:"true"`
-	EmployeeID *uint64 `swaggerignore:"true"`
-	CabinetID  *uint64 `swaggerignore:"true"`
-	StationID  *uint64 `swaggerignore:"true"`
-
-	BatteryID *uint64 `json:"batteryId" swaggerignore:"true"` // 电池编码
+	EbikeID   *uint64 `json:"ebikeId"`   // 电车ID
+	BatteryID *uint64 `json:"batteryId"` // 电池ID
 }
 
 type AllocateRiderRes struct {

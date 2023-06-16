@@ -187,13 +187,9 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
 		snag.Panic("未找到有效城市")
 	}
 
-	// 判定门店或电柜库存
-	if allo.StoreID != nil {
-		// 判定门店库存
-		stockable := NewStock().CheckStore(*allo.StoreID, sub.Model, 1)
-		if !stockable {
-			snag.Panic("电池库存不足")
-		}
+	// 判定非智能套餐门店库存
+	if allo.StoreID != nil && allo.BatteryID == nil && !NewStock().CheckStore(*allo.StoreID, sub.Model, 1) {
+		snag.Panic("电池库存不足")
 	}
 
 	var link, flowId, sn string
@@ -540,6 +536,7 @@ func (s *contractService) update(c *ent.Contract) (err error) {
 	defer func() {
 		if v := recover(); v != nil {
 			err = fmt.Errorf("%v", v)
+			zap.L().Error("合同关联更新失败", zap.Error(err), zap.Uint64("id", c.ID))
 			return
 		}
 	}()
@@ -548,7 +545,9 @@ func (s *contractService) update(c *ent.Contract) (err error) {
 		return errors.New("合同未关联订阅")
 	}
 
-	_, sub := NewBusinessRider(c.Edges.Rider).Inactive(*c.SubscribeID)
+	srv := NewBusinessRider(c.Edges.Rider)
+
+	_, sub := srv.Inactive(*c.SubscribeID)
 	if sub == nil {
 		return errors.New("需要更新订阅, 但是未找到订阅信息")
 	}
@@ -570,7 +569,11 @@ func (s *contractService) update(c *ent.Contract) (err error) {
 	}
 
 	// 激活
-	srv := NewBusinessRider(c.Edges.Rider).SetStoreID(allo.StoreID).SetCabinetID(allo.CabinetID).SetEmployeeID(allo.EmployeeID)
+	srv.SetModifier(allo.LastModifier).
+		SetStoreID(allo.StoreID).
+		SetCabinetID(allo.CabinetID).
+		SetEmployeeID(allo.EmployeeID).
+		SetBatteryID(allo.BatteryID)
 
 	// 设置电车属性
 	if allo.EbikeID != nil {

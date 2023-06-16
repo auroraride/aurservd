@@ -8408,87 +8408,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/manager/v1/enterprise/price": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "[M]管理接口"
-                ],
-                "summary": "M9016 编辑价格",
-                "operationId": "ManagerEnterpriseModifyPrice",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "管理员校验token",
-                        "name": "X-Manager-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "价格详情",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.EnterprisePriceModifyReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.EnterprisePriceWithCity"
-                        }
-                    }
-                }
-            }
-        },
-        "/manager/v1/enterprise/price/{id}": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "[M]管理接口"
-                ],
-                "summary": "M9017 删除价格",
-                "operationId": "ManagerEnterpriseDeletePrice",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "管理员校验token",
-                        "name": "X-Manager-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "价格ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/manager/v1/enterprise/repayment": {
+        "/manager/v1/enterprise/prepayment": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -8500,7 +8420,7 @@ const docTemplate = `{
                     "[M]管理接口"
                 ],
                 "summary": "M9026 充值记录",
-                "operationId": "ManagerEnterpriseRepaymentList",
+                "operationId": "ManagerEnterprisePrepaymentList",
                 "parameters": [
                     {
                         "type": "integer",
@@ -8576,6 +8496,86 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/enterprise/price": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M9016 编辑价格",
+                "operationId": "ManagerEnterpriseModifyPrice",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "价格详情",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.EnterprisePriceModifyReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.EnterprisePriceWithCity"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/enterprise/price/{id}": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M9017 删除价格",
+                "operationId": "ManagerEnterpriseDeletePrice",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "价格ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
                         }
                     }
                 }
@@ -8843,40 +8843,6 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/manager/v1/enterprise/subscribe/active": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "[M]管理接口"
-                ],
-                "summary": "M9031 激活骑手",
-                "operationId": "ManagerRiderActive",
-                "parameters": [
-                    {
-                        "description": "激活骑手请求",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.AgentSubscribeActiveReq"
-                        }
                     }
                 ],
                 "responses": {
@@ -13087,7 +13053,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M7009 激活",
+                "summary": "M7009 激活订阅",
                 "operationId": "ManagerSubscribeActive",
                 "parameters": [
                     {
@@ -17067,13 +17033,19 @@ const docTemplate = `{
         },
         "model.AgentSubscribeActiveReq": {
             "type": "object",
+            "required": [
+                "id"
+            ],
             "properties": {
                 "batteryId": {
                     "description": "电池ID",
                     "type": "integer"
                 },
-                "enterpriseId": {
-                    "description": "团签id",
+                "ebikeId": {
+                    "description": "电车ID",
+                    "type": "integer"
+                },
+                "id": {
                     "type": "integer"
                 }
             }
@@ -17104,6 +17076,10 @@ const docTemplate = `{
         "model.AllocateCreateReq": {
             "type": "object",
             "properties": {
+                "batteryId": {
+                    "description": "电池ID",
+                    "type": "integer"
+                },
                 "ebikeId": {
                     "description": "电车ID",
                     "type": "integer"

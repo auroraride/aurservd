@@ -156,7 +156,7 @@ func (s *riderBusinessService) Active(req *model.BusinessCabinetReq) model.Busin
 
 	NewBusinessRider(s.rider).
 		SetCabinet(s.cabinet).
-		SetTask(func() (*model.BinInfo, *model.Battery, error) {
+		SetCabinetTask(func() (*model.BinInfo, *model.Battery, error) {
 			// 更新分配信息
 			_ = allo.Update().SetStatus(model.AllocateStatusSigned.Value()).SetCabinetID(s.cabinet.ID).Exec(s.ctx)
 			return NewIntelligentCabinet(s.rider).DoBusiness(s.response.UUID, adapter.BusinessActive, s.subscribe, nil, s.cabinet)
@@ -178,7 +178,7 @@ func (s *riderBusinessService) Continue(req *model.BusinessCabinetReq) model.Bus
 			// ↑ 2023-01-02 添加了异步操作
 			NewBusinessRider(s.rider).
 				SetCabinet(s.cabinet).
-				SetTask(func() (*model.BinInfo, *model.Battery, error) {
+				SetCabinetTask(func() (*model.BinInfo, *model.Battery, error) {
 					return NewIntelligentCabinet(s.rider).DoBusiness(s.response.UUID, adapter.BusinessContinue, s.subscribe, nil, s.cabinet)
 				}).
 				Continue(req.ID)
@@ -205,7 +205,7 @@ func (s *riderBusinessService) Unsubscribe(req *model.BusinessCabinetReq) model.
 		err := snag.WithPanic(func() {
 			NewBusinessRider(s.rider).
 				SetCabinet(s.cabinet).
-				SetTask(func() (*model.BinInfo, *model.Battery, error) {
+				SetCabinetTask(func() (*model.BinInfo, *model.Battery, error) {
 					return NewIntelligentCabinet(s.rider).DoBusiness(s.response.UUID, adapter.BusinessUnsubscribe, s.subscribe, s.battery, s.cabinet)
 				}).
 				UnSubscribe(req.ID)
@@ -228,7 +228,7 @@ func (s *riderBusinessService) Pause(req *model.BusinessCabinetReq) model.Busine
 	go func() {
 		err := snag.WithPanic(func() {
 			NewBusinessRider(s.rider).
-				SetTask(func() (*model.BinInfo, *model.Battery, error) {
+				SetCabinetTask(func() (*model.BinInfo, *model.Battery, error) {
 					return NewIntelligentCabinet(s.rider).DoBusiness(s.response.UUID, adapter.BusinessPause, s.subscribe, s.battery, s.cabinet)
 				}).
 				SetCabinet(s.cabinet).

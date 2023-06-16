@@ -112,6 +112,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 			allocate.FieldStoreID:      {Type: field.TypeUint64, Column: allocate.FieldStoreID},
 			allocate.FieldEbikeID:      {Type: field.TypeUint64, Column: allocate.FieldEbikeID},
 			allocate.FieldBrandID:      {Type: field.TypeUint64, Column: allocate.FieldBrandID},
+			allocate.FieldBatteryID:    {Type: field.TypeUint64, Column: allocate.FieldBatteryID},
+			allocate.FieldStationID:    {Type: field.TypeUint64, Column: allocate.FieldStationID},
 			allocate.FieldType:         {Type: field.TypeEnum, Column: allocate.FieldType},
 			allocate.FieldStatus:       {Type: field.TypeUint8, Column: allocate.FieldStatus},
 			allocate.FieldTime:         {Type: field.TypeTime, Column: allocate.FieldTime},
@@ -1679,6 +1681,30 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Allocate",
 		"EbikeBrand",
+	)
+	graph.MustAddE(
+		"battery",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   allocate.BatteryTable,
+			Columns: []string{allocate.BatteryColumn},
+			Bidi:    false,
+		},
+		"Allocate",
+		"Battery",
+	)
+	graph.MustAddE(
+		"station",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   allocate.StationTable,
+			Columns: []string{allocate.StationColumn},
+			Bidi:    false,
+		},
+		"Allocate",
+		"EnterpriseStation",
 	)
 	graph.MustAddE(
 		"contract",
@@ -4782,6 +4808,16 @@ func (f *AllocateFilter) WhereBrandID(p entql.Uint64P) {
 	f.Where(p.Field(allocate.FieldBrandID))
 }
 
+// WhereBatteryID applies the entql uint64 predicate on the battery_id field.
+func (f *AllocateFilter) WhereBatteryID(p entql.Uint64P) {
+	f.Where(p.Field(allocate.FieldBatteryID))
+}
+
+// WhereStationID applies the entql uint64 predicate on the station_id field.
+func (f *AllocateFilter) WhereStationID(p entql.Uint64P) {
+	f.Where(p.Field(allocate.FieldStationID))
+}
+
 // WhereType applies the entql string predicate on the type field.
 func (f *AllocateFilter) WhereType(p entql.StringP) {
 	f.Where(p.Field(allocate.FieldType))
@@ -4894,6 +4930,34 @@ func (f *AllocateFilter) WhereHasBrand() {
 // WhereHasBrandWith applies a predicate to check if query has an edge brand with a given conditions (other predicates).
 func (f *AllocateFilter) WhereHasBrandWith(preds ...predicate.EbikeBrand) {
 	f.Where(entql.HasEdgeWith("brand", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasBattery applies a predicate to check if query has an edge battery.
+func (f *AllocateFilter) WhereHasBattery() {
+	f.Where(entql.HasEdge("battery"))
+}
+
+// WhereHasBatteryWith applies a predicate to check if query has an edge battery with a given conditions (other predicates).
+func (f *AllocateFilter) WhereHasBatteryWith(preds ...predicate.Battery) {
+	f.Where(entql.HasEdgeWith("battery", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasStation applies a predicate to check if query has an edge station.
+func (f *AllocateFilter) WhereHasStation() {
+	f.Where(entql.HasEdge("station"))
+}
+
+// WhereHasStationWith applies a predicate to check if query has an edge station with a given conditions (other predicates).
+func (f *AllocateFilter) WhereHasStationWith(preds ...predicate.EnterpriseStation) {
+	f.Where(entql.HasEdgeWith("station", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

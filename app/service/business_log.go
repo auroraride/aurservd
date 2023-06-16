@@ -27,7 +27,7 @@ func NewBusinessLog(sub *ent.Subscribe) *businessLogService {
 	s := &businessLogService{
 		ctx:     context.Background(),
 		orm:     ent.Database.Business,
-		creator: ent.Database.Business.Create(),
+		creator: ent.Database.Business.Create().SetNillableEnterpriseID(sub.EnterpriseID).SetNillableStationID(sub.StationID),
 	}
 	s.setSubscribe(sub)
 	return s

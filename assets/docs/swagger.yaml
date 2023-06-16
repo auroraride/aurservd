@@ -612,9 +612,13 @@ definitions:
       batteryId:
         description: 电池ID
         type: integer
-      enterpriseId:
-        description: 团签id
+      ebikeId:
+        description: 电车ID
         type: integer
+      id:
+        type: integer
+    required:
+    - id
     type: object
   model.AliyunOssStsRes:
     properties:
@@ -633,6 +637,9 @@ definitions:
     type: object
   model.AllocateCreateReq:
     properties:
+      batteryId:
+        description: 电池ID
+        type: integer
       ebikeId:
         description: 电车ID
         type: integer
@@ -13286,64 +13293,11 @@ paths:
       summary: M9030 反馈列表
       tags:
       - '[M]管理接口'
-  /manager/v1/enterprise/price:
-    post:
-      consumes:
-      - application/json
-      operationId: ManagerEnterpriseModifyPrice
-      parameters:
-      - description: 管理员校验token
-        in: header
-        name: X-Manager-Token
-        required: true
-        type: string
-      - description: 价格详情
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/model.EnterprisePriceModifyReq'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.EnterprisePriceWithCity'
-      summary: M9016 编辑价格
-      tags:
-      - '[M]管理接口'
-  /manager/v1/enterprise/price/{id}:
-    post:
-      consumes:
-      - application/json
-      operationId: ManagerEnterpriseDeletePrice
-      parameters:
-      - description: 管理员校验token
-        in: header
-        name: X-Manager-Token
-        required: true
-        type: string
-      - description: 价格ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.StatusResponse'
-      summary: M9017 删除价格
-      tags:
-      - '[M]管理接口'
-  /manager/v1/enterprise/repayment:
+  /manager/v1/enterprise/prepayment:
     get:
       consumes:
       - application/json
-      operationId: ManagerEnterpriseRepaymentList
+      operationId: ManagerEnterprisePrepaymentList
       parameters:
       - description: 当前页, 从1开始, 默认1
         in: query
@@ -13398,6 +13352,59 @@ paths:
                   type: array
               type: object
       summary: M9026 充值记录
+      tags:
+      - '[M]管理接口'
+  /manager/v1/enterprise/price:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerEnterpriseModifyPrice
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 价格详情
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.EnterprisePriceModifyReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.EnterprisePriceWithCity'
+      summary: M9016 编辑价格
+      tags:
+      - '[M]管理接口'
+  /manager/v1/enterprise/price/{id}:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerEnterpriseDeletePrice
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 价格ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M9017 删除价格
       tags:
       - '[M]管理接口'
   /manager/v1/enterprise/rider:
@@ -13579,28 +13586,6 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M9007 编辑站点
-      tags:
-      - '[M]管理接口'
-  /manager/v1/enterprise/subscribe/active:
-    post:
-      consumes:
-      - application/json
-      operationId: ManagerRiderActive
-      parameters:
-      - description: 激活骑手请求
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/model.AgentSubscribeActiveReq'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.StatusResponse'
-      summary: M9031 激活骑手
       tags:
       - '[M]管理接口'
   /manager/v1/enterprise/subscribe/alter:
@@ -16301,7 +16286,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M7009 激活
+      summary: M7009 激活订阅
       tags:
       - '[M]管理接口'
   /manager/v1/subscribe/alter:

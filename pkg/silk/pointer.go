@@ -55,3 +55,7 @@ func Int32(i int32) *int32 {
 func Pointer[T any](i T) *T {
 	return &i
 }
+
+func Compare[T comparable](a *T, b *T) bool {
+	return (a != nil && b != nil) || (a == nil && b == nil)
+}
