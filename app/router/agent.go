@@ -34,6 +34,7 @@ func loadAgentRoutes() {
 	auth.POST("/rider", aapi.Rider.Create)        // 添加骑手
 	auth.GET("/rider/info", aapi.Rider.RiderInfo) // 通过二维码获取骑手信息
 	auth.POST("/rider/invite", aapi.Rider.Invite) // 邀请骑手二维码
+	auth.POST("/rider/alter", aapi.Rider.Alter)   // 增加/减少骑手时长
 
 	// A3 账户
 	auth.GET("/prepayment/overview", aapi.Prepayment.Overview)
@@ -56,6 +57,7 @@ func loadAgentRoutes() {
 	auth.POST("/subscribe/active", aapi.Subscribe.Active)            // 激活骑手
 	auth.GET("/subscribe/alter", aapi.Subscribe.AlterList)           // 申请加时列表
 	auth.POST("/subscribe/alter/review", aapi.Subscribe.AlterReivew) // 审批加时
+	auth.POST("/subscribe/halt", aapi.Subscribe.Halt)                // 强制退租
 
 	// A8 业务
 	auth.GET("/business/exchange", aapi.Business.Exchange) // 换电列表

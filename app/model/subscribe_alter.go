@@ -49,3 +49,16 @@ type SubscribeAlterReviewReq struct {
 	Ids    []uint64 `json:"ids"`
 	Status int      `json:"status" validate:"required" enums:"1,2" trans:"审批状态"` // 1:通过 2:拒绝
 }
+
+// SubscribeAlter 订阅天数调整
+type SubscribeAlter struct {
+	ID     uint64 `json:"id" validate:"required"`     // 订阅ID
+	Days   int    `json:"days" validate:"required"`   // 调整天数, 正加负减
+	Reason string `json:"reason" validate:"required"` // 调整理由
+}
+
+// SubscribeAlterReq 订阅天数调整请求
+type SubscribeAlterReq struct {
+	SubscribeAlter
+	EnterpriseID uint64 `json:"enterpriseId"` // 团签id
+}

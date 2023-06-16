@@ -51,7 +51,7 @@ func (*rider) Create(c echo.Context) (err error) {
 // Alter
 // @ID           AgentRiderAlter
 // @Router       /agent/v1/rider/alter [POST]
-// @Summary      A2003 延长天数
+// @Summary      A2003 增加/减少骑手时长
 // @Tags         [A]代理接口
 // @Accept       json
 // @Produce      json
@@ -60,7 +60,11 @@ func (*rider) Create(c echo.Context) (err error) {
 // @Success      200  {object}  model.RiderItemSubscribe  "请求成功"
 func (*rider) Alter(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.SubscribeAlter](c)
-	return ctx.SendResponse(service.NewSubscribeWithAgent(ctx.Agent, ctx.Enterprise).AlterDays(req))
+	service.NewSubscribeWithAgent(ctx.Agent, ctx.Enterprise).AlterDays(&model.SubscribeAlterReq{
+		SubscribeAlter: *req,
+		EnterpriseID:   ctx.Agent.EnterpriseID,
+	})
+	return ctx.SendResponse()
 }
 
 // Detail

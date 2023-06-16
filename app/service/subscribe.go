@@ -417,35 +417,36 @@ func (s *subscribeService) UpdateStatus(item *ent.Subscribe, notice bool) error 
 }
 
 // AlterDays 修改骑手时间
-func (s *subscribeService) AlterDays(req *model.SubscribeAlter) (res model.RiderItemSubscribe) {
-	sq := s.orm.QueryNotDeleted().WithEnterprise().WithRider().Where(subscribe.ID(req.ID), subscribe.StatusIn(model.SubscribeNotUnSubscribed()...))
-	if s.agent != nil && s.enterprise != nil {
-		sq.Where(subscribe.EnterpriseID(s.enterprise.ID))
+func (s *subscribeService) AlterDays(req *model.SubscribeAlterReq) (res model.RiderItemSubscribe) {
+	sq := s.orm.QueryNotDeleted().
+		WithEnterprise().
+		WithRider().
+		Where(
+			subscribe.ID(req.ID),
+			subscribe.StatusIn(
+				model.SubscribeNotUnSubscribed()...),
+		)
+	if req.EnterpriseID != 0 {
+		sq.Where(subscribe.EnterpriseID(req.EnterpriseID))
 	}
 
 	sub, _ := sq.First(s.ctx)
-
 	if sub == nil {
 		snag.Panic("订阅不存在")
 	}
 
 	u := sub.Edges.Rider
 
-	// 团签(代理)骑手禁止修改
-	if sub.Edges.Enterprise != nil {
-		snag.Panic("团签用户无法修改")
-	}
-
 	// 剩余天数
 	before := sub.Remaining
 
-	// if se != nil && se.Agent {
-	// 	if sub.AgentEndAt == nil {
-	// 		snag.Panic("骑手订阅异常")
-	// 	}
-	// 	// 计算剩余天数
-	// 	before = tools.NewTime().LastDaysToNow(*sub.AgentEndAt)
-	// }
+	if sub.EnterpriseID != nil {
+		if sub.AgentEndAt == nil {
+			snag.Panic("骑手订阅异常")
+		}
+		// 计算剩余天数
+		before = tools.NewTime().LastDaysToNow(*sub.AgentEndAt)
+	}
 	after := before + req.Days
 	status := sub.Status
 
@@ -462,9 +463,11 @@ func (s *subscribeService) AlterDays(req *model.SubscribeAlter) (res model.Rider
 			SetSubscribeID(sub.ID).
 			SetDays(req.Days).
 			SetRemark(req.Reason).
-			SetStatus(model.SubscribeAlterStatusAgree)
-		if s.agent != nil {
-			tsa.SetAgentID(s.agent.ID).SetEnterpriseID(s.agent.EnterpriseID)
+			SetStatus(model.SubscribeAlterStatusAgree).
+			SetReviewTime(time.Now()).
+			SetNillableSubscribeEndAt(sub.AgentEndAt)
+		if sub.EnterpriseID != nil {
+			tsa.SetEnterpriseID(*sub.EnterpriseID)
 		}
 		if s.modifier != nil {
 			tsa.SetManagerID(s.modifier.ID)
@@ -475,26 +478,26 @@ func (s *subscribeService) AlterDays(req *model.SubscribeAlter) (res model.Rider
 		}
 
 		// 更新订阅
-		if after > 0 && status == model.SubscribeStatusOverdue {
-			status = model.SubscribeStatusUsing
+		// 团签没有已逾期状态
+		if sub.EnterpriseID == nil {
+			if after > 0 && status == model.SubscribeStatusOverdue {
+				status = model.SubscribeStatusUsing
+			}
+			if after < 0 {
+				status = model.SubscribeStatusOverdue
+			}
 		}
-		if after < 0 {
-			status = model.SubscribeStatusOverdue
-		}
-
 		ts := tx.Subscribe.
 			UpdateOneID(sub.ID).
 			AddAlterDays(req.Days).
 			SetStatus(status)
 
 		// 计算代理商处到期日期
-		// if se != nil && se.Agent {
-		// 	ts.SetAgentEndAt(tools.NewTime().WillEnd(*sub.AgentEndAt, req.Days, true))
-		// } else {
-		// 	ts.AddRemaining(req.Days)
-		// }
-		ts.AddRemaining(req.Days)
-
+		if sub.EnterpriseID != nil {
+			ts.SetAgentEndAt(tools.NewTime().WillEnd(*sub.AgentEndAt, req.Days, true))
+		} else {
+			ts.AddRemaining(req.Days)
+		}
 		sub, err = ts.Save(s.ctx)
 		if err != nil {
 			snag.Panic("时间修改失败")
