@@ -16,6 +16,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
+	"github.com/auroraride/aurservd/pkg/tools"
 )
 
 type agentStatisticsService struct {
@@ -32,9 +33,8 @@ func NewAgentStatistics(params ...any) *agentStatisticsService {
 func (s *agentStatisticsService) Overview(en *ent.Enterprise) *model.AgentStatisticsOverviewRes {
 	var v []model.AgentStatisticsOverviewRes
 
-	ca := carbon.Now().StartOfDay()
-	start := ca.Carbon2Time()
-	endtime := ca.AddDays(model.WillOverdueNum).Carbon2Time()
+	start := carbon.Now().StartOfDay().Carbon2Time()
+	endtime := tools.NewTime().WillEnd(start, model.WillOverdueNum, true)
 
 	ent.Database.Rider.Query().Where(rider.EnterpriseID(en.ID)).Modify(
 		func(s *sql.Selector) {
