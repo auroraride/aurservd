@@ -32,8 +32,10 @@ func NewAgentStatistics(params ...any) *agentStatisticsService {
 // Overview 代理小程序数据统计概览
 func (s *agentStatisticsService) Overview(en *ent.Enterprise) *model.AgentStatisticsOverviewRes {
 	var v []model.AgentStatisticsOverviewRes
+
 	start := carbon.Now().StartOfDay().Carbon2Time()
-	endtime := tools.NewTime().WillEnd(start, model.WillOverdueNum)
+	endtime := tools.NewTime().WillEnd(start, model.WillOverdueNum, true)
+
 	ent.Database.Rider.Query().Where(rider.EnterpriseID(en.ID)).Modify(
 		func(s *sql.Selector) {
 			t := sql.Table(subscribe.Table)
