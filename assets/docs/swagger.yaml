@@ -567,6 +567,9 @@ definitions:
     type: object
   model.AgentStatisticsOverviewRes:
     properties:
+      activationTotal:
+        description: 累计激活
+        type: integer
       averageDeduction:
         description: 日均扣费
         type: number
@@ -585,14 +588,8 @@ definitions:
       expiringRiderTotal:
         description: 临期骑手数
         type: integer
-      newRiderTotal:
-        description: 新签骑手数
-        type: integer
       overTimeRiderTotal:
         description: 骑手加时审核数
-        type: integer
-      quitRiderTotal:
-        description: 退租骑手数
         type: integer
       riderBatteryTotal:
         description: 骑手电池数
@@ -602,6 +599,9 @@ definitions:
         type: integer
       stationBatteryTotal:
         description: 站点电池数
+        type: integer
+      unSubscribeTotal:
+        description: 累计退租
         type: integer
       yesterdayDeduction:
         description: 昨日扣费
@@ -8709,7 +8709,7 @@ paths:
       summary: A7002 申请加时列表
       tags:
       - '[A]代理接口'
-  /agent/v1/subscribe/review:
+  /agent/v1/subscribe/alter/review:
     post:
       consumes:
       - application/json

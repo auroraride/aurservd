@@ -1585,7 +1585,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/agent/v1/subscribe/review": {
+        "/agent/v1/subscribe/alter/review": {
             "post": {
                 "consumes": [
                     "application/json"
@@ -17011,6 +17011,10 @@ const docTemplate = `{
         "model.AgentStatisticsOverviewRes": {
             "type": "object",
             "properties": {
+                "activationTotal": {
+                    "description": "累计激活",
+                    "type": "integer"
+                },
                 "averageDeduction": {
                     "description": "日均扣费",
                     "type": "number"
@@ -17035,16 +17039,8 @@ const docTemplate = `{
                     "description": "临期骑手数",
                     "type": "integer"
                 },
-                "newRiderTotal": {
-                    "description": "新签骑手数",
-                    "type": "integer"
-                },
                 "overTimeRiderTotal": {
                     "description": "骑手加时审核数",
-                    "type": "integer"
-                },
-                "quitRiderTotal": {
-                    "description": "退租骑手数",
                     "type": "integer"
                 },
                 "riderBatteryTotal": {
@@ -17057,6 +17053,10 @@ const docTemplate = `{
                 },
                 "stationBatteryTotal": {
                     "description": "站点电池数",
+                    "type": "integer"
+                },
+                "unSubscribeTotal": {
+                    "description": "累计退租",
                     "type": "integer"
                 },
                 "yesterdayDeduction": {
