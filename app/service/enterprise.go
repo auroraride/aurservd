@@ -553,7 +553,7 @@ func (s *enterpriseService) ModifyPrice(req *model.EnterprisePriceModifyReq) mod
 		client := ent.Database.EnterprisePrice
 		// 判定价格是否重复
 		if exist, _ := client.QueryNotDeleted().
-			Where(enterpriseprice.EnterpriseID(req.EnterpriseID), enterpriseprice.Model(req.Model), enterpriseprice.CityID(req.CityID), enterpriseprice.Intelligent(req.Intelligent)).
+			Where(enterpriseprice.EnterpriseID(req.EnterpriseID), enterpriseprice.Model(req.Model), enterpriseprice.CityID(req.CityID)).
 			Exist(s.ctx); exist {
 			snag.Panic("价格设置重复")
 		}

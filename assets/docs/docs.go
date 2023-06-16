@@ -19192,6 +19192,14 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "enterpriseStation": {
+                    "description": "站点",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EnterpriseStation"
+                        }
+                    ]
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -19319,6 +19327,14 @@ const docTemplate = `{
                     "allOf": [
                         {
                             "$ref": "#/definitions/model.Enterprise"
+                        }
+                    ]
+                },
+                "enterpriseStation": {
+                    "description": "站点",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EnterpriseStation"
                         }
                     ]
                 },
