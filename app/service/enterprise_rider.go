@@ -20,7 +20,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
-	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
 )
@@ -98,6 +97,9 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 				return errors.New("更改骑手失败")
 			}
 
+			// 删除旧的骑手登录信息
+			NewRider().Signout(r)
+
 			// 新增骑手信息
 			r, err = s.CopyAndCreateRider(tx, r, &model.RiderConvert{
 				EnterpriseID: &req.EnterpriseID,
@@ -109,12 +111,6 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 				return errors.New("转化骑手失败")
 			}
 
-			key := fmt.Sprintf("%s%d", NewRider().cacheKeyPrefix, r.ID)
-			// 删除旧的token
-			if old := cache.Get(s.ctx, key).Val(); old != "" {
-				cache.Del(s.ctx, key)
-				cache.Del(s.ctx, old)
-			}
 		} else {
 			// 未存在骑手创建骑手 并创建团签订阅信息
 			var per *ent.Person
@@ -504,12 +500,9 @@ func (s *enterpriseRiderService) ExitEnterprise(r *ent.Rider) {
 		})
 		return err
 	})
-	key := fmt.Sprintf("%s%d", NewRider().cacheKeyPrefix, r.ID)
-	// 删除旧的token
-	if old := cache.Get(s.ctx, key).Val(); old != "" {
-		cache.Del(s.ctx, key)
-		cache.Del(s.ctx, old)
-	}
+
+	// 删除旧的骑手登录信息
+	NewRider().Signout(r)
 }
 
 // CopyAndCreateRider 复制并创建骑手信息
