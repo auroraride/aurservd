@@ -68,9 +68,9 @@ type Battery struct {
 }
 
 type BatterySearchReq struct {
-	Serial       string `json:"serial" query:"serial" trans:"流水号" validate:"required,min=4"`
-	EnterpriseID uint64 `json:"enterpriseId" query:"enterpriseId"` // 团签ID
-	StationID    uint64 `json:"stationId" query:"stationId"`       // 站点ID
+	Serial       string  `json:"serial" query:"serial" trans:"流水号" validate:"required,min=4"`
+	EnterpriseID *uint64 `json:"enterpriseId" query:"enterpriseId"` // 团签ID: 0为查询非团签电池; 不携带为全部数据
+	StationID    *uint64 `json:"stationId" query:"stationId"`       // 站点ID: 0为查询非站点电池; 不携带为全部数据
 }
 
 type BatteryBind struct {

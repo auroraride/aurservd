@@ -65,8 +65,8 @@ func loadAgentRoutes() {
 	auth.GET("/statistics/overview", aapi.Statistics.Overview)
 
 	// AA 电池
-	auth.GET("/battery/section", aapi.Battery.Section) // 电池搜索
-	auth.GET("/battery/model", aapi.Battery.Model)     // 电池型号列表
+	auth.GET("/battery/selection", aapi.Battery.Selection) // 电池搜索
+	auth.GET("/battery/model", aapi.Battery.Model)         // 电池型号列表
 
 	// AZ 杂项
 	auth.POST("/misc/feedback", aapi.Misc.Feedback)            // 意见反馈
