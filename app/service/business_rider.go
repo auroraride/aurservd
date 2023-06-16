@@ -666,7 +666,7 @@ func (s *businessRiderService) UnSubscribe(subscribeID uint64, fns ...func(sub *
 	sub := s.subscribe
 
 	// 查找电池
-	bat, _ := ent.Database.Battery.Query().Where(battery.SubscribeID(sub.ID)).First(s.ctx)
+	s.battery, _ = ent.Database.Battery.Query().Where(battery.SubscribeID(sub.ID)).First(s.ctx)
 
 	err := NewSubscribe().UpdateStatus(sub, false)
 	if err != nil {
@@ -724,8 +724,8 @@ func (s *businessRiderService) UnSubscribe(subscribeID uint64, fns ...func(sub *
 		}
 
 		// 删除电池
-		if bat != nil {
-			snag.PanicIfError(NewBattery().Unallocate(tx.Battery.UpdateOne(bat)))
+		if s.battery != nil {
+			snag.PanicIfError(NewBattery().Unallocate(tx.Battery.UpdateOne(s.battery)))
 		}
 	})
 

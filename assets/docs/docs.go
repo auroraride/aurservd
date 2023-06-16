@@ -1091,7 +1091,7 @@ const docTemplate = `{
                 "tags": [
                     "[A]代理接口"
                 ],
-                "summary": "A2003 延长天数",
+                "summary": "A2003 增加/减少骑手时长",
                 "operationId": "AgentRiderAlter",
                 "parameters": [
                     {
@@ -1621,6 +1621,47 @@ const docTemplate = `{
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/agent/v1/subscribe/halt": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A7004 强制退租",
+                "operationId": "AgentSubscribeHalt",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求详情",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.BusinessSubscribeReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "string"
                         }
                     }
                 }
@@ -16904,6 +16945,10 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "integer"
+                },
+                "intelligent": {
+                    "description": "是否智能套餐",
+                    "type": "boolean"
                 },
                 "isAuthed": {
                     "description": "是否实名认证 ture已实名 false未实名",

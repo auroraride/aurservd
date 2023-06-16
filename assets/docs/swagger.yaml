@@ -508,6 +508,9 @@ definitions:
         type: string
       id:
         type: integer
+      intelligent:
+        description: 是否智能套餐
+        type: boolean
       isAuthed:
         description: 是否实名认证 ture已实名 false未实名
         type: boolean
@@ -8443,7 +8446,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.RiderItemSubscribe'
-      summary: A2003 延长天数
+      summary: A2003 增加/减少骑手时长
       tags:
       - '[A]代理接口'
   /agent/v1/rider/info:
@@ -8749,6 +8752,33 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: A7003 审核加时
+      tags:
+      - '[A]代理接口'
+  /agent/v1/subscribe/halt:
+    post:
+      consumes:
+      - application/json
+      operationId: AgentSubscribeHalt
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - description: 请求详情
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.BusinessSubscribeReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            type: string
+      summary: A7004 强制退租
       tags:
       - '[A]代理接口'
   /common/battery/model:
