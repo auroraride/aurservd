@@ -63,6 +63,7 @@ func (*rider) Alter(c echo.Context) (err error) {
 	service.NewSubscribeWithAgent(ctx.Agent, ctx.Enterprise).AlterDays(&model.SubscribeAlterReq{
 		SubscribeAlter: *req,
 		EnterpriseID:   ctx.Agent.EnterpriseID,
+		AgentID:        ctx.Agent.ID,
 	})
 	return ctx.SendResponse()
 }

@@ -424,7 +424,8 @@ func (s *subscribeService) AlterDays(req *model.SubscribeAlterReq) (res model.Ri
 		Where(
 			subscribe.ID(req.ID),
 			subscribe.StatusIn(
-				model.SubscribeNotUnSubscribed()...),
+				model.SubscribeNotUnSubscribed()...,
+			),
 		)
 	if req.EnterpriseID != 0 {
 		sq.Where(subscribe.EnterpriseID(req.EnterpriseID))
@@ -467,7 +468,7 @@ func (s *subscribeService) AlterDays(req *model.SubscribeAlterReq) (res model.Ri
 			SetReviewTime(time.Now()).
 			SetNillableSubscribeEndAt(sub.AgentEndAt)
 		if sub.EnterpriseID != nil {
-			tsa.SetEnterpriseID(*sub.EnterpriseID)
+			tsa.SetEnterpriseID(*sub.EnterpriseID).SetAgentID(req.AgentID)
 		}
 		if s.modifier != nil {
 			tsa.SetManagerID(s.modifier.ID)

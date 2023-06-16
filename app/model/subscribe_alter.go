@@ -61,4 +61,5 @@ type SubscribeAlter struct {
 type SubscribeAlterReq struct {
 	SubscribeAlter
 	EnterpriseID uint64 `json:"enterpriseId"` // 团签id
+	AgentID      uint64 `json:"agentId"`      // 代理商操作人id
 }
