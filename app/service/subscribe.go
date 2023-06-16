@@ -440,13 +440,13 @@ func (s *subscribeService) AlterDays(req *model.SubscribeAlterReq) (res model.Ri
 	// 剩余天数
 	before := sub.Remaining
 
-	// if se != nil && se.Agent {
-	// 	if sub.AgentEndAt == nil {
-	// 		snag.Panic("骑手订阅异常")
-	// 	}
-	// 	// 计算剩余天数
-	// 	before = tools.NewTime().LastDaysToNow(*sub.AgentEndAt)
-	// }
+	if sub.EnterpriseID != nil {
+		if sub.AgentEndAt == nil {
+			snag.Panic("骑手订阅异常")
+		}
+		// 计算剩余天数
+		before = tools.NewTime().LastDaysToNow(*sub.AgentEndAt)
+	}
 	after := before + req.Days
 	status := sub.Status
 
@@ -476,13 +476,15 @@ func (s *subscribeService) AlterDays(req *model.SubscribeAlterReq) (res model.Ri
 		}
 
 		// 更新订阅
-		if after > 0 && status == model.SubscribeStatusOverdue {
-			status = model.SubscribeStatusUsing
+		// 团签没有已逾期状态
+		if sub.EnterpriseID == nil {
+			if after > 0 && status == model.SubscribeStatusOverdue {
+				status = model.SubscribeStatusUsing
+			}
+			if after < 0 {
+				status = model.SubscribeStatusOverdue
+			}
 		}
-		if after < 0 {
-			status = model.SubscribeStatusOverdue
-		}
-
 		ts := tx.Subscribe.
 			UpdateOneID(sub.ID).
 			AddAlterDays(req.Days).
