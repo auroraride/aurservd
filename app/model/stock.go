@@ -60,7 +60,7 @@ type StockTransferLoopper struct {
 	EbikeSN      *string // 车架号
 	BatterySN    *string // 电池SN
 	BatteryID    *uint64 // 电池ID
-	BatteryModel string  // 电池型号
+	BatteryModel *string // 电池型号
 }
 
 type StockTransferReq struct {

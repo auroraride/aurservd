@@ -1203,7 +1203,6 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
 	}(req)
 
 	outCreator := s.orm.Create().
-		SetNillableModel(batteryModel).
 		SetNum(-num).
 		SetCityID(cityID).
 		SetType(model.StockTypeTransfer).
@@ -1221,7 +1220,6 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
 	}
 
 	inCreator := s.orm.Create().
-		SetNillableModel(batteryModel).
 		SetNum(num).
 		SetCityID(cityID).
 		SetType(model.StockTypeTransfer).
@@ -1247,7 +1245,9 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
 	case len(req.BatterySn) > 0:
 		looppers, failed = NewStockBatchable().Loopers(req, enterpriseId)
 	default:
-		looppers = make([]model.StockTransferLoopper, 1)
+		looppers = []model.StockTransferLoopper{
+			{BatteryModel: batteryModel},
+		}
 	}
 
 	for _, l := range looppers {
@@ -1263,7 +1263,7 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
 				SetName(name).
 				SetNillableEbikeID(l.EbikeID).
 				SetNillableBrandID(l.BrandID).
-				SetModel(l.BatteryModel).
+				SetNillableModel(l.BatteryModel).
 				SetNillableBatteryID(l.BatteryID).
 				Save(s.ctx)
 			if err != nil {
@@ -1279,7 +1279,7 @@ func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
 				SetNillableEbikeID(l.EbikeID).
 				SetNillableBrandID(l.BrandID).
 				SetSpouse(spouse).
-				SetModel(l.BatteryModel).
+				SetNillableModel(l.BatteryModel).
 				SetNillableBatteryID(l.BatteryID).
 				Save(s.ctx)
 			if err != nil {

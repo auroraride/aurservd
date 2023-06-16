@@ -83,7 +83,7 @@ func (s *stockBatchableService) Loopers(req *model.StockTransferReq, enterpriseI
 		Loopers = append(Loopers, model.StockTransferLoopper{
 			BatterySN:    &bat.Sn,
 			BatteryID:    &bat.ID,
-			BatteryModel: bat.Model,
+			BatteryModel: &bat.Model,
 			BrandName:    &bat.Model,
 		})
 	}
