@@ -86,6 +86,6 @@ func (*subscribe) AlterReivew(c echo.Context) (err error) {
 // @Success      200  {object}  string  "请求成功"
 func (*subscribe) Halt(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.BusinessSubscribeReq](c)
-	service.NewBusinessRiderWithModifier(nil).SetCabinetID(req.CabinetID).SetStoreID(req.StoreID).UnSubscribe(req.ID)
+	service.NewBusinessRider(nil).UnSubscribe(req.ID)
 	return ctx.SendResponse()
 }
