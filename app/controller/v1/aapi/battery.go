@@ -17,9 +17,9 @@ type battery struct{}
 
 var Battery = new(battery)
 
-// Section
-// @ID           AgentBatterySearch
-// @Router       /agent/v1/battery/section [GET]
+// Selection
+// @ID           AgentBatterySelection
+// @Router       /agent/v1/battery/selection [GET]
 // @Summary      AA001 电池选择搜索
 // @Tags         [A]代理接口
 // @Accept       json
@@ -27,12 +27,12 @@ var Battery = new(battery)
 // @Param        X-Agent-Token  header  string  true  "代理校验token"
 // @Param        query  query   model.BatterySearchReq  true  "筛选项"
 // @Success      200  {object}  []model.Battery
-func (*battery) Section(c echo.Context) (err error) {
+func (*battery) Selection(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.BatterySearchReq](c)
 	// TODO 子代理
 	return ctx.SendResponse(service.NewSelection().BatterySerialSearch(&model.BatterySearchReq{
 		Serial:       req.Serial,
-		EnterpriseID: ctx.Enterprise.ID,
+		EnterpriseID: &ctx.Enterprise.ID,
 	}))
 }
 

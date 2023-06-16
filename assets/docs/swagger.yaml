@@ -7720,18 +7720,18 @@ paths:
       summary: AA002 电池型号列表
       tags:
       - '[A]代理接口'
-  /agent/v1/battery/section:
+  /agent/v1/battery/selection:
     get:
       consumes:
       - application/json
-      operationId: AgentBatterySearch
+      operationId: AgentBatterySelection
       parameters:
       - description: 代理校验token
         in: header
         name: X-Agent-Token
         required: true
         type: string
-      - description: 团签ID
+      - description: '团签ID: 0为查询非团签电池; 不携带为全部数据'
         in: query
         name: enterpriseId
         type: integer
@@ -7740,7 +7740,7 @@ paths:
         name: serial
         required: true
         type: string
-      - description: 站点ID
+      - description: '站点ID: 0为查询非站点电池; 不携带为全部数据'
         in: query
         name: stationId
         type: integer
@@ -15279,11 +15279,19 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
-      - description: 流水号
+      - description: '团签ID: 0为查询非团签电池; 不携带为全部数据'
         in: query
+        name: enterpriseId
+        type: integer
+      - in: query
+        minLength: 4
         name: serial
         required: true
         type: string
+      - description: '站点ID: 0为查询非站点电池; 不携带为全部数据'
+        in: query
+        name: stationId
+        type: integer
       produces:
       - application/json
       responses:

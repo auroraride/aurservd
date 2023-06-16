@@ -47,7 +47,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/agent/v1/battery/section": {
+        "/agent/v1/battery/selection": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -59,7 +59,7 @@ const docTemplate = `{
                     "[A]代理接口"
                 ],
                 "summary": "AA001 电池选择搜索",
-                "operationId": "AgentBatterySearch",
+                "operationId": "AgentBatterySelection",
                 "parameters": [
                     {
                         "type": "string",
@@ -70,7 +70,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "团签ID",
+                        "description": "团签ID: 0为查询非团签电池; 不携带为全部数据",
                         "name": "enterpriseId",
                         "in": "query"
                     },
@@ -83,7 +83,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "站点ID",
+                        "description": "站点ID: 0为查询非站点电池; 不携带为全部数据",
                         "name": "stationId",
                         "in": "query"
                     }
@@ -11540,11 +11540,23 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "type": "integer",
+                        "description": "团签ID: 0为查询非团签电池; 不携带为全部数据",
+                        "name": "enterpriseId",
+                        "in": "query"
+                    },
+                    {
+                        "minLength": 4,
                         "type": "string",
-                        "description": "流水号",
                         "name": "serial",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "站点ID: 0为查询非站点电池; 不携带为全部数据",
+                        "name": "stationId",
+                        "in": "query"
                     }
                 ],
                 "responses": {

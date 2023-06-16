@@ -242,7 +242,7 @@ func (*selection) EbikeBrand(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        serial  query  string  true  "流水号"
+// @Param        query  query  model.BatterySearchReq  true  "请求参数"
 // @Success      200  {object}  []model.Battery  "请求成功"
 func (*selection) BatterySerial(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.BatterySearchReq](c)
