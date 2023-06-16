@@ -484,7 +484,7 @@ func (s *enterpriseRiderService) ExitEnterprise(r *ent.Rider) {
 	sub, _ := NewSubscribe().QueryEffective(r.ID)
 
 	if sub != nil && sub.Status != model.SubscribeStatusInactive {
-		snag.Panic("未找到订阅")
+		snag.Panic("骑士卡使用中无法转换")
 	}
 
 	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
@@ -498,7 +498,17 @@ func (s *enterpriseRiderService) ExitEnterprise(r *ent.Rider) {
 		_, err = s.CopyAndCreateRider(tx, r, &model.RiderConvert{
 			Remark: "骑手退出团签",
 		})
-		return err
+
+		if err != nil {
+			return
+		}
+
+		// 删除未激活的订阅信息
+		if sub != nil {
+			err = tx.Subscribe.DeleteOne(sub).Exec(s.ctx)
+		}
+
+		return
 	})
 
 	// 删除旧的骑手登录信息
