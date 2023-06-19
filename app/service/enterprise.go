@@ -541,6 +541,10 @@ func (s *enterpriseService) Price(req *model.EnterprisePriceReq) model.Enterpris
 	var p *ent.EnterprisePrice
 	var err error
 
+	if req.BrandID != nil {
+		NewEbikeBrand().QueryX(*req.BrandID)
+	}
+
 	if req.ID == 0 {
 		client := ent.Database.EnterprisePrice
 		// 判定价格是否重复
