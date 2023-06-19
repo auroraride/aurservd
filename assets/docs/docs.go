@@ -24193,6 +24193,10 @@ const docTemplate = `{
                 "time": {
                     "description": "时间",
                     "type": "string"
+                },
+                "tradeNo": {
+                    "description": "支付平台交易单号",
+                    "type": "string"
                 }
             }
         },

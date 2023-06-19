@@ -804,6 +804,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			enterpriseprepayment.FieldAgentID:      {Type: field.TypeUint64, Column: enterpriseprepayment.FieldAgentID},
 			enterpriseprepayment.FieldAmount:       {Type: field.TypeFloat64, Column: enterpriseprepayment.FieldAmount},
 			enterpriseprepayment.FieldPayway:       {Type: field.TypeOther, Column: enterpriseprepayment.FieldPayway},
+			enterpriseprepayment.FieldTradeNo:      {Type: field.TypeString, Column: enterpriseprepayment.FieldTradeNo},
 		},
 	}
 	graph.Nodes[26] = &sqlgraph.Node{
@@ -9374,6 +9375,11 @@ func (f *EnterprisePrepaymentFilter) WhereAmount(p entql.Float64P) {
 // WherePayway applies the entql other predicate on the payway field.
 func (f *EnterprisePrepaymentFilter) WherePayway(p entql.OtherP) {
 	f.Where(p.Field(enterpriseprepayment.FieldPayway))
+}
+
+// WhereTradeNo applies the entql string predicate on the trade_no field.
+func (f *EnterprisePrepaymentFilter) WhereTradeNo(p entql.StringP) {
+	f.Where(p.Field(enterpriseprepayment.FieldTradeNo))
 }
 
 // WhereHasEnterprise applies a predicate to check if query has an edge enterprise.

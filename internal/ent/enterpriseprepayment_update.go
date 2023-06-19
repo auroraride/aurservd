@@ -110,6 +110,26 @@ func (epu *EnterprisePrepaymentUpdate) SetNillablePayway(m *model.Payway) *Enter
 	return epu
 }
 
+// SetTradeNo sets the "trade_no" field.
+func (epu *EnterprisePrepaymentUpdate) SetTradeNo(s string) *EnterprisePrepaymentUpdate {
+	epu.mutation.SetTradeNo(s)
+	return epu
+}
+
+// SetNillableTradeNo sets the "trade_no" field if the given value is not nil.
+func (epu *EnterprisePrepaymentUpdate) SetNillableTradeNo(s *string) *EnterprisePrepaymentUpdate {
+	if s != nil {
+		epu.SetTradeNo(*s)
+	}
+	return epu
+}
+
+// ClearTradeNo clears the value of the "trade_no" field.
+func (epu *EnterprisePrepaymentUpdate) ClearTradeNo() *EnterprisePrepaymentUpdate {
+	epu.mutation.ClearTradeNo()
+	return epu
+}
+
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
 func (epu *EnterprisePrepaymentUpdate) SetEnterprise(e *Enterprise) *EnterprisePrepaymentUpdate {
 	return epu.SetEnterpriseID(e.ID)
@@ -225,6 +245,12 @@ func (epu *EnterprisePrepaymentUpdate) sqlSave(ctx context.Context) (n int, err 
 	}
 	if value, ok := epu.mutation.Payway(); ok {
 		_spec.SetField(enterpriseprepayment.FieldPayway, field.TypeOther, value)
+	}
+	if value, ok := epu.mutation.TradeNo(); ok {
+		_spec.SetField(enterpriseprepayment.FieldTradeNo, field.TypeString, value)
+	}
+	if epu.mutation.TradeNoCleared() {
+		_spec.ClearField(enterpriseprepayment.FieldTradeNo, field.TypeString)
 	}
 	if epu.mutation.EnterpriseCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -384,6 +410,26 @@ func (epuo *EnterprisePrepaymentUpdateOne) SetNillablePayway(m *model.Payway) *E
 	return epuo
 }
 
+// SetTradeNo sets the "trade_no" field.
+func (epuo *EnterprisePrepaymentUpdateOne) SetTradeNo(s string) *EnterprisePrepaymentUpdateOne {
+	epuo.mutation.SetTradeNo(s)
+	return epuo
+}
+
+// SetNillableTradeNo sets the "trade_no" field if the given value is not nil.
+func (epuo *EnterprisePrepaymentUpdateOne) SetNillableTradeNo(s *string) *EnterprisePrepaymentUpdateOne {
+	if s != nil {
+		epuo.SetTradeNo(*s)
+	}
+	return epuo
+}
+
+// ClearTradeNo clears the value of the "trade_no" field.
+func (epuo *EnterprisePrepaymentUpdateOne) ClearTradeNo() *EnterprisePrepaymentUpdateOne {
+	epuo.mutation.ClearTradeNo()
+	return epuo
+}
+
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
 func (epuo *EnterprisePrepaymentUpdateOne) SetEnterprise(e *Enterprise) *EnterprisePrepaymentUpdateOne {
 	return epuo.SetEnterpriseID(e.ID)
@@ -529,6 +575,12 @@ func (epuo *EnterprisePrepaymentUpdateOne) sqlSave(ctx context.Context) (_node *
 	}
 	if value, ok := epuo.mutation.Payway(); ok {
 		_spec.SetField(enterpriseprepayment.FieldPayway, field.TypeOther, value)
+	}
+	if value, ok := epuo.mutation.TradeNo(); ok {
+		_spec.SetField(enterpriseprepayment.FieldTradeNo, field.TypeString, value)
+	}
+	if epuo.mutation.TradeNoCleared() {
+		_spec.ClearField(enterpriseprepayment.FieldTradeNo, field.TypeString)
 	}
 	if epuo.mutation.EnterpriseCleared() {
 		edge := &sqlgraph.EdgeSpec{

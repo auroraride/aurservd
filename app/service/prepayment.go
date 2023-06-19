@@ -83,11 +83,11 @@ func (s *prepaymentService) List(enterpriseID uint64, req *model.PrepaymentListR
 
 	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.EnterprisePrepayment) model.PrepaymentListRes {
 		res := model.PrepaymentListRes{
-			Amount: item.Amount,
-			Time:   item.CreatedAt.Format(carbon.DateTimeLayout),
-			Remark: item.Remark,
-			Payway: item.Payway,
-			Name:   "",
+			Amount:  item.Amount,
+			Time:    item.CreatedAt.Format(carbon.DateTimeLayout),
+			Remark:  item.Remark,
+			Payway:  item.Payway,
+			TradeNo: item.TradeNo,
 		}
 		if item.Creator != nil && s.modifier != nil {
 			res.Name = item.Creator.Name + "-" + item.Creator.Phone
@@ -160,7 +160,7 @@ func (s *prepaymentService) WechatMiniprogramPay(ag *ent.Agent, req *model.Agent
 }
 
 // UpdateBalance 更新代理商余额
-func (s *prepaymentService) UpdateBalance(payway model.Payway, req *model.AgentPrepay) (balance float64, err error) {
+func (s *prepaymentService) UpdateBalance(payway model.Payway, req *model.AgentPrepay, tradeNo *string) (balance float64, err error) {
 	defer func() {
 		if err != nil {
 			zap.L().Error("更新代理商金额失败", zap.Error(err))
@@ -183,7 +183,12 @@ func (s *prepaymentService) UpdateBalance(payway model.Payway, req *model.AgentP
 	// 事务处理
 	err = ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
 		// 创建预付费记录
-		creator := tx.EnterprisePrepayment.Create().SetEnterpriseID(req.EnterpriseID).SetAmount(req.Amount).SetRemark(req.Remark).SetPayway(payway)
+		creator := tx.EnterprisePrepayment.Create().
+			SetEnterpriseID(req.EnterpriseID).
+			SetAmount(req.Amount).
+			SetRemark(req.Remark).
+			SetPayway(payway).
+			SetNillableTradeNo(tradeNo)
 		if req.ID > 0 {
 			creator.SetAgentID(req.ID)
 		}

@@ -39,6 +39,8 @@ type EnterprisePrepayment struct {
 	Amount float64 `json:"amount,omitempty"`
 	// 支付方式
 	Payway model.Payway `json:"payway,omitempty"`
+	// 支付平台交易单号
+	TradeNo *string `json:"trade_no,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EnterprisePrepaymentQuery when eager-loading is set.
 	Edges        EnterprisePrepaymentEdges `json:"edges"`
@@ -95,7 +97,7 @@ func (*EnterprisePrepayment) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullFloat64)
 		case enterpriseprepayment.FieldID, enterpriseprepayment.FieldEnterpriseID, enterpriseprepayment.FieldAgentID:
 			values[i] = new(sql.NullInt64)
-		case enterpriseprepayment.FieldRemark:
+		case enterpriseprepayment.FieldRemark, enterpriseprepayment.FieldTradeNo:
 			values[i] = new(sql.NullString)
 		case enterpriseprepayment.FieldCreatedAt, enterpriseprepayment.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -179,6 +181,13 @@ func (ep *EnterprisePrepayment) assignValues(columns []string, values []any) err
 			} else if value != nil {
 				ep.Payway = *value
 			}
+		case enterpriseprepayment.FieldTradeNo:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field trade_no", values[i])
+			} else if value.Valid {
+				ep.TradeNo = new(string)
+				*ep.TradeNo = value.String
+			}
 		default:
 			ep.selectValues.Set(columns[i], values[i])
 		}
@@ -253,6 +262,11 @@ func (ep *EnterprisePrepayment) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("payway=")
 	builder.WriteString(fmt.Sprintf("%v", ep.Payway))
+	builder.WriteString(", ")
+	if v := ep.TradeNo; v != nil {
+		builder.WriteString("trade_no=")
+		builder.WriteString(*v)
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }
