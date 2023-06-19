@@ -40979,6 +40979,7 @@ type EnterprisePrepaymentMutation struct {
 	amount            *float64
 	addamount         *float64
 	payway            *model.Payway
+	trade_no          *string
 	clearedFields     map[string]struct{}
 	enterprise        *uint64
 	clearedenterprise bool
@@ -41483,6 +41484,55 @@ func (m *EnterprisePrepaymentMutation) ResetPayway() {
 	m.payway = nil
 }
 
+// SetTradeNo sets the "trade_no" field.
+func (m *EnterprisePrepaymentMutation) SetTradeNo(s string) {
+	m.trade_no = &s
+}
+
+// TradeNo returns the value of the "trade_no" field in the mutation.
+func (m *EnterprisePrepaymentMutation) TradeNo() (r string, exists bool) {
+	v := m.trade_no
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTradeNo returns the old "trade_no" field's value of the EnterprisePrepayment entity.
+// If the EnterprisePrepayment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterprisePrepaymentMutation) OldTradeNo(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTradeNo is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTradeNo requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTradeNo: %w", err)
+	}
+	return oldValue.TradeNo, nil
+}
+
+// ClearTradeNo clears the value of the "trade_no" field.
+func (m *EnterprisePrepaymentMutation) ClearTradeNo() {
+	m.trade_no = nil
+	m.clearedFields[enterpriseprepayment.FieldTradeNo] = struct{}{}
+}
+
+// TradeNoCleared returns if the "trade_no" field was cleared in this mutation.
+func (m *EnterprisePrepaymentMutation) TradeNoCleared() bool {
+	_, ok := m.clearedFields[enterpriseprepayment.FieldTradeNo]
+	return ok
+}
+
+// ResetTradeNo resets all changes to the "trade_no" field.
+func (m *EnterprisePrepaymentMutation) ResetTradeNo() {
+	m.trade_no = nil
+	delete(m.clearedFields, enterpriseprepayment.FieldTradeNo)
+}
+
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
 func (m *EnterprisePrepaymentMutation) ClearEnterprise() {
 	m.clearedenterprise = true
@@ -41569,7 +41619,7 @@ func (m *EnterprisePrepaymentMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EnterprisePrepaymentMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 10)
 	if m.created_at != nil {
 		fields = append(fields, enterpriseprepayment.FieldCreatedAt)
 	}
@@ -41597,6 +41647,9 @@ func (m *EnterprisePrepaymentMutation) Fields() []string {
 	if m.payway != nil {
 		fields = append(fields, enterpriseprepayment.FieldPayway)
 	}
+	if m.trade_no != nil {
+		fields = append(fields, enterpriseprepayment.FieldTradeNo)
+	}
 	return fields
 }
 
@@ -41623,6 +41676,8 @@ func (m *EnterprisePrepaymentMutation) Field(name string) (ent.Value, bool) {
 		return m.Amount()
 	case enterpriseprepayment.FieldPayway:
 		return m.Payway()
+	case enterpriseprepayment.FieldTradeNo:
+		return m.TradeNo()
 	}
 	return nil, false
 }
@@ -41650,6 +41705,8 @@ func (m *EnterprisePrepaymentMutation) OldField(ctx context.Context, name string
 		return m.OldAmount(ctx)
 	case enterpriseprepayment.FieldPayway:
 		return m.OldPayway(ctx)
+	case enterpriseprepayment.FieldTradeNo:
+		return m.OldTradeNo(ctx)
 	}
 	return nil, fmt.Errorf("unknown EnterprisePrepayment field %s", name)
 }
@@ -41722,6 +41779,13 @@ func (m *EnterprisePrepaymentMutation) SetField(name string, value ent.Value) er
 		}
 		m.SetPayway(v)
 		return nil
+	case enterpriseprepayment.FieldTradeNo:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTradeNo(v)
+		return nil
 	}
 	return fmt.Errorf("unknown EnterprisePrepayment field %s", name)
 }
@@ -41779,6 +41843,9 @@ func (m *EnterprisePrepaymentMutation) ClearedFields() []string {
 	if m.FieldCleared(enterpriseprepayment.FieldAgentID) {
 		fields = append(fields, enterpriseprepayment.FieldAgentID)
 	}
+	if m.FieldCleared(enterpriseprepayment.FieldTradeNo) {
+		fields = append(fields, enterpriseprepayment.FieldTradeNo)
+	}
 	return fields
 }
 
@@ -41804,6 +41871,9 @@ func (m *EnterprisePrepaymentMutation) ClearField(name string) error {
 		return nil
 	case enterpriseprepayment.FieldAgentID:
 		m.ClearAgentID()
+		return nil
+	case enterpriseprepayment.FieldTradeNo:
+		m.ClearTradeNo()
 		return nil
 	}
 	return fmt.Errorf("unknown EnterprisePrepayment nullable field %s", name)
@@ -41839,6 +41909,9 @@ func (m *EnterprisePrepaymentMutation) ResetField(name string) error {
 		return nil
 	case enterpriseprepayment.FieldPayway:
 		m.ResetPayway()
+		return nil
+	case enterpriseprepayment.FieldTradeNo:
+		m.ResetTradeNo()
 		return nil
 	}
 	return fmt.Errorf("unknown EnterprisePrepayment field %s", name)

@@ -21,9 +21,10 @@ type PrepaymentListReq struct {
 }
 
 type PrepaymentListRes struct {
-	Amount float64 `json:"amount"`                                    // 金额
-	Name   string  `json:"name"`                                      // 操作人
-	Time   string  `json:"time"`                                      // 时间
-	Remark string  `json:"remark"`                                    // 备注信息
-	Payway Payway  `json:"payway" enums:"1,2" validate:"gte=1,lte=2"` // 支付方式 1:现金 2:微信
+	Amount  float64 `json:"amount"`                                    // 金额
+	Name    string  `json:"name"`                                      // 操作人
+	Time    string  `json:"time"`                                      // 时间
+	Remark  string  `json:"remark"`                                    // 备注信息
+	Payway  Payway  `json:"payway" enums:"1,2" validate:"gte=1,lte=2"` // 支付方式 1:现金 2:微信
+	TradeNo *string `json:"tradeNo,omitempty"`                         // 支付平台交易单号
 }

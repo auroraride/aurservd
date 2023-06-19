@@ -34,6 +34,8 @@ const (
 	FieldAmount = "amount"
 	// FieldPayway holds the string denoting the payway field in the database.
 	FieldPayway = "payway"
+	// FieldTradeNo holds the string denoting the trade_no field in the database.
+	FieldTradeNo = "trade_no"
 	// EdgeEnterprise holds the string denoting the enterprise edge name in mutations.
 	EdgeEnterprise = "enterprise"
 	// EdgeAgent holds the string denoting the agent edge name in mutations.
@@ -68,6 +70,7 @@ var Columns = []string{
 	FieldAgentID,
 	FieldAmount,
 	FieldPayway,
+	FieldTradeNo,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -138,6 +141,11 @@ func ByAmount(opts ...sql.OrderTermOption) OrderOption {
 // ByPayway orders the results by the payway field.
 func ByPayway(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPayway, opts...).ToFunc()
+}
+
+// ByTradeNo orders the results by the trade_no field.
+func ByTradeNo(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTradeNo, opts...).ToFunc()
 }
 
 // ByEnterpriseField orders the results by enterprise field.

@@ -91,6 +91,11 @@ func Payway(v model.Payway) predicate.EnterprisePrepayment {
 	return predicate.EnterprisePrepayment(sql.FieldEQ(FieldPayway, v))
 }
 
+// TradeNo applies equality check predicate on the "trade_no" field. It's identical to TradeNoEQ.
+func TradeNo(v string) predicate.EnterprisePrepayment {
+	return predicate.EnterprisePrepayment(sql.FieldEQ(FieldTradeNo, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.EnterprisePrepayment {
 	return predicate.EnterprisePrepayment(sql.FieldEQ(FieldCreatedAt, v))
@@ -394,6 +399,81 @@ func PaywayLT(v model.Payway) predicate.EnterprisePrepayment {
 // PaywayLTE applies the LTE predicate on the "payway" field.
 func PaywayLTE(v model.Payway) predicate.EnterprisePrepayment {
 	return predicate.EnterprisePrepayment(sql.FieldLTE(FieldPayway, v))
+}
+
+// TradeNoEQ applies the EQ predicate on the "trade_no" field.
+func TradeNoEQ(v string) predicate.EnterprisePrepayment {
+	return predicate.EnterprisePrepayment(sql.FieldEQ(FieldTradeNo, v))
+}
+
+// TradeNoNEQ applies the NEQ predicate on the "trade_no" field.
+func TradeNoNEQ(v string) predicate.EnterprisePrepayment {
+	return predicate.EnterprisePrepayment(sql.FieldNEQ(FieldTradeNo, v))
+}
+
+// TradeNoIn applies the In predicate on the "trade_no" field.
+func TradeNoIn(vs ...string) predicate.EnterprisePrepayment {
+	return predicate.EnterprisePrepayment(sql.FieldIn(FieldTradeNo, vs...))
+}
+
+// TradeNoNotIn applies the NotIn predicate on the "trade_no" field.
+func TradeNoNotIn(vs ...string) predicate.EnterprisePrepayment {
+	return predicate.EnterprisePrepayment(sql.FieldNotIn(FieldTradeNo, vs...))
+}
+
+// TradeNoGT applies the GT predicate on the "trade_no" field.
+func TradeNoGT(v string) predicate.EnterprisePrepayment {
+	return predicate.EnterprisePrepayment(sql.FieldGT(FieldTradeNo, v))
+}
+
+// TradeNoGTE applies the GTE predicate on the "trade_no" field.
+func TradeNoGTE(v string) predicate.EnterprisePrepayment {
+	return predicate.EnterprisePrepayment(sql.FieldGTE(FieldTradeNo, v))
+}
+
+// TradeNoLT applies the LT predicate on the "trade_no" field.
+func TradeNoLT(v string) predicate.EnterprisePrepayment {
+	return predicate.EnterprisePrepayment(sql.FieldLT(FieldTradeNo, v))
+}
+
+// TradeNoLTE applies the LTE predicate on the "trade_no" field.
+func TradeNoLTE(v string) predicate.EnterprisePrepayment {
+	return predicate.EnterprisePrepayment(sql.FieldLTE(FieldTradeNo, v))
+}
+
+// TradeNoContains applies the Contains predicate on the "trade_no" field.
+func TradeNoContains(v string) predicate.EnterprisePrepayment {
+	return predicate.EnterprisePrepayment(sql.FieldContains(FieldTradeNo, v))
+}
+
+// TradeNoHasPrefix applies the HasPrefix predicate on the "trade_no" field.
+func TradeNoHasPrefix(v string) predicate.EnterprisePrepayment {
+	return predicate.EnterprisePrepayment(sql.FieldHasPrefix(FieldTradeNo, v))
+}
+
+// TradeNoHasSuffix applies the HasSuffix predicate on the "trade_no" field.
+func TradeNoHasSuffix(v string) predicate.EnterprisePrepayment {
+	return predicate.EnterprisePrepayment(sql.FieldHasSuffix(FieldTradeNo, v))
+}
+
+// TradeNoIsNil applies the IsNil predicate on the "trade_no" field.
+func TradeNoIsNil() predicate.EnterprisePrepayment {
+	return predicate.EnterprisePrepayment(sql.FieldIsNull(FieldTradeNo))
+}
+
+// TradeNoNotNil applies the NotNil predicate on the "trade_no" field.
+func TradeNoNotNil() predicate.EnterprisePrepayment {
+	return predicate.EnterprisePrepayment(sql.FieldNotNull(FieldTradeNo))
+}
+
+// TradeNoEqualFold applies the EqualFold predicate on the "trade_no" field.
+func TradeNoEqualFold(v string) predicate.EnterprisePrepayment {
+	return predicate.EnterprisePrepayment(sql.FieldEqualFold(FieldTradeNo, v))
+}
+
+// TradeNoContainsFold applies the ContainsFold predicate on the "trade_no" field.
+func TradeNoContainsFold(v string) predicate.EnterprisePrepayment {
+	return predicate.EnterprisePrepayment(sql.FieldContainsFold(FieldTradeNo, v))
 }
 
 // HasEnterprise applies the HasEdge predicate on the "enterprise" edge.

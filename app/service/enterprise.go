@@ -485,7 +485,7 @@ func (s *enterpriseService) Prepayment(req *model.EnterprisePrepaymentReq) float
 		EnterpriseID: req.ID,
 		Remark:       req.Remark,
 		Amount:       req.Amount,
-	})
+	}, nil)
 	if err != nil {
 		snag.Panic(err)
 	}

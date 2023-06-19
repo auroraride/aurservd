@@ -410,7 +410,7 @@ func (s *orderService) DoPayment(pc *model.PaymentCache) {
 	case model.PaymentCacheTypeOverdueFee:
 		s.FeePaid(pc.OverDueFee)
 	case model.PaymentCacheTypeAgentPrepay:
-		_, _ = NewPrepayment().UpdateBalance(pc.AgentPrepay.Payway, pc.AgentPrepay.AgentPrepay)
+		_, _ = NewPrepayment().UpdateBalance(pc.AgentPrepay.Payway, pc.AgentPrepay.AgentPrepay, &pc.AgentPrepay.TradeNo)
 	}
 }
 
