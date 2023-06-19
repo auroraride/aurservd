@@ -118,7 +118,7 @@ func (s *enterpriseStatementService) GetBill(req *model.StatementBillReq) *model
 		cost = td.Sum(cost, bill.Cost)
 		res.Days += bill.Days
 
-		key := srv.PriceKey(bill.City.ID, bill.Model)
+		key := srv.PriceKey(bill.City.ID, bill.Model, bill.BrandID)
 		ov, ok := overview[key]
 		if !ok {
 			ov = &model.BillOverview{
@@ -289,7 +289,6 @@ func (s *enterpriseStatementService) info(id uint64) (*ent.EnterpriseStatement, 
 
 // Statement 账单明细
 func (s *enterpriseStatementService) Statement(id uint64) []model.StatementDetail {
-	s.info(id)
 	return s.detail(id)
 }
 
@@ -572,7 +571,7 @@ func (s *enterpriseStatementService) usageItems(sub *ent.Subscribe, start time.T
 	if sub.EndAt != nil {
 		endAt = *sub.EndAt
 	}
-	if data := s.usageItemCalculate(start, end, subStart, endAt, prices[NewEnterprise().PriceKey(sub.CityID, sub.Model)]); data != nil {
+	if data := s.usageItemCalculate(start, end, subStart, endAt, prices[NewEnterprise().PriceKey(sub.CityID, sub.Model, sub.BrandID)]); data != nil {
 		items = append(items, data)
 	}
 	return

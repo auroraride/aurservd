@@ -7,6 +7,7 @@ import (
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
+
 	"github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -30,6 +31,7 @@ func (EnterprisePrice) Fields() []ent.Field {
 		field.Float("price").Comment("单价 元/天"),
 		field.String("model").Comment("可用电池型号"),
 		field.Bool("intelligent").Default(false).Comment("是否智能电池"),
+		field.String("key").Optional().Comment("价格key"),
 	}
 }
 
@@ -51,6 +53,7 @@ func (EnterprisePrice) Mixin() []ent.Mixin {
 		internal.Modifier{},
 
 		CityMixin{Optional: false},
+		EbikeBrandMixin{Optional: true},
 	}
 }
 

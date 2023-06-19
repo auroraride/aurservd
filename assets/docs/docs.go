@@ -8553,8 +8553,8 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M9016 编辑价格",
-                "operationId": "ManagerEnterpriseModifyPrice",
+                "summary": "M9016 团签单价设定",
+                "operationId": "ManagerEnterprisePrice",
                 "parameters": [
                     {
                         "type": "string",
@@ -8569,7 +8569,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.EnterprisePriceModifyReq"
+                            "$ref": "#/definitions/model.EnterprisePriceReq"
                         }
                     }
                 ],
@@ -17062,10 +17062,6 @@ const docTemplate = `{
                     "description": "临期骑手数",
                     "type": "integer"
                 },
-                "overTimeRiderTotal": {
-                    "description": "骑手加时审核数",
-                    "type": "integer"
-                },
                 "riderBatteryTotal": {
                     "description": "骑手电池数",
                     "type": "integer"
@@ -17076,6 +17072,10 @@ const docTemplate = `{
                 },
                 "stationBatteryTotal": {
                     "description": "站点电池数",
+                    "type": "integer"
+                },
+                "subscribeAlterTotal": {
+                    "description": "加时待审核数",
                     "type": "integer"
                 },
                 "unSubscribeTotal": {
@@ -21903,6 +21903,10 @@ const docTemplate = `{
         "model.EnterprisePrice": {
             "type": "object",
             "properties": {
+                "brandId": {
+                    "description": "电车型号ID",
+                    "type": "integer"
+                },
                 "cityId": {
                     "type": "integer"
                 },
@@ -21920,7 +21924,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.EnterprisePriceModifyReq": {
+        "model.EnterprisePriceReq": {
             "type": "object",
             "required": [
                 "cityId",
@@ -21929,6 +21933,10 @@ const docTemplate = `{
                 "price"
             ],
             "properties": {
+                "brandId": {
+                    "description": "电车型号",
+                    "type": "integer"
+                },
                 "cityId": {
                     "type": "integer"
                 },
@@ -21959,6 +21967,14 @@ const docTemplate = `{
                     "allOf": [
                         {
                             "$ref": "#/definitions/model.City"
+                        }
+                    ]
+                },
+                "ebikeBrand": {
+                    "description": "车辆型号",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EbikeBrand"
                         }
                     ]
                 },
@@ -25523,6 +25539,10 @@ const docTemplate = `{
         "model.StatementBillData": {
             "type": "object",
             "properties": {
+                "brandId": {
+                    "description": "电车型号ID",
+                    "type": "integer"
+                },
                 "city": {
                     "description": "城市",
                     "allOf": [

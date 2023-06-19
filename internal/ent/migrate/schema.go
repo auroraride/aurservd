@@ -2220,8 +2220,10 @@ var (
 		{Name: "price", Type: field.TypeFloat64, Comment: "单价 元/天"},
 		{Name: "model", Type: field.TypeString, Comment: "可用电池型号"},
 		{Name: "intelligent", Type: field.TypeBool, Comment: "是否智能电池", Default: false},
+		{Name: "key", Type: field.TypeString, Nullable: true, Comment: "价格key"},
 		{Name: "enterprise_id", Type: field.TypeUint64},
 		{Name: "city_id", Type: field.TypeUint64, Comment: "城市ID"},
+		{Name: "brand_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// EnterprisePriceTable holds the schema information for the "enterprise_price" table.
 	EnterprisePriceTable = &schema.Table{
@@ -2231,15 +2233,21 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "enterprise_price_enterprise_prices",
-				Columns:    []*schema.Column{EnterprisePriceColumns[10]},
+				Columns:    []*schema.Column{EnterprisePriceColumns[11]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "enterprise_price_city_city",
-				Columns:    []*schema.Column{EnterprisePriceColumns[11]},
+				Columns:    []*schema.Column{EnterprisePriceColumns[12]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "enterprise_price_ebike_brand_brand",
+				Columns:    []*schema.Column{EnterprisePriceColumns[13]},
+				RefColumns: []*schema.Column{EbikeBrandColumns[0]},
+				OnDelete:   schema.SetNull,
 			},
 		},
 		Indexes: []*schema.Index{
@@ -2256,7 +2264,12 @@ var (
 			{
 				Name:    "enterpriseprice_city_id",
 				Unique:  false,
-				Columns: []*schema.Column{EnterprisePriceColumns[11]},
+				Columns: []*schema.Column{EnterprisePriceColumns[12]},
+			},
+			{
+				Name:    "enterpriseprice_brand_id",
+				Unique:  false,
+				Columns: []*schema.Column{EnterprisePriceColumns[13]},
 			},
 			{
 				Name:    "enterpriseprice_model",
@@ -2266,7 +2279,7 @@ var (
 			{
 				Name:    "enterpriseprice_enterprise_id",
 				Unique:  false,
-				Columns: []*schema.Column{EnterprisePriceColumns[10]},
+				Columns: []*schema.Column{EnterprisePriceColumns[11]},
 			},
 		},
 	}
@@ -4833,6 +4846,7 @@ func init() {
 	}
 	EnterprisePriceTable.ForeignKeys[0].RefTable = EnterpriseTable
 	EnterprisePriceTable.ForeignKeys[1].RefTable = CityTable
+	EnterprisePriceTable.ForeignKeys[2].RefTable = EbikeBrandTable
 	EnterprisePriceTable.Annotation = &entsql.Annotation{
 		Table: "enterprise_price",
 	}

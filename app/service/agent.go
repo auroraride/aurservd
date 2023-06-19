@@ -215,7 +215,7 @@ func (s *agentService) Profile(ag *ent.Agent, en *ent.Enterprise) model.AgentPro
 	pm := srv.GetPrices(en)
 	var cost float64
 	for _, sub := range subs {
-		cost = tools.NewDecimal().Sum(pm[srv.PriceKey(sub.CityID, sub.Model)].Price, cost)
+		cost = tools.NewDecimal().Sum(pm[srv.PriceKey(sub.CityID, sub.Model, sub.BrandID)].Price, cost)
 	}
 
 	prices := make([]model.EnterprisePrice, 0)

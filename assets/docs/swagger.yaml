@@ -591,9 +591,6 @@ definitions:
       expiringRiderTotal:
         description: 临期骑手数
         type: integer
-      overTimeRiderTotal:
-        description: 骑手加时审核数
-        type: integer
       riderBatteryTotal:
         description: 骑手电池数
         type: integer
@@ -602,6 +599,9 @@ definitions:
         type: integer
       stationBatteryTotal:
         description: 站点电池数
+        type: integer
+      subscribeAlterTotal:
+        description: 加时待审核数
         type: integer
       unSubscribeTotal:
         description: 累计退租
@@ -3945,6 +3945,9 @@ definitions:
     type: object
   model.EnterprisePrice:
     properties:
+      brandId:
+        description: 电车型号ID
+        type: integer
       cityId:
         type: integer
       cityName:
@@ -3956,8 +3959,11 @@ definitions:
       price:
         type: number
     type: object
-  model.EnterprisePriceModifyReq:
+  model.EnterprisePriceReq:
     properties:
+      brandId:
+        description: 电车型号
+        type: integer
       cityId:
         type: integer
       enterpriseId:
@@ -3984,6 +3990,10 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.City'
         description: 城市
+      ebikeBrand:
+        allOf:
+        - $ref: '#/definitions/model.EbikeBrand'
+        description: 车辆型号
       id:
         description: 价格ID
         type: integer
@@ -6431,6 +6441,9 @@ definitions:
     type: object
   model.StatementBillData:
     properties:
+      brandId:
+        description: 电车型号ID
+        type: integer
       city:
         allOf:
         - $ref: '#/definitions/model.City'
@@ -13396,7 +13409,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: ManagerEnterpriseModifyPrice
+      operationId: ManagerEnterprisePrice
       parameters:
       - description: 管理员校验token
         in: header
@@ -13408,7 +13421,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/model.EnterprisePriceModifyReq'
+          $ref: '#/definitions/model.EnterprisePriceReq'
       produces:
       - application/json
       responses:
@@ -13416,7 +13429,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.EnterprisePriceWithCity'
-      summary: M9016 编辑价格
+      summary: M9016 团签单价设定
       tags:
       - '[M]管理接口'
   /manager/v1/enterprise/price/{id}:

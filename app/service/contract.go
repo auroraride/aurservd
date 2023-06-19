@@ -105,7 +105,7 @@ func (s *contractService) enterpriseData(m ar.Map, sub *ent.Subscribe) *model.Co
 	// 获取企业费用信息
 	srv := NewEnterprise()
 	prices := srv.GetPriceValues(ee)
-	pk := srv.PriceKey(sub.CityID, sub.Model)
+	pk := srv.PriceKey(sub.CityID, sub.Model, sub.BrandID)
 	price, ok := prices[pk]
 	if !ok {
 		snag.Panic("团签费用查询失败")

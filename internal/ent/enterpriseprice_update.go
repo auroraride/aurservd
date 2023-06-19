@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -96,6 +97,26 @@ func (epu *EnterprisePriceUpdate) SetCityID(u uint64) *EnterprisePriceUpdate {
 	return epu
 }
 
+// SetBrandID sets the "brand_id" field.
+func (epu *EnterprisePriceUpdate) SetBrandID(u uint64) *EnterprisePriceUpdate {
+	epu.mutation.SetBrandID(u)
+	return epu
+}
+
+// SetNillableBrandID sets the "brand_id" field if the given value is not nil.
+func (epu *EnterprisePriceUpdate) SetNillableBrandID(u *uint64) *EnterprisePriceUpdate {
+	if u != nil {
+		epu.SetBrandID(*u)
+	}
+	return epu
+}
+
+// ClearBrandID clears the value of the "brand_id" field.
+func (epu *EnterprisePriceUpdate) ClearBrandID() *EnterprisePriceUpdate {
+	epu.mutation.ClearBrandID()
+	return epu
+}
+
 // SetEnterpriseID sets the "enterprise_id" field.
 func (epu *EnterprisePriceUpdate) SetEnterpriseID(u uint64) *EnterprisePriceUpdate {
 	epu.mutation.SetEnterpriseID(u)
@@ -135,9 +156,34 @@ func (epu *EnterprisePriceUpdate) SetNillableIntelligent(b *bool) *EnterprisePri
 	return epu
 }
 
+// SetKey sets the "key" field.
+func (epu *EnterprisePriceUpdate) SetKey(s string) *EnterprisePriceUpdate {
+	epu.mutation.SetKey(s)
+	return epu
+}
+
+// SetNillableKey sets the "key" field if the given value is not nil.
+func (epu *EnterprisePriceUpdate) SetNillableKey(s *string) *EnterprisePriceUpdate {
+	if s != nil {
+		epu.SetKey(*s)
+	}
+	return epu
+}
+
+// ClearKey clears the value of the "key" field.
+func (epu *EnterprisePriceUpdate) ClearKey() *EnterprisePriceUpdate {
+	epu.mutation.ClearKey()
+	return epu
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (epu *EnterprisePriceUpdate) SetCity(c *City) *EnterprisePriceUpdate {
 	return epu.SetCityID(c.ID)
+}
+
+// SetBrand sets the "brand" edge to the EbikeBrand entity.
+func (epu *EnterprisePriceUpdate) SetBrand(e *EbikeBrand) *EnterprisePriceUpdate {
+	return epu.SetBrandID(e.ID)
 }
 
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
@@ -153,6 +199,12 @@ func (epu *EnterprisePriceUpdate) Mutation() *EnterprisePriceMutation {
 // ClearCity clears the "city" edge to the City entity.
 func (epu *EnterprisePriceUpdate) ClearCity() *EnterprisePriceUpdate {
 	epu.mutation.ClearCity()
+	return epu
+}
+
+// ClearBrand clears the "brand" edge to the EbikeBrand entity.
+func (epu *EnterprisePriceUpdate) ClearBrand() *EnterprisePriceUpdate {
+	epu.mutation.ClearBrand()
 	return epu
 }
 
@@ -269,6 +321,12 @@ func (epu *EnterprisePriceUpdate) sqlSave(ctx context.Context) (n int, err error
 	if value, ok := epu.mutation.Intelligent(); ok {
 		_spec.SetField(enterpriseprice.FieldIntelligent, field.TypeBool, value)
 	}
+	if value, ok := epu.mutation.Key(); ok {
+		_spec.SetField(enterpriseprice.FieldKey, field.TypeString, value)
+	}
+	if epu.mutation.KeyCleared() {
+		_spec.ClearField(enterpriseprice.FieldKey, field.TypeString)
+	}
 	if epu.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -291,6 +349,35 @@ func (epu *EnterprisePriceUpdate) sqlSave(ctx context.Context) (n int, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if epu.mutation.BrandCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   enterpriseprice.BrandTable,
+			Columns: []string{enterpriseprice.BrandColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ebikebrand.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := epu.mutation.BrandIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   enterpriseprice.BrandTable,
+			Columns: []string{enterpriseprice.BrandColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ebikebrand.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -413,6 +500,26 @@ func (epuo *EnterprisePriceUpdateOne) SetCityID(u uint64) *EnterprisePriceUpdate
 	return epuo
 }
 
+// SetBrandID sets the "brand_id" field.
+func (epuo *EnterprisePriceUpdateOne) SetBrandID(u uint64) *EnterprisePriceUpdateOne {
+	epuo.mutation.SetBrandID(u)
+	return epuo
+}
+
+// SetNillableBrandID sets the "brand_id" field if the given value is not nil.
+func (epuo *EnterprisePriceUpdateOne) SetNillableBrandID(u *uint64) *EnterprisePriceUpdateOne {
+	if u != nil {
+		epuo.SetBrandID(*u)
+	}
+	return epuo
+}
+
+// ClearBrandID clears the value of the "brand_id" field.
+func (epuo *EnterprisePriceUpdateOne) ClearBrandID() *EnterprisePriceUpdateOne {
+	epuo.mutation.ClearBrandID()
+	return epuo
+}
+
 // SetEnterpriseID sets the "enterprise_id" field.
 func (epuo *EnterprisePriceUpdateOne) SetEnterpriseID(u uint64) *EnterprisePriceUpdateOne {
 	epuo.mutation.SetEnterpriseID(u)
@@ -452,9 +559,34 @@ func (epuo *EnterprisePriceUpdateOne) SetNillableIntelligent(b *bool) *Enterpris
 	return epuo
 }
 
+// SetKey sets the "key" field.
+func (epuo *EnterprisePriceUpdateOne) SetKey(s string) *EnterprisePriceUpdateOne {
+	epuo.mutation.SetKey(s)
+	return epuo
+}
+
+// SetNillableKey sets the "key" field if the given value is not nil.
+func (epuo *EnterprisePriceUpdateOne) SetNillableKey(s *string) *EnterprisePriceUpdateOne {
+	if s != nil {
+		epuo.SetKey(*s)
+	}
+	return epuo
+}
+
+// ClearKey clears the value of the "key" field.
+func (epuo *EnterprisePriceUpdateOne) ClearKey() *EnterprisePriceUpdateOne {
+	epuo.mutation.ClearKey()
+	return epuo
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (epuo *EnterprisePriceUpdateOne) SetCity(c *City) *EnterprisePriceUpdateOne {
 	return epuo.SetCityID(c.ID)
+}
+
+// SetBrand sets the "brand" edge to the EbikeBrand entity.
+func (epuo *EnterprisePriceUpdateOne) SetBrand(e *EbikeBrand) *EnterprisePriceUpdateOne {
+	return epuo.SetBrandID(e.ID)
 }
 
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
@@ -470,6 +602,12 @@ func (epuo *EnterprisePriceUpdateOne) Mutation() *EnterprisePriceMutation {
 // ClearCity clears the "city" edge to the City entity.
 func (epuo *EnterprisePriceUpdateOne) ClearCity() *EnterprisePriceUpdateOne {
 	epuo.mutation.ClearCity()
+	return epuo
+}
+
+// ClearBrand clears the "brand" edge to the EbikeBrand entity.
+func (epuo *EnterprisePriceUpdateOne) ClearBrand() *EnterprisePriceUpdateOne {
+	epuo.mutation.ClearBrand()
 	return epuo
 }
 
@@ -616,6 +754,12 @@ func (epuo *EnterprisePriceUpdateOne) sqlSave(ctx context.Context) (_node *Enter
 	if value, ok := epuo.mutation.Intelligent(); ok {
 		_spec.SetField(enterpriseprice.FieldIntelligent, field.TypeBool, value)
 	}
+	if value, ok := epuo.mutation.Key(); ok {
+		_spec.SetField(enterpriseprice.FieldKey, field.TypeString, value)
+	}
+	if epuo.mutation.KeyCleared() {
+		_spec.ClearField(enterpriseprice.FieldKey, field.TypeString)
+	}
 	if epuo.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -638,6 +782,35 @@ func (epuo *EnterprisePriceUpdateOne) sqlSave(ctx context.Context) (_node *Enter
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(city.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if epuo.mutation.BrandCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   enterpriseprice.BrandTable,
+			Columns: []string{enterpriseprice.BrandColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ebikebrand.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := epuo.mutation.BrandIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   enterpriseprice.BrandTable,
+			Columns: []string{enterpriseprice.BrandColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ebikebrand.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

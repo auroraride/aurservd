@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
 )
@@ -35,6 +36,8 @@ type EnterprisePrice struct {
 	Remark string `json:"remark,omitempty"`
 	// 城市ID
 	CityID uint64 `json:"city_id,omitempty"`
+	// BrandID holds the value of the "brand_id" field.
+	BrandID *uint64 `json:"brand_id,omitempty"`
 	// EnterpriseID holds the value of the "enterprise_id" field.
 	EnterpriseID uint64 `json:"enterprise_id,omitempty"`
 	// 单价 元/天
@@ -43,6 +46,8 @@ type EnterprisePrice struct {
 	Model string `json:"model,omitempty"`
 	// 是否智能电池
 	Intelligent bool `json:"intelligent,omitempty"`
+	// 价格key
+	Key string `json:"key,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EnterprisePriceQuery when eager-loading is set.
 	Edges        EnterprisePriceEdges `json:"edges"`
@@ -53,11 +58,13 @@ type EnterprisePrice struct {
 type EnterprisePriceEdges struct {
 	// City holds the value of the city edge.
 	City *City `json:"city,omitempty"`
+	// Brand holds the value of the brand edge.
+	Brand *EbikeBrand `json:"brand,omitempty"`
 	// Enterprise holds the value of the enterprise edge.
 	Enterprise *Enterprise `json:"enterprise,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -73,10 +80,23 @@ func (e EnterprisePriceEdges) CityOrErr() (*City, error) {
 	return nil, &NotLoadedError{edge: "city"}
 }
 
+// BrandOrErr returns the Brand value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e EnterprisePriceEdges) BrandOrErr() (*EbikeBrand, error) {
+	if e.loadedTypes[1] {
+		if e.Brand == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: ebikebrand.Label}
+		}
+		return e.Brand, nil
+	}
+	return nil, &NotLoadedError{edge: "brand"}
+}
+
 // EnterpriseOrErr returns the Enterprise value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e EnterprisePriceEdges) EnterpriseOrErr() (*Enterprise, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[2] {
 		if e.Enterprise == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: enterprise.Label}
@@ -97,9 +117,9 @@ func (*EnterprisePrice) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case enterpriseprice.FieldPrice:
 			values[i] = new(sql.NullFloat64)
-		case enterpriseprice.FieldID, enterpriseprice.FieldCityID, enterpriseprice.FieldEnterpriseID:
+		case enterpriseprice.FieldID, enterpriseprice.FieldCityID, enterpriseprice.FieldBrandID, enterpriseprice.FieldEnterpriseID:
 			values[i] = new(sql.NullInt64)
-		case enterpriseprice.FieldRemark, enterpriseprice.FieldModel:
+		case enterpriseprice.FieldRemark, enterpriseprice.FieldModel, enterpriseprice.FieldKey:
 			values[i] = new(sql.NullString)
 		case enterpriseprice.FieldCreatedAt, enterpriseprice.FieldUpdatedAt, enterpriseprice.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -171,6 +191,13 @@ func (ep *EnterprisePrice) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				ep.CityID = uint64(value.Int64)
 			}
+		case enterpriseprice.FieldBrandID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field brand_id", values[i])
+			} else if value.Valid {
+				ep.BrandID = new(uint64)
+				*ep.BrandID = uint64(value.Int64)
+			}
 		case enterpriseprice.FieldEnterpriseID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field enterprise_id", values[i])
@@ -195,6 +222,12 @@ func (ep *EnterprisePrice) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				ep.Intelligent = value.Bool
 			}
+		case enterpriseprice.FieldKey:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field key", values[i])
+			} else if value.Valid {
+				ep.Key = value.String
+			}
 		default:
 			ep.selectValues.Set(columns[i], values[i])
 		}
@@ -211,6 +244,11 @@ func (ep *EnterprisePrice) Value(name string) (ent.Value, error) {
 // QueryCity queries the "city" edge of the EnterprisePrice entity.
 func (ep *EnterprisePrice) QueryCity() *CityQuery {
 	return NewEnterprisePriceClient(ep.config).QueryCity(ep)
+}
+
+// QueryBrand queries the "brand" edge of the EnterprisePrice entity.
+func (ep *EnterprisePrice) QueryBrand() *EbikeBrandQuery {
+	return NewEnterprisePriceClient(ep.config).QueryBrand(ep)
 }
 
 // QueryEnterprise queries the "enterprise" edge of the EnterprisePrice entity.
@@ -264,6 +302,11 @@ func (ep *EnterprisePrice) String() string {
 	builder.WriteString("city_id=")
 	builder.WriteString(fmt.Sprintf("%v", ep.CityID))
 	builder.WriteString(", ")
+	if v := ep.BrandID; v != nil {
+		builder.WriteString("brand_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
 	builder.WriteString("enterprise_id=")
 	builder.WriteString(fmt.Sprintf("%v", ep.EnterpriseID))
 	builder.WriteString(", ")
@@ -275,6 +318,9 @@ func (ep *EnterprisePrice) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("intelligent=")
 	builder.WriteString(fmt.Sprintf("%v", ep.Intelligent))
+	builder.WriteString(", ")
+	builder.WriteString("key=")
+	builder.WriteString(ep.Key)
 	builder.WriteByte(')')
 	return builder.String()
 }
