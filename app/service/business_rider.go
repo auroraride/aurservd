@@ -701,6 +701,11 @@ func (s *businessRiderService) UnSubscribe(subscribeID uint64, fns ...func(sub *
 			reason = "店员操作退租"
 		}
 
+		// 代理商小程序退租
+		if s.subscribe.EnterpriseID != nil && s.modifier == nil {
+			reason = "代理商操作退租"
+		}
+
 		_, err = tx.Subscribe.
 			UpdateOneID(sub.ID).
 			SetEndAt(time.Now()).

@@ -38,7 +38,10 @@ func (s *stockEbikeService) Loopers(req *model.StockTransferReq, enterpriseId ui
 		// 调拨到平台则状态为 库存中 / 维修中 / 已报废
 		eq.Where(
 			ebike.StatusIn(model.EbikeStatusInStock, model.EbikeStatusMaintenance, model.EbikeStatusScrapped),
-			ebike.StoreIDNotNil(),
+			ebike.Or(
+				ebike.StoreIDNotNil(),
+				ebike.StationIDNotNil(),
+			),
 		)
 	}
 
