@@ -829,6 +829,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			enterpriseprice.FieldPrice:        {Type: field.TypeFloat64, Column: enterpriseprice.FieldPrice},
 			enterpriseprice.FieldModel:        {Type: field.TypeString, Column: enterpriseprice.FieldModel},
 			enterpriseprice.FieldIntelligent:  {Type: field.TypeBool, Column: enterpriseprice.FieldIntelligent},
+			enterpriseprice.FieldKey:          {Type: field.TypeString, Column: enterpriseprice.FieldKey},
 		},
 	}
 	graph.Nodes[27] = &sqlgraph.Node{
@@ -9501,6 +9502,11 @@ func (f *EnterprisePriceFilter) WhereModel(p entql.StringP) {
 // WhereIntelligent applies the entql bool predicate on the intelligent field.
 func (f *EnterprisePriceFilter) WhereIntelligent(p entql.BoolP) {
 	f.Where(p.Field(enterpriseprice.FieldIntelligent))
+}
+
+// WhereKey applies the entql string predicate on the key field.
+func (f *EnterprisePriceFilter) WhereKey(p entql.StringP) {
+	f.Where(p.Field(enterpriseprice.FieldKey))
 }
 
 // WhereHasCity applies a predicate to check if query has an edge city.

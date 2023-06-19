@@ -17,7 +17,6 @@ import (
 	"github.com/golang-module/carbon/v2"
 	"github.com/jinzhu/copier"
 	"github.com/r3labs/diff/v3"
-	"github.com/shopspring/decimal"
 	"go.uber.org/zap"
 
 	"github.com/auroraride/aurservd/app/model"
@@ -110,8 +109,12 @@ func (s *enterpriseService) Modify(req *model.EnterpriseDetailWithID) {
 }
 
 // PriceKey 获取企业价格key (城市id-电池型号)
-func (s *enterpriseService) PriceKey(cityID uint64, model string) string {
-	return fmt.Sprintf("%d-%s", cityID, model)
+func (s *enterpriseService) PriceKey(cityID uint64, model string, brandID *uint64) (key string) {
+	key = strconv.FormatUint(cityID, 10) + model
+	if brandID != nil {
+		key += "-" + strconv.FormatUint(*brandID, 10)
+	}
+	return
 }
 
 // DetailQuery 企业详情查询语句
@@ -320,7 +323,7 @@ func (s *enterpriseService) DiffPrices(item *ent.Enterprise, data []model.Enterp
 	src := s.GetPriceValues(item)
 	dst := make(map[string]float64)
 	for _, d := range data {
-		dst[s.PriceKey(d.CityID, d.Model)] = d.Price
+		dst[s.PriceKey(d.CityID, d.Model, d.BrandID)] = d.Price
 	}
 	var err error
 	changes, err = diff.Diff(src, dst, diff.Filter(func(path []string, parent reflect.Type, field reflect.StructField) bool {
@@ -348,12 +351,13 @@ func (s *enterpriseService) GetPrices(item *ent.Enterprise) map[string]model.Ent
 		if ci != nil {
 			cname = ci.Name
 		}
-		res[s.PriceKey(price.CityID, price.Model)] = model.EnterprisePrice{
+		res[s.PriceKey(price.CityID, price.Model, price.BrandID)] = model.EnterprisePrice{
 			CityID:   cid,
 			CityName: cname,
 			Model:    price.Model,
 			Price:    price.Price,
 			ID:       price.ID,
+			BrandID:  price.BrandID,
 		}
 	}
 	return res
@@ -404,11 +408,11 @@ func (s *enterpriseService) CalculateStatement(e *ent.Enterprise, end time.Time)
 
 		used = tt.UsedDays(to, from)
 
-		// 按城市/型号计算金额
-		k := s.PriceKey(sub.CityID, sub.Model)
+		// 按 城市/电池型号/电车型号 计算金额
+		k := s.PriceKey(sub.CityID, sub.Model, sub.BrandID)
 		p := prices[k]
 
-		cost, _ := decimal.NewFromFloat(p).Mul(decimal.NewFromInt(int64(used))).Float64()
+		cost := tools.NewDecimal().Mul(p, float64(used))
 
 		bills = append(bills, model.StatementBillData{
 			EnterpriseID: *sub.EnterpriseID,
@@ -426,6 +430,7 @@ func (s *enterpriseService) CalculateStatement(e *ent.Enterprise, end time.Time)
 			Cost:        cost,
 			Price:       p,
 			Model:       sub.Model,
+			BrandID:     sub.BrandID,
 		})
 	}
 

@@ -17062,10 +17062,6 @@ const docTemplate = `{
                     "description": "临期骑手数",
                     "type": "integer"
                 },
-                "overTimeRiderTotal": {
-                    "description": "骑手加时审核数",
-                    "type": "integer"
-                },
                 "riderBatteryTotal": {
                     "description": "骑手电池数",
                     "type": "integer"
@@ -17076,6 +17072,10 @@ const docTemplate = `{
                 },
                 "stationBatteryTotal": {
                     "description": "站点电池数",
+                    "type": "integer"
+                },
+                "subscribeAlterTotal": {
+                    "description": "加时待审核数",
                     "type": "integer"
                 },
                 "unSubscribeTotal": {
@@ -21903,6 +21903,10 @@ const docTemplate = `{
         "model.EnterprisePrice": {
             "type": "object",
             "properties": {
+                "brandId": {
+                    "description": "电车型号ID",
+                    "type": "integer"
+                },
                 "cityId": {
                     "type": "integer"
                 },
@@ -25535,6 +25539,10 @@ const docTemplate = `{
         "model.StatementBillData": {
             "type": "object",
             "properties": {
+                "brandId": {
+                    "description": "电车型号ID",
+                    "type": "integer"
+                },
                 "city": {
                     "description": "城市",
                     "allOf": [

@@ -29,6 +29,7 @@ type EnterprisePrice struct {
 	Price    float64 `json:"price"`
 	CityID   uint64  `json:"cityId"`
 	CityName string  `json:"cityName"`
+	BrandID  *uint64 `json:"brandId"` // 电车型号ID
 }
 
 type EnterpriseContractModifyReq struct {

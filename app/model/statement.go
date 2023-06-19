@@ -51,6 +51,7 @@ type StatementBillData struct {
 	Model        string  `json:"model"`               // 电池型号
 	City         City    `json:"city"`                // 城市
 	StationID    *uint64 `json:"stationId,omitempty"` // 站点ID
+	BrandID      *uint64 `json:"brandId,omitempty"`   // 电车型号ID
 }
 
 func (d *StatementBillRes) MarshalBinary() ([]byte, error) {

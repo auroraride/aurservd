@@ -41952,6 +41952,7 @@ type EnterprisePriceMutation struct {
 	addprice          *float64
 	model             *string
 	intelligent       *bool
+	key               *string
 	clearedFields     map[string]struct{}
 	city              *uint64
 	clearedcity       bool
@@ -42579,6 +42580,55 @@ func (m *EnterprisePriceMutation) ResetIntelligent() {
 	m.intelligent = nil
 }
 
+// SetKey sets the "key" field.
+func (m *EnterprisePriceMutation) SetKey(s string) {
+	m.key = &s
+}
+
+// Key returns the value of the "key" field in the mutation.
+func (m *EnterprisePriceMutation) Key() (r string, exists bool) {
+	v := m.key
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldKey returns the old "key" field's value of the EnterprisePrice entity.
+// If the EnterprisePrice object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterprisePriceMutation) OldKey(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldKey is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldKey requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldKey: %w", err)
+	}
+	return oldValue.Key, nil
+}
+
+// ClearKey clears the value of the "key" field.
+func (m *EnterprisePriceMutation) ClearKey() {
+	m.key = nil
+	m.clearedFields[enterpriseprice.FieldKey] = struct{}{}
+}
+
+// KeyCleared returns if the "key" field was cleared in this mutation.
+func (m *EnterprisePriceMutation) KeyCleared() bool {
+	_, ok := m.clearedFields[enterpriseprice.FieldKey]
+	return ok
+}
+
+// ResetKey resets all changes to the "key" field.
+func (m *EnterprisePriceMutation) ResetKey() {
+	m.key = nil
+	delete(m.clearedFields, enterpriseprice.FieldKey)
+}
+
 // ClearCity clears the "city" edge to the City entity.
 func (m *EnterprisePriceMutation) ClearCity() {
 	m.clearedcity = true
@@ -42691,7 +42741,7 @@ func (m *EnterprisePriceMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EnterprisePriceMutation) Fields() []string {
-	fields := make([]string, 0, 12)
+	fields := make([]string, 0, 13)
 	if m.created_at != nil {
 		fields = append(fields, enterpriseprice.FieldCreatedAt)
 	}
@@ -42728,6 +42778,9 @@ func (m *EnterprisePriceMutation) Fields() []string {
 	if m.intelligent != nil {
 		fields = append(fields, enterpriseprice.FieldIntelligent)
 	}
+	if m.key != nil {
+		fields = append(fields, enterpriseprice.FieldKey)
+	}
 	return fields
 }
 
@@ -42760,6 +42813,8 @@ func (m *EnterprisePriceMutation) Field(name string) (ent.Value, bool) {
 		return m.Model()
 	case enterpriseprice.FieldIntelligent:
 		return m.Intelligent()
+	case enterpriseprice.FieldKey:
+		return m.Key()
 	}
 	return nil, false
 }
@@ -42793,6 +42848,8 @@ func (m *EnterprisePriceMutation) OldField(ctx context.Context, name string) (en
 		return m.OldModel(ctx)
 	case enterpriseprice.FieldIntelligent:
 		return m.OldIntelligent(ctx)
+	case enterpriseprice.FieldKey:
+		return m.OldKey(ctx)
 	}
 	return nil, fmt.Errorf("unknown EnterprisePrice field %s", name)
 }
@@ -42886,6 +42943,13 @@ func (m *EnterprisePriceMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetIntelligent(v)
 		return nil
+	case enterpriseprice.FieldKey:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetKey(v)
+		return nil
 	}
 	return fmt.Errorf("unknown EnterprisePrice field %s", name)
 }
@@ -42946,6 +43010,9 @@ func (m *EnterprisePriceMutation) ClearedFields() []string {
 	if m.FieldCleared(enterpriseprice.FieldBrandID) {
 		fields = append(fields, enterpriseprice.FieldBrandID)
 	}
+	if m.FieldCleared(enterpriseprice.FieldKey) {
+		fields = append(fields, enterpriseprice.FieldKey)
+	}
 	return fields
 }
 
@@ -42974,6 +43041,9 @@ func (m *EnterprisePriceMutation) ClearField(name string) error {
 		return nil
 	case enterpriseprice.FieldBrandID:
 		m.ClearBrandID()
+		return nil
+	case enterpriseprice.FieldKey:
+		m.ClearKey()
 		return nil
 	}
 	return fmt.Errorf("unknown EnterprisePrice nullable field %s", name)
@@ -43018,6 +43088,9 @@ func (m *EnterprisePriceMutation) ResetField(name string) error {
 		return nil
 	case enterpriseprice.FieldIntelligent:
 		m.ResetIntelligent()
+		return nil
+	case enterpriseprice.FieldKey:
+		m.ResetKey()
 		return nil
 	}
 	return fmt.Errorf("unknown EnterprisePrice field %s", name)

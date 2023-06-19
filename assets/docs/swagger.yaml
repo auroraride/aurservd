@@ -591,9 +591,6 @@ definitions:
       expiringRiderTotal:
         description: 临期骑手数
         type: integer
-      overTimeRiderTotal:
-        description: 骑手加时审核数
-        type: integer
       riderBatteryTotal:
         description: 骑手电池数
         type: integer
@@ -602,6 +599,9 @@ definitions:
         type: integer
       stationBatteryTotal:
         description: 站点电池数
+        type: integer
+      subscribeAlterTotal:
+        description: 加时待审核数
         type: integer
       unSubscribeTotal:
         description: 累计退租
@@ -3945,6 +3945,9 @@ definitions:
     type: object
   model.EnterprisePrice:
     properties:
+      brandId:
+        description: 电车型号ID
+        type: integer
       cityId:
         type: integer
       cityName:
@@ -6438,6 +6441,9 @@ definitions:
     type: object
   model.StatementBillData:
     properties:
+      brandId:
+        description: 电车型号ID
+        type: integer
       city:
         allOf:
         - $ref: '#/definitions/model.City'

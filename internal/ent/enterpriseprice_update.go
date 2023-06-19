@@ -156,6 +156,26 @@ func (epu *EnterprisePriceUpdate) SetNillableIntelligent(b *bool) *EnterprisePri
 	return epu
 }
 
+// SetKey sets the "key" field.
+func (epu *EnterprisePriceUpdate) SetKey(s string) *EnterprisePriceUpdate {
+	epu.mutation.SetKey(s)
+	return epu
+}
+
+// SetNillableKey sets the "key" field if the given value is not nil.
+func (epu *EnterprisePriceUpdate) SetNillableKey(s *string) *EnterprisePriceUpdate {
+	if s != nil {
+		epu.SetKey(*s)
+	}
+	return epu
+}
+
+// ClearKey clears the value of the "key" field.
+func (epu *EnterprisePriceUpdate) ClearKey() *EnterprisePriceUpdate {
+	epu.mutation.ClearKey()
+	return epu
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (epu *EnterprisePriceUpdate) SetCity(c *City) *EnterprisePriceUpdate {
 	return epu.SetCityID(c.ID)
@@ -300,6 +320,12 @@ func (epu *EnterprisePriceUpdate) sqlSave(ctx context.Context) (n int, err error
 	}
 	if value, ok := epu.mutation.Intelligent(); ok {
 		_spec.SetField(enterpriseprice.FieldIntelligent, field.TypeBool, value)
+	}
+	if value, ok := epu.mutation.Key(); ok {
+		_spec.SetField(enterpriseprice.FieldKey, field.TypeString, value)
+	}
+	if epu.mutation.KeyCleared() {
+		_spec.ClearField(enterpriseprice.FieldKey, field.TypeString)
 	}
 	if epu.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -533,6 +559,26 @@ func (epuo *EnterprisePriceUpdateOne) SetNillableIntelligent(b *bool) *Enterpris
 	return epuo
 }
 
+// SetKey sets the "key" field.
+func (epuo *EnterprisePriceUpdateOne) SetKey(s string) *EnterprisePriceUpdateOne {
+	epuo.mutation.SetKey(s)
+	return epuo
+}
+
+// SetNillableKey sets the "key" field if the given value is not nil.
+func (epuo *EnterprisePriceUpdateOne) SetNillableKey(s *string) *EnterprisePriceUpdateOne {
+	if s != nil {
+		epuo.SetKey(*s)
+	}
+	return epuo
+}
+
+// ClearKey clears the value of the "key" field.
+func (epuo *EnterprisePriceUpdateOne) ClearKey() *EnterprisePriceUpdateOne {
+	epuo.mutation.ClearKey()
+	return epuo
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (epuo *EnterprisePriceUpdateOne) SetCity(c *City) *EnterprisePriceUpdateOne {
 	return epuo.SetCityID(c.ID)
@@ -707,6 +753,12 @@ func (epuo *EnterprisePriceUpdateOne) sqlSave(ctx context.Context) (_node *Enter
 	}
 	if value, ok := epuo.mutation.Intelligent(); ok {
 		_spec.SetField(enterpriseprice.FieldIntelligent, field.TypeBool, value)
+	}
+	if value, ok := epuo.mutation.Key(); ok {
+		_spec.SetField(enterpriseprice.FieldKey, field.TypeString, value)
+	}
+	if epuo.mutation.KeyCleared() {
+		_spec.ClearField(enterpriseprice.FieldKey, field.TypeString)
 	}
 	if epuo.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
