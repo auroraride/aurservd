@@ -74,7 +74,7 @@ func (*subscribe) AlterReivew(c echo.Context) (err error) {
 	return ctx.SendResponse()
 }
 
-// Halt 强制退租
+// Halt
 // @ID           AgentSubscribeHalt
 // @Router       /agent/v1/subscribe/halt [POST]
 // @Summary      A7004 强制退租
@@ -86,6 +86,6 @@ func (*subscribe) AlterReivew(c echo.Context) (err error) {
 // @Success      200  {object}  string  "请求成功"
 func (*subscribe) Halt(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.BusinessSubscribeReq](c)
-	service.NewBusinessRider(nil).SetCabinetID(req.CabinetID).UnSubscribe(req.ID)
+	service.NewBusinessRider(nil).UnSubscribe(req.ID)
 	return ctx.SendResponse()
 }

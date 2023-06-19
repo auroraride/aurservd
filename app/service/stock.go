@@ -267,18 +267,28 @@ func (s *stockService) EnterpriseList(req *model.StockListReq) *model.Pagination
 			rsp.BatteryTotal = 0
 			// 计算电池物资
 			batteries := make(map[string]*model.StockMaterial)
+			// 计算电车物资
+			bikes := make(map[string]*model.StockMaterial)
 			// 出入库
 			for _, st := range item.Edges.Stocks {
 				switch true {
 				case st.Model != nil:
 					// 电池
 					s.calculate(batteries, st)
+				case st.BrandID != nil:
+					// 电车
+					s.calculate(bikes, st)
 				}
 			}
 			for _, bat := range batteries {
 				rsp.Batteries = append(rsp.Batteries, bat)
 				rsp.BatteryTotal += bat.Surplus
 			}
+			for _, bike := range bikes {
+				rsp.Ebikes = append(rsp.Ebikes, bike)
+				rsp.EbikeTotal += bike.Surplus
+			}
+
 			return rsp
 		})
 }
