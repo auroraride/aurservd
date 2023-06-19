@@ -119,6 +119,20 @@ func (epc *EnterprisePrepaymentCreate) SetNillablePayway(m *model.Payway) *Enter
 	return epc
 }
 
+// SetTradeNo sets the "trade_no" field.
+func (epc *EnterprisePrepaymentCreate) SetTradeNo(s string) *EnterprisePrepaymentCreate {
+	epc.mutation.SetTradeNo(s)
+	return epc
+}
+
+// SetNillableTradeNo sets the "trade_no" field if the given value is not nil.
+func (epc *EnterprisePrepaymentCreate) SetNillableTradeNo(s *string) *EnterprisePrepaymentCreate {
+	if s != nil {
+		epc.SetTradeNo(*s)
+	}
+	return epc
+}
+
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
 func (epc *EnterprisePrepaymentCreate) SetEnterprise(e *Enterprise) *EnterprisePrepaymentCreate {
 	return epc.SetEnterpriseID(e.ID)
@@ -258,6 +272,10 @@ func (epc *EnterprisePrepaymentCreate) createSpec() (*EnterprisePrepayment, *sql
 	if value, ok := epc.mutation.Payway(); ok {
 		_spec.SetField(enterpriseprepayment.FieldPayway, field.TypeOther, value)
 		_node.Payway = value
+	}
+	if value, ok := epc.mutation.TradeNo(); ok {
+		_spec.SetField(enterpriseprepayment.FieldTradeNo, field.TypeString, value)
+		_node.TradeNo = &value
 	}
 	if nodes := epc.mutation.EnterpriseIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -435,6 +453,24 @@ func (u *EnterprisePrepaymentUpsert) UpdatePayway() *EnterprisePrepaymentUpsert 
 	return u
 }
 
+// SetTradeNo sets the "trade_no" field.
+func (u *EnterprisePrepaymentUpsert) SetTradeNo(v string) *EnterprisePrepaymentUpsert {
+	u.Set(enterpriseprepayment.FieldTradeNo, v)
+	return u
+}
+
+// UpdateTradeNo sets the "trade_no" field to the value that was provided on create.
+func (u *EnterprisePrepaymentUpsert) UpdateTradeNo() *EnterprisePrepaymentUpsert {
+	u.SetExcluded(enterpriseprepayment.FieldTradeNo)
+	return u
+}
+
+// ClearTradeNo clears the value of the "trade_no" field.
+func (u *EnterprisePrepaymentUpsert) ClearTradeNo() *EnterprisePrepaymentUpsert {
+	u.SetNull(enterpriseprepayment.FieldTradeNo)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -588,6 +624,27 @@ func (u *EnterprisePrepaymentUpsertOne) SetPayway(v model.Payway) *EnterprisePre
 func (u *EnterprisePrepaymentUpsertOne) UpdatePayway() *EnterprisePrepaymentUpsertOne {
 	return u.Update(func(s *EnterprisePrepaymentUpsert) {
 		s.UpdatePayway()
+	})
+}
+
+// SetTradeNo sets the "trade_no" field.
+func (u *EnterprisePrepaymentUpsertOne) SetTradeNo(v string) *EnterprisePrepaymentUpsertOne {
+	return u.Update(func(s *EnterprisePrepaymentUpsert) {
+		s.SetTradeNo(v)
+	})
+}
+
+// UpdateTradeNo sets the "trade_no" field to the value that was provided on create.
+func (u *EnterprisePrepaymentUpsertOne) UpdateTradeNo() *EnterprisePrepaymentUpsertOne {
+	return u.Update(func(s *EnterprisePrepaymentUpsert) {
+		s.UpdateTradeNo()
+	})
+}
+
+// ClearTradeNo clears the value of the "trade_no" field.
+func (u *EnterprisePrepaymentUpsertOne) ClearTradeNo() *EnterprisePrepaymentUpsertOne {
+	return u.Update(func(s *EnterprisePrepaymentUpsert) {
+		s.ClearTradeNo()
 	})
 }
 
@@ -906,6 +963,27 @@ func (u *EnterprisePrepaymentUpsertBulk) SetPayway(v model.Payway) *EnterprisePr
 func (u *EnterprisePrepaymentUpsertBulk) UpdatePayway() *EnterprisePrepaymentUpsertBulk {
 	return u.Update(func(s *EnterprisePrepaymentUpsert) {
 		s.UpdatePayway()
+	})
+}
+
+// SetTradeNo sets the "trade_no" field.
+func (u *EnterprisePrepaymentUpsertBulk) SetTradeNo(v string) *EnterprisePrepaymentUpsertBulk {
+	return u.Update(func(s *EnterprisePrepaymentUpsert) {
+		s.SetTradeNo(v)
+	})
+}
+
+// UpdateTradeNo sets the "trade_no" field to the value that was provided on create.
+func (u *EnterprisePrepaymentUpsertBulk) UpdateTradeNo() *EnterprisePrepaymentUpsertBulk {
+	return u.Update(func(s *EnterprisePrepaymentUpsert) {
+		s.UpdateTradeNo()
+	})
+}
+
+// ClearTradeNo clears the value of the "trade_no" field.
+func (u *EnterprisePrepaymentUpsertBulk) ClearTradeNo() *EnterprisePrepaymentUpsertBulk {
+	return u.Update(func(s *EnterprisePrepaymentUpsert) {
+		s.ClearTradeNo()
 	})
 }
 
