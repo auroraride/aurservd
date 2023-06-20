@@ -548,9 +548,15 @@ func (s *enterpriseService) Price(req *model.EnterprisePriceReq) model.Enterpris
 	if req.ID == 0 {
 		client := ent.Database.EnterprisePrice
 		// 判定价格是否重复
-		if exist, _ := client.QueryNotDeleted().
-			Where(enterpriseprice.EnterpriseID(req.EnterpriseID), enterpriseprice.Model(req.Model), enterpriseprice.CityID(req.CityID)).
-			Exist(s.ctx); exist {
+		q := client.QueryNotDeleted().Where(
+			enterpriseprice.EnterpriseID(req.EnterpriseID),
+			enterpriseprice.Model(req.Model),
+			enterpriseprice.CityID(req.CityID),
+		)
+		if req.BrandID != nil {
+			q.Where(enterpriseprice.BrandID(*req.BrandID))
+		}
+		if exist, _ := q.Exist(s.ctx); exist {
 			snag.Panic("价格设置重复")
 		}
 		p, err = client.
