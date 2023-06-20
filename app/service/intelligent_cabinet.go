@@ -192,7 +192,9 @@ func (s *intelligentCabinetService) Exchange(uid string, ex *ent.Exchange, sub *
 				// 更新新电池信息
 				bat, _ := bs.LoadOrCreate(putout)
 				if bat != nil {
-					_ = NewBattery().Allocate(bat.Update(), bat, sub, true)
+					_ = ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
+						return NewBattery().Allocate(tx, bat, sub, true)
+					})
 				}
 			}
 		}
@@ -460,7 +462,9 @@ func (s *intelligentCabinetService) DoBusiness(uidstr string, bus adapter.Busine
 
 		// 取走电池
 		if !putin {
-			_ = NewBattery().Allocate(bat.Update(), bat, sub, true)
+			_ = ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
+				return NewBattery().Allocate(tx, bat, sub, true)
+			})
 		}
 	}
 

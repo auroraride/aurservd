@@ -630,7 +630,7 @@ func (s *businessRiderService) Active(sub *ent.Subscribe, allo *ent.Allocate) {
 		// 后台操作设置电池编码
 		if s.battery != nil && s.cabinet == nil {
 			snag.PanicIfError(
-				NewBattery(s.modifier).Allocate(tx.Battery.UpdateOne(s.battery), s.battery, s.subscribe, false),
+				NewBattery(s.modifier).Allocate(tx, s.battery, s.subscribe, false),
 			)
 		}
 

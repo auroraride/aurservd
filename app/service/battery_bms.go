@@ -94,17 +94,36 @@ func (s *batteryBmsService) SyncPutin(sn string, cab *ent.Cabinet, ordinal int) 
 	// 移除该仓位其他电池
 	// s.SyncPutout(cab, ordinal)
 
-	// 更新电池电柜信息
-	_, err = bat.Update().SetCabinetID(cab.ID).SetOrdinal(ordinal).ClearRiderID().ClearSubscribeID().Save(s.ctx)
-	if err != nil {
-		zap.L().Error("放入电柜更新电池失败", zap.Error(err))
-	}
+	err = ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
+		updater := bat.Update().
+			SetCabinetID(cab.ID).
+			SetOrdinal(ordinal).
+			ClearRiderID().
+			ClearSubscribeID()
 
-	// 更新电池流转
-	go NewBatteryFlow().Create(bat, model.BatteryFlowCreateReq{
-		CabinetID: silk.Pointer(cab.ID),
-		Ordinal:   silk.Pointer(ordinal),
-		Serial:    silk.Pointer(cab.Serial),
+		if cab.StationID != nil {
+			// 当前电柜属于代理站点时, 设置新的站点信息
+			updater.SetNillableStationID(cab.StationID).SetNillableEnterpriseID(cab.EnterpriseID)
+		} else {
+			// 当前电柜属于平台时, 清除原有站点信息
+			updater.ClearStationID().ClearEnterpriseID()
+		}
+
+		// 更新电池电柜信息
+		_, err = updater.Save(s.ctx)
+		if err != nil {
+			zap.L().Error("放入电柜更新电池失败", zap.Error(err))
+			return
+		}
+
+		// 更新电池流转
+		NewBatteryFlow().Create(tx, bat, model.BatteryFlowCreateReq{
+			CabinetID: silk.Pointer(cab.ID),
+			Ordinal:   silk.Pointer(ordinal),
+			Serial:    silk.Pointer(cab.Serial),
+		})
+
+		return
 	})
 	return
 }

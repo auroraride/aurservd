@@ -10,6 +10,8 @@ import (
 	"net/http"
 
 	"github.com/auroraride/adapter"
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/internal/ar"
@@ -17,7 +19,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/pkg/silk"
-	"github.com/labstack/echo/v4"
 )
 
 type transfer struct{}
@@ -91,7 +92,7 @@ func (*transfer) Subscribe(c echo.Context) (err error) {
 
 			// 更新电池信息
 			if intelligent && bat != nil {
-				err = service.NewBattery().Allocate(tx.Battery.UpdateOne(bat), bat, sub, false)
+				err = service.NewBattery().Allocate(tx, bat, sub, false)
 			}
 
 			return
