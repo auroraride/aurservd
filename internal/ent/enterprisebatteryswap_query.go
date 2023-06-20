@@ -28,10 +28,10 @@ type EnterpriseBatterySwapQuery struct {
 	predicates           []predicate.EnterpriseBatterySwap
 	withExchange         *ExchangeQuery
 	withCabinet          *CabinetQuery
-	withPutinBattery     *BatteryQuery
+	withPutin            *BatteryQuery
 	withPutinEnterprise  *EnterpriseQuery
 	withPutinStation     *EnterpriseStationQuery
-	withPutoutBattery    *BatteryQuery
+	withPutout           *BatteryQuery
 	withPutoutEnterprise *EnterpriseQuery
 	withPutoutStation    *EnterpriseStationQuery
 	modifiers            []func(*sql.Selector)
@@ -115,8 +115,8 @@ func (ebsq *EnterpriseBatterySwapQuery) QueryCabinet() *CabinetQuery {
 	return query
 }
 
-// QueryPutinBattery chains the current query on the "putin_battery" edge.
-func (ebsq *EnterpriseBatterySwapQuery) QueryPutinBattery() *BatteryQuery {
+// QueryPutin chains the current query on the "putin" edge.
+func (ebsq *EnterpriseBatterySwapQuery) QueryPutin() *BatteryQuery {
 	query := (&BatteryClient{config: ebsq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := ebsq.prepareQuery(ctx); err != nil {
@@ -129,7 +129,7 @@ func (ebsq *EnterpriseBatterySwapQuery) QueryPutinBattery() *BatteryQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(enterprisebatteryswap.Table, enterprisebatteryswap.FieldID, selector),
 			sqlgraph.To(battery.Table, battery.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, enterprisebatteryswap.PutinBatteryTable, enterprisebatteryswap.PutinBatteryColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, enterprisebatteryswap.PutinTable, enterprisebatteryswap.PutinColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(ebsq.driver.Dialect(), step)
 		return fromU, nil
@@ -181,8 +181,8 @@ func (ebsq *EnterpriseBatterySwapQuery) QueryPutinStation() *EnterpriseStationQu
 	return query
 }
 
-// QueryPutoutBattery chains the current query on the "putout_battery" edge.
-func (ebsq *EnterpriseBatterySwapQuery) QueryPutoutBattery() *BatteryQuery {
+// QueryPutout chains the current query on the "putout" edge.
+func (ebsq *EnterpriseBatterySwapQuery) QueryPutout() *BatteryQuery {
 	query := (&BatteryClient{config: ebsq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := ebsq.prepareQuery(ctx); err != nil {
@@ -195,7 +195,7 @@ func (ebsq *EnterpriseBatterySwapQuery) QueryPutoutBattery() *BatteryQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(enterprisebatteryswap.Table, enterprisebatteryswap.FieldID, selector),
 			sqlgraph.To(battery.Table, battery.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, enterprisebatteryswap.PutoutBatteryTable, enterprisebatteryswap.PutoutBatteryColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, enterprisebatteryswap.PutoutTable, enterprisebatteryswap.PutoutColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(ebsq.driver.Dialect(), step)
 		return fromU, nil
@@ -441,10 +441,10 @@ func (ebsq *EnterpriseBatterySwapQuery) Clone() *EnterpriseBatterySwapQuery {
 		predicates:           append([]predicate.EnterpriseBatterySwap{}, ebsq.predicates...),
 		withExchange:         ebsq.withExchange.Clone(),
 		withCabinet:          ebsq.withCabinet.Clone(),
-		withPutinBattery:     ebsq.withPutinBattery.Clone(),
+		withPutin:            ebsq.withPutin.Clone(),
 		withPutinEnterprise:  ebsq.withPutinEnterprise.Clone(),
 		withPutinStation:     ebsq.withPutinStation.Clone(),
-		withPutoutBattery:    ebsq.withPutoutBattery.Clone(),
+		withPutout:           ebsq.withPutout.Clone(),
 		withPutoutEnterprise: ebsq.withPutoutEnterprise.Clone(),
 		withPutoutStation:    ebsq.withPutoutStation.Clone(),
 		// clone intermediate query.
@@ -475,14 +475,14 @@ func (ebsq *EnterpriseBatterySwapQuery) WithCabinet(opts ...func(*CabinetQuery))
 	return ebsq
 }
 
-// WithPutinBattery tells the query-builder to eager-load the nodes that are connected to
-// the "putin_battery" edge. The optional arguments are used to configure the query builder of the edge.
-func (ebsq *EnterpriseBatterySwapQuery) WithPutinBattery(opts ...func(*BatteryQuery)) *EnterpriseBatterySwapQuery {
+// WithPutin tells the query-builder to eager-load the nodes that are connected to
+// the "putin" edge. The optional arguments are used to configure the query builder of the edge.
+func (ebsq *EnterpriseBatterySwapQuery) WithPutin(opts ...func(*BatteryQuery)) *EnterpriseBatterySwapQuery {
 	query := (&BatteryClient{config: ebsq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	ebsq.withPutinBattery = query
+	ebsq.withPutin = query
 	return ebsq
 }
 
@@ -508,14 +508,14 @@ func (ebsq *EnterpriseBatterySwapQuery) WithPutinStation(opts ...func(*Enterpris
 	return ebsq
 }
 
-// WithPutoutBattery tells the query-builder to eager-load the nodes that are connected to
-// the "putout_battery" edge. The optional arguments are used to configure the query builder of the edge.
-func (ebsq *EnterpriseBatterySwapQuery) WithPutoutBattery(opts ...func(*BatteryQuery)) *EnterpriseBatterySwapQuery {
+// WithPutout tells the query-builder to eager-load the nodes that are connected to
+// the "putout" edge. The optional arguments are used to configure the query builder of the edge.
+func (ebsq *EnterpriseBatterySwapQuery) WithPutout(opts ...func(*BatteryQuery)) *EnterpriseBatterySwapQuery {
 	query := (&BatteryClient{config: ebsq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	ebsq.withPutoutBattery = query
+	ebsq.withPutout = query
 	return ebsq
 }
 
@@ -622,10 +622,10 @@ func (ebsq *EnterpriseBatterySwapQuery) sqlAll(ctx context.Context, hooks ...que
 		loadedTypes = [8]bool{
 			ebsq.withExchange != nil,
 			ebsq.withCabinet != nil,
-			ebsq.withPutinBattery != nil,
+			ebsq.withPutin != nil,
 			ebsq.withPutinEnterprise != nil,
 			ebsq.withPutinStation != nil,
-			ebsq.withPutoutBattery != nil,
+			ebsq.withPutout != nil,
 			ebsq.withPutoutEnterprise != nil,
 			ebsq.withPutoutStation != nil,
 		}
@@ -663,9 +663,9 @@ func (ebsq *EnterpriseBatterySwapQuery) sqlAll(ctx context.Context, hooks ...que
 			return nil, err
 		}
 	}
-	if query := ebsq.withPutinBattery; query != nil {
-		if err := ebsq.loadPutinBattery(ctx, query, nodes, nil,
-			func(n *EnterpriseBatterySwap, e *Battery) { n.Edges.PutinBattery = e }); err != nil {
+	if query := ebsq.withPutin; query != nil {
+		if err := ebsq.loadPutin(ctx, query, nodes, nil,
+			func(n *EnterpriseBatterySwap, e *Battery) { n.Edges.Putin = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -681,9 +681,9 @@ func (ebsq *EnterpriseBatterySwapQuery) sqlAll(ctx context.Context, hooks ...que
 			return nil, err
 		}
 	}
-	if query := ebsq.withPutoutBattery; query != nil {
-		if err := ebsq.loadPutoutBattery(ctx, query, nodes, nil,
-			func(n *EnterpriseBatterySwap, e *Battery) { n.Edges.PutoutBattery = e }); err != nil {
+	if query := ebsq.withPutout; query != nil {
+		if err := ebsq.loadPutout(ctx, query, nodes, nil,
+			func(n *EnterpriseBatterySwap, e *Battery) { n.Edges.Putout = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -760,11 +760,11 @@ func (ebsq *EnterpriseBatterySwapQuery) loadCabinet(ctx context.Context, query *
 	}
 	return nil
 }
-func (ebsq *EnterpriseBatterySwapQuery) loadPutinBattery(ctx context.Context, query *BatteryQuery, nodes []*EnterpriseBatterySwap, init func(*EnterpriseBatterySwap), assign func(*EnterpriseBatterySwap, *Battery)) error {
+func (ebsq *EnterpriseBatterySwapQuery) loadPutin(ctx context.Context, query *BatteryQuery, nodes []*EnterpriseBatterySwap, init func(*EnterpriseBatterySwap), assign func(*EnterpriseBatterySwap, *Battery)) error {
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*EnterpriseBatterySwap)
 	for i := range nodes {
-		fk := nodes[i].PutinBatteryID
+		fk := nodes[i].PutinID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -781,7 +781,7 @@ func (ebsq *EnterpriseBatterySwapQuery) loadPutinBattery(ctx context.Context, qu
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "putin_battery_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "putin_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -853,11 +853,11 @@ func (ebsq *EnterpriseBatterySwapQuery) loadPutinStation(ctx context.Context, qu
 	}
 	return nil
 }
-func (ebsq *EnterpriseBatterySwapQuery) loadPutoutBattery(ctx context.Context, query *BatteryQuery, nodes []*EnterpriseBatterySwap, init func(*EnterpriseBatterySwap), assign func(*EnterpriseBatterySwap, *Battery)) error {
+func (ebsq *EnterpriseBatterySwapQuery) loadPutout(ctx context.Context, query *BatteryQuery, nodes []*EnterpriseBatterySwap, init func(*EnterpriseBatterySwap), assign func(*EnterpriseBatterySwap, *Battery)) error {
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*EnterpriseBatterySwap)
 	for i := range nodes {
-		fk := nodes[i].PutoutBatteryID
+		fk := nodes[i].PutoutID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -874,7 +874,7 @@ func (ebsq *EnterpriseBatterySwapQuery) loadPutoutBattery(ctx context.Context, q
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "putout_battery_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "putout_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -981,8 +981,8 @@ func (ebsq *EnterpriseBatterySwapQuery) querySpec() *sqlgraph.QuerySpec {
 		if ebsq.withCabinet != nil {
 			_spec.Node.AddColumnOnce(enterprisebatteryswap.FieldCabinetID)
 		}
-		if ebsq.withPutinBattery != nil {
-			_spec.Node.AddColumnOnce(enterprisebatteryswap.FieldPutinBatteryID)
+		if ebsq.withPutin != nil {
+			_spec.Node.AddColumnOnce(enterprisebatteryswap.FieldPutinID)
 		}
 		if ebsq.withPutinEnterprise != nil {
 			_spec.Node.AddColumnOnce(enterprisebatteryswap.FieldPutinEnterpriseID)
@@ -990,8 +990,8 @@ func (ebsq *EnterpriseBatterySwapQuery) querySpec() *sqlgraph.QuerySpec {
 		if ebsq.withPutinStation != nil {
 			_spec.Node.AddColumnOnce(enterprisebatteryswap.FieldPutinStationID)
 		}
-		if ebsq.withPutoutBattery != nil {
-			_spec.Node.AddColumnOnce(enterprisebatteryswap.FieldPutoutBatteryID)
+		if ebsq.withPutout != nil {
+			_spec.Node.AddColumnOnce(enterprisebatteryswap.FieldPutoutID)
 		}
 		if ebsq.withPutoutEnterprise != nil {
 			_spec.Node.AddColumnOnce(enterprisebatteryswap.FieldPutoutEnterpriseID)
@@ -1069,10 +1069,10 @@ type EnterpriseBatterySwapQueryWith string
 var (
 	EnterpriseBatterySwapQueryWithExchange         EnterpriseBatterySwapQueryWith = "Exchange"
 	EnterpriseBatterySwapQueryWithCabinet          EnterpriseBatterySwapQueryWith = "Cabinet"
-	EnterpriseBatterySwapQueryWithPutinBattery     EnterpriseBatterySwapQueryWith = "PutinBattery"
+	EnterpriseBatterySwapQueryWithPutin            EnterpriseBatterySwapQueryWith = "Putin"
 	EnterpriseBatterySwapQueryWithPutinEnterprise  EnterpriseBatterySwapQueryWith = "PutinEnterprise"
 	EnterpriseBatterySwapQueryWithPutinStation     EnterpriseBatterySwapQueryWith = "PutinStation"
-	EnterpriseBatterySwapQueryWithPutoutBattery    EnterpriseBatterySwapQueryWith = "PutoutBattery"
+	EnterpriseBatterySwapQueryWithPutout           EnterpriseBatterySwapQueryWith = "Putout"
 	EnterpriseBatterySwapQueryWithPutoutEnterprise EnterpriseBatterySwapQueryWith = "PutoutEnterprise"
 	EnterpriseBatterySwapQueryWithPutoutStation    EnterpriseBatterySwapQueryWith = "PutoutStation"
 )
@@ -1084,14 +1084,14 @@ func (ebsq *EnterpriseBatterySwapQuery) With(withEdges ...EnterpriseBatterySwapQ
 			ebsq.WithExchange()
 		case EnterpriseBatterySwapQueryWithCabinet:
 			ebsq.WithCabinet()
-		case EnterpriseBatterySwapQueryWithPutinBattery:
-			ebsq.WithPutinBattery()
+		case EnterpriseBatterySwapQueryWithPutin:
+			ebsq.WithPutin()
 		case EnterpriseBatterySwapQueryWithPutinEnterprise:
 			ebsq.WithPutinEnterprise()
 		case EnterpriseBatterySwapQueryWithPutinStation:
 			ebsq.WithPutinStation()
-		case EnterpriseBatterySwapQueryWithPutoutBattery:
-			ebsq.WithPutoutBattery()
+		case EnterpriseBatterySwapQueryWithPutout:
+			ebsq.WithPutout()
 		case EnterpriseBatterySwapQueryWithPutoutEnterprise:
 			ebsq.WithPutoutEnterprise()
 		case EnterpriseBatterySwapQueryWithPutoutStation:

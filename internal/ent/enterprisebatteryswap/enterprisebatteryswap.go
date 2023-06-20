@@ -22,18 +22,18 @@ const (
 	FieldExchangeID = "exchange_id"
 	// FieldCabinetID holds the string denoting the cabinet_id field in the database.
 	FieldCabinetID = "cabinet_id"
-	// FieldPutinBatteryID holds the string denoting the putin_battery_id field in the database.
-	FieldPutinBatteryID = "putin_battery_id"
-	// FieldPutinBatterySn holds the string denoting the putin_battery_sn field in the database.
-	FieldPutinBatterySn = "putin_battery_sn"
+	// FieldPutinID holds the string denoting the putin_id field in the database.
+	FieldPutinID = "putin_id"
+	// FieldPutinSn holds the string denoting the putin_sn field in the database.
+	FieldPutinSn = "putin_sn"
 	// FieldPutinEnterpriseID holds the string denoting the putin_enterprise_id field in the database.
 	FieldPutinEnterpriseID = "putin_enterprise_id"
 	// FieldPutinStationID holds the string denoting the putin_station_id field in the database.
 	FieldPutinStationID = "putin_station_id"
-	// FieldPutoutBatteryID holds the string denoting the putout_battery_id field in the database.
-	FieldPutoutBatteryID = "putout_battery_id"
-	// FieldPutoutBatterySn holds the string denoting the putout_battery_sn field in the database.
-	FieldPutoutBatterySn = "putout_battery_sn"
+	// FieldPutoutID holds the string denoting the putout_id field in the database.
+	FieldPutoutID = "putout_id"
+	// FieldPutoutSn holds the string denoting the putout_sn field in the database.
+	FieldPutoutSn = "putout_sn"
 	// FieldPutoutEnterpriseID holds the string denoting the putout_enterprise_id field in the database.
 	FieldPutoutEnterpriseID = "putout_enterprise_id"
 	// FieldPutoutStationID holds the string denoting the putout_station_id field in the database.
@@ -42,14 +42,14 @@ const (
 	EdgeExchange = "exchange"
 	// EdgeCabinet holds the string denoting the cabinet edge name in mutations.
 	EdgeCabinet = "cabinet"
-	// EdgePutinBattery holds the string denoting the putin_battery edge name in mutations.
-	EdgePutinBattery = "putin_battery"
+	// EdgePutin holds the string denoting the putin edge name in mutations.
+	EdgePutin = "putin"
 	// EdgePutinEnterprise holds the string denoting the putin_enterprise edge name in mutations.
 	EdgePutinEnterprise = "putin_enterprise"
 	// EdgePutinStation holds the string denoting the putin_station edge name in mutations.
 	EdgePutinStation = "putin_station"
-	// EdgePutoutBattery holds the string denoting the putout_battery edge name in mutations.
-	EdgePutoutBattery = "putout_battery"
+	// EdgePutout holds the string denoting the putout edge name in mutations.
+	EdgePutout = "putout"
 	// EdgePutoutEnterprise holds the string denoting the putout_enterprise edge name in mutations.
 	EdgePutoutEnterprise = "putout_enterprise"
 	// EdgePutoutStation holds the string denoting the putout_station edge name in mutations.
@@ -70,13 +70,13 @@ const (
 	CabinetInverseTable = "cabinet"
 	// CabinetColumn is the table column denoting the cabinet relation/edge.
 	CabinetColumn = "cabinet_id"
-	// PutinBatteryTable is the table that holds the putin_battery relation/edge.
-	PutinBatteryTable = "enterprise_battery_swap"
-	// PutinBatteryInverseTable is the table name for the Battery entity.
+	// PutinTable is the table that holds the putin relation/edge.
+	PutinTable = "enterprise_battery_swap"
+	// PutinInverseTable is the table name for the Battery entity.
 	// It exists in this package in order to avoid circular dependency with the "battery" package.
-	PutinBatteryInverseTable = "battery"
-	// PutinBatteryColumn is the table column denoting the putin_battery relation/edge.
-	PutinBatteryColumn = "putin_battery_id"
+	PutinInverseTable = "battery"
+	// PutinColumn is the table column denoting the putin relation/edge.
+	PutinColumn = "putin_id"
 	// PutinEnterpriseTable is the table that holds the putin_enterprise relation/edge.
 	PutinEnterpriseTable = "enterprise_battery_swap"
 	// PutinEnterpriseInverseTable is the table name for the Enterprise entity.
@@ -91,13 +91,13 @@ const (
 	PutinStationInverseTable = "enterprise_station"
 	// PutinStationColumn is the table column denoting the putin_station relation/edge.
 	PutinStationColumn = "putin_station_id"
-	// PutoutBatteryTable is the table that holds the putout_battery relation/edge.
-	PutoutBatteryTable = "enterprise_battery_swap"
-	// PutoutBatteryInverseTable is the table name for the Battery entity.
+	// PutoutTable is the table that holds the putout relation/edge.
+	PutoutTable = "enterprise_battery_swap"
+	// PutoutInverseTable is the table name for the Battery entity.
 	// It exists in this package in order to avoid circular dependency with the "battery" package.
-	PutoutBatteryInverseTable = "battery"
-	// PutoutBatteryColumn is the table column denoting the putout_battery relation/edge.
-	PutoutBatteryColumn = "putout_battery_id"
+	PutoutInverseTable = "battery"
+	// PutoutColumn is the table column denoting the putout relation/edge.
+	PutoutColumn = "putout_id"
 	// PutoutEnterpriseTable is the table that holds the putout_enterprise relation/edge.
 	PutoutEnterpriseTable = "enterprise_battery_swap"
 	// PutoutEnterpriseInverseTable is the table name for the Enterprise entity.
@@ -121,12 +121,12 @@ var Columns = []string{
 	FieldUpdatedAt,
 	FieldExchangeID,
 	FieldCabinetID,
-	FieldPutinBatteryID,
-	FieldPutinBatterySn,
+	FieldPutinID,
+	FieldPutinSn,
 	FieldPutinEnterpriseID,
 	FieldPutinStationID,
-	FieldPutoutBatteryID,
-	FieldPutoutBatterySn,
+	FieldPutoutID,
+	FieldPutoutSn,
 	FieldPutoutEnterpriseID,
 	FieldPutoutStationID,
 }
@@ -178,14 +178,14 @@ func ByCabinetID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCabinetID, opts...).ToFunc()
 }
 
-// ByPutinBatteryID orders the results by the putin_battery_id field.
-func ByPutinBatteryID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldPutinBatteryID, opts...).ToFunc()
+// ByPutinID orders the results by the putin_id field.
+func ByPutinID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPutinID, opts...).ToFunc()
 }
 
-// ByPutinBatterySn orders the results by the putin_battery_sn field.
-func ByPutinBatterySn(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldPutinBatterySn, opts...).ToFunc()
+// ByPutinSn orders the results by the putin_sn field.
+func ByPutinSn(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPutinSn, opts...).ToFunc()
 }
 
 // ByPutinEnterpriseID orders the results by the putin_enterprise_id field.
@@ -198,14 +198,14 @@ func ByPutinStationID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPutinStationID, opts...).ToFunc()
 }
 
-// ByPutoutBatteryID orders the results by the putout_battery_id field.
-func ByPutoutBatteryID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldPutoutBatteryID, opts...).ToFunc()
+// ByPutoutID orders the results by the putout_id field.
+func ByPutoutID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPutoutID, opts...).ToFunc()
 }
 
-// ByPutoutBatterySn orders the results by the putout_battery_sn field.
-func ByPutoutBatterySn(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldPutoutBatterySn, opts...).ToFunc()
+// ByPutoutSn orders the results by the putout_sn field.
+func ByPutoutSn(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPutoutSn, opts...).ToFunc()
 }
 
 // ByPutoutEnterpriseID orders the results by the putout_enterprise_id field.
@@ -232,10 +232,10 @@ func ByCabinetField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
-// ByPutinBatteryField orders the results by putin_battery field.
-func ByPutinBatteryField(field string, opts ...sql.OrderTermOption) OrderOption {
+// ByPutinField orders the results by putin field.
+func ByPutinField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newPutinBatteryStep(), sql.OrderByField(field, opts...))
+		sqlgraph.OrderByNeighborTerms(s, newPutinStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -253,10 +253,10 @@ func ByPutinStationField(field string, opts ...sql.OrderTermOption) OrderOption 
 	}
 }
 
-// ByPutoutBatteryField orders the results by putout_battery field.
-func ByPutoutBatteryField(field string, opts ...sql.OrderTermOption) OrderOption {
+// ByPutoutField orders the results by putout field.
+func ByPutoutField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newPutoutBatteryStep(), sql.OrderByField(field, opts...))
+		sqlgraph.OrderByNeighborTerms(s, newPutoutStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -287,11 +287,11 @@ func newCabinetStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.M2O, false, CabinetTable, CabinetColumn),
 	)
 }
-func newPutinBatteryStep() *sqlgraph.Step {
+func newPutinStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(PutinBatteryInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, PutinBatteryTable, PutinBatteryColumn),
+		sqlgraph.To(PutinInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, PutinTable, PutinColumn),
 	)
 }
 func newPutinEnterpriseStep() *sqlgraph.Step {
@@ -308,11 +308,11 @@ func newPutinStationStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.M2O, true, PutinStationTable, PutinStationColumn),
 	)
 }
-func newPutoutBatteryStep() *sqlgraph.Step {
+func newPutoutStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(PutoutBatteryInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, PutoutBatteryTable, PutoutBatteryColumn),
+		sqlgraph.To(PutoutInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, PutoutTable, PutoutColumn),
 	)
 }
 func newPutoutEnterpriseStep() *sqlgraph.Step {

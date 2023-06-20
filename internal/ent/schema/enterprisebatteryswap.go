@@ -59,26 +59,26 @@ func (EnterpriseBatterySwap) Annotations() []schema.Annotation {
 // Fields of the EnterpriseBatterySwap.
 func (EnterpriseBatterySwap) Fields() []ent.Field {
 	return []ent.Field{
-		field.Uint64("putin_battery_id").Comment("放入的电池ID"),
-		field.String("putin_battery_sn").Comment("放入的电池编码"),
-		field.Uint64("putin_enterprise_id").Optional().Nillable().Comment("放入归属团签ID, 空值是平台骑手放入"),
-		field.Uint64("putin_station_id").Optional().Nillable().Comment("放入归属站点ID, 空值是平台骑手放入"),
+		field.Uint64("putin_id").Comment("放入的电池ID"),
+		field.String("putin_sn").Comment("放入的电池编码"),
+		field.Uint64("putin_enterprise_id").Optional().Nillable().Comment("放入的电池归属团签ID, 空值是平台骑手放入"),
+		field.Uint64("putin_station_id").Optional().Nillable().Comment("放入的电池归属站点ID, 空值是平台骑手放入"),
 
-		field.Uint64("putout_battery_id").Comment("取出的电池ID"),
-		field.String("putout_battery_sn").Comment("取出的电池编码"),
-		field.Uint64("putout_enterprise_id").Optional().Nillable().Comment("取出归属团签ID, 空值是从平台电柜取出"),
-		field.Uint64("putout_station_id").Optional().Nillable().Comment("取出归属站点ID, 空值是从平台电柜取出"),
+		field.Uint64("putout_id").Comment("取出的电池ID"),
+		field.String("putout_sn").Comment("取出的电池编码"),
+		field.Uint64("putout_enterprise_id").Optional().Nillable().Comment("取出的电池原归属团签ID, 空值是从平台电柜取出"),
+		field.Uint64("putout_station_id").Optional().Nillable().Comment("取出的电池原归属站点ID, 空值是从平台电柜取出"),
 	}
 }
 
 // Edges of the EnterpriseBatterySwap.
 func (EnterpriseBatterySwap) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("putin_battery", Battery.Type).Required().Unique().Field("putin_battery_id"),
+		edge.To("putin", Battery.Type).Required().Unique().Field("putin_id"),
 		edge.From("putin_enterprise", Enterprise.Type).Ref("swap_putin_batteries").Unique().Field("putin_enterprise_id"),
 		edge.From("putin_station", EnterpriseStation.Type).Ref("swap_putin_batteries").Unique().Field("putin_station_id"),
 
-		edge.To("putout_battery", Battery.Type).Required().Unique().Field("putout_battery_id"),
+		edge.To("putout", Battery.Type).Required().Unique().Field("putout_id"),
 		edge.From("putout_enterprise", Enterprise.Type).Ref("swap_putout_batteries").Unique().Field("putout_enterprise_id"),
 		edge.From("putout_station", EnterpriseStation.Type).Ref("swap_putout_batteries").Unique().Field("putout_station_id"),
 	}
@@ -95,13 +95,13 @@ func (EnterpriseBatterySwap) Mixin() []ent.Mixin {
 
 func (EnterpriseBatterySwap) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("putin_battery_id"),
-		index.Fields("putin_battery_sn"),
+		index.Fields("putin_id"),
+		index.Fields("putin_sn"),
 		index.Fields("putin_enterprise_id"),
 		index.Fields("putin_station_id"),
 
-		index.Fields("putout_battery_id"),
-		index.Fields("putout_battery_sn"),
+		index.Fields("putout_id"),
+		index.Fields("putout_sn"),
 		index.Fields("putout_enterprise_id"),
 		index.Fields("putout_station_id"),
 	}

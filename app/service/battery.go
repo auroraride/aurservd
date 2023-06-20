@@ -519,12 +519,12 @@ func (s *batteryService) StationBusinessTransfer(cabinetID, exchangeID uint64, p
 	err := ent.Database.EnterpriseBatterySwap.Create().
 		SetCabinetID(cabinetID).
 		SetExchangeID(exchangeID).
-		SetPutinBatteryID(in.ID).
-		SetPutinBatterySn(in.Sn).
+		SetPutinID(in.ID).
+		SetPutinSn(in.Sn).
 		SetNillablePutinEnterpriseID(putin.EnterpriseID).
 		SetNillablePutinStationID(putin.StationID).
-		SetPutoutBatteryID(out.ID).
-		SetPutoutBatterySn(out.Sn).
+		SetPutoutID(out.ID).
+		SetPutoutSn(out.Sn).
 		SetNillablePutoutEnterpriseID(putout.EnterpriseID).
 		SetNillablePutoutStationID(putout.StationID).
 		Exec(s.ctx)

@@ -52,15 +52,15 @@ func (ebsu *EnterpriseBatterySwapUpdate) SetCabinetID(u uint64) *EnterpriseBatte
 	return ebsu
 }
 
-// SetPutinBatteryID sets the "putin_battery_id" field.
-func (ebsu *EnterpriseBatterySwapUpdate) SetPutinBatteryID(u uint64) *EnterpriseBatterySwapUpdate {
-	ebsu.mutation.SetPutinBatteryID(u)
+// SetPutinID sets the "putin_id" field.
+func (ebsu *EnterpriseBatterySwapUpdate) SetPutinID(u uint64) *EnterpriseBatterySwapUpdate {
+	ebsu.mutation.SetPutinID(u)
 	return ebsu
 }
 
-// SetPutinBatterySn sets the "putin_battery_sn" field.
-func (ebsu *EnterpriseBatterySwapUpdate) SetPutinBatterySn(s string) *EnterpriseBatterySwapUpdate {
-	ebsu.mutation.SetPutinBatterySn(s)
+// SetPutinSn sets the "putin_sn" field.
+func (ebsu *EnterpriseBatterySwapUpdate) SetPutinSn(s string) *EnterpriseBatterySwapUpdate {
+	ebsu.mutation.SetPutinSn(s)
 	return ebsu
 }
 
@@ -104,15 +104,15 @@ func (ebsu *EnterpriseBatterySwapUpdate) ClearPutinStationID() *EnterpriseBatter
 	return ebsu
 }
 
-// SetPutoutBatteryID sets the "putout_battery_id" field.
-func (ebsu *EnterpriseBatterySwapUpdate) SetPutoutBatteryID(u uint64) *EnterpriseBatterySwapUpdate {
-	ebsu.mutation.SetPutoutBatteryID(u)
+// SetPutoutID sets the "putout_id" field.
+func (ebsu *EnterpriseBatterySwapUpdate) SetPutoutID(u uint64) *EnterpriseBatterySwapUpdate {
+	ebsu.mutation.SetPutoutID(u)
 	return ebsu
 }
 
-// SetPutoutBatterySn sets the "putout_battery_sn" field.
-func (ebsu *EnterpriseBatterySwapUpdate) SetPutoutBatterySn(s string) *EnterpriseBatterySwapUpdate {
-	ebsu.mutation.SetPutoutBatterySn(s)
+// SetPutoutSn sets the "putout_sn" field.
+func (ebsu *EnterpriseBatterySwapUpdate) SetPutoutSn(s string) *EnterpriseBatterySwapUpdate {
+	ebsu.mutation.SetPutoutSn(s)
 	return ebsu
 }
 
@@ -166,9 +166,9 @@ func (ebsu *EnterpriseBatterySwapUpdate) SetCabinet(c *Cabinet) *EnterpriseBatte
 	return ebsu.SetCabinetID(c.ID)
 }
 
-// SetPutinBattery sets the "putin_battery" edge to the Battery entity.
-func (ebsu *EnterpriseBatterySwapUpdate) SetPutinBattery(b *Battery) *EnterpriseBatterySwapUpdate {
-	return ebsu.SetPutinBatteryID(b.ID)
+// SetPutin sets the "putin" edge to the Battery entity.
+func (ebsu *EnterpriseBatterySwapUpdate) SetPutin(b *Battery) *EnterpriseBatterySwapUpdate {
+	return ebsu.SetPutinID(b.ID)
 }
 
 // SetPutinEnterprise sets the "putin_enterprise" edge to the Enterprise entity.
@@ -181,9 +181,9 @@ func (ebsu *EnterpriseBatterySwapUpdate) SetPutinStation(e *EnterpriseStation) *
 	return ebsu.SetPutinStationID(e.ID)
 }
 
-// SetPutoutBattery sets the "putout_battery" edge to the Battery entity.
-func (ebsu *EnterpriseBatterySwapUpdate) SetPutoutBattery(b *Battery) *EnterpriseBatterySwapUpdate {
-	return ebsu.SetPutoutBatteryID(b.ID)
+// SetPutout sets the "putout" edge to the Battery entity.
+func (ebsu *EnterpriseBatterySwapUpdate) SetPutout(b *Battery) *EnterpriseBatterySwapUpdate {
+	return ebsu.SetPutoutID(b.ID)
 }
 
 // SetPutoutEnterprise sets the "putout_enterprise" edge to the Enterprise entity.
@@ -213,9 +213,9 @@ func (ebsu *EnterpriseBatterySwapUpdate) ClearCabinet() *EnterpriseBatterySwapUp
 	return ebsu
 }
 
-// ClearPutinBattery clears the "putin_battery" edge to the Battery entity.
-func (ebsu *EnterpriseBatterySwapUpdate) ClearPutinBattery() *EnterpriseBatterySwapUpdate {
-	ebsu.mutation.ClearPutinBattery()
+// ClearPutin clears the "putin" edge to the Battery entity.
+func (ebsu *EnterpriseBatterySwapUpdate) ClearPutin() *EnterpriseBatterySwapUpdate {
+	ebsu.mutation.ClearPutin()
 	return ebsu
 }
 
@@ -231,9 +231,9 @@ func (ebsu *EnterpriseBatterySwapUpdate) ClearPutinStation() *EnterpriseBatteryS
 	return ebsu
 }
 
-// ClearPutoutBattery clears the "putout_battery" edge to the Battery entity.
-func (ebsu *EnterpriseBatterySwapUpdate) ClearPutoutBattery() *EnterpriseBatterySwapUpdate {
-	ebsu.mutation.ClearPutoutBattery()
+// ClearPutout clears the "putout" edge to the Battery entity.
+func (ebsu *EnterpriseBatterySwapUpdate) ClearPutout() *EnterpriseBatterySwapUpdate {
+	ebsu.mutation.ClearPutout()
 	return ebsu
 }
 
@@ -293,11 +293,11 @@ func (ebsu *EnterpriseBatterySwapUpdate) check() error {
 	if _, ok := ebsu.mutation.CabinetID(); ebsu.mutation.CabinetCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "EnterpriseBatterySwap.cabinet"`)
 	}
-	if _, ok := ebsu.mutation.PutinBatteryID(); ebsu.mutation.PutinBatteryCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "EnterpriseBatterySwap.putin_battery"`)
+	if _, ok := ebsu.mutation.PutinID(); ebsu.mutation.PutinCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "EnterpriseBatterySwap.putin"`)
 	}
-	if _, ok := ebsu.mutation.PutoutBatteryID(); ebsu.mutation.PutoutBatteryCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "EnterpriseBatterySwap.putout_battery"`)
+	if _, ok := ebsu.mutation.PutoutID(); ebsu.mutation.PutoutCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "EnterpriseBatterySwap.putout"`)
 	}
 	return nil
 }
@@ -323,11 +323,11 @@ func (ebsu *EnterpriseBatterySwapUpdate) sqlSave(ctx context.Context) (n int, er
 	if value, ok := ebsu.mutation.UpdatedAt(); ok {
 		_spec.SetField(enterprisebatteryswap.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := ebsu.mutation.PutinBatterySn(); ok {
-		_spec.SetField(enterprisebatteryswap.FieldPutinBatterySn, field.TypeString, value)
+	if value, ok := ebsu.mutation.PutinSn(); ok {
+		_spec.SetField(enterprisebatteryswap.FieldPutinSn, field.TypeString, value)
 	}
-	if value, ok := ebsu.mutation.PutoutBatterySn(); ok {
-		_spec.SetField(enterprisebatteryswap.FieldPutoutBatterySn, field.TypeString, value)
+	if value, ok := ebsu.mutation.PutoutSn(); ok {
+		_spec.SetField(enterprisebatteryswap.FieldPutoutSn, field.TypeString, value)
 	}
 	if ebsu.mutation.ExchangeCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -387,12 +387,12 @@ func (ebsu *EnterpriseBatterySwapUpdate) sqlSave(ctx context.Context) (n int, er
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if ebsu.mutation.PutinBatteryCleared() {
+	if ebsu.mutation.PutinCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   enterprisebatteryswap.PutinBatteryTable,
-			Columns: []string{enterprisebatteryswap.PutinBatteryColumn},
+			Table:   enterprisebatteryswap.PutinTable,
+			Columns: []string{enterprisebatteryswap.PutinColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
@@ -400,12 +400,12 @@ func (ebsu *EnterpriseBatterySwapUpdate) sqlSave(ctx context.Context) (n int, er
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ebsu.mutation.PutinBatteryIDs(); len(nodes) > 0 {
+	if nodes := ebsu.mutation.PutinIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   enterprisebatteryswap.PutinBatteryTable,
-			Columns: []string{enterprisebatteryswap.PutinBatteryColumn},
+			Table:   enterprisebatteryswap.PutinTable,
+			Columns: []string{enterprisebatteryswap.PutinColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
@@ -474,12 +474,12 @@ func (ebsu *EnterpriseBatterySwapUpdate) sqlSave(ctx context.Context) (n int, er
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if ebsu.mutation.PutoutBatteryCleared() {
+	if ebsu.mutation.PutoutCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   enterprisebatteryswap.PutoutBatteryTable,
-			Columns: []string{enterprisebatteryswap.PutoutBatteryColumn},
+			Table:   enterprisebatteryswap.PutoutTable,
+			Columns: []string{enterprisebatteryswap.PutoutColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
@@ -487,12 +487,12 @@ func (ebsu *EnterpriseBatterySwapUpdate) sqlSave(ctx context.Context) (n int, er
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ebsu.mutation.PutoutBatteryIDs(); len(nodes) > 0 {
+	if nodes := ebsu.mutation.PutoutIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   enterprisebatteryswap.PutoutBatteryTable,
-			Columns: []string{enterprisebatteryswap.PutoutBatteryColumn},
+			Table:   enterprisebatteryswap.PutoutTable,
+			Columns: []string{enterprisebatteryswap.PutoutColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
@@ -601,15 +601,15 @@ func (ebsuo *EnterpriseBatterySwapUpdateOne) SetCabinetID(u uint64) *EnterpriseB
 	return ebsuo
 }
 
-// SetPutinBatteryID sets the "putin_battery_id" field.
-func (ebsuo *EnterpriseBatterySwapUpdateOne) SetPutinBatteryID(u uint64) *EnterpriseBatterySwapUpdateOne {
-	ebsuo.mutation.SetPutinBatteryID(u)
+// SetPutinID sets the "putin_id" field.
+func (ebsuo *EnterpriseBatterySwapUpdateOne) SetPutinID(u uint64) *EnterpriseBatterySwapUpdateOne {
+	ebsuo.mutation.SetPutinID(u)
 	return ebsuo
 }
 
-// SetPutinBatterySn sets the "putin_battery_sn" field.
-func (ebsuo *EnterpriseBatterySwapUpdateOne) SetPutinBatterySn(s string) *EnterpriseBatterySwapUpdateOne {
-	ebsuo.mutation.SetPutinBatterySn(s)
+// SetPutinSn sets the "putin_sn" field.
+func (ebsuo *EnterpriseBatterySwapUpdateOne) SetPutinSn(s string) *EnterpriseBatterySwapUpdateOne {
+	ebsuo.mutation.SetPutinSn(s)
 	return ebsuo
 }
 
@@ -653,15 +653,15 @@ func (ebsuo *EnterpriseBatterySwapUpdateOne) ClearPutinStationID() *EnterpriseBa
 	return ebsuo
 }
 
-// SetPutoutBatteryID sets the "putout_battery_id" field.
-func (ebsuo *EnterpriseBatterySwapUpdateOne) SetPutoutBatteryID(u uint64) *EnterpriseBatterySwapUpdateOne {
-	ebsuo.mutation.SetPutoutBatteryID(u)
+// SetPutoutID sets the "putout_id" field.
+func (ebsuo *EnterpriseBatterySwapUpdateOne) SetPutoutID(u uint64) *EnterpriseBatterySwapUpdateOne {
+	ebsuo.mutation.SetPutoutID(u)
 	return ebsuo
 }
 
-// SetPutoutBatterySn sets the "putout_battery_sn" field.
-func (ebsuo *EnterpriseBatterySwapUpdateOne) SetPutoutBatterySn(s string) *EnterpriseBatterySwapUpdateOne {
-	ebsuo.mutation.SetPutoutBatterySn(s)
+// SetPutoutSn sets the "putout_sn" field.
+func (ebsuo *EnterpriseBatterySwapUpdateOne) SetPutoutSn(s string) *EnterpriseBatterySwapUpdateOne {
+	ebsuo.mutation.SetPutoutSn(s)
 	return ebsuo
 }
 
@@ -715,9 +715,9 @@ func (ebsuo *EnterpriseBatterySwapUpdateOne) SetCabinet(c *Cabinet) *EnterpriseB
 	return ebsuo.SetCabinetID(c.ID)
 }
 
-// SetPutinBattery sets the "putin_battery" edge to the Battery entity.
-func (ebsuo *EnterpriseBatterySwapUpdateOne) SetPutinBattery(b *Battery) *EnterpriseBatterySwapUpdateOne {
-	return ebsuo.SetPutinBatteryID(b.ID)
+// SetPutin sets the "putin" edge to the Battery entity.
+func (ebsuo *EnterpriseBatterySwapUpdateOne) SetPutin(b *Battery) *EnterpriseBatterySwapUpdateOne {
+	return ebsuo.SetPutinID(b.ID)
 }
 
 // SetPutinEnterprise sets the "putin_enterprise" edge to the Enterprise entity.
@@ -730,9 +730,9 @@ func (ebsuo *EnterpriseBatterySwapUpdateOne) SetPutinStation(e *EnterpriseStatio
 	return ebsuo.SetPutinStationID(e.ID)
 }
 
-// SetPutoutBattery sets the "putout_battery" edge to the Battery entity.
-func (ebsuo *EnterpriseBatterySwapUpdateOne) SetPutoutBattery(b *Battery) *EnterpriseBatterySwapUpdateOne {
-	return ebsuo.SetPutoutBatteryID(b.ID)
+// SetPutout sets the "putout" edge to the Battery entity.
+func (ebsuo *EnterpriseBatterySwapUpdateOne) SetPutout(b *Battery) *EnterpriseBatterySwapUpdateOne {
+	return ebsuo.SetPutoutID(b.ID)
 }
 
 // SetPutoutEnterprise sets the "putout_enterprise" edge to the Enterprise entity.
@@ -762,9 +762,9 @@ func (ebsuo *EnterpriseBatterySwapUpdateOne) ClearCabinet() *EnterpriseBatterySw
 	return ebsuo
 }
 
-// ClearPutinBattery clears the "putin_battery" edge to the Battery entity.
-func (ebsuo *EnterpriseBatterySwapUpdateOne) ClearPutinBattery() *EnterpriseBatterySwapUpdateOne {
-	ebsuo.mutation.ClearPutinBattery()
+// ClearPutin clears the "putin" edge to the Battery entity.
+func (ebsuo *EnterpriseBatterySwapUpdateOne) ClearPutin() *EnterpriseBatterySwapUpdateOne {
+	ebsuo.mutation.ClearPutin()
 	return ebsuo
 }
 
@@ -780,9 +780,9 @@ func (ebsuo *EnterpriseBatterySwapUpdateOne) ClearPutinStation() *EnterpriseBatt
 	return ebsuo
 }
 
-// ClearPutoutBattery clears the "putout_battery" edge to the Battery entity.
-func (ebsuo *EnterpriseBatterySwapUpdateOne) ClearPutoutBattery() *EnterpriseBatterySwapUpdateOne {
-	ebsuo.mutation.ClearPutoutBattery()
+// ClearPutout clears the "putout" edge to the Battery entity.
+func (ebsuo *EnterpriseBatterySwapUpdateOne) ClearPutout() *EnterpriseBatterySwapUpdateOne {
+	ebsuo.mutation.ClearPutout()
 	return ebsuo
 }
 
@@ -855,11 +855,11 @@ func (ebsuo *EnterpriseBatterySwapUpdateOne) check() error {
 	if _, ok := ebsuo.mutation.CabinetID(); ebsuo.mutation.CabinetCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "EnterpriseBatterySwap.cabinet"`)
 	}
-	if _, ok := ebsuo.mutation.PutinBatteryID(); ebsuo.mutation.PutinBatteryCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "EnterpriseBatterySwap.putin_battery"`)
+	if _, ok := ebsuo.mutation.PutinID(); ebsuo.mutation.PutinCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "EnterpriseBatterySwap.putin"`)
 	}
-	if _, ok := ebsuo.mutation.PutoutBatteryID(); ebsuo.mutation.PutoutBatteryCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "EnterpriseBatterySwap.putout_battery"`)
+	if _, ok := ebsuo.mutation.PutoutID(); ebsuo.mutation.PutoutCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "EnterpriseBatterySwap.putout"`)
 	}
 	return nil
 }
@@ -902,11 +902,11 @@ func (ebsuo *EnterpriseBatterySwapUpdateOne) sqlSave(ctx context.Context) (_node
 	if value, ok := ebsuo.mutation.UpdatedAt(); ok {
 		_spec.SetField(enterprisebatteryswap.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := ebsuo.mutation.PutinBatterySn(); ok {
-		_spec.SetField(enterprisebatteryswap.FieldPutinBatterySn, field.TypeString, value)
+	if value, ok := ebsuo.mutation.PutinSn(); ok {
+		_spec.SetField(enterprisebatteryswap.FieldPutinSn, field.TypeString, value)
 	}
-	if value, ok := ebsuo.mutation.PutoutBatterySn(); ok {
-		_spec.SetField(enterprisebatteryswap.FieldPutoutBatterySn, field.TypeString, value)
+	if value, ok := ebsuo.mutation.PutoutSn(); ok {
+		_spec.SetField(enterprisebatteryswap.FieldPutoutSn, field.TypeString, value)
 	}
 	if ebsuo.mutation.ExchangeCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -966,12 +966,12 @@ func (ebsuo *EnterpriseBatterySwapUpdateOne) sqlSave(ctx context.Context) (_node
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if ebsuo.mutation.PutinBatteryCleared() {
+	if ebsuo.mutation.PutinCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   enterprisebatteryswap.PutinBatteryTable,
-			Columns: []string{enterprisebatteryswap.PutinBatteryColumn},
+			Table:   enterprisebatteryswap.PutinTable,
+			Columns: []string{enterprisebatteryswap.PutinColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
@@ -979,12 +979,12 @@ func (ebsuo *EnterpriseBatterySwapUpdateOne) sqlSave(ctx context.Context) (_node
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ebsuo.mutation.PutinBatteryIDs(); len(nodes) > 0 {
+	if nodes := ebsuo.mutation.PutinIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   enterprisebatteryswap.PutinBatteryTable,
-			Columns: []string{enterprisebatteryswap.PutinBatteryColumn},
+			Table:   enterprisebatteryswap.PutinTable,
+			Columns: []string{enterprisebatteryswap.PutinColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
@@ -1053,12 +1053,12 @@ func (ebsuo *EnterpriseBatterySwapUpdateOne) sqlSave(ctx context.Context) (_node
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if ebsuo.mutation.PutoutBatteryCleared() {
+	if ebsuo.mutation.PutoutCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   enterprisebatteryswap.PutoutBatteryTable,
-			Columns: []string{enterprisebatteryswap.PutoutBatteryColumn},
+			Table:   enterprisebatteryswap.PutoutTable,
+			Columns: []string{enterprisebatteryswap.PutoutColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
@@ -1066,12 +1066,12 @@ func (ebsuo *EnterpriseBatterySwapUpdateOne) sqlSave(ctx context.Context) (_node
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ebsuo.mutation.PutoutBatteryIDs(); len(nodes) > 0 {
+	if nodes := ebsuo.mutation.PutoutIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   enterprisebatteryswap.PutoutBatteryTable,
-			Columns: []string{enterprisebatteryswap.PutoutBatteryColumn},
+			Table:   enterprisebatteryswap.PutoutTable,
+			Columns: []string{enterprisebatteryswap.PutoutColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),

@@ -5103,15 +5103,15 @@ func (c *EnterpriseBatterySwapClient) QueryCabinet(ebs *EnterpriseBatterySwap) *
 	return query
 }
 
-// QueryPutinBattery queries the putin_battery edge of a EnterpriseBatterySwap.
-func (c *EnterpriseBatterySwapClient) QueryPutinBattery(ebs *EnterpriseBatterySwap) *BatteryQuery {
+// QueryPutin queries the putin edge of a EnterpriseBatterySwap.
+func (c *EnterpriseBatterySwapClient) QueryPutin(ebs *EnterpriseBatterySwap) *BatteryQuery {
 	query := (&BatteryClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ebs.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(enterprisebatteryswap.Table, enterprisebatteryswap.FieldID, id),
 			sqlgraph.To(battery.Table, battery.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, enterprisebatteryswap.PutinBatteryTable, enterprisebatteryswap.PutinBatteryColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, enterprisebatteryswap.PutinTable, enterprisebatteryswap.PutinColumn),
 		)
 		fromV = sqlgraph.Neighbors(ebs.driver.Dialect(), step)
 		return fromV, nil
@@ -5151,15 +5151,15 @@ func (c *EnterpriseBatterySwapClient) QueryPutinStation(ebs *EnterpriseBatterySw
 	return query
 }
 
-// QueryPutoutBattery queries the putout_battery edge of a EnterpriseBatterySwap.
-func (c *EnterpriseBatterySwapClient) QueryPutoutBattery(ebs *EnterpriseBatterySwap) *BatteryQuery {
+// QueryPutout queries the putout edge of a EnterpriseBatterySwap.
+func (c *EnterpriseBatterySwapClient) QueryPutout(ebs *EnterpriseBatterySwap) *BatteryQuery {
 	query := (&BatteryClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ebs.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(enterprisebatteryswap.Table, enterprisebatteryswap.FieldID, id),
 			sqlgraph.To(battery.Table, battery.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, enterprisebatteryswap.PutoutBatteryTable, enterprisebatteryswap.PutoutBatteryColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, enterprisebatteryswap.PutoutTable, enterprisebatteryswap.PutoutColumn),
 		)
 		fromV = sqlgraph.Neighbors(ebs.driver.Dialect(), step)
 		return fromV, nil
