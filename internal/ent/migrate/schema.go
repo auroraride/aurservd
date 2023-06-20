@@ -3654,7 +3654,7 @@ var (
 		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
 		{Name: "sn", Type: field.TypeString, Comment: "调拨编号"},
-		{Name: "type", Type: field.TypeUint8, Comment: "类型 0:调拨 1:领取电池 2:寄存电池 3:结束寄存 4:归还电池", Default: 0},
+		{Name: "type", Type: field.TypeUint8, Comment: "类型 0:调拨 1:骑手激活 2:骑手寄存 3:骑手结束寄存 4:骑手退租", Default: 0},
 		{Name: "name", Type: field.TypeString, Comment: "物资名称"},
 		{Name: "model", Type: field.TypeString, Nullable: true, Comment: "电池型号"},
 		{Name: "num", Type: field.TypeInt, Comment: "物资数量: 正值调入 / 负值调出"},
