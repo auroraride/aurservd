@@ -87,30 +87,10 @@ func (s *ebikeService) IsAllocated(id uint64) bool {
 	return exists
 }
 
-func (s *ebikeService) IsAllocatedX(id uint64) {
+func (s *ebikeService) IsAllocatableX(id uint64) {
 	if s.IsAllocated(id) {
 		snag.Panic("电车已被分配")
 	}
-}
-
-func (s *ebikeService) QueryAllocatable(id, storeID uint64) (bike *ent.Ebike) {
-	if s.IsAllocated(id) {
-		return
-	}
-	q := s.AllocatableBaseFilter().WithBrand().Where(ebike.StoreIDNotNil(), ebike.ID(id))
-	if storeID > 0 {
-		q.Where(ebike.StoreID(storeID))
-	}
-	bike, _ = q.First(s.ctx)
-	return bike
-}
-
-func (s *ebikeService) QueryAllocatableX(id, storeID uint64) *ent.Ebike {
-	bike := s.QueryAllocatable(id, storeID)
-	if bike == nil {
-		snag.Panic("未找到可分配电车")
-	}
-	return bike
 }
 
 func (s *ebikeService) listFilter(req model.EbikeListFilter) (q *ent.EbikeQuery, info ar.Map) {
@@ -319,6 +299,63 @@ func (s *ebikeService) Detail(bike *ent.Ebike, brand *ent.EbikeBrand) *model.Ebi
 		}
 	}
 	return res
+}
+
+// Unallocated 获取未分配车辆信息
+func (s *ebikeService) Unallocated(params *model.EbikeUnallocatedParams) *model.Ebike {
+	q := s.AllocatableBaseFilter()
+
+	if (params.ID == nil && params.Keyword == nil) || (params.ID != nil && params.Keyword != nil) {
+		snag.Panic("参数错误")
+	}
+
+	// 根据ID或关键字查找车辆
+	if params.ID != nil {
+		q.Where(ebike.ID(*params.ID))
+	}
+
+	if params.Keyword != nil {
+		q.Where(ebike.Or(
+			ebike.SnContainsFold(*params.Keyword),
+			ebike.PlateContainsFold(*params.Keyword),
+		))
+	}
+
+	// 站点
+	if params.StationID == nil {
+		q.Where(ebike.StationID(*params.StationID))
+	}
+
+	// 门店
+	if params.StoreID != nil {
+		q.Where(ebike.StoreID(*params.StoreID))
+	}
+
+	// 查找电车
+	bike, _ := q.WithBrand().First(s.ctx)
+	if bike == nil {
+		snag.Panic("未找到可分配电车")
+	}
+
+	// 查询是否已被分配
+	s.IsAllocatableX(bike.ID)
+
+	brand := bike.Edges.Brand
+
+	return &model.Ebike{
+		EbikeInfo: model.EbikeInfo{
+			ID:        bike.ID,
+			SN:        bike.Sn,
+			ExFactory: bike.ExFactory,
+			Plate:     bike.Plate,
+			Color:     bike.Color,
+		},
+		Brand: &model.EbikeBrand{
+			ID:    brand.ID,
+			Name:  brand.Name,
+			Cover: brand.Cover,
+		},
+	}
 }
 
 // Bind TODO 解耦: 绑定骑手

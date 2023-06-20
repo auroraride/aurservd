@@ -2622,6 +2622,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"EnterpriseStation",
 	)
 	graph.MustAddE(
+		"allocates",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ebike.AllocatesTable,
+			Columns: []string{ebike.AllocatesColumn},
+			Bidi:    false,
+		},
+		"Ebike",
+		"Allocate",
+	)
+	graph.MustAddE(
 		"city",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -8127,6 +8139,20 @@ func (f *EbikeFilter) WhereHasStation() {
 // WhereHasStationWith applies a predicate to check if query has an edge station with a given conditions (other predicates).
 func (f *EbikeFilter) WhereHasStationWith(preds ...predicate.EnterpriseStation) {
 	f.Where(entql.HasEdgeWith("station", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasAllocates applies a predicate to check if query has an edge allocates.
+func (f *EbikeFilter) WhereHasAllocates() {
+	f.Where(entql.HasEdge("allocates"))
+}
+
+// WhereHasAllocatesWith applies a predicate to check if query has an edge allocates with a given conditions (other predicates).
+func (f *EbikeFilter) WhereHasAllocatesWith(preds ...predicate.Allocate) {
+	f.Where(entql.HasEdgeWith("allocates", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

@@ -67,8 +67,9 @@ type Allocate struct {
 	Model string `json:"model,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AllocateQuery when eager-loading is set.
-	Edges        AllocateEdges `json:"edges"`
-	selectValues sql.SelectValues
+	Edges           AllocateEdges `json:"edges"`
+	ebike_allocates *uint64
+	selectValues    sql.SelectValues
 }
 
 // AllocateEdges holds the relations/edges for other nodes in the graph.
@@ -241,6 +242,8 @@ func (*Allocate) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case allocate.FieldCreatedAt, allocate.FieldUpdatedAt, allocate.FieldTime:
 			values[i] = new(sql.NullTime)
+		case allocate.ForeignKeys[0]: // ebike_allocates
+			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -382,6 +385,13 @@ func (a *Allocate) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field model", values[i])
 			} else if value.Valid {
 				a.Model = value.String
+			}
+		case allocate.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field ebike_allocates", value)
+			} else if value.Valid {
+				a.ebike_allocates = new(uint64)
+				*a.ebike_allocates = uint64(value.Int64)
 			}
 		default:
 			a.selectValues.Set(columns[i], values[i])

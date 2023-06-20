@@ -29893,6 +29893,9 @@ type EbikeMutation struct {
 	clearedenterprise bool
 	station           *uint64
 	clearedstation    bool
+	allocates         map[uint64]struct{}
+	removedallocates  map[uint64]struct{}
+	clearedallocates  bool
 	done              bool
 	oldValue          func(context.Context) (*Ebike, error)
 	predicates        []predicate.Ebike
@@ -30904,6 +30907,60 @@ func (m *EbikeMutation) ResetStation() {
 	m.clearedstation = false
 }
 
+// AddAllocateIDs adds the "allocates" edge to the Allocate entity by ids.
+func (m *EbikeMutation) AddAllocateIDs(ids ...uint64) {
+	if m.allocates == nil {
+		m.allocates = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.allocates[ids[i]] = struct{}{}
+	}
+}
+
+// ClearAllocates clears the "allocates" edge to the Allocate entity.
+func (m *EbikeMutation) ClearAllocates() {
+	m.clearedallocates = true
+}
+
+// AllocatesCleared reports if the "allocates" edge to the Allocate entity was cleared.
+func (m *EbikeMutation) AllocatesCleared() bool {
+	return m.clearedallocates
+}
+
+// RemoveAllocateIDs removes the "allocates" edge to the Allocate entity by IDs.
+func (m *EbikeMutation) RemoveAllocateIDs(ids ...uint64) {
+	if m.removedallocates == nil {
+		m.removedallocates = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.allocates, ids[i])
+		m.removedallocates[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedAllocates returns the removed IDs of the "allocates" edge to the Allocate entity.
+func (m *EbikeMutation) RemovedAllocatesIDs() (ids []uint64) {
+	for id := range m.removedallocates {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// AllocatesIDs returns the "allocates" edge IDs in the mutation.
+func (m *EbikeMutation) AllocatesIDs() (ids []uint64) {
+	for id := range m.allocates {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetAllocates resets all changes to the "allocates" edge.
+func (m *EbikeMutation) ResetAllocates() {
+	m.allocates = nil
+	m.clearedallocates = false
+	m.removedallocates = nil
+}
+
 // Where appends a list predicates to the EbikeMutation builder.
 func (m *EbikeMutation) Where(ps ...predicate.Ebike) {
 	m.predicates = append(m.predicates, ps...)
@@ -31392,7 +31449,7 @@ func (m *EbikeMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *EbikeMutation) AddedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.brand != nil {
 		edges = append(edges, ebike.EdgeBrand)
 	}
@@ -31407,6 +31464,9 @@ func (m *EbikeMutation) AddedEdges() []string {
 	}
 	if m.station != nil {
 		edges = append(edges, ebike.EdgeStation)
+	}
+	if m.allocates != nil {
+		edges = append(edges, ebike.EdgeAllocates)
 	}
 	return edges
 }
@@ -31435,25 +31495,42 @@ func (m *EbikeMutation) AddedIDs(name string) []ent.Value {
 		if id := m.station; id != nil {
 			return []ent.Value{*id}
 		}
+	case ebike.EdgeAllocates:
+		ids := make([]ent.Value, 0, len(m.allocates))
+		for id := range m.allocates {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *EbikeMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
+	if m.removedallocates != nil {
+		edges = append(edges, ebike.EdgeAllocates)
+	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *EbikeMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case ebike.EdgeAllocates:
+		ids := make([]ent.Value, 0, len(m.removedallocates))
+		for id := range m.removedallocates {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *EbikeMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.clearedbrand {
 		edges = append(edges, ebike.EdgeBrand)
 	}
@@ -31468,6 +31545,9 @@ func (m *EbikeMutation) ClearedEdges() []string {
 	}
 	if m.clearedstation {
 		edges = append(edges, ebike.EdgeStation)
+	}
+	if m.clearedallocates {
+		edges = append(edges, ebike.EdgeAllocates)
 	}
 	return edges
 }
@@ -31486,6 +31566,8 @@ func (m *EbikeMutation) EdgeCleared(name string) bool {
 		return m.clearedenterprise
 	case ebike.EdgeStation:
 		return m.clearedstation
+	case ebike.EdgeAllocates:
+		return m.clearedallocates
 	}
 	return false
 }
@@ -31531,6 +31613,9 @@ func (m *EbikeMutation) ResetEdge(name string) error {
 		return nil
 	case ebike.EdgeStation:
 		m.ResetStation()
+		return nil
+	case ebike.EdgeAllocates:
+		m.ResetAllocates()
 		return nil
 	}
 	return fmt.Errorf("unknown Ebike edge %s", name)

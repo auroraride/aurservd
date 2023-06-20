@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/allocate"
 	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -263,6 +264,21 @@ func (ec *EbikeCreate) SetEnterprise(e *Enterprise) *EbikeCreate {
 // SetStation sets the "station" edge to the EnterpriseStation entity.
 func (ec *EbikeCreate) SetStation(e *EnterpriseStation) *EbikeCreate {
 	return ec.SetStationID(e.ID)
+}
+
+// AddAllocateIDs adds the "allocates" edge to the Allocate entity by IDs.
+func (ec *EbikeCreate) AddAllocateIDs(ids ...uint64) *EbikeCreate {
+	ec.mutation.AddAllocateIDs(ids...)
+	return ec
+}
+
+// AddAllocates adds the "allocates" edges to the Allocate entity.
+func (ec *EbikeCreate) AddAllocates(a ...*Allocate) *EbikeCreate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return ec.AddAllocateIDs(ids...)
 }
 
 // Mutation returns the EbikeMutation object of the builder.
@@ -522,6 +538,22 @@ func (ec *EbikeCreate) createSpec() (*Ebike, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.StationID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ec.mutation.AllocatesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ebike.AllocatesTable,
+			Columns: []string{ebike.AllocatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(allocate.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

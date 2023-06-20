@@ -70,6 +70,9 @@ func loadAgentRoutes() {
 	auth.GET("/battery/selection", aapi.Battery.Selection) // 电池搜索
 	auth.GET("/battery/model", aapi.Battery.Model)         // 电池型号列表
 
+	// AB 电车
+	auth.GET("/bike/unallocated", aapi.Bike.Unallocated) // 搜索未分配车辆
+
 	// AZ 杂项
 	auth.POST("/misc/feedback", aapi.Misc.Feedback)            // 意见反馈
 	auth.POST("/misc/feedback/image", aapi.Misc.FeedbackImage) // 意见反馈 - 上传图片

@@ -34,7 +34,6 @@ type employeeService struct {
 	cacheKeyPrefix string
 	ctx            context.Context
 	modifier       *model.Modifier
-	rider          *ent.Rider
 	employee       *ent.Employee
 	orm            *ent.EmployeeClient
 	employeeInfo   *model.Employee
@@ -46,13 +45,6 @@ func NewEmployee() *employeeService {
 		ctx:            context.Background(),
 		orm:            ent.Database.Employee,
 	}
-}
-
-func NewEmployeeWithRider(r *ent.Rider) *employeeService {
-	s := NewEmployee()
-	s.ctx = context.WithValue(s.ctx, model.CtxRiderKey{}, r)
-	s.rider = r
-	return s
 }
 
 func NewEmployeeWithModifier(m *model.Modifier) *employeeService {
@@ -96,6 +88,19 @@ func (s *employeeService) GetEmployeeByID(id uint64) (*ent.Employee, error) {
 func (s *employeeService) QueryByPhone(phone string) *ent.Employee {
 	item, _ := s.orm.QueryNotDeleted().Where(employee.Phone(phone)).First(s.ctx)
 	return item
+}
+
+// QueryStore 根据店员查找门店信息
+func (s *employeeService) QueryStore(em *ent.Employee) (*ent.Store, error) {
+	return em.QueryStore().First(s.ctx)
+}
+
+func (s *employeeService) QueryStoreX(em *ent.Employee) (st *ent.Store) {
+	st, _ = s.QueryStore(em)
+	if st == nil {
+		snag.Panic("未找到当前门店")
+	}
+	return
 }
 
 // Create 添加店员

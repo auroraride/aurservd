@@ -4,12 +4,14 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"math"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/internal/ent/allocate"
 	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -31,6 +33,7 @@ type EbikeQuery struct {
 	withStore      *StoreQuery
 	withEnterprise *EnterpriseQuery
 	withStation    *EnterpriseStationQuery
+	withAllocates  *AllocateQuery
 	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -171,6 +174,28 @@ func (eq *EbikeQuery) QueryStation() *EnterpriseStationQuery {
 			sqlgraph.From(ebike.Table, ebike.FieldID, selector),
 			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, ebike.StationTable, ebike.StationColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryAllocates chains the current query on the "allocates" edge.
+func (eq *EbikeQuery) QueryAllocates() *AllocateQuery {
+	query := (&AllocateClient{config: eq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ebike.Table, ebike.FieldID, selector),
+			sqlgraph.To(allocate.Table, allocate.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ebike.AllocatesTable, ebike.AllocatesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
 		return fromU, nil
@@ -375,6 +400,7 @@ func (eq *EbikeQuery) Clone() *EbikeQuery {
 		withStore:      eq.withStore.Clone(),
 		withEnterprise: eq.withEnterprise.Clone(),
 		withStation:    eq.withStation.Clone(),
+		withAllocates:  eq.withAllocates.Clone(),
 		// clone intermediate query.
 		sql:  eq.sql.Clone(),
 		path: eq.path,
@@ -433,6 +459,17 @@ func (eq *EbikeQuery) WithStation(opts ...func(*EnterpriseStationQuery)) *EbikeQ
 		opt(query)
 	}
 	eq.withStation = query
+	return eq
+}
+
+// WithAllocates tells the query-builder to eager-load the nodes that are connected to
+// the "allocates" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EbikeQuery) WithAllocates(opts ...func(*AllocateQuery)) *EbikeQuery {
+	query := (&AllocateClient{config: eq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withAllocates = query
 	return eq
 }
 
@@ -514,12 +551,13 @@ func (eq *EbikeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Ebike,
 	var (
 		nodes       = []*Ebike{}
 		_spec       = eq.querySpec()
-		loadedTypes = [5]bool{
+		loadedTypes = [6]bool{
 			eq.withBrand != nil,
 			eq.withRider != nil,
 			eq.withStore != nil,
 			eq.withEnterprise != nil,
 			eq.withStation != nil,
+			eq.withAllocates != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -570,6 +608,13 @@ func (eq *EbikeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Ebike,
 	if query := eq.withStation; query != nil {
 		if err := eq.loadStation(ctx, query, nodes, nil,
 			func(n *Ebike, e *EnterpriseStation) { n.Edges.Station = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := eq.withAllocates; query != nil {
+		if err := eq.loadAllocates(ctx, query, nodes,
+			func(n *Ebike) { n.Edges.Allocates = []*Allocate{} },
+			func(n *Ebike, e *Allocate) { n.Edges.Allocates = append(n.Edges.Allocates, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -733,6 +778,37 @@ func (eq *EbikeQuery) loadStation(ctx context.Context, query *EnterpriseStationQ
 	}
 	return nil
 }
+func (eq *EbikeQuery) loadAllocates(ctx context.Context, query *AllocateQuery, nodes []*Ebike, init func(*Ebike), assign func(*Ebike, *Allocate)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uint64]*Ebike)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Allocate(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(ebike.AllocatesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.ebike_allocates
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "ebike_allocates" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "ebike_allocates" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
 
 func (eq *EbikeQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := eq.querySpec()
@@ -850,6 +926,7 @@ var (
 	EbikeQueryWithStore      EbikeQueryWith = "Store"
 	EbikeQueryWithEnterprise EbikeQueryWith = "Enterprise"
 	EbikeQueryWithStation    EbikeQueryWith = "Station"
+	EbikeQueryWithAllocates  EbikeQueryWith = "Allocates"
 )
 
 func (eq *EbikeQuery) With(withEdges ...EbikeQueryWith) *EbikeQuery {
@@ -865,6 +942,8 @@ func (eq *EbikeQuery) With(withEdges ...EbikeQueryWith) *EbikeQuery {
 			eq.WithEnterprise()
 		case EbikeQueryWithStation:
 			eq.WithStation()
+		case EbikeQueryWithAllocates:
+			eq.WithAllocates()
 		}
 	}
 	return eq

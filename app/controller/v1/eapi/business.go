@@ -6,10 +6,11 @@
 package eapi
 
 import (
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
-	"github.com/labstack/echo/v4"
 )
 
 type business struct{}
@@ -56,11 +57,11 @@ func (*business) Inactive(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
-// @Param        body  body     model.AllocateCreateReq  true  "分配请求"
+// @Param        body  body     model.EmployeeAllocateCreateReq  true  "分配请求"
 // @Success      200  {object}  model.IDPostReq  "请求成功"
 func (*business) Active(c echo.Context) (err error) {
-	ctx, req := app.EmployeeContextAndBinding[model.AllocateCreateReq](c)
-	return ctx.SendResponse(service.NewBusinessEmployee(ctx.Employee).Active(req))
+	ctx, req := app.EmployeeContextAndBinding[model.EmployeeAllocateCreateReq](c)
+	return ctx.SendResponse(service.NewBusinessEmployee().Active(ctx.Employee, req))
 }
 
 // Pause

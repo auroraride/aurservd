@@ -101,6 +101,49 @@ const docTemplate = `{
                 }
             }
         },
+        "/agent/v1/bike/unallocated": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "AB003 搜索未分配车辆",
+                "operationId": "AgentBikeUnallocated",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "keyword",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "name": "stationId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.Ebike"
+                        }
+                    }
+                }
+            }
+        },
         "/agent/v1/bill/historical": {
             "get": {
                 "consumes": [
@@ -3222,7 +3265,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.AllocateCreateReq"
+                            "$ref": "#/definitions/model.EmployeeAllocateCreateReq"
                         }
                     }
                 ],
@@ -17130,25 +17173,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.AllocateCreateReq": {
-            "type": "object",
-            "properties": {
-                "batteryId": {
-                    "description": "电池ID",
-                    "type": "integer"
-                },
-                "ebikeId": {
-                    "description": "电车ID",
-                    "type": "integer"
-                },
-                "qrcode": {
-                    "type": "string"
-                },
-                "subscribeId": {
-                    "type": "integer"
-                }
-            }
-        },
         "model.AllocateDetail": {
             "type": "object",
             "properties": {
@@ -21456,6 +21480,25 @@ const docTemplate = `{
                 },
                 "storeId": {
                     "description": "门店ID",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.EmployeeAllocateCreateReq": {
+            "type": "object",
+            "properties": {
+                "batteryId": {
+                    "description": "电池ID",
+                    "type": "integer"
+                },
+                "ebikeId": {
+                    "description": "电车ID",
+                    "type": "integer"
+                },
+                "qrcode": {
+                    "type": "string"
+                },
+                "subscribeId": {
                     "type": "integer"
                 }
             }

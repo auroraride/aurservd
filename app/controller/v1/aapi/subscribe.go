@@ -29,10 +29,10 @@ var Subscribe = new(subscribe)
 // @Success      200  {object}  string  "请求成功"
 func (*subscribe) Active(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.AgentSubscribeActiveReq](c)
-	service.NewAllocate().Create(&model.AllocateCreateReq{
+	service.NewAllocate().Create(&model.AllocateCreateParams{
 		SubscribeID: req.ID,
-		EbikeID:     req.EbikeID,
 		BatteryID:   req.BatteryID,
+		EbikeParam:  model.AllocateCreateEbikeParam{ID: req.EbikeID},
 	})
 	return ctx.SendResponse()
 }

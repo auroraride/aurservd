@@ -62,6 +62,8 @@ const (
 	EdgeEnterprise = "enterprise"
 	// EdgeStation holds the string denoting the station edge name in mutations.
 	EdgeStation = "station"
+	// EdgeAllocates holds the string denoting the allocates edge name in mutations.
+	EdgeAllocates = "allocates"
 	// Table holds the table name of the ebike in the database.
 	Table = "ebike"
 	// BrandTable is the table that holds the brand relation/edge.
@@ -99,6 +101,13 @@ const (
 	StationInverseTable = "enterprise_station"
 	// StationColumn is the table column denoting the station relation/edge.
 	StationColumn = "station_id"
+	// AllocatesTable is the table that holds the allocates relation/edge.
+	AllocatesTable = "allocate"
+	// AllocatesInverseTable is the table name for the Allocate entity.
+	// It exists in this package in order to avoid circular dependency with the "allocate" package.
+	AllocatesInverseTable = "allocate"
+	// AllocatesColumn is the table column denoting the allocates relation/edge.
+	AllocatesColumn = "ebike_allocates"
 )
 
 // Columns holds all SQL columns for ebike fields.
@@ -277,6 +286,20 @@ func ByStationField(field string, opts ...sql.OrderTermOption) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newStationStep(), sql.OrderByField(field, opts...))
 	}
 }
+
+// ByAllocatesCount orders the results by allocates count.
+func ByAllocatesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newAllocatesStep(), opts...)
+	}
+}
+
+// ByAllocates orders the results by allocates terms.
+func ByAllocates(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newAllocatesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newBrandStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -310,5 +333,12 @@ func newStationStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(StationInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, false, StationTable, StationColumn),
+	)
+}
+func newAllocatesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(AllocatesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, AllocatesTable, AllocatesColumn),
 	)
 }

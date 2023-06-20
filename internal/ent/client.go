@@ -4259,6 +4259,22 @@ func (c *EbikeClient) QueryStation(e *Ebike) *EnterpriseStationQuery {
 	return query
 }
 
+// QueryAllocates queries the allocates edge of a Ebike.
+func (c *EbikeClient) QueryAllocates(e *Ebike) *AllocateQuery {
+	query := (&AllocateClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ebike.Table, ebike.FieldID, id),
+			sqlgraph.To(allocate.Table, allocate.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ebike.AllocatesTable, ebike.AllocatesColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *EbikeClient) Hooks() []Hook {
 	hooks := c.hooks.Ebike

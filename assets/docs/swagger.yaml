@@ -638,19 +638,6 @@ definitions:
       stsToken:
         type: string
     type: object
-  model.AllocateCreateReq:
-    properties:
-      batteryId:
-        description: 电池ID
-        type: integer
-      ebikeId:
-        description: 电车ID
-        type: integer
-      qrcode:
-        type: string
-      subscribeId:
-        type: integer
-    type: object
   model.AllocateDetail:
     properties:
       ebike:
@@ -3631,6 +3618,19 @@ definitions:
         type: integer
     required:
     - remark
+    type: object
+  model.EmployeeAllocateCreateReq:
+    properties:
+      batteryId:
+        description: 电池ID
+        type: integer
+      ebikeId:
+        description: 电车ID
+        type: integer
+      qrcode:
+        type: string
+      subscribeId:
+        type: integer
     type: object
   model.EmployeeCreateReq:
     properties:
@@ -7775,6 +7775,34 @@ paths:
       summary: AA001 电池选择搜索
       tags:
       - '[A]代理接口'
+  /agent/v1/bike/unallocated:
+    get:
+      consumes:
+      - application/json
+      operationId: AgentBikeUnallocated
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - in: query
+        name: keyword
+        required: true
+        type: string
+      - in: query
+        name: stationId
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.Ebike'
+      summary: AB003 搜索未分配车辆
+      tags:
+      - '[A]代理接口'
   /agent/v1/bill/historical:
     get:
       consumes:
@@ -9812,7 +9840,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/model.AllocateCreateReq'
+          $ref: '#/definitions/model.EmployeeAllocateCreateReq'
       produces:
       - application/json
       responses:

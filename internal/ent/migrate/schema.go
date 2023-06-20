@@ -86,6 +86,7 @@ var (
 		{Name: "brand_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "battery_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "station_id", Type: field.TypeUint64, Nullable: true, Comment: "站点ID"},
+		{Name: "ebike_allocates", Type: field.TypeUint64, Nullable: true},
 	}
 	// AllocateTable holds the schema information for the "allocate" table.
 	AllocateTable = &schema.Table{
@@ -145,6 +146,12 @@ var (
 				Symbol:     "allocate_enterprise_station_station",
 				Columns:    []*schema.Column{AllocateColumns[18]},
 				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "allocate_ebike_allocates",
+				Columns:    []*schema.Column{AllocateColumns[19]},
+				RefColumns: []*schema.Column{EbikeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -4691,6 +4698,7 @@ func init() {
 	AllocateTable.ForeignKeys[6].RefTable = EbikeBrandTable
 	AllocateTable.ForeignKeys[7].RefTable = BatteryTable
 	AllocateTable.ForeignKeys[8].RefTable = EnterpriseStationTable
+	AllocateTable.ForeignKeys[9].RefTable = EbikeTable
 	AllocateTable.Annotation = &entsql.Annotation{
 		Table: "allocate",
 	}

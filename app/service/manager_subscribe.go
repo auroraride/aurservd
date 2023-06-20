@@ -33,23 +33,19 @@ func NewManagerSubscribe(params ...any) *managerSubscribeService {
 // Active 激活订阅
 // 团签无需签约
 func (s *managerSubscribeService) Active(req *model.ManagerSubscribeActive) {
-	var bikeID *uint64
-	if req.EbikeKeyword != nil {
-		bike := NewAllocate().UnallocatedEbikeInfo(*req.EbikeKeyword)
-		bikeID = silk.UInt64(bike.ID)
-	}
-
-	NewAllocate(s.modifier).Create(&model.AllocateCreateReq{
-		EbikeID:     bikeID,
+	NewAllocate(s.modifier).Create(&model.AllocateCreateParams{
 		SubscribeID: silk.UInt64(req.ID),
 		StoreID:     req.StoreID,
 		BatteryID:   req.BatteryID,
+		EbikeParam: model.AllocateCreateEbikeParam{
+			Keyword: req.EbikeKeyword,
+		},
 	})
 }
 
 // ChangeEbike 修改订阅车辆
 func (s *managerSubscribeService) ChangeEbike(req *model.ManagerSubscribeChangeEbike) {
-	bike := NewAllocate().UnallocatedEbikeInfo(*req.EbikeKeyword)
+	bike := NewEbike().Unallocated(&model.EbikeUnallocatedParams{Keyword: req.EbikeKeyword})
 
 	sub, _ := ent.Database.Subscribe.QueryNotDeleted().
 		Where(

@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/allocate"
 	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -298,6 +299,21 @@ func (eu *EbikeUpdate) SetStation(e *EnterpriseStation) *EbikeUpdate {
 	return eu.SetStationID(e.ID)
 }
 
+// AddAllocateIDs adds the "allocates" edge to the Allocate entity by IDs.
+func (eu *EbikeUpdate) AddAllocateIDs(ids ...uint64) *EbikeUpdate {
+	eu.mutation.AddAllocateIDs(ids...)
+	return eu
+}
+
+// AddAllocates adds the "allocates" edges to the Allocate entity.
+func (eu *EbikeUpdate) AddAllocates(a ...*Allocate) *EbikeUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return eu.AddAllocateIDs(ids...)
+}
+
 // Mutation returns the EbikeMutation object of the builder.
 func (eu *EbikeUpdate) Mutation() *EbikeMutation {
 	return eu.mutation
@@ -331,6 +347,27 @@ func (eu *EbikeUpdate) ClearEnterprise() *EbikeUpdate {
 func (eu *EbikeUpdate) ClearStation() *EbikeUpdate {
 	eu.mutation.ClearStation()
 	return eu
+}
+
+// ClearAllocates clears all "allocates" edges to the Allocate entity.
+func (eu *EbikeUpdate) ClearAllocates() *EbikeUpdate {
+	eu.mutation.ClearAllocates()
+	return eu
+}
+
+// RemoveAllocateIDs removes the "allocates" edge to Allocate entities by IDs.
+func (eu *EbikeUpdate) RemoveAllocateIDs(ids ...uint64) *EbikeUpdate {
+	eu.mutation.RemoveAllocateIDs(ids...)
+	return eu
+}
+
+// RemoveAllocates removes "allocates" edges to Allocate entities.
+func (eu *EbikeUpdate) RemoveAllocates(a ...*Allocate) *EbikeUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return eu.RemoveAllocateIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -590,6 +627,51 @@ func (eu *EbikeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if eu.mutation.AllocatesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ebike.AllocatesTable,
+			Columns: []string{ebike.AllocatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(allocate.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.RemovedAllocatesIDs(); len(nodes) > 0 && !eu.mutation.AllocatesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ebike.AllocatesTable,
+			Columns: []string{ebike.AllocatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(allocate.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.AllocatesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ebike.AllocatesTable,
+			Columns: []string{ebike.AllocatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(allocate.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -882,6 +964,21 @@ func (euo *EbikeUpdateOne) SetStation(e *EnterpriseStation) *EbikeUpdateOne {
 	return euo.SetStationID(e.ID)
 }
 
+// AddAllocateIDs adds the "allocates" edge to the Allocate entity by IDs.
+func (euo *EbikeUpdateOne) AddAllocateIDs(ids ...uint64) *EbikeUpdateOne {
+	euo.mutation.AddAllocateIDs(ids...)
+	return euo
+}
+
+// AddAllocates adds the "allocates" edges to the Allocate entity.
+func (euo *EbikeUpdateOne) AddAllocates(a ...*Allocate) *EbikeUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return euo.AddAllocateIDs(ids...)
+}
+
 // Mutation returns the EbikeMutation object of the builder.
 func (euo *EbikeUpdateOne) Mutation() *EbikeMutation {
 	return euo.mutation
@@ -915,6 +1012,27 @@ func (euo *EbikeUpdateOne) ClearEnterprise() *EbikeUpdateOne {
 func (euo *EbikeUpdateOne) ClearStation() *EbikeUpdateOne {
 	euo.mutation.ClearStation()
 	return euo
+}
+
+// ClearAllocates clears all "allocates" edges to the Allocate entity.
+func (euo *EbikeUpdateOne) ClearAllocates() *EbikeUpdateOne {
+	euo.mutation.ClearAllocates()
+	return euo
+}
+
+// RemoveAllocateIDs removes the "allocates" edge to Allocate entities by IDs.
+func (euo *EbikeUpdateOne) RemoveAllocateIDs(ids ...uint64) *EbikeUpdateOne {
+	euo.mutation.RemoveAllocateIDs(ids...)
+	return euo
+}
+
+// RemoveAllocates removes "allocates" edges to Allocate entities.
+func (euo *EbikeUpdateOne) RemoveAllocates(a ...*Allocate) *EbikeUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return euo.RemoveAllocateIDs(ids...)
 }
 
 // Where appends a list predicates to the EbikeUpdate builder.
@@ -1204,6 +1322,51 @@ func (euo *EbikeUpdateOne) sqlSave(ctx context.Context) (_node *Ebike, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if euo.mutation.AllocatesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ebike.AllocatesTable,
+			Columns: []string{ebike.AllocatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(allocate.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.RemovedAllocatesIDs(); len(nodes) > 0 && !euo.mutation.AllocatesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ebike.AllocatesTable,
+			Columns: []string{ebike.AllocatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(allocate.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.AllocatesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ebike.AllocatesTable,
+			Columns: []string{ebike.AllocatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(allocate.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
