@@ -64,6 +64,12 @@ func (s *stockEbikeService) Loopers(req *model.StockTransferReq, enterpriseId ui
 			failed = append(failed, fmt.Sprintf("电车调拨失败，[%s]不属于当前团签", bike.Sn))
 			continue
 		}
+		// 调出到平台  不是自己站点的电车不允许调拨
+		if req.OutboundTarget == model.StockTargetStation && req.InboundTarget == model.StockTargetPlaform &&
+			bike.StationID != nil && *bike.StationID != req.OutboundID {
+			failed = append(failed, fmt.Sprintf("电车调拨失败，[%s]不属于当前站点", bike.Sn))
+			continue
+		}
 
 		looppers = append(looppers, model.StockTransferLoopper{
 			EbikeSN:   silk.String(bike.Sn),
