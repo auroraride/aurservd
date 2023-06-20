@@ -459,7 +459,7 @@ func (s *batteryService) Allocate(tx *ent.Tx, bat *ent.Battery, sub *ent.Subscri
 	}
 
 	// 分配电池给骑手
-	updater := tx.Battery.UpdateOne(bat)
+	updater := tx.Battery.UpdateOne(bat).SetRiderID(sub.RiderID).SetSubscribeID(sub.ID)
 
 	if sub.StationID != nil {
 		// 当前骑手属于代理站点时, 设置新的站点信息

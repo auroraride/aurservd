@@ -3925,7 +3925,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "站点id",
+                        "description": "站点ID",
                         "name": "stationId",
                         "in": "query"
                     },
@@ -6941,6 +6941,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "integer",
+                        "description": "团签ID",
+                        "name": "enterpriseId",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "description": "生产批次",
                         "name": "exFactory",
@@ -6953,6 +6959,16 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "enum": [
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "description": "归属类型   1:平台 2:代理商",
+                        "name": "ownerType",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "每页数据, 默认20",
                         "name": "pageSize",
@@ -6962,6 +6978,12 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "骑手ID",
                         "name": "riderId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "站点ID",
+                        "name": "stationId",
                         "in": "query"
                     },
                     {
@@ -21366,6 +21388,14 @@ const docTemplate = `{
                     "description": "是否启用, 默认要启用",
                     "type": "boolean"
                 },
+                "enterpriseId": {
+                    "description": "团签ID",
+                    "type": "integer"
+                },
+                "enterpriseName": {
+                    "description": "团签名称",
+                    "type": "string"
+                },
                 "exFactory": {
                     "description": "生产批次",
                     "type": "string"
@@ -21391,6 +21421,14 @@ const docTemplate = `{
                 },
                 "sn": {
                     "description": "车架号",
+                    "type": "string"
+                },
+                "stationId": {
+                    "description": "站点id",
+                    "type": "integer"
+                },
+                "stationName": {
+                    "description": "所属站点名称",
                     "type": "string"
                 },
                 "status": {

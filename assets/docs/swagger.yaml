@@ -3526,6 +3526,12 @@ definitions:
       enable:
         description: 是否启用, 默认要启用
         type: boolean
+      enterpriseId:
+        description: 团签ID
+        type: integer
+      enterpriseName:
+        description: 团签名称
+        type: string
       exFactory:
         description: 生产批次
         type: string
@@ -3545,6 +3551,12 @@ definitions:
         type: string
       sn:
         description: 车架号
+        type: string
+      stationId:
+        description: 站点id
+        type: integer
+      stationName:
+        description: 所属站点名称
         type: string
       status:
         description: 状态
@@ -10306,7 +10318,7 @@ paths:
         in: query
         name: sn
         type: string
-      - description: 站点id
+      - description: 站点ID
         in: query
         name: stationId
         type: integer
@@ -12284,6 +12296,10 @@ paths:
         in: query
         name: enable
         type: boolean
+      - description: 团签ID
+        in: query
+        name: enterpriseId
+        type: integer
       - description: 生产批次
         in: query
         name: exFactory
@@ -12292,6 +12308,13 @@ paths:
         in: query
         name: keyword
         type: string
+      - description: 归属类型   1:平台 2:代理商
+        enum:
+        - 1
+        - 2
+        in: query
+        name: ownerType
+        type: integer
       - description: 每页数据, 默认20
         in: query
         name: pageSize
@@ -12299,6 +12322,10 @@ paths:
       - description: 骑手ID
         in: query
         name: riderId
+        type: integer
+      - description: 站点ID
+        in: query
+        name: stationId
         type: integer
       - description: 状态, 0:库存中 1:使用中 2:维修中 3:已报废, 不携带为获取全部
         enum:
