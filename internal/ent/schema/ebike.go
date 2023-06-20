@@ -77,7 +77,9 @@ func (Ebike) Fields() []ent.Field {
 
 // Edges of the Ebike.
 func (Ebike) Edges() []ent.Edge {
-	return []ent.Edge{}
+	return []ent.Edge{
+		edge.To("allocates", Allocate.Type),
+	}
 }
 
 func (Ebike) Mixin() []ent.Mixin {

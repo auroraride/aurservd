@@ -120,5 +120,5 @@ type CascaderOption struct {
 }
 
 type KeywordQueryReq struct {
-	Keyword string `json:"keyword" validate:"required" query:"keyword" trans:"关键词"`
+	Keyword *string `json:"keyword" validate:"required" query:"keyword" trans:"关键词"`
 }

@@ -36,8 +36,6 @@ const (
 	FieldCabinetID = "cabinet_id"
 	// FieldStoreID holds the string denoting the store_id field in the database.
 	FieldStoreID = "store_id"
-	// FieldEbikeID holds the string denoting the ebike_id field in the database.
-	FieldEbikeID = "ebike_id"
 	// FieldBrandID holds the string denoting the brand_id field in the database.
 	FieldBrandID = "brand_id"
 	// FieldBatteryID holds the string denoting the battery_id field in the database.
@@ -52,6 +50,8 @@ const (
 	FieldTime = "time"
 	// FieldModel holds the string denoting the model field in the database.
 	FieldModel = "model"
+	// FieldEbikeID holds the string denoting the ebike_id field in the database.
+	FieldEbikeID = "ebike_id"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
 	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
@@ -62,8 +62,6 @@ const (
 	EdgeCabinet = "cabinet"
 	// EdgeStore holds the string denoting the store edge name in mutations.
 	EdgeStore = "store"
-	// EdgeEbike holds the string denoting the ebike edge name in mutations.
-	EdgeEbike = "ebike"
 	// EdgeBrand holds the string denoting the brand edge name in mutations.
 	EdgeBrand = "brand"
 	// EdgeBattery holds the string denoting the battery edge name in mutations.
@@ -72,6 +70,8 @@ const (
 	EdgeStation = "station"
 	// EdgeContract holds the string denoting the contract edge name in mutations.
 	EdgeContract = "contract"
+	// EdgeEbike holds the string denoting the ebike edge name in mutations.
+	EdgeEbike = "ebike"
 	// Table holds the table name of the allocate in the database.
 	Table = "allocate"
 	// RiderTable is the table that holds the rider relation/edge.
@@ -109,13 +109,6 @@ const (
 	StoreInverseTable = "store"
 	// StoreColumn is the table column denoting the store relation/edge.
 	StoreColumn = "store_id"
-	// EbikeTable is the table that holds the ebike relation/edge.
-	EbikeTable = "allocate"
-	// EbikeInverseTable is the table name for the Ebike entity.
-	// It exists in this package in order to avoid circular dependency with the "ebike" package.
-	EbikeInverseTable = "ebike"
-	// EbikeColumn is the table column denoting the ebike relation/edge.
-	EbikeColumn = "ebike_id"
 	// BrandTable is the table that holds the brand relation/edge.
 	BrandTable = "allocate"
 	// BrandInverseTable is the table name for the EbikeBrand entity.
@@ -144,6 +137,13 @@ const (
 	ContractInverseTable = "contract"
 	// ContractColumn is the table column denoting the contract relation/edge.
 	ContractColumn = "allocate_id"
+	// EbikeTable is the table that holds the ebike relation/edge.
+	EbikeTable = "allocate"
+	// EbikeInverseTable is the table name for the Ebike entity.
+	// It exists in this package in order to avoid circular dependency with the "ebike" package.
+	EbikeInverseTable = "ebike"
+	// EbikeColumn is the table column denoting the ebike relation/edge.
+	EbikeColumn = "ebike_id"
 )
 
 // Columns holds all SQL columns for allocate fields.
@@ -159,7 +159,6 @@ var Columns = []string{
 	FieldEmployeeID,
 	FieldCabinetID,
 	FieldStoreID,
-	FieldEbikeID,
 	FieldBrandID,
 	FieldBatteryID,
 	FieldStationID,
@@ -167,6 +166,7 @@ var Columns = []string{
 	FieldStatus,
 	FieldTime,
 	FieldModel,
+	FieldEbikeID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -265,11 +265,6 @@ func ByStoreID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldStoreID, opts...).ToFunc()
 }
 
-// ByEbikeID orders the results by the ebike_id field.
-func ByEbikeID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldEbikeID, opts...).ToFunc()
-}
-
 // ByBrandID orders the results by the brand_id field.
 func ByBrandID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldBrandID, opts...).ToFunc()
@@ -303,6 +298,11 @@ func ByTime(opts ...sql.OrderTermOption) OrderOption {
 // ByModel orders the results by the model field.
 func ByModel(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldModel, opts...).ToFunc()
+}
+
+// ByEbikeID orders the results by the ebike_id field.
+func ByEbikeID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldEbikeID, opts...).ToFunc()
 }
 
 // ByRiderField orders the results by rider field.
@@ -340,13 +340,6 @@ func ByStoreField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
-// ByEbikeField orders the results by ebike field.
-func ByEbikeField(field string, opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newEbikeStep(), sql.OrderByField(field, opts...))
-	}
-}
-
 // ByBrandField orders the results by brand field.
 func ByBrandField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -372,6 +365,13 @@ func ByStationField(field string, opts ...sql.OrderTermOption) OrderOption {
 func ByContractField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newContractStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByEbikeField orders the results by ebike field.
+func ByEbikeField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newEbikeStep(), sql.OrderByField(field, opts...))
 	}
 }
 func newRiderStep() *sqlgraph.Step {
@@ -409,13 +409,6 @@ func newStoreStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.M2O, false, StoreTable, StoreColumn),
 	)
 }
-func newEbikeStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(EbikeInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, EbikeTable, EbikeColumn),
-	)
-}
 func newBrandStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -442,5 +435,12 @@ func newContractStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(ContractInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2O, false, ContractTable, ContractColumn),
+	)
+}
+func newEbikeStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(EbikeInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, EbikeTable, EbikeColumn),
 	)
 }

@@ -548,9 +548,15 @@ func (s *enterpriseService) Price(req *model.EnterprisePriceReq) model.Enterpris
 	if req.ID == 0 {
 		client := ent.Database.EnterprisePrice
 		// 判定价格是否重复
-		if exist, _ := client.QueryNotDeleted().
-			Where(enterpriseprice.EnterpriseID(req.EnterpriseID), enterpriseprice.Model(req.Model), enterpriseprice.CityID(req.CityID)).
-			Exist(s.ctx); exist {
+		q := client.QueryNotDeleted().Where(
+			enterpriseprice.EnterpriseID(req.EnterpriseID),
+			enterpriseprice.Model(req.Model),
+			enterpriseprice.CityID(req.CityID),
+		)
+		if req.BrandID != nil {
+			q.Where(enterpriseprice.BrandID(*req.BrandID))
+		}
+		if exist, _ := q.Exist(s.ctx); exist {
 			snag.Panic("价格设置重复")
 		}
 		p, err = client.
@@ -708,7 +714,7 @@ func (s *enterpriseService) NameFromID(id uint64) string {
 
 // PriceList 团签价格列表
 func (s *enterpriseService) PriceList(enterpriseId uint64) (rsp []model.EnterprisePriceWithCity) {
-	pr, _ := ent.Database.EnterprisePrice.QueryNotDeleted().WithCity().Where(enterpriseprice.EnterpriseID(enterpriseId)).All(s.ctx)
+	pr, _ := ent.Database.EnterprisePrice.QueryNotDeleted().WithCity().WithBrand().Where(enterpriseprice.EnterpriseID(enterpriseId)).All(s.ctx)
 	if pr == nil {
 		snag.Panic("团签价格不存在")
 	}
@@ -723,6 +729,13 @@ func (s *enterpriseService) PriceList(enterpriseId uint64) (rsp []model.Enterpri
 				ID:   ep.Edges.City.ID,
 				Name: ep.Edges.City.Name,
 			},
+		}
+		if ep.Edges.Brand != nil {
+			data.EbikeBrand = &model.EbikeBrand{
+				ID:    ep.Edges.Brand.ID,
+				Name:  ep.Edges.Brand.Name,
+				Cover: ep.Edges.Brand.Cover,
+			}
 		}
 		rsp = append(rsp, data)
 	}

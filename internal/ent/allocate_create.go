@@ -141,20 +141,6 @@ func (ac *AllocateCreate) SetNillableStoreID(u *uint64) *AllocateCreate {
 	return ac
 }
 
-// SetEbikeID sets the "ebike_id" field.
-func (ac *AllocateCreate) SetEbikeID(u uint64) *AllocateCreate {
-	ac.mutation.SetEbikeID(u)
-	return ac
-}
-
-// SetNillableEbikeID sets the "ebike_id" field if the given value is not nil.
-func (ac *AllocateCreate) SetNillableEbikeID(u *uint64) *AllocateCreate {
-	if u != nil {
-		ac.SetEbikeID(*u)
-	}
-	return ac
-}
-
 // SetBrandID sets the "brand_id" field.
 func (ac *AllocateCreate) SetBrandID(u uint64) *AllocateCreate {
 	ac.mutation.SetBrandID(u)
@@ -221,6 +207,20 @@ func (ac *AllocateCreate) SetModel(s string) *AllocateCreate {
 	return ac
 }
 
+// SetEbikeID sets the "ebike_id" field.
+func (ac *AllocateCreate) SetEbikeID(u uint64) *AllocateCreate {
+	ac.mutation.SetEbikeID(u)
+	return ac
+}
+
+// SetNillableEbikeID sets the "ebike_id" field if the given value is not nil.
+func (ac *AllocateCreate) SetNillableEbikeID(u *uint64) *AllocateCreate {
+	if u != nil {
+		ac.SetEbikeID(*u)
+	}
+	return ac
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (ac *AllocateCreate) SetRider(r *Rider) *AllocateCreate {
 	return ac.SetRiderID(r.ID)
@@ -244,11 +244,6 @@ func (ac *AllocateCreate) SetCabinet(c *Cabinet) *AllocateCreate {
 // SetStore sets the "store" edge to the Store entity.
 func (ac *AllocateCreate) SetStore(s *Store) *AllocateCreate {
 	return ac.SetStoreID(s.ID)
-}
-
-// SetEbike sets the "ebike" edge to the Ebike entity.
-func (ac *AllocateCreate) SetEbike(e *Ebike) *AllocateCreate {
-	return ac.SetEbikeID(e.ID)
 }
 
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
@@ -283,6 +278,11 @@ func (ac *AllocateCreate) SetNillableContractID(id *uint64) *AllocateCreate {
 // SetContract sets the "contract" edge to the Contract entity.
 func (ac *AllocateCreate) SetContract(c *Contract) *AllocateCreate {
 	return ac.SetContractID(c.ID)
+}
+
+// SetEbike sets the "ebike" edge to the Ebike entity.
+func (ac *AllocateCreate) SetEbike(e *Ebike) *AllocateCreate {
+	return ac.SetEbikeID(e.ID)
 }
 
 // Mutation returns the AllocateMutation object of the builder.
@@ -518,23 +518,6 @@ func (ac *AllocateCreate) createSpec() (*Allocate, *sqlgraph.CreateSpec) {
 		_node.StoreID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := ac.mutation.EbikeIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   allocate.EbikeTable,
-			Columns: []string{allocate.EbikeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(ebike.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.EbikeID = &nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
 	if nodes := ac.mutation.BrandIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -600,6 +583,23 @@ func (ac *AllocateCreate) createSpec() (*Allocate, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ac.mutation.EbikeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   allocate.EbikeTable,
+			Columns: []string{allocate.EbikeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ebike.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.EbikeID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -786,24 +786,6 @@ func (u *AllocateUpsert) ClearStoreID() *AllocateUpsert {
 	return u
 }
 
-// SetEbikeID sets the "ebike_id" field.
-func (u *AllocateUpsert) SetEbikeID(v uint64) *AllocateUpsert {
-	u.Set(allocate.FieldEbikeID, v)
-	return u
-}
-
-// UpdateEbikeID sets the "ebike_id" field to the value that was provided on create.
-func (u *AllocateUpsert) UpdateEbikeID() *AllocateUpsert {
-	u.SetExcluded(allocate.FieldEbikeID)
-	return u
-}
-
-// ClearEbikeID clears the value of the "ebike_id" field.
-func (u *AllocateUpsert) ClearEbikeID() *AllocateUpsert {
-	u.SetNull(allocate.FieldEbikeID)
-	return u
-}
-
 // SetBrandID sets the "brand_id" field.
 func (u *AllocateUpsert) SetBrandID(v uint64) *AllocateUpsert {
 	u.Set(allocate.FieldBrandID, v)
@@ -909,6 +891,24 @@ func (u *AllocateUpsert) SetModel(v string) *AllocateUpsert {
 // UpdateModel sets the "model" field to the value that was provided on create.
 func (u *AllocateUpsert) UpdateModel() *AllocateUpsert {
 	u.SetExcluded(allocate.FieldModel)
+	return u
+}
+
+// SetEbikeID sets the "ebike_id" field.
+func (u *AllocateUpsert) SetEbikeID(v uint64) *AllocateUpsert {
+	u.Set(allocate.FieldEbikeID, v)
+	return u
+}
+
+// UpdateEbikeID sets the "ebike_id" field to the value that was provided on create.
+func (u *AllocateUpsert) UpdateEbikeID() *AllocateUpsert {
+	u.SetExcluded(allocate.FieldEbikeID)
+	return u
+}
+
+// ClearEbikeID clears the value of the "ebike_id" field.
+func (u *AllocateUpsert) ClearEbikeID() *AllocateUpsert {
+	u.SetNull(allocate.FieldEbikeID)
 	return u
 }
 
@@ -1114,27 +1114,6 @@ func (u *AllocateUpsertOne) ClearStoreID() *AllocateUpsertOne {
 	})
 }
 
-// SetEbikeID sets the "ebike_id" field.
-func (u *AllocateUpsertOne) SetEbikeID(v uint64) *AllocateUpsertOne {
-	return u.Update(func(s *AllocateUpsert) {
-		s.SetEbikeID(v)
-	})
-}
-
-// UpdateEbikeID sets the "ebike_id" field to the value that was provided on create.
-func (u *AllocateUpsertOne) UpdateEbikeID() *AllocateUpsertOne {
-	return u.Update(func(s *AllocateUpsert) {
-		s.UpdateEbikeID()
-	})
-}
-
-// ClearEbikeID clears the value of the "ebike_id" field.
-func (u *AllocateUpsertOne) ClearEbikeID() *AllocateUpsertOne {
-	return u.Update(func(s *AllocateUpsert) {
-		s.ClearEbikeID()
-	})
-}
-
 // SetBrandID sets the "brand_id" field.
 func (u *AllocateUpsertOne) SetBrandID(v uint64) *AllocateUpsertOne {
 	return u.Update(func(s *AllocateUpsert) {
@@ -1258,6 +1237,27 @@ func (u *AllocateUpsertOne) SetModel(v string) *AllocateUpsertOne {
 func (u *AllocateUpsertOne) UpdateModel() *AllocateUpsertOne {
 	return u.Update(func(s *AllocateUpsert) {
 		s.UpdateModel()
+	})
+}
+
+// SetEbikeID sets the "ebike_id" field.
+func (u *AllocateUpsertOne) SetEbikeID(v uint64) *AllocateUpsertOne {
+	return u.Update(func(s *AllocateUpsert) {
+		s.SetEbikeID(v)
+	})
+}
+
+// UpdateEbikeID sets the "ebike_id" field to the value that was provided on create.
+func (u *AllocateUpsertOne) UpdateEbikeID() *AllocateUpsertOne {
+	return u.Update(func(s *AllocateUpsert) {
+		s.UpdateEbikeID()
+	})
+}
+
+// ClearEbikeID clears the value of the "ebike_id" field.
+func (u *AllocateUpsertOne) ClearEbikeID() *AllocateUpsertOne {
+	return u.Update(func(s *AllocateUpsert) {
+		s.ClearEbikeID()
 	})
 }
 
@@ -1625,27 +1625,6 @@ func (u *AllocateUpsertBulk) ClearStoreID() *AllocateUpsertBulk {
 	})
 }
 
-// SetEbikeID sets the "ebike_id" field.
-func (u *AllocateUpsertBulk) SetEbikeID(v uint64) *AllocateUpsertBulk {
-	return u.Update(func(s *AllocateUpsert) {
-		s.SetEbikeID(v)
-	})
-}
-
-// UpdateEbikeID sets the "ebike_id" field to the value that was provided on create.
-func (u *AllocateUpsertBulk) UpdateEbikeID() *AllocateUpsertBulk {
-	return u.Update(func(s *AllocateUpsert) {
-		s.UpdateEbikeID()
-	})
-}
-
-// ClearEbikeID clears the value of the "ebike_id" field.
-func (u *AllocateUpsertBulk) ClearEbikeID() *AllocateUpsertBulk {
-	return u.Update(func(s *AllocateUpsert) {
-		s.ClearEbikeID()
-	})
-}
-
 // SetBrandID sets the "brand_id" field.
 func (u *AllocateUpsertBulk) SetBrandID(v uint64) *AllocateUpsertBulk {
 	return u.Update(func(s *AllocateUpsert) {
@@ -1769,6 +1748,27 @@ func (u *AllocateUpsertBulk) SetModel(v string) *AllocateUpsertBulk {
 func (u *AllocateUpsertBulk) UpdateModel() *AllocateUpsertBulk {
 	return u.Update(func(s *AllocateUpsert) {
 		s.UpdateModel()
+	})
+}
+
+// SetEbikeID sets the "ebike_id" field.
+func (u *AllocateUpsertBulk) SetEbikeID(v uint64) *AllocateUpsertBulk {
+	return u.Update(func(s *AllocateUpsert) {
+		s.SetEbikeID(v)
+	})
+}
+
+// UpdateEbikeID sets the "ebike_id" field to the value that was provided on create.
+func (u *AllocateUpsertBulk) UpdateEbikeID() *AllocateUpsertBulk {
+	return u.Update(func(s *AllocateUpsert) {
+		s.UpdateEbikeID()
+	})
+}
+
+// ClearEbikeID clears the value of the "ebike_id" field.
+func (u *AllocateUpsertBulk) ClearEbikeID() *AllocateUpsertBulk {
+	return u.Update(func(s *AllocateUpsert) {
+		s.ClearEbikeID()
 	})
 }
 

@@ -82,10 +82,10 @@ var (
 		{Name: "employee_id", Type: field.TypeUint64, Nullable: true, Comment: "店员ID"},
 		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true, Comment: "电柜ID"},
 		{Name: "store_id", Type: field.TypeUint64, Nullable: true, Comment: "门店ID"},
-		{Name: "ebike_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "brand_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "battery_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "station_id", Type: field.TypeUint64, Nullable: true, Comment: "站点ID"},
+		{Name: "ebike_id", Type: field.TypeUint64, Nullable: true, Comment: "电车ID"},
 	}
 	// AllocateTable holds the schema information for the "allocate" table.
 	AllocateTable = &schema.Table{
@@ -124,27 +124,27 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "allocate_ebike_ebike",
-				Columns:    []*schema.Column{AllocateColumns[15]},
-				RefColumns: []*schema.Column{EbikeColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
 				Symbol:     "allocate_ebike_brand_brand",
-				Columns:    []*schema.Column{AllocateColumns[16]},
+				Columns:    []*schema.Column{AllocateColumns[15]},
 				RefColumns: []*schema.Column{EbikeBrandColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "allocate_battery_battery",
-				Columns:    []*schema.Column{AllocateColumns[17]},
+				Columns:    []*schema.Column{AllocateColumns[16]},
 				RefColumns: []*schema.Column{BatteryColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "allocate_enterprise_station_station",
-				Columns:    []*schema.Column{AllocateColumns[18]},
+				Columns:    []*schema.Column{AllocateColumns[17]},
 				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "allocate_ebike_allocates",
+				Columns:    []*schema.Column{AllocateColumns[18]},
+				RefColumns: []*schema.Column{EbikeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -175,24 +175,19 @@ var (
 				Columns: []*schema.Column{AllocateColumns[14]},
 			},
 			{
-				Name:    "allocate_ebike_id",
+				Name:    "allocate_brand_id",
 				Unique:  false,
 				Columns: []*schema.Column{AllocateColumns[15]},
 			},
 			{
-				Name:    "allocate_brand_id",
+				Name:    "allocate_battery_id",
 				Unique:  false,
 				Columns: []*schema.Column{AllocateColumns[16]},
 			},
 			{
-				Name:    "allocate_battery_id",
-				Unique:  false,
-				Columns: []*schema.Column{AllocateColumns[17]},
-			},
-			{
 				Name:    "allocate_station_id",
 				Unique:  false,
-				Columns: []*schema.Column{AllocateColumns[18]},
+				Columns: []*schema.Column{AllocateColumns[17]},
 			},
 			{
 				Name:    "allocate_time",
@@ -3647,7 +3642,7 @@ var (
 		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
 		{Name: "sn", Type: field.TypeString, Comment: "调拨编号"},
-		{Name: "type", Type: field.TypeUint8, Comment: "类型 0:调拨 1:领取电池 2:寄存电池 3:结束寄存 4:归还电池", Default: 0},
+		{Name: "type", Type: field.TypeUint8, Comment: "类型 0:调拨 1:骑手激活 2:骑手寄存 3:骑手结束寄存 4:骑手退租", Default: 0},
 		{Name: "name", Type: field.TypeString, Comment: "物资名称"},
 		{Name: "model", Type: field.TypeString, Nullable: true, Comment: "电池型号"},
 		{Name: "num", Type: field.TypeInt, Comment: "物资数量: 正值调入 / 负值调出"},
@@ -4687,10 +4682,10 @@ func init() {
 	AllocateTable.ForeignKeys[2].RefTable = EmployeeTable
 	AllocateTable.ForeignKeys[3].RefTable = CabinetTable
 	AllocateTable.ForeignKeys[4].RefTable = StoreTable
-	AllocateTable.ForeignKeys[5].RefTable = EbikeTable
-	AllocateTable.ForeignKeys[6].RefTable = EbikeBrandTable
-	AllocateTable.ForeignKeys[7].RefTable = BatteryTable
-	AllocateTable.ForeignKeys[8].RefTable = EnterpriseStationTable
+	AllocateTable.ForeignKeys[5].RefTable = EbikeBrandTable
+	AllocateTable.ForeignKeys[6].RefTable = BatteryTable
+	AllocateTable.ForeignKeys[7].RefTable = EnterpriseStationTable
+	AllocateTable.ForeignKeys[8].RefTable = EbikeTable
 	AllocateTable.Annotation = &entsql.Annotation{
 		Table: "allocate",
 	}

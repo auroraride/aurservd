@@ -36,16 +36,34 @@ type AllocateDetail struct {
 	Ebike  *Ebike         `json:"ebike,omitempty"`            // 电车信息
 }
 
-type AllocateCreateReq struct {
+type EmployeeAllocateCreateReq struct {
 	Qrcode      *string `json:"qrcode" validate:"required_without=SubscribeID" trans:"二维码"`
+	SubscribeID *uint64 `json:"subscribeId" validate:"required_without=Qrcode" trans:"订阅ID"`
+
+	EbikeID   *uint64 `json:"ebikeId"`   // 电车ID
+	BatteryID *uint64 `json:"batteryId"` // 电池ID
+}
+
+type AllocateCreateEbikeParam struct {
+	ID      *uint64 // 电车ID
+	Keyword *string // 电车关键词
+}
+
+// Exists 车辆信息是否存在
+func (p AllocateCreateEbikeParam) Exists() bool {
+	return p.ID != nil || p.Keyword != nil
+}
+
+type AllocateCreateParams struct {
 	SubscribeID *uint64 `json:"subscribeId" validate:"required_without=Qrcode" trans:"订阅ID"`
 
 	// 选择激活对象
 	StoreID    *uint64 `swaggerignore:"true"` // 门店ID
 	EmployeeID *uint64 `swaggerignore:"true"` // 店员ID
 
-	EbikeID   *uint64 `json:"ebikeId"`   // 电车ID
 	BatteryID *uint64 `json:"batteryId"` // 电池ID
+
+	EbikeParam AllocateCreateEbikeParam
 }
 
 type AllocateRiderRes struct {

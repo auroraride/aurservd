@@ -110,7 +110,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 			allocate.FieldEmployeeID:   {Type: field.TypeUint64, Column: allocate.FieldEmployeeID},
 			allocate.FieldCabinetID:    {Type: field.TypeUint64, Column: allocate.FieldCabinetID},
 			allocate.FieldStoreID:      {Type: field.TypeUint64, Column: allocate.FieldStoreID},
-			allocate.FieldEbikeID:      {Type: field.TypeUint64, Column: allocate.FieldEbikeID},
 			allocate.FieldBrandID:      {Type: field.TypeUint64, Column: allocate.FieldBrandID},
 			allocate.FieldBatteryID:    {Type: field.TypeUint64, Column: allocate.FieldBatteryID},
 			allocate.FieldStationID:    {Type: field.TypeUint64, Column: allocate.FieldStationID},
@@ -118,6 +117,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			allocate.FieldStatus:       {Type: field.TypeUint8, Column: allocate.FieldStatus},
 			allocate.FieldTime:         {Type: field.TypeTime, Column: allocate.FieldTime},
 			allocate.FieldModel:        {Type: field.TypeString, Column: allocate.FieldModel},
+			allocate.FieldEbikeID:      {Type: field.TypeUint64, Column: allocate.FieldEbikeID},
 		},
 	}
 	graph.Nodes[2] = &sqlgraph.Node{
@@ -1662,18 +1662,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Store",
 	)
 	graph.MustAddE(
-		"ebike",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   allocate.EbikeTable,
-			Columns: []string{allocate.EbikeColumn},
-			Bidi:    false,
-		},
-		"Allocate",
-		"Ebike",
-	)
-	graph.MustAddE(
 		"brand",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1720,6 +1708,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Allocate",
 		"Contract",
+	)
+	graph.MustAddE(
+		"ebike",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   allocate.EbikeTable,
+			Columns: []string{allocate.EbikeColumn},
+			Bidi:    false,
+		},
+		"Allocate",
+		"Ebike",
 	)
 	graph.MustAddE(
 		"store",
@@ -2620,6 +2620,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Ebike",
 		"EnterpriseStation",
+	)
+	graph.MustAddE(
+		"allocates",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   ebike.AllocatesTable,
+			Columns: []string{ebike.AllocatesColumn},
+			Bidi:    false,
+		},
+		"Ebike",
+		"Allocate",
 	)
 	graph.MustAddE(
 		"city",
@@ -4813,11 +4825,6 @@ func (f *AllocateFilter) WhereStoreID(p entql.Uint64P) {
 	f.Where(p.Field(allocate.FieldStoreID))
 }
 
-// WhereEbikeID applies the entql uint64 predicate on the ebike_id field.
-func (f *AllocateFilter) WhereEbikeID(p entql.Uint64P) {
-	f.Where(p.Field(allocate.FieldEbikeID))
-}
-
 // WhereBrandID applies the entql uint64 predicate on the brand_id field.
 func (f *AllocateFilter) WhereBrandID(p entql.Uint64P) {
 	f.Where(p.Field(allocate.FieldBrandID))
@@ -4851,6 +4858,11 @@ func (f *AllocateFilter) WhereTime(p entql.TimeP) {
 // WhereModel applies the entql string predicate on the model field.
 func (f *AllocateFilter) WhereModel(p entql.StringP) {
 	f.Where(p.Field(allocate.FieldModel))
+}
+
+// WhereEbikeID applies the entql uint64 predicate on the ebike_id field.
+func (f *AllocateFilter) WhereEbikeID(p entql.Uint64P) {
+	f.Where(p.Field(allocate.FieldEbikeID))
 }
 
 // WhereHasRider applies a predicate to check if query has an edge rider.
@@ -4923,20 +4935,6 @@ func (f *AllocateFilter) WhereHasStoreWith(preds ...predicate.Store) {
 	})))
 }
 
-// WhereHasEbike applies a predicate to check if query has an edge ebike.
-func (f *AllocateFilter) WhereHasEbike() {
-	f.Where(entql.HasEdge("ebike"))
-}
-
-// WhereHasEbikeWith applies a predicate to check if query has an edge ebike with a given conditions (other predicates).
-func (f *AllocateFilter) WhereHasEbikeWith(preds ...predicate.Ebike) {
-	f.Where(entql.HasEdgeWith("ebike", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
 // WhereHasBrand applies a predicate to check if query has an edge brand.
 func (f *AllocateFilter) WhereHasBrand() {
 	f.Where(entql.HasEdge("brand"))
@@ -4987,6 +4985,20 @@ func (f *AllocateFilter) WhereHasContract() {
 // WhereHasContractWith applies a predicate to check if query has an edge contract with a given conditions (other predicates).
 func (f *AllocateFilter) WhereHasContractWith(preds ...predicate.Contract) {
 	f.Where(entql.HasEdgeWith("contract", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasEbike applies a predicate to check if query has an edge ebike.
+func (f *AllocateFilter) WhereHasEbike() {
+	f.Where(entql.HasEdge("ebike"))
+}
+
+// WhereHasEbikeWith applies a predicate to check if query has an edge ebike with a given conditions (other predicates).
+func (f *AllocateFilter) WhereHasEbikeWith(preds ...predicate.Ebike) {
+	f.Where(entql.HasEdgeWith("ebike", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -8127,6 +8139,20 @@ func (f *EbikeFilter) WhereHasStation() {
 // WhereHasStationWith applies a predicate to check if query has an edge station with a given conditions (other predicates).
 func (f *EbikeFilter) WhereHasStationWith(preds ...predicate.EnterpriseStation) {
 	f.Where(entql.HasEdgeWith("station", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasAllocates applies a predicate to check if query has an edge allocates.
+func (f *EbikeFilter) WhereHasAllocates() {
+	f.Where(entql.HasEdge("allocates"))
+}
+
+// WhereHasAllocatesWith applies a predicate to check if query has an edge allocates with a given conditions (other predicates).
+func (f *EbikeFilter) WhereHasAllocatesWith(preds ...predicate.Allocate) {
+	f.Where(entql.HasEdgeWith("allocates", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

@@ -16,10 +16,10 @@ const (
 
 const (
 	StockTypeTransfer         uint8 = iota // 调拨 (出库入库)
-	StockTypeRiderActive                   // 骑手激活电池 (出库)
-	StockTypeRiderPause                    // 骑手寄存电池 (入库)
-	StockTypeRiderContinue                 // 骑手结束寄存电池 (出库)
-	StockTypeRiderUnSubscribe              // 骑手归还电池 (入库)
+	StockTypeRiderActive                   // 骑手激活 (出库)
+	StockTypeRiderPause                    // 骑手寄存 (入库)
+	StockTypeRiderContinue                 // 骑手结束寄存 (出库)
+	StockTypeRiderUnSubscribe              // 骑手归还 (入库)
 )
 
 var (

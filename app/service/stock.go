@@ -389,7 +389,8 @@ func (s *stockService) BatteryOverview(req *model.StockOverviewReq) (items []mod
 	return
 }
 
-// RiderBusiness 和骑手交互 电池 / 电车 出入库
+// RiderBusiness 骑手业务 电池 / 电车 出入库
+// 此方法操作库存
 func (s *stockService) RiderBusiness(tx *ent.Tx, req *model.StockBusinessReq) (sk *ent.Stock, err error) {
 	num := model.StockNumberOfRiderBusiness(req.StockType)
 
@@ -1108,6 +1109,7 @@ func (s *stockService) Export(req *model.StockDetailExportReq) model.ExportRes {
 }
 
 // Transfer 调拨物资
+// 此方法操作库存
 func (s *stockService) Transfer(req *model.StockTransferReq) (failed []string) {
 	err := req.Validate()
 	if err != nil {

@@ -68,7 +68,10 @@ func (s *riderAgentService) detail(item *ent.Rider) model.AgentRider {
 	// 获取站点
 	st := item.Edges.Station
 	if st != nil {
-		res.Station = st.Name
+		res.Station = &model.EnterpriseStation{
+			ID:   st.ID,
+			Name: st.Name,
+		}
 	}
 
 	// 获取电池sn
@@ -111,6 +114,24 @@ func (s *riderAgentService) detail(item *ent.Rider) model.AgentRider {
 			// 计算剩余日期
 			if sub.AgentEndAt != nil {
 				res.Remaining = silk.Pointer(tools.NewTime().LastDays(*sub.AgentEndAt, today))
+			}
+		}
+
+		// 查找电车信息
+		if sub.Edges.Brand != nil {
+			res.Ebike = &model.Ebike{Brand: &model.EbikeBrand{
+				ID:    sub.Edges.Brand.ID,
+				Name:  sub.Edges.Brand.Name,
+				Cover: sub.Edges.Brand.Cover,
+			}}
+
+			if sub.Edges.Ebike != nil {
+				bike := sub.Edges.Ebike
+				res.Ebike.ID = bike.ID
+				res.Ebike.SN = bike.Sn
+				res.Ebike.ExFactory = bike.ExFactory
+				res.Ebike.Plate = bike.Plate
+				res.Ebike.Color = bike.Color
 			}
 		}
 	} else {
@@ -202,7 +223,7 @@ func (s *riderAgentService) Detail(req *model.IDParamReq, enterpriseID uint64) m
 	item, _ := s.orm.QueryNotDeleted().
 		Where(rider.EnterpriseID(enterpriseID), rider.ID(req.ID)).
 		WithSubscribes(func(query *ent.SubscribeQuery) {
-			query.Order(ent.Desc(subscribe.FieldCreatedAt)).WithCity()
+			query.Order(ent.Desc(subscribe.FieldCreatedAt)).WithCity().WithBrand().WithEbike()
 		}).
 		WithStation().
 		WithBattery().

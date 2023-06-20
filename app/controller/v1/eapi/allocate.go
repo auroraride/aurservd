@@ -8,10 +8,11 @@ package eapi
 import (
 	"errors"
 
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
-	"github.com/labstack/echo/v4"
 )
 
 type allocate struct{}
@@ -30,7 +31,10 @@ var Allocate = new(allocate)
 // @Success      200  {object}  model.Ebike  "电车信息"
 func (*allocate) UnallocatedEbike(c echo.Context) (err error) {
 	ctx, req := app.EmployeeContextAndBinding[model.KeywordQueryReq](c)
-	return ctx.SendResponse(service.NewAllocate(ctx.Employee).UnallocatedEbikeInfo(req.Keyword))
+	return ctx.SendResponse(service.NewEbike().UnallocatedX(&model.EbikeUnallocatedParams{
+		StoreID: &service.NewEmployee().QueryStoreX(ctx.Employee).ID,
+		Keyword: req.Keyword,
+	}))
 }
 
 // Allocate

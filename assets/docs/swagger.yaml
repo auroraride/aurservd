@@ -503,6 +503,10 @@ definitions:
       date:
         description: 创建日期
         type: string
+      ebikeBrand:
+        allOf:
+        - $ref: '#/definitions/model.Ebike'
+        description: 电车品牌信息
       endAt:
         description: 退租日期
         type: string
@@ -530,8 +534,9 @@ definitions:
         description: 开始日期
         type: string
       station:
-        description: 站点
-        type: string
+        allOf:
+        - $ref: '#/definitions/model.EnterpriseStation'
+        description: 站点信息
       status:
         description: 状态
         type: string
@@ -637,19 +642,6 @@ definitions:
         type: string
       stsToken:
         type: string
-    type: object
-  model.AllocateCreateReq:
-    properties:
-      batteryId:
-        description: 电池ID
-        type: integer
-      ebikeId:
-        description: 电车ID
-        type: integer
-      qrcode:
-        type: string
-      subscribeId:
-        type: integer
     type: object
   model.AllocateDetail:
     properties:
@@ -3631,6 +3623,19 @@ definitions:
         type: integer
     required:
     - remark
+    type: object
+  model.EmployeeAllocateCreateReq:
+    properties:
+      batteryId:
+        description: 电池ID
+        type: integer
+      ebikeId:
+        description: 电车ID
+        type: integer
+      qrcode:
+        type: string
+      subscribeId:
+        type: integer
     type: object
   model.EmployeeCreateReq:
     properties:
@@ -7775,6 +7780,37 @@ paths:
       summary: AA001 电池选择搜索
       tags:
       - '[A]代理接口'
+  /agent/v1/bike/unallocated:
+    get:
+      consumes:
+      - application/json
+      operationId: AgentBikeUnallocated
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - in: query
+        name: keyword
+        required: true
+        type: string
+      - in: query
+        name: stationId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.Ebike'
+            type: array
+      summary: AB003 搜索未分配车辆
+      tags:
+      - '[A]代理接口'
   /agent/v1/bill/historical:
     get:
       consumes:
@@ -9812,7 +9848,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/model.AllocateCreateReq'
+          $ref: '#/definitions/model.EmployeeAllocateCreateReq'
       produces:
       - application/json
       responses:

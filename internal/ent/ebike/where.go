@@ -1036,6 +1036,29 @@ func HasStationWith(preds ...predicate.EnterpriseStation) predicate.Ebike {
 	})
 }
 
+// HasAllocates applies the HasEdge predicate on the "allocates" edge.
+func HasAllocates() predicate.Ebike {
+	return predicate.Ebike(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, AllocatesTable, AllocatesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasAllocatesWith applies the HasEdge predicate on the "allocates" edge with a given conditions (other predicates).
+func HasAllocatesWith(preds ...predicate.Allocate) predicate.Ebike {
+	return predicate.Ebike(func(s *sql.Selector) {
+		step := newAllocatesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Ebike) predicate.Ebike {
 	return predicate.Ebike(func(s *sql.Selector) {

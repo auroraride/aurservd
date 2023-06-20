@@ -49,8 +49,6 @@ type Allocate struct {
 	CabinetID *uint64 `json:"cabinet_id,omitempty"`
 	// 门店ID
 	StoreID *uint64 `json:"store_id,omitempty"`
-	// EbikeID holds the value of the "ebike_id" field.
-	EbikeID *uint64 `json:"ebike_id,omitempty"`
 	// BrandID holds the value of the "brand_id" field.
 	BrandID *uint64 `json:"brand_id,omitempty"`
 	// BatteryID holds the value of the "battery_id" field.
@@ -65,6 +63,8 @@ type Allocate struct {
 	Time time.Time `json:"time,omitempty"`
 	// 电池型号
 	Model string `json:"model,omitempty"`
+	// 电车ID
+	EbikeID *uint64 `json:"ebike_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AllocateQuery when eager-loading is set.
 	Edges        AllocateEdges `json:"edges"`
@@ -83,8 +83,6 @@ type AllocateEdges struct {
 	Cabinet *Cabinet `json:"cabinet,omitempty"`
 	// Store holds the value of the store edge.
 	Store *Store `json:"store,omitempty"`
-	// Ebike holds the value of the ebike edge.
-	Ebike *Ebike `json:"ebike,omitempty"`
 	// Brand holds the value of the brand edge.
 	Brand *EbikeBrand `json:"brand,omitempty"`
 	// Battery holds the value of the battery edge.
@@ -93,6 +91,8 @@ type AllocateEdges struct {
 	Station *EnterpriseStation `json:"station,omitempty"`
 	// Contract holds the value of the contract edge.
 	Contract *Contract `json:"contract,omitempty"`
+	// Ebike holds the value of the ebike edge.
+	Ebike *Ebike `json:"ebike,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [10]bool
@@ -163,23 +163,10 @@ func (e AllocateEdges) StoreOrErr() (*Store, error) {
 	return nil, &NotLoadedError{edge: "store"}
 }
 
-// EbikeOrErr returns the Ebike value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e AllocateEdges) EbikeOrErr() (*Ebike, error) {
-	if e.loadedTypes[5] {
-		if e.Ebike == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: ebike.Label}
-		}
-		return e.Ebike, nil
-	}
-	return nil, &NotLoadedError{edge: "ebike"}
-}
-
 // BrandOrErr returns the Brand value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e AllocateEdges) BrandOrErr() (*EbikeBrand, error) {
-	if e.loadedTypes[6] {
+	if e.loadedTypes[5] {
 		if e.Brand == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: ebikebrand.Label}
@@ -192,7 +179,7 @@ func (e AllocateEdges) BrandOrErr() (*EbikeBrand, error) {
 // BatteryOrErr returns the Battery value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e AllocateEdges) BatteryOrErr() (*Battery, error) {
-	if e.loadedTypes[7] {
+	if e.loadedTypes[6] {
 		if e.Battery == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: battery.Label}
@@ -205,7 +192,7 @@ func (e AllocateEdges) BatteryOrErr() (*Battery, error) {
 // StationOrErr returns the Station value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e AllocateEdges) StationOrErr() (*EnterpriseStation, error) {
-	if e.loadedTypes[8] {
+	if e.loadedTypes[7] {
 		if e.Station == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: enterprisestation.Label}
@@ -218,7 +205,7 @@ func (e AllocateEdges) StationOrErr() (*EnterpriseStation, error) {
 // ContractOrErr returns the Contract value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e AllocateEdges) ContractOrErr() (*Contract, error) {
-	if e.loadedTypes[9] {
+	if e.loadedTypes[8] {
 		if e.Contract == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: contract.Label}
@@ -228,6 +215,19 @@ func (e AllocateEdges) ContractOrErr() (*Contract, error) {
 	return nil, &NotLoadedError{edge: "contract"}
 }
 
+// EbikeOrErr returns the Ebike value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AllocateEdges) EbikeOrErr() (*Ebike, error) {
+	if e.loadedTypes[9] {
+		if e.Ebike == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: ebike.Label}
+		}
+		return e.Ebike, nil
+	}
+	return nil, &NotLoadedError{edge: "ebike"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Allocate) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -235,7 +235,7 @@ func (*Allocate) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case allocate.FieldCreator, allocate.FieldLastModifier:
 			values[i] = new([]byte)
-		case allocate.FieldID, allocate.FieldRiderID, allocate.FieldSubscribeID, allocate.FieldEmployeeID, allocate.FieldCabinetID, allocate.FieldStoreID, allocate.FieldEbikeID, allocate.FieldBrandID, allocate.FieldBatteryID, allocate.FieldStationID, allocate.FieldStatus:
+		case allocate.FieldID, allocate.FieldRiderID, allocate.FieldSubscribeID, allocate.FieldEmployeeID, allocate.FieldCabinetID, allocate.FieldStoreID, allocate.FieldBrandID, allocate.FieldBatteryID, allocate.FieldStationID, allocate.FieldStatus, allocate.FieldEbikeID:
 			values[i] = new(sql.NullInt64)
 		case allocate.FieldRemark, allocate.FieldType, allocate.FieldModel:
 			values[i] = new(sql.NullString)
@@ -331,13 +331,6 @@ func (a *Allocate) assignValues(columns []string, values []any) error {
 				a.StoreID = new(uint64)
 				*a.StoreID = uint64(value.Int64)
 			}
-		case allocate.FieldEbikeID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field ebike_id", values[i])
-			} else if value.Valid {
-				a.EbikeID = new(uint64)
-				*a.EbikeID = uint64(value.Int64)
-			}
 		case allocate.FieldBrandID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field brand_id", values[i])
@@ -383,6 +376,13 @@ func (a *Allocate) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				a.Model = value.String
 			}
+		case allocate.FieldEbikeID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field ebike_id", values[i])
+			} else if value.Valid {
+				a.EbikeID = new(uint64)
+				*a.EbikeID = uint64(value.Int64)
+			}
 		default:
 			a.selectValues.Set(columns[i], values[i])
 		}
@@ -421,11 +421,6 @@ func (a *Allocate) QueryStore() *StoreQuery {
 	return NewAllocateClient(a.config).QueryStore(a)
 }
 
-// QueryEbike queries the "ebike" edge of the Allocate entity.
-func (a *Allocate) QueryEbike() *EbikeQuery {
-	return NewAllocateClient(a.config).QueryEbike(a)
-}
-
 // QueryBrand queries the "brand" edge of the Allocate entity.
 func (a *Allocate) QueryBrand() *EbikeBrandQuery {
 	return NewAllocateClient(a.config).QueryBrand(a)
@@ -444,6 +439,11 @@ func (a *Allocate) QueryStation() *EnterpriseStationQuery {
 // QueryContract queries the "contract" edge of the Allocate entity.
 func (a *Allocate) QueryContract() *ContractQuery {
 	return NewAllocateClient(a.config).QueryContract(a)
+}
+
+// QueryEbike queries the "ebike" edge of the Allocate entity.
+func (a *Allocate) QueryEbike() *EbikeQuery {
+	return NewAllocateClient(a.config).QueryEbike(a)
 }
 
 // Update returns a builder for updating this Allocate.
@@ -509,11 +509,6 @@ func (a *Allocate) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	if v := a.EbikeID; v != nil {
-		builder.WriteString("ebike_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
-	builder.WriteString(", ")
 	if v := a.BrandID; v != nil {
 		builder.WriteString("brand_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
@@ -540,6 +535,11 @@ func (a *Allocate) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("model=")
 	builder.WriteString(a.Model)
+	builder.WriteString(", ")
+	if v := a.EbikeID; v != nil {
+		builder.WriteString("ebike_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -36,22 +36,37 @@ func (s *businessEmployeeService) Inactive(qr string) (*model.SubscribeActiveInf
 }
 
 // Active 激活订阅
-func (s *businessEmployeeService) Active(req *model.AllocateCreateReq) (res model.AllocateCreateRes) {
+func (s *businessEmployeeService) Active(em *ent.Employee, req *model.EmployeeAllocateCreateReq) (res model.AllocateCreateRes) {
 	if s.entStore == nil {
 		snag.Panic("当前未上班")
 	}
 
 	// 解析二维码
+	subscribeID := req.SubscribeID
 	if req.SubscribeID == nil {
 		str := strings.ReplaceAll(*req.Qrcode, "SUBSCRIBE:", "")
 		id, _ := strconv.ParseUint(str, 10, 64)
-		req.SubscribeID = silk.UInt64(id)
+		subscribeID = silk.UInt64(id)
 	}
 
-	req.EmployeeID = silk.UInt64(s.entEmployee.ID)
-	req.StoreID = silk.UInt64(s.entStore.ID)
+	if subscribeID == nil {
+		snag.Panic("请选择骑手订阅")
+	}
 
-	return NewAllocate().Create(req)
+	// 获取当前门店
+	st := NewEmployee().QueryStoreX(em)
+	storeID := &st.ID
+	employeeID := &em.ID
+
+	return NewAllocate().Create(&model.AllocateCreateParams{
+		SubscribeID: subscribeID,
+		StoreID:     storeID,
+		EmployeeID:  employeeID,
+		BatteryID:   req.BatteryID,
+		EbikeParam: model.AllocateCreateEbikeParam{
+			ID: req.EbikeID,
+		},
+	})
 }
 
 func (s *businessEmployeeService) UnSubscribe(req *model.UnsubscribeEmployeeReq) {

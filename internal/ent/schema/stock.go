@@ -34,7 +34,7 @@ func (Stock) Fields() []ent.Field {
 	return []ent.Field{
 		field.Uint64("parent_id").Optional().Nillable().Comment("父级"),
 		field.String("sn").Comment("调拨编号"),
-		field.Uint8("type").Default(0).Comment("类型 0:调拨 1:领取电池 2:寄存电池 3:结束寄存 4:归还电池"),
+		field.Uint8("type").Default(0).Comment("类型 0:调拨 1:骑手激活 2:骑手寄存 3:骑手结束寄存 4:骑手退租"),
 		field.Uint64("store_id").Optional().Nillable().Comment("入库至 或 出库自 门店ID"),
 		field.Uint64("cabinet_id").Optional().Nillable().Comment("入库至 或 出库自 电柜ID"),
 		field.Uint64("rider_id").Optional().Nillable().Comment("对应骑手ID"),

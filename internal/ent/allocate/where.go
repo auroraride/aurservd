@@ -95,11 +95,6 @@ func StoreID(v uint64) predicate.Allocate {
 	return predicate.Allocate(sql.FieldEQ(FieldStoreID, v))
 }
 
-// EbikeID applies equality check predicate on the "ebike_id" field. It's identical to EbikeIDEQ.
-func EbikeID(v uint64) predicate.Allocate {
-	return predicate.Allocate(sql.FieldEQ(FieldEbikeID, v))
-}
-
 // BrandID applies equality check predicate on the "brand_id" field. It's identical to BrandIDEQ.
 func BrandID(v uint64) predicate.Allocate {
 	return predicate.Allocate(sql.FieldEQ(FieldBrandID, v))
@@ -128,6 +123,11 @@ func Time(v time.Time) predicate.Allocate {
 // Model applies equality check predicate on the "model" field. It's identical to ModelEQ.
 func Model(v string) predicate.Allocate {
 	return predicate.Allocate(sql.FieldEQ(FieldModel, v))
+}
+
+// EbikeID applies equality check predicate on the "ebike_id" field. It's identical to EbikeIDEQ.
+func EbikeID(v uint64) predicate.Allocate {
+	return predicate.Allocate(sql.FieldEQ(FieldEbikeID, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -455,36 +455,6 @@ func StoreIDNotNil() predicate.Allocate {
 	return predicate.Allocate(sql.FieldNotNull(FieldStoreID))
 }
 
-// EbikeIDEQ applies the EQ predicate on the "ebike_id" field.
-func EbikeIDEQ(v uint64) predicate.Allocate {
-	return predicate.Allocate(sql.FieldEQ(FieldEbikeID, v))
-}
-
-// EbikeIDNEQ applies the NEQ predicate on the "ebike_id" field.
-func EbikeIDNEQ(v uint64) predicate.Allocate {
-	return predicate.Allocate(sql.FieldNEQ(FieldEbikeID, v))
-}
-
-// EbikeIDIn applies the In predicate on the "ebike_id" field.
-func EbikeIDIn(vs ...uint64) predicate.Allocate {
-	return predicate.Allocate(sql.FieldIn(FieldEbikeID, vs...))
-}
-
-// EbikeIDNotIn applies the NotIn predicate on the "ebike_id" field.
-func EbikeIDNotIn(vs ...uint64) predicate.Allocate {
-	return predicate.Allocate(sql.FieldNotIn(FieldEbikeID, vs...))
-}
-
-// EbikeIDIsNil applies the IsNil predicate on the "ebike_id" field.
-func EbikeIDIsNil() predicate.Allocate {
-	return predicate.Allocate(sql.FieldIsNull(FieldEbikeID))
-}
-
-// EbikeIDNotNil applies the NotNil predicate on the "ebike_id" field.
-func EbikeIDNotNil() predicate.Allocate {
-	return predicate.Allocate(sql.FieldNotNull(FieldEbikeID))
-}
-
 // BrandIDEQ applies the EQ predicate on the "brand_id" field.
 func BrandIDEQ(v uint64) predicate.Allocate {
 	return predicate.Allocate(sql.FieldEQ(FieldBrandID, v))
@@ -740,6 +710,36 @@ func ModelContainsFold(v string) predicate.Allocate {
 	return predicate.Allocate(sql.FieldContainsFold(FieldModel, v))
 }
 
+// EbikeIDEQ applies the EQ predicate on the "ebike_id" field.
+func EbikeIDEQ(v uint64) predicate.Allocate {
+	return predicate.Allocate(sql.FieldEQ(FieldEbikeID, v))
+}
+
+// EbikeIDNEQ applies the NEQ predicate on the "ebike_id" field.
+func EbikeIDNEQ(v uint64) predicate.Allocate {
+	return predicate.Allocate(sql.FieldNEQ(FieldEbikeID, v))
+}
+
+// EbikeIDIn applies the In predicate on the "ebike_id" field.
+func EbikeIDIn(vs ...uint64) predicate.Allocate {
+	return predicate.Allocate(sql.FieldIn(FieldEbikeID, vs...))
+}
+
+// EbikeIDNotIn applies the NotIn predicate on the "ebike_id" field.
+func EbikeIDNotIn(vs ...uint64) predicate.Allocate {
+	return predicate.Allocate(sql.FieldNotIn(FieldEbikeID, vs...))
+}
+
+// EbikeIDIsNil applies the IsNil predicate on the "ebike_id" field.
+func EbikeIDIsNil() predicate.Allocate {
+	return predicate.Allocate(sql.FieldIsNull(FieldEbikeID))
+}
+
+// EbikeIDNotNil applies the NotNil predicate on the "ebike_id" field.
+func EbikeIDNotNil() predicate.Allocate {
+	return predicate.Allocate(sql.FieldNotNull(FieldEbikeID))
+}
+
 // HasRider applies the HasEdge predicate on the "rider" edge.
 func HasRider() predicate.Allocate {
 	return predicate.Allocate(func(s *sql.Selector) {
@@ -855,29 +855,6 @@ func HasStoreWith(preds ...predicate.Store) predicate.Allocate {
 	})
 }
 
-// HasEbike applies the HasEdge predicate on the "ebike" edge.
-func HasEbike() predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, EbikeTable, EbikeColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasEbikeWith applies the HasEdge predicate on the "ebike" edge with a given conditions (other predicates).
-func HasEbikeWith(preds ...predicate.Ebike) predicate.Allocate {
-	return predicate.Allocate(func(s *sql.Selector) {
-		step := newEbikeStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
 // HasBrand applies the HasEdge predicate on the "brand" edge.
 func HasBrand() predicate.Allocate {
 	return predicate.Allocate(func(s *sql.Selector) {
@@ -962,6 +939,29 @@ func HasContract() predicate.Allocate {
 func HasContractWith(preds ...predicate.Contract) predicate.Allocate {
 	return predicate.Allocate(func(s *sql.Selector) {
 		step := newContractStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasEbike applies the HasEdge predicate on the "ebike" edge.
+func HasEbike() predicate.Allocate {
+	return predicate.Allocate(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, EbikeTable, EbikeColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasEbikeWith applies the HasEdge predicate on the "ebike" edge with a given conditions (other predicates).
+func HasEbikeWith(preds ...predicate.Ebike) predicate.Allocate {
+	return predicate.Allocate(func(s *sql.Selector) {
+		step := newEbikeStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

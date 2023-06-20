@@ -101,6 +101,53 @@ const docTemplate = `{
                 }
             }
         },
+        "/agent/v1/bike/unallocated": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "AB003 搜索未分配车辆",
+                "operationId": "AgentBikeUnallocated",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "keyword",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "name": "stationId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.Ebike"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/agent/v1/bill/historical": {
             "get": {
                 "consumes": [
@@ -3222,7 +3269,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.AllocateCreateReq"
+                            "$ref": "#/definitions/model.EmployeeAllocateCreateReq"
                         }
                     }
                 ],
@@ -16939,6 +16986,14 @@ const docTemplate = `{
                     "description": "创建日期",
                     "type": "string"
                 },
+                "ebikeBrand": {
+                    "description": "电车品牌信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Ebike"
+                        }
+                    ]
+                },
                 "endAt": {
                     "description": "退租日期",
                     "type": "string"
@@ -16975,8 +17030,12 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "station": {
-                    "description": "站点",
-                    "type": "string"
+                    "description": "站点信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EnterpriseStation"
+                        }
+                    ]
                 },
                 "status": {
                     "description": "状态",
@@ -17127,25 +17186,6 @@ const docTemplate = `{
                 },
                 "stsToken": {
                     "type": "string"
-                }
-            }
-        },
-        "model.AllocateCreateReq": {
-            "type": "object",
-            "properties": {
-                "batteryId": {
-                    "description": "电池ID",
-                    "type": "integer"
-                },
-                "ebikeId": {
-                    "description": "电车ID",
-                    "type": "integer"
-                },
-                "qrcode": {
-                    "type": "string"
-                },
-                "subscribeId": {
-                    "type": "integer"
                 }
             }
         },
@@ -21456,6 +21496,25 @@ const docTemplate = `{
                 },
                 "storeId": {
                     "description": "门店ID",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.EmployeeAllocateCreateReq": {
+            "type": "object",
+            "properties": {
+                "batteryId": {
+                    "description": "电池ID",
+                    "type": "integer"
+                },
+                "ebikeId": {
+                    "description": "电车ID",
+                    "type": "integer"
+                },
+                "qrcode": {
+                    "type": "string"
+                },
+                "subscribeId": {
                     "type": "integer"
                 }
             }

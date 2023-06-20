@@ -78,9 +78,11 @@ type EbikeEdges struct {
 	Enterprise *Enterprise `json:"enterprise,omitempty"`
 	// Station holds the value of the station edge.
 	Station *EnterpriseStation `json:"station,omitempty"`
+	// Allocates holds the value of the allocates edge.
+	Allocates []*Allocate `json:"allocates,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [6]bool
 }
 
 // BrandOrErr returns the Brand value or an error if the edge
@@ -146,6 +148,15 @@ func (e EbikeEdges) StationOrErr() (*EnterpriseStation, error) {
 		return e.Station, nil
 	}
 	return nil, &NotLoadedError{edge: "station"}
+}
+
+// AllocatesOrErr returns the Allocates value or an error if the edge
+// was not loaded in eager-loading.
+func (e EbikeEdges) AllocatesOrErr() ([]*Allocate, error) {
+	if e.loadedTypes[5] {
+		return e.Allocates, nil
+	}
+	return nil, &NotLoadedError{edge: "allocates"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -341,6 +352,11 @@ func (e *Ebike) QueryEnterprise() *EnterpriseQuery {
 // QueryStation queries the "station" edge of the Ebike entity.
 func (e *Ebike) QueryStation() *EnterpriseStationQuery {
 	return NewEbikeClient(e.config).QueryStation(e)
+}
+
+// QueryAllocates queries the "allocates" edge of the Ebike entity.
+func (e *Ebike) QueryAllocates() *AllocateQuery {
+	return NewEbikeClient(e.config).QueryAllocates(e)
 }
 
 // Update returns a builder for updating this Ebike.
