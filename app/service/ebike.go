@@ -301,9 +301,24 @@ func (s *ebikeService) Detail(bike *ent.Ebike, brand *ent.EbikeBrand) *model.Ebi
 	return res
 }
 
-// Unallocated 获取未分配车辆信息
-func (s *ebikeService) Unallocated(params *model.EbikeUnallocatedParams) *model.Ebike {
-	q := s.AllocatableBaseFilter()
+func (s *ebikeService) UnallocatedX(params *model.EbikeUnallocatedParams) *model.Ebike {
+	bikes := s.SearchUnallocated(params)
+	if len(bikes) > 0 {
+		snag.Panic("存在多个车辆, 请缩小查询范围")
+	}
+	return bikes[0]
+}
+
+// SearchUnallocated 获取未分配车辆信息
+func (s *ebikeService) SearchUnallocated(params *model.EbikeUnallocatedParams) (res []*model.Ebike) {
+	q := s.AllocatableBaseFilter().
+		Where(
+			// 关联查询电车当前未被分配
+			ebike.Not(ebike.HasAllocatesWith(
+				allocate.Status(model.AllocateStatusPending.Value()),
+				allocate.TimeGTE(carbon.Now().SubSeconds(model.AllocateExpiration).Carbon2Time()),
+			)),
+		)
 
 	if (params.ID == nil && params.Keyword == nil) || (params.ID != nil && params.Keyword != nil) {
 		snag.Panic("参数错误")
@@ -332,30 +347,34 @@ func (s *ebikeService) Unallocated(params *model.EbikeUnallocatedParams) *model.
 	}
 
 	// 查找电车
-	bike, _ := q.WithBrand().First(s.ctx)
-	if bike == nil {
-		snag.Panic("未找到可分配电车")
+	bikes, _ := q.WithBrand().All(s.ctx)
+	// if len(bikes) == 0 {
+	// 	snag.Panic("未找到可分配电车")
+	// }
+
+	res = make([]*model.Ebike, len(bikes))
+	for i, bike := range bikes {
+		brand := bike.Edges.Brand
+		res[i] = &model.Ebike{
+			EbikeInfo: model.EbikeInfo{
+				ID:        bike.ID,
+				SN:        bike.Sn,
+				ExFactory: bike.ExFactory,
+				Plate:     bike.Plate,
+				Color:     bike.Color,
+			},
+			Brand: &model.EbikeBrand{
+				ID:    brand.ID,
+				Name:  brand.Name,
+				Cover: brand.Cover,
+			},
+		}
 	}
 
 	// 查询是否已被分配
-	s.IsAllocatableX(bike.ID)
+	// s.IsAllocatableX(bike.ID)
 
-	brand := bike.Edges.Brand
-
-	return &model.Ebike{
-		EbikeInfo: model.EbikeInfo{
-			ID:        bike.ID,
-			SN:        bike.Sn,
-			ExFactory: bike.ExFactory,
-			Plate:     bike.Plate,
-			Color:     bike.Color,
-		},
-		Brand: &model.EbikeBrand{
-			ID:    brand.ID,
-			Name:  brand.Name,
-			Cover: brand.Cover,
-		},
-	}
+	return
 }
 
 // Bind TODO 解耦: 绑定骑手

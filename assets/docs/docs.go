@@ -138,7 +138,10 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.Ebike"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.Ebike"
+                            }
                         }
                     }
                 }

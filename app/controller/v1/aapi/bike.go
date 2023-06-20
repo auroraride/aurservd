@@ -26,11 +26,11 @@ var Bike = new(bike)
 // @Produce      json
 // @Param        X-Agent-Token  header  string  true  "代理校验token"
 // @Param        query  query  model.EbikeAgentSearchReq  true  "请求参数"
-// @Success      200  {object}  model.Ebike  "请求成功"
+// @Success      200  {object}  []model.Ebike  "请求成功"
 func (*bike) Unallocated(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.EbikeAgentSearchReq](c)
 	// TODO 二级代理校验站点权限
-	return ctx.SendResponse(service.NewEbike().Unallocated(&model.EbikeUnallocatedParams{
+	return ctx.SendResponse(service.NewEbike().SearchUnallocated(&model.EbikeUnallocatedParams{
 		Keyword:   req.Keyword,
 		StationID: req.StationID,
 	}))

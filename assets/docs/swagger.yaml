@@ -7803,7 +7803,9 @@ paths:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/model.Ebike'
+            items:
+              $ref: '#/definitions/model.Ebike'
+            type: array
       summary: AB003 搜索未分配车辆
       tags:
       - '[A]代理接口'

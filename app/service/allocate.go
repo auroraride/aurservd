@@ -214,7 +214,7 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 		}
 
 		// 查找电车
-		bike := NewEbike().Unallocated(&model.EbikeUnallocatedParams{
+		bike := NewEbike().UnallocatedX(&model.EbikeUnallocatedParams{
 			ID:        params.EbikeParam.ID,
 			StoreID:   params.StoreID,
 			StationID: sub.StationID,

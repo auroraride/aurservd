@@ -1139,8 +1139,6 @@ type AllocateMutation struct {
 	clearedcabinet   bool
 	store            *uint64
 	clearedstore     bool
-	ebike            *uint64
-	clearedebike     bool
 	brand            *uint64
 	clearedbrand     bool
 	battery          *uint64
@@ -1149,6 +1147,8 @@ type AllocateMutation struct {
 	clearedstation   bool
 	contract         *uint64
 	clearedcontract  bool
+	ebike            *uint64
+	clearedebike     bool
 	done             bool
 	oldValue         func(context.Context) (*Allocate, error)
 	predicates       []predicate.Allocate
@@ -1716,55 +1716,6 @@ func (m *AllocateMutation) ResetStoreID() {
 	delete(m.clearedFields, allocate.FieldStoreID)
 }
 
-// SetEbikeID sets the "ebike_id" field.
-func (m *AllocateMutation) SetEbikeID(u uint64) {
-	m.ebike = &u
-}
-
-// EbikeID returns the value of the "ebike_id" field in the mutation.
-func (m *AllocateMutation) EbikeID() (r uint64, exists bool) {
-	v := m.ebike
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldEbikeID returns the old "ebike_id" field's value of the Allocate entity.
-// If the Allocate object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AllocateMutation) OldEbikeID(ctx context.Context) (v *uint64, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldEbikeID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldEbikeID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldEbikeID: %w", err)
-	}
-	return oldValue.EbikeID, nil
-}
-
-// ClearEbikeID clears the value of the "ebike_id" field.
-func (m *AllocateMutation) ClearEbikeID() {
-	m.ebike = nil
-	m.clearedFields[allocate.FieldEbikeID] = struct{}{}
-}
-
-// EbikeIDCleared returns if the "ebike_id" field was cleared in this mutation.
-func (m *AllocateMutation) EbikeIDCleared() bool {
-	_, ok := m.clearedFields[allocate.FieldEbikeID]
-	return ok
-}
-
-// ResetEbikeID resets all changes to the "ebike_id" field.
-func (m *AllocateMutation) ResetEbikeID() {
-	m.ebike = nil
-	delete(m.clearedFields, allocate.FieldEbikeID)
-}
-
 // SetBrandID sets the "brand_id" field.
 func (m *AllocateMutation) SetBrandID(u uint64) {
 	m.brand = &u
@@ -2076,6 +2027,55 @@ func (m *AllocateMutation) ResetModel() {
 	m.model = nil
 }
 
+// SetEbikeID sets the "ebike_id" field.
+func (m *AllocateMutation) SetEbikeID(u uint64) {
+	m.ebike = &u
+}
+
+// EbikeID returns the value of the "ebike_id" field in the mutation.
+func (m *AllocateMutation) EbikeID() (r uint64, exists bool) {
+	v := m.ebike
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEbikeID returns the old "ebike_id" field's value of the Allocate entity.
+// If the Allocate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AllocateMutation) OldEbikeID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEbikeID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEbikeID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEbikeID: %w", err)
+	}
+	return oldValue.EbikeID, nil
+}
+
+// ClearEbikeID clears the value of the "ebike_id" field.
+func (m *AllocateMutation) ClearEbikeID() {
+	m.ebike = nil
+	m.clearedFields[allocate.FieldEbikeID] = struct{}{}
+}
+
+// EbikeIDCleared returns if the "ebike_id" field was cleared in this mutation.
+func (m *AllocateMutation) EbikeIDCleared() bool {
+	_, ok := m.clearedFields[allocate.FieldEbikeID]
+	return ok
+}
+
+// ResetEbikeID resets all changes to the "ebike_id" field.
+func (m *AllocateMutation) ResetEbikeID() {
+	m.ebike = nil
+	delete(m.clearedFields, allocate.FieldEbikeID)
+}
+
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *AllocateMutation) ClearRider() {
 	m.clearedrider = true
@@ -2206,32 +2206,6 @@ func (m *AllocateMutation) ResetStore() {
 	m.clearedstore = false
 }
 
-// ClearEbike clears the "ebike" edge to the Ebike entity.
-func (m *AllocateMutation) ClearEbike() {
-	m.clearedebike = true
-}
-
-// EbikeCleared reports if the "ebike" edge to the Ebike entity was cleared.
-func (m *AllocateMutation) EbikeCleared() bool {
-	return m.EbikeIDCleared() || m.clearedebike
-}
-
-// EbikeIDs returns the "ebike" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// EbikeID instead. It exists only for internal usage by the builders.
-func (m *AllocateMutation) EbikeIDs() (ids []uint64) {
-	if id := m.ebike; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetEbike resets all changes to the "ebike" edge.
-func (m *AllocateMutation) ResetEbike() {
-	m.ebike = nil
-	m.clearedebike = false
-}
-
 // ClearBrand clears the "brand" edge to the EbikeBrand entity.
 func (m *AllocateMutation) ClearBrand() {
 	m.clearedbrand = true
@@ -2349,6 +2323,32 @@ func (m *AllocateMutation) ResetContract() {
 	m.clearedcontract = false
 }
 
+// ClearEbike clears the "ebike" edge to the Ebike entity.
+func (m *AllocateMutation) ClearEbike() {
+	m.clearedebike = true
+}
+
+// EbikeCleared reports if the "ebike" edge to the Ebike entity was cleared.
+func (m *AllocateMutation) EbikeCleared() bool {
+	return m.EbikeIDCleared() || m.clearedebike
+}
+
+// EbikeIDs returns the "ebike" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// EbikeID instead. It exists only for internal usage by the builders.
+func (m *AllocateMutation) EbikeIDs() (ids []uint64) {
+	if id := m.ebike; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetEbike resets all changes to the "ebike" edge.
+func (m *AllocateMutation) ResetEbike() {
+	m.ebike = nil
+	m.clearedebike = false
+}
+
 // Where appends a list predicates to the AllocateMutation builder.
 func (m *AllocateMutation) Where(ps ...predicate.Allocate) {
 	m.predicates = append(m.predicates, ps...)
@@ -2414,9 +2414,6 @@ func (m *AllocateMutation) Fields() []string {
 	if m.store != nil {
 		fields = append(fields, allocate.FieldStoreID)
 	}
-	if m.ebike != nil {
-		fields = append(fields, allocate.FieldEbikeID)
-	}
 	if m.brand != nil {
 		fields = append(fields, allocate.FieldBrandID)
 	}
@@ -2437,6 +2434,9 @@ func (m *AllocateMutation) Fields() []string {
 	}
 	if m.model != nil {
 		fields = append(fields, allocate.FieldModel)
+	}
+	if m.ebike != nil {
+		fields = append(fields, allocate.FieldEbikeID)
 	}
 	return fields
 }
@@ -2466,8 +2466,6 @@ func (m *AllocateMutation) Field(name string) (ent.Value, bool) {
 		return m.CabinetID()
 	case allocate.FieldStoreID:
 		return m.StoreID()
-	case allocate.FieldEbikeID:
-		return m.EbikeID()
 	case allocate.FieldBrandID:
 		return m.BrandID()
 	case allocate.FieldBatteryID:
@@ -2482,6 +2480,8 @@ func (m *AllocateMutation) Field(name string) (ent.Value, bool) {
 		return m.Time()
 	case allocate.FieldModel:
 		return m.Model()
+	case allocate.FieldEbikeID:
+		return m.EbikeID()
 	}
 	return nil, false
 }
@@ -2511,8 +2511,6 @@ func (m *AllocateMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldCabinetID(ctx)
 	case allocate.FieldStoreID:
 		return m.OldStoreID(ctx)
-	case allocate.FieldEbikeID:
-		return m.OldEbikeID(ctx)
 	case allocate.FieldBrandID:
 		return m.OldBrandID(ctx)
 	case allocate.FieldBatteryID:
@@ -2527,6 +2525,8 @@ func (m *AllocateMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldTime(ctx)
 	case allocate.FieldModel:
 		return m.OldModel(ctx)
+	case allocate.FieldEbikeID:
+		return m.OldEbikeID(ctx)
 	}
 	return nil, fmt.Errorf("unknown Allocate field %s", name)
 }
@@ -2606,13 +2606,6 @@ func (m *AllocateMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetStoreID(v)
 		return nil
-	case allocate.FieldEbikeID:
-		v, ok := value.(uint64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetEbikeID(v)
-		return nil
 	case allocate.FieldBrandID:
 		v, ok := value.(uint64)
 		if !ok {
@@ -2661,6 +2654,13 @@ func (m *AllocateMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetModel(v)
+		return nil
+	case allocate.FieldEbikeID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEbikeID(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Allocate field %s", name)
@@ -2731,9 +2731,6 @@ func (m *AllocateMutation) ClearedFields() []string {
 	if m.FieldCleared(allocate.FieldStoreID) {
 		fields = append(fields, allocate.FieldStoreID)
 	}
-	if m.FieldCleared(allocate.FieldEbikeID) {
-		fields = append(fields, allocate.FieldEbikeID)
-	}
 	if m.FieldCleared(allocate.FieldBrandID) {
 		fields = append(fields, allocate.FieldBrandID)
 	}
@@ -2742,6 +2739,9 @@ func (m *AllocateMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(allocate.FieldStationID) {
 		fields = append(fields, allocate.FieldStationID)
+	}
+	if m.FieldCleared(allocate.FieldEbikeID) {
+		fields = append(fields, allocate.FieldEbikeID)
 	}
 	return fields
 }
@@ -2781,9 +2781,6 @@ func (m *AllocateMutation) ClearField(name string) error {
 	case allocate.FieldStoreID:
 		m.ClearStoreID()
 		return nil
-	case allocate.FieldEbikeID:
-		m.ClearEbikeID()
-		return nil
 	case allocate.FieldBrandID:
 		m.ClearBrandID()
 		return nil
@@ -2792,6 +2789,9 @@ func (m *AllocateMutation) ClearField(name string) error {
 		return nil
 	case allocate.FieldStationID:
 		m.ClearStationID()
+		return nil
+	case allocate.FieldEbikeID:
+		m.ClearEbikeID()
 		return nil
 	}
 	return fmt.Errorf("unknown Allocate nullable field %s", name)
@@ -2831,9 +2831,6 @@ func (m *AllocateMutation) ResetField(name string) error {
 	case allocate.FieldStoreID:
 		m.ResetStoreID()
 		return nil
-	case allocate.FieldEbikeID:
-		m.ResetEbikeID()
-		return nil
 	case allocate.FieldBrandID:
 		m.ResetBrandID()
 		return nil
@@ -2854,6 +2851,9 @@ func (m *AllocateMutation) ResetField(name string) error {
 		return nil
 	case allocate.FieldModel:
 		m.ResetModel()
+		return nil
+	case allocate.FieldEbikeID:
+		m.ResetEbikeID()
 		return nil
 	}
 	return fmt.Errorf("unknown Allocate field %s", name)
@@ -2877,9 +2877,6 @@ func (m *AllocateMutation) AddedEdges() []string {
 	if m.store != nil {
 		edges = append(edges, allocate.EdgeStore)
 	}
-	if m.ebike != nil {
-		edges = append(edges, allocate.EdgeEbike)
-	}
 	if m.brand != nil {
 		edges = append(edges, allocate.EdgeBrand)
 	}
@@ -2891,6 +2888,9 @@ func (m *AllocateMutation) AddedEdges() []string {
 	}
 	if m.contract != nil {
 		edges = append(edges, allocate.EdgeContract)
+	}
+	if m.ebike != nil {
+		edges = append(edges, allocate.EdgeEbike)
 	}
 	return edges
 }
@@ -2919,10 +2919,6 @@ func (m *AllocateMutation) AddedIDs(name string) []ent.Value {
 		if id := m.store; id != nil {
 			return []ent.Value{*id}
 		}
-	case allocate.EdgeEbike:
-		if id := m.ebike; id != nil {
-			return []ent.Value{*id}
-		}
 	case allocate.EdgeBrand:
 		if id := m.brand; id != nil {
 			return []ent.Value{*id}
@@ -2937,6 +2933,10 @@ func (m *AllocateMutation) AddedIDs(name string) []ent.Value {
 		}
 	case allocate.EdgeContract:
 		if id := m.contract; id != nil {
+			return []ent.Value{*id}
+		}
+	case allocate.EdgeEbike:
+		if id := m.ebike; id != nil {
 			return []ent.Value{*id}
 		}
 	}
@@ -2973,9 +2973,6 @@ func (m *AllocateMutation) ClearedEdges() []string {
 	if m.clearedstore {
 		edges = append(edges, allocate.EdgeStore)
 	}
-	if m.clearedebike {
-		edges = append(edges, allocate.EdgeEbike)
-	}
 	if m.clearedbrand {
 		edges = append(edges, allocate.EdgeBrand)
 	}
@@ -2987,6 +2984,9 @@ func (m *AllocateMutation) ClearedEdges() []string {
 	}
 	if m.clearedcontract {
 		edges = append(edges, allocate.EdgeContract)
+	}
+	if m.clearedebike {
+		edges = append(edges, allocate.EdgeEbike)
 	}
 	return edges
 }
@@ -3005,8 +3005,6 @@ func (m *AllocateMutation) EdgeCleared(name string) bool {
 		return m.clearedcabinet
 	case allocate.EdgeStore:
 		return m.clearedstore
-	case allocate.EdgeEbike:
-		return m.clearedebike
 	case allocate.EdgeBrand:
 		return m.clearedbrand
 	case allocate.EdgeBattery:
@@ -3015,6 +3013,8 @@ func (m *AllocateMutation) EdgeCleared(name string) bool {
 		return m.clearedstation
 	case allocate.EdgeContract:
 		return m.clearedcontract
+	case allocate.EdgeEbike:
+		return m.clearedebike
 	}
 	return false
 }
@@ -3038,9 +3038,6 @@ func (m *AllocateMutation) ClearEdge(name string) error {
 	case allocate.EdgeStore:
 		m.ClearStore()
 		return nil
-	case allocate.EdgeEbike:
-		m.ClearEbike()
-		return nil
 	case allocate.EdgeBrand:
 		m.ClearBrand()
 		return nil
@@ -3052,6 +3049,9 @@ func (m *AllocateMutation) ClearEdge(name string) error {
 		return nil
 	case allocate.EdgeContract:
 		m.ClearContract()
+		return nil
+	case allocate.EdgeEbike:
+		m.ClearEbike()
 		return nil
 	}
 	return fmt.Errorf("unknown Allocate unique edge %s", name)
@@ -3076,9 +3076,6 @@ func (m *AllocateMutation) ResetEdge(name string) error {
 	case allocate.EdgeStore:
 		m.ResetStore()
 		return nil
-	case allocate.EdgeEbike:
-		m.ResetEbike()
-		return nil
 	case allocate.EdgeBrand:
 		m.ResetBrand()
 		return nil
@@ -3090,6 +3087,9 @@ func (m *AllocateMutation) ResetEdge(name string) error {
 		return nil
 	case allocate.EdgeContract:
 		m.ResetContract()
+		return nil
+	case allocate.EdgeEbike:
+		m.ResetEbike()
 		return nil
 	}
 	return fmt.Errorf("unknown Allocate edge %s", name)

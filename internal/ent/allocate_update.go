@@ -156,26 +156,6 @@ func (au *AllocateUpdate) ClearStoreID() *AllocateUpdate {
 	return au
 }
 
-// SetEbikeID sets the "ebike_id" field.
-func (au *AllocateUpdate) SetEbikeID(u uint64) *AllocateUpdate {
-	au.mutation.SetEbikeID(u)
-	return au
-}
-
-// SetNillableEbikeID sets the "ebike_id" field if the given value is not nil.
-func (au *AllocateUpdate) SetNillableEbikeID(u *uint64) *AllocateUpdate {
-	if u != nil {
-		au.SetEbikeID(*u)
-	}
-	return au
-}
-
-// ClearEbikeID clears the value of the "ebike_id" field.
-func (au *AllocateUpdate) ClearEbikeID() *AllocateUpdate {
-	au.mutation.ClearEbikeID()
-	return au
-}
-
 // SetBrandID sets the "brand_id" field.
 func (au *AllocateUpdate) SetBrandID(u uint64) *AllocateUpdate {
 	au.mutation.SetBrandID(u)
@@ -267,6 +247,26 @@ func (au *AllocateUpdate) SetModel(s string) *AllocateUpdate {
 	return au
 }
 
+// SetEbikeID sets the "ebike_id" field.
+func (au *AllocateUpdate) SetEbikeID(u uint64) *AllocateUpdate {
+	au.mutation.SetEbikeID(u)
+	return au
+}
+
+// SetNillableEbikeID sets the "ebike_id" field if the given value is not nil.
+func (au *AllocateUpdate) SetNillableEbikeID(u *uint64) *AllocateUpdate {
+	if u != nil {
+		au.SetEbikeID(*u)
+	}
+	return au
+}
+
+// ClearEbikeID clears the value of the "ebike_id" field.
+func (au *AllocateUpdate) ClearEbikeID() *AllocateUpdate {
+	au.mutation.ClearEbikeID()
+	return au
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (au *AllocateUpdate) SetRider(r *Rider) *AllocateUpdate {
 	return au.SetRiderID(r.ID)
@@ -290,11 +290,6 @@ func (au *AllocateUpdate) SetCabinet(c *Cabinet) *AllocateUpdate {
 // SetStore sets the "store" edge to the Store entity.
 func (au *AllocateUpdate) SetStore(s *Store) *AllocateUpdate {
 	return au.SetStoreID(s.ID)
-}
-
-// SetEbike sets the "ebike" edge to the Ebike entity.
-func (au *AllocateUpdate) SetEbike(e *Ebike) *AllocateUpdate {
-	return au.SetEbikeID(e.ID)
 }
 
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
@@ -329,6 +324,11 @@ func (au *AllocateUpdate) SetNillableContractID(id *uint64) *AllocateUpdate {
 // SetContract sets the "contract" edge to the Contract entity.
 func (au *AllocateUpdate) SetContract(c *Contract) *AllocateUpdate {
 	return au.SetContractID(c.ID)
+}
+
+// SetEbike sets the "ebike" edge to the Ebike entity.
+func (au *AllocateUpdate) SetEbike(e *Ebike) *AllocateUpdate {
+	return au.SetEbikeID(e.ID)
 }
 
 // Mutation returns the AllocateMutation object of the builder.
@@ -366,12 +366,6 @@ func (au *AllocateUpdate) ClearStore() *AllocateUpdate {
 	return au
 }
 
-// ClearEbike clears the "ebike" edge to the Ebike entity.
-func (au *AllocateUpdate) ClearEbike() *AllocateUpdate {
-	au.mutation.ClearEbike()
-	return au
-}
-
 // ClearBrand clears the "brand" edge to the EbikeBrand entity.
 func (au *AllocateUpdate) ClearBrand() *AllocateUpdate {
 	au.mutation.ClearBrand()
@@ -393,6 +387,12 @@ func (au *AllocateUpdate) ClearStation() *AllocateUpdate {
 // ClearContract clears the "contract" edge to the Contract entity.
 func (au *AllocateUpdate) ClearContract() *AllocateUpdate {
 	au.mutation.ClearContract()
+	return au
+}
+
+// ClearEbike clears the "ebike" edge to the Ebike entity.
+func (au *AllocateUpdate) ClearEbike() *AllocateUpdate {
+	au.mutation.ClearEbike()
 	return au
 }
 
@@ -656,35 +656,6 @@ func (au *AllocateUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if au.mutation.EbikeCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   allocate.EbikeTable,
-			Columns: []string{allocate.EbikeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(ebike.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := au.mutation.EbikeIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   allocate.EbikeTable,
-			Columns: []string{allocate.EbikeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(ebike.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if au.mutation.BrandCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -794,6 +765,35 @@ func (au *AllocateUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(contract.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if au.mutation.EbikeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   allocate.EbikeTable,
+			Columns: []string{allocate.EbikeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ebike.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.EbikeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   allocate.EbikeTable,
+			Columns: []string{allocate.EbikeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ebike.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -939,26 +939,6 @@ func (auo *AllocateUpdateOne) ClearStoreID() *AllocateUpdateOne {
 	return auo
 }
 
-// SetEbikeID sets the "ebike_id" field.
-func (auo *AllocateUpdateOne) SetEbikeID(u uint64) *AllocateUpdateOne {
-	auo.mutation.SetEbikeID(u)
-	return auo
-}
-
-// SetNillableEbikeID sets the "ebike_id" field if the given value is not nil.
-func (auo *AllocateUpdateOne) SetNillableEbikeID(u *uint64) *AllocateUpdateOne {
-	if u != nil {
-		auo.SetEbikeID(*u)
-	}
-	return auo
-}
-
-// ClearEbikeID clears the value of the "ebike_id" field.
-func (auo *AllocateUpdateOne) ClearEbikeID() *AllocateUpdateOne {
-	auo.mutation.ClearEbikeID()
-	return auo
-}
-
 // SetBrandID sets the "brand_id" field.
 func (auo *AllocateUpdateOne) SetBrandID(u uint64) *AllocateUpdateOne {
 	auo.mutation.SetBrandID(u)
@@ -1050,6 +1030,26 @@ func (auo *AllocateUpdateOne) SetModel(s string) *AllocateUpdateOne {
 	return auo
 }
 
+// SetEbikeID sets the "ebike_id" field.
+func (auo *AllocateUpdateOne) SetEbikeID(u uint64) *AllocateUpdateOne {
+	auo.mutation.SetEbikeID(u)
+	return auo
+}
+
+// SetNillableEbikeID sets the "ebike_id" field if the given value is not nil.
+func (auo *AllocateUpdateOne) SetNillableEbikeID(u *uint64) *AllocateUpdateOne {
+	if u != nil {
+		auo.SetEbikeID(*u)
+	}
+	return auo
+}
+
+// ClearEbikeID clears the value of the "ebike_id" field.
+func (auo *AllocateUpdateOne) ClearEbikeID() *AllocateUpdateOne {
+	auo.mutation.ClearEbikeID()
+	return auo
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (auo *AllocateUpdateOne) SetRider(r *Rider) *AllocateUpdateOne {
 	return auo.SetRiderID(r.ID)
@@ -1073,11 +1073,6 @@ func (auo *AllocateUpdateOne) SetCabinet(c *Cabinet) *AllocateUpdateOne {
 // SetStore sets the "store" edge to the Store entity.
 func (auo *AllocateUpdateOne) SetStore(s *Store) *AllocateUpdateOne {
 	return auo.SetStoreID(s.ID)
-}
-
-// SetEbike sets the "ebike" edge to the Ebike entity.
-func (auo *AllocateUpdateOne) SetEbike(e *Ebike) *AllocateUpdateOne {
-	return auo.SetEbikeID(e.ID)
 }
 
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
@@ -1112,6 +1107,11 @@ func (auo *AllocateUpdateOne) SetNillableContractID(id *uint64) *AllocateUpdateO
 // SetContract sets the "contract" edge to the Contract entity.
 func (auo *AllocateUpdateOne) SetContract(c *Contract) *AllocateUpdateOne {
 	return auo.SetContractID(c.ID)
+}
+
+// SetEbike sets the "ebike" edge to the Ebike entity.
+func (auo *AllocateUpdateOne) SetEbike(e *Ebike) *AllocateUpdateOne {
+	return auo.SetEbikeID(e.ID)
 }
 
 // Mutation returns the AllocateMutation object of the builder.
@@ -1149,12 +1149,6 @@ func (auo *AllocateUpdateOne) ClearStore() *AllocateUpdateOne {
 	return auo
 }
 
-// ClearEbike clears the "ebike" edge to the Ebike entity.
-func (auo *AllocateUpdateOne) ClearEbike() *AllocateUpdateOne {
-	auo.mutation.ClearEbike()
-	return auo
-}
-
 // ClearBrand clears the "brand" edge to the EbikeBrand entity.
 func (auo *AllocateUpdateOne) ClearBrand() *AllocateUpdateOne {
 	auo.mutation.ClearBrand()
@@ -1176,6 +1170,12 @@ func (auo *AllocateUpdateOne) ClearStation() *AllocateUpdateOne {
 // ClearContract clears the "contract" edge to the Contract entity.
 func (auo *AllocateUpdateOne) ClearContract() *AllocateUpdateOne {
 	auo.mutation.ClearContract()
+	return auo
+}
+
+// ClearEbike clears the "ebike" edge to the Ebike entity.
+func (auo *AllocateUpdateOne) ClearEbike() *AllocateUpdateOne {
+	auo.mutation.ClearEbike()
 	return auo
 }
 
@@ -1469,35 +1469,6 @@ func (auo *AllocateUpdateOne) sqlSave(ctx context.Context) (_node *Allocate, err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if auo.mutation.EbikeCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   allocate.EbikeTable,
-			Columns: []string{allocate.EbikeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(ebike.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := auo.mutation.EbikeIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   allocate.EbikeTable,
-			Columns: []string{allocate.EbikeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(ebike.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if auo.mutation.BrandCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1607,6 +1578,35 @@ func (auo *AllocateUpdateOne) sqlSave(ctx context.Context) (_node *Allocate, err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(contract.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.EbikeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   allocate.EbikeTable,
+			Columns: []string{allocate.EbikeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ebike.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.EbikeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   allocate.EbikeTable,
+			Columns: []string{allocate.EbikeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ebike.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

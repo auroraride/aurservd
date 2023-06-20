@@ -31,7 +31,7 @@ var Allocate = new(allocate)
 // @Success      200  {object}  model.Ebike  "电车信息"
 func (*allocate) UnallocatedEbike(c echo.Context) (err error) {
 	ctx, req := app.EmployeeContextAndBinding[model.KeywordQueryReq](c)
-	return ctx.SendResponse(service.NewEbike().Unallocated(&model.EbikeUnallocatedParams{
+	return ctx.SendResponse(service.NewEbike().UnallocatedX(&model.EbikeUnallocatedParams{
 		StoreID: &service.NewEmployee().QueryStoreX(ctx.Employee).ID,
 		Keyword: req.Keyword,
 	}))

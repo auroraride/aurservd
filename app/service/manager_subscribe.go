@@ -45,7 +45,7 @@ func (s *managerSubscribeService) Active(req *model.ManagerSubscribeActive) {
 
 // ChangeEbike 修改订阅车辆
 func (s *managerSubscribeService) ChangeEbike(req *model.ManagerSubscribeChangeEbike) {
-	bike := NewEbike().Unallocated(&model.EbikeUnallocatedParams{Keyword: req.EbikeKeyword})
+	bike := NewEbike().UnallocatedX(&model.EbikeUnallocatedParams{Keyword: req.EbikeKeyword})
 
 	sub, _ := ent.Database.Subscribe.QueryNotDeleted().
 		Where(

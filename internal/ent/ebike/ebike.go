@@ -107,7 +107,7 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "allocate" package.
 	AllocatesInverseTable = "allocate"
 	// AllocatesColumn is the table column denoting the allocates relation/edge.
-	AllocatesColumn = "ebike_allocates"
+	AllocatesColumn = "ebike_id"
 )
 
 // Columns holds all SQL columns for ebike fields.
