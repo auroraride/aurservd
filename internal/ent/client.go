@@ -7423,6 +7423,22 @@ func (c *OrderClient) QueryEbike(o *Order) *EbikeQuery {
 	return query
 }
 
+// QueryAgent queries the agent edge of a Order.
+func (c *OrderClient) QueryAgent(o *Order) *AgentQuery {
+	query := (&AgentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := o.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(order.Table, order.FieldID, id),
+			sqlgraph.To(agent.Table, agent.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, order.AgentTable, order.AgentColumn),
+		)
+		fromV = sqlgraph.Neighbors(o.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryRider queries the rider edge of a Order.
 func (c *OrderClient) QueryRider(o *Order) *RiderQuery {
 	query := (&RiderClient{config: c.config}).Query()

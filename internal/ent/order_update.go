@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
@@ -178,9 +179,43 @@ func (ou *OrderUpdate) ClearEbikeID() *OrderUpdate {
 	return ou
 }
 
+// SetAgentID sets the "agent_id" field.
+func (ou *OrderUpdate) SetAgentID(u uint64) *OrderUpdate {
+	ou.mutation.SetAgentID(u)
+	return ou
+}
+
+// SetNillableAgentID sets the "agent_id" field if the given value is not nil.
+func (ou *OrderUpdate) SetNillableAgentID(u *uint64) *OrderUpdate {
+	if u != nil {
+		ou.SetAgentID(*u)
+	}
+	return ou
+}
+
+// ClearAgentID clears the value of the "agent_id" field.
+func (ou *OrderUpdate) ClearAgentID() *OrderUpdate {
+	ou.mutation.ClearAgentID()
+	return ou
+}
+
 // SetRiderID sets the "rider_id" field.
 func (ou *OrderUpdate) SetRiderID(u uint64) *OrderUpdate {
 	ou.mutation.SetRiderID(u)
+	return ou
+}
+
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (ou *OrderUpdate) SetNillableRiderID(u *uint64) *OrderUpdate {
+	if u != nil {
+		ou.SetRiderID(*u)
+	}
+	return ou
+}
+
+// ClearRiderID clears the value of the "rider_id" field.
+func (ou *OrderUpdate) ClearRiderID() *OrderUpdate {
+	ou.mutation.ClearRiderID()
 	return ou
 }
 
@@ -423,6 +458,11 @@ func (ou *OrderUpdate) SetEbike(e *Ebike) *OrderUpdate {
 	return ou.SetEbikeID(e.ID)
 }
 
+// SetAgent sets the "agent" edge to the Agent entity.
+func (ou *OrderUpdate) SetAgent(a *Agent) *OrderUpdate {
+	return ou.SetAgentID(a.ID)
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (ou *OrderUpdate) SetRider(r *Rider) *OrderUpdate {
 	return ou.SetRiderID(r.ID)
@@ -554,6 +594,12 @@ func (ou *OrderUpdate) ClearEbike() *OrderUpdate {
 	return ou
 }
 
+// ClearAgent clears the "agent" edge to the Agent entity.
+func (ou *OrderUpdate) ClearAgent() *OrderUpdate {
+	ou.mutation.ClearAgent()
+	return ou
+}
+
 // ClearRider clears the "rider" edge to the Rider entity.
 func (ou *OrderUpdate) ClearRider() *OrderUpdate {
 	ou.mutation.ClearRider()
@@ -674,14 +720,6 @@ func (ou *OrderUpdate) defaults() error {
 	return nil
 }
 
-// check runs all checks and user-defined validators on the builder.
-func (ou *OrderUpdate) check() error {
-	if _, ok := ou.mutation.RiderID(); ou.mutation.RiderCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Order.rider"`)
-	}
-	return nil
-}
-
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (ou *OrderUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *OrderUpdate {
 	ou.modifiers = append(ou.modifiers, modifiers...)
@@ -689,9 +727,6 @@ func (ou *OrderUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *OrderUpd
 }
 
 func (ou *OrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	if err := ou.check(); err != nil {
-		return n, err
-	}
 	_spec := sqlgraph.NewUpdateSpec(order.Table, order.Columns, sqlgraph.NewFieldSpec(order.FieldID, field.TypeUint64))
 	if ps := ou.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -887,6 +922,35 @@ func (ou *OrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(ebike.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ou.mutation.AgentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   order.AgentTable,
+			Columns: []string{order.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ou.mutation.AgentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   order.AgentTable,
+			Columns: []string{order.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -1318,9 +1382,43 @@ func (ouo *OrderUpdateOne) ClearEbikeID() *OrderUpdateOne {
 	return ouo
 }
 
+// SetAgentID sets the "agent_id" field.
+func (ouo *OrderUpdateOne) SetAgentID(u uint64) *OrderUpdateOne {
+	ouo.mutation.SetAgentID(u)
+	return ouo
+}
+
+// SetNillableAgentID sets the "agent_id" field if the given value is not nil.
+func (ouo *OrderUpdateOne) SetNillableAgentID(u *uint64) *OrderUpdateOne {
+	if u != nil {
+		ouo.SetAgentID(*u)
+	}
+	return ouo
+}
+
+// ClearAgentID clears the value of the "agent_id" field.
+func (ouo *OrderUpdateOne) ClearAgentID() *OrderUpdateOne {
+	ouo.mutation.ClearAgentID()
+	return ouo
+}
+
 // SetRiderID sets the "rider_id" field.
 func (ouo *OrderUpdateOne) SetRiderID(u uint64) *OrderUpdateOne {
 	ouo.mutation.SetRiderID(u)
+	return ouo
+}
+
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (ouo *OrderUpdateOne) SetNillableRiderID(u *uint64) *OrderUpdateOne {
+	if u != nil {
+		ouo.SetRiderID(*u)
+	}
+	return ouo
+}
+
+// ClearRiderID clears the value of the "rider_id" field.
+func (ouo *OrderUpdateOne) ClearRiderID() *OrderUpdateOne {
+	ouo.mutation.ClearRiderID()
 	return ouo
 }
 
@@ -1563,6 +1661,11 @@ func (ouo *OrderUpdateOne) SetEbike(e *Ebike) *OrderUpdateOne {
 	return ouo.SetEbikeID(e.ID)
 }
 
+// SetAgent sets the "agent" edge to the Agent entity.
+func (ouo *OrderUpdateOne) SetAgent(a *Agent) *OrderUpdateOne {
+	return ouo.SetAgentID(a.ID)
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (ouo *OrderUpdateOne) SetRider(r *Rider) *OrderUpdateOne {
 	return ouo.SetRiderID(r.ID)
@@ -1691,6 +1794,12 @@ func (ouo *OrderUpdateOne) ClearBrand() *OrderUpdateOne {
 // ClearEbike clears the "ebike" edge to the Ebike entity.
 func (ouo *OrderUpdateOne) ClearEbike() *OrderUpdateOne {
 	ouo.mutation.ClearEbike()
+	return ouo
+}
+
+// ClearAgent clears the "agent" edge to the Agent entity.
+func (ouo *OrderUpdateOne) ClearAgent() *OrderUpdateOne {
+	ouo.mutation.ClearAgent()
 	return ouo
 }
 
@@ -1827,14 +1936,6 @@ func (ouo *OrderUpdateOne) defaults() error {
 	return nil
 }
 
-// check runs all checks and user-defined validators on the builder.
-func (ouo *OrderUpdateOne) check() error {
-	if _, ok := ouo.mutation.RiderID(); ouo.mutation.RiderCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Order.rider"`)
-	}
-	return nil
-}
-
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (ouo *OrderUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *OrderUpdateOne {
 	ouo.modifiers = append(ouo.modifiers, modifiers...)
@@ -1842,9 +1943,6 @@ func (ouo *OrderUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *Orde
 }
 
 func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error) {
-	if err := ouo.check(); err != nil {
-		return _node, err
-	}
 	_spec := sqlgraph.NewUpdateSpec(order.Table, order.Columns, sqlgraph.NewFieldSpec(order.FieldID, field.TypeUint64))
 	id, ok := ouo.mutation.ID()
 	if !ok {
@@ -2057,6 +2155,35 @@ func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(ebike.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ouo.mutation.AgentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   order.AgentTable,
+			Columns: []string{order.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ouo.mutation.AgentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   order.AgentTable,
+			Columns: []string{order.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

@@ -35,6 +35,8 @@ const (
 	FieldBrandID = "brand_id"
 	// FieldEbikeID holds the string denoting the ebike_id field in the database.
 	FieldEbikeID = "ebike_id"
+	// FieldAgentID holds the string denoting the agent_id field in the database.
+	FieldAgentID = "agent_id"
 	// FieldRiderID holds the string denoting the rider_id field in the database.
 	FieldRiderID = "rider_id"
 	// FieldParentID holds the string denoting the parent_id field in the database.
@@ -77,6 +79,8 @@ const (
 	EdgeBrand = "brand"
 	// EdgeEbike holds the string denoting the ebike edge name in mutations.
 	EdgeEbike = "ebike"
+	// EdgeAgent holds the string denoting the agent edge name in mutations.
+	EdgeAgent = "agent"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
 	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
@@ -123,6 +127,13 @@ const (
 	EbikeInverseTable = "ebike"
 	// EbikeColumn is the table column denoting the ebike relation/edge.
 	EbikeColumn = "ebike_id"
+	// AgentTable is the table that holds the agent relation/edge.
+	AgentTable = "order"
+	// AgentInverseTable is the table name for the Agent entity.
+	// It exists in this package in order to avoid circular dependency with the "agent" package.
+	AgentInverseTable = "agent"
+	// AgentColumn is the table column denoting the agent relation/edge.
+	AgentColumn = "agent_id"
 	// RiderTable is the table that holds the rider relation/edge.
 	RiderTable = "order"
 	// RiderInverseTable is the table name for the Rider entity.
@@ -188,6 +199,7 @@ var Columns = []string{
 	FieldCityID,
 	FieldBrandID,
 	FieldEbikeID,
+	FieldAgentID,
 	FieldRiderID,
 	FieldParentID,
 	FieldSubscribeID,
@@ -290,6 +302,11 @@ func ByBrandID(opts ...sql.OrderTermOption) OrderOption {
 // ByEbikeID orders the results by the ebike_id field.
 func ByEbikeID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldEbikeID, opts...).ToFunc()
+}
+
+// ByAgentID orders the results by the agent_id field.
+func ByAgentID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAgentID, opts...).ToFunc()
 }
 
 // ByRiderID orders the results by the rider_id field.
@@ -405,6 +422,13 @@ func ByEbikeField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
+// ByAgentField orders the results by agent field.
+func ByAgentField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newAgentStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByRiderField orders the results by rider field.
 func ByRiderField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -500,6 +524,13 @@ func newEbikeStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(EbikeInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, false, EbikeTable, EbikeColumn),
+	)
+}
+func newAgentStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(AgentInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, AgentTable, AgentColumn),
 	)
 }
 func newRiderStep() *sqlgraph.Step {

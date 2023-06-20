@@ -6,13 +6,14 @@
 package model
 
 const (
-	OrderTypeNewly      uint = iota + 1 // 新签, 需要计算业绩, 当退订时间超出设定时间间隔后视为新签
-	OrderTypeRenewal                    // 续签, 无需计算业绩
-	OrderTypeAgain                      // 重签, 无需计算业绩
-	OrderTypeTransform                  // 更改电池, 相当于续签 无需计算业绩 TODO 更改电池逻辑
-	OrderTypeAssistance                 // 救援
-	OrderTypeFee                        // 滞纳金
-	OrderTypeDeposit                    // 押金
+	OrderTypeNewly           uint = iota + 1 // 新签, 需要计算业绩, 当退订时间超出设定时间间隔后视为新签
+	OrderTypeRenewal                         // 续签, 无需计算业绩
+	OrderTypeAgain                           // 重签, 无需计算业绩
+	OrderTypeTransform                       // 更改电池, 相当于续签 无需计算业绩 TODO 更改电池逻辑
+	OrderTypeAssistance                      // 救援
+	OrderTypeFee                             // 滞纳金
+	OrderTypeDeposit                         // 押金
+	OrderTypeAgentPrepayment                 // 代理充值
 )
 
 const (
@@ -89,6 +90,7 @@ type OrderListFilter struct {
 	Refund     *uint8  `json:"refund,omitempty" query:"refund"`               // 退款查询 0:查询全部 1:查询未申请退款 2:查询已申请退款(包含退款中/已退款/已拒绝)
 	EmployeeID *uint64 `json:"employeeId,omitempty" query:"employeeId"`       // 店员ID筛选
 	Payway     *uint8  `json:"payway,omitempty" query:"payway" enums:"0,1,2"` // 支付方式 0:手动 1:支付宝 2:微信, 不携带此参数为获取全部
+	TradeNo    *string `json:"tradeNo,omitempty" query:"tradeNo"`             // 平台单号
 }
 
 // OrderListReq 订单列表请求
@@ -121,6 +123,14 @@ type OrderStatusRes struct {
 	Paid       bool   `json:"paid"`       // 是否支付
 }
 
+type OrderAgent struct {
+	ID             uint64 `json:"id"`             // 代理ID
+	Name           string `json:"name"`           // 代理姓名
+	Phone          string `json:"phone"`          // 代理电话
+	EnterpriseID   uint64 `json:"enterpriseId"`   // 团签ID
+	EnterpriseName string `json:"enterpriseName"` // 团签名称
+}
+
 // Order 骑手订单
 type Order struct {
 	ID            uint64        `json:"id"`                 // 订单ID
@@ -143,4 +153,5 @@ type Order struct {
 	CouponAmount  float64       `json:"couponAmount"`       // 优惠券抵扣金额
 	Coupons       []CouponRider `json:"coupons,omitempty"`  // 使用的优惠券
 	Ebike         *Ebike        `json:"ebike"`              // 车辆详情
+	Agent         *OrderAgent   `json:"agent"`              // 代理信息
 }

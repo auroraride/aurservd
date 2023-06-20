@@ -6,10 +6,11 @@
 package rapi
 
 import (
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
-	"github.com/labstack/echo/v4"
 )
 
 type order struct{}
@@ -79,8 +80,7 @@ func (*order) List(c echo.Context) (err error) {
 // @Success      200  {object}  model.Order  "请求成功"
 func (*order) Detail(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[model.IDParamReq](c)
-	srv := service.NewRiderOrderWithRider(ctx.Rider)
-	return ctx.SendResponse(srv.Detail(srv.Query(ctx.Rider.ID, req.ID)))
+	return ctx.SendResponse(service.NewOrderWithRider(ctx.Rider).Detail(service.NewRiderOrderWithRider(ctx.Rider).Query(ctx.Rider.ID, req.ID)))
 }
 
 // Status

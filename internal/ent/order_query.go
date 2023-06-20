@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
@@ -36,6 +37,7 @@ type OrderQuery struct {
 	withCity       *CityQuery
 	withBrand      *EbikeBrandQuery
 	withEbike      *EbikeQuery
+	withAgent      *AgentQuery
 	withRider      *RiderQuery
 	withSubscribe  *SubscribeQuery
 	withCommission *CommissionQuery
@@ -162,6 +164,28 @@ func (oq *OrderQuery) QueryEbike() *EbikeQuery {
 			sqlgraph.From(order.Table, order.FieldID, selector),
 			sqlgraph.To(ebike.Table, ebike.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, order.EbikeTable, order.EbikeColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(oq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryAgent chains the current query on the "agent" edge.
+func (oq *OrderQuery) QueryAgent() *AgentQuery {
+	query := (&AgentClient{config: oq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := oq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := oq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(order.Table, order.FieldID, selector),
+			sqlgraph.To(agent.Table, agent.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, order.AgentTable, order.AgentColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(oq.driver.Dialect(), step)
 		return fromU, nil
@@ -541,6 +565,7 @@ func (oq *OrderQuery) Clone() *OrderQuery {
 		withCity:       oq.withCity.Clone(),
 		withBrand:      oq.withBrand.Clone(),
 		withEbike:      oq.withEbike.Clone(),
+		withAgent:      oq.withAgent.Clone(),
 		withRider:      oq.withRider.Clone(),
 		withSubscribe:  oq.withSubscribe.Clone(),
 		withCommission: oq.withCommission.Clone(),
@@ -596,6 +621,17 @@ func (oq *OrderQuery) WithEbike(opts ...func(*EbikeQuery)) *OrderQuery {
 		opt(query)
 	}
 	oq.withEbike = query
+	return oq
+}
+
+// WithAgent tells the query-builder to eager-load the nodes that are connected to
+// the "agent" edge. The optional arguments are used to configure the query builder of the edge.
+func (oq *OrderQuery) WithAgent(opts ...func(*AgentQuery)) *OrderQuery {
+	query := (&AgentClient{config: oq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	oq.withAgent = query
 	return oq
 }
 
@@ -765,11 +801,12 @@ func (oq *OrderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Order,
 	var (
 		nodes       = []*Order{}
 		_spec       = oq.querySpec()
-		loadedTypes = [12]bool{
+		loadedTypes = [13]bool{
 			oq.withPlan != nil,
 			oq.withCity != nil,
 			oq.withBrand != nil,
 			oq.withEbike != nil,
+			oq.withAgent != nil,
 			oq.withRider != nil,
 			oq.withSubscribe != nil,
 			oq.withCommission != nil,
@@ -822,6 +859,12 @@ func (oq *OrderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Order,
 	if query := oq.withEbike; query != nil {
 		if err := oq.loadEbike(ctx, query, nodes, nil,
 			func(n *Order, e *Ebike) { n.Edges.Ebike = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := oq.withAgent; query != nil {
+		if err := oq.loadAgent(ctx, query, nodes, nil,
+			func(n *Order, e *Agent) { n.Edges.Agent = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -999,6 +1042,38 @@ func (oq *OrderQuery) loadEbike(ctx context.Context, query *EbikeQuery, nodes []
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "ebike_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (oq *OrderQuery) loadAgent(ctx context.Context, query *AgentQuery, nodes []*Order, init func(*Order), assign func(*Order, *Agent)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Order)
+	for i := range nodes {
+		if nodes[i].AgentID == nil {
+			continue
+		}
+		fk := *nodes[i].AgentID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(agent.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "agent_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -1281,6 +1356,9 @@ func (oq *OrderQuery) querySpec() *sqlgraph.QuerySpec {
 		if oq.withEbike != nil {
 			_spec.Node.AddColumnOnce(order.FieldEbikeID)
 		}
+		if oq.withAgent != nil {
+			_spec.Node.AddColumnOnce(order.FieldAgentID)
+		}
 		if oq.withRider != nil {
 			_spec.Node.AddColumnOnce(order.FieldRiderID)
 		}
@@ -1362,6 +1440,7 @@ var (
 	OrderQueryWithCity       OrderQueryWith = "City"
 	OrderQueryWithBrand      OrderQueryWith = "Brand"
 	OrderQueryWithEbike      OrderQueryWith = "Ebike"
+	OrderQueryWithAgent      OrderQueryWith = "Agent"
 	OrderQueryWithRider      OrderQueryWith = "Rider"
 	OrderQueryWithSubscribe  OrderQueryWith = "Subscribe"
 	OrderQueryWithCommission OrderQueryWith = "Commission"
@@ -1383,6 +1462,8 @@ func (oq *OrderQuery) With(withEdges ...OrderQueryWith) *OrderQuery {
 			oq.WithBrand()
 		case OrderQueryWithEbike:
 			oq.WithEbike()
+		case OrderQueryWithAgent:
+			oq.WithAgent()
 		case OrderQueryWithRider:
 			oq.WithRider()
 		case OrderQueryWithSubscribe:

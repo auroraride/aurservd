@@ -2882,7 +2882,7 @@ var (
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
 		{Name: "status", Type: field.TypeUint8, Comment: "订单状态 0未支付 1已支付 2申请退款 3已退款", Default: 1},
 		{Name: "payway", Type: field.TypeUint8, Comment: "支付方式 0手动 1支付宝 2微信"},
-		{Name: "type", Type: field.TypeUint, Comment: "订单类型 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金"},
+		{Name: "type", Type: field.TypeUint, Comment: "订单类型 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金 8代理充值"},
 		{Name: "out_trade_no", Type: field.TypeString, Comment: "交易订单号"},
 		{Name: "trade_no", Type: field.TypeString, Comment: "平台订单号"},
 		{Name: "amount", Type: field.TypeFloat64, Comment: "子订单金额(拆分项此条订单)"},
@@ -2898,8 +2898,9 @@ var (
 		{Name: "city_id", Type: field.TypeUint64, Nullable: true, Comment: "城市ID"},
 		{Name: "brand_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "ebike_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "agent_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "parent_id", Type: field.TypeUint64, Nullable: true, Comment: "父订单ID"},
-		{Name: "rider_id", Type: field.TypeUint64, Comment: "骑手ID"},
+		{Name: "rider_id", Type: field.TypeUint64, Nullable: true, Comment: "骑手ID"},
 		{Name: "subscribe_id", Type: field.TypeUint64, Nullable: true, Comment: "所属订阅ID"},
 	}
 	// OrderTable holds the schema information for the "order" table.
@@ -2933,20 +2934,26 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "order_order_children",
+				Symbol:     "order_agent_agent",
 				Columns:    []*schema.Column{OrderColumns[25]},
+				RefColumns: []*schema.Column{AgentColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "order_order_children",
+				Columns:    []*schema.Column{OrderColumns[26]},
 				RefColumns: []*schema.Column{OrderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "order_rider_orders",
-				Columns:    []*schema.Column{OrderColumns[26]},
+				Columns:    []*schema.Column{OrderColumns[27]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "order_subscribe_orders",
-				Columns:    []*schema.Column{OrderColumns[27]},
+				Columns:    []*schema.Column{OrderColumns[28]},
 				RefColumns: []*schema.Column{SubscribeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -2983,14 +2990,19 @@ var (
 				Columns: []*schema.Column{OrderColumns[24]},
 			},
 			{
+				Name:    "order_agent_id",
+				Unique:  false,
+				Columns: []*schema.Column{OrderColumns[25]},
+			},
+			{
 				Name:    "order_rider_id",
 				Unique:  false,
-				Columns: []*schema.Column{OrderColumns[26]},
+				Columns: []*schema.Column{OrderColumns[27]},
 			},
 			{
 				Name:    "order_subscribe_id",
 				Unique:  false,
-				Columns: []*schema.Column{OrderColumns[27]},
+				Columns: []*schema.Column{OrderColumns[28]},
 			},
 			{
 				Name:    "order_trade_no",
@@ -4981,9 +4993,10 @@ func init() {
 	OrderTable.ForeignKeys[1].RefTable = CityTable
 	OrderTable.ForeignKeys[2].RefTable = EbikeBrandTable
 	OrderTable.ForeignKeys[3].RefTable = EbikeTable
-	OrderTable.ForeignKeys[4].RefTable = OrderTable
-	OrderTable.ForeignKeys[5].RefTable = RiderTable
-	OrderTable.ForeignKeys[6].RefTable = SubscribeTable
+	OrderTable.ForeignKeys[4].RefTable = AgentTable
+	OrderTable.ForeignKeys[5].RefTable = OrderTable
+	OrderTable.ForeignKeys[6].RefTable = RiderTable
+	OrderTable.ForeignKeys[7].RefTable = SubscribeTable
 	OrderTable.Annotation = &entsql.Annotation{
 		Table: "order",
 	}
