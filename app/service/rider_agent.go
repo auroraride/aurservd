@@ -68,7 +68,10 @@ func (s *riderAgentService) detail(item *ent.Rider) model.AgentRider {
 	// 获取站点
 	st := item.Edges.Station
 	if st != nil {
-		res.Station = st.Name
+		res.Station = &model.EnterpriseStation{
+			ID:   st.ID,
+			Name: st.Name,
+		}
 	}
 
 	// 获取电池sn

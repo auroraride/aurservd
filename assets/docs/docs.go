@@ -17030,8 +17030,12 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "station": {
-                    "description": "站点",
-                    "type": "string"
+                    "description": "站点信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EnterpriseStation"
+                        }
+                    ]
                 },
                 "status": {
                     "description": "状态",

@@ -32,7 +32,6 @@ type AgentRider struct {
 	Remaining   *int   `json:"remaining,omitempty"`   // 剩余天数
 	City        *City  `json:"city,omitempty"`        // 城市
 	Date        string `json:"date,omitempty"`        // 创建日期
-	Station     string `json:"station,omitempty"`     // 站点
 	EndAt       string `json:"endAt,omitempty"`       // 退租日期
 	StopAt      string `json:"stopAt,omitempty"`      // 到期日期
 	StartAt     string `json:"startAt,omitempty"`     // 开始日期
@@ -43,7 +42,8 @@ type AgentRider struct {
 	IsAuthed    bool   `json:"isAuthed"`              // 是否实名认证 ture已实名 false未实名
 	Intelligent bool   `json:"intelligent"`           // 是否智能套餐
 
-	Ebike *Ebike `json:"ebikeBrand,omitempty"` // 电车品牌信息
+	Station *EnterpriseStation `json:"station,omitempty"`    // 站点信息
+	Ebike   *Ebike             `json:"ebikeBrand,omitempty"` // 电车品牌信息
 }
 
 type AgentRiderLogReq struct {
