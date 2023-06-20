@@ -26,11 +26,10 @@ type BatteryFilter struct {
 	CityID       uint64  `json:"cityId" query:"cityId"`             // 城市
 	Status       *int    `json:"status" query:"status"`             // 状态 0:全部 1:启用(不携带默认为启用) 2:禁用
 	EnterpriseID *uint64 `json:"enterpriseId" query:"enterpriseId"` // 团签ID
-	StationID    *uint64 `json:"stationId" query:"stationId"`       // 站点id
+	StationID    *uint64 `json:"stationId" query:"stationId"`       // 站点ID
 	CabinetName  *string `json:"cabinetName" query:"cabinetName"`   // 电柜名称
 	Keyword      *string `json:"keyword" query:"keyword"`           // 关键词
-	// 归属类型   1:平台 2:代理商
-	OwnerType *uint8 `json:"ownerType" query:"ownerType"`
+	OwnerType    *uint8  `json:"ownerType" query:"ownerType"`       // 归属类型   1:平台 2:代理商
 }
 
 type BatteryListReq struct {

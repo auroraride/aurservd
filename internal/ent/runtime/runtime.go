@@ -55,6 +55,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/schema"
 	"github.com/auroraride/aurservd/internal/ent/setting"
 	"github.com/auroraride/aurservd/internal/ent/stock"
+	"github.com/auroraride/aurservd/internal/ent/stocksummary"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
@@ -1162,6 +1163,44 @@ func init() {
 	stockDescType := stockFields[2].Descriptor()
 	// stock.DefaultType holds the default value on creation for the type field.
 	stock.DefaultType = stockDescType.Default.(uint8)
+	stocksummaryFields := schema.StockSummary{}.Fields()
+	_ = stocksummaryFields
+	// stocksummaryDescDate is the schema descriptor for date field.
+	stocksummaryDescDate := stocksummaryFields[0].Descriptor()
+	// stocksummary.DateValidator is a validator for the "date" field. It is called by the builders before save.
+	stocksummary.DateValidator = stocksummaryDescDate.Validators[0].(func(string) error)
+	// stocksummaryDescBatteryNum is the schema descriptor for battery_num field.
+	stocksummaryDescBatteryNum := stocksummaryFields[1].Descriptor()
+	// stocksummary.DefaultBatteryNum holds the default value on creation for the battery_num field.
+	stocksummary.DefaultBatteryNum = stocksummaryDescBatteryNum.Default.(int)
+	// stocksummaryDescBatteryOutboundNum is the schema descriptor for battery_outbound_num field.
+	stocksummaryDescBatteryOutboundNum := stocksummaryFields[2].Descriptor()
+	// stocksummary.DefaultBatteryOutboundNum holds the default value on creation for the battery_outbound_num field.
+	stocksummary.DefaultBatteryOutboundNum = stocksummaryDescBatteryOutboundNum.Default.(int)
+	// stocksummaryDescBatteryInboundNum is the schema descriptor for battery_inbound_num field.
+	stocksummaryDescBatteryInboundNum := stocksummaryFields[3].Descriptor()
+	// stocksummary.DefaultBatteryInboundNum holds the default value on creation for the battery_inbound_num field.
+	stocksummary.DefaultBatteryInboundNum = stocksummaryDescBatteryInboundNum.Default.(int)
+	// stocksummaryDescBikeNum is the schema descriptor for bike_num field.
+	stocksummaryDescBikeNum := stocksummaryFields[4].Descriptor()
+	// stocksummary.DefaultBikeNum holds the default value on creation for the bike_num field.
+	stocksummary.DefaultBikeNum = stocksummaryDescBikeNum.Default.(int)
+	// stocksummaryDescBikeOutboundNum is the schema descriptor for bike_outbound_num field.
+	stocksummaryDescBikeOutboundNum := stocksummaryFields[5].Descriptor()
+	// stocksummary.DefaultBikeOutboundNum holds the default value on creation for the bike_outbound_num field.
+	stocksummary.DefaultBikeOutboundNum = stocksummaryDescBikeOutboundNum.Default.(int)
+	// stocksummaryDescBikeInboundNum is the schema descriptor for bike_inbound_num field.
+	stocksummaryDescBikeInboundNum := stocksummaryFields[6].Descriptor()
+	// stocksummary.DefaultBikeInboundNum holds the default value on creation for the bike_inbound_num field.
+	stocksummary.DefaultBikeInboundNum = stocksummaryDescBikeInboundNum.Default.(int)
+	// stocksummaryDescCabinetBatteryNum is the schema descriptor for cabinet_battery_num field.
+	stocksummaryDescCabinetBatteryNum := stocksummaryFields[7].Descriptor()
+	// stocksummary.DefaultCabinetBatteryNum holds the default value on creation for the cabinet_battery_num field.
+	stocksummary.DefaultCabinetBatteryNum = stocksummaryDescCabinetBatteryNum.Default.(int)
+	// stocksummaryDescRiderBatteryNum is the schema descriptor for rider_battery_num field.
+	stocksummaryDescRiderBatteryNum := stocksummaryFields[8].Descriptor()
+	// stocksummary.DefaultRiderBatteryNum holds the default value on creation for the rider_battery_num field.
+	stocksummary.DefaultRiderBatteryNum = stocksummaryDescRiderBatteryNum.Default.(int)
 	storeMixin := schema.Store{}.Mixin()
 	storeMixinHooks2 := storeMixin[2].Hooks()
 	store.Hooks[0] = storeMixinHooks2[0]

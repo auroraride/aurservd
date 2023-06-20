@@ -59,6 +59,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/role"
 	"github.com/auroraride/aurservd/internal/ent/setting"
 	"github.com/auroraride/aurservd/internal/ent/stock"
+	"github.com/auroraride/aurservd/internal/ent/stocksummary"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
@@ -172,6 +173,7 @@ func checkColumn(table, column string) error {
 			role.Table:                  role.ValidColumn,
 			setting.Table:               setting.ValidColumn,
 			stock.Table:                 stock.ValidColumn,
+			stocksummary.Table:          stocksummary.ValidColumn,
 			store.Table:                 store.ValidColumn,
 			subscribe.Table:             subscribe.ValidColumn,
 			subscribealter.Table:        subscribealter.ValidColumn,

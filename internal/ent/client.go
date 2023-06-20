@@ -61,6 +61,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/role"
 	"github.com/auroraride/aurservd/internal/ent/setting"
 	"github.com/auroraride/aurservd/internal/ent/stock"
+	"github.com/auroraride/aurservd/internal/ent/stocksummary"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
@@ -170,6 +171,8 @@ type Client struct {
 	Setting *SettingClient
 	// Stock is the client for interacting with the Stock builders.
 	Stock *StockClient
+	// StockSummary is the client for interacting with the StockSummary builders.
+	StockSummary *StockSummaryClient
 	// Store is the client for interacting with the Store builders.
 	Store *StoreClient
 	// Subscribe is the client for interacting with the Subscribe builders.
@@ -242,6 +245,7 @@ func (c *Client) init() {
 	c.Role = NewRoleClient(c.config)
 	c.Setting = NewSettingClient(c.config)
 	c.Stock = NewStockClient(c.config)
+	c.StockSummary = NewStockSummaryClient(c.config)
 	c.Store = NewStoreClient(c.config)
 	c.Subscribe = NewSubscribeClient(c.config)
 	c.SubscribeAlter = NewSubscribeAlterClient(c.config)
@@ -377,6 +381,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Role:                  NewRoleClient(cfg),
 		Setting:               NewSettingClient(cfg),
 		Stock:                 NewStockClient(cfg),
+		StockSummary:          NewStockSummaryClient(cfg),
 		Store:                 NewStoreClient(cfg),
 		Subscribe:             NewSubscribeClient(cfg),
 		SubscribeAlter:        NewSubscribeAlterClient(cfg),
@@ -449,6 +454,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Role:                  NewRoleClient(cfg),
 		Setting:               NewSettingClient(cfg),
 		Stock:                 NewStockClient(cfg),
+		StockSummary:          NewStockSummaryClient(cfg),
 		Store:                 NewStoreClient(cfg),
 		Subscribe:             NewSubscribeClient(cfg),
 		SubscribeAlter:        NewSubscribeAlterClient(cfg),
@@ -493,8 +499,8 @@ func (c *Client) Use(hooks ...Hook) {
 		c.EnterpriseStation, c.Exception, c.Exchange, c.Export, c.Feedback,
 		c.Inventory, c.Manager, c.Order, c.OrderRefund, c.Person, c.Plan,
 		c.PlanIntroduce, c.PointLog, c.Reserve, c.Rider, c.RiderFollowUp, c.Role,
-		c.Setting, c.Stock, c.Store, c.Subscribe, c.SubscribeAlter, c.SubscribePause,
-		c.SubscribeReminder, c.SubscribeSuspend,
+		c.Setting, c.Stock, c.StockSummary, c.Store, c.Subscribe, c.SubscribeAlter,
+		c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend,
 	} {
 		n.Use(hooks...)
 	}
@@ -513,8 +519,8 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.EnterpriseStation, c.Exception, c.Exchange, c.Export, c.Feedback,
 		c.Inventory, c.Manager, c.Order, c.OrderRefund, c.Person, c.Plan,
 		c.PlanIntroduce, c.PointLog, c.Reserve, c.Rider, c.RiderFollowUp, c.Role,
-		c.Setting, c.Stock, c.Store, c.Subscribe, c.SubscribeAlter, c.SubscribePause,
-		c.SubscribeReminder, c.SubscribeSuspend,
+		c.Setting, c.Stock, c.StockSummary, c.Store, c.Subscribe, c.SubscribeAlter,
+		c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -617,6 +623,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Setting.mutate(ctx, m)
 	case *StockMutation:
 		return c.Stock.mutate(ctx, m)
+	case *StockSummaryMutation:
+		return c.StockSummary.mutate(ctx, m)
 	case *StoreMutation:
 		return c.Store.mutate(ctx, m)
 	case *SubscribeMutation:
@@ -9548,6 +9556,204 @@ func (c *StockClient) mutate(ctx context.Context, m *StockMutation) (Value, erro
 	}
 }
 
+// StockSummaryClient is a client for the StockSummary schema.
+type StockSummaryClient struct {
+	config
+}
+
+// NewStockSummaryClient returns a client for the StockSummary from the given config.
+func NewStockSummaryClient(c config) *StockSummaryClient {
+	return &StockSummaryClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `stocksummary.Hooks(f(g(h())))`.
+func (c *StockSummaryClient) Use(hooks ...Hook) {
+	c.hooks.StockSummary = append(c.hooks.StockSummary, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `stocksummary.Intercept(f(g(h())))`.
+func (c *StockSummaryClient) Intercept(interceptors ...Interceptor) {
+	c.inters.StockSummary = append(c.inters.StockSummary, interceptors...)
+}
+
+// Create returns a builder for creating a StockSummary entity.
+func (c *StockSummaryClient) Create() *StockSummaryCreate {
+	mutation := newStockSummaryMutation(c.config, OpCreate)
+	return &StockSummaryCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of StockSummary entities.
+func (c *StockSummaryClient) CreateBulk(builders ...*StockSummaryCreate) *StockSummaryCreateBulk {
+	return &StockSummaryCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for StockSummary.
+func (c *StockSummaryClient) Update() *StockSummaryUpdate {
+	mutation := newStockSummaryMutation(c.config, OpUpdate)
+	return &StockSummaryUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *StockSummaryClient) UpdateOne(ss *StockSummary) *StockSummaryUpdateOne {
+	mutation := newStockSummaryMutation(c.config, OpUpdateOne, withStockSummary(ss))
+	return &StockSummaryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *StockSummaryClient) UpdateOneID(id uint64) *StockSummaryUpdateOne {
+	mutation := newStockSummaryMutation(c.config, OpUpdateOne, withStockSummaryID(id))
+	return &StockSummaryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for StockSummary.
+func (c *StockSummaryClient) Delete() *StockSummaryDelete {
+	mutation := newStockSummaryMutation(c.config, OpDelete)
+	return &StockSummaryDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *StockSummaryClient) DeleteOne(ss *StockSummary) *StockSummaryDeleteOne {
+	return c.DeleteOneID(ss.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *StockSummaryClient) DeleteOneID(id uint64) *StockSummaryDeleteOne {
+	builder := c.Delete().Where(stocksummary.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &StockSummaryDeleteOne{builder}
+}
+
+// Query returns a query builder for StockSummary.
+func (c *StockSummaryClient) Query() *StockSummaryQuery {
+	return &StockSummaryQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeStockSummary},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a StockSummary entity by its id.
+func (c *StockSummaryClient) Get(ctx context.Context, id uint64) (*StockSummary, error) {
+	return c.Query().Where(stocksummary.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *StockSummaryClient) GetX(ctx context.Context, id uint64) *StockSummary {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryEnterprise queries the enterprise edge of a StockSummary.
+func (c *StockSummaryClient) QueryEnterprise(ss *StockSummary) *EnterpriseQuery {
+	query := (&EnterpriseClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ss.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stocksummary.Table, stocksummary.FieldID, id),
+			sqlgraph.To(enterprise.Table, enterprise.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, stocksummary.EnterpriseTable, stocksummary.EnterpriseColumn),
+		)
+		fromV = sqlgraph.Neighbors(ss.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStation queries the station edge of a StockSummary.
+func (c *StockSummaryClient) QueryStation(ss *StockSummary) *EnterpriseStationQuery {
+	query := (&EnterpriseStationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ss.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stocksummary.Table, stocksummary.FieldID, id),
+			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, stocksummary.StationTable, stocksummary.StationColumn),
+		)
+		fromV = sqlgraph.Neighbors(ss.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStore queries the store edge of a StockSummary.
+func (c *StockSummaryClient) QueryStore(ss *StockSummary) *StoreQuery {
+	query := (&StoreClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ss.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stocksummary.Table, stocksummary.FieldID, id),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, stocksummary.StoreTable, stocksummary.StoreColumn),
+		)
+		fromV = sqlgraph.Neighbors(ss.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRider queries the rider edge of a StockSummary.
+func (c *StockSummaryClient) QueryRider(ss *StockSummary) *RiderQuery {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ss.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stocksummary.Table, stocksummary.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, stocksummary.RiderTable, stocksummary.RiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(ss.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCabinet queries the cabinet edge of a StockSummary.
+func (c *StockSummaryClient) QueryCabinet(ss *StockSummary) *CabinetQuery {
+	query := (&CabinetClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ss.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stocksummary.Table, stocksummary.FieldID, id),
+			sqlgraph.To(cabinet.Table, cabinet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, stocksummary.CabinetTable, stocksummary.CabinetColumn),
+		)
+		fromV = sqlgraph.Neighbors(ss.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *StockSummaryClient) Hooks() []Hook {
+	return c.hooks.StockSummary
+}
+
+// Interceptors returns the client interceptors.
+func (c *StockSummaryClient) Interceptors() []Interceptor {
+	return c.inters.StockSummary
+}
+
+func (c *StockSummaryClient) mutate(ctx context.Context, m *StockSummaryMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&StockSummaryCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&StockSummaryUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&StockSummaryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&StockSummaryDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown StockSummary mutation op: %q", m.Op())
+	}
+}
+
 // StoreClient is a client for the Store schema.
 type StoreClient struct {
 	config
@@ -10991,7 +11197,7 @@ type (
 		EnterprisePrepayment, EnterprisePrice, EnterpriseStatement, EnterpriseStation,
 		Exception, Exchange, Export, Feedback, Inventory, Manager, Order, OrderRefund,
 		Person, Plan, PlanIntroduce, PointLog, Reserve, Rider, RiderFollowUp, Role,
-		Setting, Stock, Store, Subscribe, SubscribeAlter, SubscribePause,
+		Setting, Stock, StockSummary, Store, Subscribe, SubscribeAlter, SubscribePause,
 		SubscribeReminder, SubscribeSuspend []ent.Hook
 	}
 	inters struct {
@@ -11002,7 +11208,7 @@ type (
 		EnterprisePrepayment, EnterprisePrice, EnterpriseStatement, EnterpriseStation,
 		Exception, Exchange, Export, Feedback, Inventory, Manager, Order, OrderRefund,
 		Person, Plan, PlanIntroduce, PointLog, Reserve, Rider, RiderFollowUp, Role,
-		Setting, Stock, Store, Subscribe, SubscribeAlter, SubscribePause,
+		Setting, Stock, StockSummary, Store, Subscribe, SubscribeAlter, SubscribePause,
 		SubscribeReminder, SubscribeSuspend []ent.Interceptor
 	}
 )

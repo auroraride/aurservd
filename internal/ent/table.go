@@ -552,6 +552,16 @@ func (s *Stock) GetName() string {
 	return s.Name
 }
 
+// GetTableName returns table name for StockSummary.
+func (ss *StockSummary) GetTableName() string {
+	return "stock_summary"
+}
+
+// GetID returns id for StockSummary.
+func (ss *StockSummary) GetID() uint64 {
+	return ss.ID
+}
+
 // GetTableName returns table name for Store.
 func (s *Store) GetTableName() string {
 	return "store"

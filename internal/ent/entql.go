@@ -51,6 +51,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/role"
 	"github.com/auroraride/aurservd/internal/ent/setting"
 	"github.com/auroraride/aurservd/internal/ent/stock"
+	"github.com/auroraride/aurservd/internal/ent/stocksummary"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
@@ -66,7 +67,7 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 53)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 54)}
 	graph.Nodes[0] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   agent.Table,
@@ -1383,6 +1384,33 @@ var schemaGraph = func() *sqlgraph.Schema {
 	}
 	graph.Nodes[47] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
+			Table:   stocksummary.Table,
+			Columns: stocksummary.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint64,
+				Column: stocksummary.FieldID,
+			},
+		},
+		Type: "StockSummary",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			stocksummary.FieldEnterpriseID:       {Type: field.TypeUint64, Column: stocksummary.FieldEnterpriseID},
+			stocksummary.FieldStationID:          {Type: field.TypeUint64, Column: stocksummary.FieldStationID},
+			stocksummary.FieldStoreID:            {Type: field.TypeUint64, Column: stocksummary.FieldStoreID},
+			stocksummary.FieldRiderID:            {Type: field.TypeUint64, Column: stocksummary.FieldRiderID},
+			stocksummary.FieldCabinetID:          {Type: field.TypeUint64, Column: stocksummary.FieldCabinetID},
+			stocksummary.FieldDate:               {Type: field.TypeString, Column: stocksummary.FieldDate},
+			stocksummary.FieldBatteryNum:         {Type: field.TypeInt, Column: stocksummary.FieldBatteryNum},
+			stocksummary.FieldBatteryOutboundNum: {Type: field.TypeInt, Column: stocksummary.FieldBatteryOutboundNum},
+			stocksummary.FieldBatteryInboundNum:  {Type: field.TypeInt, Column: stocksummary.FieldBatteryInboundNum},
+			stocksummary.FieldBikeNum:            {Type: field.TypeInt, Column: stocksummary.FieldBikeNum},
+			stocksummary.FieldBikeOutboundNum:    {Type: field.TypeInt, Column: stocksummary.FieldBikeOutboundNum},
+			stocksummary.FieldBikeInboundNum:     {Type: field.TypeInt, Column: stocksummary.FieldBikeInboundNum},
+			stocksummary.FieldCabinetBatteryNum:  {Type: field.TypeInt, Column: stocksummary.FieldCabinetBatteryNum},
+			stocksummary.FieldRiderBatteryNum:    {Type: field.TypeInt, Column: stocksummary.FieldRiderBatteryNum},
+		},
+	}
+	graph.Nodes[48] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
 			Table:   store.Table,
 			Columns: store.Columns,
 			ID: &sqlgraph.FieldSpec{
@@ -1411,7 +1439,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			store.FieldEbikeRepair:  {Type: field.TypeBool, Column: store.FieldEbikeRepair},
 		},
 	}
-	graph.Nodes[48] = &sqlgraph.Node{
+	graph.Nodes[49] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   subscribe.Table,
 			Columns: subscribe.Columns,
@@ -1463,7 +1491,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribe.FieldIntelligent:       {Type: field.TypeBool, Column: subscribe.FieldIntelligent},
 		},
 	}
-	graph.Nodes[49] = &sqlgraph.Node{
+	graph.Nodes[50] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   subscribealter.Table,
 			Columns: subscribealter.Columns,
@@ -1490,7 +1518,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribealter.FieldSubscribeEndAt: {Type: field.TypeTime, Column: subscribealter.FieldSubscribeEndAt},
 		},
 	}
-	graph.Nodes[50] = &sqlgraph.Node{
+	graph.Nodes[51] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   subscribepause.Table,
 			Columns: subscribepause.Columns,
@@ -1525,7 +1553,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribepause.FieldSuspendDays:   {Type: field.TypeInt, Column: subscribepause.FieldSuspendDays},
 		},
 	}
-	graph.Nodes[51] = &sqlgraph.Node{
+	graph.Nodes[52] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   subscribereminder.Table,
 			Columns: subscribereminder.Columns,
@@ -1552,7 +1580,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribereminder.FieldFeeFormula:  {Type: field.TypeString, Column: subscribereminder.FieldFeeFormula},
 		},
 	}
-	graph.Nodes[52] = &sqlgraph.Node{
+	graph.Nodes[53] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   subscribesuspend.Table,
 			Columns: subscribesuspend.Columns,
@@ -4072,6 +4100,66 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Stock",
 		"EnterpriseStation",
+	)
+	graph.MustAddE(
+		"enterprise",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stocksummary.EnterpriseTable,
+			Columns: []string{stocksummary.EnterpriseColumn},
+			Bidi:    false,
+		},
+		"StockSummary",
+		"Enterprise",
+	)
+	graph.MustAddE(
+		"station",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stocksummary.StationTable,
+			Columns: []string{stocksummary.StationColumn},
+			Bidi:    false,
+		},
+		"StockSummary",
+		"EnterpriseStation",
+	)
+	graph.MustAddE(
+		"store",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stocksummary.StoreTable,
+			Columns: []string{stocksummary.StoreColumn},
+			Bidi:    false,
+		},
+		"StockSummary",
+		"Store",
+	)
+	graph.MustAddE(
+		"rider",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stocksummary.RiderTable,
+			Columns: []string{stocksummary.RiderColumn},
+			Bidi:    false,
+		},
+		"StockSummary",
+		"Rider",
+	)
+	graph.MustAddE(
+		"cabinet",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stocksummary.CabinetTable,
+			Columns: []string{stocksummary.CabinetColumn},
+			Bidi:    false,
+		},
+		"StockSummary",
+		"Cabinet",
 	)
 	graph.MustAddE(
 		"city",
@@ -12930,6 +13018,186 @@ func (f *StockFilter) WhereHasStationWith(preds ...predicate.EnterpriseStation) 
 }
 
 // addPredicate implements the predicateAdder interface.
+func (ssq *StockSummaryQuery) addPredicate(pred func(s *sql.Selector)) {
+	ssq.predicates = append(ssq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the StockSummaryQuery builder.
+func (ssq *StockSummaryQuery) Filter() *StockSummaryFilter {
+	return &StockSummaryFilter{config: ssq.config, predicateAdder: ssq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *StockSummaryMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the StockSummaryMutation builder.
+func (m *StockSummaryMutation) Filter() *StockSummaryFilter {
+	return &StockSummaryFilter{config: m.config, predicateAdder: m}
+}
+
+// StockSummaryFilter provides a generic filtering capability at runtime for StockSummaryQuery.
+type StockSummaryFilter struct {
+	predicateAdder
+	config
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *StockSummaryFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[47].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *StockSummaryFilter) WhereID(p entql.Uint64P) {
+	f.Where(p.Field(stocksummary.FieldID))
+}
+
+// WhereEnterpriseID applies the entql uint64 predicate on the enterprise_id field.
+func (f *StockSummaryFilter) WhereEnterpriseID(p entql.Uint64P) {
+	f.Where(p.Field(stocksummary.FieldEnterpriseID))
+}
+
+// WhereStationID applies the entql uint64 predicate on the station_id field.
+func (f *StockSummaryFilter) WhereStationID(p entql.Uint64P) {
+	f.Where(p.Field(stocksummary.FieldStationID))
+}
+
+// WhereStoreID applies the entql uint64 predicate on the store_id field.
+func (f *StockSummaryFilter) WhereStoreID(p entql.Uint64P) {
+	f.Where(p.Field(stocksummary.FieldStoreID))
+}
+
+// WhereRiderID applies the entql uint64 predicate on the rider_id field.
+func (f *StockSummaryFilter) WhereRiderID(p entql.Uint64P) {
+	f.Where(p.Field(stocksummary.FieldRiderID))
+}
+
+// WhereCabinetID applies the entql uint64 predicate on the cabinet_id field.
+func (f *StockSummaryFilter) WhereCabinetID(p entql.Uint64P) {
+	f.Where(p.Field(stocksummary.FieldCabinetID))
+}
+
+// WhereDate applies the entql string predicate on the date field.
+func (f *StockSummaryFilter) WhereDate(p entql.StringP) {
+	f.Where(p.Field(stocksummary.FieldDate))
+}
+
+// WhereBatteryNum applies the entql int predicate on the battery_num field.
+func (f *StockSummaryFilter) WhereBatteryNum(p entql.IntP) {
+	f.Where(p.Field(stocksummary.FieldBatteryNum))
+}
+
+// WhereBatteryOutboundNum applies the entql int predicate on the battery_outbound_num field.
+func (f *StockSummaryFilter) WhereBatteryOutboundNum(p entql.IntP) {
+	f.Where(p.Field(stocksummary.FieldBatteryOutboundNum))
+}
+
+// WhereBatteryInboundNum applies the entql int predicate on the battery_inbound_num field.
+func (f *StockSummaryFilter) WhereBatteryInboundNum(p entql.IntP) {
+	f.Where(p.Field(stocksummary.FieldBatteryInboundNum))
+}
+
+// WhereBikeNum applies the entql int predicate on the bike_num field.
+func (f *StockSummaryFilter) WhereBikeNum(p entql.IntP) {
+	f.Where(p.Field(stocksummary.FieldBikeNum))
+}
+
+// WhereBikeOutboundNum applies the entql int predicate on the bike_outbound_num field.
+func (f *StockSummaryFilter) WhereBikeOutboundNum(p entql.IntP) {
+	f.Where(p.Field(stocksummary.FieldBikeOutboundNum))
+}
+
+// WhereBikeInboundNum applies the entql int predicate on the bike_inbound_num field.
+func (f *StockSummaryFilter) WhereBikeInboundNum(p entql.IntP) {
+	f.Where(p.Field(stocksummary.FieldBikeInboundNum))
+}
+
+// WhereCabinetBatteryNum applies the entql int predicate on the cabinet_battery_num field.
+func (f *StockSummaryFilter) WhereCabinetBatteryNum(p entql.IntP) {
+	f.Where(p.Field(stocksummary.FieldCabinetBatteryNum))
+}
+
+// WhereRiderBatteryNum applies the entql int predicate on the rider_battery_num field.
+func (f *StockSummaryFilter) WhereRiderBatteryNum(p entql.IntP) {
+	f.Where(p.Field(stocksummary.FieldRiderBatteryNum))
+}
+
+// WhereHasEnterprise applies a predicate to check if query has an edge enterprise.
+func (f *StockSummaryFilter) WhereHasEnterprise() {
+	f.Where(entql.HasEdge("enterprise"))
+}
+
+// WhereHasEnterpriseWith applies a predicate to check if query has an edge enterprise with a given conditions (other predicates).
+func (f *StockSummaryFilter) WhereHasEnterpriseWith(preds ...predicate.Enterprise) {
+	f.Where(entql.HasEdgeWith("enterprise", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasStation applies a predicate to check if query has an edge station.
+func (f *StockSummaryFilter) WhereHasStation() {
+	f.Where(entql.HasEdge("station"))
+}
+
+// WhereHasStationWith applies a predicate to check if query has an edge station with a given conditions (other predicates).
+func (f *StockSummaryFilter) WhereHasStationWith(preds ...predicate.EnterpriseStation) {
+	f.Where(entql.HasEdgeWith("station", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasStore applies a predicate to check if query has an edge store.
+func (f *StockSummaryFilter) WhereHasStore() {
+	f.Where(entql.HasEdge("store"))
+}
+
+// WhereHasStoreWith applies a predicate to check if query has an edge store with a given conditions (other predicates).
+func (f *StockSummaryFilter) WhereHasStoreWith(preds ...predicate.Store) {
+	f.Where(entql.HasEdgeWith("store", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasRider applies a predicate to check if query has an edge rider.
+func (f *StockSummaryFilter) WhereHasRider() {
+	f.Where(entql.HasEdge("rider"))
+}
+
+// WhereHasRiderWith applies a predicate to check if query has an edge rider with a given conditions (other predicates).
+func (f *StockSummaryFilter) WhereHasRiderWith(preds ...predicate.Rider) {
+	f.Where(entql.HasEdgeWith("rider", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasCabinet applies a predicate to check if query has an edge cabinet.
+func (f *StockSummaryFilter) WhereHasCabinet() {
+	f.Where(entql.HasEdge("cabinet"))
+}
+
+// WhereHasCabinetWith applies a predicate to check if query has an edge cabinet with a given conditions (other predicates).
+func (f *StockSummaryFilter) WhereHasCabinetWith(preds ...predicate.Cabinet) {
+	f.Where(entql.HasEdgeWith("cabinet", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// addPredicate implements the predicateAdder interface.
 func (sq *StoreQuery) addPredicate(pred func(s *sql.Selector)) {
 	sq.predicates = append(sq.predicates, pred)
 }
@@ -12958,7 +13226,7 @@ type StoreFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *StoreFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[47].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[48].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -13167,7 +13435,7 @@ type SubscribeFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SubscribeFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[48].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[49].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -13640,7 +13908,7 @@ type SubscribeAlterFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SubscribeAlterFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[49].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[50].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -13820,7 +14088,7 @@ type SubscribePauseFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SubscribePauseFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[50].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[51].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -14110,7 +14378,7 @@ type SubscribeReminderFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SubscribeReminderFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[51].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[52].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -14262,7 +14530,7 @@ type SubscribeSuspendFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SubscribeSuspendFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[52].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[53].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
