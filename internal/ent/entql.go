@@ -720,12 +720,12 @@ var schemaGraph = func() *sqlgraph.Schema {
 			enterprisebatteryswap.FieldUpdatedAt:          {Type: field.TypeTime, Column: enterprisebatteryswap.FieldUpdatedAt},
 			enterprisebatteryswap.FieldExchangeID:         {Type: field.TypeUint64, Column: enterprisebatteryswap.FieldExchangeID},
 			enterprisebatteryswap.FieldCabinetID:          {Type: field.TypeUint64, Column: enterprisebatteryswap.FieldCabinetID},
-			enterprisebatteryswap.FieldPutinBatteryID:     {Type: field.TypeUint64, Column: enterprisebatteryswap.FieldPutinBatteryID},
-			enterprisebatteryswap.FieldPutinBatterySn:     {Type: field.TypeString, Column: enterprisebatteryswap.FieldPutinBatterySn},
+			enterprisebatteryswap.FieldPutinID:            {Type: field.TypeUint64, Column: enterprisebatteryswap.FieldPutinID},
+			enterprisebatteryswap.FieldPutinSn:            {Type: field.TypeString, Column: enterprisebatteryswap.FieldPutinSn},
 			enterprisebatteryswap.FieldPutinEnterpriseID:  {Type: field.TypeUint64, Column: enterprisebatteryswap.FieldPutinEnterpriseID},
 			enterprisebatteryswap.FieldPutinStationID:     {Type: field.TypeUint64, Column: enterprisebatteryswap.FieldPutinStationID},
-			enterprisebatteryswap.FieldPutoutBatteryID:    {Type: field.TypeUint64, Column: enterprisebatteryswap.FieldPutoutBatteryID},
-			enterprisebatteryswap.FieldPutoutBatterySn:    {Type: field.TypeString, Column: enterprisebatteryswap.FieldPutoutBatterySn},
+			enterprisebatteryswap.FieldPutoutID:           {Type: field.TypeUint64, Column: enterprisebatteryswap.FieldPutoutID},
+			enterprisebatteryswap.FieldPutoutSn:           {Type: field.TypeString, Column: enterprisebatteryswap.FieldPutoutSn},
 			enterprisebatteryswap.FieldPutoutEnterpriseID: {Type: field.TypeUint64, Column: enterprisebatteryswap.FieldPutoutEnterpriseID},
 			enterprisebatteryswap.FieldPutoutStationID:    {Type: field.TypeUint64, Column: enterprisebatteryswap.FieldPutoutStationID},
 		},
@@ -2898,12 +2898,12 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Cabinet",
 	)
 	graph.MustAddE(
-		"putin_battery",
+		"putin",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   enterprisebatteryswap.PutinBatteryTable,
-			Columns: []string{enterprisebatteryswap.PutinBatteryColumn},
+			Table:   enterprisebatteryswap.PutinTable,
+			Columns: []string{enterprisebatteryswap.PutinColumn},
 			Bidi:    false,
 		},
 		"EnterpriseBatterySwap",
@@ -2934,12 +2934,12 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"EnterpriseStation",
 	)
 	graph.MustAddE(
-		"putout_battery",
+		"putout",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   enterprisebatteryswap.PutoutBatteryTable,
-			Columns: []string{enterprisebatteryswap.PutoutBatteryColumn},
+			Table:   enterprisebatteryswap.PutoutTable,
+			Columns: []string{enterprisebatteryswap.PutoutColumn},
 			Bidi:    false,
 		},
 		"EnterpriseBatterySwap",
@@ -8822,14 +8822,14 @@ func (f *EnterpriseBatterySwapFilter) WhereCabinetID(p entql.Uint64P) {
 	f.Where(p.Field(enterprisebatteryswap.FieldCabinetID))
 }
 
-// WherePutinBatteryID applies the entql uint64 predicate on the putin_battery_id field.
-func (f *EnterpriseBatterySwapFilter) WherePutinBatteryID(p entql.Uint64P) {
-	f.Where(p.Field(enterprisebatteryswap.FieldPutinBatteryID))
+// WherePutinID applies the entql uint64 predicate on the putin_id field.
+func (f *EnterpriseBatterySwapFilter) WherePutinID(p entql.Uint64P) {
+	f.Where(p.Field(enterprisebatteryswap.FieldPutinID))
 }
 
-// WherePutinBatterySn applies the entql string predicate on the putin_battery_sn field.
-func (f *EnterpriseBatterySwapFilter) WherePutinBatterySn(p entql.StringP) {
-	f.Where(p.Field(enterprisebatteryswap.FieldPutinBatterySn))
+// WherePutinSn applies the entql string predicate on the putin_sn field.
+func (f *EnterpriseBatterySwapFilter) WherePutinSn(p entql.StringP) {
+	f.Where(p.Field(enterprisebatteryswap.FieldPutinSn))
 }
 
 // WherePutinEnterpriseID applies the entql uint64 predicate on the putin_enterprise_id field.
@@ -8842,14 +8842,14 @@ func (f *EnterpriseBatterySwapFilter) WherePutinStationID(p entql.Uint64P) {
 	f.Where(p.Field(enterprisebatteryswap.FieldPutinStationID))
 }
 
-// WherePutoutBatteryID applies the entql uint64 predicate on the putout_battery_id field.
-func (f *EnterpriseBatterySwapFilter) WherePutoutBatteryID(p entql.Uint64P) {
-	f.Where(p.Field(enterprisebatteryswap.FieldPutoutBatteryID))
+// WherePutoutID applies the entql uint64 predicate on the putout_id field.
+func (f *EnterpriseBatterySwapFilter) WherePutoutID(p entql.Uint64P) {
+	f.Where(p.Field(enterprisebatteryswap.FieldPutoutID))
 }
 
-// WherePutoutBatterySn applies the entql string predicate on the putout_battery_sn field.
-func (f *EnterpriseBatterySwapFilter) WherePutoutBatterySn(p entql.StringP) {
-	f.Where(p.Field(enterprisebatteryswap.FieldPutoutBatterySn))
+// WherePutoutSn applies the entql string predicate on the putout_sn field.
+func (f *EnterpriseBatterySwapFilter) WherePutoutSn(p entql.StringP) {
+	f.Where(p.Field(enterprisebatteryswap.FieldPutoutSn))
 }
 
 // WherePutoutEnterpriseID applies the entql uint64 predicate on the putout_enterprise_id field.
@@ -8890,14 +8890,14 @@ func (f *EnterpriseBatterySwapFilter) WhereHasCabinetWith(preds ...predicate.Cab
 	})))
 }
 
-// WhereHasPutinBattery applies a predicate to check if query has an edge putin_battery.
-func (f *EnterpriseBatterySwapFilter) WhereHasPutinBattery() {
-	f.Where(entql.HasEdge("putin_battery"))
+// WhereHasPutin applies a predicate to check if query has an edge putin.
+func (f *EnterpriseBatterySwapFilter) WhereHasPutin() {
+	f.Where(entql.HasEdge("putin"))
 }
 
-// WhereHasPutinBatteryWith applies a predicate to check if query has an edge putin_battery with a given conditions (other predicates).
-func (f *EnterpriseBatterySwapFilter) WhereHasPutinBatteryWith(preds ...predicate.Battery) {
-	f.Where(entql.HasEdgeWith("putin_battery", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasPutinWith applies a predicate to check if query has an edge putin with a given conditions (other predicates).
+func (f *EnterpriseBatterySwapFilter) WhereHasPutinWith(preds ...predicate.Battery) {
+	f.Where(entql.HasEdgeWith("putin", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -8932,14 +8932,14 @@ func (f *EnterpriseBatterySwapFilter) WhereHasPutinStationWith(preds ...predicat
 	})))
 }
 
-// WhereHasPutoutBattery applies a predicate to check if query has an edge putout_battery.
-func (f *EnterpriseBatterySwapFilter) WhereHasPutoutBattery() {
-	f.Where(entql.HasEdge("putout_battery"))
+// WhereHasPutout applies a predicate to check if query has an edge putout.
+func (f *EnterpriseBatterySwapFilter) WhereHasPutout() {
+	f.Where(entql.HasEdge("putout"))
 }
 
-// WhereHasPutoutBatteryWith applies a predicate to check if query has an edge putout_battery with a given conditions (other predicates).
-func (f *EnterpriseBatterySwapFilter) WhereHasPutoutBatteryWith(preds ...predicate.Battery) {
-	f.Where(entql.HasEdgeWith("putout_battery", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasPutoutWith applies a predicate to check if query has an edge putout with a given conditions (other predicates).
+func (f *EnterpriseBatterySwapFilter) WhereHasPutoutWith(preds ...predicate.Battery) {
+	f.Where(entql.HasEdgeWith("putout", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

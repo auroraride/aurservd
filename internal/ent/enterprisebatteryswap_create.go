@@ -67,15 +67,15 @@ func (ebsc *EnterpriseBatterySwapCreate) SetCabinetID(u uint64) *EnterpriseBatte
 	return ebsc
 }
 
-// SetPutinBatteryID sets the "putin_battery_id" field.
-func (ebsc *EnterpriseBatterySwapCreate) SetPutinBatteryID(u uint64) *EnterpriseBatterySwapCreate {
-	ebsc.mutation.SetPutinBatteryID(u)
+// SetPutinID sets the "putin_id" field.
+func (ebsc *EnterpriseBatterySwapCreate) SetPutinID(u uint64) *EnterpriseBatterySwapCreate {
+	ebsc.mutation.SetPutinID(u)
 	return ebsc
 }
 
-// SetPutinBatterySn sets the "putin_battery_sn" field.
-func (ebsc *EnterpriseBatterySwapCreate) SetPutinBatterySn(s string) *EnterpriseBatterySwapCreate {
-	ebsc.mutation.SetPutinBatterySn(s)
+// SetPutinSn sets the "putin_sn" field.
+func (ebsc *EnterpriseBatterySwapCreate) SetPutinSn(s string) *EnterpriseBatterySwapCreate {
+	ebsc.mutation.SetPutinSn(s)
 	return ebsc
 }
 
@@ -107,15 +107,15 @@ func (ebsc *EnterpriseBatterySwapCreate) SetNillablePutinStationID(u *uint64) *E
 	return ebsc
 }
 
-// SetPutoutBatteryID sets the "putout_battery_id" field.
-func (ebsc *EnterpriseBatterySwapCreate) SetPutoutBatteryID(u uint64) *EnterpriseBatterySwapCreate {
-	ebsc.mutation.SetPutoutBatteryID(u)
+// SetPutoutID sets the "putout_id" field.
+func (ebsc *EnterpriseBatterySwapCreate) SetPutoutID(u uint64) *EnterpriseBatterySwapCreate {
+	ebsc.mutation.SetPutoutID(u)
 	return ebsc
 }
 
-// SetPutoutBatterySn sets the "putout_battery_sn" field.
-func (ebsc *EnterpriseBatterySwapCreate) SetPutoutBatterySn(s string) *EnterpriseBatterySwapCreate {
-	ebsc.mutation.SetPutoutBatterySn(s)
+// SetPutoutSn sets the "putout_sn" field.
+func (ebsc *EnterpriseBatterySwapCreate) SetPutoutSn(s string) *EnterpriseBatterySwapCreate {
+	ebsc.mutation.SetPutoutSn(s)
 	return ebsc
 }
 
@@ -157,9 +157,9 @@ func (ebsc *EnterpriseBatterySwapCreate) SetCabinet(c *Cabinet) *EnterpriseBatte
 	return ebsc.SetCabinetID(c.ID)
 }
 
-// SetPutinBattery sets the "putin_battery" edge to the Battery entity.
-func (ebsc *EnterpriseBatterySwapCreate) SetPutinBattery(b *Battery) *EnterpriseBatterySwapCreate {
-	return ebsc.SetPutinBatteryID(b.ID)
+// SetPutin sets the "putin" edge to the Battery entity.
+func (ebsc *EnterpriseBatterySwapCreate) SetPutin(b *Battery) *EnterpriseBatterySwapCreate {
+	return ebsc.SetPutinID(b.ID)
 }
 
 // SetPutinEnterprise sets the "putin_enterprise" edge to the Enterprise entity.
@@ -172,9 +172,9 @@ func (ebsc *EnterpriseBatterySwapCreate) SetPutinStation(e *EnterpriseStation) *
 	return ebsc.SetPutinStationID(e.ID)
 }
 
-// SetPutoutBattery sets the "putout_battery" edge to the Battery entity.
-func (ebsc *EnterpriseBatterySwapCreate) SetPutoutBattery(b *Battery) *EnterpriseBatterySwapCreate {
-	return ebsc.SetPutoutBatteryID(b.ID)
+// SetPutout sets the "putout" edge to the Battery entity.
+func (ebsc *EnterpriseBatterySwapCreate) SetPutout(b *Battery) *EnterpriseBatterySwapCreate {
+	return ebsc.SetPutoutID(b.ID)
 }
 
 // SetPutoutEnterprise sets the "putout_enterprise" edge to the Enterprise entity.
@@ -246,17 +246,17 @@ func (ebsc *EnterpriseBatterySwapCreate) check() error {
 	if _, ok := ebsc.mutation.CabinetID(); !ok {
 		return &ValidationError{Name: "cabinet_id", err: errors.New(`ent: missing required field "EnterpriseBatterySwap.cabinet_id"`)}
 	}
-	if _, ok := ebsc.mutation.PutinBatteryID(); !ok {
-		return &ValidationError{Name: "putin_battery_id", err: errors.New(`ent: missing required field "EnterpriseBatterySwap.putin_battery_id"`)}
+	if _, ok := ebsc.mutation.PutinID(); !ok {
+		return &ValidationError{Name: "putin_id", err: errors.New(`ent: missing required field "EnterpriseBatterySwap.putin_id"`)}
 	}
-	if _, ok := ebsc.mutation.PutinBatterySn(); !ok {
-		return &ValidationError{Name: "putin_battery_sn", err: errors.New(`ent: missing required field "EnterpriseBatterySwap.putin_battery_sn"`)}
+	if _, ok := ebsc.mutation.PutinSn(); !ok {
+		return &ValidationError{Name: "putin_sn", err: errors.New(`ent: missing required field "EnterpriseBatterySwap.putin_sn"`)}
 	}
-	if _, ok := ebsc.mutation.PutoutBatteryID(); !ok {
-		return &ValidationError{Name: "putout_battery_id", err: errors.New(`ent: missing required field "EnterpriseBatterySwap.putout_battery_id"`)}
+	if _, ok := ebsc.mutation.PutoutID(); !ok {
+		return &ValidationError{Name: "putout_id", err: errors.New(`ent: missing required field "EnterpriseBatterySwap.putout_id"`)}
 	}
-	if _, ok := ebsc.mutation.PutoutBatterySn(); !ok {
-		return &ValidationError{Name: "putout_battery_sn", err: errors.New(`ent: missing required field "EnterpriseBatterySwap.putout_battery_sn"`)}
+	if _, ok := ebsc.mutation.PutoutSn(); !ok {
+		return &ValidationError{Name: "putout_sn", err: errors.New(`ent: missing required field "EnterpriseBatterySwap.putout_sn"`)}
 	}
 	if _, ok := ebsc.mutation.ExchangeID(); !ok {
 		return &ValidationError{Name: "exchange", err: errors.New(`ent: missing required edge "EnterpriseBatterySwap.exchange"`)}
@@ -264,11 +264,11 @@ func (ebsc *EnterpriseBatterySwapCreate) check() error {
 	if _, ok := ebsc.mutation.CabinetID(); !ok {
 		return &ValidationError{Name: "cabinet", err: errors.New(`ent: missing required edge "EnterpriseBatterySwap.cabinet"`)}
 	}
-	if _, ok := ebsc.mutation.PutinBatteryID(); !ok {
-		return &ValidationError{Name: "putin_battery", err: errors.New(`ent: missing required edge "EnterpriseBatterySwap.putin_battery"`)}
+	if _, ok := ebsc.mutation.PutinID(); !ok {
+		return &ValidationError{Name: "putin", err: errors.New(`ent: missing required edge "EnterpriseBatterySwap.putin"`)}
 	}
-	if _, ok := ebsc.mutation.PutoutBatteryID(); !ok {
-		return &ValidationError{Name: "putout_battery", err: errors.New(`ent: missing required edge "EnterpriseBatterySwap.putout_battery"`)}
+	if _, ok := ebsc.mutation.PutoutID(); !ok {
+		return &ValidationError{Name: "putout", err: errors.New(`ent: missing required edge "EnterpriseBatterySwap.putout"`)}
 	}
 	return nil
 }
@@ -305,13 +305,13 @@ func (ebsc *EnterpriseBatterySwapCreate) createSpec() (*EnterpriseBatterySwap, *
 		_spec.SetField(enterprisebatteryswap.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
-	if value, ok := ebsc.mutation.PutinBatterySn(); ok {
-		_spec.SetField(enterprisebatteryswap.FieldPutinBatterySn, field.TypeString, value)
-		_node.PutinBatterySn = value
+	if value, ok := ebsc.mutation.PutinSn(); ok {
+		_spec.SetField(enterprisebatteryswap.FieldPutinSn, field.TypeString, value)
+		_node.PutinSn = value
 	}
-	if value, ok := ebsc.mutation.PutoutBatterySn(); ok {
-		_spec.SetField(enterprisebatteryswap.FieldPutoutBatterySn, field.TypeString, value)
-		_node.PutoutBatterySn = value
+	if value, ok := ebsc.mutation.PutoutSn(); ok {
+		_spec.SetField(enterprisebatteryswap.FieldPutoutSn, field.TypeString, value)
+		_node.PutoutSn = value
 	}
 	if nodes := ebsc.mutation.ExchangeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -347,12 +347,12 @@ func (ebsc *EnterpriseBatterySwapCreate) createSpec() (*EnterpriseBatterySwap, *
 		_node.CabinetID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := ebsc.mutation.PutinBatteryIDs(); len(nodes) > 0 {
+	if nodes := ebsc.mutation.PutinIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   enterprisebatteryswap.PutinBatteryTable,
-			Columns: []string{enterprisebatteryswap.PutinBatteryColumn},
+			Table:   enterprisebatteryswap.PutinTable,
+			Columns: []string{enterprisebatteryswap.PutinColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
@@ -361,7 +361,7 @@ func (ebsc *EnterpriseBatterySwapCreate) createSpec() (*EnterpriseBatterySwap, *
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.PutinBatteryID = nodes[0]
+		_node.PutinID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := ebsc.mutation.PutinEnterpriseIDs(); len(nodes) > 0 {
@@ -398,12 +398,12 @@ func (ebsc *EnterpriseBatterySwapCreate) createSpec() (*EnterpriseBatterySwap, *
 		_node.PutinStationID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := ebsc.mutation.PutoutBatteryIDs(); len(nodes) > 0 {
+	if nodes := ebsc.mutation.PutoutIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   enterprisebatteryswap.PutoutBatteryTable,
-			Columns: []string{enterprisebatteryswap.PutoutBatteryColumn},
+			Table:   enterprisebatteryswap.PutoutTable,
+			Columns: []string{enterprisebatteryswap.PutoutColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
@@ -412,7 +412,7 @@ func (ebsc *EnterpriseBatterySwapCreate) createSpec() (*EnterpriseBatterySwap, *
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.PutoutBatteryID = nodes[0]
+		_node.PutoutID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := ebsc.mutation.PutoutEnterpriseIDs(); len(nodes) > 0 {
@@ -537,27 +537,27 @@ func (u *EnterpriseBatterySwapUpsert) UpdateCabinetID() *EnterpriseBatterySwapUp
 	return u
 }
 
-// SetPutinBatteryID sets the "putin_battery_id" field.
-func (u *EnterpriseBatterySwapUpsert) SetPutinBatteryID(v uint64) *EnterpriseBatterySwapUpsert {
-	u.Set(enterprisebatteryswap.FieldPutinBatteryID, v)
+// SetPutinID sets the "putin_id" field.
+func (u *EnterpriseBatterySwapUpsert) SetPutinID(v uint64) *EnterpriseBatterySwapUpsert {
+	u.Set(enterprisebatteryswap.FieldPutinID, v)
 	return u
 }
 
-// UpdatePutinBatteryID sets the "putin_battery_id" field to the value that was provided on create.
-func (u *EnterpriseBatterySwapUpsert) UpdatePutinBatteryID() *EnterpriseBatterySwapUpsert {
-	u.SetExcluded(enterprisebatteryswap.FieldPutinBatteryID)
+// UpdatePutinID sets the "putin_id" field to the value that was provided on create.
+func (u *EnterpriseBatterySwapUpsert) UpdatePutinID() *EnterpriseBatterySwapUpsert {
+	u.SetExcluded(enterprisebatteryswap.FieldPutinID)
 	return u
 }
 
-// SetPutinBatterySn sets the "putin_battery_sn" field.
-func (u *EnterpriseBatterySwapUpsert) SetPutinBatterySn(v string) *EnterpriseBatterySwapUpsert {
-	u.Set(enterprisebatteryswap.FieldPutinBatterySn, v)
+// SetPutinSn sets the "putin_sn" field.
+func (u *EnterpriseBatterySwapUpsert) SetPutinSn(v string) *EnterpriseBatterySwapUpsert {
+	u.Set(enterprisebatteryswap.FieldPutinSn, v)
 	return u
 }
 
-// UpdatePutinBatterySn sets the "putin_battery_sn" field to the value that was provided on create.
-func (u *EnterpriseBatterySwapUpsert) UpdatePutinBatterySn() *EnterpriseBatterySwapUpsert {
-	u.SetExcluded(enterprisebatteryswap.FieldPutinBatterySn)
+// UpdatePutinSn sets the "putin_sn" field to the value that was provided on create.
+func (u *EnterpriseBatterySwapUpsert) UpdatePutinSn() *EnterpriseBatterySwapUpsert {
+	u.SetExcluded(enterprisebatteryswap.FieldPutinSn)
 	return u
 }
 
@@ -597,27 +597,27 @@ func (u *EnterpriseBatterySwapUpsert) ClearPutinStationID() *EnterpriseBatterySw
 	return u
 }
 
-// SetPutoutBatteryID sets the "putout_battery_id" field.
-func (u *EnterpriseBatterySwapUpsert) SetPutoutBatteryID(v uint64) *EnterpriseBatterySwapUpsert {
-	u.Set(enterprisebatteryswap.FieldPutoutBatteryID, v)
+// SetPutoutID sets the "putout_id" field.
+func (u *EnterpriseBatterySwapUpsert) SetPutoutID(v uint64) *EnterpriseBatterySwapUpsert {
+	u.Set(enterprisebatteryswap.FieldPutoutID, v)
 	return u
 }
 
-// UpdatePutoutBatteryID sets the "putout_battery_id" field to the value that was provided on create.
-func (u *EnterpriseBatterySwapUpsert) UpdatePutoutBatteryID() *EnterpriseBatterySwapUpsert {
-	u.SetExcluded(enterprisebatteryswap.FieldPutoutBatteryID)
+// UpdatePutoutID sets the "putout_id" field to the value that was provided on create.
+func (u *EnterpriseBatterySwapUpsert) UpdatePutoutID() *EnterpriseBatterySwapUpsert {
+	u.SetExcluded(enterprisebatteryswap.FieldPutoutID)
 	return u
 }
 
-// SetPutoutBatterySn sets the "putout_battery_sn" field.
-func (u *EnterpriseBatterySwapUpsert) SetPutoutBatterySn(v string) *EnterpriseBatterySwapUpsert {
-	u.Set(enterprisebatteryswap.FieldPutoutBatterySn, v)
+// SetPutoutSn sets the "putout_sn" field.
+func (u *EnterpriseBatterySwapUpsert) SetPutoutSn(v string) *EnterpriseBatterySwapUpsert {
+	u.Set(enterprisebatteryswap.FieldPutoutSn, v)
 	return u
 }
 
-// UpdatePutoutBatterySn sets the "putout_battery_sn" field to the value that was provided on create.
-func (u *EnterpriseBatterySwapUpsert) UpdatePutoutBatterySn() *EnterpriseBatterySwapUpsert {
-	u.SetExcluded(enterprisebatteryswap.FieldPutoutBatterySn)
+// UpdatePutoutSn sets the "putout_sn" field to the value that was provided on create.
+func (u *EnterpriseBatterySwapUpsert) UpdatePutoutSn() *EnterpriseBatterySwapUpsert {
+	u.SetExcluded(enterprisebatteryswap.FieldPutoutSn)
 	return u
 }
 
@@ -744,31 +744,31 @@ func (u *EnterpriseBatterySwapUpsertOne) UpdateCabinetID() *EnterpriseBatterySwa
 	})
 }
 
-// SetPutinBatteryID sets the "putin_battery_id" field.
-func (u *EnterpriseBatterySwapUpsertOne) SetPutinBatteryID(v uint64) *EnterpriseBatterySwapUpsertOne {
+// SetPutinID sets the "putin_id" field.
+func (u *EnterpriseBatterySwapUpsertOne) SetPutinID(v uint64) *EnterpriseBatterySwapUpsertOne {
 	return u.Update(func(s *EnterpriseBatterySwapUpsert) {
-		s.SetPutinBatteryID(v)
+		s.SetPutinID(v)
 	})
 }
 
-// UpdatePutinBatteryID sets the "putin_battery_id" field to the value that was provided on create.
-func (u *EnterpriseBatterySwapUpsertOne) UpdatePutinBatteryID() *EnterpriseBatterySwapUpsertOne {
+// UpdatePutinID sets the "putin_id" field to the value that was provided on create.
+func (u *EnterpriseBatterySwapUpsertOne) UpdatePutinID() *EnterpriseBatterySwapUpsertOne {
 	return u.Update(func(s *EnterpriseBatterySwapUpsert) {
-		s.UpdatePutinBatteryID()
+		s.UpdatePutinID()
 	})
 }
 
-// SetPutinBatterySn sets the "putin_battery_sn" field.
-func (u *EnterpriseBatterySwapUpsertOne) SetPutinBatterySn(v string) *EnterpriseBatterySwapUpsertOne {
+// SetPutinSn sets the "putin_sn" field.
+func (u *EnterpriseBatterySwapUpsertOne) SetPutinSn(v string) *EnterpriseBatterySwapUpsertOne {
 	return u.Update(func(s *EnterpriseBatterySwapUpsert) {
-		s.SetPutinBatterySn(v)
+		s.SetPutinSn(v)
 	})
 }
 
-// UpdatePutinBatterySn sets the "putin_battery_sn" field to the value that was provided on create.
-func (u *EnterpriseBatterySwapUpsertOne) UpdatePutinBatterySn() *EnterpriseBatterySwapUpsertOne {
+// UpdatePutinSn sets the "putin_sn" field to the value that was provided on create.
+func (u *EnterpriseBatterySwapUpsertOne) UpdatePutinSn() *EnterpriseBatterySwapUpsertOne {
 	return u.Update(func(s *EnterpriseBatterySwapUpsert) {
-		s.UpdatePutinBatterySn()
+		s.UpdatePutinSn()
 	})
 }
 
@@ -814,31 +814,31 @@ func (u *EnterpriseBatterySwapUpsertOne) ClearPutinStationID() *EnterpriseBatter
 	})
 }
 
-// SetPutoutBatteryID sets the "putout_battery_id" field.
-func (u *EnterpriseBatterySwapUpsertOne) SetPutoutBatteryID(v uint64) *EnterpriseBatterySwapUpsertOne {
+// SetPutoutID sets the "putout_id" field.
+func (u *EnterpriseBatterySwapUpsertOne) SetPutoutID(v uint64) *EnterpriseBatterySwapUpsertOne {
 	return u.Update(func(s *EnterpriseBatterySwapUpsert) {
-		s.SetPutoutBatteryID(v)
+		s.SetPutoutID(v)
 	})
 }
 
-// UpdatePutoutBatteryID sets the "putout_battery_id" field to the value that was provided on create.
-func (u *EnterpriseBatterySwapUpsertOne) UpdatePutoutBatteryID() *EnterpriseBatterySwapUpsertOne {
+// UpdatePutoutID sets the "putout_id" field to the value that was provided on create.
+func (u *EnterpriseBatterySwapUpsertOne) UpdatePutoutID() *EnterpriseBatterySwapUpsertOne {
 	return u.Update(func(s *EnterpriseBatterySwapUpsert) {
-		s.UpdatePutoutBatteryID()
+		s.UpdatePutoutID()
 	})
 }
 
-// SetPutoutBatterySn sets the "putout_battery_sn" field.
-func (u *EnterpriseBatterySwapUpsertOne) SetPutoutBatterySn(v string) *EnterpriseBatterySwapUpsertOne {
+// SetPutoutSn sets the "putout_sn" field.
+func (u *EnterpriseBatterySwapUpsertOne) SetPutoutSn(v string) *EnterpriseBatterySwapUpsertOne {
 	return u.Update(func(s *EnterpriseBatterySwapUpsert) {
-		s.SetPutoutBatterySn(v)
+		s.SetPutoutSn(v)
 	})
 }
 
-// UpdatePutoutBatterySn sets the "putout_battery_sn" field to the value that was provided on create.
-func (u *EnterpriseBatterySwapUpsertOne) UpdatePutoutBatterySn() *EnterpriseBatterySwapUpsertOne {
+// UpdatePutoutSn sets the "putout_sn" field to the value that was provided on create.
+func (u *EnterpriseBatterySwapUpsertOne) UpdatePutoutSn() *EnterpriseBatterySwapUpsertOne {
 	return u.Update(func(s *EnterpriseBatterySwapUpsert) {
-		s.UpdatePutoutBatterySn()
+		s.UpdatePutoutSn()
 	})
 }
 
@@ -1133,31 +1133,31 @@ func (u *EnterpriseBatterySwapUpsertBulk) UpdateCabinetID() *EnterpriseBatterySw
 	})
 }
 
-// SetPutinBatteryID sets the "putin_battery_id" field.
-func (u *EnterpriseBatterySwapUpsertBulk) SetPutinBatteryID(v uint64) *EnterpriseBatterySwapUpsertBulk {
+// SetPutinID sets the "putin_id" field.
+func (u *EnterpriseBatterySwapUpsertBulk) SetPutinID(v uint64) *EnterpriseBatterySwapUpsertBulk {
 	return u.Update(func(s *EnterpriseBatterySwapUpsert) {
-		s.SetPutinBatteryID(v)
+		s.SetPutinID(v)
 	})
 }
 
-// UpdatePutinBatteryID sets the "putin_battery_id" field to the value that was provided on create.
-func (u *EnterpriseBatterySwapUpsertBulk) UpdatePutinBatteryID() *EnterpriseBatterySwapUpsertBulk {
+// UpdatePutinID sets the "putin_id" field to the value that was provided on create.
+func (u *EnterpriseBatterySwapUpsertBulk) UpdatePutinID() *EnterpriseBatterySwapUpsertBulk {
 	return u.Update(func(s *EnterpriseBatterySwapUpsert) {
-		s.UpdatePutinBatteryID()
+		s.UpdatePutinID()
 	})
 }
 
-// SetPutinBatterySn sets the "putin_battery_sn" field.
-func (u *EnterpriseBatterySwapUpsertBulk) SetPutinBatterySn(v string) *EnterpriseBatterySwapUpsertBulk {
+// SetPutinSn sets the "putin_sn" field.
+func (u *EnterpriseBatterySwapUpsertBulk) SetPutinSn(v string) *EnterpriseBatterySwapUpsertBulk {
 	return u.Update(func(s *EnterpriseBatterySwapUpsert) {
-		s.SetPutinBatterySn(v)
+		s.SetPutinSn(v)
 	})
 }
 
-// UpdatePutinBatterySn sets the "putin_battery_sn" field to the value that was provided on create.
-func (u *EnterpriseBatterySwapUpsertBulk) UpdatePutinBatterySn() *EnterpriseBatterySwapUpsertBulk {
+// UpdatePutinSn sets the "putin_sn" field to the value that was provided on create.
+func (u *EnterpriseBatterySwapUpsertBulk) UpdatePutinSn() *EnterpriseBatterySwapUpsertBulk {
 	return u.Update(func(s *EnterpriseBatterySwapUpsert) {
-		s.UpdatePutinBatterySn()
+		s.UpdatePutinSn()
 	})
 }
 
@@ -1203,31 +1203,31 @@ func (u *EnterpriseBatterySwapUpsertBulk) ClearPutinStationID() *EnterpriseBatte
 	})
 }
 
-// SetPutoutBatteryID sets the "putout_battery_id" field.
-func (u *EnterpriseBatterySwapUpsertBulk) SetPutoutBatteryID(v uint64) *EnterpriseBatterySwapUpsertBulk {
+// SetPutoutID sets the "putout_id" field.
+func (u *EnterpriseBatterySwapUpsertBulk) SetPutoutID(v uint64) *EnterpriseBatterySwapUpsertBulk {
 	return u.Update(func(s *EnterpriseBatterySwapUpsert) {
-		s.SetPutoutBatteryID(v)
+		s.SetPutoutID(v)
 	})
 }
 
-// UpdatePutoutBatteryID sets the "putout_battery_id" field to the value that was provided on create.
-func (u *EnterpriseBatterySwapUpsertBulk) UpdatePutoutBatteryID() *EnterpriseBatterySwapUpsertBulk {
+// UpdatePutoutID sets the "putout_id" field to the value that was provided on create.
+func (u *EnterpriseBatterySwapUpsertBulk) UpdatePutoutID() *EnterpriseBatterySwapUpsertBulk {
 	return u.Update(func(s *EnterpriseBatterySwapUpsert) {
-		s.UpdatePutoutBatteryID()
+		s.UpdatePutoutID()
 	})
 }
 
-// SetPutoutBatterySn sets the "putout_battery_sn" field.
-func (u *EnterpriseBatterySwapUpsertBulk) SetPutoutBatterySn(v string) *EnterpriseBatterySwapUpsertBulk {
+// SetPutoutSn sets the "putout_sn" field.
+func (u *EnterpriseBatterySwapUpsertBulk) SetPutoutSn(v string) *EnterpriseBatterySwapUpsertBulk {
 	return u.Update(func(s *EnterpriseBatterySwapUpsert) {
-		s.SetPutoutBatterySn(v)
+		s.SetPutoutSn(v)
 	})
 }
 
-// UpdatePutoutBatterySn sets the "putout_battery_sn" field to the value that was provided on create.
-func (u *EnterpriseBatterySwapUpsertBulk) UpdatePutoutBatterySn() *EnterpriseBatterySwapUpsertBulk {
+// UpdatePutoutSn sets the "putout_sn" field to the value that was provided on create.
+func (u *EnterpriseBatterySwapUpsertBulk) UpdatePutoutSn() *EnterpriseBatterySwapUpsertBulk {
 	return u.Update(func(s *EnterpriseBatterySwapUpsert) {
-		s.UpdatePutoutBatterySn()
+		s.UpdatePutoutSn()
 	})
 }
 

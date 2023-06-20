@@ -75,14 +75,14 @@ func CabinetID(v uint64) predicate.EnterpriseBatterySwap {
 	return predicate.EnterpriseBatterySwap(sql.FieldEQ(FieldCabinetID, v))
 }
 
-// PutinBatteryID applies equality check predicate on the "putin_battery_id" field. It's identical to PutinBatteryIDEQ.
-func PutinBatteryID(v uint64) predicate.EnterpriseBatterySwap {
-	return predicate.EnterpriseBatterySwap(sql.FieldEQ(FieldPutinBatteryID, v))
+// PutinID applies equality check predicate on the "putin_id" field. It's identical to PutinIDEQ.
+func PutinID(v uint64) predicate.EnterpriseBatterySwap {
+	return predicate.EnterpriseBatterySwap(sql.FieldEQ(FieldPutinID, v))
 }
 
-// PutinBatterySn applies equality check predicate on the "putin_battery_sn" field. It's identical to PutinBatterySnEQ.
-func PutinBatterySn(v string) predicate.EnterpriseBatterySwap {
-	return predicate.EnterpriseBatterySwap(sql.FieldEQ(FieldPutinBatterySn, v))
+// PutinSn applies equality check predicate on the "putin_sn" field. It's identical to PutinSnEQ.
+func PutinSn(v string) predicate.EnterpriseBatterySwap {
+	return predicate.EnterpriseBatterySwap(sql.FieldEQ(FieldPutinSn, v))
 }
 
 // PutinEnterpriseID applies equality check predicate on the "putin_enterprise_id" field. It's identical to PutinEnterpriseIDEQ.
@@ -95,14 +95,14 @@ func PutinStationID(v uint64) predicate.EnterpriseBatterySwap {
 	return predicate.EnterpriseBatterySwap(sql.FieldEQ(FieldPutinStationID, v))
 }
 
-// PutoutBatteryID applies equality check predicate on the "putout_battery_id" field. It's identical to PutoutBatteryIDEQ.
-func PutoutBatteryID(v uint64) predicate.EnterpriseBatterySwap {
-	return predicate.EnterpriseBatterySwap(sql.FieldEQ(FieldPutoutBatteryID, v))
+// PutoutID applies equality check predicate on the "putout_id" field. It's identical to PutoutIDEQ.
+func PutoutID(v uint64) predicate.EnterpriseBatterySwap {
+	return predicate.EnterpriseBatterySwap(sql.FieldEQ(FieldPutoutID, v))
 }
 
-// PutoutBatterySn applies equality check predicate on the "putout_battery_sn" field. It's identical to PutoutBatterySnEQ.
-func PutoutBatterySn(v string) predicate.EnterpriseBatterySwap {
-	return predicate.EnterpriseBatterySwap(sql.FieldEQ(FieldPutoutBatterySn, v))
+// PutoutSn applies equality check predicate on the "putout_sn" field. It's identical to PutoutSnEQ.
+func PutoutSn(v string) predicate.EnterpriseBatterySwap {
+	return predicate.EnterpriseBatterySwap(sql.FieldEQ(FieldPutoutSn, v))
 }
 
 // PutoutEnterpriseID applies equality check predicate on the "putout_enterprise_id" field. It's identical to PutoutEnterpriseIDEQ.
@@ -235,89 +235,89 @@ func CabinetIDNotIn(vs ...uint64) predicate.EnterpriseBatterySwap {
 	return predicate.EnterpriseBatterySwap(sql.FieldNotIn(FieldCabinetID, vs...))
 }
 
-// PutinBatteryIDEQ applies the EQ predicate on the "putin_battery_id" field.
-func PutinBatteryIDEQ(v uint64) predicate.EnterpriseBatterySwap {
-	return predicate.EnterpriseBatterySwap(sql.FieldEQ(FieldPutinBatteryID, v))
+// PutinIDEQ applies the EQ predicate on the "putin_id" field.
+func PutinIDEQ(v uint64) predicate.EnterpriseBatterySwap {
+	return predicate.EnterpriseBatterySwap(sql.FieldEQ(FieldPutinID, v))
 }
 
-// PutinBatteryIDNEQ applies the NEQ predicate on the "putin_battery_id" field.
-func PutinBatteryIDNEQ(v uint64) predicate.EnterpriseBatterySwap {
-	return predicate.EnterpriseBatterySwap(sql.FieldNEQ(FieldPutinBatteryID, v))
+// PutinIDNEQ applies the NEQ predicate on the "putin_id" field.
+func PutinIDNEQ(v uint64) predicate.EnterpriseBatterySwap {
+	return predicate.EnterpriseBatterySwap(sql.FieldNEQ(FieldPutinID, v))
 }
 
-// PutinBatteryIDIn applies the In predicate on the "putin_battery_id" field.
-func PutinBatteryIDIn(vs ...uint64) predicate.EnterpriseBatterySwap {
-	return predicate.EnterpriseBatterySwap(sql.FieldIn(FieldPutinBatteryID, vs...))
+// PutinIDIn applies the In predicate on the "putin_id" field.
+func PutinIDIn(vs ...uint64) predicate.EnterpriseBatterySwap {
+	return predicate.EnterpriseBatterySwap(sql.FieldIn(FieldPutinID, vs...))
 }
 
-// PutinBatteryIDNotIn applies the NotIn predicate on the "putin_battery_id" field.
-func PutinBatteryIDNotIn(vs ...uint64) predicate.EnterpriseBatterySwap {
-	return predicate.EnterpriseBatterySwap(sql.FieldNotIn(FieldPutinBatteryID, vs...))
+// PutinIDNotIn applies the NotIn predicate on the "putin_id" field.
+func PutinIDNotIn(vs ...uint64) predicate.EnterpriseBatterySwap {
+	return predicate.EnterpriseBatterySwap(sql.FieldNotIn(FieldPutinID, vs...))
 }
 
-// PutinBatterySnEQ applies the EQ predicate on the "putin_battery_sn" field.
-func PutinBatterySnEQ(v string) predicate.EnterpriseBatterySwap {
-	return predicate.EnterpriseBatterySwap(sql.FieldEQ(FieldPutinBatterySn, v))
+// PutinSnEQ applies the EQ predicate on the "putin_sn" field.
+func PutinSnEQ(v string) predicate.EnterpriseBatterySwap {
+	return predicate.EnterpriseBatterySwap(sql.FieldEQ(FieldPutinSn, v))
 }
 
-// PutinBatterySnNEQ applies the NEQ predicate on the "putin_battery_sn" field.
-func PutinBatterySnNEQ(v string) predicate.EnterpriseBatterySwap {
-	return predicate.EnterpriseBatterySwap(sql.FieldNEQ(FieldPutinBatterySn, v))
+// PutinSnNEQ applies the NEQ predicate on the "putin_sn" field.
+func PutinSnNEQ(v string) predicate.EnterpriseBatterySwap {
+	return predicate.EnterpriseBatterySwap(sql.FieldNEQ(FieldPutinSn, v))
 }
 
-// PutinBatterySnIn applies the In predicate on the "putin_battery_sn" field.
-func PutinBatterySnIn(vs ...string) predicate.EnterpriseBatterySwap {
-	return predicate.EnterpriseBatterySwap(sql.FieldIn(FieldPutinBatterySn, vs...))
+// PutinSnIn applies the In predicate on the "putin_sn" field.
+func PutinSnIn(vs ...string) predicate.EnterpriseBatterySwap {
+	return predicate.EnterpriseBatterySwap(sql.FieldIn(FieldPutinSn, vs...))
 }
 
-// PutinBatterySnNotIn applies the NotIn predicate on the "putin_battery_sn" field.
-func PutinBatterySnNotIn(vs ...string) predicate.EnterpriseBatterySwap {
-	return predicate.EnterpriseBatterySwap(sql.FieldNotIn(FieldPutinBatterySn, vs...))
+// PutinSnNotIn applies the NotIn predicate on the "putin_sn" field.
+func PutinSnNotIn(vs ...string) predicate.EnterpriseBatterySwap {
+	return predicate.EnterpriseBatterySwap(sql.FieldNotIn(FieldPutinSn, vs...))
 }
 
-// PutinBatterySnGT applies the GT predicate on the "putin_battery_sn" field.
-func PutinBatterySnGT(v string) predicate.EnterpriseBatterySwap {
-	return predicate.EnterpriseBatterySwap(sql.FieldGT(FieldPutinBatterySn, v))
+// PutinSnGT applies the GT predicate on the "putin_sn" field.
+func PutinSnGT(v string) predicate.EnterpriseBatterySwap {
+	return predicate.EnterpriseBatterySwap(sql.FieldGT(FieldPutinSn, v))
 }
 
-// PutinBatterySnGTE applies the GTE predicate on the "putin_battery_sn" field.
-func PutinBatterySnGTE(v string) predicate.EnterpriseBatterySwap {
-	return predicate.EnterpriseBatterySwap(sql.FieldGTE(FieldPutinBatterySn, v))
+// PutinSnGTE applies the GTE predicate on the "putin_sn" field.
+func PutinSnGTE(v string) predicate.EnterpriseBatterySwap {
+	return predicate.EnterpriseBatterySwap(sql.FieldGTE(FieldPutinSn, v))
 }
 
-// PutinBatterySnLT applies the LT predicate on the "putin_battery_sn" field.
-func PutinBatterySnLT(v string) predicate.EnterpriseBatterySwap {
-	return predicate.EnterpriseBatterySwap(sql.FieldLT(FieldPutinBatterySn, v))
+// PutinSnLT applies the LT predicate on the "putin_sn" field.
+func PutinSnLT(v string) predicate.EnterpriseBatterySwap {
+	return predicate.EnterpriseBatterySwap(sql.FieldLT(FieldPutinSn, v))
 }
 
-// PutinBatterySnLTE applies the LTE predicate on the "putin_battery_sn" field.
-func PutinBatterySnLTE(v string) predicate.EnterpriseBatterySwap {
-	return predicate.EnterpriseBatterySwap(sql.FieldLTE(FieldPutinBatterySn, v))
+// PutinSnLTE applies the LTE predicate on the "putin_sn" field.
+func PutinSnLTE(v string) predicate.EnterpriseBatterySwap {
+	return predicate.EnterpriseBatterySwap(sql.FieldLTE(FieldPutinSn, v))
 }
 
-// PutinBatterySnContains applies the Contains predicate on the "putin_battery_sn" field.
-func PutinBatterySnContains(v string) predicate.EnterpriseBatterySwap {
-	return predicate.EnterpriseBatterySwap(sql.FieldContains(FieldPutinBatterySn, v))
+// PutinSnContains applies the Contains predicate on the "putin_sn" field.
+func PutinSnContains(v string) predicate.EnterpriseBatterySwap {
+	return predicate.EnterpriseBatterySwap(sql.FieldContains(FieldPutinSn, v))
 }
 
-// PutinBatterySnHasPrefix applies the HasPrefix predicate on the "putin_battery_sn" field.
-func PutinBatterySnHasPrefix(v string) predicate.EnterpriseBatterySwap {
-	return predicate.EnterpriseBatterySwap(sql.FieldHasPrefix(FieldPutinBatterySn, v))
+// PutinSnHasPrefix applies the HasPrefix predicate on the "putin_sn" field.
+func PutinSnHasPrefix(v string) predicate.EnterpriseBatterySwap {
+	return predicate.EnterpriseBatterySwap(sql.FieldHasPrefix(FieldPutinSn, v))
 }
 
-// PutinBatterySnHasSuffix applies the HasSuffix predicate on the "putin_battery_sn" field.
-func PutinBatterySnHasSuffix(v string) predicate.EnterpriseBatterySwap {
-	return predicate.EnterpriseBatterySwap(sql.FieldHasSuffix(FieldPutinBatterySn, v))
+// PutinSnHasSuffix applies the HasSuffix predicate on the "putin_sn" field.
+func PutinSnHasSuffix(v string) predicate.EnterpriseBatterySwap {
+	return predicate.EnterpriseBatterySwap(sql.FieldHasSuffix(FieldPutinSn, v))
 }
 
-// PutinBatterySnEqualFold applies the EqualFold predicate on the "putin_battery_sn" field.
-func PutinBatterySnEqualFold(v string) predicate.EnterpriseBatterySwap {
-	return predicate.EnterpriseBatterySwap(sql.FieldEqualFold(FieldPutinBatterySn, v))
+// PutinSnEqualFold applies the EqualFold predicate on the "putin_sn" field.
+func PutinSnEqualFold(v string) predicate.EnterpriseBatterySwap {
+	return predicate.EnterpriseBatterySwap(sql.FieldEqualFold(FieldPutinSn, v))
 }
 
-// PutinBatterySnContainsFold applies the ContainsFold predicate on the "putin_battery_sn" field.
-func PutinBatterySnContainsFold(v string) predicate.EnterpriseBatterySwap {
-	return predicate.EnterpriseBatterySwap(sql.FieldContainsFold(FieldPutinBatterySn, v))
+// PutinSnContainsFold applies the ContainsFold predicate on the "putin_sn" field.
+func PutinSnContainsFold(v string) predicate.EnterpriseBatterySwap {
+	return predicate.EnterpriseBatterySwap(sql.FieldContainsFold(FieldPutinSn, v))
 }
 
 // PutinEnterpriseIDEQ applies the EQ predicate on the "putin_enterprise_id" field.
@@ -380,89 +380,89 @@ func PutinStationIDNotNil() predicate.EnterpriseBatterySwap {
 	return predicate.EnterpriseBatterySwap(sql.FieldNotNull(FieldPutinStationID))
 }
 
-// PutoutBatteryIDEQ applies the EQ predicate on the "putout_battery_id" field.
-func PutoutBatteryIDEQ(v uint64) predicate.EnterpriseBatterySwap {
-	return predicate.EnterpriseBatterySwap(sql.FieldEQ(FieldPutoutBatteryID, v))
+// PutoutIDEQ applies the EQ predicate on the "putout_id" field.
+func PutoutIDEQ(v uint64) predicate.EnterpriseBatterySwap {
+	return predicate.EnterpriseBatterySwap(sql.FieldEQ(FieldPutoutID, v))
 }
 
-// PutoutBatteryIDNEQ applies the NEQ predicate on the "putout_battery_id" field.
-func PutoutBatteryIDNEQ(v uint64) predicate.EnterpriseBatterySwap {
-	return predicate.EnterpriseBatterySwap(sql.FieldNEQ(FieldPutoutBatteryID, v))
+// PutoutIDNEQ applies the NEQ predicate on the "putout_id" field.
+func PutoutIDNEQ(v uint64) predicate.EnterpriseBatterySwap {
+	return predicate.EnterpriseBatterySwap(sql.FieldNEQ(FieldPutoutID, v))
 }
 
-// PutoutBatteryIDIn applies the In predicate on the "putout_battery_id" field.
-func PutoutBatteryIDIn(vs ...uint64) predicate.EnterpriseBatterySwap {
-	return predicate.EnterpriseBatterySwap(sql.FieldIn(FieldPutoutBatteryID, vs...))
+// PutoutIDIn applies the In predicate on the "putout_id" field.
+func PutoutIDIn(vs ...uint64) predicate.EnterpriseBatterySwap {
+	return predicate.EnterpriseBatterySwap(sql.FieldIn(FieldPutoutID, vs...))
 }
 
-// PutoutBatteryIDNotIn applies the NotIn predicate on the "putout_battery_id" field.
-func PutoutBatteryIDNotIn(vs ...uint64) predicate.EnterpriseBatterySwap {
-	return predicate.EnterpriseBatterySwap(sql.FieldNotIn(FieldPutoutBatteryID, vs...))
+// PutoutIDNotIn applies the NotIn predicate on the "putout_id" field.
+func PutoutIDNotIn(vs ...uint64) predicate.EnterpriseBatterySwap {
+	return predicate.EnterpriseBatterySwap(sql.FieldNotIn(FieldPutoutID, vs...))
 }
 
-// PutoutBatterySnEQ applies the EQ predicate on the "putout_battery_sn" field.
-func PutoutBatterySnEQ(v string) predicate.EnterpriseBatterySwap {
-	return predicate.EnterpriseBatterySwap(sql.FieldEQ(FieldPutoutBatterySn, v))
+// PutoutSnEQ applies the EQ predicate on the "putout_sn" field.
+func PutoutSnEQ(v string) predicate.EnterpriseBatterySwap {
+	return predicate.EnterpriseBatterySwap(sql.FieldEQ(FieldPutoutSn, v))
 }
 
-// PutoutBatterySnNEQ applies the NEQ predicate on the "putout_battery_sn" field.
-func PutoutBatterySnNEQ(v string) predicate.EnterpriseBatterySwap {
-	return predicate.EnterpriseBatterySwap(sql.FieldNEQ(FieldPutoutBatterySn, v))
+// PutoutSnNEQ applies the NEQ predicate on the "putout_sn" field.
+func PutoutSnNEQ(v string) predicate.EnterpriseBatterySwap {
+	return predicate.EnterpriseBatterySwap(sql.FieldNEQ(FieldPutoutSn, v))
 }
 
-// PutoutBatterySnIn applies the In predicate on the "putout_battery_sn" field.
-func PutoutBatterySnIn(vs ...string) predicate.EnterpriseBatterySwap {
-	return predicate.EnterpriseBatterySwap(sql.FieldIn(FieldPutoutBatterySn, vs...))
+// PutoutSnIn applies the In predicate on the "putout_sn" field.
+func PutoutSnIn(vs ...string) predicate.EnterpriseBatterySwap {
+	return predicate.EnterpriseBatterySwap(sql.FieldIn(FieldPutoutSn, vs...))
 }
 
-// PutoutBatterySnNotIn applies the NotIn predicate on the "putout_battery_sn" field.
-func PutoutBatterySnNotIn(vs ...string) predicate.EnterpriseBatterySwap {
-	return predicate.EnterpriseBatterySwap(sql.FieldNotIn(FieldPutoutBatterySn, vs...))
+// PutoutSnNotIn applies the NotIn predicate on the "putout_sn" field.
+func PutoutSnNotIn(vs ...string) predicate.EnterpriseBatterySwap {
+	return predicate.EnterpriseBatterySwap(sql.FieldNotIn(FieldPutoutSn, vs...))
 }
 
-// PutoutBatterySnGT applies the GT predicate on the "putout_battery_sn" field.
-func PutoutBatterySnGT(v string) predicate.EnterpriseBatterySwap {
-	return predicate.EnterpriseBatterySwap(sql.FieldGT(FieldPutoutBatterySn, v))
+// PutoutSnGT applies the GT predicate on the "putout_sn" field.
+func PutoutSnGT(v string) predicate.EnterpriseBatterySwap {
+	return predicate.EnterpriseBatterySwap(sql.FieldGT(FieldPutoutSn, v))
 }
 
-// PutoutBatterySnGTE applies the GTE predicate on the "putout_battery_sn" field.
-func PutoutBatterySnGTE(v string) predicate.EnterpriseBatterySwap {
-	return predicate.EnterpriseBatterySwap(sql.FieldGTE(FieldPutoutBatterySn, v))
+// PutoutSnGTE applies the GTE predicate on the "putout_sn" field.
+func PutoutSnGTE(v string) predicate.EnterpriseBatterySwap {
+	return predicate.EnterpriseBatterySwap(sql.FieldGTE(FieldPutoutSn, v))
 }
 
-// PutoutBatterySnLT applies the LT predicate on the "putout_battery_sn" field.
-func PutoutBatterySnLT(v string) predicate.EnterpriseBatterySwap {
-	return predicate.EnterpriseBatterySwap(sql.FieldLT(FieldPutoutBatterySn, v))
+// PutoutSnLT applies the LT predicate on the "putout_sn" field.
+func PutoutSnLT(v string) predicate.EnterpriseBatterySwap {
+	return predicate.EnterpriseBatterySwap(sql.FieldLT(FieldPutoutSn, v))
 }
 
-// PutoutBatterySnLTE applies the LTE predicate on the "putout_battery_sn" field.
-func PutoutBatterySnLTE(v string) predicate.EnterpriseBatterySwap {
-	return predicate.EnterpriseBatterySwap(sql.FieldLTE(FieldPutoutBatterySn, v))
+// PutoutSnLTE applies the LTE predicate on the "putout_sn" field.
+func PutoutSnLTE(v string) predicate.EnterpriseBatterySwap {
+	return predicate.EnterpriseBatterySwap(sql.FieldLTE(FieldPutoutSn, v))
 }
 
-// PutoutBatterySnContains applies the Contains predicate on the "putout_battery_sn" field.
-func PutoutBatterySnContains(v string) predicate.EnterpriseBatterySwap {
-	return predicate.EnterpriseBatterySwap(sql.FieldContains(FieldPutoutBatterySn, v))
+// PutoutSnContains applies the Contains predicate on the "putout_sn" field.
+func PutoutSnContains(v string) predicate.EnterpriseBatterySwap {
+	return predicate.EnterpriseBatterySwap(sql.FieldContains(FieldPutoutSn, v))
 }
 
-// PutoutBatterySnHasPrefix applies the HasPrefix predicate on the "putout_battery_sn" field.
-func PutoutBatterySnHasPrefix(v string) predicate.EnterpriseBatterySwap {
-	return predicate.EnterpriseBatterySwap(sql.FieldHasPrefix(FieldPutoutBatterySn, v))
+// PutoutSnHasPrefix applies the HasPrefix predicate on the "putout_sn" field.
+func PutoutSnHasPrefix(v string) predicate.EnterpriseBatterySwap {
+	return predicate.EnterpriseBatterySwap(sql.FieldHasPrefix(FieldPutoutSn, v))
 }
 
-// PutoutBatterySnHasSuffix applies the HasSuffix predicate on the "putout_battery_sn" field.
-func PutoutBatterySnHasSuffix(v string) predicate.EnterpriseBatterySwap {
-	return predicate.EnterpriseBatterySwap(sql.FieldHasSuffix(FieldPutoutBatterySn, v))
+// PutoutSnHasSuffix applies the HasSuffix predicate on the "putout_sn" field.
+func PutoutSnHasSuffix(v string) predicate.EnterpriseBatterySwap {
+	return predicate.EnterpriseBatterySwap(sql.FieldHasSuffix(FieldPutoutSn, v))
 }
 
-// PutoutBatterySnEqualFold applies the EqualFold predicate on the "putout_battery_sn" field.
-func PutoutBatterySnEqualFold(v string) predicate.EnterpriseBatterySwap {
-	return predicate.EnterpriseBatterySwap(sql.FieldEqualFold(FieldPutoutBatterySn, v))
+// PutoutSnEqualFold applies the EqualFold predicate on the "putout_sn" field.
+func PutoutSnEqualFold(v string) predicate.EnterpriseBatterySwap {
+	return predicate.EnterpriseBatterySwap(sql.FieldEqualFold(FieldPutoutSn, v))
 }
 
-// PutoutBatterySnContainsFold applies the ContainsFold predicate on the "putout_battery_sn" field.
-func PutoutBatterySnContainsFold(v string) predicate.EnterpriseBatterySwap {
-	return predicate.EnterpriseBatterySwap(sql.FieldContainsFold(FieldPutoutBatterySn, v))
+// PutoutSnContainsFold applies the ContainsFold predicate on the "putout_sn" field.
+func PutoutSnContainsFold(v string) predicate.EnterpriseBatterySwap {
+	return predicate.EnterpriseBatterySwap(sql.FieldContainsFold(FieldPutoutSn, v))
 }
 
 // PutoutEnterpriseIDEQ applies the EQ predicate on the "putout_enterprise_id" field.
@@ -571,21 +571,21 @@ func HasCabinetWith(preds ...predicate.Cabinet) predicate.EnterpriseBatterySwap 
 	})
 }
 
-// HasPutinBattery applies the HasEdge predicate on the "putin_battery" edge.
-func HasPutinBattery() predicate.EnterpriseBatterySwap {
+// HasPutin applies the HasEdge predicate on the "putin" edge.
+func HasPutin() predicate.EnterpriseBatterySwap {
 	return predicate.EnterpriseBatterySwap(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, PutinBatteryTable, PutinBatteryColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, PutinTable, PutinColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasPutinBatteryWith applies the HasEdge predicate on the "putin_battery" edge with a given conditions (other predicates).
-func HasPutinBatteryWith(preds ...predicate.Battery) predicate.EnterpriseBatterySwap {
+// HasPutinWith applies the HasEdge predicate on the "putin" edge with a given conditions (other predicates).
+func HasPutinWith(preds ...predicate.Battery) predicate.EnterpriseBatterySwap {
 	return predicate.EnterpriseBatterySwap(func(s *sql.Selector) {
-		step := newPutinBatteryStep()
+		step := newPutinStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -640,21 +640,21 @@ func HasPutinStationWith(preds ...predicate.EnterpriseStation) predicate.Enterpr
 	})
 }
 
-// HasPutoutBattery applies the HasEdge predicate on the "putout_battery" edge.
-func HasPutoutBattery() predicate.EnterpriseBatterySwap {
+// HasPutout applies the HasEdge predicate on the "putout" edge.
+func HasPutout() predicate.EnterpriseBatterySwap {
 	return predicate.EnterpriseBatterySwap(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, PutoutBatteryTable, PutoutBatteryColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, PutoutTable, PutoutColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasPutoutBatteryWith applies the HasEdge predicate on the "putout_battery" edge with a given conditions (other predicates).
-func HasPutoutBatteryWith(preds ...predicate.Battery) predicate.EnterpriseBatterySwap {
+// HasPutoutWith applies the HasEdge predicate on the "putout" edge with a given conditions (other predicates).
+func HasPutoutWith(preds ...predicate.Battery) predicate.EnterpriseBatterySwap {
 	return predicate.EnterpriseBatterySwap(func(s *sql.Selector) {
-		step := newPutoutBatteryStep()
+		step := newPutoutStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

@@ -31,20 +31,20 @@ type EnterpriseBatterySwap struct {
 	// 电柜ID
 	CabinetID uint64 `json:"cabinet_id,omitempty"`
 	// 放入的电池ID
-	PutinBatteryID uint64 `json:"putin_battery_id,omitempty"`
+	PutinID uint64 `json:"putin_id,omitempty"`
 	// 放入的电池编码
-	PutinBatterySn string `json:"putin_battery_sn,omitempty"`
-	// 放入归属团签ID, 空值是平台骑手放入
+	PutinSn string `json:"putin_sn,omitempty"`
+	// 放入的电池归属团签ID, 空值是平台骑手放入
 	PutinEnterpriseID *uint64 `json:"putin_enterprise_id,omitempty"`
-	// 放入归属站点ID, 空值是平台骑手放入
+	// 放入的电池归属站点ID, 空值是平台骑手放入
 	PutinStationID *uint64 `json:"putin_station_id,omitempty"`
 	// 取出的电池ID
-	PutoutBatteryID uint64 `json:"putout_battery_id,omitempty"`
+	PutoutID uint64 `json:"putout_id,omitempty"`
 	// 取出的电池编码
-	PutoutBatterySn string `json:"putout_battery_sn,omitempty"`
-	// 取出归属团签ID, 空值是从平台电柜取出
+	PutoutSn string `json:"putout_sn,omitempty"`
+	// 取出的电池原归属团签ID, 空值是从平台电柜取出
 	PutoutEnterpriseID *uint64 `json:"putout_enterprise_id,omitempty"`
-	// 取出归属站点ID, 空值是从平台电柜取出
+	// 取出的电池原归属站点ID, 空值是从平台电柜取出
 	PutoutStationID *uint64 `json:"putout_station_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EnterpriseBatterySwapQuery when eager-loading is set.
@@ -58,14 +58,14 @@ type EnterpriseBatterySwapEdges struct {
 	Exchange *Exchange `json:"exchange,omitempty"`
 	// Cabinet holds the value of the cabinet edge.
 	Cabinet *Cabinet `json:"cabinet,omitempty"`
-	// PutinBattery holds the value of the putin_battery edge.
-	PutinBattery *Battery `json:"putin_battery,omitempty"`
+	// Putin holds the value of the putin edge.
+	Putin *Battery `json:"putin,omitempty"`
 	// PutinEnterprise holds the value of the putin_enterprise edge.
 	PutinEnterprise *Enterprise `json:"putin_enterprise,omitempty"`
 	// PutinStation holds the value of the putin_station edge.
 	PutinStation *EnterpriseStation `json:"putin_station,omitempty"`
-	// PutoutBattery holds the value of the putout_battery edge.
-	PutoutBattery *Battery `json:"putout_battery,omitempty"`
+	// Putout holds the value of the putout edge.
+	Putout *Battery `json:"putout,omitempty"`
 	// PutoutEnterprise holds the value of the putout_enterprise edge.
 	PutoutEnterprise *Enterprise `json:"putout_enterprise,omitempty"`
 	// PutoutStation holds the value of the putout_station edge.
@@ -101,17 +101,17 @@ func (e EnterpriseBatterySwapEdges) CabinetOrErr() (*Cabinet, error) {
 	return nil, &NotLoadedError{edge: "cabinet"}
 }
 
-// PutinBatteryOrErr returns the PutinBattery value or an error if the edge
+// PutinOrErr returns the Putin value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e EnterpriseBatterySwapEdges) PutinBatteryOrErr() (*Battery, error) {
+func (e EnterpriseBatterySwapEdges) PutinOrErr() (*Battery, error) {
 	if e.loadedTypes[2] {
-		if e.PutinBattery == nil {
+		if e.Putin == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: battery.Label}
 		}
-		return e.PutinBattery, nil
+		return e.Putin, nil
 	}
-	return nil, &NotLoadedError{edge: "putin_battery"}
+	return nil, &NotLoadedError{edge: "putin"}
 }
 
 // PutinEnterpriseOrErr returns the PutinEnterprise value or an error if the edge
@@ -140,17 +140,17 @@ func (e EnterpriseBatterySwapEdges) PutinStationOrErr() (*EnterpriseStation, err
 	return nil, &NotLoadedError{edge: "putin_station"}
 }
 
-// PutoutBatteryOrErr returns the PutoutBattery value or an error if the edge
+// PutoutOrErr returns the Putout value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e EnterpriseBatterySwapEdges) PutoutBatteryOrErr() (*Battery, error) {
+func (e EnterpriseBatterySwapEdges) PutoutOrErr() (*Battery, error) {
 	if e.loadedTypes[5] {
-		if e.PutoutBattery == nil {
+		if e.Putout == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: battery.Label}
 		}
-		return e.PutoutBattery, nil
+		return e.Putout, nil
 	}
-	return nil, &NotLoadedError{edge: "putout_battery"}
+	return nil, &NotLoadedError{edge: "putout"}
 }
 
 // PutoutEnterpriseOrErr returns the PutoutEnterprise value or an error if the edge
@@ -184,9 +184,9 @@ func (*EnterpriseBatterySwap) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case enterprisebatteryswap.FieldID, enterprisebatteryswap.FieldExchangeID, enterprisebatteryswap.FieldCabinetID, enterprisebatteryswap.FieldPutinBatteryID, enterprisebatteryswap.FieldPutinEnterpriseID, enterprisebatteryswap.FieldPutinStationID, enterprisebatteryswap.FieldPutoutBatteryID, enterprisebatteryswap.FieldPutoutEnterpriseID, enterprisebatteryswap.FieldPutoutStationID:
+		case enterprisebatteryswap.FieldID, enterprisebatteryswap.FieldExchangeID, enterprisebatteryswap.FieldCabinetID, enterprisebatteryswap.FieldPutinID, enterprisebatteryswap.FieldPutinEnterpriseID, enterprisebatteryswap.FieldPutinStationID, enterprisebatteryswap.FieldPutoutID, enterprisebatteryswap.FieldPutoutEnterpriseID, enterprisebatteryswap.FieldPutoutStationID:
 			values[i] = new(sql.NullInt64)
-		case enterprisebatteryswap.FieldPutinBatterySn, enterprisebatteryswap.FieldPutoutBatterySn:
+		case enterprisebatteryswap.FieldPutinSn, enterprisebatteryswap.FieldPutoutSn:
 			values[i] = new(sql.NullString)
 		case enterprisebatteryswap.FieldCreatedAt, enterprisebatteryswap.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -235,17 +235,17 @@ func (ebs *EnterpriseBatterySwap) assignValues(columns []string, values []any) e
 			} else if value.Valid {
 				ebs.CabinetID = uint64(value.Int64)
 			}
-		case enterprisebatteryswap.FieldPutinBatteryID:
+		case enterprisebatteryswap.FieldPutinID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field putin_battery_id", values[i])
+				return fmt.Errorf("unexpected type %T for field putin_id", values[i])
 			} else if value.Valid {
-				ebs.PutinBatteryID = uint64(value.Int64)
+				ebs.PutinID = uint64(value.Int64)
 			}
-		case enterprisebatteryswap.FieldPutinBatterySn:
+		case enterprisebatteryswap.FieldPutinSn:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field putin_battery_sn", values[i])
+				return fmt.Errorf("unexpected type %T for field putin_sn", values[i])
 			} else if value.Valid {
-				ebs.PutinBatterySn = value.String
+				ebs.PutinSn = value.String
 			}
 		case enterprisebatteryswap.FieldPutinEnterpriseID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -261,17 +261,17 @@ func (ebs *EnterpriseBatterySwap) assignValues(columns []string, values []any) e
 				ebs.PutinStationID = new(uint64)
 				*ebs.PutinStationID = uint64(value.Int64)
 			}
-		case enterprisebatteryswap.FieldPutoutBatteryID:
+		case enterprisebatteryswap.FieldPutoutID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field putout_battery_id", values[i])
+				return fmt.Errorf("unexpected type %T for field putout_id", values[i])
 			} else if value.Valid {
-				ebs.PutoutBatteryID = uint64(value.Int64)
+				ebs.PutoutID = uint64(value.Int64)
 			}
-		case enterprisebatteryswap.FieldPutoutBatterySn:
+		case enterprisebatteryswap.FieldPutoutSn:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field putout_battery_sn", values[i])
+				return fmt.Errorf("unexpected type %T for field putout_sn", values[i])
 			} else if value.Valid {
-				ebs.PutoutBatterySn = value.String
+				ebs.PutoutSn = value.String
 			}
 		case enterprisebatteryswap.FieldPutoutEnterpriseID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -310,9 +310,9 @@ func (ebs *EnterpriseBatterySwap) QueryCabinet() *CabinetQuery {
 	return NewEnterpriseBatterySwapClient(ebs.config).QueryCabinet(ebs)
 }
 
-// QueryPutinBattery queries the "putin_battery" edge of the EnterpriseBatterySwap entity.
-func (ebs *EnterpriseBatterySwap) QueryPutinBattery() *BatteryQuery {
-	return NewEnterpriseBatterySwapClient(ebs.config).QueryPutinBattery(ebs)
+// QueryPutin queries the "putin" edge of the EnterpriseBatterySwap entity.
+func (ebs *EnterpriseBatterySwap) QueryPutin() *BatteryQuery {
+	return NewEnterpriseBatterySwapClient(ebs.config).QueryPutin(ebs)
 }
 
 // QueryPutinEnterprise queries the "putin_enterprise" edge of the EnterpriseBatterySwap entity.
@@ -325,9 +325,9 @@ func (ebs *EnterpriseBatterySwap) QueryPutinStation() *EnterpriseStationQuery {
 	return NewEnterpriseBatterySwapClient(ebs.config).QueryPutinStation(ebs)
 }
 
-// QueryPutoutBattery queries the "putout_battery" edge of the EnterpriseBatterySwap entity.
-func (ebs *EnterpriseBatterySwap) QueryPutoutBattery() *BatteryQuery {
-	return NewEnterpriseBatterySwapClient(ebs.config).QueryPutoutBattery(ebs)
+// QueryPutout queries the "putout" edge of the EnterpriseBatterySwap entity.
+func (ebs *EnterpriseBatterySwap) QueryPutout() *BatteryQuery {
+	return NewEnterpriseBatterySwapClient(ebs.config).QueryPutout(ebs)
 }
 
 // QueryPutoutEnterprise queries the "putout_enterprise" edge of the EnterpriseBatterySwap entity.
@@ -375,11 +375,11 @@ func (ebs *EnterpriseBatterySwap) String() string {
 	builder.WriteString("cabinet_id=")
 	builder.WriteString(fmt.Sprintf("%v", ebs.CabinetID))
 	builder.WriteString(", ")
-	builder.WriteString("putin_battery_id=")
-	builder.WriteString(fmt.Sprintf("%v", ebs.PutinBatteryID))
+	builder.WriteString("putin_id=")
+	builder.WriteString(fmt.Sprintf("%v", ebs.PutinID))
 	builder.WriteString(", ")
-	builder.WriteString("putin_battery_sn=")
-	builder.WriteString(ebs.PutinBatterySn)
+	builder.WriteString("putin_sn=")
+	builder.WriteString(ebs.PutinSn)
 	builder.WriteString(", ")
 	if v := ebs.PutinEnterpriseID; v != nil {
 		builder.WriteString("putin_enterprise_id=")
@@ -391,11 +391,11 @@ func (ebs *EnterpriseBatterySwap) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	builder.WriteString("putout_battery_id=")
-	builder.WriteString(fmt.Sprintf("%v", ebs.PutoutBatteryID))
+	builder.WriteString("putout_id=")
+	builder.WriteString(fmt.Sprintf("%v", ebs.PutoutID))
 	builder.WriteString(", ")
-	builder.WriteString("putout_battery_sn=")
-	builder.WriteString(ebs.PutoutBatterySn)
+	builder.WriteString("putout_sn=")
+	builder.WriteString(ebs.PutoutSn)
 	builder.WriteString(", ")
 	if v := ebs.PutoutEnterpriseID; v != nil {
 		builder.WriteString("putout_enterprise_id=")
