@@ -113,6 +113,15 @@ func (s *riderAgentService) detail(item *ent.Rider) model.AgentRider {
 				res.Remaining = silk.Pointer(tools.NewTime().LastDays(*sub.AgentEndAt, today))
 			}
 		}
+
+		// 查找电车信息
+		if sub.Edges.Brand != nil {
+			res.EbikeBrand = &model.EbikeBrand{
+				ID:    sub.Edges.Brand.ID,
+				Name:  sub.Edges.Brand.Name,
+				Cover: sub.Edges.Brand.Cover,
+			}
+		}
 	} else {
 		res.Status = model.AgentRiderStatusInactive
 	}
@@ -202,7 +211,7 @@ func (s *riderAgentService) Detail(req *model.IDParamReq, enterpriseID uint64) m
 	item, _ := s.orm.QueryNotDeleted().
 		Where(rider.EnterpriseID(enterpriseID), rider.ID(req.ID)).
 		WithSubscribes(func(query *ent.SubscribeQuery) {
-			query.Order(ent.Desc(subscribe.FieldCreatedAt)).WithCity()
+			query.Order(ent.Desc(subscribe.FieldCreatedAt)).WithCity().WithBrand()
 		}).
 		WithStation().
 		WithBattery().

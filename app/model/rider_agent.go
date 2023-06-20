@@ -42,6 +42,8 @@ type AgentRider struct {
 	Used        int    `json:"used,omitempty"`        // 使用天数
 	IsAuthed    bool   `json:"isAuthed"`              // 是否实名认证 ture已实名 false未实名
 	Intelligent bool   `json:"intelligent"`           // 是否智能套餐
+
+	EbikeBrand *EbikeBrand `json:"ebikeBrand,omitempty"` // 电车品牌信息
 }
 
 type AgentRiderLogReq struct {

@@ -16982,6 +16982,14 @@ const docTemplate = `{
                     "description": "创建日期",
                     "type": "string"
                 },
+                "ebikeBrand": {
+                    "description": "电车品牌信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EbikeBrand"
+                        }
+                    ]
+                },
                 "endAt": {
                     "description": "退租日期",
                     "type": "string"
