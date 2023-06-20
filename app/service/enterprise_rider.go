@@ -135,6 +135,7 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 		sub, err = tx.Subscribe.Create().
 			SetRiderID(r.ID).
 			SetModel(ep.Model).
+			SetNillableBrandID(ep.BrandID).
 			SetIntelligent(ep.Intelligent).
 			SetRemaining(0).
 			SetInitialDays(req.Days).
@@ -413,6 +414,7 @@ func (s *enterpriseRiderService) RiderEnterpriseInfo(req *model.EnterproseInfoRe
 }
 
 // JoinEnterprise 加入团签
+// TODO: 和 Create 方法实现的功能基本类似
 func (s *enterpriseRiderService) JoinEnterprise(req *model.EnterpriseJoinReq, rid *ent.Rider) {
 	// 判断团签是否存在或者站点是否存在
 	// 查询团签信息
@@ -460,6 +462,7 @@ func (s *enterpriseRiderService) JoinEnterprise(req *model.EnterpriseJoinReq, ri
 		_, err = tx.Subscribe.Create().
 			SetRiderID(rid.ID).
 			SetModel(ep.Model).
+			SetNillableBrandID(ep.BrandID).
 			SetIntelligent(ep.Intelligent).
 			SetRemaining(0).
 			SetInitialDays(req.Days).
