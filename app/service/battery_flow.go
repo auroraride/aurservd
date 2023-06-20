@@ -8,10 +8,11 @@ package service
 import (
 	"github.com/auroraride/adapter"
 	"github.com/auroraride/adapter/rpc/pb"
+	"go.uber.org/zap"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/rpc"
 	"github.com/auroraride/aurservd/internal/ent"
-	"go.uber.org/zap"
 )
 
 type batteryFlowService struct {
@@ -28,8 +29,8 @@ func NewBatteryFlow(params ...any) *batteryFlowService {
 	}
 }
 
-func (s *batteryFlowService) Create(bat *ent.Battery, req model.BatteryFlowCreateReq) {
-	updater := s.orm.Create().
+func (s *batteryFlowService) Create(tx *ent.Tx, bat *ent.Battery, req model.BatteryFlowCreateReq) {
+	updater := tx.BatteryFlow.Create().
 		SetSn(bat.Sn).
 		SetBatteryID(bat.ID).
 		SetNillableRiderID(req.RiderID).

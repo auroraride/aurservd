@@ -13,7 +13,6 @@ import (
 	"github.com/auroraride/adapter"
 	"github.com/auroraride/adapter/log"
 	"github.com/auroraride/adapter/rpc/pb"
-	"github.com/jackc/pgconn"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/labstack/echo/v4"
 	"go.uber.org/zap"
@@ -415,10 +414,9 @@ func (s *batteryService) BindRequest(req *model.BatteryBind) {
 }
 
 func (s *batteryService) Bind(bat *ent.Battery, sub *ent.Subscribe, rd *ent.Rider) {
-	err := s.Allocate(bat.Update(), bat, sub, false)
-	if err != nil {
-		snag.Panic(err)
-	}
+	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
+		return s.Allocate(tx, bat, sub, false)
+	})
 
 	go logging.NewOperateLog().
 		SetOperate(model.OperateBindBattery).
@@ -452,29 +450,35 @@ func (s *batteryService) Unbind(req *model.BatteryUnbindRequest) {
 }
 
 // Allocate 将电池分配给骑手
-func (s *batteryService) Allocate(buo *ent.BatteryUpdateOne, bat *ent.Battery, sub *ent.Subscribe, ignoreError bool) (err error) {
-	err = buo.SetSubscribeID(sub.ID).SetRiderID(sub.RiderID).Exec(s.ctx)
-	if err != nil && ent.IsConstraintError(err) {
-		switch v := err.(*ent.ConstraintError).Unwrap().(type) {
-		case *pgconn.PgError:
-			if v.ConstraintName == "battery_subscribe_id_key" || v.ConstraintName == "battery_rider_id_key" {
-				// 删除原有信息
-				err = s.orm.Update().Where(battery.SubscribeID(sub.ID)).ClearRiderID().ClearSubscribeID().Exec(s.ctx)
-				if err != nil {
-					return
-				}
-				err = buo.SetSubscribeID(sub.ID).SetRiderID(sub.RiderID).Exec(s.ctx)
-			}
-		}
+// @param createFlowIfError 即使遇到错误也创建电池流转信息
+func (s *batteryService) Allocate(tx *ent.Tx, bat *ent.Battery, sub *ent.Subscribe, createFlowIfError bool) (err error) {
+	// 删除原有骑手电池信息
+	err = tx.Battery.Update().Where(battery.SubscribeID(sub.ID)).ClearRiderID().ClearSubscribeID().Exec(s.ctx)
+	if err != nil {
+		return
 	}
 
-	// 更新流转
-	if ignoreError || err == nil {
-		go NewBatteryFlow().Create(bat, model.BatteryFlowCreateReq{
+	// 分配电池给骑手
+	updater := tx.Battery.UpdateOne(bat)
+
+	if sub.StationID != nil {
+		// 当前骑手属于代理站点时, 设置新的站点信息
+		updater.SetNillableStationID(sub.StationID).SetNillableEnterpriseID(sub.StationID)
+	} else {
+		// 当前骑手属于平台时, 清除原有站点信息
+		updater.ClearStationID().ClearEnterpriseID()
+	}
+
+	err = updater.Exec(s.ctx)
+
+	// 如果无错误或忽略错误，更新流转
+	if createFlowIfError || err == nil {
+		NewBatteryFlow().Create(tx, bat, model.BatteryFlowCreateReq{
 			RiderID:     silk.Pointer(sub.RiderID),
 			SubscribeID: silk.Pointer(sub.ID),
 		})
 	}
+
 	return
 }
 
