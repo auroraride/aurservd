@@ -303,7 +303,10 @@ func (s *ebikeService) Detail(bike *ent.Ebike, brand *ent.EbikeBrand) *model.Ebi
 
 func (s *ebikeService) UnallocatedX(params *model.EbikeUnallocatedParams) *model.Ebike {
 	bikes := s.SearchUnallocated(params)
-	if len(bikes) > 0 {
+	if len(bikes) == 0 {
+		snag.Panic("未找到有效车辆")
+	}
+	if len(bikes) > 1 {
 		snag.Panic("存在多个车辆, 请缩小查询范围")
 	}
 	return bikes[0]

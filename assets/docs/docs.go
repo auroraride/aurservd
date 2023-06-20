@@ -131,7 +131,8 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "name": "stationId",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -16989,7 +16990,7 @@ const docTemplate = `{
                     "description": "电车品牌信息",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.EbikeBrand"
+                            "$ref": "#/definitions/model.Ebike"
                         }
                     ]
                 },

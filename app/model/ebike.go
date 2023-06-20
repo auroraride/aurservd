@@ -132,6 +132,6 @@ type EbikeUnallocatedParams struct {
 }
 
 type EbikeAgentSearchReq struct {
-	StationID *uint64 `json:"stationId" query:"stationId" trans:"站点ID (一般是subscribe.stationId)"`
+	StationID *uint64 `json:"stationId" query:"stationId" validate:"required" trans:"站点ID (一般是subscribe.stationId)"`
 	Keyword   *string `json:"keyword" query:"keyword" validate:"required" trans:"车辆关键词 (编码或牌照)"`
 }

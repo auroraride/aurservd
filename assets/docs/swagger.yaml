@@ -505,7 +505,7 @@ definitions:
         type: string
       ebikeBrand:
         allOf:
-        - $ref: '#/definitions/model.EbikeBrand'
+        - $ref: '#/definitions/model.Ebike'
         description: 电车品牌信息
       endAt:
         description: 退租日期
@@ -7796,6 +7796,7 @@ paths:
         type: string
       - in: query
         name: stationId
+        required: true
         type: integer
       produces:
       - application/json
