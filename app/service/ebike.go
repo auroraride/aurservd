@@ -337,7 +337,7 @@ func (s *ebikeService) SearchUnallocated(params *model.EbikeUnallocatedParams) (
 	}
 
 	// 站点
-	if params.StationID == nil {
+	if params.StationID != nil {
 		q.Where(ebike.StationID(*params.StationID))
 	}
 
