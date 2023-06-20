@@ -58,5 +58,5 @@ func (*prepayment) List(c echo.Context) (err error) {
 // @Success      200  {object}  model.AgentPrepayRes  "请求成功"
 func (*prepayment) WechatMiniprogramPay(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.AgentPrepayReq](c)
-	return ctx.SendResponse(service.NewPrepayment().WechatMiniprogramPay(ctx.Agent, req))
+	return ctx.SendResponse(service.NewPrepayment().WechatMiniprogramPay(ctx.Agent, ctx.Enterprise, req))
 }

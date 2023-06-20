@@ -95,6 +95,11 @@ func EbikeID(v uint64) predicate.Order {
 	return predicate.Order(sql.FieldEQ(FieldEbikeID, v))
 }
 
+// AgentID applies equality check predicate on the "agent_id" field. It's identical to AgentIDEQ.
+func AgentID(v uint64) predicate.Order {
+	return predicate.Order(sql.FieldEQ(FieldAgentID, v))
+}
+
 // RiderID applies equality check predicate on the "rider_id" field. It's identical to RiderIDEQ.
 func RiderID(v uint64) predicate.Order {
 	return predicate.Order(sql.FieldEQ(FieldRiderID, v))
@@ -525,6 +530,36 @@ func EbikeIDNotNil() predicate.Order {
 	return predicate.Order(sql.FieldNotNull(FieldEbikeID))
 }
 
+// AgentIDEQ applies the EQ predicate on the "agent_id" field.
+func AgentIDEQ(v uint64) predicate.Order {
+	return predicate.Order(sql.FieldEQ(FieldAgentID, v))
+}
+
+// AgentIDNEQ applies the NEQ predicate on the "agent_id" field.
+func AgentIDNEQ(v uint64) predicate.Order {
+	return predicate.Order(sql.FieldNEQ(FieldAgentID, v))
+}
+
+// AgentIDIn applies the In predicate on the "agent_id" field.
+func AgentIDIn(vs ...uint64) predicate.Order {
+	return predicate.Order(sql.FieldIn(FieldAgentID, vs...))
+}
+
+// AgentIDNotIn applies the NotIn predicate on the "agent_id" field.
+func AgentIDNotIn(vs ...uint64) predicate.Order {
+	return predicate.Order(sql.FieldNotIn(FieldAgentID, vs...))
+}
+
+// AgentIDIsNil applies the IsNil predicate on the "agent_id" field.
+func AgentIDIsNil() predicate.Order {
+	return predicate.Order(sql.FieldIsNull(FieldAgentID))
+}
+
+// AgentIDNotNil applies the NotNil predicate on the "agent_id" field.
+func AgentIDNotNil() predicate.Order {
+	return predicate.Order(sql.FieldNotNull(FieldAgentID))
+}
+
 // RiderIDEQ applies the EQ predicate on the "rider_id" field.
 func RiderIDEQ(v uint64) predicate.Order {
 	return predicate.Order(sql.FieldEQ(FieldRiderID, v))
@@ -543,6 +578,16 @@ func RiderIDIn(vs ...uint64) predicate.Order {
 // RiderIDNotIn applies the NotIn predicate on the "rider_id" field.
 func RiderIDNotIn(vs ...uint64) predicate.Order {
 	return predicate.Order(sql.FieldNotIn(FieldRiderID, vs...))
+}
+
+// RiderIDIsNil applies the IsNil predicate on the "rider_id" field.
+func RiderIDIsNil() predicate.Order {
+	return predicate.Order(sql.FieldIsNull(FieldRiderID))
+}
+
+// RiderIDNotNil applies the NotNil predicate on the "rider_id" field.
+func RiderIDNotNil() predicate.Order {
+	return predicate.Order(sql.FieldNotNull(FieldRiderID))
 }
 
 // ParentIDEQ applies the EQ predicate on the "parent_id" field.
@@ -1329,6 +1374,29 @@ func HasEbike() predicate.Order {
 func HasEbikeWith(preds ...predicate.Ebike) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
 		step := newEbikeStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasAgent applies the HasEdge predicate on the "agent" edge.
+func HasAgent() predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, AgentTable, AgentColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasAgentWith applies the HasEdge predicate on the "agent" edge with a given conditions (other predicates).
+func HasAgentWith(preds ...predicate.Agent) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		step := newAgentStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

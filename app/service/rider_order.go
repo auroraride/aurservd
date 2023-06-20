@@ -8,13 +8,10 @@ package service
 import (
 	"context"
 
-	"github.com/golang-module/carbon/v2"
-
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/pkg/snag"
-	"github.com/auroraride/aurservd/pkg/tools"
 )
 
 type riderOrderService struct {
@@ -65,96 +62,8 @@ func (s *riderOrderService) List(riderID uint64, req model.PaginationReq) *model
 	return model.ParsePaginationResponse[model.Order, ent.Order](
 		q,
 		req,
-		s.Detail,
+		NewOrder().Detail,
 	)
-}
-
-// Detail 订单详情
-func (s *riderOrderService) Detail(item *ent.Order) model.Order {
-	rc := item.Edges.City
-	no := item.TradeNo
-	if item.Payway == model.OrderPaywayManual {
-		no = ""
-	}
-	res := model.Order{
-		ID:         item.ID,
-		Type:       item.Type,
-		Status:     item.Status,
-		Payway:     item.Payway,
-		PayAt:      item.CreatedAt.Format(carbon.DateTimeLayout),
-		Amount:     item.Amount,
-		OutTradeNo: item.OutTradeNo,
-		TradeNo:    no,
-		City: model.City{
-			ID:   rc.ID,
-			Name: rc.Name,
-		},
-		PointAmount:   tools.NewDecimal().Mul(float64(item.Points), item.PointRatio),
-		DiscountNewly: item.DiscountNewly,
-		CouponAmount:  item.CouponAmount,
-		Ebike:         NewEbike().Detail(item.Edges.Ebike, item.Edges.Brand),
-	}
-	if len(item.Edges.Coupons) > 0 {
-		res.Coupons = make([]model.CouponRider, len(item.Edges.Coupons))
-		for i, c := range item.Edges.Coupons {
-			res.Coupons[i] = NewCoupon().RiderDetail(c)
-		}
-	}
-	// 骑士卡订阅订单
-	op := item.Edges.Plan
-	if op != nil {
-		res.Plan = op.BasicInfo()
-	}
-
-	// 骑手信息
-	or := item.Edges.Rider
-	if or != nil {
-		res.Rider = model.Rider{
-			ID:    or.ID,
-			Phone: or.Phone,
-			Name:  or.Name,
-		}
-	}
-
-	// store
-	osub := item.Edges.Subscribe
-	if osub != nil {
-		res.Model = osub.Model
-		os := osub.Edges.Store
-		if os != nil {
-			res.Store = &model.Store{
-				ID:   os.ID,
-				Name: os.Name,
-			}
-		}
-
-		oe := osub.Edges.Employee
-		if oe != nil {
-			res.Employee = &model.Employee{
-				ID:    oe.ID,
-				Name:  oe.Name,
-				Phone: oe.Phone,
-			}
-		}
-	}
-
-	// refund
-	rf := item.Edges.Refund
-	if rf != nil {
-		res.Refund = &model.Refund{
-			Status:      rf.Status,
-			Amount:      rf.Amount,
-			OutRefundNo: rf.OutRefundNo,
-			Reason:      rf.Reason,
-			CreatedAt:   rf.CreatedAt.Format(carbon.DateTimeLayout),
-			Remark:      rf.Remark,
-			Modifier:    rf.LastModifier,
-		}
-		if rf.RefundAt != nil {
-			res.Refund.RefundAt = rf.RefundAt.Format(carbon.DateTimeLayout)
-		}
-	}
-	return res
 }
 
 // Query 查询订单

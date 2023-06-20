@@ -75,7 +75,7 @@ func (c *alipayClient) loadCerts() {
 // AppPay app支付
 func (c *alipayClient) AppPay(pc *model.PaymentCache) (string, error) {
 	cfg := ar.Config.Payment.Alipay
-	amount, subject, no := pc.GetPaymentArgs()
+	amount, subject, no, _ := pc.GetPaymentArgs()
 	trade := alipay.TradeAppPay{
 		Trade: alipay.Trade{
 			TotalAmount: fmt.Sprintf("%.2f", amount),
@@ -110,7 +110,7 @@ func (c *alipayClient) Native(pc *model.PaymentCache) (string, error) {
 
 	c.loadCerts()
 
-	amount, subject, no := pc.GetPaymentArgs()
+	amount, subject, no, _ := pc.GetPaymentArgs()
 	trade := alipay.TradePreCreate{
 		Trade: alipay.Trade{
 			TotalAmount: fmt.Sprintf("%.2f", amount),

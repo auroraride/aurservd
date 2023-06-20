@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
@@ -157,9 +158,31 @@ func (oc *OrderCreate) SetNillableEbikeID(u *uint64) *OrderCreate {
 	return oc
 }
 
+// SetAgentID sets the "agent_id" field.
+func (oc *OrderCreate) SetAgentID(u uint64) *OrderCreate {
+	oc.mutation.SetAgentID(u)
+	return oc
+}
+
+// SetNillableAgentID sets the "agent_id" field if the given value is not nil.
+func (oc *OrderCreate) SetNillableAgentID(u *uint64) *OrderCreate {
+	if u != nil {
+		oc.SetAgentID(*u)
+	}
+	return oc
+}
+
 // SetRiderID sets the "rider_id" field.
 func (oc *OrderCreate) SetRiderID(u uint64) *OrderCreate {
 	oc.mutation.SetRiderID(u)
+	return oc
+}
+
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (oc *OrderCreate) SetNillableRiderID(u *uint64) *OrderCreate {
+	if u != nil {
+		oc.SetRiderID(*u)
+	}
 	return oc
 }
 
@@ -367,6 +390,11 @@ func (oc *OrderCreate) SetEbike(e *Ebike) *OrderCreate {
 	return oc.SetEbikeID(e.ID)
 }
 
+// SetAgent sets the "agent" edge to the Agent entity.
+func (oc *OrderCreate) SetAgent(a *Agent) *OrderCreate {
+	return oc.SetAgentID(a.ID)
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (oc *OrderCreate) SetRider(r *Rider) *OrderCreate {
 	return oc.SetRiderID(r.ID)
@@ -555,9 +583,6 @@ func (oc *OrderCreate) check() error {
 	if _, ok := oc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Order.updated_at"`)}
 	}
-	if _, ok := oc.mutation.RiderID(); !ok {
-		return &ValidationError{Name: "rider_id", err: errors.New(`ent: missing required field "Order.rider_id"`)}
-	}
 	if _, ok := oc.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Order.status"`)}
 	}
@@ -590,9 +615,6 @@ func (oc *OrderCreate) check() error {
 	}
 	if _, ok := oc.mutation.DiscountNewly(); !ok {
 		return &ValidationError{Name: "discount_newly", err: errors.New(`ent: missing required field "Order.discount_newly"`)}
-	}
-	if _, ok := oc.mutation.RiderID(); !ok {
-		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "Order.rider"`)}
 	}
 	return nil
 }
@@ -767,6 +789,23 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.EbikeID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := oc.mutation.AgentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   order.AgentTable,
+			Columns: []string{order.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.AgentID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := oc.mutation.RiderIDs(); len(nodes) > 0 {
@@ -1090,6 +1129,24 @@ func (u *OrderUpsert) ClearEbikeID() *OrderUpsert {
 	return u
 }
 
+// SetAgentID sets the "agent_id" field.
+func (u *OrderUpsert) SetAgentID(v uint64) *OrderUpsert {
+	u.Set(order.FieldAgentID, v)
+	return u
+}
+
+// UpdateAgentID sets the "agent_id" field to the value that was provided on create.
+func (u *OrderUpsert) UpdateAgentID() *OrderUpsert {
+	u.SetExcluded(order.FieldAgentID)
+	return u
+}
+
+// ClearAgentID clears the value of the "agent_id" field.
+func (u *OrderUpsert) ClearAgentID() *OrderUpsert {
+	u.SetNull(order.FieldAgentID)
+	return u
+}
+
 // SetRiderID sets the "rider_id" field.
 func (u *OrderUpsert) SetRiderID(v uint64) *OrderUpsert {
 	u.Set(order.FieldRiderID, v)
@@ -1099,6 +1156,12 @@ func (u *OrderUpsert) SetRiderID(v uint64) *OrderUpsert {
 // UpdateRiderID sets the "rider_id" field to the value that was provided on create.
 func (u *OrderUpsert) UpdateRiderID() *OrderUpsert {
 	u.SetExcluded(order.FieldRiderID)
+	return u
+}
+
+// ClearRiderID clears the value of the "rider_id" field.
+func (u *OrderUpsert) ClearRiderID() *OrderUpsert {
+	u.SetNull(order.FieldRiderID)
 	return u
 }
 
@@ -1521,6 +1584,27 @@ func (u *OrderUpsertOne) ClearEbikeID() *OrderUpsertOne {
 	})
 }
 
+// SetAgentID sets the "agent_id" field.
+func (u *OrderUpsertOne) SetAgentID(v uint64) *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetAgentID(v)
+	})
+}
+
+// UpdateAgentID sets the "agent_id" field to the value that was provided on create.
+func (u *OrderUpsertOne) UpdateAgentID() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateAgentID()
+	})
+}
+
+// ClearAgentID clears the value of the "agent_id" field.
+func (u *OrderUpsertOne) ClearAgentID() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearAgentID()
+	})
+}
+
 // SetRiderID sets the "rider_id" field.
 func (u *OrderUpsertOne) SetRiderID(v uint64) *OrderUpsertOne {
 	return u.Update(func(s *OrderUpsert) {
@@ -1532,6 +1616,13 @@ func (u *OrderUpsertOne) SetRiderID(v uint64) *OrderUpsertOne {
 func (u *OrderUpsertOne) UpdateRiderID() *OrderUpsertOne {
 	return u.Update(func(s *OrderUpsert) {
 		s.UpdateRiderID()
+	})
+}
+
+// ClearRiderID clears the value of the "rider_id" field.
+func (u *OrderUpsertOne) ClearRiderID() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearRiderID()
 	})
 }
 
@@ -2148,6 +2239,27 @@ func (u *OrderUpsertBulk) ClearEbikeID() *OrderUpsertBulk {
 	})
 }
 
+// SetAgentID sets the "agent_id" field.
+func (u *OrderUpsertBulk) SetAgentID(v uint64) *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetAgentID(v)
+	})
+}
+
+// UpdateAgentID sets the "agent_id" field to the value that was provided on create.
+func (u *OrderUpsertBulk) UpdateAgentID() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateAgentID()
+	})
+}
+
+// ClearAgentID clears the value of the "agent_id" field.
+func (u *OrderUpsertBulk) ClearAgentID() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearAgentID()
+	})
+}
+
 // SetRiderID sets the "rider_id" field.
 func (u *OrderUpsertBulk) SetRiderID(v uint64) *OrderUpsertBulk {
 	return u.Update(func(s *OrderUpsert) {
@@ -2159,6 +2271,13 @@ func (u *OrderUpsertBulk) SetRiderID(v uint64) *OrderUpsertBulk {
 func (u *OrderUpsertBulk) UpdateRiderID() *OrderUpsertBulk {
 	return u.Update(func(s *OrderUpsert) {
 		s.UpdateRiderID()
+	})
+}
+
+// ClearRiderID clears the value of the "rider_id" field.
+func (u *OrderUpsertBulk) ClearRiderID() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearRiderID()
 	})
 }
 

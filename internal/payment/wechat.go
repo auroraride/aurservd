@@ -77,7 +77,7 @@ func NewWechat() *wechatClient {
 
 // AppPay APP支付
 func (c *wechatClient) AppPay(pc *model.PaymentCache) (string, error) {
-	amount, subject, no := pc.GetPaymentArgs()
+	amount, subject, no, _ := pc.GetPaymentArgs()
 	cfg := ar.Config.Payment.Wechat
 
 	svc := app.AppApiService{
@@ -117,7 +117,7 @@ func (c *wechatClient) AppPay(pc *model.PaymentCache) (string, error) {
 }
 
 func (c *wechatClient) Native(pc *model.PaymentCache) (string, error) {
-	amount, subject, no := pc.GetPaymentArgs()
+	amount, subject, no, attach := pc.GetPaymentArgs()
 	cfg := ar.Config.Payment.Wechat
 
 	svc := native.NativeApiService{Client: c.Client}
@@ -128,6 +128,7 @@ func (c *wechatClient) Native(pc *model.PaymentCache) (string, error) {
 		OutTradeNo:  core.String(no),
 		TimeExpire:  core.Time(time.Now().Add(10 * time.Minute)),
 		NotifyUrl:   core.String(cfg.NotifyUrl),
+		Attach:      core.String(attach),
 		Amount: &native.Amount{
 			Currency: core.String("CNY"),
 			Total:    core.Int64(int64(math.Round(amount * 100))),
@@ -147,7 +148,7 @@ func (c *wechatClient) Native(pc *model.PaymentCache) (string, error) {
 }
 
 func (c *wechatClient) Miniprogram(appID, openID string, pc *model.PaymentCache) (*jsapi.PrepayWithRequestPaymentResponse, error) {
-	amount, subject, no := pc.GetPaymentArgs()
+	amount, subject, no, _ := pc.GetPaymentArgs()
 	cfg := ar.Config.Payment.Wechat
 
 	svc := jsapi.JsapiApiService{Client: c.Client}

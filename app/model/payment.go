@@ -94,6 +94,7 @@ type PaymentAgentPrepay struct {
 	Payway     Payway `json:"payway"`            // 支付方式
 	OutTradeNo string `json:"outTradeNo"`        // 订单号
 	TradeNo    string `json:"tradeNo,omitempty"` // 支付单号
+	Attach     string `json:"attach,omitempty"`  // 订单备注
 }
 
 // PaymentCache 支付缓存
@@ -114,18 +115,18 @@ func (pc *PaymentCache) UnmarshalBinary(data []byte) error {
 	return jsoniter.Unmarshal(data, pc)
 }
 
-func (pc *PaymentCache) GetPaymentArgs() (float64, string, string) {
+func (pc *PaymentCache) GetPaymentArgs() (amount float64, desc string, outTradeNo string, attach string) {
 	switch pc.CacheType {
 	case PaymentCacheTypePlan:
-		return pc.Subscribe.Amount, pc.Subscribe.Name, pc.Subscribe.OutTradeNo
+		return pc.Subscribe.Amount, pc.Subscribe.Name, pc.Subscribe.OutTradeNo, ""
 	case PaymentCacheTypeOverdueFee:
-		return pc.OverDueFee.Amount, pc.OverDueFee.Subject, pc.OverDueFee.OutTradeNo
+		return pc.OverDueFee.Amount, pc.OverDueFee.Subject, pc.OverDueFee.OutTradeNo, ""
 	case PaymentCacheTypeAssistance:
-		return pc.Assistance.Cost, pc.Assistance.Subject, pc.Assistance.OutTradeNo
+		return pc.Assistance.Cost, pc.Assistance.Subject, pc.Assistance.OutTradeNo, ""
 	case PaymentCacheTypeAgentPrepay:
-		return pc.AgentPrepay.Amount, "代理商自主储值", pc.AgentPrepay.OutTradeNo
+		return pc.AgentPrepay.Amount, "代理商自主储值", pc.AgentPrepay.OutTradeNo, pc.AgentPrepay.Attach
 	}
-	return 0, "", ""
+	return 0, "", "", ""
 }
 
 type PaymentConfigure struct {

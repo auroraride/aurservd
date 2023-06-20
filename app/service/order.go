@@ -410,7 +410,7 @@ func (s *orderService) DoPayment(pc *model.PaymentCache) {
 	case model.PaymentCacheTypeOverdueFee:
 		s.FeePaid(pc.OverDueFee)
 	case model.PaymentCacheTypeAgentPrepay:
-		_, _ = NewPrepayment().UpdateBalance(pc.AgentPrepay.Payway, pc.AgentPrepay.AgentPrepay, &pc.AgentPrepay.TradeNo)
+		_, _ = NewPrepayment().UpdateBalance(pc.AgentPrepay.Payway, pc.AgentPrepay.AgentPrepay, pc.AgentPrepay)
 	}
 }
 
@@ -691,7 +691,10 @@ func (s *orderService) listFilter(req model.OrderListFilter) (*ent.OrderQuery, a
 		WithRefund().
 		WithCoupons().
 		WithEbike().
-		WithBrand()
+		WithBrand().
+		WithAgent(func(aq *ent.AgentQuery) {
+			aq.WithEnterprise()
+		})
 	if req.Start != nil {
 		info["开始日期"] = req.Start
 		q.Where(order.CreatedAtGTE(tt.ParseDateStringX(*req.Start)))
@@ -754,6 +757,9 @@ func (s *orderService) listFilter(req model.OrderListFilter) (*ent.OrderQuery, a
 		}
 		info[k] = v
 	}
+	if req.TradeNo != nil {
+		q.Where(order.TradeNo(*req.TradeNo))
+	}
 	return q, info
 }
 
@@ -763,8 +769,112 @@ func (s *orderService) List(req *model.OrderListReq) *model.PaginationRes {
 	return model.ParsePaginationResponse(
 		q,
 		req.PaginationReq,
-		NewRiderOrder().Detail,
+		s.Detail,
 	)
+}
+
+// Detail 订单详情
+func (s *orderService) Detail(item *ent.Order) model.Order {
+	rc := item.Edges.City
+	no := item.TradeNo
+	if item.Payway == model.OrderPaywayManual {
+		no = ""
+	}
+	res := model.Order{
+		ID:         item.ID,
+		Type:       item.Type,
+		Status:     item.Status,
+		Payway:     item.Payway,
+		PayAt:      item.CreatedAt.Format(carbon.DateTimeLayout),
+		Amount:     item.Amount,
+		OutTradeNo: item.OutTradeNo,
+		TradeNo:    no,
+		City: model.City{
+			ID:   rc.ID,
+			Name: rc.Name,
+		},
+		PointAmount:   tools.NewDecimal().Mul(float64(item.Points), item.PointRatio),
+		DiscountNewly: item.DiscountNewly,
+		CouponAmount:  item.CouponAmount,
+		Ebike:         NewEbike().Detail(item.Edges.Ebike, item.Edges.Brand),
+	}
+	if len(item.Edges.Coupons) > 0 {
+		res.Coupons = make([]model.CouponRider, len(item.Edges.Coupons))
+		for i, c := range item.Edges.Coupons {
+			res.Coupons[i] = NewCoupon().RiderDetail(c)
+		}
+	}
+	// 骑士卡订阅订单
+	op := item.Edges.Plan
+	if op != nil {
+		res.Plan = op.BasicInfo()
+	}
+
+	// 骑手信息
+	or := item.Edges.Rider
+	if or != nil {
+		res.Rider = model.Rider{
+			ID:    or.ID,
+			Phone: or.Phone,
+			Name:  or.Name,
+		}
+	}
+
+	// store
+	osub := item.Edges.Subscribe
+	if osub != nil {
+		res.Model = osub.Model
+		os := osub.Edges.Store
+		if os != nil {
+			res.Store = &model.Store{
+				ID:   os.ID,
+				Name: os.Name,
+			}
+		}
+
+		oe := osub.Edges.Employee
+		if oe != nil {
+			res.Employee = &model.Employee{
+				ID:    oe.ID,
+				Name:  oe.Name,
+				Phone: oe.Phone,
+			}
+		}
+	}
+
+	// refund
+	rf := item.Edges.Refund
+	if rf != nil {
+		res.Refund = &model.Refund{
+			Status:      rf.Status,
+			Amount:      rf.Amount,
+			OutRefundNo: rf.OutRefundNo,
+			Reason:      rf.Reason,
+			CreatedAt:   rf.CreatedAt.Format(carbon.DateTimeLayout),
+			Remark:      rf.Remark,
+			Modifier:    rf.LastModifier,
+		}
+		if rf.RefundAt != nil {
+			res.Refund.RefundAt = rf.RefundAt.Format(carbon.DateTimeLayout)
+		}
+	}
+
+	oa := item.Edges.Agent
+	if oa != nil {
+		res.Agent = &model.OrderAgent{
+			ID:    oa.ID,
+			Name:  oa.Name,
+			Phone: oa.Phone,
+		}
+
+		oae := oa.Edges.Enterprise
+		if oae != nil {
+			res.Agent.EnterpriseName = oae.Name
+			res.Agent.EnterpriseID = oae.ID
+		}
+	}
+
+	return res
 }
 
 func (s *orderService) Export(req *model.OrderListExport) model.ExportRes {
@@ -792,7 +902,7 @@ func (s *orderService) Export(req *model.OrderListExport) model.ExportRes {
 		rows = append(rows, title)
 
 		for _, item := range items {
-			detail := NewRiderOrder().Detail(item)
+			detail := s.Detail(item)
 
 			st := ""
 			if detail.Store != nil {

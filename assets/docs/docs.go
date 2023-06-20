@@ -10138,6 +10138,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "description": "平台单号",
+                        "name": "tradeNo",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "订单类型 1:新签 2:续签 3:重签 4:更改电池 5:救援 6:滞纳金 7:押金",
                         "name": "type",
@@ -23292,6 +23298,14 @@ const docTemplate = `{
         "model.Order": {
             "type": "object",
             "properties": {
+                "agent": {
+                    "description": "代理信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.OrderAgent"
+                        }
+                    ]
+                },
                 "amount": {
                     "description": "支付金额",
                     "type": "number"
@@ -23402,6 +23416,31 @@ const docTemplate = `{
                 "type": {
                     "description": "订单类型 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金",
                     "type": "integer"
+                }
+            }
+        },
+        "model.OrderAgent": {
+            "type": "object",
+            "properties": {
+                "enterpriseId": {
+                    "description": "团签ID",
+                    "type": "integer"
+                },
+                "enterpriseName": {
+                    "description": "团签名称",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "代理ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "代理姓名",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "代理电话",
+                    "type": "string"
                 }
             }
         },
@@ -23523,6 +23562,10 @@ const docTemplate = `{
                 },
                 "storeName": {
                     "description": "门店名字",
+                    "type": "string"
+                },
+                "tradeNo": {
+                    "description": "平台单号",
                     "type": "string"
                 },
                 "type": {

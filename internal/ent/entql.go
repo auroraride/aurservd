@@ -1071,6 +1071,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			order.FieldCityID:        {Type: field.TypeUint64, Column: order.FieldCityID},
 			order.FieldBrandID:       {Type: field.TypeUint64, Column: order.FieldBrandID},
 			order.FieldEbikeID:       {Type: field.TypeUint64, Column: order.FieldEbikeID},
+			order.FieldAgentID:       {Type: field.TypeUint64, Column: order.FieldAgentID},
 			order.FieldRiderID:       {Type: field.TypeUint64, Column: order.FieldRiderID},
 			order.FieldParentID:      {Type: field.TypeUint64, Column: order.FieldParentID},
 			order.FieldSubscribeID:   {Type: field.TypeUint64, Column: order.FieldSubscribeID},
@@ -3500,6 +3501,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Order",
 		"Ebike",
+	)
+	graph.MustAddE(
+		"agent",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   order.AgentTable,
+			Columns: []string{order.AgentColumn},
+			Bidi:    false,
+		},
+		"Order",
+		"Agent",
 	)
 	graph.MustAddE(
 		"rider",
@@ -10991,6 +11004,11 @@ func (f *OrderFilter) WhereEbikeID(p entql.Uint64P) {
 	f.Where(p.Field(order.FieldEbikeID))
 }
 
+// WhereAgentID applies the entql uint64 predicate on the agent_id field.
+func (f *OrderFilter) WhereAgentID(p entql.Uint64P) {
+	f.Where(p.Field(order.FieldAgentID))
+}
+
 // WhereRiderID applies the entql uint64 predicate on the rider_id field.
 func (f *OrderFilter) WhereRiderID(p entql.Uint64P) {
 	f.Where(p.Field(order.FieldRiderID))
@@ -11126,6 +11144,20 @@ func (f *OrderFilter) WhereHasEbike() {
 // WhereHasEbikeWith applies a predicate to check if query has an edge ebike with a given conditions (other predicates).
 func (f *OrderFilter) WhereHasEbikeWith(preds ...predicate.Ebike) {
 	f.Where(entql.HasEdgeWith("ebike", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasAgent applies a predicate to check if query has an edge agent.
+func (f *OrderFilter) WhereHasAgent() {
+	f.Where(entql.HasEdge("agent"))
+}
+
+// WhereHasAgentWith applies a predicate to check if query has an edge agent with a given conditions (other predicates).
+func (f *OrderFilter) WhereHasAgentWith(preds ...predicate.Agent) {
+	f.Where(entql.HasEdgeWith("agent", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

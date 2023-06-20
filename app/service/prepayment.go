@@ -100,7 +100,7 @@ func (s *prepaymentService) List(enterpriseID uint64, req *model.PrepaymentListR
 }
 
 // WechatMiniprogramPay 小程序储值
-func (s *prepaymentService) WechatMiniprogramPay(ag *ent.Agent, req *model.AgentPrepayReq) (data *model.AgentPrepayRes) {
+func (s *prepaymentService) WechatMiniprogramPay(ag *ent.Agent, en *ent.Enterprise, req *model.AgentPrepayReq) (data *model.AgentPrepayRes) {
 	defer func() {
 		go func() {
 			b, _ := jsoniter.Marshal(data)
@@ -127,6 +127,7 @@ func (s *prepaymentService) WechatMiniprogramPay(ag *ent.Agent, req *model.Agent
 			},
 			Payway:     model.PaywayAgentWxMiniprogram,
 			OutTradeNo: tools.NewUnique().NewSN(),
+			Attach:     "代理：" + en.Name + "，操作人：" + ag.Name + " - " + ag.Phone,
 		},
 	}
 
@@ -160,7 +161,7 @@ func (s *prepaymentService) WechatMiniprogramPay(ag *ent.Agent, req *model.Agent
 }
 
 // UpdateBalance 更新代理商余额
-func (s *prepaymentService) UpdateBalance(payway model.Payway, req *model.AgentPrepay, tradeNo *string) (balance float64, err error) {
+func (s *prepaymentService) UpdateBalance(payway model.Payway, req *model.AgentPrepay, pc *model.PaymentAgentPrepay) (balance float64, err error) {
 	defer func() {
 		if err != nil {
 			zap.L().Error("更新代理商金额失败", zap.Error(err))
@@ -187,10 +188,12 @@ func (s *prepaymentService) UpdateBalance(payway model.Payway, req *model.AgentP
 			SetEnterpriseID(req.EnterpriseID).
 			SetAmount(req.Amount).
 			SetRemark(req.Remark).
-			SetPayway(payway).
-			SetNillableTradeNo(tradeNo)
+			SetPayway(payway)
 		if req.ID > 0 {
 			creator.SetAgentID(req.ID)
+		}
+		if pc != nil {
+			creator.SetTradeNo(pc.TradeNo)
 		}
 		_, err = creator.Save(s.ctx)
 		if err != nil {
@@ -209,6 +212,23 @@ func (s *prepaymentService) UpdateBalance(payway model.Payway, req *model.AgentP
 
 		// 更新企业表
 		_, err = tx.Enterprise.UpdateOne(e).SetBalance(balance).AddPrepaymentTotal(req.Amount).Save(s.ctx)
+		if err != nil {
+			return
+		}
+
+		if pc != nil {
+			// 创建订单
+			err = tx.Order.Create().
+				SetAgentID(req.ID).
+				SetAmount(req.Amount).
+				SetTotal(req.Amount).
+				SetStatus(model.OrderStatusPaid).
+				SetPayway(model.OrderPaywayWechat).
+				SetType(model.OrderTypeAgentPrepayment).
+				SetOutTradeNo(pc.OutTradeNo).
+				SetTradeNo(pc.TradeNo).
+				Exec(s.ctx)
+		}
 		return
 	})
 

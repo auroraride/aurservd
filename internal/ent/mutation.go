@@ -54603,6 +54603,8 @@ type OrderMutation struct {
 	clearedbrand      bool
 	ebike             *uint64
 	clearedebike      bool
+	agent             *uint64
+	clearedagent      bool
 	rider             *uint64
 	clearedrider      bool
 	subscribe         *uint64
@@ -55188,6 +55190,55 @@ func (m *OrderMutation) ResetEbikeID() {
 	delete(m.clearedFields, order.FieldEbikeID)
 }
 
+// SetAgentID sets the "agent_id" field.
+func (m *OrderMutation) SetAgentID(u uint64) {
+	m.agent = &u
+}
+
+// AgentID returns the value of the "agent_id" field in the mutation.
+func (m *OrderMutation) AgentID() (r uint64, exists bool) {
+	v := m.agent
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAgentID returns the old "agent_id" field's value of the Order entity.
+// If the Order object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OrderMutation) OldAgentID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAgentID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAgentID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAgentID: %w", err)
+	}
+	return oldValue.AgentID, nil
+}
+
+// ClearAgentID clears the value of the "agent_id" field.
+func (m *OrderMutation) ClearAgentID() {
+	m.agent = nil
+	m.clearedFields[order.FieldAgentID] = struct{}{}
+}
+
+// AgentIDCleared returns if the "agent_id" field was cleared in this mutation.
+func (m *OrderMutation) AgentIDCleared() bool {
+	_, ok := m.clearedFields[order.FieldAgentID]
+	return ok
+}
+
+// ResetAgentID resets all changes to the "agent_id" field.
+func (m *OrderMutation) ResetAgentID() {
+	m.agent = nil
+	delete(m.clearedFields, order.FieldAgentID)
+}
+
 // SetRiderID sets the "rider_id" field.
 func (m *OrderMutation) SetRiderID(u uint64) {
 	m.rider = &u
@@ -55219,9 +55270,22 @@ func (m *OrderMutation) OldRiderID(ctx context.Context) (v uint64, err error) {
 	return oldValue.RiderID, nil
 }
 
+// ClearRiderID clears the value of the "rider_id" field.
+func (m *OrderMutation) ClearRiderID() {
+	m.rider = nil
+	m.clearedFields[order.FieldRiderID] = struct{}{}
+}
+
+// RiderIDCleared returns if the "rider_id" field was cleared in this mutation.
+func (m *OrderMutation) RiderIDCleared() bool {
+	_, ok := m.clearedFields[order.FieldRiderID]
+	return ok
+}
+
 // ResetRiderID resets all changes to the "rider_id" field.
 func (m *OrderMutation) ResetRiderID() {
 	m.rider = nil
+	delete(m.clearedFields, order.FieldRiderID)
 }
 
 // SetParentID sets the "parent_id" field.
@@ -56191,6 +56255,32 @@ func (m *OrderMutation) ResetEbike() {
 	m.clearedebike = false
 }
 
+// ClearAgent clears the "agent" edge to the Agent entity.
+func (m *OrderMutation) ClearAgent() {
+	m.clearedagent = true
+}
+
+// AgentCleared reports if the "agent" edge to the Agent entity was cleared.
+func (m *OrderMutation) AgentCleared() bool {
+	return m.AgentIDCleared() || m.clearedagent
+}
+
+// AgentIDs returns the "agent" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// AgentID instead. It exists only for internal usage by the builders.
+func (m *OrderMutation) AgentIDs() (ids []uint64) {
+	if id := m.agent; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetAgent resets all changes to the "agent" edge.
+func (m *OrderMutation) ResetAgent() {
+	m.agent = nil
+	m.clearedagent = false
+}
+
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *OrderMutation) ClearRider() {
 	m.clearedrider = true
@@ -56198,7 +56288,7 @@ func (m *OrderMutation) ClearRider() {
 
 // RiderCleared reports if the "rider" edge to the Rider entity was cleared.
 func (m *OrderMutation) RiderCleared() bool {
-	return m.clearedrider
+	return m.RiderIDCleared() || m.clearedrider
 }
 
 // RiderIDs returns the "rider" edge IDs in the mutation.
@@ -56528,7 +56618,7 @@ func (m *OrderMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *OrderMutation) Fields() []string {
-	fields := make([]string, 0, 27)
+	fields := make([]string, 0, 28)
 	if m.created_at != nil {
 		fields = append(fields, order.FieldCreatedAt)
 	}
@@ -56558,6 +56648,9 @@ func (m *OrderMutation) Fields() []string {
 	}
 	if m.ebike != nil {
 		fields = append(fields, order.FieldEbikeID)
+	}
+	if m.agent != nil {
+		fields = append(fields, order.FieldAgentID)
 	}
 	if m.rider != nil {
 		fields = append(fields, order.FieldRiderID)
@@ -56638,6 +56731,8 @@ func (m *OrderMutation) Field(name string) (ent.Value, bool) {
 		return m.BrandID()
 	case order.FieldEbikeID:
 		return m.EbikeID()
+	case order.FieldAgentID:
+		return m.AgentID()
 	case order.FieldRiderID:
 		return m.RiderID()
 	case order.FieldParentID:
@@ -56701,6 +56796,8 @@ func (m *OrderMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldBrandID(ctx)
 	case order.FieldEbikeID:
 		return m.OldEbikeID(ctx)
+	case order.FieldAgentID:
+		return m.OldAgentID(ctx)
 	case order.FieldRiderID:
 		return m.OldRiderID(ctx)
 	case order.FieldParentID:
@@ -56813,6 +56910,13 @@ func (m *OrderMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetEbikeID(v)
+		return nil
+	case order.FieldAgentID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAgentID(v)
 		return nil
 	case order.FieldRiderID:
 		v, ok := value.(uint64)
@@ -57122,6 +57226,12 @@ func (m *OrderMutation) ClearedFields() []string {
 	if m.FieldCleared(order.FieldEbikeID) {
 		fields = append(fields, order.FieldEbikeID)
 	}
+	if m.FieldCleared(order.FieldAgentID) {
+		fields = append(fields, order.FieldAgentID)
+	}
+	if m.FieldCleared(order.FieldRiderID) {
+		fields = append(fields, order.FieldRiderID)
+	}
 	if m.FieldCleared(order.FieldParentID) {
 		fields = append(fields, order.FieldParentID)
 	}
@@ -57175,6 +57285,12 @@ func (m *OrderMutation) ClearField(name string) error {
 	case order.FieldEbikeID:
 		m.ClearEbikeID()
 		return nil
+	case order.FieldAgentID:
+		m.ClearAgentID()
+		return nil
+	case order.FieldRiderID:
+		m.ClearRiderID()
+		return nil
 	case order.FieldParentID:
 		m.ClearParentID()
 		return nil
@@ -57227,6 +57343,9 @@ func (m *OrderMutation) ResetField(name string) error {
 		return nil
 	case order.FieldEbikeID:
 		m.ResetEbikeID()
+		return nil
+	case order.FieldAgentID:
+		m.ResetAgentID()
 		return nil
 	case order.FieldRiderID:
 		m.ResetRiderID()
@@ -57285,7 +57404,7 @@ func (m *OrderMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *OrderMutation) AddedEdges() []string {
-	edges := make([]string, 0, 12)
+	edges := make([]string, 0, 13)
 	if m.plan != nil {
 		edges = append(edges, order.EdgePlan)
 	}
@@ -57297,6 +57416,9 @@ func (m *OrderMutation) AddedEdges() []string {
 	}
 	if m.ebike != nil {
 		edges = append(edges, order.EdgeEbike)
+	}
+	if m.agent != nil {
+		edges = append(edges, order.EdgeAgent)
 	}
 	if m.rider != nil {
 		edges = append(edges, order.EdgeRider)
@@ -57345,6 +57467,10 @@ func (m *OrderMutation) AddedIDs(name string) []ent.Value {
 		if id := m.ebike; id != nil {
 			return []ent.Value{*id}
 		}
+	case order.EdgeAgent:
+		if id := m.agent; id != nil {
+			return []ent.Value{*id}
+		}
 	case order.EdgeRider:
 		if id := m.rider; id != nil {
 			return []ent.Value{*id}
@@ -57387,7 +57513,7 @@ func (m *OrderMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *OrderMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 12)
+	edges := make([]string, 0, 13)
 	if m.removedchildren != nil {
 		edges = append(edges, order.EdgeChildren)
 	}
@@ -57419,7 +57545,7 @@ func (m *OrderMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *OrderMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 12)
+	edges := make([]string, 0, 13)
 	if m.clearedplan {
 		edges = append(edges, order.EdgePlan)
 	}
@@ -57431,6 +57557,9 @@ func (m *OrderMutation) ClearedEdges() []string {
 	}
 	if m.clearedebike {
 		edges = append(edges, order.EdgeEbike)
+	}
+	if m.clearedagent {
+		edges = append(edges, order.EdgeAgent)
 	}
 	if m.clearedrider {
 		edges = append(edges, order.EdgeRider)
@@ -57471,6 +57600,8 @@ func (m *OrderMutation) EdgeCleared(name string) bool {
 		return m.clearedbrand
 	case order.EdgeEbike:
 		return m.clearedebike
+	case order.EdgeAgent:
+		return m.clearedagent
 	case order.EdgeRider:
 		return m.clearedrider
 	case order.EdgeSubscribe:
@@ -57506,6 +57637,9 @@ func (m *OrderMutation) ClearEdge(name string) error {
 		return nil
 	case order.EdgeEbike:
 		m.ClearEbike()
+		return nil
+	case order.EdgeAgent:
+		m.ClearAgent()
 		return nil
 	case order.EdgeRider:
 		m.ClearRider()
@@ -57544,6 +57678,9 @@ func (m *OrderMutation) ResetEdge(name string) error {
 		return nil
 	case order.EdgeEbike:
 		m.ResetEbike()
+		return nil
+	case order.EdgeAgent:
+		m.ResetAgent()
 		return nil
 	case order.EdgeRider:
 		m.ResetRider()
