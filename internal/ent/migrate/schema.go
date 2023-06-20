@@ -3840,6 +3840,94 @@ var (
 			},
 		},
 	}
+	// StockSummaryColumns holds the columns for the "stock_summary" table.
+	StockSummaryColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "date", Type: field.TypeString, Comment: "日期"},
+		{Name: "battery_num", Type: field.TypeInt, Comment: "电池总数", Default: 0},
+		{Name: "battery_outbound_num", Type: field.TypeInt, Comment: "电池出库总数", Default: 0},
+		{Name: "battery_inbound_num", Type: field.TypeInt, Comment: "电池入库总数", Default: 0},
+		{Name: "bike_num", Type: field.TypeInt, Comment: "电车总数", Default: 0},
+		{Name: "bike_outbound_num", Type: field.TypeInt, Comment: "电车出库总数", Default: 0},
+		{Name: "bike_inbound_num", Type: field.TypeInt, Comment: "电车入库总数", Default: 0},
+		{Name: "cabinet_battery_num", Type: field.TypeInt, Comment: "电柜电池总数", Default: 0},
+		{Name: "rider_battery_num", Type: field.TypeInt, Comment: "骑手电池总数", Default: 0},
+		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true, Comment: "企业ID"},
+		{Name: "station_id", Type: field.TypeUint64, Nullable: true, Comment: "站点ID"},
+		{Name: "store_id", Type: field.TypeUint64, Nullable: true, Comment: "门店ID"},
+		{Name: "rider_id", Type: field.TypeUint64, Nullable: true, Comment: "骑手ID"},
+		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true, Comment: "电柜ID"},
+	}
+	// StockSummaryTable holds the schema information for the "stock_summary" table.
+	StockSummaryTable = &schema.Table{
+		Name:       "stock_summary",
+		Columns:    StockSummaryColumns,
+		PrimaryKey: []*schema.Column{StockSummaryColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "stock_summary_enterprise_enterprise",
+				Columns:    []*schema.Column{StockSummaryColumns[10]},
+				RefColumns: []*schema.Column{EnterpriseColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "stock_summary_enterprise_station_station",
+				Columns:    []*schema.Column{StockSummaryColumns[11]},
+				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "stock_summary_store_store",
+				Columns:    []*schema.Column{StockSummaryColumns[12]},
+				RefColumns: []*schema.Column{StoreColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "stock_summary_rider_rider",
+				Columns:    []*schema.Column{StockSummaryColumns[13]},
+				RefColumns: []*schema.Column{RiderColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "stock_summary_cabinet_cabinet",
+				Columns:    []*schema.Column{StockSummaryColumns[14]},
+				RefColumns: []*schema.Column{CabinetColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "stocksummary_enterprise_id",
+				Unique:  false,
+				Columns: []*schema.Column{StockSummaryColumns[10]},
+			},
+			{
+				Name:    "stocksummary_station_id",
+				Unique:  false,
+				Columns: []*schema.Column{StockSummaryColumns[11]},
+			},
+			{
+				Name:    "stocksummary_store_id",
+				Unique:  false,
+				Columns: []*schema.Column{StockSummaryColumns[12]},
+			},
+			{
+				Name:    "stocksummary_rider_id",
+				Unique:  false,
+				Columns: []*schema.Column{StockSummaryColumns[13]},
+			},
+			{
+				Name:    "stocksummary_cabinet_id",
+				Unique:  false,
+				Columns: []*schema.Column{StockSummaryColumns[14]},
+			},
+			{
+				Name:    "stocksummary_date",
+				Unique:  false,
+				Columns: []*schema.Column{StockSummaryColumns[1]},
+			},
+		},
+	}
 	// StoreColumns holds the columns for the "store" table.
 	StoreColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -4659,6 +4747,7 @@ var (
 		RoleTable,
 		SettingTable,
 		StockTable,
+		StockSummaryTable,
 		StoreTable,
 		SubscribeTable,
 		SubscribeAlterTable,
@@ -4958,6 +5047,14 @@ func init() {
 	StockTable.ForeignKeys[12].RefTable = StoreTable
 	StockTable.Annotation = &entsql.Annotation{
 		Table: "stock",
+	}
+	StockSummaryTable.ForeignKeys[0].RefTable = EnterpriseTable
+	StockSummaryTable.ForeignKeys[1].RefTable = EnterpriseStationTable
+	StockSummaryTable.ForeignKeys[2].RefTable = StoreTable
+	StockSummaryTable.ForeignKeys[3].RefTable = RiderTable
+	StockSummaryTable.ForeignKeys[4].RefTable = CabinetTable
+	StockSummaryTable.Annotation = &entsql.Annotation{
+		Table: "stock_summary",
 	}
 	StoreTable.ForeignKeys[0].RefTable = BranchTable
 	StoreTable.ForeignKeys[1].RefTable = EmployeeTable

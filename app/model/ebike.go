@@ -57,13 +57,16 @@ func (p EbikeStatus) String() string {
 }
 
 type EbikeListFilter struct {
-	RiderID   uint64       `json:"riderId" query:"riderId"`               // 骑手ID
-	StoreID   uint64       `json:"storeId" query:"storeId"`               // 门店ID
-	BrandID   uint64       `json:"brandId" query:"brandId"`               // 品牌ID
-	Enable    *bool        `json:"enable" query:"enable"`                 // 是否启用, 默认`true`, 不携带为获取全部
-	Status    *EbikeStatus `json:"status" query:"status" enums:"0,1,2,3"` // 状态, 0:库存中 1:使用中 2:维修中 3:已报废, 不携带为获取全部
-	ExFactory string       `json:"exFactory" query:"exFactory"`           // 生产批次
-	Keyword   string       `json:"keyword" query:"keyword"`               // 搜索关键词<骑手:电话/姓名, 车辆:车架号/车牌号/终端编号/SIM卡号>
+	RiderID      uint64       `json:"riderId" query:"riderId"`                 // 骑手ID
+	StoreID      uint64       `json:"storeId" query:"storeId"`                 // 门店ID
+	BrandID      uint64       `json:"brandId" query:"brandId"`                 // 品牌ID
+	Enable       *bool        `json:"enable" query:"enable"`                   // 是否启用, 默认`true`, 不携带为获取全部
+	Status       *EbikeStatus `json:"status" query:"status" enums:"0,1,2,3"`   // 状态, 0:库存中 1:使用中 2:维修中 3:已报废, 不携带为获取全部
+	ExFactory    string       `json:"exFactory" query:"exFactory"`             // 生产批次
+	Keyword      string       `json:"keyword" query:"keyword"`                 // 搜索关键词<骑手:电话/姓名, 车辆:车架号/车牌号/终端编号/SIM卡号>
+	OwnerType    *uint8       `json:"ownerType" query:"ownerType" enums:"1,2"` // 归属类型   1:平台 2:代理商
+	EnterpriseID *uint64      `json:"enterpriseId" query:"enterpriseId"`       // 团签ID
+	StationID    *uint64      `json:"stationId" query:"stationId"`             // 站点ID
 }
 
 type EbikeAttributes struct {
@@ -83,13 +86,18 @@ type EbikeListRes struct {
 	ID uint64 `json:"id"`
 	EbikeAttributes
 
-	ExFactory string `json:"exFactory"`       // 生产批次
-	Rider     string `json:"rider,omitempty"` // 骑手
-	Store     string `json:"store,omitempty"` // 门店
-	Brand     string `json:"brand,omitempty"` // 品牌
-	SN        string `json:"sn"`              // 车架号
-	BrandID   uint64 `json:"brandId"`         // 品牌ID
-	Status    string `json:"status"`          // 状态
+	ExFactory      string  `json:"exFactory"`                // 生产批次
+	Rider          string  `json:"rider,omitempty"`          // 骑手
+	Store          string  `json:"store,omitempty"`          // 门店
+	Brand          string  `json:"brand,omitempty"`          // 品牌
+	SN             string  `json:"sn"`                       // 车架号
+	BrandID        uint64  `json:"brandId"`                  // 品牌ID
+	Status         string  `json:"status"`                   // 状态
+	StationName    string  `json:"stationName,omitempty"`    // 所属站点名称
+	StationID      *uint64 `json:"stationId,omitempty"`      // 站点id
+	EnterpriseName string  `json:"enterpriseName,omitempty"` // 团签名称
+	EnterpriseID   *uint64 `json:"enterpriseId,omitempty"`   // 团签ID
+
 }
 
 type EbikeCreateReq struct {

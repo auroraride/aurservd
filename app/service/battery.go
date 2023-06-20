@@ -463,7 +463,7 @@ func (s *batteryService) Allocate(tx *ent.Tx, bat *ent.Battery, sub *ent.Subscri
 
 	if sub.StationID != nil {
 		// 当前骑手属于代理站点时, 设置新的站点信息
-		updater.SetNillableStationID(sub.StationID).SetNillableEnterpriseID(sub.StationID)
+		updater.SetNillableStationID(sub.StationID).SetNillableEnterpriseID(sub.EnterpriseID)
 	} else {
 		// 当前骑手属于平台时, 清除原有站点信息
 		updater.ClearStationID().ClearEnterpriseID()

@@ -573,6 +573,18 @@ func (f StockFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.StockMutation", m)
 }
 
+// The StockSummaryFunc type is an adapter to allow the use of ordinary
+// function as StockSummary mutator.
+type StockSummaryFunc func(context.Context, *ent.StockSummaryMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f StockSummaryFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.StockSummaryMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.StockSummaryMutation", m)
+}
+
 // The StoreFunc type is an adapter to allow the use of ordinary
 // function as Store mutator.
 type StoreFunc func(context.Context, *ent.StoreMutation) (ent.Value, error)

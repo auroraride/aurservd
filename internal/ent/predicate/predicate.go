@@ -147,6 +147,9 @@ type Setting func(*sql.Selector)
 // Stock is the predicate function for stock builders.
 type Stock func(*sql.Selector)
 
+// StockSummary is the predicate function for stocksummary builders.
+type StockSummary func(*sql.Selector)
+
 // Store is the predicate function for store builders.
 type Store func(*sql.Selector)
 

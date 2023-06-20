@@ -18,6 +18,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/allocate"
 	"github.com/auroraride/aurservd/internal/ent/ebike"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
+	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/pkg/silk"
@@ -96,7 +98,13 @@ func (s *ebikeService) IsAllocatableX(id uint64) {
 func (s *ebikeService) listFilter(req model.EbikeListFilter) (q *ent.EbikeQuery, info ar.Map) {
 	info = make(ar.Map)
 
-	q = s.orm.Query().Order(ent.Desc(ebike.FieldCreatedAt)).WithRider().WithStore().WithBrand()
+	q = s.orm.Query().
+		Order(ent.Desc(ebike.FieldCreatedAt)).
+		WithRider().
+		WithStore().
+		WithBrand().
+		WithEnterprise().
+		WithStation()
 
 	// 启用状态
 	if req.Enable != nil {
@@ -152,6 +160,29 @@ func (s *ebikeService) listFilter(req model.EbikeListFilter) (q *ent.EbikeQuery,
 		info["生产批次"] = req.ExFactory
 		q.Where(ebike.ExFactory(req.ExFactory))
 	}
+	// 归属
+	if req.OwnerType != nil {
+		var OwnerTypeName string
+		switch *req.OwnerType {
+		case 1: // 平台
+			q.Where(ebike.EnterpriseIDIsNil())
+			OwnerTypeName = "平台"
+		case 2: // 代理商
+			q.Where(ebike.EnterpriseIDNotNil())
+			OwnerTypeName = "代理商"
+		}
+		info["归属"] = OwnerTypeName
+	}
+	// 团签
+	if req.EnterpriseID != nil {
+		info["团签"] = ent.NewExportInfo(*req.EnterpriseID, enterprise.Table)
+		q.Where(ebike.EnterpriseID(*req.EnterpriseID))
+	}
+	// 站点
+	if req.StationID != nil {
+		info["站点"] = ent.NewExportInfo(*req.StationID, enterprisestation.Table)
+		q.Where(ebike.StationID(*req.StationID))
+	}
 
 	return
 }
@@ -185,6 +216,16 @@ func (s *ebikeService) List(req *model.EbikeListReq) *model.PaginationRes {
 		if es != nil {
 			res.Store = es.Name
 		}
+
+		if item.Edges.Station != nil {
+			res.StationName = item.Edges.Station.Name
+			res.StationID = &item.Edges.Station.ID
+		}
+		if item.Edges.Enterprise != nil {
+			res.EnterpriseName = item.Edges.Enterprise.Name
+			res.EnterpriseID = &item.Edges.Enterprise.ID
+		}
+
 		return res
 	})
 }
