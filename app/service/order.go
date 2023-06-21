@@ -775,28 +775,26 @@ func (s *orderService) List(req *model.OrderListReq) *model.PaginationRes {
 
 // Detail 订单详情
 func (s *orderService) Detail(item *ent.Order) model.Order {
-	rc := item.Edges.City
-	no := item.TradeNo
-	if item.Payway == model.OrderPaywayManual {
-		no = ""
-	}
 	res := model.Order{
-		ID:         item.ID,
-		Type:       item.Type,
-		Status:     item.Status,
-		Payway:     item.Payway,
-		PayAt:      item.CreatedAt.Format(carbon.DateTimeLayout),
-		Amount:     item.Amount,
-		OutTradeNo: item.OutTradeNo,
-		TradeNo:    no,
-		City: model.City{
-			ID:   rc.ID,
-			Name: rc.Name,
-		},
+		ID:            item.ID,
+		Type:          item.Type,
+		Status:        item.Status,
+		Payway:        item.Payway,
+		PayAt:         item.CreatedAt.Format(carbon.DateTimeLayout),
+		Amount:        item.Amount,
+		OutTradeNo:    item.OutTradeNo,
+		TradeNo:       item.TradeNo,
 		PointAmount:   tools.NewDecimal().Mul(float64(item.Points), item.PointRatio),
 		DiscountNewly: item.DiscountNewly,
 		CouponAmount:  item.CouponAmount,
 		Ebike:         NewEbike().Detail(item.Edges.Ebike, item.Edges.Brand),
+	}
+	rc := item.Edges.City
+	if rc != nil {
+		res.City = model.City{
+			ID:   rc.ID,
+			Name: rc.Name,
+		}
 	}
 	if len(item.Edges.Coupons) > 0 {
 		res.Coupons = make([]model.CouponRider, len(item.Edges.Coupons))
