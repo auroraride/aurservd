@@ -9402,6 +9402,22 @@ func (c *StockClient) QueryBattery(s *Stock) *BatteryQuery {
 	return query
 }
 
+// QueryAgent queries the agent edge of a Stock.
+func (c *StockClient) QueryAgent(s *Stock) *AgentQuery {
+	query := (&AgentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, id),
+			sqlgraph.To(agent.Table, agent.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, stock.AgentTable, stock.AgentColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryStore queries the store edge of a Stock.
 func (c *StockClient) QueryStore(s *Stock) *StoreQuery {
 	query := (&StoreClient{config: c.config}).Query()

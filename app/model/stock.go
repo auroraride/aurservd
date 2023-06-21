@@ -281,6 +281,7 @@ type StockBusinessReq struct {
 	SubscribeID  *uint64 `json:"subscribeId"`  // 订阅ID
 	EnterpriseID *uint64 `json:"enterpriseId"` // 团签ID
 	StationID    *uint64 `json:"stationId"`    // 站点ID
+	AgentID      *uint64 `json:"agentId"`      // 代理商ID
 
 	Ebike   *EbikeBusinessInfo `json:"ebike"`   // 电车信息
 	Battery *Battery           `json:"battery"` // 电池信息

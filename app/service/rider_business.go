@@ -208,7 +208,7 @@ func (s *riderBusinessService) Unsubscribe(req *model.BusinessCabinetReq) model.
 				SetCabinetTask(func() (*model.BinInfo, *model.Battery, error) {
 					return NewIntelligentCabinet(s.rider).DoBusiness(s.response.UUID, adapter.BusinessUnsubscribe, s.subscribe, s.battery, s.cabinet)
 				}).
-				UnSubscribe(req.ID)
+				UnSubscribe(&model.BusinessSubscribeReq{ID: req.ID})
 		})
 
 		if err != nil {

@@ -1368,6 +1368,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			stock.FieldEbikeID:      {Type: field.TypeUint64, Column: stock.FieldEbikeID},
 			stock.FieldBrandID:      {Type: field.TypeUint64, Column: stock.FieldBrandID},
 			stock.FieldBatteryID:    {Type: field.TypeUint64, Column: stock.FieldBatteryID},
+			stock.FieldAgentID:      {Type: field.TypeUint64, Column: stock.FieldAgentID},
 			stock.FieldParentID:     {Type: field.TypeUint64, Column: stock.FieldParentID},
 			stock.FieldSn:           {Type: field.TypeString, Column: stock.FieldSn},
 			stock.FieldType:         {Type: field.TypeUint8, Column: stock.FieldType},
@@ -4005,6 +4006,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Stock",
 		"Battery",
+	)
+	graph.MustAddE(
+		"agent",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stock.AgentTable,
+			Columns: []string{stock.AgentColumn},
+			Bidi:    false,
+		},
+		"Stock",
+		"Agent",
 	)
 	graph.MustAddE(
 		"store",
@@ -12788,6 +12801,11 @@ func (f *StockFilter) WhereBatteryID(p entql.Uint64P) {
 	f.Where(p.Field(stock.FieldBatteryID))
 }
 
+// WhereAgentID applies the entql uint64 predicate on the agent_id field.
+func (f *StockFilter) WhereAgentID(p entql.Uint64P) {
+	f.Where(p.Field(stock.FieldAgentID))
+}
+
 // WhereParentID applies the entql uint64 predicate on the parent_id field.
 func (f *StockFilter) WhereParentID(p entql.Uint64P) {
 	f.Where(p.Field(stock.FieldParentID))
@@ -12917,6 +12935,20 @@ func (f *StockFilter) WhereHasBattery() {
 // WhereHasBatteryWith applies a predicate to check if query has an edge battery with a given conditions (other predicates).
 func (f *StockFilter) WhereHasBatteryWith(preds ...predicate.Battery) {
 	f.Where(entql.HasEdgeWith("battery", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasAgent applies a predicate to check if query has an edge agent.
+func (f *StockFilter) WhereHasAgent() {
+	f.Where(entql.HasEdge("agent"))
+}
+
+// WhereHasAgentWith applies a predicate to check if query has an edge agent with a given conditions (other predicates).
+func (f *StockFilter) WhereHasAgentWith(preds ...predicate.Agent) {
+	f.Where(entql.HasEdgeWith("agent", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

@@ -440,7 +440,8 @@ func (s *stockService) RiderBusiness(tx *ent.Tx, req *model.StockBusinessReq) (s
 		SetType(req.StockType).
 		SetNum(num).
 		SetCityID(req.CityID).
-		SetNillableSubscribeID(req.SubscribeID)
+		SetNillableSubscribeID(req.SubscribeID).
+		SetNillableAgentID(req.AgentID)
 
 	son := creator.Clone()
 
@@ -690,7 +691,8 @@ func (s *stockService) listFilter(req model.StockDetailFilter) (q *ent.StockQuer
 		WithEbike().
 		WithStation().
 		WithBattery().
-		WithEnterprise()
+		WithEnterprise().
+		WithAgent()
 	// 排序
 	if req.Positive {
 		q.Order(ent.Asc(stock.FieldSn))
@@ -845,6 +847,8 @@ func (s *stockService) detailInfo(item *ent.Stock) model.StockDetailRes {
 	en := item.Edges.Enterprise
 	st := item.Edges.Station
 	battery := item.Edges.Battery
+	ag := item.Edges.Agent
+
 	// 站点调拨电池
 	if battery != nil {
 		res.Name = fmt.Sprintf("[%s] %s", *item.Model, battery.Sn)
@@ -879,10 +883,15 @@ func (s *stockService) detailInfo(item *ent.Stock) model.StockDetailRes {
 	} else {
 		// 业务调拨记录
 		var riderName string
+		var agentName string
 
 		if er != nil {
 			riderName = er.Name
 			res.Rider = fmt.Sprintf("%s - %s", riderName, er.Phone)
+		}
+
+		if ag != nil {
+			agentName = ag.Name
 		}
 
 		tm := map[uint8]string{
@@ -904,8 +913,8 @@ func (s *stockService) detailInfo(item *ent.Stock) model.StockDetailRes {
 				tmr = "后台"
 				res.Operator = fmt.Sprintf("后台 - %s", item.Creator.Name)
 			} else if st != nil {
-				tmr = "代理商站点"
-				res.Operator = fmt.Sprintf("代理商站点 - %s", st.Name)
+				tmr = "站点"
+				res.Operator = fmt.Sprintf("代理 - %s", agentName)
 			}
 		}
 

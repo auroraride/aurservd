@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -38,6 +39,7 @@ type StockQuery struct {
 	withEbike      *EbikeQuery
 	withBrand      *EbikeBrandQuery
 	withBattery    *BatteryQuery
+	withAgent      *AgentQuery
 	withStore      *StoreQuery
 	withCabinet    *CabinetQuery
 	withRider      *RiderQuery
@@ -188,6 +190,28 @@ func (sq *StockQuery) QueryBattery() *BatteryQuery {
 			sqlgraph.From(stock.Table, stock.FieldID, selector),
 			sqlgraph.To(battery.Table, battery.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, stock.BatteryTable, stock.BatteryColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryAgent chains the current query on the "agent" edge.
+func (sq *StockQuery) QueryAgent() *AgentQuery {
+	query := (&AgentClient{config: sq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := sq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := sq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, selector),
+			sqlgraph.To(agent.Table, agent.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, stock.AgentTable, stock.AgentColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
 		return fromU, nil
@@ -590,6 +614,7 @@ func (sq *StockQuery) Clone() *StockQuery {
 		withEbike:      sq.withEbike.Clone(),
 		withBrand:      sq.withBrand.Clone(),
 		withBattery:    sq.withBattery.Clone(),
+		withAgent:      sq.withAgent.Clone(),
 		withStore:      sq.withStore.Clone(),
 		withCabinet:    sq.withCabinet.Clone(),
 		withRider:      sq.withRider.Clone(),
@@ -657,6 +682,17 @@ func (sq *StockQuery) WithBattery(opts ...func(*BatteryQuery)) *StockQuery {
 		opt(query)
 	}
 	sq.withBattery = query
+	return sq
+}
+
+// WithAgent tells the query-builder to eager-load the nodes that are connected to
+// the "agent" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *StockQuery) WithAgent(opts ...func(*AgentQuery)) *StockQuery {
+	query := (&AgentClient{config: sq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	sq.withAgent = query
 	return sq
 }
 
@@ -838,12 +874,13 @@ func (sq *StockQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Stock,
 		nodes       = []*Stock{}
 		withFKs     = sq.withFKs
 		_spec       = sq.querySpec()
-		loadedTypes = [14]bool{
+		loadedTypes = [15]bool{
 			sq.withCity != nil,
 			sq.withSubscribe != nil,
 			sq.withEbike != nil,
 			sq.withBrand != nil,
 			sq.withBattery != nil,
+			sq.withAgent != nil,
 			sq.withStore != nil,
 			sq.withCabinet != nil,
 			sq.withRider != nil,
@@ -909,6 +946,12 @@ func (sq *StockQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Stock,
 	if query := sq.withBattery; query != nil {
 		if err := sq.loadBattery(ctx, query, nodes, nil,
 			func(n *Stock, e *Battery) { n.Edges.Battery = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := sq.withAgent; query != nil {
+		if err := sq.loadAgent(ctx, query, nodes, nil,
+			func(n *Stock, e *Agent) { n.Edges.Agent = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -1123,6 +1166,38 @@ func (sq *StockQuery) loadBattery(ctx context.Context, query *BatteryQuery, node
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "battery_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (sq *StockQuery) loadAgent(ctx context.Context, query *AgentQuery, nodes []*Stock, init func(*Stock), assign func(*Stock, *Agent)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Stock)
+	for i := range nodes {
+		if nodes[i].AgentID == nil {
+			continue
+		}
+		fk := *nodes[i].AgentID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(agent.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "agent_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -1464,6 +1539,9 @@ func (sq *StockQuery) querySpec() *sqlgraph.QuerySpec {
 		if sq.withBattery != nil {
 			_spec.Node.AddColumnOnce(stock.FieldBatteryID)
 		}
+		if sq.withAgent != nil {
+			_spec.Node.AddColumnOnce(stock.FieldAgentID)
+		}
 		if sq.withStore != nil {
 			_spec.Node.AddColumnOnce(stock.FieldStoreID)
 		}
@@ -1558,6 +1636,7 @@ var (
 	StockQueryWithEbike      StockQueryWith = "Ebike"
 	StockQueryWithBrand      StockQueryWith = "Brand"
 	StockQueryWithBattery    StockQueryWith = "Battery"
+	StockQueryWithAgent      StockQueryWith = "Agent"
 	StockQueryWithStore      StockQueryWith = "Store"
 	StockQueryWithCabinet    StockQueryWith = "Cabinet"
 	StockQueryWithRider      StockQueryWith = "Rider"
@@ -1582,6 +1661,8 @@ func (sq *StockQuery) With(withEdges ...StockQueryWith) *StockQuery {
 			sq.WithBrand()
 		case StockQueryWithBattery:
 			sq.WithBattery()
+		case StockQueryWithAgent:
+			sq.WithAgent()
 		case StockQueryWithStore:
 			sq.WithStore()
 		case StockQueryWithCabinet:

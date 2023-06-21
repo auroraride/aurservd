@@ -310,6 +310,7 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 			bat,
 		).
 			SetEmployeeID(allo.EmployeeID).
+			SetAgentID(params.AgentID).
 			Active(sub, allo)
 	}
 
