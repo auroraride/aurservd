@@ -72,6 +72,7 @@ type ExchangeListFilter struct {
 	Model        string               `json:"model" query:"model"`                                // 电池型号
 	Times        int                  `json:"times" query:"times"`                                // 次数 (所选时间段内最小换电次数)
 	EnterpriseID uint64               `json:"enterpriseId" query:"enterpriseId"`                  // 团签ID
+	BatterySN    string               `json:"batterySn" query:"batterySn"`                        // 电池编码
 }
 
 type ExchangeEmployeeListReq struct {
@@ -100,20 +101,22 @@ type ExchangeListExport struct {
 }
 
 type ExchangeManagerListRes struct {
-	ID          uint64            `json:"id"`
-	Name        string            `json:"name"`                 // 骑手姓名
-	Phone       string            `json:"phone"`                // 骑手电话
-	Time        string            `json:"time"`                 // 换电时间
-	Model       string            `json:"model"`                // 电池型号
-	Alternative bool              `json:"alternative"`          // 换电方案 `true`非满电 `false`满电, 只有`true`的时候才显示为`非满电`
-	Enterprise  *Enterprise       `json:"enterprise,omitempty"` // 团签企业, 个签无此字段
-	Store       *Store            `json:"store,omitempty"`      // 门店, 电柜换电无此字段
-	Cabinet     *CabinetBasicInfo `json:"cabinet,omitempty"`    // 电柜, 门店换电无此字段
-	City        City              `json:"city"`                 // 城市
-	Status      uint8             `json:"status"`               // 换电状态 0:进行中 1:成功 2:失败
-	Full        string            `json:"full,omitempty"`       // 满电仓位信息, 门店换电不存在
-	Empty       string            `json:"empty,omitempty"`      // 空仓位信息, 门店换电不存在
-	Error       string            `json:"error,omitempty"`      // 换电失败原因
+	ID            uint64            `json:"id"`
+	Name          string            `json:"name"`                    // 骑手姓名
+	Phone         string            `json:"phone"`                   // 骑手电话
+	Time          string            `json:"time"`                    // 换电时间
+	Model         string            `json:"model"`                   // 电池型号
+	Alternative   bool              `json:"alternative"`             // 换电方案 `true`非满电 `false`满电, 只有`true`的时候才显示为`非满电`
+	Enterprise    *Enterprise       `json:"enterprise,omitempty"`    // 团签企业, 个签无此字段
+	Store         *Store            `json:"store,omitempty"`         // 门店, 电柜换电无此字段
+	Cabinet       *CabinetBasicInfo `json:"cabinet,omitempty"`       // 电柜, 门店换电无此字段
+	City          City              `json:"city"`                    // 城市
+	Status        uint8             `json:"status"`                  // 换电状态 0:进行中 1:成功 2:失败
+	Full          string            `json:"full,omitempty"`          // 满电仓位信息, 门店换电不存在
+	Empty         string            `json:"empty,omitempty"`         // 空仓位信息, 门店换电不存在
+	Error         string            `json:"error,omitempty"`         // 换电失败原因
+	PutinBattery  *string           `json:"putinBattery,omitempty"`  // 放入电池编码
+	PutoutBattery *string           `json:"putoutBattery,omitempty"` // 取出电池编码
 }
 
 type ExchangeStepResultCache struct {

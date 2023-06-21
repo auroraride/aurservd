@@ -2283,6 +2283,9 @@ definitions:
     type: object
   model.BusinessSubscribeReq:
     properties:
+      agentID:
+        description: 代理商ID
+        type: integer
       cabinetId:
         type: integer
       id:
@@ -4352,6 +4355,9 @@ definitions:
         - 1
         - 2
         type: integer
+      batterySn:
+        description: 电池编码
+        type: string
       brand:
         allOf:
         - $ref: '#/definitions/adapter.CabinetBrand'
@@ -4453,6 +4459,12 @@ definitions:
         type: string
       phone:
         description: 骑手电话
+        type: string
+      putinBattery:
+        description: 放入电池编码
+        type: string
+      putoutBattery:
+        description: 取出电池编码
         type: string
       status:
         description: 换电状态 0:进行中 1:成功 2:失败
@@ -6793,12 +6805,18 @@ definitions:
     type: object
   model.StockDetailExportReq:
     properties:
+      batterySn:
+        description: 电池编码
+        type: string
       cabinetId:
         description: 电柜ID
         type: integer
       cityId:
         description: 城市ID
         type: integer
+      ebikeSn:
+        description: 车架号
+        type: string
       end:
         description: 结束时间
         type: string
@@ -8640,6 +8658,10 @@ paths:
         name: X-Agent-Token
         required: true
         type: string
+      - description: 电池编码
+        in: query
+        name: batterySn
+        type: string
       - description: 电柜ID
         in: query
         name: cabinetId
@@ -8652,6 +8674,10 @@ paths:
         in: query
         name: current
         type: integer
+      - description: 车架号
+        in: query
+        name: ebikeSn
+        type: string
       - description: 结束时间
         in: query
         name: end
@@ -13848,6 +13874,10 @@ paths:
         in: query
         name: alternative
         type: integer
+      - description: 电池编码
+        in: query
+        name: batterySn
+        type: string
       - description: 电柜类型, KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
         enum:
         - UNKNOWN
@@ -16032,6 +16062,10 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
+      - description: 电池编码
+        in: query
+        name: batterySn
+        type: string
       - description: 电柜ID
         in: query
         name: cabinetId
@@ -16044,6 +16078,10 @@ paths:
         in: query
         name: current
         type: integer
+      - description: 车架号
+        in: query
+        name: ebikeSn
+        type: string
       - description: 结束时间
         in: query
         name: end

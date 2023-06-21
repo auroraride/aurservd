@@ -360,6 +360,8 @@ type StockDetailFilter struct {
 	Keyword      string           `json:"keyword" query:"keyword"`             // 骑手关键词 (手机号或姓名)
 	EnterpriseID uint64           `json:"enterpriseId" query:"enterpriseId"`   // 企业ID (代理该参数不生效)
 	StationID    uint64           `json:"stationId" query:"stationId"`         // 站点ID
+	EbikeSN      string           `json:"ebikeSn" query:"ebikeSn"`             // 车架号
+	BatterySN    string           `json:"batterySn" query:"batterySn"`         // 电池编码
 }
 
 type StockDetailReq struct {

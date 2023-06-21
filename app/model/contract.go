@@ -103,7 +103,7 @@ type ContractListReq struct {
 type ContractListRes struct {
 	Name      string `json:"name"`                // 骑手姓名
 	Phone     string `json:"phone"`               // 骑手电话
-	Link      string `json:"link"`                // 文件Url
+	Link      string `json:"link,omitempty"`      // 文件Url
 	Status    string `json:"status"`              // 状态
 	Effective bool   `json:"effective"`           // 是否有效
 	ExpiresAt string `json:"expiresAt,omitempty"` // 过期时间 (签约完成无此字段)

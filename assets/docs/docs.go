@@ -1368,6 +1368,12 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "type": "string",
+                        "description": "电池编码",
+                        "name": "batterySn",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "电柜ID",
                         "name": "cabinetId",
@@ -1383,6 +1389,12 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "当前页, 从1开始, 默认1",
                         "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "车架号",
+                        "name": "ebikeSn",
                         "in": "query"
                     },
                     {
@@ -9273,6 +9285,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "description": "电池编码",
+                        "name": "batterySn",
+                        "in": "query"
+                    },
+                    {
                         "enum": [
                             "UNKNOWN",
                             "KAIXIN",
@@ -12585,6 +12603,12 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "type": "string",
+                        "description": "电池编码",
+                        "name": "batterySn",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "电柜ID",
                         "name": "cabinetId",
@@ -12600,6 +12624,12 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "当前页, 从1开始, 默认1",
                         "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "车架号",
+                        "name": "ebikeSn",
                         "in": "query"
                     },
                     {
@@ -19615,6 +19645,10 @@ const docTemplate = `{
                 "id"
             ],
             "properties": {
+                "agentID": {
+                    "description": "代理商ID",
+                    "type": "integer"
+                },
                 "cabinetId": {
                     "type": "integer"
                 },
@@ -22574,6 +22608,10 @@ const docTemplate = `{
                         2
                     ]
                 },
+                "batterySn": {
+                    "description": "电池编码",
+                    "type": "string"
+                },
                 "brand": {
                     "description": "电柜类型, KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
                     "enum": [
@@ -22718,6 +22756,14 @@ const docTemplate = `{
                 },
                 "phone": {
                     "description": "骑手电话",
+                    "type": "string"
+                },
+                "putinBattery": {
+                    "description": "放入电池编码",
+                    "type": "string"
+                },
+                "putoutBattery": {
+                    "description": "取出电池编码",
                     "type": "string"
                 },
                 "status": {
@@ -26138,6 +26184,10 @@ const docTemplate = `{
                 "remark"
             ],
             "properties": {
+                "batterySn": {
+                    "description": "电池编码",
+                    "type": "string"
+                },
                 "cabinetId": {
                     "description": "电柜ID",
                     "type": "integer"
@@ -26145,6 +26195,10 @@ const docTemplate = `{
                 "cityId": {
                     "description": "城市ID",
                     "type": "integer"
+                },
+                "ebikeSn": {
+                    "description": "车架号",
+                    "type": "string"
                 },
                 "end": {
                     "description": "结束时间",

@@ -19,6 +19,7 @@ import (
 	"github.com/golang-module/carbon/v2"
 	jsoniter "github.com/json-iterator/go"
 
+	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -720,6 +721,16 @@ func (s *stockService) listFilter(req model.StockDetailFilter) (q *ent.StockQuer
 		q.Where(stock.HasCabinetWith(cabinet.Serial(req.Serial)))
 	}
 
+	if req.EbikeSN != "" {
+		info["车架号"] = req.EbikeSN
+		q.Where(stock.HasEbikeWith(ebike.Sn(req.EbikeSN)))
+	}
+
+	if req.BatterySN != "" {
+		info["电池编码"] = req.BatterySN
+		q.Where(stock.HasBatteryWith(battery.Sn(req.BatterySN)))
+	}
+
 	switch req.Goal {
 	case model.StockGoalStore:
 		// 门店物资
@@ -800,9 +811,9 @@ func (s *stockService) listFilter(req model.StockDetailFilter) (q *ent.StockQuer
 		q.Where(stock.CabinetID(req.CabinetID))
 	}
 
-	q.Modify(func(sel *sql.Selector) {
-		sel.Distinct().Select("ON (sn,parent_id) *")
-	})
+	// q.Modify(func(sel *sql.Selector) {
+	// 	sel.Distinct().Select("ON (sn,parent_id) *")
+	// })
 
 	if req.EnterpriseID != 0 {
 		info["团签"] = ent.NewExportInfo(req.EnterpriseID, enterprise.Table)

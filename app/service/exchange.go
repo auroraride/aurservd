@@ -24,6 +24,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
+	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
@@ -503,8 +504,19 @@ func (s *exchangeService) listFilter(req model.ExchangeListFilter) (q *ent.Excha
 			)
 		})
 	}
+
 	if req.EnterpriseID != 0 {
 		q.Where(exchange.EnterpriseID(req.EnterpriseID))
+		info["门店"] = ent.NewExportInfo(req.EnterpriseID, enterprise.Table)
+	}
+
+	// 查询相关电池
+	if req.BatterySN != "" {
+		info["相关电池"] = req.BatterySN
+		q.Where(exchange.Or(
+			exchange.PutinBattery(req.BatterySN),
+			exchange.PutoutBattery(req.BatterySN),
+		))
 	}
 	return
 }
@@ -514,12 +526,14 @@ func (s *exchangeService) listDetail(item *ent.Exchange) (res model.ExchangeMana
 		return
 	}
 	res = model.ExchangeManagerListRes{
-		ID:          item.ID,
-		Name:        item.Edges.Rider.Name,
-		Phone:       item.Edges.Rider.Phone,
-		Time:        item.CreatedAt.Format(carbon.DateTimeLayout),
-		Model:       item.Model,
-		Alternative: item.Alternative,
+		ID:            item.ID,
+		Name:          item.Edges.Rider.Name,
+		Phone:         item.Edges.Rider.Phone,
+		Time:          item.CreatedAt.Format(carbon.DateTimeLayout),
+		Model:         item.Model,
+		Alternative:   item.Alternative,
+		PutinBattery:  item.PutinBattery,
+		PutoutBattery: item.PutoutBattery,
 	}
 
 	if item.FinishAt.IsZero() && item.CabinetID != 0 {
