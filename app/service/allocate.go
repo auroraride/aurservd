@@ -136,7 +136,7 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 		}
 
 		if e.Payment == model.EnterprisePaymentPrepay && e.Balance <= 0 {
-			snag.Panic("余额不足")
+			snag.Panic("余额不足,请充值")
 		}
 	}
 
