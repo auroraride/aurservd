@@ -111,7 +111,7 @@ func (s *subscribeAlterService) List(req *model.SubscribeAlterListReq) *model.Pa
 				Status:    item.Status,
 			}
 			if item.SubscribeEndAt != nil {
-				res.SubscribeEndAt = item.SubscribeEndAt.Format(carbon.DateTimeLayout)
+				res.SubscribeEndAt = item.SubscribeEndAt.Format(carbon.DateLayout)
 			}
 			if item.ReviewTime != nil {
 				res.ReviewTime = item.ReviewTime.Format(carbon.DateTimeLayout)

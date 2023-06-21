@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -196,6 +197,26 @@ func (su *StockUpdate) SetNillableBatteryID(u *uint64) *StockUpdate {
 // ClearBatteryID clears the value of the "battery_id" field.
 func (su *StockUpdate) ClearBatteryID() *StockUpdate {
 	su.mutation.ClearBatteryID()
+	return su
+}
+
+// SetAgentID sets the "agent_id" field.
+func (su *StockUpdate) SetAgentID(u uint64) *StockUpdate {
+	su.mutation.SetAgentID(u)
+	return su
+}
+
+// SetNillableAgentID sets the "agent_id" field if the given value is not nil.
+func (su *StockUpdate) SetNillableAgentID(u *uint64) *StockUpdate {
+	if u != nil {
+		su.SetAgentID(*u)
+	}
+	return su
+}
+
+// ClearAgentID clears the value of the "agent_id" field.
+func (su *StockUpdate) ClearAgentID() *StockUpdate {
+	su.mutation.ClearAgentID()
 	return su
 }
 
@@ -423,6 +444,11 @@ func (su *StockUpdate) SetBattery(b *Battery) *StockUpdate {
 	return su.SetBatteryID(b.ID)
 }
 
+// SetAgent sets the "agent" edge to the Agent entity.
+func (su *StockUpdate) SetAgent(a *Agent) *StockUpdate {
+	return su.SetAgentID(a.ID)
+}
+
 // SetStore sets the "store" edge to the Store entity.
 func (su *StockUpdate) SetStore(s *Store) *StockUpdate {
 	return su.SetStoreID(s.ID)
@@ -524,6 +550,12 @@ func (su *StockUpdate) ClearBrand() *StockUpdate {
 // ClearBattery clears the "battery" edge to the Battery entity.
 func (su *StockUpdate) ClearBattery() *StockUpdate {
 	su.mutation.ClearBattery()
+	return su
+}
+
+// ClearAgent clears the "agent" edge to the Agent entity.
+func (su *StockUpdate) ClearAgent() *StockUpdate {
+	su.mutation.ClearAgent()
 	return su
 }
 
@@ -849,6 +881,35 @@ func (su *StockUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if su.mutation.AgentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stock.AgentTable,
+			Columns: []string{stock.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.AgentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stock.AgentTable,
+			Columns: []string{stock.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -1313,6 +1374,26 @@ func (suo *StockUpdateOne) ClearBatteryID() *StockUpdateOne {
 	return suo
 }
 
+// SetAgentID sets the "agent_id" field.
+func (suo *StockUpdateOne) SetAgentID(u uint64) *StockUpdateOne {
+	suo.mutation.SetAgentID(u)
+	return suo
+}
+
+// SetNillableAgentID sets the "agent_id" field if the given value is not nil.
+func (suo *StockUpdateOne) SetNillableAgentID(u *uint64) *StockUpdateOne {
+	if u != nil {
+		suo.SetAgentID(*u)
+	}
+	return suo
+}
+
+// ClearAgentID clears the value of the "agent_id" field.
+func (suo *StockUpdateOne) ClearAgentID() *StockUpdateOne {
+	suo.mutation.ClearAgentID()
+	return suo
+}
+
 // SetParentID sets the "parent_id" field.
 func (suo *StockUpdateOne) SetParentID(u uint64) *StockUpdateOne {
 	suo.mutation.SetParentID(u)
@@ -1537,6 +1618,11 @@ func (suo *StockUpdateOne) SetBattery(b *Battery) *StockUpdateOne {
 	return suo.SetBatteryID(b.ID)
 }
 
+// SetAgent sets the "agent" edge to the Agent entity.
+func (suo *StockUpdateOne) SetAgent(a *Agent) *StockUpdateOne {
+	return suo.SetAgentID(a.ID)
+}
+
 // SetStore sets the "store" edge to the Store entity.
 func (suo *StockUpdateOne) SetStore(s *Store) *StockUpdateOne {
 	return suo.SetStoreID(s.ID)
@@ -1638,6 +1724,12 @@ func (suo *StockUpdateOne) ClearBrand() *StockUpdateOne {
 // ClearBattery clears the "battery" edge to the Battery entity.
 func (suo *StockUpdateOne) ClearBattery() *StockUpdateOne {
 	suo.mutation.ClearBattery()
+	return suo
+}
+
+// ClearAgent clears the "agent" edge to the Agent entity.
+func (suo *StockUpdateOne) ClearAgent() *StockUpdateOne {
+	suo.mutation.ClearAgent()
 	return suo
 }
 
@@ -1993,6 +2085,35 @@ func (suo *StockUpdateOne) sqlSave(ctx context.Context) (_node *Stock, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if suo.mutation.AgentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stock.AgentTable,
+			Columns: []string{stock.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.AgentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stock.AgentTable,
+			Columns: []string{stock.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

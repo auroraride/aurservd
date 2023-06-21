@@ -38,6 +38,8 @@ const (
 	FieldBrandID = "brand_id"
 	// FieldBatteryID holds the string denoting the battery_id field in the database.
 	FieldBatteryID = "battery_id"
+	// FieldAgentID holds the string denoting the agent_id field in the database.
+	FieldAgentID = "agent_id"
 	// FieldParentID holds the string denoting the parent_id field in the database.
 	FieldParentID = "parent_id"
 	// FieldSn holds the string denoting the sn field in the database.
@@ -74,6 +76,8 @@ const (
 	EdgeBrand = "brand"
 	// EdgeBattery holds the string denoting the battery edge name in mutations.
 	EdgeBattery = "battery"
+	// EdgeAgent holds the string denoting the agent edge name in mutations.
+	EdgeAgent = "agent"
 	// EdgeStore holds the string denoting the store edge name in mutations.
 	EdgeStore = "store"
 	// EdgeCabinet holds the string denoting the cabinet edge name in mutations.
@@ -129,6 +133,13 @@ const (
 	BatteryInverseTable = "battery"
 	// BatteryColumn is the table column denoting the battery relation/edge.
 	BatteryColumn = "battery_id"
+	// AgentTable is the table that holds the agent relation/edge.
+	AgentTable = "stock"
+	// AgentInverseTable is the table name for the Agent entity.
+	// It exists in this package in order to avoid circular dependency with the "agent" package.
+	AgentInverseTable = "agent"
+	// AgentColumn is the table column denoting the agent relation/edge.
+	AgentColumn = "agent_id"
 	// StoreTable is the table that holds the store relation/edge.
 	StoreTable = "stock"
 	// StoreInverseTable is the table name for the Store entity.
@@ -199,6 +210,7 @@ var Columns = []string{
 	FieldEbikeID,
 	FieldBrandID,
 	FieldBatteryID,
+	FieldAgentID,
 	FieldParentID,
 	FieldSn,
 	FieldType,
@@ -329,6 +341,11 @@ func ByBatteryID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldBatteryID, opts...).ToFunc()
 }
 
+// ByAgentID orders the results by the agent_id field.
+func ByAgentID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAgentID, opts...).ToFunc()
+}
+
 // ByParentID orders the results by the parent_id field.
 func ByParentID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldParentID, opts...).ToFunc()
@@ -426,6 +443,13 @@ func ByBrandField(field string, opts ...sql.OrderTermOption) OrderOption {
 func ByBatteryField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newBatteryStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByAgentField orders the results by agent field.
+func ByAgentField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newAgentStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -531,6 +555,13 @@ func newBatteryStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(BatteryInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, false, BatteryTable, BatteryColumn),
+	)
+}
+func newAgentStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(AgentInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, AgentTable, AgentColumn),
 	)
 }
 func newStoreStep() *sqlgraph.Step {

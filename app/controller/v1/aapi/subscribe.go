@@ -33,6 +33,7 @@ func (*subscribe) Active(c echo.Context) (err error) {
 		SubscribeID: req.ID,
 		BatteryID:   req.BatteryID,
 		EbikeParam:  model.AllocateCreateEbikeParam{ID: req.EbikeID},
+		AgentID:     &ctx.Agent.ID,
 	})
 	return ctx.SendResponse()
 }
@@ -86,6 +87,9 @@ func (*subscribe) AlterReivew(c echo.Context) (err error) {
 // @Success      200  {object}  string  "请求成功"
 func (*subscribe) Halt(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.BusinessSubscribeReq](c)
-	service.NewBusinessRider(nil).UnSubscribe(req.ID)
+	service.NewBusinessRider(nil).UnSubscribe(&model.BusinessSubscribeReq{
+		ID:      req.ID,
+		AgentID: &ctx.Agent.ID,
+	})
 	return ctx.SendResponse()
 }

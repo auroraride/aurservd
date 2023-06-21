@@ -44,7 +44,7 @@ type businessRiderService struct {
 
 	cabTask func() (*model.BinInfo, *model.Battery, error) // 电柜任务
 
-	storeID, employeeID, cabinetID, subscribeID *uint64
+	storeID, employeeID, cabinetID, subscribeID, agentID *uint64
 
 	// 电车信息
 	ebikeInfo *model.EbikeBusinessInfo
@@ -94,6 +94,14 @@ func (s *businessRiderService) SetCabinetID(id *uint64) *businessRiderService {
 func (s *businessRiderService) SetStoreID(id *uint64) *businessRiderService {
 	if id != nil {
 		s.store = NewStore().Query(*id)
+	}
+	return s
+}
+
+// SetAgentID 设置代理商ID
+func (s *businessRiderService) SetAgentID(id *uint64) *businessRiderService {
+	if id != nil {
+		s.agentID = id
 	}
 	return s
 }
@@ -498,6 +506,7 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
 						SubscribeID:  s.subscribeID,
 						StationID:    s.subscribe.StationID,
 						EnterpriseID: s.subscribe.EnterpriseID,
+						AgentID:      s.agentID,
 
 						Ebike:   s.ebikeInfo,
 						Battery: bat,
@@ -655,15 +664,18 @@ func (s *businessRiderService) Active(sub *ent.Subscribe, allo *ent.Allocate) {
 
 // UnSubscribe 退租
 // 会抹去欠费情况
-func (s *businessRiderService) UnSubscribe(subscribeID uint64, fns ...func(sub *ent.Subscribe)) {
+func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns ...func(sub *ent.Subscribe)) {
 	// 预处理业务信息
-	s.preprocess(business.TypeUnsubscribe, s.QuerySubscribeWithRider(subscribeID))
+	s.preprocess(business.TypeUnsubscribe, s.QuerySubscribeWithRider(req.ID))
 
 	if len(fns) > 0 {
 		fns[0](s.subscribe)
 	}
 
 	sub := s.subscribe
+
+	// 代理商操作退租
+	s.agentID = req.AgentID
 
 	// 查找电池
 	s.battery, _ = ent.Database.Battery.Query().Where(battery.SubscribeID(sub.ID)).First(s.ctx)

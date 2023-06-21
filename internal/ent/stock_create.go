@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -168,6 +169,20 @@ func (sc *StockCreate) SetBatteryID(u uint64) *StockCreate {
 func (sc *StockCreate) SetNillableBatteryID(u *uint64) *StockCreate {
 	if u != nil {
 		sc.SetBatteryID(*u)
+	}
+	return sc
+}
+
+// SetAgentID sets the "agent_id" field.
+func (sc *StockCreate) SetAgentID(u uint64) *StockCreate {
+	sc.mutation.SetAgentID(u)
+	return sc
+}
+
+// SetNillableAgentID sets the "agent_id" field if the given value is not nil.
+func (sc *StockCreate) SetNillableAgentID(u *uint64) *StockCreate {
+	if u != nil {
+		sc.SetAgentID(*u)
 	}
 	return sc
 }
@@ -345,6 +360,11 @@ func (sc *StockCreate) SetBrand(e *EbikeBrand) *StockCreate {
 // SetBattery sets the "battery" edge to the Battery entity.
 func (sc *StockCreate) SetBattery(b *Battery) *StockCreate {
 	return sc.SetBatteryID(b.ID)
+}
+
+// SetAgent sets the "agent" edge to the Agent entity.
+func (sc *StockCreate) SetAgent(a *Agent) *StockCreate {
+	return sc.SetAgentID(a.ID)
 }
 
 // SetStore sets the "store" edge to the Store entity.
@@ -660,6 +680,23 @@ func (sc *StockCreate) createSpec() (*Stock, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.BatteryID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := sc.mutation.AgentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stock.AgentTable,
+			Columns: []string{stock.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.AgentID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := sc.mutation.StoreIDs(); len(nodes) > 0 {
@@ -1019,6 +1056,24 @@ func (u *StockUpsert) UpdateBatteryID() *StockUpsert {
 // ClearBatteryID clears the value of the "battery_id" field.
 func (u *StockUpsert) ClearBatteryID() *StockUpsert {
 	u.SetNull(stock.FieldBatteryID)
+	return u
+}
+
+// SetAgentID sets the "agent_id" field.
+func (u *StockUpsert) SetAgentID(v uint64) *StockUpsert {
+	u.Set(stock.FieldAgentID, v)
+	return u
+}
+
+// UpdateAgentID sets the "agent_id" field to the value that was provided on create.
+func (u *StockUpsert) UpdateAgentID() *StockUpsert {
+	u.SetExcluded(stock.FieldAgentID)
+	return u
+}
+
+// ClearAgentID clears the value of the "agent_id" field.
+func (u *StockUpsert) ClearAgentID() *StockUpsert {
+	u.SetNull(stock.FieldAgentID)
 	return u
 }
 
@@ -1450,6 +1505,27 @@ func (u *StockUpsertOne) UpdateBatteryID() *StockUpsertOne {
 func (u *StockUpsertOne) ClearBatteryID() *StockUpsertOne {
 	return u.Update(func(s *StockUpsert) {
 		s.ClearBatteryID()
+	})
+}
+
+// SetAgentID sets the "agent_id" field.
+func (u *StockUpsertOne) SetAgentID(v uint64) *StockUpsertOne {
+	return u.Update(func(s *StockUpsert) {
+		s.SetAgentID(v)
+	})
+}
+
+// UpdateAgentID sets the "agent_id" field to the value that was provided on create.
+func (u *StockUpsertOne) UpdateAgentID() *StockUpsertOne {
+	return u.Update(func(s *StockUpsert) {
+		s.UpdateAgentID()
+	})
+}
+
+// ClearAgentID clears the value of the "agent_id" field.
+func (u *StockUpsertOne) ClearAgentID() *StockUpsertOne {
+	return u.Update(func(s *StockUpsert) {
+		s.ClearAgentID()
 	})
 }
 
@@ -2076,6 +2152,27 @@ func (u *StockUpsertBulk) UpdateBatteryID() *StockUpsertBulk {
 func (u *StockUpsertBulk) ClearBatteryID() *StockUpsertBulk {
 	return u.Update(func(s *StockUpsert) {
 		s.ClearBatteryID()
+	})
+}
+
+// SetAgentID sets the "agent_id" field.
+func (u *StockUpsertBulk) SetAgentID(v uint64) *StockUpsertBulk {
+	return u.Update(func(s *StockUpsert) {
+		s.SetAgentID(v)
+	})
+}
+
+// UpdateAgentID sets the "agent_id" field to the value that was provided on create.
+func (u *StockUpsertBulk) UpdateAgentID() *StockUpsertBulk {
+	return u.Update(func(s *StockUpsert) {
+		s.UpdateAgentID()
+	})
+}
+
+// ClearAgentID clears the value of the "agent_id" field.
+func (u *StockUpsertBulk) ClearAgentID() *StockUpsertBulk {
+	return u.Update(func(s *StockUpsert) {
+		s.ClearAgentID()
 	})
 }
 

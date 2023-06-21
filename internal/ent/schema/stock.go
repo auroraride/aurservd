@@ -80,6 +80,9 @@ func (Stock) Mixin() []ent.Mixin {
 
 		// 电池
 		BatteryMixin{Optional: true},
+
+		// 代理商
+		AgentMixin{Optional: true},
 	}
 }
 

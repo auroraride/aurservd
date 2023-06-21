@@ -60,8 +60,8 @@ type AllocateCreateParams struct {
 	// 选择激活对象
 	StoreID    *uint64 `swaggerignore:"true"` // 门店ID
 	EmployeeID *uint64 `swaggerignore:"true"` // 店员ID
-
-	BatteryID *uint64 `json:"batteryId"` // 电池ID
+	AgentID    *uint64 `json:"agentId"`       // 代理ID
+	BatteryID  *uint64 `json:"batteryId"`     // 电池ID
 
 	EbikeParam AllocateCreateEbikeParam
 }

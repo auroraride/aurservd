@@ -78,7 +78,15 @@ func (*subscribe) Continue(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*subscribe) Halt(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.BusinessSubscribeReq](c)
-	service.NewBusinessRider(nil).SetModifier(ctx.Modifier).SetCabinetID(req.CabinetID).SetStoreID(req.StoreID).UnSubscribe(req.ID)
+	service.NewBusinessRider(nil).
+		SetModifier(ctx.Modifier).
+		SetCabinetID(req.CabinetID).
+		SetStoreID(req.StoreID).
+		UnSubscribe(
+			&model.BusinessSubscribeReq{
+				ID: req.ID,
+			},
+		)
 	return ctx.SendResponse()
 }
 
