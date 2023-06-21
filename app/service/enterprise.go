@@ -519,7 +519,7 @@ func (s *enterpriseService) Business(e *ent.Enterprise) error {
 	}
 
 	if e.Payment == model.EnterprisePaymentPrepay && e.Balance < 0 {
-		return errors.New("企业已欠费")
+		return errors.New("余额不足,请充值")
 	}
 
 	return nil
