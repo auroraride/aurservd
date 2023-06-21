@@ -47,7 +47,7 @@ func (s *agentStatisticsService) Overview(en *ent.Enterprise) *model.AgentStatis
 					// 计费中骑手
 					sql.As(fmt.Sprintf("COUNT(DISTINCT CASE WHEN rider.deleted_at IS NULL AND t1.status = %d THEN rider.id END)", model.SubscribeStatusUsing), "billingRiderTotal"),
 					// 临期骑手
-					sql.As(fmt.Sprintf("COUNT(DISTINCT CASE WHEN rider.deleted_at IS NULL AND t1.agent_end_at <= '%s' AND t1.agent_end_at >= '%s' AND t1.status = %d THEN rider.id END)",
+					sql.As(fmt.Sprintf("COUNT(DISTINCT CASE WHEN rider.deleted_at IS NULL AND t1.agent_end_at < '%s' AND t1.agent_end_at >= '%s' AND t1.status = %d THEN rider.id END)",
 						endtime.Format(carbon.DateLayout), start.Format(carbon.DateLayout), model.SubscribeStatusUsing), "expiringRiderTotal"),
 					// 累计退订骑手
 					sql.As(fmt.Sprintf("COUNT(DISTINCT CASE WHEN t1.status = %d THEN rider.id END)", model.SubscribeStatusUnSubscribed), "unSubscribeTotal"),
