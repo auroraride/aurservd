@@ -105,11 +105,6 @@ func Intelligent(v bool) predicate.EnterprisePrice {
 	return predicate.EnterprisePrice(sql.FieldEQ(FieldIntelligent, v))
 }
 
-// Key applies equality check predicate on the "key" field. It's identical to KeyEQ.
-func Key(v string) predicate.EnterprisePrice {
-	return predicate.EnterprisePrice(sql.FieldEQ(FieldKey, v))
-}
-
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.EnterprisePrice {
 	return predicate.EnterprisePrice(sql.FieldEQ(FieldCreatedAt, v))
@@ -518,81 +513,6 @@ func IntelligentEQ(v bool) predicate.EnterprisePrice {
 // IntelligentNEQ applies the NEQ predicate on the "intelligent" field.
 func IntelligentNEQ(v bool) predicate.EnterprisePrice {
 	return predicate.EnterprisePrice(sql.FieldNEQ(FieldIntelligent, v))
-}
-
-// KeyEQ applies the EQ predicate on the "key" field.
-func KeyEQ(v string) predicate.EnterprisePrice {
-	return predicate.EnterprisePrice(sql.FieldEQ(FieldKey, v))
-}
-
-// KeyNEQ applies the NEQ predicate on the "key" field.
-func KeyNEQ(v string) predicate.EnterprisePrice {
-	return predicate.EnterprisePrice(sql.FieldNEQ(FieldKey, v))
-}
-
-// KeyIn applies the In predicate on the "key" field.
-func KeyIn(vs ...string) predicate.EnterprisePrice {
-	return predicate.EnterprisePrice(sql.FieldIn(FieldKey, vs...))
-}
-
-// KeyNotIn applies the NotIn predicate on the "key" field.
-func KeyNotIn(vs ...string) predicate.EnterprisePrice {
-	return predicate.EnterprisePrice(sql.FieldNotIn(FieldKey, vs...))
-}
-
-// KeyGT applies the GT predicate on the "key" field.
-func KeyGT(v string) predicate.EnterprisePrice {
-	return predicate.EnterprisePrice(sql.FieldGT(FieldKey, v))
-}
-
-// KeyGTE applies the GTE predicate on the "key" field.
-func KeyGTE(v string) predicate.EnterprisePrice {
-	return predicate.EnterprisePrice(sql.FieldGTE(FieldKey, v))
-}
-
-// KeyLT applies the LT predicate on the "key" field.
-func KeyLT(v string) predicate.EnterprisePrice {
-	return predicate.EnterprisePrice(sql.FieldLT(FieldKey, v))
-}
-
-// KeyLTE applies the LTE predicate on the "key" field.
-func KeyLTE(v string) predicate.EnterprisePrice {
-	return predicate.EnterprisePrice(sql.FieldLTE(FieldKey, v))
-}
-
-// KeyContains applies the Contains predicate on the "key" field.
-func KeyContains(v string) predicate.EnterprisePrice {
-	return predicate.EnterprisePrice(sql.FieldContains(FieldKey, v))
-}
-
-// KeyHasPrefix applies the HasPrefix predicate on the "key" field.
-func KeyHasPrefix(v string) predicate.EnterprisePrice {
-	return predicate.EnterprisePrice(sql.FieldHasPrefix(FieldKey, v))
-}
-
-// KeyHasSuffix applies the HasSuffix predicate on the "key" field.
-func KeyHasSuffix(v string) predicate.EnterprisePrice {
-	return predicate.EnterprisePrice(sql.FieldHasSuffix(FieldKey, v))
-}
-
-// KeyIsNil applies the IsNil predicate on the "key" field.
-func KeyIsNil() predicate.EnterprisePrice {
-	return predicate.EnterprisePrice(sql.FieldIsNull(FieldKey))
-}
-
-// KeyNotNil applies the NotNil predicate on the "key" field.
-func KeyNotNil() predicate.EnterprisePrice {
-	return predicate.EnterprisePrice(sql.FieldNotNull(FieldKey))
-}
-
-// KeyEqualFold applies the EqualFold predicate on the "key" field.
-func KeyEqualFold(v string) predicate.EnterprisePrice {
-	return predicate.EnterprisePrice(sql.FieldEqualFold(FieldKey, v))
-}
-
-// KeyContainsFold applies the ContainsFold predicate on the "key" field.
-func KeyContainsFold(v string) predicate.EnterprisePrice {
-	return predicate.EnterprisePrice(sql.FieldContainsFold(FieldKey, v))
 }
 
 // HasCity applies the HasEdge predicate on the "city" edge.

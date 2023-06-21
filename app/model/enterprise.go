@@ -171,10 +171,6 @@ type EnterpriseStationListReq struct {
 	EnterpriseID uint64 `json:"enterpriseId" query:"enterpriseId" trans:"企业ID"`
 }
 
-type EnterprisePriceBatteryModelListReq struct {
-	CityID uint64 `json:"cityId" validate:"required" query:"cityId" trans:"城市ID"`
-}
-
 type EnterpriseRiderSubscribeChooseReq struct {
 	Model string `json:"model" validate:"required" trans:"电池型号"`
 }
@@ -213,4 +209,8 @@ type EnterproseInfoRsp struct {
 	PriceList []EnterprisePriceWithCity
 	// 天数
 	Days []int `json:"days"`
+}
+
+type EnterprisePricePlanListReq struct {
+	CityID uint64 `json:"cityId" validate:"required" query:"cityId" trans:"城市ID"`
 }

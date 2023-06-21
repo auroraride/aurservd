@@ -285,13 +285,13 @@ func (s *enterpriseRiderService) List(req *model.EnterpriseRiderListReq) *model.
 }
 
 // BatteryModels 列出企业可用电压型号
-func (s *enterpriseRiderService) BatteryModels(req *model.EnterprisePriceBatteryModelListReq) []string {
+func (s *enterpriseRiderService) BatteryModels(req *model.EnterprisePricePlanListReq) []string {
 	if s.rider.EnterpriseID == nil {
 		snag.Panic("非企业骑手")
 	}
 
 	items, _ := ent.Database.EnterprisePrice.QueryNotDeleted().
-		Where(enterpriseprice.EnterpriseID(*s.rider.EnterpriseID), enterpriseprice.CityID(req.CityID)).
+		Where(enterpriseprice.EnterpriseID(*s.rider.EnterpriseID), enterpriseprice.CityID(req.CityID), enterpriseprice.BrandIDIsNil()).
 		All(s.ctx)
 
 	res := make([]string, len(items))
@@ -405,7 +405,7 @@ func (s *enterpriseRiderService) RiderEnterpriseInfo(req *model.EnterproseInfoRe
 	rsp.StationName = stationInfo.Name
 	rsp.EnterproseName = enterpriseInfo.Name
 
-	price := NewEnterprise().PriceList(req.EnterpriseId)
+	price := NewEnterprisePrice().PriceList(req.EnterpriseId)
 	rsp.PriceList = price
 	if enterpriseInfo.Days != nil {
 		rsp.Days = enterpriseInfo.Days

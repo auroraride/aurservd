@@ -56,5 +56,5 @@ func (*business) Exchange(c echo.Context) (err error) {
 // @Success      200  {object}  []model.EnterprisePriceWithCity
 func (*business) Price(c echo.Context) (err error) {
 	ctx := app.ContextX[app.AgentContext](c)
-	return ctx.SendResponse(service.NewEnterprise().PriceList(ctx.Enterprise.ID))
+	return ctx.SendResponse(service.NewEnterprisePrice().PriceList(ctx.Enterprise.ID))
 }

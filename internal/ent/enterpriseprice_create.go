@@ -146,20 +146,6 @@ func (epc *EnterprisePriceCreate) SetNillableIntelligent(b *bool) *EnterprisePri
 	return epc
 }
 
-// SetKey sets the "key" field.
-func (epc *EnterprisePriceCreate) SetKey(s string) *EnterprisePriceCreate {
-	epc.mutation.SetKey(s)
-	return epc
-}
-
-// SetNillableKey sets the "key" field if the given value is not nil.
-func (epc *EnterprisePriceCreate) SetNillableKey(s *string) *EnterprisePriceCreate {
-	if s != nil {
-		epc.SetKey(*s)
-	}
-	return epc
-}
-
 // SetCity sets the "city" edge to the City entity.
 func (epc *EnterprisePriceCreate) SetCity(c *City) *EnterprisePriceCreate {
 	return epc.SetCityID(c.ID)
@@ -324,10 +310,6 @@ func (epc *EnterprisePriceCreate) createSpec() (*EnterprisePrice, *sqlgraph.Crea
 	if value, ok := epc.mutation.Intelligent(); ok {
 		_spec.SetField(enterpriseprice.FieldIntelligent, field.TypeBool, value)
 		_node.Intelligent = value
-	}
-	if value, ok := epc.mutation.Key(); ok {
-		_spec.SetField(enterpriseprice.FieldKey, field.TypeString, value)
-		_node.Key = value
 	}
 	if nodes := epc.mutation.CityIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -582,24 +564,6 @@ func (u *EnterprisePriceUpsert) UpdateIntelligent() *EnterprisePriceUpsert {
 	return u
 }
 
-// SetKey sets the "key" field.
-func (u *EnterprisePriceUpsert) SetKey(v string) *EnterprisePriceUpsert {
-	u.Set(enterpriseprice.FieldKey, v)
-	return u
-}
-
-// UpdateKey sets the "key" field to the value that was provided on create.
-func (u *EnterprisePriceUpsert) UpdateKey() *EnterprisePriceUpsert {
-	u.SetExcluded(enterpriseprice.FieldKey)
-	return u
-}
-
-// ClearKey clears the value of the "key" field.
-func (u *EnterprisePriceUpsert) ClearKey() *EnterprisePriceUpsert {
-	u.SetNull(enterpriseprice.FieldKey)
-	return u
-}
-
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -820,27 +784,6 @@ func (u *EnterprisePriceUpsertOne) SetIntelligent(v bool) *EnterprisePriceUpsert
 func (u *EnterprisePriceUpsertOne) UpdateIntelligent() *EnterprisePriceUpsertOne {
 	return u.Update(func(s *EnterprisePriceUpsert) {
 		s.UpdateIntelligent()
-	})
-}
-
-// SetKey sets the "key" field.
-func (u *EnterprisePriceUpsertOne) SetKey(v string) *EnterprisePriceUpsertOne {
-	return u.Update(func(s *EnterprisePriceUpsert) {
-		s.SetKey(v)
-	})
-}
-
-// UpdateKey sets the "key" field to the value that was provided on create.
-func (u *EnterprisePriceUpsertOne) UpdateKey() *EnterprisePriceUpsertOne {
-	return u.Update(func(s *EnterprisePriceUpsert) {
-		s.UpdateKey()
-	})
-}
-
-// ClearKey clears the value of the "key" field.
-func (u *EnterprisePriceUpsertOne) ClearKey() *EnterprisePriceUpsertOne {
-	return u.Update(func(s *EnterprisePriceUpsert) {
-		s.ClearKey()
 	})
 }
 
@@ -1226,27 +1169,6 @@ func (u *EnterprisePriceUpsertBulk) SetIntelligent(v bool) *EnterprisePriceUpser
 func (u *EnterprisePriceUpsertBulk) UpdateIntelligent() *EnterprisePriceUpsertBulk {
 	return u.Update(func(s *EnterprisePriceUpsert) {
 		s.UpdateIntelligent()
-	})
-}
-
-// SetKey sets the "key" field.
-func (u *EnterprisePriceUpsertBulk) SetKey(v string) *EnterprisePriceUpsertBulk {
-	return u.Update(func(s *EnterprisePriceUpsert) {
-		s.SetKey(v)
-	})
-}
-
-// UpdateKey sets the "key" field to the value that was provided on create.
-func (u *EnterprisePriceUpsertBulk) UpdateKey() *EnterprisePriceUpsertBulk {
-	return u.Update(func(s *EnterprisePriceUpsert) {
-		s.UpdateKey()
-	})
-}
-
-// ClearKey clears the value of the "key" field.
-func (u *EnterprisePriceUpsertBulk) ClearKey() *EnterprisePriceUpsertBulk {
-	return u.Update(func(s *EnterprisePriceUpsert) {
-		s.ClearKey()
 	})
 }
 

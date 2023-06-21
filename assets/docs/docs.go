@@ -15182,7 +15182,7 @@ const docTemplate = `{
                     "[R]骑手接口"
                 ],
                 "summary": "R3017 退出团签",
-                "operationId": "RiderEnterpriseExit",
+                "operationId": "RiderEnterpriseExitEnterprise",
                 "parameters": [
                     {
                         "type": "string",
@@ -15214,7 +15214,7 @@ const docTemplate = `{
                     "[R]骑手接口"
                 ],
                 "summary": "R3016 骑手团签信息",
-                "operationId": "RiderEnterpriseInfo",
+                "operationId": "RiderEnterpriseRiderEnterpriseInfo",
                 "parameters": [
                     {
                         "type": "string",
@@ -15260,7 +15260,7 @@ const docTemplate = `{
                     "[R]骑手接口"
                 ],
                 "summary": "R3015 企业骑手加入团签",
-                "operationId": "RiderEnterpriseJoin",
+                "operationId": "RiderEnterpriseJoinEnterprise",
                 "parameters": [
                     {
                         "description": "加入团签请求",
