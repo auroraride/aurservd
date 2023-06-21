@@ -465,8 +465,11 @@ func (s *subscribeService) AlterDays(req *model.SubscribeAlterReq) (res model.Ri
 			SetDays(req.Days).
 			SetRemark(req.Reason).
 			SetStatus(model.SubscribeAlterStatusAgree).
-			SetReviewTime(time.Now()).
-			SetNillableSubscribeEndAt(sub.AgentEndAt)
+			SetReviewTime(time.Now())
+
+		if sub.AgentEndAt != nil {
+			tsa.SetSubscribeEndAt(carbon.Time2Carbon(*sub.AgentEndAt).EndOfDay().Carbon2Time())
+		}
 		if sub.EnterpriseID != nil {
 			tsa.SetEnterpriseID(*sub.EnterpriseID).SetAgentID(req.AgentID)
 		}

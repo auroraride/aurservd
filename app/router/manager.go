@@ -155,8 +155,8 @@ func loadManagerRoutes() {
 	g.GET("/enterprise/prepayment", mapi.Enterprise.PrepaymentList)                        // 充值列表
 	g.POST("/enterprise/bind/cabinet", mapi.Enterprise.BindCabinet)                        // 绑定电柜
 	g.GET("/enterprise/unbind/cabinet/:id", mapi.Enterprise.UnbindCabinet)                 // 解绑电柜
-	g.GET("/enterprise/subscribe/alter/:enterpriseId", mapi.Enterprise.SubscribeAlterList) // 申请列表
-	g.POST("/enterprise/subscribe/alter", mapi.Enterprise.SubscribeApply)                  // 申请审核
+	g.GET("/enterprise/subscribe/alter/:enterpriseId", mapi.Enterprise.SubscribeAlterList) // 加时申请列表
+	g.POST("/enterprise/subscribe/alter", mapi.Enterprise.SubscribeApply)                  // 审批订阅申请
 
 	// 店员
 	g.POST("/employee", mapi.Employee.Create)
