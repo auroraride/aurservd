@@ -137,17 +137,13 @@ func loadRideRoutes() {
 	g.GET("/business/pause/info", rapi.Business.PauseInfo)
 	g.GET("/business/allocated/:id", rapi.Business.Allocated)
 	g.GET("/business/subscribe/signed/:id", rapi.Business.SubscribeSigned)
-	// 小程序加入团签
-	g.POST("/enterprise/join", rapi.Enterprise.JoinEnterprise)
 
-	// 小程序加入团签信息
-	g.GET("/enterprise/info", rapi.Enterprise.RiderEnterpriseInfo)
-	// 退出团签
-	g.POST("/enterprise/exit", rapi.Enterprise.ExitEnterprise)
-	// 申请加时
-	g.POST("/enterprise/subscribe/alter", rapi.Enterprise.SubscribeAlter)
-	// 申请列表
-	g.GET("/enterprise/subscribe/alter/list", rapi.Enterprise.SubscribeAlterList)
+	// 代理、团签
+	g.POST("/enterprise/join", rapi.Enterprise.JoinEnterprise)                    // 加入团签
+	g.GET("/enterprise/info", rapi.Enterprise.RiderEnterpriseInfo)                // 小程序加入团签信息
+	g.POST("/enterprise/exit", rapi.Enterprise.ExitEnterprise)                    // 退出团签
+	g.POST("/enterprise/subscribe/alter", rapi.Enterprise.SubscribeAlter)         // 申请加时
+	g.GET("/enterprise/subscribe/alter/list", rapi.Enterprise.SubscribeAlterList) // 申请列表
 
 	// 电柜
 	cabinet := g.Group("/cabinet")

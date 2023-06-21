@@ -17723,7 +17723,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: RiderEnterpriseExit
+      operationId: RiderEnterpriseExitEnterprise
       parameters:
       - description: 骑手校验token
         in: header
@@ -17744,7 +17744,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderEnterpriseInfo
+      operationId: RiderEnterpriseRiderEnterpriseInfo
       parameters:
       - description: 骑手校验token
         in: header
@@ -17775,7 +17775,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: RiderEnterpriseJoin
+      operationId: RiderEnterpriseJoinEnterprise
       parameters:
       - description: 加入团签请求
         in: body

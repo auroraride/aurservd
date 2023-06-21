@@ -711,33 +711,3 @@ func (s *enterpriseService) NameFromID(id uint64) string {
 	}
 	return p.Name
 }
-
-// PriceList 团签价格列表
-func (s *enterpriseService) PriceList(enterpriseId uint64) (rsp []model.EnterprisePriceWithCity) {
-	pr, _ := ent.Database.EnterprisePrice.QueryNotDeleted().WithCity().WithBrand().Where(enterpriseprice.EnterpriseID(enterpriseId)).All(s.ctx)
-	if pr == nil {
-		snag.Panic("团签价格不存在")
-	}
-	rsp = make([]model.EnterprisePriceWithCity, 0)
-	for _, ep := range pr {
-		data := model.EnterprisePriceWithCity{
-			ID:          ep.ID,
-			Model:       ep.Model,
-			Price:       ep.Price,
-			Intelligent: ep.Intelligent,
-			City: model.City{
-				ID:   ep.Edges.City.ID,
-				Name: ep.Edges.City.Name,
-			},
-		}
-		if ep.Edges.Brand != nil {
-			data.EbikeBrand = &model.EbikeBrand{
-				ID:    ep.Edges.Brand.ID,
-				Name:  ep.Edges.Brand.Name,
-				Cover: ep.Edges.Brand.Cover,
-			}
-		}
-		rsp = append(rsp, data)
-	}
-	return
-}

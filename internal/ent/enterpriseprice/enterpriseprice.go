@@ -39,8 +39,6 @@ const (
 	FieldModel = "model"
 	// FieldIntelligent holds the string denoting the intelligent field in the database.
 	FieldIntelligent = "intelligent"
-	// FieldKey holds the string denoting the key field in the database.
-	FieldKey = "key"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
 	// EdgeBrand holds the string denoting the brand edge name in mutations.
@@ -87,7 +85,6 @@ var Columns = []string{
 	FieldPrice,
 	FieldModel,
 	FieldIntelligent,
-	FieldKey,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -173,11 +170,6 @@ func ByModel(opts ...sql.OrderTermOption) OrderOption {
 // ByIntelligent orders the results by the intelligent field.
 func ByIntelligent(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIntelligent, opts...).ToFunc()
-}
-
-// ByKey orders the results by the key field.
-func ByKey(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldKey, opts...).ToFunc()
 }
 
 // ByCityField orders the results by city field.

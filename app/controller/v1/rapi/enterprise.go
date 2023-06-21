@@ -29,7 +29,7 @@ var Enterprise = new(enterprise)
 // @Param        cityId  query  uint64  true  "城市ID"
 // @Success      200  {object}  []string  "请求成功"
 func (*enterprise) Battery(c echo.Context) (err error) {
-	ctx, req := app.RiderContextAndBinding[model.EnterprisePriceBatteryModelListReq](c)
+	ctx, req := app.RiderContextAndBinding[model.EnterprisePricePlanListReq](c)
 	return ctx.SendResponse(service.NewEnterpriseRiderWithRider(ctx.Rider).BatteryModels(req))
 }
 
@@ -103,7 +103,7 @@ func (*enterprise) SubscribeAlterList(c echo.Context) (err error) {
 }
 
 // JoinEnterprise
-// @ID           RiderEnterpriseJoin
+// @ID           RiderEnterpriseJoinEnterprise
 // @Router       /rider/v1/enterprise/join [POST]
 // @Summary      R3015 企业骑手加入团签
 // @Tags         [R]骑手接口
@@ -117,8 +117,8 @@ func (s *enterprise) JoinEnterprise(c echo.Context) error {
 	return ctx.SendResponse()
 }
 
-// RiderEnterpriseInfo 骑手团签信息
-// @ID           RiderEnterpriseInfo
+// RiderEnterpriseInfo
+// @ID           RiderEnterpriseRiderEnterpriseInfo
 // @Router       /rider/v1/enterprise/info [GET]
 // @Summary      R3016 骑手团签信息
 // @Tags         [R]骑手接口
@@ -133,7 +133,7 @@ func (*enterprise) RiderEnterpriseInfo(c echo.Context) (err error) {
 }
 
 // ExitEnterprise
-// @ID           RiderEnterpriseExit
+// @ID           RiderEnterpriseExitEnterprise
 // @Router       /rider/v1/enterprise/exit [POST]
 // @Summary      R3017 退出团签
 // @Tags         [R]骑手接口
