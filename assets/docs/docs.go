@@ -471,80 +471,27 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "enum": [
-                            "UNKNOWN",
-                            "KAIXIN",
-                            "YUNDONG",
-                            "TUOBANG",
-                            "XILIULOUSERV"
-                        ],
-                        "type": "string",
-                        "x-enum-comments": {
-                            "CabinetBrandXiliulouServer": "西六楼服务器版"
-                        },
-                        "x-enum-varnames": [
-                            "CabinetBrandUnknown",
-                            "CabinetBrandKaixin",
-                            "CabinetBrandYundong",
-                            "CabinetBrandTuobang",
-                            "CabinetBrandXiliulouServer"
-                        ],
-                        "description": "电柜型号 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
-                        "name": "brand",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "城市ID",
-                        "name": "cityId",
-                        "in": "query"
-                    },
-                    {
                         "type": "integer",
                         "description": "当前页, 从1开始, 默认1",
                         "name": "current",
                         "in": "query"
                     },
                     {
-                        "type": "integer",
-                        "description": "团签ID",
-                        "name": "enterpriseId",
+                        "type": "number",
+                        "description": "纬度",
+                        "name": "lat",
                         "in": "query"
                     },
                     {
-                        "type": "integer",
-                        "description": "是否智能柜 0:全部 1:是 2:否",
-                        "name": "intelligent",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "关键字",
-                        "name": "keyword",
+                        "type": "number",
+                        "description": "经度",
+                        "name": "lng",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "电池型号",
+                        "description": "型号",
                         "name": "model",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "电柜名称",
-                        "name": "name",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "在线状态",
-                        "name": "online",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "归属类型   1:平台 2:代理商",
-                        "name": "ownerType",
                         "in": "query"
                     },
                     {
@@ -555,20 +502,14 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "电柜编号",
+                        "description": "编号",
                         "name": "serial",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "站点ID",
+                        "description": "站点",
                         "name": "stationId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "电柜状态",
-                        "name": "status",
                         "in": "query"
                     }
                 ],
@@ -586,7 +527,7 @@ const docTemplate = `{
                                         "items": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/model.AgentCabinetDetailRes"
+                                                "$ref": "#/definitions/model.AgentCabinet"
                                             }
                                         }
                                     }
@@ -659,13 +600,25 @@ const docTemplate = `{
                         "name": "serial",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "纬度",
+                        "name": "lat",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "经度",
+                        "name": "lng",
+                        "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.AgentCabinetDetailRes"
+                            "$ref": "#/definitions/model.AgentCabinet"
                         }
                     }
                 }
@@ -16785,6 +16738,89 @@ const docTemplate = `{
                 }
             }
         },
+        "model.AgentCabinet": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "description": "地址",
+                    "type": "string"
+                },
+                "bins": {
+                    "description": "仓位信息",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.AgentCabinetBin"
+                    }
+                },
+                "distance": {
+                    "description": "距离（仅携带` + "`" + `lng` + "`" + `和` + "`" + `lat` + "`" + `时有该字段）",
+                    "type": "number"
+                },
+                "health": {
+                    "description": "健康状态, 0:离线 1:在线 2:故障",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1,
+                        2
+                    ]
+                },
+                "lat": {
+                    "description": "电柜纬度",
+                    "type": "number"
+                },
+                "lng": {
+                    "description": "电柜经度",
+                    "type": "number"
+                },
+                "models": {
+                    "description": "电池型号",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "name": {
+                    "description": "电柜名称",
+                    "type": "string"
+                },
+                "permission": {
+                    "description": "权限，\u003ca target=\"_blank\" href=\"https://rqsz38umzux.feishu.cn/wiki/space/7248526754619539460?ccm_open_type=lark_wiki_spaceLink\"\u003e查看WIKI\u003c/a\u003e",
+                    "enum": [
+                        1,
+                        2,
+                        4,
+                        8,
+                        16,
+                        32
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.AgentCabinetPermission"
+                        }
+                    ]
+                },
+                "serial": {
+                    "type": "string"
+                },
+                "station": {
+                    "description": "所属站点",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EnterpriseStation"
+                        }
+                    ]
+                },
+                "status": {
+                    "description": "投放状态, 1:运营中 2:维护中",
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
+                }
+            }
+        },
         "model.AgentCabinetBin": {
             "type": "object",
             "properties": {
@@ -16806,52 +16842,32 @@ const docTemplate = `{
                 }
             }
         },
-        "model.AgentCabinetDetailRes": {
-            "type": "object",
-            "properties": {
-                "bins": {
-                    "description": "仓位信息",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.AgentCabinetBin"
-                    }
-                },
-                "health": {
-                    "description": "健康状态, 0:离线 1:在线 2:故障",
-                    "type": "integer",
-                    "enum": [
-                        0,
-                        1,
-                        2
-                    ]
-                },
-                "models": {
-                    "description": "电池型号",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "name": {
-                    "description": "电柜名称",
-                    "type": "string"
-                },
-                "serial": {
-                    "type": "string"
-                },
-                "station": {
-                    "description": "所属站点",
-                    "type": "string"
-                },
-                "status": {
-                    "description": "投放状态, 1:运营中 2:维护中",
-                    "type": "integer",
-                    "enum": [
-                        1,
-                        2
-                    ]
-                }
-            }
+        "model.AgentCabinetPermission": {
+            "type": "integer",
+            "enum": [
+                1,
+                2,
+                4,
+                8,
+                16,
+                32
+            ],
+            "x-enum-comments": {
+                "AgentCabinetPermissionDisableBin": "禁用仓位",
+                "AgentCabinetPermissionEnableBin": "启用仓位",
+                "AgentCabinetPermissionMaintain": "维护",
+                "AgentCabinetPermissionOpenBin": "开仓（包含满电仓和空仓）",
+                "AgentCabinetPermissionReboot": "重启",
+                "AgentCabinetPermissionView": "查看"
+            },
+            "x-enum-varnames": [
+                "AgentCabinetPermissionView",
+                "AgentCabinetPermissionMaintain",
+                "AgentCabinetPermissionReboot",
+                "AgentCabinetPermissionOpenBin",
+                "AgentCabinetPermissionDisableBin",
+                "AgentCabinetPermissionEnableBin"
+            ]
         },
         "model.AgentCreateReq": {
             "type": "object",
@@ -23152,9 +23168,11 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "lat": {
+                    "description": "纬度",
                     "type": "number"
                 },
                 "lng": {
+                    "description": "经度",
                     "type": "number"
                 }
             }

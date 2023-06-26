@@ -20,6 +20,7 @@ var (
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
 		{Name: "name", Type: field.TypeString},
 		{Name: "phone", Type: field.TypeString, Unique: true},
+		{Name: "super", Type: field.TypeBool, Comment: "是否超级管理", Default: true},
 		{Name: "enterprise_id", Type: field.TypeUint64, Comment: "企业ID"},
 		{Name: "enterprise_agents", Type: field.TypeUint64, Nullable: true},
 	}
@@ -31,13 +32,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "agent_enterprise_enterprise",
-				Columns:    []*schema.Column{AgentColumns[9]},
+				Columns:    []*schema.Column{AgentColumns[10]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "agent_enterprise_agents",
-				Columns:    []*schema.Column{AgentColumns[10]},
+				Columns:    []*schema.Column{AgentColumns[11]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -56,7 +57,7 @@ var (
 			{
 				Name:    "agent_enterprise_id",
 				Unique:  false,
-				Columns: []*schema.Column{AgentColumns[9]},
+				Columns: []*schema.Column{AgentColumns[10]},
 			},
 			{
 				Name:    "agent_phone",
@@ -913,6 +914,7 @@ var (
 		{Name: "status", Type: field.TypeUint8, Comment: "投放状态"},
 		{Name: "lng", Type: field.TypeFloat64, Nullable: true, Comment: "经度"},
 		{Name: "lat", Type: field.TypeFloat64, Nullable: true, Comment: "纬度"},
+		{Name: "geom", Type: field.TypeOther, Nullable: true, Comment: "坐标", SchemaType: map[string]string{"postgres": "geometry"}},
 		{Name: "address", Type: field.TypeString, Nullable: true, Comment: "详细地址"},
 		{Name: "sim_sn", Type: field.TypeString, Nullable: true, Comment: "SIM卡号"},
 		{Name: "sim_date", Type: field.TypeTime, Nullable: true, Comment: "SIM卡到期日期"},
@@ -938,25 +940,25 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "cabinet_branch_cabinets",
-				Columns:    []*schema.Column{CabinetColumns[27]},
+				Columns:    []*schema.Column{CabinetColumns[28]},
 				RefColumns: []*schema.Column{BranchColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "cabinet_city_city",
-				Columns:    []*schema.Column{CabinetColumns[28]},
+				Columns:    []*schema.Column{CabinetColumns[29]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "cabinet_enterprise_cabinets",
-				Columns:    []*schema.Column{CabinetColumns[29]},
+				Columns:    []*schema.Column{CabinetColumns[30]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "cabinet_enterprise_station_cabinets",
-				Columns:    []*schema.Column{CabinetColumns[30]},
+				Columns:    []*schema.Column{CabinetColumns[31]},
 				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -975,12 +977,12 @@ var (
 			{
 				Name:    "cabinet_city_id",
 				Unique:  false,
-				Columns: []*schema.Column{CabinetColumns[28]},
+				Columns: []*schema.Column{CabinetColumns[29]},
 			},
 			{
 				Name:    "cabinet_branch_id",
 				Unique:  false,
-				Columns: []*schema.Column{CabinetColumns[27]},
+				Columns: []*schema.Column{CabinetColumns[28]},
 			},
 			{
 				Name:    "cabinet_brand",
@@ -1012,7 +1014,7 @@ var (
 			{
 				Name:    "cabinet_bin",
 				Unique:  false,
-				Columns: []*schema.Column{CabinetColumns[21]},
+				Columns: []*schema.Column{CabinetColumns[22]},
 				Annotation: &entsql.IndexAnnotation{
 					OpClass: "jsonb_ops",
 					Types: map[string]string{
@@ -1023,7 +1025,22 @@ var (
 			{
 				Name:    "cabinet_sim_date",
 				Unique:  false,
-				Columns: []*schema.Column{CabinetColumns[17]},
+				Columns: []*schema.Column{CabinetColumns[18]},
+			},
+			{
+				Name:    "cabinet_lng_lat",
+				Unique:  false,
+				Columns: []*schema.Column{CabinetColumns[13], CabinetColumns[14]},
+			},
+			{
+				Name:    "cabinet_geom",
+				Unique:  false,
+				Columns: []*schema.Column{CabinetColumns[15]},
+				Annotation: &entsql.IndexAnnotation{
+					Types: map[string]string{
+						"postgres": "GIST",
+					},
+				},
 			},
 		},
 	}

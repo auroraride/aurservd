@@ -150,6 +150,7 @@ type AgentMutation struct {
 	remark            *string
 	name              *string
 	phone             *string
+	super             *bool
 	clearedFields     map[string]struct{}
 	enterprise        *uint64
 	clearedenterprise bool
@@ -635,6 +636,42 @@ func (m *AgentMutation) ResetPhone() {
 	m.phone = nil
 }
 
+// SetSuper sets the "super" field.
+func (m *AgentMutation) SetSuper(b bool) {
+	m.super = &b
+}
+
+// Super returns the value of the "super" field in the mutation.
+func (m *AgentMutation) Super() (r bool, exists bool) {
+	v := m.super
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSuper returns the old "super" field's value of the Agent entity.
+// If the Agent object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AgentMutation) OldSuper(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSuper is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSuper requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSuper: %w", err)
+	}
+	return oldValue.Super, nil
+}
+
+// ResetSuper resets all changes to the "super" field.
+func (m *AgentMutation) ResetSuper() {
+	m.super = nil
+}
+
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
 func (m *AgentMutation) ClearEnterprise() {
 	m.clearedenterprise = true
@@ -749,7 +786,7 @@ func (m *AgentMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AgentMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 10)
 	if m.created_at != nil {
 		fields = append(fields, agent.FieldCreatedAt)
 	}
@@ -777,6 +814,9 @@ func (m *AgentMutation) Fields() []string {
 	if m.phone != nil {
 		fields = append(fields, agent.FieldPhone)
 	}
+	if m.super != nil {
+		fields = append(fields, agent.FieldSuper)
+	}
 	return fields
 }
 
@@ -803,6 +843,8 @@ func (m *AgentMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case agent.FieldPhone:
 		return m.Phone()
+	case agent.FieldSuper:
+		return m.Super()
 	}
 	return nil, false
 }
@@ -830,6 +872,8 @@ func (m *AgentMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldName(ctx)
 	case agent.FieldPhone:
 		return m.OldPhone(ctx)
+	case agent.FieldSuper:
+		return m.OldSuper(ctx)
 	}
 	return nil, fmt.Errorf("unknown Agent field %s", name)
 }
@@ -901,6 +945,13 @@ func (m *AgentMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetPhone(v)
+		return nil
+	case agent.FieldSuper:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSuper(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Agent field %s", name)
@@ -1007,6 +1058,9 @@ func (m *AgentMutation) ResetField(name string) error {
 		return nil
 	case agent.FieldPhone:
 		m.ResetPhone()
+		return nil
+	case agent.FieldSuper:
+		m.ResetSuper()
 		return nil
 	}
 	return fmt.Errorf("unknown Agent field %s", name)
@@ -16772,6 +16826,7 @@ type CabinetMutation struct {
 	addlng                  *float64
 	lat                     *float64
 	addlat                  *float64
+	geom                    **model.Geometry
 	address                 *string
 	sim_sn                  *string
 	sim_date                *time.Time
@@ -17779,6 +17834,55 @@ func (m *CabinetMutation) ResetLat() {
 	m.lat = nil
 	m.addlat = nil
 	delete(m.clearedFields, cabinet.FieldLat)
+}
+
+// SetGeom sets the "geom" field.
+func (m *CabinetMutation) SetGeom(value *model.Geometry) {
+	m.geom = &value
+}
+
+// Geom returns the value of the "geom" field in the mutation.
+func (m *CabinetMutation) Geom() (r *model.Geometry, exists bool) {
+	v := m.geom
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldGeom returns the old "geom" field's value of the Cabinet entity.
+// If the Cabinet object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CabinetMutation) OldGeom(ctx context.Context) (v *model.Geometry, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldGeom is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldGeom requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldGeom: %w", err)
+	}
+	return oldValue.Geom, nil
+}
+
+// ClearGeom clears the value of the "geom" field.
+func (m *CabinetMutation) ClearGeom() {
+	m.geom = nil
+	m.clearedFields[cabinet.FieldGeom] = struct{}{}
+}
+
+// GeomCleared returns if the "geom" field was cleared in this mutation.
+func (m *CabinetMutation) GeomCleared() bool {
+	_, ok := m.clearedFields[cabinet.FieldGeom]
+	return ok
+}
+
+// ResetGeom resets all changes to the "geom" field.
+func (m *CabinetMutation) ResetGeom() {
+	m.geom = nil
+	delete(m.clearedFields, cabinet.FieldGeom)
 }
 
 // SetAddress sets the "address" field.
@@ -18863,7 +18967,7 @@ func (m *CabinetMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CabinetMutation) Fields() []string {
-	fields := make([]string, 0, 30)
+	fields := make([]string, 0, 31)
 	if m.created_at != nil {
 		fields = append(fields, cabinet.FieldCreatedAt)
 	}
@@ -18917,6 +19021,9 @@ func (m *CabinetMutation) Fields() []string {
 	}
 	if m.lat != nil {
 		fields = append(fields, cabinet.FieldLat)
+	}
+	if m.geom != nil {
+		fields = append(fields, cabinet.FieldGeom)
 	}
 	if m.address != nil {
 		fields = append(fields, cabinet.FieldAddress)
@@ -18998,6 +19105,8 @@ func (m *CabinetMutation) Field(name string) (ent.Value, bool) {
 		return m.Lng()
 	case cabinet.FieldLat:
 		return m.Lat()
+	case cabinet.FieldGeom:
+		return m.Geom()
 	case cabinet.FieldAddress:
 		return m.Address()
 	case cabinet.FieldSimSn:
@@ -19067,6 +19176,8 @@ func (m *CabinetMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldLng(ctx)
 	case cabinet.FieldLat:
 		return m.OldLat(ctx)
+	case cabinet.FieldGeom:
+		return m.OldGeom(ctx)
 	case cabinet.FieldAddress:
 		return m.OldAddress(ctx)
 	case cabinet.FieldSimSn:
@@ -19225,6 +19336,13 @@ func (m *CabinetMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetLat(v)
+		return nil
+	case cabinet.FieldGeom:
+		v, ok := value.(*model.Geometry)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetGeom(v)
 		return nil
 	case cabinet.FieldAddress:
 		v, ok := value.(string)
@@ -19493,6 +19611,9 @@ func (m *CabinetMutation) ClearedFields() []string {
 	if m.FieldCleared(cabinet.FieldLat) {
 		fields = append(fields, cabinet.FieldLat)
 	}
+	if m.FieldCleared(cabinet.FieldGeom) {
+		fields = append(fields, cabinet.FieldGeom)
+	}
 	if m.FieldCleared(cabinet.FieldAddress) {
 		fields = append(fields, cabinet.FieldAddress)
 	}
@@ -19548,6 +19669,9 @@ func (m *CabinetMutation) ClearField(name string) error {
 		return nil
 	case cabinet.FieldLat:
 		m.ClearLat()
+		return nil
+	case cabinet.FieldGeom:
+		m.ClearGeom()
 		return nil
 	case cabinet.FieldAddress:
 		m.ClearAddress()
@@ -19622,6 +19746,9 @@ func (m *CabinetMutation) ResetField(name string) error {
 		return nil
 	case cabinet.FieldLat:
 		m.ResetLat()
+		return nil
+	case cabinet.FieldGeom:
+		m.ResetGeom()
 		return nil
 	case cabinet.FieldAddress:
 		m.ResetAddress()

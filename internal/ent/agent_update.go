@@ -108,6 +108,20 @@ func (au *AgentUpdate) SetPhone(s string) *AgentUpdate {
 	return au
 }
 
+// SetSuper sets the "super" field.
+func (au *AgentUpdate) SetSuper(b bool) *AgentUpdate {
+	au.mutation.SetSuper(b)
+	return au
+}
+
+// SetNillableSuper sets the "super" field if the given value is not nil.
+func (au *AgentUpdate) SetNillableSuper(b *bool) *AgentUpdate {
+	if b != nil {
+		au.SetSuper(*b)
+	}
+	return au
+}
+
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
 func (au *AgentUpdate) SetEnterprise(e *Enterprise) *AgentUpdate {
 	return au.SetEnterpriseID(e.ID)
@@ -257,6 +271,9 @@ func (au *AgentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := au.mutation.Phone(); ok {
 		_spec.SetField(agent.FieldPhone, field.TypeString, value)
+	}
+	if value, ok := au.mutation.Super(); ok {
+		_spec.SetField(agent.FieldSuper, field.TypeBool, value)
 	}
 	if au.mutation.EnterpriseCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -427,6 +444,20 @@ func (auo *AgentUpdateOne) SetName(s string) *AgentUpdateOne {
 // SetPhone sets the "phone" field.
 func (auo *AgentUpdateOne) SetPhone(s string) *AgentUpdateOne {
 	auo.mutation.SetPhone(s)
+	return auo
+}
+
+// SetSuper sets the "super" field.
+func (auo *AgentUpdateOne) SetSuper(b bool) *AgentUpdateOne {
+	auo.mutation.SetSuper(b)
+	return auo
+}
+
+// SetNillableSuper sets the "super" field if the given value is not nil.
+func (auo *AgentUpdateOne) SetNillableSuper(b *bool) *AgentUpdateOne {
+	if b != nil {
+		auo.SetSuper(*b)
+	}
 	return auo
 }
 
@@ -609,6 +640,9 @@ func (auo *AgentUpdateOne) sqlSave(ctx context.Context) (_node *Agent, err error
 	}
 	if value, ok := auo.mutation.Phone(); ok {
 		_spec.SetField(agent.FieldPhone, field.TypeString, value)
+	}
+	if value, ok := auo.mutation.Super(); ok {
+		_spec.SetField(agent.FieldSuper, field.TypeBool, value)
 	}
 	if auo.mutation.EnterpriseCleared() {
 		edge := &sqlgraph.EdgeSpec{

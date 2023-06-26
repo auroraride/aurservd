@@ -109,22 +109,35 @@ func (s *agentService) List(req *model.AgentListReq) *model.PaginationRes {
 
 // TokenVerify Token校验
 // 返回携带 ent.Enterprise 和 ent.EnterpriseStations
-func (s *agentService) TokenVerify(token string) (ag *ent.Agent) {
+func (s *agentService) TokenVerify(token string) (ag *ent.Agent, en *ent.Enterprise, stations ent.EnterpriseStations) {
 	// 获取token对应ID
 	id, _ := ar.Redis.HGet(s.ctx, s.tokenCacheKey, token).Uint64()
 	if id <= 0 {
 		return
 	}
+
 	// 反向校验token是否正确
 	if ar.Redis.HGet(s.ctx, s.tokenCacheKey, strconv.FormatUint(id, 10)).Val() != token {
 		return
 	}
-	// 获取agent和enterprise
-	ag, _ = s.orm.QueryNotDeleted().Where(agent.ID(id)).WithEnterprise().WithStations().First(s.ctx)
+
+	// 获取agent
+	ag, _ = s.orm.QueryNotDeleted().Where(agent.ID(id)).WithEnterprise(func(eq *ent.EnterpriseQuery) {
+		eq.WithStations()
+	}).WithStations().First(s.ctx)
 	if ag == nil || ag.Edges.Enterprise == nil {
 		return
 	}
-	return ag
+
+	en = ag.Edges.Enterprise
+	stations = ag.Edges.Stations
+
+	// 如果是超级管理员，拥有所有站点
+	if ag.Super {
+		stations = en.Edges.Stations
+	}
+
+	return
 }
 
 // 代理登录, 返回代理端资料

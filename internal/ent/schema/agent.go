@@ -59,6 +59,7 @@ func (Agent) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name"),
 		field.String("phone").Unique(),
+		field.Bool("super").Default(true).Comment("是否超级管理"),
 	}
 }
 

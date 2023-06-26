@@ -25,24 +25,11 @@ var Cabinet = new(cabinet)
 // @Accept       json
 // @Produce      json
 // @Param        X-Agent-Token  header  string  true  "代理校验token"
-// @Param        query  query   model.CabinetQueryReq  false  "筛选选项"
-// @Success      200  {object}  model.PaginationRes{items=[]model.AgentCabinetDetailRes}  "请求成功"
+// @Param        query  query  model.AgentCabinetListReq  false  "请求参数"
+// @Success      200  {object}  model.PaginationRes{items=[]model.AgentCabinet}  "请求成功"
 func (*cabinet) List(c echo.Context) (err error) {
-	ctx, req := app.AgentContextAndBinding[model.CabinetQueryReq](c)
-	return ctx.SendResponse(service.NewCabinet().List(&model.CabinetQueryReq{
-		PaginationReq: model.PaginationReq{},
-		Serial:        req.Serial,
-		Name:          req.Name,
-		CityID:        req.CityID,
-		Brand:         req.Brand,
-		Status:        req.Status,
-		Model:         req.Model,
-		Online:        req.Online,
-		Intelligent:   req.Intelligent,
-		EnterpriseID:  &ctx.Enterprise.ID,
-		StationID:     req.StationID,
-		Keyword:       req.Keyword,
-	}))
+	ctx, req := app.AgentContextAndBinding[model.AgentCabinetListReq](c)
+	return ctx.SendResponse(service.NewAgentCabinet().List(ctx.StationIDs(), req))
 }
 
 // Detail
@@ -54,10 +41,11 @@ func (*cabinet) List(c echo.Context) (err error) {
 // @Produce      json
 // @Param        X-Agent-Token  header  string  true  "代理校验token"
 // @Param        serial  path  string  true  "电柜编号"
-// @Success      200  {object}  model.AgentCabinetDetailRes  "请求成功"
+// @Param        query  query  model.LngLat  false  "请求参数"
+// @Success      200  {object}  model.AgentCabinet  "请求成功"
 func (*cabinet) Detail(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.AgentCabinetDetailReq](c)
-	return ctx.SendResponse(service.NewAgentCabinet().Detail(req.Serial, ctx.Agent, ctx.Stations))
+	return ctx.SendResponse(service.NewAgentCabinet().Detail(ctx.StationIDs(), req))
 }
 
 // Section

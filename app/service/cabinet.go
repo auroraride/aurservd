@@ -102,7 +102,7 @@ func (s *cabinetService) CreateCabinet(req *model.CabinetCreateReq) (res *model.
 		SetHealth(model.CabinetHealthStatusOffline)
 	if req.BranchID != nil {
 		b := NewBranch().Query(*req.BranchID)
-		q.SetBranchID(*req.BranchID).SetCityID(b.CityID)
+		q.SetBranchID(*req.BranchID).SetCityID(b.CityID).SetLng(b.Lng).SetLat(b.Lat).SetGeom(b.Geom).SetAddress(b.Address)
 	}
 	if req.SimSn != "" && req.SimDate != "" {
 		q.SetSimSn(req.SimSn).
@@ -242,8 +242,7 @@ func (s *cabinetService) Modify(req *model.CabinetModifyReq) {
 		}
 		if req.BranchID != nil {
 			b := NewBranch().Query(*req.BranchID)
-			q.SetLng(b.Lng).
-				SetLat(b.Lat).
+			q.SetLng(b.Lng).SetLat(b.Lat).SetGeom(b.Geom).
 				SetAddress(b.Address).
 				SetBranchID(*req.BranchID).
 				SetCityID(b.CityID)

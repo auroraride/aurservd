@@ -20,18 +20,12 @@ type AgentContext struct {
 }
 
 // NewAgentContext 新建代理上下文
-func NewAgentContext(c echo.Context, ag *ent.Agent) *AgentContext {
+func NewAgentContext(c echo.Context, ag *ent.Agent, en *ent.Enterprise, stations ent.EnterpriseStations) *AgentContext {
 	ctx := &AgentContext{
 		BaseContext: Context(c),
 		Agent:       ag,
-	}
-	if ag != nil {
-		if ag.Edges.Enterprise != nil {
-			ctx.Enterprise = ag.Edges.Enterprise
-		}
-		if ag.Edges.Stations != nil {
-			ctx.Stations = ag.Edges.Stations
-		}
+		Enterprise:  en,
+		Stations:    stations,
 	}
 	return ctx
 }
@@ -39,4 +33,11 @@ func NewAgentContext(c echo.Context, ag *ent.Agent) *AgentContext {
 // AgentContextAndBinding 代理上下文绑定数据
 func AgentContextAndBinding[T any](c echo.Context) (*AgentContext, *T) {
 	return ContextBindingX[AgentContext, T](c)
+}
+
+func (c *AgentContext) StationIDs() (ids []uint64) {
+	for _, station := range c.Stations {
+		ids = append(ids, station.ID)
+	}
+	return
 }
