@@ -1360,7 +1360,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 		Fields: map[string]*sqlgraph.FieldSpec{
 			stock.FieldCreatedAt:    {Type: field.TypeTime, Column: stock.FieldCreatedAt},
 			stock.FieldUpdatedAt:    {Type: field.TypeTime, Column: stock.FieldUpdatedAt},
-			stock.FieldDeletedAt:    {Type: field.TypeTime, Column: stock.FieldDeletedAt},
 			stock.FieldCreator:      {Type: field.TypeJSON, Column: stock.FieldCreator},
 			stock.FieldLastModifier: {Type: field.TypeJSON, Column: stock.FieldLastModifier},
 			stock.FieldRemark:       {Type: field.TypeString, Column: stock.FieldRemark},
@@ -12760,11 +12759,6 @@ func (f *StockFilter) WhereCreatedAt(p entql.TimeP) {
 // WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
 func (f *StockFilter) WhereUpdatedAt(p entql.TimeP) {
 	f.Where(p.Field(stock.FieldUpdatedAt))
-}
-
-// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
-func (f *StockFilter) WhereDeletedAt(p entql.TimeP) {
-	f.Where(p.Field(stock.FieldDeletedAt))
 }
 
 // WhereCreator applies the entql json.RawMessage predicate on the creator field.

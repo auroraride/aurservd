@@ -38,7 +38,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
-	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
@@ -1317,46 +1316,6 @@ func (c *RiderFollowUpClient) GetNotDeleted(ctx context.Context, id uint64) (*Ri
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *RiderFollowUpClient) GetNotDeletedX(ctx context.Context, id uint64) *RiderFollowUp {
-	obj, err := c.GetNotDeleted(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// SoftDelete returns an soft delete builder for Stock.
-func (c *StockClient) SoftDelete() *StockUpdate {
-	mutation := newStockMutation(c.config, OpUpdate)
-	mutation.SetDeletedAt(time.Now())
-	return &StockUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// SoftDeleteOne returns an soft delete builder for the given entity.
-func (c *StockClient) SoftDeleteOne(s *Stock) *StockUpdateOne {
-	mutation := newStockMutation(c.config, OpUpdateOne, withStock(s))
-	mutation.SetDeletedAt(time.Now())
-	return &StockUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// SoftDeleteOneID returns an soft delete builder for the given id.
-func (c *StockClient) SoftDeleteOneID(id uint64) *StockUpdateOne {
-	mutation := newStockMutation(c.config, OpUpdateOne, withStockID(id))
-	mutation.SetDeletedAt(time.Now())
-	return &StockUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// QueryNotDeleted returns a query not deleted builder for Stock.
-func (c *StockClient) QueryNotDeleted() *StockQuery {
-	return c.Query().Where(stock.DeletedAtIsNil())
-}
-
-// GetNotDeleted returns a Stock not deleted entity by its id.
-func (c *StockClient) GetNotDeleted(ctx context.Context, id uint64) (*Stock, error) {
-	return c.Query().Where(stock.ID(id), stock.DeletedAtIsNil()).Only(ctx)
-}
-
-// GetNotDeletedX is like Get, but panics if an error occurs.
-func (c *StockClient) GetNotDeletedX(ctx context.Context, id uint64) *Stock {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)

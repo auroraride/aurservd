@@ -48,26 +48,6 @@ func (su *StockUpdate) SetUpdatedAt(t time.Time) *StockUpdate {
 	return su
 }
 
-// SetDeletedAt sets the "deleted_at" field.
-func (su *StockUpdate) SetDeletedAt(t time.Time) *StockUpdate {
-	su.mutation.SetDeletedAt(t)
-	return su
-}
-
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (su *StockUpdate) SetNillableDeletedAt(t *time.Time) *StockUpdate {
-	if t != nil {
-		su.SetDeletedAt(*t)
-	}
-	return su
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (su *StockUpdate) ClearDeletedAt() *StockUpdate {
-	su.mutation.ClearDeletedAt()
-	return su
-}
-
 // SetLastModifier sets the "last_modifier" field.
 func (su *StockUpdate) SetLastModifier(m *model.Modifier) *StockUpdate {
 	su.mutation.SetLastModifier(m)
@@ -701,12 +681,6 @@ func (su *StockUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := su.mutation.UpdatedAt(); ok {
 		_spec.SetField(stock.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := su.mutation.DeletedAt(); ok {
-		_spec.SetField(stock.FieldDeletedAt, field.TypeTime, value)
-	}
-	if su.mutation.DeletedAtCleared() {
-		_spec.ClearField(stock.FieldDeletedAt, field.TypeTime)
-	}
 	if su.mutation.CreatorCleared() {
 		_spec.ClearField(stock.FieldCreator, field.TypeJSON)
 	}
@@ -1219,26 +1193,6 @@ type StockUpdateOne struct {
 // SetUpdatedAt sets the "updated_at" field.
 func (suo *StockUpdateOne) SetUpdatedAt(t time.Time) *StockUpdateOne {
 	suo.mutation.SetUpdatedAt(t)
-	return suo
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (suo *StockUpdateOne) SetDeletedAt(t time.Time) *StockUpdateOne {
-	suo.mutation.SetDeletedAt(t)
-	return suo
-}
-
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (suo *StockUpdateOne) SetNillableDeletedAt(t *time.Time) *StockUpdateOne {
-	if t != nil {
-		suo.SetDeletedAt(*t)
-	}
-	return suo
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (suo *StockUpdateOne) ClearDeletedAt() *StockUpdateOne {
-	suo.mutation.ClearDeletedAt()
 	return suo
 }
 
@@ -1904,12 +1858,6 @@ func (suo *StockUpdateOne) sqlSave(ctx context.Context) (_node *Stock, err error
 	}
 	if value, ok := suo.mutation.UpdatedAt(); ok {
 		_spec.SetField(stock.FieldUpdatedAt, field.TypeTime, value)
-	}
-	if value, ok := suo.mutation.DeletedAt(); ok {
-		_spec.SetField(stock.FieldDeletedAt, field.TypeTime, value)
-	}
-	if suo.mutation.DeletedAtCleared() {
-		_spec.ClearField(stock.FieldDeletedAt, field.TypeTime)
 	}
 	if suo.mutation.CreatorCleared() {
 		_spec.ClearField(stock.FieldCreator, field.TypeJSON)

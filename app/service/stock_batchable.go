@@ -36,7 +36,7 @@ func (s *stockBatchableService) Fetch(target uint8, id uint64, name string) int 
 		CabinetID uint64 `json:"cabinet_id"`
 		StationID uint64 `json:"station_id"`
 	}
-	q := s.orm.QueryNotDeleted()
+	q := s.orm.Query()
 	var idw predicate.Stock
 	switch target {
 	case model.StockTargetStore:

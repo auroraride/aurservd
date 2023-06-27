@@ -13,7 +13,7 @@ require (
 	github.com/aliyun/alibaba-cloud-sdk-go v1.62.392
 	github.com/aliyun/aliyun-log-go-sdk v0.1.49
 	github.com/aliyun/aliyun-oss-go-sdk v2.2.7+incompatible
-	github.com/auroraride/adapter v0.0.0-20230627020148-492b19b31043
+	github.com/auroraride/adapter v0.0.0-20230627042649-96946a9d6476
 	github.com/ethereum/go-ethereum v1.12.0
 	github.com/fsnotify/fsnotify v1.6.0
 	github.com/getkin/kin-openapi v0.118.0
@@ -27,7 +27,6 @@ require (
 	github.com/gorilla/websocket v1.5.0
 	github.com/h2non/filetype v1.1.3
 	github.com/iancoleman/strcase v0.2.0
-	github.com/jackc/pgconn v1.14.0
 	github.com/jackc/pgx/v4 v4.18.1
 	github.com/jinzhu/copier v0.3.5
 	github.com/json-iterator/go v1.1.13-0.20220915233716-71ac16282d12
@@ -104,6 +103,7 @@ require (
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/invopop/yaml v0.2.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
+	github.com/jackc/pgconn v1.14.0 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgproto3/v2 v2.3.2 // indirect

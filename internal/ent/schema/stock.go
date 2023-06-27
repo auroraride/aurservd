@@ -67,7 +67,6 @@ func (Stock) Edges() []ent.Edge {
 func (Stock) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		internal.TimeMixin{},
-		internal.DeleteMixin{},
 		internal.Modifier{
 			IndexCreator: true,
 		},

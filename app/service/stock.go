@@ -493,7 +493,7 @@ func (s *stockService) EmployeeOverview() (res model.StockEmployeeOverview) {
 	batteries := make(map[string]*model.StockEmployeeOverviewBattery)
 	materials := make(map[string]*model.StockEmployeeOverviewMaterial)
 
-	items, _ := s.orm.QueryNotDeleted().Where(stock.StoreID(st.ID)).All(s.ctx)
+	items, _ := s.orm.Query().Where(stock.StoreID(st.ID)).All(s.ctx)
 	for _, item := range items {
 		name := st.Name
 		if item.Model != nil {
@@ -548,7 +548,7 @@ func (s *stockService) EmployeeOverview() (res model.StockEmployeeOverview) {
 func (s *stockService) listBasicQuery(req *model.StockEmployeeListReq) *ent.StockQuery {
 	tt := tools.NewTime()
 
-	q := s.orm.QueryNotDeleted().WithRider()
+	q := s.orm.Query().WithRider()
 
 	if req.Outbound {
 		q.Where(stock.NumLT(0))
@@ -603,7 +603,7 @@ func (s *stockService) EmployeeList(req *model.StockEmployeeListReq) model.Stock
 			ID  uint64 `json:"id"`
 			Sum int    `json:"sum"`
 		}
-		cq := s.orm.QueryNotDeleted().Where(
+		cq := s.orm.Query().Where(
 			stock.CreatedAtGTE(carbon.Now().StartOfDay().Carbon2Time()),
 			stock.StoreID(st.ID),
 		)
@@ -680,7 +680,11 @@ func (s *stockService) CabinetList(req *model.StockCabinetListReq) *model.Pagina
 func (s *stockService) listFilter(req model.StockDetailFilter) (q *ent.StockQuery, info ar.Map) {
 	info = make(ar.Map)
 
-	q = s.orm.QueryNotDeleted().
+	q = s.orm.Query().
+		Modify(func(sel *sql.Selector) {
+			// 去重排除配偶
+			sel.FromExpr(sql.Raw("(SELECT DISTINCT ON (id + COALESCE(stock_spouse, 0)) * FROM stock) stock"))
+		}).
 		WithCabinet().
 		WithStore().
 		WithSpouse(func(sq *ent.StockQuery) {
@@ -810,10 +814,6 @@ func (s *stockService) listFilter(req model.StockDetailFilter) (q *ent.StockQuer
 		info["电柜"] = ent.NewExportInfo(req.CabinetID, cabinet.Table)
 		q.Where(stock.CabinetID(req.CabinetID))
 	}
-
-	// q.Modify(func(sel *sql.Selector) {
-	// 	sel.Distinct().Select("ON (sn,parent_id) *")
-	// })
 
 	if req.EnterpriseID != 0 {
 		info["团签"] = ent.NewExportInfo(req.EnterpriseID, enterprise.Table)
@@ -973,7 +973,7 @@ func (s *stockService) Detail(req *model.StockDetailReq) *model.PaginationRes {
 // StoreCurrent 列出当前门店所有库存物资
 func (s *stockService) StoreCurrent(id uint64) []model.InventoryNum {
 	ins := make([]model.InventoryNum, 0)
-	_ = s.orm.QueryNotDeleted().
+	_ = s.orm.Query().
 		Where(stock.StoreID(id)).
 		Modify(func(sel *sql.Selector) {
 			sel.GroupBy(stock.FieldName, stock.FieldModel).
@@ -1004,7 +1004,7 @@ func (s *stockService) CurrentBatteryNum(ids []uint64, field string) map[uint64]
 	for i := range v {
 		v[i] = ids[i]
 	}
-	_ = s.orm.QueryNotDeleted().
+	_ = s.orm.Query().
 		Modify(func(sel *sql.Selector) {
 			sel.Where(sql.In(sel.C(field), v...)).
 				Select(
@@ -1027,7 +1027,7 @@ func (s *stockService) CurrentBattery(id uint64, field string) int {
 
 // Inventory 查询所有物资
 func (s *stockService) Inventory(req *model.StockInventoryReq) (items []model.StockInventory) {
-	_ = s.orm.QueryNotDeleted().
+	_ = s.orm.Query().
 		Modify(func(sel *sql.Selector) {
 			sel.Select(stock.FieldCabinetID, stock.FieldStoreID, stock.FieldName, stock.FieldMaterial).
 				AppendSelectExprAs(sql.Raw(fmt.Sprintf("SUM(%s)", stock.FieldNum)), "num").

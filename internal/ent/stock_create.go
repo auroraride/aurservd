@@ -63,20 +63,6 @@ func (sc *StockCreate) SetNillableUpdatedAt(t *time.Time) *StockCreate {
 	return sc
 }
 
-// SetDeletedAt sets the "deleted_at" field.
-func (sc *StockCreate) SetDeletedAt(t time.Time) *StockCreate {
-	sc.mutation.SetDeletedAt(t)
-	return sc
-}
-
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (sc *StockCreate) SetNillableDeletedAt(t *time.Time) *StockCreate {
-	if t != nil {
-		sc.SetDeletedAt(*t)
-	}
-	return sc
-}
-
 // SetCreator sets the "creator" field.
 func (sc *StockCreate) SetCreator(m *model.Modifier) *StockCreate {
 	sc.mutation.SetCreator(m)
@@ -557,10 +543,6 @@ func (sc *StockCreate) createSpec() (*Stock, *sqlgraph.CreateSpec) {
 		_spec.SetField(stock.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
-	if value, ok := sc.mutation.DeletedAt(); ok {
-		_spec.SetField(stock.FieldDeletedAt, field.TypeTime, value)
-		_node.DeletedAt = &value
-	}
 	if value, ok := sc.mutation.Creator(); ok {
 		_spec.SetField(stock.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
@@ -912,24 +894,6 @@ func (u *StockUpsert) SetUpdatedAt(v time.Time) *StockUpsert {
 // UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
 func (u *StockUpsert) UpdateUpdatedAt() *StockUpsert {
 	u.SetExcluded(stock.FieldUpdatedAt)
-	return u
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (u *StockUpsert) SetDeletedAt(v time.Time) *StockUpsert {
-	u.Set(stock.FieldDeletedAt, v)
-	return u
-}
-
-// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
-func (u *StockUpsert) UpdateDeletedAt() *StockUpsert {
-	u.SetExcluded(stock.FieldDeletedAt)
-	return u
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (u *StockUpsert) ClearDeletedAt() *StockUpsert {
-	u.SetNull(stock.FieldDeletedAt)
 	return u
 }
 
@@ -1337,27 +1301,6 @@ func (u *StockUpsertOne) SetUpdatedAt(v time.Time) *StockUpsertOne {
 func (u *StockUpsertOne) UpdateUpdatedAt() *StockUpsertOne {
 	return u.Update(func(s *StockUpsert) {
 		s.UpdateUpdatedAt()
-	})
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (u *StockUpsertOne) SetDeletedAt(v time.Time) *StockUpsertOne {
-	return u.Update(func(s *StockUpsert) {
-		s.SetDeletedAt(v)
-	})
-}
-
-// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
-func (u *StockUpsertOne) UpdateDeletedAt() *StockUpsertOne {
-	return u.Update(func(s *StockUpsert) {
-		s.UpdateDeletedAt()
-	})
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (u *StockUpsertOne) ClearDeletedAt() *StockUpsertOne {
-	return u.Update(func(s *StockUpsert) {
-		s.ClearDeletedAt()
 	})
 }
 
@@ -1984,27 +1927,6 @@ func (u *StockUpsertBulk) SetUpdatedAt(v time.Time) *StockUpsertBulk {
 func (u *StockUpsertBulk) UpdateUpdatedAt() *StockUpsertBulk {
 	return u.Update(func(s *StockUpsert) {
 		s.UpdateUpdatedAt()
-	})
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (u *StockUpsertBulk) SetDeletedAt(v time.Time) *StockUpsertBulk {
-	return u.Update(func(s *StockUpsert) {
-		s.SetDeletedAt(v)
-	})
-}
-
-// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
-func (u *StockUpsertBulk) UpdateDeletedAt() *StockUpsertBulk {
-	return u.Update(func(s *StockUpsert) {
-		s.UpdateDeletedAt()
-	})
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (u *StockUpsertBulk) ClearDeletedAt() *StockUpsertBulk {
-	return u.Update(func(s *StockUpsert) {
-		s.ClearDeletedAt()
 	})
 }
 

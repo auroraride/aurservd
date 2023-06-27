@@ -35,8 +35,6 @@ type Stock struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
-	// DeletedAt holds the value of the "deleted_at" field.
-	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// 创建人
 	Creator *model.Modifier `json:"creator,omitempty"`
 	// 最后修改人
@@ -327,7 +325,7 @@ func (*Stock) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case stock.FieldRemark, stock.FieldSn, stock.FieldName, stock.FieldModel, stock.FieldMaterial:
 			values[i] = new(sql.NullString)
-		case stock.FieldCreatedAt, stock.FieldUpdatedAt, stock.FieldDeletedAt:
+		case stock.FieldCreatedAt, stock.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		case stock.ForeignKeys[0]: // stock_spouse
 			values[i] = new(sql.NullInt64)
@@ -363,13 +361,6 @@ func (s *Stock) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
 				s.UpdatedAt = value.Time
-			}
-		case stock.FieldDeletedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
-			} else if value.Valid {
-				s.DeletedAt = new(time.Time)
-				*s.DeletedAt = value.Time
 			}
 		case stock.FieldCreator:
 			if value, ok := values[i].(*[]byte); !ok {
@@ -644,11 +635,6 @@ func (s *Stock) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
 	builder.WriteString(s.UpdatedAt.Format(time.ANSIC))
-	builder.WriteString(", ")
-	if v := s.DeletedAt; v != nil {
-		builder.WriteString("deleted_at=")
-		builder.WriteString(v.Format(time.ANSIC))
-	}
 	builder.WriteString(", ")
 	builder.WriteString("creator=")
 	builder.WriteString(fmt.Sprintf("%v", s.Creator))

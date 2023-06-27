@@ -70920,7 +70920,6 @@ type StockMutation struct {
 	id                *uint64
 	created_at        *time.Time
 	updated_at        *time.Time
-	deleted_at        *time.Time
 	creator           **model.Modifier
 	last_modifier     **model.Modifier
 	remark            *string
@@ -71137,55 +71136,6 @@ func (m *StockMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err erro
 // ResetUpdatedAt resets all changes to the "updated_at" field.
 func (m *StockMutation) ResetUpdatedAt() {
 	m.updated_at = nil
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (m *StockMutation) SetDeletedAt(t time.Time) {
-	m.deleted_at = &t
-}
-
-// DeletedAt returns the value of the "deleted_at" field in the mutation.
-func (m *StockMutation) DeletedAt() (r time.Time, exists bool) {
-	v := m.deleted_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldDeletedAt returns the old "deleted_at" field's value of the Stock entity.
-// If the Stock object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *StockMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
-	}
-	return oldValue.DeletedAt, nil
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (m *StockMutation) ClearDeletedAt() {
-	m.deleted_at = nil
-	m.clearedFields[stock.FieldDeletedAt] = struct{}{}
-}
-
-// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
-func (m *StockMutation) DeletedAtCleared() bool {
-	_, ok := m.clearedFields[stock.FieldDeletedAt]
-	return ok
-}
-
-// ResetDeletedAt resets all changes to the "deleted_at" field.
-func (m *StockMutation) ResetDeletedAt() {
-	m.deleted_at = nil
-	delete(m.clearedFields, stock.FieldDeletedAt)
 }
 
 // SetCreator sets the "creator" field.
@@ -72706,15 +72656,12 @@ func (m *StockMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *StockMutation) Fields() []string {
-	fields := make([]string, 0, 25)
+	fields := make([]string, 0, 24)
 	if m.created_at != nil {
 		fields = append(fields, stock.FieldCreatedAt)
 	}
 	if m.updated_at != nil {
 		fields = append(fields, stock.FieldUpdatedAt)
-	}
-	if m.deleted_at != nil {
-		fields = append(fields, stock.FieldDeletedAt)
 	}
 	if m.creator != nil {
 		fields = append(fields, stock.FieldCreator)
@@ -72794,8 +72741,6 @@ func (m *StockMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case stock.FieldUpdatedAt:
 		return m.UpdatedAt()
-	case stock.FieldDeletedAt:
-		return m.DeletedAt()
 	case stock.FieldCreator:
 		return m.Creator()
 	case stock.FieldLastModifier:
@@ -72853,8 +72798,6 @@ func (m *StockMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldCreatedAt(ctx)
 	case stock.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
-	case stock.FieldDeletedAt:
-		return m.OldDeletedAt(ctx)
 	case stock.FieldCreator:
 		return m.OldCreator(ctx)
 	case stock.FieldLastModifier:
@@ -72921,13 +72864,6 @@ func (m *StockMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUpdatedAt(v)
-		return nil
-	case stock.FieldDeletedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetDeletedAt(v)
 		return nil
 	case stock.FieldCreator:
 		v, ok := value.(*model.Modifier)
@@ -73140,9 +73076,6 @@ func (m *StockMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *StockMutation) ClearedFields() []string {
 	var fields []string
-	if m.FieldCleared(stock.FieldDeletedAt) {
-		fields = append(fields, stock.FieldDeletedAt)
-	}
 	if m.FieldCleared(stock.FieldCreator) {
 		fields = append(fields, stock.FieldCreator)
 	}
@@ -73208,9 +73141,6 @@ func (m *StockMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *StockMutation) ClearField(name string) error {
 	switch name {
-	case stock.FieldDeletedAt:
-		m.ClearDeletedAt()
-		return nil
 	case stock.FieldCreator:
 		m.ClearCreator()
 		return nil
@@ -73275,9 +73205,6 @@ func (m *StockMutation) ResetField(name string) error {
 		return nil
 	case stock.FieldUpdatedAt:
 		m.ResetUpdatedAt()
-		return nil
-	case stock.FieldDeletedAt:
-		m.ResetDeletedAt()
 		return nil
 	case stock.FieldCreator:
 		m.ResetCreator()
