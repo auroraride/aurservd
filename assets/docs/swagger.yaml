@@ -8195,6 +8195,81 @@ paths:
       summary: A5002 电柜详情
       tags:
       - '[A]代理接口'
+  /agent/v1/cabinet/binopen:
+    post:
+      consumes:
+      - application/json
+      operationId: AgentCabinetBinOpen
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - in: query
+        name: id
+        required: true
+        type: integer
+      - in: query
+        name: lat
+        required: true
+        type: number
+      - in: query
+        name: lng
+        required: true
+        type: number
+      - description: 从`1`开始
+        in: query
+        name: ordinal
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: A5005 电柜开仓
+      tags:
+      - '[A]代理接口'
+  /agent/v1/cabinet/maintain:
+    post:
+      consumes:
+      - application/json
+      operationId: AgentCabinetMaintain
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - in: query
+        name: id
+        required: true
+        type: integer
+      - in: query
+        name: lat
+        required: true
+        type: number
+      - in: query
+        name: lng
+        required: true
+        type: number
+      - in: query
+        name: maintain
+        required: true
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: A5004 电柜维护
+      tags:
+      - '[A]代理接口'
   /agent/v1/cabinet/section:
     get:
       consumes:
@@ -8215,7 +8290,7 @@ paths:
             items:
               $ref: '#/definitions/model.CascaderOptionLevel2'
             type: array
-      summary: A5003 选择电柜
+      summary: A5003 电柜选择
       tags:
       - '[A]代理接口'
   /agent/v1/misc/feedback:

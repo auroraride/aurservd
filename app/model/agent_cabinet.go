@@ -59,3 +59,17 @@ type AgentCabinetListReq struct {
 	Model     *string  `json:"model" query:"model"`         // 型号
 	Serial    *string  `json:"serial" query:"serial"`       // 编号
 }
+
+type AgentMaintainReq struct {
+	ID       uint64  `json:"id" validate:"required" trans:"电柜ID"`
+	Maintain *bool   `json:"maintain" validate:"required" trans:"是否维护"`
+	Lng      float64 `json:"lng" validate:"required" trans:"经度"`
+	Lat      float64 `json:"lat" validate:"required" trans:"纬度"`
+}
+
+type AgentBinOperateReq struct {
+	ID      uint64  `json:"id" validate:"required" trans:"电柜ID"`
+	Lng     float64 `json:"lng" validate:"required" trans:"经度"`
+	Lat     float64 `json:"lat" validate:"required" trans:"纬度"`
+	Ordinal *int    `json:"ordinal" validate:"required" trans:"仓位序号"` // 从`1`开始
+}

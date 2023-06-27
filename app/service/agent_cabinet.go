@@ -10,7 +10,11 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/LucaTheHacker/go-haversine"
+	"github.com/auroraride/adapter"
+	"github.com/auroraride/adapter/defs/cabdef"
 
+	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/logging"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
@@ -70,12 +74,12 @@ func (s *agentCabinetService) detail(item *ent.Cabinet, lng *float64, lat *float
 }
 
 // Detail 代理端查询电柜详情
-func (s *agentCabinetService) Detail(stations []uint64, req *model.AgentCabinetDetailReq) *model.AgentCabinet {
+func (s *agentCabinetService) Detail(ac *app.AgentContext, req *model.AgentCabinetDetailReq) *model.AgentCabinet {
 	// 查找电柜
 	q := ent.Database.Cabinet.QueryNotDeleted().WithStation().WithModels().Where(
 		cabinet.Serial(req.Serial),
 		cabinet.StatusNEQ(model.CabinetStatusPending.Value()),
-		cabinet.StationIDIn(stations...),
+		cabinet.StationIDIn(ac.StationIDs()...),
 	)
 
 	cab, _ := q.First(s.ctx)
@@ -89,8 +93,8 @@ func (s *agentCabinetService) Detail(stations []uint64, req *model.AgentCabinetD
 	return s.detail(cab, req.Lng, req.Lat)
 }
 
-func (s *agentCabinetService) List(stations []uint64, req *model.AgentCabinetListReq) *model.PaginationRes {
-	q := s.orm.QueryNotDeleted().Where(cabinet.StationIDIn(stations...)).WithStation().WithModels()
+func (s *agentCabinetService) List(ac *app.AgentContext, req *model.AgentCabinetListReq) *model.PaginationRes {
+	q := s.orm.QueryNotDeleted().Where(cabinet.StationIDIn(ac.StationIDs()...)).WithStation().WithModels()
 
 	// 筛选站点
 	if req.StationID != nil {
@@ -126,6 +130,65 @@ func (s *agentCabinetService) List(stations []uint64, req *model.AgentCabinetLis
 	)
 }
 
-func (s *agentCabinetService) Open() {
+func (s *agentCabinetService) Operable(ac *app.AgentContext, id uint64, lng, lat float64) *ent.Cabinet {
+	cab, _ := s.orm.QueryNotDeleted().Where(
+		cabinet.StationIDIn(ac.StationIDs()...),
+		cabinet.StatusNEQ(model.CabinetStatusPending.Value()),
+		cabinet.ID(id),
+	).First(s.ctx)
 
+	if cab == nil {
+		snag.Panic("未找到有效电柜")
+	}
+
+	if haversine.Distance(haversine.NewCoordinates(lat, lng), haversine.NewCoordinates(cab.Lat, cab.Lng)).Kilometers()*1000.0 > 200 {
+		snag.Panic("操作距离过远")
+	}
+
+	return cab
+}
+
+// Maintain 设置电柜操作维护
+func (s *agentCabinetService) Maintain(ac *app.AgentContext, req *model.AgentMaintainReq) (detail *model.CabinetDetailRes) {
+	cab := s.Operable(ac, req.ID, req.Lng, req.Lat)
+
+	status := model.CabinetStatusNormal
+	if *req.Maintain {
+		status = model.CabinetStatusMaintenance
+	}
+
+	err := cab.Update().SetStatus(status.Value()).Exec(s.ctx)
+	if err != nil {
+		snag.Panic(err)
+	}
+
+	// 记录日志
+	go logging.NewOperateLog().
+		SetRef(cab).
+		SetAgent(ac.Agent).
+		SetOperate(model.OperateCabinetMaintain).
+		SetDiff(model.CabinetStatus(cab.Status).String(), status.String()).
+		Send()
+
+	return
+}
+
+// BinOpen 仓位操作
+func (s *agentCabinetService) BinOpen(ac *app.AgentContext, req *model.AgentBinOperateReq, operate cabdef.Operate) []*cabdef.BinOperateResult {
+	cab := s.Operable(ac, req.ID, req.Lng, req.Lat)
+
+	payload := &cabdef.OperateBinRequest{
+		Operate: operate,
+		Ordinal: req.Ordinal,
+		Serial:  cab.Serial,
+		Remark:  "代理开仓",
+	}
+
+	results, err := adapter.Post[[]*cabdef.BinOperateResult](s.GetCabinetAdapterUrlX(cab, "/agent/operate/bin/open"), ac.Agent.AdapterUser(), payload)
+
+	if err != nil {
+		snag.Panic(err)
+	}
+
+	return results
 }

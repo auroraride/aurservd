@@ -16,7 +16,7 @@ type AgentContext struct {
 
 	Enterprise *ent.Enterprise
 	Agent      *ent.Agent
-	Stations   ent.EnterpriseStations
+	Stations   ent.EnterpriseStations // 站点列表
 }
 
 // NewAgentContext 新建代理上下文
@@ -35,6 +35,7 @@ func AgentContextAndBinding[T any](c echo.Context) (*AgentContext, *T) {
 	return ContextBindingX[AgentContext, T](c)
 }
 
+// StationIDs 该代理站点ID列表
 func (c *AgentContext) StationIDs() (ids []uint64) {
 	for _, station := range c.Stations {
 		ids = append(ids, station.ID)

@@ -32,6 +32,7 @@ var (
 		"export_info.go":           FileInfoTypeFile,
 		"plan_attached.go":         FileInfoTypeFile,
 		"stock_attached.go":        FileInfoTypeFile,
+		"agent_attached.go":        FileInfoTypeFile,
 		"subscribe_attached.go":    FileInfoTypeFile,
 		"allocate_attached.go":     FileInfoTypeFile,
 		"stocksummary_attached.go": FileInfoTypeFile,
