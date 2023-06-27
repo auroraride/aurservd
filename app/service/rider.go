@@ -378,6 +378,8 @@ func (s *riderService) Status(u *ent.Rider) uint8 {
 }
 
 func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery, info ar.Map) {
+	var subqs []predicate.Subscribe
+
 	info = make(ar.Map)
 	q = ent.Database.Rider.
 		QueryNotDeleted().
@@ -468,24 +470,26 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
 		switch rss {
 		case 11:
 			// 即将到期
-			q.Where(rider.HasSubscribesWith(
+			subqs = append(
+				subqs,
 				subscribe.Status(model.SubscribeStatusUsing),
 				subscribe.RemainingLTE(3),
-			))
+			)
 		case 99:
 			q.Where(rider.Not(rider.HasSubscribes()))
 		case model.SubscribeStatusUnSubscribed:
-			q.Where(
-				rider.And(
-					rider.HasSubscribesWith(
+			subqs = append(
+				subqs,
+				subscribe.Or(
+					subscribe.And(
 						subscribe.EndAtNotNil(),
 						subscribe.Status(model.SubscribeStatusUnSubscribed),
 					),
-					rider.Not(rider.HasSubscribesWith(subscribe.StatusIn(model.SubscribeNotUnSubscribed()...))),
+					subscribe.StatusIn(model.SubscribeNotUnSubscribed()...),
 				),
 			)
 		default:
-			q.Where(rider.HasSubscribesWith(subscribe.Status(rss)))
+			subqs = append(subqs, subscribe.Status(rss))
 		}
 		info[key] = map[uint8]string{
 			0:  "未激活",
@@ -496,11 +500,12 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
 			5:  "已取消",
 			11: "即将到期",
 			99: "未使用",
-		}[*req.SubscribeStatus]
+		}[rss]
 	}
 	if req.PlanID != nil {
 		info["骑士卡"] = ent.NewExportInfo(*req.PlanID, plan.Table)
-		q.Where(rider.HasSubscribesWith(subscribe.PlanID(*req.PlanID)))
+		// q.Where(rider.HasSubscribesWith(subscribe.PlanID(*req.PlanID)))
+		subqs = append(subqs, subscribe.PlanID(*req.PlanID))
 	}
 	if req.Enterprise != nil && *req.Enterprise != 0 {
 		key := "是否团签"
@@ -522,13 +527,12 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
 
 	if req.CityID != nil {
 		info["城市"] = ent.NewExportInfo(*req.CityID, city.Table)
-		q.Where(rider.HasSubscribesWith(subscribe.CityID(*req.CityID)))
+		subqs = append(subqs, subscribe.CityID(*req.CityID))
 	}
 
 	if req.Remaining != nil {
 		arr := strings.Split(*req.Remaining, ",")
 
-		var subqs []predicate.Subscribe
 		subqs = append(subqs, subscribe.StatusNotIn(model.SubscribeStatusUnSubscribed, model.SubscribeStatusCanceled))
 		r1, _ := strconv.Atoi(strings.TrimSpace(arr[0]))
 		subqs = append(subqs, subscribe.RemainingGTE(r1))
@@ -544,47 +548,43 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
 		} else {
 			info["骑士卡剩余天数"] = fmt.Sprintf("> %d", r1)
 		}
-
-		q.Where(rider.HasSubscribesWith(subqs...))
 	}
 
 	if req.Suspend != nil {
 		if *req.Suspend {
-			q.Where(rider.HasSubscribesWith(subscribe.SuspendAtNotNil(), subscribe.EndAtIsNil()))
+			subqs = append(subqs, subscribe.SuspendAtNotNil(), subscribe.EndAtIsNil())
 			info["暂停扣费"] = "是"
 		} else {
-			q.Where(rider.HasSubscribesWith(subscribe.SuspendAtIsNil(), subscribe.EndAtIsNil()))
+			subqs = append(subqs, subscribe.SuspendAtIsNil(), subscribe.EndAtIsNil())
 			info["暂停扣费"] = "否"
 		}
 	}
 
 	if req.Model != nil {
 		info["电池型号"] = req.Model
-		subarr := []predicate.Subscribe{
-			subscribe.Model(*req.Model),
-		}
+		subqs = append(subqs, subscribe.Model(*req.Model))
 		// 如果筛选了电池型号但是未筛选订阅状态时, 默认订阅状态为: 非退订 && 非取消
 		if req.SubscribeStatus == nil {
-			subarr = append(subarr, subscribe.StatusNotIn(model.SubscribeStatusCanceled, model.SubscribeStatusUnSubscribed))
+			subqs = append(subqs, subscribe.StatusNotIn(model.SubscribeStatusCanceled, model.SubscribeStatusUnSubscribed))
 		}
-		q.Where(rider.HasSubscribesWith(subarr...))
 	}
 
 	if req.EbikeBrandID != nil {
 		info["电车型号"] = ent.NewExportInfo(*req.EbikeBrandID, ebikebrand.Table)
-		subarr := []predicate.Subscribe{
-			subscribe.BrandID(*req.EbikeBrandID),
-		}
+		subqs = append(subqs, subscribe.BrandID(*req.EbikeBrandID))
 		// 如果筛选了电车型号但是未筛选订阅状态时, 默认订阅状态为: 非退订 && 非取消
 		if req.SubscribeStatus == nil {
-			subarr = append(subarr, subscribe.StatusNotIn(model.SubscribeStatusCanceled, model.SubscribeStatusUnSubscribed))
+			subqs = append(subqs, subscribe.StatusNotIn(model.SubscribeStatusCanceled, model.SubscribeStatusUnSubscribed))
 		}
-		q.Where(rider.HasSubscribesWith(subarr...))
 	}
 
 	if req.BatteryID != nil {
 		info["电池编码"] = ent.NewExportInfo(*req.BatteryID, battery.Table)
 		q.Where(rider.HasBatteryWith(battery.ID(*req.BatteryID)))
+	}
+
+	if len(subqs) > 0 {
+		q.Where(rider.HasSubscribesWith(subqs...))
 	}
 	return
 }
@@ -1131,5 +1131,4 @@ func (s *riderService) GetRiderNameById(id uint64) *model.RiderSampleInfo {
 		Name:  ri.Name,
 		Phone: ri.Phone,
 	}
-
 }
