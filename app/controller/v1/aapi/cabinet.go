@@ -75,7 +75,8 @@ func (*cabinet) Section(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*cabinet) Maintain(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.AgentMaintainReq](c)
-	return ctx.SendResponse(service.NewAgentCabinet().Maintain(ctx, req))
+	service.NewAgentCabinet().Maintain(ctx, req)
+	return ctx.SendResponse()
 }
 
 // BinOpen
@@ -87,7 +88,7 @@ func (*cabinet) Maintain(c echo.Context) (err error) {
 // @Produce      json
 // @Param        X-Agent-Token  header  string  true  "代理校验token"
 // @Param        query  query  model.AgentBinOperateReq  false  "请求参数"
-// @Success      200  {object}  []*cabdef.BinOperateResult  "请求成功"
+// @Success      200  {object}  []cabdef.BinOperateResult  "请求成功"
 func (*cabinet) BinOpen(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.AgentBinOperateReq](c)
 	return ctx.SendResponse(service.NewAgentCabinet().BinOpen(ctx, req, cabdef.OperateDoorOpen))

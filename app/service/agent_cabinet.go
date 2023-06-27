@@ -149,7 +149,7 @@ func (s *agentCabinetService) Operable(ac *app.AgentContext, id uint64, lng, lat
 }
 
 // Maintain 设置电柜操作维护
-func (s *agentCabinetService) Maintain(ac *app.AgentContext, req *model.AgentMaintainReq) (detail *model.CabinetDetailRes) {
+func (s *agentCabinetService) Maintain(ac *app.AgentContext, req *model.AgentMaintainReq) {
 	cab := s.Operable(ac, req.ID, req.Lng, req.Lat)
 
 	status := model.CabinetStatusNormal
@@ -169,8 +169,6 @@ func (s *agentCabinetService) Maintain(ac *app.AgentContext, req *model.AgentMai
 		SetOperate(model.OperateCabinetMaintain).
 		SetDiff(model.CabinetStatus(cab.Status).String(), status.String()).
 		Send()
-
-	return
 }
 
 // BinOpen 仓位操作

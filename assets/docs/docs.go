@@ -589,7 +589,10 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/cabdef.BinOperateResult"
+                            }
                         }
                     }
                 }
@@ -16434,6 +16437,33 @@ const docTemplate = `{
                 "BatteryBrandTB"
             ]
         },
+        "adapter.Business": {
+            "type": "string",
+            "enum": [
+                "operate",
+                "exchange",
+                "active",
+                "pause",
+                "continue",
+                "unsubscribe"
+            ],
+            "x-enum-comments": {
+                "BusinessActive": "激活",
+                "BusinessContinue": "取消寄存",
+                "BusinessExchange": "换电",
+                "BusinessOperate": "运维操作",
+                "BusinessPause": "寄存",
+                "BusinessUnsubscribe": "退订"
+            },
+            "x-enum-varnames": [
+                "BusinessOperate",
+                "BusinessExchange",
+                "BusinessActive",
+                "BusinessPause",
+                "BusinessContinue",
+                "BusinessUnsubscribe"
+            ]
+        },
         "adapter.CabinetBrand": {
             "type": "string",
             "enum": [
@@ -16462,6 +16492,107 @@ const docTemplate = `{
                 },
                 "lng": {
                     "type": "number"
+                }
+            }
+        },
+        "cabdef.BinInfo": {
+            "type": "object",
+            "properties": {
+                "batteryExists": {
+                    "description": "电池在位",
+                    "type": "boolean"
+                },
+                "batterySn": {
+                    "description": "电池编码",
+                    "type": "string"
+                },
+                "current": {
+                    "description": "电流",
+                    "type": "number"
+                },
+                "enable": {
+                    "description": "启用",
+                    "type": "boolean"
+                },
+                "health": {
+                    "description": "健康",
+                    "type": "boolean"
+                },
+                "open": {
+                    "description": "开启",
+                    "type": "boolean"
+                },
+                "ordinal": {
+                    "description": "仓位序号",
+                    "type": "integer"
+                },
+                "soc": {
+                    "description": "电量",
+                    "type": "number"
+                },
+                "soh": {
+                    "description": "健康",
+                    "type": "number"
+                },
+                "voltage": {
+                    "description": "电压",
+                    "type": "number"
+                }
+            }
+        },
+        "cabdef.BinOperateResult": {
+            "type": "object",
+            "properties": {
+                "after": {
+                    "description": "操作后仓位信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/cabdef.BinInfo"
+                        }
+                    ]
+                },
+                "before": {
+                    "description": "操作前仓位信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/cabdef.BinInfo"
+                        }
+                    ]
+                },
+                "business": {
+                    "description": "业务类型",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/adapter.Business"
+                        }
+                    ]
+                },
+                "duration": {
+                    "description": "耗时",
+                    "type": "number"
+                },
+                "message": {
+                    "description": "消息",
+                    "type": "string"
+                },
+                "startAt": {
+                    "description": "开始时间",
+                    "type": "string"
+                },
+                "step": {
+                    "description": "操作步骤",
+                    "type": "integer"
+                },
+                "stopAt": {
+                    "description": "结束时间",
+                    "type": "string"
+                },
+                "success": {
+                    "description": "是否成功",
+                    "type": "boolean"
+                },
+                "uuid": {
+                    "type": "string"
                 }
             }
         },
