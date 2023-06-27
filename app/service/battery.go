@@ -25,6 +25,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
@@ -250,24 +252,47 @@ func (s *batteryService) listFilter(req model.BatteryFilter) (q *ent.BatteryQuer
 		q.Where(battery.Model(m))
 	}
 	if req.EnterpriseID != nil {
+		info["团签"] = ent.NewExportInfo(*req.EnterpriseID, enterprise.Table)
 		q.Where(battery.EnterpriseID(*req.EnterpriseID))
 	}
 	if req.StationID != nil {
+		info["站点"] = ent.NewExportInfo(*req.StationID, enterprisestation.Table)
 		q.Where(battery.StationID(*req.StationID))
 	}
 	if req.CabinetName != nil {
+		info["电柜名称"] = *req.CabinetName
 		q.Where(battery.HasCabinetWith(cabinet.Name(*req.CabinetName)))
 	}
 	if req.Keyword != nil {
+		info["关键字"] = *req.Keyword
 		q.Where(battery.HasRiderWith(rider.NameContainsFold(*req.Keyword)))
 	}
 
 	if req.OwnerType != nil {
+		var name string
 		switch *req.OwnerType {
 		case 1: // 平台
 			q.Where(battery.EnterpriseIDIsNil())
+			name = "平台"
 		case 2: // 代理商
 			q.Where(battery.EnterpriseIDNotNil())
+			name = "代理商"
+		}
+		info["归属"] = name
+	}
+
+	if req.CabinetID != nil {
+		info["电柜"] = ent.NewExportInfo(*req.CabinetID, cabinet.Table)
+		q.Where(battery.CabinetID(*req.CabinetID))
+	}
+
+	if req.RiderID != nil {
+		if *req.RiderID > 0 {
+			info["骑手"] = ent.NewExportInfo(*req.RiderID, rider.Table)
+			q.Where(battery.RiderID(*req.RiderID))
+		} else {
+			// 当RiderID为0时, 查询所有绑定骑手的电池
+			q.Where(battery.RiderIDNotNil())
 		}
 	}
 

@@ -68,6 +68,16 @@ func (s *stockBatchableService) Loopers(req *model.StockTransferReq, enterpriseI
 	// 查询电池信息
 	q := ent.Database.Battery.Query().Where(battery.SnIn(req.BatterySn...), battery.RiderIDIsNil())
 
+	// 平台往站点调拨 需要判断当前电池有没有被使用
+	if req.OutboundTarget == model.StockTargetPlaform && req.InboundTarget == model.StockTargetStation {
+		q.Where(
+			battery.EnterpriseIDIsNil(),
+			battery.StationIDIsNil(),
+			battery.CabinetIDIsNil(),
+			battery.SubscribeIDIsNil(),
+		)
+	}
+
 	all, _ := q.All(s.ctx)
 	if len(all) == 0 {
 		snag.Panic("电池信息获取失败或电池已被使用")

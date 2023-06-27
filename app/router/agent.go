@@ -52,8 +52,10 @@ func loadAgentRoutes() {
 	auth.POST("/cabinet/maintain", aapi.Cabinet.Maintain)    // 电柜维护
 	auth.POST("/cabinet/binopen", aapi.Cabinet.BinOpen)      // 电柜开仓
 
-	// A6 出入库
-	auth.GET("/stock", aapi.Stock.Detail)
+	// A6 物资
+	auth.GET("/stock", aapi.Stock.Detail)               // 出入库详情
+	auth.GET("/stock/battery", aapi.Stock.BatteryStock) //  电池物资
+	auth.GET("/stock/ebike", aapi.Stock.EBikeStock)     // 电车物资
 
 	// A7 骑士卡 / 订阅
 	auth.POST("/subscribe/active", aapi.Subscribe.Active)            // 激活骑手
@@ -69,10 +71,12 @@ func loadAgentRoutes() {
 	auth.GET("/statistics/overview", aapi.Statistics.Overview)
 
 	// AA 电池
+	auth.GET("/battery", aapi.Battery.List)                // 电池列表
 	auth.GET("/battery/selection", aapi.Battery.Selection) // 电池搜索
 	auth.GET("/battery/model", aapi.Battery.Model)         // 电池型号列表
 
 	// AB 电车
+	auth.GET("/bike", aapi.Bike.List)                    // 电车列表
 	auth.GET("/bike/unallocated", aapi.Bike.Unallocated) // 搜索未分配车辆
 
 	// AZ 杂项

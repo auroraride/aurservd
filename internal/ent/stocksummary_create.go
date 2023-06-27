@@ -102,115 +102,107 @@ func (ssc *StockSummaryCreate) SetDate(s string) *StockSummaryCreate {
 	return ssc
 }
 
-// SetBatteryNum sets the "battery_num" field.
-func (ssc *StockSummaryCreate) SetBatteryNum(i int) *StockSummaryCreate {
-	ssc.mutation.SetBatteryNum(i)
+// SetModel sets the "model" field.
+func (ssc *StockSummaryCreate) SetModel(s string) *StockSummaryCreate {
+	ssc.mutation.SetModel(s)
 	return ssc
 }
 
-// SetNillableBatteryNum sets the "battery_num" field if the given value is not nil.
-func (ssc *StockSummaryCreate) SetNillableBatteryNum(i *int) *StockSummaryCreate {
-	if i != nil {
-		ssc.SetBatteryNum(*i)
+// SetNillableModel sets the "model" field if the given value is not nil.
+func (ssc *StockSummaryCreate) SetNillableModel(s *string) *StockSummaryCreate {
+	if s != nil {
+		ssc.SetModel(*s)
 	}
 	return ssc
 }
 
-// SetBatteryOutboundNum sets the "battery_outbound_num" field.
-func (ssc *StockSummaryCreate) SetBatteryOutboundNum(i int) *StockSummaryCreate {
-	ssc.mutation.SetBatteryOutboundNum(i)
+// SetNum sets the "num" field.
+func (ssc *StockSummaryCreate) SetNum(i int) *StockSummaryCreate {
+	ssc.mutation.SetNum(i)
 	return ssc
 }
 
-// SetNillableBatteryOutboundNum sets the "battery_outbound_num" field if the given value is not nil.
-func (ssc *StockSummaryCreate) SetNillableBatteryOutboundNum(i *int) *StockSummaryCreate {
+// SetNillableNum sets the "num" field if the given value is not nil.
+func (ssc *StockSummaryCreate) SetNillableNum(i *int) *StockSummaryCreate {
 	if i != nil {
-		ssc.SetBatteryOutboundNum(*i)
+		ssc.SetNum(*i)
 	}
 	return ssc
 }
 
-// SetBatteryInboundNum sets the "battery_inbound_num" field.
-func (ssc *StockSummaryCreate) SetBatteryInboundNum(i int) *StockSummaryCreate {
-	ssc.mutation.SetBatteryInboundNum(i)
+// SetTodayNum sets the "today_num" field.
+func (ssc *StockSummaryCreate) SetTodayNum(i int) *StockSummaryCreate {
+	ssc.mutation.SetTodayNum(i)
 	return ssc
 }
 
-// SetNillableBatteryInboundNum sets the "battery_inbound_num" field if the given value is not nil.
-func (ssc *StockSummaryCreate) SetNillableBatteryInboundNum(i *int) *StockSummaryCreate {
+// SetNillableTodayNum sets the "today_num" field if the given value is not nil.
+func (ssc *StockSummaryCreate) SetNillableTodayNum(i *int) *StockSummaryCreate {
 	if i != nil {
-		ssc.SetBatteryInboundNum(*i)
+		ssc.SetTodayNum(*i)
 	}
 	return ssc
 }
 
-// SetBikeNum sets the "bike_num" field.
-func (ssc *StockSummaryCreate) SetBikeNum(i int) *StockSummaryCreate {
-	ssc.mutation.SetBikeNum(i)
+// SetOutboundNum sets the "outbound_num" field.
+func (ssc *StockSummaryCreate) SetOutboundNum(i int) *StockSummaryCreate {
+	ssc.mutation.SetOutboundNum(i)
 	return ssc
 }
 
-// SetNillableBikeNum sets the "bike_num" field if the given value is not nil.
-func (ssc *StockSummaryCreate) SetNillableBikeNum(i *int) *StockSummaryCreate {
+// SetNillableOutboundNum sets the "outbound_num" field if the given value is not nil.
+func (ssc *StockSummaryCreate) SetNillableOutboundNum(i *int) *StockSummaryCreate {
 	if i != nil {
-		ssc.SetBikeNum(*i)
+		ssc.SetOutboundNum(*i)
 	}
 	return ssc
 }
 
-// SetBikeOutboundNum sets the "bike_outbound_num" field.
-func (ssc *StockSummaryCreate) SetBikeOutboundNum(i int) *StockSummaryCreate {
-	ssc.mutation.SetBikeOutboundNum(i)
+// SetInboundNum sets the "inbound_num" field.
+func (ssc *StockSummaryCreate) SetInboundNum(i int) *StockSummaryCreate {
+	ssc.mutation.SetInboundNum(i)
 	return ssc
 }
 
-// SetNillableBikeOutboundNum sets the "bike_outbound_num" field if the given value is not nil.
-func (ssc *StockSummaryCreate) SetNillableBikeOutboundNum(i *int) *StockSummaryCreate {
+// SetNillableInboundNum sets the "inbound_num" field if the given value is not nil.
+func (ssc *StockSummaryCreate) SetNillableInboundNum(i *int) *StockSummaryCreate {
 	if i != nil {
-		ssc.SetBikeOutboundNum(*i)
+		ssc.SetInboundNum(*i)
 	}
 	return ssc
 }
 
-// SetBikeInboundNum sets the "bike_inbound_num" field.
-func (ssc *StockSummaryCreate) SetBikeInboundNum(i int) *StockSummaryCreate {
-	ssc.mutation.SetBikeInboundNum(i)
+// SetInCabinetNum sets the "in_cabinet_num" field.
+func (ssc *StockSummaryCreate) SetInCabinetNum(i int) *StockSummaryCreate {
+	ssc.mutation.SetInCabinetNum(i)
 	return ssc
 }
 
-// SetNillableBikeInboundNum sets the "bike_inbound_num" field if the given value is not nil.
-func (ssc *StockSummaryCreate) SetNillableBikeInboundNum(i *int) *StockSummaryCreate {
+// SetNillableInCabinetNum sets the "in_cabinet_num" field if the given value is not nil.
+func (ssc *StockSummaryCreate) SetNillableInCabinetNum(i *int) *StockSummaryCreate {
 	if i != nil {
-		ssc.SetBikeInboundNum(*i)
+		ssc.SetInCabinetNum(*i)
 	}
 	return ssc
 }
 
-// SetCabinetBatteryNum sets the "cabinet_battery_num" field.
-func (ssc *StockSummaryCreate) SetCabinetBatteryNum(i int) *StockSummaryCreate {
-	ssc.mutation.SetCabinetBatteryNum(i)
+// SetInRiderNum sets the "in_rider_num" field.
+func (ssc *StockSummaryCreate) SetInRiderNum(i int) *StockSummaryCreate {
+	ssc.mutation.SetInRiderNum(i)
 	return ssc
 }
 
-// SetNillableCabinetBatteryNum sets the "cabinet_battery_num" field if the given value is not nil.
-func (ssc *StockSummaryCreate) SetNillableCabinetBatteryNum(i *int) *StockSummaryCreate {
+// SetNillableInRiderNum sets the "in_rider_num" field if the given value is not nil.
+func (ssc *StockSummaryCreate) SetNillableInRiderNum(i *int) *StockSummaryCreate {
 	if i != nil {
-		ssc.SetCabinetBatteryNum(*i)
+		ssc.SetInRiderNum(*i)
 	}
 	return ssc
 }
 
-// SetRiderBatteryNum sets the "rider_battery_num" field.
-func (ssc *StockSummaryCreate) SetRiderBatteryNum(i int) *StockSummaryCreate {
-	ssc.mutation.SetRiderBatteryNum(i)
-	return ssc
-}
-
-// SetNillableRiderBatteryNum sets the "rider_battery_num" field if the given value is not nil.
-func (ssc *StockSummaryCreate) SetNillableRiderBatteryNum(i *int) *StockSummaryCreate {
-	if i != nil {
-		ssc.SetRiderBatteryNum(*i)
-	}
+// SetMaterial sets the "material" field.
+func (ssc *StockSummaryCreate) SetMaterial(s stocksummary.Material) *StockSummaryCreate {
+	ssc.mutation.SetMaterial(s)
 	return ssc
 }
 
@@ -274,37 +266,29 @@ func (ssc *StockSummaryCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (ssc *StockSummaryCreate) defaults() {
-	if _, ok := ssc.mutation.BatteryNum(); !ok {
-		v := stocksummary.DefaultBatteryNum
-		ssc.mutation.SetBatteryNum(v)
+	if _, ok := ssc.mutation.Num(); !ok {
+		v := stocksummary.DefaultNum
+		ssc.mutation.SetNum(v)
 	}
-	if _, ok := ssc.mutation.BatteryOutboundNum(); !ok {
-		v := stocksummary.DefaultBatteryOutboundNum
-		ssc.mutation.SetBatteryOutboundNum(v)
+	if _, ok := ssc.mutation.TodayNum(); !ok {
+		v := stocksummary.DefaultTodayNum
+		ssc.mutation.SetTodayNum(v)
 	}
-	if _, ok := ssc.mutation.BatteryInboundNum(); !ok {
-		v := stocksummary.DefaultBatteryInboundNum
-		ssc.mutation.SetBatteryInboundNum(v)
+	if _, ok := ssc.mutation.OutboundNum(); !ok {
+		v := stocksummary.DefaultOutboundNum
+		ssc.mutation.SetOutboundNum(v)
 	}
-	if _, ok := ssc.mutation.BikeNum(); !ok {
-		v := stocksummary.DefaultBikeNum
-		ssc.mutation.SetBikeNum(v)
+	if _, ok := ssc.mutation.InboundNum(); !ok {
+		v := stocksummary.DefaultInboundNum
+		ssc.mutation.SetInboundNum(v)
 	}
-	if _, ok := ssc.mutation.BikeOutboundNum(); !ok {
-		v := stocksummary.DefaultBikeOutboundNum
-		ssc.mutation.SetBikeOutboundNum(v)
+	if _, ok := ssc.mutation.InCabinetNum(); !ok {
+		v := stocksummary.DefaultInCabinetNum
+		ssc.mutation.SetInCabinetNum(v)
 	}
-	if _, ok := ssc.mutation.BikeInboundNum(); !ok {
-		v := stocksummary.DefaultBikeInboundNum
-		ssc.mutation.SetBikeInboundNum(v)
-	}
-	if _, ok := ssc.mutation.CabinetBatteryNum(); !ok {
-		v := stocksummary.DefaultCabinetBatteryNum
-		ssc.mutation.SetCabinetBatteryNum(v)
-	}
-	if _, ok := ssc.mutation.RiderBatteryNum(); !ok {
-		v := stocksummary.DefaultRiderBatteryNum
-		ssc.mutation.SetRiderBatteryNum(v)
+	if _, ok := ssc.mutation.InRiderNum(); !ok {
+		v := stocksummary.DefaultInRiderNum
+		ssc.mutation.SetInRiderNum(v)
 	}
 }
 
@@ -318,29 +302,31 @@ func (ssc *StockSummaryCreate) check() error {
 			return &ValidationError{Name: "date", err: fmt.Errorf(`ent: validator failed for field "StockSummary.date": %w`, err)}
 		}
 	}
-	if _, ok := ssc.mutation.BatteryNum(); !ok {
-		return &ValidationError{Name: "battery_num", err: errors.New(`ent: missing required field "StockSummary.battery_num"`)}
+	if _, ok := ssc.mutation.Num(); !ok {
+		return &ValidationError{Name: "num", err: errors.New(`ent: missing required field "StockSummary.num"`)}
 	}
-	if _, ok := ssc.mutation.BatteryOutboundNum(); !ok {
-		return &ValidationError{Name: "battery_outbound_num", err: errors.New(`ent: missing required field "StockSummary.battery_outbound_num"`)}
+	if _, ok := ssc.mutation.TodayNum(); !ok {
+		return &ValidationError{Name: "today_num", err: errors.New(`ent: missing required field "StockSummary.today_num"`)}
 	}
-	if _, ok := ssc.mutation.BatteryInboundNum(); !ok {
-		return &ValidationError{Name: "battery_inbound_num", err: errors.New(`ent: missing required field "StockSummary.battery_inbound_num"`)}
+	if _, ok := ssc.mutation.OutboundNum(); !ok {
+		return &ValidationError{Name: "outbound_num", err: errors.New(`ent: missing required field "StockSummary.outbound_num"`)}
 	}
-	if _, ok := ssc.mutation.BikeNum(); !ok {
-		return &ValidationError{Name: "bike_num", err: errors.New(`ent: missing required field "StockSummary.bike_num"`)}
+	if _, ok := ssc.mutation.InboundNum(); !ok {
+		return &ValidationError{Name: "inbound_num", err: errors.New(`ent: missing required field "StockSummary.inbound_num"`)}
 	}
-	if _, ok := ssc.mutation.BikeOutboundNum(); !ok {
-		return &ValidationError{Name: "bike_outbound_num", err: errors.New(`ent: missing required field "StockSummary.bike_outbound_num"`)}
+	if _, ok := ssc.mutation.InCabinetNum(); !ok {
+		return &ValidationError{Name: "in_cabinet_num", err: errors.New(`ent: missing required field "StockSummary.in_cabinet_num"`)}
 	}
-	if _, ok := ssc.mutation.BikeInboundNum(); !ok {
-		return &ValidationError{Name: "bike_inbound_num", err: errors.New(`ent: missing required field "StockSummary.bike_inbound_num"`)}
+	if _, ok := ssc.mutation.InRiderNum(); !ok {
+		return &ValidationError{Name: "in_rider_num", err: errors.New(`ent: missing required field "StockSummary.in_rider_num"`)}
 	}
-	if _, ok := ssc.mutation.CabinetBatteryNum(); !ok {
-		return &ValidationError{Name: "cabinet_battery_num", err: errors.New(`ent: missing required field "StockSummary.cabinet_battery_num"`)}
+	if _, ok := ssc.mutation.Material(); !ok {
+		return &ValidationError{Name: "material", err: errors.New(`ent: missing required field "StockSummary.material"`)}
 	}
-	if _, ok := ssc.mutation.RiderBatteryNum(); !ok {
-		return &ValidationError{Name: "rider_battery_num", err: errors.New(`ent: missing required field "StockSummary.rider_battery_num"`)}
+	if v, ok := ssc.mutation.Material(); ok {
+		if err := stocksummary.MaterialValidator(v); err != nil {
+			return &ValidationError{Name: "material", err: fmt.Errorf(`ent: validator failed for field "StockSummary.material": %w`, err)}
+		}
 	}
 	return nil
 }
@@ -373,37 +359,37 @@ func (ssc *StockSummaryCreate) createSpec() (*StockSummary, *sqlgraph.CreateSpec
 		_spec.SetField(stocksummary.FieldDate, field.TypeString, value)
 		_node.Date = value
 	}
-	if value, ok := ssc.mutation.BatteryNum(); ok {
-		_spec.SetField(stocksummary.FieldBatteryNum, field.TypeInt, value)
-		_node.BatteryNum = value
+	if value, ok := ssc.mutation.Model(); ok {
+		_spec.SetField(stocksummary.FieldModel, field.TypeString, value)
+		_node.Model = value
 	}
-	if value, ok := ssc.mutation.BatteryOutboundNum(); ok {
-		_spec.SetField(stocksummary.FieldBatteryOutboundNum, field.TypeInt, value)
-		_node.BatteryOutboundNum = value
+	if value, ok := ssc.mutation.Num(); ok {
+		_spec.SetField(stocksummary.FieldNum, field.TypeInt, value)
+		_node.Num = value
 	}
-	if value, ok := ssc.mutation.BatteryInboundNum(); ok {
-		_spec.SetField(stocksummary.FieldBatteryInboundNum, field.TypeInt, value)
-		_node.BatteryInboundNum = value
+	if value, ok := ssc.mutation.TodayNum(); ok {
+		_spec.SetField(stocksummary.FieldTodayNum, field.TypeInt, value)
+		_node.TodayNum = value
 	}
-	if value, ok := ssc.mutation.BikeNum(); ok {
-		_spec.SetField(stocksummary.FieldBikeNum, field.TypeInt, value)
-		_node.BikeNum = value
+	if value, ok := ssc.mutation.OutboundNum(); ok {
+		_spec.SetField(stocksummary.FieldOutboundNum, field.TypeInt, value)
+		_node.OutboundNum = value
 	}
-	if value, ok := ssc.mutation.BikeOutboundNum(); ok {
-		_spec.SetField(stocksummary.FieldBikeOutboundNum, field.TypeInt, value)
-		_node.BikeOutboundNum = value
+	if value, ok := ssc.mutation.InboundNum(); ok {
+		_spec.SetField(stocksummary.FieldInboundNum, field.TypeInt, value)
+		_node.InboundNum = value
 	}
-	if value, ok := ssc.mutation.BikeInboundNum(); ok {
-		_spec.SetField(stocksummary.FieldBikeInboundNum, field.TypeInt, value)
-		_node.BikeInboundNum = value
+	if value, ok := ssc.mutation.InCabinetNum(); ok {
+		_spec.SetField(stocksummary.FieldInCabinetNum, field.TypeInt, value)
+		_node.InCabinetNum = value
 	}
-	if value, ok := ssc.mutation.CabinetBatteryNum(); ok {
-		_spec.SetField(stocksummary.FieldCabinetBatteryNum, field.TypeInt, value)
-		_node.CabinetBatteryNum = value
+	if value, ok := ssc.mutation.InRiderNum(); ok {
+		_spec.SetField(stocksummary.FieldInRiderNum, field.TypeInt, value)
+		_node.InRiderNum = value
 	}
-	if value, ok := ssc.mutation.RiderBatteryNum(); ok {
-		_spec.SetField(stocksummary.FieldRiderBatteryNum, field.TypeInt, value)
-		_node.RiderBatteryNum = value
+	if value, ok := ssc.mutation.Material(); ok {
+		_spec.SetField(stocksummary.FieldMaterial, field.TypeEnum, value)
+		_node.Material = value
 	}
 	if nodes := ssc.mutation.EnterpriseIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -644,147 +630,141 @@ func (u *StockSummaryUpsert) UpdateDate() *StockSummaryUpsert {
 	return u
 }
 
-// SetBatteryNum sets the "battery_num" field.
-func (u *StockSummaryUpsert) SetBatteryNum(v int) *StockSummaryUpsert {
-	u.Set(stocksummary.FieldBatteryNum, v)
+// SetModel sets the "model" field.
+func (u *StockSummaryUpsert) SetModel(v string) *StockSummaryUpsert {
+	u.Set(stocksummary.FieldModel, v)
 	return u
 }
 
-// UpdateBatteryNum sets the "battery_num" field to the value that was provided on create.
-func (u *StockSummaryUpsert) UpdateBatteryNum() *StockSummaryUpsert {
-	u.SetExcluded(stocksummary.FieldBatteryNum)
+// UpdateModel sets the "model" field to the value that was provided on create.
+func (u *StockSummaryUpsert) UpdateModel() *StockSummaryUpsert {
+	u.SetExcluded(stocksummary.FieldModel)
 	return u
 }
 
-// AddBatteryNum adds v to the "battery_num" field.
-func (u *StockSummaryUpsert) AddBatteryNum(v int) *StockSummaryUpsert {
-	u.Add(stocksummary.FieldBatteryNum, v)
+// ClearModel clears the value of the "model" field.
+func (u *StockSummaryUpsert) ClearModel() *StockSummaryUpsert {
+	u.SetNull(stocksummary.FieldModel)
 	return u
 }
 
-// SetBatteryOutboundNum sets the "battery_outbound_num" field.
-func (u *StockSummaryUpsert) SetBatteryOutboundNum(v int) *StockSummaryUpsert {
-	u.Set(stocksummary.FieldBatteryOutboundNum, v)
+// SetNum sets the "num" field.
+func (u *StockSummaryUpsert) SetNum(v int) *StockSummaryUpsert {
+	u.Set(stocksummary.FieldNum, v)
 	return u
 }
 
-// UpdateBatteryOutboundNum sets the "battery_outbound_num" field to the value that was provided on create.
-func (u *StockSummaryUpsert) UpdateBatteryOutboundNum() *StockSummaryUpsert {
-	u.SetExcluded(stocksummary.FieldBatteryOutboundNum)
+// UpdateNum sets the "num" field to the value that was provided on create.
+func (u *StockSummaryUpsert) UpdateNum() *StockSummaryUpsert {
+	u.SetExcluded(stocksummary.FieldNum)
 	return u
 }
 
-// AddBatteryOutboundNum adds v to the "battery_outbound_num" field.
-func (u *StockSummaryUpsert) AddBatteryOutboundNum(v int) *StockSummaryUpsert {
-	u.Add(stocksummary.FieldBatteryOutboundNum, v)
+// AddNum adds v to the "num" field.
+func (u *StockSummaryUpsert) AddNum(v int) *StockSummaryUpsert {
+	u.Add(stocksummary.FieldNum, v)
 	return u
 }
 
-// SetBatteryInboundNum sets the "battery_inbound_num" field.
-func (u *StockSummaryUpsert) SetBatteryInboundNum(v int) *StockSummaryUpsert {
-	u.Set(stocksummary.FieldBatteryInboundNum, v)
+// SetTodayNum sets the "today_num" field.
+func (u *StockSummaryUpsert) SetTodayNum(v int) *StockSummaryUpsert {
+	u.Set(stocksummary.FieldTodayNum, v)
 	return u
 }
 
-// UpdateBatteryInboundNum sets the "battery_inbound_num" field to the value that was provided on create.
-func (u *StockSummaryUpsert) UpdateBatteryInboundNum() *StockSummaryUpsert {
-	u.SetExcluded(stocksummary.FieldBatteryInboundNum)
+// UpdateTodayNum sets the "today_num" field to the value that was provided on create.
+func (u *StockSummaryUpsert) UpdateTodayNum() *StockSummaryUpsert {
+	u.SetExcluded(stocksummary.FieldTodayNum)
 	return u
 }
 
-// AddBatteryInboundNum adds v to the "battery_inbound_num" field.
-func (u *StockSummaryUpsert) AddBatteryInboundNum(v int) *StockSummaryUpsert {
-	u.Add(stocksummary.FieldBatteryInboundNum, v)
+// AddTodayNum adds v to the "today_num" field.
+func (u *StockSummaryUpsert) AddTodayNum(v int) *StockSummaryUpsert {
+	u.Add(stocksummary.FieldTodayNum, v)
 	return u
 }
 
-// SetBikeNum sets the "bike_num" field.
-func (u *StockSummaryUpsert) SetBikeNum(v int) *StockSummaryUpsert {
-	u.Set(stocksummary.FieldBikeNum, v)
+// SetOutboundNum sets the "outbound_num" field.
+func (u *StockSummaryUpsert) SetOutboundNum(v int) *StockSummaryUpsert {
+	u.Set(stocksummary.FieldOutboundNum, v)
 	return u
 }
 
-// UpdateBikeNum sets the "bike_num" field to the value that was provided on create.
-func (u *StockSummaryUpsert) UpdateBikeNum() *StockSummaryUpsert {
-	u.SetExcluded(stocksummary.FieldBikeNum)
+// UpdateOutboundNum sets the "outbound_num" field to the value that was provided on create.
+func (u *StockSummaryUpsert) UpdateOutboundNum() *StockSummaryUpsert {
+	u.SetExcluded(stocksummary.FieldOutboundNum)
 	return u
 }
 
-// AddBikeNum adds v to the "bike_num" field.
-func (u *StockSummaryUpsert) AddBikeNum(v int) *StockSummaryUpsert {
-	u.Add(stocksummary.FieldBikeNum, v)
+// AddOutboundNum adds v to the "outbound_num" field.
+func (u *StockSummaryUpsert) AddOutboundNum(v int) *StockSummaryUpsert {
+	u.Add(stocksummary.FieldOutboundNum, v)
 	return u
 }
 
-// SetBikeOutboundNum sets the "bike_outbound_num" field.
-func (u *StockSummaryUpsert) SetBikeOutboundNum(v int) *StockSummaryUpsert {
-	u.Set(stocksummary.FieldBikeOutboundNum, v)
+// SetInboundNum sets the "inbound_num" field.
+func (u *StockSummaryUpsert) SetInboundNum(v int) *StockSummaryUpsert {
+	u.Set(stocksummary.FieldInboundNum, v)
 	return u
 }
 
-// UpdateBikeOutboundNum sets the "bike_outbound_num" field to the value that was provided on create.
-func (u *StockSummaryUpsert) UpdateBikeOutboundNum() *StockSummaryUpsert {
-	u.SetExcluded(stocksummary.FieldBikeOutboundNum)
+// UpdateInboundNum sets the "inbound_num" field to the value that was provided on create.
+func (u *StockSummaryUpsert) UpdateInboundNum() *StockSummaryUpsert {
+	u.SetExcluded(stocksummary.FieldInboundNum)
 	return u
 }
 
-// AddBikeOutboundNum adds v to the "bike_outbound_num" field.
-func (u *StockSummaryUpsert) AddBikeOutboundNum(v int) *StockSummaryUpsert {
-	u.Add(stocksummary.FieldBikeOutboundNum, v)
+// AddInboundNum adds v to the "inbound_num" field.
+func (u *StockSummaryUpsert) AddInboundNum(v int) *StockSummaryUpsert {
+	u.Add(stocksummary.FieldInboundNum, v)
 	return u
 }
 
-// SetBikeInboundNum sets the "bike_inbound_num" field.
-func (u *StockSummaryUpsert) SetBikeInboundNum(v int) *StockSummaryUpsert {
-	u.Set(stocksummary.FieldBikeInboundNum, v)
+// SetInCabinetNum sets the "in_cabinet_num" field.
+func (u *StockSummaryUpsert) SetInCabinetNum(v int) *StockSummaryUpsert {
+	u.Set(stocksummary.FieldInCabinetNum, v)
 	return u
 }
 
-// UpdateBikeInboundNum sets the "bike_inbound_num" field to the value that was provided on create.
-func (u *StockSummaryUpsert) UpdateBikeInboundNum() *StockSummaryUpsert {
-	u.SetExcluded(stocksummary.FieldBikeInboundNum)
+// UpdateInCabinetNum sets the "in_cabinet_num" field to the value that was provided on create.
+func (u *StockSummaryUpsert) UpdateInCabinetNum() *StockSummaryUpsert {
+	u.SetExcluded(stocksummary.FieldInCabinetNum)
 	return u
 }
 
-// AddBikeInboundNum adds v to the "bike_inbound_num" field.
-func (u *StockSummaryUpsert) AddBikeInboundNum(v int) *StockSummaryUpsert {
-	u.Add(stocksummary.FieldBikeInboundNum, v)
+// AddInCabinetNum adds v to the "in_cabinet_num" field.
+func (u *StockSummaryUpsert) AddInCabinetNum(v int) *StockSummaryUpsert {
+	u.Add(stocksummary.FieldInCabinetNum, v)
 	return u
 }
 
-// SetCabinetBatteryNum sets the "cabinet_battery_num" field.
-func (u *StockSummaryUpsert) SetCabinetBatteryNum(v int) *StockSummaryUpsert {
-	u.Set(stocksummary.FieldCabinetBatteryNum, v)
+// SetInRiderNum sets the "in_rider_num" field.
+func (u *StockSummaryUpsert) SetInRiderNum(v int) *StockSummaryUpsert {
+	u.Set(stocksummary.FieldInRiderNum, v)
 	return u
 }
 
-// UpdateCabinetBatteryNum sets the "cabinet_battery_num" field to the value that was provided on create.
-func (u *StockSummaryUpsert) UpdateCabinetBatteryNum() *StockSummaryUpsert {
-	u.SetExcluded(stocksummary.FieldCabinetBatteryNum)
+// UpdateInRiderNum sets the "in_rider_num" field to the value that was provided on create.
+func (u *StockSummaryUpsert) UpdateInRiderNum() *StockSummaryUpsert {
+	u.SetExcluded(stocksummary.FieldInRiderNum)
 	return u
 }
 
-// AddCabinetBatteryNum adds v to the "cabinet_battery_num" field.
-func (u *StockSummaryUpsert) AddCabinetBatteryNum(v int) *StockSummaryUpsert {
-	u.Add(stocksummary.FieldCabinetBatteryNum, v)
+// AddInRiderNum adds v to the "in_rider_num" field.
+func (u *StockSummaryUpsert) AddInRiderNum(v int) *StockSummaryUpsert {
+	u.Add(stocksummary.FieldInRiderNum, v)
 	return u
 }
 
-// SetRiderBatteryNum sets the "rider_battery_num" field.
-func (u *StockSummaryUpsert) SetRiderBatteryNum(v int) *StockSummaryUpsert {
-	u.Set(stocksummary.FieldRiderBatteryNum, v)
+// SetMaterial sets the "material" field.
+func (u *StockSummaryUpsert) SetMaterial(v stocksummary.Material) *StockSummaryUpsert {
+	u.Set(stocksummary.FieldMaterial, v)
 	return u
 }
 
-// UpdateRiderBatteryNum sets the "rider_battery_num" field to the value that was provided on create.
-func (u *StockSummaryUpsert) UpdateRiderBatteryNum() *StockSummaryUpsert {
-	u.SetExcluded(stocksummary.FieldRiderBatteryNum)
-	return u
-}
-
-// AddRiderBatteryNum adds v to the "rider_battery_num" field.
-func (u *StockSummaryUpsert) AddRiderBatteryNum(v int) *StockSummaryUpsert {
-	u.Add(stocksummary.FieldRiderBatteryNum, v)
+// UpdateMaterial sets the "material" field to the value that was provided on create.
+func (u *StockSummaryUpsert) UpdateMaterial() *StockSummaryUpsert {
+	u.SetExcluded(stocksummary.FieldMaterial)
 	return u
 }
 
@@ -947,171 +927,164 @@ func (u *StockSummaryUpsertOne) UpdateDate() *StockSummaryUpsertOne {
 	})
 }
 
-// SetBatteryNum sets the "battery_num" field.
-func (u *StockSummaryUpsertOne) SetBatteryNum(v int) *StockSummaryUpsertOne {
+// SetModel sets the "model" field.
+func (u *StockSummaryUpsertOne) SetModel(v string) *StockSummaryUpsertOne {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.SetBatteryNum(v)
+		s.SetModel(v)
 	})
 }
 
-// AddBatteryNum adds v to the "battery_num" field.
-func (u *StockSummaryUpsertOne) AddBatteryNum(v int) *StockSummaryUpsertOne {
+// UpdateModel sets the "model" field to the value that was provided on create.
+func (u *StockSummaryUpsertOne) UpdateModel() *StockSummaryUpsertOne {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.AddBatteryNum(v)
+		s.UpdateModel()
 	})
 }
 
-// UpdateBatteryNum sets the "battery_num" field to the value that was provided on create.
-func (u *StockSummaryUpsertOne) UpdateBatteryNum() *StockSummaryUpsertOne {
+// ClearModel clears the value of the "model" field.
+func (u *StockSummaryUpsertOne) ClearModel() *StockSummaryUpsertOne {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.UpdateBatteryNum()
+		s.ClearModel()
 	})
 }
 
-// SetBatteryOutboundNum sets the "battery_outbound_num" field.
-func (u *StockSummaryUpsertOne) SetBatteryOutboundNum(v int) *StockSummaryUpsertOne {
+// SetNum sets the "num" field.
+func (u *StockSummaryUpsertOne) SetNum(v int) *StockSummaryUpsertOne {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.SetBatteryOutboundNum(v)
+		s.SetNum(v)
 	})
 }
 
-// AddBatteryOutboundNum adds v to the "battery_outbound_num" field.
-func (u *StockSummaryUpsertOne) AddBatteryOutboundNum(v int) *StockSummaryUpsertOne {
+// AddNum adds v to the "num" field.
+func (u *StockSummaryUpsertOne) AddNum(v int) *StockSummaryUpsertOne {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.AddBatteryOutboundNum(v)
+		s.AddNum(v)
 	})
 }
 
-// UpdateBatteryOutboundNum sets the "battery_outbound_num" field to the value that was provided on create.
-func (u *StockSummaryUpsertOne) UpdateBatteryOutboundNum() *StockSummaryUpsertOne {
+// UpdateNum sets the "num" field to the value that was provided on create.
+func (u *StockSummaryUpsertOne) UpdateNum() *StockSummaryUpsertOne {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.UpdateBatteryOutboundNum()
+		s.UpdateNum()
 	})
 }
 
-// SetBatteryInboundNum sets the "battery_inbound_num" field.
-func (u *StockSummaryUpsertOne) SetBatteryInboundNum(v int) *StockSummaryUpsertOne {
+// SetTodayNum sets the "today_num" field.
+func (u *StockSummaryUpsertOne) SetTodayNum(v int) *StockSummaryUpsertOne {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.SetBatteryInboundNum(v)
+		s.SetTodayNum(v)
 	})
 }
 
-// AddBatteryInboundNum adds v to the "battery_inbound_num" field.
-func (u *StockSummaryUpsertOne) AddBatteryInboundNum(v int) *StockSummaryUpsertOne {
+// AddTodayNum adds v to the "today_num" field.
+func (u *StockSummaryUpsertOne) AddTodayNum(v int) *StockSummaryUpsertOne {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.AddBatteryInboundNum(v)
+		s.AddTodayNum(v)
 	})
 }
 
-// UpdateBatteryInboundNum sets the "battery_inbound_num" field to the value that was provided on create.
-func (u *StockSummaryUpsertOne) UpdateBatteryInboundNum() *StockSummaryUpsertOne {
+// UpdateTodayNum sets the "today_num" field to the value that was provided on create.
+func (u *StockSummaryUpsertOne) UpdateTodayNum() *StockSummaryUpsertOne {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.UpdateBatteryInboundNum()
+		s.UpdateTodayNum()
 	})
 }
 
-// SetBikeNum sets the "bike_num" field.
-func (u *StockSummaryUpsertOne) SetBikeNum(v int) *StockSummaryUpsertOne {
+// SetOutboundNum sets the "outbound_num" field.
+func (u *StockSummaryUpsertOne) SetOutboundNum(v int) *StockSummaryUpsertOne {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.SetBikeNum(v)
+		s.SetOutboundNum(v)
 	})
 }
 
-// AddBikeNum adds v to the "bike_num" field.
-func (u *StockSummaryUpsertOne) AddBikeNum(v int) *StockSummaryUpsertOne {
+// AddOutboundNum adds v to the "outbound_num" field.
+func (u *StockSummaryUpsertOne) AddOutboundNum(v int) *StockSummaryUpsertOne {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.AddBikeNum(v)
+		s.AddOutboundNum(v)
 	})
 }
 
-// UpdateBikeNum sets the "bike_num" field to the value that was provided on create.
-func (u *StockSummaryUpsertOne) UpdateBikeNum() *StockSummaryUpsertOne {
+// UpdateOutboundNum sets the "outbound_num" field to the value that was provided on create.
+func (u *StockSummaryUpsertOne) UpdateOutboundNum() *StockSummaryUpsertOne {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.UpdateBikeNum()
+		s.UpdateOutboundNum()
 	})
 }
 
-// SetBikeOutboundNum sets the "bike_outbound_num" field.
-func (u *StockSummaryUpsertOne) SetBikeOutboundNum(v int) *StockSummaryUpsertOne {
+// SetInboundNum sets the "inbound_num" field.
+func (u *StockSummaryUpsertOne) SetInboundNum(v int) *StockSummaryUpsertOne {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.SetBikeOutboundNum(v)
+		s.SetInboundNum(v)
 	})
 }
 
-// AddBikeOutboundNum adds v to the "bike_outbound_num" field.
-func (u *StockSummaryUpsertOne) AddBikeOutboundNum(v int) *StockSummaryUpsertOne {
+// AddInboundNum adds v to the "inbound_num" field.
+func (u *StockSummaryUpsertOne) AddInboundNum(v int) *StockSummaryUpsertOne {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.AddBikeOutboundNum(v)
+		s.AddInboundNum(v)
 	})
 }
 
-// UpdateBikeOutboundNum sets the "bike_outbound_num" field to the value that was provided on create.
-func (u *StockSummaryUpsertOne) UpdateBikeOutboundNum() *StockSummaryUpsertOne {
+// UpdateInboundNum sets the "inbound_num" field to the value that was provided on create.
+func (u *StockSummaryUpsertOne) UpdateInboundNum() *StockSummaryUpsertOne {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.UpdateBikeOutboundNum()
+		s.UpdateInboundNum()
 	})
 }
 
-// SetBikeInboundNum sets the "bike_inbound_num" field.
-func (u *StockSummaryUpsertOne) SetBikeInboundNum(v int) *StockSummaryUpsertOne {
+// SetInCabinetNum sets the "in_cabinet_num" field.
+func (u *StockSummaryUpsertOne) SetInCabinetNum(v int) *StockSummaryUpsertOne {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.SetBikeInboundNum(v)
+		s.SetInCabinetNum(v)
 	})
 }
 
-// AddBikeInboundNum adds v to the "bike_inbound_num" field.
-func (u *StockSummaryUpsertOne) AddBikeInboundNum(v int) *StockSummaryUpsertOne {
+// AddInCabinetNum adds v to the "in_cabinet_num" field.
+func (u *StockSummaryUpsertOne) AddInCabinetNum(v int) *StockSummaryUpsertOne {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.AddBikeInboundNum(v)
+		s.AddInCabinetNum(v)
 	})
 }
 
-// UpdateBikeInboundNum sets the "bike_inbound_num" field to the value that was provided on create.
-func (u *StockSummaryUpsertOne) UpdateBikeInboundNum() *StockSummaryUpsertOne {
+// UpdateInCabinetNum sets the "in_cabinet_num" field to the value that was provided on create.
+func (u *StockSummaryUpsertOne) UpdateInCabinetNum() *StockSummaryUpsertOne {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.UpdateBikeInboundNum()
+		s.UpdateInCabinetNum()
 	})
 }
 
-// SetCabinetBatteryNum sets the "cabinet_battery_num" field.
-func (u *StockSummaryUpsertOne) SetCabinetBatteryNum(v int) *StockSummaryUpsertOne {
+// SetInRiderNum sets the "in_rider_num" field.
+func (u *StockSummaryUpsertOne) SetInRiderNum(v int) *StockSummaryUpsertOne {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.SetCabinetBatteryNum(v)
+		s.SetInRiderNum(v)
 	})
 }
 
-// AddCabinetBatteryNum adds v to the "cabinet_battery_num" field.
-func (u *StockSummaryUpsertOne) AddCabinetBatteryNum(v int) *StockSummaryUpsertOne {
+// AddInRiderNum adds v to the "in_rider_num" field.
+func (u *StockSummaryUpsertOne) AddInRiderNum(v int) *StockSummaryUpsertOne {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.AddCabinetBatteryNum(v)
+		s.AddInRiderNum(v)
 	})
 }
 
-// UpdateCabinetBatteryNum sets the "cabinet_battery_num" field to the value that was provided on create.
-func (u *StockSummaryUpsertOne) UpdateCabinetBatteryNum() *StockSummaryUpsertOne {
+// UpdateInRiderNum sets the "in_rider_num" field to the value that was provided on create.
+func (u *StockSummaryUpsertOne) UpdateInRiderNum() *StockSummaryUpsertOne {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.UpdateCabinetBatteryNum()
+		s.UpdateInRiderNum()
 	})
 }
 
-// SetRiderBatteryNum sets the "rider_battery_num" field.
-func (u *StockSummaryUpsertOne) SetRiderBatteryNum(v int) *StockSummaryUpsertOne {
+// SetMaterial sets the "material" field.
+func (u *StockSummaryUpsertOne) SetMaterial(v stocksummary.Material) *StockSummaryUpsertOne {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.SetRiderBatteryNum(v)
+		s.SetMaterial(v)
 	})
 }
 
-// AddRiderBatteryNum adds v to the "rider_battery_num" field.
-func (u *StockSummaryUpsertOne) AddRiderBatteryNum(v int) *StockSummaryUpsertOne {
+// UpdateMaterial sets the "material" field to the value that was provided on create.
+func (u *StockSummaryUpsertOne) UpdateMaterial() *StockSummaryUpsertOne {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.AddRiderBatteryNum(v)
-	})
-}
-
-// UpdateRiderBatteryNum sets the "rider_battery_num" field to the value that was provided on create.
-func (u *StockSummaryUpsertOne) UpdateRiderBatteryNum() *StockSummaryUpsertOne {
-	return u.Update(func(s *StockSummaryUpsert) {
-		s.UpdateRiderBatteryNum()
+		s.UpdateMaterial()
 	})
 }
 
@@ -1434,171 +1407,164 @@ func (u *StockSummaryUpsertBulk) UpdateDate() *StockSummaryUpsertBulk {
 	})
 }
 
-// SetBatteryNum sets the "battery_num" field.
-func (u *StockSummaryUpsertBulk) SetBatteryNum(v int) *StockSummaryUpsertBulk {
+// SetModel sets the "model" field.
+func (u *StockSummaryUpsertBulk) SetModel(v string) *StockSummaryUpsertBulk {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.SetBatteryNum(v)
+		s.SetModel(v)
 	})
 }
 
-// AddBatteryNum adds v to the "battery_num" field.
-func (u *StockSummaryUpsertBulk) AddBatteryNum(v int) *StockSummaryUpsertBulk {
+// UpdateModel sets the "model" field to the value that was provided on create.
+func (u *StockSummaryUpsertBulk) UpdateModel() *StockSummaryUpsertBulk {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.AddBatteryNum(v)
+		s.UpdateModel()
 	})
 }
 
-// UpdateBatteryNum sets the "battery_num" field to the value that was provided on create.
-func (u *StockSummaryUpsertBulk) UpdateBatteryNum() *StockSummaryUpsertBulk {
+// ClearModel clears the value of the "model" field.
+func (u *StockSummaryUpsertBulk) ClearModel() *StockSummaryUpsertBulk {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.UpdateBatteryNum()
+		s.ClearModel()
 	})
 }
 
-// SetBatteryOutboundNum sets the "battery_outbound_num" field.
-func (u *StockSummaryUpsertBulk) SetBatteryOutboundNum(v int) *StockSummaryUpsertBulk {
+// SetNum sets the "num" field.
+func (u *StockSummaryUpsertBulk) SetNum(v int) *StockSummaryUpsertBulk {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.SetBatteryOutboundNum(v)
+		s.SetNum(v)
 	})
 }
 
-// AddBatteryOutboundNum adds v to the "battery_outbound_num" field.
-func (u *StockSummaryUpsertBulk) AddBatteryOutboundNum(v int) *StockSummaryUpsertBulk {
+// AddNum adds v to the "num" field.
+func (u *StockSummaryUpsertBulk) AddNum(v int) *StockSummaryUpsertBulk {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.AddBatteryOutboundNum(v)
+		s.AddNum(v)
 	})
 }
 
-// UpdateBatteryOutboundNum sets the "battery_outbound_num" field to the value that was provided on create.
-func (u *StockSummaryUpsertBulk) UpdateBatteryOutboundNum() *StockSummaryUpsertBulk {
+// UpdateNum sets the "num" field to the value that was provided on create.
+func (u *StockSummaryUpsertBulk) UpdateNum() *StockSummaryUpsertBulk {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.UpdateBatteryOutboundNum()
+		s.UpdateNum()
 	})
 }
 
-// SetBatteryInboundNum sets the "battery_inbound_num" field.
-func (u *StockSummaryUpsertBulk) SetBatteryInboundNum(v int) *StockSummaryUpsertBulk {
+// SetTodayNum sets the "today_num" field.
+func (u *StockSummaryUpsertBulk) SetTodayNum(v int) *StockSummaryUpsertBulk {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.SetBatteryInboundNum(v)
+		s.SetTodayNum(v)
 	})
 }
 
-// AddBatteryInboundNum adds v to the "battery_inbound_num" field.
-func (u *StockSummaryUpsertBulk) AddBatteryInboundNum(v int) *StockSummaryUpsertBulk {
+// AddTodayNum adds v to the "today_num" field.
+func (u *StockSummaryUpsertBulk) AddTodayNum(v int) *StockSummaryUpsertBulk {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.AddBatteryInboundNum(v)
+		s.AddTodayNum(v)
 	})
 }
 
-// UpdateBatteryInboundNum sets the "battery_inbound_num" field to the value that was provided on create.
-func (u *StockSummaryUpsertBulk) UpdateBatteryInboundNum() *StockSummaryUpsertBulk {
+// UpdateTodayNum sets the "today_num" field to the value that was provided on create.
+func (u *StockSummaryUpsertBulk) UpdateTodayNum() *StockSummaryUpsertBulk {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.UpdateBatteryInboundNum()
+		s.UpdateTodayNum()
 	})
 }
 
-// SetBikeNum sets the "bike_num" field.
-func (u *StockSummaryUpsertBulk) SetBikeNum(v int) *StockSummaryUpsertBulk {
+// SetOutboundNum sets the "outbound_num" field.
+func (u *StockSummaryUpsertBulk) SetOutboundNum(v int) *StockSummaryUpsertBulk {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.SetBikeNum(v)
+		s.SetOutboundNum(v)
 	})
 }
 
-// AddBikeNum adds v to the "bike_num" field.
-func (u *StockSummaryUpsertBulk) AddBikeNum(v int) *StockSummaryUpsertBulk {
+// AddOutboundNum adds v to the "outbound_num" field.
+func (u *StockSummaryUpsertBulk) AddOutboundNum(v int) *StockSummaryUpsertBulk {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.AddBikeNum(v)
+		s.AddOutboundNum(v)
 	})
 }
 
-// UpdateBikeNum sets the "bike_num" field to the value that was provided on create.
-func (u *StockSummaryUpsertBulk) UpdateBikeNum() *StockSummaryUpsertBulk {
+// UpdateOutboundNum sets the "outbound_num" field to the value that was provided on create.
+func (u *StockSummaryUpsertBulk) UpdateOutboundNum() *StockSummaryUpsertBulk {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.UpdateBikeNum()
+		s.UpdateOutboundNum()
 	})
 }
 
-// SetBikeOutboundNum sets the "bike_outbound_num" field.
-func (u *StockSummaryUpsertBulk) SetBikeOutboundNum(v int) *StockSummaryUpsertBulk {
+// SetInboundNum sets the "inbound_num" field.
+func (u *StockSummaryUpsertBulk) SetInboundNum(v int) *StockSummaryUpsertBulk {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.SetBikeOutboundNum(v)
+		s.SetInboundNum(v)
 	})
 }
 
-// AddBikeOutboundNum adds v to the "bike_outbound_num" field.
-func (u *StockSummaryUpsertBulk) AddBikeOutboundNum(v int) *StockSummaryUpsertBulk {
+// AddInboundNum adds v to the "inbound_num" field.
+func (u *StockSummaryUpsertBulk) AddInboundNum(v int) *StockSummaryUpsertBulk {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.AddBikeOutboundNum(v)
+		s.AddInboundNum(v)
 	})
 }
 
-// UpdateBikeOutboundNum sets the "bike_outbound_num" field to the value that was provided on create.
-func (u *StockSummaryUpsertBulk) UpdateBikeOutboundNum() *StockSummaryUpsertBulk {
+// UpdateInboundNum sets the "inbound_num" field to the value that was provided on create.
+func (u *StockSummaryUpsertBulk) UpdateInboundNum() *StockSummaryUpsertBulk {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.UpdateBikeOutboundNum()
+		s.UpdateInboundNum()
 	})
 }
 
-// SetBikeInboundNum sets the "bike_inbound_num" field.
-func (u *StockSummaryUpsertBulk) SetBikeInboundNum(v int) *StockSummaryUpsertBulk {
+// SetInCabinetNum sets the "in_cabinet_num" field.
+func (u *StockSummaryUpsertBulk) SetInCabinetNum(v int) *StockSummaryUpsertBulk {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.SetBikeInboundNum(v)
+		s.SetInCabinetNum(v)
 	})
 }
 
-// AddBikeInboundNum adds v to the "bike_inbound_num" field.
-func (u *StockSummaryUpsertBulk) AddBikeInboundNum(v int) *StockSummaryUpsertBulk {
+// AddInCabinetNum adds v to the "in_cabinet_num" field.
+func (u *StockSummaryUpsertBulk) AddInCabinetNum(v int) *StockSummaryUpsertBulk {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.AddBikeInboundNum(v)
+		s.AddInCabinetNum(v)
 	})
 }
 
-// UpdateBikeInboundNum sets the "bike_inbound_num" field to the value that was provided on create.
-func (u *StockSummaryUpsertBulk) UpdateBikeInboundNum() *StockSummaryUpsertBulk {
+// UpdateInCabinetNum sets the "in_cabinet_num" field to the value that was provided on create.
+func (u *StockSummaryUpsertBulk) UpdateInCabinetNum() *StockSummaryUpsertBulk {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.UpdateBikeInboundNum()
+		s.UpdateInCabinetNum()
 	})
 }
 
-// SetCabinetBatteryNum sets the "cabinet_battery_num" field.
-func (u *StockSummaryUpsertBulk) SetCabinetBatteryNum(v int) *StockSummaryUpsertBulk {
+// SetInRiderNum sets the "in_rider_num" field.
+func (u *StockSummaryUpsertBulk) SetInRiderNum(v int) *StockSummaryUpsertBulk {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.SetCabinetBatteryNum(v)
+		s.SetInRiderNum(v)
 	})
 }
 
-// AddCabinetBatteryNum adds v to the "cabinet_battery_num" field.
-func (u *StockSummaryUpsertBulk) AddCabinetBatteryNum(v int) *StockSummaryUpsertBulk {
+// AddInRiderNum adds v to the "in_rider_num" field.
+func (u *StockSummaryUpsertBulk) AddInRiderNum(v int) *StockSummaryUpsertBulk {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.AddCabinetBatteryNum(v)
+		s.AddInRiderNum(v)
 	})
 }
 
-// UpdateCabinetBatteryNum sets the "cabinet_battery_num" field to the value that was provided on create.
-func (u *StockSummaryUpsertBulk) UpdateCabinetBatteryNum() *StockSummaryUpsertBulk {
+// UpdateInRiderNum sets the "in_rider_num" field to the value that was provided on create.
+func (u *StockSummaryUpsertBulk) UpdateInRiderNum() *StockSummaryUpsertBulk {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.UpdateCabinetBatteryNum()
+		s.UpdateInRiderNum()
 	})
 }
 
-// SetRiderBatteryNum sets the "rider_battery_num" field.
-func (u *StockSummaryUpsertBulk) SetRiderBatteryNum(v int) *StockSummaryUpsertBulk {
+// SetMaterial sets the "material" field.
+func (u *StockSummaryUpsertBulk) SetMaterial(v stocksummary.Material) *StockSummaryUpsertBulk {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.SetRiderBatteryNum(v)
+		s.SetMaterial(v)
 	})
 }
 
-// AddRiderBatteryNum adds v to the "rider_battery_num" field.
-func (u *StockSummaryUpsertBulk) AddRiderBatteryNum(v int) *StockSummaryUpsertBulk {
+// UpdateMaterial sets the "material" field to the value that was provided on create.
+func (u *StockSummaryUpsertBulk) UpdateMaterial() *StockSummaryUpsertBulk {
 	return u.Update(func(s *StockSummaryUpsert) {
-		s.AddRiderBatteryNum(v)
-	})
-}
-
-// UpdateRiderBatteryNum sets the "rider_battery_num" field to the value that was provided on create.
-func (u *StockSummaryUpsertBulk) UpdateRiderBatteryNum() *StockSummaryUpsertBulk {
-	return u.Update(func(s *StockSummaryUpsert) {
-		s.UpdateRiderBatteryNum()
+		s.UpdateMaterial()
 	})
 }
 

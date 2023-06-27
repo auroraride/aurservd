@@ -1173,38 +1173,30 @@ func init() {
 	stocksummaryDescDate := stocksummaryFields[0].Descriptor()
 	// stocksummary.DateValidator is a validator for the "date" field. It is called by the builders before save.
 	stocksummary.DateValidator = stocksummaryDescDate.Validators[0].(func(string) error)
-	// stocksummaryDescBatteryNum is the schema descriptor for battery_num field.
-	stocksummaryDescBatteryNum := stocksummaryFields[1].Descriptor()
-	// stocksummary.DefaultBatteryNum holds the default value on creation for the battery_num field.
-	stocksummary.DefaultBatteryNum = stocksummaryDescBatteryNum.Default.(int)
-	// stocksummaryDescBatteryOutboundNum is the schema descriptor for battery_outbound_num field.
-	stocksummaryDescBatteryOutboundNum := stocksummaryFields[2].Descriptor()
-	// stocksummary.DefaultBatteryOutboundNum holds the default value on creation for the battery_outbound_num field.
-	stocksummary.DefaultBatteryOutboundNum = stocksummaryDescBatteryOutboundNum.Default.(int)
-	// stocksummaryDescBatteryInboundNum is the schema descriptor for battery_inbound_num field.
-	stocksummaryDescBatteryInboundNum := stocksummaryFields[3].Descriptor()
-	// stocksummary.DefaultBatteryInboundNum holds the default value on creation for the battery_inbound_num field.
-	stocksummary.DefaultBatteryInboundNum = stocksummaryDescBatteryInboundNum.Default.(int)
-	// stocksummaryDescBikeNum is the schema descriptor for bike_num field.
-	stocksummaryDescBikeNum := stocksummaryFields[4].Descriptor()
-	// stocksummary.DefaultBikeNum holds the default value on creation for the bike_num field.
-	stocksummary.DefaultBikeNum = stocksummaryDescBikeNum.Default.(int)
-	// stocksummaryDescBikeOutboundNum is the schema descriptor for bike_outbound_num field.
-	stocksummaryDescBikeOutboundNum := stocksummaryFields[5].Descriptor()
-	// stocksummary.DefaultBikeOutboundNum holds the default value on creation for the bike_outbound_num field.
-	stocksummary.DefaultBikeOutboundNum = stocksummaryDescBikeOutboundNum.Default.(int)
-	// stocksummaryDescBikeInboundNum is the schema descriptor for bike_inbound_num field.
-	stocksummaryDescBikeInboundNum := stocksummaryFields[6].Descriptor()
-	// stocksummary.DefaultBikeInboundNum holds the default value on creation for the bike_inbound_num field.
-	stocksummary.DefaultBikeInboundNum = stocksummaryDescBikeInboundNum.Default.(int)
-	// stocksummaryDescCabinetBatteryNum is the schema descriptor for cabinet_battery_num field.
-	stocksummaryDescCabinetBatteryNum := stocksummaryFields[7].Descriptor()
-	// stocksummary.DefaultCabinetBatteryNum holds the default value on creation for the cabinet_battery_num field.
-	stocksummary.DefaultCabinetBatteryNum = stocksummaryDescCabinetBatteryNum.Default.(int)
-	// stocksummaryDescRiderBatteryNum is the schema descriptor for rider_battery_num field.
-	stocksummaryDescRiderBatteryNum := stocksummaryFields[8].Descriptor()
-	// stocksummary.DefaultRiderBatteryNum holds the default value on creation for the rider_battery_num field.
-	stocksummary.DefaultRiderBatteryNum = stocksummaryDescRiderBatteryNum.Default.(int)
+	// stocksummaryDescNum is the schema descriptor for num field.
+	stocksummaryDescNum := stocksummaryFields[2].Descriptor()
+	// stocksummary.DefaultNum holds the default value on creation for the num field.
+	stocksummary.DefaultNum = stocksummaryDescNum.Default.(int)
+	// stocksummaryDescTodayNum is the schema descriptor for today_num field.
+	stocksummaryDescTodayNum := stocksummaryFields[3].Descriptor()
+	// stocksummary.DefaultTodayNum holds the default value on creation for the today_num field.
+	stocksummary.DefaultTodayNum = stocksummaryDescTodayNum.Default.(int)
+	// stocksummaryDescOutboundNum is the schema descriptor for outbound_num field.
+	stocksummaryDescOutboundNum := stocksummaryFields[4].Descriptor()
+	// stocksummary.DefaultOutboundNum holds the default value on creation for the outbound_num field.
+	stocksummary.DefaultOutboundNum = stocksummaryDescOutboundNum.Default.(int)
+	// stocksummaryDescInboundNum is the schema descriptor for inbound_num field.
+	stocksummaryDescInboundNum := stocksummaryFields[5].Descriptor()
+	// stocksummary.DefaultInboundNum holds the default value on creation for the inbound_num field.
+	stocksummary.DefaultInboundNum = stocksummaryDescInboundNum.Default.(int)
+	// stocksummaryDescInCabinetNum is the schema descriptor for in_cabinet_num field.
+	stocksummaryDescInCabinetNum := stocksummaryFields[6].Descriptor()
+	// stocksummary.DefaultInCabinetNum holds the default value on creation for the in_cabinet_num field.
+	stocksummary.DefaultInCabinetNum = stocksummaryDescInCabinetNum.Default.(int)
+	// stocksummaryDescInRiderNum is the schema descriptor for in_rider_num field.
+	stocksummaryDescInRiderNum := stocksummaryFields[7].Descriptor()
+	// stocksummary.DefaultInRiderNum holds the default value on creation for the in_rider_num field.
+	stocksummary.DefaultInRiderNum = stocksummaryDescInRiderNum.Default.(int)
 	storeMixin := schema.Store{}.Mixin()
 	storeMixinHooks2 := storeMixin[2].Hooks()
 	store.Hooks[0] = storeMixinHooks2[0]

@@ -55,7 +55,7 @@ func (s *agentSubscribeService) AlterReview(req *model.SubscribeAlterReviewReq) 
 			// 查询订阅信息
 			sub := v.Edges.Subscribe
 
-			err = tx.SubscribeAlter.UpdateOne(v).SetStatus(req.Status).SetReviewTime(time.Now()).Exec(s.ctx)
+			err = tx.SubscribeAlter.UpdateOne(v).SetNillableAgentID(req.AgentID).SetStatus(req.Status).SetReviewTime(time.Now()).Exec(s.ctx)
 			if err != nil {
 				zap.L().Log(zap.ErrorLevel, "审批加时申请失败", zap.Error(err))
 				return

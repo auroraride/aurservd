@@ -42,12 +42,14 @@ type SubscribeAlterApplyListRes struct {
 	Status         int    `json:"status"`                   // 审核状态
 	SubscribeEndAt string `json:"subscribeEndAt,omitempty"` // 团签到期时间
 	Rider          *Rider `json:"rider,omitempty"`          // 骑手
+	Operator       string `json:"operator,omitempty"`       // 操作人
 }
 
 // SubscribeAlterReviewReq 审批订阅申请
 type SubscribeAlterReviewReq struct {
-	Ids    []uint64 `json:"ids"`
-	Status int      `json:"status" validate:"required" enums:"1,2" trans:"审批状态"` // 1:通过 2:拒绝
+	Ids     []uint64 `json:"ids"`
+	Status  int      `json:"status" validate:"required" enums:"1,2" trans:"审批状态"` // 1:通过 2:拒绝
+	AgentID *uint64  `json:"agentID"`
 }
 
 // SubscribeAlter 订阅天数调整

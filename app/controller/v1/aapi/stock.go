@@ -31,3 +31,31 @@ func (*stock) Detail(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.StockDetailReq](c)
 	return ctx.SendResponse(service.NewStock().Detail(req))
 }
+
+// BatteryStock 电池物资
+// @ID           AgentBatteryStock
+// @Router       /agent/v1/stock/battery [GET]
+// @Summary      A6002 电池物资
+// @Tags         [A]代理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Agent-Token  header  string  true  "代理校验token"
+// @Success      200  {object}  []model.BatteryStockSummaryRsp  "请求成功"
+func (*stock) BatteryStock(c echo.Context) (err error) {
+	ctx := app.ContextX[app.AgentContext](c)
+	return ctx.SendResponse(service.NewStockSummary().BatteryStockSummary(&model.StockSummaryReq{EnterpriseID: ctx.Enterprise.ID}))
+}
+
+// EBikeStock 电车物资
+// @ID           AgentBikeStock
+// @Router       /agent/v1/stock/ebike [GET]
+// @Summary      A6003 电车物资
+// @Tags         [A]代理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Agent-Token  header  string  true  "代理校验token"
+// @Success      200  {object}  []model.EbikeStockSummaryRsp  "请求成功"
+func (*stock) EBikeStock(c echo.Context) (err error) {
+	ctx := app.ContextX[app.AgentContext](c)
+	return ctx.SendResponse(service.NewStockSummary().EbikeStockSummary(&model.StockSummaryReq{EnterpriseID: ctx.Enterprise.ID}))
+}

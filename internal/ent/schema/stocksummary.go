@@ -58,14 +58,14 @@ func (StockSummary) Annotations() []schema.Annotation {
 func (StockSummary) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("date").NotEmpty().Comment("日期"),
-		field.Int("battery_num").Default(0).Comment("电池总数"),
-		field.Int("battery_outbound_num").Default(0).Comment("电池出库总数"),
-		field.Int("battery_inbound_num").Default(0).Comment("电池入库总数"),
-		field.Int("bike_num").Default(0).Comment("电车总数"),
-		field.Int("bike_outbound_num").Default(0).Comment("电车出库总数"),
-		field.Int("bike_inbound_num").Default(0).Comment("电车入库总数"),
-		field.Int("cabinet_battery_num").Default(0).Comment("电柜电池总数"),
-		field.Int("rider_battery_num").Default(0).Comment("骑手电池总数"),
+		field.String("model").Optional().Comment("型号"),
+		field.Int("num").Default(0).Comment("总数"),
+		field.Int("today_num").Default(0).Comment("今日总数"),
+		field.Int("outbound_num").Default(0).Comment("出库总数"),
+		field.Int("inbound_num").Default(0).Comment("入库总数"),
+		field.Int("in_cabinet_num").Default(0).Comment("电池在电柜总数"),
+		field.Int("in_rider_num").Default(0).Comment("电池在骑手总数"),
+		field.Enum("material").Values("battery", "ebike", "others").Comment("物资种类"),
 	}
 }
 

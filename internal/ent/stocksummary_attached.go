@@ -1,94 +1,111 @@
 package ent
 
 import (
+	"github.com/golang-module/carbon/v2"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/stocksummary"
 )
 
 // Do 物资更新统计数据
-func (s *StockSummaryUpdateOne) Do(req *model.StockSummaryReq) *StockSummaryUpdateOne {
-
+func (s *StockSummaryUpdateOne) Do(params *model.StockSummaryParams) *StockSummaryUpdateOne {
 	// 更新当天的统计数据
-	s.Where(stocksummary.Date(req.Date))
+	s.Where(stocksummary.Date(params.Date.Format(carbon.DateLayout)))
+	// 物资型号
+	s.Where(stocksummary.Model(params.Model))
+	// 物资类型
+	s.Where(stocksummary.MaterialEQ(stocksummary.Material(params.Material)))
 
-	// 记录团签物资出入库数量
-	if req.EnterpriseID != nil && req.StationID != nil {
-		s.Where(stocksummary.EnterpriseID(*req.EnterpriseID), stocksummary.StationID(*req.StationID))
-	}
-	// 记录门店物资出入库数量
-	if req.StoreID != nil {
-		s.Where(stocksummary.StoreID(*req.StoreID))
-	}
-	// 电柜
-	if req.CabinetID != nil {
-		s.Where(stocksummary.CabinetID(*req.CabinetID))
+	// 团签站点纬度修改统计数据
+	if params.StationID != nil {
+		s.Where(stocksummary.EnterpriseID(*params.EnterpriseID), stocksummary.StationID(*params.StationID))
 	}
 
-	// 记录电池 出/入库数量
-	if req.Num > 0 && req.BatteryID != nil {
-		s.AddBatteryInboundNum(req.Num)
-	} else if req.Num < 0 && req.BatteryID != nil {
-		s.AddBatteryOutboundNum(req.Num)
+	// 门店纬度修改统计数据
+	if params.StoreID != nil {
+		s.Where(stocksummary.StoreID(*params.StoreID))
 	}
 
-	// 记录电车 出/入库数量
-	if req.Num > 0 && req.EbikeID != nil {
-		s.AddBikeInboundNum(req.Num)
-	} else if req.Num < 0 && req.EbikeID != nil {
-		s.AddBikeOutboundNum(req.Num)
+	// 电柜纬度修改统计数据
+	if params.CabinetID != nil {
+		s.Where(stocksummary.CabinetID(*params.CabinetID))
 	}
 
-	// 电池总数增/减
-	if req.BatteryID != nil {
-		s.AddBatteryNum(req.Num)
-	}
-	// 电车总数增/减
-	if req.EbikeID != nil {
-		s.AddBikeNum(req.Num)
-	}
+	// 修改电池统计 出/入库数量
+	s.updateStockSummary(params)
 
 	return s
 }
 
-// Do 物资创建统计数据
-func (s *StockSummaryCreate) Do(req *model.StockSummaryReq) *StockSummaryCreate {
-	// 记录日期
-	s.SetDate(req.Date)
-	// 记录团签物资出入库数量
-	if req.EnterpriseID != nil && req.StationID != nil {
-		s.SetStationID(*req.StationID).SetEnterpriseID(*req.EnterpriseID)
-	}
-	// 记录门店物资出入库数量
-	if req.StoreID != nil {
-		s.SetStoreID(*req.StoreID)
-	}
-	// 电柜
-	if req.CabinetID != nil {
-		s.SetCabinetID(*req.CabinetID)
+// updateBattery 修改物资统计数据
+func (s *StockSummaryUpdateOne) updateStockSummary(params *model.StockSummaryParams) {
+	if params.Num > 0 {
+		s.AddInboundNum(params.Num)
+	} else {
+		s.AddOutboundNum(params.Num)
 	}
 
-	// 记录电池 出/入库数量
-	if req.Num > 0 && req.BatteryID != nil {
-		s.SetBatteryInboundNum(req.Num)
-	} else if req.Num < 0 && req.BatteryID != nil {
-		s.SetBatteryOutboundNum(req.Num)
+	s.AddNum(params.Num)
+
+	s.AddTodayNum(params.Num)
+
+	if params.CabinetID != nil && (params.StationID != nil || params.StoreID != nil) {
+		s.AddInCabinetNum(params.Num)
 	}
 
-	// 记录电车 出/入库数量
-	if req.Num > 0 && req.EbikeID != nil {
-		s.SetBikeInboundNum(req.Num)
-	} else if req.Num < 0 && req.EbikeID != nil {
-		s.SetBikeOutboundNum(req.Num)
+	if params.RiderID != nil {
+		s.AddInRiderNum(params.Num)
 	}
 
-	// 电池总数增/减
-	if req.BatteryID != nil {
-		s.SetBatteryNum(req.Num)
+}
+
+// Do 创建物资统计数据
+func (s *StockSummaryCreate) Do(params *model.StockSummaryParams) *StockSummaryCreate {
+	// 记录日期 以每天为单位统计
+	s.SetDate(params.Date.Format(carbon.DateLayout))
+	// 记录物资类型
+	s.SetMaterial(stocksummary.Material(params.Material))
+	// 记录物资型号
+	s.SetModel(params.Model)
+
+	// 团签站点纬度统计数量
+	if params.StationID != nil && params.StoreID == nil {
+		s.SetStationID(*params.StationID).SetEnterpriseID(*params.EnterpriseID)
 	}
-	// 电车总数增/减
-	if req.EbikeID != nil {
-		s.SetBikeNum(req.Num)
+
+	// 门店纬度统计数量
+	if params.StoreID != nil && params.StationID == nil {
+		s.SetStoreID(*params.StoreID)
 	}
+
+	// 电柜纬度统计数量
+	if params.CabinetID != nil {
+		s.SetCabinetID(*params.CabinetID)
+	}
+	// 物资数量设置
+	s.createStockSummary(params)
 
 	return s
+}
+
+// 物资统计数据
+func (s *StockSummaryCreate) createStockSummary(params *model.StockSummaryParams) {
+	// 出入库数量
+	if params.Num > 0 {
+		s.SetInboundNum(params.Num)
+	} else {
+		s.SetOutboundNum(params.Num)
+	}
+	// 今天出入库总数
+	s.SetTodayNum(params.Num)
+	// 总数 总数加上今天的数量
+	s.SetNum(params.StockNum + params.Num)
+
+	if params.CabinetID != nil && (params.StationID != nil || params.StoreID != nil) {
+		s.SetInCabinetNum(params.Num)
+	}
+
+	if params.RiderID != nil {
+		s.SetInRiderNum(params.Num)
+	}
 }
