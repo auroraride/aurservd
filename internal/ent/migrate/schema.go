@@ -3885,7 +3885,7 @@ var (
 		{Name: "inbound_num", Type: field.TypeInt, Comment: "入库总数", Default: 0},
 		{Name: "in_cabinet_num", Type: field.TypeInt, Comment: "电池在电柜总数", Default: 0},
 		{Name: "in_rider_num", Type: field.TypeInt, Comment: "电池在骑手总数", Default: 0},
-		{Name: "material", Type: field.TypeEnum, Comment: "物资种类", Enums: []string{"battery", "ebike", "others"}},
+		{Name: "material", Type: field.TypeEnum, Nullable: true, Comment: "物资种类", Enums: []string{"battery", "ebike", "others"}},
 		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true, Comment: "企业ID"},
 		{Name: "station_id", Type: field.TypeUint64, Nullable: true, Comment: "站点ID"},
 		{Name: "store_id", Type: field.TypeUint64, Nullable: true, Comment: "门店ID"},

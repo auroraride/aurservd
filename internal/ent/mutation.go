@@ -74444,9 +74444,22 @@ func (m *StockSummaryMutation) OldMaterial(ctx context.Context) (v stocksummary.
 	return oldValue.Material, nil
 }
 
+// ClearMaterial clears the value of the "material" field.
+func (m *StockSummaryMutation) ClearMaterial() {
+	m.material = nil
+	m.clearedFields[stocksummary.FieldMaterial] = struct{}{}
+}
+
+// MaterialCleared returns if the "material" field was cleared in this mutation.
+func (m *StockSummaryMutation) MaterialCleared() bool {
+	_, ok := m.clearedFields[stocksummary.FieldMaterial]
+	return ok
+}
+
 // ResetMaterial resets all changes to the "material" field.
 func (m *StockSummaryMutation) ResetMaterial() {
 	m.material = nil
+	delete(m.clearedFields, stocksummary.FieldMaterial)
 }
 
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
@@ -74959,6 +74972,9 @@ func (m *StockSummaryMutation) ClearedFields() []string {
 	if m.FieldCleared(stocksummary.FieldModel) {
 		fields = append(fields, stocksummary.FieldModel)
 	}
+	if m.FieldCleared(stocksummary.FieldMaterial) {
+		fields = append(fields, stocksummary.FieldMaterial)
+	}
 	return fields
 }
 
@@ -74990,6 +75006,9 @@ func (m *StockSummaryMutation) ClearField(name string) error {
 		return nil
 	case stocksummary.FieldModel:
 		m.ClearModel()
+		return nil
+	case stocksummary.FieldMaterial:
+		m.ClearMaterial()
 		return nil
 	}
 	return fmt.Errorf("unknown StockSummary nullable field %s", name)

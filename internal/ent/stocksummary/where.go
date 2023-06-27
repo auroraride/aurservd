@@ -668,6 +668,16 @@ func MaterialNotIn(vs ...Material) predicate.StockSummary {
 	return predicate.StockSummary(sql.FieldNotIn(FieldMaterial, vs...))
 }
 
+// MaterialIsNil applies the IsNil predicate on the "material" field.
+func MaterialIsNil() predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldIsNull(FieldMaterial))
+}
+
+// MaterialNotNil applies the NotNil predicate on the "material" field.
+func MaterialNotNil() predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldNotNull(FieldMaterial))
+}
+
 // HasEnterprise applies the HasEdge predicate on the "enterprise" edge.
 func HasEnterprise() predicate.StockSummary {
 	return predicate.StockSummary(func(s *sql.Selector) {

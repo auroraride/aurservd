@@ -206,6 +206,14 @@ func (ssc *StockSummaryCreate) SetMaterial(s stocksummary.Material) *StockSummar
 	return ssc
 }
 
+// SetNillableMaterial sets the "material" field if the given value is not nil.
+func (ssc *StockSummaryCreate) SetNillableMaterial(s *stocksummary.Material) *StockSummaryCreate {
+	if s != nil {
+		ssc.SetMaterial(*s)
+	}
+	return ssc
+}
+
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
 func (ssc *StockSummaryCreate) SetEnterprise(e *Enterprise) *StockSummaryCreate {
 	return ssc.SetEnterpriseID(e.ID)
@@ -319,9 +327,6 @@ func (ssc *StockSummaryCreate) check() error {
 	}
 	if _, ok := ssc.mutation.InRiderNum(); !ok {
 		return &ValidationError{Name: "in_rider_num", err: errors.New(`ent: missing required field "StockSummary.in_rider_num"`)}
-	}
-	if _, ok := ssc.mutation.Material(); !ok {
-		return &ValidationError{Name: "material", err: errors.New(`ent: missing required field "StockSummary.material"`)}
 	}
 	if v, ok := ssc.mutation.Material(); ok {
 		if err := stocksummary.MaterialValidator(v); err != nil {
@@ -768,6 +773,12 @@ func (u *StockSummaryUpsert) UpdateMaterial() *StockSummaryUpsert {
 	return u
 }
 
+// ClearMaterial clears the value of the "material" field.
+func (u *StockSummaryUpsert) ClearMaterial() *StockSummaryUpsert {
+	u.SetNull(stocksummary.FieldMaterial)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1085,6 +1096,13 @@ func (u *StockSummaryUpsertOne) SetMaterial(v stocksummary.Material) *StockSumma
 func (u *StockSummaryUpsertOne) UpdateMaterial() *StockSummaryUpsertOne {
 	return u.Update(func(s *StockSummaryUpsert) {
 		s.UpdateMaterial()
+	})
+}
+
+// ClearMaterial clears the value of the "material" field.
+func (u *StockSummaryUpsertOne) ClearMaterial() *StockSummaryUpsertOne {
+	return u.Update(func(s *StockSummaryUpsert) {
+		s.ClearMaterial()
 	})
 }
 
@@ -1565,6 +1583,13 @@ func (u *StockSummaryUpsertBulk) SetMaterial(v stocksummary.Material) *StockSumm
 func (u *StockSummaryUpsertBulk) UpdateMaterial() *StockSummaryUpsertBulk {
 	return u.Update(func(s *StockSummaryUpsert) {
 		s.UpdateMaterial()
+	})
+}
+
+// ClearMaterial clears the value of the "material" field.
+func (u *StockSummaryUpsertBulk) ClearMaterial() *StockSummaryUpsertBulk {
+	return u.Update(func(s *StockSummaryUpsert) {
+		s.ClearMaterial()
 	})
 }
 

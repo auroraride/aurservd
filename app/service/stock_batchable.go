@@ -89,6 +89,12 @@ func (s *stockBatchableService) Loopers(req *model.StockTransferReq, enterpriseI
 			failed = append(failed, fmt.Sprintf("电池调拨失败，电池[%s]不属于当前团签", bat.Sn))
 			continue
 		}
+		// 调出到平台  不是自己站点的电池不允许调拨
+		if req.OutboundTarget == model.StockTargetStation && req.InboundTarget == model.StockTargetPlaform &&
+			bat.StationID != nil && *bat.StationID != req.OutboundID {
+			failed = append(failed, fmt.Sprintf("电池调拨失败，[%s]不属于当前站点", bat.Sn))
+			continue
+		}
 
 		Loopers = append(Loopers, model.StockTransferLoopper{
 			BatterySN:    &bat.Sn,

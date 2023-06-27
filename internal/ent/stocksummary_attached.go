@@ -101,7 +101,7 @@ func (s *StockSummaryCreate) createStockSummary(params *model.StockSummaryParams
 	// 总数 总数加上今天的数量
 	s.SetNum(params.StockNum + params.Num)
 
-	if params.CabinetID != nil && (params.StationID != nil || params.StoreID != nil) {
+	if params.CabinetID != nil {
 		s.SetInCabinetNum(params.Num)
 	}
 

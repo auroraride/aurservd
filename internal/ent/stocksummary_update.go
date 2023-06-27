@@ -291,6 +291,20 @@ func (ssu *StockSummaryUpdate) SetMaterial(s stocksummary.Material) *StockSummar
 	return ssu
 }
 
+// SetNillableMaterial sets the "material" field if the given value is not nil.
+func (ssu *StockSummaryUpdate) SetNillableMaterial(s *stocksummary.Material) *StockSummaryUpdate {
+	if s != nil {
+		ssu.SetMaterial(*s)
+	}
+	return ssu
+}
+
+// ClearMaterial clears the value of the "material" field.
+func (ssu *StockSummaryUpdate) ClearMaterial() *StockSummaryUpdate {
+	ssu.mutation.ClearMaterial()
+	return ssu
+}
+
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
 func (ssu *StockSummaryUpdate) SetEnterprise(e *Enterprise) *StockSummaryUpdate {
 	return ssu.SetEnterpriseID(e.ID)
@@ -458,6 +472,9 @@ func (ssu *StockSummaryUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := ssu.mutation.Material(); ok {
 		_spec.SetField(stocksummary.FieldMaterial, field.TypeEnum, value)
+	}
+	if ssu.mutation.MaterialCleared() {
+		_spec.ClearField(stocksummary.FieldMaterial, field.TypeEnum)
 	}
 	if ssu.mutation.EnterpriseCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -884,6 +901,20 @@ func (ssuo *StockSummaryUpdateOne) SetMaterial(s stocksummary.Material) *StockSu
 	return ssuo
 }
 
+// SetNillableMaterial sets the "material" field if the given value is not nil.
+func (ssuo *StockSummaryUpdateOne) SetNillableMaterial(s *stocksummary.Material) *StockSummaryUpdateOne {
+	if s != nil {
+		ssuo.SetMaterial(*s)
+	}
+	return ssuo
+}
+
+// ClearMaterial clears the value of the "material" field.
+func (ssuo *StockSummaryUpdateOne) ClearMaterial() *StockSummaryUpdateOne {
+	ssuo.mutation.ClearMaterial()
+	return ssuo
+}
+
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
 func (ssuo *StockSummaryUpdateOne) SetEnterprise(e *Enterprise) *StockSummaryUpdateOne {
 	return ssuo.SetEnterpriseID(e.ID)
@@ -1081,6 +1112,9 @@ func (ssuo *StockSummaryUpdateOne) sqlSave(ctx context.Context) (_node *StockSum
 	}
 	if value, ok := ssuo.mutation.Material(); ok {
 		_spec.SetField(stocksummary.FieldMaterial, field.TypeEnum, value)
+	}
+	if ssuo.mutation.MaterialCleared() {
+		_spec.ClearField(stocksummary.FieldMaterial, field.TypeEnum)
 	}
 	if ssuo.mutation.EnterpriseCleared() {
 		edge := &sqlgraph.EdgeSpec{
