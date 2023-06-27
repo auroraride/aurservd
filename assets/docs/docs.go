@@ -17009,6 +17009,9 @@ const docTemplate = `{
                         2
                     ]
                 },
+                "id": {
+                    "type": "integer"
+                },
                 "lat": {
                     "description": "电柜纬度",
                     "type": "number"

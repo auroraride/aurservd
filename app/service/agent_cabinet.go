@@ -37,6 +37,7 @@ func NewAgentCabinet(params ...any) *agentCabinetService {
 
 func (s *agentCabinetService) detail(item *ent.Cabinet, lng *float64, lat *float64) *model.AgentCabinet {
 	data := &model.AgentCabinet{
+		ID:         item.ID,
 		Serial:     item.Serial,
 		Name:       item.Name,
 		Status:     item.Status,

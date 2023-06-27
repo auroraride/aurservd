@@ -30,6 +30,7 @@ type AgentCabinetDetailReq struct {
 
 // AgentCabinet 代理电柜详情
 type AgentCabinet struct {
+	ID         uint64                 `json:"id"`
 	Serial     string                 `json:"serial"`
 	Name       string                 `json:"name"`                             // 电柜名称
 	Status     uint8                  `json:"status" enums:"1,2"`               // 投放状态, 1:运营中 2:维护中
