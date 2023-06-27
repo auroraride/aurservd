@@ -49,12 +49,12 @@ func (s *StockSummaryUpdateOne) updateStockSummary(params *model.StockSummaryPar
 
 	s.AddTodayNum(params.Num)
 
-	if params.CabinetID != nil && (params.StationID != nil || params.StoreID != nil) {
-		s.AddInCabinetNum(params.Num)
+	if params.CabinetID != nil && params.StationID != nil {
+		s.AddInCabinetNum(-(params.Num))
 	}
 
-	if params.RiderID != nil {
-		s.AddInRiderNum(params.Num)
+	if params.RiderID != nil && params.StationID != nil {
+		s.AddInRiderNum(-(params.Num))
 	}
 
 }
@@ -101,11 +101,12 @@ func (s *StockSummaryCreate) createStockSummary(params *model.StockSummaryParams
 	// 总数 总数加上今天的数量
 	s.SetNum(params.StockNum + params.Num)
 
-	if params.CabinetID != nil {
-		s.SetInCabinetNum(params.Num)
+	if params.CabinetID != nil && params.StationID != nil {
+		s.SetInCabinetNum(-(params.Num))
 	}
 
-	if params.RiderID != nil {
-		s.SetInRiderNum(params.Num)
+	// 如果有骑手ID 电池出库至骑手
+	if params.RiderID != nil && params.StationID != nil {
+		s.SetInRiderNum(-(params.Num))
 	}
 }

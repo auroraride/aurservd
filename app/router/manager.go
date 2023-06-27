@@ -167,8 +167,6 @@ func loadManagerRoutes() {
 	g.POST("/employee/enable", mapi.Employee.Enable)
 	g.GET("/employee/attendance", mapi.Attendance.List)
 	g.POST("/employee/offwork", mapi.Employee.OffWork)
-	// 团签物资列表
-	g.GET("/stock/enterprise/list", mapi.Stock.EnterpriseList)
 
 	// 物资
 	g.POST("/stock", mapi.Stock.Create)
@@ -176,6 +174,7 @@ func loadManagerRoutes() {
 	g.GET("/stock/store", mapi.Stock.StoreList)
 	g.GET("/stock/cabinet", mapi.Stock.CabinetList)
 	g.GET("/stock/detail", mapi.Stock.Detail)
+	g.GET("/stock/enterprise/list", mapi.Stock.EnterpriseList) // 团签物资列表
 
 	// 选择项目
 	g.GET("/selection/plan", mapi.Selection.Plan)

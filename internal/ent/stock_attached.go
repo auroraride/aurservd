@@ -146,12 +146,17 @@ func GetStockNum(ctx context.Context, Params *model.StockSummaryParams) {
 		StockNum int `json:"stockNum"` // 总数量
 	}
 	q := Database.StockSummary.Query()
+
+	if Params.Model != "" {
+		q.Where(stocksummary.Model(Params.Model))
+	}
+
 	// 电池数量
 	if Params.Material == stock.MaterialBattery.String() {
 		q.Where(stocksummary.MaterialEQ(stocksummary.Material(stock.MaterialBattery)))
 	}
 	// 电车数量
-	if Params.Material != stock.MaterialEbike.String() {
+	if Params.Material == stock.MaterialEbike.String() {
 		q.Where(stocksummary.MaterialEQ(stocksummary.Material(stock.MaterialEbike)))
 	}
 	// 其他物资
