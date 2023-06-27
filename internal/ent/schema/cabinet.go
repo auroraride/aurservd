@@ -90,6 +90,9 @@ func (Cabinet) Fields() []ent.Field {
 
 		field.Float("lng").Optional().Comment("经度"),
 		field.Float("lat").Optional().Comment("纬度"),
+		field.Other("geom", &model.Geometry{}).Optional().SchemaType(map[string]string{
+			dialect.Postgres: "geometry",
+		}).Comment("坐标"),
 		field.String("address").Optional().Comment("详细地址"),
 		field.String("sim_sn").Optional().Comment("SIM卡号"),
 		field.Time("sim_date").Optional().Comment("SIM卡到期日期"),
@@ -159,6 +162,12 @@ func (Cabinet) Indexes() []ent.Index {
 			entsql.OpClass("jsonb_ops"), // jsonb_path_ops只支持@>操作符
 		),
 		index.Fields("sim_date"),
+		index.Fields("lng", "lat"),
+		index.Fields("geom").Annotations(
+			entsql.IndexTypes(map[string]string{
+				dialect.Postgres: "GIST",
+			}),
+		),
 	}
 }
 

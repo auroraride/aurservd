@@ -292,6 +292,18 @@ func (cu *CabinetUpdate) ClearLat() *CabinetUpdate {
 	return cu
 }
 
+// SetGeom sets the "geom" field.
+func (cu *CabinetUpdate) SetGeom(m *model.Geometry) *CabinetUpdate {
+	cu.mutation.SetGeom(m)
+	return cu
+}
+
+// ClearGeom clears the value of the "geom" field.
+func (cu *CabinetUpdate) ClearGeom() *CabinetUpdate {
+	cu.mutation.ClearGeom()
+	return cu
+}
+
 // SetAddress sets the "address" field.
 func (cu *CabinetUpdate) SetAddress(s string) *CabinetUpdate {
 	cu.mutation.SetAddress(s)
@@ -911,6 +923,12 @@ func (cu *CabinetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if cu.mutation.LatCleared() {
 		_spec.ClearField(cabinet.FieldLat, field.TypeFloat64)
+	}
+	if value, ok := cu.mutation.Geom(); ok {
+		_spec.SetField(cabinet.FieldGeom, field.TypeOther, value)
+	}
+	if cu.mutation.GeomCleared() {
+		_spec.ClearField(cabinet.FieldGeom, field.TypeOther)
 	}
 	if value, ok := cu.mutation.Address(); ok {
 		_spec.SetField(cabinet.FieldAddress, field.TypeString, value)
@@ -1641,6 +1659,18 @@ func (cuo *CabinetUpdateOne) ClearLat() *CabinetUpdateOne {
 	return cuo
 }
 
+// SetGeom sets the "geom" field.
+func (cuo *CabinetUpdateOne) SetGeom(m *model.Geometry) *CabinetUpdateOne {
+	cuo.mutation.SetGeom(m)
+	return cuo
+}
+
+// ClearGeom clears the value of the "geom" field.
+func (cuo *CabinetUpdateOne) ClearGeom() *CabinetUpdateOne {
+	cuo.mutation.ClearGeom()
+	return cuo
+}
+
 // SetAddress sets the "address" field.
 func (cuo *CabinetUpdateOne) SetAddress(s string) *CabinetUpdateOne {
 	cuo.mutation.SetAddress(s)
@@ -2290,6 +2320,12 @@ func (cuo *CabinetUpdateOne) sqlSave(ctx context.Context) (_node *Cabinet, err e
 	}
 	if cuo.mutation.LatCleared() {
 		_spec.ClearField(cabinet.FieldLat, field.TypeFloat64)
+	}
+	if value, ok := cuo.mutation.Geom(); ok {
+		_spec.SetField(cabinet.FieldGeom, field.TypeOther, value)
+	}
+	if cuo.mutation.GeomCleared() {
+		_spec.ClearField(cabinet.FieldGeom, field.TypeOther)
 	}
 	if value, ok := cuo.mutation.Address(); ok {
 		_spec.SetField(cabinet.FieldAddress, field.TypeString, value)

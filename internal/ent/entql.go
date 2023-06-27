@@ -88,6 +88,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			agent.FieldEnterpriseID: {Type: field.TypeUint64, Column: agent.FieldEnterpriseID},
 			agent.FieldName:         {Type: field.TypeString, Column: agent.FieldName},
 			agent.FieldPhone:        {Type: field.TypeString, Column: agent.FieldPhone},
+			agent.FieldSuper:        {Type: field.TypeBool, Column: agent.FieldSuper},
 		},
 	}
 	graph.Nodes[1] = &sqlgraph.Node{
@@ -390,6 +391,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			cabinet.FieldStatus:             {Type: field.TypeUint8, Column: cabinet.FieldStatus},
 			cabinet.FieldLng:                {Type: field.TypeFloat64, Column: cabinet.FieldLng},
 			cabinet.FieldLat:                {Type: field.TypeFloat64, Column: cabinet.FieldLat},
+			cabinet.FieldGeom:               {Type: field.TypeOther, Column: cabinet.FieldGeom},
 			cabinet.FieldAddress:            {Type: field.TypeString, Column: cabinet.FieldAddress},
 			cabinet.FieldSimSn:              {Type: field.TypeString, Column: cabinet.FieldSimSn},
 			cabinet.FieldSimDate:            {Type: field.TypeTime, Column: cabinet.FieldSimDate},
@@ -4820,6 +4822,11 @@ func (f *AgentFilter) WherePhone(p entql.StringP) {
 	f.Where(p.Field(agent.FieldPhone))
 }
 
+// WhereSuper applies the entql bool predicate on the super field.
+func (f *AgentFilter) WhereSuper(p entql.BoolP) {
+	f.Where(p.Field(agent.FieldSuper))
+}
+
 // WhereHasEnterprise applies a predicate to check if query has an edge enterprise.
 func (f *AgentFilter) WhereHasEnterprise() {
 	f.Where(entql.HasEdge("enterprise"))
@@ -6750,6 +6757,11 @@ func (f *CabinetFilter) WhereLng(p entql.Float64P) {
 // WhereLat applies the entql float64 predicate on the lat field.
 func (f *CabinetFilter) WhereLat(p entql.Float64P) {
 	f.Where(p.Field(cabinet.FieldLat))
+}
+
+// WhereGeom applies the entql other predicate on the geom field.
+func (f *CabinetFilter) WhereGeom(p entql.OtherP) {
+	f.Where(p.Field(cabinet.FieldGeom))
 }
 
 // WhereAddress applies the entql string predicate on the address field.

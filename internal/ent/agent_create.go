@@ -111,6 +111,20 @@ func (ac *AgentCreate) SetPhone(s string) *AgentCreate {
 	return ac
 }
 
+// SetSuper sets the "super" field.
+func (ac *AgentCreate) SetSuper(b bool) *AgentCreate {
+	ac.mutation.SetSuper(b)
+	return ac
+}
+
+// SetNillableSuper sets the "super" field if the given value is not nil.
+func (ac *AgentCreate) SetNillableSuper(b *bool) *AgentCreate {
+	if b != nil {
+		ac.SetSuper(*b)
+	}
+	return ac
+}
+
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
 func (ac *AgentCreate) SetEnterprise(e *Enterprise) *AgentCreate {
 	return ac.SetEnterpriseID(e.ID)
@@ -182,6 +196,10 @@ func (ac *AgentCreate) defaults() error {
 		v := agent.DefaultUpdatedAt()
 		ac.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := ac.mutation.Super(); !ok {
+		v := agent.DefaultSuper
+		ac.mutation.SetSuper(v)
+	}
 	return nil
 }
 
@@ -201,6 +219,9 @@ func (ac *AgentCreate) check() error {
 	}
 	if _, ok := ac.mutation.Phone(); !ok {
 		return &ValidationError{Name: "phone", err: errors.New(`ent: missing required field "Agent.phone"`)}
+	}
+	if _, ok := ac.mutation.Super(); !ok {
+		return &ValidationError{Name: "super", err: errors.New(`ent: missing required field "Agent.super"`)}
 	}
 	if _, ok := ac.mutation.EnterpriseID(); !ok {
 		return &ValidationError{Name: "enterprise", err: errors.New(`ent: missing required edge "Agent.enterprise"`)}
@@ -263,6 +284,10 @@ func (ac *AgentCreate) createSpec() (*Agent, *sqlgraph.CreateSpec) {
 	if value, ok := ac.mutation.Phone(); ok {
 		_spec.SetField(agent.FieldPhone, field.TypeString, value)
 		_node.Phone = value
+	}
+	if value, ok := ac.mutation.Super(); ok {
+		_spec.SetField(agent.FieldSuper, field.TypeBool, value)
+		_node.Super = value
 	}
 	if nodes := ac.mutation.EnterpriseIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -451,6 +476,18 @@ func (u *AgentUpsert) UpdatePhone() *AgentUpsert {
 	return u
 }
 
+// SetSuper sets the "super" field.
+func (u *AgentUpsert) SetSuper(v bool) *AgentUpsert {
+	u.Set(agent.FieldSuper, v)
+	return u
+}
+
+// UpdateSuper sets the "super" field to the value that was provided on create.
+func (u *AgentUpsert) UpdateSuper() *AgentUpsert {
+	u.SetExcluded(agent.FieldSuper)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -615,6 +652,20 @@ func (u *AgentUpsertOne) SetPhone(v string) *AgentUpsertOne {
 func (u *AgentUpsertOne) UpdatePhone() *AgentUpsertOne {
 	return u.Update(func(s *AgentUpsert) {
 		s.UpdatePhone()
+	})
+}
+
+// SetSuper sets the "super" field.
+func (u *AgentUpsertOne) SetSuper(v bool) *AgentUpsertOne {
+	return u.Update(func(s *AgentUpsert) {
+		s.SetSuper(v)
+	})
+}
+
+// UpdateSuper sets the "super" field to the value that was provided on create.
+func (u *AgentUpsertOne) UpdateSuper() *AgentUpsertOne {
+	return u.Update(func(s *AgentUpsert) {
+		s.UpdateSuper()
 	})
 }
 
@@ -944,6 +995,20 @@ func (u *AgentUpsertBulk) SetPhone(v string) *AgentUpsertBulk {
 func (u *AgentUpsertBulk) UpdatePhone() *AgentUpsertBulk {
 	return u.Update(func(s *AgentUpsert) {
 		s.UpdatePhone()
+	})
+}
+
+// SetSuper sets the "super" field.
+func (u *AgentUpsertBulk) SetSuper(v bool) *AgentUpsertBulk {
+	return u.Update(func(s *AgentUpsert) {
+		s.SetSuper(v)
+	})
+}
+
+// UpdateSuper sets the "super" field to the value that was provided on create.
+func (u *AgentUpsertBulk) UpdateSuper() *AgentUpsertBulk {
+	return u.Update(func(s *AgentUpsert) {
+		s.UpdateSuper()
 	})
 }
 

@@ -90,6 +90,11 @@ func Phone(v string) predicate.Agent {
 	return predicate.Agent(sql.FieldEQ(FieldPhone, v))
 }
 
+// Super applies equality check predicate on the "super" field. It's identical to SuperEQ.
+func Super(v bool) predicate.Agent {
+	return predicate.Agent(sql.FieldEQ(FieldSuper, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Agent {
 	return predicate.Agent(sql.FieldEQ(FieldCreatedAt, v))
@@ -463,6 +468,16 @@ func PhoneEqualFold(v string) predicate.Agent {
 // PhoneContainsFold applies the ContainsFold predicate on the "phone" field.
 func PhoneContainsFold(v string) predicate.Agent {
 	return predicate.Agent(sql.FieldContainsFold(FieldPhone, v))
+}
+
+// SuperEQ applies the EQ predicate on the "super" field.
+func SuperEQ(v bool) predicate.Agent {
+	return predicate.Agent(sql.FieldEQ(FieldSuper, v))
+}
+
+// SuperNEQ applies the NEQ predicate on the "super" field.
+func SuperNEQ(v bool) predicate.Agent {
+	return predicate.Agent(sql.FieldNEQ(FieldSuper, v))
 }
 
 // HasEnterprise applies the HasEdge predicate on the "enterprise" edge.

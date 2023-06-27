@@ -14,6 +14,29 @@ definitions:
     - BatteryBrandUnknown
     - BatteryBrandXC
     - BatteryBrandTB
+  adapter.Business:
+    enum:
+    - operate
+    - exchange
+    - active
+    - pause
+    - continue
+    - unsubscribe
+    type: string
+    x-enum-comments:
+      BusinessActive: 激活
+      BusinessContinue: 取消寄存
+      BusinessExchange: 换电
+      BusinessOperate: 运维操作
+      BusinessPause: 寄存
+      BusinessUnsubscribe: 退订
+    x-enum-varnames:
+    - BusinessOperate
+    - BusinessExchange
+    - BusinessActive
+    - BusinessPause
+    - BusinessContinue
+    - BusinessUnsubscribe
   adapter.CabinetBrand:
     enum:
     - UNKNOWN
@@ -36,6 +59,74 @@ definitions:
         type: number
       lng:
         type: number
+    type: object
+  cabdef.BinInfo:
+    properties:
+      batteryExists:
+        description: 电池在位
+        type: boolean
+      batterySn:
+        description: 电池编码
+        type: string
+      current:
+        description: 电流
+        type: number
+      enable:
+        description: 启用
+        type: boolean
+      health:
+        description: 健康
+        type: boolean
+      open:
+        description: 开启
+        type: boolean
+      ordinal:
+        description: 仓位序号
+        type: integer
+      soc:
+        description: 电量
+        type: number
+      soh:
+        description: 健康
+        type: number
+      voltage:
+        description: 电压
+        type: number
+    type: object
+  cabdef.BinOperateResult:
+    properties:
+      after:
+        allOf:
+        - $ref: '#/definitions/cabdef.BinInfo'
+        description: 操作后仓位信息
+      before:
+        allOf:
+        - $ref: '#/definitions/cabdef.BinInfo'
+        description: 操作前仓位信息
+      business:
+        allOf:
+        - $ref: '#/definitions/adapter.Business'
+        description: 业务类型
+      duration:
+        description: 耗时
+        type: number
+      message:
+        description: 消息
+        type: string
+      startAt:
+        description: 开始时间
+        type: string
+      step:
+        description: 操作步骤
+        type: integer
+      stopAt:
+        description: 结束时间
+        type: string
+      success:
+        description: 是否成功
+        type: boolean
+      uuid:
+        type: string
     type: object
   controller.CrmCustomerWithID:
     properties:
@@ -322,6 +413,64 @@ definitions:
         description: 电话
         type: string
     type: object
+  model.AgentCabinet:
+    properties:
+      address:
+        description: 地址
+        type: string
+      bins:
+        description: 仓位信息
+        items:
+          $ref: '#/definitions/model.AgentCabinetBin'
+        type: array
+      distance:
+        description: 距离（仅携带`lng`和`lat`时有该字段）
+        type: number
+      health:
+        description: 健康状态, 0:离线 1:在线 2:故障
+        enum:
+        - 0
+        - 1
+        - 2
+        type: integer
+      lat:
+        description: 电柜纬度
+        type: number
+      lng:
+        description: 电柜经度
+        type: number
+      models:
+        description: 电池型号
+        items:
+          type: string
+        type: array
+      name:
+        description: 电柜名称
+        type: string
+      permission:
+        allOf:
+        - $ref: '#/definitions/model.AgentCabinetPermission'
+        description: 权限，<a target="_blank" href="https://rqsz38umzux.feishu.cn/wiki/space/7248526754619539460?ccm_open_type=lark_wiki_spaceLink">查看WIKI</a>
+        enum:
+        - 1
+        - 2
+        - 4
+        - 8
+        - 16
+        - 32
+      serial:
+        type: string
+      station:
+        allOf:
+        - $ref: '#/definitions/model.EnterpriseStation'
+        description: 所属站点
+      status:
+        description: 投放状态, 1:运营中 2:维护中
+        enum:
+        - 1
+        - 2
+        type: integer
+    type: object
   model.AgentCabinetBin:
     properties:
       batterySn:
@@ -337,40 +486,29 @@ definitions:
         description: 是否可用 `false`时,禁止代理操作该仓位
         type: boolean
     type: object
-  model.AgentCabinetDetailRes:
-    properties:
-      bins:
-        description: 仓位信息
-        items:
-          $ref: '#/definitions/model.AgentCabinetBin'
-        type: array
-      health:
-        description: 健康状态, 0:离线 1:在线 2:故障
-        enum:
-        - 0
-        - 1
-        - 2
-        type: integer
-      models:
-        description: 电池型号
-        items:
-          type: string
-        type: array
-      name:
-        description: 电柜名称
-        type: string
-      serial:
-        type: string
-      station:
-        description: 所属站点
-        type: string
-      status:
-        description: 投放状态, 1:运营中 2:维护中
-        enum:
-        - 1
-        - 2
-        type: integer
-    type: object
+  model.AgentCabinetPermission:
+    enum:
+    - 1
+    - 2
+    - 4
+    - 8
+    - 16
+    - 32
+    type: integer
+    x-enum-comments:
+      AgentCabinetPermissionDisableBin: 禁用仓位
+      AgentCabinetPermissionEnableBin: 启用仓位
+      AgentCabinetPermissionMaintain: 维护
+      AgentCabinetPermissionOpenBin: 开仓（包含满电仓和空仓）
+      AgentCabinetPermissionReboot: 重启
+      AgentCabinetPermissionView: 查看
+    x-enum-varnames:
+    - AgentCabinetPermissionView
+    - AgentCabinetPermissionMaintain
+    - AgentCabinetPermissionReboot
+    - AgentCabinetPermissionOpenBin
+    - AgentCabinetPermissionDisableBin
+    - AgentCabinetPermissionEnableBin
   model.AgentCreateReq:
     properties:
       enterpriseId:
@@ -4733,8 +4871,10 @@ definitions:
   model.LngLat:
     properties:
       lat:
+        description: 纬度
         type: number
       lng:
+        description: 经度
         type: number
     type: object
   model.LogOperate:
@@ -8067,75 +8207,33 @@ paths:
         name: X-Agent-Token
         required: true
         type: string
-      - description: 电柜型号 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
-        enum:
-        - UNKNOWN
-        - KAIXIN
-        - YUNDONG
-        - TUOBANG
-        - XILIULOUSERV
-        in: query
-        name: brand
-        type: string
-        x-enum-comments:
-          CabinetBrandXiliulouServer: 西六楼服务器版
-        x-enum-varnames:
-        - CabinetBrandUnknown
-        - CabinetBrandKaixin
-        - CabinetBrandYundong
-        - CabinetBrandTuobang
-        - CabinetBrandXiliulouServer
-      - description: 城市ID
-        in: query
-        name: cityId
-        type: integer
       - description: 当前页, 从1开始, 默认1
         in: query
         name: current
         type: integer
-      - description: 团签ID
+      - description: 纬度
         in: query
-        name: enterpriseId
-        type: integer
-      - description: 是否智能柜 0:全部 1:是 2:否
+        name: lat
+        type: number
+      - description: 经度
         in: query
-        name: intelligent
-        type: integer
-      - description: 关键字
-        in: query
-        name: keyword
-        type: string
-      - description: 电池型号
+        name: lng
+        type: number
+      - description: 型号
         in: query
         name: model
         type: string
-      - description: 电柜名称
-        in: query
-        name: name
-        type: string
-      - description: 在线状态
-        in: query
-        name: online
-        type: integer
-      - description: 归属类型   1:平台 2:代理商
-        in: query
-        name: ownerType
-        type: integer
       - description: 每页数据, 默认20
         in: query
         name: pageSize
         type: integer
-      - description: 电柜编号
+      - description: 编号
         in: query
         name: serial
         type: string
-      - description: 站点ID
+      - description: 站点
         in: query
         name: stationId
-        type: integer
-      - description: 电柜状态
-        in: query
-        name: status
         type: integer
       produces:
       - application/json
@@ -8148,7 +8246,7 @@ paths:
             - properties:
                 items:
                   items:
-                    $ref: '#/definitions/model.AgentCabinetDetailRes'
+                    $ref: '#/definitions/model.AgentCabinet'
                   type: array
               type: object
       summary: A5001 电柜列表
@@ -8170,14 +8268,99 @@ paths:
         name: serial
         required: true
         type: string
+      - description: 纬度
+        in: query
+        name: lat
+        type: number
+      - description: 经度
+        in: query
+        name: lng
+        type: number
       produces:
       - application/json
       responses:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/model.AgentCabinetDetailRes'
+            $ref: '#/definitions/model.AgentCabinet'
       summary: A5002 电柜详情
+      tags:
+      - '[A]代理接口'
+  /agent/v1/cabinet/binopen:
+    post:
+      consumes:
+      - application/json
+      operationId: AgentCabinetBinOpen
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - in: query
+        name: id
+        required: true
+        type: integer
+      - in: query
+        name: lat
+        required: true
+        type: number
+      - in: query
+        name: lng
+        required: true
+        type: number
+      - description: 从`1`开始
+        in: query
+        name: ordinal
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/cabdef.BinOperateResult'
+            type: array
+      summary: A5005 电柜开仓
+      tags:
+      - '[A]代理接口'
+  /agent/v1/cabinet/maintain:
+    post:
+      consumes:
+      - application/json
+      operationId: AgentCabinetMaintain
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - in: query
+        name: id
+        required: true
+        type: integer
+      - in: query
+        name: lat
+        required: true
+        type: number
+      - in: query
+        name: lng
+        required: true
+        type: number
+      - in: query
+        name: maintain
+        required: true
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: A5004 电柜维护
       tags:
       - '[A]代理接口'
   /agent/v1/cabinet/section:
@@ -8200,7 +8383,7 @@ paths:
             items:
               $ref: '#/definitions/model.CascaderOptionLevel2'
             type: array
-      summary: A5003 选择电柜
+      summary: A5003 电柜选择
       tags:
       - '[A]代理接口'
   /agent/v1/misc/feedback:

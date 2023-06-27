@@ -197,7 +197,14 @@ func (s *branchService) Modify(req *model.BranchModifyReq) {
 		geom.Lat = *req.Lat
 	}
 
-	q.SetGeom(geom).SaveX(s.ctx)
+	nb := q.SetGeom(geom).SaveX(s.ctx)
+
+	if req.Lng != nil || req.Lat != nil || req.Address != nil {
+		// 更新电柜地址和坐标
+		_ = ent.Database.Cabinet.Update().Where(cabinet.BranchID(req.ID)).SetLng(nb.Lng).SetLat(nb.Lat).SetGeom(nb.Geom).SetAddress(nb.Address).Exec(s.ctx)
+		// 更新门店地址和坐标
+		_ = ent.Database.Store.Update().Where(store.BranchID(req.ID)).SetLng(nb.Lng).SetLat(nb.Lat).SetAddress(nb.Address).Exec(s.ctx)
+	}
 }
 
 // Selector 网点选择列表
@@ -605,7 +612,7 @@ func (s *branchService) Facility(req *model.BranchFacilityReq) (data model.Branc
 		Address:  b.Address,
 		Lng:      b.Lng,
 		Lat:      b.Lat,
-		Distance: distance.Kilometers() * 1000,
+		Distance: distance.Kilometers() * 1000.0,
 		Image:    b.Photos[0],
 	}
 	if sto != nil {

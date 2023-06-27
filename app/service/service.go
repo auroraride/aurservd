@@ -225,6 +225,11 @@ func (s *BaseService) GetAdapterUser() (user *adapter.User, err error) {
 			Type: adapter.UserTypeManager,
 			ID:   s.modifier.Phone,
 		}, nil
+	case s.agent != nil:
+		return &adapter.User{
+			Type: adapter.UserTypeAgent,
+			ID:   s.agent.Phone,
+		}, nil
 	}
 }
 

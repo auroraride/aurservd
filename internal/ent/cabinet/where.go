@@ -8,6 +8,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/auroraride/adapter"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
@@ -134,6 +135,11 @@ func Lng(v float64) predicate.Cabinet {
 // Lat applies equality check predicate on the "lat" field. It's identical to LatEQ.
 func Lat(v float64) predicate.Cabinet {
 	return predicate.Cabinet(sql.FieldEQ(FieldLat, v))
+}
+
+// Geom applies equality check predicate on the "geom" field. It's identical to GeomEQ.
+func Geom(v *model.Geometry) predicate.Cabinet {
+	return predicate.Cabinet(sql.FieldEQ(FieldGeom, v))
 }
 
 // Address applies equality check predicate on the "address" field. It's identical to AddressEQ.
@@ -949,6 +955,56 @@ func LatIsNil() predicate.Cabinet {
 // LatNotNil applies the NotNil predicate on the "lat" field.
 func LatNotNil() predicate.Cabinet {
 	return predicate.Cabinet(sql.FieldNotNull(FieldLat))
+}
+
+// GeomEQ applies the EQ predicate on the "geom" field.
+func GeomEQ(v *model.Geometry) predicate.Cabinet {
+	return predicate.Cabinet(sql.FieldEQ(FieldGeom, v))
+}
+
+// GeomNEQ applies the NEQ predicate on the "geom" field.
+func GeomNEQ(v *model.Geometry) predicate.Cabinet {
+	return predicate.Cabinet(sql.FieldNEQ(FieldGeom, v))
+}
+
+// GeomIn applies the In predicate on the "geom" field.
+func GeomIn(vs ...*model.Geometry) predicate.Cabinet {
+	return predicate.Cabinet(sql.FieldIn(FieldGeom, vs...))
+}
+
+// GeomNotIn applies the NotIn predicate on the "geom" field.
+func GeomNotIn(vs ...*model.Geometry) predicate.Cabinet {
+	return predicate.Cabinet(sql.FieldNotIn(FieldGeom, vs...))
+}
+
+// GeomGT applies the GT predicate on the "geom" field.
+func GeomGT(v *model.Geometry) predicate.Cabinet {
+	return predicate.Cabinet(sql.FieldGT(FieldGeom, v))
+}
+
+// GeomGTE applies the GTE predicate on the "geom" field.
+func GeomGTE(v *model.Geometry) predicate.Cabinet {
+	return predicate.Cabinet(sql.FieldGTE(FieldGeom, v))
+}
+
+// GeomLT applies the LT predicate on the "geom" field.
+func GeomLT(v *model.Geometry) predicate.Cabinet {
+	return predicate.Cabinet(sql.FieldLT(FieldGeom, v))
+}
+
+// GeomLTE applies the LTE predicate on the "geom" field.
+func GeomLTE(v *model.Geometry) predicate.Cabinet {
+	return predicate.Cabinet(sql.FieldLTE(FieldGeom, v))
+}
+
+// GeomIsNil applies the IsNil predicate on the "geom" field.
+func GeomIsNil() predicate.Cabinet {
+	return predicate.Cabinet(sql.FieldIsNull(FieldGeom))
+}
+
+// GeomNotNil applies the NotNil predicate on the "geom" field.
+func GeomNotNil() predicate.Cabinet {
+	return predicate.Cabinet(sql.FieldNotNull(FieldGeom))
 }
 
 // AddressEQ applies the EQ predicate on the "address" field.

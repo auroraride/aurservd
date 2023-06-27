@@ -53,6 +53,7 @@ const (
 	OperateUnbindEbike                         // 解绑电车
 	OperateAgentPrepay                         // 代理商充值
 	OperateAgentSubscribeAlter                 // 修改代理骑手天数
+	OperateAgentCabinetOpenBin                 // 代理商开仓
 )
 
 func (o Operate) String() string {
@@ -121,6 +122,8 @@ func (o Operate) String() string {
 		return "代理商充值"
 	case OperateAgentSubscribeAlter:
 		return "修改代理骑手天数"
+	case OperateAgentCabinetOpenBin:
+		return "代理商开仓"
 	default:
 		return "未知操作"
 	}

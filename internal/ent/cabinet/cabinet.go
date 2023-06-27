@@ -52,6 +52,8 @@ const (
 	FieldLng = "lng"
 	// FieldLat holds the string denoting the lat field in the database.
 	FieldLat = "lat"
+	// FieldGeom holds the string denoting the geom field in the database.
+	FieldGeom = "geom"
 	// FieldAddress holds the string denoting the address field in the database.
 	FieldAddress = "address"
 	// FieldSimSn holds the string denoting the sim_sn field in the database.
@@ -189,6 +191,7 @@ var Columns = []string{
 	FieldStatus,
 	FieldLng,
 	FieldLat,
+	FieldGeom,
 	FieldAddress,
 	FieldSimSn,
 	FieldSimDate,
@@ -338,6 +341,11 @@ func ByLng(opts ...sql.OrderTermOption) OrderOption {
 // ByLat orders the results by the lat field.
 func ByLat(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldLat, opts...).ToFunc()
+}
+
+// ByGeom orders the results by the geom field.
+func ByGeom(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldGeom, opts...).ToFunc()
 }
 
 // ByAddress orders the results by the address field.

@@ -60,6 +60,8 @@ type Cabinet struct {
 	Lng float64 `json:"lng,omitempty"`
 	// 纬度
 	Lat float64 `json:"lat,omitempty"`
+	// 坐标
+	Geom *model.Geometry `json:"geom,omitempty"`
 	// 详细地址
 	Address string `json:"address,omitempty"`
 	// SIM卡号
@@ -232,6 +234,8 @@ func (*Cabinet) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case cabinet.FieldBrand:
 			values[i] = new(adapter.CabinetBrand)
+		case cabinet.FieldGeom:
+			values[i] = new(model.Geometry)
 		case cabinet.FieldTransferred, cabinet.FieldIntelligent:
 			values[i] = new(sql.NullBool)
 		case cabinet.FieldLng, cabinet.FieldLat:
@@ -379,6 +383,12 @@ func (c *Cabinet) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field lat", values[i])
 			} else if value.Valid {
 				c.Lat = value.Float64
+			}
+		case cabinet.FieldGeom:
+			if value, ok := values[i].(*model.Geometry); !ok {
+				return fmt.Errorf("unexpected type %T for field geom", values[i])
+			} else if value != nil {
+				c.Geom = value
 			}
 		case cabinet.FieldAddress:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -603,6 +613,9 @@ func (c *Cabinet) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("lat=")
 	builder.WriteString(fmt.Sprintf("%v", c.Lat))
+	builder.WriteString(", ")
+	builder.WriteString("geom=")
+	builder.WriteString(fmt.Sprintf("%v", c.Geom))
 	builder.WriteString(", ")
 	builder.WriteString("address=")
 	builder.WriteString(c.Address)

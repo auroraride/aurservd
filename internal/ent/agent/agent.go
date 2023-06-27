@@ -33,6 +33,8 @@ const (
 	FieldName = "name"
 	// FieldPhone holds the string denoting the phone field in the database.
 	FieldPhone = "phone"
+	// FieldSuper holds the string denoting the super field in the database.
+	FieldSuper = "super"
 	// EdgeEnterprise holds the string denoting the enterprise edge name in mutations.
 	EdgeEnterprise = "enterprise"
 	// EdgeStations holds the string denoting the stations edge name in mutations.
@@ -65,6 +67,7 @@ var Columns = []string{
 	FieldEnterpriseID,
 	FieldName,
 	FieldPhone,
+	FieldSuper,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "agent"
@@ -107,6 +110,8 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultSuper holds the default value on creation for the "super" field.
+	DefaultSuper bool
 )
 
 // OrderOption defines the ordering options for the Agent queries.
@@ -150,6 +155,11 @@ func ByName(opts ...sql.OrderTermOption) OrderOption {
 // ByPhone orders the results by the phone field.
 func ByPhone(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPhone, opts...).ToFunc()
+}
+
+// BySuper orders the results by the super field.
+func BySuper(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSuper, opts...).ToFunc()
 }
 
 // ByEnterpriseField orders the results by enterprise field.

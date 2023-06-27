@@ -230,6 +230,12 @@ func (cc *CabinetCreate) SetNillableLat(f *float64) *CabinetCreate {
 	return cc
 }
 
+// SetGeom sets the "geom" field.
+func (cc *CabinetCreate) SetGeom(m *model.Geometry) *CabinetCreate {
+	cc.mutation.SetGeom(m)
+	return cc
+}
+
 // SetAddress sets the "address" field.
 func (cc *CabinetCreate) SetAddress(s string) *CabinetCreate {
 	cc.mutation.SetAddress(s)
@@ -722,6 +728,10 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 	if value, ok := cc.mutation.Lat(); ok {
 		_spec.SetField(cabinet.FieldLat, field.TypeFloat64, value)
 		_node.Lat = value
+	}
+	if value, ok := cc.mutation.Geom(); ok {
+		_spec.SetField(cabinet.FieldGeom, field.TypeOther, value)
+		_node.Geom = value
 	}
 	if value, ok := cc.mutation.Address(); ok {
 		_spec.SetField(cabinet.FieldAddress, field.TypeString, value)
@@ -1254,6 +1264,24 @@ func (u *CabinetUpsert) AddLat(v float64) *CabinetUpsert {
 // ClearLat clears the value of the "lat" field.
 func (u *CabinetUpsert) ClearLat() *CabinetUpsert {
 	u.SetNull(cabinet.FieldLat)
+	return u
+}
+
+// SetGeom sets the "geom" field.
+func (u *CabinetUpsert) SetGeom(v *model.Geometry) *CabinetUpsert {
+	u.Set(cabinet.FieldGeom, v)
+	return u
+}
+
+// UpdateGeom sets the "geom" field to the value that was provided on create.
+func (u *CabinetUpsert) UpdateGeom() *CabinetUpsert {
+	u.SetExcluded(cabinet.FieldGeom)
+	return u
+}
+
+// ClearGeom clears the value of the "geom" field.
+func (u *CabinetUpsert) ClearGeom() *CabinetUpsert {
+	u.SetNull(cabinet.FieldGeom)
 	return u
 }
 
@@ -1821,6 +1849,27 @@ func (u *CabinetUpsertOne) UpdateLat() *CabinetUpsertOne {
 func (u *CabinetUpsertOne) ClearLat() *CabinetUpsertOne {
 	return u.Update(func(s *CabinetUpsert) {
 		s.ClearLat()
+	})
+}
+
+// SetGeom sets the "geom" field.
+func (u *CabinetUpsertOne) SetGeom(v *model.Geometry) *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.SetGeom(v)
+	})
+}
+
+// UpdateGeom sets the "geom" field to the value that was provided on create.
+func (u *CabinetUpsertOne) UpdateGeom() *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.UpdateGeom()
+	})
+}
+
+// ClearGeom clears the value of the "geom" field.
+func (u *CabinetUpsertOne) ClearGeom() *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.ClearGeom()
 	})
 }
 
@@ -2584,6 +2633,27 @@ func (u *CabinetUpsertBulk) UpdateLat() *CabinetUpsertBulk {
 func (u *CabinetUpsertBulk) ClearLat() *CabinetUpsertBulk {
 	return u.Update(func(s *CabinetUpsert) {
 		s.ClearLat()
+	})
+}
+
+// SetGeom sets the "geom" field.
+func (u *CabinetUpsertBulk) SetGeom(v *model.Geometry) *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.SetGeom(v)
+	})
+}
+
+// UpdateGeom sets the "geom" field to the value that was provided on create.
+func (u *CabinetUpsertBulk) UpdateGeom() *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.UpdateGeom()
+	})
+}
+
+// ClearGeom clears the value of the "geom" field.
+func (u *CabinetUpsertBulk) ClearGeom() *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.ClearGeom()
 	})
 }
 

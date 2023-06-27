@@ -109,8 +109,8 @@ type CascaderOptionLevel3 struct {
 }
 
 type LngLat struct {
-	Lng float64 `json:"lng"`
-	Lat float64 `json:"lat"`
+	Lng float64 `json:"lng" query:"lng"` // 经度
+	Lat float64 `json:"lat" query:"lat"` // 纬度
 }
 
 type CascaderOption struct {
