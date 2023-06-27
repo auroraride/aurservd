@@ -339,25 +339,33 @@ func (s *enterpriseService) DiffPrices(item *ent.Enterprise, data []model.Enterp
 func (s *enterpriseService) GetPrices(item *ent.Enterprise) map[string]model.EnterprisePrice {
 	var items []*ent.EnterprisePrice
 	if item.Edges.Prices == nil {
-		items, _ = ent.Database.EnterprisePrice.QueryNotDeleted().Where(enterpriseprice.EnterpriseID(item.ID)).WithCity().All(s.ctx)
+		items, _ = ent.Database.EnterprisePrice.QueryNotDeleted().Where(enterpriseprice.EnterpriseID(item.ID)).WithCity().WithBrand().All(s.ctx)
 	} else {
 		items = item.Edges.Prices
 	}
 	res := make(map[string]model.EnterprisePrice)
 	for _, price := range items {
 		ci := price.Edges.City
+		br := price.Edges.Brand
 		cid := item.CityID
 		cname := ""
 		if ci != nil {
 			cname = ci.Name
 		}
+
+		ename := ""
+		if br != nil {
+			ename = br.Name
+		}
+
 		res[s.PriceKey(price.CityID, price.Model, price.BrandID)] = model.EnterprisePrice{
-			CityID:   cid,
-			CityName: cname,
-			Model:    price.Model,
-			Price:    price.Price,
-			ID:       price.ID,
-			BrandID:  price.BrandID,
+			CityID:    cid,
+			CityName:  cname,
+			Model:     price.Model,
+			Price:     price.Price,
+			ID:        price.ID,
+			BrandID:   price.BrandID,
+			EbikeName: ename,
 		}
 	}
 	return res

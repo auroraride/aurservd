@@ -24,12 +24,13 @@ type EnterpriseContract struct {
 }
 
 type EnterprisePrice struct {
-	ID       uint64  `json:"id"`
-	Model    string  `json:"model"`
-	Price    float64 `json:"price"`
-	CityID   uint64  `json:"cityId"`
-	CityName string  `json:"cityName"`
-	BrandID  *uint64 `json:"brandId"` // 电车型号ID
+	ID        uint64  `json:"id"`
+	Model     string  `json:"model"`
+	Price     float64 `json:"price"`
+	CityID    uint64  `json:"cityId"`
+	CityName  string  `json:"cityName"`
+	BrandID   *uint64 `json:"brandId"`   // 电车型号ID
+	EbikeName string  `json:"ebikeName"` // 电车型号名称
 }
 
 type EnterpriseContractModifyReq struct {

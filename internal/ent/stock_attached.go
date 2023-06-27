@@ -151,18 +151,15 @@ func GetStockNum(ctx context.Context, Params *model.StockSummaryParams) {
 		q.Where(stocksummary.Model(Params.Model))
 	}
 
-	// 电池数量
-	if Params.Material == stock.MaterialBattery.String() {
+	switch Params.Material {
+	case stock.MaterialBattery.String(): // 电池物资
 		q.Where(stocksummary.MaterialEQ(stocksummary.Material(stock.MaterialBattery)))
-	}
-	// 电车数量
-	if Params.Material == stock.MaterialEbike.String() {
+	case stock.MaterialEbike.String(): // 电车物资
 		q.Where(stocksummary.MaterialEQ(stocksummary.Material(stock.MaterialEbike)))
-	}
-	// 其他物资
-	if Params.Material == stock.MaterialOthers.String() {
+	case stock.MaterialOthers.String(): // 其他物资
 		q.Where(stocksummary.MaterialEQ(stocksummary.Material(stock.MaterialOthers)))
 	}
+
 	//  站点查询
 	if Params.StationID != nil {
 		q.Where(stocksummary.StationID(*Params.StationID))
