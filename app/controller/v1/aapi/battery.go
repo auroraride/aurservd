@@ -72,6 +72,7 @@ func (*battery) List(c echo.Context) (err error) {
 			Model:        req.Model,
 			RiderID:      req.RiderID,
 			Status:       req.Status,
+			Goal:         req.Goal,
 		},
 	}))
 }

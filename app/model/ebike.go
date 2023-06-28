@@ -67,6 +67,7 @@ type EbikeListFilter struct {
 	OwnerType    *uint8       `json:"ownerType" query:"ownerType" enums:"1,2"` // 归属类型   1:平台 2:代理商
 	EnterpriseID *uint64      `json:"enterpriseId" query:"enterpriseId"`       // 团签ID
 	StationID    *uint64      `json:"stationId" query:"stationId"`             // 站点ID
+	Goal         EbikeGoal    `json:"goal" query:"goal" enums:"0,1,2"`         // 查询目标, 0:不筛选 1:站点 2:骑手
 }
 
 type EbikeAttributes struct {

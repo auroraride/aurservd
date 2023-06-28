@@ -37,3 +37,44 @@ func (sg StoreCabiletGoal) SQLString() string {
 		StockGoalCabinet: "cabinet",
 	}[sg]
 }
+
+type BatteryGoal uint8
+
+const (
+	BatteryAll BatteryGoal = iota
+	BatteryStation
+	BatteryCabinet
+	BatteryRider
+)
+
+func (bg BatteryGoal) String() string {
+	switch bg {
+	case BatteryStation:
+		return "站点"
+	case BatteryCabinet:
+		return "电柜"
+	case BatteryRider:
+		return "骑手"
+	default:
+		return ""
+	}
+}
+
+type EbikeGoal uint8
+
+const (
+	EbikeAll EbikeGoal = iota
+	EbikeStation
+	EbikeRider
+)
+
+func (bg EbikeGoal) String() string {
+	switch bg {
+	case EbikeStation:
+		return "站点"
+	case EbikeRider:
+		return "骑手"
+	default:
+		return ""
+	}
+}

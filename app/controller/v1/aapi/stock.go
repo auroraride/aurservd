@@ -28,8 +28,8 @@ var Stock = new(stock)
 // @Param        query  query   model.StockDetailReq  false  "筛选条件"
 // @Success      200  {object}  model.PaginationRes{items=[]model.StockDetailRes}  "请求成功"
 func (*stock) Detail(c echo.Context) (err error) {
-	ctx, req := app.AgentContextAndBinding[model.StockDetailReq](c)
-	return ctx.SendResponse(service.NewStock().Detail(req))
+	ctx, req := app.AgentContextAndBinding[model.AgentStockDetailReq](c)
+	return ctx.SendResponse(service.NewAgentStock().Detail(req))
 }
 
 // BatteryStock 电池物资

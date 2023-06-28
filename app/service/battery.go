@@ -287,13 +287,32 @@ func (s *batteryService) listFilter(req model.BatteryFilter) (q *ent.BatteryQuer
 	}
 
 	if req.RiderID != nil {
-		if *req.RiderID > 0 {
-			info["骑手"] = ent.NewExportInfo(*req.RiderID, rider.Table)
-			q.Where(battery.RiderID(*req.RiderID))
-		} else {
-			// 当RiderID为0时, 查询所有绑定骑手的电池
-			q.Where(battery.RiderIDNotNil())
-		}
+		info["骑手"] = ent.NewExportInfo(*req.RiderID, rider.Table)
+		q.Where(battery.RiderID(*req.RiderID))
+	}
+
+	switch req.Goal {
+	case model.BatteryStation:
+		info["查询目标"] = "站点"
+		q.Where(
+			battery.StationIDNotNil(),
+			battery.CabinetIDIsNil(),
+			battery.RiderIDIsNil(),
+		)
+	case model.BatteryCabinet:
+		info["查询目标"] = "电柜"
+		q.Where(
+			battery.CabinetIDNotNil(),
+			battery.StationIDIsNil(),
+			battery.RiderIDIsNil(),
+		)
+	case model.BatteryRider:
+		info["查询目标"] = "骑手"
+		q.Where(
+			battery.RiderIDNotNil(),
+			battery.StationIDIsNil(),
+			battery.CabinetIDIsNil(),
+		)
 	}
 
 	return
