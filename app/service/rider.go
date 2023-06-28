@@ -472,8 +472,18 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
 			// 即将到期
 			subqs = append(
 				subqs,
-				subscribe.Status(model.SubscribeStatusUsing),
-				subscribe.RemainingLTE(3),
+				subscribe.Or(
+					subscribe.And(
+						subscribe.EnterpriseIDIsNil(),
+						subscribe.StatusIn(model.SubscribeNotUnSubscribed()...),
+						subscribe.RemainingLTE(3),
+					),
+					subscribe.And(
+						subscribe.EnterpriseIDNotNil(),
+						subscribe.Status(model.SubscribeStatusUsing),
+						subscribe.AgentEndAtLTE(carbon.Time2Carbon(tools.NewTime().WillEnd(time.Now(), 3)).EndOfDay().Carbon2Time()),
+					),
+				),
 			)
 		case 99:
 			q.Where(rider.Not(rider.HasSubscribes()))
