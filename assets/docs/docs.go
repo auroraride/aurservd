@@ -598,6 +598,57 @@ const docTemplate = `{
                 }
             }
         },
+        "/agent/v1/cabinet/detail/{serial}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A5002 电柜详情",
+                "operationId": "AgentCabinetDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "电柜编号",
+                        "name": "serial",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "纬度",
+                        "name": "lat",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "经度",
+                        "name": "lng",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.AgentCabinet"
+                        }
+                    }
+                }
+            }
+        },
         "/agent/v1/cabinet/maintain": {
             "post": {
                 "consumes": [
@@ -684,57 +735,6 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/model.CascaderOptionLevel2"
                             }
-                        }
-                    }
-                }
-            }
-        },
-        "/agent/v1/cabinet/{serial}": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "[A]代理接口"
-                ],
-                "summary": "A5002 电柜详情",
-                "operationId": "AgentCabinetDetail",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "代理校验token",
-                        "name": "X-Agent-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "电柜编号",
-                        "name": "serial",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "number",
-                        "description": "纬度",
-                        "name": "lat",
-                        "in": "query"
-                    },
-                    {
-                        "type": "number",
-                        "description": "经度",
-                        "name": "lng",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.AgentCabinet"
                         }
                     }
                 }

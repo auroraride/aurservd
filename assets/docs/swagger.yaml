@@ -8254,40 +8254,6 @@ paths:
       summary: A5001 电柜列表
       tags:
       - '[A]代理接口'
-  /agent/v1/cabinet/{serial}:
-    get:
-      consumes:
-      - application/json
-      operationId: AgentCabinetDetail
-      parameters:
-      - description: 代理校验token
-        in: header
-        name: X-Agent-Token
-        required: true
-        type: string
-      - description: 电柜编号
-        in: path
-        name: serial
-        required: true
-        type: string
-      - description: 纬度
-        in: query
-        name: lat
-        type: number
-      - description: 经度
-        in: query
-        name: lng
-        type: number
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.AgentCabinet'
-      summary: A5002 电柜详情
-      tags:
-      - '[A]代理接口'
   /agent/v1/cabinet/binopen:
     post:
       consumes:
@@ -8326,6 +8292,40 @@ paths:
               $ref: '#/definitions/cabdef.BinOperateResult'
             type: array
       summary: A5005 电柜开仓
+      tags:
+      - '[A]代理接口'
+  /agent/v1/cabinet/detail/{serial}:
+    get:
+      consumes:
+      - application/json
+      operationId: AgentCabinetDetail
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - description: 电柜编号
+        in: path
+        name: serial
+        required: true
+        type: string
+      - description: 纬度
+        in: query
+        name: lat
+        type: number
+      - description: 经度
+        in: query
+        name: lng
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.AgentCabinet'
+      summary: A5002 电柜详情
       tags:
       - '[A]代理接口'
   /agent/v1/cabinet/maintain:

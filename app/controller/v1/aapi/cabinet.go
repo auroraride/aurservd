@@ -35,7 +35,7 @@ func (*cabinet) List(c echo.Context) (err error) {
 
 // Detail
 // @ID           AgentCabinetDetail
-// @Router       /agent/v1/cabinet/{serial} [GET]
+// @Router       /agent/v1/cabinet/detail/{serial} [GET]
 // @Summary      A5002 电柜详情
 // @Tags         [A]代理接口
 // @Accept       json

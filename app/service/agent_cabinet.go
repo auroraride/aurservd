@@ -65,7 +65,7 @@ func (s *agentCabinetService) detail(item *ent.Cabinet, lng *float64, lat *float
 	for i, b := range item.Bin {
 		data.Bins[i] = &model.AgentCabinetBin{
 			Ordinal:   b.Index + 1,
-			Usable:    b.CanUse(),
+			Usable:    b.DoorHealth && !b.Deactivate,
 			BatterySN: b.BatterySN,
 			Soc:       b.Electricity,
 		}
