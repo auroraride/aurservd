@@ -46,8 +46,8 @@ type businessRiderService struct {
 
 	storeID, employeeID, cabinetID, subscribeID, agentID *uint64
 
-	// 团签站点ID
-	enterpriseID, stationID *uint64
+	// // 团签站点ID
+	// enterpriseID, stationID *uint64
 
 	// 电车信息
 	ebikeInfo *model.EbikeBusinessInfo
@@ -105,22 +105,6 @@ func (s *businessRiderService) SetStoreID(id *uint64) *businessRiderService {
 func (s *businessRiderService) SetAgentID(id *uint64) *businessRiderService {
 	if id != nil {
 		s.agentID = id
-	}
-	return s
-}
-
-// SetEnterpriseID 设置团签ID
-func (s *businessRiderService) SetEnterpriseID(id *uint64) *businessRiderService {
-	if id != nil {
-		s.enterpriseID = id
-	}
-	return s
-}
-
-// SetStationID 设置站点ID
-func (s *businessRiderService) SetStationID(id *uint64) *businessRiderService {
-	if id != nil {
-		s.stationID = id
 	}
 	return s
 }
@@ -360,10 +344,10 @@ func (s *businessRiderService) preprocess(bt business.Type, sub *ent.Subscribe) 
 		// 团签激活和退租
 		// 如果骑手在团签电柜退租 退租至电柜
 		// 代理商操作退租和后台强制退租退至团签
-		if sub.StationID != nil && s.cabinet == nil && (bt == business.TypeActive || bt == business.TypeUnsubscribe) {
-			s.stationID = sub.StationID
-			s.enterpriseID = sub.EnterpriseID
-		}
+		// if sub.StationID != nil && s.cabinet == nil && (bt == business.TypeActive || bt == business.TypeUnsubscribe) {
+		// 	s.stationID = sub.StationID
+		// 	s.enterpriseID = sub.EnterpriseID
+		// }
 
 	}
 
@@ -519,7 +503,7 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
 			cb(tx)
 
 			// 需要进行业务出入库
-			if s.cabinetID != nil || s.storeID != nil || s.stationID != nil {
+			if s.cabinetID != nil || s.storeID != nil || s.subscribe.StationID != nil {
 				sk, err = NewStockWithModifier(s.modifier).RiderBusiness(
 					tx,
 					&model.StockBusinessReq{
@@ -533,8 +517,8 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
 						CabinetID:   s.cabinetID,
 						SubscribeID: s.subscribeID,
 
-						StationID:    s.stationID,
-						EnterpriseID: s.enterpriseID,
+						StationID:    s.subscribe.StationID,
+						EnterpriseID: s.subscribe.EnterpriseID,
 						AgentID:      s.agentID,
 
 						Ebike:   s.ebikeInfo,

@@ -43,7 +43,7 @@ func (*stock) Detail(c echo.Context) (err error) {
 // @Success      200  {object}  []model.BatteryStockSummaryRsp  "请求成功"
 func (*stock) BatteryStock(c echo.Context) (err error) {
 	ctx := app.ContextX[app.AgentContext](c)
-	return ctx.SendResponse(service.NewStockSummary().BatteryStockSummary(&model.StockSummaryReq{EnterpriseID: ctx.Enterprise.ID}))
+	return ctx.SendResponse(service.NewStockSummary().BatteryStockSummary(ctx))
 }
 
 // EBikeStock 电车物资
@@ -57,5 +57,5 @@ func (*stock) BatteryStock(c echo.Context) (err error) {
 // @Success      200  {object}  []model.EbikeStockSummaryRsp  "请求成功"
 func (*stock) EBikeStock(c echo.Context) (err error) {
 	ctx := app.ContextX[app.AgentContext](c)
-	return ctx.SendResponse(service.NewStockSummary().EbikeStockSummary(&model.StockSummaryReq{EnterpriseID: ctx.Enterprise.ID}))
+	return ctx.SendResponse(service.NewStockSummary().EbikeStockSummary(ctx))
 }

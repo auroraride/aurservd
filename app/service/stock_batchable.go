@@ -48,15 +48,21 @@ func (s *stockBatchableService) Fetch(target uint8, id uint64, name string) int 
 		// 对于非智能电池的查询 非智能电池没有电池id
 		q.Where(stock.BatteryIDIsNil())
 	}
-	err := q.Where(stock.Name(name), idw).
-		GroupBy(stock.FieldStoreID, stock.FieldCabinetID, stock.FieldStationID).
-		Aggregate(ent.Sum(stock.FieldNum)).
-		Scan(s.ctx, &result)
+
+	var err error
+	q.Where(stock.Name(name), idw)
+	if target == model.StockTargetStation {
+		err = q.GroupBy(stock.FieldStationID).Aggregate(ent.Sum(stock.FieldNum)).
+			Scan(s.ctx, &result)
+	} else {
+		q.GroupBy(stock.FieldStoreID, stock.FieldCabinetID)
+		err = q.Aggregate(ent.Sum(stock.FieldNum)).
+			Scan(s.ctx, &result)
+	}
 
 	if err != nil {
 		snag.Panic("物资数量获取失败")
 	}
-
 	if len(result) == 0 {
 		return 0
 	}

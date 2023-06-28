@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/golang-module/carbon/v2"
 
+	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -30,21 +31,21 @@ func NewAgentStatistics(params ...any) *agentStatisticsService {
 }
 
 // Overview 代理小程序数据统计概览
-func (s *agentStatisticsService) Overview(en *ent.Enterprise) *model.AgentStatisticsOverviewRes {
+func (s *agentStatisticsService) Overview(ac *app.AgentContext) *model.AgentStatisticsOverviewRes {
 	var rsp model.AgentStatisticsOverviewRes
-	rsp.AgentStatisticsOverviewRider = s.RiderSummary(en)
+	rsp.AgentStatisticsOverviewRider = s.RiderSummary(ac.Enterprise)
 	// 加时审核数
 	rsp.SubscribeAlterTotal = ent.Database.SubscribeAlter.Query().Where(
-		subscribealter.EnterpriseID(en.ID),
+		subscribealter.EnterpriseID(ac.Enterprise.ID),
 		subscribealter.StatusEQ(model.SubscribeAlterStatusPending),
 		subscribealter.HasRiderWith(rider.DeletedAtIsNil()),
 	).CountX(s.ctx)
 
 	ns := NewStockSummary()
 	// 电池数据统计
-	rsp.BatterySummary = ns.BatterySummary(en.ID)
+	rsp.BatterySummary = ns.BatterySummary(ac)
 	// 车+电骑手数
-	rsp.EbikeSummary = ns.EbikeSummary(en.ID)
+	rsp.EbikeSummary = ns.EbikeSummary(ac)
 	return &rsp
 }
 

@@ -27,5 +27,5 @@ var Statistics = new(statistics)
 // @Success      200  {object}  model.AgentStatisticsOverviewRes  "请求成功"
 func (*statistics) Overview(c echo.Context) (err error) {
 	ctx := app.ContextX[app.AgentContext](c)
-	return ctx.SendResponse(service.NewAgentStatistics().Overview(ctx.Enterprise))
+	return ctx.SendResponse(service.NewAgentStatistics().Overview(ctx))
 }

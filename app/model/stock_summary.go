@@ -42,8 +42,8 @@ type StockSummaryReq struct {
 }
 
 type BatteryStockSummaryRsp struct {
-	Overview BatterySummary      `json:"overview"` // 概览
-	Group    []BatteryStockGroup `json:"group"`    // 分组
+	Overview BatterySummary       `json:"overview"` // 概览
+	Group    []*BatteryStockGroup `json:"group"`    // 分组
 }
 
 // BatteryStockGroup 电池物资分组
@@ -53,8 +53,8 @@ type BatteryStockGroup struct {
 }
 
 type EbikeStockSummaryRsp struct {
-	Overview EbikeSummary      `json:"overview"` // 概览
-	Group    []EbikeStockGroup `json:"group"`    // 分组
+	Overview EbikeSummary       `json:"overview"` // 概览
+	Group    []*EbikeStockGroup `json:"group"`    // 分组
 }
 
 // EbikeStockGroup 电车物资分组统计
