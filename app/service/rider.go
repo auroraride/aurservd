@@ -480,13 +480,7 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
 		case model.SubscribeStatusUnSubscribed:
 			subqs = append(
 				subqs,
-				subscribe.Or(
-					subscribe.And(
-						subscribe.EndAtNotNil(),
-						subscribe.Status(model.SubscribeStatusUnSubscribed),
-					),
-					subscribe.StatusIn(model.SubscribeNotUnSubscribed()...),
-				),
+				subscribe.Status(model.SubscribeStatusUnSubscribed),
 			)
 		default:
 			subqs = append(subqs, subscribe.Status(rss))
