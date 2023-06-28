@@ -17231,8 +17231,8 @@ const docTemplate = `{
                     }
                 },
                 "distance": {
-                    "description": "距离",
-                    "type": "integer"
+                    "description": "可控制电柜距离（米）",
+                    "type": "number"
                 },
                 "enterprise": {
                     "description": "企业",
@@ -22154,8 +22154,8 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "distance": {
-                    "description": "电柜距离",
-                    "type": "integer"
+                    "description": "可控制电柜距离（米）",
+                    "type": "number"
                 },
                 "idcardNumber": {
                     "type": "string"
@@ -22242,8 +22242,8 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "distance": {
-                    "description": "电柜距离",
-                    "type": "integer"
+                    "description": "可控制电柜距离（米）",
+                    "type": "number"
                 },
                 "idcardNumber": {
                     "type": "string"

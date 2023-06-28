@@ -1784,7 +1784,7 @@ var (
 		{Name: "agent", Type: field.TypeBool, Comment: "代理商模式", Default: false},
 		{Name: "use_store", Type: field.TypeBool, Nullable: true, Comment: "是否可以使用门店, 只有代理商模式生效", Default: true},
 		{Name: "days", Type: field.TypeJSON, Nullable: true, Comment: "代理商时间选项"},
-		{Name: "distance", Type: field.TypeUint64, Comment: "可控制电柜距离", Default: 0},
+		{Name: "distance", Type: field.TypeFloat64, Comment: "可控制电柜距离（米）", Default: 200},
 		{Name: "recharge_amount", Type: field.TypeJSON, Nullable: true, Comment: "充值金额选项"},
 		{Name: "city_id", Type: field.TypeUint64, Comment: "城市ID"},
 	}

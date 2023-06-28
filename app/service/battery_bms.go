@@ -82,14 +82,14 @@ func (s *batteryBmsService) SyncPutin(sn string, cab *ent.Cabinet, ordinal int) 
 		return
 	}
 
-	if time.Since(bat.UpdatedAt).Seconds() < 20 {
-		rid := ""
-		if bat.RiderID != nil {
-			rid = strconv.FormatUint(*bat.RiderID, 10)
-		}
-		zap.L().Error("电池解绑过快, sn=" + bat.Sn + ", updated_at=" + bat.UpdatedAt.Format("2006-01-02 15:04:05.000") + ", rider_id=" + rid + ", serial=" + cab.Serial + ", ordinal=" + strconv.Itoa(ordinal))
-		return
-	}
+	// if time.Since(bat.UpdatedAt).Seconds() < 20 {
+	// 	rid := ""
+	// 	if bat.RiderID != nil {
+	// 		rid = strconv.FormatUint(*bat.RiderID, 10)
+	// 	}
+	// 	zap.L().Error("电池解绑过快, sn=" + bat.Sn + ", updated_at=" + bat.UpdatedAt.Format("2006-01-02 15:04:05.000") + ", rider_id=" + rid + ", serial=" + cab.Serial + ", ordinal=" + strconv.Itoa(ordinal))
+	// 	return
+	// }
 
 	// 移除该仓位其他电池
 	// s.SyncPutout(cab, ordinal)

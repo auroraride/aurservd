@@ -54,7 +54,7 @@ type AgentProfile struct {
 	Prices         []EnterprisePrice   `json:"prices"`             // 价格列表
 	Days           []int               `json:"days"`               // 日期选项
 	RechargeAmount []int               `json:"rechargeAmount"`     // 充值金额选项
-	Distance       uint64              `json:"distance"`           // 距离
+	Distance       float64             `json:"distance"`           // 可控制电柜距离（米）
 }
 
 type AgentSigninRes struct {

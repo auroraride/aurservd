@@ -35,14 +35,14 @@ func NewAgentCabinet(params ...any) *agentCabinetService {
 	}
 }
 
-func (s *agentCabinetService) detail(item *ent.Cabinet, lng *float64, lat *float64) *model.AgentCabinet {
+func (s *agentCabinetService) detail(ac *app.AgentContext, item *ent.Cabinet, lng *float64, lat *float64) *model.AgentCabinet {
 	data := &model.AgentCabinet{
 		ID:         item.ID,
 		Serial:     item.Serial,
 		Name:       item.Name,
 		Status:     item.Status,
 		Health:     item.Health,
-		Permission: model.AgentCabinetPermissionAll,
+		Permission: model.AgentCabinetPermissionView,
 		Address:    item.Address,
 		Lng:        item.Lng,
 		Lat:        item.Lat,
@@ -55,7 +55,12 @@ func (s *agentCabinetService) detail(item *ent.Cabinet, lng *float64, lat *float
 	}
 
 	if lng != nil && lat != nil {
-		data.Distance = silk.Pointer(haversine.Distance(haversine.NewCoordinates(*lat, *lng), haversine.NewCoordinates(item.Lat, item.Lng)).Kilometers() * 1000.0)
+		distance := haversine.Distance(haversine.NewCoordinates(*lat, *lng), haversine.NewCoordinates(item.Lat, item.Lng)).Kilometers() * 1000.0
+		data.Distance = silk.Pointer(distance)
+		// 当前距离小于控制距离上限则有全部权限
+		if distance <= ac.Enterprise.Distance {
+			data.Permission = model.AgentCabinetPermissionAll
+		}
 	}
 
 	for i, bm := range item.Edges.Models {
@@ -91,7 +96,7 @@ func (s *agentCabinetService) Detail(ac *app.AgentContext, req *model.AgentCabin
 	// 同步电柜并返回电柜详情
 	NewCabinet().Sync(cab)
 
-	return s.detail(cab, req.Lng, req.Lat)
+	return s.detail(ac, cab, req.Lng, req.Lat)
 }
 
 func (s *agentCabinetService) List(ac *app.AgentContext, req *model.AgentCabinetListReq) *model.PaginationRes {
@@ -125,7 +130,7 @@ func (s *agentCabinetService) List(ac *app.AgentContext, req *model.AgentCabinet
 		q,
 		req.PaginationReq,
 		func(item *ent.Cabinet) *model.AgentCabinet {
-			return s.detail(item, req.Lng, req.Lat)
+			return s.detail(ac, item, req.Lng, req.Lat)
 		},
 		NewCabinet().SyncCabinets,
 	)

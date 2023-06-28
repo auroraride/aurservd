@@ -256,7 +256,7 @@ var (
 	// DefaultUseStore holds the default value on creation for the "use_store" field.
 	DefaultUseStore bool
 	// DefaultDistance holds the default value on creation for the "distance" field.
-	DefaultDistance uint64
+	DefaultDistance float64
 )
 
 // OrderOption defines the ordering options for the Enterprise queries.

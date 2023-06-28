@@ -34062,8 +34062,8 @@ type EnterpriseMutation struct {
 	use_store                    *bool
 	days                         *[]int
 	appenddays                   []int
-	distance                     *uint64
-	adddistance                  *int64
+	distance                     *float64
+	adddistance                  *float64
 	recharge_amount              *[]int
 	appendrecharge_amount        []int
 	clearedFields                map[string]struct{}
@@ -35224,13 +35224,13 @@ func (m *EnterpriseMutation) ResetDays() {
 }
 
 // SetDistance sets the "distance" field.
-func (m *EnterpriseMutation) SetDistance(u uint64) {
-	m.distance = &u
+func (m *EnterpriseMutation) SetDistance(f float64) {
+	m.distance = &f
 	m.adddistance = nil
 }
 
 // Distance returns the value of the "distance" field in the mutation.
-func (m *EnterpriseMutation) Distance() (r uint64, exists bool) {
+func (m *EnterpriseMutation) Distance() (r float64, exists bool) {
 	v := m.distance
 	if v == nil {
 		return
@@ -35241,7 +35241,7 @@ func (m *EnterpriseMutation) Distance() (r uint64, exists bool) {
 // OldDistance returns the old "distance" field's value of the Enterprise entity.
 // If the Enterprise object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EnterpriseMutation) OldDistance(ctx context.Context) (v uint64, err error) {
+func (m *EnterpriseMutation) OldDistance(ctx context.Context) (v float64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDistance is only allowed on UpdateOne operations")
 	}
@@ -35255,17 +35255,17 @@ func (m *EnterpriseMutation) OldDistance(ctx context.Context) (v uint64, err err
 	return oldValue.Distance, nil
 }
 
-// AddDistance adds u to the "distance" field.
-func (m *EnterpriseMutation) AddDistance(u int64) {
+// AddDistance adds f to the "distance" field.
+func (m *EnterpriseMutation) AddDistance(f float64) {
 	if m.adddistance != nil {
-		*m.adddistance += u
+		*m.adddistance += f
 	} else {
-		m.adddistance = &u
+		m.adddistance = &f
 	}
 }
 
 // AddedDistance returns the value that was added to the "distance" field in this mutation.
-func (m *EnterpriseMutation) AddedDistance() (r int64, exists bool) {
+func (m *EnterpriseMutation) AddedDistance() (r float64, exists bool) {
 	v := m.adddistance
 	if v == nil {
 		return
@@ -36456,7 +36456,7 @@ func (m *EnterpriseMutation) SetField(name string, value ent.Value) error {
 		m.SetDays(v)
 		return nil
 	case enterprise.FieldDistance:
-		v, ok := value.(uint64)
+		v, ok := value.(float64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -36560,7 +36560,7 @@ func (m *EnterpriseMutation) AddField(name string, value ent.Value) error {
 		m.AddPrepaymentTotal(v)
 		return nil
 	case enterprise.FieldDistance:
-		v, ok := value.(int64)
+		v, ok := value.(float64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
