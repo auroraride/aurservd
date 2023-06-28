@@ -359,13 +359,14 @@ func (s *enterpriseService) GetPrices(item *ent.Enterprise) map[string]model.Ent
 		}
 
 		res[s.PriceKey(price.CityID, price.Model, price.BrandID)] = model.EnterprisePrice{
-			CityID:    cid,
-			CityName:  cname,
-			Model:     price.Model,
-			Price:     price.Price,
-			ID:        price.ID,
-			BrandID:   price.BrandID,
-			EbikeName: ename,
+			CityID:      cid,
+			CityName:    cname,
+			Model:       price.Model,
+			Price:       price.Price,
+			ID:          price.ID,
+			BrandID:     price.BrandID,
+			EbikeName:   ename,
+			Intelligent: price.Intelligent,
 		}
 	}
 	return res
