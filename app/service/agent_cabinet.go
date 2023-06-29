@@ -19,7 +19,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
-	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
 )
 
@@ -54,15 +53,15 @@ func (s *agentCabinetService) detail(ac *app.AgentContext, item *ent.Cabinet, ln
 		Models: make([]string, len(item.Edges.Models)),
 	}
 
-	ed := ac.Enterprise.Distance
-	if lng != nil && lat != nil && ed >= 0 {
-		distance := haversine.Distance(haversine.NewCoordinates(*lat, *lng), haversine.NewCoordinates(item.Lat, item.Lng)).Kilometers() * 1000.0
-		data.Distance = silk.Pointer(distance)
-		// 若无限制或当前距离小于控制距离上限则有全部权限
-		if ed == 0 || distance <= ed {
-			data.Permission = model.AgentCabinetPermissionAll
-		}
-	}
+	// ed := ac.Enterprise.Distance
+	// if lng != nil && lat != nil && ed >= 0 {
+	// 	distance := haversine.Distance(haversine.NewCoordinates(*lat, *lng), haversine.NewCoordinates(item.Lat, item.Lng)).Kilometers() * 1000.0
+	// 	data.Distance = silk.Pointer(distance)
+	// 	// 若无限制或当前距离小于控制距离上限则有全部权限
+	// 	if ed == 0 || distance <= ed {
+	// 		data.Permission = model.AgentCabinetPermissionAll
+	// 	}
+	// }
 
 	for i, bm := range item.Edges.Models {
 		data.Models[i] = bm.Model
@@ -147,6 +146,9 @@ func (s *agentCabinetService) Operable(ac *app.AgentContext, id uint64, lng, lat
 	if cab == nil {
 		snag.Panic("未找到有效电柜")
 	}
+
+	// 暂时屏蔽电柜控制权限
+	snag.Panic("无权限操作")
 
 	ed := ac.Enterprise.Distance
 	if ed < 0 || (ed > 0 && haversine.Distance(haversine.NewCoordinates(lat, lng), haversine.NewCoordinates(cab.Lat, cab.Lng)).Kilometers()*1000.0 > ed) {
