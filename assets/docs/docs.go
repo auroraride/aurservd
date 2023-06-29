@@ -15,6 +15,141 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/agent/v1/battery": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "AA003 电池列表",
+                "operationId": "AgentBatteryList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "电柜ID",
+                        "name": "cabinetID",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "电柜名称",
+                        "name": "cabinetName",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "团签ID",
+                        "name": "enterpriseId",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2,
+                            3
+                        ],
+                        "type": "integer",
+                        "x-enum-varnames": [
+                            "BatteryAll",
+                            "BatteryStation",
+                            "BatteryCabinet",
+                            "BatteryRider"
+                        ],
+                        "description": "查询目标, 0:不筛选 1:站点 2:电柜 3:骑手",
+                        "name": "goal",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "关键词",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "型号",
+                        "name": "model",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "description": "归属类型   1:平台 2:代理商",
+                        "name": "ownerType",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "骑手ID",
+                        "name": "riderId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "编号",
+                        "name": "sn",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "站点ID",
+                        "name": "stationId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "状态 0:全部 1:启用(不携带默认为启用) 2:禁用",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.BatteryListRes"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/agent/v1/battery/model": {
             "get": {
                 "consumes": [
@@ -95,6 +230,151 @@ const docTemplate = `{
                             "type": "array",
                             "items": {
                                 "$ref": "#/definitions/model.Battery"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/agent/v1/bike": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "AB001 电车列表",
+                "operationId": "AgentBikeList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "品牌ID",
+                        "name": "brandId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "是否启用, 默认` + "`" + `true` + "`" + `, 不携带为获取全部",
+                        "name": "enable",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "团签ID",
+                        "name": "enterpriseId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "生产批次",
+                        "name": "exFactory",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "x-enum-varnames": [
+                            "EbikeAll",
+                            "EbikeStation",
+                            "EbikeRider"
+                        ],
+                        "description": "查询目标, 0:不筛选 1:站点 2:骑手",
+                        "name": "goal",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "搜索关键词\u003c骑手:电话/姓名, 车辆:车架号/车牌号/终端编号/SIM卡号\u003e",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "description": "归属类型   1:平台 2:代理商",
+                        "name": "ownerType",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "骑手ID",
+                        "name": "riderId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "站点ID",
+                        "name": "stationId",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2,
+                            3
+                        ],
+                        "type": "integer",
+                        "x-enum-comments": {
+                            "EbikeStatusInStock": "库存中",
+                            "EbikeStatusMaintenance": "维修中",
+                            "EbikeStatusScrapped": "已报废",
+                            "EbikeStatusUsing": "使用中"
+                        },
+                        "x-enum-varnames": [
+                            "EbikeStatusInStock",
+                            "EbikeStatusUsing",
+                            "EbikeStatusMaintenance",
+                            "EbikeStatusScrapped"
+                        ],
+                        "description": "状态, 0:库存中 1:使用中 2:维修中 3:已报废, 不携带为获取全部",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "门店ID",
+                        "name": "storeId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.EbikeListRes"
                             }
                         }
                     }
@@ -1479,26 +1759,8 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
-                        "enum": [
-                            0,
-                            1,
-                            2,
-                            3
-                        ],
-                        "type": "integer",
-                        "x-enum-varnames": [
-                            "StockGoalAll",
-                            "StockGoalStore",
-                            "StockGoalCabinet",
-                            "StockGoalStation"
-                        ],
-                        "description": "查询目标 0:不筛选 1:门店(默认) 2:电柜 3:站点",
-                        "name": "goal",
-                        "in": "query"
-                    },
-                    {
                         "type": "string",
-                        "description": "骑手关键词 (手机号或姓名)",
+                        "description": "查询电柜编号、车架号、电池编码",
                         "name": "keyword",
                         "in": "query"
                     },
@@ -1506,6 +1768,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "查询物资类别, 默认为电池, 逗号分隔 battery:电池 ebike:电车 others:其他物资",
                         "name": "materials",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "电池型号",
+                        "name": "model",
                         "in": "query"
                     },
                     {
@@ -1536,12 +1804,6 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "站点ID",
                         "name": "stationId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "门店ID",
-                        "name": "storeId",
                         "in": "query"
                     },
                     {
@@ -1578,6 +1840,76 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            }
+        },
+        "/agent/v1/stock/battery": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A6002 电池物资",
+                "operationId": "AgentBatteryStock",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.BatteryStockSummaryRsp"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/agent/v1/stock/ebike": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A6003 电车物资",
+                "operationId": "AgentBikeStock",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.EbikeStockSummaryRsp"
+                            }
                         }
                     }
                 }
@@ -3951,6 +4283,12 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "type": "integer",
+                        "description": "电柜ID",
+                        "name": "cabinetID",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "description": "电柜名称",
                         "name": "cabinetName",
@@ -3975,6 +4313,24 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "enum": [
+                            0,
+                            1,
+                            2,
+                            3
+                        ],
+                        "type": "integer",
+                        "x-enum-varnames": [
+                            "BatteryAll",
+                            "BatteryStation",
+                            "BatteryCabinet",
+                            "BatteryRider"
+                        ],
+                        "description": "查询目标, 0:不筛选 1:站点 2:电柜 3:骑手",
+                        "name": "goal",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "description": "关键词",
                         "name": "keyword",
@@ -3987,6 +4343,10 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "enum": [
+                            1,
+                            2
+                        ],
                         "type": "integer",
                         "description": "归属类型   1:平台 2:代理商",
                         "name": "ownerType",
@@ -3996,6 +4356,12 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "每页数据, 默认20",
                         "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "骑手ID",
+                        "name": "riderId",
                         "in": "query"
                     },
                     {
@@ -7031,6 +7397,22 @@ const docTemplate = `{
                         "type": "string",
                         "description": "生产批次",
                         "name": "exFactory",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "x-enum-varnames": [
+                            "EbikeAll",
+                            "EbikeStation",
+                            "EbikeRider"
+                        ],
+                        "description": "查询目标, 0:不筛选 1:站点 2:骑手",
+                        "name": "goal",
                         "in": "query"
                     },
                     {
@@ -12733,7 +13115,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "骑手关键词 (手机号或姓名)",
+                        "description": "查询电柜编号、车架号、电池编码",
                         "name": "keyword",
                         "in": "query"
                     },
@@ -12741,6 +13123,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "查询物资类别, 默认为电池, 逗号分隔 battery:电池 ebike:电车 others:其他物资",
                         "name": "materials",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "电池型号",
+                        "name": "model",
                         "in": "query"
                     },
                     {
@@ -17411,13 +17799,9 @@ const docTemplate = `{
                 }
             }
         },
-        "model.AgentStatisticsOverviewRes": {
+        "model.AgentStatisticsOverviewAmount": {
             "type": "object",
             "properties": {
-                "activationTotal": {
-                    "description": "累计激活",
-                    "type": "integer"
-                },
                 "averageDeduction": {
                     "description": "日均扣费",
                     "type": "number"
@@ -17426,32 +17810,54 @@ const docTemplate = `{
                     "description": "余额",
                     "type": "number"
                 },
-                "batteryTotal": {
-                    "description": "电池总数",
+                "yesterdayDeduction": {
+                    "description": "昨日扣费",
+                    "type": "number"
+                }
+            }
+        },
+        "model.AgentStatisticsOverviewRes": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "$ref": "#/definitions/model.AgentStatisticsOverviewAmount"
+                },
+                "batterySummary": {
+                    "$ref": "#/definitions/model.BatterySummary"
+                },
+                "ebikeSummary": {
+                    "$ref": "#/definitions/model.EbikeSummary"
+                },
+                "rider": {
+                    "$ref": "#/definitions/model.AgentStatisticsOverviewRider"
+                }
+            }
+        },
+        "model.AgentStatisticsOverviewRider": {
+            "type": "object",
+            "properties": {
+                "activationTotal": {
+                    "description": "累计激活",
                     "type": "integer"
                 },
                 "billingRiderTotal": {
                     "description": "计费骑手数",
                     "type": "integer"
                 },
-                "cabinetBatteryTotal": {
-                    "description": "电柜电池数",
-                    "type": "integer"
-                },
                 "expiringRiderTotal": {
                     "description": "临期骑手数",
                     "type": "integer"
                 },
-                "riderBatteryTotal": {
-                    "description": "骑手电池数",
+                "riderBatteryAndEbikeTotal": {
+                    "description": "车+电骑手",
+                    "type": "integer"
+                },
+                "riderOnlyBatteryTotal": {
+                    "description": "单电骑手",
                     "type": "integer"
                 },
                 "riderTotal": {
                     "description": "骑手总数",
-                    "type": "integer"
-                },
-                "stationBatteryTotal": {
-                    "description": "站点电池数",
                     "type": "integer"
                 },
                 "subscribeAlterTotal": {
@@ -17461,10 +17867,6 @@ const docTemplate = `{
                 "unSubscribeTotal": {
                     "description": "累计退租",
                     "type": "integer"
-                },
-                "yesterdayDeduction": {
-                    "description": "昨日扣费",
-                    "type": "number"
                 }
             }
         },
@@ -18682,6 +19084,21 @@ const docTemplate = `{
                 }
             }
         },
+        "model.BatteryGoal": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "x-enum-varnames": [
+                "BatteryAll",
+                "BatteryStation",
+                "BatteryCabinet",
+                "BatteryRider"
+            ]
+        },
         "model.BatteryListRes": {
             "type": "object",
             "properties": {
@@ -18992,6 +19409,71 @@ const docTemplate = `{
                 "BatteryStatusDisCharging",
                 "BatteryStatusFault"
             ]
+        },
+        "model.BatteryStockGroup": {
+            "type": "object",
+            "properties": {
+                "batteryTotal": {
+                    "description": "电池总数",
+                    "type": "integer"
+                },
+                "cabinetBatteryTotal": {
+                    "description": "电柜电池数",
+                    "type": "integer"
+                },
+                "model": {
+                    "type": "string"
+                },
+                "riderBatteryTotal": {
+                    "description": "骑手电池数",
+                    "type": "integer"
+                },
+                "stationBatteryTotal": {
+                    "description": "站点电池数",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.BatteryStockSummaryRsp": {
+            "type": "object",
+            "properties": {
+                "group": {
+                    "description": "分组",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.BatteryStockGroup"
+                    }
+                },
+                "overview": {
+                    "description": "概览",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.BatterySummary"
+                        }
+                    ]
+                }
+            }
+        },
+        "model.BatterySummary": {
+            "type": "object",
+            "properties": {
+                "batteryTotal": {
+                    "description": "电池总数",
+                    "type": "integer"
+                },
+                "cabinetBatteryTotal": {
+                    "description": "电柜电池数",
+                    "type": "integer"
+                },
+                "riderBatteryTotal": {
+                    "description": "骑手电池数",
+                    "type": "integer"
+                },
+                "stationBatteryTotal": {
+                    "description": "站点电池数",
+                    "type": "integer"
+                }
+            }
         },
         "model.BatteryUnbindRequest": {
             "type": "object",
@@ -19908,7 +20390,7 @@ const docTemplate = `{
                 "id"
             ],
             "properties": {
-                "agentID": {
+                "agentId": {
                     "description": "代理商ID",
                     "type": "integer"
                 },
@@ -21672,6 +22154,19 @@ const docTemplate = `{
                 }
             }
         },
+        "model.EbikeGoal": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2
+            ],
+            "x-enum-varnames": [
+                "EbikeAll",
+                "EbikeStation",
+                "EbikeRider"
+            ]
+        },
         "model.EbikeListRes": {
             "type": "object",
             "properties": {
@@ -21793,6 +22288,63 @@ const docTemplate = `{
                 "EbikeStatusMaintenance",
                 "EbikeStatusScrapped"
             ]
+        },
+        "model.EbikeStockGroup": {
+            "type": "object",
+            "properties": {
+                "ebikeTotal": {
+                    "description": "电车总数",
+                    "type": "integer"
+                },
+                "model": {
+                    "type": "string"
+                },
+                "riderEbikeTotal": {
+                    "description": "骑手电车数",
+                    "type": "integer"
+                },
+                "stationEbikeTotal": {
+                    "description": "站点电车数",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.EbikeStockSummaryRsp": {
+            "type": "object",
+            "properties": {
+                "group": {
+                    "description": "分组",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.EbikeStockGroup"
+                    }
+                },
+                "overview": {
+                    "description": "概览",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EbikeSummary"
+                        }
+                    ]
+                }
+            }
+        },
+        "model.EbikeSummary": {
+            "type": "object",
+            "properties": {
+                "ebikeTotal": {
+                    "description": "电车总数",
+                    "type": "integer"
+                },
+                "riderEbikeTotal": {
+                    "description": "骑手电车数",
+                    "type": "integer"
+                },
+                "stationEbikeTotal": {
+                    "description": "站点电车数",
+                    "type": "integer"
+                }
+            }
         },
         "model.Employee": {
             "type": "object",
@@ -22313,8 +22865,16 @@ const docTemplate = `{
                 "cityName": {
                     "type": "string"
                 },
+                "ebikeName": {
+                    "description": "电车型号名称",
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
+                },
+                "intelligent": {
+                    "description": "是否智能电池",
+                    "type": "boolean"
                 },
                 "model": {
                     "type": "string"
@@ -26488,11 +27048,15 @@ const docTemplate = `{
                     ]
                 },
                 "keyword": {
-                    "description": "骑手关键词 (手机号或姓名)",
+                    "description": "查询电柜编号、车架号、电池编码",
                     "type": "string"
                 },
                 "materials": {
                     "description": "查询物资类别, 默认为电池, 逗号分隔 battery:电池 ebike:电车 others:其他物资",
+                    "type": "string"
+                },
+                "model": {
+                    "description": "电池型号",
                     "type": "string"
                 },
                 "positive": {
@@ -27285,6 +27849,10 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "operator": {
+                    "description": "操作人",
+                    "type": "string"
+                },
                 "reviewTime": {
                     "description": "审核时间",
                     "type": "string"
@@ -27313,6 +27881,9 @@ const docTemplate = `{
                 "status"
             ],
             "properties": {
+                "agentID": {
+                    "type": "integer"
+                },
                 "ids": {
                     "type": "array",
                     "items": {

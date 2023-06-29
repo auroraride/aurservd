@@ -713,37 +713,48 @@ definitions:
       token:
         type: string
     type: object
-  model.AgentStatisticsOverviewRes:
+  model.AgentStatisticsOverviewAmount:
     properties:
-      activationTotal:
-        description: 累计激活
-        type: integer
       averageDeduction:
         description: 日均扣费
         type: number
       balance:
         description: 余额
         type: number
-      batteryTotal:
-        description: 电池总数
+      yesterdayDeduction:
+        description: 昨日扣费
+        type: number
+    type: object
+  model.AgentStatisticsOverviewRes:
+    properties:
+      amount:
+        $ref: '#/definitions/model.AgentStatisticsOverviewAmount'
+      batterySummary:
+        $ref: '#/definitions/model.BatterySummary'
+      ebikeSummary:
+        $ref: '#/definitions/model.EbikeSummary'
+      rider:
+        $ref: '#/definitions/model.AgentStatisticsOverviewRider'
+    type: object
+  model.AgentStatisticsOverviewRider:
+    properties:
+      activationTotal:
+        description: 累计激活
         type: integer
       billingRiderTotal:
         description: 计费骑手数
         type: integer
-      cabinetBatteryTotal:
-        description: 电柜电池数
-        type: integer
       expiringRiderTotal:
         description: 临期骑手数
         type: integer
-      riderBatteryTotal:
-        description: 骑手电池数
+      riderBatteryAndEbikeTotal:
+        description: 车+电骑手
+        type: integer
+      riderOnlyBatteryTotal:
+        description: 单电骑手
         type: integer
       riderTotal:
         description: 骑手总数
-        type: integer
-      stationBatteryTotal:
-        description: 站点电池数
         type: integer
       subscribeAlterTotal:
         description: 加时待审核数
@@ -751,9 +762,6 @@ definitions:
       unSubscribeTotal:
         description: 累计退租
         type: integer
-      yesterdayDeduction:
-        description: 昨日扣费
-        type: number
     type: object
   model.AgentSubscribeActiveReq:
     properties:
@@ -1583,6 +1591,18 @@ definitions:
       sn:
         type: string
     type: object
+  model.BatteryGoal:
+    enum:
+    - 0
+    - 1
+    - 2
+    - 3
+    type: integer
+    x-enum-varnames:
+    - BatteryAll
+    - BatteryStation
+    - BatteryCabinet
+    - BatteryRider
   model.BatteryListRes:
     properties:
       brand:
@@ -1799,6 +1819,50 @@ definitions:
     - BatteryStatusCharging
     - BatteryStatusDisCharging
     - BatteryStatusFault
+  model.BatteryStockGroup:
+    properties:
+      batteryTotal:
+        description: 电池总数
+        type: integer
+      cabinetBatteryTotal:
+        description: 电柜电池数
+        type: integer
+      model:
+        type: string
+      riderBatteryTotal:
+        description: 骑手电池数
+        type: integer
+      stationBatteryTotal:
+        description: 站点电池数
+        type: integer
+    type: object
+  model.BatteryStockSummaryRsp:
+    properties:
+      group:
+        description: 分组
+        items:
+          $ref: '#/definitions/model.BatteryStockGroup'
+        type: array
+      overview:
+        allOf:
+        - $ref: '#/definitions/model.BatterySummary'
+        description: 概览
+    type: object
+  model.BatterySummary:
+    properties:
+      batteryTotal:
+        description: 电池总数
+        type: integer
+      cabinetBatteryTotal:
+        description: 电柜电池数
+        type: integer
+      riderBatteryTotal:
+        description: 骑手电池数
+        type: integer
+      stationBatteryTotal:
+        description: 站点电池数
+        type: integer
+    type: object
   model.BatteryUnbindRequest:
     properties:
       riderId:
@@ -2423,7 +2487,7 @@ definitions:
     type: object
   model.BusinessSubscribeReq:
     properties:
-      agentID:
+      agentId:
         description: 代理商ID
         type: integer
       cabinetId:
@@ -3655,6 +3719,16 @@ definitions:
     - exFactory
     - sn
     type: object
+  model.EbikeGoal:
+    enum:
+    - 0
+    - 1
+    - 2
+    type: integer
+    x-enum-varnames:
+    - EbikeAll
+    - EbikeStation
+    - EbikeRider
   model.EbikeListRes:
     properties:
       brand:
@@ -3746,6 +3820,44 @@ definitions:
     - EbikeStatusUsing
     - EbikeStatusMaintenance
     - EbikeStatusScrapped
+  model.EbikeStockGroup:
+    properties:
+      ebikeTotal:
+        description: 电车总数
+        type: integer
+      model:
+        type: string
+      riderEbikeTotal:
+        description: 骑手电车数
+        type: integer
+      stationEbikeTotal:
+        description: 站点电车数
+        type: integer
+    type: object
+  model.EbikeStockSummaryRsp:
+    properties:
+      group:
+        description: 分组
+        items:
+          $ref: '#/definitions/model.EbikeStockGroup'
+        type: array
+      overview:
+        allOf:
+        - $ref: '#/definitions/model.EbikeSummary'
+        description: 概览
+    type: object
+  model.EbikeSummary:
+    properties:
+      ebikeTotal:
+        description: 电车总数
+        type: integer
+      riderEbikeTotal:
+        description: 骑手电车数
+        type: integer
+      stationEbikeTotal:
+        description: 站点电车数
+        type: integer
+    type: object
   model.Employee:
     properties:
       id:
@@ -4112,8 +4224,14 @@ definitions:
         type: integer
       cityName:
         type: string
+      ebikeName:
+        description: 电车型号名称
+        type: string
       id:
         type: integer
+      intelligent:
+        description: 是否智能电池
+        type: boolean
       model:
         type: string
       price:
@@ -6975,10 +7093,13 @@ definitions:
         - 2
         - 3
       keyword:
-        description: 骑手关键词 (手机号或姓名)
+        description: 查询电柜编号、车架号、电池编码
         type: string
       materials:
         description: 查询物资类别, 默认为电池, 逗号分隔 battery:电池 ebike:电车 others:其他物资
+        type: string
+      model:
+        description: 电池型号
         type: string
       positive:
         description: 是否正序(默认倒序)
@@ -7525,6 +7646,9 @@ definitions:
         type: integer
       id:
         type: integer
+      operator:
+        description: 操作人
+        type: string
       reviewTime:
         description: 审核时间
         type: string
@@ -7541,6 +7665,8 @@ definitions:
     type: object
   model.SubscribeAlterReviewReq:
     properties:
+      agentID:
+        type: integer
       ids:
         items:
           type: integer
@@ -7920,6 +8046,98 @@ info:
   title: 极光出行API
   version: "1.0"
 paths:
+  /agent/v1/battery:
+    get:
+      consumes:
+      - application/json
+      operationId: AgentBatteryList
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - description: 电柜ID
+        in: query
+        name: cabinetID
+        type: integer
+      - description: 电柜名称
+        in: query
+        name: cabinetName
+        type: string
+      - description: 城市
+        in: query
+        name: cityId
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 团签ID
+        in: query
+        name: enterpriseId
+        type: integer
+      - description: 查询目标, 0:不筛选 1:站点 2:电柜 3:骑手
+        enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        in: query
+        name: goal
+        type: integer
+        x-enum-varnames:
+        - BatteryAll
+        - BatteryStation
+        - BatteryCabinet
+        - BatteryRider
+      - description: 关键词
+        in: query
+        name: keyword
+        type: string
+      - description: 型号
+        in: query
+        name: model
+        type: string
+      - description: 归属类型   1:平台 2:代理商
+        enum:
+        - 1
+        - 2
+        in: query
+        name: ownerType
+        type: integer
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 骑手ID
+        in: query
+        name: riderId
+        type: integer
+      - description: 编号
+        in: query
+        name: sn
+        type: string
+      - description: 站点ID
+        in: query
+        name: stationId
+        type: integer
+      - description: 状态 0:全部 1:启用(不携带默认为启用) 2:禁用
+        in: query
+        name: status
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.BatteryListRes'
+            type: array
+      summary: AA003 电池列表
+      tags:
+      - '[A]代理接口'
   /agent/v1/battery/model:
     get:
       consumes:
@@ -7975,6 +8193,107 @@ paths:
               $ref: '#/definitions/model.Battery'
             type: array
       summary: AA001 电池选择搜索
+      tags:
+      - '[A]代理接口'
+  /agent/v1/bike:
+    get:
+      consumes:
+      - application/json
+      operationId: AgentBikeList
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - description: 品牌ID
+        in: query
+        name: brandId
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 是否启用, 默认`true`, 不携带为获取全部
+        in: query
+        name: enable
+        type: boolean
+      - description: 团签ID
+        in: query
+        name: enterpriseId
+        type: integer
+      - description: 生产批次
+        in: query
+        name: exFactory
+        type: string
+      - description: 查询目标, 0:不筛选 1:站点 2:骑手
+        enum:
+        - 0
+        - 1
+        - 2
+        in: query
+        name: goal
+        type: integer
+        x-enum-varnames:
+        - EbikeAll
+        - EbikeStation
+        - EbikeRider
+      - description: 搜索关键词<骑手:电话/姓名, 车辆:车架号/车牌号/终端编号/SIM卡号>
+        in: query
+        name: keyword
+        type: string
+      - description: 归属类型   1:平台 2:代理商
+        enum:
+        - 1
+        - 2
+        in: query
+        name: ownerType
+        type: integer
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 骑手ID
+        in: query
+        name: riderId
+        type: integer
+      - description: 站点ID
+        in: query
+        name: stationId
+        type: integer
+      - description: 状态, 0:库存中 1:使用中 2:维修中 3:已报废, 不携带为获取全部
+        enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        in: query
+        name: status
+        type: integer
+        x-enum-comments:
+          EbikeStatusInStock: 库存中
+          EbikeStatusMaintenance: 维修中
+          EbikeStatusScrapped: 已报废
+          EbikeStatusUsing: 使用中
+        x-enum-varnames:
+        - EbikeStatusInStock
+        - EbikeStatusUsing
+        - EbikeStatusMaintenance
+        - EbikeStatusScrapped
+      - description: 门店ID
+        in: query
+        name: storeId
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.EbikeListRes'
+            type: array
+      summary: AB001 电车列表
       tags:
       - '[A]代理接口'
   /agent/v1/bike/unallocated:
@@ -8871,27 +9190,17 @@ paths:
         in: query
         name: enterpriseId
         type: integer
-      - description: 查询目标 0:不筛选 1:门店(默认) 2:电柜 3:站点
-        enum:
-        - 0
-        - 1
-        - 2
-        - 3
-        in: query
-        name: goal
-        type: integer
-        x-enum-varnames:
-        - StockGoalAll
-        - StockGoalStore
-        - StockGoalCabinet
-        - StockGoalStation
-      - description: 骑手关键词 (手机号或姓名)
+      - description: 查询电柜编号、车架号、电池编码
         in: query
         name: keyword
         type: string
       - description: 查询物资类别, 默认为电池, 逗号分隔 battery:电池 ebike:电车 others:其他物资
         in: query
         name: materials
+        type: string
+      - description: 电池型号
+        in: query
+        name: model
         type: string
       - description: 每页数据, 默认20
         in: query
@@ -8912,10 +9221,6 @@ paths:
       - description: 站点ID
         in: query
         name: stationId
-        type: integer
-      - description: 门店ID
-        in: query
-        name: storeId
         type: integer
       - description: 调拨类型, 0:调拨 1:激活 2:寄存 3:结束寄存 4:退租
         enum:
@@ -8942,6 +9247,52 @@ paths:
                   type: array
               type: object
       summary: A6001 出入库明细
+      tags:
+      - '[A]代理接口'
+  /agent/v1/stock/battery:
+    get:
+      consumes:
+      - application/json
+      operationId: AgentBatteryStock
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.BatteryStockSummaryRsp'
+            type: array
+      summary: A6002 电池物资
+      tags:
+      - '[A]代理接口'
+  /agent/v1/stock/ebike:
+    get:
+      consumes:
+      - application/json
+      operationId: AgentBikeStock
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.EbikeStockSummaryRsp'
+            type: array
+      summary: A6003 电车物资
       tags:
       - '[A]代理接口'
   /agent/v1/subscribe/active:
@@ -10518,6 +10869,10 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
+      - description: 电柜ID
+        in: query
+        name: cabinetID
+        type: integer
       - description: 电柜名称
         in: query
         name: cabinetName
@@ -10534,6 +10889,20 @@ paths:
         in: query
         name: enterpriseId
         type: integer
+      - description: 查询目标, 0:不筛选 1:站点 2:电柜 3:骑手
+        enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        in: query
+        name: goal
+        type: integer
+        x-enum-varnames:
+        - BatteryAll
+        - BatteryStation
+        - BatteryCabinet
+        - BatteryRider
       - description: 关键词
         in: query
         name: keyword
@@ -10543,12 +10912,19 @@ paths:
         name: model
         type: string
       - description: 归属类型   1:平台 2:代理商
+        enum:
+        - 1
+        - 2
         in: query
         name: ownerType
         type: integer
       - description: 每页数据, 默认20
         in: query
         name: pageSize
+        type: integer
+      - description: 骑手ID
+        in: query
+        name: riderId
         type: integer
       - description: 编号
         in: query
@@ -12540,6 +12916,18 @@ paths:
         in: query
         name: exFactory
         type: string
+      - description: 查询目标, 0:不筛选 1:站点 2:骑手
+        enum:
+        - 0
+        - 1
+        - 2
+        in: query
+        name: goal
+        type: integer
+        x-enum-varnames:
+        - EbikeAll
+        - EbikeStation
+        - EbikeRider
       - description: 搜索关键词<骑手:电话/姓名, 车辆:车架号/车牌号/终端编号/SIM卡号>
         in: query
         name: keyword
@@ -16289,13 +16677,17 @@ paths:
         - StockGoalStore
         - StockGoalCabinet
         - StockGoalStation
-      - description: 骑手关键词 (手机号或姓名)
+      - description: 查询电柜编号、车架号、电池编码
         in: query
         name: keyword
         type: string
       - description: 查询物资类别, 默认为电池, 逗号分隔 battery:电池 ebike:电车 others:其他物资
         in: query
         name: materials
+        type: string
+      - description: 电池型号
+        in: query
+        name: model
         type: string
       - description: 每页数据, 默认20
         in: query

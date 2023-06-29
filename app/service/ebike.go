@@ -370,14 +370,24 @@ func (s *ebikeService) UnallocatedX(params *model.EbikeUnallocatedParams) *model
 
 // SearchUnallocated 获取未分配车辆信息
 func (s *ebikeService) SearchUnallocated(params *model.EbikeUnallocatedParams) (res []*model.Ebike) {
-	q := s.AllocatableBaseFilter().
-		Where(
-			// 关联查询电车当前未被分配
-			ebike.Not(ebike.HasAllocatesWith(
-				allocate.Status(model.AllocateStatusPending.Value()),
-				allocate.TimeGTE(carbon.Now().SubSeconds(model.AllocateExpiration).Carbon2Time()),
-			)),
+	q := s.AllocatableBaseFilter().WithAllocates(func(query *ent.AllocateQuery) {
+		query.Where(
+			allocate.Status(model.AllocateStatusPending.Value()),
+			allocate.TimeGTE(carbon.Now().SubSeconds(model.AllocateExpiration).Carbon2Time()),
 		)
+	})
+	// Where(
+	// 	// 关联查询电车当前未被分配
+	// 	ebike.Or(
+	// 		ebike.Not(
+	// 			ebike.HasAllocatesWith(
+	// 				allocate.Status(model.AllocateStatusPending.Value()),
+	// 				allocate.TimeGTE(carbon.Now().SubSeconds(model.AllocateExpiration).Carbon2Time()),
+	// 			),
+	// 		),
+	// 		ebike.HasAllocates(),
+	// 	),
+	// )
 
 	if (params.ID == nil && params.Keyword == nil) || (params.ID != nil && params.Keyword != nil) {
 		snag.Panic("参数错误")
@@ -413,6 +423,9 @@ func (s *ebikeService) SearchUnallocated(params *model.EbikeUnallocatedParams) (
 
 	res = make([]*model.Ebike, len(bikes))
 	for i, bike := range bikes {
+		if len(bike.Edges.Allocates) > 0 {
+			continue
+		}
 		brand := bike.Edges.Brand
 		res[i] = &model.Ebike{
 			EbikeInfo: model.EbikeInfo{
