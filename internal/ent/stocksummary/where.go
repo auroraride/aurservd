@@ -83,44 +83,34 @@ func Date(v string) predicate.StockSummary {
 	return predicate.StockSummary(sql.FieldEQ(FieldDate, v))
 }
 
-// BatteryNum applies equality check predicate on the "battery_num" field. It's identical to BatteryNumEQ.
-func BatteryNum(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldEQ(FieldBatteryNum, v))
+// Model applies equality check predicate on the "model" field. It's identical to ModelEQ.
+func Model(v string) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldEQ(FieldModel, v))
 }
 
-// BatteryOutboundNum applies equality check predicate on the "battery_outbound_num" field. It's identical to BatteryOutboundNumEQ.
-func BatteryOutboundNum(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldEQ(FieldBatteryOutboundNum, v))
+// Num applies equality check predicate on the "num" field. It's identical to NumEQ.
+func Num(v int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldEQ(FieldNum, v))
 }
 
-// BatteryInboundNum applies equality check predicate on the "battery_inbound_num" field. It's identical to BatteryInboundNumEQ.
-func BatteryInboundNum(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldEQ(FieldBatteryInboundNum, v))
+// TodayNum applies equality check predicate on the "today_num" field. It's identical to TodayNumEQ.
+func TodayNum(v int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldEQ(FieldTodayNum, v))
 }
 
-// BikeNum applies equality check predicate on the "bike_num" field. It's identical to BikeNumEQ.
-func BikeNum(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldEQ(FieldBikeNum, v))
+// OutboundNum applies equality check predicate on the "outbound_num" field. It's identical to OutboundNumEQ.
+func OutboundNum(v int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldEQ(FieldOutboundNum, v))
 }
 
-// BikeOutboundNum applies equality check predicate on the "bike_outbound_num" field. It's identical to BikeOutboundNumEQ.
-func BikeOutboundNum(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldEQ(FieldBikeOutboundNum, v))
+// InboundNum applies equality check predicate on the "inbound_num" field. It's identical to InboundNumEQ.
+func InboundNum(v int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldEQ(FieldInboundNum, v))
 }
 
-// BikeInboundNum applies equality check predicate on the "bike_inbound_num" field. It's identical to BikeInboundNumEQ.
-func BikeInboundNum(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldEQ(FieldBikeInboundNum, v))
-}
-
-// CabinetBatteryNum applies equality check predicate on the "cabinet_battery_num" field. It's identical to CabinetBatteryNumEQ.
-func CabinetBatteryNum(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldEQ(FieldCabinetBatteryNum, v))
-}
-
-// RiderBatteryNum applies equality check predicate on the "rider_battery_num" field. It's identical to RiderBatteryNumEQ.
-func RiderBatteryNum(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldEQ(FieldRiderBatteryNum, v))
+// InRiderNum applies equality check predicate on the "in_rider_num" field. It's identical to InRiderNumEQ.
+func InRiderNum(v int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldEQ(FieldInRiderNum, v))
 }
 
 // EnterpriseIDEQ applies the EQ predicate on the "enterprise_id" field.
@@ -338,324 +328,309 @@ func DateContainsFold(v string) predicate.StockSummary {
 	return predicate.StockSummary(sql.FieldContainsFold(FieldDate, v))
 }
 
-// BatteryNumEQ applies the EQ predicate on the "battery_num" field.
-func BatteryNumEQ(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldEQ(FieldBatteryNum, v))
+// ModelEQ applies the EQ predicate on the "model" field.
+func ModelEQ(v string) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldEQ(FieldModel, v))
 }
 
-// BatteryNumNEQ applies the NEQ predicate on the "battery_num" field.
-func BatteryNumNEQ(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldNEQ(FieldBatteryNum, v))
+// ModelNEQ applies the NEQ predicate on the "model" field.
+func ModelNEQ(v string) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldNEQ(FieldModel, v))
 }
 
-// BatteryNumIn applies the In predicate on the "battery_num" field.
-func BatteryNumIn(vs ...int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldIn(FieldBatteryNum, vs...))
+// ModelIn applies the In predicate on the "model" field.
+func ModelIn(vs ...string) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldIn(FieldModel, vs...))
 }
 
-// BatteryNumNotIn applies the NotIn predicate on the "battery_num" field.
-func BatteryNumNotIn(vs ...int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldNotIn(FieldBatteryNum, vs...))
+// ModelNotIn applies the NotIn predicate on the "model" field.
+func ModelNotIn(vs ...string) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldNotIn(FieldModel, vs...))
 }
 
-// BatteryNumGT applies the GT predicate on the "battery_num" field.
-func BatteryNumGT(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldGT(FieldBatteryNum, v))
+// ModelGT applies the GT predicate on the "model" field.
+func ModelGT(v string) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldGT(FieldModel, v))
 }
 
-// BatteryNumGTE applies the GTE predicate on the "battery_num" field.
-func BatteryNumGTE(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldGTE(FieldBatteryNum, v))
+// ModelGTE applies the GTE predicate on the "model" field.
+func ModelGTE(v string) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldGTE(FieldModel, v))
 }
 
-// BatteryNumLT applies the LT predicate on the "battery_num" field.
-func BatteryNumLT(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldLT(FieldBatteryNum, v))
+// ModelLT applies the LT predicate on the "model" field.
+func ModelLT(v string) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldLT(FieldModel, v))
 }
 
-// BatteryNumLTE applies the LTE predicate on the "battery_num" field.
-func BatteryNumLTE(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldLTE(FieldBatteryNum, v))
+// ModelLTE applies the LTE predicate on the "model" field.
+func ModelLTE(v string) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldLTE(FieldModel, v))
 }
 
-// BatteryOutboundNumEQ applies the EQ predicate on the "battery_outbound_num" field.
-func BatteryOutboundNumEQ(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldEQ(FieldBatteryOutboundNum, v))
+// ModelContains applies the Contains predicate on the "model" field.
+func ModelContains(v string) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldContains(FieldModel, v))
 }
 
-// BatteryOutboundNumNEQ applies the NEQ predicate on the "battery_outbound_num" field.
-func BatteryOutboundNumNEQ(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldNEQ(FieldBatteryOutboundNum, v))
+// ModelHasPrefix applies the HasPrefix predicate on the "model" field.
+func ModelHasPrefix(v string) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldHasPrefix(FieldModel, v))
 }
 
-// BatteryOutboundNumIn applies the In predicate on the "battery_outbound_num" field.
-func BatteryOutboundNumIn(vs ...int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldIn(FieldBatteryOutboundNum, vs...))
+// ModelHasSuffix applies the HasSuffix predicate on the "model" field.
+func ModelHasSuffix(v string) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldHasSuffix(FieldModel, v))
 }
 
-// BatteryOutboundNumNotIn applies the NotIn predicate on the "battery_outbound_num" field.
-func BatteryOutboundNumNotIn(vs ...int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldNotIn(FieldBatteryOutboundNum, vs...))
+// ModelIsNil applies the IsNil predicate on the "model" field.
+func ModelIsNil() predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldIsNull(FieldModel))
 }
 
-// BatteryOutboundNumGT applies the GT predicate on the "battery_outbound_num" field.
-func BatteryOutboundNumGT(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldGT(FieldBatteryOutboundNum, v))
+// ModelNotNil applies the NotNil predicate on the "model" field.
+func ModelNotNil() predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldNotNull(FieldModel))
 }
 
-// BatteryOutboundNumGTE applies the GTE predicate on the "battery_outbound_num" field.
-func BatteryOutboundNumGTE(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldGTE(FieldBatteryOutboundNum, v))
+// ModelEqualFold applies the EqualFold predicate on the "model" field.
+func ModelEqualFold(v string) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldEqualFold(FieldModel, v))
 }
 
-// BatteryOutboundNumLT applies the LT predicate on the "battery_outbound_num" field.
-func BatteryOutboundNumLT(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldLT(FieldBatteryOutboundNum, v))
+// ModelContainsFold applies the ContainsFold predicate on the "model" field.
+func ModelContainsFold(v string) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldContainsFold(FieldModel, v))
 }
 
-// BatteryOutboundNumLTE applies the LTE predicate on the "battery_outbound_num" field.
-func BatteryOutboundNumLTE(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldLTE(FieldBatteryOutboundNum, v))
+// NumEQ applies the EQ predicate on the "num" field.
+func NumEQ(v int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldEQ(FieldNum, v))
 }
 
-// BatteryInboundNumEQ applies the EQ predicate on the "battery_inbound_num" field.
-func BatteryInboundNumEQ(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldEQ(FieldBatteryInboundNum, v))
+// NumNEQ applies the NEQ predicate on the "num" field.
+func NumNEQ(v int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldNEQ(FieldNum, v))
 }
 
-// BatteryInboundNumNEQ applies the NEQ predicate on the "battery_inbound_num" field.
-func BatteryInboundNumNEQ(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldNEQ(FieldBatteryInboundNum, v))
+// NumIn applies the In predicate on the "num" field.
+func NumIn(vs ...int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldIn(FieldNum, vs...))
 }
 
-// BatteryInboundNumIn applies the In predicate on the "battery_inbound_num" field.
-func BatteryInboundNumIn(vs ...int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldIn(FieldBatteryInboundNum, vs...))
+// NumNotIn applies the NotIn predicate on the "num" field.
+func NumNotIn(vs ...int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldNotIn(FieldNum, vs...))
 }
 
-// BatteryInboundNumNotIn applies the NotIn predicate on the "battery_inbound_num" field.
-func BatteryInboundNumNotIn(vs ...int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldNotIn(FieldBatteryInboundNum, vs...))
+// NumGT applies the GT predicate on the "num" field.
+func NumGT(v int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldGT(FieldNum, v))
 }
 
-// BatteryInboundNumGT applies the GT predicate on the "battery_inbound_num" field.
-func BatteryInboundNumGT(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldGT(FieldBatteryInboundNum, v))
+// NumGTE applies the GTE predicate on the "num" field.
+func NumGTE(v int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldGTE(FieldNum, v))
 }
 
-// BatteryInboundNumGTE applies the GTE predicate on the "battery_inbound_num" field.
-func BatteryInboundNumGTE(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldGTE(FieldBatteryInboundNum, v))
+// NumLT applies the LT predicate on the "num" field.
+func NumLT(v int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldLT(FieldNum, v))
 }
 
-// BatteryInboundNumLT applies the LT predicate on the "battery_inbound_num" field.
-func BatteryInboundNumLT(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldLT(FieldBatteryInboundNum, v))
+// NumLTE applies the LTE predicate on the "num" field.
+func NumLTE(v int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldLTE(FieldNum, v))
 }
 
-// BatteryInboundNumLTE applies the LTE predicate on the "battery_inbound_num" field.
-func BatteryInboundNumLTE(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldLTE(FieldBatteryInboundNum, v))
+// TodayNumEQ applies the EQ predicate on the "today_num" field.
+func TodayNumEQ(v int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldEQ(FieldTodayNum, v))
 }
 
-// BikeNumEQ applies the EQ predicate on the "bike_num" field.
-func BikeNumEQ(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldEQ(FieldBikeNum, v))
+// TodayNumNEQ applies the NEQ predicate on the "today_num" field.
+func TodayNumNEQ(v int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldNEQ(FieldTodayNum, v))
 }
 
-// BikeNumNEQ applies the NEQ predicate on the "bike_num" field.
-func BikeNumNEQ(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldNEQ(FieldBikeNum, v))
+// TodayNumIn applies the In predicate on the "today_num" field.
+func TodayNumIn(vs ...int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldIn(FieldTodayNum, vs...))
 }
 
-// BikeNumIn applies the In predicate on the "bike_num" field.
-func BikeNumIn(vs ...int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldIn(FieldBikeNum, vs...))
+// TodayNumNotIn applies the NotIn predicate on the "today_num" field.
+func TodayNumNotIn(vs ...int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldNotIn(FieldTodayNum, vs...))
 }
 
-// BikeNumNotIn applies the NotIn predicate on the "bike_num" field.
-func BikeNumNotIn(vs ...int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldNotIn(FieldBikeNum, vs...))
+// TodayNumGT applies the GT predicate on the "today_num" field.
+func TodayNumGT(v int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldGT(FieldTodayNum, v))
 }
 
-// BikeNumGT applies the GT predicate on the "bike_num" field.
-func BikeNumGT(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldGT(FieldBikeNum, v))
+// TodayNumGTE applies the GTE predicate on the "today_num" field.
+func TodayNumGTE(v int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldGTE(FieldTodayNum, v))
 }
 
-// BikeNumGTE applies the GTE predicate on the "bike_num" field.
-func BikeNumGTE(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldGTE(FieldBikeNum, v))
+// TodayNumLT applies the LT predicate on the "today_num" field.
+func TodayNumLT(v int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldLT(FieldTodayNum, v))
 }
 
-// BikeNumLT applies the LT predicate on the "bike_num" field.
-func BikeNumLT(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldLT(FieldBikeNum, v))
+// TodayNumLTE applies the LTE predicate on the "today_num" field.
+func TodayNumLTE(v int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldLTE(FieldTodayNum, v))
 }
 
-// BikeNumLTE applies the LTE predicate on the "bike_num" field.
-func BikeNumLTE(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldLTE(FieldBikeNum, v))
+// OutboundNumEQ applies the EQ predicate on the "outbound_num" field.
+func OutboundNumEQ(v int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldEQ(FieldOutboundNum, v))
 }
 
-// BikeOutboundNumEQ applies the EQ predicate on the "bike_outbound_num" field.
-func BikeOutboundNumEQ(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldEQ(FieldBikeOutboundNum, v))
+// OutboundNumNEQ applies the NEQ predicate on the "outbound_num" field.
+func OutboundNumNEQ(v int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldNEQ(FieldOutboundNum, v))
 }
 
-// BikeOutboundNumNEQ applies the NEQ predicate on the "bike_outbound_num" field.
-func BikeOutboundNumNEQ(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldNEQ(FieldBikeOutboundNum, v))
+// OutboundNumIn applies the In predicate on the "outbound_num" field.
+func OutboundNumIn(vs ...int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldIn(FieldOutboundNum, vs...))
 }
 
-// BikeOutboundNumIn applies the In predicate on the "bike_outbound_num" field.
-func BikeOutboundNumIn(vs ...int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldIn(FieldBikeOutboundNum, vs...))
+// OutboundNumNotIn applies the NotIn predicate on the "outbound_num" field.
+func OutboundNumNotIn(vs ...int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldNotIn(FieldOutboundNum, vs...))
 }
 
-// BikeOutboundNumNotIn applies the NotIn predicate on the "bike_outbound_num" field.
-func BikeOutboundNumNotIn(vs ...int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldNotIn(FieldBikeOutboundNum, vs...))
+// OutboundNumGT applies the GT predicate on the "outbound_num" field.
+func OutboundNumGT(v int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldGT(FieldOutboundNum, v))
 }
 
-// BikeOutboundNumGT applies the GT predicate on the "bike_outbound_num" field.
-func BikeOutboundNumGT(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldGT(FieldBikeOutboundNum, v))
+// OutboundNumGTE applies the GTE predicate on the "outbound_num" field.
+func OutboundNumGTE(v int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldGTE(FieldOutboundNum, v))
 }
 
-// BikeOutboundNumGTE applies the GTE predicate on the "bike_outbound_num" field.
-func BikeOutboundNumGTE(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldGTE(FieldBikeOutboundNum, v))
+// OutboundNumLT applies the LT predicate on the "outbound_num" field.
+func OutboundNumLT(v int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldLT(FieldOutboundNum, v))
 }
 
-// BikeOutboundNumLT applies the LT predicate on the "bike_outbound_num" field.
-func BikeOutboundNumLT(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldLT(FieldBikeOutboundNum, v))
+// OutboundNumLTE applies the LTE predicate on the "outbound_num" field.
+func OutboundNumLTE(v int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldLTE(FieldOutboundNum, v))
 }
 
-// BikeOutboundNumLTE applies the LTE predicate on the "bike_outbound_num" field.
-func BikeOutboundNumLTE(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldLTE(FieldBikeOutboundNum, v))
+// InboundNumEQ applies the EQ predicate on the "inbound_num" field.
+func InboundNumEQ(v int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldEQ(FieldInboundNum, v))
 }
 
-// BikeInboundNumEQ applies the EQ predicate on the "bike_inbound_num" field.
-func BikeInboundNumEQ(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldEQ(FieldBikeInboundNum, v))
+// InboundNumNEQ applies the NEQ predicate on the "inbound_num" field.
+func InboundNumNEQ(v int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldNEQ(FieldInboundNum, v))
 }
 
-// BikeInboundNumNEQ applies the NEQ predicate on the "bike_inbound_num" field.
-func BikeInboundNumNEQ(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldNEQ(FieldBikeInboundNum, v))
+// InboundNumIn applies the In predicate on the "inbound_num" field.
+func InboundNumIn(vs ...int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldIn(FieldInboundNum, vs...))
 }
 
-// BikeInboundNumIn applies the In predicate on the "bike_inbound_num" field.
-func BikeInboundNumIn(vs ...int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldIn(FieldBikeInboundNum, vs...))
+// InboundNumNotIn applies the NotIn predicate on the "inbound_num" field.
+func InboundNumNotIn(vs ...int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldNotIn(FieldInboundNum, vs...))
 }
 
-// BikeInboundNumNotIn applies the NotIn predicate on the "bike_inbound_num" field.
-func BikeInboundNumNotIn(vs ...int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldNotIn(FieldBikeInboundNum, vs...))
+// InboundNumGT applies the GT predicate on the "inbound_num" field.
+func InboundNumGT(v int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldGT(FieldInboundNum, v))
 }
 
-// BikeInboundNumGT applies the GT predicate on the "bike_inbound_num" field.
-func BikeInboundNumGT(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldGT(FieldBikeInboundNum, v))
+// InboundNumGTE applies the GTE predicate on the "inbound_num" field.
+func InboundNumGTE(v int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldGTE(FieldInboundNum, v))
 }
 
-// BikeInboundNumGTE applies the GTE predicate on the "bike_inbound_num" field.
-func BikeInboundNumGTE(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldGTE(FieldBikeInboundNum, v))
+// InboundNumLT applies the LT predicate on the "inbound_num" field.
+func InboundNumLT(v int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldLT(FieldInboundNum, v))
 }
 
-// BikeInboundNumLT applies the LT predicate on the "bike_inbound_num" field.
-func BikeInboundNumLT(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldLT(FieldBikeInboundNum, v))
+// InboundNumLTE applies the LTE predicate on the "inbound_num" field.
+func InboundNumLTE(v int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldLTE(FieldInboundNum, v))
 }
 
-// BikeInboundNumLTE applies the LTE predicate on the "bike_inbound_num" field.
-func BikeInboundNumLTE(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldLTE(FieldBikeInboundNum, v))
+// InRiderNumEQ applies the EQ predicate on the "in_rider_num" field.
+func InRiderNumEQ(v int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldEQ(FieldInRiderNum, v))
 }
 
-// CabinetBatteryNumEQ applies the EQ predicate on the "cabinet_battery_num" field.
-func CabinetBatteryNumEQ(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldEQ(FieldCabinetBatteryNum, v))
+// InRiderNumNEQ applies the NEQ predicate on the "in_rider_num" field.
+func InRiderNumNEQ(v int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldNEQ(FieldInRiderNum, v))
 }
 
-// CabinetBatteryNumNEQ applies the NEQ predicate on the "cabinet_battery_num" field.
-func CabinetBatteryNumNEQ(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldNEQ(FieldCabinetBatteryNum, v))
+// InRiderNumIn applies the In predicate on the "in_rider_num" field.
+func InRiderNumIn(vs ...int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldIn(FieldInRiderNum, vs...))
 }
 
-// CabinetBatteryNumIn applies the In predicate on the "cabinet_battery_num" field.
-func CabinetBatteryNumIn(vs ...int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldIn(FieldCabinetBatteryNum, vs...))
+// InRiderNumNotIn applies the NotIn predicate on the "in_rider_num" field.
+func InRiderNumNotIn(vs ...int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldNotIn(FieldInRiderNum, vs...))
 }
 
-// CabinetBatteryNumNotIn applies the NotIn predicate on the "cabinet_battery_num" field.
-func CabinetBatteryNumNotIn(vs ...int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldNotIn(FieldCabinetBatteryNum, vs...))
+// InRiderNumGT applies the GT predicate on the "in_rider_num" field.
+func InRiderNumGT(v int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldGT(FieldInRiderNum, v))
 }
 
-// CabinetBatteryNumGT applies the GT predicate on the "cabinet_battery_num" field.
-func CabinetBatteryNumGT(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldGT(FieldCabinetBatteryNum, v))
+// InRiderNumGTE applies the GTE predicate on the "in_rider_num" field.
+func InRiderNumGTE(v int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldGTE(FieldInRiderNum, v))
 }
 
-// CabinetBatteryNumGTE applies the GTE predicate on the "cabinet_battery_num" field.
-func CabinetBatteryNumGTE(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldGTE(FieldCabinetBatteryNum, v))
+// InRiderNumLT applies the LT predicate on the "in_rider_num" field.
+func InRiderNumLT(v int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldLT(FieldInRiderNum, v))
 }
 
-// CabinetBatteryNumLT applies the LT predicate on the "cabinet_battery_num" field.
-func CabinetBatteryNumLT(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldLT(FieldCabinetBatteryNum, v))
+// InRiderNumLTE applies the LTE predicate on the "in_rider_num" field.
+func InRiderNumLTE(v int) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldLTE(FieldInRiderNum, v))
 }
 
-// CabinetBatteryNumLTE applies the LTE predicate on the "cabinet_battery_num" field.
-func CabinetBatteryNumLTE(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldLTE(FieldCabinetBatteryNum, v))
+// MaterialEQ applies the EQ predicate on the "material" field.
+func MaterialEQ(v Material) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldEQ(FieldMaterial, v))
 }
 
-// RiderBatteryNumEQ applies the EQ predicate on the "rider_battery_num" field.
-func RiderBatteryNumEQ(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldEQ(FieldRiderBatteryNum, v))
+// MaterialNEQ applies the NEQ predicate on the "material" field.
+func MaterialNEQ(v Material) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldNEQ(FieldMaterial, v))
 }
 
-// RiderBatteryNumNEQ applies the NEQ predicate on the "rider_battery_num" field.
-func RiderBatteryNumNEQ(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldNEQ(FieldRiderBatteryNum, v))
+// MaterialIn applies the In predicate on the "material" field.
+func MaterialIn(vs ...Material) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldIn(FieldMaterial, vs...))
 }
 
-// RiderBatteryNumIn applies the In predicate on the "rider_battery_num" field.
-func RiderBatteryNumIn(vs ...int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldIn(FieldRiderBatteryNum, vs...))
+// MaterialNotIn applies the NotIn predicate on the "material" field.
+func MaterialNotIn(vs ...Material) predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldNotIn(FieldMaterial, vs...))
 }
 
-// RiderBatteryNumNotIn applies the NotIn predicate on the "rider_battery_num" field.
-func RiderBatteryNumNotIn(vs ...int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldNotIn(FieldRiderBatteryNum, vs...))
+// MaterialIsNil applies the IsNil predicate on the "material" field.
+func MaterialIsNil() predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldIsNull(FieldMaterial))
 }
 
-// RiderBatteryNumGT applies the GT predicate on the "rider_battery_num" field.
-func RiderBatteryNumGT(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldGT(FieldRiderBatteryNum, v))
-}
-
-// RiderBatteryNumGTE applies the GTE predicate on the "rider_battery_num" field.
-func RiderBatteryNumGTE(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldGTE(FieldRiderBatteryNum, v))
-}
-
-// RiderBatteryNumLT applies the LT predicate on the "rider_battery_num" field.
-func RiderBatteryNumLT(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldLT(FieldRiderBatteryNum, v))
-}
-
-// RiderBatteryNumLTE applies the LTE predicate on the "rider_battery_num" field.
-func RiderBatteryNumLTE(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldLTE(FieldRiderBatteryNum, v))
+// MaterialNotNil applies the NotNil predicate on the "material" field.
+func MaterialNotNil() predicate.StockSummary {
+	return predicate.StockSummary(sql.FieldNotNull(FieldMaterial))
 }
 
 // HasEnterprise applies the HasEdge predicate on the "enterprise" edge.

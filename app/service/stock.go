@@ -857,12 +857,12 @@ func (s *stockService) detailInfo(item *ent.Stock) model.StockDetailRes {
 	ec := item.Edges.Cabinet
 	en := item.Edges.Enterprise
 	st := item.Edges.Station
-	battery := item.Edges.Battery
+	ba := item.Edges.Battery
 	ag := item.Edges.Agent
 
 	// 站点调拨电池
-	if battery != nil {
-		res.Name = fmt.Sprintf("[%s] %s", *item.Model, battery.Sn)
+	if ba != nil {
+		res.Name = fmt.Sprintf("[%s] %s", *item.Model, ba.Sn)
 	}
 	if item.Type == model.StockTypeTransfer {
 		// 平台调拨记录

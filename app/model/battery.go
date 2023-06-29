@@ -21,15 +21,18 @@ type BatteryModifyReq struct {
 }
 
 type BatteryFilter struct {
-	SN           string  `json:"sn" query:"sn"`                     // 编号
-	Model        string  `json:"model" query:"model"`               // 型号
-	CityID       uint64  `json:"cityId" query:"cityId"`             // 城市
-	Status       *int    `json:"status" query:"status"`             // 状态 0:全部 1:启用(不携带默认为启用) 2:禁用
-	EnterpriseID *uint64 `json:"enterpriseId" query:"enterpriseId"` // 团签ID
-	StationID    *uint64 `json:"stationId" query:"stationId"`       // 站点ID
-	CabinetName  *string `json:"cabinetName" query:"cabinetName"`   // 电柜名称
-	Keyword      *string `json:"keyword" query:"keyword"`           // 关键词
-	OwnerType    *uint8  `json:"ownerType" query:"ownerType"`       // 归属类型   1:平台 2:代理商
+	SN           string      `json:"sn" query:"sn"`                           // 编号
+	Model        string      `json:"model" query:"model"`                     // 型号
+	CityID       uint64      `json:"cityId" query:"cityId"`                   // 城市
+	Status       *int        `json:"status" query:"status"`                   // 状态 0:全部 1:启用(不携带默认为启用) 2:禁用
+	EnterpriseID *uint64     `json:"enterpriseId" query:"enterpriseId"`       // 团签ID
+	StationID    *uint64     `json:"stationId" query:"stationId"`             // 站点ID
+	CabinetID    *uint64     `json:"cabinetID" query:"cabinetID"`             // 电柜ID
+	CabinetName  *string     `json:"cabinetName" query:"cabinetName"`         // 电柜名称
+	Keyword      *string     `json:"keyword" query:"keyword"`                 // 关键词
+	OwnerType    *uint8      `json:"ownerType" query:"ownerType" enums:"1,2"` // 归属类型   1:平台 2:代理商
+	RiderID      *uint64     `json:"riderId" query:"riderId"`                 // 骑手ID
+	Goal         BatteryGoal `json:"goal" query:"goal" enums:"0,1,2,3"`       // 查询目标, 0:不筛选 1:站点 2:电柜 3:骑手
 }
 
 type BatteryListReq struct {

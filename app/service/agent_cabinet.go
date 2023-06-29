@@ -200,3 +200,16 @@ func (s *agentCabinetService) BinOpen(ac *app.AgentContext, req *model.AgentBinO
 
 	return results
 }
+
+// AllNonIntelligentCabinet 查询代理所有非智能电柜
+func (s *agentCabinetService) AllNonIntelligentCabinet(ac *app.AgentContext) []*ent.Cabinet {
+	cab, _ := s.orm.QueryNotDeleted().Where(
+		cabinet.StationIDIn(ac.StationIDs()...),
+		cabinet.Intelligent(false),
+	).WithModels().All(s.ctx)
+
+	if cab == nil {
+		snag.Panic("未找到有效电柜")
+	}
+	return cab
+}

@@ -33,22 +33,20 @@ type StockSummary struct {
 	CabinetID *uint64 `json:"cabinet_id,omitempty"`
 	// 日期
 	Date string `json:"date,omitempty"`
-	// 电池总数
-	BatteryNum int `json:"battery_num,omitempty"`
-	// 电池出库总数
-	BatteryOutboundNum int `json:"battery_outbound_num,omitempty"`
-	// 电池入库总数
-	BatteryInboundNum int `json:"battery_inbound_num,omitempty"`
-	// 电车总数
-	BikeNum int `json:"bike_num,omitempty"`
-	// 电车出库总数
-	BikeOutboundNum int `json:"bike_outbound_num,omitempty"`
-	// 电车入库总数
-	BikeInboundNum int `json:"bike_inbound_num,omitempty"`
-	// 电柜电池总数
-	CabinetBatteryNum int `json:"cabinet_battery_num,omitempty"`
-	// 骑手电池总数
-	RiderBatteryNum int `json:"rider_battery_num,omitempty"`
+	// 型号
+	Model string `json:"model,omitempty"`
+	// 总数
+	Num int `json:"num,omitempty"`
+	// 今日总数
+	TodayNum int `json:"today_num,omitempty"`
+	// 出库总数
+	OutboundNum int `json:"outbound_num,omitempty"`
+	// 入库总数
+	InboundNum int `json:"inbound_num,omitempty"`
+	// 电池在骑手总数
+	InRiderNum int `json:"in_rider_num,omitempty"`
+	// 物资种类
+	Material stocksummary.Material `json:"material,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the StockSummaryQuery when eager-loading is set.
 	Edges        StockSummaryEdges `json:"edges"`
@@ -142,9 +140,9 @@ func (*StockSummary) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case stocksummary.FieldID, stocksummary.FieldEnterpriseID, stocksummary.FieldStationID, stocksummary.FieldStoreID, stocksummary.FieldRiderID, stocksummary.FieldCabinetID, stocksummary.FieldBatteryNum, stocksummary.FieldBatteryOutboundNum, stocksummary.FieldBatteryInboundNum, stocksummary.FieldBikeNum, stocksummary.FieldBikeOutboundNum, stocksummary.FieldBikeInboundNum, stocksummary.FieldCabinetBatteryNum, stocksummary.FieldRiderBatteryNum:
+		case stocksummary.FieldID, stocksummary.FieldEnterpriseID, stocksummary.FieldStationID, stocksummary.FieldStoreID, stocksummary.FieldRiderID, stocksummary.FieldCabinetID, stocksummary.FieldNum, stocksummary.FieldTodayNum, stocksummary.FieldOutboundNum, stocksummary.FieldInboundNum, stocksummary.FieldInRiderNum:
 			values[i] = new(sql.NullInt64)
-		case stocksummary.FieldDate:
+		case stocksummary.FieldDate, stocksummary.FieldModel, stocksummary.FieldMaterial:
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -208,53 +206,47 @@ func (ss *StockSummary) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				ss.Date = value.String
 			}
-		case stocksummary.FieldBatteryNum:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field battery_num", values[i])
+		case stocksummary.FieldModel:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field model", values[i])
 			} else if value.Valid {
-				ss.BatteryNum = int(value.Int64)
+				ss.Model = value.String
 			}
-		case stocksummary.FieldBatteryOutboundNum:
+		case stocksummary.FieldNum:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field battery_outbound_num", values[i])
+				return fmt.Errorf("unexpected type %T for field num", values[i])
 			} else if value.Valid {
-				ss.BatteryOutboundNum = int(value.Int64)
+				ss.Num = int(value.Int64)
 			}
-		case stocksummary.FieldBatteryInboundNum:
+		case stocksummary.FieldTodayNum:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field battery_inbound_num", values[i])
+				return fmt.Errorf("unexpected type %T for field today_num", values[i])
 			} else if value.Valid {
-				ss.BatteryInboundNum = int(value.Int64)
+				ss.TodayNum = int(value.Int64)
 			}
-		case stocksummary.FieldBikeNum:
+		case stocksummary.FieldOutboundNum:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field bike_num", values[i])
+				return fmt.Errorf("unexpected type %T for field outbound_num", values[i])
 			} else if value.Valid {
-				ss.BikeNum = int(value.Int64)
+				ss.OutboundNum = int(value.Int64)
 			}
-		case stocksummary.FieldBikeOutboundNum:
+		case stocksummary.FieldInboundNum:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field bike_outbound_num", values[i])
+				return fmt.Errorf("unexpected type %T for field inbound_num", values[i])
 			} else if value.Valid {
-				ss.BikeOutboundNum = int(value.Int64)
+				ss.InboundNum = int(value.Int64)
 			}
-		case stocksummary.FieldBikeInboundNum:
+		case stocksummary.FieldInRiderNum:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field bike_inbound_num", values[i])
+				return fmt.Errorf("unexpected type %T for field in_rider_num", values[i])
 			} else if value.Valid {
-				ss.BikeInboundNum = int(value.Int64)
+				ss.InRiderNum = int(value.Int64)
 			}
-		case stocksummary.FieldCabinetBatteryNum:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field cabinet_battery_num", values[i])
+		case stocksummary.FieldMaterial:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field material", values[i])
 			} else if value.Valid {
-				ss.CabinetBatteryNum = int(value.Int64)
-			}
-		case stocksummary.FieldRiderBatteryNum:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field rider_battery_num", values[i])
-			} else if value.Valid {
-				ss.RiderBatteryNum = int(value.Int64)
+				ss.Material = stocksummary.Material(value.String)
 			}
 		default:
 			ss.selectValues.Set(columns[i], values[i])
@@ -345,29 +337,26 @@ func (ss *StockSummary) String() string {
 	builder.WriteString("date=")
 	builder.WriteString(ss.Date)
 	builder.WriteString(", ")
-	builder.WriteString("battery_num=")
-	builder.WriteString(fmt.Sprintf("%v", ss.BatteryNum))
+	builder.WriteString("model=")
+	builder.WriteString(ss.Model)
 	builder.WriteString(", ")
-	builder.WriteString("battery_outbound_num=")
-	builder.WriteString(fmt.Sprintf("%v", ss.BatteryOutboundNum))
+	builder.WriteString("num=")
+	builder.WriteString(fmt.Sprintf("%v", ss.Num))
 	builder.WriteString(", ")
-	builder.WriteString("battery_inbound_num=")
-	builder.WriteString(fmt.Sprintf("%v", ss.BatteryInboundNum))
+	builder.WriteString("today_num=")
+	builder.WriteString(fmt.Sprintf("%v", ss.TodayNum))
 	builder.WriteString(", ")
-	builder.WriteString("bike_num=")
-	builder.WriteString(fmt.Sprintf("%v", ss.BikeNum))
+	builder.WriteString("outbound_num=")
+	builder.WriteString(fmt.Sprintf("%v", ss.OutboundNum))
 	builder.WriteString(", ")
-	builder.WriteString("bike_outbound_num=")
-	builder.WriteString(fmt.Sprintf("%v", ss.BikeOutboundNum))
+	builder.WriteString("inbound_num=")
+	builder.WriteString(fmt.Sprintf("%v", ss.InboundNum))
 	builder.WriteString(", ")
-	builder.WriteString("bike_inbound_num=")
-	builder.WriteString(fmt.Sprintf("%v", ss.BikeInboundNum))
+	builder.WriteString("in_rider_num=")
+	builder.WriteString(fmt.Sprintf("%v", ss.InRiderNum))
 	builder.WriteString(", ")
-	builder.WriteString("cabinet_battery_num=")
-	builder.WriteString(fmt.Sprintf("%v", ss.CabinetBatteryNum))
-	builder.WriteString(", ")
-	builder.WriteString("rider_battery_num=")
-	builder.WriteString(fmt.Sprintf("%v", ss.RiderBatteryNum))
+	builder.WriteString("material=")
+	builder.WriteString(fmt.Sprintf("%v", ss.Material))
 	builder.WriteByte(')')
 	return builder.String()
 }

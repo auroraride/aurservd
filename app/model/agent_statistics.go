@@ -4,9 +4,10 @@ package model
 
 // AgentStatisticsOverviewRes 代理商小程序首页数据
 type AgentStatisticsOverviewRes struct {
-	AgentStatisticsOverviewAmount
-	AgentStatisticsOverviewRider
-	AgentStatisticsOverviewBattery
+	AgentStatisticsOverviewAmount `json:"amount"`
+	AgentStatisticsOverviewRider  `json:"rider"`
+	BatterySummary                `json:"batterySummary"`
+	EbikeSummary                  `json:"ebikeSummary"`
 }
 
 // AgentStatisticsOverviewAmount 团签金额汇总
@@ -27,16 +28,7 @@ type AgentStatisticsOverviewRider struct {
 	SubscribeAlterTotal int `json:"subscribeAlterTotal"` // 加时待审核数
 	ActivationTotal     int `json:"activationTotal"`     // 累计激活
 	UnSubscribeTotal    int `json:"unSubscribeTotal"`    // 累计退租
-}
 
-// AgentStatisticsOverviewBattery 团签电池汇总
-type AgentStatisticsOverviewBattery struct {
-	// 电池总数
-	BatteryTotal int `json:"batteryTotal"`
-	// 站点电池数
-	StationBatteryTotal int `json:"stationBatteryTotal"`
-	// 电柜电池数
-	CabinetBatteryTotal int `json:"cabinetBatteryTotal"`
-	// 骑手电池数
-	RiderBatteryTotal int `json:"riderBatteryTotal"`
+	RiderOnlyBatteryTotal     int `json:"riderOnlyBatteryTotal"`     // 单电骑手
+	RiderBatteryAndEbikeTotal int `json:"riderBatteryAndEbikeTotal"` // 车+电骑手
 }

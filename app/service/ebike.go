@@ -184,6 +184,21 @@ func (s *ebikeService) listFilter(req model.EbikeListFilter) (q *ent.EbikeQuery,
 		q.Where(ebike.StationID(*req.StationID))
 	}
 
+	switch req.Goal {
+	case model.EbikeStation:
+		info["查询目标"] = "站点"
+		q.Where(
+			ebike.StationIDNotNil(),
+			ebike.RiderIDIsNil(),
+		)
+	case model.EbikeRider:
+		info["查询目标"] = "骑手"
+		q.Where(
+			ebike.RiderIDNotNil(),
+			ebike.StationIDIsNil(),
+		)
+	}
+
 	return
 }
 

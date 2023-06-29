@@ -69,8 +69,9 @@ func (*subscribe) AlterList(c echo.Context) (err error) {
 func (*subscribe) AlterReivew(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.SubscribeAlterReviewReq](c)
 	service.NewAgentSubscribe(ctx.Agent, ctx.Enterprise).AlterReview(&model.SubscribeAlterReviewReq{
-		Ids:    req.Ids,
-		Status: req.Status,
+		Ids:     req.Ids,
+		Status:  req.Status,
+		AgentID: &ctx.Agent.ID,
 	})
 	return ctx.SendResponse()
 }

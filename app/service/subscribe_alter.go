@@ -6,6 +6,8 @@
 package service
 
 import (
+	"fmt"
+
 	"github.com/golang-module/carbon/v2"
 
 	"github.com/auroraride/aurservd/app/model"
@@ -69,7 +71,8 @@ func (s *subscribeAlterService) List(req *model.SubscribeAlterListReq) *model.Pa
 		).
 		Order(ent.Desc(subscribealter.FieldCreatedAt)).
 		WithRider().
-		WithSubscribe()
+		WithSubscribe().
+		WithAgent()
 
 	tt := tools.NewTime()
 	if req.Start != nil {
@@ -122,6 +125,13 @@ func (s *subscribeAlterService) List(req *model.SubscribeAlterListReq) *model.Pa
 					Phone: item.Edges.Rider.Phone,
 					Name:  item.Edges.Rider.Name,
 				}
+			}
+			// 操作人
+			if item.Edges.Agent != nil {
+				res.Operator = fmt.Sprintf("代理 - %s", item.Edges.Agent.Name)
+			}
+			if item.Creator != nil {
+				res.Operator = fmt.Sprintf("后台 - %s", item.Creator.Name)
 			}
 			return res
 		},

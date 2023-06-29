@@ -3,6 +3,8 @@
 package stocksummary
 
 import (
+	"fmt"
+
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 )
@@ -24,22 +26,20 @@ const (
 	FieldCabinetID = "cabinet_id"
 	// FieldDate holds the string denoting the date field in the database.
 	FieldDate = "date"
-	// FieldBatteryNum holds the string denoting the battery_num field in the database.
-	FieldBatteryNum = "battery_num"
-	// FieldBatteryOutboundNum holds the string denoting the battery_outbound_num field in the database.
-	FieldBatteryOutboundNum = "battery_outbound_num"
-	// FieldBatteryInboundNum holds the string denoting the battery_inbound_num field in the database.
-	FieldBatteryInboundNum = "battery_inbound_num"
-	// FieldBikeNum holds the string denoting the bike_num field in the database.
-	FieldBikeNum = "bike_num"
-	// FieldBikeOutboundNum holds the string denoting the bike_outbound_num field in the database.
-	FieldBikeOutboundNum = "bike_outbound_num"
-	// FieldBikeInboundNum holds the string denoting the bike_inbound_num field in the database.
-	FieldBikeInboundNum = "bike_inbound_num"
-	// FieldCabinetBatteryNum holds the string denoting the cabinet_battery_num field in the database.
-	FieldCabinetBatteryNum = "cabinet_battery_num"
-	// FieldRiderBatteryNum holds the string denoting the rider_battery_num field in the database.
-	FieldRiderBatteryNum = "rider_battery_num"
+	// FieldModel holds the string denoting the model field in the database.
+	FieldModel = "model"
+	// FieldNum holds the string denoting the num field in the database.
+	FieldNum = "num"
+	// FieldTodayNum holds the string denoting the today_num field in the database.
+	FieldTodayNum = "today_num"
+	// FieldOutboundNum holds the string denoting the outbound_num field in the database.
+	FieldOutboundNum = "outbound_num"
+	// FieldInboundNum holds the string denoting the inbound_num field in the database.
+	FieldInboundNum = "inbound_num"
+	// FieldInRiderNum holds the string denoting the in_rider_num field in the database.
+	FieldInRiderNum = "in_rider_num"
+	// FieldMaterial holds the string denoting the material field in the database.
+	FieldMaterial = "material"
 	// EdgeEnterprise holds the string denoting the enterprise edge name in mutations.
 	EdgeEnterprise = "enterprise"
 	// EdgeStation holds the string denoting the station edge name in mutations.
@@ -98,14 +98,13 @@ var Columns = []string{
 	FieldRiderID,
 	FieldCabinetID,
 	FieldDate,
-	FieldBatteryNum,
-	FieldBatteryOutboundNum,
-	FieldBatteryInboundNum,
-	FieldBikeNum,
-	FieldBikeOutboundNum,
-	FieldBikeInboundNum,
-	FieldCabinetBatteryNum,
-	FieldRiderBatteryNum,
+	FieldModel,
+	FieldNum,
+	FieldTodayNum,
+	FieldOutboundNum,
+	FieldInboundNum,
+	FieldInRiderNum,
+	FieldMaterial,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -121,23 +120,41 @@ func ValidColumn(column string) bool {
 var (
 	// DateValidator is a validator for the "date" field. It is called by the builders before save.
 	DateValidator func(string) error
-	// DefaultBatteryNum holds the default value on creation for the "battery_num" field.
-	DefaultBatteryNum int
-	// DefaultBatteryOutboundNum holds the default value on creation for the "battery_outbound_num" field.
-	DefaultBatteryOutboundNum int
-	// DefaultBatteryInboundNum holds the default value on creation for the "battery_inbound_num" field.
-	DefaultBatteryInboundNum int
-	// DefaultBikeNum holds the default value on creation for the "bike_num" field.
-	DefaultBikeNum int
-	// DefaultBikeOutboundNum holds the default value on creation for the "bike_outbound_num" field.
-	DefaultBikeOutboundNum int
-	// DefaultBikeInboundNum holds the default value on creation for the "bike_inbound_num" field.
-	DefaultBikeInboundNum int
-	// DefaultCabinetBatteryNum holds the default value on creation for the "cabinet_battery_num" field.
-	DefaultCabinetBatteryNum int
-	// DefaultRiderBatteryNum holds the default value on creation for the "rider_battery_num" field.
-	DefaultRiderBatteryNum int
+	// DefaultNum holds the default value on creation for the "num" field.
+	DefaultNum int
+	// DefaultTodayNum holds the default value on creation for the "today_num" field.
+	DefaultTodayNum int
+	// DefaultOutboundNum holds the default value on creation for the "outbound_num" field.
+	DefaultOutboundNum int
+	// DefaultInboundNum holds the default value on creation for the "inbound_num" field.
+	DefaultInboundNum int
+	// DefaultInRiderNum holds the default value on creation for the "in_rider_num" field.
+	DefaultInRiderNum int
 )
+
+// Material defines the type for the "material" enum field.
+type Material string
+
+// Material values.
+const (
+	MaterialBattery Material = "battery"
+	MaterialEbike   Material = "ebike"
+	MaterialOthers  Material = "others"
+)
+
+func (m Material) String() string {
+	return string(m)
+}
+
+// MaterialValidator is a validator for the "material" field enum values. It is called by the builders before save.
+func MaterialValidator(m Material) error {
+	switch m {
+	case MaterialBattery, MaterialEbike, MaterialOthers:
+		return nil
+	default:
+		return fmt.Errorf("stocksummary: invalid enum value for material field: %q", m)
+	}
+}
 
 // OrderOption defines the ordering options for the StockSummary queries.
 type OrderOption func(*sql.Selector)
@@ -177,44 +194,39 @@ func ByDate(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDate, opts...).ToFunc()
 }
 
-// ByBatteryNum orders the results by the battery_num field.
-func ByBatteryNum(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldBatteryNum, opts...).ToFunc()
+// ByModel orders the results by the model field.
+func ByModel(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldModel, opts...).ToFunc()
 }
 
-// ByBatteryOutboundNum orders the results by the battery_outbound_num field.
-func ByBatteryOutboundNum(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldBatteryOutboundNum, opts...).ToFunc()
+// ByNum orders the results by the num field.
+func ByNum(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldNum, opts...).ToFunc()
 }
 
-// ByBatteryInboundNum orders the results by the battery_inbound_num field.
-func ByBatteryInboundNum(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldBatteryInboundNum, opts...).ToFunc()
+// ByTodayNum orders the results by the today_num field.
+func ByTodayNum(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTodayNum, opts...).ToFunc()
 }
 
-// ByBikeNum orders the results by the bike_num field.
-func ByBikeNum(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldBikeNum, opts...).ToFunc()
+// ByOutboundNum orders the results by the outbound_num field.
+func ByOutboundNum(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldOutboundNum, opts...).ToFunc()
 }
 
-// ByBikeOutboundNum orders the results by the bike_outbound_num field.
-func ByBikeOutboundNum(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldBikeOutboundNum, opts...).ToFunc()
+// ByInboundNum orders the results by the inbound_num field.
+func ByInboundNum(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldInboundNum, opts...).ToFunc()
 }
 
-// ByBikeInboundNum orders the results by the bike_inbound_num field.
-func ByBikeInboundNum(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldBikeInboundNum, opts...).ToFunc()
+// ByInRiderNum orders the results by the in_rider_num field.
+func ByInRiderNum(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldInRiderNum, opts...).ToFunc()
 }
 
-// ByCabinetBatteryNum orders the results by the cabinet_battery_num field.
-func ByCabinetBatteryNum(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldCabinetBatteryNum, opts...).ToFunc()
-}
-
-// ByRiderBatteryNum orders the results by the rider_battery_num field.
-func ByRiderBatteryNum(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldRiderBatteryNum, opts...).ToFunc()
+// ByMaterial orders the results by the material field.
+func ByMaterial(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldMaterial, opts...).ToFunc()
 }
 
 // ByEnterpriseField orders the results by enterprise field.

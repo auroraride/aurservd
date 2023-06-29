@@ -48,15 +48,21 @@ func (s *stockBatchableService) Fetch(target uint8, id uint64, name string) int 
 		// 对于非智能电池的查询 非智能电池没有电池id
 		q.Where(stock.BatteryIDIsNil())
 	}
-	err := q.Where(stock.Name(name), idw).
-		GroupBy(stock.FieldStoreID, stock.FieldCabinetID, stock.FieldStationID).
-		Aggregate(ent.Sum(stock.FieldNum)).
-		Scan(s.ctx, &result)
+
+	var err error
+	q.Where(stock.Name(name), idw)
+	if target == model.StockTargetStation {
+		err = q.GroupBy(stock.FieldStationID).Aggregate(ent.Sum(stock.FieldNum)).
+			Scan(s.ctx, &result)
+	} else {
+		q.GroupBy(stock.FieldStoreID, stock.FieldCabinetID)
+		err = q.Aggregate(ent.Sum(stock.FieldNum)).
+			Scan(s.ctx, &result)
+	}
 
 	if err != nil {
 		snag.Panic("物资数量获取失败")
 	}
-
 	if len(result) == 0 {
 		return 0
 	}
@@ -68,6 +74,16 @@ func (s *stockBatchableService) Loopers(req *model.StockTransferReq, enterpriseI
 	// 查询电池信息
 	q := ent.Database.Battery.Query().Where(battery.SnIn(req.BatterySn...), battery.RiderIDIsNil())
 
+	// 平台往站点调拨 需要判断当前电池有没有被使用
+	if req.OutboundTarget == model.StockTargetPlaform && req.InboundTarget == model.StockTargetStation {
+		q.Where(
+			battery.EnterpriseIDIsNil(),
+			battery.StationIDIsNil(),
+			battery.CabinetIDIsNil(),
+			battery.SubscribeIDIsNil(),
+		)
+	}
+
 	all, _ := q.All(s.ctx)
 	if len(all) == 0 {
 		snag.Panic("电池信息获取失败或电池已被使用")
@@ -77,6 +93,12 @@ func (s *stockBatchableService) Loopers(req *model.StockTransferReq, enterpriseI
 		// 站点调拨到站点 只能同一团签
 		if req.InboundTarget == model.StockTargetStation && req.OutboundTarget == model.StockTargetStation && *bat.EnterpriseID != enterpriseId {
 			failed = append(failed, fmt.Sprintf("电池调拨失败，电池[%s]不属于当前团签", bat.Sn))
+			continue
+		}
+		// 调出到平台  不是自己站点的电池不允许调拨
+		if req.OutboundTarget == model.StockTargetStation && req.InboundTarget == model.StockTargetPlaform &&
+			bat.StationID != nil && *bat.StationID != req.OutboundID {
+			failed = append(failed, fmt.Sprintf("电池调拨失败，[%s]不属于当前站点", bat.Sn))
 			continue
 		}
 

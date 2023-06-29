@@ -139,171 +139,148 @@ func (ssu *StockSummaryUpdate) SetDate(s string) *StockSummaryUpdate {
 	return ssu
 }
 
-// SetBatteryNum sets the "battery_num" field.
-func (ssu *StockSummaryUpdate) SetBatteryNum(i int) *StockSummaryUpdate {
-	ssu.mutation.ResetBatteryNum()
-	ssu.mutation.SetBatteryNum(i)
+// SetModel sets the "model" field.
+func (ssu *StockSummaryUpdate) SetModel(s string) *StockSummaryUpdate {
+	ssu.mutation.SetModel(s)
 	return ssu
 }
 
-// SetNillableBatteryNum sets the "battery_num" field if the given value is not nil.
-func (ssu *StockSummaryUpdate) SetNillableBatteryNum(i *int) *StockSummaryUpdate {
-	if i != nil {
-		ssu.SetBatteryNum(*i)
+// SetNillableModel sets the "model" field if the given value is not nil.
+func (ssu *StockSummaryUpdate) SetNillableModel(s *string) *StockSummaryUpdate {
+	if s != nil {
+		ssu.SetModel(*s)
 	}
 	return ssu
 }
 
-// AddBatteryNum adds i to the "battery_num" field.
-func (ssu *StockSummaryUpdate) AddBatteryNum(i int) *StockSummaryUpdate {
-	ssu.mutation.AddBatteryNum(i)
+// ClearModel clears the value of the "model" field.
+func (ssu *StockSummaryUpdate) ClearModel() *StockSummaryUpdate {
+	ssu.mutation.ClearModel()
 	return ssu
 }
 
-// SetBatteryOutboundNum sets the "battery_outbound_num" field.
-func (ssu *StockSummaryUpdate) SetBatteryOutboundNum(i int) *StockSummaryUpdate {
-	ssu.mutation.ResetBatteryOutboundNum()
-	ssu.mutation.SetBatteryOutboundNum(i)
+// SetNum sets the "num" field.
+func (ssu *StockSummaryUpdate) SetNum(i int) *StockSummaryUpdate {
+	ssu.mutation.ResetNum()
+	ssu.mutation.SetNum(i)
 	return ssu
 }
 
-// SetNillableBatteryOutboundNum sets the "battery_outbound_num" field if the given value is not nil.
-func (ssu *StockSummaryUpdate) SetNillableBatteryOutboundNum(i *int) *StockSummaryUpdate {
+// SetNillableNum sets the "num" field if the given value is not nil.
+func (ssu *StockSummaryUpdate) SetNillableNum(i *int) *StockSummaryUpdate {
 	if i != nil {
-		ssu.SetBatteryOutboundNum(*i)
+		ssu.SetNum(*i)
 	}
 	return ssu
 }
 
-// AddBatteryOutboundNum adds i to the "battery_outbound_num" field.
-func (ssu *StockSummaryUpdate) AddBatteryOutboundNum(i int) *StockSummaryUpdate {
-	ssu.mutation.AddBatteryOutboundNum(i)
+// AddNum adds i to the "num" field.
+func (ssu *StockSummaryUpdate) AddNum(i int) *StockSummaryUpdate {
+	ssu.mutation.AddNum(i)
 	return ssu
 }
 
-// SetBatteryInboundNum sets the "battery_inbound_num" field.
-func (ssu *StockSummaryUpdate) SetBatteryInboundNum(i int) *StockSummaryUpdate {
-	ssu.mutation.ResetBatteryInboundNum()
-	ssu.mutation.SetBatteryInboundNum(i)
+// SetTodayNum sets the "today_num" field.
+func (ssu *StockSummaryUpdate) SetTodayNum(i int) *StockSummaryUpdate {
+	ssu.mutation.ResetTodayNum()
+	ssu.mutation.SetTodayNum(i)
 	return ssu
 }
 
-// SetNillableBatteryInboundNum sets the "battery_inbound_num" field if the given value is not nil.
-func (ssu *StockSummaryUpdate) SetNillableBatteryInboundNum(i *int) *StockSummaryUpdate {
+// SetNillableTodayNum sets the "today_num" field if the given value is not nil.
+func (ssu *StockSummaryUpdate) SetNillableTodayNum(i *int) *StockSummaryUpdate {
 	if i != nil {
-		ssu.SetBatteryInboundNum(*i)
+		ssu.SetTodayNum(*i)
 	}
 	return ssu
 }
 
-// AddBatteryInboundNum adds i to the "battery_inbound_num" field.
-func (ssu *StockSummaryUpdate) AddBatteryInboundNum(i int) *StockSummaryUpdate {
-	ssu.mutation.AddBatteryInboundNum(i)
+// AddTodayNum adds i to the "today_num" field.
+func (ssu *StockSummaryUpdate) AddTodayNum(i int) *StockSummaryUpdate {
+	ssu.mutation.AddTodayNum(i)
 	return ssu
 }
 
-// SetBikeNum sets the "bike_num" field.
-func (ssu *StockSummaryUpdate) SetBikeNum(i int) *StockSummaryUpdate {
-	ssu.mutation.ResetBikeNum()
-	ssu.mutation.SetBikeNum(i)
+// SetOutboundNum sets the "outbound_num" field.
+func (ssu *StockSummaryUpdate) SetOutboundNum(i int) *StockSummaryUpdate {
+	ssu.mutation.ResetOutboundNum()
+	ssu.mutation.SetOutboundNum(i)
 	return ssu
 }
 
-// SetNillableBikeNum sets the "bike_num" field if the given value is not nil.
-func (ssu *StockSummaryUpdate) SetNillableBikeNum(i *int) *StockSummaryUpdate {
+// SetNillableOutboundNum sets the "outbound_num" field if the given value is not nil.
+func (ssu *StockSummaryUpdate) SetNillableOutboundNum(i *int) *StockSummaryUpdate {
 	if i != nil {
-		ssu.SetBikeNum(*i)
+		ssu.SetOutboundNum(*i)
 	}
 	return ssu
 }
 
-// AddBikeNum adds i to the "bike_num" field.
-func (ssu *StockSummaryUpdate) AddBikeNum(i int) *StockSummaryUpdate {
-	ssu.mutation.AddBikeNum(i)
+// AddOutboundNum adds i to the "outbound_num" field.
+func (ssu *StockSummaryUpdate) AddOutboundNum(i int) *StockSummaryUpdate {
+	ssu.mutation.AddOutboundNum(i)
 	return ssu
 }
 
-// SetBikeOutboundNum sets the "bike_outbound_num" field.
-func (ssu *StockSummaryUpdate) SetBikeOutboundNum(i int) *StockSummaryUpdate {
-	ssu.mutation.ResetBikeOutboundNum()
-	ssu.mutation.SetBikeOutboundNum(i)
+// SetInboundNum sets the "inbound_num" field.
+func (ssu *StockSummaryUpdate) SetInboundNum(i int) *StockSummaryUpdate {
+	ssu.mutation.ResetInboundNum()
+	ssu.mutation.SetInboundNum(i)
 	return ssu
 }
 
-// SetNillableBikeOutboundNum sets the "bike_outbound_num" field if the given value is not nil.
-func (ssu *StockSummaryUpdate) SetNillableBikeOutboundNum(i *int) *StockSummaryUpdate {
+// SetNillableInboundNum sets the "inbound_num" field if the given value is not nil.
+func (ssu *StockSummaryUpdate) SetNillableInboundNum(i *int) *StockSummaryUpdate {
 	if i != nil {
-		ssu.SetBikeOutboundNum(*i)
+		ssu.SetInboundNum(*i)
 	}
 	return ssu
 }
 
-// AddBikeOutboundNum adds i to the "bike_outbound_num" field.
-func (ssu *StockSummaryUpdate) AddBikeOutboundNum(i int) *StockSummaryUpdate {
-	ssu.mutation.AddBikeOutboundNum(i)
+// AddInboundNum adds i to the "inbound_num" field.
+func (ssu *StockSummaryUpdate) AddInboundNum(i int) *StockSummaryUpdate {
+	ssu.mutation.AddInboundNum(i)
 	return ssu
 }
 
-// SetBikeInboundNum sets the "bike_inbound_num" field.
-func (ssu *StockSummaryUpdate) SetBikeInboundNum(i int) *StockSummaryUpdate {
-	ssu.mutation.ResetBikeInboundNum()
-	ssu.mutation.SetBikeInboundNum(i)
+// SetInRiderNum sets the "in_rider_num" field.
+func (ssu *StockSummaryUpdate) SetInRiderNum(i int) *StockSummaryUpdate {
+	ssu.mutation.ResetInRiderNum()
+	ssu.mutation.SetInRiderNum(i)
 	return ssu
 }
 
-// SetNillableBikeInboundNum sets the "bike_inbound_num" field if the given value is not nil.
-func (ssu *StockSummaryUpdate) SetNillableBikeInboundNum(i *int) *StockSummaryUpdate {
+// SetNillableInRiderNum sets the "in_rider_num" field if the given value is not nil.
+func (ssu *StockSummaryUpdate) SetNillableInRiderNum(i *int) *StockSummaryUpdate {
 	if i != nil {
-		ssu.SetBikeInboundNum(*i)
+		ssu.SetInRiderNum(*i)
 	}
 	return ssu
 }
 
-// AddBikeInboundNum adds i to the "bike_inbound_num" field.
-func (ssu *StockSummaryUpdate) AddBikeInboundNum(i int) *StockSummaryUpdate {
-	ssu.mutation.AddBikeInboundNum(i)
+// AddInRiderNum adds i to the "in_rider_num" field.
+func (ssu *StockSummaryUpdate) AddInRiderNum(i int) *StockSummaryUpdate {
+	ssu.mutation.AddInRiderNum(i)
 	return ssu
 }
 
-// SetCabinetBatteryNum sets the "cabinet_battery_num" field.
-func (ssu *StockSummaryUpdate) SetCabinetBatteryNum(i int) *StockSummaryUpdate {
-	ssu.mutation.ResetCabinetBatteryNum()
-	ssu.mutation.SetCabinetBatteryNum(i)
+// SetMaterial sets the "material" field.
+func (ssu *StockSummaryUpdate) SetMaterial(s stocksummary.Material) *StockSummaryUpdate {
+	ssu.mutation.SetMaterial(s)
 	return ssu
 }
 
-// SetNillableCabinetBatteryNum sets the "cabinet_battery_num" field if the given value is not nil.
-func (ssu *StockSummaryUpdate) SetNillableCabinetBatteryNum(i *int) *StockSummaryUpdate {
-	if i != nil {
-		ssu.SetCabinetBatteryNum(*i)
+// SetNillableMaterial sets the "material" field if the given value is not nil.
+func (ssu *StockSummaryUpdate) SetNillableMaterial(s *stocksummary.Material) *StockSummaryUpdate {
+	if s != nil {
+		ssu.SetMaterial(*s)
 	}
 	return ssu
 }
 
-// AddCabinetBatteryNum adds i to the "cabinet_battery_num" field.
-func (ssu *StockSummaryUpdate) AddCabinetBatteryNum(i int) *StockSummaryUpdate {
-	ssu.mutation.AddCabinetBatteryNum(i)
-	return ssu
-}
-
-// SetRiderBatteryNum sets the "rider_battery_num" field.
-func (ssu *StockSummaryUpdate) SetRiderBatteryNum(i int) *StockSummaryUpdate {
-	ssu.mutation.ResetRiderBatteryNum()
-	ssu.mutation.SetRiderBatteryNum(i)
-	return ssu
-}
-
-// SetNillableRiderBatteryNum sets the "rider_battery_num" field if the given value is not nil.
-func (ssu *StockSummaryUpdate) SetNillableRiderBatteryNum(i *int) *StockSummaryUpdate {
-	if i != nil {
-		ssu.SetRiderBatteryNum(*i)
-	}
-	return ssu
-}
-
-// AddRiderBatteryNum adds i to the "rider_battery_num" field.
-func (ssu *StockSummaryUpdate) AddRiderBatteryNum(i int) *StockSummaryUpdate {
-	ssu.mutation.AddRiderBatteryNum(i)
+// ClearMaterial clears the value of the "material" field.
+func (ssu *StockSummaryUpdate) ClearMaterial() *StockSummaryUpdate {
+	ssu.mutation.ClearMaterial()
 	return ssu
 }
 
@@ -401,6 +378,11 @@ func (ssu *StockSummaryUpdate) check() error {
 			return &ValidationError{Name: "date", err: fmt.Errorf(`ent: validator failed for field "StockSummary.date": %w`, err)}
 		}
 	}
+	if v, ok := ssu.mutation.Material(); ok {
+		if err := stocksummary.MaterialValidator(v); err != nil {
+			return &ValidationError{Name: "material", err: fmt.Errorf(`ent: validator failed for field "StockSummary.material": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -425,53 +407,47 @@ func (ssu *StockSummaryUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := ssu.mutation.Date(); ok {
 		_spec.SetField(stocksummary.FieldDate, field.TypeString, value)
 	}
-	if value, ok := ssu.mutation.BatteryNum(); ok {
-		_spec.SetField(stocksummary.FieldBatteryNum, field.TypeInt, value)
+	if value, ok := ssu.mutation.Model(); ok {
+		_spec.SetField(stocksummary.FieldModel, field.TypeString, value)
 	}
-	if value, ok := ssu.mutation.AddedBatteryNum(); ok {
-		_spec.AddField(stocksummary.FieldBatteryNum, field.TypeInt, value)
+	if ssu.mutation.ModelCleared() {
+		_spec.ClearField(stocksummary.FieldModel, field.TypeString)
 	}
-	if value, ok := ssu.mutation.BatteryOutboundNum(); ok {
-		_spec.SetField(stocksummary.FieldBatteryOutboundNum, field.TypeInt, value)
+	if value, ok := ssu.mutation.Num(); ok {
+		_spec.SetField(stocksummary.FieldNum, field.TypeInt, value)
 	}
-	if value, ok := ssu.mutation.AddedBatteryOutboundNum(); ok {
-		_spec.AddField(stocksummary.FieldBatteryOutboundNum, field.TypeInt, value)
+	if value, ok := ssu.mutation.AddedNum(); ok {
+		_spec.AddField(stocksummary.FieldNum, field.TypeInt, value)
 	}
-	if value, ok := ssu.mutation.BatteryInboundNum(); ok {
-		_spec.SetField(stocksummary.FieldBatteryInboundNum, field.TypeInt, value)
+	if value, ok := ssu.mutation.TodayNum(); ok {
+		_spec.SetField(stocksummary.FieldTodayNum, field.TypeInt, value)
 	}
-	if value, ok := ssu.mutation.AddedBatteryInboundNum(); ok {
-		_spec.AddField(stocksummary.FieldBatteryInboundNum, field.TypeInt, value)
+	if value, ok := ssu.mutation.AddedTodayNum(); ok {
+		_spec.AddField(stocksummary.FieldTodayNum, field.TypeInt, value)
 	}
-	if value, ok := ssu.mutation.BikeNum(); ok {
-		_spec.SetField(stocksummary.FieldBikeNum, field.TypeInt, value)
+	if value, ok := ssu.mutation.OutboundNum(); ok {
+		_spec.SetField(stocksummary.FieldOutboundNum, field.TypeInt, value)
 	}
-	if value, ok := ssu.mutation.AddedBikeNum(); ok {
-		_spec.AddField(stocksummary.FieldBikeNum, field.TypeInt, value)
+	if value, ok := ssu.mutation.AddedOutboundNum(); ok {
+		_spec.AddField(stocksummary.FieldOutboundNum, field.TypeInt, value)
 	}
-	if value, ok := ssu.mutation.BikeOutboundNum(); ok {
-		_spec.SetField(stocksummary.FieldBikeOutboundNum, field.TypeInt, value)
+	if value, ok := ssu.mutation.InboundNum(); ok {
+		_spec.SetField(stocksummary.FieldInboundNum, field.TypeInt, value)
 	}
-	if value, ok := ssu.mutation.AddedBikeOutboundNum(); ok {
-		_spec.AddField(stocksummary.FieldBikeOutboundNum, field.TypeInt, value)
+	if value, ok := ssu.mutation.AddedInboundNum(); ok {
+		_spec.AddField(stocksummary.FieldInboundNum, field.TypeInt, value)
 	}
-	if value, ok := ssu.mutation.BikeInboundNum(); ok {
-		_spec.SetField(stocksummary.FieldBikeInboundNum, field.TypeInt, value)
+	if value, ok := ssu.mutation.InRiderNum(); ok {
+		_spec.SetField(stocksummary.FieldInRiderNum, field.TypeInt, value)
 	}
-	if value, ok := ssu.mutation.AddedBikeInboundNum(); ok {
-		_spec.AddField(stocksummary.FieldBikeInboundNum, field.TypeInt, value)
+	if value, ok := ssu.mutation.AddedInRiderNum(); ok {
+		_spec.AddField(stocksummary.FieldInRiderNum, field.TypeInt, value)
 	}
-	if value, ok := ssu.mutation.CabinetBatteryNum(); ok {
-		_spec.SetField(stocksummary.FieldCabinetBatteryNum, field.TypeInt, value)
+	if value, ok := ssu.mutation.Material(); ok {
+		_spec.SetField(stocksummary.FieldMaterial, field.TypeEnum, value)
 	}
-	if value, ok := ssu.mutation.AddedCabinetBatteryNum(); ok {
-		_spec.AddField(stocksummary.FieldCabinetBatteryNum, field.TypeInt, value)
-	}
-	if value, ok := ssu.mutation.RiderBatteryNum(); ok {
-		_spec.SetField(stocksummary.FieldRiderBatteryNum, field.TypeInt, value)
-	}
-	if value, ok := ssu.mutation.AddedRiderBatteryNum(); ok {
-		_spec.AddField(stocksummary.FieldRiderBatteryNum, field.TypeInt, value)
+	if ssu.mutation.MaterialCleared() {
+		_spec.ClearField(stocksummary.FieldMaterial, field.TypeEnum)
 	}
 	if ssu.mutation.EnterpriseCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -746,171 +722,148 @@ func (ssuo *StockSummaryUpdateOne) SetDate(s string) *StockSummaryUpdateOne {
 	return ssuo
 }
 
-// SetBatteryNum sets the "battery_num" field.
-func (ssuo *StockSummaryUpdateOne) SetBatteryNum(i int) *StockSummaryUpdateOne {
-	ssuo.mutation.ResetBatteryNum()
-	ssuo.mutation.SetBatteryNum(i)
+// SetModel sets the "model" field.
+func (ssuo *StockSummaryUpdateOne) SetModel(s string) *StockSummaryUpdateOne {
+	ssuo.mutation.SetModel(s)
 	return ssuo
 }
 
-// SetNillableBatteryNum sets the "battery_num" field if the given value is not nil.
-func (ssuo *StockSummaryUpdateOne) SetNillableBatteryNum(i *int) *StockSummaryUpdateOne {
-	if i != nil {
-		ssuo.SetBatteryNum(*i)
+// SetNillableModel sets the "model" field if the given value is not nil.
+func (ssuo *StockSummaryUpdateOne) SetNillableModel(s *string) *StockSummaryUpdateOne {
+	if s != nil {
+		ssuo.SetModel(*s)
 	}
 	return ssuo
 }
 
-// AddBatteryNum adds i to the "battery_num" field.
-func (ssuo *StockSummaryUpdateOne) AddBatteryNum(i int) *StockSummaryUpdateOne {
-	ssuo.mutation.AddBatteryNum(i)
+// ClearModel clears the value of the "model" field.
+func (ssuo *StockSummaryUpdateOne) ClearModel() *StockSummaryUpdateOne {
+	ssuo.mutation.ClearModel()
 	return ssuo
 }
 
-// SetBatteryOutboundNum sets the "battery_outbound_num" field.
-func (ssuo *StockSummaryUpdateOne) SetBatteryOutboundNum(i int) *StockSummaryUpdateOne {
-	ssuo.mutation.ResetBatteryOutboundNum()
-	ssuo.mutation.SetBatteryOutboundNum(i)
+// SetNum sets the "num" field.
+func (ssuo *StockSummaryUpdateOne) SetNum(i int) *StockSummaryUpdateOne {
+	ssuo.mutation.ResetNum()
+	ssuo.mutation.SetNum(i)
 	return ssuo
 }
 
-// SetNillableBatteryOutboundNum sets the "battery_outbound_num" field if the given value is not nil.
-func (ssuo *StockSummaryUpdateOne) SetNillableBatteryOutboundNum(i *int) *StockSummaryUpdateOne {
+// SetNillableNum sets the "num" field if the given value is not nil.
+func (ssuo *StockSummaryUpdateOne) SetNillableNum(i *int) *StockSummaryUpdateOne {
 	if i != nil {
-		ssuo.SetBatteryOutboundNum(*i)
+		ssuo.SetNum(*i)
 	}
 	return ssuo
 }
 
-// AddBatteryOutboundNum adds i to the "battery_outbound_num" field.
-func (ssuo *StockSummaryUpdateOne) AddBatteryOutboundNum(i int) *StockSummaryUpdateOne {
-	ssuo.mutation.AddBatteryOutboundNum(i)
+// AddNum adds i to the "num" field.
+func (ssuo *StockSummaryUpdateOne) AddNum(i int) *StockSummaryUpdateOne {
+	ssuo.mutation.AddNum(i)
 	return ssuo
 }
 
-// SetBatteryInboundNum sets the "battery_inbound_num" field.
-func (ssuo *StockSummaryUpdateOne) SetBatteryInboundNum(i int) *StockSummaryUpdateOne {
-	ssuo.mutation.ResetBatteryInboundNum()
-	ssuo.mutation.SetBatteryInboundNum(i)
+// SetTodayNum sets the "today_num" field.
+func (ssuo *StockSummaryUpdateOne) SetTodayNum(i int) *StockSummaryUpdateOne {
+	ssuo.mutation.ResetTodayNum()
+	ssuo.mutation.SetTodayNum(i)
 	return ssuo
 }
 
-// SetNillableBatteryInboundNum sets the "battery_inbound_num" field if the given value is not nil.
-func (ssuo *StockSummaryUpdateOne) SetNillableBatteryInboundNum(i *int) *StockSummaryUpdateOne {
+// SetNillableTodayNum sets the "today_num" field if the given value is not nil.
+func (ssuo *StockSummaryUpdateOne) SetNillableTodayNum(i *int) *StockSummaryUpdateOne {
 	if i != nil {
-		ssuo.SetBatteryInboundNum(*i)
+		ssuo.SetTodayNum(*i)
 	}
 	return ssuo
 }
 
-// AddBatteryInboundNum adds i to the "battery_inbound_num" field.
-func (ssuo *StockSummaryUpdateOne) AddBatteryInboundNum(i int) *StockSummaryUpdateOne {
-	ssuo.mutation.AddBatteryInboundNum(i)
+// AddTodayNum adds i to the "today_num" field.
+func (ssuo *StockSummaryUpdateOne) AddTodayNum(i int) *StockSummaryUpdateOne {
+	ssuo.mutation.AddTodayNum(i)
 	return ssuo
 }
 
-// SetBikeNum sets the "bike_num" field.
-func (ssuo *StockSummaryUpdateOne) SetBikeNum(i int) *StockSummaryUpdateOne {
-	ssuo.mutation.ResetBikeNum()
-	ssuo.mutation.SetBikeNum(i)
+// SetOutboundNum sets the "outbound_num" field.
+func (ssuo *StockSummaryUpdateOne) SetOutboundNum(i int) *StockSummaryUpdateOne {
+	ssuo.mutation.ResetOutboundNum()
+	ssuo.mutation.SetOutboundNum(i)
 	return ssuo
 }
 
-// SetNillableBikeNum sets the "bike_num" field if the given value is not nil.
-func (ssuo *StockSummaryUpdateOne) SetNillableBikeNum(i *int) *StockSummaryUpdateOne {
+// SetNillableOutboundNum sets the "outbound_num" field if the given value is not nil.
+func (ssuo *StockSummaryUpdateOne) SetNillableOutboundNum(i *int) *StockSummaryUpdateOne {
 	if i != nil {
-		ssuo.SetBikeNum(*i)
+		ssuo.SetOutboundNum(*i)
 	}
 	return ssuo
 }
 
-// AddBikeNum adds i to the "bike_num" field.
-func (ssuo *StockSummaryUpdateOne) AddBikeNum(i int) *StockSummaryUpdateOne {
-	ssuo.mutation.AddBikeNum(i)
+// AddOutboundNum adds i to the "outbound_num" field.
+func (ssuo *StockSummaryUpdateOne) AddOutboundNum(i int) *StockSummaryUpdateOne {
+	ssuo.mutation.AddOutboundNum(i)
 	return ssuo
 }
 
-// SetBikeOutboundNum sets the "bike_outbound_num" field.
-func (ssuo *StockSummaryUpdateOne) SetBikeOutboundNum(i int) *StockSummaryUpdateOne {
-	ssuo.mutation.ResetBikeOutboundNum()
-	ssuo.mutation.SetBikeOutboundNum(i)
+// SetInboundNum sets the "inbound_num" field.
+func (ssuo *StockSummaryUpdateOne) SetInboundNum(i int) *StockSummaryUpdateOne {
+	ssuo.mutation.ResetInboundNum()
+	ssuo.mutation.SetInboundNum(i)
 	return ssuo
 }
 
-// SetNillableBikeOutboundNum sets the "bike_outbound_num" field if the given value is not nil.
-func (ssuo *StockSummaryUpdateOne) SetNillableBikeOutboundNum(i *int) *StockSummaryUpdateOne {
+// SetNillableInboundNum sets the "inbound_num" field if the given value is not nil.
+func (ssuo *StockSummaryUpdateOne) SetNillableInboundNum(i *int) *StockSummaryUpdateOne {
 	if i != nil {
-		ssuo.SetBikeOutboundNum(*i)
+		ssuo.SetInboundNum(*i)
 	}
 	return ssuo
 }
 
-// AddBikeOutboundNum adds i to the "bike_outbound_num" field.
-func (ssuo *StockSummaryUpdateOne) AddBikeOutboundNum(i int) *StockSummaryUpdateOne {
-	ssuo.mutation.AddBikeOutboundNum(i)
+// AddInboundNum adds i to the "inbound_num" field.
+func (ssuo *StockSummaryUpdateOne) AddInboundNum(i int) *StockSummaryUpdateOne {
+	ssuo.mutation.AddInboundNum(i)
 	return ssuo
 }
 
-// SetBikeInboundNum sets the "bike_inbound_num" field.
-func (ssuo *StockSummaryUpdateOne) SetBikeInboundNum(i int) *StockSummaryUpdateOne {
-	ssuo.mutation.ResetBikeInboundNum()
-	ssuo.mutation.SetBikeInboundNum(i)
+// SetInRiderNum sets the "in_rider_num" field.
+func (ssuo *StockSummaryUpdateOne) SetInRiderNum(i int) *StockSummaryUpdateOne {
+	ssuo.mutation.ResetInRiderNum()
+	ssuo.mutation.SetInRiderNum(i)
 	return ssuo
 }
 
-// SetNillableBikeInboundNum sets the "bike_inbound_num" field if the given value is not nil.
-func (ssuo *StockSummaryUpdateOne) SetNillableBikeInboundNum(i *int) *StockSummaryUpdateOne {
+// SetNillableInRiderNum sets the "in_rider_num" field if the given value is not nil.
+func (ssuo *StockSummaryUpdateOne) SetNillableInRiderNum(i *int) *StockSummaryUpdateOne {
 	if i != nil {
-		ssuo.SetBikeInboundNum(*i)
+		ssuo.SetInRiderNum(*i)
 	}
 	return ssuo
 }
 
-// AddBikeInboundNum adds i to the "bike_inbound_num" field.
-func (ssuo *StockSummaryUpdateOne) AddBikeInboundNum(i int) *StockSummaryUpdateOne {
-	ssuo.mutation.AddBikeInboundNum(i)
+// AddInRiderNum adds i to the "in_rider_num" field.
+func (ssuo *StockSummaryUpdateOne) AddInRiderNum(i int) *StockSummaryUpdateOne {
+	ssuo.mutation.AddInRiderNum(i)
 	return ssuo
 }
 
-// SetCabinetBatteryNum sets the "cabinet_battery_num" field.
-func (ssuo *StockSummaryUpdateOne) SetCabinetBatteryNum(i int) *StockSummaryUpdateOne {
-	ssuo.mutation.ResetCabinetBatteryNum()
-	ssuo.mutation.SetCabinetBatteryNum(i)
+// SetMaterial sets the "material" field.
+func (ssuo *StockSummaryUpdateOne) SetMaterial(s stocksummary.Material) *StockSummaryUpdateOne {
+	ssuo.mutation.SetMaterial(s)
 	return ssuo
 }
 
-// SetNillableCabinetBatteryNum sets the "cabinet_battery_num" field if the given value is not nil.
-func (ssuo *StockSummaryUpdateOne) SetNillableCabinetBatteryNum(i *int) *StockSummaryUpdateOne {
-	if i != nil {
-		ssuo.SetCabinetBatteryNum(*i)
+// SetNillableMaterial sets the "material" field if the given value is not nil.
+func (ssuo *StockSummaryUpdateOne) SetNillableMaterial(s *stocksummary.Material) *StockSummaryUpdateOne {
+	if s != nil {
+		ssuo.SetMaterial(*s)
 	}
 	return ssuo
 }
 
-// AddCabinetBatteryNum adds i to the "cabinet_battery_num" field.
-func (ssuo *StockSummaryUpdateOne) AddCabinetBatteryNum(i int) *StockSummaryUpdateOne {
-	ssuo.mutation.AddCabinetBatteryNum(i)
-	return ssuo
-}
-
-// SetRiderBatteryNum sets the "rider_battery_num" field.
-func (ssuo *StockSummaryUpdateOne) SetRiderBatteryNum(i int) *StockSummaryUpdateOne {
-	ssuo.mutation.ResetRiderBatteryNum()
-	ssuo.mutation.SetRiderBatteryNum(i)
-	return ssuo
-}
-
-// SetNillableRiderBatteryNum sets the "rider_battery_num" field if the given value is not nil.
-func (ssuo *StockSummaryUpdateOne) SetNillableRiderBatteryNum(i *int) *StockSummaryUpdateOne {
-	if i != nil {
-		ssuo.SetRiderBatteryNum(*i)
-	}
-	return ssuo
-}
-
-// AddRiderBatteryNum adds i to the "rider_battery_num" field.
-func (ssuo *StockSummaryUpdateOne) AddRiderBatteryNum(i int) *StockSummaryUpdateOne {
-	ssuo.mutation.AddRiderBatteryNum(i)
+// ClearMaterial clears the value of the "material" field.
+func (ssuo *StockSummaryUpdateOne) ClearMaterial() *StockSummaryUpdateOne {
+	ssuo.mutation.ClearMaterial()
 	return ssuo
 }
 
@@ -1021,6 +974,11 @@ func (ssuo *StockSummaryUpdateOne) check() error {
 			return &ValidationError{Name: "date", err: fmt.Errorf(`ent: validator failed for field "StockSummary.date": %w`, err)}
 		}
 	}
+	if v, ok := ssuo.mutation.Material(); ok {
+		if err := stocksummary.MaterialValidator(v); err != nil {
+			return &ValidationError{Name: "material", err: fmt.Errorf(`ent: validator failed for field "StockSummary.material": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -1062,53 +1020,47 @@ func (ssuo *StockSummaryUpdateOne) sqlSave(ctx context.Context) (_node *StockSum
 	if value, ok := ssuo.mutation.Date(); ok {
 		_spec.SetField(stocksummary.FieldDate, field.TypeString, value)
 	}
-	if value, ok := ssuo.mutation.BatteryNum(); ok {
-		_spec.SetField(stocksummary.FieldBatteryNum, field.TypeInt, value)
+	if value, ok := ssuo.mutation.Model(); ok {
+		_spec.SetField(stocksummary.FieldModel, field.TypeString, value)
 	}
-	if value, ok := ssuo.mutation.AddedBatteryNum(); ok {
-		_spec.AddField(stocksummary.FieldBatteryNum, field.TypeInt, value)
+	if ssuo.mutation.ModelCleared() {
+		_spec.ClearField(stocksummary.FieldModel, field.TypeString)
 	}
-	if value, ok := ssuo.mutation.BatteryOutboundNum(); ok {
-		_spec.SetField(stocksummary.FieldBatteryOutboundNum, field.TypeInt, value)
+	if value, ok := ssuo.mutation.Num(); ok {
+		_spec.SetField(stocksummary.FieldNum, field.TypeInt, value)
 	}
-	if value, ok := ssuo.mutation.AddedBatteryOutboundNum(); ok {
-		_spec.AddField(stocksummary.FieldBatteryOutboundNum, field.TypeInt, value)
+	if value, ok := ssuo.mutation.AddedNum(); ok {
+		_spec.AddField(stocksummary.FieldNum, field.TypeInt, value)
 	}
-	if value, ok := ssuo.mutation.BatteryInboundNum(); ok {
-		_spec.SetField(stocksummary.FieldBatteryInboundNum, field.TypeInt, value)
+	if value, ok := ssuo.mutation.TodayNum(); ok {
+		_spec.SetField(stocksummary.FieldTodayNum, field.TypeInt, value)
 	}
-	if value, ok := ssuo.mutation.AddedBatteryInboundNum(); ok {
-		_spec.AddField(stocksummary.FieldBatteryInboundNum, field.TypeInt, value)
+	if value, ok := ssuo.mutation.AddedTodayNum(); ok {
+		_spec.AddField(stocksummary.FieldTodayNum, field.TypeInt, value)
 	}
-	if value, ok := ssuo.mutation.BikeNum(); ok {
-		_spec.SetField(stocksummary.FieldBikeNum, field.TypeInt, value)
+	if value, ok := ssuo.mutation.OutboundNum(); ok {
+		_spec.SetField(stocksummary.FieldOutboundNum, field.TypeInt, value)
 	}
-	if value, ok := ssuo.mutation.AddedBikeNum(); ok {
-		_spec.AddField(stocksummary.FieldBikeNum, field.TypeInt, value)
+	if value, ok := ssuo.mutation.AddedOutboundNum(); ok {
+		_spec.AddField(stocksummary.FieldOutboundNum, field.TypeInt, value)
 	}
-	if value, ok := ssuo.mutation.BikeOutboundNum(); ok {
-		_spec.SetField(stocksummary.FieldBikeOutboundNum, field.TypeInt, value)
+	if value, ok := ssuo.mutation.InboundNum(); ok {
+		_spec.SetField(stocksummary.FieldInboundNum, field.TypeInt, value)
 	}
-	if value, ok := ssuo.mutation.AddedBikeOutboundNum(); ok {
-		_spec.AddField(stocksummary.FieldBikeOutboundNum, field.TypeInt, value)
+	if value, ok := ssuo.mutation.AddedInboundNum(); ok {
+		_spec.AddField(stocksummary.FieldInboundNum, field.TypeInt, value)
 	}
-	if value, ok := ssuo.mutation.BikeInboundNum(); ok {
-		_spec.SetField(stocksummary.FieldBikeInboundNum, field.TypeInt, value)
+	if value, ok := ssuo.mutation.InRiderNum(); ok {
+		_spec.SetField(stocksummary.FieldInRiderNum, field.TypeInt, value)
 	}
-	if value, ok := ssuo.mutation.AddedBikeInboundNum(); ok {
-		_spec.AddField(stocksummary.FieldBikeInboundNum, field.TypeInt, value)
+	if value, ok := ssuo.mutation.AddedInRiderNum(); ok {
+		_spec.AddField(stocksummary.FieldInRiderNum, field.TypeInt, value)
 	}
-	if value, ok := ssuo.mutation.CabinetBatteryNum(); ok {
-		_spec.SetField(stocksummary.FieldCabinetBatteryNum, field.TypeInt, value)
+	if value, ok := ssuo.mutation.Material(); ok {
+		_spec.SetField(stocksummary.FieldMaterial, field.TypeEnum, value)
 	}
-	if value, ok := ssuo.mutation.AddedCabinetBatteryNum(); ok {
-		_spec.AddField(stocksummary.FieldCabinetBatteryNum, field.TypeInt, value)
-	}
-	if value, ok := ssuo.mutation.RiderBatteryNum(); ok {
-		_spec.SetField(stocksummary.FieldRiderBatteryNum, field.TypeInt, value)
-	}
-	if value, ok := ssuo.mutation.AddedRiderBatteryNum(); ok {
-		_spec.AddField(stocksummary.FieldRiderBatteryNum, field.TypeInt, value)
+	if ssuo.mutation.MaterialCleared() {
+		_spec.ClearField(stocksummary.FieldMaterial, field.TypeEnum)
 	}
 	if ssuo.mutation.EnterpriseCleared() {
 		edge := &sqlgraph.EdgeSpec{

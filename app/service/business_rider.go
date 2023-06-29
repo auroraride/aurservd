@@ -46,6 +46,9 @@ type businessRiderService struct {
 
 	storeID, employeeID, cabinetID, subscribeID, agentID *uint64
 
+	// // 团签站点ID
+	// enterpriseID, stationID *uint64
+
 	// 电车信息
 	ebikeInfo *model.EbikeBusinessInfo
 
@@ -337,6 +340,7 @@ func (s *businessRiderService) preprocess(bt business.Type, sub *ent.Subscribe) 
 		if en.Agent && !en.UseStore && s.employee != nil {
 			snag.Panic("代理无法在门店办理业务")
 		}
+
 	}
 
 	s.subscribeID = silk.Pointer(sub.ID)
@@ -500,10 +504,11 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
 						CityID:    s.subscribe.CityID,
 						StockType: sts[bt],
 
-						StoreID:      s.storeID,
-						EmployeeID:   s.employeeID,
-						CabinetID:    s.cabinetID,
-						SubscribeID:  s.subscribeID,
+						StoreID:     s.storeID,
+						EmployeeID:  s.employeeID,
+						CabinetID:   s.cabinetID,
+						SubscribeID: s.subscribeID,
+
 						StationID:    s.subscribe.StationID,
 						EnterpriseID: s.subscribe.EnterpriseID,
 						AgentID:      s.agentID,

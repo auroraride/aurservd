@@ -1395,20 +1395,19 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "StockSummary",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			stocksummary.FieldEnterpriseID:       {Type: field.TypeUint64, Column: stocksummary.FieldEnterpriseID},
-			stocksummary.FieldStationID:          {Type: field.TypeUint64, Column: stocksummary.FieldStationID},
-			stocksummary.FieldStoreID:            {Type: field.TypeUint64, Column: stocksummary.FieldStoreID},
-			stocksummary.FieldRiderID:            {Type: field.TypeUint64, Column: stocksummary.FieldRiderID},
-			stocksummary.FieldCabinetID:          {Type: field.TypeUint64, Column: stocksummary.FieldCabinetID},
-			stocksummary.FieldDate:               {Type: field.TypeString, Column: stocksummary.FieldDate},
-			stocksummary.FieldBatteryNum:         {Type: field.TypeInt, Column: stocksummary.FieldBatteryNum},
-			stocksummary.FieldBatteryOutboundNum: {Type: field.TypeInt, Column: stocksummary.FieldBatteryOutboundNum},
-			stocksummary.FieldBatteryInboundNum:  {Type: field.TypeInt, Column: stocksummary.FieldBatteryInboundNum},
-			stocksummary.FieldBikeNum:            {Type: field.TypeInt, Column: stocksummary.FieldBikeNum},
-			stocksummary.FieldBikeOutboundNum:    {Type: field.TypeInt, Column: stocksummary.FieldBikeOutboundNum},
-			stocksummary.FieldBikeInboundNum:     {Type: field.TypeInt, Column: stocksummary.FieldBikeInboundNum},
-			stocksummary.FieldCabinetBatteryNum:  {Type: field.TypeInt, Column: stocksummary.FieldCabinetBatteryNum},
-			stocksummary.FieldRiderBatteryNum:    {Type: field.TypeInt, Column: stocksummary.FieldRiderBatteryNum},
+			stocksummary.FieldEnterpriseID: {Type: field.TypeUint64, Column: stocksummary.FieldEnterpriseID},
+			stocksummary.FieldStationID:    {Type: field.TypeUint64, Column: stocksummary.FieldStationID},
+			stocksummary.FieldStoreID:      {Type: field.TypeUint64, Column: stocksummary.FieldStoreID},
+			stocksummary.FieldRiderID:      {Type: field.TypeUint64, Column: stocksummary.FieldRiderID},
+			stocksummary.FieldCabinetID:    {Type: field.TypeUint64, Column: stocksummary.FieldCabinetID},
+			stocksummary.FieldDate:         {Type: field.TypeString, Column: stocksummary.FieldDate},
+			stocksummary.FieldModel:        {Type: field.TypeString, Column: stocksummary.FieldModel},
+			stocksummary.FieldNum:          {Type: field.TypeInt, Column: stocksummary.FieldNum},
+			stocksummary.FieldTodayNum:     {Type: field.TypeInt, Column: stocksummary.FieldTodayNum},
+			stocksummary.FieldOutboundNum:  {Type: field.TypeInt, Column: stocksummary.FieldOutboundNum},
+			stocksummary.FieldInboundNum:   {Type: field.TypeInt, Column: stocksummary.FieldInboundNum},
+			stocksummary.FieldInRiderNum:   {Type: field.TypeInt, Column: stocksummary.FieldInRiderNum},
+			stocksummary.FieldMaterial:     {Type: field.TypeEnum, Column: stocksummary.FieldMaterial},
 		},
 	}
 	graph.Nodes[48] = &sqlgraph.Node{
@@ -13151,44 +13150,39 @@ func (f *StockSummaryFilter) WhereDate(p entql.StringP) {
 	f.Where(p.Field(stocksummary.FieldDate))
 }
 
-// WhereBatteryNum applies the entql int predicate on the battery_num field.
-func (f *StockSummaryFilter) WhereBatteryNum(p entql.IntP) {
-	f.Where(p.Field(stocksummary.FieldBatteryNum))
+// WhereModel applies the entql string predicate on the model field.
+func (f *StockSummaryFilter) WhereModel(p entql.StringP) {
+	f.Where(p.Field(stocksummary.FieldModel))
 }
 
-// WhereBatteryOutboundNum applies the entql int predicate on the battery_outbound_num field.
-func (f *StockSummaryFilter) WhereBatteryOutboundNum(p entql.IntP) {
-	f.Where(p.Field(stocksummary.FieldBatteryOutboundNum))
+// WhereNum applies the entql int predicate on the num field.
+func (f *StockSummaryFilter) WhereNum(p entql.IntP) {
+	f.Where(p.Field(stocksummary.FieldNum))
 }
 
-// WhereBatteryInboundNum applies the entql int predicate on the battery_inbound_num field.
-func (f *StockSummaryFilter) WhereBatteryInboundNum(p entql.IntP) {
-	f.Where(p.Field(stocksummary.FieldBatteryInboundNum))
+// WhereTodayNum applies the entql int predicate on the today_num field.
+func (f *StockSummaryFilter) WhereTodayNum(p entql.IntP) {
+	f.Where(p.Field(stocksummary.FieldTodayNum))
 }
 
-// WhereBikeNum applies the entql int predicate on the bike_num field.
-func (f *StockSummaryFilter) WhereBikeNum(p entql.IntP) {
-	f.Where(p.Field(stocksummary.FieldBikeNum))
+// WhereOutboundNum applies the entql int predicate on the outbound_num field.
+func (f *StockSummaryFilter) WhereOutboundNum(p entql.IntP) {
+	f.Where(p.Field(stocksummary.FieldOutboundNum))
 }
 
-// WhereBikeOutboundNum applies the entql int predicate on the bike_outbound_num field.
-func (f *StockSummaryFilter) WhereBikeOutboundNum(p entql.IntP) {
-	f.Where(p.Field(stocksummary.FieldBikeOutboundNum))
+// WhereInboundNum applies the entql int predicate on the inbound_num field.
+func (f *StockSummaryFilter) WhereInboundNum(p entql.IntP) {
+	f.Where(p.Field(stocksummary.FieldInboundNum))
 }
 
-// WhereBikeInboundNum applies the entql int predicate on the bike_inbound_num field.
-func (f *StockSummaryFilter) WhereBikeInboundNum(p entql.IntP) {
-	f.Where(p.Field(stocksummary.FieldBikeInboundNum))
+// WhereInRiderNum applies the entql int predicate on the in_rider_num field.
+func (f *StockSummaryFilter) WhereInRiderNum(p entql.IntP) {
+	f.Where(p.Field(stocksummary.FieldInRiderNum))
 }
 
-// WhereCabinetBatteryNum applies the entql int predicate on the cabinet_battery_num field.
-func (f *StockSummaryFilter) WhereCabinetBatteryNum(p entql.IntP) {
-	f.Where(p.Field(stocksummary.FieldCabinetBatteryNum))
-}
-
-// WhereRiderBatteryNum applies the entql int predicate on the rider_battery_num field.
-func (f *StockSummaryFilter) WhereRiderBatteryNum(p entql.IntP) {
-	f.Where(p.Field(stocksummary.FieldRiderBatteryNum))
+// WhereMaterial applies the entql string predicate on the material field.
+func (f *StockSummaryFilter) WhereMaterial(p entql.StringP) {
+	f.Where(p.Field(stocksummary.FieldMaterial))
 }
 
 // WhereHasEnterprise applies a predicate to check if query has an edge enterprise.

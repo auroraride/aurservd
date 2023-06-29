@@ -73615,40 +73615,36 @@ func (m *StockMutation) ResetEdge(name string) error {
 // StockSummaryMutation represents an operation that mutates the StockSummary nodes in the graph.
 type StockSummaryMutation struct {
 	config
-	op                      Op
-	typ                     string
-	id                      *uint64
-	date                    *string
-	battery_num             *int
-	addbattery_num          *int
-	battery_outbound_num    *int
-	addbattery_outbound_num *int
-	battery_inbound_num     *int
-	addbattery_inbound_num  *int
-	bike_num                *int
-	addbike_num             *int
-	bike_outbound_num       *int
-	addbike_outbound_num    *int
-	bike_inbound_num        *int
-	addbike_inbound_num     *int
-	cabinet_battery_num     *int
-	addcabinet_battery_num  *int
-	rider_battery_num       *int
-	addrider_battery_num    *int
-	clearedFields           map[string]struct{}
-	enterprise              *uint64
-	clearedenterprise       bool
-	station                 *uint64
-	clearedstation          bool
-	store                   *uint64
-	clearedstore            bool
-	rider                   *uint64
-	clearedrider            bool
-	cabinet                 *uint64
-	clearedcabinet          bool
-	done                    bool
-	oldValue                func(context.Context) (*StockSummary, error)
-	predicates              []predicate.StockSummary
+	op                Op
+	typ               string
+	id                *uint64
+	date              *string
+	model             *string
+	num               *int
+	addnum            *int
+	today_num         *int
+	addtoday_num      *int
+	outbound_num      *int
+	addoutbound_num   *int
+	inbound_num       *int
+	addinbound_num    *int
+	in_rider_num      *int
+	addin_rider_num   *int
+	material          *stocksummary.Material
+	clearedFields     map[string]struct{}
+	enterprise        *uint64
+	clearedenterprise bool
+	station           *uint64
+	clearedstation    bool
+	store             *uint64
+	clearedstore      bool
+	rider             *uint64
+	clearedrider      bool
+	cabinet           *uint64
+	clearedcabinet    bool
+	done              bool
+	oldValue          func(context.Context) (*StockSummary, error)
+	predicates        []predicate.StockSummary
 }
 
 var _ ent.Mutation = (*StockSummaryMutation)(nil)
@@ -74030,452 +74026,382 @@ func (m *StockSummaryMutation) ResetDate() {
 	m.date = nil
 }
 
-// SetBatteryNum sets the "battery_num" field.
-func (m *StockSummaryMutation) SetBatteryNum(i int) {
-	m.battery_num = &i
-	m.addbattery_num = nil
+// SetModel sets the "model" field.
+func (m *StockSummaryMutation) SetModel(s string) {
+	m.model = &s
 }
 
-// BatteryNum returns the value of the "battery_num" field in the mutation.
-func (m *StockSummaryMutation) BatteryNum() (r int, exists bool) {
-	v := m.battery_num
+// Model returns the value of the "model" field in the mutation.
+func (m *StockSummaryMutation) Model() (r string, exists bool) {
+	v := m.model
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldBatteryNum returns the old "battery_num" field's value of the StockSummary entity.
+// OldModel returns the old "model" field's value of the StockSummary entity.
 // If the StockSummary object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *StockSummaryMutation) OldBatteryNum(ctx context.Context) (v int, err error) {
+func (m *StockSummaryMutation) OldModel(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldBatteryNum is only allowed on UpdateOne operations")
+		return v, errors.New("OldModel is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldBatteryNum requires an ID field in the mutation")
+		return v, errors.New("OldModel requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldBatteryNum: %w", err)
+		return v, fmt.Errorf("querying old value for OldModel: %w", err)
 	}
-	return oldValue.BatteryNum, nil
+	return oldValue.Model, nil
 }
 
-// AddBatteryNum adds i to the "battery_num" field.
-func (m *StockSummaryMutation) AddBatteryNum(i int) {
-	if m.addbattery_num != nil {
-		*m.addbattery_num += i
-	} else {
-		m.addbattery_num = &i
-	}
+// ClearModel clears the value of the "model" field.
+func (m *StockSummaryMutation) ClearModel() {
+	m.model = nil
+	m.clearedFields[stocksummary.FieldModel] = struct{}{}
 }
 
-// AddedBatteryNum returns the value that was added to the "battery_num" field in this mutation.
-func (m *StockSummaryMutation) AddedBatteryNum() (r int, exists bool) {
-	v := m.addbattery_num
+// ModelCleared returns if the "model" field was cleared in this mutation.
+func (m *StockSummaryMutation) ModelCleared() bool {
+	_, ok := m.clearedFields[stocksummary.FieldModel]
+	return ok
+}
+
+// ResetModel resets all changes to the "model" field.
+func (m *StockSummaryMutation) ResetModel() {
+	m.model = nil
+	delete(m.clearedFields, stocksummary.FieldModel)
+}
+
+// SetNum sets the "num" field.
+func (m *StockSummaryMutation) SetNum(i int) {
+	m.num = &i
+	m.addnum = nil
+}
+
+// Num returns the value of the "num" field in the mutation.
+func (m *StockSummaryMutation) Num() (r int, exists bool) {
+	v := m.num
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// ResetBatteryNum resets all changes to the "battery_num" field.
-func (m *StockSummaryMutation) ResetBatteryNum() {
-	m.battery_num = nil
-	m.addbattery_num = nil
-}
-
-// SetBatteryOutboundNum sets the "battery_outbound_num" field.
-func (m *StockSummaryMutation) SetBatteryOutboundNum(i int) {
-	m.battery_outbound_num = &i
-	m.addbattery_outbound_num = nil
-}
-
-// BatteryOutboundNum returns the value of the "battery_outbound_num" field in the mutation.
-func (m *StockSummaryMutation) BatteryOutboundNum() (r int, exists bool) {
-	v := m.battery_outbound_num
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldBatteryOutboundNum returns the old "battery_outbound_num" field's value of the StockSummary entity.
+// OldNum returns the old "num" field's value of the StockSummary entity.
 // If the StockSummary object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *StockSummaryMutation) OldBatteryOutboundNum(ctx context.Context) (v int, err error) {
+func (m *StockSummaryMutation) OldNum(ctx context.Context) (v int, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldBatteryOutboundNum is only allowed on UpdateOne operations")
+		return v, errors.New("OldNum is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldBatteryOutboundNum requires an ID field in the mutation")
+		return v, errors.New("OldNum requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldBatteryOutboundNum: %w", err)
+		return v, fmt.Errorf("querying old value for OldNum: %w", err)
 	}
-	return oldValue.BatteryOutboundNum, nil
+	return oldValue.Num, nil
 }
 
-// AddBatteryOutboundNum adds i to the "battery_outbound_num" field.
-func (m *StockSummaryMutation) AddBatteryOutboundNum(i int) {
-	if m.addbattery_outbound_num != nil {
-		*m.addbattery_outbound_num += i
+// AddNum adds i to the "num" field.
+func (m *StockSummaryMutation) AddNum(i int) {
+	if m.addnum != nil {
+		*m.addnum += i
 	} else {
-		m.addbattery_outbound_num = &i
+		m.addnum = &i
 	}
 }
 
-// AddedBatteryOutboundNum returns the value that was added to the "battery_outbound_num" field in this mutation.
-func (m *StockSummaryMutation) AddedBatteryOutboundNum() (r int, exists bool) {
-	v := m.addbattery_outbound_num
+// AddedNum returns the value that was added to the "num" field in this mutation.
+func (m *StockSummaryMutation) AddedNum() (r int, exists bool) {
+	v := m.addnum
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// ResetBatteryOutboundNum resets all changes to the "battery_outbound_num" field.
-func (m *StockSummaryMutation) ResetBatteryOutboundNum() {
-	m.battery_outbound_num = nil
-	m.addbattery_outbound_num = nil
+// ResetNum resets all changes to the "num" field.
+func (m *StockSummaryMutation) ResetNum() {
+	m.num = nil
+	m.addnum = nil
 }
 
-// SetBatteryInboundNum sets the "battery_inbound_num" field.
-func (m *StockSummaryMutation) SetBatteryInboundNum(i int) {
-	m.battery_inbound_num = &i
-	m.addbattery_inbound_num = nil
+// SetTodayNum sets the "today_num" field.
+func (m *StockSummaryMutation) SetTodayNum(i int) {
+	m.today_num = &i
+	m.addtoday_num = nil
 }
 
-// BatteryInboundNum returns the value of the "battery_inbound_num" field in the mutation.
-func (m *StockSummaryMutation) BatteryInboundNum() (r int, exists bool) {
-	v := m.battery_inbound_num
+// TodayNum returns the value of the "today_num" field in the mutation.
+func (m *StockSummaryMutation) TodayNum() (r int, exists bool) {
+	v := m.today_num
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldBatteryInboundNum returns the old "battery_inbound_num" field's value of the StockSummary entity.
+// OldTodayNum returns the old "today_num" field's value of the StockSummary entity.
 // If the StockSummary object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *StockSummaryMutation) OldBatteryInboundNum(ctx context.Context) (v int, err error) {
+func (m *StockSummaryMutation) OldTodayNum(ctx context.Context) (v int, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldBatteryInboundNum is only allowed on UpdateOne operations")
+		return v, errors.New("OldTodayNum is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldBatteryInboundNum requires an ID field in the mutation")
+		return v, errors.New("OldTodayNum requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldBatteryInboundNum: %w", err)
+		return v, fmt.Errorf("querying old value for OldTodayNum: %w", err)
 	}
-	return oldValue.BatteryInboundNum, nil
+	return oldValue.TodayNum, nil
 }
 
-// AddBatteryInboundNum adds i to the "battery_inbound_num" field.
-func (m *StockSummaryMutation) AddBatteryInboundNum(i int) {
-	if m.addbattery_inbound_num != nil {
-		*m.addbattery_inbound_num += i
+// AddTodayNum adds i to the "today_num" field.
+func (m *StockSummaryMutation) AddTodayNum(i int) {
+	if m.addtoday_num != nil {
+		*m.addtoday_num += i
 	} else {
-		m.addbattery_inbound_num = &i
+		m.addtoday_num = &i
 	}
 }
 
-// AddedBatteryInboundNum returns the value that was added to the "battery_inbound_num" field in this mutation.
-func (m *StockSummaryMutation) AddedBatteryInboundNum() (r int, exists bool) {
-	v := m.addbattery_inbound_num
+// AddedTodayNum returns the value that was added to the "today_num" field in this mutation.
+func (m *StockSummaryMutation) AddedTodayNum() (r int, exists bool) {
+	v := m.addtoday_num
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// ResetBatteryInboundNum resets all changes to the "battery_inbound_num" field.
-func (m *StockSummaryMutation) ResetBatteryInboundNum() {
-	m.battery_inbound_num = nil
-	m.addbattery_inbound_num = nil
+// ResetTodayNum resets all changes to the "today_num" field.
+func (m *StockSummaryMutation) ResetTodayNum() {
+	m.today_num = nil
+	m.addtoday_num = nil
 }
 
-// SetBikeNum sets the "bike_num" field.
-func (m *StockSummaryMutation) SetBikeNum(i int) {
-	m.bike_num = &i
-	m.addbike_num = nil
+// SetOutboundNum sets the "outbound_num" field.
+func (m *StockSummaryMutation) SetOutboundNum(i int) {
+	m.outbound_num = &i
+	m.addoutbound_num = nil
 }
 
-// BikeNum returns the value of the "bike_num" field in the mutation.
-func (m *StockSummaryMutation) BikeNum() (r int, exists bool) {
-	v := m.bike_num
+// OutboundNum returns the value of the "outbound_num" field in the mutation.
+func (m *StockSummaryMutation) OutboundNum() (r int, exists bool) {
+	v := m.outbound_num
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldBikeNum returns the old "bike_num" field's value of the StockSummary entity.
+// OldOutboundNum returns the old "outbound_num" field's value of the StockSummary entity.
 // If the StockSummary object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *StockSummaryMutation) OldBikeNum(ctx context.Context) (v int, err error) {
+func (m *StockSummaryMutation) OldOutboundNum(ctx context.Context) (v int, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldBikeNum is only allowed on UpdateOne operations")
+		return v, errors.New("OldOutboundNum is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldBikeNum requires an ID field in the mutation")
+		return v, errors.New("OldOutboundNum requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldBikeNum: %w", err)
+		return v, fmt.Errorf("querying old value for OldOutboundNum: %w", err)
 	}
-	return oldValue.BikeNum, nil
+	return oldValue.OutboundNum, nil
 }
 
-// AddBikeNum adds i to the "bike_num" field.
-func (m *StockSummaryMutation) AddBikeNum(i int) {
-	if m.addbike_num != nil {
-		*m.addbike_num += i
+// AddOutboundNum adds i to the "outbound_num" field.
+func (m *StockSummaryMutation) AddOutboundNum(i int) {
+	if m.addoutbound_num != nil {
+		*m.addoutbound_num += i
 	} else {
-		m.addbike_num = &i
+		m.addoutbound_num = &i
 	}
 }
 
-// AddedBikeNum returns the value that was added to the "bike_num" field in this mutation.
-func (m *StockSummaryMutation) AddedBikeNum() (r int, exists bool) {
-	v := m.addbike_num
+// AddedOutboundNum returns the value that was added to the "outbound_num" field in this mutation.
+func (m *StockSummaryMutation) AddedOutboundNum() (r int, exists bool) {
+	v := m.addoutbound_num
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// ResetBikeNum resets all changes to the "bike_num" field.
-func (m *StockSummaryMutation) ResetBikeNum() {
-	m.bike_num = nil
-	m.addbike_num = nil
+// ResetOutboundNum resets all changes to the "outbound_num" field.
+func (m *StockSummaryMutation) ResetOutboundNum() {
+	m.outbound_num = nil
+	m.addoutbound_num = nil
 }
 
-// SetBikeOutboundNum sets the "bike_outbound_num" field.
-func (m *StockSummaryMutation) SetBikeOutboundNum(i int) {
-	m.bike_outbound_num = &i
-	m.addbike_outbound_num = nil
+// SetInboundNum sets the "inbound_num" field.
+func (m *StockSummaryMutation) SetInboundNum(i int) {
+	m.inbound_num = &i
+	m.addinbound_num = nil
 }
 
-// BikeOutboundNum returns the value of the "bike_outbound_num" field in the mutation.
-func (m *StockSummaryMutation) BikeOutboundNum() (r int, exists bool) {
-	v := m.bike_outbound_num
+// InboundNum returns the value of the "inbound_num" field in the mutation.
+func (m *StockSummaryMutation) InboundNum() (r int, exists bool) {
+	v := m.inbound_num
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldBikeOutboundNum returns the old "bike_outbound_num" field's value of the StockSummary entity.
+// OldInboundNum returns the old "inbound_num" field's value of the StockSummary entity.
 // If the StockSummary object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *StockSummaryMutation) OldBikeOutboundNum(ctx context.Context) (v int, err error) {
+func (m *StockSummaryMutation) OldInboundNum(ctx context.Context) (v int, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldBikeOutboundNum is only allowed on UpdateOne operations")
+		return v, errors.New("OldInboundNum is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldBikeOutboundNum requires an ID field in the mutation")
+		return v, errors.New("OldInboundNum requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldBikeOutboundNum: %w", err)
+		return v, fmt.Errorf("querying old value for OldInboundNum: %w", err)
 	}
-	return oldValue.BikeOutboundNum, nil
+	return oldValue.InboundNum, nil
 }
 
-// AddBikeOutboundNum adds i to the "bike_outbound_num" field.
-func (m *StockSummaryMutation) AddBikeOutboundNum(i int) {
-	if m.addbike_outbound_num != nil {
-		*m.addbike_outbound_num += i
+// AddInboundNum adds i to the "inbound_num" field.
+func (m *StockSummaryMutation) AddInboundNum(i int) {
+	if m.addinbound_num != nil {
+		*m.addinbound_num += i
 	} else {
-		m.addbike_outbound_num = &i
+		m.addinbound_num = &i
 	}
 }
 
-// AddedBikeOutboundNum returns the value that was added to the "bike_outbound_num" field in this mutation.
-func (m *StockSummaryMutation) AddedBikeOutboundNum() (r int, exists bool) {
-	v := m.addbike_outbound_num
+// AddedInboundNum returns the value that was added to the "inbound_num" field in this mutation.
+func (m *StockSummaryMutation) AddedInboundNum() (r int, exists bool) {
+	v := m.addinbound_num
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// ResetBikeOutboundNum resets all changes to the "bike_outbound_num" field.
-func (m *StockSummaryMutation) ResetBikeOutboundNum() {
-	m.bike_outbound_num = nil
-	m.addbike_outbound_num = nil
+// ResetInboundNum resets all changes to the "inbound_num" field.
+func (m *StockSummaryMutation) ResetInboundNum() {
+	m.inbound_num = nil
+	m.addinbound_num = nil
 }
 
-// SetBikeInboundNum sets the "bike_inbound_num" field.
-func (m *StockSummaryMutation) SetBikeInboundNum(i int) {
-	m.bike_inbound_num = &i
-	m.addbike_inbound_num = nil
+// SetInRiderNum sets the "in_rider_num" field.
+func (m *StockSummaryMutation) SetInRiderNum(i int) {
+	m.in_rider_num = &i
+	m.addin_rider_num = nil
 }
 
-// BikeInboundNum returns the value of the "bike_inbound_num" field in the mutation.
-func (m *StockSummaryMutation) BikeInboundNum() (r int, exists bool) {
-	v := m.bike_inbound_num
+// InRiderNum returns the value of the "in_rider_num" field in the mutation.
+func (m *StockSummaryMutation) InRiderNum() (r int, exists bool) {
+	v := m.in_rider_num
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldBikeInboundNum returns the old "bike_inbound_num" field's value of the StockSummary entity.
+// OldInRiderNum returns the old "in_rider_num" field's value of the StockSummary entity.
 // If the StockSummary object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *StockSummaryMutation) OldBikeInboundNum(ctx context.Context) (v int, err error) {
+func (m *StockSummaryMutation) OldInRiderNum(ctx context.Context) (v int, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldBikeInboundNum is only allowed on UpdateOne operations")
+		return v, errors.New("OldInRiderNum is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldBikeInboundNum requires an ID field in the mutation")
+		return v, errors.New("OldInRiderNum requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldBikeInboundNum: %w", err)
+		return v, fmt.Errorf("querying old value for OldInRiderNum: %w", err)
 	}
-	return oldValue.BikeInboundNum, nil
+	return oldValue.InRiderNum, nil
 }
 
-// AddBikeInboundNum adds i to the "bike_inbound_num" field.
-func (m *StockSummaryMutation) AddBikeInboundNum(i int) {
-	if m.addbike_inbound_num != nil {
-		*m.addbike_inbound_num += i
+// AddInRiderNum adds i to the "in_rider_num" field.
+func (m *StockSummaryMutation) AddInRiderNum(i int) {
+	if m.addin_rider_num != nil {
+		*m.addin_rider_num += i
 	} else {
-		m.addbike_inbound_num = &i
+		m.addin_rider_num = &i
 	}
 }
 
-// AddedBikeInboundNum returns the value that was added to the "bike_inbound_num" field in this mutation.
-func (m *StockSummaryMutation) AddedBikeInboundNum() (r int, exists bool) {
-	v := m.addbike_inbound_num
+// AddedInRiderNum returns the value that was added to the "in_rider_num" field in this mutation.
+func (m *StockSummaryMutation) AddedInRiderNum() (r int, exists bool) {
+	v := m.addin_rider_num
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// ResetBikeInboundNum resets all changes to the "bike_inbound_num" field.
-func (m *StockSummaryMutation) ResetBikeInboundNum() {
-	m.bike_inbound_num = nil
-	m.addbike_inbound_num = nil
+// ResetInRiderNum resets all changes to the "in_rider_num" field.
+func (m *StockSummaryMutation) ResetInRiderNum() {
+	m.in_rider_num = nil
+	m.addin_rider_num = nil
 }
 
-// SetCabinetBatteryNum sets the "cabinet_battery_num" field.
-func (m *StockSummaryMutation) SetCabinetBatteryNum(i int) {
-	m.cabinet_battery_num = &i
-	m.addcabinet_battery_num = nil
+// SetMaterial sets the "material" field.
+func (m *StockSummaryMutation) SetMaterial(s stocksummary.Material) {
+	m.material = &s
 }
 
-// CabinetBatteryNum returns the value of the "cabinet_battery_num" field in the mutation.
-func (m *StockSummaryMutation) CabinetBatteryNum() (r int, exists bool) {
-	v := m.cabinet_battery_num
+// Material returns the value of the "material" field in the mutation.
+func (m *StockSummaryMutation) Material() (r stocksummary.Material, exists bool) {
+	v := m.material
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldCabinetBatteryNum returns the old "cabinet_battery_num" field's value of the StockSummary entity.
+// OldMaterial returns the old "material" field's value of the StockSummary entity.
 // If the StockSummary object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *StockSummaryMutation) OldCabinetBatteryNum(ctx context.Context) (v int, err error) {
+func (m *StockSummaryMutation) OldMaterial(ctx context.Context) (v stocksummary.Material, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCabinetBatteryNum is only allowed on UpdateOne operations")
+		return v, errors.New("OldMaterial is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCabinetBatteryNum requires an ID field in the mutation")
+		return v, errors.New("OldMaterial requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCabinetBatteryNum: %w", err)
+		return v, fmt.Errorf("querying old value for OldMaterial: %w", err)
 	}
-	return oldValue.CabinetBatteryNum, nil
+	return oldValue.Material, nil
 }
 
-// AddCabinetBatteryNum adds i to the "cabinet_battery_num" field.
-func (m *StockSummaryMutation) AddCabinetBatteryNum(i int) {
-	if m.addcabinet_battery_num != nil {
-		*m.addcabinet_battery_num += i
-	} else {
-		m.addcabinet_battery_num = &i
-	}
+// ClearMaterial clears the value of the "material" field.
+func (m *StockSummaryMutation) ClearMaterial() {
+	m.material = nil
+	m.clearedFields[stocksummary.FieldMaterial] = struct{}{}
 }
 
-// AddedCabinetBatteryNum returns the value that was added to the "cabinet_battery_num" field in this mutation.
-func (m *StockSummaryMutation) AddedCabinetBatteryNum() (r int, exists bool) {
-	v := m.addcabinet_battery_num
-	if v == nil {
-		return
-	}
-	return *v, true
+// MaterialCleared returns if the "material" field was cleared in this mutation.
+func (m *StockSummaryMutation) MaterialCleared() bool {
+	_, ok := m.clearedFields[stocksummary.FieldMaterial]
+	return ok
 }
 
-// ResetCabinetBatteryNum resets all changes to the "cabinet_battery_num" field.
-func (m *StockSummaryMutation) ResetCabinetBatteryNum() {
-	m.cabinet_battery_num = nil
-	m.addcabinet_battery_num = nil
-}
-
-// SetRiderBatteryNum sets the "rider_battery_num" field.
-func (m *StockSummaryMutation) SetRiderBatteryNum(i int) {
-	m.rider_battery_num = &i
-	m.addrider_battery_num = nil
-}
-
-// RiderBatteryNum returns the value of the "rider_battery_num" field in the mutation.
-func (m *StockSummaryMutation) RiderBatteryNum() (r int, exists bool) {
-	v := m.rider_battery_num
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldRiderBatteryNum returns the old "rider_battery_num" field's value of the StockSummary entity.
-// If the StockSummary object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *StockSummaryMutation) OldRiderBatteryNum(ctx context.Context) (v int, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldRiderBatteryNum is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldRiderBatteryNum requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldRiderBatteryNum: %w", err)
-	}
-	return oldValue.RiderBatteryNum, nil
-}
-
-// AddRiderBatteryNum adds i to the "rider_battery_num" field.
-func (m *StockSummaryMutation) AddRiderBatteryNum(i int) {
-	if m.addrider_battery_num != nil {
-		*m.addrider_battery_num += i
-	} else {
-		m.addrider_battery_num = &i
-	}
-}
-
-// AddedRiderBatteryNum returns the value that was added to the "rider_battery_num" field in this mutation.
-func (m *StockSummaryMutation) AddedRiderBatteryNum() (r int, exists bool) {
-	v := m.addrider_battery_num
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetRiderBatteryNum resets all changes to the "rider_battery_num" field.
-func (m *StockSummaryMutation) ResetRiderBatteryNum() {
-	m.rider_battery_num = nil
-	m.addrider_battery_num = nil
+// ResetMaterial resets all changes to the "material" field.
+func (m *StockSummaryMutation) ResetMaterial() {
+	m.material = nil
+	delete(m.clearedFields, stocksummary.FieldMaterial)
 }
 
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
@@ -74642,7 +74568,7 @@ func (m *StockSummaryMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *StockSummaryMutation) Fields() []string {
-	fields := make([]string, 0, 14)
+	fields := make([]string, 0, 13)
 	if m.enterprise != nil {
 		fields = append(fields, stocksummary.FieldEnterpriseID)
 	}
@@ -74661,29 +74587,26 @@ func (m *StockSummaryMutation) Fields() []string {
 	if m.date != nil {
 		fields = append(fields, stocksummary.FieldDate)
 	}
-	if m.battery_num != nil {
-		fields = append(fields, stocksummary.FieldBatteryNum)
+	if m.model != nil {
+		fields = append(fields, stocksummary.FieldModel)
 	}
-	if m.battery_outbound_num != nil {
-		fields = append(fields, stocksummary.FieldBatteryOutboundNum)
+	if m.num != nil {
+		fields = append(fields, stocksummary.FieldNum)
 	}
-	if m.battery_inbound_num != nil {
-		fields = append(fields, stocksummary.FieldBatteryInboundNum)
+	if m.today_num != nil {
+		fields = append(fields, stocksummary.FieldTodayNum)
 	}
-	if m.bike_num != nil {
-		fields = append(fields, stocksummary.FieldBikeNum)
+	if m.outbound_num != nil {
+		fields = append(fields, stocksummary.FieldOutboundNum)
 	}
-	if m.bike_outbound_num != nil {
-		fields = append(fields, stocksummary.FieldBikeOutboundNum)
+	if m.inbound_num != nil {
+		fields = append(fields, stocksummary.FieldInboundNum)
 	}
-	if m.bike_inbound_num != nil {
-		fields = append(fields, stocksummary.FieldBikeInboundNum)
+	if m.in_rider_num != nil {
+		fields = append(fields, stocksummary.FieldInRiderNum)
 	}
-	if m.cabinet_battery_num != nil {
-		fields = append(fields, stocksummary.FieldCabinetBatteryNum)
-	}
-	if m.rider_battery_num != nil {
-		fields = append(fields, stocksummary.FieldRiderBatteryNum)
+	if m.material != nil {
+		fields = append(fields, stocksummary.FieldMaterial)
 	}
 	return fields
 }
@@ -74705,22 +74628,20 @@ func (m *StockSummaryMutation) Field(name string) (ent.Value, bool) {
 		return m.CabinetID()
 	case stocksummary.FieldDate:
 		return m.Date()
-	case stocksummary.FieldBatteryNum:
-		return m.BatteryNum()
-	case stocksummary.FieldBatteryOutboundNum:
-		return m.BatteryOutboundNum()
-	case stocksummary.FieldBatteryInboundNum:
-		return m.BatteryInboundNum()
-	case stocksummary.FieldBikeNum:
-		return m.BikeNum()
-	case stocksummary.FieldBikeOutboundNum:
-		return m.BikeOutboundNum()
-	case stocksummary.FieldBikeInboundNum:
-		return m.BikeInboundNum()
-	case stocksummary.FieldCabinetBatteryNum:
-		return m.CabinetBatteryNum()
-	case stocksummary.FieldRiderBatteryNum:
-		return m.RiderBatteryNum()
+	case stocksummary.FieldModel:
+		return m.Model()
+	case stocksummary.FieldNum:
+		return m.Num()
+	case stocksummary.FieldTodayNum:
+		return m.TodayNum()
+	case stocksummary.FieldOutboundNum:
+		return m.OutboundNum()
+	case stocksummary.FieldInboundNum:
+		return m.InboundNum()
+	case stocksummary.FieldInRiderNum:
+		return m.InRiderNum()
+	case stocksummary.FieldMaterial:
+		return m.Material()
 	}
 	return nil, false
 }
@@ -74742,22 +74663,20 @@ func (m *StockSummaryMutation) OldField(ctx context.Context, name string) (ent.V
 		return m.OldCabinetID(ctx)
 	case stocksummary.FieldDate:
 		return m.OldDate(ctx)
-	case stocksummary.FieldBatteryNum:
-		return m.OldBatteryNum(ctx)
-	case stocksummary.FieldBatteryOutboundNum:
-		return m.OldBatteryOutboundNum(ctx)
-	case stocksummary.FieldBatteryInboundNum:
-		return m.OldBatteryInboundNum(ctx)
-	case stocksummary.FieldBikeNum:
-		return m.OldBikeNum(ctx)
-	case stocksummary.FieldBikeOutboundNum:
-		return m.OldBikeOutboundNum(ctx)
-	case stocksummary.FieldBikeInboundNum:
-		return m.OldBikeInboundNum(ctx)
-	case stocksummary.FieldCabinetBatteryNum:
-		return m.OldCabinetBatteryNum(ctx)
-	case stocksummary.FieldRiderBatteryNum:
-		return m.OldRiderBatteryNum(ctx)
+	case stocksummary.FieldModel:
+		return m.OldModel(ctx)
+	case stocksummary.FieldNum:
+		return m.OldNum(ctx)
+	case stocksummary.FieldTodayNum:
+		return m.OldTodayNum(ctx)
+	case stocksummary.FieldOutboundNum:
+		return m.OldOutboundNum(ctx)
+	case stocksummary.FieldInboundNum:
+		return m.OldInboundNum(ctx)
+	case stocksummary.FieldInRiderNum:
+		return m.OldInRiderNum(ctx)
+	case stocksummary.FieldMaterial:
+		return m.OldMaterial(ctx)
 	}
 	return nil, fmt.Errorf("unknown StockSummary field %s", name)
 }
@@ -74809,61 +74728,54 @@ func (m *StockSummaryMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDate(v)
 		return nil
-	case stocksummary.FieldBatteryNum:
-		v, ok := value.(int)
+	case stocksummary.FieldModel:
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetBatteryNum(v)
+		m.SetModel(v)
 		return nil
-	case stocksummary.FieldBatteryOutboundNum:
+	case stocksummary.FieldNum:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetBatteryOutboundNum(v)
+		m.SetNum(v)
 		return nil
-	case stocksummary.FieldBatteryInboundNum:
+	case stocksummary.FieldTodayNum:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetBatteryInboundNum(v)
+		m.SetTodayNum(v)
 		return nil
-	case stocksummary.FieldBikeNum:
+	case stocksummary.FieldOutboundNum:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetBikeNum(v)
+		m.SetOutboundNum(v)
 		return nil
-	case stocksummary.FieldBikeOutboundNum:
+	case stocksummary.FieldInboundNum:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetBikeOutboundNum(v)
+		m.SetInboundNum(v)
 		return nil
-	case stocksummary.FieldBikeInboundNum:
+	case stocksummary.FieldInRiderNum:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetBikeInboundNum(v)
+		m.SetInRiderNum(v)
 		return nil
-	case stocksummary.FieldCabinetBatteryNum:
-		v, ok := value.(int)
+	case stocksummary.FieldMaterial:
+		v, ok := value.(stocksummary.Material)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetCabinetBatteryNum(v)
-		return nil
-	case stocksummary.FieldRiderBatteryNum:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetRiderBatteryNum(v)
+		m.SetMaterial(v)
 		return nil
 	}
 	return fmt.Errorf("unknown StockSummary field %s", name)
@@ -74873,29 +74785,20 @@ func (m *StockSummaryMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *StockSummaryMutation) AddedFields() []string {
 	var fields []string
-	if m.addbattery_num != nil {
-		fields = append(fields, stocksummary.FieldBatteryNum)
+	if m.addnum != nil {
+		fields = append(fields, stocksummary.FieldNum)
 	}
-	if m.addbattery_outbound_num != nil {
-		fields = append(fields, stocksummary.FieldBatteryOutboundNum)
+	if m.addtoday_num != nil {
+		fields = append(fields, stocksummary.FieldTodayNum)
 	}
-	if m.addbattery_inbound_num != nil {
-		fields = append(fields, stocksummary.FieldBatteryInboundNum)
+	if m.addoutbound_num != nil {
+		fields = append(fields, stocksummary.FieldOutboundNum)
 	}
-	if m.addbike_num != nil {
-		fields = append(fields, stocksummary.FieldBikeNum)
+	if m.addinbound_num != nil {
+		fields = append(fields, stocksummary.FieldInboundNum)
 	}
-	if m.addbike_outbound_num != nil {
-		fields = append(fields, stocksummary.FieldBikeOutboundNum)
-	}
-	if m.addbike_inbound_num != nil {
-		fields = append(fields, stocksummary.FieldBikeInboundNum)
-	}
-	if m.addcabinet_battery_num != nil {
-		fields = append(fields, stocksummary.FieldCabinetBatteryNum)
-	}
-	if m.addrider_battery_num != nil {
-		fields = append(fields, stocksummary.FieldRiderBatteryNum)
+	if m.addin_rider_num != nil {
+		fields = append(fields, stocksummary.FieldInRiderNum)
 	}
 	return fields
 }
@@ -74905,22 +74808,16 @@ func (m *StockSummaryMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *StockSummaryMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
-	case stocksummary.FieldBatteryNum:
-		return m.AddedBatteryNum()
-	case stocksummary.FieldBatteryOutboundNum:
-		return m.AddedBatteryOutboundNum()
-	case stocksummary.FieldBatteryInboundNum:
-		return m.AddedBatteryInboundNum()
-	case stocksummary.FieldBikeNum:
-		return m.AddedBikeNum()
-	case stocksummary.FieldBikeOutboundNum:
-		return m.AddedBikeOutboundNum()
-	case stocksummary.FieldBikeInboundNum:
-		return m.AddedBikeInboundNum()
-	case stocksummary.FieldCabinetBatteryNum:
-		return m.AddedCabinetBatteryNum()
-	case stocksummary.FieldRiderBatteryNum:
-		return m.AddedRiderBatteryNum()
+	case stocksummary.FieldNum:
+		return m.AddedNum()
+	case stocksummary.FieldTodayNum:
+		return m.AddedTodayNum()
+	case stocksummary.FieldOutboundNum:
+		return m.AddedOutboundNum()
+	case stocksummary.FieldInboundNum:
+		return m.AddedInboundNum()
+	case stocksummary.FieldInRiderNum:
+		return m.AddedInRiderNum()
 	}
 	return nil, false
 }
@@ -74930,61 +74827,40 @@ func (m *StockSummaryMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *StockSummaryMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case stocksummary.FieldBatteryNum:
+	case stocksummary.FieldNum:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.AddBatteryNum(v)
+		m.AddNum(v)
 		return nil
-	case stocksummary.FieldBatteryOutboundNum:
+	case stocksummary.FieldTodayNum:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.AddBatteryOutboundNum(v)
+		m.AddTodayNum(v)
 		return nil
-	case stocksummary.FieldBatteryInboundNum:
+	case stocksummary.FieldOutboundNum:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.AddBatteryInboundNum(v)
+		m.AddOutboundNum(v)
 		return nil
-	case stocksummary.FieldBikeNum:
+	case stocksummary.FieldInboundNum:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.AddBikeNum(v)
+		m.AddInboundNum(v)
 		return nil
-	case stocksummary.FieldBikeOutboundNum:
+	case stocksummary.FieldInRiderNum:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.AddBikeOutboundNum(v)
-		return nil
-	case stocksummary.FieldBikeInboundNum:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddBikeInboundNum(v)
-		return nil
-	case stocksummary.FieldCabinetBatteryNum:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddCabinetBatteryNum(v)
-		return nil
-	case stocksummary.FieldRiderBatteryNum:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddRiderBatteryNum(v)
+		m.AddInRiderNum(v)
 		return nil
 	}
 	return fmt.Errorf("unknown StockSummary numeric field %s", name)
@@ -75008,6 +74884,12 @@ func (m *StockSummaryMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(stocksummary.FieldCabinetID) {
 		fields = append(fields, stocksummary.FieldCabinetID)
+	}
+	if m.FieldCleared(stocksummary.FieldModel) {
+		fields = append(fields, stocksummary.FieldModel)
+	}
+	if m.FieldCleared(stocksummary.FieldMaterial) {
+		fields = append(fields, stocksummary.FieldMaterial)
 	}
 	return fields
 }
@@ -75038,6 +74920,12 @@ func (m *StockSummaryMutation) ClearField(name string) error {
 	case stocksummary.FieldCabinetID:
 		m.ClearCabinetID()
 		return nil
+	case stocksummary.FieldModel:
+		m.ClearModel()
+		return nil
+	case stocksummary.FieldMaterial:
+		m.ClearMaterial()
+		return nil
 	}
 	return fmt.Errorf("unknown StockSummary nullable field %s", name)
 }
@@ -75064,29 +74952,26 @@ func (m *StockSummaryMutation) ResetField(name string) error {
 	case stocksummary.FieldDate:
 		m.ResetDate()
 		return nil
-	case stocksummary.FieldBatteryNum:
-		m.ResetBatteryNum()
+	case stocksummary.FieldModel:
+		m.ResetModel()
 		return nil
-	case stocksummary.FieldBatteryOutboundNum:
-		m.ResetBatteryOutboundNum()
+	case stocksummary.FieldNum:
+		m.ResetNum()
 		return nil
-	case stocksummary.FieldBatteryInboundNum:
-		m.ResetBatteryInboundNum()
+	case stocksummary.FieldTodayNum:
+		m.ResetTodayNum()
 		return nil
-	case stocksummary.FieldBikeNum:
-		m.ResetBikeNum()
+	case stocksummary.FieldOutboundNum:
+		m.ResetOutboundNum()
 		return nil
-	case stocksummary.FieldBikeOutboundNum:
-		m.ResetBikeOutboundNum()
+	case stocksummary.FieldInboundNum:
+		m.ResetInboundNum()
 		return nil
-	case stocksummary.FieldBikeInboundNum:
-		m.ResetBikeInboundNum()
+	case stocksummary.FieldInRiderNum:
+		m.ResetInRiderNum()
 		return nil
-	case stocksummary.FieldCabinetBatteryNum:
-		m.ResetCabinetBatteryNum()
-		return nil
-	case stocksummary.FieldRiderBatteryNum:
-		m.ResetRiderBatteryNum()
+	case stocksummary.FieldMaterial:
+		m.ResetMaterial()
 		return nil
 	}
 	return fmt.Errorf("unknown StockSummary field %s", name)

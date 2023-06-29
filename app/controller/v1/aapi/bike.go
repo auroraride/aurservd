@@ -17,6 +17,31 @@ type bike struct{}
 
 var Bike = new(bike)
 
+// List 电车列表
+// @ID           AgentBikeList
+// @Router       /agent/v1/bike [GET]
+// @Summary      AB001 电车列表
+// @Tags         [A]代理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Agent-Token  header  string  true  "代理校验token"
+// @Param        query  query  model.EbikeListReq  true  "请求参数"
+// @Success      200  {object}  []model.EbikeListRes  "请求成功"
+func (*bike) List(c echo.Context) (err error) {
+	ctx, req := app.AgentContextAndBinding[model.EbikeListReq](c)
+	return ctx.SendResponse(service.NewEbike().List(&model.EbikeListReq{
+		PaginationReq: req.PaginationReq,
+		EbikeListFilter: model.EbikeListFilter{
+			RiderID:      req.RiderID,
+			StationID:    req.StationID,
+			EnterpriseID: &ctx.Enterprise.ID,
+			Status:       req.Status,
+			Keyword:      req.Keyword,
+			BrandID:      req.BrandID,
+		},
+	}))
+}
+
 // Unallocated
 // @ID           AgentBikeUnallocated
 // @Router       /agent/v1/bike/unallocated [GET]
