@@ -25,7 +25,7 @@ var Stock = new(stock)
 // @Accept       json
 // @Produce      json
 // @Param        X-Agent-Token  header  string  true  "代理校验token"
-// @Param        query  query   model.StockDetailReq  false  "筛选条件"
+// @Param        query  query   model.AgentStockDetailReq  false  "筛选条件"
 // @Success      200  {object}  model.PaginationRes{items=[]model.StockDetailRes}  "请求成功"
 func (*stock) Detail(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.AgentStockDetailReq](c)

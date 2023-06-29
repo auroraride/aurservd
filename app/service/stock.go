@@ -823,23 +823,6 @@ func (s *stockService) listFilter(req model.StockDetailFilter) (q *ent.StockQuer
 		info["站点"] = ent.NewExportInfo(req.StationID, enterprisestation.Table)
 		q.Where(stock.StationID(req.StationID))
 	}
-	if req.Model != "" {
-		info["型号"] = req.Model
-		q.Where(stock.Model(req.Model))
-	}
-
-	if req.Keyword != "" {
-		// 搜索关键字 查询电柜编号、车架号、电池编码
-		info["关键字"] = req.Keyword
-		q.Where(
-			stock.Or(
-				stock.HasCabinetWith(cabinet.SerialContains(req.Keyword)),
-				stock.HasEbikeWith(ebike.SnContains(req.Keyword)),
-				stock.HasBatteryWith(battery.SnContains(req.Keyword)),
-			),
-		)
-
-	}
 
 	return
 }

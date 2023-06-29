@@ -341,14 +341,6 @@ func (s *businessRiderService) preprocess(bt business.Type, sub *ent.Subscribe) 
 			snag.Panic("代理无法在门店办理业务")
 		}
 
-		// 团签激活和退租
-		// 如果骑手在团签电柜退租 退租至电柜
-		// 代理商操作退租和后台强制退租退至团签
-		// if sub.StationID != nil && s.cabinet == nil && (bt == business.TypeActive || bt == business.TypeUnsubscribe) {
-		// 	s.stationID = sub.StationID
-		// 	s.enterpriseID = sub.EnterpriseID
-		// }
-
 	}
 
 	s.subscribeID = silk.Pointer(sub.ID)
