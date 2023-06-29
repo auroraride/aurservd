@@ -54,11 +54,12 @@ func (s *agentCabinetService) detail(ac *app.AgentContext, item *ent.Cabinet, ln
 		Models: make([]string, len(item.Edges.Models)),
 	}
 
-	if lng != nil && lat != nil {
+	ed := ac.Enterprise.Distance
+	if lng != nil && lat != nil && ed >= 0 {
 		distance := haversine.Distance(haversine.NewCoordinates(*lat, *lng), haversine.NewCoordinates(item.Lat, item.Lng)).Kilometers() * 1000.0
 		data.Distance = silk.Pointer(distance)
-		// 当前距离小于控制距离上限则有全部权限
-		if distance <= ac.Enterprise.Distance {
+		// 若无限制或当前距离小于控制距离上限则有全部权限
+		if ed == 0 || distance <= ed {
 			data.Permission = model.AgentCabinetPermissionAll
 		}
 	}
