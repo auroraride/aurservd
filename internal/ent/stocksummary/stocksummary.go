@@ -36,8 +36,6 @@ const (
 	FieldOutboundNum = "outbound_num"
 	// FieldInboundNum holds the string denoting the inbound_num field in the database.
 	FieldInboundNum = "inbound_num"
-	// FieldInCabinetNum holds the string denoting the in_cabinet_num field in the database.
-	FieldInCabinetNum = "in_cabinet_num"
 	// FieldInRiderNum holds the string denoting the in_rider_num field in the database.
 	FieldInRiderNum = "in_rider_num"
 	// FieldMaterial holds the string denoting the material field in the database.
@@ -105,7 +103,6 @@ var Columns = []string{
 	FieldTodayNum,
 	FieldOutboundNum,
 	FieldInboundNum,
-	FieldInCabinetNum,
 	FieldInRiderNum,
 	FieldMaterial,
 }
@@ -131,8 +128,6 @@ var (
 	DefaultOutboundNum int
 	// DefaultInboundNum holds the default value on creation for the "inbound_num" field.
 	DefaultInboundNum int
-	// DefaultInCabinetNum holds the default value on creation for the "in_cabinet_num" field.
-	DefaultInCabinetNum int
 	// DefaultInRiderNum holds the default value on creation for the "in_rider_num" field.
 	DefaultInRiderNum int
 )
@@ -222,11 +217,6 @@ func ByOutboundNum(opts ...sql.OrderTermOption) OrderOption {
 // ByInboundNum orders the results by the inbound_num field.
 func ByInboundNum(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldInboundNum, opts...).ToFunc()
-}
-
-// ByInCabinetNum orders the results by the in_cabinet_num field.
-func ByInCabinetNum(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldInCabinetNum, opts...).ToFunc()
 }
 
 // ByInRiderNum orders the results by the in_rider_num field.

@@ -108,11 +108,6 @@ func InboundNum(v int) predicate.StockSummary {
 	return predicate.StockSummary(sql.FieldEQ(FieldInboundNum, v))
 }
 
-// InCabinetNum applies equality check predicate on the "in_cabinet_num" field. It's identical to InCabinetNumEQ.
-func InCabinetNum(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldEQ(FieldInCabinetNum, v))
-}
-
 // InRiderNum applies equality check predicate on the "in_rider_num" field. It's identical to InRiderNumEQ.
 func InRiderNum(v int) predicate.StockSummary {
 	return predicate.StockSummary(sql.FieldEQ(FieldInRiderNum, v))
@@ -566,46 +561,6 @@ func InboundNumLT(v int) predicate.StockSummary {
 // InboundNumLTE applies the LTE predicate on the "inbound_num" field.
 func InboundNumLTE(v int) predicate.StockSummary {
 	return predicate.StockSummary(sql.FieldLTE(FieldInboundNum, v))
-}
-
-// InCabinetNumEQ applies the EQ predicate on the "in_cabinet_num" field.
-func InCabinetNumEQ(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldEQ(FieldInCabinetNum, v))
-}
-
-// InCabinetNumNEQ applies the NEQ predicate on the "in_cabinet_num" field.
-func InCabinetNumNEQ(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldNEQ(FieldInCabinetNum, v))
-}
-
-// InCabinetNumIn applies the In predicate on the "in_cabinet_num" field.
-func InCabinetNumIn(vs ...int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldIn(FieldInCabinetNum, vs...))
-}
-
-// InCabinetNumNotIn applies the NotIn predicate on the "in_cabinet_num" field.
-func InCabinetNumNotIn(vs ...int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldNotIn(FieldInCabinetNum, vs...))
-}
-
-// InCabinetNumGT applies the GT predicate on the "in_cabinet_num" field.
-func InCabinetNumGT(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldGT(FieldInCabinetNum, v))
-}
-
-// InCabinetNumGTE applies the GTE predicate on the "in_cabinet_num" field.
-func InCabinetNumGTE(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldGTE(FieldInCabinetNum, v))
-}
-
-// InCabinetNumLT applies the LT predicate on the "in_cabinet_num" field.
-func InCabinetNumLT(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldLT(FieldInCabinetNum, v))
-}
-
-// InCabinetNumLTE applies the LTE predicate on the "in_cabinet_num" field.
-func InCabinetNumLTE(v int) predicate.StockSummary {
-	return predicate.StockSummary(sql.FieldLTE(FieldInCabinetNum, v))
 }
 
 // InRiderNumEQ applies the EQ predicate on the "in_rider_num" field.

@@ -73628,8 +73628,6 @@ type StockSummaryMutation struct {
 	addoutbound_num   *int
 	inbound_num       *int
 	addinbound_num    *int
-	in_cabinet_num    *int
-	addin_cabinet_num *int
 	in_rider_num      *int
 	addin_rider_num   *int
 	material          *stocksummary.Material
@@ -74301,62 +74299,6 @@ func (m *StockSummaryMutation) ResetInboundNum() {
 	m.addinbound_num = nil
 }
 
-// SetInCabinetNum sets the "in_cabinet_num" field.
-func (m *StockSummaryMutation) SetInCabinetNum(i int) {
-	m.in_cabinet_num = &i
-	m.addin_cabinet_num = nil
-}
-
-// InCabinetNum returns the value of the "in_cabinet_num" field in the mutation.
-func (m *StockSummaryMutation) InCabinetNum() (r int, exists bool) {
-	v := m.in_cabinet_num
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldInCabinetNum returns the old "in_cabinet_num" field's value of the StockSummary entity.
-// If the StockSummary object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *StockSummaryMutation) OldInCabinetNum(ctx context.Context) (v int, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldInCabinetNum is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldInCabinetNum requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldInCabinetNum: %w", err)
-	}
-	return oldValue.InCabinetNum, nil
-}
-
-// AddInCabinetNum adds i to the "in_cabinet_num" field.
-func (m *StockSummaryMutation) AddInCabinetNum(i int) {
-	if m.addin_cabinet_num != nil {
-		*m.addin_cabinet_num += i
-	} else {
-		m.addin_cabinet_num = &i
-	}
-}
-
-// AddedInCabinetNum returns the value that was added to the "in_cabinet_num" field in this mutation.
-func (m *StockSummaryMutation) AddedInCabinetNum() (r int, exists bool) {
-	v := m.addin_cabinet_num
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetInCabinetNum resets all changes to the "in_cabinet_num" field.
-func (m *StockSummaryMutation) ResetInCabinetNum() {
-	m.in_cabinet_num = nil
-	m.addin_cabinet_num = nil
-}
-
 // SetInRiderNum sets the "in_rider_num" field.
 func (m *StockSummaryMutation) SetInRiderNum(i int) {
 	m.in_rider_num = &i
@@ -74626,7 +74568,7 @@ func (m *StockSummaryMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *StockSummaryMutation) Fields() []string {
-	fields := make([]string, 0, 14)
+	fields := make([]string, 0, 13)
 	if m.enterprise != nil {
 		fields = append(fields, stocksummary.FieldEnterpriseID)
 	}
@@ -74659,9 +74601,6 @@ func (m *StockSummaryMutation) Fields() []string {
 	}
 	if m.inbound_num != nil {
 		fields = append(fields, stocksummary.FieldInboundNum)
-	}
-	if m.in_cabinet_num != nil {
-		fields = append(fields, stocksummary.FieldInCabinetNum)
 	}
 	if m.in_rider_num != nil {
 		fields = append(fields, stocksummary.FieldInRiderNum)
@@ -74699,8 +74638,6 @@ func (m *StockSummaryMutation) Field(name string) (ent.Value, bool) {
 		return m.OutboundNum()
 	case stocksummary.FieldInboundNum:
 		return m.InboundNum()
-	case stocksummary.FieldInCabinetNum:
-		return m.InCabinetNum()
 	case stocksummary.FieldInRiderNum:
 		return m.InRiderNum()
 	case stocksummary.FieldMaterial:
@@ -74736,8 +74673,6 @@ func (m *StockSummaryMutation) OldField(ctx context.Context, name string) (ent.V
 		return m.OldOutboundNum(ctx)
 	case stocksummary.FieldInboundNum:
 		return m.OldInboundNum(ctx)
-	case stocksummary.FieldInCabinetNum:
-		return m.OldInCabinetNum(ctx)
 	case stocksummary.FieldInRiderNum:
 		return m.OldInRiderNum(ctx)
 	case stocksummary.FieldMaterial:
@@ -74828,13 +74763,6 @@ func (m *StockSummaryMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetInboundNum(v)
 		return nil
-	case stocksummary.FieldInCabinetNum:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetInCabinetNum(v)
-		return nil
 	case stocksummary.FieldInRiderNum:
 		v, ok := value.(int)
 		if !ok {
@@ -74869,9 +74797,6 @@ func (m *StockSummaryMutation) AddedFields() []string {
 	if m.addinbound_num != nil {
 		fields = append(fields, stocksummary.FieldInboundNum)
 	}
-	if m.addin_cabinet_num != nil {
-		fields = append(fields, stocksummary.FieldInCabinetNum)
-	}
 	if m.addin_rider_num != nil {
 		fields = append(fields, stocksummary.FieldInRiderNum)
 	}
@@ -74891,8 +74816,6 @@ func (m *StockSummaryMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedOutboundNum()
 	case stocksummary.FieldInboundNum:
 		return m.AddedInboundNum()
-	case stocksummary.FieldInCabinetNum:
-		return m.AddedInCabinetNum()
 	case stocksummary.FieldInRiderNum:
 		return m.AddedInRiderNum()
 	}
@@ -74931,13 +74854,6 @@ func (m *StockSummaryMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddInboundNum(v)
-		return nil
-	case stocksummary.FieldInCabinetNum:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddInCabinetNum(v)
 		return nil
 	case stocksummary.FieldInRiderNum:
 		v, ok := value.(int)
@@ -75050,9 +74966,6 @@ func (m *StockSummaryMutation) ResetField(name string) error {
 		return nil
 	case stocksummary.FieldInboundNum:
 		m.ResetInboundNum()
-		return nil
-	case stocksummary.FieldInCabinetNum:
-		m.ResetInCabinetNum()
 		return nil
 	case stocksummary.FieldInRiderNum:
 		m.ResetInRiderNum()

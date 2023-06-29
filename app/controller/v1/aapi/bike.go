@@ -26,7 +26,7 @@ var Bike = new(bike)
 // @Produce      json
 // @Param        X-Agent-Token  header  string  true  "代理校验token"
 // @Param        query  query  model.EbikeListReq  true  "请求参数"
-// @Success      200  {object}  []model.Ebike  "请求成功"
+// @Success      200  {object}  []model.EbikeListRes  "请求成功"
 func (*bike) List(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.EbikeListReq](c)
 	return ctx.SendResponse(service.NewEbike().List(&model.EbikeListReq{
@@ -37,6 +37,7 @@ func (*bike) List(c echo.Context) (err error) {
 			EnterpriseID: &ctx.Enterprise.ID,
 			Status:       req.Status,
 			Keyword:      req.Keyword,
+			BrandID:      req.BrandID,
 		},
 	}))
 }

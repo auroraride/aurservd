@@ -172,20 +172,6 @@ func (ssc *StockSummaryCreate) SetNillableInboundNum(i *int) *StockSummaryCreate
 	return ssc
 }
 
-// SetInCabinetNum sets the "in_cabinet_num" field.
-func (ssc *StockSummaryCreate) SetInCabinetNum(i int) *StockSummaryCreate {
-	ssc.mutation.SetInCabinetNum(i)
-	return ssc
-}
-
-// SetNillableInCabinetNum sets the "in_cabinet_num" field if the given value is not nil.
-func (ssc *StockSummaryCreate) SetNillableInCabinetNum(i *int) *StockSummaryCreate {
-	if i != nil {
-		ssc.SetInCabinetNum(*i)
-	}
-	return ssc
-}
-
 // SetInRiderNum sets the "in_rider_num" field.
 func (ssc *StockSummaryCreate) SetInRiderNum(i int) *StockSummaryCreate {
 	ssc.mutation.SetInRiderNum(i)
@@ -290,10 +276,6 @@ func (ssc *StockSummaryCreate) defaults() {
 		v := stocksummary.DefaultInboundNum
 		ssc.mutation.SetInboundNum(v)
 	}
-	if _, ok := ssc.mutation.InCabinetNum(); !ok {
-		v := stocksummary.DefaultInCabinetNum
-		ssc.mutation.SetInCabinetNum(v)
-	}
 	if _, ok := ssc.mutation.InRiderNum(); !ok {
 		v := stocksummary.DefaultInRiderNum
 		ssc.mutation.SetInRiderNum(v)
@@ -321,9 +303,6 @@ func (ssc *StockSummaryCreate) check() error {
 	}
 	if _, ok := ssc.mutation.InboundNum(); !ok {
 		return &ValidationError{Name: "inbound_num", err: errors.New(`ent: missing required field "StockSummary.inbound_num"`)}
-	}
-	if _, ok := ssc.mutation.InCabinetNum(); !ok {
-		return &ValidationError{Name: "in_cabinet_num", err: errors.New(`ent: missing required field "StockSummary.in_cabinet_num"`)}
 	}
 	if _, ok := ssc.mutation.InRiderNum(); !ok {
 		return &ValidationError{Name: "in_rider_num", err: errors.New(`ent: missing required field "StockSummary.in_rider_num"`)}
@@ -383,10 +362,6 @@ func (ssc *StockSummaryCreate) createSpec() (*StockSummary, *sqlgraph.CreateSpec
 	if value, ok := ssc.mutation.InboundNum(); ok {
 		_spec.SetField(stocksummary.FieldInboundNum, field.TypeInt, value)
 		_node.InboundNum = value
-	}
-	if value, ok := ssc.mutation.InCabinetNum(); ok {
-		_spec.SetField(stocksummary.FieldInCabinetNum, field.TypeInt, value)
-		_node.InCabinetNum = value
 	}
 	if value, ok := ssc.mutation.InRiderNum(); ok {
 		_spec.SetField(stocksummary.FieldInRiderNum, field.TypeInt, value)
@@ -725,24 +700,6 @@ func (u *StockSummaryUpsert) AddInboundNum(v int) *StockSummaryUpsert {
 	return u
 }
 
-// SetInCabinetNum sets the "in_cabinet_num" field.
-func (u *StockSummaryUpsert) SetInCabinetNum(v int) *StockSummaryUpsert {
-	u.Set(stocksummary.FieldInCabinetNum, v)
-	return u
-}
-
-// UpdateInCabinetNum sets the "in_cabinet_num" field to the value that was provided on create.
-func (u *StockSummaryUpsert) UpdateInCabinetNum() *StockSummaryUpsert {
-	u.SetExcluded(stocksummary.FieldInCabinetNum)
-	return u
-}
-
-// AddInCabinetNum adds v to the "in_cabinet_num" field.
-func (u *StockSummaryUpsert) AddInCabinetNum(v int) *StockSummaryUpsert {
-	u.Add(stocksummary.FieldInCabinetNum, v)
-	return u
-}
-
 // SetInRiderNum sets the "in_rider_num" field.
 func (u *StockSummaryUpsert) SetInRiderNum(v int) *StockSummaryUpsert {
 	u.Set(stocksummary.FieldInRiderNum, v)
@@ -1040,27 +997,6 @@ func (u *StockSummaryUpsertOne) AddInboundNum(v int) *StockSummaryUpsertOne {
 func (u *StockSummaryUpsertOne) UpdateInboundNum() *StockSummaryUpsertOne {
 	return u.Update(func(s *StockSummaryUpsert) {
 		s.UpdateInboundNum()
-	})
-}
-
-// SetInCabinetNum sets the "in_cabinet_num" field.
-func (u *StockSummaryUpsertOne) SetInCabinetNum(v int) *StockSummaryUpsertOne {
-	return u.Update(func(s *StockSummaryUpsert) {
-		s.SetInCabinetNum(v)
-	})
-}
-
-// AddInCabinetNum adds v to the "in_cabinet_num" field.
-func (u *StockSummaryUpsertOne) AddInCabinetNum(v int) *StockSummaryUpsertOne {
-	return u.Update(func(s *StockSummaryUpsert) {
-		s.AddInCabinetNum(v)
-	})
-}
-
-// UpdateInCabinetNum sets the "in_cabinet_num" field to the value that was provided on create.
-func (u *StockSummaryUpsertOne) UpdateInCabinetNum() *StockSummaryUpsertOne {
-	return u.Update(func(s *StockSummaryUpsert) {
-		s.UpdateInCabinetNum()
 	})
 }
 
@@ -1527,27 +1463,6 @@ func (u *StockSummaryUpsertBulk) AddInboundNum(v int) *StockSummaryUpsertBulk {
 func (u *StockSummaryUpsertBulk) UpdateInboundNum() *StockSummaryUpsertBulk {
 	return u.Update(func(s *StockSummaryUpsert) {
 		s.UpdateInboundNum()
-	})
-}
-
-// SetInCabinetNum sets the "in_cabinet_num" field.
-func (u *StockSummaryUpsertBulk) SetInCabinetNum(v int) *StockSummaryUpsertBulk {
-	return u.Update(func(s *StockSummaryUpsert) {
-		s.SetInCabinetNum(v)
-	})
-}
-
-// AddInCabinetNum adds v to the "in_cabinet_num" field.
-func (u *StockSummaryUpsertBulk) AddInCabinetNum(v int) *StockSummaryUpsertBulk {
-	return u.Update(func(s *StockSummaryUpsert) {
-		s.AddInCabinetNum(v)
-	})
-}
-
-// UpdateInCabinetNum sets the "in_cabinet_num" field to the value that was provided on create.
-func (u *StockSummaryUpsertBulk) UpdateInCabinetNum() *StockSummaryUpsertBulk {
-	return u.Update(func(s *StockSummaryUpsert) {
-		s.UpdateInCabinetNum()
 	})
 }
 

@@ -63,7 +63,6 @@ func (StockSummary) Fields() []ent.Field {
 		field.Int("today_num").Default(0).Comment("今日总数"),
 		field.Int("outbound_num").Default(0).Comment("出库总数"),
 		field.Int("inbound_num").Default(0).Comment("入库总数"),
-		field.Int("in_cabinet_num").Default(0).Comment("电池在电柜总数"),
 		field.Int("in_rider_num").Default(0).Comment("电池在骑手总数"),
 		field.Enum("material").Values("battery", "ebike", "others").Optional().Comment("物资种类"),
 	}

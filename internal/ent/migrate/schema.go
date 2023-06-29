@@ -3883,7 +3883,6 @@ var (
 		{Name: "today_num", Type: field.TypeInt, Comment: "今日总数", Default: 0},
 		{Name: "outbound_num", Type: field.TypeInt, Comment: "出库总数", Default: 0},
 		{Name: "inbound_num", Type: field.TypeInt, Comment: "入库总数", Default: 0},
-		{Name: "in_cabinet_num", Type: field.TypeInt, Comment: "电池在电柜总数", Default: 0},
 		{Name: "in_rider_num", Type: field.TypeInt, Comment: "电池在骑手总数", Default: 0},
 		{Name: "material", Type: field.TypeEnum, Nullable: true, Comment: "物资种类", Enums: []string{"battery", "ebike", "others"}},
 		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true, Comment: "企业ID"},
@@ -3900,31 +3899,31 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "stock_summary_enterprise_enterprise",
-				Columns:    []*schema.Column{StockSummaryColumns[10]},
+				Columns:    []*schema.Column{StockSummaryColumns[9]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "stock_summary_enterprise_station_station",
-				Columns:    []*schema.Column{StockSummaryColumns[11]},
+				Columns:    []*schema.Column{StockSummaryColumns[10]},
 				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "stock_summary_store_store",
-				Columns:    []*schema.Column{StockSummaryColumns[12]},
+				Columns:    []*schema.Column{StockSummaryColumns[11]},
 				RefColumns: []*schema.Column{StoreColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "stock_summary_rider_rider",
-				Columns:    []*schema.Column{StockSummaryColumns[13]},
+				Columns:    []*schema.Column{StockSummaryColumns[12]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "stock_summary_cabinet_cabinet",
-				Columns:    []*schema.Column{StockSummaryColumns[14]},
+				Columns:    []*schema.Column{StockSummaryColumns[13]},
 				RefColumns: []*schema.Column{CabinetColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -3933,27 +3932,27 @@ var (
 			{
 				Name:    "stocksummary_enterprise_id",
 				Unique:  false,
-				Columns: []*schema.Column{StockSummaryColumns[10]},
+				Columns: []*schema.Column{StockSummaryColumns[9]},
 			},
 			{
 				Name:    "stocksummary_station_id",
 				Unique:  false,
-				Columns: []*schema.Column{StockSummaryColumns[11]},
+				Columns: []*schema.Column{StockSummaryColumns[10]},
 			},
 			{
 				Name:    "stocksummary_store_id",
 				Unique:  false,
-				Columns: []*schema.Column{StockSummaryColumns[12]},
+				Columns: []*schema.Column{StockSummaryColumns[11]},
 			},
 			{
 				Name:    "stocksummary_rider_id",
 				Unique:  false,
-				Columns: []*schema.Column{StockSummaryColumns[13]},
+				Columns: []*schema.Column{StockSummaryColumns[12]},
 			},
 			{
 				Name:    "stocksummary_cabinet_id",
 				Unique:  false,
-				Columns: []*schema.Column{StockSummaryColumns[14]},
+				Columns: []*schema.Column{StockSummaryColumns[13]},
 			},
 			{
 				Name:    "stocksummary_date",

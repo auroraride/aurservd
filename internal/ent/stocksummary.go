@@ -43,8 +43,6 @@ type StockSummary struct {
 	OutboundNum int `json:"outbound_num,omitempty"`
 	// 入库总数
 	InboundNum int `json:"inbound_num,omitempty"`
-	// 电池在电柜总数
-	InCabinetNum int `json:"in_cabinet_num,omitempty"`
 	// 电池在骑手总数
 	InRiderNum int `json:"in_rider_num,omitempty"`
 	// 物资种类
@@ -142,7 +140,7 @@ func (*StockSummary) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case stocksummary.FieldID, stocksummary.FieldEnterpriseID, stocksummary.FieldStationID, stocksummary.FieldStoreID, stocksummary.FieldRiderID, stocksummary.FieldCabinetID, stocksummary.FieldNum, stocksummary.FieldTodayNum, stocksummary.FieldOutboundNum, stocksummary.FieldInboundNum, stocksummary.FieldInCabinetNum, stocksummary.FieldInRiderNum:
+		case stocksummary.FieldID, stocksummary.FieldEnterpriseID, stocksummary.FieldStationID, stocksummary.FieldStoreID, stocksummary.FieldRiderID, stocksummary.FieldCabinetID, stocksummary.FieldNum, stocksummary.FieldTodayNum, stocksummary.FieldOutboundNum, stocksummary.FieldInboundNum, stocksummary.FieldInRiderNum:
 			values[i] = new(sql.NullInt64)
 		case stocksummary.FieldDate, stocksummary.FieldModel, stocksummary.FieldMaterial:
 			values[i] = new(sql.NullString)
@@ -237,12 +235,6 @@ func (ss *StockSummary) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field inbound_num", values[i])
 			} else if value.Valid {
 				ss.InboundNum = int(value.Int64)
-			}
-		case stocksummary.FieldInCabinetNum:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field in_cabinet_num", values[i])
-			} else if value.Valid {
-				ss.InCabinetNum = int(value.Int64)
 			}
 		case stocksummary.FieldInRiderNum:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -359,9 +351,6 @@ func (ss *StockSummary) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("inbound_num=")
 	builder.WriteString(fmt.Sprintf("%v", ss.InboundNum))
-	builder.WriteString(", ")
-	builder.WriteString("in_cabinet_num=")
-	builder.WriteString(fmt.Sprintf("%v", ss.InCabinetNum))
 	builder.WriteString(", ")
 	builder.WriteString("in_rider_num=")
 	builder.WriteString(fmt.Sprintf("%v", ss.InRiderNum))

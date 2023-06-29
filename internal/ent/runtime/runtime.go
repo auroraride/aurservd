@@ -1189,12 +1189,8 @@ func init() {
 	stocksummaryDescInboundNum := stocksummaryFields[5].Descriptor()
 	// stocksummary.DefaultInboundNum holds the default value on creation for the inbound_num field.
 	stocksummary.DefaultInboundNum = stocksummaryDescInboundNum.Default.(int)
-	// stocksummaryDescInCabinetNum is the schema descriptor for in_cabinet_num field.
-	stocksummaryDescInCabinetNum := stocksummaryFields[6].Descriptor()
-	// stocksummary.DefaultInCabinetNum holds the default value on creation for the in_cabinet_num field.
-	stocksummary.DefaultInCabinetNum = stocksummaryDescInCabinetNum.Default.(int)
 	// stocksummaryDescInRiderNum is the schema descriptor for in_rider_num field.
-	stocksummaryDescInRiderNum := stocksummaryFields[7].Descriptor()
+	stocksummaryDescInRiderNum := stocksummaryFields[6].Descriptor()
 	// stocksummary.DefaultInRiderNum holds the default value on creation for the in_rider_num field.
 	stocksummary.DefaultInRiderNum = stocksummaryDescInRiderNum.Default.(int)
 	storeMixin := schema.Store{}.Mixin()

@@ -2,7 +2,7 @@ package model
 
 type AgentStockDetailReq struct {
 	PaginationReq
-	StockDetailFilter
+	AgentStockDetailFilter
 }
 
 type AgentStockDetailFilter struct {

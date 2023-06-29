@@ -1406,7 +1406,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 			stocksummary.FieldTodayNum:     {Type: field.TypeInt, Column: stocksummary.FieldTodayNum},
 			stocksummary.FieldOutboundNum:  {Type: field.TypeInt, Column: stocksummary.FieldOutboundNum},
 			stocksummary.FieldInboundNum:   {Type: field.TypeInt, Column: stocksummary.FieldInboundNum},
-			stocksummary.FieldInCabinetNum: {Type: field.TypeInt, Column: stocksummary.FieldInCabinetNum},
 			stocksummary.FieldInRiderNum:   {Type: field.TypeInt, Column: stocksummary.FieldInRiderNum},
 			stocksummary.FieldMaterial:     {Type: field.TypeEnum, Column: stocksummary.FieldMaterial},
 		},
@@ -13174,11 +13173,6 @@ func (f *StockSummaryFilter) WhereOutboundNum(p entql.IntP) {
 // WhereInboundNum applies the entql int predicate on the inbound_num field.
 func (f *StockSummaryFilter) WhereInboundNum(p entql.IntP) {
 	f.Where(p.Field(stocksummary.FieldInboundNum))
-}
-
-// WhereInCabinetNum applies the entql int predicate on the in_cabinet_num field.
-func (f *StockSummaryFilter) WhereInCabinetNum(p entql.IntP) {
-	f.Where(p.Field(stocksummary.FieldInCabinetNum))
 }
 
 // WhereInRiderNum applies the entql int predicate on the in_rider_num field.

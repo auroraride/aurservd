@@ -243,27 +243,6 @@ func (ssu *StockSummaryUpdate) AddInboundNum(i int) *StockSummaryUpdate {
 	return ssu
 }
 
-// SetInCabinetNum sets the "in_cabinet_num" field.
-func (ssu *StockSummaryUpdate) SetInCabinetNum(i int) *StockSummaryUpdate {
-	ssu.mutation.ResetInCabinetNum()
-	ssu.mutation.SetInCabinetNum(i)
-	return ssu
-}
-
-// SetNillableInCabinetNum sets the "in_cabinet_num" field if the given value is not nil.
-func (ssu *StockSummaryUpdate) SetNillableInCabinetNum(i *int) *StockSummaryUpdate {
-	if i != nil {
-		ssu.SetInCabinetNum(*i)
-	}
-	return ssu
-}
-
-// AddInCabinetNum adds i to the "in_cabinet_num" field.
-func (ssu *StockSummaryUpdate) AddInCabinetNum(i int) *StockSummaryUpdate {
-	ssu.mutation.AddInCabinetNum(i)
-	return ssu
-}
-
 // SetInRiderNum sets the "in_rider_num" field.
 func (ssu *StockSummaryUpdate) SetInRiderNum(i int) *StockSummaryUpdate {
 	ssu.mutation.ResetInRiderNum()
@@ -457,12 +436,6 @@ func (ssu *StockSummaryUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := ssu.mutation.AddedInboundNum(); ok {
 		_spec.AddField(stocksummary.FieldInboundNum, field.TypeInt, value)
-	}
-	if value, ok := ssu.mutation.InCabinetNum(); ok {
-		_spec.SetField(stocksummary.FieldInCabinetNum, field.TypeInt, value)
-	}
-	if value, ok := ssu.mutation.AddedInCabinetNum(); ok {
-		_spec.AddField(stocksummary.FieldInCabinetNum, field.TypeInt, value)
 	}
 	if value, ok := ssu.mutation.InRiderNum(); ok {
 		_spec.SetField(stocksummary.FieldInRiderNum, field.TypeInt, value)
@@ -853,27 +826,6 @@ func (ssuo *StockSummaryUpdateOne) AddInboundNum(i int) *StockSummaryUpdateOne {
 	return ssuo
 }
 
-// SetInCabinetNum sets the "in_cabinet_num" field.
-func (ssuo *StockSummaryUpdateOne) SetInCabinetNum(i int) *StockSummaryUpdateOne {
-	ssuo.mutation.ResetInCabinetNum()
-	ssuo.mutation.SetInCabinetNum(i)
-	return ssuo
-}
-
-// SetNillableInCabinetNum sets the "in_cabinet_num" field if the given value is not nil.
-func (ssuo *StockSummaryUpdateOne) SetNillableInCabinetNum(i *int) *StockSummaryUpdateOne {
-	if i != nil {
-		ssuo.SetInCabinetNum(*i)
-	}
-	return ssuo
-}
-
-// AddInCabinetNum adds i to the "in_cabinet_num" field.
-func (ssuo *StockSummaryUpdateOne) AddInCabinetNum(i int) *StockSummaryUpdateOne {
-	ssuo.mutation.AddInCabinetNum(i)
-	return ssuo
-}
-
 // SetInRiderNum sets the "in_rider_num" field.
 func (ssuo *StockSummaryUpdateOne) SetInRiderNum(i int) *StockSummaryUpdateOne {
 	ssuo.mutation.ResetInRiderNum()
@@ -1097,12 +1049,6 @@ func (ssuo *StockSummaryUpdateOne) sqlSave(ctx context.Context) (_node *StockSum
 	}
 	if value, ok := ssuo.mutation.AddedInboundNum(); ok {
 		_spec.AddField(stocksummary.FieldInboundNum, field.TypeInt, value)
-	}
-	if value, ok := ssuo.mutation.InCabinetNum(); ok {
-		_spec.SetField(stocksummary.FieldInCabinetNum, field.TypeInt, value)
-	}
-	if value, ok := ssuo.mutation.AddedInCabinetNum(); ok {
-		_spec.AddField(stocksummary.FieldInCabinetNum, field.TypeInt, value)
 	}
 	if value, ok := ssuo.mutation.InRiderNum(); ok {
 		_spec.SetField(stocksummary.FieldInRiderNum, field.TypeInt, value)
