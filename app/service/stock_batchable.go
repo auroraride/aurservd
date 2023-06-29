@@ -8,6 +8,8 @@ package service
 import (
 	"fmt"
 
+	"go.uber.org/zap"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/battery"
@@ -49,19 +51,20 @@ func (s *stockBatchableService) Fetch(target uint8, id uint64, name string) int 
 		q.Where(stock.BatteryIDIsNil())
 	}
 
-	var err error
 	q.Where(stock.Name(name), idw)
+
+	var gp *ent.StockGroupBy
+
 	if target == model.StockTargetStation {
-		err = q.GroupBy(stock.FieldStationID).Aggregate(ent.Sum(stock.FieldNum)).
-			Scan(s.ctx, &result)
+		gp = q.GroupBy(stock.FieldStationID)
 	} else {
-		q.GroupBy(stock.FieldStoreID, stock.FieldCabinetID)
-		err = q.Aggregate(ent.Sum(stock.FieldNum)).
-			Scan(s.ctx, &result)
+		gp = q.GroupBy(stock.FieldStoreID, stock.FieldCabinetID)
 	}
 
+	err := gp.Aggregate(ent.Sum(stock.FieldNum)).Scan(s.ctx, &result)
+
 	if err != nil {
-		snag.Panic("物资数量获取失败")
+		snag.Panic("物资数量获取失败", zap.Error(err))
 	}
 	if len(result) == 0 {
 		return 0
