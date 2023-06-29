@@ -148,7 +148,8 @@ func (s *agentCabinetService) Operable(ac *app.AgentContext, id uint64, lng, lat
 		snag.Panic("未找到有效电柜")
 	}
 
-	if haversine.Distance(haversine.NewCoordinates(lat, lng), haversine.NewCoordinates(cab.Lat, cab.Lng)).Kilometers()*1000.0 > 200 {
+	ed := ac.Enterprise.Distance
+	if ed < 0 || (ed > 0 && haversine.Distance(haversine.NewCoordinates(lat, lng), haversine.NewCoordinates(cab.Lat, cab.Lng)).Kilometers()*1000.0 > ed) {
 		snag.Panic("操作距离过远")
 	}
 
