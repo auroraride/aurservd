@@ -145,6 +145,11 @@ func Points(v int64) predicate.Rider {
 	return predicate.Rider(sql.FieldEQ(FieldPoints, v))
 }
 
+// JoinEnterpriseAt applies equality check predicate on the "join_enterprise_at" field. It's identical to JoinEnterpriseAtEQ.
+func JoinEnterpriseAt(v time.Time) predicate.Rider {
+	return predicate.Rider(sql.FieldEQ(FieldJoinEnterpriseAt, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Rider {
 	return predicate.Rider(sql.FieldEQ(FieldCreatedAt, v))
@@ -1088,6 +1093,56 @@ func ExchangeFrequencyIsNil() predicate.Rider {
 // ExchangeFrequencyNotNil applies the NotNil predicate on the "exchange_frequency" field.
 func ExchangeFrequencyNotNil() predicate.Rider {
 	return predicate.Rider(sql.FieldNotNull(FieldExchangeFrequency))
+}
+
+// JoinEnterpriseAtEQ applies the EQ predicate on the "join_enterprise_at" field.
+func JoinEnterpriseAtEQ(v time.Time) predicate.Rider {
+	return predicate.Rider(sql.FieldEQ(FieldJoinEnterpriseAt, v))
+}
+
+// JoinEnterpriseAtNEQ applies the NEQ predicate on the "join_enterprise_at" field.
+func JoinEnterpriseAtNEQ(v time.Time) predicate.Rider {
+	return predicate.Rider(sql.FieldNEQ(FieldJoinEnterpriseAt, v))
+}
+
+// JoinEnterpriseAtIn applies the In predicate on the "join_enterprise_at" field.
+func JoinEnterpriseAtIn(vs ...time.Time) predicate.Rider {
+	return predicate.Rider(sql.FieldIn(FieldJoinEnterpriseAt, vs...))
+}
+
+// JoinEnterpriseAtNotIn applies the NotIn predicate on the "join_enterprise_at" field.
+func JoinEnterpriseAtNotIn(vs ...time.Time) predicate.Rider {
+	return predicate.Rider(sql.FieldNotIn(FieldJoinEnterpriseAt, vs...))
+}
+
+// JoinEnterpriseAtGT applies the GT predicate on the "join_enterprise_at" field.
+func JoinEnterpriseAtGT(v time.Time) predicate.Rider {
+	return predicate.Rider(sql.FieldGT(FieldJoinEnterpriseAt, v))
+}
+
+// JoinEnterpriseAtGTE applies the GTE predicate on the "join_enterprise_at" field.
+func JoinEnterpriseAtGTE(v time.Time) predicate.Rider {
+	return predicate.Rider(sql.FieldGTE(FieldJoinEnterpriseAt, v))
+}
+
+// JoinEnterpriseAtLT applies the LT predicate on the "join_enterprise_at" field.
+func JoinEnterpriseAtLT(v time.Time) predicate.Rider {
+	return predicate.Rider(sql.FieldLT(FieldJoinEnterpriseAt, v))
+}
+
+// JoinEnterpriseAtLTE applies the LTE predicate on the "join_enterprise_at" field.
+func JoinEnterpriseAtLTE(v time.Time) predicate.Rider {
+	return predicate.Rider(sql.FieldLTE(FieldJoinEnterpriseAt, v))
+}
+
+// JoinEnterpriseAtIsNil applies the IsNil predicate on the "join_enterprise_at" field.
+func JoinEnterpriseAtIsNil() predicate.Rider {
+	return predicate.Rider(sql.FieldIsNull(FieldJoinEnterpriseAt))
+}
+
+// JoinEnterpriseAtNotNil applies the NotNil predicate on the "join_enterprise_at" field.
+func JoinEnterpriseAtNotNil() predicate.Rider {
+	return predicate.Rider(sql.FieldNotNull(FieldJoinEnterpriseAt))
 }
 
 // HasStation applies the HasEdge predicate on the "station" edge.

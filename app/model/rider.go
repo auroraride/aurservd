@@ -7,6 +7,7 @@ package model
 
 import (
 	"fmt"
+	"time"
 )
 
 // RiderTokenPermission 骑手token权限, 以此判定登陆后动作
@@ -243,8 +244,9 @@ type RiderFollowUpListRes struct {
 }
 
 type RiderConvert struct {
-	EnterpriseID *uint64 `json:"enterpriseId"`
-	StationID    *uint64 `json:"stationId"`
-	Remark       string  `json:"remark"`
-	Name         string  `json:"name"`
+	EnterpriseID     *uint64   `json:"enterpriseId"`
+	StationID        *uint64   `json:"stationId"`
+	Remark           string    `json:"remark"`
+	Name             string    `json:"name"`
+	JoinEnterpriseAt time.Time `json:"joinEnterpriseAt"`
 }

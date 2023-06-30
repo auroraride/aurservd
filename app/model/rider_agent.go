@@ -25,22 +25,23 @@ type AgentRiderListReq struct {
 }
 
 type AgentRider struct {
-	ID          uint64 `json:"id,omitempty"`
-	Name        string `json:"name,omitempty"`        // 姓名
-	Phone       string `json:"phone,omitempty"`       // 电话
-	Status      string `json:"status,omitempty"`      // 状态
-	Remaining   *int   `json:"remaining,omitempty"`   // 剩余天数
-	City        *City  `json:"city,omitempty"`        // 城市
-	Date        string `json:"date,omitempty"`        // 创建日期
-	EndAt       string `json:"endAt,omitempty"`       // 退租日期
-	StopAt      string `json:"stopAt,omitempty"`      // 到期日期
-	StartAt     string `json:"startAt,omitempty"`     // 开始日期
-	SubscribeID uint64 `json:"subscribeId,omitempty"` // 订阅ID
-	Model       string `json:"model,omitempty"`       // 电池型号
-	BatterySN   string `json:"batterySn,omitempty"`   // 电池sn
-	Used        int    `json:"used,omitempty"`        // 使用天数
-	IsAuthed    bool   `json:"isAuthed"`              // 是否实名认证 ture已实名 false未实名
-	Intelligent bool   `json:"intelligent"`           // 是否智能套餐
+	ID               uint64 `json:"id,omitempty"`
+	Name             string `json:"name,omitempty"`        // 姓名
+	Phone            string `json:"phone,omitempty"`       // 电话
+	Status           string `json:"status,omitempty"`      // 状态
+	Remaining        *int   `json:"remaining,omitempty"`   // 剩余天数
+	City             *City  `json:"city,omitempty"`        // 城市
+	Date             string `json:"date,omitempty"`        // 创建日期
+	EndAt            string `json:"endAt,omitempty"`       // 退租日期
+	StopAt           string `json:"stopAt,omitempty"`      // 到期日期
+	StartAt          string `json:"startAt,omitempty"`     // 开始日期
+	SubscribeID      uint64 `json:"subscribeId,omitempty"` // 订阅ID
+	Model            string `json:"model,omitempty"`       // 电池型号
+	BatterySN        string `json:"batterySn,omitempty"`   // 电池sn
+	Used             int    `json:"used,omitempty"`        // 使用天数
+	IsAuthed         bool   `json:"isAuthed"`              // 是否实名认证 ture已实名 false未实名
+	Intelligent      bool   `json:"intelligent"`           // 是否智能套餐
+	JoinEnterpriseAt string `json:"joinEnterpriseAt"`      // 加入团签时间
 
 	Station *EnterpriseStation `json:"station,omitempty"`    // 站点信息
 	Ebike   *Ebike             `json:"ebikeBrand,omitempty"` // 电车品牌信息

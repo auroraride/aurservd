@@ -123,3 +123,11 @@ type UnsubscribeEmployeeReq struct {
 type SubscribeSigned struct {
 	Signed uint8 `json:"signed" enums:"0,1,2"` // 签约状态, 0:无签约信息(直接弹窗提示用户"未找到签约信息"并返回首页) 1:签署中(继续轮询) 2:签约成功(弹出扫码)
 }
+
+// ReactiveSubscribeReq 代理重新激活骑手订阅
+type ReactiveSubscribeReq struct {
+	RiderID   uint64 `json:"riderId" validate:"required"`   // 骑手ID
+	StationID uint64 `json:"stationId" validate:"required"` // 站点ID
+	Days      int    `json:"days" `                         // 天数
+	PriceID   uint64 `json:"priceId"`                       // 套餐价格ID
+}

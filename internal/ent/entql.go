@@ -1285,6 +1285,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			rider.FieldPoints:            {Type: field.TypeInt64, Column: rider.FieldPoints},
 			rider.FieldExchangeLimit:     {Type: field.TypeJSON, Column: rider.FieldExchangeLimit},
 			rider.FieldExchangeFrequency: {Type: field.TypeJSON, Column: rider.FieldExchangeFrequency},
+			rider.FieldJoinEnterpriseAt:  {Type: field.TypeTime, Column: rider.FieldJoinEnterpriseAt},
 		},
 	}
 	graph.Nodes[43] = &sqlgraph.Node{
@@ -12273,6 +12274,11 @@ func (f *RiderFilter) WhereExchangeLimit(p entql.BytesP) {
 // WhereExchangeFrequency applies the entql json.RawMessage predicate on the exchange_frequency field.
 func (f *RiderFilter) WhereExchangeFrequency(p entql.BytesP) {
 	f.Where(p.Field(rider.FieldExchangeFrequency))
+}
+
+// WhereJoinEnterpriseAt applies the entql time.Time predicate on the join_enterprise_at field.
+func (f *RiderFilter) WhereJoinEnterpriseAt(p entql.TimeP) {
+	f.Where(p.Field(rider.FieldJoinEnterpriseAt))
 }
 
 // WhereHasStation applies a predicate to check if query has an edge station.

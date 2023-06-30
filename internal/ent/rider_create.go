@@ -309,6 +309,20 @@ func (rc *RiderCreate) SetExchangeFrequency(mef model.RiderExchangeFrequency) *R
 	return rc
 }
 
+// SetJoinEnterpriseAt sets the "join_enterprise_at" field.
+func (rc *RiderCreate) SetJoinEnterpriseAt(t time.Time) *RiderCreate {
+	rc.mutation.SetJoinEnterpriseAt(t)
+	return rc
+}
+
+// SetNillableJoinEnterpriseAt sets the "join_enterprise_at" field if the given value is not nil.
+func (rc *RiderCreate) SetNillableJoinEnterpriseAt(t *time.Time) *RiderCreate {
+	if t != nil {
+		rc.SetJoinEnterpriseAt(*t)
+	}
+	return rc
+}
+
 // SetStation sets the "station" edge to the EnterpriseStation entity.
 func (rc *RiderCreate) SetStation(e *EnterpriseStation) *RiderCreate {
 	return rc.SetStationID(e.ID)
@@ -670,6 +684,10 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 	if value, ok := rc.mutation.ExchangeFrequency(); ok {
 		_spec.SetField(rider.FieldExchangeFrequency, field.TypeJSON, value)
 		_node.ExchangeFrequency = value
+	}
+	if value, ok := rc.mutation.JoinEnterpriseAt(); ok {
+		_spec.SetField(rider.FieldJoinEnterpriseAt, field.TypeTime, value)
+		_node.JoinEnterpriseAt = &value
 	}
 	if nodes := rc.mutation.StationIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1278,6 +1296,24 @@ func (u *RiderUpsert) ClearExchangeFrequency() *RiderUpsert {
 	return u
 }
 
+// SetJoinEnterpriseAt sets the "join_enterprise_at" field.
+func (u *RiderUpsert) SetJoinEnterpriseAt(v time.Time) *RiderUpsert {
+	u.Set(rider.FieldJoinEnterpriseAt, v)
+	return u
+}
+
+// UpdateJoinEnterpriseAt sets the "join_enterprise_at" field to the value that was provided on create.
+func (u *RiderUpsert) UpdateJoinEnterpriseAt() *RiderUpsert {
+	u.SetExcluded(rider.FieldJoinEnterpriseAt)
+	return u
+}
+
+// ClearJoinEnterpriseAt clears the value of the "join_enterprise_at" field.
+func (u *RiderUpsert) ClearJoinEnterpriseAt() *RiderUpsert {
+	u.SetNull(rider.FieldJoinEnterpriseAt)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1743,6 +1779,27 @@ func (u *RiderUpsertOne) UpdateExchangeFrequency() *RiderUpsertOne {
 func (u *RiderUpsertOne) ClearExchangeFrequency() *RiderUpsertOne {
 	return u.Update(func(s *RiderUpsert) {
 		s.ClearExchangeFrequency()
+	})
+}
+
+// SetJoinEnterpriseAt sets the "join_enterprise_at" field.
+func (u *RiderUpsertOne) SetJoinEnterpriseAt(v time.Time) *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetJoinEnterpriseAt(v)
+	})
+}
+
+// UpdateJoinEnterpriseAt sets the "join_enterprise_at" field to the value that was provided on create.
+func (u *RiderUpsertOne) UpdateJoinEnterpriseAt() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateJoinEnterpriseAt()
+	})
+}
+
+// ClearJoinEnterpriseAt clears the value of the "join_enterprise_at" field.
+func (u *RiderUpsertOne) ClearJoinEnterpriseAt() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearJoinEnterpriseAt()
 	})
 }
 
@@ -2373,6 +2430,27 @@ func (u *RiderUpsertBulk) UpdateExchangeFrequency() *RiderUpsertBulk {
 func (u *RiderUpsertBulk) ClearExchangeFrequency() *RiderUpsertBulk {
 	return u.Update(func(s *RiderUpsert) {
 		s.ClearExchangeFrequency()
+	})
+}
+
+// SetJoinEnterpriseAt sets the "join_enterprise_at" field.
+func (u *RiderUpsertBulk) SetJoinEnterpriseAt(v time.Time) *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetJoinEnterpriseAt(v)
+	})
+}
+
+// UpdateJoinEnterpriseAt sets the "join_enterprise_at" field to the value that was provided on create.
+func (u *RiderUpsertBulk) UpdateJoinEnterpriseAt() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateJoinEnterpriseAt()
+	})
+}
+
+// ClearJoinEnterpriseAt clears the value of the "join_enterprise_at" field.
+func (u *RiderUpsertBulk) ClearJoinEnterpriseAt() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearJoinEnterpriseAt()
 	})
 }
 

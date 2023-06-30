@@ -69,6 +69,8 @@ type Rider struct {
 	ExchangeLimit model.RiderExchangeLimit `json:"exchange_limit,omitempty"`
 	// 换电频次配置
 	ExchangeFrequency model.RiderExchangeFrequency `json:"exchange_frequency,omitempty"`
+	// 加入团签时间
+	JoinEnterpriseAt *time.Time `json:"join_enterprise_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the RiderQuery when eager-loading is set.
 	Edges        RiderEdges `json:"edges"`
@@ -243,7 +245,7 @@ func (*Rider) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case rider.FieldRemark, rider.FieldName, rider.FieldIDCardNumber, rider.FieldPhone, rider.FieldLastDevice, rider.FieldLastFace, rider.FieldPushID:
 			values[i] = new(sql.NullString)
-		case rider.FieldCreatedAt, rider.FieldUpdatedAt, rider.FieldDeletedAt, rider.FieldLastSigninAt:
+		case rider.FieldCreatedAt, rider.FieldUpdatedAt, rider.FieldDeletedAt, rider.FieldLastSigninAt, rider.FieldJoinEnterpriseAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -419,6 +421,13 @@ func (r *Rider) assignValues(columns []string, values []any) error {
 				if err := json.Unmarshal(*value, &r.ExchangeFrequency); err != nil {
 					return fmt.Errorf("unmarshal field exchange_frequency: %w", err)
 				}
+			}
+		case rider.FieldJoinEnterpriseAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field join_enterprise_at", values[i])
+			} else if value.Valid {
+				r.JoinEnterpriseAt = new(time.Time)
+				*r.JoinEnterpriseAt = value.Time
 			}
 		default:
 			r.selectValues.Set(columns[i], values[i])
@@ -596,6 +605,11 @@ func (r *Rider) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("exchange_frequency=")
 	builder.WriteString(fmt.Sprintf("%v", r.ExchangeFrequency))
+	builder.WriteString(", ")
+	if v := r.JoinEnterpriseAt; v != nil {
+		builder.WriteString("join_enterprise_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

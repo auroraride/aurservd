@@ -63,7 +63,13 @@ func (s *feedbackService) FeedbackList(req *model.FeedbackListReq) *model.Pagina
 	q := s.orm.Query().WithEnterprise().Order(ent.Desc(feedback.FieldCreatedAt))
 	// 筛选条件
 	if req.Keyword != "" {
-		q.Where(feedback.ContentContains(req.Keyword))
+		q.Where(
+			feedback.Or(
+				feedback.ContentContains(req.Keyword),
+				feedback.NameContains(req.Keyword),
+				feedback.PhoneContains(req.Keyword),
+			),
+		)
 	}
 	if req.Type != nil {
 		q.Where(feedback.TypeEQ(*req.Type))

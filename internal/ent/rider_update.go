@@ -411,6 +411,26 @@ func (ru *RiderUpdate) ClearExchangeFrequency() *RiderUpdate {
 	return ru
 }
 
+// SetJoinEnterpriseAt sets the "join_enterprise_at" field.
+func (ru *RiderUpdate) SetJoinEnterpriseAt(t time.Time) *RiderUpdate {
+	ru.mutation.SetJoinEnterpriseAt(t)
+	return ru
+}
+
+// SetNillableJoinEnterpriseAt sets the "join_enterprise_at" field if the given value is not nil.
+func (ru *RiderUpdate) SetNillableJoinEnterpriseAt(t *time.Time) *RiderUpdate {
+	if t != nil {
+		ru.SetJoinEnterpriseAt(*t)
+	}
+	return ru
+}
+
+// ClearJoinEnterpriseAt clears the value of the "join_enterprise_at" field.
+func (ru *RiderUpdate) ClearJoinEnterpriseAt() *RiderUpdate {
+	ru.mutation.ClearJoinEnterpriseAt()
+	return ru
+}
+
 // SetStation sets the "station" edge to the EnterpriseStation entity.
 func (ru *RiderUpdate) SetStation(e *EnterpriseStation) *RiderUpdate {
 	return ru.SetStationID(e.ID)
@@ -953,6 +973,12 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if ru.mutation.ExchangeFrequencyCleared() {
 		_spec.ClearField(rider.FieldExchangeFrequency, field.TypeJSON)
+	}
+	if value, ok := ru.mutation.JoinEnterpriseAt(); ok {
+		_spec.SetField(rider.FieldJoinEnterpriseAt, field.TypeTime, value)
+	}
+	if ru.mutation.JoinEnterpriseAtCleared() {
+		_spec.ClearField(rider.FieldJoinEnterpriseAt, field.TypeTime)
 	}
 	if ru.mutation.StationCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1820,6 +1846,26 @@ func (ruo *RiderUpdateOne) ClearExchangeFrequency() *RiderUpdateOne {
 	return ruo
 }
 
+// SetJoinEnterpriseAt sets the "join_enterprise_at" field.
+func (ruo *RiderUpdateOne) SetJoinEnterpriseAt(t time.Time) *RiderUpdateOne {
+	ruo.mutation.SetJoinEnterpriseAt(t)
+	return ruo
+}
+
+// SetNillableJoinEnterpriseAt sets the "join_enterprise_at" field if the given value is not nil.
+func (ruo *RiderUpdateOne) SetNillableJoinEnterpriseAt(t *time.Time) *RiderUpdateOne {
+	if t != nil {
+		ruo.SetJoinEnterpriseAt(*t)
+	}
+	return ruo
+}
+
+// ClearJoinEnterpriseAt clears the value of the "join_enterprise_at" field.
+func (ruo *RiderUpdateOne) ClearJoinEnterpriseAt() *RiderUpdateOne {
+	ruo.mutation.ClearJoinEnterpriseAt()
+	return ruo
+}
+
 // SetStation sets the "station" edge to the EnterpriseStation entity.
 func (ruo *RiderUpdateOne) SetStation(e *EnterpriseStation) *RiderUpdateOne {
 	return ruo.SetStationID(e.ID)
@@ -2392,6 +2438,12 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 	}
 	if ruo.mutation.ExchangeFrequencyCleared() {
 		_spec.ClearField(rider.FieldExchangeFrequency, field.TypeJSON)
+	}
+	if value, ok := ruo.mutation.JoinEnterpriseAt(); ok {
+		_spec.SetField(rider.FieldJoinEnterpriseAt, field.TypeTime, value)
+	}
+	if ruo.mutation.JoinEnterpriseAtCleared() {
+		_spec.ClearField(rider.FieldJoinEnterpriseAt, field.TypeTime)
 	}
 	if ruo.mutation.StationCleared() {
 		edge := &sqlgraph.EdgeSpec{

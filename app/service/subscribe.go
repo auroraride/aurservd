@@ -16,11 +16,13 @@ import (
 	"github.com/shopspring/decimal"
 	"go.uber.org/zap"
 
+	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/logging"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/task/reminder"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/contract"
+	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -622,4 +624,43 @@ func (s *subscribeService) Signed(riderID, subscribeID uint64) (res model.Subscr
 	}
 
 	return
+}
+
+// ReactiveSubscribe 重新绑定订阅
+func (s *subscribeService) ReactiveSubscribe(ag *app.AgentContext, req *model.ReactiveSubscribeReq) {
+	// 骑手信息
+	r := ent.Database.Rider.QueryNotDeleted().Where(rider.ID(req.RiderID)).FirstX(s.ctx)
+	if r == nil {
+		snag.Panic("未找到骑手信息")
+	}
+	ep, _ := ent.Database.EnterprisePrice.QueryNotDeleted().Where(enterpriseprice.EnterpriseID(ag.Enterprise.ID), enterpriseprice.ID(req.PriceID)).First(s.ctx)
+	if ep == nil {
+		snag.Panic("未找到价格信息")
+	}
+	// 查询站点信息
+	NewEnterpriseStation().QueryX(req.StationID)
+
+	// 查询订阅信息
+	sub, _ := NewSubscribe().QueryEffective(req.RiderID)
+	if sub != nil && sub.Status != model.SubscribeStatusUnSubscribed {
+		snag.Panic("该骑手不能重新激活,已有未完成的订单")
+	}
+
+	// 创建订阅信息
+	_, err := s.orm.Create().
+		SetRiderID(req.RiderID).
+		SetModel(ep.Model).
+		SetNillableBrandID(ep.BrandID).
+		SetIntelligent(ep.Intelligent).
+		SetRemaining(0).
+		SetInitialDays(req.Days).
+		SetStatus(model.SubscribeStatusInactive).
+		SetCityID(ep.CityID).
+		SetNeedContract(false).
+		SetEnterpriseID(ag.Enterprise.ID).
+		SetStationID(req.StationID).
+		Save(s.ctx)
+	if err != nil {
+		snag.Panic("重新激活失败")
+	}
 }
