@@ -80,6 +80,9 @@ func (s *riderAgentService) detail(item *ent.Rider) model.AgentRider {
 		res.BatterySN = bat.Sn
 	}
 
+	// 加入团签时间
+	res.JoinEnterpriseAt = item.CreatedAt.Format(carbon.DateTimeLayout)
+
 	// 获取订阅信息
 	subs := item.Edges.Subscribes
 	if len(subs) > 0 {
@@ -209,7 +212,7 @@ func (s *riderAgentService) List(enterpriseID uint64, req *model.AgentRiderListR
 			subquery,
 			subscribe.Status(model.SubscribeStatusUsing),
 			subscribe.AgentEndAtGTE(today),
-			subscribe.AgentEndAtLTE(tools.NewTime().WillEnd(today, model.WillOverdueNum)),
+			subscribe.AgentEndAtLTE(carbon.Time2Carbon(tools.NewTime().WillEnd(today, model.WillOverdueNum, true)).EndOfDay().Carbon2Time()),
 		)
 		q.Where(rider.HasSubscribesWith(subquery...))
 	}

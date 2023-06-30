@@ -102,10 +102,11 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 
 			// 新增骑手信息
 			r, err = s.CopyAndCreateRider(tx, r, &model.RiderConvert{
-				EnterpriseID: &req.EnterpriseID,
-				StationID:    &req.StationID,
-				Remark:       "代理转化骑手",
-				Name:         req.Name,
+				EnterpriseID:     &req.EnterpriseID,
+				StationID:        &req.StationID,
+				Remark:           "代理转化骑手",
+				Name:             req.Name,
+				JoinEnterpriseAt: time.Now(),
 			})
 			if err != nil {
 				return errors.New("转化骑手失败")
@@ -125,6 +126,7 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 				SetEnterpriseID(req.EnterpriseID).
 				SetStationID(req.StationID).
 				SetPerson(per).
+				SetJoinEnterpriseAt(time.Now()).
 				SetName(req.Name).
 				Save(s.ctx)
 			if err != nil {
@@ -440,6 +442,7 @@ func (s *enterpriseRiderService) JoinEnterprise(req *model.EnterpriseJoinReq, ri
 		_, err = ent.Database.Rider.Update().Where(rider.ID(rid.ID)).
 			SetEnterpriseID(req.EnterpriseId).
 			SetStationID(req.StationId).
+			SetJoinEnterpriseAt(time.Now()).
 			Save(s.ctx)
 		if err != nil {
 			snag.Panic("加入团签失败")
@@ -447,12 +450,18 @@ func (s *enterpriseRiderService) JoinEnterprise(req *model.EnterpriseJoinReq, ri
 		// 判断如果是团签未激活的订单，更新订阅信息
 		if sub != nil && sub.EnterpriseID != nil && sub.Status == model.SubscribeStatusInactive {
 			aendTime := tools.NewTime().WillEnd(carbon.Now().StartOfDay().Carbon2Time(), req.Days)
+			// 先清除之前的订阅套餐信息
+			tx.Subscribe.UpdateOne(sub).ClearBrandID().SaveX(s.ctx)
 			_, err = tx.Subscribe.UpdateOne(sub).
 				SetRiderID(rid.ID).
 				SetEnterpriseID(req.EnterpriseId).
 				SetStationID(req.StationId).
 				SetInitialDays(req.Days).
 				SetAgentEndAt(aendTime).
+				SetModel(ep.Model).
+				SetCityID(ep.CityID).
+				SetNillableBrandID(ep.BrandID).
+				SetIntelligent(ep.Intelligent).
 				Save(s.ctx)
 			if err != nil {
 				return err
@@ -543,5 +552,6 @@ func (s *enterpriseRiderService) CopyAndCreateRider(tx *ent.Tx, r *ent.Rider, pa
 		SetExchangeFrequency(r.ExchangeFrequency).
 		SetNillableEnterpriseID(params.EnterpriseID).
 		SetNillableStationID(params.StationID).
+		SetNillableJoinEnterpriseAt(&params.JoinEnterpriseAt).
 		Save(s.ctx)
 }

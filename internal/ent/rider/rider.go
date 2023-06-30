@@ -61,6 +61,8 @@ const (
 	FieldExchangeLimit = "exchange_limit"
 	// FieldExchangeFrequency holds the string denoting the exchange_frequency field in the database.
 	FieldExchangeFrequency = "exchange_frequency"
+	// FieldJoinEnterpriseAt holds the string denoting the join_enterprise_at field in the database.
+	FieldJoinEnterpriseAt = "join_enterprise_at"
 	// EdgeStation holds the string denoting the station edge name in mutations.
 	EdgeStation = "station"
 	// EdgePerson holds the string denoting the person edge name in mutations.
@@ -199,6 +201,7 @@ var Columns = []string{
 	FieldPoints,
 	FieldExchangeLimit,
 	FieldExchangeFrequency,
+	FieldJoinEnterpriseAt,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -334,6 +337,11 @@ func ByBlocked(opts ...sql.OrderTermOption) OrderOption {
 // ByPoints orders the results by the points field.
 func ByPoints(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPoints, opts...).ToFunc()
+}
+
+// ByJoinEnterpriseAt orders the results by the join_enterprise_at field.
+func ByJoinEnterpriseAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldJoinEnterpriseAt, opts...).ToFunc()
 }
 
 // ByStationField orders the results by station field.

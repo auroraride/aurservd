@@ -337,6 +337,8 @@ func (s *cabinetService) DetailFromID(id uint64) *model.CabinetDetailRes {
 	item, _ := s.orm.QueryNotDeleted().
 		Where(cabinet.ID(id)).
 		WithModels().
+		WithEnterprise().
+		WithStation().
 		First(s.ctx)
 	if item == nil {
 		snag.Panic("未找到电柜")
@@ -379,6 +381,15 @@ func (s *cabinetService) Detail(item *ent.Cabinet) *model.CabinetDetailRes {
 	})
 	if biz != nil {
 		res.Biz = biz.Items
+	}
+
+	if item.Edges.Station != nil {
+		res.StationName = item.Edges.Station.Name
+		res.StationID = &item.Edges.Station.ID
+	}
+	if item.Edges.Enterprise != nil {
+		res.EnterpriseName = item.Edges.Enterprise.Name
+		res.EnterpriseID = &item.Edges.Enterprise.ID
 	}
 
 	return res

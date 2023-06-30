@@ -38,6 +38,7 @@ func (*bike) List(c echo.Context) (err error) {
 			Status:       req.Status,
 			Keyword:      req.Keyword,
 			BrandID:      req.BrandID,
+			Goal:         req.Goal,
 		},
 	}))
 }

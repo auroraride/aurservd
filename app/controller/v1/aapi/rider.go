@@ -112,3 +112,19 @@ func (*rider) Invite(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.EnterpriseRiderInviteReq](c)
 	return ctx.SendResponse(service.NewminiProgram().Invite(ctx.Enterprise, req))
 }
+
+// Reactive 重新激活骑手
+// @ID           AgentRiderReactive
+// @Router       /agent/v1/rider/reactive [POST]
+// @Summary      A2007 重新激活骑手
+// @Tags         [A]代理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Agent-Token  header  string  true  "代理校验token"
+// @Param        body  body   model.ReactiveSubscribeReq  true "重新激活骑手"
+// @Success      200  {object}  string  "请求成功"
+func (*rider) Reactive(c echo.Context) (err error) {
+	ctx, req := app.AgentContextAndBinding[model.ReactiveSubscribeReq](c)
+	service.NewSubscribe().ReactiveSubscribe(ctx, req)
+	return ctx.SendResponse()
+}

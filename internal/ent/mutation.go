@@ -65808,6 +65808,7 @@ type RiderMutation struct {
 	appendexchange_limit     model.RiderExchangeLimit
 	exchange_frequency       *model.RiderExchangeFrequency
 	appendexchange_frequency model.RiderExchangeFrequency
+	join_enterprise_at       *time.Time
 	clearedFields            map[string]struct{}
 	station                  *uint64
 	clearedstation           bool
@@ -67066,6 +67067,55 @@ func (m *RiderMutation) ResetExchangeFrequency() {
 	delete(m.clearedFields, rider.FieldExchangeFrequency)
 }
 
+// SetJoinEnterpriseAt sets the "join_enterprise_at" field.
+func (m *RiderMutation) SetJoinEnterpriseAt(t time.Time) {
+	m.join_enterprise_at = &t
+}
+
+// JoinEnterpriseAt returns the value of the "join_enterprise_at" field in the mutation.
+func (m *RiderMutation) JoinEnterpriseAt() (r time.Time, exists bool) {
+	v := m.join_enterprise_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldJoinEnterpriseAt returns the old "join_enterprise_at" field's value of the Rider entity.
+// If the Rider object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RiderMutation) OldJoinEnterpriseAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldJoinEnterpriseAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldJoinEnterpriseAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldJoinEnterpriseAt: %w", err)
+	}
+	return oldValue.JoinEnterpriseAt, nil
+}
+
+// ClearJoinEnterpriseAt clears the value of the "join_enterprise_at" field.
+func (m *RiderMutation) ClearJoinEnterpriseAt() {
+	m.join_enterprise_at = nil
+	m.clearedFields[rider.FieldJoinEnterpriseAt] = struct{}{}
+}
+
+// JoinEnterpriseAtCleared returns if the "join_enterprise_at" field was cleared in this mutation.
+func (m *RiderMutation) JoinEnterpriseAtCleared() bool {
+	_, ok := m.clearedFields[rider.FieldJoinEnterpriseAt]
+	return ok
+}
+
+// ResetJoinEnterpriseAt resets all changes to the "join_enterprise_at" field.
+func (m *RiderMutation) ResetJoinEnterpriseAt() {
+	m.join_enterprise_at = nil
+	delete(m.clearedFields, rider.FieldJoinEnterpriseAt)
+}
+
 // ClearStation clears the "station" edge to the EnterpriseStation entity.
 func (m *RiderMutation) ClearStation() {
 	m.clearedstation = true
@@ -67649,7 +67699,7 @@ func (m *RiderMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RiderMutation) Fields() []string {
-	fields := make([]string, 0, 23)
+	fields := make([]string, 0, 24)
 	if m.created_at != nil {
 		fields = append(fields, rider.FieldCreatedAt)
 	}
@@ -67719,6 +67769,9 @@ func (m *RiderMutation) Fields() []string {
 	if m.exchange_frequency != nil {
 		fields = append(fields, rider.FieldExchangeFrequency)
 	}
+	if m.join_enterprise_at != nil {
+		fields = append(fields, rider.FieldJoinEnterpriseAt)
+	}
 	return fields
 }
 
@@ -67773,6 +67826,8 @@ func (m *RiderMutation) Field(name string) (ent.Value, bool) {
 		return m.ExchangeLimit()
 	case rider.FieldExchangeFrequency:
 		return m.ExchangeFrequency()
+	case rider.FieldJoinEnterpriseAt:
+		return m.JoinEnterpriseAt()
 	}
 	return nil, false
 }
@@ -67828,6 +67883,8 @@ func (m *RiderMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldExchangeLimit(ctx)
 	case rider.FieldExchangeFrequency:
 		return m.OldExchangeFrequency(ctx)
+	case rider.FieldJoinEnterpriseAt:
+		return m.OldJoinEnterpriseAt(ctx)
 	}
 	return nil, fmt.Errorf("unknown Rider field %s", name)
 }
@@ -67998,6 +68055,13 @@ func (m *RiderMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetExchangeFrequency(v)
 		return nil
+	case rider.FieldJoinEnterpriseAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetJoinEnterpriseAt(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Rider field %s", name)
 }
@@ -68106,6 +68170,9 @@ func (m *RiderMutation) ClearedFields() []string {
 	if m.FieldCleared(rider.FieldExchangeFrequency) {
 		fields = append(fields, rider.FieldExchangeFrequency)
 	}
+	if m.FieldCleared(rider.FieldJoinEnterpriseAt) {
+		fields = append(fields, rider.FieldJoinEnterpriseAt)
+	}
 	return fields
 }
 
@@ -68170,6 +68237,9 @@ func (m *RiderMutation) ClearField(name string) error {
 		return nil
 	case rider.FieldExchangeFrequency:
 		m.ClearExchangeFrequency()
+		return nil
+	case rider.FieldJoinEnterpriseAt:
+		m.ClearJoinEnterpriseAt()
 		return nil
 	}
 	return fmt.Errorf("unknown Rider nullable field %s", name)
@@ -68247,6 +68317,9 @@ func (m *RiderMutation) ResetField(name string) error {
 		return nil
 	case rider.FieldExchangeFrequency:
 		m.ResetExchangeFrequency()
+		return nil
+	case rider.FieldJoinEnterpriseAt:
+		m.ResetJoinEnterpriseAt()
 		return nil
 	}
 	return fmt.Errorf("unknown Rider field %s", name)

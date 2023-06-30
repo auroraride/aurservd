@@ -53,8 +53,7 @@ func (s *agentStatisticsService) Overview(ac *app.AgentContext) *model.AgentStat
 func (s *agentStatisticsService) RiderSummary(en *ent.Enterprise) model.AgentStatisticsOverviewRider {
 	var v []model.AgentStatisticsOverviewRider
 	start := carbon.Now().StartOfDay().Carbon2Time()
-	endtime := tools.NewTime().WillEnd(start, model.WillOverdueNum, true)
-
+	endtime := tools.NewTime().WillEnd(start, 4, true)
 	ent.Database.Rider.Query().Where(rider.EnterpriseID(en.ID)).Modify(
 		func(s *sql.Selector) {
 			t := sql.Table(subscribe.Table)

@@ -74,6 +74,7 @@ func (Rider) Fields() []ent.Field {
 		field.Int64("points").Default(0).Comment("骑手积分"),
 		field.JSON("exchange_limit", model.RiderExchangeLimit{}).Optional().Comment("换电间隔配置"),
 		field.JSON("exchange_frequency", model.RiderExchangeFrequency{}).Optional().Comment("换电频次配置"),
+		field.Time("join_enterprise_at").Optional().Nillable().Comment("加入团签时间"),
 	}
 }
 

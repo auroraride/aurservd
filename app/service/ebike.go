@@ -195,7 +195,6 @@ func (s *ebikeService) listFilter(req model.EbikeListFilter) (q *ent.EbikeQuery,
 		info["查询目标"] = "骑手"
 		q.Where(
 			ebike.RiderIDNotNil(),
-			ebike.StationIDIsNil(),
 		)
 	}
 

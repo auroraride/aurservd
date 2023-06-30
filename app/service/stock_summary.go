@@ -78,6 +78,7 @@ func (s *stockSummaryService) BatteryGroup(ac *app.AgentContext) []*model.Batter
 
 	s.orm.Query().
 		Where(stocksummary.EnterpriseID(ac.Enterprise.ID), stocksummary.MaterialEQ(stocksummary.MaterialBattery)).
+		Order(ent.Asc(stocksummary.FieldModel)).
 		GroupBy(stocksummary.FieldModel).
 		Aggregate(
 			ent.As(ent.Sum(stocksummary.FieldTodayNum), "stationBatteryTotal"),
@@ -102,18 +103,23 @@ func (s *stockSummaryService) BatteryGroup(ac *app.AgentContext) []*model.Batter
 
 	processedModels := make(map[string]bool) // 创建一个用于跟踪已处理模型的映射
 
+	// 处理已统计到的电池型号
 	for i, v := range rsp {
 		if total, ok := modelTotal[v.Model]; ok {
 			rsp[i].CabinetBatteryTotal += total
 			processedModels[v.Model] = true
 		}
+		// 电池总数
+		rsp[i].BatteryTotal = rsp[i].StationBatteryTotal + rsp[i].CabinetBatteryTotal + rsp[i].RiderBatteryTotal
 	}
+	// 处理未统计到的电池型号
 	for m, total := range modelTotal {
 		if !processedModels[m] {
 			newBatteryGroup := &model.BatteryStockGroup{
 				Model: m,
 				BatterySummary: model.BatterySummary{
 					CabinetBatteryTotal: total,
+					BatteryTotal:        total,
 				},
 			}
 			rsp = append(rsp, newBatteryGroup)
@@ -128,6 +134,7 @@ func (s *stockSummaryService) EbikeGroup(ac *app.AgentContext) []*model.EbikeSto
 	var v []*model.EbikeStockGroup
 	s.orm.Query().
 		Where(stocksummary.EnterpriseID(ac.Enterprise.ID), stocksummary.MaterialEQ(stocksummary.MaterialEbike)).
+		Order(ent.Asc(stocksummary.FieldModel)).
 		GroupBy(stocksummary.FieldModel).
 		Aggregate(
 			ent.As(ent.Sum(stocksummary.FieldTodayNum), "stationEbikeTotal"),
