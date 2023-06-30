@@ -212,7 +212,7 @@ func (s *riderAgentService) List(enterpriseID uint64, req *model.AgentRiderListR
 			subquery,
 			subscribe.Status(model.SubscribeStatusUsing),
 			subscribe.AgentEndAtGTE(today),
-			subscribe.AgentEndAtLTE(tools.NewTime().WillEnd(today, model.WillOverdueNum, true)),
+			subscribe.AgentEndAtLTE(carbon.Time2Carbon(tools.NewTime().WillEnd(today, model.WillOverdueNum, true)).EndOfDay().Carbon2Time()),
 		)
 		q.Where(rider.HasSubscribesWith(subquery...))
 	}
