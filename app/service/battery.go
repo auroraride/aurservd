@@ -303,14 +303,12 @@ func (s *batteryService) listFilter(req model.BatteryFilter) (q *ent.BatteryQuer
 		info["查询目标"] = "电柜"
 		q.Where(
 			battery.CabinetIDNotNil(),
-			battery.StationIDIsNil(),
 			battery.RiderIDIsNil(),
 		)
 	case model.BatteryRider:
 		info["查询目标"] = "骑手"
 		q.Where(
 			battery.RiderIDNotNil(),
-			battery.StationIDIsNil(),
 			battery.CabinetIDIsNil(),
 		)
 	}
