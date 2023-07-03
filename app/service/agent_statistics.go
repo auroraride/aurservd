@@ -39,6 +39,7 @@ func (s *agentStatisticsService) Overview(ac *app.AgentContext) *model.AgentStat
 		subscribealter.EnterpriseID(ac.Enterprise.ID),
 		subscribealter.StatusEQ(model.SubscribeAlterStatusPending),
 		subscribealter.HasRiderWith(rider.DeletedAtIsNil()),
+		subscribealter.HasSubscribeWith(subscribe.StatusNEQ(model.SubscribeStatusUnSubscribed)),
 	).CountX(s.ctx)
 
 	ns := NewStockSummary()
