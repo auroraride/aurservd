@@ -13,7 +13,7 @@ require (
 	github.com/aliyun/alibaba-cloud-sdk-go v1.62.401
 	github.com/aliyun/aliyun-log-go-sdk v0.1.50
 	github.com/aliyun/aliyun-oss-go-sdk v2.2.7+incompatible
-	github.com/auroraride/adapter v0.0.0-20230627042649-96946a9d6476
+	github.com/auroraride/adapter v0.0.0-20230629034846-b2c1dc52e016
 	github.com/ethereum/go-ethereum v1.12.0
 	github.com/fsnotify/fsnotify v1.6.0
 	github.com/getkin/kin-openapi v0.118.0

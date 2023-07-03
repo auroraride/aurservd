@@ -658,6 +658,9 @@ definitions:
       isAuthed:
         description: 是否实名认证 ture已实名 false未实名
         type: boolean
+      joinEnterpriseAt:
+        description: 加入团签时间
+        type: string
       model:
         description: 电池型号
         type: string
@@ -5857,6 +5860,24 @@ definitions:
         description: 充值次数
         type: integer
     type: object
+  model.ReactiveSubscribeReq:
+    properties:
+      days:
+        description: 天数
+        type: integer
+      priceId:
+        description: 套餐价格ID
+        type: integer
+      riderId:
+        description: 骑手ID
+        type: integer
+      stationId:
+        description: 站点ID
+        type: integer
+    required:
+    - riderId
+    - stationId
+    type: object
   model.Refund:
     properties:
       amount:
@@ -9106,6 +9127,33 @@ paths:
           schema:
             type: string
       summary: A2006 邀请骑手
+      tags:
+      - '[A]代理接口'
+  /agent/v1/rider/reactive:
+    post:
+      consumes:
+      - application/json
+      operationId: AgentRiderReactive
+      parameters:
+      - description: 代理校验token
+        in: header
+        name: X-Agent-Token
+        required: true
+        type: string
+      - description: 重新激活骑手
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.ReactiveSubscribeReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            type: string
+      summary: A2007 重新激活骑手
       tags:
       - '[A]代理接口'
   /agent/v1/signin:
@@ -16769,7 +16817,7 @@ paths:
         type: string
       - description: 团签ID
         in: query
-        name: enterprise_id
+        name: enterpriseId
         type: integer
       - description: 其他物资名称
         in: query
@@ -16845,7 +16893,7 @@ paths:
         type: string
       - description: 团签ID
         in: query
-        name: enterprise_id
+        name: enterpriseId
         type: integer
       - description: 其他物资名称
         in: query

@@ -133,6 +133,8 @@ github.com/armon/go-radix v1.0.0/go.mod h1:ufUuZ+zHj4x4TnLV4JWEpy2hxWSpsRywHrMgI
 github.com/aryann/difflib v0.0.0-20170710044230-e206f873d14a/go.mod h1:DAHtR1m6lCRdSC2Tm3DSWRPvIPr6xNKyeHdqDQSQT+A=
 github.com/auroraride/adapter v0.0.0-20230627042649-96946a9d6476 h1:+MqKVJTDxAR7t3BunJnXLCByH1DcsKeRa2YE+32rp6Y=
 github.com/auroraride/adapter v0.0.0-20230627042649-96946a9d6476/go.mod h1:LCfiWWgtVj+3nrtMFWkB1lL19xb2O+Hw4LGgUZOogJw=
+github.com/auroraride/adapter v0.0.0-20230629034846-b2c1dc52e016 h1:IsoR4HbjBU1zbDmxvQYijyh3rW+2O+wAkkqmTz6FXhM=
+github.com/auroraride/adapter v0.0.0-20230629034846-b2c1dc52e016/go.mod h1:LCfiWWgtVj+3nrtMFWkB1lL19xb2O+Hw4LGgUZOogJw=
 github.com/aws/aws-lambda-go v1.13.3/go.mod h1:4UKl9IzQMoD+QF79YdCuzCwp8VbmG4VAQwij/eHl5CU=
 github.com/aws/aws-sdk-go v1.27.0/go.mod h1:KmX6BPdI08NWTb3/sm4ZGu5ShLoqVDhKgpiN924inxo=
 github.com/aws/aws-sdk-go-v2 v0.18.0/go.mod h1:JWVYvqSMppoMJC0x5wdwiImzgXTI9FuZwxzkQq9wy+g=

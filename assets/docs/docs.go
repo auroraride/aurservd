@@ -1590,6 +1590,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/agent/v1/rider/reactive": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[A]代理接口"
+                ],
+                "summary": "A2007 重新激活骑手",
+                "operationId": "AgentRiderReactive",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "代理校验token",
+                        "name": "X-Agent-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "重新激活骑手",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ReactiveSubscribeReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/agent/v1/rider/{id}": {
             "get": {
                 "consumes": [
@@ -13254,7 +13295,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "团签ID",
-                        "name": "enterprise_id",
+                        "name": "enterpriseId",
                         "in": "query"
                     },
                     {
@@ -13373,7 +13414,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "团签ID",
-                        "name": "enterprise_id",
+                        "name": "enterpriseId",
                         "in": "query"
                     },
                     {
@@ -17717,6 +17758,10 @@ const docTemplate = `{
                 "isAuthed": {
                     "description": "是否实名认证 ture已实名 false未实名",
                     "type": "boolean"
+                },
+                "joinEnterpriseAt": {
+                    "description": "加入团签时间",
+                    "type": "string"
                 },
                 "model": {
                     "description": "电池型号",
@@ -25228,6 +25273,31 @@ const docTemplate = `{
                 },
                 "times": {
                     "description": "充值次数",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.ReactiveSubscribeReq": {
+            "type": "object",
+            "required": [
+                "riderId",
+                "stationId"
+            ],
+            "properties": {
+                "days": {
+                    "description": "天数",
+                    "type": "integer"
+                },
+                "priceId": {
+                    "description": "套餐价格ID",
+                    "type": "integer"
+                },
+                "riderId": {
+                    "description": "骑手ID",
+                    "type": "integer"
+                },
+                "stationId": {
+                    "description": "站点ID",
                     "type": "integer"
                 }
             }
