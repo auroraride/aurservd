@@ -428,11 +428,13 @@ func (s *ebikeService) SearchUnallocated(params *model.EbikeUnallocatedParams) (
 		brand := bike.Edges.Brand
 		res[i] = &model.Ebike{
 			EbikeInfo: model.EbikeInfo{
-				ID:        bike.ID,
-				SN:        bike.Sn,
-				ExFactory: bike.ExFactory,
-				Plate:     bike.Plate,
-				Color:     bike.Color,
+				ID:           bike.ID,
+				SN:           bike.Sn,
+				ExFactory:    bike.ExFactory,
+				Plate:        bike.Plate,
+				Color:        bike.Color,
+				EnterpriseID: bike.EnterpriseID,
+				StationID:    bike.StationID,
 			},
 			Brand: &model.EbikeBrand{
 				ID:    brand.ID,
