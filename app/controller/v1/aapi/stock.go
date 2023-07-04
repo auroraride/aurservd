@@ -29,6 +29,7 @@ var Stock = new(stock)
 // @Success      200  {object}  model.PaginationRes{items=[]model.StockDetailRes}  "请求成功"
 func (*stock) Detail(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.AgentStockDetailReq](c)
+	req.EnterpriseID = ctx.Enterprise.ID
 	return ctx.SendResponse(service.NewAgentStock().Detail(req))
 }
 

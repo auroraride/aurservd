@@ -32,6 +32,7 @@ func NewAgentStock(params ...any) *agentStockService {
 
 func (s *agentStockService) Detail(req *model.AgentStockDetailReq) *model.PaginationRes {
 	q := s.orm.Query().
+		Where(stock.EnterpriseIDEQ(req.EnterpriseID)).
 		Order(ent.Desc(stock.FieldCreatedAt)).
 		Modify(func(sel *sql.Selector) {
 			// 去重排除配偶
