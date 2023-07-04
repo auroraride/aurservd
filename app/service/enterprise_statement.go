@@ -559,10 +559,10 @@ func (s *enterpriseStatementService) usageItems(sub *ent.Subscribe, start time.T
 		}
 	}
 	subStart := *sub.StartAt
-	// 订阅 上次结账日如果晚于结束日期第二天 直接跳过
+	// 订阅 上次结账日如果早于结束日期第二天 直接跳过
 	next := end.AddDate(0, 0, 1)
 	if sub.LastBillDate != nil {
-		if sub.LastBillDate.After(next) {
+		if sub.LastBillDate.Before(next) {
 			return
 		}
 		subStart = *sub.LastBillDate
