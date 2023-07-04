@@ -115,11 +115,13 @@ type EbikeModifyReq struct {
 }
 
 type EbikeInfo struct {
-	ID        uint64  `json:"id,omitempty"`
-	SN        string  `json:"sn,omitempty"`        // 车架号
-	ExFactory string  `json:"exFactory,omitempty"` // 生产批次
-	Plate     *string `json:"plate,omitempty"`     // 车牌号
-	Color     string  `json:"color,omitempty"`     // 颜色
+	ID           uint64  `json:"id,omitempty"`
+	SN           string  `json:"sn,omitempty"`           // 车架号
+	ExFactory    string  `json:"exFactory,omitempty"`    // 生产批次
+	Plate        *string `json:"plate,omitempty"`        // 车牌号
+	Color        string  `json:"color,omitempty"`        // 颜色
+	EnterpriseID *uint64 `json:"enterpriseId,omitempty"` // 团签ID
+	StationID    *uint64 `json:"stationId,omitempty"`    // 站点ID
 }
 
 type Ebike struct {

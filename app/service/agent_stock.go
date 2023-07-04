@@ -32,6 +32,7 @@ func NewAgentStock(params ...any) *agentStockService {
 
 func (s *agentStockService) Detail(req *model.AgentStockDetailReq) *model.PaginationRes {
 	q := s.orm.Query().
+		Order(ent.Desc(stock.FieldCreatedAt)).
 		Modify(func(sel *sql.Selector) {
 			// 去重排除配偶
 			sel.FromExpr(sql.Raw("(SELECT DISTINCT ON (id + COALESCE(stock_spouse, 0)) * FROM stock) stock"))

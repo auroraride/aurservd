@@ -39,6 +39,7 @@ func (s *agentStatisticsService) Overview(ac *app.AgentContext) *model.AgentStat
 		subscribealter.EnterpriseID(ac.Enterprise.ID),
 		subscribealter.StatusEQ(model.SubscribeAlterStatusPending),
 		subscribealter.HasRiderWith(rider.DeletedAtIsNil()),
+		subscribealter.HasSubscribeWith(subscribe.StatusNEQ(model.SubscribeStatusUnSubscribed)),
 	).CountX(s.ctx)
 
 	ns := NewStockSummary()
@@ -70,9 +71,9 @@ func (s *agentStatisticsService) RiderSummary(en *ent.Enterprise) model.AgentSta
 					// 累计退订骑手
 					sql.As(fmt.Sprintf("COUNT(DISTINCT CASE WHEN t1.status = %d AND t1.enterprise_id = %d THEN t1.rider_id END)", model.SubscribeStatusUnSubscribed, en.ID), "unSubscribeTotal"),
 					// 单电骑手
-					sql.As(fmt.Sprintf("COUNT(DISTINCT CASE WHEN t1.enterprise_id = %d AND t1.brand_id IS NULL THEN t1.rider_id END)", en.ID), "riderOnlyBatteryTotal"),
+					sql.As(fmt.Sprintf("COUNT(DISTINCT CASE WHEN rider.deleted_at IS NULL AND t1.enterprise_id = %d AND t1.brand_id IS NULL THEN t1.rider_id END)", en.ID), "riderOnlyBatteryTotal"),
 					// 车+电骑手
-					sql.As(fmt.Sprintf("COUNT(DISTINCT CASE WHEN t1.enterprise_id = %d AND t1.brand_id IS NOT NULL THEN t1.rider_id END)", en.ID), "riderBatteryAndEbikeTotal"),
+					sql.As(fmt.Sprintf("COUNT(DISTINCT CASE WHEN rider.deleted_at IS NULL AND t1.enterprise_id = %d AND t1.brand_id IS NOT NULL THEN t1.rider_id END)", en.ID), "riderBatteryAndEbikeTotal"),
 				)
 		},
 	).ScanX(s.ctx, &v)

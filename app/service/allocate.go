@@ -191,6 +191,11 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 		if bat.Model != sub.Model {
 			snag.Panic("电池型号不符")
 		}
+
+		// 判定电池站点是否正确
+		if sub.StationID != nil && bat.StationID != nil && *sub.StationID != *bat.StationID {
+			snag.Panic("电池站点归属不一致")
+		}
 	}
 
 	// 判定智能和非智能电池
@@ -220,6 +225,10 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 			StationID: sub.StationID,
 			Keyword:   params.EbikeParam.Keyword,
 		})
+
+		if sub.StationID != nil && bike.EbikeInfo.StationID != nil && *sub.StationID != *bike.EbikeInfo.StationID {
+			snag.Panic("车辆站点归属不一致")
+		}
 
 		// 比对型号
 		if bike.Brand.ID != *sub.BrandID {

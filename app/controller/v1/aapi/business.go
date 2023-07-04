@@ -41,6 +41,7 @@ func (*business) Exchange(c echo.Context) (err error) {
 			},
 			CabinetID:    req.CabinetID,
 			EnterpriseID: ctx.Agent.EnterpriseID,
+			Model:        req.Model,
 		},
 	}))
 }

@@ -31,21 +31,23 @@ func NewSubscribeAlter(params ...any) *subscribeAlterService {
 
 // AlterDays 申请加时
 func (s *subscribeAlterService) AlterDays(r *ent.Rider, req *model.SubscribeAlterRiderReq) {
-	// 查询骑手申请是否有未审批的
-	q := ent.Database.SubscribeAlter.Query().Where(
-		subscribealter.RiderID(r.ID),
-		subscribealter.Status(model.SubscribeAlterStatusPending),
-	)
-
-	exists, _ := q.Exist(s.ctx)
-	if exists {
-		snag.Panic("存在未审批的申请")
-	}
 
 	// 查询骑手团签
 	sub, _ := NewSubscribe().QueryEffective(r.ID)
 	if sub == nil {
 		snag.Panic("订阅状态异常")
+	}
+
+	// 查询骑手申请是否有未审批的
+	q := ent.Database.SubscribeAlter.Query().Where(
+		subscribealter.RiderID(r.ID),
+		subscribealter.Status(model.SubscribeAlterStatusPending),
+		subscribealter.SubscribeID(sub.ID),
+	)
+
+	exists, _ := q.Exist(s.ctx)
+	if exists {
+		snag.Panic("存在未审批的申请")
 	}
 
 	// 增加记录
