@@ -597,3 +597,14 @@ func (s *batteryService) updateStation(bat *ent.Battery, stationID, enterpriseID
 		zap.L().Error("电池流转更新失败", zap.Error(err))
 	}
 }
+
+// GetEnterpriseBatteryModel 获取属于团签的电池型号
+func (s *batteryService) GetEnterpriseBatteryModel(enterpriseID uint64) []*model.BatteryGroup {
+	var rsp []*model.BatteryGroup
+	s.orm.Query().
+		Where(battery.EnterpriseID(enterpriseID)).
+		Order(ent.Asc(battery.FieldModel)).
+		GroupBy(battery.FieldModel).
+		ScanX(s.ctx, &rsp)
+	return rsp
+}

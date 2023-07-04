@@ -111,3 +111,7 @@ type BatteryEnterpriseTransfer struct {
 	StationID    *uint64 `json:"stationId"`    // 站点ID
 	EnterpriseID *uint64 `json:"enterpriseId"` // 团签ID
 }
+
+type BatteryGroup struct {
+	Model string `json:"model"`
+}

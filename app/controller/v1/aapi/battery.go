@@ -76,3 +76,17 @@ func (*battery) List(c echo.Context) (err error) {
 		},
 	}))
 }
+
+// EnterpriseModel
+// @ID            AgentBatteryEnterpriseModel
+// @Router       /agent/v1/battery/enterprise/model [GET]
+// @Summary      AA004 团签所属电池型号列表
+// @Tags         [A]代理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Agent-Token  header  string  true  "代理校验token"
+// @Success      200  {object}  []string
+func (*battery) EnterpriseModel(c echo.Context) (err error) {
+	ctx := app.ContextX[app.AgentContext](c)
+	return ctx.SendResponse(service.NewBattery().GetEnterpriseBatteryModel(ctx.Enterprise.ID))
+}
