@@ -22096,6 +22096,10 @@ const docTemplate = `{
                     "description": "颜色",
                     "type": "string"
                 },
+                "enterpriseId": {
+                    "description": "团签ID",
+                    "type": "integer"
+                },
                 "exFactory": {
                     "description": "生产批次",
                     "type": "string"
@@ -22110,6 +22114,10 @@ const docTemplate = `{
                 "sn": {
                     "description": "车架号",
                     "type": "string"
+                },
+                "stationId": {
+                    "description": "站点ID",
+                    "type": "integer"
                 }
             }
         },

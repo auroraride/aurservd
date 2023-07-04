@@ -10,10 +10,10 @@ require (
 	github.com/alibabacloud-go/dysmsapi-20170525/v2 v2.0.18
 	github.com/alibabacloud-go/dyvmsapi-20170525/v2 v2.1.4
 	github.com/alibabacloud-go/tea v1.2.1
-	github.com/aliyun/alibaba-cloud-sdk-go v1.62.401
+	github.com/aliyun/alibaba-cloud-sdk-go v1.62.411
 	github.com/aliyun/aliyun-log-go-sdk v0.1.50
 	github.com/aliyun/aliyun-oss-go-sdk v2.2.7+incompatible
-	github.com/auroraride/adapter v0.0.0-20230629034846-b2c1dc52e016
+	github.com/auroraride/adapter v0.0.0-20230704023145-0af279db72dc
 	github.com/ethereum/go-ethereum v1.12.0
 	github.com/fsnotify/fsnotify v1.6.0
 	github.com/getkin/kin-openapi v0.118.0
@@ -41,7 +41,7 @@ require (
 	github.com/shopspring/decimal v1.3.1
 	github.com/shurcooL/github_flavored_markdown v0.0.0-20210228213109-c3a9aa474629
 	github.com/silenceper/wechat/v2 v2.1.5
-	github.com/smartwalle/alipay/v3 v3.2.13
+	github.com/smartwalle/alipay/v3 v3.2.14
 	github.com/sony/sonyflake v1.1.0
 	github.com/speps/go-hashids/v2 v2.0.1
 	github.com/spf13/cobra v1.7.0
@@ -111,7 +111,7 @@ require (
 	github.com/jackc/pgtype v1.14.0 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
-	github.com/klauspost/compress v1.16.6 // indirect
+	github.com/klauspost/compress v1.16.7 // indirect
 	github.com/knadh/koanf v1.5.0 // indirect
 	github.com/leodido/go-urn v1.2.4 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
