@@ -608,7 +608,7 @@ func (s *enterpriseService) PriceModify(req *model.EnterprisePriceReq) (p *ent.E
 		snag.Panic("电池型号无法修改")
 	}
 
-	if p.BrandID != req.BrandID {
+	if req.BrandID != nil && *p.BrandID != *req.BrandID {
 		snag.Panic("电车型号无法修改")
 	}
 
