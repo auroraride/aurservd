@@ -62,9 +62,14 @@ func (s *managerSubscribeService) ChangeEbike(req *model.ManagerSubscribeChangeE
 		snag.Panic("门店为必选")
 	}
 
+	if sub.StationID != nil && req.StoreID != nil {
+		snag.Panic("代理骑手无法使用门店物资")
+	}
+
 	// 获取门店和站点ID
 	stationID := sub.StationID
 	storeID := req.StoreID
+	enterpriseID := sub.EnterpriseID
 
 	bike := NewEbike().UnallocatedX(&model.EbikeUnallocatedParams{Keyword: req.EbikeKeyword, StoreID: storeID, StationID: stationID})
 
@@ -79,6 +84,7 @@ func (s *managerSubscribeService) ChangeEbike(req *model.ManagerSubscribeChangeE
 			SetNum(1).
 			SetNillableStoreID(storeID).
 			SetNillableStationID(stationID).
+			SetNillableEnterpriseID(enterpriseID).
 			SetSn(tools.NewUnique().NewSN()).
 			SetRiderID(sub.RiderID).
 			SetName(sub.Edges.Brand.Name).
@@ -97,6 +103,7 @@ func (s *managerSubscribeService) ChangeEbike(req *model.ManagerSubscribeChangeE
 			SetNum(-1).
 			SetNillableStoreID(storeID).
 			SetNillableStationID(stationID).
+			SetNillableEnterpriseID(enterpriseID).
 			SetSn(tools.NewUnique().NewSN()).
 			SetRiderID(sub.RiderID).
 			SetName(bike.Brand.Name).
