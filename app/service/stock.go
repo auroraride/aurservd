@@ -682,8 +682,10 @@ func (s *stockService) listFilter(req model.StockDetailFilter) (q *ent.StockQuer
 
 	q = s.orm.Query().
 		Modify(func(sel *sql.Selector) {
-			// 去重排除配偶
-			sel.FromExpr(sql.Raw("(SELECT DISTINCT ON (id + COALESCE(stock_spouse, 0)) * FROM stock) stock"))
+			// 不做对象查询时需要去重排除配偶
+			if req.Goal == 0 && req.Serial == "" && req.StoreID == 0 && req.CabinetID == 0 && req.EnterpriseID == 0 && req.StationID == 0 {
+				sel.FromExpr(sql.Raw("(SELECT DISTINCT ON (id + COALESCE(stock_spouse, 0)) * FROM stock) stock"))
+			}
 		}).
 		WithCabinet().
 		WithStore().
