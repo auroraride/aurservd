@@ -24165,8 +24165,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "ebikeKeyword",
-                "id",
-                "storeId"
+                "id"
             ],
             "properties": {
                 "ebikeKeyword": {

@@ -5105,7 +5105,6 @@ definitions:
     required:
     - ebikeKeyword
     - id
-    - storeId
     type: object
   model.ManagerSubscribeUnbindEbike:
     properties:

@@ -45,8 +45,6 @@ func (s *managerSubscribeService) Active(req *model.ManagerSubscribeActive) {
 
 // ChangeEbike 修改订阅车辆
 func (s *managerSubscribeService) ChangeEbike(req *model.ManagerSubscribeChangeEbike) {
-	bike := NewEbike().UnallocatedX(&model.EbikeUnallocatedParams{Keyword: req.EbikeKeyword})
-
 	sub, _ := ent.Database.Subscribe.QueryNotDeleted().
 		Where(
 			subscribe.Status(model.SubscribeStatusUsing),
@@ -55,9 +53,20 @@ func (s *managerSubscribeService) ChangeEbike(req *model.ManagerSubscribeChangeE
 		).
 		WithBrand().
 		First(s.ctx)
+
 	if sub == nil {
 		snag.Panic("未找到订阅")
 	}
+
+	if sub.StationID == nil && req.StoreID == nil {
+		snag.Panic("门店为必选")
+	}
+
+	// 获取门店和站点ID
+	stationID := sub.StationID
+	storeID := req.StoreID
+
+	bike := NewEbike().UnallocatedX(&model.EbikeUnallocatedParams{Keyword: req.EbikeKeyword, StoreID: storeID, StationID: stationID})
 
 	if bike.Brand.ID != *sub.BrandID {
 		snag.Panic("电车型号不同")
@@ -68,7 +77,8 @@ func (s *managerSubscribeService) ChangeEbike(req *model.ManagerSubscribeChangeE
 		err = tx.Stock.Create().
 			SetEbikeID(*sub.EbikeID).
 			SetNum(1).
-			SetStoreID(req.StoreID).
+			SetNillableStoreID(storeID).
+			SetNillableStationID(stationID).
 			SetSn(tools.NewUnique().NewSN()).
 			SetRiderID(sub.RiderID).
 			SetName(sub.Edges.Brand.Name).
@@ -85,7 +95,8 @@ func (s *managerSubscribeService) ChangeEbike(req *model.ManagerSubscribeChangeE
 		err = tx.Stock.Create().
 			SetEbikeID(bike.ID).
 			SetNum(-1).
-			SetStoreID(req.StoreID).
+			SetNillableStoreID(storeID).
+			SetNillableStationID(stationID).
 			SetSn(tools.NewUnique().NewSN()).
 			SetRiderID(sub.RiderID).
 			SetName(bike.Brand.Name).
