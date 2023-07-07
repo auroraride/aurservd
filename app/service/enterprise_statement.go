@@ -308,11 +308,6 @@ func (s *enterpriseStatementService) detail(id uint64) []model.StatementDetail {
 		c := item.Edges.City
 		t := item.Edges.Station
 		res[i] = model.StatementDetail{
-			Rider: model.Rider{
-				ID:    r.ID,
-				Phone: r.Phone,
-				Name:  r.Name,
-			},
 			City: model.City{
 				ID:   c.ID,
 				Name: c.Name,
@@ -324,6 +319,15 @@ func (s *enterpriseStatementService) detail(id uint64) []model.StatementDetail {
 			Price: item.Price,
 			Cost:  item.Cost,
 		}
+
+		if r != nil {
+			res[i].Rider = model.Rider{
+				ID:    r.ID,
+				Phone: r.Phone,
+				Name:  r.Name,
+			}
+		}
+
 		if t != nil {
 			res[i].Station = &model.EnterpriseStation{
 				ID:   t.ID,
@@ -516,29 +520,35 @@ func (s *enterpriseStatementService) usageDetail(en *ent.Enterprise, item *ent.S
 	r := item.Edges.Rider
 	c := item.Edges.City
 	del := ""
-	if r.DeletedAt != nil {
+	if r != nil && r.DeletedAt != nil {
 		del = r.DeletedAt.Format(carbon.DateTimeLayout)
 	}
+
 	status := model.SubscribeStatusText(item.Status)
 	today := carbon.Now().StartOfDay().Carbon2Time()
 	if en.Agent && item.AgentEndAt != nil && item.AgentEndAt.Before(today) {
 		status = "已超期"
 	}
+
 	res := model.StatementUsageRes{
 		Model: item.Model,
 		City: model.City{
 			ID:   c.ID,
 			Name: c.Name,
 		},
-		Rider: model.Rider{
-			ID:    r.ID,
-			Phone: r.Phone,
-			Name:  r.Name,
-		},
 		Status:    status,
 		DeletedAt: del,
 		Items:     s.usageItems(item, start, end, prices),
 	}
+
+	if r != nil {
+		res.Rider = model.Rider{
+			ID:    r.ID,
+			Phone: r.Phone,
+			Name:  r.Name,
+		}
+	}
+
 	a := item.Edges.Station
 	if a != nil {
 		res.Station = &model.EnterpriseStation{

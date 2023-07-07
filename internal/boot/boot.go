@@ -14,11 +14,10 @@ import (
 	"github.com/golang-module/carbon/v2"
 
 	"github.com/auroraride/aurservd/app/logging"
+	_ "github.com/auroraride/aurservd/app/permission"
 	"github.com/auroraride/aurservd/assets"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/payment"
-
-	_ "github.com/auroraride/aurservd/app/permission"
 )
 
 func Bootstrap() {

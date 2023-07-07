@@ -455,7 +455,9 @@ func (s *enterpriseService) UpdateStatementByID(id uint64) {
 
 // UpdateStatement 更新企业账单
 func (s *enterpriseService) UpdateStatement(e *ent.Enterprise) {
-	sta, bills := s.CalculateStatement(e, time.Now())
+	end := time.Now()
+
+	sta, bills := s.CalculateStatement(e, end)
 
 	// 总天数
 	var days int
