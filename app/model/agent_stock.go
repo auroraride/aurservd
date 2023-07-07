@@ -23,18 +23,19 @@ type AgentStockDetailFilter struct {
 }
 
 type AgentStockDetailRes struct {
-	ID       uint64       `json:"id"`              // 调拨ID
-	Sn       string       `json:"sn"`              // 调拨编号
-	City     string       `json:"city"`            // 城市
-	Inbound  TransferInfo `json:"inbound"`         // 调入
-	Outbound TransferInfo `json:"outbound"`        // 调出
-	Name     string       `json:"name"`            // 物资
-	Num      int          `json:"num"`             // 数量
-	Type     string       `json:"type"`            // 类型
-	Operator string       `json:"operator"`        // 操作人
-	Time     string       `json:"time"`            // 时间
-	Remark   string       `json:"remark"`          // 备注信息
-	Rider    string       `json:"rider,omitempty"` // 骑手, 仅业务发生有此字段
+	ID         uint64       `json:"id"`              // 调拨ID
+	Sn         string       `json:"sn"`              // 调拨编号
+	City       string       `json:"city"`            // 城市
+	Inbound    TransferInfo `json:"inbound"`         // 调入
+	Outbound   TransferInfo `json:"outbound"`        // 调出
+	Name       string       `json:"name"`            // 物资
+	MaterialSn string       `json:"materialSn"`      // 物资编号
+	Num        int          `json:"num"`             // 数量
+	Type       string       `json:"type"`            // 类型
+	Operator   string       `json:"operator"`        // 操作人
+	Time       string       `json:"time"`            // 时间
+	Remark     string       `json:"remark"`          // 备注信息
+	Rider      string       `json:"rider,omitempty"` // 骑手, 仅业务发生有此字段
 }
 type TransferInfo struct {
 	PlatformName   string `json:"platformName"`   // 平台名称

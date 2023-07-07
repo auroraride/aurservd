@@ -124,7 +124,8 @@ func (s *agentStockService) detailInfo(item *ent.Stock) model.AgentStockDetailRe
 	// 电车
 	bike := item.Edges.Ebike
 	if bike != nil {
-		res.Name = fmt.Sprintf("[%s] %s", item.Name, bike.Sn)
+		res.Name = item.Name
+		res.MaterialSn = bike.Sn
 	}
 
 	em := item.Creator
@@ -137,7 +138,8 @@ func (s *agentStockService) detailInfo(item *ent.Stock) model.AgentStockDetailRe
 
 	// 站点调拨电池
 	if ba != nil {
-		res.Name = fmt.Sprintf("[%s] %s", *item.Model, ba.Sn)
+		res.Name = *item.Model
+		res.MaterialSn = ba.Sn
 	}
 	if item.Type == model.StockTypeTransfer {
 		// 平台调拨记录
