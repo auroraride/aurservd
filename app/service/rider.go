@@ -1011,10 +1011,18 @@ func (s *riderService) GetLogs(req *model.RiderLogReq) *model.PaginationRes {
 // Delete 删除账户
 func (s *riderService) Delete(req *model.IDParamReq) {
 	u := s.Query(req.ID)
-	sub, _ := ent.Database.Subscribe.QueryNotDeleted().Where(
-		subscribe.RiderID(req.ID),
-		subscribe.StatusNotIn(model.SubscribeStatusUnSubscribed, model.SubscribeStatusCanceled),
-	).First(s.ctx)
+	q := ent.Database.Subscribe.QueryNotDeleted().Where(subscribe.RiderID(req.ID))
+
+	if u.EnterpriseID != nil {
+		q.Where(
+			subscribe.StatusIn(model.SubscribeStatusUsing),
+		)
+	} else {
+		q.Where(
+			subscribe.StatusNotIn(model.SubscribeStatusUnSubscribed, model.SubscribeStatusCanceled),
+		)
+	}
+	sub, _ := q.First(s.ctx)
 	if sub != nil {
 		snag.Panic("骑手当前有订阅")
 	}
