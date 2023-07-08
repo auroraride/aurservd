@@ -566,6 +566,8 @@ func (s *enterpriseService) Price(req *model.EnterprisePriceReq) model.Enterpris
 		)
 		if req.BrandID != nil {
 			q.Where(enterpriseprice.BrandID(*req.BrandID))
+		} else {
+			q.Where(enterpriseprice.BrandIDIsNil())
 		}
 		if exist, _ := q.Exist(s.ctx); exist {
 			snag.Panic("价格设置重复")
