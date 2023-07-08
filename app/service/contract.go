@@ -444,7 +444,7 @@ func (s *contractService) checkResult(flowID string) {
 		c, _ := s.orm.Query().Where(contract.FlowID(flowID)).WithRider().First(s.ctx)
 
 		// 如果合同状态不是签署中, 直接结束
-		if c.Status != model.ContractStatusSigning.Value() {
+		if c == nil || c.Status != model.ContractStatusSigning.Value() {
 			ticker.Stop()
 			return
 		}
