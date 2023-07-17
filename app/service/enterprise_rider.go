@@ -88,12 +88,12 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 		if r != nil {
 			// 查询订阅信息
 			sub, _ = NewSubscribe().QueryEffective(r.ID)
-			if sub != nil && sub.EnterpriseID == nil {
+			if sub != nil && (sub.EnterpriseID == nil || (sub.EnterpriseID != nil && sub.Status != model.SubscribeStatusInactive)) {
 				return errors.New("该骑手不能绑定,已有未完成的订单")
 			}
 
 			// 若原有团签订阅未激活，直接删除
-			if sub != nil && sub.EnterpriseID != nil && sub.Status != model.SubscribeStatusInactive {
+			if sub != nil && sub.EnterpriseID != nil && sub.Status == model.SubscribeStatusInactive {
 				err = tx.Subscribe.DeleteOne(sub).Exec(s.ctx)
 				if err != nil {
 					return errors.New("原未激活订阅处理失败")
@@ -440,7 +440,7 @@ func (s *enterpriseRiderService) JoinEnterprise(req *model.EnterpriseJoinReq, ri
 	// 判断骑手是否有未完成的订单
 	// 查询订阅信息
 	sub, _ := NewSubscribe().QueryEffective(rid.ID)
-	if sub != nil && sub.EnterpriseID == nil {
+	if sub != nil && (sub.EnterpriseID == nil || (sub.EnterpriseID != nil && sub.Status != model.SubscribeStatusInactive)) {
 		snag.Panic("有未完成的订单")
 	}
 
@@ -451,7 +451,7 @@ func (s *enterpriseRiderService) JoinEnterprise(req *model.EnterpriseJoinReq, ri
 
 	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
 		// 若原有团签订阅未激活，直接删除
-		if sub != nil && sub.EnterpriseID != nil && sub.Status != model.SubscribeStatusInactive {
+		if sub != nil && sub.EnterpriseID != nil && sub.Status == model.SubscribeStatusInactive {
 			err = tx.Subscribe.DeleteOne(sub).Exec(s.ctx)
 			if err != nil {
 				return errors.New("原未激活订阅处理失败")
