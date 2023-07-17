@@ -20,6 +20,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
+	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
 )
@@ -87,8 +88,15 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 		if r != nil {
 			// 查询订阅信息
 			sub, _ = NewSubscribe().QueryEffective(r.ID)
-			if sub != nil && (sub.EnterpriseID == nil || (sub.EnterpriseID != nil && sub.Status != model.SubscribeStatusInactive)) {
+			if sub != nil && sub.EnterpriseID == nil {
 				return errors.New("该骑手不能绑定,已有未完成的订单")
+			}
+
+			if sub.EnterpriseID != nil && sub.Status != model.SubscribeStatusInactive {
+				err = tx.Subscribe.DeleteOne(sub).Exec(s.ctx)
+				if err != nil {
+					return errors.New("原未激活订阅处理失败")
+				}
 			}
 
 			// 删除之前骑手信息
@@ -106,7 +114,7 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 				StationID:        &req.StationID,
 				Remark:           "代理转化骑手",
 				Name:             req.Name,
-				JoinEnterpriseAt: time.Now(),
+				JoinEnterpriseAt: silk.Pointer(time.Now()),
 			})
 			if err != nil {
 				return errors.New("转化骑手失败")
@@ -134,7 +142,7 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 			}
 		}
 		// 创建订阅信息
-		sub, err = tx.Subscribe.Create().
+		err = tx.Subscribe.Create().
 			SetRiderID(r.ID).
 			SetModel(ep.Model).
 			SetNillableBrandID(ep.BrandID).
@@ -147,7 +155,7 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 			SetNeedContract(false).
 			SetEnterpriseID(req.EnterpriseID).
 			SetStationID(req.StationID).
-			Save(s.ctx)
+			Exec(s.ctx)
 		return
 	})
 
@@ -431,14 +439,24 @@ func (s *enterpriseRiderService) JoinEnterprise(req *model.EnterpriseJoinReq, ri
 	// 判断骑手是否有未完成的订单
 	// 查询订阅信息
 	sub, _ := NewSubscribe().QueryEffective(rid.ID)
-	if sub != nil && (sub.EnterpriseID == nil || (sub.EnterpriseID != nil && sub.Status != model.SubscribeStatusInactive)) {
+	if sub != nil && sub.EnterpriseID == nil {
 		snag.Panic("有未完成的订单")
 	}
+
 	ep, _ := ent.Database.EnterprisePrice.QueryNotDeleted().Where(enterpriseprice.EnterpriseID(req.EnterpriseId), enterpriseprice.ID(req.PriceID)).First(s.ctx)
 	if ep == nil {
 		snag.Panic("未找到价格信息")
 	}
+
 	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
+		// 若原有团签订阅未激活，直接删除
+		if sub != nil && sub.EnterpriseID != nil && sub.Status != model.SubscribeStatusInactive {
+			err = tx.Subscribe.DeleteOne(sub).Exec(s.ctx)
+			if err != nil {
+				return errors.New("原未激活订阅处理失败")
+			}
+		}
+
 		_, err = ent.Database.Rider.Update().Where(rider.ID(rid.ID)).
 			SetEnterpriseID(req.EnterpriseId).
 			SetStationID(req.StationId).
@@ -447,28 +465,8 @@ func (s *enterpriseRiderService) JoinEnterprise(req *model.EnterpriseJoinReq, ri
 		if err != nil {
 			snag.Panic("加入团签失败")
 		}
-		// 判断如果是团签未激活的订单，更新订阅信息
-		if sub != nil && sub.EnterpriseID != nil && sub.Status == model.SubscribeStatusInactive {
-			aendTime := tools.NewTime().WillEnd(carbon.Now().StartOfDay().Carbon2Time(), req.Days)
-			// 先清除之前的订阅套餐信息
-			tx.Subscribe.UpdateOne(sub).ClearBrandID().SaveX(s.ctx)
-			_, err = tx.Subscribe.UpdateOne(sub).
-				SetRiderID(rid.ID).
-				SetEnterpriseID(req.EnterpriseId).
-				SetStationID(req.StationId).
-				SetInitialDays(req.Days).
-				SetAgentEndAt(aendTime).
-				SetModel(ep.Model).
-				SetCityID(ep.CityID).
-				SetNillableBrandID(ep.BrandID).
-				SetIntelligent(ep.Intelligent).
-				Save(s.ctx)
-			if err != nil {
-				return err
-			}
-			return
-		}
-		_, err = tx.Subscribe.Create().
+
+		return tx.Subscribe.Create().
 			SetRiderID(rid.ID).
 			SetModel(ep.Model).
 			SetNillableBrandID(ep.BrandID).
@@ -480,8 +478,7 @@ func (s *enterpriseRiderService) JoinEnterprise(req *model.EnterpriseJoinReq, ri
 			SetNeedContract(false).
 			SetEnterpriseID(req.EnterpriseId).
 			SetStationID(req.StationId).
-			Save(s.ctx)
-		return
+			Exec(s.ctx)
 	})
 
 }
@@ -552,6 +549,6 @@ func (s *enterpriseRiderService) CopyAndCreateRider(tx *ent.Tx, r *ent.Rider, pa
 		SetExchangeFrequency(r.ExchangeFrequency).
 		SetNillableEnterpriseID(params.EnterpriseID).
 		SetNillableStationID(params.StationID).
-		SetNillableJoinEnterpriseAt(&params.JoinEnterpriseAt).
+		SetNillableJoinEnterpriseAt(params.JoinEnterpriseAt).
 		Save(s.ctx)
 }

@@ -244,9 +244,9 @@ type RiderFollowUpListRes struct {
 }
 
 type RiderConvert struct {
-	EnterpriseID     *uint64   `json:"enterpriseId"`
-	StationID        *uint64   `json:"stationId"`
-	Remark           string    `json:"remark"`
-	Name             string    `json:"name"`
-	JoinEnterpriseAt time.Time `json:"joinEnterpriseAt"`
+	EnterpriseID     *uint64    `json:"enterpriseId"`
+	StationID        *uint64    `json:"stationId"`
+	Remark           string     `json:"remark"`
+	Name             string     `json:"name"`
+	JoinEnterpriseAt *time.Time `json:"joinEnterpriseAt"`
 }
