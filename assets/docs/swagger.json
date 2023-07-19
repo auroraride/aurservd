@@ -12805,6 +12805,86 @@
                 }
             }
         },
+        "/manager/v1/setting/legal": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M1017 保存法规",
+                "operationId": "ManagerSettingLegalSave",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.LegalSaveReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/setting/legal/{name}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M1016 获取法规",
+                "operationId": "ManagerSettingLegalRead",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "法规名称, policy: APP隐私政策; agreement: APP服务协议; agent-policy: 代理端小程序隐私政策; agent-agreement: 代理端小程序服务协议; promote-policy: 推广端小程序隐私政策; promote-agreement: 推广端小程序服务协议",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.LegalRes"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/setting/{key}": {
             "put": {
                 "consumes": [
@@ -24015,6 +24095,34 @@
             "type": "object",
             "properties": {
                 "item": {}
+            }
+        },
+        "model.LegalRes": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "description": "内文",
+                    "type": "string"
+                },
+                "title": {
+                    "description": "法规项目名称",
+                    "type": "string"
+                },
+                "url": {
+                    "description": "url \u003c前端需要加入API前缀，例如`https://api.auroraride.com/`\u003e",
+                    "type": "string"
+                }
+            }
+        },
+        "model.LegalSaveReq": {
+            "type": "object",
+            "required": [
+                "content"
+            ],
+            "properties": {
+                "content": {
+                    "type": "string"
+                }
             }
         },
         "model.LngLat": {

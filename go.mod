@@ -60,6 +60,7 @@ require (
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
+	github.com/PuerkitoBio/goquery v1.8.1 // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/alibabacloud-go/alibabacloud-gateway-spi v0.0.4 // indirect
 	github.com/alibabacloud-go/debug v1.0.0 // indirect
@@ -69,6 +70,7 @@ require (
 	github.com/alibabacloud-go/tea-xml v1.1.3 // indirect
 	github.com/aliyun/credentials-go v1.3.0 // indirect
 	github.com/andybalholm/brotli v1.0.5 // indirect
+	github.com/andybalholm/cascadia v1.3.2 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/bradfitz/gomemcache v0.0.0-20230611145640-acc696258285 // indirect
