@@ -6,6 +6,7 @@
 package assets
 
 import (
+	"embed"
 	_ "embed"
 )
 
@@ -39,4 +40,7 @@ var (
 
 	//go:embed sql/stock_overview.sql
 	SQLStockOverview string
+
+	//go:embed views/legal.go.html
+	LegalTemplateFS embed.FS
 )

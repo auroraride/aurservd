@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{{ .name }}</title>
+    <style>
+        body {
+            padding: 10px 20px;
+        }
+
+        .container {
+            max-width: 640px;
+            text-align: left;
+            margin: 0 auto;
+        }
+
+        a, p {
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    {{ .content }}
+</div>
+</body>
+</html>
