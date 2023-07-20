@@ -8,6 +8,7 @@ package service
 import (
 	"html/template"
 	"os"
+	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 	"golang.org/x/exp/slices"
@@ -75,9 +76,9 @@ func (s *legalService) Save(req *model.LegalSaveReq) {
 		snag.Panic(err)
 	}
 
-	err = t.ExecuteTemplate(f, "legal.go.html", map[string]string{
+	err = t.ExecuteTemplate(f, "legal.go.html", map[string]any{
 		"name":    req.Name.Title(),
-		"content": req.Content,
+		"content": template.HTML(strings.Join(strings.Split(req.Content, "\n"), "")),
 	})
 	if err != nil {
 		snag.Panic(err)
