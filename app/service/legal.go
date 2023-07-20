@@ -61,7 +61,7 @@ func (s *legalService) Read(req *model.LegalName) model.LegalRes {
 	return model.LegalRes{
 		Title:   req.Name.Title(),
 		Content: content,
-		Url:     req.Name.Filepath(),
+		Url:     req.Name.Url(),
 	}
 }
 

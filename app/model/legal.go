@@ -17,6 +17,10 @@ func (l Legal) Filepath() string {
 	return filepath.Join("public", "pages", string(l)+".html")
 }
 
+func (l Legal) Url() string {
+	return "pages/" + string(l) + ".html"
+}
+
 func (l Legal) Title() string {
 	switch l {
 	case LegalAppPolicy:
