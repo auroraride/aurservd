@@ -6,9 +6,8 @@
 package service
 
 import (
-	"html/template"
+	"fmt"
 	"os"
-	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 	"golang.org/x/exp/slices"
@@ -71,15 +70,9 @@ func (s *legalService) Save(req *model.LegalSaveReq) {
 		_ = f.Close()
 	}(f)
 
-	t, err := template.New("layout").ParseFS(assets.LegalTemplateFS, "views/legal.go.html")
-	if err != nil {
-		snag.Panic(err)
-	}
+	data := fmt.Sprintf(assets.LegalTemplate, req.LegalName.Name.Title(), req.Content)
 
-	err = t.ExecuteTemplate(f, "legal.go.html", map[string]any{
-		"name":    req.Name.Title(),
-		"content": template.HTML(strings.Join(strings.Split(req.Content, "\n"), "")),
-	})
+	_, err := f.Write([]byte(data))
 	if err != nil {
 		snag.Panic(err)
 	}
