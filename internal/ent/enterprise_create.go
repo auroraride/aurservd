@@ -276,6 +276,12 @@ func (ec *EnterpriseCreate) SetRechargeAmount(i []int) *EnterpriseCreate {
 	return ec
 }
 
+// SetSignType sets the "sign_type" field.
+func (ec *EnterpriseCreate) SetSignType(mst model.EnterpriseSignType) *EnterpriseCreate {
+	ec.mutation.SetSignType(mst)
+	return ec
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (ec *EnterpriseCreate) SetCity(c *City) *EnterpriseCreate {
 	return ec.SetCityID(c.ID)
@@ -601,6 +607,14 @@ func (ec *EnterpriseCreate) check() error {
 	if _, ok := ec.mutation.Distance(); !ok {
 		return &ValidationError{Name: "distance", err: errors.New(`ent: missing required field "Enterprise.distance"`)}
 	}
+	if _, ok := ec.mutation.SignType(); !ok {
+		return &ValidationError{Name: "sign_type", err: errors.New(`ent: missing required field "Enterprise.sign_type"`)}
+	}
+	if v, ok := ec.mutation.SignType(); ok {
+		if err := enterprise.SignTypeValidator(v); err != nil {
+			return &ValidationError{Name: "sign_type", err: fmt.Errorf(`ent: validator failed for field "Enterprise.sign_type": %w`, err)}
+		}
+	}
 	if _, ok := ec.mutation.CityID(); !ok {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Enterprise.city"`)}
 	}
@@ -722,6 +736,10 @@ func (ec *EnterpriseCreate) createSpec() (*Enterprise, *sqlgraph.CreateSpec) {
 	if value, ok := ec.mutation.RechargeAmount(); ok {
 		_spec.SetField(enterprise.FieldRechargeAmount, field.TypeJSON, value)
 		_node.RechargeAmount = value
+	}
+	if value, ok := ec.mutation.SignType(); ok {
+		_spec.SetField(enterprise.FieldSignType, field.TypeEnum, value)
+		_node.SignType = value
 	}
 	if nodes := ec.mutation.CityIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1348,6 +1366,18 @@ func (u *EnterpriseUpsert) ClearRechargeAmount() *EnterpriseUpsert {
 	return u
 }
 
+// SetSignType sets the "sign_type" field.
+func (u *EnterpriseUpsert) SetSignType(v model.EnterpriseSignType) *EnterpriseUpsert {
+	u.Set(enterprise.FieldSignType, v)
+	return u
+}
+
+// UpdateSignType sets the "sign_type" field to the value that was provided on create.
+func (u *EnterpriseUpsert) UpdateSignType() *EnterpriseUpsert {
+	u.SetExcluded(enterprise.FieldSignType)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1799,6 +1829,20 @@ func (u *EnterpriseUpsertOne) UpdateRechargeAmount() *EnterpriseUpsertOne {
 func (u *EnterpriseUpsertOne) ClearRechargeAmount() *EnterpriseUpsertOne {
 	return u.Update(func(s *EnterpriseUpsert) {
 		s.ClearRechargeAmount()
+	})
+}
+
+// SetSignType sets the "sign_type" field.
+func (u *EnterpriseUpsertOne) SetSignType(v model.EnterpriseSignType) *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.SetSignType(v)
+	})
+}
+
+// UpdateSignType sets the "sign_type" field to the value that was provided on create.
+func (u *EnterpriseUpsertOne) UpdateSignType() *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.UpdateSignType()
 	})
 }
 
@@ -2415,6 +2459,20 @@ func (u *EnterpriseUpsertBulk) UpdateRechargeAmount() *EnterpriseUpsertBulk {
 func (u *EnterpriseUpsertBulk) ClearRechargeAmount() *EnterpriseUpsertBulk {
 	return u.Update(func(s *EnterpriseUpsert) {
 		s.ClearRechargeAmount()
+	})
+}
+
+// SetSignType sets the "sign_type" field.
+func (u *EnterpriseUpsertBulk) SetSignType(v model.EnterpriseSignType) *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.SetSignType(v)
+	})
+}
+
+// UpdateSignType sets the "sign_type" field to the value that was provided on create.
+func (u *EnterpriseUpsertBulk) UpdateSignType() *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.UpdateSignType()
 	})
 }
 

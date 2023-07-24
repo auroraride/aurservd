@@ -34066,6 +34066,7 @@ type EnterpriseMutation struct {
 	adddistance                  *float64
 	recharge_amount              *[]int
 	appendrecharge_amount        []int
+	sign_type                    *model.EnterpriseSignType
 	clearedFields                map[string]struct{}
 	city                         *uint64
 	clearedcity                  bool
@@ -35344,6 +35345,42 @@ func (m *EnterpriseMutation) ResetRechargeAmount() {
 	delete(m.clearedFields, enterprise.FieldRechargeAmount)
 }
 
+// SetSignType sets the "sign_type" field.
+func (m *EnterpriseMutation) SetSignType(mst model.EnterpriseSignType) {
+	m.sign_type = &mst
+}
+
+// SignType returns the value of the "sign_type" field in the mutation.
+func (m *EnterpriseMutation) SignType() (r model.EnterpriseSignType, exists bool) {
+	v := m.sign_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSignType returns the old "sign_type" field's value of the Enterprise entity.
+// If the Enterprise object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseMutation) OldSignType(ctx context.Context) (v model.EnterpriseSignType, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSignType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSignType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSignType: %w", err)
+	}
+	return oldValue.SignType, nil
+}
+
+// ResetSignType resets all changes to the "sign_type" field.
+func (m *EnterpriseMutation) ResetSignType() {
+	m.sign_type = nil
+}
+
 // ClearCity clears the "city" edge to the City entity.
 func (m *EnterpriseMutation) ClearCity() {
 	m.clearedcity = true
@@ -36106,7 +36143,7 @@ func (m *EnterpriseMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EnterpriseMutation) Fields() []string {
-	fields := make([]string, 0, 24)
+	fields := make([]string, 0, 25)
 	if m.created_at != nil {
 		fields = append(fields, enterprise.FieldCreatedAt)
 	}
@@ -36179,6 +36216,9 @@ func (m *EnterpriseMutation) Fields() []string {
 	if m.recharge_amount != nil {
 		fields = append(fields, enterprise.FieldRechargeAmount)
 	}
+	if m.sign_type != nil {
+		fields = append(fields, enterprise.FieldSignType)
+	}
 	return fields
 }
 
@@ -36235,6 +36275,8 @@ func (m *EnterpriseMutation) Field(name string) (ent.Value, bool) {
 		return m.Distance()
 	case enterprise.FieldRechargeAmount:
 		return m.RechargeAmount()
+	case enterprise.FieldSignType:
+		return m.SignType()
 	}
 	return nil, false
 }
@@ -36292,6 +36334,8 @@ func (m *EnterpriseMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldDistance(ctx)
 	case enterprise.FieldRechargeAmount:
 		return m.OldRechargeAmount(ctx)
+	case enterprise.FieldSignType:
+		return m.OldSignType(ctx)
 	}
 	return nil, fmt.Errorf("unknown Enterprise field %s", name)
 }
@@ -36468,6 +36512,13 @@ func (m *EnterpriseMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetRechargeAmount(v)
+		return nil
+	case enterprise.FieldSignType:
+		v, ok := value.(model.EnterpriseSignType)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSignType(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Enterprise field %s", name)
@@ -36721,6 +36772,9 @@ func (m *EnterpriseMutation) ResetField(name string) error {
 		return nil
 	case enterprise.FieldRechargeAmount:
 		m.ResetRechargeAmount()
+		return nil
+	case enterprise.FieldSignType:
+		m.ResetSignType()
 		return nil
 	}
 	return fmt.Errorf("unknown Enterprise field %s", name)

@@ -706,6 +706,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			enterprise.FieldDays:            {Type: field.TypeJSON, Column: enterprise.FieldDays},
 			enterprise.FieldDistance:        {Type: field.TypeFloat64, Column: enterprise.FieldDistance},
 			enterprise.FieldRechargeAmount:  {Type: field.TypeJSON, Column: enterprise.FieldRechargeAmount},
+			enterprise.FieldSignType:        {Type: field.TypeEnum, Column: enterprise.FieldSignType},
 		},
 	}
 	graph.Nodes[22] = &sqlgraph.Node{
@@ -8714,6 +8715,11 @@ func (f *EnterpriseFilter) WhereDistance(p entql.Float64P) {
 // WhereRechargeAmount applies the entql json.RawMessage predicate on the recharge_amount field.
 func (f *EnterpriseFilter) WhereRechargeAmount(p entql.BytesP) {
 	f.Where(p.Field(enterprise.FieldRechargeAmount))
+}
+
+// WhereSignType applies the entql string predicate on the sign_type field.
+func (f *EnterpriseFilter) WhereSignType(p entql.StringP) {
+	f.Where(p.Field(enterprise.FieldSignType))
 }
 
 // WhereHasCity applies a predicate to check if query has an edge city.
