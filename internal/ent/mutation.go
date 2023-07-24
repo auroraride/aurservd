@@ -35376,9 +35376,22 @@ func (m *EnterpriseMutation) OldSignType(ctx context.Context) (v model.Enterpris
 	return oldValue.SignType, nil
 }
 
+// ClearSignType clears the value of the "sign_type" field.
+func (m *EnterpriseMutation) ClearSignType() {
+	m.sign_type = nil
+	m.clearedFields[enterprise.FieldSignType] = struct{}{}
+}
+
+// SignTypeCleared returns if the "sign_type" field was cleared in this mutation.
+func (m *EnterpriseMutation) SignTypeCleared() bool {
+	_, ok := m.clearedFields[enterprise.FieldSignType]
+	return ok
+}
+
 // ResetSignType resets all changes to the "sign_type" field.
 func (m *EnterpriseMutation) ResetSignType() {
 	m.sign_type = nil
+	delete(m.clearedFields, enterprise.FieldSignType)
 }
 
 // ClearCity clears the "city" edge to the City entity.
@@ -36652,6 +36665,9 @@ func (m *EnterpriseMutation) ClearedFields() []string {
 	if m.FieldCleared(enterprise.FieldRechargeAmount) {
 		fields = append(fields, enterprise.FieldRechargeAmount)
 	}
+	if m.FieldCleared(enterprise.FieldSignType) {
+		fields = append(fields, enterprise.FieldSignType)
+	}
 	return fields
 }
 
@@ -36692,6 +36708,9 @@ func (m *EnterpriseMutation) ClearField(name string) error {
 		return nil
 	case enterprise.FieldRechargeAmount:
 		m.ClearRechargeAmount()
+		return nil
+	case enterprise.FieldSignType:
+		m.ClearSignType()
 		return nil
 	}
 	return fmt.Errorf("unknown Enterprise nullable field %s", name)

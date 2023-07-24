@@ -1161,6 +1161,16 @@ func SignTypeNotIn(vs ...model.EnterpriseSignType) predicate.Enterprise {
 	return predicate.Enterprise(sql.FieldNotIn(FieldSignType, vs...))
 }
 
+// SignTypeIsNil applies the IsNil predicate on the "sign_type" field.
+func SignTypeIsNil() predicate.Enterprise {
+	return predicate.Enterprise(sql.FieldIsNull(FieldSignType))
+}
+
+// SignTypeNotNil applies the NotNil predicate on the "sign_type" field.
+func SignTypeNotNil() predicate.Enterprise {
+	return predicate.Enterprise(sql.FieldNotNull(FieldSignType))
+}
+
 // HasCity applies the HasEdge predicate on the "city" edge.
 func HasCity() predicate.Enterprise {
 	return predicate.Enterprise(func(s *sql.Selector) {

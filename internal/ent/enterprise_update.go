@@ -364,6 +364,20 @@ func (eu *EnterpriseUpdate) SetSignType(mst model.EnterpriseSignType) *Enterpris
 	return eu
 }
 
+// SetNillableSignType sets the "sign_type" field if the given value is not nil.
+func (eu *EnterpriseUpdate) SetNillableSignType(mst *model.EnterpriseSignType) *EnterpriseUpdate {
+	if mst != nil {
+		eu.SetSignType(*mst)
+	}
+	return eu
+}
+
+// ClearSignType clears the value of the "sign_type" field.
+func (eu *EnterpriseUpdate) ClearSignType() *EnterpriseUpdate {
+	eu.mutation.ClearSignType()
+	return eu
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (eu *EnterpriseUpdate) SetCity(c *City) *EnterpriseUpdate {
 	return eu.SetCityID(c.ID)
@@ -1041,6 +1055,9 @@ func (eu *EnterpriseUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := eu.mutation.SignType(); ok {
 		_spec.SetField(enterprise.FieldSignType, field.TypeEnum, value)
+	}
+	if eu.mutation.SignTypeCleared() {
+		_spec.ClearField(enterprise.FieldSignType, field.TypeEnum)
 	}
 	if eu.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1998,6 +2015,20 @@ func (euo *EnterpriseUpdateOne) SetSignType(mst model.EnterpriseSignType) *Enter
 	return euo
 }
 
+// SetNillableSignType sets the "sign_type" field if the given value is not nil.
+func (euo *EnterpriseUpdateOne) SetNillableSignType(mst *model.EnterpriseSignType) *EnterpriseUpdateOne {
+	if mst != nil {
+		euo.SetSignType(*mst)
+	}
+	return euo
+}
+
+// ClearSignType clears the value of the "sign_type" field.
+func (euo *EnterpriseUpdateOne) ClearSignType() *EnterpriseUpdateOne {
+	euo.mutation.ClearSignType()
+	return euo
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (euo *EnterpriseUpdateOne) SetCity(c *City) *EnterpriseUpdateOne {
 	return euo.SetCityID(c.ID)
@@ -2705,6 +2736,9 @@ func (euo *EnterpriseUpdateOne) sqlSave(ctx context.Context) (_node *Enterprise,
 	}
 	if value, ok := euo.mutation.SignType(); ok {
 		_spec.SetField(enterprise.FieldSignType, field.TypeEnum, value)
+	}
+	if euo.mutation.SignTypeCleared() {
+		_spec.ClearField(enterprise.FieldSignType, field.TypeEnum)
 	}
 	if euo.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{

@@ -264,6 +264,8 @@ var (
 	DefaultDistance float64
 )
 
+const DefaultSignType model.EnterpriseSignType = "without"
+
 // SignTypeValidator is a validator for the "sign_type" field enum values. It is called by the builders before save.
 func SignTypeValidator(st model.EnterpriseSignType) error {
 	switch st.String() {

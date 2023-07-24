@@ -1786,7 +1786,7 @@ var (
 		{Name: "days", Type: field.TypeJSON, Nullable: true, Comment: "代理商时间选项"},
 		{Name: "distance", Type: field.TypeFloat64, Comment: "可控制电柜距离（米）", Default: 200},
 		{Name: "recharge_amount", Type: field.TypeJSON, Nullable: true, Comment: "充值金额选项"},
-		{Name: "sign_type", Type: field.TypeEnum, Comment: "签约类型 without:无需签约 rider:骑手签约 tripartite:三方签约", Enums: []string{"without", "rider", "tripartite"}},
+		{Name: "sign_type", Type: field.TypeEnum, Nullable: true, Comment: "签约类型 without:无需签约 rider:骑手签约 tripartite:三方签约", Enums: []string{"without", "rider", "tripartite"}, Default: "without"},
 		{Name: "city_id", Type: field.TypeUint64, Comment: "城市ID"},
 	}
 	// EnterpriseTable holds the schema information for the "enterprise" table.

@@ -282,6 +282,14 @@ func (ec *EnterpriseCreate) SetSignType(mst model.EnterpriseSignType) *Enterpris
 	return ec
 }
 
+// SetNillableSignType sets the "sign_type" field if the given value is not nil.
+func (ec *EnterpriseCreate) SetNillableSignType(mst *model.EnterpriseSignType) *EnterpriseCreate {
+	if mst != nil {
+		ec.SetSignType(*mst)
+	}
+	return ec
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (ec *EnterpriseCreate) SetCity(c *City) *EnterpriseCreate {
 	return ec.SetCityID(c.ID)
@@ -557,6 +565,10 @@ func (ec *EnterpriseCreate) defaults() error {
 		v := enterprise.DefaultDistance
 		ec.mutation.SetDistance(v)
 	}
+	if _, ok := ec.mutation.SignType(); !ok {
+		v := enterprise.DefaultSignType
+		ec.mutation.SetSignType(v)
+	}
 	return nil
 }
 
@@ -606,9 +618,6 @@ func (ec *EnterpriseCreate) check() error {
 	}
 	if _, ok := ec.mutation.Distance(); !ok {
 		return &ValidationError{Name: "distance", err: errors.New(`ent: missing required field "Enterprise.distance"`)}
-	}
-	if _, ok := ec.mutation.SignType(); !ok {
-		return &ValidationError{Name: "sign_type", err: errors.New(`ent: missing required field "Enterprise.sign_type"`)}
 	}
 	if v, ok := ec.mutation.SignType(); ok {
 		if err := enterprise.SignTypeValidator(v); err != nil {
@@ -1378,6 +1387,12 @@ func (u *EnterpriseUpsert) UpdateSignType() *EnterpriseUpsert {
 	return u
 }
 
+// ClearSignType clears the value of the "sign_type" field.
+func (u *EnterpriseUpsert) ClearSignType() *EnterpriseUpsert {
+	u.SetNull(enterprise.FieldSignType)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1843,6 +1858,13 @@ func (u *EnterpriseUpsertOne) SetSignType(v model.EnterpriseSignType) *Enterpris
 func (u *EnterpriseUpsertOne) UpdateSignType() *EnterpriseUpsertOne {
 	return u.Update(func(s *EnterpriseUpsert) {
 		s.UpdateSignType()
+	})
+}
+
+// ClearSignType clears the value of the "sign_type" field.
+func (u *EnterpriseUpsertOne) ClearSignType() *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.ClearSignType()
 	})
 }
 
@@ -2473,6 +2495,13 @@ func (u *EnterpriseUpsertBulk) SetSignType(v model.EnterpriseSignType) *Enterpri
 func (u *EnterpriseUpsertBulk) UpdateSignType() *EnterpriseUpsertBulk {
 	return u.Update(func(s *EnterpriseUpsert) {
 		s.UpdateSignType()
+	})
+}
+
+// ClearSignType clears the value of the "sign_type" field.
+func (u *EnterpriseUpsertBulk) ClearSignType() *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.ClearSignType()
 	})
 }
 
