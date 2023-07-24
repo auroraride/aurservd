@@ -153,7 +153,7 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 			SetStatus(model.SubscribeStatusInactive).
 			SetCityID(ep.CityID).
 			// 团签骑手无须签合同
-			SetNeedContract(false).
+			SetNeedContract(e.SignType.NeedSign()).
 			SetEnterpriseID(req.EnterpriseID).
 			SetStationID(req.StationID).
 			Exec(s.ctx)
@@ -429,9 +429,7 @@ func (s *enterpriseRiderService) RiderEnterpriseInfo(req *model.EnterproseInfoRe
 func (s *enterpriseRiderService) JoinEnterprise(req *model.EnterpriseJoinReq, rid *ent.Rider) {
 	// 判断团签是否存在或者站点是否存在
 	// 查询团签信息
-	if NewEnterprise().QueryX(req.EnterpriseId) == nil {
-		snag.Panic("未找到企业信息")
-	}
+	e := NewEnterprise().QueryX(req.EnterpriseId)
 	// 查询站点信息
 	if ent.Database.EnterpriseStation.Query().Where(enterprisestation.IDEQ(req.StationId),
 		enterprisestation.EnterpriseIDEQ(req.EnterpriseId)).FirstX(s.ctx) == nil {
@@ -476,7 +474,7 @@ func (s *enterpriseRiderService) JoinEnterprise(req *model.EnterpriseJoinReq, ri
 			SetInitialDays(req.Days).
 			SetStatus(model.SubscribeStatusInactive).
 			SetCityID(ep.CityID).
-			SetNeedContract(false).
+			SetNeedContract(e.SignType.NeedSign()).
 			SetEnterpriseID(req.EnterpriseId).
 			SetStationID(req.StationId).
 			Exec(s.ctx)

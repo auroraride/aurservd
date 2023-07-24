@@ -22,6 +22,10 @@ var EnterpriseSignTypes = []EnterpriseSignType{
 	EnterpriseSignTripartite,
 }
 
+func (s EnterpriseSignType) NeedSign() bool {
+	return s != EnterpriseSignWithout
+}
+
 func (s EnterpriseSignType) String() string {
 	return string(s)
 }
