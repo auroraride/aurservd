@@ -22865,6 +22865,14 @@ const docTemplate = `{
                         "type": "integer"
                     }
                 },
+                "signType": {
+                    "description": "签约类型 without:无需签约（默认） rider:骑手签约 tripartite:三方签约（前端选项暂时不显示）",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EnterpriseSignType"
+                        }
+                    ]
+                },
                 "status": {
                     "description": "0:未合作 1:合作中 2:已暂停",
                     "type": "integer",
@@ -22952,6 +22960,14 @@ const docTemplate = `{
                     "items": {
                         "type": "integer"
                     }
+                },
+                "signType": {
+                    "description": "签约类型 without:无需签约（默认） rider:骑手签约 tripartite:三方签约（前端选项暂时不显示）",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EnterpriseSignType"
+                        }
+                    ]
                 },
                 "status": {
                     "description": "0:未合作 1:合作中 2:已暂停",
@@ -23180,6 +23196,14 @@ const docTemplate = `{
                     "description": "骑手数量",
                     "type": "integer"
                 },
+                "signType": {
+                    "description": "签约类型 without:无需签约（默认） rider:骑手签约 tripartite:三方签约",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EnterpriseSignType"
+                        }
+                    ]
+                },
                 "statementStart": {
                     "description": "账单开始日期",
                     "type": "string"
@@ -23304,6 +23328,24 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "model.EnterpriseSignType": {
+            "type": "string",
+            "enum": [
+                "without",
+                "rider",
+                "tripartite"
+            ],
+            "x-enum-comments": {
+                "EnterpriseSignRider": "仅骑手",
+                "EnterpriseSignTripartite": "三方",
+                "EnterpriseSignWithout": "无需"
+            },
+            "x-enum-varnames": [
+                "EnterpriseSignWithout",
+                "EnterpriseSignRider",
+                "EnterpriseSignTripartite"
+            ]
         },
         "model.EnterpriseStation": {
             "type": "object",
