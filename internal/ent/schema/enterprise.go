@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/schema/index"
 	"entgo.io/ent/schema/mixin"
 
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -75,6 +76,7 @@ func (Enterprise) Fields() []ent.Field {
 		field.Ints("days").Optional().Comment("代理商时间选项"),
 		field.Float("distance").Default(200).Comment("可控制电柜距离（米）"),
 		field.Ints("recharge_amount").Optional().Comment("充值金额选项"),
+		field.Enum("sign_type").Optional().GoType(model.EnterpriseSignType("")).Default(model.EnterpriseSignWithout.String()).Comment("签约类型 without:无需签约 rider:骑手签约 tripartite:三方签约"),
 	}
 }
 

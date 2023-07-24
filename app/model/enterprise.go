@@ -5,6 +5,65 @@
 
 package model
 
+import "database/sql/driver"
+
+// EnterpriseSignType 团签订阅激活签约类型
+type EnterpriseSignType string
+
+const (
+	EnterpriseSignWithout    EnterpriseSignType = "without"    // 无需
+	EnterpriseSignRider      EnterpriseSignType = "rider"      // 仅骑手
+	EnterpriseSignTripartite EnterpriseSignType = "tripartite" // 三方
+)
+
+var EnterpriseSignTypes = []EnterpriseSignType{
+	EnterpriseSignWithout,
+	EnterpriseSignRider,
+	EnterpriseSignTripartite,
+}
+
+func (s EnterpriseSignType) NeedSign() bool {
+	return s != EnterpriseSignWithout
+}
+
+func (s EnterpriseSignType) String() string {
+	return string(s)
+}
+
+func (s EnterpriseSignType) Text() string {
+	switch s {
+	case EnterpriseSignWithout:
+		return "无需签约"
+	case EnterpriseSignRider:
+		return "骑手签约"
+	case EnterpriseSignTripartite:
+		return "三方签约"
+	}
+	return "-"
+}
+
+func (EnterpriseSignType) Values() []string {
+	return []string{
+		EnterpriseSignWithout.String(),
+		EnterpriseSignRider.String(),
+		EnterpriseSignTripartite.String(),
+	}
+}
+
+func (s *EnterpriseSignType) Scan(src interface{}) error {
+	switch v := src.(type) {
+	case nil:
+		return nil
+	case string:
+		*s = EnterpriseSignType(v)
+	}
+	return nil
+}
+
+func (s EnterpriseSignType) Value() (driver.Value, error) {
+	return s, nil
+}
+
 const (
 	EnterpriseStatusLack         uint8 = iota // 未合作
 	EnterpriseStatusCollaborated              // 合作中
@@ -80,21 +139,22 @@ type EnterpriseContact struct {
 
 // EnterpriseDetail 企业详细字段
 type EnterpriseDetail struct {
-	Name           *string  `json:"name" validate:"required" trans:"团签名称"`
-	CompanyName    *string  `json:"companyName" validate:"required" trans:"企业全称"`
-	Status         *uint8   `json:"status" enums:"0,1,2" validate:"required,min=0,max=2" trans:"合作状态"` // 0:未合作 1:合作中 2:已暂停
-	ContactName    *string  `json:"contactName" validate:"required" trans:"联系人"`
-	ContactPhone   *string  `json:"contactPhone" validate:"required" trans:"联系电话"`
-	IdcardNumber   *string  `json:"idcardNumber" validate:"required" trans:"身份证号"`
-	CityID         *uint64  `json:"cityId" validate:"required" trans:"所在城市"`
-	Address        *string  `json:"address" validate:"required" trans:"企业地址"`
-	Payment        *uint8   `json:"payment" validate:"required,min=1,max=2" enums:"1,2" trans:"付费方式"` // 1:预付费 2:后付费
-	Deposit        *float64 `json:"deposit" validate:"required" trans:"押金"`
-	Agent          *bool    `json:"agent"`              // 代理商 `true`是 `false`否
-	UseStore       *bool    `json:"useStore,omitempty"` // 可使用门店 `true`允许 `false`不允许 (仅代理商模式生效), 骑手是否可以使用门店进行激活和退租
-	Days           *[]int   `json:"days,omitempty"`     // 代理商时间选项
-	Distance       *float64 `json:"distance"`           // 可控制电柜距离（米）
-	RechargeAmount *[]int   `json:"rechargeAmount"`     // 充值金额选项
+	Name           *string             `json:"name" validate:"required" trans:"团签名称"`
+	CompanyName    *string             `json:"companyName" validate:"required" trans:"企业全称"`
+	Status         *uint8              `json:"status" enums:"0,1,2" validate:"required,min=0,max=2" trans:"合作状态"` // 0:未合作 1:合作中 2:已暂停
+	ContactName    *string             `json:"contactName" validate:"required" trans:"联系人"`
+	ContactPhone   *string             `json:"contactPhone" validate:"required" trans:"联系电话"`
+	IdcardNumber   *string             `json:"idcardNumber" validate:"required" trans:"身份证号"`
+	CityID         *uint64             `json:"cityId" validate:"required" trans:"所在城市"`
+	Address        *string             `json:"address" validate:"required" trans:"企业地址"`
+	Payment        *uint8              `json:"payment" validate:"required,min=1,max=2" enums:"1,2" trans:"付费方式"` // 1:预付费 2:后付费
+	Deposit        *float64            `json:"deposit" validate:"required" trans:"押金"`
+	Agent          *bool               `json:"agent"`              // 代理商 `true`是 `false`否
+	UseStore       *bool               `json:"useStore,omitempty"` // 可使用门店 `true`允许 `false`不允许 (仅代理商模式生效), 骑手是否可以使用门店进行激活和退租
+	Days           *[]int              `json:"days,omitempty"`     // 代理商时间选项
+	Distance       *float64            `json:"distance"`           // 可控制电柜距离（米）
+	RechargeAmount *[]int              `json:"rechargeAmount"`     // 充值金额选项
+	SignType       *EnterpriseSignType `json:"signType"`           // 签约类型 without:无需签约（默认） rider:骑手签约 tripartite:三方签约（前端选项暂时不显示）
 }
 
 type EnterpriseDetailWithID struct {
@@ -139,6 +199,7 @@ type EnterpriseRes struct {
 	Days           *[]int                    `json:"days,omitempty"`           // 代理商时间选项
 	RechargeAmount *[]int                    `json:"rechargeAmount,omitempty"` // 充值金额选项
 	Distance       *uint64                   `json:"distance,omitempty"`       // 电柜距离
+	SignType       EnterpriseSignType        `json:"signType"`                 // 签约类型 without:无需签约（默认） rider:骑手签约 tripartite:三方签约
 }
 
 type EnterprisePrepaymentReq struct {

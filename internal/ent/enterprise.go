@@ -68,6 +68,8 @@ type Enterprise struct {
 	Distance float64 `json:"distance,omitempty"`
 	// 充值金额选项
 	RechargeAmount []int `json:"recharge_amount,omitempty"`
+	// 签约类型 without:无需签约 rider:骑手签约 tripartite:三方签约
+	SignType model.EnterpriseSignType `json:"sign_type,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EnterpriseQuery when eager-loading is set.
 	Edges        EnterpriseEdges `json:"edges"`
@@ -246,6 +248,8 @@ func (*Enterprise) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case enterprise.FieldCreator, enterprise.FieldLastModifier, enterprise.FieldDays, enterprise.FieldRechargeAmount:
 			values[i] = new([]byte)
+		case enterprise.FieldSignType:
+			values[i] = new(model.EnterpriseSignType)
 		case enterprise.FieldAgent, enterprise.FieldUseStore:
 			values[i] = new(sql.NullBool)
 		case enterprise.FieldDeposit, enterprise.FieldBalance, enterprise.FieldPrepaymentTotal, enterprise.FieldDistance:
@@ -431,6 +435,12 @@ func (e *Enterprise) assignValues(columns []string, values []any) error {
 					return fmt.Errorf("unmarshal field recharge_amount: %w", err)
 				}
 			}
+		case enterprise.FieldSignType:
+			if value, ok := values[i].(*model.EnterpriseSignType); !ok {
+				return fmt.Errorf("unexpected type %T for field sign_type", values[i])
+			} else if value != nil {
+				e.SignType = *value
+			}
 		default:
 			e.selectValues.Set(columns[i], values[i])
 		}
@@ -612,6 +622,9 @@ func (e *Enterprise) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("recharge_amount=")
 	builder.WriteString(fmt.Sprintf("%v", e.RechargeAmount))
+	builder.WriteString(", ")
+	builder.WriteString("sign_type=")
+	builder.WriteString(fmt.Sprintf("%v", e.SignType))
 	builder.WriteByte(')')
 	return builder.String()
 }

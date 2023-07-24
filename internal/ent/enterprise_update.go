@@ -358,6 +358,26 @@ func (eu *EnterpriseUpdate) ClearRechargeAmount() *EnterpriseUpdate {
 	return eu
 }
 
+// SetSignType sets the "sign_type" field.
+func (eu *EnterpriseUpdate) SetSignType(mst model.EnterpriseSignType) *EnterpriseUpdate {
+	eu.mutation.SetSignType(mst)
+	return eu
+}
+
+// SetNillableSignType sets the "sign_type" field if the given value is not nil.
+func (eu *EnterpriseUpdate) SetNillableSignType(mst *model.EnterpriseSignType) *EnterpriseUpdate {
+	if mst != nil {
+		eu.SetSignType(*mst)
+	}
+	return eu
+}
+
+// ClearSignType clears the value of the "sign_type" field.
+func (eu *EnterpriseUpdate) ClearSignType() *EnterpriseUpdate {
+	eu.mutation.ClearSignType()
+	return eu
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (eu *EnterpriseUpdate) SetCity(c *City) *EnterpriseUpdate {
 	return eu.SetCityID(c.ID)
@@ -886,6 +906,11 @@ func (eu *EnterpriseUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (eu *EnterpriseUpdate) check() error {
+	if v, ok := eu.mutation.SignType(); ok {
+		if err := enterprise.SignTypeValidator(v); err != nil {
+			return &ValidationError{Name: "sign_type", err: fmt.Errorf(`ent: validator failed for field "Enterprise.sign_type": %w`, err)}
+		}
+	}
 	if _, ok := eu.mutation.CityID(); eu.mutation.CityCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Enterprise.city"`)
 	}
@@ -1027,6 +1052,12 @@ func (eu *EnterpriseUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if eu.mutation.RechargeAmountCleared() {
 		_spec.ClearField(enterprise.FieldRechargeAmount, field.TypeJSON)
+	}
+	if value, ok := eu.mutation.SignType(); ok {
+		_spec.SetField(enterprise.FieldSignType, field.TypeEnum, value)
+	}
+	if eu.mutation.SignTypeCleared() {
+		_spec.ClearField(enterprise.FieldSignType, field.TypeEnum)
 	}
 	if eu.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1978,6 +2009,26 @@ func (euo *EnterpriseUpdateOne) ClearRechargeAmount() *EnterpriseUpdateOne {
 	return euo
 }
 
+// SetSignType sets the "sign_type" field.
+func (euo *EnterpriseUpdateOne) SetSignType(mst model.EnterpriseSignType) *EnterpriseUpdateOne {
+	euo.mutation.SetSignType(mst)
+	return euo
+}
+
+// SetNillableSignType sets the "sign_type" field if the given value is not nil.
+func (euo *EnterpriseUpdateOne) SetNillableSignType(mst *model.EnterpriseSignType) *EnterpriseUpdateOne {
+	if mst != nil {
+		euo.SetSignType(*mst)
+	}
+	return euo
+}
+
+// ClearSignType clears the value of the "sign_type" field.
+func (euo *EnterpriseUpdateOne) ClearSignType() *EnterpriseUpdateOne {
+	euo.mutation.ClearSignType()
+	return euo
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (euo *EnterpriseUpdateOne) SetCity(c *City) *EnterpriseUpdateOne {
 	return euo.SetCityID(c.ID)
@@ -2519,6 +2570,11 @@ func (euo *EnterpriseUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (euo *EnterpriseUpdateOne) check() error {
+	if v, ok := euo.mutation.SignType(); ok {
+		if err := enterprise.SignTypeValidator(v); err != nil {
+			return &ValidationError{Name: "sign_type", err: fmt.Errorf(`ent: validator failed for field "Enterprise.sign_type": %w`, err)}
+		}
+	}
 	if _, ok := euo.mutation.CityID(); euo.mutation.CityCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Enterprise.city"`)
 	}
@@ -2677,6 +2733,12 @@ func (euo *EnterpriseUpdateOne) sqlSave(ctx context.Context) (_node *Enterprise,
 	}
 	if euo.mutation.RechargeAmountCleared() {
 		_spec.ClearField(enterprise.FieldRechargeAmount, field.TypeJSON)
+	}
+	if value, ok := euo.mutation.SignType(); ok {
+		_spec.SetField(enterprise.FieldSignType, field.TypeEnum, value)
+	}
+	if euo.mutation.SignTypeCleared() {
+		_spec.ClearField(enterprise.FieldSignType, field.TypeEnum)
 	}
 	if euo.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{

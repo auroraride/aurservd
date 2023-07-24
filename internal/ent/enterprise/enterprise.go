@@ -3,11 +3,13 @@
 package enterprise
 
 import (
+	"fmt"
 	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/auroraride/aurservd/app/model"
 )
 
 const (
@@ -63,6 +65,8 @@ const (
 	FieldDistance = "distance"
 	// FieldRechargeAmount holds the string denoting the recharge_amount field in the database.
 	FieldRechargeAmount = "recharge_amount"
+	// FieldSignType holds the string denoting the sign_type field in the database.
+	FieldSignType = "sign_type"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
 	// EdgeRiders holds the string denoting the riders edge name in mutations.
@@ -220,6 +224,7 @@ var Columns = []string{
 	FieldDays,
 	FieldDistance,
 	FieldRechargeAmount,
+	FieldSignType,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -258,6 +263,18 @@ var (
 	// DefaultDistance holds the default value on creation for the "distance" field.
 	DefaultDistance float64
 )
+
+const DefaultSignType model.EnterpriseSignType = "without"
+
+// SignTypeValidator is a validator for the "sign_type" field enum values. It is called by the builders before save.
+func SignTypeValidator(st model.EnterpriseSignType) error {
+	switch st.String() {
+	case "without", "rider", "tripartite":
+		return nil
+	default:
+		return fmt.Errorf("enterprise: invalid enum value for sign_type field: %q", st)
+	}
+}
 
 // OrderOption defines the ordering options for the Enterprise queries.
 type OrderOption func(*sql.Selector)
@@ -365,6 +382,11 @@ func ByUseStore(opts ...sql.OrderTermOption) OrderOption {
 // ByDistance orders the results by the distance field.
 func ByDistance(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDistance, opts...).ToFunc()
+}
+
+// BySignType orders the results by the sign_type field.
+func BySignType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSignType, opts...).ToFunc()
 }
 
 // ByCityField orders the results by city field.

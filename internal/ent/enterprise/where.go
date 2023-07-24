@@ -7,6 +7,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
@@ -1138,6 +1139,36 @@ func RechargeAmountIsNil() predicate.Enterprise {
 // RechargeAmountNotNil applies the NotNil predicate on the "recharge_amount" field.
 func RechargeAmountNotNil() predicate.Enterprise {
 	return predicate.Enterprise(sql.FieldNotNull(FieldRechargeAmount))
+}
+
+// SignTypeEQ applies the EQ predicate on the "sign_type" field.
+func SignTypeEQ(v model.EnterpriseSignType) predicate.Enterprise {
+	return predicate.Enterprise(sql.FieldEQ(FieldSignType, v))
+}
+
+// SignTypeNEQ applies the NEQ predicate on the "sign_type" field.
+func SignTypeNEQ(v model.EnterpriseSignType) predicate.Enterprise {
+	return predicate.Enterprise(sql.FieldNEQ(FieldSignType, v))
+}
+
+// SignTypeIn applies the In predicate on the "sign_type" field.
+func SignTypeIn(vs ...model.EnterpriseSignType) predicate.Enterprise {
+	return predicate.Enterprise(sql.FieldIn(FieldSignType, vs...))
+}
+
+// SignTypeNotIn applies the NotIn predicate on the "sign_type" field.
+func SignTypeNotIn(vs ...model.EnterpriseSignType) predicate.Enterprise {
+	return predicate.Enterprise(sql.FieldNotIn(FieldSignType, vs...))
+}
+
+// SignTypeIsNil applies the IsNil predicate on the "sign_type" field.
+func SignTypeIsNil() predicate.Enterprise {
+	return predicate.Enterprise(sql.FieldIsNull(FieldSignType))
+}
+
+// SignTypeNotNil applies the NotNil predicate on the "sign_type" field.
+func SignTypeNotNil() predicate.Enterprise {
+	return predicate.Enterprise(sql.FieldNotNull(FieldSignType))
 }
 
 // HasCity applies the HasEdge predicate on the "city" edge.
