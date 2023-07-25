@@ -32,8 +32,8 @@ func NewManagerSubscribe(params ...any) *managerSubscribeService {
 
 // Active 激活订阅
 // 团签无需签约
-func (s *managerSubscribeService) Active(req *model.ManagerSubscribeActive) {
-	NewAllocate(s.modifier).Create(&model.AllocateCreateParams{
+func (s *managerSubscribeService) Active(req *model.ManagerSubscribeActive) model.AllocateCreateRes {
+	return NewAllocate(s.modifier).Create(&model.AllocateCreateParams{
 		SubscribeID: silk.UInt64(req.ID),
 		StoreID:     req.StoreID,
 		BatteryID:   req.BatteryID,

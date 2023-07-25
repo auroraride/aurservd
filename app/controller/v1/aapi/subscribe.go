@@ -26,16 +26,15 @@ var Subscribe = new(subscribe)
 // @Produce      json
 // @Param        X-Agent-Token  header  string  true  "代理校验token"
 // @Param        body  body     model.AgentSubscribeActiveReq  true  "请求详情"
-// @Success      200  {object}  string  "请求成功"
+// @Success      200  {object}  model.AllocateCreateRes  "请求成功"
 func (*subscribe) Active(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.AgentSubscribeActiveReq](c)
-	service.NewAllocate().Create(&model.AllocateCreateParams{
+	return ctx.SendResponse(service.NewAllocate().Create(&model.AllocateCreateParams{
 		SubscribeID: req.ID,
 		BatteryID:   req.BatteryID,
 		EbikeParam:  model.AllocateCreateEbikeParam{ID: req.EbikeID},
 		AgentID:     &ctx.Agent.ID,
-	})
-	return ctx.SendResponse()
+	}))
 }
 
 // AlterList

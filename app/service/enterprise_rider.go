@@ -152,7 +152,6 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 			SetInitialDays(req.Days).
 			SetStatus(model.SubscribeStatusInactive).
 			SetCityID(ep.CityID).
-			// 团签骑手无须签合同
 			SetNeedContract(e.SignType.NeedSign()).
 			SetEnterpriseID(req.EnterpriseID).
 			SetStationID(req.StationID).

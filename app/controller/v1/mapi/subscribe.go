@@ -99,11 +99,10 @@ func (*subscribe) Halt(c echo.Context) (err error) {
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Param        body  body     model.ManagerSubscribeActive  true  "订阅信息"
-// @Success      200  {object}  model.StatusResponse  "请求成功"
+// @Success      200  {object}  model.AllocateCreateRes  "请求成功"
 func (*subscribe) Active(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.ManagerSubscribeActive](c)
-	service.NewManagerSubscribe(ctx.Modifier).Active(req)
-	return ctx.SendResponse()
+	return ctx.SendResponse(service.NewManagerSubscribe(ctx.Modifier).Active(req))
 }
 
 // Suspend
