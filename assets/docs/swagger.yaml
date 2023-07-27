@@ -794,6 +794,13 @@ definitions:
       stsToken:
         type: string
     type: object
+  model.AllocateCreateRes:
+    properties:
+      id:
+        type: integer
+      needContract:
+        type: boolean
+    type: object
   model.AllocateDetail:
     properties:
       ebike:
@@ -9416,7 +9423,7 @@ paths:
         "200":
           description: 请求成功
           schema:
-            type: string
+            $ref: '#/definitions/model.AllocateCreateRes'
       summary: A7001 激活订阅
       tags:
       - '[A]代理接口'
@@ -17207,7 +17214,7 @@ paths:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/model.StatusResponse'
+            $ref: '#/definitions/model.AllocateCreateRes'
       summary: M7009 激活订阅
       tags:
       - '[M]管理接口'

@@ -1991,7 +1991,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/model.AllocateCreateRes"
                         }
                     }
                 }
@@ -13813,7 +13813,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
+                            "$ref": "#/definitions/model.AllocateCreateRes"
                         }
                     }
                 }
@@ -18034,6 +18034,17 @@ const docTemplate = `{
                 },
                 "stsToken": {
                     "type": "string"
+                }
+            }
+        },
+        "model.AllocateCreateRes": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "needContract": {
+                    "type": "boolean"
                 }
             }
         },

@@ -126,10 +126,10 @@ func (s *contractService) enterpriseData(m ar.Map, sub *ent.Subscribe) *model.Co
 
 	// 如果是代理
 	if ee.Agent {
-		if sub.AgentEndAt == nil {
-			snag.Panic("代理团签订阅日期错误")
+		if sub.InitialDays == 0 {
+			snag.Panic("订阅天数错误错误")
 		}
-		days = float64(tools.NewTime().LastDaysToNow(*sub.AgentEndAt))
+		days = float64(tools.NewTime().LastDaysToNow(tools.NewTime().WillEnd(time.Now(), sub.InitialDays)))
 		month = int(math.Round(days / float64(s.monthDays)))
 	}
 
