@@ -633,10 +633,13 @@ func (s *subscribeService) ReactiveSubscribe(ag *app.AgentContext, req *model.Re
 	if r == nil {
 		snag.Panic("未找到骑手信息")
 	}
+
+	// 查询价格信息
 	ep, _ := ent.Database.EnterprisePrice.QueryNotDeleted().Where(enterpriseprice.EnterpriseID(ag.Enterprise.ID), enterpriseprice.ID(req.PriceID)).First(s.ctx)
 	if ep == nil {
 		snag.Panic("未找到价格信息")
 	}
+
 	// 查询站点信息
 	NewEnterpriseStation().QueryX(req.StationID)
 
@@ -656,7 +659,7 @@ func (s *subscribeService) ReactiveSubscribe(ag *app.AgentContext, req *model.Re
 		SetInitialDays(req.Days).
 		SetStatus(model.SubscribeStatusInactive).
 		SetCityID(ep.CityID).
-		SetNeedContract(false).
+		SetNeedContract(ag.Enterprise.SignType.NeedSign()).
 		SetEnterpriseID(ag.Enterprise.ID).
 		SetStationID(req.StationID).
 		Save(s.ctx)
