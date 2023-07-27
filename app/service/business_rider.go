@@ -46,9 +46,6 @@ type businessRiderService struct {
 
 	storeID, employeeID, cabinetID, subscribeID, agentID *uint64
 
-	// // 团签站点ID
-	// enterpriseID, stationID *uint64
-
 	// 电车信息
 	ebikeInfo *model.EbikeBusinessInfo
 

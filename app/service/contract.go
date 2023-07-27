@@ -562,12 +562,6 @@ func (s *contractService) update(c *ent.Contract) (err error) {
 	// 更新分配状态
 	err = allo.Update().SetStatus(model.AllocateStatusSigned.Value()).Exec(s.ctx)
 
-	// 以下进行激活流程
-	// 如果没有门店属性, 则代表是电柜激活, 此时跳过激活流程让用户扫码激活
-	if allo.StoreID == nil {
-		return
-	}
-
 	// 激活
 	srv.SetModifier(allo.LastModifier).
 		SetStoreID(allo.StoreID).
@@ -592,6 +586,7 @@ func (s *contractService) update(c *ent.Contract) (err error) {
 	// 完成签约后
 	// 若是门店或站点分配则自动并激活 (骑手扫码电柜无需激活)
 	if allo.StoreID != nil || allo.StationID != nil {
+		zap.L().Info("开始激活流程, allocateId = " + strconv.FormatUint(allo.ID, 10))
 		srv.Active(sub, allo)
 	}
 
