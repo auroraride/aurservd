@@ -590,8 +590,8 @@ func (s *contractService) update(c *ent.Contract) (err error) {
 	}
 
 	// 完成签约后
-	// 若是门店分配则自动并激活 (骑手扫码电柜无需激活)
-	if allo.StoreID != nil {
+	// 若是门店或站点分配则自动并激活 (骑手扫码电柜无需激活)
+	if allo.StoreID != nil || allo.StationID != nil {
 		srv.Active(sub, allo)
 	}
 
