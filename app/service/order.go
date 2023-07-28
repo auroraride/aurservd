@@ -575,6 +575,9 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
 			}
 		}
 
+		// 实际剩余天数应减去当天
+		remaining := int(trade.Days) - 1
+
 		// 创建或更新subscribe
 		// 新签或重签
 		if trade.OrderType == model.OrderTypeNewly || trade.OrderType == model.OrderTypeAgain {
@@ -583,7 +586,7 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
 				SetType(trade.OrderType).
 				SetRiderID(trade.RiderID).
 				SetModel(trade.Model).
-				SetRemaining(int(trade.Days)).
+				SetRemaining(remaining).
 				SetInitialDays(int(trade.Days)).
 				SetStatus(model.SubscribeStatusInactive).
 				SetPlanID(trade.Plan.ID).
@@ -614,7 +617,7 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
 
 			sub, err = tx.Subscribe.UpdateOneID(*trade.SubscribeID).
 				AddRenewalDays(int(trade.Days)).
-				AddRemaining(int(trade.Days)).
+				AddRemaining(remaining).
 				SetStatus(status).
 				Save(s.ctx)
 			if err != nil {
