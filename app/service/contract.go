@@ -130,7 +130,7 @@ func (s *contractService) enterpriseData(m ar.Map, sub *ent.Subscribe) *model.Co
 	}
 
 	return &model.ContractSignUniversal{
-		Price: fmt.Sprintf("%.2f", price),
+		Price: fmt.Sprintf("%.2f", price*30.0),
 		Month: month,
 		Total: fmt.Sprintf("%.2f", price*days),
 		Stop:  stop,
