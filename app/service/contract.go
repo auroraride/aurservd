@@ -86,10 +86,6 @@ func (s *contractService) planData(sub *ent.Subscribe) *model.ContractSignUniver
 
 // enterpriseData 团签合同数据
 func (s *contractService) enterpriseData(m ar.Map, sub *ent.Subscribe) *model.ContractSignUniversal {
-	if sub.BrandID != nil || sub.EbikeID != nil {
-		snag.Panic("暂不支持团签")
-	}
-
 	// 查询团签
 	ee, _ := sub.QueryEnterprise().First(s.ctx)
 	if ee == nil {
@@ -177,8 +173,8 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
 		snag.Panic("未找到有效分配")
 	}
 
-	if sub.BrandID != nil && allo.StoreID == nil {
-		snag.Panic("电车必须由门店分配")
+	if sub.BrandID != nil && allo.StoreID == nil && allo.StationID == nil {
+		snag.Panic("电车必须由门店或站点分配")
 	}
 
 	// 城市
