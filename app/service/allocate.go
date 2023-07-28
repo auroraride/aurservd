@@ -280,6 +280,7 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 		SetStatus(status).
 		SetTime(time.Now()).
 		SetModel(sub.Model).
+		SetNillableAgentID(params.AgentID).
 		Save(s.ctx)
 
 	if err != nil {

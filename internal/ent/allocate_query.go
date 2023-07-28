@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
@@ -40,6 +41,7 @@ type AllocateQuery struct {
 	withBrand     *EbikeBrandQuery
 	withBattery   *BatteryQuery
 	withStation   *EnterpriseStationQuery
+	withAgent     *AgentQuery
 	withContract  *ContractQuery
 	withEbike     *EbikeQuery
 	modifiers     []func(*sql.Selector)
@@ -248,6 +250,28 @@ func (aq *AllocateQuery) QueryStation() *EnterpriseStationQuery {
 			sqlgraph.From(allocate.Table, allocate.FieldID, selector),
 			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, allocate.StationTable, allocate.StationColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryAgent chains the current query on the "agent" edge.
+func (aq *AllocateQuery) QueryAgent() *AgentQuery {
+	query := (&AgentClient{config: aq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(allocate.Table, allocate.FieldID, selector),
+			sqlgraph.To(agent.Table, agent.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, allocate.AgentTable, allocate.AgentColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
@@ -499,6 +523,7 @@ func (aq *AllocateQuery) Clone() *AllocateQuery {
 		withBrand:     aq.withBrand.Clone(),
 		withBattery:   aq.withBattery.Clone(),
 		withStation:   aq.withStation.Clone(),
+		withAgent:     aq.withAgent.Clone(),
 		withContract:  aq.withContract.Clone(),
 		withEbike:     aq.withEbike.Clone(),
 		// clone intermediate query.
@@ -592,6 +617,17 @@ func (aq *AllocateQuery) WithStation(opts ...func(*EnterpriseStationQuery)) *All
 		opt(query)
 	}
 	aq.withStation = query
+	return aq
+}
+
+// WithAgent tells the query-builder to eager-load the nodes that are connected to
+// the "agent" edge. The optional arguments are used to configure the query builder of the edge.
+func (aq *AllocateQuery) WithAgent(opts ...func(*AgentQuery)) *AllocateQuery {
+	query := (&AgentClient{config: aq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	aq.withAgent = query
 	return aq
 }
 
@@ -695,7 +731,7 @@ func (aq *AllocateQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*All
 	var (
 		nodes       = []*Allocate{}
 		_spec       = aq.querySpec()
-		loadedTypes = [10]bool{
+		loadedTypes = [11]bool{
 			aq.withRider != nil,
 			aq.withSubscribe != nil,
 			aq.withEmployee != nil,
@@ -704,6 +740,7 @@ func (aq *AllocateQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*All
 			aq.withBrand != nil,
 			aq.withBattery != nil,
 			aq.withStation != nil,
+			aq.withAgent != nil,
 			aq.withContract != nil,
 			aq.withEbike != nil,
 		}
@@ -774,6 +811,12 @@ func (aq *AllocateQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*All
 	if query := aq.withStation; query != nil {
 		if err := aq.loadStation(ctx, query, nodes, nil,
 			func(n *Allocate, e *EnterpriseStation) { n.Edges.Station = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := aq.withAgent; query != nil {
+		if err := aq.loadAgent(ctx, query, nodes, nil,
+			func(n *Allocate, e *Agent) { n.Edges.Agent = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -1042,6 +1085,38 @@ func (aq *AllocateQuery) loadStation(ctx context.Context, query *EnterpriseStati
 	}
 	return nil
 }
+func (aq *AllocateQuery) loadAgent(ctx context.Context, query *AgentQuery, nodes []*Allocate, init func(*Allocate), assign func(*Allocate, *Agent)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*Allocate)
+	for i := range nodes {
+		if nodes[i].AgentID == nil {
+			continue
+		}
+		fk := *nodes[i].AgentID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(agent.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "agent_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 func (aq *AllocateQuery) loadContract(ctx context.Context, query *ContractQuery, nodes []*Allocate, init func(*Allocate), assign func(*Allocate, *Contract)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[uint64]*Allocate)
@@ -1157,6 +1232,9 @@ func (aq *AllocateQuery) querySpec() *sqlgraph.QuerySpec {
 		if aq.withStation != nil {
 			_spec.Node.AddColumnOnce(allocate.FieldStationID)
 		}
+		if aq.withAgent != nil {
+			_spec.Node.AddColumnOnce(allocate.FieldAgentID)
+		}
 		if aq.withEbike != nil {
 			_spec.Node.AddColumnOnce(allocate.FieldEbikeID)
 		}
@@ -1236,6 +1314,7 @@ var (
 	AllocateQueryWithBrand     AllocateQueryWith = "Brand"
 	AllocateQueryWithBattery   AllocateQueryWith = "Battery"
 	AllocateQueryWithStation   AllocateQueryWith = "Station"
+	AllocateQueryWithAgent     AllocateQueryWith = "Agent"
 	AllocateQueryWithContract  AllocateQueryWith = "Contract"
 	AllocateQueryWithEbike     AllocateQueryWith = "Ebike"
 )
@@ -1259,6 +1338,8 @@ func (aq *AllocateQuery) With(withEdges ...AllocateQueryWith) *AllocateQuery {
 			aq.WithBattery()
 		case AllocateQueryWithStation:
 			aq.WithStation()
+		case AllocateQueryWithAgent:
+			aq.WithAgent()
 		case AllocateQueryWithContract:
 			aq.WithContract()
 		case AllocateQueryWithEbike:

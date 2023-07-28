@@ -115,6 +115,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			allocate.FieldBrandID:      {Type: field.TypeUint64, Column: allocate.FieldBrandID},
 			allocate.FieldBatteryID:    {Type: field.TypeUint64, Column: allocate.FieldBatteryID},
 			allocate.FieldStationID:    {Type: field.TypeUint64, Column: allocate.FieldStationID},
+			allocate.FieldAgentID:      {Type: field.TypeUint64, Column: allocate.FieldAgentID},
 			allocate.FieldType:         {Type: field.TypeEnum, Column: allocate.FieldType},
 			allocate.FieldStatus:       {Type: field.TypeUint8, Column: allocate.FieldStatus},
 			allocate.FieldTime:         {Type: field.TypeTime, Column: allocate.FieldTime},
@@ -1727,6 +1728,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Allocate",
 		"EnterpriseStation",
+	)
+	graph.MustAddE(
+		"agent",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   allocate.AgentTable,
+			Columns: []string{allocate.AgentColumn},
+			Bidi:    false,
+		},
+		"Allocate",
+		"Agent",
 	)
 	graph.MustAddE(
 		"contract",
@@ -4960,6 +4973,11 @@ func (f *AllocateFilter) WhereStationID(p entql.Uint64P) {
 	f.Where(p.Field(allocate.FieldStationID))
 }
 
+// WhereAgentID applies the entql uint64 predicate on the agent_id field.
+func (f *AllocateFilter) WhereAgentID(p entql.Uint64P) {
+	f.Where(p.Field(allocate.FieldAgentID))
+}
+
 // WhereType applies the entql string predicate on the type field.
 func (f *AllocateFilter) WhereType(p entql.StringP) {
 	f.Where(p.Field(allocate.FieldType))
@@ -5091,6 +5109,20 @@ func (f *AllocateFilter) WhereHasStation() {
 // WhereHasStationWith applies a predicate to check if query has an edge station with a given conditions (other predicates).
 func (f *AllocateFilter) WhereHasStationWith(preds ...predicate.EnterpriseStation) {
 	f.Where(entql.HasEdgeWith("station", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasAgent applies a predicate to check if query has an edge agent.
+func (f *AllocateFilter) WhereHasAgent() {
+	f.Where(entql.HasEdge("agent"))
+}
+
+// WhereHasAgentWith applies a predicate to check if query has an edge agent with a given conditions (other predicates).
+func (f *AllocateFilter) WhereHasAgentWith(preds ...predicate.Agent) {
+	f.Where(entql.HasEdgeWith("agent", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

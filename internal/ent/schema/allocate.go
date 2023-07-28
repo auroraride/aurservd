@@ -94,6 +94,8 @@ func (Allocate) Mixin() []ent.Mixin {
 
 		BatteryMixin{Optional: true},
 		StationMixin{Optional: true},
+
+		AgentMixin{Optional: true},
 	}
 }
 

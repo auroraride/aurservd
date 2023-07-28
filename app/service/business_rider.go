@@ -583,6 +583,9 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
 
 // Active 激活订阅
 func (s *businessRiderService) Active(sub *ent.Subscribe, allo *ent.Allocate) {
+	// 设置代理id
+	s.agentID = allo.AgentID
+
 	s.preprocess(business.TypeActive, sub)
 
 	if NewSubscribe().NeedContract(sub) {

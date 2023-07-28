@@ -1201,6 +1201,8 @@ type AllocateMutation struct {
 	clearedbattery   bool
 	station          *uint64
 	clearedstation   bool
+	agent            *uint64
+	clearedagent     bool
 	contract         *uint64
 	clearedcontract  bool
 	ebike            *uint64
@@ -1919,6 +1921,55 @@ func (m *AllocateMutation) ResetStationID() {
 	delete(m.clearedFields, allocate.FieldStationID)
 }
 
+// SetAgentID sets the "agent_id" field.
+func (m *AllocateMutation) SetAgentID(u uint64) {
+	m.agent = &u
+}
+
+// AgentID returns the value of the "agent_id" field in the mutation.
+func (m *AllocateMutation) AgentID() (r uint64, exists bool) {
+	v := m.agent
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAgentID returns the old "agent_id" field's value of the Allocate entity.
+// If the Allocate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AllocateMutation) OldAgentID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAgentID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAgentID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAgentID: %w", err)
+	}
+	return oldValue.AgentID, nil
+}
+
+// ClearAgentID clears the value of the "agent_id" field.
+func (m *AllocateMutation) ClearAgentID() {
+	m.agent = nil
+	m.clearedFields[allocate.FieldAgentID] = struct{}{}
+}
+
+// AgentIDCleared returns if the "agent_id" field was cleared in this mutation.
+func (m *AllocateMutation) AgentIDCleared() bool {
+	_, ok := m.clearedFields[allocate.FieldAgentID]
+	return ok
+}
+
+// ResetAgentID resets all changes to the "agent_id" field.
+func (m *AllocateMutation) ResetAgentID() {
+	m.agent = nil
+	delete(m.clearedFields, allocate.FieldAgentID)
+}
+
 // SetType sets the "type" field.
 func (m *AllocateMutation) SetType(a allocate.Type) {
 	m._type = &a
@@ -2340,6 +2391,32 @@ func (m *AllocateMutation) ResetStation() {
 	m.clearedstation = false
 }
 
+// ClearAgent clears the "agent" edge to the Agent entity.
+func (m *AllocateMutation) ClearAgent() {
+	m.clearedagent = true
+}
+
+// AgentCleared reports if the "agent" edge to the Agent entity was cleared.
+func (m *AllocateMutation) AgentCleared() bool {
+	return m.AgentIDCleared() || m.clearedagent
+}
+
+// AgentIDs returns the "agent" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// AgentID instead. It exists only for internal usage by the builders.
+func (m *AllocateMutation) AgentIDs() (ids []uint64) {
+	if id := m.agent; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetAgent resets all changes to the "agent" edge.
+func (m *AllocateMutation) ResetAgent() {
+	m.agent = nil
+	m.clearedagent = false
+}
+
 // SetContractID sets the "contract" edge to the Contract entity by id.
 func (m *AllocateMutation) SetContractID(id uint64) {
 	m.contract = &id
@@ -2439,7 +2516,7 @@ func (m *AllocateMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AllocateMutation) Fields() []string {
-	fields := make([]string, 0, 18)
+	fields := make([]string, 0, 19)
 	if m.created_at != nil {
 		fields = append(fields, allocate.FieldCreatedAt)
 	}
@@ -2478,6 +2555,9 @@ func (m *AllocateMutation) Fields() []string {
 	}
 	if m.station != nil {
 		fields = append(fields, allocate.FieldStationID)
+	}
+	if m.agent != nil {
+		fields = append(fields, allocate.FieldAgentID)
 	}
 	if m._type != nil {
 		fields = append(fields, allocate.FieldType)
@@ -2528,6 +2608,8 @@ func (m *AllocateMutation) Field(name string) (ent.Value, bool) {
 		return m.BatteryID()
 	case allocate.FieldStationID:
 		return m.StationID()
+	case allocate.FieldAgentID:
+		return m.AgentID()
 	case allocate.FieldType:
 		return m.GetType()
 	case allocate.FieldStatus:
@@ -2573,6 +2655,8 @@ func (m *AllocateMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldBatteryID(ctx)
 	case allocate.FieldStationID:
 		return m.OldStationID(ctx)
+	case allocate.FieldAgentID:
+		return m.OldAgentID(ctx)
 	case allocate.FieldType:
 		return m.OldType(ctx)
 	case allocate.FieldStatus:
@@ -2682,6 +2766,13 @@ func (m *AllocateMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetStationID(v)
+		return nil
+	case allocate.FieldAgentID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAgentID(v)
 		return nil
 	case allocate.FieldType:
 		v, ok := value.(allocate.Type)
@@ -2796,6 +2887,9 @@ func (m *AllocateMutation) ClearedFields() []string {
 	if m.FieldCleared(allocate.FieldStationID) {
 		fields = append(fields, allocate.FieldStationID)
 	}
+	if m.FieldCleared(allocate.FieldAgentID) {
+		fields = append(fields, allocate.FieldAgentID)
+	}
 	if m.FieldCleared(allocate.FieldEbikeID) {
 		fields = append(fields, allocate.FieldEbikeID)
 	}
@@ -2845,6 +2939,9 @@ func (m *AllocateMutation) ClearField(name string) error {
 		return nil
 	case allocate.FieldStationID:
 		m.ClearStationID()
+		return nil
+	case allocate.FieldAgentID:
+		m.ClearAgentID()
 		return nil
 	case allocate.FieldEbikeID:
 		m.ClearEbikeID()
@@ -2896,6 +2993,9 @@ func (m *AllocateMutation) ResetField(name string) error {
 	case allocate.FieldStationID:
 		m.ResetStationID()
 		return nil
+	case allocate.FieldAgentID:
+		m.ResetAgentID()
+		return nil
 	case allocate.FieldType:
 		m.ResetType()
 		return nil
@@ -2917,7 +3017,7 @@ func (m *AllocateMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *AllocateMutation) AddedEdges() []string {
-	edges := make([]string, 0, 10)
+	edges := make([]string, 0, 11)
 	if m.rider != nil {
 		edges = append(edges, allocate.EdgeRider)
 	}
@@ -2941,6 +3041,9 @@ func (m *AllocateMutation) AddedEdges() []string {
 	}
 	if m.station != nil {
 		edges = append(edges, allocate.EdgeStation)
+	}
+	if m.agent != nil {
+		edges = append(edges, allocate.EdgeAgent)
 	}
 	if m.contract != nil {
 		edges = append(edges, allocate.EdgeContract)
@@ -2987,6 +3090,10 @@ func (m *AllocateMutation) AddedIDs(name string) []ent.Value {
 		if id := m.station; id != nil {
 			return []ent.Value{*id}
 		}
+	case allocate.EdgeAgent:
+		if id := m.agent; id != nil {
+			return []ent.Value{*id}
+		}
 	case allocate.EdgeContract:
 		if id := m.contract; id != nil {
 			return []ent.Value{*id}
@@ -3001,7 +3108,7 @@ func (m *AllocateMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *AllocateMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 10)
+	edges := make([]string, 0, 11)
 	return edges
 }
 
@@ -3013,7 +3120,7 @@ func (m *AllocateMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *AllocateMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 10)
+	edges := make([]string, 0, 11)
 	if m.clearedrider {
 		edges = append(edges, allocate.EdgeRider)
 	}
@@ -3037,6 +3144,9 @@ func (m *AllocateMutation) ClearedEdges() []string {
 	}
 	if m.clearedstation {
 		edges = append(edges, allocate.EdgeStation)
+	}
+	if m.clearedagent {
+		edges = append(edges, allocate.EdgeAgent)
 	}
 	if m.clearedcontract {
 		edges = append(edges, allocate.EdgeContract)
@@ -3067,6 +3177,8 @@ func (m *AllocateMutation) EdgeCleared(name string) bool {
 		return m.clearedbattery
 	case allocate.EdgeStation:
 		return m.clearedstation
+	case allocate.EdgeAgent:
+		return m.clearedagent
 	case allocate.EdgeContract:
 		return m.clearedcontract
 	case allocate.EdgeEbike:
@@ -3102,6 +3214,9 @@ func (m *AllocateMutation) ClearEdge(name string) error {
 		return nil
 	case allocate.EdgeStation:
 		m.ClearStation()
+		return nil
+	case allocate.EdgeAgent:
+		m.ClearAgent()
 		return nil
 	case allocate.EdgeContract:
 		m.ClearContract()
@@ -3140,6 +3255,9 @@ func (m *AllocateMutation) ResetEdge(name string) error {
 		return nil
 	case allocate.EdgeStation:
 		m.ResetStation()
+		return nil
+	case allocate.EdgeAgent:
+		m.ResetAgent()
 		return nil
 	case allocate.EdgeContract:
 		m.ResetContract()
