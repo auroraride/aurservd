@@ -86,6 +86,7 @@ var (
 		{Name: "brand_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "battery_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "station_id", Type: field.TypeUint64, Nullable: true, Comment: "站点ID"},
+		{Name: "agent_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "ebike_id", Type: field.TypeUint64, Nullable: true, Comment: "电车ID"},
 	}
 	// AllocateTable holds the schema information for the "allocate" table.
@@ -143,8 +144,14 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "allocate_ebike_allocates",
+				Symbol:     "allocate_agent_agent",
 				Columns:    []*schema.Column{AllocateColumns[18]},
+				RefColumns: []*schema.Column{AgentColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "allocate_ebike_allocates",
+				Columns:    []*schema.Column{AllocateColumns[19]},
 				RefColumns: []*schema.Column{EbikeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -189,6 +196,11 @@ var (
 				Name:    "allocate_station_id",
 				Unique:  false,
 				Columns: []*schema.Column{AllocateColumns[17]},
+			},
+			{
+				Name:    "allocate_agent_id",
+				Unique:  false,
+				Columns: []*schema.Column{AllocateColumns[18]},
 			},
 			{
 				Name:    "allocate_time",
@@ -4809,7 +4821,8 @@ func init() {
 	AllocateTable.ForeignKeys[5].RefTable = EbikeBrandTable
 	AllocateTable.ForeignKeys[6].RefTable = BatteryTable
 	AllocateTable.ForeignKeys[7].RefTable = EnterpriseStationTable
-	AllocateTable.ForeignKeys[8].RefTable = EbikeTable
+	AllocateTable.ForeignKeys[8].RefTable = AgentTable
+	AllocateTable.ForeignKeys[9].RefTable = EbikeTable
 	AllocateTable.Annotation = &entsql.Annotation{
 		Table: "allocate",
 	}

@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
@@ -183,6 +184,20 @@ func (ac *AllocateCreate) SetNillableStationID(u *uint64) *AllocateCreate {
 	return ac
 }
 
+// SetAgentID sets the "agent_id" field.
+func (ac *AllocateCreate) SetAgentID(u uint64) *AllocateCreate {
+	ac.mutation.SetAgentID(u)
+	return ac
+}
+
+// SetNillableAgentID sets the "agent_id" field if the given value is not nil.
+func (ac *AllocateCreate) SetNillableAgentID(u *uint64) *AllocateCreate {
+	if u != nil {
+		ac.SetAgentID(*u)
+	}
+	return ac
+}
+
 // SetType sets the "type" field.
 func (ac *AllocateCreate) SetType(a allocate.Type) *AllocateCreate {
 	ac.mutation.SetType(a)
@@ -259,6 +274,11 @@ func (ac *AllocateCreate) SetBattery(b *Battery) *AllocateCreate {
 // SetStation sets the "station" edge to the EnterpriseStation entity.
 func (ac *AllocateCreate) SetStation(e *EnterpriseStation) *AllocateCreate {
 	return ac.SetStationID(e.ID)
+}
+
+// SetAgent sets the "agent" edge to the Agent entity.
+func (ac *AllocateCreate) SetAgent(a *Agent) *AllocateCreate {
+	return ac.SetAgentID(a.ID)
 }
 
 // SetContractID sets the "contract" edge to the Contract entity by ID.
@@ -569,6 +589,23 @@ func (ac *AllocateCreate) createSpec() (*Allocate, *sqlgraph.CreateSpec) {
 		_node.StationID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := ac.mutation.AgentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   allocate.AgentTable,
+			Columns: []string{allocate.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.AgentID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := ac.mutation.ContractIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
@@ -837,6 +874,24 @@ func (u *AllocateUpsert) UpdateStationID() *AllocateUpsert {
 // ClearStationID clears the value of the "station_id" field.
 func (u *AllocateUpsert) ClearStationID() *AllocateUpsert {
 	u.SetNull(allocate.FieldStationID)
+	return u
+}
+
+// SetAgentID sets the "agent_id" field.
+func (u *AllocateUpsert) SetAgentID(v uint64) *AllocateUpsert {
+	u.Set(allocate.FieldAgentID, v)
+	return u
+}
+
+// UpdateAgentID sets the "agent_id" field to the value that was provided on create.
+func (u *AllocateUpsert) UpdateAgentID() *AllocateUpsert {
+	u.SetExcluded(allocate.FieldAgentID)
+	return u
+}
+
+// ClearAgentID clears the value of the "agent_id" field.
+func (u *AllocateUpsert) ClearAgentID() *AllocateUpsert {
+	u.SetNull(allocate.FieldAgentID)
 	return u
 }
 
@@ -1174,6 +1229,27 @@ func (u *AllocateUpsertOne) UpdateStationID() *AllocateUpsertOne {
 func (u *AllocateUpsertOne) ClearStationID() *AllocateUpsertOne {
 	return u.Update(func(s *AllocateUpsert) {
 		s.ClearStationID()
+	})
+}
+
+// SetAgentID sets the "agent_id" field.
+func (u *AllocateUpsertOne) SetAgentID(v uint64) *AllocateUpsertOne {
+	return u.Update(func(s *AllocateUpsert) {
+		s.SetAgentID(v)
+	})
+}
+
+// UpdateAgentID sets the "agent_id" field to the value that was provided on create.
+func (u *AllocateUpsertOne) UpdateAgentID() *AllocateUpsertOne {
+	return u.Update(func(s *AllocateUpsert) {
+		s.UpdateAgentID()
+	})
+}
+
+// ClearAgentID clears the value of the "agent_id" field.
+func (u *AllocateUpsertOne) ClearAgentID() *AllocateUpsertOne {
+	return u.Update(func(s *AllocateUpsert) {
+		s.ClearAgentID()
 	})
 }
 
@@ -1685,6 +1761,27 @@ func (u *AllocateUpsertBulk) UpdateStationID() *AllocateUpsertBulk {
 func (u *AllocateUpsertBulk) ClearStationID() *AllocateUpsertBulk {
 	return u.Update(func(s *AllocateUpsert) {
 		s.ClearStationID()
+	})
+}
+
+// SetAgentID sets the "agent_id" field.
+func (u *AllocateUpsertBulk) SetAgentID(v uint64) *AllocateUpsertBulk {
+	return u.Update(func(s *AllocateUpsert) {
+		s.SetAgentID(v)
+	})
+}
+
+// UpdateAgentID sets the "agent_id" field to the value that was provided on create.
+func (u *AllocateUpsertBulk) UpdateAgentID() *AllocateUpsertBulk {
+	return u.Update(func(s *AllocateUpsert) {
+		s.UpdateAgentID()
+	})
+}
+
+// ClearAgentID clears the value of the "agent_id" field.
+func (u *AllocateUpsertBulk) ClearAgentID() *AllocateUpsertBulk {
+	return u.Update(func(s *AllocateUpsert) {
+		s.ClearAgentID()
 	})
 }
 

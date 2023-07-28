@@ -42,6 +42,8 @@ const (
 	FieldBatteryID = "battery_id"
 	// FieldStationID holds the string denoting the station_id field in the database.
 	FieldStationID = "station_id"
+	// FieldAgentID holds the string denoting the agent_id field in the database.
+	FieldAgentID = "agent_id"
 	// FieldType holds the string denoting the type field in the database.
 	FieldType = "type"
 	// FieldStatus holds the string denoting the status field in the database.
@@ -68,6 +70,8 @@ const (
 	EdgeBattery = "battery"
 	// EdgeStation holds the string denoting the station edge name in mutations.
 	EdgeStation = "station"
+	// EdgeAgent holds the string denoting the agent edge name in mutations.
+	EdgeAgent = "agent"
 	// EdgeContract holds the string denoting the contract edge name in mutations.
 	EdgeContract = "contract"
 	// EdgeEbike holds the string denoting the ebike edge name in mutations.
@@ -130,6 +134,13 @@ const (
 	StationInverseTable = "enterprise_station"
 	// StationColumn is the table column denoting the station relation/edge.
 	StationColumn = "station_id"
+	// AgentTable is the table that holds the agent relation/edge.
+	AgentTable = "allocate"
+	// AgentInverseTable is the table name for the Agent entity.
+	// It exists in this package in order to avoid circular dependency with the "agent" package.
+	AgentInverseTable = "agent"
+	// AgentColumn is the table column denoting the agent relation/edge.
+	AgentColumn = "agent_id"
 	// ContractTable is the table that holds the contract relation/edge.
 	ContractTable = "contract"
 	// ContractInverseTable is the table name for the Contract entity.
@@ -162,6 +173,7 @@ var Columns = []string{
 	FieldBrandID,
 	FieldBatteryID,
 	FieldStationID,
+	FieldAgentID,
 	FieldType,
 	FieldStatus,
 	FieldTime,
@@ -280,6 +292,11 @@ func ByStationID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldStationID, opts...).ToFunc()
 }
 
+// ByAgentID orders the results by the agent_id field.
+func ByAgentID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAgentID, opts...).ToFunc()
+}
+
 // ByType orders the results by the type field.
 func ByType(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldType, opts...).ToFunc()
@@ -361,6 +378,13 @@ func ByStationField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
+// ByAgentField orders the results by agent field.
+func ByAgentField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newAgentStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByContractField orders the results by contract field.
 func ByContractField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -428,6 +452,13 @@ func newStationStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(StationInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, false, StationTable, StationColumn),
+	)
+}
+func newAgentStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(AgentInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, AgentTable, AgentColumn),
 	)
 }
 func newContractStep() *sqlgraph.Step {

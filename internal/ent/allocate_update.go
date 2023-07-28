@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
@@ -216,6 +217,26 @@ func (au *AllocateUpdate) ClearStationID() *AllocateUpdate {
 	return au
 }
 
+// SetAgentID sets the "agent_id" field.
+func (au *AllocateUpdate) SetAgentID(u uint64) *AllocateUpdate {
+	au.mutation.SetAgentID(u)
+	return au
+}
+
+// SetNillableAgentID sets the "agent_id" field if the given value is not nil.
+func (au *AllocateUpdate) SetNillableAgentID(u *uint64) *AllocateUpdate {
+	if u != nil {
+		au.SetAgentID(*u)
+	}
+	return au
+}
+
+// ClearAgentID clears the value of the "agent_id" field.
+func (au *AllocateUpdate) ClearAgentID() *AllocateUpdate {
+	au.mutation.ClearAgentID()
+	return au
+}
+
 // SetType sets the "type" field.
 func (au *AllocateUpdate) SetType(a allocate.Type) *AllocateUpdate {
 	au.mutation.SetType(a)
@@ -307,6 +328,11 @@ func (au *AllocateUpdate) SetStation(e *EnterpriseStation) *AllocateUpdate {
 	return au.SetStationID(e.ID)
 }
 
+// SetAgent sets the "agent" edge to the Agent entity.
+func (au *AllocateUpdate) SetAgent(a *Agent) *AllocateUpdate {
+	return au.SetAgentID(a.ID)
+}
+
 // SetContractID sets the "contract" edge to the Contract entity by ID.
 func (au *AllocateUpdate) SetContractID(id uint64) *AllocateUpdate {
 	au.mutation.SetContractID(id)
@@ -381,6 +407,12 @@ func (au *AllocateUpdate) ClearBattery() *AllocateUpdate {
 // ClearStation clears the "station" edge to the EnterpriseStation entity.
 func (au *AllocateUpdate) ClearStation() *AllocateUpdate {
 	au.mutation.ClearStation()
+	return au
+}
+
+// ClearAgent clears the "agent" edge to the Agent entity.
+func (au *AllocateUpdate) ClearAgent() *AllocateUpdate {
+	au.mutation.ClearAgent()
 	return au
 }
 
@@ -743,6 +775,35 @@ func (au *AllocateUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if au.mutation.AgentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   allocate.AgentTable,
+			Columns: []string{allocate.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.AgentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   allocate.AgentTable,
+			Columns: []string{allocate.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if au.mutation.ContractCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
@@ -999,6 +1060,26 @@ func (auo *AllocateUpdateOne) ClearStationID() *AllocateUpdateOne {
 	return auo
 }
 
+// SetAgentID sets the "agent_id" field.
+func (auo *AllocateUpdateOne) SetAgentID(u uint64) *AllocateUpdateOne {
+	auo.mutation.SetAgentID(u)
+	return auo
+}
+
+// SetNillableAgentID sets the "agent_id" field if the given value is not nil.
+func (auo *AllocateUpdateOne) SetNillableAgentID(u *uint64) *AllocateUpdateOne {
+	if u != nil {
+		auo.SetAgentID(*u)
+	}
+	return auo
+}
+
+// ClearAgentID clears the value of the "agent_id" field.
+func (auo *AllocateUpdateOne) ClearAgentID() *AllocateUpdateOne {
+	auo.mutation.ClearAgentID()
+	return auo
+}
+
 // SetType sets the "type" field.
 func (auo *AllocateUpdateOne) SetType(a allocate.Type) *AllocateUpdateOne {
 	auo.mutation.SetType(a)
@@ -1090,6 +1171,11 @@ func (auo *AllocateUpdateOne) SetStation(e *EnterpriseStation) *AllocateUpdateOn
 	return auo.SetStationID(e.ID)
 }
 
+// SetAgent sets the "agent" edge to the Agent entity.
+func (auo *AllocateUpdateOne) SetAgent(a *Agent) *AllocateUpdateOne {
+	return auo.SetAgentID(a.ID)
+}
+
 // SetContractID sets the "contract" edge to the Contract entity by ID.
 func (auo *AllocateUpdateOne) SetContractID(id uint64) *AllocateUpdateOne {
 	auo.mutation.SetContractID(id)
@@ -1164,6 +1250,12 @@ func (auo *AllocateUpdateOne) ClearBattery() *AllocateUpdateOne {
 // ClearStation clears the "station" edge to the EnterpriseStation entity.
 func (auo *AllocateUpdateOne) ClearStation() *AllocateUpdateOne {
 	auo.mutation.ClearStation()
+	return auo
+}
+
+// ClearAgent clears the "agent" edge to the Agent entity.
+func (auo *AllocateUpdateOne) ClearAgent() *AllocateUpdateOne {
+	auo.mutation.ClearAgent()
 	return auo
 }
 
@@ -1549,6 +1641,35 @@ func (auo *AllocateUpdateOne) sqlSave(ctx context.Context) (_node *Allocate, err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(enterprisestation.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.AgentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   allocate.AgentTable,
+			Columns: []string{allocate.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.AgentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   allocate.AgentTable,
+			Columns: []string{allocate.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

@@ -1014,6 +1014,22 @@ func (c *AllocateClient) QueryStation(a *Allocate) *EnterpriseStationQuery {
 	return query
 }
 
+// QueryAgent queries the agent edge of a Allocate.
+func (c *AllocateClient) QueryAgent(a *Allocate) *AgentQuery {
+	query := (&AgentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(allocate.Table, allocate.FieldID, id),
+			sqlgraph.To(agent.Table, agent.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, allocate.AgentTable, allocate.AgentColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryContract queries the contract edge of a Allocate.
 func (c *AllocateClient) QueryContract(a *Allocate) *ContractQuery {
 	query := (&ContractClient{config: c.config}).Query()

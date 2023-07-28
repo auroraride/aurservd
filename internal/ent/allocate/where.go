@@ -110,6 +110,11 @@ func StationID(v uint64) predicate.Allocate {
 	return predicate.Allocate(sql.FieldEQ(FieldStationID, v))
 }
 
+// AgentID applies equality check predicate on the "agent_id" field. It's identical to AgentIDEQ.
+func AgentID(v uint64) predicate.Allocate {
+	return predicate.Allocate(sql.FieldEQ(FieldAgentID, v))
+}
+
 // Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
 func Status(v uint8) predicate.Allocate {
 	return predicate.Allocate(sql.FieldEQ(FieldStatus, v))
@@ -545,6 +550,36 @@ func StationIDNotNil() predicate.Allocate {
 	return predicate.Allocate(sql.FieldNotNull(FieldStationID))
 }
 
+// AgentIDEQ applies the EQ predicate on the "agent_id" field.
+func AgentIDEQ(v uint64) predicate.Allocate {
+	return predicate.Allocate(sql.FieldEQ(FieldAgentID, v))
+}
+
+// AgentIDNEQ applies the NEQ predicate on the "agent_id" field.
+func AgentIDNEQ(v uint64) predicate.Allocate {
+	return predicate.Allocate(sql.FieldNEQ(FieldAgentID, v))
+}
+
+// AgentIDIn applies the In predicate on the "agent_id" field.
+func AgentIDIn(vs ...uint64) predicate.Allocate {
+	return predicate.Allocate(sql.FieldIn(FieldAgentID, vs...))
+}
+
+// AgentIDNotIn applies the NotIn predicate on the "agent_id" field.
+func AgentIDNotIn(vs ...uint64) predicate.Allocate {
+	return predicate.Allocate(sql.FieldNotIn(FieldAgentID, vs...))
+}
+
+// AgentIDIsNil applies the IsNil predicate on the "agent_id" field.
+func AgentIDIsNil() predicate.Allocate {
+	return predicate.Allocate(sql.FieldIsNull(FieldAgentID))
+}
+
+// AgentIDNotNil applies the NotNil predicate on the "agent_id" field.
+func AgentIDNotNil() predicate.Allocate {
+	return predicate.Allocate(sql.FieldNotNull(FieldAgentID))
+}
+
 // TypeEQ applies the EQ predicate on the "type" field.
 func TypeEQ(v Type) predicate.Allocate {
 	return predicate.Allocate(sql.FieldEQ(FieldType, v))
@@ -916,6 +951,29 @@ func HasStation() predicate.Allocate {
 func HasStationWith(preds ...predicate.EnterpriseStation) predicate.Allocate {
 	return predicate.Allocate(func(s *sql.Selector) {
 		step := newStationStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasAgent applies the HasEdge predicate on the "agent" edge.
+func HasAgent() predicate.Allocate {
+	return predicate.Allocate(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, AgentTable, AgentColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasAgentWith applies the HasEdge predicate on the "agent" edge with a given conditions (other predicates).
+func HasAgentWith(preds ...predicate.Agent) predicate.Allocate {
+	return predicate.Allocate(func(s *sql.Selector) {
+		step := newAgentStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
