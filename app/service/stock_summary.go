@@ -150,14 +150,16 @@ func (s *stockSummaryService) EbikeGroup(ac *app.AgentContext) []*model.EbikeSto
 }
 
 func (s *stockSummaryService) NonIntelligentBatteryNum(ac *app.AgentContext) (batteryNum int, modelsCounts map[string]int) {
-	allCabinet := NewAgentCabinet().AllNonIntelligentCabinet(ac)
+	isIntelligentValue := false
+	// 查询所有非智能电池柜
+	allCabinet := NewAgentCabinet().AllCabinet(ac, &isIntelligentValue)
 	NewCabinet().SyncCabinets(allCabinet)
 
 	// 电池型号 非智能电池柜只有一种电池型号
 	modelsCounts = make(map[string]int) // 电池型号 -> 数量
 
-	// 计算电池总数
 	for _, cab := range allCabinet {
+		// 计算电池总数
 		batteryNum += cab.BatteryNum
 
 		// 统计电池型号 -> 数量
@@ -170,12 +172,26 @@ func (s *stockSummaryService) NonIntelligentBatteryNum(ac *app.AgentContext) (ba
 	return batteryNum, modelsCounts
 }
 
+// IntelligentBatteryNum 在电柜的智能电池数量
 func (s *stockSummaryService) IntelligentBatteryNum(ac *app.AgentContext) (modelsCounts map[string]int) {
+	var batteryModel []string
+
+	isIntelligentValue := false
+	allCabinet := NewAgentCabinet().AllCabinet(ac, &isIntelligentValue)
+	for _, cab := range allCabinet {
+		if cab.Edges.Models != nil && len(cab.Edges.Models) > 0 {
+			m := cab.Edges.Models[0].Model
+			batteryModel = append(batteryModel, m)
+		}
+	}
+
 	var intelligent []model.BatteryStockGroup
 	ent.Database.Battery.Query().
 		Where(
 			battery.EnterpriseID(ac.Enterprise.ID),
 			battery.CabinetIDNotNil(),
+			// 只查询代理电柜有的电池型号
+			battery.ModelIn(batteryModel...),
 		).
 		GroupBy(battery.FieldModel).Aggregate(ent.As(ent.Count(), "batteryTotal")).ScanX(s.ctx, &intelligent)
 	modelsCounts = make(map[string]int)

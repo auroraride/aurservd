@@ -202,15 +202,14 @@ func (s *agentCabinetService) BinOpen(ac *app.AgentContext, req *model.AgentBinO
 	return results
 }
 
-// AllNonIntelligentCabinet 查询代理所有非智能电柜
-func (s *agentCabinetService) AllNonIntelligentCabinet(ac *app.AgentContext) []*ent.Cabinet {
-	cab, _ := s.orm.QueryNotDeleted().Where(
+// AllCabinet 查询代理所有智能或者非智能电柜
+func (s *agentCabinetService) AllCabinet(ac *app.AgentContext, isIntelligent *bool) []*ent.Cabinet {
+	q := s.orm.QueryNotDeleted().Where(
 		cabinet.StationIDIn(ac.StationIDs()...),
-		cabinet.Intelligent(false),
-	).WithModels().All(s.ctx)
-
-	if cab == nil {
-		snag.Panic("未找到有效电柜")
+		cabinet.EnterpriseID(ac.Enterprise.ID),
+	).WithModels()
+	if isIntelligent != nil {
+		q.Where(cabinet.Intelligent(*isIntelligent))
 	}
-	return cab
+	return q.AllX(s.ctx)
 }

@@ -358,7 +358,7 @@ type StockDetailFilter struct {
 	Positive     bool             `json:"positive" query:"positive"`           // 是否正序(默认倒序)
 	Type         uint8            `json:"type" query:"type" enums:"0,1,2,3,4"` // 调拨类型, 0:调拨 1:激活 2:寄存 3:结束寄存 4:退租
 	Keyword      string           `json:"keyword" query:"keyword"`             // 查询电柜编号、车架号、电池编码
-	EnterpriseID uint64           `json:"enterpriseId" query:"enterpriseId"`   // 企业ID (代理该参数不生效)
+	EnterpriseID uint64           `json:"enterpriseId" query:"enterpriseId"`   // 企业ID
 	StationID    uint64           `json:"stationId" query:"stationId"`         // 站点ID
 	EbikeSN      string           `json:"ebikeSn" query:"ebikeSn"`             // 车架号
 	BatterySN    string           `json:"batterySn" query:"batterySn"`         // 电池编码
