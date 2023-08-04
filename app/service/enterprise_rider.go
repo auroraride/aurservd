@@ -89,7 +89,7 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 			// 查询订阅信息
 			sub, _ = NewSubscribe().QueryEffective(r.ID)
 			if sub != nil && (sub.EnterpriseID == nil || (sub.EnterpriseID != nil && sub.Status != model.SubscribeStatusInactive)) {
-				return errors.New("该骑手不能绑定,已有未完成的订单")
+				return errors.New("该骑手存在未完成的订单")
 			}
 
 			// 若原有团签订阅未激活，直接删除

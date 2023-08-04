@@ -1280,6 +1280,409 @@ func (plq *PointLogQuery) PaginationResult(req model.PaginationReq) model.Pagina
 	}
 }
 
+// Pagination returns pagination query builder for PromotionAchievementQuery.
+func (paq *PromotionAchievementQuery) Pagination(req model.PaginationReq) *PromotionAchievementQuery {
+	paq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return paq
+}
+
+// PaginationItems returns pagination query builder for PromotionAchievementQuery.
+func (paq *PromotionAchievementQuery) PaginationItemsX(req model.PaginationReq) any {
+	return paq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for PromotionAchievementQuery.
+func (paq *PromotionAchievementQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := paq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
+// Pagination returns pagination query builder for PromotionBankCardQuery.
+func (pbcq *PromotionBankCardQuery) Pagination(req model.PaginationReq) *PromotionBankCardQuery {
+	pbcq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return pbcq
+}
+
+// PaginationItems returns pagination query builder for PromotionBankCardQuery.
+func (pbcq *PromotionBankCardQuery) PaginationItemsX(req model.PaginationReq) any {
+	return pbcq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for PromotionBankCardQuery.
+func (pbcq *PromotionBankCardQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := pbcq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
+// Pagination returns pagination query builder for PromotionCommissionQuery.
+func (pcq *PromotionCommissionQuery) Pagination(req model.PaginationReq) *PromotionCommissionQuery {
+	pcq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return pcq
+}
+
+// PaginationItems returns pagination query builder for PromotionCommissionQuery.
+func (pcq *PromotionCommissionQuery) PaginationItemsX(req model.PaginationReq) any {
+	return pcq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for PromotionCommissionQuery.
+func (pcq *PromotionCommissionQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := pcq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
+// Pagination returns pagination query builder for PromotionEarningsQuery.
+func (peq *PromotionEarningsQuery) Pagination(req model.PaginationReq) *PromotionEarningsQuery {
+	peq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return peq
+}
+
+// PaginationItems returns pagination query builder for PromotionEarningsQuery.
+func (peq *PromotionEarningsQuery) PaginationItemsX(req model.PaginationReq) any {
+	return peq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for PromotionEarningsQuery.
+func (peq *PromotionEarningsQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := peq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
+// Pagination returns pagination query builder for PromotionGrowthQuery.
+func (pgq *PromotionGrowthQuery) Pagination(req model.PaginationReq) *PromotionGrowthQuery {
+	pgq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return pgq
+}
+
+// PaginationItems returns pagination query builder for PromotionGrowthQuery.
+func (pgq *PromotionGrowthQuery) PaginationItemsX(req model.PaginationReq) any {
+	return pgq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for PromotionGrowthQuery.
+func (pgq *PromotionGrowthQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := pgq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
+// Pagination returns pagination query builder for PromotionLevelQuery.
+func (plq *PromotionLevelQuery) Pagination(req model.PaginationReq) *PromotionLevelQuery {
+	plq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return plq
+}
+
+// PaginationItems returns pagination query builder for PromotionLevelQuery.
+func (plq *PromotionLevelQuery) PaginationItemsX(req model.PaginationReq) any {
+	return plq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for PromotionLevelQuery.
+func (plq *PromotionLevelQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := plq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
+// Pagination returns pagination query builder for PromotionLevelTaskQuery.
+func (pltq *PromotionLevelTaskQuery) Pagination(req model.PaginationReq) *PromotionLevelTaskQuery {
+	pltq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return pltq
+}
+
+// PaginationItems returns pagination query builder for PromotionLevelTaskQuery.
+func (pltq *PromotionLevelTaskQuery) PaginationItemsX(req model.PaginationReq) any {
+	return pltq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for PromotionLevelTaskQuery.
+func (pltq *PromotionLevelTaskQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := pltq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
+// Pagination returns pagination query builder for PromotionMemberQuery.
+func (pmq *PromotionMemberQuery) Pagination(req model.PaginationReq) *PromotionMemberQuery {
+	pmq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return pmq
+}
+
+// PaginationItems returns pagination query builder for PromotionMemberQuery.
+func (pmq *PromotionMemberQuery) PaginationItemsX(req model.PaginationReq) any {
+	return pmq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for PromotionMemberQuery.
+func (pmq *PromotionMemberQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := pmq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
+// Pagination returns pagination query builder for PromotionPersonQuery.
+func (ppq *PromotionPersonQuery) Pagination(req model.PaginationReq) *PromotionPersonQuery {
+	ppq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return ppq
+}
+
+// PaginationItems returns pagination query builder for PromotionPersonQuery.
+func (ppq *PromotionPersonQuery) PaginationItemsX(req model.PaginationReq) any {
+	return ppq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for PromotionPersonQuery.
+func (ppq *PromotionPersonQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := ppq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
+// Pagination returns pagination query builder for PromotionPrivilegeQuery.
+func (ppq *PromotionPrivilegeQuery) Pagination(req model.PaginationReq) *PromotionPrivilegeQuery {
+	ppq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return ppq
+}
+
+// PaginationItems returns pagination query builder for PromotionPrivilegeQuery.
+func (ppq *PromotionPrivilegeQuery) PaginationItemsX(req model.PaginationReq) any {
+	return ppq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for PromotionPrivilegeQuery.
+func (ppq *PromotionPrivilegeQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := ppq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
+// Pagination returns pagination query builder for PromotionReferralsQuery.
+func (prq *PromotionReferralsQuery) Pagination(req model.PaginationReq) *PromotionReferralsQuery {
+	prq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return prq
+}
+
+// PaginationItems returns pagination query builder for PromotionReferralsQuery.
+func (prq *PromotionReferralsQuery) PaginationItemsX(req model.PaginationReq) any {
+	return prq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for PromotionReferralsQuery.
+func (prq *PromotionReferralsQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := prq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
+// Pagination returns pagination query builder for PromotionSettingQuery.
+func (psq *PromotionSettingQuery) Pagination(req model.PaginationReq) *PromotionSettingQuery {
+	psq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return psq
+}
+
+// PaginationItems returns pagination query builder for PromotionSettingQuery.
+func (psq *PromotionSettingQuery) PaginationItemsX(req model.PaginationReq) any {
+	return psq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for PromotionSettingQuery.
+func (psq *PromotionSettingQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := psq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
+// Pagination returns pagination query builder for PromotionWithdrawalQuery.
+func (pwq *PromotionWithdrawalQuery) Pagination(req model.PaginationReq) *PromotionWithdrawalQuery {
+	pwq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return pwq
+}
+
+// PaginationItems returns pagination query builder for PromotionWithdrawalQuery.
+func (pwq *PromotionWithdrawalQuery) PaginationItemsX(req model.PaginationReq) any {
+	return pwq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for PromotionWithdrawalQuery.
+func (pwq *PromotionWithdrawalQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := pwq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for ReserveQuery.
 func (rq *ReserveQuery) Pagination(req model.PaginationReq) *ReserveQuery {
 	rq.Offset(req.GetOffset()).Limit(req.GetLimit())

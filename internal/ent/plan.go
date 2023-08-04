@@ -52,6 +52,8 @@ type Plan struct {
 	Days uint `json:"days,omitempty"`
 	// 提成
 	Commission float64 `json:"commission,omitempty"`
+	// 提成底数
+	CommissionBase float64 `json:"commission_base,omitempty"`
 	// 原价
 	Original float64 `json:"original,omitempty"`
 	// 优惠信息
@@ -138,7 +140,7 @@ func (*Plan) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case plan.FieldEnable, plan.FieldIntelligent:
 			values[i] = new(sql.NullBool)
-		case plan.FieldPrice, plan.FieldCommission, plan.FieldOriginal, plan.FieldDiscountNewly:
+		case plan.FieldPrice, plan.FieldCommission, plan.FieldCommissionBase, plan.FieldOriginal, plan.FieldDiscountNewly:
 			values[i] = new(sql.NullFloat64)
 		case plan.FieldID, plan.FieldBrandID, plan.FieldType, plan.FieldDays, plan.FieldParentID:
 			values[i] = new(sql.NullInt64)
@@ -268,6 +270,12 @@ func (pl *Plan) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field commission", values[i])
 			} else if value.Valid {
 				pl.Commission = value.Float64
+			}
+		case plan.FieldCommissionBase:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field commission_base", values[i])
+			} else if value.Valid {
+				pl.CommissionBase = value.Float64
 			}
 		case plan.FieldOriginal:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
@@ -415,6 +423,9 @@ func (pl *Plan) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("commission=")
 	builder.WriteString(fmt.Sprintf("%v", pl.Commission))
+	builder.WriteString(", ")
+	builder.WriteString("commission_base=")
+	builder.WriteString(fmt.Sprintf("%v", pl.CommissionBase))
 	builder.WriteString(", ")
 	builder.WriteString("original=")
 	builder.WriteString(fmt.Sprintf("%v", pl.Original))

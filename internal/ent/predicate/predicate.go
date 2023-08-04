@@ -129,6 +129,45 @@ type PlanIntroduce func(*sql.Selector)
 // PointLog is the predicate function for pointlog builders.
 type PointLog func(*sql.Selector)
 
+// PromotionAchievement is the predicate function for promotionachievement builders.
+type PromotionAchievement func(*sql.Selector)
+
+// PromotionBankCard is the predicate function for promotionbankcard builders.
+type PromotionBankCard func(*sql.Selector)
+
+// PromotionCommission is the predicate function for promotioncommission builders.
+type PromotionCommission func(*sql.Selector)
+
+// PromotionEarnings is the predicate function for promotionearnings builders.
+type PromotionEarnings func(*sql.Selector)
+
+// PromotionGrowth is the predicate function for promotiongrowth builders.
+type PromotionGrowth func(*sql.Selector)
+
+// PromotionLevel is the predicate function for promotionlevel builders.
+type PromotionLevel func(*sql.Selector)
+
+// PromotionLevelTask is the predicate function for promotionleveltask builders.
+type PromotionLevelTask func(*sql.Selector)
+
+// PromotionMember is the predicate function for promotionmember builders.
+type PromotionMember func(*sql.Selector)
+
+// PromotionPerson is the predicate function for promotionperson builders.
+type PromotionPerson func(*sql.Selector)
+
+// PromotionPrivilege is the predicate function for promotionprivilege builders.
+type PromotionPrivilege func(*sql.Selector)
+
+// PromotionReferrals is the predicate function for promotionreferrals builders.
+type PromotionReferrals func(*sql.Selector)
+
+// PromotionSetting is the predicate function for promotionsetting builders.
+type PromotionSetting func(*sql.Selector)
+
+// PromotionWithdrawal is the predicate function for promotionwithdrawal builders.
+type PromotionWithdrawal func(*sql.Selector)
+
 // Reserve is the predicate function for reserve builders.
 type Reserve func(*sql.Selector)
 

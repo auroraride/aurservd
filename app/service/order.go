@@ -16,6 +16,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/model/promotion"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -635,6 +636,42 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
 				return
 			}
 		}
+
+		// 计算推广返佣
+		// 只有新签和续签才有返佣
+		// 新签是指：骑手第一次购买才是新签，不按照订单类型来判断
+		// 续签是指：骑手已经购买过，再次购买 包括退订阅后再次购买
+		// 这里订单的新签有可能是续签,因为当退订时间超出设定时间间隔后视为新签,这里只处理续签的情况
+		// 新签在激活时处理
+		if trade.OrderType == model.OrderTypeNewly || trade.OrderType == model.OrderTypeRenewal {
+			var commissionType promotion.CommissionCalculationType
+
+			ri := ent.Database.Rider.QueryNotDeleted().Where(rider.IDEQ(trade.RiderID)).FirstX(s.ctx)
+			if ri == nil {
+				zap.L().Error("订单已支付, 骑手不存在: "+trade.OutTradeNo, zap.Error(err))
+				return
+			}
+			// 判断返佣类型
+			commissionType, err = NewPromotionCommissionService().GetCommissionType(ri.Phone)
+			if err != nil {
+				zap.L().Error("订单已支付, 获取返佣类型失败: "+trade.OutTradeNo, zap.Error(err))
+				return
+			}
+
+			// 续费返佣
+			if commissionType == promotion.CommissionTypeRenewal {
+				err = NewPromotionCommissionService().CommissionCalculation(tx, &promotion.CommissionCalculation{
+					RiderID:        trade.RiderID,
+					CommissionBase: trade.Plan.CommissionBase,
+					Type:           commissionType,
+				})
+				if err != nil {
+					zap.L().Error("订单已支付, 续费返佣失败: "+trade.OutTradeNo, zap.Error(err))
+					return
+				}
+			}
+		}
+
 		return
 	})
 

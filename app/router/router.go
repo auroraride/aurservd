@@ -130,6 +130,7 @@ func Run() {
 	loadKitRoutes()
 
 	loadAgentRoutes()
+	loadPromotionRoutes()
 
 	zap.L().Fatal("路由启动失败", zap.Error(e.Start(cfg.Bind)))
 }

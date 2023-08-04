@@ -11,10 +11,11 @@ import (
 
 func (pl *Plan) BasicInfo() *model.Plan {
 	return &model.Plan{
-		ID:          pl.ID,
-		Name:        pl.Name,
-		Days:        pl.Days,
-		Intelligent: pl.Intelligent,
+		ID:             pl.ID,
+		Name:           pl.Name,
+		Days:           pl.Days,
+		Intelligent:    pl.Intelligent,
+		CommissionBase: pl.CommissionBase,
 	}
 }
 

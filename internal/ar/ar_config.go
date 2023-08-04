@@ -100,6 +100,7 @@ type config struct {
 		Reserve    bool // 预约到期计算
 		Reminder   bool // 个签到期提醒
 		Cabinet    bool // 电柜任务失效
+		Earnings   bool // 返佣收益结算
 	}
 
 	Cabinet struct {
@@ -181,6 +182,13 @@ type config struct {
 			HealthLog       string // 电柜在线变化日志logstore
 			BatteryLog      string // 电柜电池变化日志logstore
 		}
+
+		IdVerify struct {
+			AppCode string
+		}
+		BankAddr struct {
+			AppCode string
+		}
 	}
 
 	Baidu struct {
@@ -241,7 +249,8 @@ type config struct {
 		CorpSecret string `koanf:"corpSecret"`
 	}
 	WechatMiniprogram struct {
-		Agent Wechat
+		Agent     Wechat
+		Promotion Wechat
 	} `koanf:"wechatMiniprogram"`
 }
 

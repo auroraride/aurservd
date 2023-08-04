@@ -185,7 +185,8 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanListRes {
 				SetCommission(cl.Commission).
 				SetDesc(cl.Desc).
 				SetDays(cl.Days).
-				SetDiscountNewly(cl.DiscountNewly)
+				SetDiscountNewly(cl.DiscountNewly).
+				SetCommissionBase(cl.CommissionBase)
 			if i > 0 {
 				c.SetParent(parent)
 			}
@@ -341,14 +342,15 @@ func (s *planService) PlanWithComplexes(item *ent.Plan) (res model.PlanListRes) 
 			m[child.Model] = r
 		}
 		*r = append(*r, model.PlanComplex{
-			ID:            child.ID,
-			Price:         child.Price,
-			Days:          child.Days,
-			Original:      child.Original,
-			Desc:          child.Desc,
-			Commission:    child.Commission,
-			Model:         child.Model,
-			DiscountNewly: child.DiscountNewly,
+			ID:             child.ID,
+			Price:          child.Price,
+			Days:           child.Days,
+			Original:       child.Original,
+			Desc:           child.Desc,
+			Commission:     child.Commission,
+			Model:          child.Model,
+			DiscountNewly:  child.DiscountNewly,
+			CommissionBase: child.CommissionBase,
 		})
 	}
 

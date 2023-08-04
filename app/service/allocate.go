@@ -12,6 +12,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/model/promotion"
 	"github.com/auroraride/aurservd/app/socket"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
@@ -328,6 +329,28 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 			Active(sub, allo)
 	}
 
+	// 激活成功后，返佣计算
+	// 团签用户不返佣 个签用户返佣
+	if sub.EnterpriseID == nil && sub.Type == model.OrderTypeNewly {
+		// 判断返佣类型 新签有可能是续签
+		commissionType, err := NewPromotionCommissionService().GetCommissionType(r.Phone)
+		if err != nil {
+			snag.Panic("获取分佣类型失败")
+		}
+
+		ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
+			err = NewPromotionCommissionService().CommissionCalculation(tx, &promotion.CommissionCalculation{
+				RiderID:        r.ID,
+				CommissionBase: sub.Edges.Plan.CommissionBase,
+				Type:           commissionType,
+			})
+			if err != nil {
+				return
+			}
+			return
+		})
+
+	}
 	return model.AllocateCreateRes{
 		ID:           allo.ID,
 		NeedContract: sub.NeedContract,

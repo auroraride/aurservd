@@ -96,6 +96,32 @@ type Tx struct {
 	PlanIntroduce *PlanIntroduceClient
 	// PointLog is the client for interacting with the PointLog builders.
 	PointLog *PointLogClient
+	// PromotionAchievement is the client for interacting with the PromotionAchievement builders.
+	PromotionAchievement *PromotionAchievementClient
+	// PromotionBankCard is the client for interacting with the PromotionBankCard builders.
+	PromotionBankCard *PromotionBankCardClient
+	// PromotionCommission is the client for interacting with the PromotionCommission builders.
+	PromotionCommission *PromotionCommissionClient
+	// PromotionEarnings is the client for interacting with the PromotionEarnings builders.
+	PromotionEarnings *PromotionEarningsClient
+	// PromotionGrowth is the client for interacting with the PromotionGrowth builders.
+	PromotionGrowth *PromotionGrowthClient
+	// PromotionLevel is the client for interacting with the PromotionLevel builders.
+	PromotionLevel *PromotionLevelClient
+	// PromotionLevelTask is the client for interacting with the PromotionLevelTask builders.
+	PromotionLevelTask *PromotionLevelTaskClient
+	// PromotionMember is the client for interacting with the PromotionMember builders.
+	PromotionMember *PromotionMemberClient
+	// PromotionPerson is the client for interacting with the PromotionPerson builders.
+	PromotionPerson *PromotionPersonClient
+	// PromotionPrivilege is the client for interacting with the PromotionPrivilege builders.
+	PromotionPrivilege *PromotionPrivilegeClient
+	// PromotionReferrals is the client for interacting with the PromotionReferrals builders.
+	PromotionReferrals *PromotionReferralsClient
+	// PromotionSetting is the client for interacting with the PromotionSetting builders.
+	PromotionSetting *PromotionSettingClient
+	// PromotionWithdrawal is the client for interacting with the PromotionWithdrawal builders.
+	PromotionWithdrawal *PromotionWithdrawalClient
 	// Reserve is the client for interacting with the Reserve builders.
 	Reserve *ReserveClient
 	// Rider is the client for interacting with the Rider builders.
@@ -294,6 +320,19 @@ func (tx *Tx) init() {
 	tx.Plan = NewPlanClient(tx.config)
 	tx.PlanIntroduce = NewPlanIntroduceClient(tx.config)
 	tx.PointLog = NewPointLogClient(tx.config)
+	tx.PromotionAchievement = NewPromotionAchievementClient(tx.config)
+	tx.PromotionBankCard = NewPromotionBankCardClient(tx.config)
+	tx.PromotionCommission = NewPromotionCommissionClient(tx.config)
+	tx.PromotionEarnings = NewPromotionEarningsClient(tx.config)
+	tx.PromotionGrowth = NewPromotionGrowthClient(tx.config)
+	tx.PromotionLevel = NewPromotionLevelClient(tx.config)
+	tx.PromotionLevelTask = NewPromotionLevelTaskClient(tx.config)
+	tx.PromotionMember = NewPromotionMemberClient(tx.config)
+	tx.PromotionPerson = NewPromotionPersonClient(tx.config)
+	tx.PromotionPrivilege = NewPromotionPrivilegeClient(tx.config)
+	tx.PromotionReferrals = NewPromotionReferralsClient(tx.config)
+	tx.PromotionSetting = NewPromotionSettingClient(tx.config)
+	tx.PromotionWithdrawal = NewPromotionWithdrawalClient(tx.config)
 	tx.Reserve = NewReserveClient(tx.config)
 	tx.Rider = NewRiderClient(tx.config)
 	tx.RiderFollowUp = NewRiderFollowUpClient(tx.config)

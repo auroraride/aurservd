@@ -26,4 +26,6 @@ const (
 	HeaderEmployeeToken = "X-Employee-Token"
 	// HeaderAgentToken 代理商token
 	HeaderAgentToken = "X-Agent-Token"
+	// HeaderPromotionToken 推广token
+	HeaderPromotionToken = "X-Promotion-Token"
 )

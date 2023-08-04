@@ -71,6 +71,14 @@ func (s *stockEbikeService) Loopers(req *model.StockTransferReq, enterpriseId ui
 			continue
 		}
 
+		// 平台调拨判断 电车是否使用
+		if req.InboundTarget == model.StockTargetStation {
+			if bike.StoreID != nil || bike.StationID != nil || bike.RiderID != nil {
+				failed = append(failed, fmt.Sprintf("电车调拨失败，[%s]调出目标不符", bike.Sn))
+				continue
+			}
+		}
+
 		looppers = append(looppers, model.StockTransferLoopper{
 			EbikeSN:   silk.String(bike.Sn),
 			EbikeID:   silk.UInt64(bike.ID),

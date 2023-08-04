@@ -125,6 +125,11 @@ func Commission(v float64) predicate.Plan {
 	return predicate.Plan(sql.FieldEQ(FieldCommission, v))
 }
 
+// CommissionBase applies equality check predicate on the "commission_base" field. It's identical to CommissionBaseEQ.
+func CommissionBase(v float64) predicate.Plan {
+	return predicate.Plan(sql.FieldEQ(FieldCommissionBase, v))
+}
+
 // Original applies equality check predicate on the "original" field. It's identical to OriginalEQ.
 func Original(v float64) predicate.Plan {
 	return predicate.Plan(sql.FieldEQ(FieldOriginal, v))
@@ -793,6 +798,56 @@ func CommissionLT(v float64) predicate.Plan {
 // CommissionLTE applies the LTE predicate on the "commission" field.
 func CommissionLTE(v float64) predicate.Plan {
 	return predicate.Plan(sql.FieldLTE(FieldCommission, v))
+}
+
+// CommissionBaseEQ applies the EQ predicate on the "commission_base" field.
+func CommissionBaseEQ(v float64) predicate.Plan {
+	return predicate.Plan(sql.FieldEQ(FieldCommissionBase, v))
+}
+
+// CommissionBaseNEQ applies the NEQ predicate on the "commission_base" field.
+func CommissionBaseNEQ(v float64) predicate.Plan {
+	return predicate.Plan(sql.FieldNEQ(FieldCommissionBase, v))
+}
+
+// CommissionBaseIn applies the In predicate on the "commission_base" field.
+func CommissionBaseIn(vs ...float64) predicate.Plan {
+	return predicate.Plan(sql.FieldIn(FieldCommissionBase, vs...))
+}
+
+// CommissionBaseNotIn applies the NotIn predicate on the "commission_base" field.
+func CommissionBaseNotIn(vs ...float64) predicate.Plan {
+	return predicate.Plan(sql.FieldNotIn(FieldCommissionBase, vs...))
+}
+
+// CommissionBaseGT applies the GT predicate on the "commission_base" field.
+func CommissionBaseGT(v float64) predicate.Plan {
+	return predicate.Plan(sql.FieldGT(FieldCommissionBase, v))
+}
+
+// CommissionBaseGTE applies the GTE predicate on the "commission_base" field.
+func CommissionBaseGTE(v float64) predicate.Plan {
+	return predicate.Plan(sql.FieldGTE(FieldCommissionBase, v))
+}
+
+// CommissionBaseLT applies the LT predicate on the "commission_base" field.
+func CommissionBaseLT(v float64) predicate.Plan {
+	return predicate.Plan(sql.FieldLT(FieldCommissionBase, v))
+}
+
+// CommissionBaseLTE applies the LTE predicate on the "commission_base" field.
+func CommissionBaseLTE(v float64) predicate.Plan {
+	return predicate.Plan(sql.FieldLTE(FieldCommissionBase, v))
+}
+
+// CommissionBaseIsNil applies the IsNil predicate on the "commission_base" field.
+func CommissionBaseIsNil() predicate.Plan {
+	return predicate.Plan(sql.FieldIsNull(FieldCommissionBase))
+}
+
+// CommissionBaseNotNil applies the NotNil predicate on the "commission_base" field.
+func CommissionBaseNotNil() predicate.Plan {
+	return predicate.Plan(sql.FieldNotNull(FieldCommissionBase))
 }
 
 // OriginalEQ applies the EQ predicate on the "original" field.

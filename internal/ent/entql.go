@@ -45,6 +45,19 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/planintroduce"
 	"github.com/auroraride/aurservd/internal/ent/pointlog"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
+	"github.com/auroraride/aurservd/internal/ent/promotionachievement"
+	"github.com/auroraride/aurservd/internal/ent/promotionbankcard"
+	"github.com/auroraride/aurservd/internal/ent/promotioncommission"
+	"github.com/auroraride/aurservd/internal/ent/promotionearnings"
+	"github.com/auroraride/aurservd/internal/ent/promotiongrowth"
+	"github.com/auroraride/aurservd/internal/ent/promotionlevel"
+	"github.com/auroraride/aurservd/internal/ent/promotionleveltask"
+	"github.com/auroraride/aurservd/internal/ent/promotionmember"
+	"github.com/auroraride/aurservd/internal/ent/promotionperson"
+	"github.com/auroraride/aurservd/internal/ent/promotionprivilege"
+	"github.com/auroraride/aurservd/internal/ent/promotionreferrals"
+	"github.com/auroraride/aurservd/internal/ent/promotionsetting"
+	"github.com/auroraride/aurservd/internal/ent/promotionwithdrawal"
 	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
@@ -67,7 +80,7 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 54)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 67)}
 	graph.Nodes[0] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   agent.Table,
@@ -1162,28 +1175,29 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Plan",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			plan.FieldCreatedAt:     {Type: field.TypeTime, Column: plan.FieldCreatedAt},
-			plan.FieldUpdatedAt:     {Type: field.TypeTime, Column: plan.FieldUpdatedAt},
-			plan.FieldDeletedAt:     {Type: field.TypeTime, Column: plan.FieldDeletedAt},
-			plan.FieldCreator:       {Type: field.TypeJSON, Column: plan.FieldCreator},
-			plan.FieldLastModifier:  {Type: field.TypeJSON, Column: plan.FieldLastModifier},
-			plan.FieldRemark:        {Type: field.TypeString, Column: plan.FieldRemark},
-			plan.FieldBrandID:       {Type: field.TypeUint64, Column: plan.FieldBrandID},
-			plan.FieldModel:         {Type: field.TypeString, Column: plan.FieldModel},
-			plan.FieldEnable:        {Type: field.TypeBool, Column: plan.FieldEnable},
-			plan.FieldType:          {Type: field.TypeUint8, Column: plan.FieldType},
-			plan.FieldName:          {Type: field.TypeString, Column: plan.FieldName},
-			plan.FieldStart:         {Type: field.TypeTime, Column: plan.FieldStart},
-			plan.FieldEnd:           {Type: field.TypeTime, Column: plan.FieldEnd},
-			plan.FieldPrice:         {Type: field.TypeFloat64, Column: plan.FieldPrice},
-			plan.FieldDays:          {Type: field.TypeUint, Column: plan.FieldDays},
-			plan.FieldCommission:    {Type: field.TypeFloat64, Column: plan.FieldCommission},
-			plan.FieldOriginal:      {Type: field.TypeFloat64, Column: plan.FieldOriginal},
-			plan.FieldDesc:          {Type: field.TypeString, Column: plan.FieldDesc},
-			plan.FieldParentID:      {Type: field.TypeUint64, Column: plan.FieldParentID},
-			plan.FieldDiscountNewly: {Type: field.TypeFloat64, Column: plan.FieldDiscountNewly},
-			plan.FieldNotes:         {Type: field.TypeJSON, Column: plan.FieldNotes},
-			plan.FieldIntelligent:   {Type: field.TypeBool, Column: plan.FieldIntelligent},
+			plan.FieldCreatedAt:      {Type: field.TypeTime, Column: plan.FieldCreatedAt},
+			plan.FieldUpdatedAt:      {Type: field.TypeTime, Column: plan.FieldUpdatedAt},
+			plan.FieldDeletedAt:      {Type: field.TypeTime, Column: plan.FieldDeletedAt},
+			plan.FieldCreator:        {Type: field.TypeJSON, Column: plan.FieldCreator},
+			plan.FieldLastModifier:   {Type: field.TypeJSON, Column: plan.FieldLastModifier},
+			plan.FieldRemark:         {Type: field.TypeString, Column: plan.FieldRemark},
+			plan.FieldBrandID:        {Type: field.TypeUint64, Column: plan.FieldBrandID},
+			plan.FieldModel:          {Type: field.TypeString, Column: plan.FieldModel},
+			plan.FieldEnable:         {Type: field.TypeBool, Column: plan.FieldEnable},
+			plan.FieldType:           {Type: field.TypeUint8, Column: plan.FieldType},
+			plan.FieldName:           {Type: field.TypeString, Column: plan.FieldName},
+			plan.FieldStart:          {Type: field.TypeTime, Column: plan.FieldStart},
+			plan.FieldEnd:            {Type: field.TypeTime, Column: plan.FieldEnd},
+			plan.FieldPrice:          {Type: field.TypeFloat64, Column: plan.FieldPrice},
+			plan.FieldDays:           {Type: field.TypeUint, Column: plan.FieldDays},
+			plan.FieldCommission:     {Type: field.TypeFloat64, Column: plan.FieldCommission},
+			plan.FieldCommissionBase: {Type: field.TypeFloat64, Column: plan.FieldCommissionBase},
+			plan.FieldOriginal:       {Type: field.TypeFloat64, Column: plan.FieldOriginal},
+			plan.FieldDesc:           {Type: field.TypeString, Column: plan.FieldDesc},
+			plan.FieldParentID:       {Type: field.TypeUint64, Column: plan.FieldParentID},
+			plan.FieldDiscountNewly:  {Type: field.TypeFloat64, Column: plan.FieldDiscountNewly},
+			plan.FieldNotes:          {Type: field.TypeJSON, Column: plan.FieldNotes},
+			plan.FieldIntelligent:    {Type: field.TypeBool, Column: plan.FieldIntelligent},
 		},
 	}
 	graph.Nodes[39] = &sqlgraph.Node{
@@ -1230,6 +1244,328 @@ var schemaGraph = func() *sqlgraph.Schema {
 	}
 	graph.Nodes[41] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
+			Table:   promotionachievement.Table,
+			Columns: promotionachievement.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint64,
+				Column: promotionachievement.FieldID,
+			},
+		},
+		Type: "PromotionAchievement",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			promotionachievement.FieldCreatedAt:    {Type: field.TypeTime, Column: promotionachievement.FieldCreatedAt},
+			promotionachievement.FieldUpdatedAt:    {Type: field.TypeTime, Column: promotionachievement.FieldUpdatedAt},
+			promotionachievement.FieldDeletedAt:    {Type: field.TypeTime, Column: promotionachievement.FieldDeletedAt},
+			promotionachievement.FieldCreator:      {Type: field.TypeJSON, Column: promotionachievement.FieldCreator},
+			promotionachievement.FieldLastModifier: {Type: field.TypeJSON, Column: promotionachievement.FieldLastModifier},
+			promotionachievement.FieldRemark:       {Type: field.TypeString, Column: promotionachievement.FieldRemark},
+			promotionachievement.FieldName:         {Type: field.TypeString, Column: promotionachievement.FieldName},
+			promotionachievement.FieldType:         {Type: field.TypeUint8, Column: promotionachievement.FieldType},
+			promotionachievement.FieldIcon:         {Type: field.TypeString, Column: promotionachievement.FieldIcon},
+			promotionachievement.FieldCondition:    {Type: field.TypeUint64, Column: promotionachievement.FieldCondition},
+		},
+	}
+	graph.Nodes[42] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   promotionbankcard.Table,
+			Columns: promotionbankcard.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint64,
+				Column: promotionbankcard.FieldID,
+			},
+		},
+		Type: "PromotionBankCard",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			promotionbankcard.FieldCreatedAt:    {Type: field.TypeTime, Column: promotionbankcard.FieldCreatedAt},
+			promotionbankcard.FieldUpdatedAt:    {Type: field.TypeTime, Column: promotionbankcard.FieldUpdatedAt},
+			promotionbankcard.FieldDeletedAt:    {Type: field.TypeTime, Column: promotionbankcard.FieldDeletedAt},
+			promotionbankcard.FieldCreator:      {Type: field.TypeJSON, Column: promotionbankcard.FieldCreator},
+			promotionbankcard.FieldLastModifier: {Type: field.TypeJSON, Column: promotionbankcard.FieldLastModifier},
+			promotionbankcard.FieldRemark:       {Type: field.TypeString, Column: promotionbankcard.FieldRemark},
+			promotionbankcard.FieldMemberID:     {Type: field.TypeUint64, Column: promotionbankcard.FieldMemberID},
+			promotionbankcard.FieldCardNo:       {Type: field.TypeString, Column: promotionbankcard.FieldCardNo},
+			promotionbankcard.FieldBank:         {Type: field.TypeString, Column: promotionbankcard.FieldBank},
+			promotionbankcard.FieldIsDefault:    {Type: field.TypeBool, Column: promotionbankcard.FieldIsDefault},
+			promotionbankcard.FieldBankLogoURL:  {Type: field.TypeString, Column: promotionbankcard.FieldBankLogoURL},
+			promotionbankcard.FieldProvince:     {Type: field.TypeString, Column: promotionbankcard.FieldProvince},
+			promotionbankcard.FieldCity:         {Type: field.TypeString, Column: promotionbankcard.FieldCity},
+		},
+	}
+	graph.Nodes[43] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   promotioncommission.Table,
+			Columns: promotioncommission.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint64,
+				Column: promotioncommission.FieldID,
+			},
+		},
+		Type: "PromotionCommission",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			promotioncommission.FieldCreatedAt:    {Type: field.TypeTime, Column: promotioncommission.FieldCreatedAt},
+			promotioncommission.FieldUpdatedAt:    {Type: field.TypeTime, Column: promotioncommission.FieldUpdatedAt},
+			promotioncommission.FieldDeletedAt:    {Type: field.TypeTime, Column: promotioncommission.FieldDeletedAt},
+			promotioncommission.FieldCreator:      {Type: field.TypeJSON, Column: promotioncommission.FieldCreator},
+			promotioncommission.FieldLastModifier: {Type: field.TypeJSON, Column: promotioncommission.FieldLastModifier},
+			promotioncommission.FieldRemark:       {Type: field.TypeString, Column: promotioncommission.FieldRemark},
+			promotioncommission.FieldMemberID:     {Type: field.TypeUint64, Column: promotioncommission.FieldMemberID},
+			promotioncommission.FieldType:         {Type: field.TypeUint8, Column: promotioncommission.FieldType},
+			promotioncommission.FieldName:         {Type: field.TypeString, Column: promotioncommission.FieldName},
+			promotioncommission.FieldRule:         {Type: field.TypeJSON, Column: promotioncommission.FieldRule},
+			promotioncommission.FieldEnable:       {Type: field.TypeBool, Column: promotioncommission.FieldEnable},
+			promotioncommission.FieldAmountSum:    {Type: field.TypeFloat64, Column: promotioncommission.FieldAmountSum},
+			promotioncommission.FieldDesc:         {Type: field.TypeString, Column: promotioncommission.FieldDesc},
+			promotioncommission.FieldHistoryID:    {Type: field.TypeJSON, Column: promotioncommission.FieldHistoryID},
+			promotioncommission.FieldStartAt:      {Type: field.TypeTime, Column: promotioncommission.FieldStartAt},
+			promotioncommission.FieldEndAt:        {Type: field.TypeTime, Column: promotioncommission.FieldEndAt},
+		},
+	}
+	graph.Nodes[44] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   promotionearnings.Table,
+			Columns: promotionearnings.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint64,
+				Column: promotionearnings.FieldID,
+			},
+		},
+		Type: "PromotionEarnings",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			promotionearnings.FieldCreatedAt:         {Type: field.TypeTime, Column: promotionearnings.FieldCreatedAt},
+			promotionearnings.FieldUpdatedAt:         {Type: field.TypeTime, Column: promotionearnings.FieldUpdatedAt},
+			promotionearnings.FieldDeletedAt:         {Type: field.TypeTime, Column: promotionearnings.FieldDeletedAt},
+			promotionearnings.FieldCreator:           {Type: field.TypeJSON, Column: promotionearnings.FieldCreator},
+			promotionearnings.FieldLastModifier:      {Type: field.TypeJSON, Column: promotionearnings.FieldLastModifier},
+			promotionearnings.FieldRemark:            {Type: field.TypeString, Column: promotionearnings.FieldRemark},
+			promotionearnings.FieldCommissionID:      {Type: field.TypeUint64, Column: promotionearnings.FieldCommissionID},
+			promotionearnings.FieldMemberID:          {Type: field.TypeUint64, Column: promotionearnings.FieldMemberID},
+			promotionearnings.FieldRiderID:           {Type: field.TypeUint64, Column: promotionearnings.FieldRiderID},
+			promotionearnings.FieldStatus:            {Type: field.TypeUint8, Column: promotionearnings.FieldStatus},
+			promotionearnings.FieldAmount:            {Type: field.TypeFloat64, Column: promotionearnings.FieldAmount},
+			promotionearnings.FieldCommissionRuleKey: {Type: field.TypeString, Column: promotionearnings.FieldCommissionRuleKey},
+		},
+	}
+	graph.Nodes[45] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   promotiongrowth.Table,
+			Columns: promotiongrowth.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint64,
+				Column: promotiongrowth.FieldID,
+			},
+		},
+		Type: "PromotionGrowth",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			promotiongrowth.FieldCreatedAt:    {Type: field.TypeTime, Column: promotiongrowth.FieldCreatedAt},
+			promotiongrowth.FieldUpdatedAt:    {Type: field.TypeTime, Column: promotiongrowth.FieldUpdatedAt},
+			promotiongrowth.FieldDeletedAt:    {Type: field.TypeTime, Column: promotiongrowth.FieldDeletedAt},
+			promotiongrowth.FieldCreator:      {Type: field.TypeJSON, Column: promotiongrowth.FieldCreator},
+			promotiongrowth.FieldLastModifier: {Type: field.TypeJSON, Column: promotiongrowth.FieldLastModifier},
+			promotiongrowth.FieldRemark:       {Type: field.TypeString, Column: promotiongrowth.FieldRemark},
+			promotiongrowth.FieldMemberID:     {Type: field.TypeUint64, Column: promotiongrowth.FieldMemberID},
+			promotiongrowth.FieldTaskID:       {Type: field.TypeUint64, Column: promotiongrowth.FieldTaskID},
+			promotiongrowth.FieldStatus:       {Type: field.TypeUint8, Column: promotiongrowth.FieldStatus},
+			promotiongrowth.FieldGrowthValue:  {Type: field.TypeUint64, Column: promotiongrowth.FieldGrowthValue},
+		},
+	}
+	graph.Nodes[46] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   promotionlevel.Table,
+			Columns: promotionlevel.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint64,
+				Column: promotionlevel.FieldID,
+			},
+		},
+		Type: "PromotionLevel",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			promotionlevel.FieldCreatedAt:       {Type: field.TypeTime, Column: promotionlevel.FieldCreatedAt},
+			promotionlevel.FieldUpdatedAt:       {Type: field.TypeTime, Column: promotionlevel.FieldUpdatedAt},
+			promotionlevel.FieldDeletedAt:       {Type: field.TypeTime, Column: promotionlevel.FieldDeletedAt},
+			promotionlevel.FieldCreator:         {Type: field.TypeJSON, Column: promotionlevel.FieldCreator},
+			promotionlevel.FieldLastModifier:    {Type: field.TypeJSON, Column: promotionlevel.FieldLastModifier},
+			promotionlevel.FieldRemark:          {Type: field.TypeString, Column: promotionlevel.FieldRemark},
+			promotionlevel.FieldLevel:           {Type: field.TypeUint64, Column: promotionlevel.FieldLevel},
+			promotionlevel.FieldGrowthValue:     {Type: field.TypeUint64, Column: promotionlevel.FieldGrowthValue},
+			promotionlevel.FieldCommissionRatio: {Type: field.TypeFloat64, Column: promotionlevel.FieldCommissionRatio},
+		},
+	}
+	graph.Nodes[47] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   promotionleveltask.Table,
+			Columns: promotionleveltask.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint64,
+				Column: promotionleveltask.FieldID,
+			},
+		},
+		Type: "PromotionLevelTask",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			promotionleveltask.FieldCreatedAt:    {Type: field.TypeTime, Column: promotionleveltask.FieldCreatedAt},
+			promotionleveltask.FieldUpdatedAt:    {Type: field.TypeTime, Column: promotionleveltask.FieldUpdatedAt},
+			promotionleveltask.FieldDeletedAt:    {Type: field.TypeTime, Column: promotionleveltask.FieldDeletedAt},
+			promotionleveltask.FieldCreator:      {Type: field.TypeJSON, Column: promotionleveltask.FieldCreator},
+			promotionleveltask.FieldLastModifier: {Type: field.TypeJSON, Column: promotionleveltask.FieldLastModifier},
+			promotionleveltask.FieldRemark:       {Type: field.TypeString, Column: promotionleveltask.FieldRemark},
+			promotionleveltask.FieldName:         {Type: field.TypeString, Column: promotionleveltask.FieldName},
+			promotionleveltask.FieldDescription:  {Type: field.TypeString, Column: promotionleveltask.FieldDescription},
+			promotionleveltask.FieldType:         {Type: field.TypeUint8, Column: promotionleveltask.FieldType},
+			promotionleveltask.FieldGrowthValue:  {Type: field.TypeUint64, Column: promotionleveltask.FieldGrowthValue},
+			promotionleveltask.FieldKey:          {Type: field.TypeString, Column: promotionleveltask.FieldKey},
+		},
+	}
+	graph.Nodes[48] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   promotionmember.Table,
+			Columns: promotionmember.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint64,
+				Column: promotionmember.FieldID,
+			},
+		},
+		Type: "PromotionMember",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			promotionmember.FieldCreatedAt:          {Type: field.TypeTime, Column: promotionmember.FieldCreatedAt},
+			promotionmember.FieldUpdatedAt:          {Type: field.TypeTime, Column: promotionmember.FieldUpdatedAt},
+			promotionmember.FieldDeletedAt:          {Type: field.TypeTime, Column: promotionmember.FieldDeletedAt},
+			promotionmember.FieldCreator:            {Type: field.TypeJSON, Column: promotionmember.FieldCreator},
+			promotionmember.FieldLastModifier:       {Type: field.TypeJSON, Column: promotionmember.FieldLastModifier},
+			promotionmember.FieldRemark:             {Type: field.TypeString, Column: promotionmember.FieldRemark},
+			promotionmember.FieldRiderID:            {Type: field.TypeUint64, Column: promotionmember.FieldRiderID},
+			promotionmember.FieldLevelID:            {Type: field.TypeUint64, Column: promotionmember.FieldLevelID},
+			promotionmember.FieldCommissionID:       {Type: field.TypeUint64, Column: promotionmember.FieldCommissionID},
+			promotionmember.FieldPhone:              {Type: field.TypeString, Column: promotionmember.FieldPhone},
+			promotionmember.FieldName:               {Type: field.TypeString, Column: promotionmember.FieldName},
+			promotionmember.FieldBalance:            {Type: field.TypeFloat64, Column: promotionmember.FieldBalance},
+			promotionmember.FieldFrozen:             {Type: field.TypeFloat64, Column: promotionmember.FieldFrozen},
+			promotionmember.FieldTotalGrowthValue:   {Type: field.TypeUint64, Column: promotionmember.FieldTotalGrowthValue},
+			promotionmember.FieldCurrentGrowthValue: {Type: field.TypeUint64, Column: promotionmember.FieldCurrentGrowthValue},
+			promotionmember.FieldEnable:             {Type: field.TypeBool, Column: promotionmember.FieldEnable},
+			promotionmember.FieldPersonID:           {Type: field.TypeUint64, Column: promotionmember.FieldPersonID},
+			promotionmember.FieldAvatarURL:          {Type: field.TypeString, Column: promotionmember.FieldAvatarURL},
+		},
+	}
+	graph.Nodes[49] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   promotionperson.Table,
+			Columns: promotionperson.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint64,
+				Column: promotionperson.FieldID,
+			},
+		},
+		Type: "PromotionPerson",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			promotionperson.FieldCreatedAt:    {Type: field.TypeTime, Column: promotionperson.FieldCreatedAt},
+			promotionperson.FieldUpdatedAt:    {Type: field.TypeTime, Column: promotionperson.FieldUpdatedAt},
+			promotionperson.FieldDeletedAt:    {Type: field.TypeTime, Column: promotionperson.FieldDeletedAt},
+			promotionperson.FieldCreator:      {Type: field.TypeJSON, Column: promotionperson.FieldCreator},
+			promotionperson.FieldLastModifier: {Type: field.TypeJSON, Column: promotionperson.FieldLastModifier},
+			promotionperson.FieldRemark:       {Type: field.TypeString, Column: promotionperson.FieldRemark},
+			promotionperson.FieldStatus:       {Type: field.TypeUint8, Column: promotionperson.FieldStatus},
+			promotionperson.FieldName:         {Type: field.TypeString, Column: promotionperson.FieldName},
+			promotionperson.FieldIDCardNumber: {Type: field.TypeString, Column: promotionperson.FieldIDCardNumber},
+			promotionperson.FieldAddress:      {Type: field.TypeString, Column: promotionperson.FieldAddress},
+		},
+	}
+	graph.Nodes[50] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   promotionprivilege.Table,
+			Columns: promotionprivilege.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint64,
+				Column: promotionprivilege.FieldID,
+			},
+		},
+		Type: "PromotionPrivilege",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			promotionprivilege.FieldCreatedAt:    {Type: field.TypeTime, Column: promotionprivilege.FieldCreatedAt},
+			promotionprivilege.FieldUpdatedAt:    {Type: field.TypeTime, Column: promotionprivilege.FieldUpdatedAt},
+			promotionprivilege.FieldDeletedAt:    {Type: field.TypeTime, Column: promotionprivilege.FieldDeletedAt},
+			promotionprivilege.FieldCreator:      {Type: field.TypeJSON, Column: promotionprivilege.FieldCreator},
+			promotionprivilege.FieldLastModifier: {Type: field.TypeJSON, Column: promotionprivilege.FieldLastModifier},
+			promotionprivilege.FieldRemark:       {Type: field.TypeString, Column: promotionprivilege.FieldRemark},
+			promotionprivilege.FieldType:         {Type: field.TypeUint8, Column: promotionprivilege.FieldType},
+			promotionprivilege.FieldName:         {Type: field.TypeString, Column: promotionprivilege.FieldName},
+			promotionprivilege.FieldDescription:  {Type: field.TypeString, Column: promotionprivilege.FieldDescription},
+			promotionprivilege.FieldValue:        {Type: field.TypeUint64, Column: promotionprivilege.FieldValue},
+		},
+	}
+	graph.Nodes[51] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   promotionreferrals.Table,
+			Columns: promotionreferrals.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint64,
+				Column: promotionreferrals.FieldID,
+			},
+		},
+		Type: "PromotionReferrals",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			promotionreferrals.FieldCreatedAt:         {Type: field.TypeTime, Column: promotionreferrals.FieldCreatedAt},
+			promotionreferrals.FieldUpdatedAt:         {Type: field.TypeTime, Column: promotionreferrals.FieldUpdatedAt},
+			promotionreferrals.FieldDeletedAt:         {Type: field.TypeTime, Column: promotionreferrals.FieldDeletedAt},
+			promotionreferrals.FieldCreator:           {Type: field.TypeJSON, Column: promotionreferrals.FieldCreator},
+			promotionreferrals.FieldLastModifier:      {Type: field.TypeJSON, Column: promotionreferrals.FieldLastModifier},
+			promotionreferrals.FieldRemark:            {Type: field.TypeString, Column: promotionreferrals.FieldRemark},
+			promotionreferrals.FieldReferringMemberID: {Type: field.TypeUint64, Column: promotionreferrals.FieldReferringMemberID},
+			promotionreferrals.FieldReferredMemberID:  {Type: field.TypeUint64, Column: promotionreferrals.FieldReferredMemberID},
+			promotionreferrals.FieldRiderID:           {Type: field.TypeUint64, Column: promotionreferrals.FieldRiderID},
+			promotionreferrals.FieldParentID:          {Type: field.TypeUint64, Column: promotionreferrals.FieldParentID},
+		},
+	}
+	graph.Nodes[52] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   promotionsetting.Table,
+			Columns: promotionsetting.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint64,
+				Column: promotionsetting.FieldID,
+			},
+		},
+		Type: "PromotionSetting",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			promotionsetting.FieldCreatedAt:    {Type: field.TypeTime, Column: promotionsetting.FieldCreatedAt},
+			promotionsetting.FieldUpdatedAt:    {Type: field.TypeTime, Column: promotionsetting.FieldUpdatedAt},
+			promotionsetting.FieldDeletedAt:    {Type: field.TypeTime, Column: promotionsetting.FieldDeletedAt},
+			promotionsetting.FieldCreator:      {Type: field.TypeJSON, Column: promotionsetting.FieldCreator},
+			promotionsetting.FieldLastModifier: {Type: field.TypeJSON, Column: promotionsetting.FieldLastModifier},
+			promotionsetting.FieldRemark:       {Type: field.TypeString, Column: promotionsetting.FieldRemark},
+			promotionsetting.FieldTitle:        {Type: field.TypeString, Column: promotionsetting.FieldTitle},
+			promotionsetting.FieldContent:      {Type: field.TypeString, Column: promotionsetting.FieldContent},
+			promotionsetting.FieldKey:          {Type: field.TypeString, Column: promotionsetting.FieldKey},
+		},
+	}
+	graph.Nodes[53] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   promotionwithdrawal.Table,
+			Columns: promotionwithdrawal.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint64,
+				Column: promotionwithdrawal.FieldID,
+			},
+		},
+		Type: "PromotionWithdrawal",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			promotionwithdrawal.FieldCreatedAt:    {Type: field.TypeTime, Column: promotionwithdrawal.FieldCreatedAt},
+			promotionwithdrawal.FieldUpdatedAt:    {Type: field.TypeTime, Column: promotionwithdrawal.FieldUpdatedAt},
+			promotionwithdrawal.FieldDeletedAt:    {Type: field.TypeTime, Column: promotionwithdrawal.FieldDeletedAt},
+			promotionwithdrawal.FieldCreator:      {Type: field.TypeJSON, Column: promotionwithdrawal.FieldCreator},
+			promotionwithdrawal.FieldLastModifier: {Type: field.TypeJSON, Column: promotionwithdrawal.FieldLastModifier},
+			promotionwithdrawal.FieldRemark:       {Type: field.TypeString, Column: promotionwithdrawal.FieldRemark},
+			promotionwithdrawal.FieldMemberID:     {Type: field.TypeUint64, Column: promotionwithdrawal.FieldMemberID},
+			promotionwithdrawal.FieldStatus:       {Type: field.TypeUint8, Column: promotionwithdrawal.FieldStatus},
+			promotionwithdrawal.FieldApplyAmount:  {Type: field.TypeFloat64, Column: promotionwithdrawal.FieldApplyAmount},
+			promotionwithdrawal.FieldAmount:       {Type: field.TypeFloat64, Column: promotionwithdrawal.FieldAmount},
+			promotionwithdrawal.FieldFee:          {Type: field.TypeFloat64, Column: promotionwithdrawal.FieldFee},
+			promotionwithdrawal.FieldMethod:       {Type: field.TypeUint8, Column: promotionwithdrawal.FieldMethod},
+			promotionwithdrawal.FieldAccountID:    {Type: field.TypeUint64, Column: promotionwithdrawal.FieldAccountID},
+			promotionwithdrawal.FieldApplyTime:    {Type: field.TypeTime, Column: promotionwithdrawal.FieldApplyTime},
+			promotionwithdrawal.FieldReviewTime:   {Type: field.TypeTime, Column: promotionwithdrawal.FieldReviewTime},
+		},
+	}
+	graph.Nodes[54] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
 			Table:   reserve.Table,
 			Columns: reserve.Columns,
 			ID: &sqlgraph.FieldSpec{
@@ -1253,7 +1589,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			reserve.FieldType:         {Type: field.TypeString, Column: reserve.FieldType},
 		},
 	}
-	graph.Nodes[42] = &sqlgraph.Node{
+	graph.Nodes[55] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   rider.Table,
 			Columns: rider.Columns,
@@ -1290,7 +1626,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			rider.FieldJoinEnterpriseAt:  {Type: field.TypeTime, Column: rider.FieldJoinEnterpriseAt},
 		},
 	}
-	graph.Nodes[43] = &sqlgraph.Node{
+	graph.Nodes[56] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   riderfollowup.Table,
 			Columns: riderfollowup.Columns,
@@ -1311,7 +1647,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			riderfollowup.FieldRiderID:      {Type: field.TypeUint64, Column: riderfollowup.FieldRiderID},
 		},
 	}
-	graph.Nodes[44] = &sqlgraph.Node{
+	graph.Nodes[57] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   role.Table,
 			Columns: role.Columns,
@@ -1329,7 +1665,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			role.FieldCreatedAt:   {Type: field.TypeTime, Column: role.FieldCreatedAt},
 		},
 	}
-	graph.Nodes[45] = &sqlgraph.Node{
+	graph.Nodes[58] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   setting.Table,
 			Columns: setting.Columns,
@@ -1350,7 +1686,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			setting.FieldContent:      {Type: field.TypeString, Column: setting.FieldContent},
 		},
 	}
-	graph.Nodes[46] = &sqlgraph.Node{
+	graph.Nodes[59] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   stock.Table,
 			Columns: stock.Columns,
@@ -1387,7 +1723,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			stock.FieldMaterial:     {Type: field.TypeEnum, Column: stock.FieldMaterial},
 		},
 	}
-	graph.Nodes[47] = &sqlgraph.Node{
+	graph.Nodes[60] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   stocksummary.Table,
 			Columns: stocksummary.Columns,
@@ -1413,7 +1749,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			stocksummary.FieldMaterial:     {Type: field.TypeEnum, Column: stocksummary.FieldMaterial},
 		},
 	}
-	graph.Nodes[48] = &sqlgraph.Node{
+	graph.Nodes[61] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   store.Table,
 			Columns: store.Columns,
@@ -1443,7 +1779,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			store.FieldEbikeRepair:  {Type: field.TypeBool, Column: store.FieldEbikeRepair},
 		},
 	}
-	graph.Nodes[49] = &sqlgraph.Node{
+	graph.Nodes[62] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   subscribe.Table,
 			Columns: subscribe.Columns,
@@ -1495,7 +1831,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribe.FieldIntelligent:       {Type: field.TypeBool, Column: subscribe.FieldIntelligent},
 		},
 	}
-	graph.Nodes[50] = &sqlgraph.Node{
+	graph.Nodes[63] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   subscribealter.Table,
 			Columns: subscribealter.Columns,
@@ -1522,7 +1858,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribealter.FieldSubscribeEndAt: {Type: field.TypeTime, Column: subscribealter.FieldSubscribeEndAt},
 		},
 	}
-	graph.Nodes[51] = &sqlgraph.Node{
+	graph.Nodes[64] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   subscribepause.Table,
 			Columns: subscribepause.Columns,
@@ -1557,7 +1893,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribepause.FieldSuspendDays:   {Type: field.TypeInt, Column: subscribepause.FieldSuspendDays},
 		},
 	}
-	graph.Nodes[52] = &sqlgraph.Node{
+	graph.Nodes[65] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   subscribereminder.Table,
 			Columns: subscribereminder.Columns,
@@ -1584,7 +1920,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribereminder.FieldFeeFormula:  {Type: field.TypeString, Column: subscribereminder.FieldFeeFormula},
 		},
 	}
-	graph.Nodes[53] = &sqlgraph.Node{
+	graph.Nodes[66] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   subscribesuspend.Table,
 			Columns: subscribesuspend.Columns,
@@ -3732,6 +4068,270 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"PointLog",
 		"Order",
+	)
+	graph.MustAddE(
+		"member",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   promotionbankcard.MemberTable,
+			Columns: []string{promotionbankcard.MemberColumn},
+			Bidi:    false,
+		},
+		"PromotionBankCard",
+		"PromotionMember",
+	)
+	graph.MustAddE(
+		"withdrawals",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   promotionbankcard.WithdrawalsTable,
+			Columns: []string{promotionbankcard.WithdrawalsColumn},
+			Bidi:    false,
+		},
+		"PromotionBankCard",
+		"PromotionWithdrawal",
+	)
+	graph.MustAddE(
+		"member",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotioncommission.MemberTable,
+			Columns: []string{promotioncommission.MemberColumn},
+			Bidi:    false,
+		},
+		"PromotionCommission",
+		"PromotionMember",
+	)
+	graph.MustAddE(
+		"commission",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotionearnings.CommissionTable,
+			Columns: []string{promotionearnings.CommissionColumn},
+			Bidi:    false,
+		},
+		"PromotionEarnings",
+		"PromotionCommission",
+	)
+	graph.MustAddE(
+		"member",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotionearnings.MemberTable,
+			Columns: []string{promotionearnings.MemberColumn},
+			Bidi:    false,
+		},
+		"PromotionEarnings",
+		"PromotionMember",
+	)
+	graph.MustAddE(
+		"rider",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotionearnings.RiderTable,
+			Columns: []string{promotionearnings.RiderColumn},
+			Bidi:    false,
+		},
+		"PromotionEarnings",
+		"Rider",
+	)
+	graph.MustAddE(
+		"member",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotiongrowth.MemberTable,
+			Columns: []string{promotiongrowth.MemberColumn},
+			Bidi:    false,
+		},
+		"PromotionGrowth",
+		"PromotionMember",
+	)
+	graph.MustAddE(
+		"task",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotiongrowth.TaskTable,
+			Columns: []string{promotiongrowth.TaskColumn},
+			Bidi:    false,
+		},
+		"PromotionGrowth",
+		"PromotionLevelTask",
+	)
+	graph.MustAddE(
+		"rider",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotionmember.RiderTable,
+			Columns: []string{promotionmember.RiderColumn},
+			Bidi:    false,
+		},
+		"PromotionMember",
+		"Rider",
+	)
+	graph.MustAddE(
+		"level",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotionmember.LevelTable,
+			Columns: []string{promotionmember.LevelColumn},
+			Bidi:    false,
+		},
+		"PromotionMember",
+		"PromotionLevel",
+	)
+	graph.MustAddE(
+		"commission",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotionmember.CommissionTable,
+			Columns: []string{promotionmember.CommissionColumn},
+			Bidi:    false,
+		},
+		"PromotionMember",
+		"PromotionCommission",
+	)
+	graph.MustAddE(
+		"referring",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   promotionmember.ReferringTable,
+			Columns: []string{promotionmember.ReferringColumn},
+			Bidi:    false,
+		},
+		"PromotionMember",
+		"PromotionReferrals",
+	)
+	graph.MustAddE(
+		"referred",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   promotionmember.ReferredTable,
+			Columns: []string{promotionmember.ReferredColumn},
+			Bidi:    false,
+		},
+		"PromotionMember",
+		"PromotionReferrals",
+	)
+	graph.MustAddE(
+		"person",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   promotionmember.PersonTable,
+			Columns: []string{promotionmember.PersonColumn},
+			Bidi:    false,
+		},
+		"PromotionMember",
+		"PromotionPerson",
+	)
+	graph.MustAddE(
+		"cards",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   promotionmember.CardsTable,
+			Columns: []string{promotionmember.CardsColumn},
+			Bidi:    false,
+		},
+		"PromotionMember",
+		"PromotionBankCard",
+	)
+	graph.MustAddE(
+		"member",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   promotionperson.MemberTable,
+			Columns: []string{promotionperson.MemberColumn},
+			Bidi:    false,
+		},
+		"PromotionPerson",
+		"PromotionMember",
+	)
+	graph.MustAddE(
+		"referring_member",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   promotionreferrals.ReferringMemberTable,
+			Columns: []string{promotionreferrals.ReferringMemberColumn},
+			Bidi:    false,
+		},
+		"PromotionReferrals",
+		"PromotionMember",
+	)
+	graph.MustAddE(
+		"referred_member",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   promotionreferrals.ReferredMemberTable,
+			Columns: []string{promotionreferrals.ReferredMemberColumn},
+			Bidi:    false,
+		},
+		"PromotionReferrals",
+		"PromotionMember",
+	)
+	graph.MustAddE(
+		"parent",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   promotionreferrals.ParentTable,
+			Columns: []string{promotionreferrals.ParentColumn},
+			Bidi:    false,
+		},
+		"PromotionReferrals",
+		"PromotionReferrals",
+	)
+	graph.MustAddE(
+		"children",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   promotionreferrals.ChildrenTable,
+			Columns: []string{promotionreferrals.ChildrenColumn},
+			Bidi:    false,
+		},
+		"PromotionReferrals",
+		"PromotionReferrals",
+	)
+	graph.MustAddE(
+		"member",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotionwithdrawal.MemberTable,
+			Columns: []string{promotionwithdrawal.MemberColumn},
+			Bidi:    false,
+		},
+		"PromotionWithdrawal",
+		"PromotionMember",
+	)
+	graph.MustAddE(
+		"cards",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   promotionwithdrawal.CardsTable,
+			Columns: []string{promotionwithdrawal.CardsColumn},
+			Bidi:    false,
+		},
+		"PromotionWithdrawal",
+		"PromotionBankCard",
 	)
 	graph.MustAddE(
 		"cabinet",
@@ -11715,6 +12315,11 @@ func (f *PlanFilter) WhereCommission(p entql.Float64P) {
 	f.Where(p.Field(plan.FieldCommission))
 }
 
+// WhereCommissionBase applies the entql float64 predicate on the commission_base field.
+func (f *PlanFilter) WhereCommissionBase(p entql.Float64P) {
+	f.Where(p.Field(plan.FieldCommissionBase))
+}
+
 // WhereOriginal applies the entql float64 predicate on the original field.
 func (f *PlanFilter) WhereOriginal(p entql.Float64P) {
 	f.Where(p.Field(plan.FieldOriginal))
@@ -12004,6 +12609,1599 @@ func (f *PointLogFilter) WhereHasOrderWith(preds ...predicate.Order) {
 }
 
 // addPredicate implements the predicateAdder interface.
+func (paq *PromotionAchievementQuery) addPredicate(pred func(s *sql.Selector)) {
+	paq.predicates = append(paq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the PromotionAchievementQuery builder.
+func (paq *PromotionAchievementQuery) Filter() *PromotionAchievementFilter {
+	return &PromotionAchievementFilter{config: paq.config, predicateAdder: paq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *PromotionAchievementMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the PromotionAchievementMutation builder.
+func (m *PromotionAchievementMutation) Filter() *PromotionAchievementFilter {
+	return &PromotionAchievementFilter{config: m.config, predicateAdder: m}
+}
+
+// PromotionAchievementFilter provides a generic filtering capability at runtime for PromotionAchievementQuery.
+type PromotionAchievementFilter struct {
+	predicateAdder
+	config
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *PromotionAchievementFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[41].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *PromotionAchievementFilter) WhereID(p entql.Uint64P) {
+	f.Where(p.Field(promotionachievement.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *PromotionAchievementFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(promotionachievement.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *PromotionAchievementFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(promotionachievement.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *PromotionAchievementFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(promotionachievement.FieldDeletedAt))
+}
+
+// WhereCreator applies the entql json.RawMessage predicate on the creator field.
+func (f *PromotionAchievementFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(promotionachievement.FieldCreator))
+}
+
+// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
+func (f *PromotionAchievementFilter) WhereLastModifier(p entql.BytesP) {
+	f.Where(p.Field(promotionachievement.FieldLastModifier))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *PromotionAchievementFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(promotionachievement.FieldRemark))
+}
+
+// WhereName applies the entql string predicate on the name field.
+func (f *PromotionAchievementFilter) WhereName(p entql.StringP) {
+	f.Where(p.Field(promotionachievement.FieldName))
+}
+
+// WhereType applies the entql uint8 predicate on the type field.
+func (f *PromotionAchievementFilter) WhereType(p entql.Uint8P) {
+	f.Where(p.Field(promotionachievement.FieldType))
+}
+
+// WhereIcon applies the entql string predicate on the icon field.
+func (f *PromotionAchievementFilter) WhereIcon(p entql.StringP) {
+	f.Where(p.Field(promotionachievement.FieldIcon))
+}
+
+// WhereCondition applies the entql uint64 predicate on the condition field.
+func (f *PromotionAchievementFilter) WhereCondition(p entql.Uint64P) {
+	f.Where(p.Field(promotionachievement.FieldCondition))
+}
+
+// addPredicate implements the predicateAdder interface.
+func (pbcq *PromotionBankCardQuery) addPredicate(pred func(s *sql.Selector)) {
+	pbcq.predicates = append(pbcq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the PromotionBankCardQuery builder.
+func (pbcq *PromotionBankCardQuery) Filter() *PromotionBankCardFilter {
+	return &PromotionBankCardFilter{config: pbcq.config, predicateAdder: pbcq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *PromotionBankCardMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the PromotionBankCardMutation builder.
+func (m *PromotionBankCardMutation) Filter() *PromotionBankCardFilter {
+	return &PromotionBankCardFilter{config: m.config, predicateAdder: m}
+}
+
+// PromotionBankCardFilter provides a generic filtering capability at runtime for PromotionBankCardQuery.
+type PromotionBankCardFilter struct {
+	predicateAdder
+	config
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *PromotionBankCardFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[42].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *PromotionBankCardFilter) WhereID(p entql.Uint64P) {
+	f.Where(p.Field(promotionbankcard.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *PromotionBankCardFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(promotionbankcard.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *PromotionBankCardFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(promotionbankcard.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *PromotionBankCardFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(promotionbankcard.FieldDeletedAt))
+}
+
+// WhereCreator applies the entql json.RawMessage predicate on the creator field.
+func (f *PromotionBankCardFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(promotionbankcard.FieldCreator))
+}
+
+// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
+func (f *PromotionBankCardFilter) WhereLastModifier(p entql.BytesP) {
+	f.Where(p.Field(promotionbankcard.FieldLastModifier))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *PromotionBankCardFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(promotionbankcard.FieldRemark))
+}
+
+// WhereMemberID applies the entql uint64 predicate on the member_id field.
+func (f *PromotionBankCardFilter) WhereMemberID(p entql.Uint64P) {
+	f.Where(p.Field(promotionbankcard.FieldMemberID))
+}
+
+// WhereCardNo applies the entql string predicate on the card_no field.
+func (f *PromotionBankCardFilter) WhereCardNo(p entql.StringP) {
+	f.Where(p.Field(promotionbankcard.FieldCardNo))
+}
+
+// WhereBank applies the entql string predicate on the bank field.
+func (f *PromotionBankCardFilter) WhereBank(p entql.StringP) {
+	f.Where(p.Field(promotionbankcard.FieldBank))
+}
+
+// WhereIsDefault applies the entql bool predicate on the is_default field.
+func (f *PromotionBankCardFilter) WhereIsDefault(p entql.BoolP) {
+	f.Where(p.Field(promotionbankcard.FieldIsDefault))
+}
+
+// WhereBankLogoURL applies the entql string predicate on the bank_logo_url field.
+func (f *PromotionBankCardFilter) WhereBankLogoURL(p entql.StringP) {
+	f.Where(p.Field(promotionbankcard.FieldBankLogoURL))
+}
+
+// WhereProvince applies the entql string predicate on the province field.
+func (f *PromotionBankCardFilter) WhereProvince(p entql.StringP) {
+	f.Where(p.Field(promotionbankcard.FieldProvince))
+}
+
+// WhereCity applies the entql string predicate on the city field.
+func (f *PromotionBankCardFilter) WhereCity(p entql.StringP) {
+	f.Where(p.Field(promotionbankcard.FieldCity))
+}
+
+// WhereHasMember applies a predicate to check if query has an edge member.
+func (f *PromotionBankCardFilter) WhereHasMember() {
+	f.Where(entql.HasEdge("member"))
+}
+
+// WhereHasMemberWith applies a predicate to check if query has an edge member with a given conditions (other predicates).
+func (f *PromotionBankCardFilter) WhereHasMemberWith(preds ...predicate.PromotionMember) {
+	f.Where(entql.HasEdgeWith("member", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasWithdrawals applies a predicate to check if query has an edge withdrawals.
+func (f *PromotionBankCardFilter) WhereHasWithdrawals() {
+	f.Where(entql.HasEdge("withdrawals"))
+}
+
+// WhereHasWithdrawalsWith applies a predicate to check if query has an edge withdrawals with a given conditions (other predicates).
+func (f *PromotionBankCardFilter) WhereHasWithdrawalsWith(preds ...predicate.PromotionWithdrawal) {
+	f.Where(entql.HasEdgeWith("withdrawals", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// addPredicate implements the predicateAdder interface.
+func (pcq *PromotionCommissionQuery) addPredicate(pred func(s *sql.Selector)) {
+	pcq.predicates = append(pcq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the PromotionCommissionQuery builder.
+func (pcq *PromotionCommissionQuery) Filter() *PromotionCommissionFilter {
+	return &PromotionCommissionFilter{config: pcq.config, predicateAdder: pcq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *PromotionCommissionMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the PromotionCommissionMutation builder.
+func (m *PromotionCommissionMutation) Filter() *PromotionCommissionFilter {
+	return &PromotionCommissionFilter{config: m.config, predicateAdder: m}
+}
+
+// PromotionCommissionFilter provides a generic filtering capability at runtime for PromotionCommissionQuery.
+type PromotionCommissionFilter struct {
+	predicateAdder
+	config
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *PromotionCommissionFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[43].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *PromotionCommissionFilter) WhereID(p entql.Uint64P) {
+	f.Where(p.Field(promotioncommission.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *PromotionCommissionFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(promotioncommission.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *PromotionCommissionFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(promotioncommission.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *PromotionCommissionFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(promotioncommission.FieldDeletedAt))
+}
+
+// WhereCreator applies the entql json.RawMessage predicate on the creator field.
+func (f *PromotionCommissionFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(promotioncommission.FieldCreator))
+}
+
+// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
+func (f *PromotionCommissionFilter) WhereLastModifier(p entql.BytesP) {
+	f.Where(p.Field(promotioncommission.FieldLastModifier))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *PromotionCommissionFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(promotioncommission.FieldRemark))
+}
+
+// WhereMemberID applies the entql uint64 predicate on the member_id field.
+func (f *PromotionCommissionFilter) WhereMemberID(p entql.Uint64P) {
+	f.Where(p.Field(promotioncommission.FieldMemberID))
+}
+
+// WhereType applies the entql uint8 predicate on the type field.
+func (f *PromotionCommissionFilter) WhereType(p entql.Uint8P) {
+	f.Where(p.Field(promotioncommission.FieldType))
+}
+
+// WhereName applies the entql string predicate on the name field.
+func (f *PromotionCommissionFilter) WhereName(p entql.StringP) {
+	f.Where(p.Field(promotioncommission.FieldName))
+}
+
+// WhereRule applies the entql json.RawMessage predicate on the rule field.
+func (f *PromotionCommissionFilter) WhereRule(p entql.BytesP) {
+	f.Where(p.Field(promotioncommission.FieldRule))
+}
+
+// WhereEnable applies the entql bool predicate on the enable field.
+func (f *PromotionCommissionFilter) WhereEnable(p entql.BoolP) {
+	f.Where(p.Field(promotioncommission.FieldEnable))
+}
+
+// WhereAmountSum applies the entql float64 predicate on the amount_sum field.
+func (f *PromotionCommissionFilter) WhereAmountSum(p entql.Float64P) {
+	f.Where(p.Field(promotioncommission.FieldAmountSum))
+}
+
+// WhereDesc applies the entql string predicate on the desc field.
+func (f *PromotionCommissionFilter) WhereDesc(p entql.StringP) {
+	f.Where(p.Field(promotioncommission.FieldDesc))
+}
+
+// WhereHistoryID applies the entql json.RawMessage predicate on the history_id field.
+func (f *PromotionCommissionFilter) WhereHistoryID(p entql.BytesP) {
+	f.Where(p.Field(promotioncommission.FieldHistoryID))
+}
+
+// WhereStartAt applies the entql time.Time predicate on the start_at field.
+func (f *PromotionCommissionFilter) WhereStartAt(p entql.TimeP) {
+	f.Where(p.Field(promotioncommission.FieldStartAt))
+}
+
+// WhereEndAt applies the entql time.Time predicate on the end_at field.
+func (f *PromotionCommissionFilter) WhereEndAt(p entql.TimeP) {
+	f.Where(p.Field(promotioncommission.FieldEndAt))
+}
+
+// WhereHasMember applies a predicate to check if query has an edge member.
+func (f *PromotionCommissionFilter) WhereHasMember() {
+	f.Where(entql.HasEdge("member"))
+}
+
+// WhereHasMemberWith applies a predicate to check if query has an edge member with a given conditions (other predicates).
+func (f *PromotionCommissionFilter) WhereHasMemberWith(preds ...predicate.PromotionMember) {
+	f.Where(entql.HasEdgeWith("member", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// addPredicate implements the predicateAdder interface.
+func (peq *PromotionEarningsQuery) addPredicate(pred func(s *sql.Selector)) {
+	peq.predicates = append(peq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the PromotionEarningsQuery builder.
+func (peq *PromotionEarningsQuery) Filter() *PromotionEarningsFilter {
+	return &PromotionEarningsFilter{config: peq.config, predicateAdder: peq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *PromotionEarningsMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the PromotionEarningsMutation builder.
+func (m *PromotionEarningsMutation) Filter() *PromotionEarningsFilter {
+	return &PromotionEarningsFilter{config: m.config, predicateAdder: m}
+}
+
+// PromotionEarningsFilter provides a generic filtering capability at runtime for PromotionEarningsQuery.
+type PromotionEarningsFilter struct {
+	predicateAdder
+	config
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *PromotionEarningsFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[44].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *PromotionEarningsFilter) WhereID(p entql.Uint64P) {
+	f.Where(p.Field(promotionearnings.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *PromotionEarningsFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(promotionearnings.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *PromotionEarningsFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(promotionearnings.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *PromotionEarningsFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(promotionearnings.FieldDeletedAt))
+}
+
+// WhereCreator applies the entql json.RawMessage predicate on the creator field.
+func (f *PromotionEarningsFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(promotionearnings.FieldCreator))
+}
+
+// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
+func (f *PromotionEarningsFilter) WhereLastModifier(p entql.BytesP) {
+	f.Where(p.Field(promotionearnings.FieldLastModifier))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *PromotionEarningsFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(promotionearnings.FieldRemark))
+}
+
+// WhereCommissionID applies the entql uint64 predicate on the commission_id field.
+func (f *PromotionEarningsFilter) WhereCommissionID(p entql.Uint64P) {
+	f.Where(p.Field(promotionearnings.FieldCommissionID))
+}
+
+// WhereMemberID applies the entql uint64 predicate on the member_id field.
+func (f *PromotionEarningsFilter) WhereMemberID(p entql.Uint64P) {
+	f.Where(p.Field(promotionearnings.FieldMemberID))
+}
+
+// WhereRiderID applies the entql uint64 predicate on the rider_id field.
+func (f *PromotionEarningsFilter) WhereRiderID(p entql.Uint64P) {
+	f.Where(p.Field(promotionearnings.FieldRiderID))
+}
+
+// WhereStatus applies the entql uint8 predicate on the status field.
+func (f *PromotionEarningsFilter) WhereStatus(p entql.Uint8P) {
+	f.Where(p.Field(promotionearnings.FieldStatus))
+}
+
+// WhereAmount applies the entql float64 predicate on the amount field.
+func (f *PromotionEarningsFilter) WhereAmount(p entql.Float64P) {
+	f.Where(p.Field(promotionearnings.FieldAmount))
+}
+
+// WhereCommissionRuleKey applies the entql string predicate on the commission_rule_key field.
+func (f *PromotionEarningsFilter) WhereCommissionRuleKey(p entql.StringP) {
+	f.Where(p.Field(promotionearnings.FieldCommissionRuleKey))
+}
+
+// WhereHasCommission applies a predicate to check if query has an edge commission.
+func (f *PromotionEarningsFilter) WhereHasCommission() {
+	f.Where(entql.HasEdge("commission"))
+}
+
+// WhereHasCommissionWith applies a predicate to check if query has an edge commission with a given conditions (other predicates).
+func (f *PromotionEarningsFilter) WhereHasCommissionWith(preds ...predicate.PromotionCommission) {
+	f.Where(entql.HasEdgeWith("commission", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasMember applies a predicate to check if query has an edge member.
+func (f *PromotionEarningsFilter) WhereHasMember() {
+	f.Where(entql.HasEdge("member"))
+}
+
+// WhereHasMemberWith applies a predicate to check if query has an edge member with a given conditions (other predicates).
+func (f *PromotionEarningsFilter) WhereHasMemberWith(preds ...predicate.PromotionMember) {
+	f.Where(entql.HasEdgeWith("member", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasRider applies a predicate to check if query has an edge rider.
+func (f *PromotionEarningsFilter) WhereHasRider() {
+	f.Where(entql.HasEdge("rider"))
+}
+
+// WhereHasRiderWith applies a predicate to check if query has an edge rider with a given conditions (other predicates).
+func (f *PromotionEarningsFilter) WhereHasRiderWith(preds ...predicate.Rider) {
+	f.Where(entql.HasEdgeWith("rider", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// addPredicate implements the predicateAdder interface.
+func (pgq *PromotionGrowthQuery) addPredicate(pred func(s *sql.Selector)) {
+	pgq.predicates = append(pgq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the PromotionGrowthQuery builder.
+func (pgq *PromotionGrowthQuery) Filter() *PromotionGrowthFilter {
+	return &PromotionGrowthFilter{config: pgq.config, predicateAdder: pgq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *PromotionGrowthMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the PromotionGrowthMutation builder.
+func (m *PromotionGrowthMutation) Filter() *PromotionGrowthFilter {
+	return &PromotionGrowthFilter{config: m.config, predicateAdder: m}
+}
+
+// PromotionGrowthFilter provides a generic filtering capability at runtime for PromotionGrowthQuery.
+type PromotionGrowthFilter struct {
+	predicateAdder
+	config
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *PromotionGrowthFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[45].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *PromotionGrowthFilter) WhereID(p entql.Uint64P) {
+	f.Where(p.Field(promotiongrowth.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *PromotionGrowthFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(promotiongrowth.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *PromotionGrowthFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(promotiongrowth.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *PromotionGrowthFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(promotiongrowth.FieldDeletedAt))
+}
+
+// WhereCreator applies the entql json.RawMessage predicate on the creator field.
+func (f *PromotionGrowthFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(promotiongrowth.FieldCreator))
+}
+
+// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
+func (f *PromotionGrowthFilter) WhereLastModifier(p entql.BytesP) {
+	f.Where(p.Field(promotiongrowth.FieldLastModifier))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *PromotionGrowthFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(promotiongrowth.FieldRemark))
+}
+
+// WhereMemberID applies the entql uint64 predicate on the member_id field.
+func (f *PromotionGrowthFilter) WhereMemberID(p entql.Uint64P) {
+	f.Where(p.Field(promotiongrowth.FieldMemberID))
+}
+
+// WhereTaskID applies the entql uint64 predicate on the task_id field.
+func (f *PromotionGrowthFilter) WhereTaskID(p entql.Uint64P) {
+	f.Where(p.Field(promotiongrowth.FieldTaskID))
+}
+
+// WhereStatus applies the entql uint8 predicate on the status field.
+func (f *PromotionGrowthFilter) WhereStatus(p entql.Uint8P) {
+	f.Where(p.Field(promotiongrowth.FieldStatus))
+}
+
+// WhereGrowthValue applies the entql uint64 predicate on the growth_value field.
+func (f *PromotionGrowthFilter) WhereGrowthValue(p entql.Uint64P) {
+	f.Where(p.Field(promotiongrowth.FieldGrowthValue))
+}
+
+// WhereHasMember applies a predicate to check if query has an edge member.
+func (f *PromotionGrowthFilter) WhereHasMember() {
+	f.Where(entql.HasEdge("member"))
+}
+
+// WhereHasMemberWith applies a predicate to check if query has an edge member with a given conditions (other predicates).
+func (f *PromotionGrowthFilter) WhereHasMemberWith(preds ...predicate.PromotionMember) {
+	f.Where(entql.HasEdgeWith("member", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasTask applies a predicate to check if query has an edge task.
+func (f *PromotionGrowthFilter) WhereHasTask() {
+	f.Where(entql.HasEdge("task"))
+}
+
+// WhereHasTaskWith applies a predicate to check if query has an edge task with a given conditions (other predicates).
+func (f *PromotionGrowthFilter) WhereHasTaskWith(preds ...predicate.PromotionLevelTask) {
+	f.Where(entql.HasEdgeWith("task", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// addPredicate implements the predicateAdder interface.
+func (plq *PromotionLevelQuery) addPredicate(pred func(s *sql.Selector)) {
+	plq.predicates = append(plq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the PromotionLevelQuery builder.
+func (plq *PromotionLevelQuery) Filter() *PromotionLevelFilter {
+	return &PromotionLevelFilter{config: plq.config, predicateAdder: plq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *PromotionLevelMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the PromotionLevelMutation builder.
+func (m *PromotionLevelMutation) Filter() *PromotionLevelFilter {
+	return &PromotionLevelFilter{config: m.config, predicateAdder: m}
+}
+
+// PromotionLevelFilter provides a generic filtering capability at runtime for PromotionLevelQuery.
+type PromotionLevelFilter struct {
+	predicateAdder
+	config
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *PromotionLevelFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[46].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *PromotionLevelFilter) WhereID(p entql.Uint64P) {
+	f.Where(p.Field(promotionlevel.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *PromotionLevelFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(promotionlevel.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *PromotionLevelFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(promotionlevel.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *PromotionLevelFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(promotionlevel.FieldDeletedAt))
+}
+
+// WhereCreator applies the entql json.RawMessage predicate on the creator field.
+func (f *PromotionLevelFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(promotionlevel.FieldCreator))
+}
+
+// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
+func (f *PromotionLevelFilter) WhereLastModifier(p entql.BytesP) {
+	f.Where(p.Field(promotionlevel.FieldLastModifier))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *PromotionLevelFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(promotionlevel.FieldRemark))
+}
+
+// WhereLevel applies the entql uint64 predicate on the level field.
+func (f *PromotionLevelFilter) WhereLevel(p entql.Uint64P) {
+	f.Where(p.Field(promotionlevel.FieldLevel))
+}
+
+// WhereGrowthValue applies the entql uint64 predicate on the growth_value field.
+func (f *PromotionLevelFilter) WhereGrowthValue(p entql.Uint64P) {
+	f.Where(p.Field(promotionlevel.FieldGrowthValue))
+}
+
+// WhereCommissionRatio applies the entql float64 predicate on the commission_ratio field.
+func (f *PromotionLevelFilter) WhereCommissionRatio(p entql.Float64P) {
+	f.Where(p.Field(promotionlevel.FieldCommissionRatio))
+}
+
+// addPredicate implements the predicateAdder interface.
+func (pltq *PromotionLevelTaskQuery) addPredicate(pred func(s *sql.Selector)) {
+	pltq.predicates = append(pltq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the PromotionLevelTaskQuery builder.
+func (pltq *PromotionLevelTaskQuery) Filter() *PromotionLevelTaskFilter {
+	return &PromotionLevelTaskFilter{config: pltq.config, predicateAdder: pltq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *PromotionLevelTaskMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the PromotionLevelTaskMutation builder.
+func (m *PromotionLevelTaskMutation) Filter() *PromotionLevelTaskFilter {
+	return &PromotionLevelTaskFilter{config: m.config, predicateAdder: m}
+}
+
+// PromotionLevelTaskFilter provides a generic filtering capability at runtime for PromotionLevelTaskQuery.
+type PromotionLevelTaskFilter struct {
+	predicateAdder
+	config
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *PromotionLevelTaskFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[47].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *PromotionLevelTaskFilter) WhereID(p entql.Uint64P) {
+	f.Where(p.Field(promotionleveltask.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *PromotionLevelTaskFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(promotionleveltask.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *PromotionLevelTaskFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(promotionleveltask.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *PromotionLevelTaskFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(promotionleveltask.FieldDeletedAt))
+}
+
+// WhereCreator applies the entql json.RawMessage predicate on the creator field.
+func (f *PromotionLevelTaskFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(promotionleveltask.FieldCreator))
+}
+
+// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
+func (f *PromotionLevelTaskFilter) WhereLastModifier(p entql.BytesP) {
+	f.Where(p.Field(promotionleveltask.FieldLastModifier))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *PromotionLevelTaskFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(promotionleveltask.FieldRemark))
+}
+
+// WhereName applies the entql string predicate on the name field.
+func (f *PromotionLevelTaskFilter) WhereName(p entql.StringP) {
+	f.Where(p.Field(promotionleveltask.FieldName))
+}
+
+// WhereDescription applies the entql string predicate on the description field.
+func (f *PromotionLevelTaskFilter) WhereDescription(p entql.StringP) {
+	f.Where(p.Field(promotionleveltask.FieldDescription))
+}
+
+// WhereType applies the entql uint8 predicate on the type field.
+func (f *PromotionLevelTaskFilter) WhereType(p entql.Uint8P) {
+	f.Where(p.Field(promotionleveltask.FieldType))
+}
+
+// WhereGrowthValue applies the entql uint64 predicate on the growth_value field.
+func (f *PromotionLevelTaskFilter) WhereGrowthValue(p entql.Uint64P) {
+	f.Where(p.Field(promotionleveltask.FieldGrowthValue))
+}
+
+// WhereKey applies the entql string predicate on the key field.
+func (f *PromotionLevelTaskFilter) WhereKey(p entql.StringP) {
+	f.Where(p.Field(promotionleveltask.FieldKey))
+}
+
+// addPredicate implements the predicateAdder interface.
+func (pmq *PromotionMemberQuery) addPredicate(pred func(s *sql.Selector)) {
+	pmq.predicates = append(pmq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the PromotionMemberQuery builder.
+func (pmq *PromotionMemberQuery) Filter() *PromotionMemberFilter {
+	return &PromotionMemberFilter{config: pmq.config, predicateAdder: pmq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *PromotionMemberMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the PromotionMemberMutation builder.
+func (m *PromotionMemberMutation) Filter() *PromotionMemberFilter {
+	return &PromotionMemberFilter{config: m.config, predicateAdder: m}
+}
+
+// PromotionMemberFilter provides a generic filtering capability at runtime for PromotionMemberQuery.
+type PromotionMemberFilter struct {
+	predicateAdder
+	config
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *PromotionMemberFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[48].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *PromotionMemberFilter) WhereID(p entql.Uint64P) {
+	f.Where(p.Field(promotionmember.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *PromotionMemberFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(promotionmember.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *PromotionMemberFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(promotionmember.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *PromotionMemberFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(promotionmember.FieldDeletedAt))
+}
+
+// WhereCreator applies the entql json.RawMessage predicate on the creator field.
+func (f *PromotionMemberFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(promotionmember.FieldCreator))
+}
+
+// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
+func (f *PromotionMemberFilter) WhereLastModifier(p entql.BytesP) {
+	f.Where(p.Field(promotionmember.FieldLastModifier))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *PromotionMemberFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(promotionmember.FieldRemark))
+}
+
+// WhereRiderID applies the entql uint64 predicate on the rider_id field.
+func (f *PromotionMemberFilter) WhereRiderID(p entql.Uint64P) {
+	f.Where(p.Field(promotionmember.FieldRiderID))
+}
+
+// WhereLevelID applies the entql uint64 predicate on the level_id field.
+func (f *PromotionMemberFilter) WhereLevelID(p entql.Uint64P) {
+	f.Where(p.Field(promotionmember.FieldLevelID))
+}
+
+// WhereCommissionID applies the entql uint64 predicate on the commission_id field.
+func (f *PromotionMemberFilter) WhereCommissionID(p entql.Uint64P) {
+	f.Where(p.Field(promotionmember.FieldCommissionID))
+}
+
+// WherePhone applies the entql string predicate on the phone field.
+func (f *PromotionMemberFilter) WherePhone(p entql.StringP) {
+	f.Where(p.Field(promotionmember.FieldPhone))
+}
+
+// WhereName applies the entql string predicate on the name field.
+func (f *PromotionMemberFilter) WhereName(p entql.StringP) {
+	f.Where(p.Field(promotionmember.FieldName))
+}
+
+// WhereBalance applies the entql float64 predicate on the balance field.
+func (f *PromotionMemberFilter) WhereBalance(p entql.Float64P) {
+	f.Where(p.Field(promotionmember.FieldBalance))
+}
+
+// WhereFrozen applies the entql float64 predicate on the frozen field.
+func (f *PromotionMemberFilter) WhereFrozen(p entql.Float64P) {
+	f.Where(p.Field(promotionmember.FieldFrozen))
+}
+
+// WhereTotalGrowthValue applies the entql uint64 predicate on the total_growth_value field.
+func (f *PromotionMemberFilter) WhereTotalGrowthValue(p entql.Uint64P) {
+	f.Where(p.Field(promotionmember.FieldTotalGrowthValue))
+}
+
+// WhereCurrentGrowthValue applies the entql uint64 predicate on the current_growth_value field.
+func (f *PromotionMemberFilter) WhereCurrentGrowthValue(p entql.Uint64P) {
+	f.Where(p.Field(promotionmember.FieldCurrentGrowthValue))
+}
+
+// WhereEnable applies the entql bool predicate on the enable field.
+func (f *PromotionMemberFilter) WhereEnable(p entql.BoolP) {
+	f.Where(p.Field(promotionmember.FieldEnable))
+}
+
+// WherePersonID applies the entql uint64 predicate on the person_id field.
+func (f *PromotionMemberFilter) WherePersonID(p entql.Uint64P) {
+	f.Where(p.Field(promotionmember.FieldPersonID))
+}
+
+// WhereAvatarURL applies the entql string predicate on the avatar_url field.
+func (f *PromotionMemberFilter) WhereAvatarURL(p entql.StringP) {
+	f.Where(p.Field(promotionmember.FieldAvatarURL))
+}
+
+// WhereHasRider applies a predicate to check if query has an edge rider.
+func (f *PromotionMemberFilter) WhereHasRider() {
+	f.Where(entql.HasEdge("rider"))
+}
+
+// WhereHasRiderWith applies a predicate to check if query has an edge rider with a given conditions (other predicates).
+func (f *PromotionMemberFilter) WhereHasRiderWith(preds ...predicate.Rider) {
+	f.Where(entql.HasEdgeWith("rider", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasLevel applies a predicate to check if query has an edge level.
+func (f *PromotionMemberFilter) WhereHasLevel() {
+	f.Where(entql.HasEdge("level"))
+}
+
+// WhereHasLevelWith applies a predicate to check if query has an edge level with a given conditions (other predicates).
+func (f *PromotionMemberFilter) WhereHasLevelWith(preds ...predicate.PromotionLevel) {
+	f.Where(entql.HasEdgeWith("level", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasCommission applies a predicate to check if query has an edge commission.
+func (f *PromotionMemberFilter) WhereHasCommission() {
+	f.Where(entql.HasEdge("commission"))
+}
+
+// WhereHasCommissionWith applies a predicate to check if query has an edge commission with a given conditions (other predicates).
+func (f *PromotionMemberFilter) WhereHasCommissionWith(preds ...predicate.PromotionCommission) {
+	f.Where(entql.HasEdgeWith("commission", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasReferring applies a predicate to check if query has an edge referring.
+func (f *PromotionMemberFilter) WhereHasReferring() {
+	f.Where(entql.HasEdge("referring"))
+}
+
+// WhereHasReferringWith applies a predicate to check if query has an edge referring with a given conditions (other predicates).
+func (f *PromotionMemberFilter) WhereHasReferringWith(preds ...predicate.PromotionReferrals) {
+	f.Where(entql.HasEdgeWith("referring", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasReferred applies a predicate to check if query has an edge referred.
+func (f *PromotionMemberFilter) WhereHasReferred() {
+	f.Where(entql.HasEdge("referred"))
+}
+
+// WhereHasReferredWith applies a predicate to check if query has an edge referred with a given conditions (other predicates).
+func (f *PromotionMemberFilter) WhereHasReferredWith(preds ...predicate.PromotionReferrals) {
+	f.Where(entql.HasEdgeWith("referred", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasPerson applies a predicate to check if query has an edge person.
+func (f *PromotionMemberFilter) WhereHasPerson() {
+	f.Where(entql.HasEdge("person"))
+}
+
+// WhereHasPersonWith applies a predicate to check if query has an edge person with a given conditions (other predicates).
+func (f *PromotionMemberFilter) WhereHasPersonWith(preds ...predicate.PromotionPerson) {
+	f.Where(entql.HasEdgeWith("person", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasCards applies a predicate to check if query has an edge cards.
+func (f *PromotionMemberFilter) WhereHasCards() {
+	f.Where(entql.HasEdge("cards"))
+}
+
+// WhereHasCardsWith applies a predicate to check if query has an edge cards with a given conditions (other predicates).
+func (f *PromotionMemberFilter) WhereHasCardsWith(preds ...predicate.PromotionBankCard) {
+	f.Where(entql.HasEdgeWith("cards", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// addPredicate implements the predicateAdder interface.
+func (ppq *PromotionPersonQuery) addPredicate(pred func(s *sql.Selector)) {
+	ppq.predicates = append(ppq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the PromotionPersonQuery builder.
+func (ppq *PromotionPersonQuery) Filter() *PromotionPersonFilter {
+	return &PromotionPersonFilter{config: ppq.config, predicateAdder: ppq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *PromotionPersonMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the PromotionPersonMutation builder.
+func (m *PromotionPersonMutation) Filter() *PromotionPersonFilter {
+	return &PromotionPersonFilter{config: m.config, predicateAdder: m}
+}
+
+// PromotionPersonFilter provides a generic filtering capability at runtime for PromotionPersonQuery.
+type PromotionPersonFilter struct {
+	predicateAdder
+	config
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *PromotionPersonFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[49].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *PromotionPersonFilter) WhereID(p entql.Uint64P) {
+	f.Where(p.Field(promotionperson.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *PromotionPersonFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(promotionperson.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *PromotionPersonFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(promotionperson.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *PromotionPersonFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(promotionperson.FieldDeletedAt))
+}
+
+// WhereCreator applies the entql json.RawMessage predicate on the creator field.
+func (f *PromotionPersonFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(promotionperson.FieldCreator))
+}
+
+// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
+func (f *PromotionPersonFilter) WhereLastModifier(p entql.BytesP) {
+	f.Where(p.Field(promotionperson.FieldLastModifier))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *PromotionPersonFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(promotionperson.FieldRemark))
+}
+
+// WhereStatus applies the entql uint8 predicate on the status field.
+func (f *PromotionPersonFilter) WhereStatus(p entql.Uint8P) {
+	f.Where(p.Field(promotionperson.FieldStatus))
+}
+
+// WhereName applies the entql string predicate on the name field.
+func (f *PromotionPersonFilter) WhereName(p entql.StringP) {
+	f.Where(p.Field(promotionperson.FieldName))
+}
+
+// WhereIDCardNumber applies the entql string predicate on the id_card_number field.
+func (f *PromotionPersonFilter) WhereIDCardNumber(p entql.StringP) {
+	f.Where(p.Field(promotionperson.FieldIDCardNumber))
+}
+
+// WhereAddress applies the entql string predicate on the address field.
+func (f *PromotionPersonFilter) WhereAddress(p entql.StringP) {
+	f.Where(p.Field(promotionperson.FieldAddress))
+}
+
+// WhereHasMember applies a predicate to check if query has an edge member.
+func (f *PromotionPersonFilter) WhereHasMember() {
+	f.Where(entql.HasEdge("member"))
+}
+
+// WhereHasMemberWith applies a predicate to check if query has an edge member with a given conditions (other predicates).
+func (f *PromotionPersonFilter) WhereHasMemberWith(preds ...predicate.PromotionMember) {
+	f.Where(entql.HasEdgeWith("member", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// addPredicate implements the predicateAdder interface.
+func (ppq *PromotionPrivilegeQuery) addPredicate(pred func(s *sql.Selector)) {
+	ppq.predicates = append(ppq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the PromotionPrivilegeQuery builder.
+func (ppq *PromotionPrivilegeQuery) Filter() *PromotionPrivilegeFilter {
+	return &PromotionPrivilegeFilter{config: ppq.config, predicateAdder: ppq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *PromotionPrivilegeMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the PromotionPrivilegeMutation builder.
+func (m *PromotionPrivilegeMutation) Filter() *PromotionPrivilegeFilter {
+	return &PromotionPrivilegeFilter{config: m.config, predicateAdder: m}
+}
+
+// PromotionPrivilegeFilter provides a generic filtering capability at runtime for PromotionPrivilegeQuery.
+type PromotionPrivilegeFilter struct {
+	predicateAdder
+	config
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *PromotionPrivilegeFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[50].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *PromotionPrivilegeFilter) WhereID(p entql.Uint64P) {
+	f.Where(p.Field(promotionprivilege.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *PromotionPrivilegeFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(promotionprivilege.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *PromotionPrivilegeFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(promotionprivilege.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *PromotionPrivilegeFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(promotionprivilege.FieldDeletedAt))
+}
+
+// WhereCreator applies the entql json.RawMessage predicate on the creator field.
+func (f *PromotionPrivilegeFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(promotionprivilege.FieldCreator))
+}
+
+// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
+func (f *PromotionPrivilegeFilter) WhereLastModifier(p entql.BytesP) {
+	f.Where(p.Field(promotionprivilege.FieldLastModifier))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *PromotionPrivilegeFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(promotionprivilege.FieldRemark))
+}
+
+// WhereType applies the entql uint8 predicate on the type field.
+func (f *PromotionPrivilegeFilter) WhereType(p entql.Uint8P) {
+	f.Where(p.Field(promotionprivilege.FieldType))
+}
+
+// WhereName applies the entql string predicate on the name field.
+func (f *PromotionPrivilegeFilter) WhereName(p entql.StringP) {
+	f.Where(p.Field(promotionprivilege.FieldName))
+}
+
+// WhereDescription applies the entql string predicate on the description field.
+func (f *PromotionPrivilegeFilter) WhereDescription(p entql.StringP) {
+	f.Where(p.Field(promotionprivilege.FieldDescription))
+}
+
+// WhereValue applies the entql uint64 predicate on the value field.
+func (f *PromotionPrivilegeFilter) WhereValue(p entql.Uint64P) {
+	f.Where(p.Field(promotionprivilege.FieldValue))
+}
+
+// addPredicate implements the predicateAdder interface.
+func (prq *PromotionReferralsQuery) addPredicate(pred func(s *sql.Selector)) {
+	prq.predicates = append(prq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the PromotionReferralsQuery builder.
+func (prq *PromotionReferralsQuery) Filter() *PromotionReferralsFilter {
+	return &PromotionReferralsFilter{config: prq.config, predicateAdder: prq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *PromotionReferralsMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the PromotionReferralsMutation builder.
+func (m *PromotionReferralsMutation) Filter() *PromotionReferralsFilter {
+	return &PromotionReferralsFilter{config: m.config, predicateAdder: m}
+}
+
+// PromotionReferralsFilter provides a generic filtering capability at runtime for PromotionReferralsQuery.
+type PromotionReferralsFilter struct {
+	predicateAdder
+	config
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *PromotionReferralsFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[51].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *PromotionReferralsFilter) WhereID(p entql.Uint64P) {
+	f.Where(p.Field(promotionreferrals.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *PromotionReferralsFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(promotionreferrals.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *PromotionReferralsFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(promotionreferrals.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *PromotionReferralsFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(promotionreferrals.FieldDeletedAt))
+}
+
+// WhereCreator applies the entql json.RawMessage predicate on the creator field.
+func (f *PromotionReferralsFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(promotionreferrals.FieldCreator))
+}
+
+// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
+func (f *PromotionReferralsFilter) WhereLastModifier(p entql.BytesP) {
+	f.Where(p.Field(promotionreferrals.FieldLastModifier))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *PromotionReferralsFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(promotionreferrals.FieldRemark))
+}
+
+// WhereReferringMemberID applies the entql uint64 predicate on the referring_member_id field.
+func (f *PromotionReferralsFilter) WhereReferringMemberID(p entql.Uint64P) {
+	f.Where(p.Field(promotionreferrals.FieldReferringMemberID))
+}
+
+// WhereReferredMemberID applies the entql uint64 predicate on the referred_member_id field.
+func (f *PromotionReferralsFilter) WhereReferredMemberID(p entql.Uint64P) {
+	f.Where(p.Field(promotionreferrals.FieldReferredMemberID))
+}
+
+// WhereRiderID applies the entql uint64 predicate on the rider_id field.
+func (f *PromotionReferralsFilter) WhereRiderID(p entql.Uint64P) {
+	f.Where(p.Field(promotionreferrals.FieldRiderID))
+}
+
+// WhereParentID applies the entql uint64 predicate on the parent_id field.
+func (f *PromotionReferralsFilter) WhereParentID(p entql.Uint64P) {
+	f.Where(p.Field(promotionreferrals.FieldParentID))
+}
+
+// WhereHasReferringMember applies a predicate to check if query has an edge referring_member.
+func (f *PromotionReferralsFilter) WhereHasReferringMember() {
+	f.Where(entql.HasEdge("referring_member"))
+}
+
+// WhereHasReferringMemberWith applies a predicate to check if query has an edge referring_member with a given conditions (other predicates).
+func (f *PromotionReferralsFilter) WhereHasReferringMemberWith(preds ...predicate.PromotionMember) {
+	f.Where(entql.HasEdgeWith("referring_member", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasReferredMember applies a predicate to check if query has an edge referred_member.
+func (f *PromotionReferralsFilter) WhereHasReferredMember() {
+	f.Where(entql.HasEdge("referred_member"))
+}
+
+// WhereHasReferredMemberWith applies a predicate to check if query has an edge referred_member with a given conditions (other predicates).
+func (f *PromotionReferralsFilter) WhereHasReferredMemberWith(preds ...predicate.PromotionMember) {
+	f.Where(entql.HasEdgeWith("referred_member", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasParent applies a predicate to check if query has an edge parent.
+func (f *PromotionReferralsFilter) WhereHasParent() {
+	f.Where(entql.HasEdge("parent"))
+}
+
+// WhereHasParentWith applies a predicate to check if query has an edge parent with a given conditions (other predicates).
+func (f *PromotionReferralsFilter) WhereHasParentWith(preds ...predicate.PromotionReferrals) {
+	f.Where(entql.HasEdgeWith("parent", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasChildren applies a predicate to check if query has an edge children.
+func (f *PromotionReferralsFilter) WhereHasChildren() {
+	f.Where(entql.HasEdge("children"))
+}
+
+// WhereHasChildrenWith applies a predicate to check if query has an edge children with a given conditions (other predicates).
+func (f *PromotionReferralsFilter) WhereHasChildrenWith(preds ...predicate.PromotionReferrals) {
+	f.Where(entql.HasEdgeWith("children", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// addPredicate implements the predicateAdder interface.
+func (psq *PromotionSettingQuery) addPredicate(pred func(s *sql.Selector)) {
+	psq.predicates = append(psq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the PromotionSettingQuery builder.
+func (psq *PromotionSettingQuery) Filter() *PromotionSettingFilter {
+	return &PromotionSettingFilter{config: psq.config, predicateAdder: psq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *PromotionSettingMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the PromotionSettingMutation builder.
+func (m *PromotionSettingMutation) Filter() *PromotionSettingFilter {
+	return &PromotionSettingFilter{config: m.config, predicateAdder: m}
+}
+
+// PromotionSettingFilter provides a generic filtering capability at runtime for PromotionSettingQuery.
+type PromotionSettingFilter struct {
+	predicateAdder
+	config
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *PromotionSettingFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[52].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *PromotionSettingFilter) WhereID(p entql.Uint64P) {
+	f.Where(p.Field(promotionsetting.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *PromotionSettingFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(promotionsetting.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *PromotionSettingFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(promotionsetting.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *PromotionSettingFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(promotionsetting.FieldDeletedAt))
+}
+
+// WhereCreator applies the entql json.RawMessage predicate on the creator field.
+func (f *PromotionSettingFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(promotionsetting.FieldCreator))
+}
+
+// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
+func (f *PromotionSettingFilter) WhereLastModifier(p entql.BytesP) {
+	f.Where(p.Field(promotionsetting.FieldLastModifier))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *PromotionSettingFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(promotionsetting.FieldRemark))
+}
+
+// WhereTitle applies the entql string predicate on the title field.
+func (f *PromotionSettingFilter) WhereTitle(p entql.StringP) {
+	f.Where(p.Field(promotionsetting.FieldTitle))
+}
+
+// WhereContent applies the entql string predicate on the content field.
+func (f *PromotionSettingFilter) WhereContent(p entql.StringP) {
+	f.Where(p.Field(promotionsetting.FieldContent))
+}
+
+// WhereKey applies the entql string predicate on the key field.
+func (f *PromotionSettingFilter) WhereKey(p entql.StringP) {
+	f.Where(p.Field(promotionsetting.FieldKey))
+}
+
+// addPredicate implements the predicateAdder interface.
+func (pwq *PromotionWithdrawalQuery) addPredicate(pred func(s *sql.Selector)) {
+	pwq.predicates = append(pwq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the PromotionWithdrawalQuery builder.
+func (pwq *PromotionWithdrawalQuery) Filter() *PromotionWithdrawalFilter {
+	return &PromotionWithdrawalFilter{config: pwq.config, predicateAdder: pwq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *PromotionWithdrawalMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the PromotionWithdrawalMutation builder.
+func (m *PromotionWithdrawalMutation) Filter() *PromotionWithdrawalFilter {
+	return &PromotionWithdrawalFilter{config: m.config, predicateAdder: m}
+}
+
+// PromotionWithdrawalFilter provides a generic filtering capability at runtime for PromotionWithdrawalQuery.
+type PromotionWithdrawalFilter struct {
+	predicateAdder
+	config
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *PromotionWithdrawalFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[53].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *PromotionWithdrawalFilter) WhereID(p entql.Uint64P) {
+	f.Where(p.Field(promotionwithdrawal.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *PromotionWithdrawalFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(promotionwithdrawal.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *PromotionWithdrawalFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(promotionwithdrawal.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *PromotionWithdrawalFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(promotionwithdrawal.FieldDeletedAt))
+}
+
+// WhereCreator applies the entql json.RawMessage predicate on the creator field.
+func (f *PromotionWithdrawalFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(promotionwithdrawal.FieldCreator))
+}
+
+// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
+func (f *PromotionWithdrawalFilter) WhereLastModifier(p entql.BytesP) {
+	f.Where(p.Field(promotionwithdrawal.FieldLastModifier))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *PromotionWithdrawalFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(promotionwithdrawal.FieldRemark))
+}
+
+// WhereMemberID applies the entql uint64 predicate on the member_id field.
+func (f *PromotionWithdrawalFilter) WhereMemberID(p entql.Uint64P) {
+	f.Where(p.Field(promotionwithdrawal.FieldMemberID))
+}
+
+// WhereStatus applies the entql uint8 predicate on the status field.
+func (f *PromotionWithdrawalFilter) WhereStatus(p entql.Uint8P) {
+	f.Where(p.Field(promotionwithdrawal.FieldStatus))
+}
+
+// WhereApplyAmount applies the entql float64 predicate on the apply_amount field.
+func (f *PromotionWithdrawalFilter) WhereApplyAmount(p entql.Float64P) {
+	f.Where(p.Field(promotionwithdrawal.FieldApplyAmount))
+}
+
+// WhereAmount applies the entql float64 predicate on the amount field.
+func (f *PromotionWithdrawalFilter) WhereAmount(p entql.Float64P) {
+	f.Where(p.Field(promotionwithdrawal.FieldAmount))
+}
+
+// WhereFee applies the entql float64 predicate on the fee field.
+func (f *PromotionWithdrawalFilter) WhereFee(p entql.Float64P) {
+	f.Where(p.Field(promotionwithdrawal.FieldFee))
+}
+
+// WhereMethod applies the entql uint8 predicate on the method field.
+func (f *PromotionWithdrawalFilter) WhereMethod(p entql.Uint8P) {
+	f.Where(p.Field(promotionwithdrawal.FieldMethod))
+}
+
+// WhereAccountID applies the entql uint64 predicate on the account_id field.
+func (f *PromotionWithdrawalFilter) WhereAccountID(p entql.Uint64P) {
+	f.Where(p.Field(promotionwithdrawal.FieldAccountID))
+}
+
+// WhereApplyTime applies the entql time.Time predicate on the apply_time field.
+func (f *PromotionWithdrawalFilter) WhereApplyTime(p entql.TimeP) {
+	f.Where(p.Field(promotionwithdrawal.FieldApplyTime))
+}
+
+// WhereReviewTime applies the entql time.Time predicate on the review_time field.
+func (f *PromotionWithdrawalFilter) WhereReviewTime(p entql.TimeP) {
+	f.Where(p.Field(promotionwithdrawal.FieldReviewTime))
+}
+
+// WhereHasMember applies a predicate to check if query has an edge member.
+func (f *PromotionWithdrawalFilter) WhereHasMember() {
+	f.Where(entql.HasEdge("member"))
+}
+
+// WhereHasMemberWith applies a predicate to check if query has an edge member with a given conditions (other predicates).
+func (f *PromotionWithdrawalFilter) WhereHasMemberWith(preds ...predicate.PromotionMember) {
+	f.Where(entql.HasEdgeWith("member", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasCards applies a predicate to check if query has an edge cards.
+func (f *PromotionWithdrawalFilter) WhereHasCards() {
+	f.Where(entql.HasEdge("cards"))
+}
+
+// WhereHasCardsWith applies a predicate to check if query has an edge cards with a given conditions (other predicates).
+func (f *PromotionWithdrawalFilter) WhereHasCardsWith(preds ...predicate.PromotionBankCard) {
+	f.Where(entql.HasEdgeWith("cards", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// addPredicate implements the predicateAdder interface.
 func (rq *ReserveQuery) addPredicate(pred func(s *sql.Selector)) {
 	rq.predicates = append(rq.predicates, pred)
 }
@@ -12032,7 +14230,7 @@ type ReserveFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *ReserveFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[41].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[54].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -12188,7 +14386,7 @@ type RiderFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *RiderFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[42].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[55].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -12516,7 +14714,7 @@ type RiderFollowUpFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *RiderFollowUpFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[43].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[56].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -12624,7 +14822,7 @@ type RoleFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *RoleFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[44].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[57].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -12703,7 +14901,7 @@ type SettingFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SettingFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[45].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[58].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -12783,7 +14981,7 @@ type StockFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *StockFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[46].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[59].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -13153,7 +15351,7 @@ type StockSummaryFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *StockSummaryFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[47].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[60].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -13328,7 +15526,7 @@ type StoreFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *StoreFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[48].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[61].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -13537,7 +15735,7 @@ type SubscribeFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SubscribeFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[49].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[62].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -14010,7 +16208,7 @@ type SubscribeAlterFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SubscribeAlterFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[50].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[63].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -14190,7 +16388,7 @@ type SubscribePauseFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SubscribePauseFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[51].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[64].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -14480,7 +16678,7 @@ type SubscribeReminderFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SubscribeReminderFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[52].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[65].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -14632,7 +16830,7 @@ type SubscribeSuspendFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SubscribeSuspendFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[53].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[66].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})

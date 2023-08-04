@@ -53,6 +53,19 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/planintroduce"
 	"github.com/auroraride/aurservd/internal/ent/pointlog"
+	"github.com/auroraride/aurservd/internal/ent/promotionachievement"
+	"github.com/auroraride/aurservd/internal/ent/promotionbankcard"
+	"github.com/auroraride/aurservd/internal/ent/promotioncommission"
+	"github.com/auroraride/aurservd/internal/ent/promotionearnings"
+	"github.com/auroraride/aurservd/internal/ent/promotiongrowth"
+	"github.com/auroraride/aurservd/internal/ent/promotionlevel"
+	"github.com/auroraride/aurservd/internal/ent/promotionleveltask"
+	"github.com/auroraride/aurservd/internal/ent/promotionmember"
+	"github.com/auroraride/aurservd/internal/ent/promotionperson"
+	"github.com/auroraride/aurservd/internal/ent/promotionprivilege"
+	"github.com/auroraride/aurservd/internal/ent/promotionreferrals"
+	"github.com/auroraride/aurservd/internal/ent/promotionsetting"
+	"github.com/auroraride/aurservd/internal/ent/promotionwithdrawal"
 	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
@@ -167,6 +180,19 @@ func checkColumn(table, column string) error {
 			plan.Table:                  plan.ValidColumn,
 			planintroduce.Table:         planintroduce.ValidColumn,
 			pointlog.Table:              pointlog.ValidColumn,
+			promotionachievement.Table:  promotionachievement.ValidColumn,
+			promotionbankcard.Table:     promotionbankcard.ValidColumn,
+			promotioncommission.Table:   promotioncommission.ValidColumn,
+			promotionearnings.Table:     promotionearnings.ValidColumn,
+			promotiongrowth.Table:       promotiongrowth.ValidColumn,
+			promotionlevel.Table:        promotionlevel.ValidColumn,
+			promotionleveltask.Table:    promotionleveltask.ValidColumn,
+			promotionmember.Table:       promotionmember.ValidColumn,
+			promotionperson.Table:       promotionperson.ValidColumn,
+			promotionprivilege.Table:    promotionprivilege.ValidColumn,
+			promotionreferrals.Table:    promotionreferrals.ValidColumn,
+			promotionsetting.Table:      promotionsetting.ValidColumn,
+			promotionwithdrawal.Table:   promotionwithdrawal.ValidColumn,
 			reserve.Table:               reserve.ValidColumn,
 			rider.Table:                 rider.ValidColumn,
 			riderfollowup.Table:         riderfollowup.ValidColumn,

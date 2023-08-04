@@ -480,6 +480,160 @@ func (pl *PointLog) GetID() uint64 {
 	return pl.ID
 }
 
+// GetTableName returns table name for PromotionAchievement.
+func (pa *PromotionAchievement) GetTableName() string {
+	return "promotion_achievement"
+}
+
+// GetID returns id for PromotionAchievement.
+func (pa *PromotionAchievement) GetID() uint64 {
+	return pa.ID
+}
+
+func (pa *PromotionAchievement) GetName() string {
+	return pa.Name
+}
+
+// GetTableName returns table name for PromotionBankCard.
+func (pbc *PromotionBankCard) GetTableName() string {
+	return "promotion_bank_card"
+}
+
+// GetID returns id for PromotionBankCard.
+func (pbc *PromotionBankCard) GetID() uint64 {
+	return pbc.ID
+}
+
+// GetTableName returns table name for PromotionCommission.
+func (pc *PromotionCommission) GetTableName() string {
+	return "promotion_commission"
+}
+
+// GetID returns id for PromotionCommission.
+func (pc *PromotionCommission) GetID() uint64 {
+	return pc.ID
+}
+
+func (pc *PromotionCommission) GetName() string {
+	return pc.Name
+}
+
+// GetTableName returns table name for PromotionEarnings.
+func (pe *PromotionEarnings) GetTableName() string {
+	return "promotion_earnings"
+}
+
+// GetID returns id for PromotionEarnings.
+func (pe *PromotionEarnings) GetID() uint64 {
+	return pe.ID
+}
+
+// GetTableName returns table name for PromotionGrowth.
+func (pg *PromotionGrowth) GetTableName() string {
+	return "promotion_growth"
+}
+
+// GetID returns id for PromotionGrowth.
+func (pg *PromotionGrowth) GetID() uint64 {
+	return pg.ID
+}
+
+// GetTableName returns table name for PromotionLevel.
+func (pl *PromotionLevel) GetTableName() string {
+	return "promotion_level"
+}
+
+// GetID returns id for PromotionLevel.
+func (pl *PromotionLevel) GetID() uint64 {
+	return pl.ID
+}
+
+// GetTableName returns table name for PromotionLevelTask.
+func (plt *PromotionLevelTask) GetTableName() string {
+	return "promotion_level_task"
+}
+
+// GetID returns id for PromotionLevelTask.
+func (plt *PromotionLevelTask) GetID() uint64 {
+	return plt.ID
+}
+
+func (plt *PromotionLevelTask) GetName() string {
+	return plt.Name
+}
+
+// GetTableName returns table name for PromotionMember.
+func (pm *PromotionMember) GetTableName() string {
+	return "promotion_member"
+}
+
+// GetID returns id for PromotionMember.
+func (pm *PromotionMember) GetID() uint64 {
+	return pm.ID
+}
+
+func (pm *PromotionMember) GetName() string {
+	return pm.Name
+}
+
+// GetTableName returns table name for PromotionPerson.
+func (pp *PromotionPerson) GetTableName() string {
+	return "promotion_person"
+}
+
+// GetID returns id for PromotionPerson.
+func (pp *PromotionPerson) GetID() uint64 {
+	return pp.ID
+}
+
+func (pp *PromotionPerson) GetName() string {
+	return pp.Name
+}
+
+// GetTableName returns table name for PromotionPrivilege.
+func (pp *PromotionPrivilege) GetTableName() string {
+	return "promotion_privilege"
+}
+
+// GetID returns id for PromotionPrivilege.
+func (pp *PromotionPrivilege) GetID() uint64 {
+	return pp.ID
+}
+
+func (pp *PromotionPrivilege) GetName() string {
+	return pp.Name
+}
+
+// GetTableName returns table name for PromotionReferrals.
+func (pr *PromotionReferrals) GetTableName() string {
+	return "promotion_referrals"
+}
+
+// GetID returns id for PromotionReferrals.
+func (pr *PromotionReferrals) GetID() uint64 {
+	return pr.ID
+}
+
+// GetTableName returns table name for PromotionSetting.
+func (ps *PromotionSetting) GetTableName() string {
+	return "promotion_setting"
+}
+
+// GetID returns id for PromotionSetting.
+func (ps *PromotionSetting) GetID() uint64 {
+	return ps.ID
+}
+
+// GetTableName returns table name for PromotionWithdrawal.
+func (pw *PromotionWithdrawal) GetTableName() string {
+	return "promotion_withdrawal"
+}
+
+// GetID returns id for PromotionWithdrawal.
+func (pw *PromotionWithdrawal) GetID() uint64 {
+	return pw.ID
+}
+
 // GetTableName returns table name for Reserve.
 func (r *Reserve) GetTableName() string {
 	return "reserve"

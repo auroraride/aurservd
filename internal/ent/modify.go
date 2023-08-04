@@ -338,6 +338,97 @@ func (c *PointLogClient) ModifyOne(old *PointLog, data any) *PointLogUpdateOne {
 	return EntitySetAttributes[PointLogUpdateOne, PointLog](up, old, data)
 }
 
+// ModifyOne returns an update with pointer struct builder for PromotionAchievement.
+func (c *PromotionAchievementClient) ModifyOne(old *PromotionAchievement, data any) *PromotionAchievementUpdateOne {
+	mutation := newPromotionAchievementMutation(c.config, OpUpdateOne, withPromotionAchievement(old))
+	up := &PromotionAchievementUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[PromotionAchievementUpdateOne, PromotionAchievement](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for PromotionBankCard.
+func (c *PromotionBankCardClient) ModifyOne(old *PromotionBankCard, data any) *PromotionBankCardUpdateOne {
+	mutation := newPromotionBankCardMutation(c.config, OpUpdateOne, withPromotionBankCard(old))
+	up := &PromotionBankCardUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[PromotionBankCardUpdateOne, PromotionBankCard](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for PromotionCommission.
+func (c *PromotionCommissionClient) ModifyOne(old *PromotionCommission, data any) *PromotionCommissionUpdateOne {
+	mutation := newPromotionCommissionMutation(c.config, OpUpdateOne, withPromotionCommission(old))
+	up := &PromotionCommissionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[PromotionCommissionUpdateOne, PromotionCommission](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for PromotionEarnings.
+func (c *PromotionEarningsClient) ModifyOne(old *PromotionEarnings, data any) *PromotionEarningsUpdateOne {
+	mutation := newPromotionEarningsMutation(c.config, OpUpdateOne, withPromotionEarnings(old))
+	up := &PromotionEarningsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[PromotionEarningsUpdateOne, PromotionEarnings](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for PromotionGrowth.
+func (c *PromotionGrowthClient) ModifyOne(old *PromotionGrowth, data any) *PromotionGrowthUpdateOne {
+	mutation := newPromotionGrowthMutation(c.config, OpUpdateOne, withPromotionGrowth(old))
+	up := &PromotionGrowthUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[PromotionGrowthUpdateOne, PromotionGrowth](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for PromotionLevel.
+func (c *PromotionLevelClient) ModifyOne(old *PromotionLevel, data any) *PromotionLevelUpdateOne {
+	mutation := newPromotionLevelMutation(c.config, OpUpdateOne, withPromotionLevel(old))
+	up := &PromotionLevelUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[PromotionLevelUpdateOne, PromotionLevel](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for PromotionLevelTask.
+func (c *PromotionLevelTaskClient) ModifyOne(old *PromotionLevelTask, data any) *PromotionLevelTaskUpdateOne {
+	mutation := newPromotionLevelTaskMutation(c.config, OpUpdateOne, withPromotionLevelTask(old))
+	up := &PromotionLevelTaskUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[PromotionLevelTaskUpdateOne, PromotionLevelTask](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for PromotionMember.
+func (c *PromotionMemberClient) ModifyOne(old *PromotionMember, data any) *PromotionMemberUpdateOne {
+	mutation := newPromotionMemberMutation(c.config, OpUpdateOne, withPromotionMember(old))
+	up := &PromotionMemberUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[PromotionMemberUpdateOne, PromotionMember](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for PromotionPerson.
+func (c *PromotionPersonClient) ModifyOne(old *PromotionPerson, data any) *PromotionPersonUpdateOne {
+	mutation := newPromotionPersonMutation(c.config, OpUpdateOne, withPromotionPerson(old))
+	up := &PromotionPersonUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[PromotionPersonUpdateOne, PromotionPerson](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for PromotionPrivilege.
+func (c *PromotionPrivilegeClient) ModifyOne(old *PromotionPrivilege, data any) *PromotionPrivilegeUpdateOne {
+	mutation := newPromotionPrivilegeMutation(c.config, OpUpdateOne, withPromotionPrivilege(old))
+	up := &PromotionPrivilegeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[PromotionPrivilegeUpdateOne, PromotionPrivilege](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for PromotionReferrals.
+func (c *PromotionReferralsClient) ModifyOne(old *PromotionReferrals, data any) *PromotionReferralsUpdateOne {
+	mutation := newPromotionReferralsMutation(c.config, OpUpdateOne, withPromotionReferrals(old))
+	up := &PromotionReferralsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[PromotionReferralsUpdateOne, PromotionReferrals](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for PromotionSetting.
+func (c *PromotionSettingClient) ModifyOne(old *PromotionSetting, data any) *PromotionSettingUpdateOne {
+	mutation := newPromotionSettingMutation(c.config, OpUpdateOne, withPromotionSetting(old))
+	up := &PromotionSettingUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[PromotionSettingUpdateOne, PromotionSetting](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for PromotionWithdrawal.
+func (c *PromotionWithdrawalClient) ModifyOne(old *PromotionWithdrawal, data any) *PromotionWithdrawalUpdateOne {
+	mutation := newPromotionWithdrawalMutation(c.config, OpUpdateOne, withPromotionWithdrawal(old))
+	up := &PromotionWithdrawalUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[PromotionWithdrawalUpdateOne, PromotionWithdrawal](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for Reserve.
 func (c *ReserveClient) ModifyOne(old *Reserve, data any) *ReserveUpdateOne {
 	mutation := newReserveMutation(c.config, OpUpdateOne, withReserve(old))

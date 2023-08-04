@@ -47,6 +47,8 @@ const (
 	FieldDays = "days"
 	// FieldCommission holds the string denoting the commission field in the database.
 	FieldCommission = "commission"
+	// FieldCommissionBase holds the string denoting the commission_base field in the database.
+	FieldCommissionBase = "commission_base"
 	// FieldOriginal holds the string denoting the original field in the database.
 	FieldOriginal = "original"
 	// FieldDesc holds the string denoting the desc field in the database.
@@ -110,6 +112,7 @@ var Columns = []string{
 	FieldPrice,
 	FieldDays,
 	FieldCommission,
+	FieldCommissionBase,
 	FieldOriginal,
 	FieldDesc,
 	FieldParentID,
@@ -149,6 +152,8 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 	// DefaultType holds the default value on creation for the "type" field.
 	DefaultType uint8
+	// DefaultCommissionBase holds the default value on creation for the "commission_base" field.
+	DefaultCommissionBase float64
 	// DefaultDiscountNewly holds the default value on creation for the "discount_newly" field.
 	DefaultDiscountNewly float64
 	// DefaultIntelligent holds the default value on creation for the "intelligent" field.
@@ -231,6 +236,11 @@ func ByDays(opts ...sql.OrderTermOption) OrderOption {
 // ByCommission orders the results by the commission field.
 func ByCommission(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCommission, opts...).ToFunc()
+}
+
+// ByCommissionBase orders the results by the commission_base field.
+func ByCommissionBase(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCommissionBase, opts...).ToFunc()
 }
 
 // ByOriginal orders the results by the original field.

@@ -255,4 +255,59 @@ func loadManagerRoutes() {
 
 	// 反馈
 	g.GET("/enterprise/feedback", mapi.Enterprise.FeedbackList)
+
+	// 营销
+	// 佣金方案
+	g.GET("/promotion/commission", mapi.PromotionCommission.List)                    // 佣金方案列表
+	g.GET("/promotion/commission/:id", mapi.PromotionCommission.Detail)              // 佣金方案详情
+	g.GET("/promotion/commission/history/:id", mapi.PromotionCommission.HistoryList) // 历史佣金方案列表
+	g.POST("/promotion/commission", mapi.PromotionCommission.Create)                 // 创建佣金方案
+	g.PUT("/promotion/commission/:id", mapi.PromotionCommission.Update)              // 修改佣金方案
+	g.DELETE("/promotion/commission/:id", mapi.PromotionCommission.Delete)           // 删除佣金方案
+	g.POST("/promotion/commission/enable", mapi.PromotionCommission.Enable)          // 更新佣金方案状态
+
+	g.GET("/promotion/commission/selection", mapi.PromotionCommission.Selection)          // 方案选择
+	g.GET("/promotion/commission/task/selection", mapi.PromotionCommission.TaskSelection) // 方案任务选择
+
+	// 会员
+	g.GET("/promotion/member", mapi.Member.List)                         // 会员列表
+	g.GET("/promotion/member/:id", mapi.Member.Detail)                   // 会员详情
+	g.GET("/promotion/member/team/:id", mapi.Member.TeamList)            // 会员团队列表
+	g.PUT("/promotion/member/:id", mapi.Member.Update)                   // 修改会员
+	g.POST("/promotion/member/setcommission", mapi.Member.SetCommission) // 设置会员佣金
+
+	// 收益
+	g.GET("/promotion/earnings/:id", mapi.PromotionEarnings.List)       // 收益明细列表
+	g.POST("/promotion/earnings/cancel", mapi.PromotionEarnings.Cancel) // 取消收益
+	// 提现
+	g.GET("/promotion/withdrawl/:id", mapi.PromotionWithdrawal.List)                   // 提现记录列表
+	g.GET("/promotion/withdrawal/alter/list", mapi.PromotionWithdrawal.AlterList)      // 提现申请列表
+	g.POST("/promotion/withdrawal/alter/review", mapi.PromotionWithdrawal.AlterReview) // 提现审核
+	g.GET("/promotion/withdrawal/export", mapi.PromotionWithdrawal.Export)             // 导出提现申请
+
+	// 成长
+	g.GET("/promotion/growth/:id", mapi.PromotionGrowth.List) // 成长记录列表
+
+	// 等级
+	g.GET("/promotion/level", mapi.PromotionLevel.List)                // 等级列表
+	g.GET("/promotion/level/selection", mapi.PromotionLevel.Selection) // 等级选择
+	g.POST("/promotion/level", mapi.PromotionLevel.Create)             // 创建等级
+	g.PUT("/promotion/level/:id", mapi.PromotionLevel.Update)          // 修改等级
+	g.DELETE("/promotion/level/:id", mapi.PromotionLevel.Delete)       // 删除等级
+
+	// 任务
+	g.GET("/promotion/task", mapi.PromotionLevelTask.List)       // 任务列表
+	g.PUT("/promotion/task/:id", mapi.PromotionLevelTask.Update) // 修改任务
+
+	// 成就
+	g.GET("/promotion/achievement", mapi.PromotionAchievement.List)               // 成就列表
+	g.POST("/promotion/achievement", mapi.PromotionAchievement.Create)            // 创建成就
+	g.PUT("/promotion/achievement/:id", mapi.PromotionAchievement.Update)         // 修改成就
+	g.DELETE("/promotion/achievement/:id", mapi.PromotionAchievement.Delete)      // 删除成就
+	g.POST("/promotion/achievement/upload", mapi.PromotionAchievement.UploadIcon) // 上传icon
+
+	// 推广设置
+	g.GET("/promotion/setting/:key", mapi.PromotionSetting.Setting) // 获取会员设置
+	g.PUT("/promotion/setting/:key", mapi.PromotionSetting.Update)  // 修改会员设置
+
 }
