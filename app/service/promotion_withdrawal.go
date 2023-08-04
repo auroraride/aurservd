@@ -109,13 +109,20 @@ func (s *promotionWithdrawalService) List(req *promotion.WithdrawalListReq) *mod
 
 // Alter 申请提现
 func (s *promotionWithdrawalService) Alter(mem *ent.PromotionMember, req *promotion.WithdrawalAlterReq) {
+
+	if ent.Database.PromotionWithdrawal.Query().Where(promotionwithdrawal.MemberID(mem.ID), promotionwithdrawal.Status(promotion.WithdrawalStatusPending.Value())).CountX(s.ctx) > 0 {
+		snag.Panic("存在未审批的提现申请")
+	}
+
 	if mem.Balance < req.ApplyAmount {
 		snag.Panic("余额不足")
 	}
+
 	bankCard := mem.Edges.Cards
 	if bankCard == nil {
 		snag.Panic("请先绑定银行卡")
 	}
+
 	if mem.Edges.Person != nil && mem.Edges.Person.Status != promotion.PersonAuthenticated.Value() {
 		snag.Panic("请先实名认证")
 	}
