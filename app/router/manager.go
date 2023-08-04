@@ -280,7 +280,7 @@ func loadManagerRoutes() {
 	g.GET("/promotion/earnings/:id", mapi.PromotionEarnings.List)       // 收益明细列表
 	g.POST("/promotion/earnings/cancel", mapi.PromotionEarnings.Cancel) // 取消收益
 	// 提现
-	g.GET("/promotion/withdrawl/:id", mapi.PromotionWithdrawal.List)                   // 提现记录列表
+	g.GET("/promotion/withdrawl", mapi.PromotionWithdrawal.List)                       // 提现记录列表
 	g.POST("/promotion/withdrawal/alter/review", mapi.PromotionWithdrawal.AlterReview) // 提现审核
 	g.GET("/promotion/withdrawal/export", mapi.PromotionWithdrawal.Export)             // 导出提现申请
 

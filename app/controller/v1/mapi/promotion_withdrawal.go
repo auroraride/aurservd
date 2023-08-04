@@ -15,7 +15,7 @@ var PromotionWithdrawal = new(promotionWithdrawal)
 
 // List
 // @ID           ManagerPromotionWithdrawalList
-// @Router       /manager/v1/promotion/withdrawal/{id} [GET]
+// @Router       /manager/v1/promotion/withdrawal [GET]
 // @Summary      PM3013 会员提现列表
 // @Tags         [PM]推广管理接口
 // @Accept       json

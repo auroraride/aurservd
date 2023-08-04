@@ -44,7 +44,7 @@ func (w WithdrawalStatus) Value() uint8 {
 type WithdrawalListReq struct {
 	model.PaginationReq
 	WithdrawalFilter
-	ID *uint64 `json:"id" param:"id"`
+	ID *uint64 `json:"id" query:"id"` // 会员id
 }
 
 // WithdrawalFilter 提现列表筛选

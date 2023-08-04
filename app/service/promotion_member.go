@@ -396,14 +396,14 @@ func (s *promotionMemberService) MemberCreate(tx *ent.Tx, req *promotion.MemberC
 	commission, _ := NewPromotionCommissionService().DefaultPromotionCommission()
 
 	// 创建实名认证信息
-	person := ent.Database.PromotionPerson.Create().
-		SetNillableName(req.Name).
-		SaveX(s.ctx)
+	// person := ent.Database.PromotionPerson.Create().
+	// 	SetNillableName(req.Name).
+	// 	SaveX(s.ctx)
 
 	q := tx.PromotionMember.Create().
 		SetNillableName(req.Name).
-		SetPhone(req.Phone).
-		SetPerson(person)
+		SetPhone(req.Phone)
+	// SetPerson(person)
 
 	if commission != nil {
 		q.SetCommission(commission)
