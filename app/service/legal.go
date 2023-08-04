@@ -6,8 +6,8 @@
 package service
 
 import (
-	"fmt"
 	"os"
+	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 	"golang.org/x/exp/slices"
@@ -70,7 +70,8 @@ func (s *legalService) Save(req *model.LegalSaveReq) {
 		_ = f.Close()
 	}(f)
 
-	data := fmt.Sprintf(assets.LegalTemplate, req.LegalName.Name.Title(), req.Content)
+	data := strings.Replace(assets.LegalTemplate, "{{- .Title -}}", req.LegalName.Name.Title(), 1)
+	data = strings.Replace(data, "{{- .Content -}}", req.Content, 1)
 
 	_, err := f.Write([]byte(data))
 	if err != nil {
