@@ -162,6 +162,10 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 		entStation = NewEnterpriseStation().QueryX(*sub.StationID)
 		cityID = *entStation.CityID
 		// TODO 判定站点非智能电池库存
+
+		if params.BatteryID == nil && !NewStock().CheckStation(*sub.StationID, sub.Model, 1) {
+			snag.Panic("站点电池库存不足")
+		}
 	}
 
 	// 判定城市
