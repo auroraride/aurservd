@@ -208,7 +208,7 @@ func (s *promotionWithdrawalService) CalculateWithdrawalFee(mem *ent.PromotionMe
 	}
 
 	// 手续费
-	fee = (req.ApplyAmount-taxableAmount)*promotion.FeeRate + transferFees
+	fee = (req.ApplyAmount-tax)*promotion.FeeRate + transferFees
 	// 实际到账金额
 	amount := req.ApplyAmount - fee - tax
 

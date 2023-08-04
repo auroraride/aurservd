@@ -28,25 +28,10 @@ func (p *promotionWithdrawal) List(c echo.Context) (err error) {
 	return ctx.SendResponse(service.NewPromotionWithdrawalService().List(req))
 }
 
-// AlterList
-// @ID           ManagerPromotionWithdrawalAlterList
-// @Router       /manager/v1/promotion/withdrawal/alter/list [GET]
-// @Summary      PM3014  申请提现列表
-// @Tags         [PM]推广管理接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        body  body  promotion.WithdrawalListReq true  "请求参数"
-// @Success      200  {object}  []promotion.WithdrawalListRes
-func (p *promotionWithdrawal) AlterList(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[promotion.WithdrawalListReq](c)
-	return ctx.SendResponse(service.NewPromotionWithdrawalService().List(req))
-}
-
 // AlterReview
 // @ID           ManagerPromotionWithdrawalAlterReview
 // @Router       /manager/v1/promotion/withdrawal/alter/review [POST]
-// @Summary      PM3015  审批提现
+// @Summary      PM3014  审批提现
 // @Tags         [PM]推广管理接口
 // @Accept       json
 // @Produce      json
@@ -62,7 +47,7 @@ func (p *promotionWithdrawal) AlterReview(c echo.Context) (err error) {
 // Export
 // @ID           ManagerPromotionWithdrawalExport
 // @Router       /manager/v1/promotion/withdrawal/export [GET]
-// @Summary       PM3016  导出提现列表
+// @Summary       PM3015  导出提现列表
 // @Tags          [PM]推广管理接口
 // @Accept       json
 // @Produce      json
