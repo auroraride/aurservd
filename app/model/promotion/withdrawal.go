@@ -5,12 +5,18 @@ import "github.com/auroraride/aurservd/app/model"
 type WithdrawalMethod uint8
 
 const (
-	TaxExemptAmount  float64 = 800    // 免税额度
-	TaxRate          float64 = 0.2    // 税率
-	FransferFee      float64 = 5      // 转账手续费
-	FeeExemptionCity string  = "西安市"  // 免手续费城市
-	FeeExemptionBank string  = "招商银行" // 免手续费银行
-	FeeRate          float64 = 0.006  // 手续费率
+	// TaxExemptAmount 免税额度
+	TaxExemptAmount float64 = 800
+	// TaxRate 税率
+	TaxRate float64 = 0.2
+	// FransferFee 转账手续费
+	FransferFee float64 = 5
+	// FeeExemptionCity 免手续费城市
+	FeeExemptionCity string = "西安市"
+	// FeeExemptionBank 免手续费银行
+	FeeExemptionBank string = "招商银行"
+	// FeeRate 手续费率
+	FeeRate float64 = 0.006
 )
 
 const (

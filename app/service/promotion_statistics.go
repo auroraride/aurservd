@@ -89,7 +89,7 @@ LEFT JOIN (
         GROUP BY r.person_id
     ) AS subscription_stats
     GROUP BY person_id
-) AS r ON mh.person_id = r.person_id;
+) AS r ON mh.person_id = r.person_id
 			`
 
 	if req.Start != nil && req.End != nil {
