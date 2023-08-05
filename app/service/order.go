@@ -654,7 +654,7 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
 			// 判断返佣类型
 			commissionType, err = NewPromotionCommissionService().GetCommissionType(ri.Phone)
 			if err != nil {
-				zap.L().Error("订单已支付, 获取返佣类型失败: "+trade.OutTradeNo, zap.Error(err))
+				zap.L().Error("订单已支付, 返佣失败: "+trade.OutTradeNo, zap.Error(err))
 				return
 			}
 

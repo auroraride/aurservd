@@ -57,28 +57,39 @@ func (s *promotionStatisticsService) Earnings(mem *ent.PromotionMember, req *pro
 func (s *promotionStatisticsService) Team(mem *ent.PromotionMember, req *promotion.StatisticsReq) promotion.StatisticsTeamRes {
 	v := promotion.StatisticsTeamRes{}
 	sqls := `
-			WITH RECURSIVE member_hierarchy AS (
-			  SELECT referred_member_id, 1 AS level,rider_id,created_at
-			  FROM promotion_referrals
-		 ` + fmt.Sprintf(" WHERE referring_member_id = %d", mem.ID) + `
-			  UNION ALL
-			  SELECT mr.referred_member_id, mh.level + 1 AS level,mr.rider_id,mr.created_at
-			  FROM member_hierarchy mh
-			  INNER JOIN promotion_referrals as mr ON mh.referred_member_id = mr.referring_member_id
-              WHERE mh.level < 2
-			)
-			SELECT
-			  COUNT(DISTINCT mh.referred_member_id) AS totalTeam,
-			  COUNT(DISTINCT CASE WHEN s.num_active_subscriptions > 0 THEN mh.referred_member_id END) AS totalNewSign,
-			  COUNT(DISTINCT CASE WHEN s.num_active_subscriptions >= 2 THEN mh.referred_member_id END) AS totalRenewal
-			FROM member_hierarchy mh
-			LEFT JOIN rider AS r ON mh.rider_id = r.ID
-			LEFT JOIN (
-			  SELECT rider_id, COUNT(*) AS num_active_subscriptions
-			  FROM subscribe
-			  WHERE status <> 0
-			  GROUP BY rider_id
-			) AS s ON r.ID = s.rider_id
+WITH RECURSIVE member_hierarchy AS (
+    SELECT pr.referred_member_id, 1 AS level, pr.rider_id, r.created_at, r.person_id
+    FROM promotion_referrals pr
+    INNER JOIN rider r ON pr.rider_id = r.id
+    ` + fmt.Sprintf(" WHERE referring_member_id = %d", mem.ID) + `
+
+    UNION ALL
+
+    SELECT mr.referred_member_id, mh.level + 1 AS level, mr.rider_id, mr.created_at, r.person_id
+    FROM member_hierarchy mh
+    INNER JOIN promotion_referrals mr ON mh.referred_member_id = mr.referring_member_id
+    INNER JOIN rider r ON mr.rider_id = r.id
+    WHERE mh.level < 2
+)
+SELECT
+    COUNT(DISTINCT mh.referred_member_id) AS totalTeam,
+    COUNT(DISTINCT CASE WHEN r.num_new_sign = 1 THEN mh.referred_member_id END) AS totalNewSign,
+    COUNT(DISTINCT CASE WHEN r.num_renewals > 0 THEN mh.referred_member_id END) AS totalRenewal
+FROM member_hierarchy mh
+LEFT JOIN (
+    SELECT person_id,
+           SUM(CASE WHEN num_subscriptions = 1 AND status <> 0 THEN 1 ELSE 0 END) AS num_new_sign,
+           SUM(CASE WHEN num_subscriptions > 1 THEN 1 ELSE 0 END) AS num_renewals
+    FROM (
+        SELECT r.person_id,
+               COUNT(*) AS num_subscriptions,
+               MAX(CASE WHEN status <> 0 THEN 1 ELSE 0 END) AS status
+        FROM rider r
+        LEFT JOIN subscribe s ON r.id = s.rider_id
+        GROUP BY r.person_id
+    ) AS subscription_stats
+    GROUP BY person_id
+) AS r ON mh.person_id = r.person_id;
 			`
 
 	if req.Start != nil && req.End != nil {
@@ -227,30 +238,42 @@ func (s *promotionStatisticsService) SecondLevelEarnings(mem *ent.PromotionMembe
 func (s *promotionStatisticsService) MyTeamStatistics(mem *ent.PromotionMember) []promotion.StatisticsTeamDetailRes {
 	var v []promotion.StatisticsTeamDetailRes
 	sqls := `
-			WITH RECURSIVE member_hierarchy AS (
-			  SELECT referred_member_id, 1 AS level,rider_id,created_at
-			  FROM promotion_referrals
-            ` + fmt.Sprintf(" WHERE referring_member_id = %d", mem.ID) + `
-			  UNION ALL
-			  SELECT mr.referred_member_id, mh.level + 1 AS level,mr.rider_id,mr.created_at
-			  FROM member_hierarchy mh
-			  INNER JOIN promotion_referrals as mr ON mh.referred_member_id = mr.referring_member_id
-			  WHERE mh.level < 2
-			)
-			SELECT
-			  level,
-			  COUNT(DISTINCT mh.referred_member_id) AS TotalTeam,
-			  COUNT(DISTINCT CASE WHEN s.num_active_subscriptions > 0 THEN mh.referred_member_id END) AS TotalNewSign,
-			  COUNT(DISTINCT CASE WHEN s.num_active_subscriptions >= 2 THEN mh.referred_member_id END) AS TotalRenewal
-			FROM member_hierarchy mh
-			LEFT JOIN rider AS r ON mh.rider_id = r.ID
-			LEFT JOIN (
-			  SELECT rider_id, COUNT(*) AS num_active_subscriptions
-			  FROM subscribe
-			  WHERE status <> 0
-			  GROUP BY rider_id
-			) AS s ON r.ID = s.rider_id
-			GROUP BY mh.level;
+WITH RECURSIVE member_hierarchy AS (
+    SELECT referred_member_id, 1 AS level, rider_id, pr.created_at, person_id
+    FROM promotion_referrals pr
+    INNER JOIN rider r ON pr.rider_id = r.id
+    ` + fmt.Sprintf(" WHERE referring_member_id = %d", mem.ID) + `
+
+    UNION ALL
+
+    SELECT mr.referred_member_id, mh.level + 1 AS level, mr.rider_id, mr.created_at, r.person_id
+    FROM member_hierarchy mh
+    INNER JOIN promotion_referrals mr ON mh.referred_member_id = mr.referring_member_id
+    INNER JOIN rider r ON mr.rider_id = r.id
+    WHERE mh.level < 2
+)
+
+SELECT
+    level,
+    COUNT(DISTINCT mh.referred_member_id) AS TotalTeam,
+    COUNT(DISTINCT CASE WHEN r.num_new_sign = 1 THEN mh.referred_member_id END) AS TotalNewSign,
+    COUNT(DISTINCT CASE WHEN r.num_renewals > 0 THEN mh.referred_member_id END) AS TotalRenewal
+FROM member_hierarchy mh
+LEFT JOIN (
+    SELECT person_id,
+           SUM(CASE WHEN num_subscriptions = 1 AND status <> 0 THEN 1 ELSE 0 END) AS num_new_sign,
+           SUM(CASE WHEN num_subscriptions >= 2 THEN 1 ELSE 0 END) AS num_renewals
+    FROM (
+        SELECT r.person_id,
+               COUNT(*) AS num_subscriptions,
+               MAX(CASE WHEN status <> 0 THEN 1 ELSE 0 END) AS status
+        FROM rider r
+        LEFT JOIN subscribe s ON r.id = s.rider_id
+        GROUP BY r.person_id
+    ) AS subscription_stats
+    GROUP BY person_id
+) AS r ON mh.person_id = r.person_id
+GROUP BY level;
 			`
 	rows, err := ent.Database.QueryContext(s.ctx, sqls)
 	if err != nil {
@@ -273,7 +296,8 @@ func (s *promotionStatisticsService) MyTeamStatistics(mem *ent.PromotionMember) 
 	return v
 }
 
-func getYearMonthSlice(startDate, endDate string) (res []promotion.StatisticsTeamGrowthTrendRes) {
+// getYearMonthSlice 获取年月切片
+func (s *promotionStatisticsService) getYearMonthSlice(startDate, endDate string) (res []promotion.StatisticsTeamGrowthTrendRes) {
 	layout := "2006-01-02"
 	start, _ := time.Parse(layout, startDate)
 	end, _ := time.Parse(layout, endDate)
@@ -301,10 +325,9 @@ func (s *promotionStatisticsService) TeamGrowth(mem *ent.PromotionMember, req *p
 		snag.Panic("请查询6个月内的数据")
 	}
 
-	res = getYearMonthSlice(*req.Start, *req.End)
+	res = s.getYearMonthSlice(*req.Start, *req.End)
 
-	sqls := `
-			WITH RECURSIVE member_hierarchy AS (
+	sqls := `WITH RECURSIVE member_hierarchy AS (
 			  SELECT referred_member_id, 1 AS level,rider_id,created_at
 			  FROM promotion_referrals
 		  ` + fmt.Sprintf(" WHERE referring_member_id = %d", mem.ID) + `

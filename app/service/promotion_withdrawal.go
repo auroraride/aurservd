@@ -36,7 +36,7 @@ func NewPromotionWithdrawalService(params ...any) *promotionWithdrawalService {
 
 // List 提现列表
 func (s *promotionWithdrawalService) List(req *promotion.WithdrawalListReq) *model.PaginationRes {
-	q := ent.Database.PromotionWithdrawal.Query().WithCards().Order(ent.Asc(promotionwithdrawal.FieldStatus), ent.Desc(promotionwithdrawal.FieldCreatedAt))
+	q := ent.Database.PromotionWithdrawal.Query().WithCards().WithMember().Order(ent.Asc(promotionwithdrawal.FieldStatus), ent.Desc(promotionwithdrawal.FieldCreatedAt))
 
 	if req.ID != nil {
 		q.Where(promotionwithdrawal.MemberID(*req.ID))
@@ -83,6 +83,10 @@ func (s *promotionWithdrawalService) List(req *promotion.WithdrawalListReq) *mod
 					ApplyTime: item.ApplyTime.Format(carbon.DateTimeLayout),
 				},
 			}
+			if item.ReviewTime != nil {
+				res.ReviewTime = item.ReviewTime.Format(carbon.DateTimeLayout)
+			}
+
 			if item.Edges.Cards != nil {
 				account := item.Edges.Cards.CardNo
 
@@ -172,7 +176,7 @@ func (s *promotionWithdrawalService) AlterReview(req *promotion.WithdrawalApprov
 					snag.Panic("审批不通过 退回余额失败")
 				}
 			}
-			err = tx.PromotionWithdrawal.Update().Where(promotionwithdrawal.ID(v.ID)).SetStatus(req.Status).SetApplyTime(time.Now()).Exec(s.ctx)
+			err = tx.PromotionWithdrawal.Update().Where(promotionwithdrawal.ID(v.ID)).SetStatus(req.Status).SetReviewTime(time.Now()).Exec(s.ctx)
 			if err != nil {
 				snag.Panic("审批失败")
 			}

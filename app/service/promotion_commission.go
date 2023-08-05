@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
 	"time"
@@ -384,7 +385,7 @@ func (s *promotionCommissionService) saveEarningsAndUpdateCommission(tx *ent.Tx,
 	// 查询任务积分
 	lt, err := NewPromotionLevelTaskService().QueryByKey(req.CommissionRuleKey.Value())
 	if err != nil {
-		zap.L().Error("会员任务查询失败 会员成长值记录失败 会员成长值更新失败", zap.Error(err), zap.Any("积分记录", lt))
+		zap.L().Error("会员任务查询失败 会员成长值记录失败 会员成长值更新失败", zap.Error(err))
 		return
 	}
 	// 记录积分
@@ -432,7 +433,18 @@ func (s *promotionCommissionService) getCommissionRatio(rule map[promotion.Commi
 // GetCommissionType 查询骑手是新用户还是续费用户
 func (s *promotionCommissionService) GetCommissionType(phone string) (promotion.CommissionCalculationType, error) {
 
-	riders := ent.Database.Rider.Query().WithSubscribes().Where(rider.Phone(phone)).AllX(s.ctx)
+	// 通过实名认证 查询骑手是否是新用户
+	ri := ent.Database.Rider.Query().Where(rider.Phone(phone)).FirstX(s.ctx)
+	if ri == nil {
+		return 0, errors.New("骑手不存在")
+	}
+
+	if ri.Edges.Person == nil {
+		return 0, errors.New("骑手未实名认证")
+	}
+
+	riders := ent.Database.Rider.Query().WithSubscribes().Where(rider.PersonID(ri.Edges.Person.ID)).AllX(s.ctx)
+
 	for _, v := range riders {
 		sub := v.Edges.Subscribes
 		if sub != nil && (len(sub) == 1 && sub[0].RenewalDays > 0 || len(sub) > 1) {

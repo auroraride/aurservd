@@ -66,7 +66,7 @@ func (PromotionWithdrawal) Fields() []ent.Field {
 		field.Uint8("method").Comment("提现方式 1:银行卡"),
 		field.Uint64("account_id").Optional().Comment("提现账号ID"),
 		field.Time("apply_time").Optional().Comment("申请时间"),
-		field.Time("review_time").Optional().Comment("审核时间"),
+		field.Time("review_time").Optional().Nillable().Comment("审核时间"),
 	}
 }
 

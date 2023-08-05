@@ -17,6 +17,7 @@ import (
 
 	"github.com/auroraride/aurservd/internal/ent/promotionlevel"
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
+	"github.com/auroraride/aurservd/internal/ent/promotionperson"
 
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
@@ -25,7 +26,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/promotioncommission"
-	"github.com/auroraride/aurservd/internal/ent/promotionperson"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
@@ -74,6 +74,8 @@ func (s *promotionMemberService) MemberSignin(req *promotion.MemberSigninReq) *p
 	case promotion.MemberSigninTypeWechat:
 		// 获取手机号
 		req.Phone = NewPromotionMiniProgram().GetPhoneNumber(req.Code)
+	default:
+		snag.Panic("不支持的登录方式")
 	}
 	c := &promotion.MemberCreateReq{
 		Phone: req.Phone,
@@ -97,6 +99,14 @@ func (s *promotionMemberService) MemberSignin(req *promotion.MemberSigninReq) *p
 
 // MemberSignup 邀请注册
 func (s *promotionMemberService) MemberSignup(req *promotion.MemberSigninReq) *promotion.MemberSigninRes {
+	switch req.SigninType {
+	case promotion.MemberSigninTypeSms:
+		// 校验短信
+		NewSms().VerifyCodeX(req.Phone, req.SmsID, req.Code)
+	default:
+		snag.Panic("不支持的注册方式")
+	}
+
 	// 判断是否已经注册骑手
 	if ent.Database.Rider.QueryNotDeleted().Where(rider.Phone(req.Phone)).ExistX(s.ctx) {
 		snag.Panic("账号已存在")
@@ -291,7 +301,12 @@ func (s *promotionMemberService) MemberList(req *promotion.MemberReq) *model.Pag
 	}
 
 	if req.AuthStatus != nil {
-		q.Where(promotionmember.HasPersonWith(promotionperson.StatusEQ(req.AuthStatus.Value())))
+		q.Where(
+			promotionmember.Or(
+				promotionmember.HasPersonWith(promotionperson.StatusEQ(req.AuthStatus.Value())),
+				promotionmember.PersonIDIsNil(),
+			),
+		)
 	}
 
 	return model.ParsePaginationResponse(
@@ -395,15 +410,9 @@ func (s *promotionMemberService) MemberCreate(tx *ent.Tx, req *promotion.MemberC
 	// 获取默认分佣方案
 	commission, _ := NewPromotionCommissionService().DefaultPromotionCommission()
 
-	// 创建实名认证信息
-	// person := ent.Database.PromotionPerson.Create().
-	// 	SetNillableName(req.Name).
-	// 	SaveX(s.ctx)
-
 	q := tx.PromotionMember.Create().
 		SetNillableName(req.Name).
 		SetPhone(req.Phone)
-	// SetPerson(person)
 
 	if commission != nil {
 		q.SetCommission(commission)
@@ -424,7 +433,7 @@ func (s *promotionMemberService) MemberCreate(tx *ent.Tx, req *promotion.MemberC
 		req.ReferringMemberID = nil
 	}
 
-	// 更新上级会员的团队人数
+	// 创建推荐关系
 	NewPromotionReferralsService().MemberReferrals(tx, promotion.Referrals{
 		ReferringMemberId: req.ReferringMemberID,
 		ReferredMemberId:  mem.ID,
@@ -577,7 +586,7 @@ func (s *promotionMemberService) MemberTeamFilter(req *promotion.MemberTeamReq, 
 	}
 }
 
-// MemberTeamStatistics 会员团队统计概览
+// MemberTeamStatistics 会员团队统计
 func (s *promotionMemberService) MemberTeamStatistics(req *promotion.MemberTeamReq) *promotion.MemberTeamStatisticsRes {
 	sqls := `
 			WITH RECURSIVE member_hierarchy AS (

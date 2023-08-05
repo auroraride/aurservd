@@ -69,10 +69,11 @@ type WithdrawalDetail struct {
 	Amount          float64      `json:"amount"`             // 提现金额
 	Fee             float64      `json:"fee"`                // 提现手续费
 	Status          uint8        `json:"status"`             // 状态 0:待审核 1:成功 2:失败
-	CreatedAt       string       `json:"createdAt"`          // 提现时间
+	CreatedAt       string       `json:"createdAt"`          // 创建时间
 	Method          string       `json:"method"`             // 提现方式 1:银行卡
 	Remark          string       `json:"remark"`             // 备注
 	ApplyTime       string       `json:"applyTime"`          // 申请时间
+	ReviewTime      string       `json:"review_time"`        // 审核时间
 }
 
 // WithdrawalAlterReq 提现申请请求

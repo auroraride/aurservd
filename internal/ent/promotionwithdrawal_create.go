@@ -403,7 +403,7 @@ func (pwc *PromotionWithdrawalCreate) createSpec() (*PromotionWithdrawal, *sqlgr
 	}
 	if value, ok := pwc.mutation.ReviewTime(); ok {
 		_spec.SetField(promotionwithdrawal.FieldReviewTime, field.TypeTime, value)
-		_node.ReviewTime = value
+		_node.ReviewTime = &value
 	}
 	if nodes := pwc.mutation.MemberIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

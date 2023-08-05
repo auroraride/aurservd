@@ -50,7 +50,7 @@ type PromotionWithdrawal struct {
 	// 申请时间
 	ApplyTime time.Time `json:"apply_time,omitempty"`
 	// 审核时间
-	ReviewTime time.Time `json:"review_time,omitempty"`
+	ReviewTime *time.Time `json:"review_time,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PromotionWithdrawalQuery when eager-loading is set.
 	Edges        PromotionWithdrawalEdges `json:"edges"`
@@ -223,7 +223,8 @@ func (pw *PromotionWithdrawal) assignValues(columns []string, values []any) erro
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field review_time", values[i])
 			} else if value.Valid {
-				pw.ReviewTime = value.Time
+				pw.ReviewTime = new(time.Time)
+				*pw.ReviewTime = value.Time
 			}
 		default:
 			pw.selectValues.Set(columns[i], values[i])
@@ -315,8 +316,10 @@ func (pw *PromotionWithdrawal) String() string {
 	builder.WriteString("apply_time=")
 	builder.WriteString(pw.ApplyTime.Format(time.ANSIC))
 	builder.WriteString(", ")
-	builder.WriteString("review_time=")
-	builder.WriteString(pw.ReviewTime.Format(time.ANSIC))
+	if v := pw.ReviewTime; v != nil {
+		builder.WriteString("review_time=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

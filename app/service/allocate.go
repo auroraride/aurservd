@@ -332,10 +332,13 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 	// 激活成功后，返佣计算
 	// 团签用户不返佣 个签用户返佣
 	if sub.EnterpriseID == nil && sub.Type == model.OrderTypeNewly {
+
+		var commissionType promotion.CommissionCalculationType
+
 		// 判断返佣类型 新签有可能是续签
-		commissionType, err := NewPromotionCommissionService().GetCommissionType(r.Phone)
+		commissionType, err = NewPromotionCommissionService().GetCommissionType(r.Phone)
 		if err != nil {
-			snag.Panic("获取分佣类型失败")
+			snag.Panic(err.Error())
 		}
 
 		ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
