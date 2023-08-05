@@ -243,6 +243,7 @@ func (s *businessRiderService) Inactive(id uint64) (*model.SubscribeActiveInfo, 
 			oq.WithPlan().WithCommission()
 		}).
 		WithRider().
+		WithPlan().
 		WithEnterprise().
 		WithCity().
 		WithBrand().

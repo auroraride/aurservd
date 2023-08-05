@@ -110,12 +110,12 @@ func (s *promotionMemberService) Signup(req *promotion.MemberSigninReq) *promoti
 
 	// 判断是否已经注册骑手
 	if ent.Database.Rider.QueryNotDeleted().Where(rider.Phone(req.Phone)).ExistX(s.ctx) {
-		snag.Panic("账号已存在")
+		snag.Panic("账号已存在,请登录")
 	}
 	// 推广账号
 	mem, _ := s.GetMemberByPhone(req.Phone)
 	if mem != nil {
-		snag.Panic("账号已存在")
+		snag.Panic("账号已存在,请登录")
 	}
 
 	c := &promotion.MemberCreateReq{

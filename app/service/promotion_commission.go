@@ -436,7 +436,7 @@ func (s *promotionCommissionService) getCommissionRatio(rule map[promotion.Commi
 func (s *promotionCommissionService) GetCommissionType(phone string) (promotion.CommissionCalculationType, error) {
 
 	// 通过实名认证 查询骑手是否是新用户
-	ri, _ := ent.Database.Rider.Query().Where(rider.Phone(phone)).First(s.ctx)
+	ri, _ := ent.Database.Rider.Query().WithPerson().Where(rider.Phone(phone)).First(s.ctx)
 	if ri == nil {
 		return 0, errors.New("骑手不存在")
 	}

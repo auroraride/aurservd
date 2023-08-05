@@ -329,31 +329,31 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 			Active(sub, allo)
 	}
 
-	// 激活成功后，返佣计算
-	// 团签用户不返佣 个签用户返佣
-	if sub.EnterpriseID == nil && sub.Type == model.OrderTypeNewly {
+	go func() {
+		// 激活成功后，返佣计算
+		// 团签用户不返佣 个签用户返佣
+		if sub.EnterpriseID == nil && sub.Type == model.OrderTypeNewly {
 
-		var commissionType promotion.CommissionCalculationType
+			var commissionType promotion.CommissionCalculationType
 
-		// 判断返佣类型 新签有可能是续签
-		commissionType, err = NewPromotionCommissionService().GetCommissionType(r.Phone)
-		if err != nil {
-			snag.Panic(err.Error())
-		}
-
-		ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
-			err = NewPromotionCommissionService().CommissionCalculation(tx, &promotion.CommissionCalculation{
-				RiderID:        r.ID,
-				CommissionBase: sub.Edges.Plan.CommissionBase,
-				Type:           commissionType,
-			})
-			if err != nil {
+			// 判断返佣类型 新签有可能是续签
+			commissionType, err = NewPromotionCommissionService().GetCommissionType(r.Phone)
+			if err != nil || sub.Edges.Plan == nil {
+				zap.L().Error("激活成功获取返佣失败", zap.Error(err))
 				return
 			}
-			return
-		})
 
-	}
+			ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
+				err = NewPromotionCommissionService().CommissionCalculation(tx, &promotion.CommissionCalculation{
+					RiderID:        r.ID,
+					CommissionBase: sub.Edges.Plan.CommissionBase,
+					Type:           commissionType,
+				})
+				return
+			})
+		}
+	}()
+
 	return model.AllocateCreateRes{
 		ID:           allo.ID,
 		NeedContract: sub.NeedContract,
