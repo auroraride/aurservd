@@ -1140,8 +1140,6 @@ func init() {
 	// promotionearnings.DefaultAmount holds the default value on creation for the amount field.
 	promotionearnings.DefaultAmount = promotionearningsDescAmount.Default.(float64)
 	promotiongrowthMixin := schema.PromotionGrowth{}.Mixin()
-	promotiongrowthMixinHooks2 := promotiongrowthMixin[2].Hooks()
-	promotiongrowth.Hooks[0] = promotiongrowthMixinHooks2[0]
 	promotiongrowthMixinFields0 := promotiongrowthMixin[0].Fields()
 	_ = promotiongrowthMixinFields0
 	promotiongrowthFields := schema.PromotionGrowth{}.Fields()
@@ -1156,10 +1154,6 @@ func init() {
 	promotiongrowth.DefaultUpdatedAt = promotiongrowthDescUpdatedAt.Default.(func() time.Time)
 	// promotiongrowth.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	promotiongrowth.UpdateDefaultUpdatedAt = promotiongrowthDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// promotiongrowthDescStatus is the schema descriptor for status field.
-	promotiongrowthDescStatus := promotiongrowthFields[0].Descriptor()
-	// promotiongrowth.DefaultStatus holds the default value on creation for the status field.
-	promotiongrowth.DefaultStatus = promotiongrowthDescStatus.Default.(uint8)
 	promotionlevelMixin := schema.PromotionLevel{}.Mixin()
 	promotionlevelMixinHooks2 := promotionlevelMixin[2].Hooks()
 	promotionlevel.Hooks[0] = promotionlevelMixinHooks2[0]

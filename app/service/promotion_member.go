@@ -110,12 +110,12 @@ func (s *promotionMemberService) Signup(req *promotion.MemberSigninReq) *promoti
 
 	// 判断是否已经注册骑手
 	if ent.Database.Rider.QueryNotDeleted().Where(rider.Phone(req.Phone)).ExistX(s.ctx) {
-		snag.Panic("账号已存在,请登录")
+		snag.Panic(promotion.ErrorCode, "账号已存在,请登录")
 	}
 	// 推广账号
 	mem, _ := s.GetMemberByPhone(req.Phone)
 	if mem != nil {
-		snag.Panic("账号已存在,请登录")
+		snag.Panic(promotion.ErrorCode, "账号已存在,请登录")
 	}
 
 	c := &promotion.MemberCreateReq{
@@ -327,7 +327,7 @@ func (s *promotionMemberService) Detail(req *promotion.MemberReq) promotion.Memb
 	info, _ := ent.Database.PromotionMember.QueryNotDeleted().WithReferred(
 		func(query *ent.PromotionReferralsQuery) {
 			query.WithReferringMember()
-		}).WithLevel().WithCommission().Where(promotionmember.IDEQ(req.ID)).First(s.ctx)
+		}).WithLevel().WithCommission().WithPerson().Where(promotionmember.IDEQ(req.ID)).First(s.ctx)
 	if info == nil {
 		snag.Panic("会员不存在")
 	}

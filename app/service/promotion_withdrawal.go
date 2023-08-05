@@ -59,7 +59,7 @@ func (s *promotionWithdrawalService) List(req *promotion.WithdrawalListReq) *mod
 		))
 	}
 
-	if req.Status != nil && req.End != nil {
+	if req.Start != nil && req.End != nil {
 		start := tools.NewTime().ParseDateStringX(*req.Start)
 		end := tools.NewTime().ParseNextDateStringX(*req.End)
 		q.Where(
@@ -171,12 +171,12 @@ func (s *promotionWithdrawalService) AlterReview(req *promotion.WithdrawalApprov
 		for _, v := range mw {
 			if req.Status == promotion.WithdrawalStatusFailed.Value() {
 				// 审批不通过 退回余额
-				err = tx.PromotionMember.UpdateOneID(v.Edges.Member.ID).AddBalance(v.ApplyAmount).SetRemark(req.Remark).Exec(s.ctx)
+				err = tx.PromotionMember.UpdateOneID(v.Edges.Member.ID).AddBalance(v.ApplyAmount).Exec(s.ctx)
 				if err != nil {
 					snag.Panic("审批不通过 退回余额失败")
 				}
 			}
-			err = tx.PromotionWithdrawal.Update().Where(promotionwithdrawal.ID(v.ID)).SetStatus(req.Status).SetReviewTime(time.Now()).Exec(s.ctx)
+			err = tx.PromotionWithdrawal.Update().Where(promotionwithdrawal.ID(v.ID)).SetStatus(req.Status).SetReviewTime(time.Now()).SetRemark(req.Remark).Exec(s.ctx)
 			if err != nil {
 				snag.Panic("审批失败")
 			}

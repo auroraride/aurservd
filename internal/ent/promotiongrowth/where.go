@@ -70,11 +70,6 @@ func DeletedAt(v time.Time) predicate.PromotionGrowth {
 	return predicate.PromotionGrowth(sql.FieldEQ(FieldDeletedAt, v))
 }
 
-// Remark applies equality check predicate on the "remark" field. It's identical to RemarkEQ.
-func Remark(v string) predicate.PromotionGrowth {
-	return predicate.PromotionGrowth(sql.FieldEQ(FieldRemark, v))
-}
-
 // MemberID applies equality check predicate on the "member_id" field. It's identical to MemberIDEQ.
 func MemberID(v uint64) predicate.PromotionGrowth {
 	return predicate.PromotionGrowth(sql.FieldEQ(FieldMemberID, v))
@@ -85,9 +80,9 @@ func TaskID(v uint64) predicate.PromotionGrowth {
 	return predicate.PromotionGrowth(sql.FieldEQ(FieldTaskID, v))
 }
 
-// Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
-func Status(v uint8) predicate.PromotionGrowth {
-	return predicate.PromotionGrowth(sql.FieldEQ(FieldStatus, v))
+// RiderID applies equality check predicate on the "rider_id" field. It's identical to RiderIDEQ.
+func RiderID(v uint64) predicate.PromotionGrowth {
+	return predicate.PromotionGrowth(sql.FieldEQ(FieldRiderID, v))
 }
 
 // GrowthValue applies equality check predicate on the "growth_value" field. It's identical to GrowthValueEQ.
@@ -225,101 +220,6 @@ func DeletedAtNotNil() predicate.PromotionGrowth {
 	return predicate.PromotionGrowth(sql.FieldNotNull(FieldDeletedAt))
 }
 
-// CreatorIsNil applies the IsNil predicate on the "creator" field.
-func CreatorIsNil() predicate.PromotionGrowth {
-	return predicate.PromotionGrowth(sql.FieldIsNull(FieldCreator))
-}
-
-// CreatorNotNil applies the NotNil predicate on the "creator" field.
-func CreatorNotNil() predicate.PromotionGrowth {
-	return predicate.PromotionGrowth(sql.FieldNotNull(FieldCreator))
-}
-
-// LastModifierIsNil applies the IsNil predicate on the "last_modifier" field.
-func LastModifierIsNil() predicate.PromotionGrowth {
-	return predicate.PromotionGrowth(sql.FieldIsNull(FieldLastModifier))
-}
-
-// LastModifierNotNil applies the NotNil predicate on the "last_modifier" field.
-func LastModifierNotNil() predicate.PromotionGrowth {
-	return predicate.PromotionGrowth(sql.FieldNotNull(FieldLastModifier))
-}
-
-// RemarkEQ applies the EQ predicate on the "remark" field.
-func RemarkEQ(v string) predicate.PromotionGrowth {
-	return predicate.PromotionGrowth(sql.FieldEQ(FieldRemark, v))
-}
-
-// RemarkNEQ applies the NEQ predicate on the "remark" field.
-func RemarkNEQ(v string) predicate.PromotionGrowth {
-	return predicate.PromotionGrowth(sql.FieldNEQ(FieldRemark, v))
-}
-
-// RemarkIn applies the In predicate on the "remark" field.
-func RemarkIn(vs ...string) predicate.PromotionGrowth {
-	return predicate.PromotionGrowth(sql.FieldIn(FieldRemark, vs...))
-}
-
-// RemarkNotIn applies the NotIn predicate on the "remark" field.
-func RemarkNotIn(vs ...string) predicate.PromotionGrowth {
-	return predicate.PromotionGrowth(sql.FieldNotIn(FieldRemark, vs...))
-}
-
-// RemarkGT applies the GT predicate on the "remark" field.
-func RemarkGT(v string) predicate.PromotionGrowth {
-	return predicate.PromotionGrowth(sql.FieldGT(FieldRemark, v))
-}
-
-// RemarkGTE applies the GTE predicate on the "remark" field.
-func RemarkGTE(v string) predicate.PromotionGrowth {
-	return predicate.PromotionGrowth(sql.FieldGTE(FieldRemark, v))
-}
-
-// RemarkLT applies the LT predicate on the "remark" field.
-func RemarkLT(v string) predicate.PromotionGrowth {
-	return predicate.PromotionGrowth(sql.FieldLT(FieldRemark, v))
-}
-
-// RemarkLTE applies the LTE predicate on the "remark" field.
-func RemarkLTE(v string) predicate.PromotionGrowth {
-	return predicate.PromotionGrowth(sql.FieldLTE(FieldRemark, v))
-}
-
-// RemarkContains applies the Contains predicate on the "remark" field.
-func RemarkContains(v string) predicate.PromotionGrowth {
-	return predicate.PromotionGrowth(sql.FieldContains(FieldRemark, v))
-}
-
-// RemarkHasPrefix applies the HasPrefix predicate on the "remark" field.
-func RemarkHasPrefix(v string) predicate.PromotionGrowth {
-	return predicate.PromotionGrowth(sql.FieldHasPrefix(FieldRemark, v))
-}
-
-// RemarkHasSuffix applies the HasSuffix predicate on the "remark" field.
-func RemarkHasSuffix(v string) predicate.PromotionGrowth {
-	return predicate.PromotionGrowth(sql.FieldHasSuffix(FieldRemark, v))
-}
-
-// RemarkIsNil applies the IsNil predicate on the "remark" field.
-func RemarkIsNil() predicate.PromotionGrowth {
-	return predicate.PromotionGrowth(sql.FieldIsNull(FieldRemark))
-}
-
-// RemarkNotNil applies the NotNil predicate on the "remark" field.
-func RemarkNotNil() predicate.PromotionGrowth {
-	return predicate.PromotionGrowth(sql.FieldNotNull(FieldRemark))
-}
-
-// RemarkEqualFold applies the EqualFold predicate on the "remark" field.
-func RemarkEqualFold(v string) predicate.PromotionGrowth {
-	return predicate.PromotionGrowth(sql.FieldEqualFold(FieldRemark, v))
-}
-
-// RemarkContainsFold applies the ContainsFold predicate on the "remark" field.
-func RemarkContainsFold(v string) predicate.PromotionGrowth {
-	return predicate.PromotionGrowth(sql.FieldContainsFold(FieldRemark, v))
-}
-
 // MemberIDEQ applies the EQ predicate on the "member_id" field.
 func MemberIDEQ(v uint64) predicate.PromotionGrowth {
 	return predicate.PromotionGrowth(sql.FieldEQ(FieldMemberID, v))
@@ -380,44 +280,34 @@ func TaskIDNotNil() predicate.PromotionGrowth {
 	return predicate.PromotionGrowth(sql.FieldNotNull(FieldTaskID))
 }
 
-// StatusEQ applies the EQ predicate on the "status" field.
-func StatusEQ(v uint8) predicate.PromotionGrowth {
-	return predicate.PromotionGrowth(sql.FieldEQ(FieldStatus, v))
+// RiderIDEQ applies the EQ predicate on the "rider_id" field.
+func RiderIDEQ(v uint64) predicate.PromotionGrowth {
+	return predicate.PromotionGrowth(sql.FieldEQ(FieldRiderID, v))
 }
 
-// StatusNEQ applies the NEQ predicate on the "status" field.
-func StatusNEQ(v uint8) predicate.PromotionGrowth {
-	return predicate.PromotionGrowth(sql.FieldNEQ(FieldStatus, v))
+// RiderIDNEQ applies the NEQ predicate on the "rider_id" field.
+func RiderIDNEQ(v uint64) predicate.PromotionGrowth {
+	return predicate.PromotionGrowth(sql.FieldNEQ(FieldRiderID, v))
 }
 
-// StatusIn applies the In predicate on the "status" field.
-func StatusIn(vs ...uint8) predicate.PromotionGrowth {
-	return predicate.PromotionGrowth(sql.FieldIn(FieldStatus, vs...))
+// RiderIDIn applies the In predicate on the "rider_id" field.
+func RiderIDIn(vs ...uint64) predicate.PromotionGrowth {
+	return predicate.PromotionGrowth(sql.FieldIn(FieldRiderID, vs...))
 }
 
-// StatusNotIn applies the NotIn predicate on the "status" field.
-func StatusNotIn(vs ...uint8) predicate.PromotionGrowth {
-	return predicate.PromotionGrowth(sql.FieldNotIn(FieldStatus, vs...))
+// RiderIDNotIn applies the NotIn predicate on the "rider_id" field.
+func RiderIDNotIn(vs ...uint64) predicate.PromotionGrowth {
+	return predicate.PromotionGrowth(sql.FieldNotIn(FieldRiderID, vs...))
 }
 
-// StatusGT applies the GT predicate on the "status" field.
-func StatusGT(v uint8) predicate.PromotionGrowth {
-	return predicate.PromotionGrowth(sql.FieldGT(FieldStatus, v))
+// RiderIDIsNil applies the IsNil predicate on the "rider_id" field.
+func RiderIDIsNil() predicate.PromotionGrowth {
+	return predicate.PromotionGrowth(sql.FieldIsNull(FieldRiderID))
 }
 
-// StatusGTE applies the GTE predicate on the "status" field.
-func StatusGTE(v uint8) predicate.PromotionGrowth {
-	return predicate.PromotionGrowth(sql.FieldGTE(FieldStatus, v))
-}
-
-// StatusLT applies the LT predicate on the "status" field.
-func StatusLT(v uint8) predicate.PromotionGrowth {
-	return predicate.PromotionGrowth(sql.FieldLT(FieldStatus, v))
-}
-
-// StatusLTE applies the LTE predicate on the "status" field.
-func StatusLTE(v uint8) predicate.PromotionGrowth {
-	return predicate.PromotionGrowth(sql.FieldLTE(FieldStatus, v))
+// RiderIDNotNil applies the NotNil predicate on the "rider_id" field.
+func RiderIDNotNil() predicate.PromotionGrowth {
+	return predicate.PromotionGrowth(sql.FieldNotNull(FieldRiderID))
 }
 
 // GrowthValueEQ applies the EQ predicate on the "growth_value" field.
@@ -498,6 +388,29 @@ func HasTask() predicate.PromotionGrowth {
 func HasTaskWith(preds ...predicate.PromotionLevelTask) predicate.PromotionGrowth {
 	return predicate.PromotionGrowth(func(s *sql.Selector) {
 		step := newTaskStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasRider applies the HasEdge predicate on the "rider" edge.
+func HasRider() predicate.PromotionGrowth {
+	return predicate.PromotionGrowth(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, RiderTable, RiderColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRiderWith applies the HasEdge predicate on the "rider" edge with a given conditions (other predicates).
+func HasRiderWith(preds ...predicate.Rider) predicate.PromotionGrowth {
+	return predicate.PromotionGrowth(func(s *sql.Selector) {
+		step := newRiderStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

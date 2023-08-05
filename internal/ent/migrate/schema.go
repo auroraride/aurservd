@@ -3562,13 +3562,10 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
-		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
-		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
-		{Name: "status", Type: field.TypeUint8, Comment: "状态 1:有效 2:无效", Default: 1},
 		{Name: "growth_value", Type: field.TypeUint64, Comment: "成长值"},
 		{Name: "member_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "task_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "rider_id", Type: field.TypeUint64, Nullable: true, Comment: "骑手ID"},
 	}
 	// PromotionGrowthTable holds the schema information for the "promotion_growth" table.
 	PromotionGrowthTable = &schema.Table{
@@ -3578,14 +3575,20 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "promotion_growth_promotion_member_member",
-				Columns:    []*schema.Column{PromotionGrowthColumns[9]},
+				Columns:    []*schema.Column{PromotionGrowthColumns[5]},
 				RefColumns: []*schema.Column{PromotionMemberColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "promotion_growth_promotion_level_task_task",
-				Columns:    []*schema.Column{PromotionGrowthColumns[10]},
+				Columns:    []*schema.Column{PromotionGrowthColumns[6]},
 				RefColumns: []*schema.Column{PromotionLevelTaskColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "promotion_growth_rider_rider",
+				Columns:    []*schema.Column{PromotionGrowthColumns[7]},
+				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -3603,12 +3606,17 @@ var (
 			{
 				Name:    "promotiongrowth_member_id",
 				Unique:  false,
-				Columns: []*schema.Column{PromotionGrowthColumns[9]},
+				Columns: []*schema.Column{PromotionGrowthColumns[5]},
 			},
 			{
 				Name:    "promotiongrowth_task_id",
 				Unique:  false,
-				Columns: []*schema.Column{PromotionGrowthColumns[10]},
+				Columns: []*schema.Column{PromotionGrowthColumns[6]},
+			},
+			{
+				Name:    "promotiongrowth_rider_id",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionGrowthColumns[7]},
 			},
 		},
 	}
@@ -5689,6 +5697,7 @@ func init() {
 	}
 	PromotionGrowthTable.ForeignKeys[0].RefTable = PromotionMemberTable
 	PromotionGrowthTable.ForeignKeys[1].RefTable = PromotionLevelTaskTable
+	PromotionGrowthTable.ForeignKeys[2].RefTable = RiderTable
 	PromotionGrowthTable.Annotation = &entsql.Annotation{
 		Table: "promotion_growth",
 	}

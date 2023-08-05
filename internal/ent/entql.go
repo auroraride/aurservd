@@ -1356,16 +1356,13 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "PromotionGrowth",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			promotiongrowth.FieldCreatedAt:    {Type: field.TypeTime, Column: promotiongrowth.FieldCreatedAt},
-			promotiongrowth.FieldUpdatedAt:    {Type: field.TypeTime, Column: promotiongrowth.FieldUpdatedAt},
-			promotiongrowth.FieldDeletedAt:    {Type: field.TypeTime, Column: promotiongrowth.FieldDeletedAt},
-			promotiongrowth.FieldCreator:      {Type: field.TypeJSON, Column: promotiongrowth.FieldCreator},
-			promotiongrowth.FieldLastModifier: {Type: field.TypeJSON, Column: promotiongrowth.FieldLastModifier},
-			promotiongrowth.FieldRemark:       {Type: field.TypeString, Column: promotiongrowth.FieldRemark},
-			promotiongrowth.FieldMemberID:     {Type: field.TypeUint64, Column: promotiongrowth.FieldMemberID},
-			promotiongrowth.FieldTaskID:       {Type: field.TypeUint64, Column: promotiongrowth.FieldTaskID},
-			promotiongrowth.FieldStatus:       {Type: field.TypeUint8, Column: promotiongrowth.FieldStatus},
-			promotiongrowth.FieldGrowthValue:  {Type: field.TypeUint64, Column: promotiongrowth.FieldGrowthValue},
+			promotiongrowth.FieldCreatedAt:   {Type: field.TypeTime, Column: promotiongrowth.FieldCreatedAt},
+			promotiongrowth.FieldUpdatedAt:   {Type: field.TypeTime, Column: promotiongrowth.FieldUpdatedAt},
+			promotiongrowth.FieldDeletedAt:   {Type: field.TypeTime, Column: promotiongrowth.FieldDeletedAt},
+			promotiongrowth.FieldMemberID:    {Type: field.TypeUint64, Column: promotiongrowth.FieldMemberID},
+			promotiongrowth.FieldTaskID:      {Type: field.TypeUint64, Column: promotiongrowth.FieldTaskID},
+			promotiongrowth.FieldRiderID:     {Type: field.TypeUint64, Column: promotiongrowth.FieldRiderID},
+			promotiongrowth.FieldGrowthValue: {Type: field.TypeUint64, Column: promotiongrowth.FieldGrowthValue},
 		},
 	}
 	graph.Nodes[46] = &sqlgraph.Node{
@@ -4164,6 +4161,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"PromotionGrowth",
 		"PromotionLevelTask",
+	)
+	graph.MustAddE(
+		"rider",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotiongrowth.RiderTable,
+			Columns: []string{promotiongrowth.RiderColumn},
+			Bidi:    false,
+		},
+		"PromotionGrowth",
+		"Rider",
 	)
 	graph.MustAddE(
 		"rider",
@@ -13162,21 +13171,6 @@ func (f *PromotionGrowthFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(promotiongrowth.FieldDeletedAt))
 }
 
-// WhereCreator applies the entql json.RawMessage predicate on the creator field.
-func (f *PromotionGrowthFilter) WhereCreator(p entql.BytesP) {
-	f.Where(p.Field(promotiongrowth.FieldCreator))
-}
-
-// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
-func (f *PromotionGrowthFilter) WhereLastModifier(p entql.BytesP) {
-	f.Where(p.Field(promotiongrowth.FieldLastModifier))
-}
-
-// WhereRemark applies the entql string predicate on the remark field.
-func (f *PromotionGrowthFilter) WhereRemark(p entql.StringP) {
-	f.Where(p.Field(promotiongrowth.FieldRemark))
-}
-
 // WhereMemberID applies the entql uint64 predicate on the member_id field.
 func (f *PromotionGrowthFilter) WhereMemberID(p entql.Uint64P) {
 	f.Where(p.Field(promotiongrowth.FieldMemberID))
@@ -13187,9 +13181,9 @@ func (f *PromotionGrowthFilter) WhereTaskID(p entql.Uint64P) {
 	f.Where(p.Field(promotiongrowth.FieldTaskID))
 }
 
-// WhereStatus applies the entql uint8 predicate on the status field.
-func (f *PromotionGrowthFilter) WhereStatus(p entql.Uint8P) {
-	f.Where(p.Field(promotiongrowth.FieldStatus))
+// WhereRiderID applies the entql uint64 predicate on the rider_id field.
+func (f *PromotionGrowthFilter) WhereRiderID(p entql.Uint64P) {
+	f.Where(p.Field(promotiongrowth.FieldRiderID))
 }
 
 // WhereGrowthValue applies the entql uint64 predicate on the growth_value field.
@@ -13219,6 +13213,20 @@ func (f *PromotionGrowthFilter) WhereHasTask() {
 // WhereHasTaskWith applies a predicate to check if query has an edge task with a given conditions (other predicates).
 func (f *PromotionGrowthFilter) WhereHasTaskWith(preds ...predicate.PromotionLevelTask) {
 	f.Where(entql.HasEdgeWith("task", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasRider applies a predicate to check if query has an edge rider.
+func (f *PromotionGrowthFilter) WhereHasRider() {
+	f.Where(entql.HasEdge("rider"))
+}
+
+// WhereHasRiderWith applies a predicate to check if query has an edge rider with a given conditions (other predicates).
+func (f *PromotionGrowthFilter) WhereHasRiderWith(preds ...predicate.Rider) {
+	f.Where(entql.HasEdgeWith("rider", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

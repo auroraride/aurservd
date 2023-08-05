@@ -6,6 +6,8 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 )
 
+const ErrorCode = 10001
+
 // MemberReq  会员请求参数
 type MemberReq struct {
 	model.PaginationReq

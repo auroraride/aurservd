@@ -3,17 +3,16 @@
 package ent
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/promotiongrowth"
 	"github.com/auroraride/aurservd/internal/ent/promotionleveltask"
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
+	"github.com/auroraride/aurservd/internal/ent/rider"
 )
 
 // PromotionGrowth is the model entity for the PromotionGrowth schema.
@@ -27,18 +26,12 @@ type PromotionGrowth struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
-	// 创建人
-	Creator *model.Modifier `json:"creator,omitempty"`
-	// 最后修改人
-	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
-	// 管理员改动原因/备注
-	Remark string `json:"remark,omitempty"`
 	// MemberID holds the value of the "member_id" field.
 	MemberID *uint64 `json:"member_id,omitempty"`
 	// TaskID holds the value of the "task_id" field.
 	TaskID *uint64 `json:"task_id,omitempty"`
-	// 状态 1:有效 2:无效
-	Status uint8 `json:"status,omitempty"`
+	// 骑手ID
+	RiderID *uint64 `json:"rider_id,omitempty"`
 	// 成长值
 	GrowthValue uint64 `json:"growth_value,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -53,9 +46,11 @@ type PromotionGrowthEdges struct {
 	Member *PromotionMember `json:"member,omitempty"`
 	// Task holds the value of the task edge.
 	Task *PromotionLevelTask `json:"task,omitempty"`
+	// 骑手
+	Rider *Rider `json:"rider,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // MemberOrErr returns the Member value or an error if the edge
@@ -84,17 +79,26 @@ func (e PromotionGrowthEdges) TaskOrErr() (*PromotionLevelTask, error) {
 	return nil, &NotLoadedError{edge: "task"}
 }
 
+// RiderOrErr returns the Rider value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e PromotionGrowthEdges) RiderOrErr() (*Rider, error) {
+	if e.loadedTypes[2] {
+		if e.Rider == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: rider.Label}
+		}
+		return e.Rider, nil
+	}
+	return nil, &NotLoadedError{edge: "rider"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*PromotionGrowth) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case promotiongrowth.FieldCreator, promotiongrowth.FieldLastModifier:
-			values[i] = new([]byte)
-		case promotiongrowth.FieldID, promotiongrowth.FieldMemberID, promotiongrowth.FieldTaskID, promotiongrowth.FieldStatus, promotiongrowth.FieldGrowthValue:
+		case promotiongrowth.FieldID, promotiongrowth.FieldMemberID, promotiongrowth.FieldTaskID, promotiongrowth.FieldRiderID, promotiongrowth.FieldGrowthValue:
 			values[i] = new(sql.NullInt64)
-		case promotiongrowth.FieldRemark:
-			values[i] = new(sql.NullString)
 		case promotiongrowth.FieldCreatedAt, promotiongrowth.FieldUpdatedAt, promotiongrowth.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
 		default:
@@ -137,28 +141,6 @@ func (pg *PromotionGrowth) assignValues(columns []string, values []any) error {
 				pg.DeletedAt = new(time.Time)
 				*pg.DeletedAt = value.Time
 			}
-		case promotiongrowth.FieldCreator:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field creator", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &pg.Creator); err != nil {
-					return fmt.Errorf("unmarshal field creator: %w", err)
-				}
-			}
-		case promotiongrowth.FieldLastModifier:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field last_modifier", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &pg.LastModifier); err != nil {
-					return fmt.Errorf("unmarshal field last_modifier: %w", err)
-				}
-			}
-		case promotiongrowth.FieldRemark:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field remark", values[i])
-			} else if value.Valid {
-				pg.Remark = value.String
-			}
 		case promotiongrowth.FieldMemberID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field member_id", values[i])
@@ -173,11 +155,12 @@ func (pg *PromotionGrowth) assignValues(columns []string, values []any) error {
 				pg.TaskID = new(uint64)
 				*pg.TaskID = uint64(value.Int64)
 			}
-		case promotiongrowth.FieldStatus:
+		case promotiongrowth.FieldRiderID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field status", values[i])
+				return fmt.Errorf("unexpected type %T for field rider_id", values[i])
 			} else if value.Valid {
-				pg.Status = uint8(value.Int64)
+				pg.RiderID = new(uint64)
+				*pg.RiderID = uint64(value.Int64)
 			}
 		case promotiongrowth.FieldGrowthValue:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -206,6 +189,11 @@ func (pg *PromotionGrowth) QueryMember() *PromotionMemberQuery {
 // QueryTask queries the "task" edge of the PromotionGrowth entity.
 func (pg *PromotionGrowth) QueryTask() *PromotionLevelTaskQuery {
 	return NewPromotionGrowthClient(pg.config).QueryTask(pg)
+}
+
+// QueryRider queries the "rider" edge of the PromotionGrowth entity.
+func (pg *PromotionGrowth) QueryRider() *RiderQuery {
+	return NewPromotionGrowthClient(pg.config).QueryRider(pg)
 }
 
 // Update returns a builder for updating this PromotionGrowth.
@@ -242,15 +230,6 @@ func (pg *PromotionGrowth) String() string {
 		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteString(", ")
-	builder.WriteString("creator=")
-	builder.WriteString(fmt.Sprintf("%v", pg.Creator))
-	builder.WriteString(", ")
-	builder.WriteString("last_modifier=")
-	builder.WriteString(fmt.Sprintf("%v", pg.LastModifier))
-	builder.WriteString(", ")
-	builder.WriteString("remark=")
-	builder.WriteString(pg.Remark)
-	builder.WriteString(", ")
 	if v := pg.MemberID; v != nil {
 		builder.WriteString("member_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
@@ -261,8 +240,10 @@ func (pg *PromotionGrowth) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	builder.WriteString("status=")
-	builder.WriteString(fmt.Sprintf("%v", pg.Status))
+	if v := pg.RiderID; v != nil {
+		builder.WriteString("rider_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", ")
 	builder.WriteString("growth_value=")
 	builder.WriteString(fmt.Sprintf("%v", pg.GrowthValue))

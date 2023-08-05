@@ -321,8 +321,8 @@ func (s *promotionCommissionService) calculateFirstLevelCommission(req *promotio
 			// 查询已经返佣的次数
 			count, _ = ent.Database.PromotionEarnings.Query().Where(promotionearnings.MemberID(mem.ID), promotionearnings.RiderID(req.RiderID)).Count(s.ctx)
 		}
-
-		res.Amount = s.calculateCommission(req.CommissionBase, s.getCommissionRatio(conf.RenewalCommission, promotion.FirstLevelRenewalSubscribeKey, count))
+		// count-1 新签次数不算
+		res.Amount = s.calculateCommission(req.CommissionBase, s.getCommissionRatio(conf.RenewalCommission, promotion.FirstLevelRenewalSubscribeKey, count-1))
 		res.CommissionRuleKey = promotion.FirstLevelRenewalSubscribeKey
 	}
 	return
@@ -355,7 +355,7 @@ func (s *promotionCommissionService) calculateSecondLevelCommission(req *promoti
 				count, _ = ent.Database.PromotionEarnings.Query().Where(promotionearnings.MemberID(parentMember.ID), promotionearnings.RiderID(req.RiderID)).Count(s.ctx)
 			}
 
-			res.Amount = s.calculateCommission(req.CommissionBase, s.getCommissionRatio(conf.RenewalCommission, promotion.SecondLevelRenewalSubscribeKey, count))
+			res.Amount = s.calculateCommission(req.CommissionBase, s.getCommissionRatio(conf.RenewalCommission, promotion.SecondLevelRenewalSubscribeKey, count-1))
 			res.CommissionRuleKey = promotion.SecondLevelRenewalSubscribeKey
 		}
 	}
@@ -363,25 +363,28 @@ func (s *promotionCommissionService) calculateSecondLevelCommission(req *promoti
 }
 
 func (s *promotionCommissionService) saveEarningsAndUpdateCommission(tx *ent.Tx, req promotion.EarningsCreateReq) (err error) {
-	// 保存收益
-	err = NewPromotionEarningsService().Create(tx, &req)
-	if err != nil {
-		zap.L().Error("收益记录创建失败", zap.Error(err), zap.Any("收益记录", req))
-		return
-	}
 
-	// 更新返佣总收益
-	_, err = tx.PromotionCommission.UpdateOneID(req.CommissionID).AddAmountSum(req.Amount).Save(s.ctx)
-	if err != nil {
-		zap.L().Error("返佣总收益更新失败", zap.Error(err), zap.Any("收益记录", req))
-		return
-	}
+	if req.Amount != 0 {
+		// 保存收益
+		err = NewPromotionEarningsService().Create(tx, &req)
+		if err != nil {
+			zap.L().Error("收益记录创建失败", zap.Error(err), zap.Any("收益记录", req))
+			return
+		}
 
-	// 更新会员未结算收益
-	_, err = tx.PromotionMember.UpdateOneID(req.MemberID).AddFrozen(req.Amount).Save(s.ctx)
-	if err != nil {
-		zap.L().Error("会员未结算收益更新失败", zap.Error(err), zap.Any("收益记录", req))
-		return
+		// 更新返佣总收益
+		_, err = tx.PromotionCommission.UpdateOneID(req.CommissionID).AddAmountSum(req.Amount).Save(s.ctx)
+		if err != nil {
+			zap.L().Error("返佣总收益更新失败", zap.Error(err), zap.Any("收益记录", req))
+			return
+		}
+
+		// 更新会员未结算收益
+		_, err = tx.PromotionMember.UpdateOneID(req.MemberID).AddFrozen(req.Amount).Save(s.ctx)
+		if err != nil {
+			zap.L().Error("会员未结算收益更新失败", zap.Error(err), zap.Any("收益记录", req))
+			return
+		}
 	}
 
 	// 查询任务积分
@@ -395,7 +398,7 @@ func (s *promotionCommissionService) saveEarningsAndUpdateCommission(tx *ent.Tx,
 		MemberID:    req.MemberID,
 		TaksID:      lt.ID,
 		GrowthValue: lt.GrowthValue,
-		Status:      promotion.GrowthStatusValid.Value(),
+		RiderID:     req.RiderID,
 	})
 	if err != nil {
 		zap.L().Error("会员成长值记录失败", zap.Error(err), zap.Any("积分记录", lt))
@@ -408,6 +411,9 @@ func (s *promotionCommissionService) saveEarningsAndUpdateCommission(tx *ent.Tx,
 		zap.L().Error("会员成长值更新失败", zap.Error(err), zap.Any("积分记录", lt))
 		return
 	}
+
+	zap.L().Info("返佣成功", zap.Any(fmt.Sprintf("收益记录 member_id: %d", req.MemberID), req))
+
 	return
 }
 
@@ -423,8 +429,8 @@ func (s *promotionCommissionService) getCommissionRatio(rule map[promotion.Commi
 		return 0
 	}
 	if rule[index].LimitedType == promotion.CommissionLimited { // 有限制次数
-		// 判断是否超过最大次数
-		if countIndex >= len(rule[index].Ratio) {
+		// 判断是否超过最大次数 或者countIndex小于0
+		if countIndex >= len(rule[index].Ratio) || countIndex < 0 {
 			return 0
 		}
 		return rule[index].Ratio[countIndex]

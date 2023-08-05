@@ -59,7 +59,6 @@ func (PromotionGrowth) Annotations() []schema.Annotation {
 // Fields of the PromotionGrowth.
 func (PromotionGrowth) Fields() []ent.Field {
 	return []ent.Field{
-		field.Uint8("status").Default(1).Comment("状态 1:有效 2:无效"),
 		field.Uint64("growth_value").Comment("成长值"),
 	}
 }
@@ -73,10 +72,10 @@ func (PromotionGrowth) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		internal.TimeMixin{},
 		internal.DeleteMixin{},
-		internal.Modifier{},
 
 		PromotionMemberMixin{Optional: true},
 		PromotionLevelTaskMixin{Optional: true},
+		RiderMixin{Optional: true},
 	}
 }
 

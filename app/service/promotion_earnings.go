@@ -2,6 +2,8 @@ package service
 
 import (
 	"context"
+	"fmt"
+	"strconv"
 
 	"github.com/golang-module/carbon/v2"
 
@@ -154,5 +156,7 @@ func (s *promotionEarningsService) cancelIncome(balance float64, frozen float64,
 	} else {
 		frozen -= amount
 	}
+	balance, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", balance), 64)
+	frozen, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", frozen), 64)
 	return balance, frozen
 }

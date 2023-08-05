@@ -9156,10 +9156,25 @@ func (c *PromotionGrowthClient) QueryTask(pg *PromotionGrowth) *PromotionLevelTa
 	return query
 }
 
+// QueryRider queries the rider edge of a PromotionGrowth.
+func (c *PromotionGrowthClient) QueryRider(pg *PromotionGrowth) *RiderQuery {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pg.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(promotiongrowth.Table, promotiongrowth.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, promotiongrowth.RiderTable, promotiongrowth.RiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(pg.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *PromotionGrowthClient) Hooks() []Hook {
-	hooks := c.hooks.PromotionGrowth
-	return append(hooks[:len(hooks):len(hooks)], promotiongrowth.Hooks[:]...)
+	return c.hooks.PromotionGrowth
 }
 
 // Interceptors returns the client interceptors.

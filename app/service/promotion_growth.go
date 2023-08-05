@@ -10,7 +10,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/promotiongrowth"
 	"github.com/auroraride/aurservd/internal/ent/promotionleveltask"
-	"github.com/auroraride/aurservd/internal/ent/promotionmember"
+	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/pkg/tools"
 )
 
@@ -26,7 +26,7 @@ func NewPromotionGrowthService() *promotionGrowthService {
 
 // List 会员成长值列表
 func (s *promotionGrowthService) List(req *promotion.GrowthReq) *model.PaginationRes {
-	q := ent.Database.PromotionGrowth.Query().WithMember().WithTask().Order(ent.Desc(promotiongrowth.FieldCreatedAt))
+	q := ent.Database.PromotionGrowth.Query().WithTask().WithRider().Order(ent.Desc(promotiongrowth.FieldCreatedAt))
 
 	if req.ID != nil {
 		q.Where(promotiongrowth.MemberID(*req.ID))
@@ -34,17 +34,13 @@ func (s *promotionGrowthService) List(req *promotion.GrowthReq) *model.Paginatio
 
 	if req.Keyword != nil {
 		q.Where(
-			promotiongrowth.HasMemberWith(
-				promotionmember.Or(
-					promotionmember.PhoneContainsFold(*req.Keyword),
-					promotionmember.NameContainsFold(*req.Keyword),
+			promotiongrowth.HasRiderWith(
+				rider.Or(
+					rider.PhoneContainsFold(*req.Keyword),
+					rider.NameContainsFold(*req.Keyword),
 				),
 			),
 		)
-	}
-
-	if req.Status != nil {
-		q.Where(promotiongrowth.Status(*req.Status))
 	}
 
 	if req.LevelTaskID != nil {
@@ -67,18 +63,18 @@ func (s *promotionGrowthService) List(req *promotion.GrowthReq) *model.Paginatio
 			res = promotion.GrowthRes{
 				GrowthDetail: promotion.GrowthDetail{
 					ID:          item.ID,
-					Status:      item.Status,
 					GrowthValue: item.GrowthValue,
 					CreatedAt:   item.CreatedAt.Format(carbon.DateTimeLayout),
-					Remark:      item.Remark,
 				}}
-			if item.Edges.Member != nil {
-				res.Phone = item.Edges.Member.Phone
-				res.Name = item.Edges.Member.Name
-			}
 			if item.Edges.Task != nil {
 				res.LevelTaskName = item.Edges.Task.Name
 			}
+
+			if item.Edges.Rider != nil {
+				res.Name = item.Edges.Rider.Name
+				res.Phone = item.Edges.Rider.Phone
+			}
+
 			return
 		})
 }
@@ -89,7 +85,7 @@ func (s *promotionGrowthService) Create(tx *ent.Tx, req *promotion.GrowthCreateR
 		SetMemberID(req.MemberID).
 		SetTaskID(req.TaksID).
 		SetGrowthValue(req.GrowthValue).
-		SetStatus(req.Status).
+		SetRiderID(req.RiderID).
 		Exec(s.ctx)
 }
 

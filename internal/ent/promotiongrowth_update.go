@@ -11,11 +11,11 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/promotiongrowth"
 	"github.com/auroraride/aurservd/internal/ent/promotionleveltask"
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
+	"github.com/auroraride/aurservd/internal/ent/rider"
 )
 
 // PromotionGrowthUpdate is the builder for updating PromotionGrowth entities.
@@ -55,38 +55,6 @@ func (pgu *PromotionGrowthUpdate) SetNillableDeletedAt(t *time.Time) *PromotionG
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (pgu *PromotionGrowthUpdate) ClearDeletedAt() *PromotionGrowthUpdate {
 	pgu.mutation.ClearDeletedAt()
-	return pgu
-}
-
-// SetLastModifier sets the "last_modifier" field.
-func (pgu *PromotionGrowthUpdate) SetLastModifier(m *model.Modifier) *PromotionGrowthUpdate {
-	pgu.mutation.SetLastModifier(m)
-	return pgu
-}
-
-// ClearLastModifier clears the value of the "last_modifier" field.
-func (pgu *PromotionGrowthUpdate) ClearLastModifier() *PromotionGrowthUpdate {
-	pgu.mutation.ClearLastModifier()
-	return pgu
-}
-
-// SetRemark sets the "remark" field.
-func (pgu *PromotionGrowthUpdate) SetRemark(s string) *PromotionGrowthUpdate {
-	pgu.mutation.SetRemark(s)
-	return pgu
-}
-
-// SetNillableRemark sets the "remark" field if the given value is not nil.
-func (pgu *PromotionGrowthUpdate) SetNillableRemark(s *string) *PromotionGrowthUpdate {
-	if s != nil {
-		pgu.SetRemark(*s)
-	}
-	return pgu
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (pgu *PromotionGrowthUpdate) ClearRemark() *PromotionGrowthUpdate {
-	pgu.mutation.ClearRemark()
 	return pgu
 }
 
@@ -130,24 +98,23 @@ func (pgu *PromotionGrowthUpdate) ClearTaskID() *PromotionGrowthUpdate {
 	return pgu
 }
 
-// SetStatus sets the "status" field.
-func (pgu *PromotionGrowthUpdate) SetStatus(u uint8) *PromotionGrowthUpdate {
-	pgu.mutation.ResetStatus()
-	pgu.mutation.SetStatus(u)
+// SetRiderID sets the "rider_id" field.
+func (pgu *PromotionGrowthUpdate) SetRiderID(u uint64) *PromotionGrowthUpdate {
+	pgu.mutation.SetRiderID(u)
 	return pgu
 }
 
-// SetNillableStatus sets the "status" field if the given value is not nil.
-func (pgu *PromotionGrowthUpdate) SetNillableStatus(u *uint8) *PromotionGrowthUpdate {
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (pgu *PromotionGrowthUpdate) SetNillableRiderID(u *uint64) *PromotionGrowthUpdate {
 	if u != nil {
-		pgu.SetStatus(*u)
+		pgu.SetRiderID(*u)
 	}
 	return pgu
 }
 
-// AddStatus adds u to the "status" field.
-func (pgu *PromotionGrowthUpdate) AddStatus(u int8) *PromotionGrowthUpdate {
-	pgu.mutation.AddStatus(u)
+// ClearRiderID clears the value of the "rider_id" field.
+func (pgu *PromotionGrowthUpdate) ClearRiderID() *PromotionGrowthUpdate {
+	pgu.mutation.ClearRiderID()
 	return pgu
 }
 
@@ -174,6 +141,11 @@ func (pgu *PromotionGrowthUpdate) SetTask(p *PromotionLevelTask) *PromotionGrowt
 	return pgu.SetTaskID(p.ID)
 }
 
+// SetRider sets the "rider" edge to the Rider entity.
+func (pgu *PromotionGrowthUpdate) SetRider(r *Rider) *PromotionGrowthUpdate {
+	return pgu.SetRiderID(r.ID)
+}
+
 // Mutation returns the PromotionGrowthMutation object of the builder.
 func (pgu *PromotionGrowthUpdate) Mutation() *PromotionGrowthMutation {
 	return pgu.mutation
@@ -191,11 +163,15 @@ func (pgu *PromotionGrowthUpdate) ClearTask() *PromotionGrowthUpdate {
 	return pgu
 }
 
+// ClearRider clears the "rider" edge to the Rider entity.
+func (pgu *PromotionGrowthUpdate) ClearRider() *PromotionGrowthUpdate {
+	pgu.mutation.ClearRider()
+	return pgu
+}
+
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (pgu *PromotionGrowthUpdate) Save(ctx context.Context) (int, error) {
-	if err := pgu.defaults(); err != nil {
-		return 0, err
-	}
+	pgu.defaults()
 	return withHooks(ctx, pgu.sqlSave, pgu.mutation, pgu.hooks)
 }
 
@@ -222,15 +198,11 @@ func (pgu *PromotionGrowthUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (pgu *PromotionGrowthUpdate) defaults() error {
+func (pgu *PromotionGrowthUpdate) defaults() {
 	if _, ok := pgu.mutation.UpdatedAt(); !ok {
-		if promotiongrowth.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized promotiongrowth.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
 		v := promotiongrowth.UpdateDefaultUpdatedAt()
 		pgu.mutation.SetUpdatedAt(v)
 	}
-	return nil
 }
 
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
@@ -256,27 +228,6 @@ func (pgu *PromotionGrowthUpdate) sqlSave(ctx context.Context) (n int, err error
 	}
 	if pgu.mutation.DeletedAtCleared() {
 		_spec.ClearField(promotiongrowth.FieldDeletedAt, field.TypeTime)
-	}
-	if pgu.mutation.CreatorCleared() {
-		_spec.ClearField(promotiongrowth.FieldCreator, field.TypeJSON)
-	}
-	if value, ok := pgu.mutation.LastModifier(); ok {
-		_spec.SetField(promotiongrowth.FieldLastModifier, field.TypeJSON, value)
-	}
-	if pgu.mutation.LastModifierCleared() {
-		_spec.ClearField(promotiongrowth.FieldLastModifier, field.TypeJSON)
-	}
-	if value, ok := pgu.mutation.Remark(); ok {
-		_spec.SetField(promotiongrowth.FieldRemark, field.TypeString, value)
-	}
-	if pgu.mutation.RemarkCleared() {
-		_spec.ClearField(promotiongrowth.FieldRemark, field.TypeString)
-	}
-	if value, ok := pgu.mutation.Status(); ok {
-		_spec.SetField(promotiongrowth.FieldStatus, field.TypeUint8, value)
-	}
-	if value, ok := pgu.mutation.AddedStatus(); ok {
-		_spec.AddField(promotiongrowth.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := pgu.mutation.GrowthValue(); ok {
 		_spec.SetField(promotiongrowth.FieldGrowthValue, field.TypeUint64, value)
@@ -342,6 +293,35 @@ func (pgu *PromotionGrowthUpdate) sqlSave(ctx context.Context) (n int, err error
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if pgu.mutation.RiderCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotiongrowth.RiderTable,
+			Columns: []string{promotiongrowth.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pgu.mutation.RiderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotiongrowth.RiderTable,
+			Columns: []string{promotiongrowth.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(pgu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, pgu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -390,38 +370,6 @@ func (pguo *PromotionGrowthUpdateOne) ClearDeletedAt() *PromotionGrowthUpdateOne
 	return pguo
 }
 
-// SetLastModifier sets the "last_modifier" field.
-func (pguo *PromotionGrowthUpdateOne) SetLastModifier(m *model.Modifier) *PromotionGrowthUpdateOne {
-	pguo.mutation.SetLastModifier(m)
-	return pguo
-}
-
-// ClearLastModifier clears the value of the "last_modifier" field.
-func (pguo *PromotionGrowthUpdateOne) ClearLastModifier() *PromotionGrowthUpdateOne {
-	pguo.mutation.ClearLastModifier()
-	return pguo
-}
-
-// SetRemark sets the "remark" field.
-func (pguo *PromotionGrowthUpdateOne) SetRemark(s string) *PromotionGrowthUpdateOne {
-	pguo.mutation.SetRemark(s)
-	return pguo
-}
-
-// SetNillableRemark sets the "remark" field if the given value is not nil.
-func (pguo *PromotionGrowthUpdateOne) SetNillableRemark(s *string) *PromotionGrowthUpdateOne {
-	if s != nil {
-		pguo.SetRemark(*s)
-	}
-	return pguo
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (pguo *PromotionGrowthUpdateOne) ClearRemark() *PromotionGrowthUpdateOne {
-	pguo.mutation.ClearRemark()
-	return pguo
-}
-
 // SetMemberID sets the "member_id" field.
 func (pguo *PromotionGrowthUpdateOne) SetMemberID(u uint64) *PromotionGrowthUpdateOne {
 	pguo.mutation.SetMemberID(u)
@@ -462,24 +410,23 @@ func (pguo *PromotionGrowthUpdateOne) ClearTaskID() *PromotionGrowthUpdateOne {
 	return pguo
 }
 
-// SetStatus sets the "status" field.
-func (pguo *PromotionGrowthUpdateOne) SetStatus(u uint8) *PromotionGrowthUpdateOne {
-	pguo.mutation.ResetStatus()
-	pguo.mutation.SetStatus(u)
+// SetRiderID sets the "rider_id" field.
+func (pguo *PromotionGrowthUpdateOne) SetRiderID(u uint64) *PromotionGrowthUpdateOne {
+	pguo.mutation.SetRiderID(u)
 	return pguo
 }
 
-// SetNillableStatus sets the "status" field if the given value is not nil.
-func (pguo *PromotionGrowthUpdateOne) SetNillableStatus(u *uint8) *PromotionGrowthUpdateOne {
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (pguo *PromotionGrowthUpdateOne) SetNillableRiderID(u *uint64) *PromotionGrowthUpdateOne {
 	if u != nil {
-		pguo.SetStatus(*u)
+		pguo.SetRiderID(*u)
 	}
 	return pguo
 }
 
-// AddStatus adds u to the "status" field.
-func (pguo *PromotionGrowthUpdateOne) AddStatus(u int8) *PromotionGrowthUpdateOne {
-	pguo.mutation.AddStatus(u)
+// ClearRiderID clears the value of the "rider_id" field.
+func (pguo *PromotionGrowthUpdateOne) ClearRiderID() *PromotionGrowthUpdateOne {
+	pguo.mutation.ClearRiderID()
 	return pguo
 }
 
@@ -506,6 +453,11 @@ func (pguo *PromotionGrowthUpdateOne) SetTask(p *PromotionLevelTask) *PromotionG
 	return pguo.SetTaskID(p.ID)
 }
 
+// SetRider sets the "rider" edge to the Rider entity.
+func (pguo *PromotionGrowthUpdateOne) SetRider(r *Rider) *PromotionGrowthUpdateOne {
+	return pguo.SetRiderID(r.ID)
+}
+
 // Mutation returns the PromotionGrowthMutation object of the builder.
 func (pguo *PromotionGrowthUpdateOne) Mutation() *PromotionGrowthMutation {
 	return pguo.mutation
@@ -520,6 +472,12 @@ func (pguo *PromotionGrowthUpdateOne) ClearMember() *PromotionGrowthUpdateOne {
 // ClearTask clears the "task" edge to the PromotionLevelTask entity.
 func (pguo *PromotionGrowthUpdateOne) ClearTask() *PromotionGrowthUpdateOne {
 	pguo.mutation.ClearTask()
+	return pguo
+}
+
+// ClearRider clears the "rider" edge to the Rider entity.
+func (pguo *PromotionGrowthUpdateOne) ClearRider() *PromotionGrowthUpdateOne {
+	pguo.mutation.ClearRider()
 	return pguo
 }
 
@@ -538,9 +496,7 @@ func (pguo *PromotionGrowthUpdateOne) Select(field string, fields ...string) *Pr
 
 // Save executes the query and returns the updated PromotionGrowth entity.
 func (pguo *PromotionGrowthUpdateOne) Save(ctx context.Context) (*PromotionGrowth, error) {
-	if err := pguo.defaults(); err != nil {
-		return nil, err
-	}
+	pguo.defaults()
 	return withHooks(ctx, pguo.sqlSave, pguo.mutation, pguo.hooks)
 }
 
@@ -567,15 +523,11 @@ func (pguo *PromotionGrowthUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (pguo *PromotionGrowthUpdateOne) defaults() error {
+func (pguo *PromotionGrowthUpdateOne) defaults() {
 	if _, ok := pguo.mutation.UpdatedAt(); !ok {
-		if promotiongrowth.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized promotiongrowth.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
 		v := promotiongrowth.UpdateDefaultUpdatedAt()
 		pguo.mutation.SetUpdatedAt(v)
 	}
-	return nil
 }
 
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
@@ -618,27 +570,6 @@ func (pguo *PromotionGrowthUpdateOne) sqlSave(ctx context.Context) (_node *Promo
 	}
 	if pguo.mutation.DeletedAtCleared() {
 		_spec.ClearField(promotiongrowth.FieldDeletedAt, field.TypeTime)
-	}
-	if pguo.mutation.CreatorCleared() {
-		_spec.ClearField(promotiongrowth.FieldCreator, field.TypeJSON)
-	}
-	if value, ok := pguo.mutation.LastModifier(); ok {
-		_spec.SetField(promotiongrowth.FieldLastModifier, field.TypeJSON, value)
-	}
-	if pguo.mutation.LastModifierCleared() {
-		_spec.ClearField(promotiongrowth.FieldLastModifier, field.TypeJSON)
-	}
-	if value, ok := pguo.mutation.Remark(); ok {
-		_spec.SetField(promotiongrowth.FieldRemark, field.TypeString, value)
-	}
-	if pguo.mutation.RemarkCleared() {
-		_spec.ClearField(promotiongrowth.FieldRemark, field.TypeString)
-	}
-	if value, ok := pguo.mutation.Status(); ok {
-		_spec.SetField(promotiongrowth.FieldStatus, field.TypeUint8, value)
-	}
-	if value, ok := pguo.mutation.AddedStatus(); ok {
-		_spec.AddField(promotiongrowth.FieldStatus, field.TypeUint8, value)
 	}
 	if value, ok := pguo.mutation.GrowthValue(); ok {
 		_spec.SetField(promotiongrowth.FieldGrowthValue, field.TypeUint64, value)
@@ -697,6 +628,35 @@ func (pguo *PromotionGrowthUpdateOne) sqlSave(ctx context.Context) (_node *Promo
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(promotionleveltask.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if pguo.mutation.RiderCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotiongrowth.RiderTable,
+			Columns: []string{promotiongrowth.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pguo.mutation.RiderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotiongrowth.RiderTable,
+			Columns: []string{promotiongrowth.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

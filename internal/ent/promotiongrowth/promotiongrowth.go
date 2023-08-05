@@ -5,7 +5,6 @@ package promotiongrowth
 import (
 	"time"
 
-	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 )
@@ -21,24 +20,20 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
 	FieldDeletedAt = "deleted_at"
-	// FieldCreator holds the string denoting the creator field in the database.
-	FieldCreator = "creator"
-	// FieldLastModifier holds the string denoting the last_modifier field in the database.
-	FieldLastModifier = "last_modifier"
-	// FieldRemark holds the string denoting the remark field in the database.
-	FieldRemark = "remark"
 	// FieldMemberID holds the string denoting the member_id field in the database.
 	FieldMemberID = "member_id"
 	// FieldTaskID holds the string denoting the task_id field in the database.
 	FieldTaskID = "task_id"
-	// FieldStatus holds the string denoting the status field in the database.
-	FieldStatus = "status"
+	// FieldRiderID holds the string denoting the rider_id field in the database.
+	FieldRiderID = "rider_id"
 	// FieldGrowthValue holds the string denoting the growth_value field in the database.
 	FieldGrowthValue = "growth_value"
 	// EdgeMember holds the string denoting the member edge name in mutations.
 	EdgeMember = "member"
 	// EdgeTask holds the string denoting the task edge name in mutations.
 	EdgeTask = "task"
+	// EdgeRider holds the string denoting the rider edge name in mutations.
+	EdgeRider = "rider"
 	// Table holds the table name of the promotiongrowth in the database.
 	Table = "promotion_growth"
 	// MemberTable is the table that holds the member relation/edge.
@@ -55,6 +50,13 @@ const (
 	TaskInverseTable = "promotion_level_task"
 	// TaskColumn is the table column denoting the task relation/edge.
 	TaskColumn = "task_id"
+	// RiderTable is the table that holds the rider relation/edge.
+	RiderTable = "promotion_growth"
+	// RiderInverseTable is the table name for the Rider entity.
+	// It exists in this package in order to avoid circular dependency with the "rider" package.
+	RiderInverseTable = "rider"
+	// RiderColumn is the table column denoting the rider relation/edge.
+	RiderColumn = "rider_id"
 )
 
 // Columns holds all SQL columns for promotiongrowth fields.
@@ -63,12 +65,9 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldDeletedAt,
-	FieldCreator,
-	FieldLastModifier,
-	FieldRemark,
 	FieldMemberID,
 	FieldTaskID,
-	FieldStatus,
+	FieldRiderID,
 	FieldGrowthValue,
 }
 
@@ -82,21 +81,13 @@ func ValidColumn(column string) bool {
 	return false
 }
 
-// Note that the variables below are initialized by the runtime
-// package on the initialization of the application. Therefore,
-// it should be imported in the main as follows:
-//
-//	import _ "github.com/auroraride/aurservd/internal/ent/runtime"
 var (
-	Hooks [1]ent.Hook
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
-	// DefaultStatus holds the default value on creation for the "status" field.
-	DefaultStatus uint8
 )
 
 // OrderOption defines the ordering options for the PromotionGrowth queries.
@@ -122,11 +113,6 @@ func ByDeletedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDeletedAt, opts...).ToFunc()
 }
 
-// ByRemark orders the results by the remark field.
-func ByRemark(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldRemark, opts...).ToFunc()
-}
-
 // ByMemberID orders the results by the member_id field.
 func ByMemberID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldMemberID, opts...).ToFunc()
@@ -137,9 +123,9 @@ func ByTaskID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTaskID, opts...).ToFunc()
 }
 
-// ByStatus orders the results by the status field.
-func ByStatus(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldStatus, opts...).ToFunc()
+// ByRiderID orders the results by the rider_id field.
+func ByRiderID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRiderID, opts...).ToFunc()
 }
 
 // ByGrowthValue orders the results by the growth_value field.
@@ -160,6 +146,13 @@ func ByTaskField(field string, opts ...sql.OrderTermOption) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newTaskStep(), sql.OrderByField(field, opts...))
 	}
 }
+
+// ByRiderField orders the results by rider field.
+func ByRiderField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRiderStep(), sql.OrderByField(field, opts...))
+	}
+}
 func newMemberStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -172,5 +165,12 @@ func newTaskStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(TaskInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, false, TaskTable, TaskColumn),
+	)
+}
+func newRiderStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(RiderInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, RiderTable, RiderColumn),
 	)
 }

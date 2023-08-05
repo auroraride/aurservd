@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/promotiongrowth"
 	"github.com/auroraride/aurservd/internal/ent/promotionleveltask"
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
+	"github.com/auroraride/aurservd/internal/ent/rider"
 )
 
 // PromotionGrowthQuery is the builder for querying PromotionGrowth entities.
@@ -25,6 +26,7 @@ type PromotionGrowthQuery struct {
 	predicates []predicate.PromotionGrowth
 	withMember *PromotionMemberQuery
 	withTask   *PromotionLevelTaskQuery
+	withRider  *RiderQuery
 	modifiers  []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -99,6 +101,28 @@ func (pgq *PromotionGrowthQuery) QueryTask() *PromotionLevelTaskQuery {
 			sqlgraph.From(promotiongrowth.Table, promotiongrowth.FieldID, selector),
 			sqlgraph.To(promotionleveltask.Table, promotionleveltask.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, promotiongrowth.TaskTable, promotiongrowth.TaskColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(pgq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryRider chains the current query on the "rider" edge.
+func (pgq *PromotionGrowthQuery) QueryRider() *RiderQuery {
+	query := (&RiderClient{config: pgq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pgq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pgq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(promotiongrowth.Table, promotiongrowth.FieldID, selector),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, promotiongrowth.RiderTable, promotiongrowth.RiderColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(pgq.driver.Dialect(), step)
 		return fromU, nil
@@ -300,6 +324,7 @@ func (pgq *PromotionGrowthQuery) Clone() *PromotionGrowthQuery {
 		predicates: append([]predicate.PromotionGrowth{}, pgq.predicates...),
 		withMember: pgq.withMember.Clone(),
 		withTask:   pgq.withTask.Clone(),
+		withRider:  pgq.withRider.Clone(),
 		// clone intermediate query.
 		sql:  pgq.sql.Clone(),
 		path: pgq.path,
@@ -325,6 +350,17 @@ func (pgq *PromotionGrowthQuery) WithTask(opts ...func(*PromotionLevelTaskQuery)
 		opt(query)
 	}
 	pgq.withTask = query
+	return pgq
+}
+
+// WithRider tells the query-builder to eager-load the nodes that are connected to
+// the "rider" edge. The optional arguments are used to configure the query builder of the edge.
+func (pgq *PromotionGrowthQuery) WithRider(opts ...func(*RiderQuery)) *PromotionGrowthQuery {
+	query := (&RiderClient{config: pgq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	pgq.withRider = query
 	return pgq
 }
 
@@ -406,9 +442,10 @@ func (pgq *PromotionGrowthQuery) sqlAll(ctx context.Context, hooks ...queryHook)
 	var (
 		nodes       = []*PromotionGrowth{}
 		_spec       = pgq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			pgq.withMember != nil,
 			pgq.withTask != nil,
+			pgq.withRider != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -441,6 +478,12 @@ func (pgq *PromotionGrowthQuery) sqlAll(ctx context.Context, hooks ...queryHook)
 	if query := pgq.withTask; query != nil {
 		if err := pgq.loadTask(ctx, query, nodes, nil,
 			func(n *PromotionGrowth, e *PromotionLevelTask) { n.Edges.Task = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := pgq.withRider; query != nil {
+		if err := pgq.loadRider(ctx, query, nodes, nil,
+			func(n *PromotionGrowth, e *Rider) { n.Edges.Rider = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -511,6 +554,38 @@ func (pgq *PromotionGrowthQuery) loadTask(ctx context.Context, query *PromotionL
 	}
 	return nil
 }
+func (pgq *PromotionGrowthQuery) loadRider(ctx context.Context, query *RiderQuery, nodes []*PromotionGrowth, init func(*PromotionGrowth), assign func(*PromotionGrowth, *Rider)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*PromotionGrowth)
+	for i := range nodes {
+		if nodes[i].RiderID == nil {
+			continue
+		}
+		fk := *nodes[i].RiderID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(rider.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "rider_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 
 func (pgq *PromotionGrowthQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := pgq.querySpec()
@@ -545,6 +620,9 @@ func (pgq *PromotionGrowthQuery) querySpec() *sqlgraph.QuerySpec {
 		}
 		if pgq.withTask != nil {
 			_spec.Node.AddColumnOnce(promotiongrowth.FieldTaskID)
+		}
+		if pgq.withRider != nil {
+			_spec.Node.AddColumnOnce(promotiongrowth.FieldRiderID)
 		}
 	}
 	if ps := pgq.predicates; len(ps) > 0 {
@@ -616,6 +694,7 @@ type PromotionGrowthQueryWith string
 var (
 	PromotionGrowthQueryWithMember PromotionGrowthQueryWith = "Member"
 	PromotionGrowthQueryWithTask   PromotionGrowthQueryWith = "Task"
+	PromotionGrowthQueryWithRider  PromotionGrowthQueryWith = "Rider"
 )
 
 func (pgq *PromotionGrowthQuery) With(withEdges ...PromotionGrowthQueryWith) *PromotionGrowthQuery {
@@ -625,6 +704,8 @@ func (pgq *PromotionGrowthQuery) With(withEdges ...PromotionGrowthQueryWith) *Pr
 			pgq.WithMember()
 		case PromotionGrowthQueryWithTask:
 			pgq.WithTask()
+		case PromotionGrowthQueryWithRider:
+			pgq.WithRider()
 		}
 	}
 	return pgq

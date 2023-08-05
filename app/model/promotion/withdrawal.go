@@ -57,7 +57,7 @@ type WithdrawalListReq struct {
 type WithdrawalFilter struct {
 	Account *string `json:"account" query:"account"`             // 提现账户
 	Status  *uint8  `json:"status" query:"status" enums:"0,1,2"` // 提现状态 0:待审核 1:成功 2:失败
-	Start   *string `json:"start" query:"start" `                // 开始日期
+	Start   *string `json:"start" query:"start"`                 // 开始日期
 	End     *string `json:"end" query:"end"`                     // 结束日期
 	Keywork *string `json:"keywork" query:"keywork"`             // 关键字
 }

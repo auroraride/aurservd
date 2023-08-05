@@ -69798,11 +69798,6 @@ type PromotionGrowthMutation struct {
 	created_at      *time.Time
 	updated_at      *time.Time
 	deleted_at      *time.Time
-	creator         **model.Modifier
-	last_modifier   **model.Modifier
-	remark          *string
-	status          *uint8
-	addstatus       *int8
 	growth_value    *uint64
 	addgrowth_value *int64
 	clearedFields   map[string]struct{}
@@ -69810,6 +69805,8 @@ type PromotionGrowthMutation struct {
 	clearedmember   bool
 	task            *uint64
 	clearedtask     bool
+	rider           *uint64
+	clearedrider    bool
 	done            bool
 	oldValue        func(context.Context) (*PromotionGrowth, error)
 	predicates      []predicate.PromotionGrowth
@@ -70034,153 +70031,6 @@ func (m *PromotionGrowthMutation) ResetDeletedAt() {
 	delete(m.clearedFields, promotiongrowth.FieldDeletedAt)
 }
 
-// SetCreator sets the "creator" field.
-func (m *PromotionGrowthMutation) SetCreator(value *model.Modifier) {
-	m.creator = &value
-}
-
-// Creator returns the value of the "creator" field in the mutation.
-func (m *PromotionGrowthMutation) Creator() (r *model.Modifier, exists bool) {
-	v := m.creator
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCreator returns the old "creator" field's value of the PromotionGrowth entity.
-// If the PromotionGrowth object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PromotionGrowthMutation) OldCreator(ctx context.Context) (v *model.Modifier, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCreator is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCreator requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCreator: %w", err)
-	}
-	return oldValue.Creator, nil
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (m *PromotionGrowthMutation) ClearCreator() {
-	m.creator = nil
-	m.clearedFields[promotiongrowth.FieldCreator] = struct{}{}
-}
-
-// CreatorCleared returns if the "creator" field was cleared in this mutation.
-func (m *PromotionGrowthMutation) CreatorCleared() bool {
-	_, ok := m.clearedFields[promotiongrowth.FieldCreator]
-	return ok
-}
-
-// ResetCreator resets all changes to the "creator" field.
-func (m *PromotionGrowthMutation) ResetCreator() {
-	m.creator = nil
-	delete(m.clearedFields, promotiongrowth.FieldCreator)
-}
-
-// SetLastModifier sets the "last_modifier" field.
-func (m *PromotionGrowthMutation) SetLastModifier(value *model.Modifier) {
-	m.last_modifier = &value
-}
-
-// LastModifier returns the value of the "last_modifier" field in the mutation.
-func (m *PromotionGrowthMutation) LastModifier() (r *model.Modifier, exists bool) {
-	v := m.last_modifier
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldLastModifier returns the old "last_modifier" field's value of the PromotionGrowth entity.
-// If the PromotionGrowth object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PromotionGrowthMutation) OldLastModifier(ctx context.Context) (v *model.Modifier, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldLastModifier is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldLastModifier requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldLastModifier: %w", err)
-	}
-	return oldValue.LastModifier, nil
-}
-
-// ClearLastModifier clears the value of the "last_modifier" field.
-func (m *PromotionGrowthMutation) ClearLastModifier() {
-	m.last_modifier = nil
-	m.clearedFields[promotiongrowth.FieldLastModifier] = struct{}{}
-}
-
-// LastModifierCleared returns if the "last_modifier" field was cleared in this mutation.
-func (m *PromotionGrowthMutation) LastModifierCleared() bool {
-	_, ok := m.clearedFields[promotiongrowth.FieldLastModifier]
-	return ok
-}
-
-// ResetLastModifier resets all changes to the "last_modifier" field.
-func (m *PromotionGrowthMutation) ResetLastModifier() {
-	m.last_modifier = nil
-	delete(m.clearedFields, promotiongrowth.FieldLastModifier)
-}
-
-// SetRemark sets the "remark" field.
-func (m *PromotionGrowthMutation) SetRemark(s string) {
-	m.remark = &s
-}
-
-// Remark returns the value of the "remark" field in the mutation.
-func (m *PromotionGrowthMutation) Remark() (r string, exists bool) {
-	v := m.remark
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldRemark returns the old "remark" field's value of the PromotionGrowth entity.
-// If the PromotionGrowth object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PromotionGrowthMutation) OldRemark(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldRemark is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldRemark requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldRemark: %w", err)
-	}
-	return oldValue.Remark, nil
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (m *PromotionGrowthMutation) ClearRemark() {
-	m.remark = nil
-	m.clearedFields[promotiongrowth.FieldRemark] = struct{}{}
-}
-
-// RemarkCleared returns if the "remark" field was cleared in this mutation.
-func (m *PromotionGrowthMutation) RemarkCleared() bool {
-	_, ok := m.clearedFields[promotiongrowth.FieldRemark]
-	return ok
-}
-
-// ResetRemark resets all changes to the "remark" field.
-func (m *PromotionGrowthMutation) ResetRemark() {
-	m.remark = nil
-	delete(m.clearedFields, promotiongrowth.FieldRemark)
-}
-
 // SetMemberID sets the "member_id" field.
 func (m *PromotionGrowthMutation) SetMemberID(u uint64) {
 	m.member = &u
@@ -70279,60 +70129,53 @@ func (m *PromotionGrowthMutation) ResetTaskID() {
 	delete(m.clearedFields, promotiongrowth.FieldTaskID)
 }
 
-// SetStatus sets the "status" field.
-func (m *PromotionGrowthMutation) SetStatus(u uint8) {
-	m.status = &u
-	m.addstatus = nil
+// SetRiderID sets the "rider_id" field.
+func (m *PromotionGrowthMutation) SetRiderID(u uint64) {
+	m.rider = &u
 }
 
-// Status returns the value of the "status" field in the mutation.
-func (m *PromotionGrowthMutation) Status() (r uint8, exists bool) {
-	v := m.status
+// RiderID returns the value of the "rider_id" field in the mutation.
+func (m *PromotionGrowthMutation) RiderID() (r uint64, exists bool) {
+	v := m.rider
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldStatus returns the old "status" field's value of the PromotionGrowth entity.
+// OldRiderID returns the old "rider_id" field's value of the PromotionGrowth entity.
 // If the PromotionGrowth object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PromotionGrowthMutation) OldStatus(ctx context.Context) (v uint8, err error) {
+func (m *PromotionGrowthMutation) OldRiderID(ctx context.Context) (v *uint64, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
+		return v, errors.New("OldRiderID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldStatus requires an ID field in the mutation")
+		return v, errors.New("OldRiderID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
+		return v, fmt.Errorf("querying old value for OldRiderID: %w", err)
 	}
-	return oldValue.Status, nil
+	return oldValue.RiderID, nil
 }
 
-// AddStatus adds u to the "status" field.
-func (m *PromotionGrowthMutation) AddStatus(u int8) {
-	if m.addstatus != nil {
-		*m.addstatus += u
-	} else {
-		m.addstatus = &u
-	}
+// ClearRiderID clears the value of the "rider_id" field.
+func (m *PromotionGrowthMutation) ClearRiderID() {
+	m.rider = nil
+	m.clearedFields[promotiongrowth.FieldRiderID] = struct{}{}
 }
 
-// AddedStatus returns the value that was added to the "status" field in this mutation.
-func (m *PromotionGrowthMutation) AddedStatus() (r int8, exists bool) {
-	v := m.addstatus
-	if v == nil {
-		return
-	}
-	return *v, true
+// RiderIDCleared returns if the "rider_id" field was cleared in this mutation.
+func (m *PromotionGrowthMutation) RiderIDCleared() bool {
+	_, ok := m.clearedFields[promotiongrowth.FieldRiderID]
+	return ok
 }
 
-// ResetStatus resets all changes to the "status" field.
-func (m *PromotionGrowthMutation) ResetStatus() {
-	m.status = nil
-	m.addstatus = nil
+// ResetRiderID resets all changes to the "rider_id" field.
+func (m *PromotionGrowthMutation) ResetRiderID() {
+	m.rider = nil
+	delete(m.clearedFields, promotiongrowth.FieldRiderID)
 }
 
 // SetGrowthValue sets the "growth_value" field.
@@ -70443,6 +70286,32 @@ func (m *PromotionGrowthMutation) ResetTask() {
 	m.clearedtask = false
 }
 
+// ClearRider clears the "rider" edge to the Rider entity.
+func (m *PromotionGrowthMutation) ClearRider() {
+	m.clearedrider = true
+}
+
+// RiderCleared reports if the "rider" edge to the Rider entity was cleared.
+func (m *PromotionGrowthMutation) RiderCleared() bool {
+	return m.RiderIDCleared() || m.clearedrider
+}
+
+// RiderIDs returns the "rider" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// RiderID instead. It exists only for internal usage by the builders.
+func (m *PromotionGrowthMutation) RiderIDs() (ids []uint64) {
+	if id := m.rider; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetRider resets all changes to the "rider" edge.
+func (m *PromotionGrowthMutation) ResetRider() {
+	m.rider = nil
+	m.clearedrider = false
+}
+
 // Where appends a list predicates to the PromotionGrowthMutation builder.
 func (m *PromotionGrowthMutation) Where(ps ...predicate.PromotionGrowth) {
 	m.predicates = append(m.predicates, ps...)
@@ -70477,7 +70346,7 @@ func (m *PromotionGrowthMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PromotionGrowthMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 7)
 	if m.created_at != nil {
 		fields = append(fields, promotiongrowth.FieldCreatedAt)
 	}
@@ -70487,23 +70356,14 @@ func (m *PromotionGrowthMutation) Fields() []string {
 	if m.deleted_at != nil {
 		fields = append(fields, promotiongrowth.FieldDeletedAt)
 	}
-	if m.creator != nil {
-		fields = append(fields, promotiongrowth.FieldCreator)
-	}
-	if m.last_modifier != nil {
-		fields = append(fields, promotiongrowth.FieldLastModifier)
-	}
-	if m.remark != nil {
-		fields = append(fields, promotiongrowth.FieldRemark)
-	}
 	if m.member != nil {
 		fields = append(fields, promotiongrowth.FieldMemberID)
 	}
 	if m.task != nil {
 		fields = append(fields, promotiongrowth.FieldTaskID)
 	}
-	if m.status != nil {
-		fields = append(fields, promotiongrowth.FieldStatus)
+	if m.rider != nil {
+		fields = append(fields, promotiongrowth.FieldRiderID)
 	}
 	if m.growth_value != nil {
 		fields = append(fields, promotiongrowth.FieldGrowthValue)
@@ -70522,18 +70382,12 @@ func (m *PromotionGrowthMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case promotiongrowth.FieldDeletedAt:
 		return m.DeletedAt()
-	case promotiongrowth.FieldCreator:
-		return m.Creator()
-	case promotiongrowth.FieldLastModifier:
-		return m.LastModifier()
-	case promotiongrowth.FieldRemark:
-		return m.Remark()
 	case promotiongrowth.FieldMemberID:
 		return m.MemberID()
 	case promotiongrowth.FieldTaskID:
 		return m.TaskID()
-	case promotiongrowth.FieldStatus:
-		return m.Status()
+	case promotiongrowth.FieldRiderID:
+		return m.RiderID()
 	case promotiongrowth.FieldGrowthValue:
 		return m.GrowthValue()
 	}
@@ -70551,18 +70405,12 @@ func (m *PromotionGrowthMutation) OldField(ctx context.Context, name string) (en
 		return m.OldUpdatedAt(ctx)
 	case promotiongrowth.FieldDeletedAt:
 		return m.OldDeletedAt(ctx)
-	case promotiongrowth.FieldCreator:
-		return m.OldCreator(ctx)
-	case promotiongrowth.FieldLastModifier:
-		return m.OldLastModifier(ctx)
-	case promotiongrowth.FieldRemark:
-		return m.OldRemark(ctx)
 	case promotiongrowth.FieldMemberID:
 		return m.OldMemberID(ctx)
 	case promotiongrowth.FieldTaskID:
 		return m.OldTaskID(ctx)
-	case promotiongrowth.FieldStatus:
-		return m.OldStatus(ctx)
+	case promotiongrowth.FieldRiderID:
+		return m.OldRiderID(ctx)
 	case promotiongrowth.FieldGrowthValue:
 		return m.OldGrowthValue(ctx)
 	}
@@ -70595,27 +70443,6 @@ func (m *PromotionGrowthMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDeletedAt(v)
 		return nil
-	case promotiongrowth.FieldCreator:
-		v, ok := value.(*model.Modifier)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCreator(v)
-		return nil
-	case promotiongrowth.FieldLastModifier:
-		v, ok := value.(*model.Modifier)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetLastModifier(v)
-		return nil
-	case promotiongrowth.FieldRemark:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetRemark(v)
-		return nil
 	case promotiongrowth.FieldMemberID:
 		v, ok := value.(uint64)
 		if !ok {
@@ -70630,12 +70457,12 @@ func (m *PromotionGrowthMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetTaskID(v)
 		return nil
-	case promotiongrowth.FieldStatus:
-		v, ok := value.(uint8)
+	case promotiongrowth.FieldRiderID:
+		v, ok := value.(uint64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetStatus(v)
+		m.SetRiderID(v)
 		return nil
 	case promotiongrowth.FieldGrowthValue:
 		v, ok := value.(uint64)
@@ -70652,9 +70479,6 @@ func (m *PromotionGrowthMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *PromotionGrowthMutation) AddedFields() []string {
 	var fields []string
-	if m.addstatus != nil {
-		fields = append(fields, promotiongrowth.FieldStatus)
-	}
 	if m.addgrowth_value != nil {
 		fields = append(fields, promotiongrowth.FieldGrowthValue)
 	}
@@ -70666,8 +70490,6 @@ func (m *PromotionGrowthMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *PromotionGrowthMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
-	case promotiongrowth.FieldStatus:
-		return m.AddedStatus()
 	case promotiongrowth.FieldGrowthValue:
 		return m.AddedGrowthValue()
 	}
@@ -70679,13 +70501,6 @@ func (m *PromotionGrowthMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *PromotionGrowthMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case promotiongrowth.FieldStatus:
-		v, ok := value.(int8)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddStatus(v)
-		return nil
 	case promotiongrowth.FieldGrowthValue:
 		v, ok := value.(int64)
 		if !ok {
@@ -70704,20 +70519,14 @@ func (m *PromotionGrowthMutation) ClearedFields() []string {
 	if m.FieldCleared(promotiongrowth.FieldDeletedAt) {
 		fields = append(fields, promotiongrowth.FieldDeletedAt)
 	}
-	if m.FieldCleared(promotiongrowth.FieldCreator) {
-		fields = append(fields, promotiongrowth.FieldCreator)
-	}
-	if m.FieldCleared(promotiongrowth.FieldLastModifier) {
-		fields = append(fields, promotiongrowth.FieldLastModifier)
-	}
-	if m.FieldCleared(promotiongrowth.FieldRemark) {
-		fields = append(fields, promotiongrowth.FieldRemark)
-	}
 	if m.FieldCleared(promotiongrowth.FieldMemberID) {
 		fields = append(fields, promotiongrowth.FieldMemberID)
 	}
 	if m.FieldCleared(promotiongrowth.FieldTaskID) {
 		fields = append(fields, promotiongrowth.FieldTaskID)
+	}
+	if m.FieldCleared(promotiongrowth.FieldRiderID) {
+		fields = append(fields, promotiongrowth.FieldRiderID)
 	}
 	return fields
 }
@@ -70736,20 +70545,14 @@ func (m *PromotionGrowthMutation) ClearField(name string) error {
 	case promotiongrowth.FieldDeletedAt:
 		m.ClearDeletedAt()
 		return nil
-	case promotiongrowth.FieldCreator:
-		m.ClearCreator()
-		return nil
-	case promotiongrowth.FieldLastModifier:
-		m.ClearLastModifier()
-		return nil
-	case promotiongrowth.FieldRemark:
-		m.ClearRemark()
-		return nil
 	case promotiongrowth.FieldMemberID:
 		m.ClearMemberID()
 		return nil
 	case promotiongrowth.FieldTaskID:
 		m.ClearTaskID()
+		return nil
+	case promotiongrowth.FieldRiderID:
+		m.ClearRiderID()
 		return nil
 	}
 	return fmt.Errorf("unknown PromotionGrowth nullable field %s", name)
@@ -70768,23 +70571,14 @@ func (m *PromotionGrowthMutation) ResetField(name string) error {
 	case promotiongrowth.FieldDeletedAt:
 		m.ResetDeletedAt()
 		return nil
-	case promotiongrowth.FieldCreator:
-		m.ResetCreator()
-		return nil
-	case promotiongrowth.FieldLastModifier:
-		m.ResetLastModifier()
-		return nil
-	case promotiongrowth.FieldRemark:
-		m.ResetRemark()
-		return nil
 	case promotiongrowth.FieldMemberID:
 		m.ResetMemberID()
 		return nil
 	case promotiongrowth.FieldTaskID:
 		m.ResetTaskID()
 		return nil
-	case promotiongrowth.FieldStatus:
-		m.ResetStatus()
+	case promotiongrowth.FieldRiderID:
+		m.ResetRiderID()
 		return nil
 	case promotiongrowth.FieldGrowthValue:
 		m.ResetGrowthValue()
@@ -70795,12 +70589,15 @@ func (m *PromotionGrowthMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PromotionGrowthMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.member != nil {
 		edges = append(edges, promotiongrowth.EdgeMember)
 	}
 	if m.task != nil {
 		edges = append(edges, promotiongrowth.EdgeTask)
+	}
+	if m.rider != nil {
+		edges = append(edges, promotiongrowth.EdgeRider)
 	}
 	return edges
 }
@@ -70817,13 +70614,17 @@ func (m *PromotionGrowthMutation) AddedIDs(name string) []ent.Value {
 		if id := m.task; id != nil {
 			return []ent.Value{*id}
 		}
+	case promotiongrowth.EdgeRider:
+		if id := m.rider; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PromotionGrowthMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	return edges
 }
 
@@ -70835,12 +70636,15 @@ func (m *PromotionGrowthMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PromotionGrowthMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.clearedmember {
 		edges = append(edges, promotiongrowth.EdgeMember)
 	}
 	if m.clearedtask {
 		edges = append(edges, promotiongrowth.EdgeTask)
+	}
+	if m.clearedrider {
+		edges = append(edges, promotiongrowth.EdgeRider)
 	}
 	return edges
 }
@@ -70853,6 +70657,8 @@ func (m *PromotionGrowthMutation) EdgeCleared(name string) bool {
 		return m.clearedmember
 	case promotiongrowth.EdgeTask:
 		return m.clearedtask
+	case promotiongrowth.EdgeRider:
+		return m.clearedrider
 	}
 	return false
 }
@@ -70867,6 +70673,9 @@ func (m *PromotionGrowthMutation) ClearEdge(name string) error {
 	case promotiongrowth.EdgeTask:
 		m.ClearTask()
 		return nil
+	case promotiongrowth.EdgeRider:
+		m.ClearRider()
+		return nil
 	}
 	return fmt.Errorf("unknown PromotionGrowth unique edge %s", name)
 }
@@ -70880,6 +70689,9 @@ func (m *PromotionGrowthMutation) ResetEdge(name string) error {
 		return nil
 	case promotiongrowth.EdgeTask:
 		m.ResetTask()
+		return nil
+	case promotiongrowth.EdgeRider:
+		m.ResetRider()
 		return nil
 	}
 	return fmt.Errorf("unknown PromotionGrowth edge %s", name)

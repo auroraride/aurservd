@@ -11,10 +11,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/promotiongrowth"
 	"github.com/auroraride/aurservd/internal/ent/promotionleveltask"
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
+	"github.com/auroraride/aurservd/internal/ent/rider"
 )
 
 // PromotionGrowthCreate is the builder for creating a PromotionGrowth entity.
@@ -67,32 +67,6 @@ func (pgc *PromotionGrowthCreate) SetNillableDeletedAt(t *time.Time) *PromotionG
 	return pgc
 }
 
-// SetCreator sets the "creator" field.
-func (pgc *PromotionGrowthCreate) SetCreator(m *model.Modifier) *PromotionGrowthCreate {
-	pgc.mutation.SetCreator(m)
-	return pgc
-}
-
-// SetLastModifier sets the "last_modifier" field.
-func (pgc *PromotionGrowthCreate) SetLastModifier(m *model.Modifier) *PromotionGrowthCreate {
-	pgc.mutation.SetLastModifier(m)
-	return pgc
-}
-
-// SetRemark sets the "remark" field.
-func (pgc *PromotionGrowthCreate) SetRemark(s string) *PromotionGrowthCreate {
-	pgc.mutation.SetRemark(s)
-	return pgc
-}
-
-// SetNillableRemark sets the "remark" field if the given value is not nil.
-func (pgc *PromotionGrowthCreate) SetNillableRemark(s *string) *PromotionGrowthCreate {
-	if s != nil {
-		pgc.SetRemark(*s)
-	}
-	return pgc
-}
-
 // SetMemberID sets the "member_id" field.
 func (pgc *PromotionGrowthCreate) SetMemberID(u uint64) *PromotionGrowthCreate {
 	pgc.mutation.SetMemberID(u)
@@ -121,16 +95,16 @@ func (pgc *PromotionGrowthCreate) SetNillableTaskID(u *uint64) *PromotionGrowthC
 	return pgc
 }
 
-// SetStatus sets the "status" field.
-func (pgc *PromotionGrowthCreate) SetStatus(u uint8) *PromotionGrowthCreate {
-	pgc.mutation.SetStatus(u)
+// SetRiderID sets the "rider_id" field.
+func (pgc *PromotionGrowthCreate) SetRiderID(u uint64) *PromotionGrowthCreate {
+	pgc.mutation.SetRiderID(u)
 	return pgc
 }
 
-// SetNillableStatus sets the "status" field if the given value is not nil.
-func (pgc *PromotionGrowthCreate) SetNillableStatus(u *uint8) *PromotionGrowthCreate {
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (pgc *PromotionGrowthCreate) SetNillableRiderID(u *uint64) *PromotionGrowthCreate {
 	if u != nil {
-		pgc.SetStatus(*u)
+		pgc.SetRiderID(*u)
 	}
 	return pgc
 }
@@ -151,6 +125,11 @@ func (pgc *PromotionGrowthCreate) SetTask(p *PromotionLevelTask) *PromotionGrowt
 	return pgc.SetTaskID(p.ID)
 }
 
+// SetRider sets the "rider" edge to the Rider entity.
+func (pgc *PromotionGrowthCreate) SetRider(r *Rider) *PromotionGrowthCreate {
+	return pgc.SetRiderID(r.ID)
+}
+
 // Mutation returns the PromotionGrowthMutation object of the builder.
 func (pgc *PromotionGrowthCreate) Mutation() *PromotionGrowthMutation {
 	return pgc.mutation
@@ -158,9 +137,7 @@ func (pgc *PromotionGrowthCreate) Mutation() *PromotionGrowthMutation {
 
 // Save creates the PromotionGrowth in the database.
 func (pgc *PromotionGrowthCreate) Save(ctx context.Context) (*PromotionGrowth, error) {
-	if err := pgc.defaults(); err != nil {
-		return nil, err
-	}
+	pgc.defaults()
 	return withHooks(ctx, pgc.sqlSave, pgc.mutation, pgc.hooks)
 }
 
@@ -187,26 +164,15 @@ func (pgc *PromotionGrowthCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (pgc *PromotionGrowthCreate) defaults() error {
+func (pgc *PromotionGrowthCreate) defaults() {
 	if _, ok := pgc.mutation.CreatedAt(); !ok {
-		if promotiongrowth.DefaultCreatedAt == nil {
-			return fmt.Errorf("ent: uninitialized promotiongrowth.DefaultCreatedAt (forgotten import ent/runtime?)")
-		}
 		v := promotiongrowth.DefaultCreatedAt()
 		pgc.mutation.SetCreatedAt(v)
 	}
 	if _, ok := pgc.mutation.UpdatedAt(); !ok {
-		if promotiongrowth.DefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized promotiongrowth.DefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
 		v := promotiongrowth.DefaultUpdatedAt()
 		pgc.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := pgc.mutation.Status(); !ok {
-		v := promotiongrowth.DefaultStatus
-		pgc.mutation.SetStatus(v)
-	}
-	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -216,9 +182,6 @@ func (pgc *PromotionGrowthCreate) check() error {
 	}
 	if _, ok := pgc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "PromotionGrowth.updated_at"`)}
-	}
-	if _, ok := pgc.mutation.Status(); !ok {
-		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "PromotionGrowth.status"`)}
 	}
 	if _, ok := pgc.mutation.GrowthValue(); !ok {
 		return &ValidationError{Name: "growth_value", err: errors.New(`ent: missing required field "PromotionGrowth.growth_value"`)}
@@ -262,22 +225,6 @@ func (pgc *PromotionGrowthCreate) createSpec() (*PromotionGrowth, *sqlgraph.Crea
 		_spec.SetField(promotiongrowth.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
-	if value, ok := pgc.mutation.Creator(); ok {
-		_spec.SetField(promotiongrowth.FieldCreator, field.TypeJSON, value)
-		_node.Creator = value
-	}
-	if value, ok := pgc.mutation.LastModifier(); ok {
-		_spec.SetField(promotiongrowth.FieldLastModifier, field.TypeJSON, value)
-		_node.LastModifier = value
-	}
-	if value, ok := pgc.mutation.Remark(); ok {
-		_spec.SetField(promotiongrowth.FieldRemark, field.TypeString, value)
-		_node.Remark = value
-	}
-	if value, ok := pgc.mutation.Status(); ok {
-		_spec.SetField(promotiongrowth.FieldStatus, field.TypeUint8, value)
-		_node.Status = value
-	}
 	if value, ok := pgc.mutation.GrowthValue(); ok {
 		_spec.SetField(promotiongrowth.FieldGrowthValue, field.TypeUint64, value)
 		_node.GrowthValue = value
@@ -314,6 +261,23 @@ func (pgc *PromotionGrowthCreate) createSpec() (*PromotionGrowth, *sqlgraph.Crea
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.TaskID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pgc.mutation.RiderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotiongrowth.RiderTable,
+			Columns: []string{promotiongrowth.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.RiderID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -398,42 +362,6 @@ func (u *PromotionGrowthUpsert) ClearDeletedAt() *PromotionGrowthUpsert {
 	return u
 }
 
-// SetLastModifier sets the "last_modifier" field.
-func (u *PromotionGrowthUpsert) SetLastModifier(v *model.Modifier) *PromotionGrowthUpsert {
-	u.Set(promotiongrowth.FieldLastModifier, v)
-	return u
-}
-
-// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
-func (u *PromotionGrowthUpsert) UpdateLastModifier() *PromotionGrowthUpsert {
-	u.SetExcluded(promotiongrowth.FieldLastModifier)
-	return u
-}
-
-// ClearLastModifier clears the value of the "last_modifier" field.
-func (u *PromotionGrowthUpsert) ClearLastModifier() *PromotionGrowthUpsert {
-	u.SetNull(promotiongrowth.FieldLastModifier)
-	return u
-}
-
-// SetRemark sets the "remark" field.
-func (u *PromotionGrowthUpsert) SetRemark(v string) *PromotionGrowthUpsert {
-	u.Set(promotiongrowth.FieldRemark, v)
-	return u
-}
-
-// UpdateRemark sets the "remark" field to the value that was provided on create.
-func (u *PromotionGrowthUpsert) UpdateRemark() *PromotionGrowthUpsert {
-	u.SetExcluded(promotiongrowth.FieldRemark)
-	return u
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (u *PromotionGrowthUpsert) ClearRemark() *PromotionGrowthUpsert {
-	u.SetNull(promotiongrowth.FieldRemark)
-	return u
-}
-
 // SetMemberID sets the "member_id" field.
 func (u *PromotionGrowthUpsert) SetMemberID(v uint64) *PromotionGrowthUpsert {
 	u.Set(promotiongrowth.FieldMemberID, v)
@@ -470,21 +398,21 @@ func (u *PromotionGrowthUpsert) ClearTaskID() *PromotionGrowthUpsert {
 	return u
 }
 
-// SetStatus sets the "status" field.
-func (u *PromotionGrowthUpsert) SetStatus(v uint8) *PromotionGrowthUpsert {
-	u.Set(promotiongrowth.FieldStatus, v)
+// SetRiderID sets the "rider_id" field.
+func (u *PromotionGrowthUpsert) SetRiderID(v uint64) *PromotionGrowthUpsert {
+	u.Set(promotiongrowth.FieldRiderID, v)
 	return u
 }
 
-// UpdateStatus sets the "status" field to the value that was provided on create.
-func (u *PromotionGrowthUpsert) UpdateStatus() *PromotionGrowthUpsert {
-	u.SetExcluded(promotiongrowth.FieldStatus)
+// UpdateRiderID sets the "rider_id" field to the value that was provided on create.
+func (u *PromotionGrowthUpsert) UpdateRiderID() *PromotionGrowthUpsert {
+	u.SetExcluded(promotiongrowth.FieldRiderID)
 	return u
 }
 
-// AddStatus adds v to the "status" field.
-func (u *PromotionGrowthUpsert) AddStatus(v uint8) *PromotionGrowthUpsert {
-	u.Add(promotiongrowth.FieldStatus, v)
+// ClearRiderID clears the value of the "rider_id" field.
+func (u *PromotionGrowthUpsert) ClearRiderID() *PromotionGrowthUpsert {
+	u.SetNull(promotiongrowth.FieldRiderID)
 	return u
 }
 
@@ -519,9 +447,6 @@ func (u *PromotionGrowthUpsertOne) UpdateNewValues() *PromotionGrowthUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(promotiongrowth.FieldCreatedAt)
-		}
-		if _, exists := u.create.mutation.Creator(); exists {
-			s.SetIgnore(promotiongrowth.FieldCreator)
 		}
 	}))
 	return u
@@ -589,48 +514,6 @@ func (u *PromotionGrowthUpsertOne) ClearDeletedAt() *PromotionGrowthUpsertOne {
 	})
 }
 
-// SetLastModifier sets the "last_modifier" field.
-func (u *PromotionGrowthUpsertOne) SetLastModifier(v *model.Modifier) *PromotionGrowthUpsertOne {
-	return u.Update(func(s *PromotionGrowthUpsert) {
-		s.SetLastModifier(v)
-	})
-}
-
-// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
-func (u *PromotionGrowthUpsertOne) UpdateLastModifier() *PromotionGrowthUpsertOne {
-	return u.Update(func(s *PromotionGrowthUpsert) {
-		s.UpdateLastModifier()
-	})
-}
-
-// ClearLastModifier clears the value of the "last_modifier" field.
-func (u *PromotionGrowthUpsertOne) ClearLastModifier() *PromotionGrowthUpsertOne {
-	return u.Update(func(s *PromotionGrowthUpsert) {
-		s.ClearLastModifier()
-	})
-}
-
-// SetRemark sets the "remark" field.
-func (u *PromotionGrowthUpsertOne) SetRemark(v string) *PromotionGrowthUpsertOne {
-	return u.Update(func(s *PromotionGrowthUpsert) {
-		s.SetRemark(v)
-	})
-}
-
-// UpdateRemark sets the "remark" field to the value that was provided on create.
-func (u *PromotionGrowthUpsertOne) UpdateRemark() *PromotionGrowthUpsertOne {
-	return u.Update(func(s *PromotionGrowthUpsert) {
-		s.UpdateRemark()
-	})
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (u *PromotionGrowthUpsertOne) ClearRemark() *PromotionGrowthUpsertOne {
-	return u.Update(func(s *PromotionGrowthUpsert) {
-		s.ClearRemark()
-	})
-}
-
 // SetMemberID sets the "member_id" field.
 func (u *PromotionGrowthUpsertOne) SetMemberID(v uint64) *PromotionGrowthUpsertOne {
 	return u.Update(func(s *PromotionGrowthUpsert) {
@@ -673,24 +556,24 @@ func (u *PromotionGrowthUpsertOne) ClearTaskID() *PromotionGrowthUpsertOne {
 	})
 }
 
-// SetStatus sets the "status" field.
-func (u *PromotionGrowthUpsertOne) SetStatus(v uint8) *PromotionGrowthUpsertOne {
+// SetRiderID sets the "rider_id" field.
+func (u *PromotionGrowthUpsertOne) SetRiderID(v uint64) *PromotionGrowthUpsertOne {
 	return u.Update(func(s *PromotionGrowthUpsert) {
-		s.SetStatus(v)
+		s.SetRiderID(v)
 	})
 }
 
-// AddStatus adds v to the "status" field.
-func (u *PromotionGrowthUpsertOne) AddStatus(v uint8) *PromotionGrowthUpsertOne {
+// UpdateRiderID sets the "rider_id" field to the value that was provided on create.
+func (u *PromotionGrowthUpsertOne) UpdateRiderID() *PromotionGrowthUpsertOne {
 	return u.Update(func(s *PromotionGrowthUpsert) {
-		s.AddStatus(v)
+		s.UpdateRiderID()
 	})
 }
 
-// UpdateStatus sets the "status" field to the value that was provided on create.
-func (u *PromotionGrowthUpsertOne) UpdateStatus() *PromotionGrowthUpsertOne {
+// ClearRiderID clears the value of the "rider_id" field.
+func (u *PromotionGrowthUpsertOne) ClearRiderID() *PromotionGrowthUpsertOne {
 	return u.Update(func(s *PromotionGrowthUpsert) {
-		s.UpdateStatus()
+		s.ClearRiderID()
 	})
 }
 
@@ -890,9 +773,6 @@ func (u *PromotionGrowthUpsertBulk) UpdateNewValues() *PromotionGrowthUpsertBulk
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(promotiongrowth.FieldCreatedAt)
 			}
-			if _, exists := b.mutation.Creator(); exists {
-				s.SetIgnore(promotiongrowth.FieldCreator)
-			}
 		}
 	}))
 	return u
@@ -960,48 +840,6 @@ func (u *PromotionGrowthUpsertBulk) ClearDeletedAt() *PromotionGrowthUpsertBulk 
 	})
 }
 
-// SetLastModifier sets the "last_modifier" field.
-func (u *PromotionGrowthUpsertBulk) SetLastModifier(v *model.Modifier) *PromotionGrowthUpsertBulk {
-	return u.Update(func(s *PromotionGrowthUpsert) {
-		s.SetLastModifier(v)
-	})
-}
-
-// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
-func (u *PromotionGrowthUpsertBulk) UpdateLastModifier() *PromotionGrowthUpsertBulk {
-	return u.Update(func(s *PromotionGrowthUpsert) {
-		s.UpdateLastModifier()
-	})
-}
-
-// ClearLastModifier clears the value of the "last_modifier" field.
-func (u *PromotionGrowthUpsertBulk) ClearLastModifier() *PromotionGrowthUpsertBulk {
-	return u.Update(func(s *PromotionGrowthUpsert) {
-		s.ClearLastModifier()
-	})
-}
-
-// SetRemark sets the "remark" field.
-func (u *PromotionGrowthUpsertBulk) SetRemark(v string) *PromotionGrowthUpsertBulk {
-	return u.Update(func(s *PromotionGrowthUpsert) {
-		s.SetRemark(v)
-	})
-}
-
-// UpdateRemark sets the "remark" field to the value that was provided on create.
-func (u *PromotionGrowthUpsertBulk) UpdateRemark() *PromotionGrowthUpsertBulk {
-	return u.Update(func(s *PromotionGrowthUpsert) {
-		s.UpdateRemark()
-	})
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (u *PromotionGrowthUpsertBulk) ClearRemark() *PromotionGrowthUpsertBulk {
-	return u.Update(func(s *PromotionGrowthUpsert) {
-		s.ClearRemark()
-	})
-}
-
 // SetMemberID sets the "member_id" field.
 func (u *PromotionGrowthUpsertBulk) SetMemberID(v uint64) *PromotionGrowthUpsertBulk {
 	return u.Update(func(s *PromotionGrowthUpsert) {
@@ -1044,24 +882,24 @@ func (u *PromotionGrowthUpsertBulk) ClearTaskID() *PromotionGrowthUpsertBulk {
 	})
 }
 
-// SetStatus sets the "status" field.
-func (u *PromotionGrowthUpsertBulk) SetStatus(v uint8) *PromotionGrowthUpsertBulk {
+// SetRiderID sets the "rider_id" field.
+func (u *PromotionGrowthUpsertBulk) SetRiderID(v uint64) *PromotionGrowthUpsertBulk {
 	return u.Update(func(s *PromotionGrowthUpsert) {
-		s.SetStatus(v)
+		s.SetRiderID(v)
 	})
 }
 
-// AddStatus adds v to the "status" field.
-func (u *PromotionGrowthUpsertBulk) AddStatus(v uint8) *PromotionGrowthUpsertBulk {
+// UpdateRiderID sets the "rider_id" field to the value that was provided on create.
+func (u *PromotionGrowthUpsertBulk) UpdateRiderID() *PromotionGrowthUpsertBulk {
 	return u.Update(func(s *PromotionGrowthUpsert) {
-		s.AddStatus(v)
+		s.UpdateRiderID()
 	})
 }
 
-// UpdateStatus sets the "status" field to the value that was provided on create.
-func (u *PromotionGrowthUpsertBulk) UpdateStatus() *PromotionGrowthUpsertBulk {
+// ClearRiderID clears the value of the "rider_id" field.
+func (u *PromotionGrowthUpsertBulk) ClearRiderID() *PromotionGrowthUpsertBulk {
 	return u.Update(func(s *PromotionGrowthUpsert) {
-		s.UpdateStatus()
+		s.ClearRiderID()
 	})
 }
 
