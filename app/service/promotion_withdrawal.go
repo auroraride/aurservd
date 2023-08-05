@@ -194,7 +194,7 @@ func (s *promotionWithdrawalService) roundToTwoDecimalPlaces(value float64) floa
 
 // CalculateWithdrawalFee 计算提现费用
 func (s *promotionWithdrawalService) CalculateWithdrawalFee(mem *ent.PromotionMember, req *promotion.WithdrawalAlterReq) promotion.WithdrawalFeeRes {
-	bankCard := ent.Database.PromotionBankCard.Query().Where(promotionbankcard.MemberID(mem.ID), promotionbankcard.ID(req.AccountID)).FirstX(s.ctx)
+	bankCard, _ := ent.Database.PromotionBankCard.Query().Where(promotionbankcard.MemberID(mem.ID), promotionbankcard.ID(req.AccountID)).First(s.ctx)
 	if bankCard == nil {
 		snag.Panic("提现账户不存在")
 	}
@@ -233,9 +233,12 @@ func (s *promotionWithdrawalService) CalculateWithdrawalFee(mem *ent.PromotionMe
 
 // Export 导出
 func (s *promotionWithdrawalService) Export() (string, string) {
-	items := ent.Database.PromotionWithdrawal.Query().WithMember(func(q *ent.PromotionMemberQuery) {
+	items, _ := ent.Database.PromotionWithdrawal.Query().WithMember(func(q *ent.PromotionMemberQuery) {
 		q.WithPerson()
-	}).WithCards().Where(promotionwithdrawal.Status(promotion.WithdrawalStatusPending.Value())).AllX(s.ctx)
+	}).WithCards().Where(promotionwithdrawal.Status(promotion.WithdrawalStatusPending.Value())).All(s.ctx)
+	if len(items) == 0 {
+		snag.Panic("没有可导出的数据")
+	}
 	file1 := s.ExportTex(items)
 	file2 := s.ExportWithdrawal(items)
 

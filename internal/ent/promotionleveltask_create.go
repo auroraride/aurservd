@@ -115,6 +115,14 @@ func (pltc *PromotionLevelTaskCreate) SetGrowthValue(u uint64) *PromotionLevelTa
 	return pltc
 }
 
+// SetNillableGrowthValue sets the "growth_value" field if the given value is not nil.
+func (pltc *PromotionLevelTaskCreate) SetNillableGrowthValue(u *uint64) *PromotionLevelTaskCreate {
+	if u != nil {
+		pltc.SetGrowthValue(*u)
+	}
+	return pltc
+}
+
 // SetKey sets the "key" field.
 func (pltc *PromotionLevelTaskCreate) SetKey(s string) *PromotionLevelTaskCreate {
 	pltc.mutation.SetKey(s)
@@ -179,6 +187,10 @@ func (pltc *PromotionLevelTaskCreate) defaults() error {
 		}
 		v := promotionleveltask.DefaultUpdatedAt()
 		pltc.mutation.SetUpdatedAt(v)
+	}
+	if _, ok := pltc.mutation.GrowthValue(); !ok {
+		v := promotionleveltask.DefaultGrowthValue
+		pltc.mutation.SetGrowthValue(v)
 	}
 	return nil
 }

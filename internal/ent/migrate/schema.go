@@ -3655,7 +3655,7 @@ var (
 		{Name: "name", Type: field.TypeString, Comment: "任务名称"},
 		{Name: "description", Type: field.TypeString, Comment: "任务描述"},
 		{Name: "type", Type: field.TypeUint8, Comment: "完成条件 1: 签约 2:续费"},
-		{Name: "growth_value", Type: field.TypeUint64, Comment: "任务成长值"},
+		{Name: "growth_value", Type: field.TypeUint64, Comment: "任务成长值", Default: 0},
 		{Name: "key", Type: field.TypeString, Nullable: true, Comment: "任务key"},
 	}
 	// PromotionLevelTaskTable holds the schema information for the "promotion_level_task" table.

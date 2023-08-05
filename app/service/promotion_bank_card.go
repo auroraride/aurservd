@@ -25,9 +25,9 @@ func NewPromotionBankCardService() *promotionBankCardService {
 // BankCardList 获取银行卡列表
 func (s *promotionBankCardService) BankCardList(mem *ent.PromotionMember) (res []*promotion.BankCardRes) {
 	res = make([]*promotion.BankCardRes, 0)
-	list, err := ent.Database.PromotionBankCard.Query().Where(promotionbankcard.MemberID(mem.ID)).Order(ent.Desc(promotionbankcard.FieldCreatedAt)).All(s.ctx)
-	if err != nil {
-		snag.Panic(err)
+	list, _ := ent.Database.PromotionBankCard.Query().Where(promotionbankcard.MemberID(mem.ID)).Order(ent.Desc(promotionbankcard.FieldCreatedAt)).All(s.ctx)
+	if len(list) == 0 {
+		snag.Panic("获取银行卡列表失败")
 	}
 	for _, item := range list {
 		data := &promotion.BankCardRes{
@@ -52,7 +52,7 @@ func (s *promotionBankCardService) Create(mem *ent.PromotionMember, req *promoti
 	}
 
 	// 判断是否已经存在
-	bankCard := ent.Database.PromotionBankCard.Query().Where(promotionbankcard.CardNo(req.CardNo), promotionbankcard.MemberID(mem.ID)).FirstX(s.ctx)
+	bankCard, _ := ent.Database.PromotionBankCard.Query().Where(promotionbankcard.CardNo(req.CardNo), promotionbankcard.MemberID(mem.ID)).First(s.ctx)
 	if bankCard != nil {
 		snag.Panic("银行卡已经存在")
 	}

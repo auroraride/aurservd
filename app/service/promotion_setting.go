@@ -2,11 +2,13 @@ package service
 
 import (
 	"context"
+	"time"
 
 	"go.uber.org/zap"
 
 	"github.com/auroraride/aurservd/app/model/promotion"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/promotioncommission"
 	"github.com/auroraride/aurservd/internal/ent/promotionsetting"
 	"github.com/auroraride/aurservd/pkg/snag"
 )
@@ -24,7 +26,7 @@ func NewPromotionSettingService(params ...any) *promotionSettingService {
 }
 
 func (s *promotionSettingService) Initialize() {
-	// 设置默认佣金配置
+
 	for k, v := range promotion.Settings {
 		ms, _ := ent.Database.PromotionSetting.Query().Where(promotionsetting.Key(k.Value())).First(s.ctx)
 		if ms == nil {
@@ -32,6 +34,44 @@ func (s *promotionSettingService) Initialize() {
 			if err != nil {
 				zap.L().Fatal("营销设置初始化失败", zap.Error(err))
 			}
+		}
+	}
+
+	// 查询是否有推广返佣(全局)的配置，没有则创建
+	com, _ := ent.Database.PromotionCommission.QueryNotDeleted().Where(promotioncommission.Type(0)).First(s.ctx)
+	if com == nil {
+		ent.Database.PromotionCommission.Create().
+			SetType(0).
+			SetName("推广返佣(全局)").
+			SetRule(&promotion.CommissionRule{}).
+			SetEnable(true).
+			SetStartAt(time.Now()).
+			SaveX(s.ctx)
+	}
+
+	// 初始化推广等级任务
+	existingKeys := make(map[string]bool)
+
+	lt := ent.Database.PromotionLevelTask.Query().AllX(s.ctx)
+
+	for _, v := range lt {
+		existingKeys[v.Key] = true
+	}
+
+	for k := range promotion.CommissionRuleKeyNames {
+		if _, exists := existingKeys[k.Value()]; !exists {
+			q := ent.Database.PromotionLevelTask.Create().
+				SetKey(k.Value()).
+				SetName(promotion.CommissionRuleKeyNames[k]).
+				SetDescription(promotion.CommissionRuleKeyNames[k])
+
+			if k == promotion.FirstLevelNewSubscribeKey || k == promotion.SecondLevelNewSubscribeKey {
+				q.SetType(promotion.LevelTaskTypeSign.Value())
+			} else {
+				q.SetType(promotion.LevelTaskTypeRenew.Value())
+			}
+
+			q.SaveX(s.ctx)
 		}
 	}
 
@@ -58,17 +98,15 @@ func (s *promotionSettingService) Initialize() {
 	// 	return
 	// }
 	//
-	// _, err = ent.Database.ExecContext(context.Background(), `
-	// INSERT INTO "public"."promotion_commission" ("id", "created_at", "updated_at", "deleted_at", "creator", "last_modifier", "remark", "type", "name", "rule", "enable", "use_count", "amount_sum", "desc", "history_id", "member_id") VALUES (317827579906, '2023-07-19 18:03:03+08', '2023-07-20 10:26:12.810352+08', NULL, NULL, NULL, NULL, 0, '推广返佣(全局)', '{"newUserCommission": {"firstLevelNewSubscribe": {"desc": "邀请好友注册极光出行", "name": "一级团员新签任务", "ratio": [20], "limitedType": 0}, "secondLevelNewSubscribe": {"desc": "好友邀请的二级团员注册极光出行", "name": "二级团员新签任务", "ratio": [5], "limitedType": 0}}, "renewalCommission": {"firstLevelRenewalSubscribe": {"desc": "已激活的好友再次续费", "name": "一级团员续费任务", "ratio": [5], "limitedType": 2}, "secondLevelRenewalSubscribe": {"desc": "已激活的二级团员再次续费", "name": "二级团员续费任务", "ratio": [1, 1, 1], "limitedType": 1}}}', 't', 3, 0, '', NULL, NULL)`)
-	// if err != nil {
-	// 	return
-	// }
 
 }
 
 // Setting 获取会员设置
 func (s *promotionSettingService) Setting(req *promotion.SettingReq) *promotion.Setting {
-	item := ent.Database.PromotionSetting.Query().Where(promotionsetting.Key(req.Key.Value())).FirstX(s.ctx)
+	item, _ := ent.Database.PromotionSetting.Query().Where(promotionsetting.Key(req.Key.Value())).First(s.ctx)
+	if item == nil {
+		return nil
+	}
 	return &promotion.Setting{
 		Key:     promotion.SettingKey(item.Key),
 		Title:   item.Title,

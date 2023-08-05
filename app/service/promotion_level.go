@@ -68,7 +68,7 @@ func (s *promotionLevelService) DeleteMemberLevel(id uint64) {
 
 // LevelSelection 会员等级选择
 func (s *promotionLevelService) LevelSelection() []*promotion.LevelSelection {
-	levels := ent.Database.PromotionLevel.QueryNotDeleted().Order(ent.Asc(promotionlevel.FieldLevel)).AllX(s.ctx)
+	levels, _ := ent.Database.PromotionLevel.QueryNotDeleted().Order(ent.Asc(promotionlevel.FieldLevel)).All(s.ctx)
 	var selections []*promotion.LevelSelection
 	for _, level := range levels {
 		selections = append(selections, &promotion.LevelSelection{

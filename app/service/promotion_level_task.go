@@ -22,7 +22,7 @@ func NewPromotionLevelTaskService(params ...any) *promotionLevelTaskService {
 
 // TaskList 会员任务列表
 func (s *promotionLevelTaskService) TaskList() []promotion.LevelTask {
-	item := ent.Database.PromotionLevelTask.Query().Order(ent.Desc(promotionleveltask.FieldCreatedAt)).AllX(s.ctx)
+	item, _ := ent.Database.PromotionLevelTask.Query().Order(ent.Desc(promotionleveltask.FieldCreatedAt)).All(s.ctx)
 	res := make([]promotion.LevelTask, 0, len(item))
 	for _, v := range item {
 		res = append(res, promotion.LevelTask{
@@ -45,8 +45,15 @@ func (s *promotionLevelTaskService) UpdateTask(req *promotion.LevelTask) {
 
 // LevelTaskSelect 任务选择
 func (s *promotionLevelTaskService) LevelTaskSelect() []*promotion.LevelTaskSelect {
-	ent.Database.PromotionLevelTask.Query().AllX(s.ctx)
-	return nil
+	res := make([]*promotion.LevelTaskSelect, 0)
+	lt := ent.Database.PromotionLevelTask.Query().AllX(s.ctx)
+	for _, v := range lt {
+		res = append(res, &promotion.LevelTaskSelect{
+			ID:   v.ID,
+			Name: v.Name,
+		})
+	}
+	return res
 }
 
 // QueryByKey 通过key查询成长值

@@ -33,10 +33,7 @@ func NewPromotionAchievementService(params ...any) *promotionAchievementService 
 
 // AchievementList 获取成就列表
 func (s *promotionAchievementService) AchievementList() []promotion.Achievement {
-	item, err := ent.Database.PromotionAchievement.QueryNotDeleted().Order(ent.Desc(promotionachievement.FieldCreatedAt)).All(s.ctx)
-	if err != nil {
-		snag.Panic("获取成就列表失败")
-	}
+	item, _ := ent.Database.PromotionAchievement.QueryNotDeleted().Order(ent.Desc(promotionachievement.FieldCreatedAt)).All(s.ctx)
 	res := make([]promotion.Achievement, 0, len(item))
 	for _, v := range item {
 		res = append(res, promotion.Achievement{

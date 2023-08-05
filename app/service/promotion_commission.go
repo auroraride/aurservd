@@ -184,7 +184,9 @@ func (s *promotionCommissionService) StatusUpdate(req *promotion.CommissionEnabl
 	if commissionInfo.Enable && !*req.Enable { // 禁用当前方案
 		// 查询默认方案
 		defaultCommission, _ := ent.Database.PromotionCommission.QueryNotDeleted().Where(promotioncommission.Type(promotion.CommissionDefault.Value())).First(s.ctx)
-
+		if defaultCommission == nil {
+			snag.Panic("默认方案不存在")
+		}
 		// 禁用当前方案 需要更新使用该方案的会员更换为默认方案
 
 		ent.Database.PromotionMember.Update().Where(promotionmember.CommissionID(commissionInfo.ID)).SetCommissionID(defaultCommission.ID).SaveX(s.ctx)
@@ -383,8 +385,8 @@ func (s *promotionCommissionService) saveEarningsAndUpdateCommission(tx *ent.Tx,
 	}
 
 	// 查询任务积分
-	lt, err := NewPromotionLevelTaskService().QueryByKey(req.CommissionRuleKey.Value())
-	if err != nil {
+	lt, _ := NewPromotionLevelTaskService().QueryByKey(req.CommissionRuleKey.Value())
+	if lt == nil {
 		zap.L().Error("会员任务查询失败 会员成长值记录失败 会员成长值更新失败", zap.Error(err))
 		return
 	}
@@ -434,7 +436,7 @@ func (s *promotionCommissionService) getCommissionRatio(rule map[promotion.Commi
 func (s *promotionCommissionService) GetCommissionType(phone string) (promotion.CommissionCalculationType, error) {
 
 	// 通过实名认证 查询骑手是否是新用户
-	ri := ent.Database.Rider.Query().Where(rider.Phone(phone)).FirstX(s.ctx)
+	ri, _ := ent.Database.Rider.Query().Where(rider.Phone(phone)).First(s.ctx)
 	if ri == nil {
 		return 0, errors.New("骑手不存在")
 	}
@@ -443,7 +445,7 @@ func (s *promotionCommissionService) GetCommissionType(phone string) (promotion.
 		return 0, errors.New("骑手未实名认证")
 	}
 
-	riders := ent.Database.Rider.Query().WithSubscribes().Where(rider.PersonID(ri.Edges.Person.ID)).AllX(s.ctx)
+	riders, _ := ent.Database.Rider.Query().WithSubscribes().Where(rider.PersonID(ri.Edges.Person.ID)).All(s.ctx)
 
 	for _, v := range riders {
 		sub := v.Edges.Subscribes

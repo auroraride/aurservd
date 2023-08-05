@@ -120,6 +120,14 @@ func (pltu *PromotionLevelTaskUpdate) SetGrowthValue(u uint64) *PromotionLevelTa
 	return pltu
 }
 
+// SetNillableGrowthValue sets the "growth_value" field if the given value is not nil.
+func (pltu *PromotionLevelTaskUpdate) SetNillableGrowthValue(u *uint64) *PromotionLevelTaskUpdate {
+	if u != nil {
+		pltu.SetGrowthValue(*u)
+	}
+	return pltu
+}
+
 // AddGrowthValue adds u to the "growth_value" field.
 func (pltu *PromotionLevelTaskUpdate) AddGrowthValue(u int64) *PromotionLevelTaskUpdate {
 	pltu.mutation.AddGrowthValue(u)
@@ -365,6 +373,14 @@ func (pltuo *PromotionLevelTaskUpdateOne) AddType(u int8) *PromotionLevelTaskUpd
 func (pltuo *PromotionLevelTaskUpdateOne) SetGrowthValue(u uint64) *PromotionLevelTaskUpdateOne {
 	pltuo.mutation.ResetGrowthValue()
 	pltuo.mutation.SetGrowthValue(u)
+	return pltuo
+}
+
+// SetNillableGrowthValue sets the "growth_value" field if the given value is not nil.
+func (pltuo *PromotionLevelTaskUpdateOne) SetNillableGrowthValue(u *uint64) *PromotionLevelTaskUpdateOne {
+	if u != nil {
+		pltuo.SetGrowthValue(*u)
+	}
 	return pltuo
 }
 

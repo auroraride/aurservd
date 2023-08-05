@@ -1202,6 +1202,10 @@ func init() {
 	promotionleveltask.DefaultUpdatedAt = promotionleveltaskDescUpdatedAt.Default.(func() time.Time)
 	// promotionleveltask.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	promotionleveltask.UpdateDefaultUpdatedAt = promotionleveltaskDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// promotionleveltaskDescGrowthValue is the schema descriptor for growth_value field.
+	promotionleveltaskDescGrowthValue := promotionleveltaskFields[3].Descriptor()
+	// promotionleveltask.DefaultGrowthValue holds the default value on creation for the growth_value field.
+	promotionleveltask.DefaultGrowthValue = promotionleveltaskDescGrowthValue.Default.(uint64)
 	promotionmemberMixin := schema.PromotionMember{}.Mixin()
 	promotionmemberMixinHooks2 := promotionmemberMixin[2].Hooks()
 	promotionmember.Hooks[0] = promotionmemberMixinHooks2[0]

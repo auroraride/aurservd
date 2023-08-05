@@ -22,7 +22,7 @@ func NewPromotionReferralsService() *promotionReferralsService {
 func (s *promotionReferralsService) MemberReferrals(tx *ent.Tx, req promotion.Referrals) {
 	var ref *ent.PromotionReferrals
 	if req.ReferringMemberId != nil {
-		ref = ent.Database.PromotionReferrals.Query().Where(promotionreferrals.ReferredMemberID(*req.ReferringMemberId)).FirstX(s.ctx)
+		ref, _ = ent.Database.PromotionReferrals.Query().Where(promotionreferrals.ReferredMemberID(*req.ReferringMemberId)).First(s.ctx)
 	}
 
 	// 记录推荐关系

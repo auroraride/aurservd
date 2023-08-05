@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	stdsql "database/sql"
+	"errors"
 	"fmt"
 	"math/rand"
 	"mime/multipart"
@@ -81,7 +82,7 @@ func (s *promotionMemberService) MemberSignin(req *promotion.MemberSigninReq) *p
 		Phone: req.Phone,
 		Name:  req.Name,
 	}
-	mem := s.GetMemberByPhone(req.Phone)
+	mem, _ := s.GetMemberByPhone(req.Phone)
 	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
 		// 获取骑手信息或创建骑手
 		s.getRiderOrCreate(tx, req.Phone, c)
@@ -112,7 +113,7 @@ func (s *promotionMemberService) MemberSignup(req *promotion.MemberSigninReq) *p
 		snag.Panic("账号已存在")
 	}
 	// 推广账号
-	mem := s.GetMemberByPhone(req.Phone)
+	mem, _ := s.GetMemberByPhone(req.Phone)
 	if mem != nil {
 		snag.Panic("账号已存在")
 	}
@@ -134,7 +135,7 @@ func (s *promotionMemberService) MemberSignup(req *promotion.MemberSigninReq) *p
 
 // 获取骑手信息或创建骑手
 func (s *promotionMemberService) getRiderOrCreate(tx *ent.Tx, phone string, c *promotion.MemberCreateReq) {
-	rinfo := ent.Database.Rider.QueryNotDeleted().Where(rider.Phone(phone)).WithPerson().FirstX(s.ctx)
+	rinfo, _ := ent.Database.Rider.QueryNotDeleted().Where(rider.Phone(phone)).WithPerson().First(s.ctx)
 	if rinfo == nil {
 		// 创建骑手
 		rinfo = tx.Rider.Create().
@@ -156,8 +157,8 @@ func (s *promotionMemberService) updateMemberInfo(tx *ent.Tx, mem *ent.Promotion
 }
 
 // GetMemberByPhone  获取会员信息
-func (s *promotionMemberService) GetMemberByPhone(phone string) *ent.PromotionMember {
-	mem := ent.Database.PromotionMember.QueryNotDeleted().
+func (s *promotionMemberService) GetMemberByPhone(phone string) (*ent.PromotionMember, error) {
+	return ent.Database.PromotionMember.QueryNotDeleted().
 		Where(promotionmember.Phone(phone)).
 		WithReferred(
 			func(query *ent.PromotionReferralsQuery) {
@@ -167,8 +168,7 @@ func (s *promotionMemberService) GetMemberByPhone(phone string) *ent.PromotionMe
 		WithLevel().
 		WithCommission().
 		WithPerson().
-		FirstX(s.ctx)
-	return mem
+		First(s.ctx)
 }
 
 // 创建会员
@@ -301,12 +301,16 @@ func (s *promotionMemberService) MemberList(req *promotion.MemberReq) *model.Pag
 	}
 
 	if req.AuthStatus != nil {
-		q.Where(
-			promotionmember.Or(
-				promotionmember.HasPersonWith(promotionperson.StatusEQ(req.AuthStatus.Value())),
-				promotionmember.PersonIDIsNil(),
-			),
-		)
+		if *req.AuthStatus == promotion.PersonUnauthenticated {
+			q.Where(
+				promotionmember.Or(
+					promotionmember.HasPersonWith(promotionperson.StatusEQ(req.AuthStatus.Value())),
+					promotionmember.PersonIDIsNil(),
+				),
+			)
+		} else {
+			q.Where(promotionmember.HasPersonWith(promotionperson.StatusEQ(req.AuthStatus.Value())))
+		}
 	}
 
 	return model.ParsePaginationResponse(
@@ -642,7 +646,7 @@ func (s *promotionMemberService) MemberTeamStatistics(req *promotion.MemberTeamR
 
 // MemberSetCommission 会员设置返佣方案
 func (s *promotionMemberService) MemberSetCommission(req *promotion.MemberCommissionReq) {
-	info := ent.Database.PromotionMember.QueryNotDeleted().Where(promotionmember.IDEQ(req.ID)).FirstX(s.ctx)
+	info, _ := ent.Database.PromotionMember.QueryNotDeleted().Where(promotionmember.IDEQ(req.ID)).First(s.ctx)
 	if info == nil {
 		snag.Panic("会员不存在")
 	}
@@ -719,7 +723,7 @@ func (s *promotionMemberService) UpgradeMemberLevel(tx *ent.Tx, memberID, addGro
 
 	mem, _ := s.GetMemberById(memberID)
 	if mem == nil {
-		return fmt.Errorf("会员不存在")
+		return errors.New("会员不存在")
 	}
 
 	curLevel = 0
@@ -727,9 +731,9 @@ func (s *promotionMemberService) UpgradeMemberLevel(tx *ent.Tx, memberID, addGro
 		curLevel = mem.Edges.Level.Level
 	}
 	// 获取下一级会员等级 大于当前等级 并且按等级升序排列
-	setLevel, err := ent.Database.PromotionLevel.QueryNotDeleted().Where(promotionlevel.LevelGT(curLevel)).Order(ent.Asc(promotionlevel.FieldLevel)).First(s.ctx)
-	if err != nil {
-		return err
+	setLevel, _ := ent.Database.PromotionLevel.QueryNotDeleted().Where(promotionlevel.LevelGT(curLevel)).Order(ent.Asc(promotionlevel.FieldLevel)).First(s.ctx)
+	if setLevel == nil {
+		return errors.New("无下一级会员等级")
 	}
 
 	q := tx.PromotionMember.UpdateOne(mem)

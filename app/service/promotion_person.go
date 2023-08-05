@@ -58,9 +58,7 @@ func (s *promotionPersonService) RealNameAuth(mem *ent.PromotionMember, req *pro
 	}
 
 	// 查询是否有重复的身份证号
-	per = ent.Database.PromotionPerson.Query().
-		Where(promotionperson.IDCardNumber(v.Result.IDCard), promotionperson.Name(v.Result.Name)).
-		FirstX(s.ctx)
+	per, _ = ent.Database.PromotionPerson.Query().Where(promotionperson.IDCardNumber(v.Result.IDCard), promotionperson.Name(v.Result.Name)).First(s.ctx)
 
 	if per == nil {
 		// 创建新的认证信息

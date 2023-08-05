@@ -62,7 +62,7 @@ func (PromotionLevelTask) Fields() []ent.Field {
 		field.String("name").Comment("任务名称"),
 		field.String("description").Comment("任务描述"),
 		field.Uint8("type").Comment("完成条件 1: 签约 2:续费"),
-		field.Uint64("growth_value").Comment("任务成长值"),
+		field.Uint64("growth_value").Default(0).Comment("任务成长值"),
 		field.String("key").Optional().Comment("任务key"),
 	}
 }
