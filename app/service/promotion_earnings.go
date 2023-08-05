@@ -28,8 +28,8 @@ func NewPromotionEarningsService(params ...any) *promotionEarningsService {
 	}
 }
 
-// EarningsList 会员收益列表
-func (s *promotionEarningsService) EarningsList(req *promotion.EarningsReq) *model.PaginationRes {
+// List 会员收益列表
+func (s *promotionEarningsService) List(req *promotion.EarningsReq) *model.PaginationRes {
 	q := ent.Database.PromotionEarnings.Query().WithRider().WithCommission().Order(ent.Desc(promotionearnings.FieldCreatedAt))
 
 	if req.ID != nil {
@@ -87,8 +87,8 @@ func (s *promotionEarningsService) EarningsList(req *promotion.EarningsReq) *mod
 	)
 }
 
-// CreateEarnings 创建会员收益
-func (s *promotionEarningsService) CreateEarnings(tx *ent.Tx, req *promotion.EarningsCreateReq) error {
+// Create 创建会员收益
+func (s *promotionEarningsService) Create(tx *ent.Tx, req *promotion.EarningsCreateReq) error {
 	return tx.PromotionEarnings.Create().
 		SetMemberID(req.MemberID).
 		SetRiderID(req.RiderID).
@@ -98,8 +98,8 @@ func (s *promotionEarningsService) CreateEarnings(tx *ent.Tx, req *promotion.Ear
 		Exec(s.ctx)
 }
 
-// CancelEarnings 取消收益
-func (s *promotionEarningsService) CancelEarnings(req *promotion.EarningsCancelReq) {
+// Cancel 取消收益
+func (s *promotionEarningsService) Cancel(req *promotion.EarningsCancelReq) {
 	// 查询收益
 	earning, _ := ent.Database.PromotionEarnings.Query().Where(promotionearnings.ID(req.ID)).First(s.ctx)
 	if earning == nil {

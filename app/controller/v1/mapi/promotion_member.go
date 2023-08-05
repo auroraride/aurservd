@@ -25,7 +25,7 @@ var Member = new(member)
 // @Success      200  {object}  []promotion.MemberRes  "请求成功"
 func (m member) List(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[promotion.MemberReq](c)
-	return ctx.SendResponse(service.NewPromotionMemberService().MemberList(req))
+	return ctx.SendResponse(service.NewPromotionMemberService().List(req))
 }
 
 // Detail
@@ -40,7 +40,7 @@ func (m member) List(c echo.Context) (err error) {
 // @Success      200  {object}  promotion.MemberRes
 func (m member) Detail(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[promotion.MemberReq](c)
-	return ctx.SendResponse(service.NewPromotionMemberService().MemberDetail(req))
+	return ctx.SendResponse(service.NewPromotionMemberService().Detail(req))
 }
 
 // Update
@@ -55,7 +55,7 @@ func (m member) Detail(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse
 func (m member) Update(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[promotion.MemberUpdateReq](c)
-	service.NewPromotionMemberService(ctx.Modifier).MemberUpdate(req)
+	service.NewPromotionMemberService(ctx.Modifier).Update(req)
 	return ctx.SendResponse()
 }
 
@@ -71,7 +71,7 @@ func (m member) Update(c echo.Context) (err error) {
 // @Success      200  {object}  model.PaginationRes{items=[]promotion.MemberTeamRes}
 func (m *member) TeamList(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[promotion.MemberTeamReq](c)
-	return ctx.SendResponse(service.NewPromotionMemberService().MemberTeamList(req))
+	return ctx.SendResponse(service.NewPromotionMemberService().TeamList(req))
 }
 
 // SetCommission
@@ -86,6 +86,6 @@ func (m *member) TeamList(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse
 func (m *member) SetCommission(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[promotion.MemberCommissionReq](c)
-	service.NewPromotionMemberService(ctx.Modifier).MemberSetCommission(req)
+	service.NewPromotionMemberService(ctx.Modifier).SetCommission(req)
 	return ctx.SendResponse()
 }

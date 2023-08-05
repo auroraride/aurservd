@@ -25,7 +25,7 @@ var PromotionEarnings = new(promotionEarnings)
 // @Success      200  {object}  []promotion.EarningsRes
 func (m *promotionEarnings) List(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[promotion.EarningsReq](c)
-	return ctx.SendResponse(service.NewPromotionEarningsService().EarningsList(req))
+	return ctx.SendResponse(service.NewPromotionEarningsService().List(req))
 }
 
 // Cancel
@@ -40,6 +40,6 @@ func (m *promotionEarnings) List(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse
 func (m *promotionEarnings) Cancel(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[promotion.EarningsCancelReq](c)
-	service.NewPromotionEarningsService(ctx.Modifier).CancelEarnings(req)
+	service.NewPromotionEarningsService(ctx.Modifier).Cancel(req)
 	return ctx.SendResponse()
 }

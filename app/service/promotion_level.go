@@ -23,8 +23,8 @@ func NewPromotionLevelService(params ...any) *promotionLevelService {
 	}
 }
 
-// MemberLevel 会员等级列表
-func (s *promotionLevelService) MemberLevel() []promotion.Level {
+// Level 会员等级列表
+func (s *promotionLevelService) Level() []promotion.Level {
 	item := ent.Database.PromotionLevel.QueryNotDeleted().Order(ent.Asc(promotionlevel.FieldLevel)).AllX(s.ctx)
 	res := make([]promotion.Level, 0, len(item))
 	for _, v := range item {
@@ -38,8 +38,8 @@ func (s *promotionLevelService) MemberLevel() []promotion.Level {
 	return res
 }
 
-// CreateMemberLevel 新增会员等级
-func (s *promotionLevelService) CreateMemberLevel(req *promotion.Level) {
+// Create 新增会员等级
+func (s *promotionLevelService) Create(req *promotion.Level) {
 	ent.Database.PromotionLevel.Create().
 		SetLevel(*req.Level).
 		SetGrowthValue(*req.GrowthValue).
@@ -47,8 +47,8 @@ func (s *promotionLevelService) CreateMemberLevel(req *promotion.Level) {
 		SaveX(s.ctx)
 }
 
-// UpdateMemberLevel 修改会员等级
-func (s *promotionLevelService) UpdateMemberLevel(req *promotion.Level) {
+// Update 修改会员等级
+func (s *promotionLevelService) Update(req *promotion.Level) {
 	ent.Database.PromotionLevel.UpdateOneID(req.ID).
 		SetLevel(*req.Level).
 		SetGrowthValue(*req.GrowthValue).
@@ -56,8 +56,8 @@ func (s *promotionLevelService) UpdateMemberLevel(req *promotion.Level) {
 		SaveX(s.ctx)
 }
 
-// DeleteMemberLevel 删除会员等级
-func (s *promotionLevelService) DeleteMemberLevel(id uint64) {
+// Delete 删除会员等级
+func (s *promotionLevelService) Delete(id uint64) {
 	// 查询是否有会员使用该等级
 	count, _ := ent.Database.PromotionMember.Query().Where(promotionmember.LevelID(id)).Count(s.ctx)
 	if count > 0 {

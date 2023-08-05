@@ -24,7 +24,7 @@ var PromotionLevelTask = new(promotionLevelTask)
 // @Success      200  {object}  []promotion.LevelTask
 func (m *promotionLevelTask) List(c echo.Context) (err error) {
 	ctx := app.ContextX[app.ManagerContext](c)
-	return ctx.SendResponse(service.NewPromotionLevelTaskService().TaskList())
+	return ctx.SendResponse(service.NewPromotionLevelTaskService().List())
 }
 
 // Update
@@ -39,6 +39,6 @@ func (m *promotionLevelTask) List(c echo.Context) (err error) {
 // @Success      200  {object}  string
 func (m *promotionLevelTask) Update(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[promotion.LevelTask](c)
-	service.NewPromotionLevelTaskService(ctx.Modifier).UpdateTask(req)
+	service.NewPromotionLevelTaskService(ctx.Modifier).Update(req)
 	return ctx.SendResponse()
 }

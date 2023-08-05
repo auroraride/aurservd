@@ -22,8 +22,8 @@ func NewPromotionBankCardService() *promotionBankCardService {
 	}
 }
 
-// BankCardList 获取银行卡列表
-func (s *promotionBankCardService) BankCardList(mem *ent.PromotionMember) (res []*promotion.BankCardRes) {
+// List 获取银行卡列表
+func (s *promotionBankCardService) List(mem *ent.PromotionMember) (res []*promotion.BankCardRes) {
 	res = make([]*promotion.BankCardRes, 0)
 	list, _ := ent.Database.PromotionBankCard.Query().Where(promotionbankcard.MemberID(mem.ID)).Order(ent.Desc(promotionbankcard.FieldCreatedAt)).All(s.ctx)
 	if len(list) == 0 {

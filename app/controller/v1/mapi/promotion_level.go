@@ -25,7 +25,7 @@ var PromotionLevel = new(promotionLevel)
 // @Success      200  {object}  []promotion.Level
 func (l *promotionLevel) List(c echo.Context) (err error) {
 	ctx := app.ContextX[app.ManagerContext](c)
-	return ctx.SendResponse(service.NewPromotionLevelService().MemberLevel())
+	return ctx.SendResponse(service.NewPromotionLevelService().Level())
 }
 
 // Update
@@ -40,7 +40,7 @@ func (l *promotionLevel) List(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse
 func (l *promotionLevel) Update(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[promotion.Level](c)
-	service.NewPromotionLevelService(ctx.Modifier).UpdateMemberLevel(req)
+	service.NewPromotionLevelService(ctx.Modifier).Update(req)
 	return ctx.SendResponse()
 }
 
@@ -56,7 +56,7 @@ func (l *promotionLevel) Update(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse
 func (l *promotionLevel) Create(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[promotion.Level](c)
-	service.NewPromotionLevelService(ctx.Modifier).CreateMemberLevel(req)
+	service.NewPromotionLevelService(ctx.Modifier).Create(req)
 	return ctx.SendResponse()
 }
 
@@ -72,7 +72,7 @@ func (l *promotionLevel) Create(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse
 func (l *promotionLevel) Delete(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
-	service.NewPromotionLevelService(ctx.Modifier).DeleteMemberLevel(req.ID)
+	service.NewPromotionLevelService(ctx.Modifier).Delete(req.ID)
 	return ctx.SendResponse()
 }
 

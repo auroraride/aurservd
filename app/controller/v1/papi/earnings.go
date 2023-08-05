@@ -25,7 +25,7 @@ var PromotionEarnings = new(promotionEarnings)
 // @Success      200  {object}  []promotion.EarningsRes
 func (e *promotionEarnings) List(c echo.Context) (err error) {
 	ctx, req := app.PromotionContextAndBinding[promotion.EarningsReq](c)
-	return ctx.SendResponse(service.NewPromotionEarningsService().EarningsList(&promotion.EarningsReq{
+	return ctx.SendResponse(service.NewPromotionEarningsService().List(&promotion.EarningsReq{
 		ID:             &ctx.Member.ID,
 		PaginationReq:  req.PaginationReq,
 		EarningsFilter: req.EarningsFilter,

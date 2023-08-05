@@ -24,7 +24,7 @@ var Member = new(member)
 // @Success      200  {object}  promotion.MemberSigninRes  "请求成功"
 func (m *member) Signin(c echo.Context) (err error) {
 	ctx, req := app.ContextBinding[promotion.MemberSigninReq](c)
-	return ctx.SendResponse(service.NewPromotionMemberService().MemberSignin(req))
+	return ctx.SendResponse(service.NewPromotionMemberService().Signin(req))
 }
 
 // Profile
@@ -67,7 +67,7 @@ func (m *member) ShareQrcode(c echo.Context) (err error) {
 // @Success      200  {object}  promotion.UploadAvatar  "请求成功"
 func (m *member) UpdateAvatar(c echo.Context) (err error) {
 	ctx := app.ContextX[app.PromotionContext](c)
-	return ctx.SendResponse(service.NewPromotionMemberService().MemberUpdateAvatar(ctx))
+	return ctx.SendResponse(service.NewPromotionMemberService().UploadAvatar(ctx))
 }
 
 // Team
@@ -82,7 +82,7 @@ func (m *member) UpdateAvatar(c echo.Context) (err error) {
 // @Success      200  {object}  model.PaginationRes{items=[]promotion.MemberTeamRes}
 func (m *member) Team(c echo.Context) (err error) {
 	ctx, req := app.PromotionContextAndBinding[promotion.MemberTeamReq](c)
-	return ctx.SendResponse(service.NewPromotionMemberService().MemberTeamList(&promotion.MemberTeamReq{
+	return ctx.SendResponse(service.NewPromotionMemberService().TeamList(&promotion.MemberTeamReq{
 		ID:               ctx.Member.ID,
 		PaginationReq:    req.PaginationReq,
 		MemberTeamFilter: req.MemberTeamFilter,
@@ -101,5 +101,5 @@ func (m *member) Team(c echo.Context) (err error) {
 // @Success      200  {object}  promotion.MemberSigninRes  "请求成功"
 func (m *member) Signup(c echo.Context) (err error) {
 	ctx, req := app.PromotionContextAndBinding[promotion.MemberSigninReq](c)
-	return ctx.SendResponse(service.NewPromotionMemberService().MemberSignup(req))
+	return ctx.SendResponse(service.NewPromotionMemberService().Signup(req))
 }

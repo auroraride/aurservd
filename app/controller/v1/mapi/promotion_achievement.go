@@ -25,7 +25,7 @@ var PromotionAchievement = new(promotionAchievement)
 // @Success      200  {object}  []promotion.Achievement
 func (a *promotionAchievement) List(c echo.Context) (err error) {
 	ctx := app.ContextX[app.ManagerContext](c)
-	return ctx.SendResponse(service.NewPromotionAchievementService().AchievementList())
+	return ctx.SendResponse(service.NewPromotionAchievementService().List())
 }
 
 // Create
@@ -40,7 +40,7 @@ func (a *promotionAchievement) List(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse
 func (a *promotionAchievement) Create(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[promotion.Achievement](c)
-	service.NewPromotionAchievementService(ctx.Modifier).CreateAchievement(req)
+	service.NewPromotionAchievementService(ctx.Modifier).Create(req)
 	return ctx.SendResponse()
 }
 
@@ -56,7 +56,7 @@ func (a *promotionAchievement) Create(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse
 func (a *promotionAchievement) Update(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[promotion.Achievement](c)
-	service.NewPromotionAchievementService(ctx.Modifier).UpdateAchievement(req)
+	service.NewPromotionAchievementService(ctx.Modifier).Update(req)
 	return ctx.SendResponse()
 }
 
@@ -72,7 +72,7 @@ func (a *promotionAchievement) Update(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse
 func (a *promotionAchievement) Delete(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
-	service.NewPromotionAchievementService(ctx.Modifier).DeleteAchievement(req.ID)
+	service.NewPromotionAchievementService(ctx.Modifier).Delete(req.ID)
 	return ctx.SendResponse()
 }
 

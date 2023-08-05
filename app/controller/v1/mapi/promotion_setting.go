@@ -40,6 +40,6 @@ func (p *promotionSetting) Setting(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse
 func (p *promotionSetting) Update(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[promotion.Setting](c)
-	service.NewPromotionSettingService().UpdateSetting(req)
+	service.NewPromotionSettingService().Update(req)
 	return ctx.SendResponse()
 }

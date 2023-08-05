@@ -66,8 +66,8 @@ func (s *promotionMemberService) TokenVerify(token string) (me *ent.PromotionMem
 	return me
 }
 
-// MemberSignin 推广会员登录
-func (s *promotionMemberService) MemberSignin(req *promotion.MemberSigninReq) *promotion.MemberSigninRes {
+// Signin 推广会员登录
+func (s *promotionMemberService) Signin(req *promotion.MemberSigninReq) *promotion.MemberSigninRes {
 	switch req.SigninType {
 	case promotion.MemberSigninTypeSms:
 		// 校验短信
@@ -98,8 +98,8 @@ func (s *promotionMemberService) MemberSignin(req *promotion.MemberSigninReq) *p
 	return s.signin(mem)
 }
 
-// MemberSignup 邀请注册
-func (s *promotionMemberService) MemberSignup(req *promotion.MemberSigninReq) *promotion.MemberSigninRes {
+// Signup 邀请注册
+func (s *promotionMemberService) Signup(req *promotion.MemberSigninReq) *promotion.MemberSigninRes {
 	switch req.SigninType {
 	case promotion.MemberSigninTypeSms:
 		// 校验短信
@@ -173,7 +173,7 @@ func (s *promotionMemberService) GetMemberByPhone(phone string) (*ent.PromotionM
 
 // 创建会员
 func (s *promotionMemberService) createMember(tx *ent.Tx, req *promotion.MemberCreateReq) *ent.PromotionMember {
-	mem := NewPromotionMemberService().MemberCreate(tx, &promotion.MemberCreateReq{
+	mem := NewPromotionMemberService().Create(tx, &promotion.MemberCreateReq{
 		Phone:             req.Phone,
 		Name:              req.Name,
 		RiderID:           req.RiderID,
@@ -267,8 +267,8 @@ func (s *promotionMemberService) MaskName(name string) string {
 	return firstPart + middlePart + lastPart
 }
 
-// MemberList 会员列表
-func (s *promotionMemberService) MemberList(req *promotion.MemberReq) *model.PaginationRes {
+// List 会员列表
+func (s *promotionMemberService) List(req *promotion.MemberReq) *model.PaginationRes {
 	q := ent.Database.PromotionMember.QueryNotDeleted().WithPerson().WithLevel().WithCommission().Order(ent.Desc(promotionmember.FieldCreatedAt))
 	if req.Keyword != nil {
 		q.Where(
@@ -322,8 +322,8 @@ func (s *promotionMemberService) MemberList(req *promotion.MemberReq) *model.Pag
 	)
 }
 
-// MemberDetail 会员详情
-func (s *promotionMemberService) MemberDetail(req *promotion.MemberReq) promotion.MemberRes {
+// Detail 会员详情
+func (s *promotionMemberService) Detail(req *promotion.MemberReq) promotion.MemberRes {
 	info, _ := ent.Database.PromotionMember.QueryNotDeleted().WithReferred(
 		func(query *ent.PromotionReferralsQuery) {
 			query.WithReferringMember()
@@ -398,7 +398,7 @@ func (s *promotionMemberService) detail(item *ent.PromotionMember) (res promotio
 		}
 	}
 
-	team := s.MemberTeamStatistics(&promotion.MemberTeamReq{
+	team := s.TeamStatistics(&promotion.MemberTeamReq{
 		ID: item.ID,
 	})
 	// 团队人数
@@ -408,8 +408,8 @@ func (s *promotionMemberService) detail(item *ent.PromotionMember) (res promotio
 	return res
 }
 
-// MemberCreate 创建会员
-func (s *promotionMemberService) MemberCreate(tx *ent.Tx, req *promotion.MemberCreateReq) *ent.PromotionMember {
+// Create 创建会员
+func (s *promotionMemberService) Create(tx *ent.Tx, req *promotion.MemberCreateReq) *ent.PromotionMember {
 
 	// 获取默认分佣方案
 	commission, _ := NewPromotionCommissionService().DefaultPromotionCommission()
@@ -464,8 +464,8 @@ func (s *promotionMemberService) GetMemberById(id uint64) (*ent.PromotionMember,
 		First(s.ctx)
 }
 
-// MemberUpdate 编辑会员
-func (s *promotionMemberService) MemberUpdate(req *promotion.MemberUpdateReq) {
+// Update 编辑会员
+func (s *promotionMemberService) Update(req *promotion.MemberUpdateReq) {
 	ent.Database.PromotionMember.
 		UpdateOneID(req.ID).
 		SetNillableEnable(req.Enable).
@@ -473,8 +473,8 @@ func (s *promotionMemberService) MemberUpdate(req *promotion.MemberUpdateReq) {
 		SaveX(s.ctx)
 }
 
-// MemberTeamList 会员团队列表
-func (s *promotionMemberService) MemberTeamList(req *promotion.MemberTeamReq) model.PaginationRes {
+// TeamList 会员团队列表
+func (s *promotionMemberService) TeamList(req *promotion.MemberTeamReq) model.PaginationRes {
 	sqls := `
 			WITH RECURSIVE member_hierarchy AS (
                 SELECT referred_member_id, 1 AS level,rider_id,created_at
@@ -551,7 +551,7 @@ func (s *promotionMemberService) MemberTeamList(req *promotion.MemberTeamReq) mo
 	}
 
 	// 统计总数
-	statistics := s.MemberTeamStatistics(req)
+	statistics := s.TeamStatistics(req)
 
 	pageReq := req.PaginationReq
 	pages := pageReq.GetPages(int(statistics.Total))
@@ -590,8 +590,8 @@ func (s *promotionMemberService) MemberTeamFilter(req *promotion.MemberTeamReq, 
 	}
 }
 
-// MemberTeamStatistics 会员团队统计
-func (s *promotionMemberService) MemberTeamStatistics(req *promotion.MemberTeamReq) *promotion.MemberTeamStatisticsRes {
+// TeamStatistics 会员团队统计
+func (s *promotionMemberService) TeamStatistics(req *promotion.MemberTeamReq) *promotion.MemberTeamStatisticsRes {
 	sqls := `
 			WITH RECURSIVE member_hierarchy AS (
                 SELECT referred_member_id, 1 AS level,rider_id,created_at
@@ -644,8 +644,8 @@ func (s *promotionMemberService) MemberTeamStatistics(req *promotion.MemberTeamR
 	return res
 }
 
-// MemberSetCommission 会员设置返佣方案
-func (s *promotionMemberService) MemberSetCommission(req *promotion.MemberCommissionReq) {
+// SetCommission 会员设置返佣方案
+func (s *promotionMemberService) SetCommission(req *promotion.MemberCommissionReq) {
 	info, _ := ent.Database.PromotionMember.QueryNotDeleted().Where(promotionmember.IDEQ(req.ID)).First(s.ctx)
 	if info == nil {
 		snag.Panic("会员不存在")
@@ -680,8 +680,8 @@ func (s *promotionMemberService) MemberSetCommission(req *promotion.MemberCommis
 	ent.Database.PromotionMember.UpdateOneID(info.ID).SetCommissionID(c.ID).SaveX(s.ctx)
 }
 
-// MemberUpdateAvatar 更新会员头像
-func (s *promotionMemberService) MemberUpdateAvatar(ctx *app.PromotionContext) promotion.UploadAvatar {
+// UploadAvatar 更新会员头像
+func (s *promotionMemberService) UploadAvatar(ctx *app.PromotionContext) promotion.UploadAvatar {
 	f, err := ctx.FormFile("avatar")
 	if err != nil {
 		snag.Panic("上传失败")

@@ -57,7 +57,7 @@ func (m *promotionBankCard) Update(c echo.Context) (err error) {
 // @Success      200  {object}  []promotion.BankCardRes  "请求成功"
 func (m *promotionBankCard) List(c echo.Context) (err error) {
 	ctx := app.ContextX[app.PromotionContext](c)
-	return ctx.SendResponse(service.NewPromotionBankCardService().BankCardList(ctx.Member))
+	return ctx.SendResponse(service.NewPromotionBankCardService().List(ctx.Member))
 }
 
 // Delete

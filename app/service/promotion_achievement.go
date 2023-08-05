@@ -31,8 +31,8 @@ func NewPromotionAchievementService(params ...any) *promotionAchievementService 
 	}
 }
 
-// AchievementList 获取成就列表
-func (s *promotionAchievementService) AchievementList() []promotion.Achievement {
+// List 获取成就列表
+func (s *promotionAchievementService) List() []promotion.Achievement {
 	item, _ := ent.Database.PromotionAchievement.QueryNotDeleted().Order(ent.Desc(promotionachievement.FieldCreatedAt)).All(s.ctx)
 	res := make([]promotion.Achievement, 0, len(item))
 	for _, v := range item {
@@ -47,8 +47,8 @@ func (s *promotionAchievementService) AchievementList() []promotion.Achievement 
 	return res
 }
 
-// CreateAchievement 新增成就
-func (s *promotionAchievementService) CreateAchievement(req *promotion.Achievement) {
+// Create 新增成就
+func (s *promotionAchievementService) Create(req *promotion.Achievement) {
 	_, err := ent.Database.PromotionAchievement.Create().
 		SetName(req.Name).
 		SetIcon(req.Icon).
@@ -60,8 +60,8 @@ func (s *promotionAchievementService) CreateAchievement(req *promotion.Achieveme
 	}
 }
 
-// UpdateAchievement 修改成就
-func (s *promotionAchievementService) UpdateAchievement(req *promotion.Achievement) {
+// Update 修改成就
+func (s *promotionAchievementService) Update(req *promotion.Achievement) {
 	_, err := ent.Database.PromotionAchievement.
 		UpdateOneID(req.ID).
 		SetName(req.Name).
@@ -74,8 +74,8 @@ func (s *promotionAchievementService) UpdateAchievement(req *promotion.Achieveme
 	}
 }
 
-// DeleteAchievement 删除成就
-func (s *promotionAchievementService) DeleteAchievement(id uint64) {
+// Delete 删除成就
+func (s *promotionAchievementService) Delete(id uint64) {
 	// 软删除
 	_, err := ent.Database.PromotionAchievement.Update().
 		Where(promotionachievement.ID(id)).

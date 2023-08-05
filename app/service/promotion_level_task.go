@@ -20,9 +20,9 @@ func NewPromotionLevelTaskService(params ...any) *promotionLevelTaskService {
 	}
 }
 
-// TaskList 会员任务列表
-func (s *promotionLevelTaskService) TaskList() []promotion.LevelTask {
-	item, _ := ent.Database.PromotionLevelTask.Query().Order(ent.Desc(promotionleveltask.FieldCreatedAt)).All(s.ctx)
+// List 会员任务列表
+func (s *promotionLevelTaskService) List() []promotion.LevelTask {
+	item, _ := ent.Database.PromotionLevelTask.Query().Order(ent.Asc(promotionleveltask.FieldCreatedAt)).All(s.ctx)
 	res := make([]promotion.LevelTask, 0, len(item))
 	for _, v := range item {
 		res = append(res, promotion.LevelTask{
@@ -36,8 +36,8 @@ func (s *promotionLevelTaskService) TaskList() []promotion.LevelTask {
 	return res
 }
 
-// UpdateTask 修改任务列表
-func (s *promotionLevelTaskService) UpdateTask(req *promotion.LevelTask) {
+// Update 修改任务列表
+func (s *promotionLevelTaskService) Update(req *promotion.LevelTask) {
 	ent.Database.PromotionLevelTask.UpdateOneID(req.ID).
 		SetGrowthValue(req.GrowthValue).
 		SaveX(s.ctx)

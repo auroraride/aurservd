@@ -364,7 +364,7 @@ func (s *promotionCommissionService) calculateSecondLevelCommission(req *promoti
 
 func (s *promotionCommissionService) saveEarningsAndUpdateCommission(tx *ent.Tx, req promotion.EarningsCreateReq) (err error) {
 	// 保存收益
-	err = NewPromotionEarningsService().CreateEarnings(tx, &req)
+	err = NewPromotionEarningsService().Create(tx, &req)
 	if err != nil {
 		zap.L().Error("收益记录创建失败", zap.Error(err), zap.Any("收益记录", req))
 		return

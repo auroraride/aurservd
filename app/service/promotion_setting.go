@@ -74,31 +74,6 @@ func (s *promotionSettingService) Initialize() {
 			q.SaveX(s.ctx)
 		}
 	}
-
-	// ent.Database.PromotionLevelTask.Delete().ExecX(s.ctx)
-	// // 不应该写这里临时用一下
-	// _, err := ent.Database.ExecContext(context.Background(), `
-	// INSERT INTO "public"."promotion_level_task" ("id", "created_at", "updated_at", "name", "description", "growth_value", "type","key") VALUES (313532612608, '2023-07-21 10:33:03+08', '2023-07-21 10:33:05+08', '一级团员新签', '一级下线用户注册并签约', 4, 1,'firstLevelNewSubscribe')`)
-	// if err != nil {
-	// 	return
-	// }
-	// _, err = ent.Database.ExecContext(context.Background(), `
-	// INSERT INTO "public"."promotion_level_task" ("id", "created_at", "updated_at", "name", "description", "growth_value", "type","key") VALUES (313532612609, '2023-07-21 10:33:34+08', '2023-07-21 10:33:36+08', '一级团员续费', '一级下线用户续费', 2, 2,'firstLevelRenewalSubscribe')`)
-	// if err != nil {
-	// 	return
-	// }
-	// _, err = ent.Database.ExecContext(context.Background(), `
-	// INSERT INTO "public"."promotion_level_task" ("id", "created_at", "updated_at", "name", "description", "growth_value", "type","key") VALUES (313532612610, '2023-07-21 10:33:56+08', '2023-07-21 10:33:57+08', '二级团员新签', '二级下线用户注册并签约', 2, 1,'secondLevelNewSubscribe')`)
-	// if err != nil {
-	// 	return
-	// }
-	// _, err = ent.Database.ExecContext(context.Background(), `
-	// INSERT INTO "public"."promotion_level_task" ("id", "created_at", "updated_at", "name", "description", "growth_value", "type","key") VALUES (313532612612, '2023-07-21 10:34:19+08', '2023-07-21 10:34:20+08', '二级团员续费', '二级下线用户续费', 1, 2,'secondLevelRenewalSubscribe')`)
-	// if err != nil {
-	// 	return
-	// }
-	//
-
 }
 
 // Setting 获取会员设置
@@ -114,8 +89,8 @@ func (s *promotionSettingService) Setting(req *promotion.SettingReq) *promotion.
 	}
 }
 
-// UpdateSetting 修改会员设置
-func (s *promotionSettingService) UpdateSetting(req *promotion.Setting) {
+// Update 修改会员设置
+func (s *promotionSettingService) Update(req *promotion.Setting) {
 	_, err := ent.Database.PromotionSetting.Update().
 		Where(promotionsetting.Key(req.Key.Value())).
 		SetTitle(req.Title).
