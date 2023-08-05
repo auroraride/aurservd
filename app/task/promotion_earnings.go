@@ -62,25 +62,23 @@ func (*promotionEarningsTask) Do() {
 		total[item.MemberID] += item.Amount
 	}
 
-	err := ent.WithTx(ctx, func(tx *ent.Tx) error {
+	ent.WithTxPanic(ctx, func(tx *ent.Tx) (err error) {
 		for k, v := range total {
 			// 更新用户总收益
-			_, err := ent.Database.PromotionMember.UpdateOneID(k).SetBalance(v).SetFrozen(-v).Save(ctx)
+			_, err = tx.PromotionMember.UpdateOneID(k).SetBalance(v).AddFrozen(-v).Save(ctx)
 			if err != nil {
+				zap.L().Error("更新用户总收益失败", zap.Error(err))
 				return err
 			}
 		}
 		for _, v := range all {
 			// 更新收益明细状态
-			_, err := ent.Database.PromotionEarnings.Update().Where(promotionearnings.ID(v.ID)).SetStatus(promotion.EarningsStatusSettled.Value()).Save(ctx)
+			_, err = tx.PromotionEarnings.Update().Where(promotionearnings.ID(v.ID)).SetStatus(promotion.EarningsStatusSettled.Value()).Save(ctx)
 			if err != nil {
-				return err
+				zap.L().Error("更新收益失败", zap.Error(err))
+				return
 			}
 		}
-		return nil
+		return
 	})
-	if err != nil {
-		zap.L().Error("更新收益失败", zap.Error(err))
-	}
-
 }
