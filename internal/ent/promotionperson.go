@@ -3,14 +3,12 @@
 package ent
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/promotionperson"
 )
 
@@ -23,14 +21,6 @@ type PromotionPerson struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
-	// DeletedAt holds the value of the "deleted_at" field.
-	DeletedAt *time.Time `json:"deleted_at,omitempty"`
-	// 创建人
-	Creator *model.Modifier `json:"creator,omitempty"`
-	// 最后修改人
-	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
-	// 管理员改动原因/备注
-	Remark string `json:"remark,omitempty"`
 	// 认证状态 0未认证 1已认证 2认证失败
 	Status uint8 `json:"status,omitempty"`
 	// 真实姓名
@@ -68,13 +58,11 @@ func (*PromotionPerson) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case promotionperson.FieldCreator, promotionperson.FieldLastModifier:
-			values[i] = new([]byte)
 		case promotionperson.FieldID, promotionperson.FieldStatus:
 			values[i] = new(sql.NullInt64)
-		case promotionperson.FieldRemark, promotionperson.FieldName, promotionperson.FieldIDCardNumber, promotionperson.FieldAddress:
+		case promotionperson.FieldName, promotionperson.FieldIDCardNumber, promotionperson.FieldAddress:
 			values[i] = new(sql.NullString)
-		case promotionperson.FieldCreatedAt, promotionperson.FieldUpdatedAt, promotionperson.FieldDeletedAt:
+		case promotionperson.FieldCreatedAt, promotionperson.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -108,35 +96,6 @@ func (pp *PromotionPerson) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
 				pp.UpdatedAt = value.Time
-			}
-		case promotionperson.FieldDeletedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
-			} else if value.Valid {
-				pp.DeletedAt = new(time.Time)
-				*pp.DeletedAt = value.Time
-			}
-		case promotionperson.FieldCreator:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field creator", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &pp.Creator); err != nil {
-					return fmt.Errorf("unmarshal field creator: %w", err)
-				}
-			}
-		case promotionperson.FieldLastModifier:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field last_modifier", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &pp.LastModifier); err != nil {
-					return fmt.Errorf("unmarshal field last_modifier: %w", err)
-				}
-			}
-		case promotionperson.FieldRemark:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field remark", values[i])
-			} else if value.Valid {
-				pp.Remark = value.String
 			}
 		case promotionperson.FieldStatus:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -208,20 +167,6 @@ func (pp *PromotionPerson) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
 	builder.WriteString(pp.UpdatedAt.Format(time.ANSIC))
-	builder.WriteString(", ")
-	if v := pp.DeletedAt; v != nil {
-		builder.WriteString("deleted_at=")
-		builder.WriteString(v.Format(time.ANSIC))
-	}
-	builder.WriteString(", ")
-	builder.WriteString("creator=")
-	builder.WriteString(fmt.Sprintf("%v", pp.Creator))
-	builder.WriteString(", ")
-	builder.WriteString("last_modifier=")
-	builder.WriteString(fmt.Sprintf("%v", pp.LastModifier))
-	builder.WriteString(", ")
-	builder.WriteString("remark=")
-	builder.WriteString(pp.Remark)
 	builder.WriteString(", ")
 	builder.WriteString("status=")
 	builder.WriteString(fmt.Sprintf("%v", pp.Status))

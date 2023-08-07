@@ -11,7 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
 	"github.com/auroraride/aurservd/internal/ent/promotionreferrals"
@@ -34,58 +33,6 @@ func (pru *PromotionReferralsUpdate) Where(ps ...predicate.PromotionReferrals) *
 // SetUpdatedAt sets the "updated_at" field.
 func (pru *PromotionReferralsUpdate) SetUpdatedAt(t time.Time) *PromotionReferralsUpdate {
 	pru.mutation.SetUpdatedAt(t)
-	return pru
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (pru *PromotionReferralsUpdate) SetDeletedAt(t time.Time) *PromotionReferralsUpdate {
-	pru.mutation.SetDeletedAt(t)
-	return pru
-}
-
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (pru *PromotionReferralsUpdate) SetNillableDeletedAt(t *time.Time) *PromotionReferralsUpdate {
-	if t != nil {
-		pru.SetDeletedAt(*t)
-	}
-	return pru
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (pru *PromotionReferralsUpdate) ClearDeletedAt() *PromotionReferralsUpdate {
-	pru.mutation.ClearDeletedAt()
-	return pru
-}
-
-// SetLastModifier sets the "last_modifier" field.
-func (pru *PromotionReferralsUpdate) SetLastModifier(m *model.Modifier) *PromotionReferralsUpdate {
-	pru.mutation.SetLastModifier(m)
-	return pru
-}
-
-// ClearLastModifier clears the value of the "last_modifier" field.
-func (pru *PromotionReferralsUpdate) ClearLastModifier() *PromotionReferralsUpdate {
-	pru.mutation.ClearLastModifier()
-	return pru
-}
-
-// SetRemark sets the "remark" field.
-func (pru *PromotionReferralsUpdate) SetRemark(s string) *PromotionReferralsUpdate {
-	pru.mutation.SetRemark(s)
-	return pru
-}
-
-// SetNillableRemark sets the "remark" field if the given value is not nil.
-func (pru *PromotionReferralsUpdate) SetNillableRemark(s *string) *PromotionReferralsUpdate {
-	if s != nil {
-		pru.SetRemark(*s)
-	}
-	return pru
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (pru *PromotionReferralsUpdate) ClearRemark() *PromotionReferralsUpdate {
-	pru.mutation.ClearRemark()
 	return pru
 }
 
@@ -156,26 +103,6 @@ func (pru *PromotionReferralsUpdate) ClearRiderID() *PromotionReferralsUpdate {
 	return pru
 }
 
-// SetParentID sets the "parent_id" field.
-func (pru *PromotionReferralsUpdate) SetParentID(u uint64) *PromotionReferralsUpdate {
-	pru.mutation.SetParentID(u)
-	return pru
-}
-
-// SetNillableParentID sets the "parent_id" field if the given value is not nil.
-func (pru *PromotionReferralsUpdate) SetNillableParentID(u *uint64) *PromotionReferralsUpdate {
-	if u != nil {
-		pru.SetParentID(*u)
-	}
-	return pru
-}
-
-// ClearParentID clears the value of the "parent_id" field.
-func (pru *PromotionReferralsUpdate) ClearParentID() *PromotionReferralsUpdate {
-	pru.mutation.ClearParentID()
-	return pru
-}
-
 // SetReferringMember sets the "referring_member" edge to the PromotionMember entity.
 func (pru *PromotionReferralsUpdate) SetReferringMember(p *PromotionMember) *PromotionReferralsUpdate {
 	return pru.SetReferringMemberID(p.ID)
@@ -184,26 +111,6 @@ func (pru *PromotionReferralsUpdate) SetReferringMember(p *PromotionMember) *Pro
 // SetReferredMember sets the "referred_member" edge to the PromotionMember entity.
 func (pru *PromotionReferralsUpdate) SetReferredMember(p *PromotionMember) *PromotionReferralsUpdate {
 	return pru.SetReferredMemberID(p.ID)
-}
-
-// SetParent sets the "parent" edge to the PromotionReferrals entity.
-func (pru *PromotionReferralsUpdate) SetParent(p *PromotionReferrals) *PromotionReferralsUpdate {
-	return pru.SetParentID(p.ID)
-}
-
-// AddChildIDs adds the "children" edge to the PromotionReferrals entity by IDs.
-func (pru *PromotionReferralsUpdate) AddChildIDs(ids ...uint64) *PromotionReferralsUpdate {
-	pru.mutation.AddChildIDs(ids...)
-	return pru
-}
-
-// AddChildren adds the "children" edges to the PromotionReferrals entity.
-func (pru *PromotionReferralsUpdate) AddChildren(p ...*PromotionReferrals) *PromotionReferralsUpdate {
-	ids := make([]uint64, len(p))
-	for i := range p {
-		ids[i] = p[i].ID
-	}
-	return pru.AddChildIDs(ids...)
 }
 
 // Mutation returns the PromotionReferralsMutation object of the builder.
@@ -223,38 +130,9 @@ func (pru *PromotionReferralsUpdate) ClearReferredMember() *PromotionReferralsUp
 	return pru
 }
 
-// ClearParent clears the "parent" edge to the PromotionReferrals entity.
-func (pru *PromotionReferralsUpdate) ClearParent() *PromotionReferralsUpdate {
-	pru.mutation.ClearParent()
-	return pru
-}
-
-// ClearChildren clears all "children" edges to the PromotionReferrals entity.
-func (pru *PromotionReferralsUpdate) ClearChildren() *PromotionReferralsUpdate {
-	pru.mutation.ClearChildren()
-	return pru
-}
-
-// RemoveChildIDs removes the "children" edge to PromotionReferrals entities by IDs.
-func (pru *PromotionReferralsUpdate) RemoveChildIDs(ids ...uint64) *PromotionReferralsUpdate {
-	pru.mutation.RemoveChildIDs(ids...)
-	return pru
-}
-
-// RemoveChildren removes "children" edges to PromotionReferrals entities.
-func (pru *PromotionReferralsUpdate) RemoveChildren(p ...*PromotionReferrals) *PromotionReferralsUpdate {
-	ids := make([]uint64, len(p))
-	for i := range p {
-		ids[i] = p[i].ID
-	}
-	return pru.RemoveChildIDs(ids...)
-}
-
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (pru *PromotionReferralsUpdate) Save(ctx context.Context) (int, error) {
-	if err := pru.defaults(); err != nil {
-		return 0, err
-	}
+	pru.defaults()
 	return withHooks(ctx, pru.sqlSave, pru.mutation, pru.hooks)
 }
 
@@ -281,15 +159,11 @@ func (pru *PromotionReferralsUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (pru *PromotionReferralsUpdate) defaults() error {
+func (pru *PromotionReferralsUpdate) defaults() {
 	if _, ok := pru.mutation.UpdatedAt(); !ok {
-		if promotionreferrals.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized promotionreferrals.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
 		v := promotionreferrals.UpdateDefaultUpdatedAt()
 		pru.mutation.SetUpdatedAt(v)
 	}
-	return nil
 }
 
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
@@ -309,27 +183,6 @@ func (pru *PromotionReferralsUpdate) sqlSave(ctx context.Context) (n int, err er
 	}
 	if value, ok := pru.mutation.UpdatedAt(); ok {
 		_spec.SetField(promotionreferrals.FieldUpdatedAt, field.TypeTime, value)
-	}
-	if value, ok := pru.mutation.DeletedAt(); ok {
-		_spec.SetField(promotionreferrals.FieldDeletedAt, field.TypeTime, value)
-	}
-	if pru.mutation.DeletedAtCleared() {
-		_spec.ClearField(promotionreferrals.FieldDeletedAt, field.TypeTime)
-	}
-	if pru.mutation.CreatorCleared() {
-		_spec.ClearField(promotionreferrals.FieldCreator, field.TypeJSON)
-	}
-	if value, ok := pru.mutation.LastModifier(); ok {
-		_spec.SetField(promotionreferrals.FieldLastModifier, field.TypeJSON, value)
-	}
-	if pru.mutation.LastModifierCleared() {
-		_spec.ClearField(promotionreferrals.FieldLastModifier, field.TypeJSON)
-	}
-	if value, ok := pru.mutation.Remark(); ok {
-		_spec.SetField(promotionreferrals.FieldRemark, field.TypeString, value)
-	}
-	if pru.mutation.RemarkCleared() {
-		_spec.ClearField(promotionreferrals.FieldRemark, field.TypeString)
 	}
 	if value, ok := pru.mutation.RiderID(); ok {
 		_spec.SetField(promotionreferrals.FieldRiderID, field.TypeUint64, value)
@@ -398,80 +251,6 @@ func (pru *PromotionReferralsUpdate) sqlSave(ctx context.Context) (n int, err er
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if pru.mutation.ParentCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   promotionreferrals.ParentTable,
-			Columns: []string{promotionreferrals.ParentColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(promotionreferrals.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := pru.mutation.ParentIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   promotionreferrals.ParentTable,
-			Columns: []string{promotionreferrals.ParentColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(promotionreferrals.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if pru.mutation.ChildrenCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   promotionreferrals.ChildrenTable,
-			Columns: []string{promotionreferrals.ChildrenColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(promotionreferrals.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := pru.mutation.RemovedChildrenIDs(); len(nodes) > 0 && !pru.mutation.ChildrenCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   promotionreferrals.ChildrenTable,
-			Columns: []string{promotionreferrals.ChildrenColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(promotionreferrals.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := pru.mutation.ChildrenIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   promotionreferrals.ChildrenTable,
-			Columns: []string{promotionreferrals.ChildrenColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(promotionreferrals.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	_spec.AddModifiers(pru.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, pru.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -497,58 +276,6 @@ type PromotionReferralsUpdateOne struct {
 // SetUpdatedAt sets the "updated_at" field.
 func (pruo *PromotionReferralsUpdateOne) SetUpdatedAt(t time.Time) *PromotionReferralsUpdateOne {
 	pruo.mutation.SetUpdatedAt(t)
-	return pruo
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (pruo *PromotionReferralsUpdateOne) SetDeletedAt(t time.Time) *PromotionReferralsUpdateOne {
-	pruo.mutation.SetDeletedAt(t)
-	return pruo
-}
-
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (pruo *PromotionReferralsUpdateOne) SetNillableDeletedAt(t *time.Time) *PromotionReferralsUpdateOne {
-	if t != nil {
-		pruo.SetDeletedAt(*t)
-	}
-	return pruo
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (pruo *PromotionReferralsUpdateOne) ClearDeletedAt() *PromotionReferralsUpdateOne {
-	pruo.mutation.ClearDeletedAt()
-	return pruo
-}
-
-// SetLastModifier sets the "last_modifier" field.
-func (pruo *PromotionReferralsUpdateOne) SetLastModifier(m *model.Modifier) *PromotionReferralsUpdateOne {
-	pruo.mutation.SetLastModifier(m)
-	return pruo
-}
-
-// ClearLastModifier clears the value of the "last_modifier" field.
-func (pruo *PromotionReferralsUpdateOne) ClearLastModifier() *PromotionReferralsUpdateOne {
-	pruo.mutation.ClearLastModifier()
-	return pruo
-}
-
-// SetRemark sets the "remark" field.
-func (pruo *PromotionReferralsUpdateOne) SetRemark(s string) *PromotionReferralsUpdateOne {
-	pruo.mutation.SetRemark(s)
-	return pruo
-}
-
-// SetNillableRemark sets the "remark" field if the given value is not nil.
-func (pruo *PromotionReferralsUpdateOne) SetNillableRemark(s *string) *PromotionReferralsUpdateOne {
-	if s != nil {
-		pruo.SetRemark(*s)
-	}
-	return pruo
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (pruo *PromotionReferralsUpdateOne) ClearRemark() *PromotionReferralsUpdateOne {
-	pruo.mutation.ClearRemark()
 	return pruo
 }
 
@@ -619,26 +346,6 @@ func (pruo *PromotionReferralsUpdateOne) ClearRiderID() *PromotionReferralsUpdat
 	return pruo
 }
 
-// SetParentID sets the "parent_id" field.
-func (pruo *PromotionReferralsUpdateOne) SetParentID(u uint64) *PromotionReferralsUpdateOne {
-	pruo.mutation.SetParentID(u)
-	return pruo
-}
-
-// SetNillableParentID sets the "parent_id" field if the given value is not nil.
-func (pruo *PromotionReferralsUpdateOne) SetNillableParentID(u *uint64) *PromotionReferralsUpdateOne {
-	if u != nil {
-		pruo.SetParentID(*u)
-	}
-	return pruo
-}
-
-// ClearParentID clears the value of the "parent_id" field.
-func (pruo *PromotionReferralsUpdateOne) ClearParentID() *PromotionReferralsUpdateOne {
-	pruo.mutation.ClearParentID()
-	return pruo
-}
-
 // SetReferringMember sets the "referring_member" edge to the PromotionMember entity.
 func (pruo *PromotionReferralsUpdateOne) SetReferringMember(p *PromotionMember) *PromotionReferralsUpdateOne {
 	return pruo.SetReferringMemberID(p.ID)
@@ -647,26 +354,6 @@ func (pruo *PromotionReferralsUpdateOne) SetReferringMember(p *PromotionMember) 
 // SetReferredMember sets the "referred_member" edge to the PromotionMember entity.
 func (pruo *PromotionReferralsUpdateOne) SetReferredMember(p *PromotionMember) *PromotionReferralsUpdateOne {
 	return pruo.SetReferredMemberID(p.ID)
-}
-
-// SetParent sets the "parent" edge to the PromotionReferrals entity.
-func (pruo *PromotionReferralsUpdateOne) SetParent(p *PromotionReferrals) *PromotionReferralsUpdateOne {
-	return pruo.SetParentID(p.ID)
-}
-
-// AddChildIDs adds the "children" edge to the PromotionReferrals entity by IDs.
-func (pruo *PromotionReferralsUpdateOne) AddChildIDs(ids ...uint64) *PromotionReferralsUpdateOne {
-	pruo.mutation.AddChildIDs(ids...)
-	return pruo
-}
-
-// AddChildren adds the "children" edges to the PromotionReferrals entity.
-func (pruo *PromotionReferralsUpdateOne) AddChildren(p ...*PromotionReferrals) *PromotionReferralsUpdateOne {
-	ids := make([]uint64, len(p))
-	for i := range p {
-		ids[i] = p[i].ID
-	}
-	return pruo.AddChildIDs(ids...)
 }
 
 // Mutation returns the PromotionReferralsMutation object of the builder.
@@ -686,33 +373,6 @@ func (pruo *PromotionReferralsUpdateOne) ClearReferredMember() *PromotionReferra
 	return pruo
 }
 
-// ClearParent clears the "parent" edge to the PromotionReferrals entity.
-func (pruo *PromotionReferralsUpdateOne) ClearParent() *PromotionReferralsUpdateOne {
-	pruo.mutation.ClearParent()
-	return pruo
-}
-
-// ClearChildren clears all "children" edges to the PromotionReferrals entity.
-func (pruo *PromotionReferralsUpdateOne) ClearChildren() *PromotionReferralsUpdateOne {
-	pruo.mutation.ClearChildren()
-	return pruo
-}
-
-// RemoveChildIDs removes the "children" edge to PromotionReferrals entities by IDs.
-func (pruo *PromotionReferralsUpdateOne) RemoveChildIDs(ids ...uint64) *PromotionReferralsUpdateOne {
-	pruo.mutation.RemoveChildIDs(ids...)
-	return pruo
-}
-
-// RemoveChildren removes "children" edges to PromotionReferrals entities.
-func (pruo *PromotionReferralsUpdateOne) RemoveChildren(p ...*PromotionReferrals) *PromotionReferralsUpdateOne {
-	ids := make([]uint64, len(p))
-	for i := range p {
-		ids[i] = p[i].ID
-	}
-	return pruo.RemoveChildIDs(ids...)
-}
-
 // Where appends a list predicates to the PromotionReferralsUpdate builder.
 func (pruo *PromotionReferralsUpdateOne) Where(ps ...predicate.PromotionReferrals) *PromotionReferralsUpdateOne {
 	pruo.mutation.Where(ps...)
@@ -728,9 +388,7 @@ func (pruo *PromotionReferralsUpdateOne) Select(field string, fields ...string) 
 
 // Save executes the query and returns the updated PromotionReferrals entity.
 func (pruo *PromotionReferralsUpdateOne) Save(ctx context.Context) (*PromotionReferrals, error) {
-	if err := pruo.defaults(); err != nil {
-		return nil, err
-	}
+	pruo.defaults()
 	return withHooks(ctx, pruo.sqlSave, pruo.mutation, pruo.hooks)
 }
 
@@ -757,15 +415,11 @@ func (pruo *PromotionReferralsUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (pruo *PromotionReferralsUpdateOne) defaults() error {
+func (pruo *PromotionReferralsUpdateOne) defaults() {
 	if _, ok := pruo.mutation.UpdatedAt(); !ok {
-		if promotionreferrals.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized promotionreferrals.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
 		v := promotionreferrals.UpdateDefaultUpdatedAt()
 		pruo.mutation.SetUpdatedAt(v)
 	}
-	return nil
 }
 
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
@@ -802,27 +456,6 @@ func (pruo *PromotionReferralsUpdateOne) sqlSave(ctx context.Context) (_node *Pr
 	}
 	if value, ok := pruo.mutation.UpdatedAt(); ok {
 		_spec.SetField(promotionreferrals.FieldUpdatedAt, field.TypeTime, value)
-	}
-	if value, ok := pruo.mutation.DeletedAt(); ok {
-		_spec.SetField(promotionreferrals.FieldDeletedAt, field.TypeTime, value)
-	}
-	if pruo.mutation.DeletedAtCleared() {
-		_spec.ClearField(promotionreferrals.FieldDeletedAt, field.TypeTime)
-	}
-	if pruo.mutation.CreatorCleared() {
-		_spec.ClearField(promotionreferrals.FieldCreator, field.TypeJSON)
-	}
-	if value, ok := pruo.mutation.LastModifier(); ok {
-		_spec.SetField(promotionreferrals.FieldLastModifier, field.TypeJSON, value)
-	}
-	if pruo.mutation.LastModifierCleared() {
-		_spec.ClearField(promotionreferrals.FieldLastModifier, field.TypeJSON)
-	}
-	if value, ok := pruo.mutation.Remark(); ok {
-		_spec.SetField(promotionreferrals.FieldRemark, field.TypeString, value)
-	}
-	if pruo.mutation.RemarkCleared() {
-		_spec.ClearField(promotionreferrals.FieldRemark, field.TypeString)
 	}
 	if value, ok := pruo.mutation.RiderID(); ok {
 		_spec.SetField(promotionreferrals.FieldRiderID, field.TypeUint64, value)
@@ -884,80 +517,6 @@ func (pruo *PromotionReferralsUpdateOne) sqlSave(ctx context.Context) (_node *Pr
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(promotionmember.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if pruo.mutation.ParentCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   promotionreferrals.ParentTable,
-			Columns: []string{promotionreferrals.ParentColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(promotionreferrals.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := pruo.mutation.ParentIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   promotionreferrals.ParentTable,
-			Columns: []string{promotionreferrals.ParentColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(promotionreferrals.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if pruo.mutation.ChildrenCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   promotionreferrals.ChildrenTable,
-			Columns: []string{promotionreferrals.ChildrenColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(promotionreferrals.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := pruo.mutation.RemovedChildrenIDs(); len(nodes) > 0 && !pruo.mutation.ChildrenCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   promotionreferrals.ChildrenTable,
-			Columns: []string{promotionreferrals.ChildrenColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(promotionreferrals.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := pruo.mutation.ChildrenIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   promotionreferrals.ChildrenTable,
-			Columns: []string{promotionreferrals.ChildrenColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(promotionreferrals.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

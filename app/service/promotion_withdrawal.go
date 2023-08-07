@@ -1,7 +1,6 @@
 package service
 
 import (
-	"context"
 	"fmt"
 	"net/url"
 	"path/filepath"
@@ -23,13 +22,11 @@ import (
 )
 
 type promotionWithdrawalService struct {
-	ctx context.Context
 	*BaseService
 }
 
 func NewPromotionWithdrawalService(params ...any) *promotionWithdrawalService {
 	return &promotionWithdrawalService{
-		ctx:         context.Background(),
 		BaseService: newService(params...),
 	}
 }

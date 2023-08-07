@@ -3502,6 +3502,7 @@ var (
 		{Name: "commission_id", Type: field.TypeUint64},
 		{Name: "member_id", Type: field.TypeUint64},
 		{Name: "rider_id", Type: field.TypeUint64, Comment: "骑手ID"},
+		{Name: "order_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// PromotionEarningsTable holds the schema information for the "promotion_earnings" table.
 	PromotionEarningsTable = &schema.Table{
@@ -3526,6 +3527,12 @@ var (
 				Columns:    []*schema.Column{PromotionEarningsColumns[12]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "promotion_earnings_order_order",
+				Columns:    []*schema.Column{PromotionEarningsColumns[13]},
+				RefColumns: []*schema.Column{OrderColumns[0]},
+				OnDelete:   schema.SetNull,
 			},
 		},
 		Indexes: []*schema.Index{
@@ -3553,6 +3560,11 @@ var (
 				Name:    "promotionearnings_rider_id",
 				Unique:  false,
 				Columns: []*schema.Column{PromotionEarningsColumns[12]},
+			},
+			{
+				Name:    "promotionearnings_order_id",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionEarningsColumns[13]},
 			},
 		},
 	}
@@ -3656,7 +3668,6 @@ var (
 		{Name: "id", Type: field.TypeUint64, Increment: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
 		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
@@ -3676,11 +3687,6 @@ var (
 				Name:    "promotionleveltask_created_at",
 				Unique:  false,
 				Columns: []*schema.Column{PromotionLevelTaskColumns[1]},
-			},
-			{
-				Name:    "promotionleveltask_deleted_at",
-				Unique:  false,
-				Columns: []*schema.Column{PromotionLevelTaskColumns[3]},
 			},
 		},
 	}
@@ -3770,10 +3776,6 @@ var (
 		{Name: "id", Type: field.TypeUint64, Increment: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
-		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
-		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
 		{Name: "status", Type: field.TypeUint8, Comment: "认证状态 0未认证 1已认证 2认证失败", Default: 0},
 		{Name: "name", Type: field.TypeString, Nullable: true, Size: 40, Comment: "真实姓名"},
 		{Name: "id_card_number", Type: field.TypeString, Unique: true, Nullable: true, Size: 40, Comment: "证件号码"},
@@ -3789,11 +3791,6 @@ var (
 				Name:    "promotionperson_created_at",
 				Unique:  false,
 				Columns: []*schema.Column{PromotionPersonColumns[1]},
-			},
-			{
-				Name:    "promotionperson_deleted_at",
-				Unique:  false,
-				Columns: []*schema.Column{PromotionPersonColumns[3]},
 			},
 		},
 	}
@@ -3834,14 +3831,9 @@ var (
 		{Name: "id", Type: field.TypeUint64, Increment: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
-		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
-		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
 		{Name: "rider_id", Type: field.TypeUint64, Nullable: true, Comment: "骑手id"},
 		{Name: "referring_member_id", Type: field.TypeUint64, Nullable: true, Comment: "推广者id"},
 		{Name: "referred_member_id", Type: field.TypeUint64, Unique: true, Nullable: true, Comment: "被推广者ID"},
-		{Name: "parent_id", Type: field.TypeUint64, Nullable: true, Comment: "上级id"},
 	}
 	// PromotionReferralsTable holds the schema information for the "promotion_referrals" table.
 	PromotionReferralsTable = &schema.Table{
@@ -3851,20 +3843,14 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "promotion_referrals_promotion_member_referring",
-				Columns:    []*schema.Column{PromotionReferralsColumns[8]},
+				Columns:    []*schema.Column{PromotionReferralsColumns[4]},
 				RefColumns: []*schema.Column{PromotionMemberColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "promotion_referrals_promotion_member_referred",
-				Columns:    []*schema.Column{PromotionReferralsColumns[9]},
+				Columns:    []*schema.Column{PromotionReferralsColumns[5]},
 				RefColumns: []*schema.Column{PromotionMemberColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
-				Symbol:     "promotion_referrals_promotion_referrals_children",
-				Columns:    []*schema.Column{PromotionReferralsColumns[10]},
-				RefColumns: []*schema.Column{PromotionReferralsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -3874,11 +3860,6 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{PromotionReferralsColumns[1]},
 			},
-			{
-				Name:    "promotionreferrals_deleted_at",
-				Unique:  false,
-				Columns: []*schema.Column{PromotionReferralsColumns[3]},
-			},
 		},
 	}
 	// PromotionSettingColumns holds the columns for the "promotion_setting" table.
@@ -3886,7 +3867,6 @@ var (
 		{Name: "id", Type: field.TypeUint64, Increment: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
 		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
@@ -3904,11 +3884,6 @@ var (
 				Name:    "promotionsetting_created_at",
 				Unique:  false,
 				Columns: []*schema.Column{PromotionSettingColumns[1]},
-			},
-			{
-				Name:    "promotionsetting_deleted_at",
-				Unique:  false,
-				Columns: []*schema.Column{PromotionSettingColumns[3]},
 			},
 		},
 	}
@@ -5692,6 +5667,7 @@ func init() {
 	PromotionEarningsTable.ForeignKeys[0].RefTable = PromotionCommissionTable
 	PromotionEarningsTable.ForeignKeys[1].RefTable = PromotionMemberTable
 	PromotionEarningsTable.ForeignKeys[2].RefTable = RiderTable
+	PromotionEarningsTable.ForeignKeys[3].RefTable = OrderTable
 	PromotionEarningsTable.Annotation = &entsql.Annotation{
 		Table: "promotion_earnings",
 	}
@@ -5722,7 +5698,6 @@ func init() {
 	}
 	PromotionReferralsTable.ForeignKeys[0].RefTable = PromotionMemberTable
 	PromotionReferralsTable.ForeignKeys[1].RefTable = PromotionMemberTable
-	PromotionReferralsTable.ForeignKeys[2].RefTable = PromotionReferralsTable
 	PromotionReferralsTable.Annotation = &entsql.Annotation{
 		Table: "promotion_referrals",
 	}

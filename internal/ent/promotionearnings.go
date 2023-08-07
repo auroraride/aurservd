@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/promotioncommission"
 	"github.com/auroraride/aurservd/internal/ent/promotionearnings"
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
@@ -40,6 +41,8 @@ type PromotionEarnings struct {
 	MemberID uint64 `json:"member_id,omitempty"`
 	// 骑手ID
 	RiderID uint64 `json:"rider_id,omitempty"`
+	// OrderID holds the value of the "order_id" field.
+	OrderID *uint64 `json:"order_id,omitempty"`
 	// 收益状态 0:未结算 1:已结算 2:已取消
 	Status uint8 `json:"status,omitempty"`
 	// 收益金额
@@ -60,9 +63,11 @@ type PromotionEarningsEdges struct {
 	Member *PromotionMember `json:"member,omitempty"`
 	// 骑手
 	Rider *Rider `json:"rider,omitempty"`
+	// Order holds the value of the order edge.
+	Order *Order `json:"order,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // CommissionOrErr returns the Commission value or an error if the edge
@@ -104,6 +109,19 @@ func (e PromotionEarningsEdges) RiderOrErr() (*Rider, error) {
 	return nil, &NotLoadedError{edge: "rider"}
 }
 
+// OrderOrErr returns the Order value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e PromotionEarningsEdges) OrderOrErr() (*Order, error) {
+	if e.loadedTypes[3] {
+		if e.Order == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: order.Label}
+		}
+		return e.Order, nil
+	}
+	return nil, &NotLoadedError{edge: "order"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*PromotionEarnings) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -113,7 +131,7 @@ func (*PromotionEarnings) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case promotionearnings.FieldAmount:
 			values[i] = new(sql.NullFloat64)
-		case promotionearnings.FieldID, promotionearnings.FieldCommissionID, promotionearnings.FieldMemberID, promotionearnings.FieldRiderID, promotionearnings.FieldStatus:
+		case promotionearnings.FieldID, promotionearnings.FieldCommissionID, promotionearnings.FieldMemberID, promotionearnings.FieldRiderID, promotionearnings.FieldOrderID, promotionearnings.FieldStatus:
 			values[i] = new(sql.NullInt64)
 		case promotionearnings.FieldRemark, promotionearnings.FieldCommissionRuleKey:
 			values[i] = new(sql.NullString)
@@ -199,6 +217,13 @@ func (pe *PromotionEarnings) assignValues(columns []string, values []any) error 
 			} else if value.Valid {
 				pe.RiderID = uint64(value.Int64)
 			}
+		case promotionearnings.FieldOrderID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field order_id", values[i])
+			} else if value.Valid {
+				pe.OrderID = new(uint64)
+				*pe.OrderID = uint64(value.Int64)
+			}
 		case promotionearnings.FieldStatus:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field status", values[i])
@@ -243,6 +268,11 @@ func (pe *PromotionEarnings) QueryMember() *PromotionMemberQuery {
 // QueryRider queries the "rider" edge of the PromotionEarnings entity.
 func (pe *PromotionEarnings) QueryRider() *RiderQuery {
 	return NewPromotionEarningsClient(pe.config).QueryRider(pe)
+}
+
+// QueryOrder queries the "order" edge of the PromotionEarnings entity.
+func (pe *PromotionEarnings) QueryOrder() *OrderQuery {
+	return NewPromotionEarningsClient(pe.config).QueryOrder(pe)
 }
 
 // Update returns a builder for updating this PromotionEarnings.
@@ -296,6 +326,11 @@ func (pe *PromotionEarnings) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("rider_id=")
 	builder.WriteString(fmt.Sprintf("%v", pe.RiderID))
+	builder.WriteString(", ")
+	if v := pe.OrderID; v != nil {
+		builder.WriteString("order_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", ")
 	builder.WriteString("status=")
 	builder.WriteString(fmt.Sprintf("%v", pe.Status))

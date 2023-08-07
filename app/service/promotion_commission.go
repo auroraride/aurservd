@@ -1,7 +1,6 @@
 package service
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"strconv"
@@ -21,12 +20,10 @@ import (
 
 type promotionCommissionService struct {
 	*BaseService
-	ctx context.Context
 }
 
 func NewPromotionCommissionService(params ...any) *promotionCommissionService {
 	return &promotionCommissionService{
-		ctx:         context.Background(),
 		BaseService: newService(params...),
 	}
 }
@@ -310,6 +307,7 @@ func (s *promotionCommissionService) calculateFirstLevelCommission(req *promotio
 	res.CommissionID = *mem.CommissionID
 	res.MemberID = mem.ID
 	res.RiderID = req.RiderID
+	res.OrderID = req.OrderID
 
 	conf := mem.Edges.Commission.Rule
 	count := 0
@@ -340,6 +338,7 @@ func (s *promotionCommissionService) calculateSecondLevelCommission(req *promoti
 		res.CommissionID = *parentMember.CommissionID
 		res.MemberID = parentMember.ID
 		res.RiderID = req.RiderID
+		res.OrderID = req.OrderID
 
 		conf := parentMember.Edges.Commission.Rule
 		count := 0
@@ -365,6 +364,13 @@ func (s *promotionCommissionService) calculateSecondLevelCommission(req *promoti
 func (s *promotionCommissionService) saveEarningsAndUpdateCommission(tx *ent.Tx, req promotion.EarningsCreateReq) (err error) {
 
 	if req.Amount != 0 {
+		// 查询是是否重复返佣
+		es, _ := ent.Database.PromotionEarnings.Query().Where(promotionearnings.OrderID(req.OrderID), promotionearnings.CommissionRuleKey(req.CommissionRuleKey.Value())).First(s.ctx)
+		if es != nil {
+			zap.L().Error("返佣失败,重复返佣", zap.Any("收益记录", req))
+			return
+		}
+
 		// 保存收益
 		err = NewPromotionEarningsService().Create(tx, &req)
 		if err != nil {

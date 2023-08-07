@@ -79,7 +79,7 @@ type WithdrawalDetail struct {
 	Method          string       `json:"method"`             // 提现方式 1:银行卡
 	Remark          string       `json:"remark"`             // 备注
 	ApplyTime       string       `json:"applyTime"`          // 申请时间
-	ReviewTime      string       `json:"review_time"`        // 审核时间
+	ReviewTime      string       `json:"reviewTime"`         // 审核时间
 }
 
 // WithdrawalAlterReq 提现申请请求

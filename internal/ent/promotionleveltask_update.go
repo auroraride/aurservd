@@ -36,26 +36,6 @@ func (pltu *PromotionLevelTaskUpdate) SetUpdatedAt(t time.Time) *PromotionLevelT
 	return pltu
 }
 
-// SetDeletedAt sets the "deleted_at" field.
-func (pltu *PromotionLevelTaskUpdate) SetDeletedAt(t time.Time) *PromotionLevelTaskUpdate {
-	pltu.mutation.SetDeletedAt(t)
-	return pltu
-}
-
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (pltu *PromotionLevelTaskUpdate) SetNillableDeletedAt(t *time.Time) *PromotionLevelTaskUpdate {
-	if t != nil {
-		pltu.SetDeletedAt(*t)
-	}
-	return pltu
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (pltu *PromotionLevelTaskUpdate) ClearDeletedAt() *PromotionLevelTaskUpdate {
-	pltu.mutation.ClearDeletedAt()
-	return pltu
-}
-
 // SetLastModifier sets the "last_modifier" field.
 func (pltu *PromotionLevelTaskUpdate) SetLastModifier(m *model.Modifier) *PromotionLevelTaskUpdate {
 	pltu.mutation.SetLastModifier(m)
@@ -219,12 +199,6 @@ func (pltu *PromotionLevelTaskUpdate) sqlSave(ctx context.Context) (n int, err e
 	if value, ok := pltu.mutation.UpdatedAt(); ok {
 		_spec.SetField(promotionleveltask.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := pltu.mutation.DeletedAt(); ok {
-		_spec.SetField(promotionleveltask.FieldDeletedAt, field.TypeTime, value)
-	}
-	if pltu.mutation.DeletedAtCleared() {
-		_spec.ClearField(promotionleveltask.FieldDeletedAt, field.TypeTime)
-	}
 	if pltu.mutation.CreatorCleared() {
 		_spec.ClearField(promotionleveltask.FieldCreator, field.TypeJSON)
 	}
@@ -289,26 +263,6 @@ type PromotionLevelTaskUpdateOne struct {
 // SetUpdatedAt sets the "updated_at" field.
 func (pltuo *PromotionLevelTaskUpdateOne) SetUpdatedAt(t time.Time) *PromotionLevelTaskUpdateOne {
 	pltuo.mutation.SetUpdatedAt(t)
-	return pltuo
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (pltuo *PromotionLevelTaskUpdateOne) SetDeletedAt(t time.Time) *PromotionLevelTaskUpdateOne {
-	pltuo.mutation.SetDeletedAt(t)
-	return pltuo
-}
-
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (pltuo *PromotionLevelTaskUpdateOne) SetNillableDeletedAt(t *time.Time) *PromotionLevelTaskUpdateOne {
-	if t != nil {
-		pltuo.SetDeletedAt(*t)
-	}
-	return pltuo
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (pltuo *PromotionLevelTaskUpdateOne) ClearDeletedAt() *PromotionLevelTaskUpdateOne {
-	pltuo.mutation.ClearDeletedAt()
 	return pltuo
 }
 
@@ -504,12 +458,6 @@ func (pltuo *PromotionLevelTaskUpdateOne) sqlSave(ctx context.Context) (_node *P
 	}
 	if value, ok := pltuo.mutation.UpdatedAt(); ok {
 		_spec.SetField(promotionleveltask.FieldUpdatedAt, field.TypeTime, value)
-	}
-	if value, ok := pltuo.mutation.DeletedAt(); ok {
-		_spec.SetField(promotionleveltask.FieldDeletedAt, field.TypeTime, value)
-	}
-	if pltuo.mutation.DeletedAtCleared() {
-		_spec.ClearField(promotionleveltask.FieldDeletedAt, field.TypeTime)
 	}
 	if pltuo.mutation.CreatorCleared() {
 		_spec.ClearField(promotionleveltask.FieldCreator, field.TypeJSON)

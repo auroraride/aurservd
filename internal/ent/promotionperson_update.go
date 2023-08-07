@@ -11,7 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
 	"github.com/auroraride/aurservd/internal/ent/promotionperson"
@@ -34,58 +33,6 @@ func (ppu *PromotionPersonUpdate) Where(ps ...predicate.PromotionPerson) *Promot
 // SetUpdatedAt sets the "updated_at" field.
 func (ppu *PromotionPersonUpdate) SetUpdatedAt(t time.Time) *PromotionPersonUpdate {
 	ppu.mutation.SetUpdatedAt(t)
-	return ppu
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (ppu *PromotionPersonUpdate) SetDeletedAt(t time.Time) *PromotionPersonUpdate {
-	ppu.mutation.SetDeletedAt(t)
-	return ppu
-}
-
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (ppu *PromotionPersonUpdate) SetNillableDeletedAt(t *time.Time) *PromotionPersonUpdate {
-	if t != nil {
-		ppu.SetDeletedAt(*t)
-	}
-	return ppu
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (ppu *PromotionPersonUpdate) ClearDeletedAt() *PromotionPersonUpdate {
-	ppu.mutation.ClearDeletedAt()
-	return ppu
-}
-
-// SetLastModifier sets the "last_modifier" field.
-func (ppu *PromotionPersonUpdate) SetLastModifier(m *model.Modifier) *PromotionPersonUpdate {
-	ppu.mutation.SetLastModifier(m)
-	return ppu
-}
-
-// ClearLastModifier clears the value of the "last_modifier" field.
-func (ppu *PromotionPersonUpdate) ClearLastModifier() *PromotionPersonUpdate {
-	ppu.mutation.ClearLastModifier()
-	return ppu
-}
-
-// SetRemark sets the "remark" field.
-func (ppu *PromotionPersonUpdate) SetRemark(s string) *PromotionPersonUpdate {
-	ppu.mutation.SetRemark(s)
-	return ppu
-}
-
-// SetNillableRemark sets the "remark" field if the given value is not nil.
-func (ppu *PromotionPersonUpdate) SetNillableRemark(s *string) *PromotionPersonUpdate {
-	if s != nil {
-		ppu.SetRemark(*s)
-	}
-	return ppu
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (ppu *PromotionPersonUpdate) ClearRemark() *PromotionPersonUpdate {
-	ppu.mutation.ClearRemark()
 	return ppu
 }
 
@@ -213,9 +160,7 @@ func (ppu *PromotionPersonUpdate) RemoveMember(p ...*PromotionMember) *Promotion
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (ppu *PromotionPersonUpdate) Save(ctx context.Context) (int, error) {
-	if err := ppu.defaults(); err != nil {
-		return 0, err
-	}
+	ppu.defaults()
 	return withHooks(ctx, ppu.sqlSave, ppu.mutation, ppu.hooks)
 }
 
@@ -242,15 +187,11 @@ func (ppu *PromotionPersonUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (ppu *PromotionPersonUpdate) defaults() error {
+func (ppu *PromotionPersonUpdate) defaults() {
 	if _, ok := ppu.mutation.UpdatedAt(); !ok {
-		if promotionperson.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized promotionperson.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
 		v := promotionperson.UpdateDefaultUpdatedAt()
 		ppu.mutation.SetUpdatedAt(v)
 	}
-	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -288,27 +229,6 @@ func (ppu *PromotionPersonUpdate) sqlSave(ctx context.Context) (n int, err error
 	}
 	if value, ok := ppu.mutation.UpdatedAt(); ok {
 		_spec.SetField(promotionperson.FieldUpdatedAt, field.TypeTime, value)
-	}
-	if value, ok := ppu.mutation.DeletedAt(); ok {
-		_spec.SetField(promotionperson.FieldDeletedAt, field.TypeTime, value)
-	}
-	if ppu.mutation.DeletedAtCleared() {
-		_spec.ClearField(promotionperson.FieldDeletedAt, field.TypeTime)
-	}
-	if ppu.mutation.CreatorCleared() {
-		_spec.ClearField(promotionperson.FieldCreator, field.TypeJSON)
-	}
-	if value, ok := ppu.mutation.LastModifier(); ok {
-		_spec.SetField(promotionperson.FieldLastModifier, field.TypeJSON, value)
-	}
-	if ppu.mutation.LastModifierCleared() {
-		_spec.ClearField(promotionperson.FieldLastModifier, field.TypeJSON)
-	}
-	if value, ok := ppu.mutation.Remark(); ok {
-		_spec.SetField(promotionperson.FieldRemark, field.TypeString, value)
-	}
-	if ppu.mutation.RemarkCleared() {
-		_spec.ClearField(promotionperson.FieldRemark, field.TypeString)
 	}
 	if value, ok := ppu.mutation.Status(); ok {
 		_spec.SetField(promotionperson.FieldStatus, field.TypeUint8, value)
@@ -404,58 +324,6 @@ type PromotionPersonUpdateOne struct {
 // SetUpdatedAt sets the "updated_at" field.
 func (ppuo *PromotionPersonUpdateOne) SetUpdatedAt(t time.Time) *PromotionPersonUpdateOne {
 	ppuo.mutation.SetUpdatedAt(t)
-	return ppuo
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (ppuo *PromotionPersonUpdateOne) SetDeletedAt(t time.Time) *PromotionPersonUpdateOne {
-	ppuo.mutation.SetDeletedAt(t)
-	return ppuo
-}
-
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (ppuo *PromotionPersonUpdateOne) SetNillableDeletedAt(t *time.Time) *PromotionPersonUpdateOne {
-	if t != nil {
-		ppuo.SetDeletedAt(*t)
-	}
-	return ppuo
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (ppuo *PromotionPersonUpdateOne) ClearDeletedAt() *PromotionPersonUpdateOne {
-	ppuo.mutation.ClearDeletedAt()
-	return ppuo
-}
-
-// SetLastModifier sets the "last_modifier" field.
-func (ppuo *PromotionPersonUpdateOne) SetLastModifier(m *model.Modifier) *PromotionPersonUpdateOne {
-	ppuo.mutation.SetLastModifier(m)
-	return ppuo
-}
-
-// ClearLastModifier clears the value of the "last_modifier" field.
-func (ppuo *PromotionPersonUpdateOne) ClearLastModifier() *PromotionPersonUpdateOne {
-	ppuo.mutation.ClearLastModifier()
-	return ppuo
-}
-
-// SetRemark sets the "remark" field.
-func (ppuo *PromotionPersonUpdateOne) SetRemark(s string) *PromotionPersonUpdateOne {
-	ppuo.mutation.SetRemark(s)
-	return ppuo
-}
-
-// SetNillableRemark sets the "remark" field if the given value is not nil.
-func (ppuo *PromotionPersonUpdateOne) SetNillableRemark(s *string) *PromotionPersonUpdateOne {
-	if s != nil {
-		ppuo.SetRemark(*s)
-	}
-	return ppuo
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (ppuo *PromotionPersonUpdateOne) ClearRemark() *PromotionPersonUpdateOne {
-	ppuo.mutation.ClearRemark()
 	return ppuo
 }
 
@@ -596,9 +464,7 @@ func (ppuo *PromotionPersonUpdateOne) Select(field string, fields ...string) *Pr
 
 // Save executes the query and returns the updated PromotionPerson entity.
 func (ppuo *PromotionPersonUpdateOne) Save(ctx context.Context) (*PromotionPerson, error) {
-	if err := ppuo.defaults(); err != nil {
-		return nil, err
-	}
+	ppuo.defaults()
 	return withHooks(ctx, ppuo.sqlSave, ppuo.mutation, ppuo.hooks)
 }
 
@@ -625,15 +491,11 @@ func (ppuo *PromotionPersonUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (ppuo *PromotionPersonUpdateOne) defaults() error {
+func (ppuo *PromotionPersonUpdateOne) defaults() {
 	if _, ok := ppuo.mutation.UpdatedAt(); !ok {
-		if promotionperson.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized promotionperson.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
 		v := promotionperson.UpdateDefaultUpdatedAt()
 		ppuo.mutation.SetUpdatedAt(v)
 	}
-	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -688,27 +550,6 @@ func (ppuo *PromotionPersonUpdateOne) sqlSave(ctx context.Context) (_node *Promo
 	}
 	if value, ok := ppuo.mutation.UpdatedAt(); ok {
 		_spec.SetField(promotionperson.FieldUpdatedAt, field.TypeTime, value)
-	}
-	if value, ok := ppuo.mutation.DeletedAt(); ok {
-		_spec.SetField(promotionperson.FieldDeletedAt, field.TypeTime, value)
-	}
-	if ppuo.mutation.DeletedAtCleared() {
-		_spec.ClearField(promotionperson.FieldDeletedAt, field.TypeTime)
-	}
-	if ppuo.mutation.CreatorCleared() {
-		_spec.ClearField(promotionperson.FieldCreator, field.TypeJSON)
-	}
-	if value, ok := ppuo.mutation.LastModifier(); ok {
-		_spec.SetField(promotionperson.FieldLastModifier, field.TypeJSON, value)
-	}
-	if ppuo.mutation.LastModifierCleared() {
-		_spec.ClearField(promotionperson.FieldLastModifier, field.TypeJSON)
-	}
-	if value, ok := ppuo.mutation.Remark(); ok {
-		_spec.SetField(promotionperson.FieldRemark, field.TypeString, value)
-	}
-	if ppuo.mutation.RemarkCleared() {
-		_spec.ClearField(promotionperson.FieldRemark, field.TypeString)
 	}
 	if value, ok := ppuo.mutation.Status(); ok {
 		_spec.SetField(promotionperson.FieldStatus, field.TypeUint8, value)

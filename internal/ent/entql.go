@@ -1340,6 +1340,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			promotionearnings.FieldCommissionID:      {Type: field.TypeUint64, Column: promotionearnings.FieldCommissionID},
 			promotionearnings.FieldMemberID:          {Type: field.TypeUint64, Column: promotionearnings.FieldMemberID},
 			promotionearnings.FieldRiderID:           {Type: field.TypeUint64, Column: promotionearnings.FieldRiderID},
+			promotionearnings.FieldOrderID:           {Type: field.TypeUint64, Column: promotionearnings.FieldOrderID},
 			promotionearnings.FieldStatus:            {Type: field.TypeUint8, Column: promotionearnings.FieldStatus},
 			promotionearnings.FieldAmount:            {Type: field.TypeFloat64, Column: promotionearnings.FieldAmount},
 			promotionearnings.FieldCommissionRuleKey: {Type: field.TypeString, Column: promotionearnings.FieldCommissionRuleKey},
@@ -1400,7 +1401,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 		Fields: map[string]*sqlgraph.FieldSpec{
 			promotionleveltask.FieldCreatedAt:    {Type: field.TypeTime, Column: promotionleveltask.FieldCreatedAt},
 			promotionleveltask.FieldUpdatedAt:    {Type: field.TypeTime, Column: promotionleveltask.FieldUpdatedAt},
-			promotionleveltask.FieldDeletedAt:    {Type: field.TypeTime, Column: promotionleveltask.FieldDeletedAt},
 			promotionleveltask.FieldCreator:      {Type: field.TypeJSON, Column: promotionleveltask.FieldCreator},
 			promotionleveltask.FieldLastModifier: {Type: field.TypeJSON, Column: promotionleveltask.FieldLastModifier},
 			promotionleveltask.FieldRemark:       {Type: field.TypeString, Column: promotionleveltask.FieldRemark},
@@ -1455,10 +1455,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 		Fields: map[string]*sqlgraph.FieldSpec{
 			promotionperson.FieldCreatedAt:    {Type: field.TypeTime, Column: promotionperson.FieldCreatedAt},
 			promotionperson.FieldUpdatedAt:    {Type: field.TypeTime, Column: promotionperson.FieldUpdatedAt},
-			promotionperson.FieldDeletedAt:    {Type: field.TypeTime, Column: promotionperson.FieldDeletedAt},
-			promotionperson.FieldCreator:      {Type: field.TypeJSON, Column: promotionperson.FieldCreator},
-			promotionperson.FieldLastModifier: {Type: field.TypeJSON, Column: promotionperson.FieldLastModifier},
-			promotionperson.FieldRemark:       {Type: field.TypeString, Column: promotionperson.FieldRemark},
 			promotionperson.FieldStatus:       {Type: field.TypeUint8, Column: promotionperson.FieldStatus},
 			promotionperson.FieldName:         {Type: field.TypeString, Column: promotionperson.FieldName},
 			promotionperson.FieldIDCardNumber: {Type: field.TypeString, Column: promotionperson.FieldIDCardNumber},
@@ -1501,14 +1497,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 		Fields: map[string]*sqlgraph.FieldSpec{
 			promotionreferrals.FieldCreatedAt:         {Type: field.TypeTime, Column: promotionreferrals.FieldCreatedAt},
 			promotionreferrals.FieldUpdatedAt:         {Type: field.TypeTime, Column: promotionreferrals.FieldUpdatedAt},
-			promotionreferrals.FieldDeletedAt:         {Type: field.TypeTime, Column: promotionreferrals.FieldDeletedAt},
-			promotionreferrals.FieldCreator:           {Type: field.TypeJSON, Column: promotionreferrals.FieldCreator},
-			promotionreferrals.FieldLastModifier:      {Type: field.TypeJSON, Column: promotionreferrals.FieldLastModifier},
-			promotionreferrals.FieldRemark:            {Type: field.TypeString, Column: promotionreferrals.FieldRemark},
 			promotionreferrals.FieldReferringMemberID: {Type: field.TypeUint64, Column: promotionreferrals.FieldReferringMemberID},
 			promotionreferrals.FieldReferredMemberID:  {Type: field.TypeUint64, Column: promotionreferrals.FieldReferredMemberID},
 			promotionreferrals.FieldRiderID:           {Type: field.TypeUint64, Column: promotionreferrals.FieldRiderID},
-			promotionreferrals.FieldParentID:          {Type: field.TypeUint64, Column: promotionreferrals.FieldParentID},
 		},
 	}
 	graph.Nodes[52] = &sqlgraph.Node{
@@ -1524,7 +1515,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 		Fields: map[string]*sqlgraph.FieldSpec{
 			promotionsetting.FieldCreatedAt:    {Type: field.TypeTime, Column: promotionsetting.FieldCreatedAt},
 			promotionsetting.FieldUpdatedAt:    {Type: field.TypeTime, Column: promotionsetting.FieldUpdatedAt},
-			promotionsetting.FieldDeletedAt:    {Type: field.TypeTime, Column: promotionsetting.FieldDeletedAt},
 			promotionsetting.FieldCreator:      {Type: field.TypeJSON, Column: promotionsetting.FieldCreator},
 			promotionsetting.FieldLastModifier: {Type: field.TypeJSON, Column: promotionsetting.FieldLastModifier},
 			promotionsetting.FieldRemark:       {Type: field.TypeString, Column: promotionsetting.FieldRemark},
@@ -4139,6 +4129,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Rider",
 	)
 	graph.MustAddE(
+		"order",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotionearnings.OrderTable,
+			Columns: []string{promotionearnings.OrderColumn},
+			Bidi:    false,
+		},
+		"PromotionEarnings",
+		"Order",
+	)
+	graph.MustAddE(
 		"member",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -4293,30 +4295,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"PromotionReferrals",
 		"PromotionMember",
-	)
-	graph.MustAddE(
-		"parent",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   promotionreferrals.ParentTable,
-			Columns: []string{promotionreferrals.ParentColumn},
-			Bidi:    false,
-		},
-		"PromotionReferrals",
-		"PromotionReferrals",
-	)
-	graph.MustAddE(
-		"children",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   promotionreferrals.ChildrenTable,
-			Columns: []string{promotionreferrals.ChildrenColumn},
-			Bidi:    false,
-		},
-		"PromotionReferrals",
-		"PromotionReferrals",
 	)
 	graph.MustAddE(
 		"member",
@@ -13059,6 +13037,11 @@ func (f *PromotionEarningsFilter) WhereRiderID(p entql.Uint64P) {
 	f.Where(p.Field(promotionearnings.FieldRiderID))
 }
 
+// WhereOrderID applies the entql uint64 predicate on the order_id field.
+func (f *PromotionEarningsFilter) WhereOrderID(p entql.Uint64P) {
+	f.Where(p.Field(promotionearnings.FieldOrderID))
+}
+
 // WhereStatus applies the entql uint8 predicate on the status field.
 func (f *PromotionEarningsFilter) WhereStatus(p entql.Uint8P) {
 	f.Where(p.Field(promotionearnings.FieldStatus))
@@ -13110,6 +13093,20 @@ func (f *PromotionEarningsFilter) WhereHasRider() {
 // WhereHasRiderWith applies a predicate to check if query has an edge rider with a given conditions (other predicates).
 func (f *PromotionEarningsFilter) WhereHasRiderWith(preds ...predicate.Rider) {
 	f.Where(entql.HasEdgeWith("rider", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasOrder applies a predicate to check if query has an edge order.
+func (f *PromotionEarningsFilter) WhereHasOrder() {
+	f.Where(entql.HasEdge("order"))
+}
+
+// WhereHasOrderWith applies a predicate to check if query has an edge order with a given conditions (other predicates).
+func (f *PromotionEarningsFilter) WhereHasOrderWith(preds ...predicate.Order) {
+	f.Where(entql.HasEdgeWith("order", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -13366,11 +13363,6 @@ func (f *PromotionLevelTaskFilter) WhereCreatedAt(p entql.TimeP) {
 // WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
 func (f *PromotionLevelTaskFilter) WhereUpdatedAt(p entql.TimeP) {
 	f.Where(p.Field(promotionleveltask.FieldUpdatedAt))
-}
-
-// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
-func (f *PromotionLevelTaskFilter) WhereDeletedAt(p entql.TimeP) {
-	f.Where(p.Field(promotionleveltask.FieldDeletedAt))
 }
 
 // WhereCreator applies the entql json.RawMessage predicate on the creator field.
@@ -13691,26 +13683,6 @@ func (f *PromotionPersonFilter) WhereUpdatedAt(p entql.TimeP) {
 	f.Where(p.Field(promotionperson.FieldUpdatedAt))
 }
 
-// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
-func (f *PromotionPersonFilter) WhereDeletedAt(p entql.TimeP) {
-	f.Where(p.Field(promotionperson.FieldDeletedAt))
-}
-
-// WhereCreator applies the entql json.RawMessage predicate on the creator field.
-func (f *PromotionPersonFilter) WhereCreator(p entql.BytesP) {
-	f.Where(p.Field(promotionperson.FieldCreator))
-}
-
-// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
-func (f *PromotionPersonFilter) WhereLastModifier(p entql.BytesP) {
-	f.Where(p.Field(promotionperson.FieldLastModifier))
-}
-
-// WhereRemark applies the entql string predicate on the remark field.
-func (f *PromotionPersonFilter) WhereRemark(p entql.StringP) {
-	f.Where(p.Field(promotionperson.FieldRemark))
-}
-
 // WhereStatus applies the entql uint8 predicate on the status field.
 func (f *PromotionPersonFilter) WhereStatus(p entql.Uint8P) {
 	f.Where(p.Field(promotionperson.FieldStatus))
@@ -13885,26 +13857,6 @@ func (f *PromotionReferralsFilter) WhereUpdatedAt(p entql.TimeP) {
 	f.Where(p.Field(promotionreferrals.FieldUpdatedAt))
 }
 
-// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
-func (f *PromotionReferralsFilter) WhereDeletedAt(p entql.TimeP) {
-	f.Where(p.Field(promotionreferrals.FieldDeletedAt))
-}
-
-// WhereCreator applies the entql json.RawMessage predicate on the creator field.
-func (f *PromotionReferralsFilter) WhereCreator(p entql.BytesP) {
-	f.Where(p.Field(promotionreferrals.FieldCreator))
-}
-
-// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
-func (f *PromotionReferralsFilter) WhereLastModifier(p entql.BytesP) {
-	f.Where(p.Field(promotionreferrals.FieldLastModifier))
-}
-
-// WhereRemark applies the entql string predicate on the remark field.
-func (f *PromotionReferralsFilter) WhereRemark(p entql.StringP) {
-	f.Where(p.Field(promotionreferrals.FieldRemark))
-}
-
 // WhereReferringMemberID applies the entql uint64 predicate on the referring_member_id field.
 func (f *PromotionReferralsFilter) WhereReferringMemberID(p entql.Uint64P) {
 	f.Where(p.Field(promotionreferrals.FieldReferringMemberID))
@@ -13918,11 +13870,6 @@ func (f *PromotionReferralsFilter) WhereReferredMemberID(p entql.Uint64P) {
 // WhereRiderID applies the entql uint64 predicate on the rider_id field.
 func (f *PromotionReferralsFilter) WhereRiderID(p entql.Uint64P) {
 	f.Where(p.Field(promotionreferrals.FieldRiderID))
-}
-
-// WhereParentID applies the entql uint64 predicate on the parent_id field.
-func (f *PromotionReferralsFilter) WhereParentID(p entql.Uint64P) {
-	f.Where(p.Field(promotionreferrals.FieldParentID))
 }
 
 // WhereHasReferringMember applies a predicate to check if query has an edge referring_member.
@@ -13947,34 +13894,6 @@ func (f *PromotionReferralsFilter) WhereHasReferredMember() {
 // WhereHasReferredMemberWith applies a predicate to check if query has an edge referred_member with a given conditions (other predicates).
 func (f *PromotionReferralsFilter) WhereHasReferredMemberWith(preds ...predicate.PromotionMember) {
 	f.Where(entql.HasEdgeWith("referred_member", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// WhereHasParent applies a predicate to check if query has an edge parent.
-func (f *PromotionReferralsFilter) WhereHasParent() {
-	f.Where(entql.HasEdge("parent"))
-}
-
-// WhereHasParentWith applies a predicate to check if query has an edge parent with a given conditions (other predicates).
-func (f *PromotionReferralsFilter) WhereHasParentWith(preds ...predicate.PromotionReferrals) {
-	f.Where(entql.HasEdgeWith("parent", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// WhereHasChildren applies a predicate to check if query has an edge children.
-func (f *PromotionReferralsFilter) WhereHasChildren() {
-	f.Where(entql.HasEdge("children"))
-}
-
-// WhereHasChildrenWith applies a predicate to check if query has an edge children with a given conditions (other predicates).
-func (f *PromotionReferralsFilter) WhereHasChildrenWith(preds ...predicate.PromotionReferrals) {
-	f.Where(entql.HasEdgeWith("children", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -14029,11 +13948,6 @@ func (f *PromotionSettingFilter) WhereCreatedAt(p entql.TimeP) {
 // WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
 func (f *PromotionSettingFilter) WhereUpdatedAt(p entql.TimeP) {
 	f.Where(p.Field(promotionsetting.FieldUpdatedAt))
-}
-
-// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
-func (f *PromotionSettingFilter) WhereDeletedAt(p entql.TimeP) {
-	f.Where(p.Field(promotionsetting.FieldDeletedAt))
 }
 
 // WhereCreator applies the entql json.RawMessage predicate on the creator field.

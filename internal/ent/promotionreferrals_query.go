@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"database/sql/driver"
 	"fmt"
 	"math"
 
@@ -25,8 +24,6 @@ type PromotionReferralsQuery struct {
 	predicates          []predicate.PromotionReferrals
 	withReferringMember *PromotionMemberQuery
 	withReferredMember  *PromotionMemberQuery
-	withParent          *PromotionReferralsQuery
-	withChildren        *PromotionReferralsQuery
 	modifiers           []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -101,50 +98,6 @@ func (prq *PromotionReferralsQuery) QueryReferredMember() *PromotionMemberQuery 
 			sqlgraph.From(promotionreferrals.Table, promotionreferrals.FieldID, selector),
 			sqlgraph.To(promotionmember.Table, promotionmember.FieldID),
 			sqlgraph.Edge(sqlgraph.O2O, true, promotionreferrals.ReferredMemberTable, promotionreferrals.ReferredMemberColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(prq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryParent chains the current query on the "parent" edge.
-func (prq *PromotionReferralsQuery) QueryParent() *PromotionReferralsQuery {
-	query := (&PromotionReferralsClient{config: prq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := prq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := prq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(promotionreferrals.Table, promotionreferrals.FieldID, selector),
-			sqlgraph.To(promotionreferrals.Table, promotionreferrals.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, promotionreferrals.ParentTable, promotionreferrals.ParentColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(prq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryChildren chains the current query on the "children" edge.
-func (prq *PromotionReferralsQuery) QueryChildren() *PromotionReferralsQuery {
-	query := (&PromotionReferralsClient{config: prq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := prq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := prq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(promotionreferrals.Table, promotionreferrals.FieldID, selector),
-			sqlgraph.To(promotionreferrals.Table, promotionreferrals.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, promotionreferrals.ChildrenTable, promotionreferrals.ChildrenColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(prq.driver.Dialect(), step)
 		return fromU, nil
@@ -346,8 +299,6 @@ func (prq *PromotionReferralsQuery) Clone() *PromotionReferralsQuery {
 		predicates:          append([]predicate.PromotionReferrals{}, prq.predicates...),
 		withReferringMember: prq.withReferringMember.Clone(),
 		withReferredMember:  prq.withReferredMember.Clone(),
-		withParent:          prq.withParent.Clone(),
-		withChildren:        prq.withChildren.Clone(),
 		// clone intermediate query.
 		sql:  prq.sql.Clone(),
 		path: prq.path,
@@ -373,28 +324,6 @@ func (prq *PromotionReferralsQuery) WithReferredMember(opts ...func(*PromotionMe
 		opt(query)
 	}
 	prq.withReferredMember = query
-	return prq
-}
-
-// WithParent tells the query-builder to eager-load the nodes that are connected to
-// the "parent" edge. The optional arguments are used to configure the query builder of the edge.
-func (prq *PromotionReferralsQuery) WithParent(opts ...func(*PromotionReferralsQuery)) *PromotionReferralsQuery {
-	query := (&PromotionReferralsClient{config: prq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	prq.withParent = query
-	return prq
-}
-
-// WithChildren tells the query-builder to eager-load the nodes that are connected to
-// the "children" edge. The optional arguments are used to configure the query builder of the edge.
-func (prq *PromotionReferralsQuery) WithChildren(opts ...func(*PromotionReferralsQuery)) *PromotionReferralsQuery {
-	query := (&PromotionReferralsClient{config: prq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	prq.withChildren = query
 	return prq
 }
 
@@ -476,11 +405,9 @@ func (prq *PromotionReferralsQuery) sqlAll(ctx context.Context, hooks ...queryHo
 	var (
 		nodes       = []*PromotionReferrals{}
 		_spec       = prq.querySpec()
-		loadedTypes = [4]bool{
+		loadedTypes = [2]bool{
 			prq.withReferringMember != nil,
 			prq.withReferredMember != nil,
-			prq.withParent != nil,
-			prq.withChildren != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -513,19 +440,6 @@ func (prq *PromotionReferralsQuery) sqlAll(ctx context.Context, hooks ...queryHo
 	if query := prq.withReferredMember; query != nil {
 		if err := prq.loadReferredMember(ctx, query, nodes, nil,
 			func(n *PromotionReferrals, e *PromotionMember) { n.Edges.ReferredMember = e }); err != nil {
-			return nil, err
-		}
-	}
-	if query := prq.withParent; query != nil {
-		if err := prq.loadParent(ctx, query, nodes, nil,
-			func(n *PromotionReferrals, e *PromotionReferrals) { n.Edges.Parent = e }); err != nil {
-			return nil, err
-		}
-	}
-	if query := prq.withChildren; query != nil {
-		if err := prq.loadChildren(ctx, query, nodes,
-			func(n *PromotionReferrals) { n.Edges.Children = []*PromotionReferrals{} },
-			func(n *PromotionReferrals, e *PromotionReferrals) { n.Edges.Children = append(n.Edges.Children, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -593,71 +507,6 @@ func (prq *PromotionReferralsQuery) loadReferredMember(ctx context.Context, quer
 	}
 	return nil
 }
-func (prq *PromotionReferralsQuery) loadParent(ctx context.Context, query *PromotionReferralsQuery, nodes []*PromotionReferrals, init func(*PromotionReferrals), assign func(*PromotionReferrals, *PromotionReferrals)) error {
-	ids := make([]uint64, 0, len(nodes))
-	nodeids := make(map[uint64][]*PromotionReferrals)
-	for i := range nodes {
-		if nodes[i].ParentID == nil {
-			continue
-		}
-		fk := *nodes[i].ParentID
-		if _, ok := nodeids[fk]; !ok {
-			ids = append(ids, fk)
-		}
-		nodeids[fk] = append(nodeids[fk], nodes[i])
-	}
-	if len(ids) == 0 {
-		return nil
-	}
-	query.Where(promotionreferrals.IDIn(ids...))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		nodes, ok := nodeids[n.ID]
-		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "parent_id" returned %v`, n.ID)
-		}
-		for i := range nodes {
-			assign(nodes[i], n)
-		}
-	}
-	return nil
-}
-func (prq *PromotionReferralsQuery) loadChildren(ctx context.Context, query *PromotionReferralsQuery, nodes []*PromotionReferrals, init func(*PromotionReferrals), assign func(*PromotionReferrals, *PromotionReferrals)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[uint64]*PromotionReferrals)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
-		}
-	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(promotionreferrals.FieldParentID)
-	}
-	query.Where(predicate.PromotionReferrals(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(promotionreferrals.ChildrenColumn), fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		fk := n.ParentID
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "parent_id" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
-		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "parent_id" returned %v for node %v`, *fk, n.ID)
-		}
-		assign(node, n)
-	}
-	return nil
-}
 
 func (prq *PromotionReferralsQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := prq.querySpec()
@@ -692,9 +541,6 @@ func (prq *PromotionReferralsQuery) querySpec() *sqlgraph.QuerySpec {
 		}
 		if prq.withReferredMember != nil {
 			_spec.Node.AddColumnOnce(promotionreferrals.FieldReferredMemberID)
-		}
-		if prq.withParent != nil {
-			_spec.Node.AddColumnOnce(promotionreferrals.FieldParentID)
 		}
 	}
 	if ps := prq.predicates; len(ps) > 0 {
@@ -766,8 +612,6 @@ type PromotionReferralsQueryWith string
 var (
 	PromotionReferralsQueryWithReferringMember PromotionReferralsQueryWith = "ReferringMember"
 	PromotionReferralsQueryWithReferredMember  PromotionReferralsQueryWith = "ReferredMember"
-	PromotionReferralsQueryWithParent          PromotionReferralsQueryWith = "Parent"
-	PromotionReferralsQueryWithChildren        PromotionReferralsQueryWith = "Children"
 )
 
 func (prq *PromotionReferralsQuery) With(withEdges ...PromotionReferralsQueryWith) *PromotionReferralsQuery {
@@ -777,10 +621,6 @@ func (prq *PromotionReferralsQuery) With(withEdges ...PromotionReferralsQueryWit
 			prq.WithReferringMember()
 		case PromotionReferralsQueryWithReferredMember:
 			prq.WithReferredMember()
-		case PromotionReferralsQueryWithParent:
-			prq.WithParent()
-		case PromotionReferralsQueryWithChildren:
-			prq.WithChildren()
 		}
 	}
 	return prq

@@ -88,5 +88,5 @@ func (a *promotionAchievement) Delete(c echo.Context) (err error) {
 // @Success      200  {object}  promotion.UploadIcon
 func (a *promotionAchievement) UploadIcon(c echo.Context) (err error) {
 	ctx := app.ContextX[app.ManagerContext](c)
-	return ctx.SendResponse(service.NewPromotionAchievementService().UploadIcon(ctx))
+	return ctx.SendResponse(service.NewPromotionAchievementService(ctx.Modifier).UploadIcon(ctx))
 }

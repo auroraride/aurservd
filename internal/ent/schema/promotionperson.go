@@ -76,8 +76,6 @@ func (PromotionPerson) Edges() []ent.Edge {
 func (PromotionPerson) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		internal.TimeMixin{},
-		internal.DeleteMixin{},
-		internal.Modifier{},
 	}
 }
 

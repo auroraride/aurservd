@@ -51,20 +51,6 @@ func (pltc *PromotionLevelTaskCreate) SetNillableUpdatedAt(t *time.Time) *Promot
 	return pltc
 }
 
-// SetDeletedAt sets the "deleted_at" field.
-func (pltc *PromotionLevelTaskCreate) SetDeletedAt(t time.Time) *PromotionLevelTaskCreate {
-	pltc.mutation.SetDeletedAt(t)
-	return pltc
-}
-
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (pltc *PromotionLevelTaskCreate) SetNillableDeletedAt(t *time.Time) *PromotionLevelTaskCreate {
-	if t != nil {
-		pltc.SetDeletedAt(*t)
-	}
-	return pltc
-}
-
 // SetCreator sets the "creator" field.
 func (pltc *PromotionLevelTaskCreate) SetCreator(m *model.Modifier) *PromotionLevelTaskCreate {
 	pltc.mutation.SetCreator(m)
@@ -250,10 +236,6 @@ func (pltc *PromotionLevelTaskCreate) createSpec() (*PromotionLevelTask, *sqlgra
 		_spec.SetField(promotionleveltask.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
-	if value, ok := pltc.mutation.DeletedAt(); ok {
-		_spec.SetField(promotionleveltask.FieldDeletedAt, field.TypeTime, value)
-		_node.DeletedAt = &value
-	}
 	if value, ok := pltc.mutation.Creator(); ok {
 		_spec.SetField(promotionleveltask.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
@@ -347,24 +329,6 @@ func (u *PromotionLevelTaskUpsert) SetUpdatedAt(v time.Time) *PromotionLevelTask
 // UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
 func (u *PromotionLevelTaskUpsert) UpdateUpdatedAt() *PromotionLevelTaskUpsert {
 	u.SetExcluded(promotionleveltask.FieldUpdatedAt)
-	return u
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (u *PromotionLevelTaskUpsert) SetDeletedAt(v time.Time) *PromotionLevelTaskUpsert {
-	u.Set(promotionleveltask.FieldDeletedAt, v)
-	return u
-}
-
-// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
-func (u *PromotionLevelTaskUpsert) UpdateDeletedAt() *PromotionLevelTaskUpsert {
-	u.SetExcluded(promotionleveltask.FieldDeletedAt)
-	return u
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (u *PromotionLevelTaskUpsert) ClearDeletedAt() *PromotionLevelTaskUpsert {
-	u.SetNull(promotionleveltask.FieldDeletedAt)
 	return u
 }
 
@@ -541,27 +505,6 @@ func (u *PromotionLevelTaskUpsertOne) SetUpdatedAt(v time.Time) *PromotionLevelT
 func (u *PromotionLevelTaskUpsertOne) UpdateUpdatedAt() *PromotionLevelTaskUpsertOne {
 	return u.Update(func(s *PromotionLevelTaskUpsert) {
 		s.UpdateUpdatedAt()
-	})
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (u *PromotionLevelTaskUpsertOne) SetDeletedAt(v time.Time) *PromotionLevelTaskUpsertOne {
-	return u.Update(func(s *PromotionLevelTaskUpsert) {
-		s.SetDeletedAt(v)
-	})
-}
-
-// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
-func (u *PromotionLevelTaskUpsertOne) UpdateDeletedAt() *PromotionLevelTaskUpsertOne {
-	return u.Update(func(s *PromotionLevelTaskUpsert) {
-		s.UpdateDeletedAt()
-	})
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (u *PromotionLevelTaskUpsertOne) ClearDeletedAt() *PromotionLevelTaskUpsertOne {
-	return u.Update(func(s *PromotionLevelTaskUpsert) {
-		s.ClearDeletedAt()
 	})
 }
 
@@ -919,27 +862,6 @@ func (u *PromotionLevelTaskUpsertBulk) SetUpdatedAt(v time.Time) *PromotionLevel
 func (u *PromotionLevelTaskUpsertBulk) UpdateUpdatedAt() *PromotionLevelTaskUpsertBulk {
 	return u.Update(func(s *PromotionLevelTaskUpsert) {
 		s.UpdateUpdatedAt()
-	})
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (u *PromotionLevelTaskUpsertBulk) SetDeletedAt(v time.Time) *PromotionLevelTaskUpsertBulk {
-	return u.Update(func(s *PromotionLevelTaskUpsert) {
-		s.SetDeletedAt(v)
-	})
-}
-
-// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
-func (u *PromotionLevelTaskUpsertBulk) UpdateDeletedAt() *PromotionLevelTaskUpsertBulk {
-	return u.Update(func(s *PromotionLevelTaskUpsert) {
-		s.UpdateDeletedAt()
-	})
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (u *PromotionLevelTaskUpsertBulk) ClearDeletedAt() *PromotionLevelTaskUpsertBulk {
-	return u.Update(func(s *PromotionLevelTaskUpsert) {
-		s.ClearDeletedAt()
 	})
 }
 

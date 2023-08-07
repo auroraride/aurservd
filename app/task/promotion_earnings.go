@@ -13,7 +13,6 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/auroraride/aurservd/app/model/promotion"
-	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/promotionearnings"
 )
@@ -26,9 +25,6 @@ func NewPromotionEarnings() *promotionEarningsTask {
 }
 
 func (t *promotionEarningsTask) Start() {
-	if !ar.Config.Task.Earnings {
-		return
-	}
 
 	go t.Do()
 

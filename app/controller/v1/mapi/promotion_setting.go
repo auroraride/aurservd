@@ -25,7 +25,7 @@ var PromotionSetting = new(promotionSetting)
 // @Success      200  {object}  []promotion.Setting
 func (p *promotionSetting) Setting(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[promotion.SettingReq](c)
-	return ctx.SendResponse(service.NewPromotionSettingService(ctx.Modifier).Setting(req))
+	return ctx.SendResponse(service.NewPromotionSettingService().Setting(req))
 }
 
 // Update
@@ -40,6 +40,6 @@ func (p *promotionSetting) Setting(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse
 func (p *promotionSetting) Update(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[promotion.Setting](c)
-	service.NewPromotionSettingService().Update(req)
+	service.NewPromotionSettingService(ctx.Modifier).Update(req)
 	return ctx.SendResponse()
 }

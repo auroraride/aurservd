@@ -1,8 +1,6 @@
 package service
 
 import (
-	"context"
-
 	"github.com/auroraride/aurservd/app/model/promotion"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/promotionlevel"
@@ -12,13 +10,11 @@ import (
 )
 
 type promotionLevelService struct {
-	ctx context.Context
 	*BaseService
 }
 
 func NewPromotionLevelService(params ...any) *promotionLevelService {
 	return &promotionLevelService{
-		ctx:         context.Background(),
 		BaseService: newService(params...),
 	}
 }

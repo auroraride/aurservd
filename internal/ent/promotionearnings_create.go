@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/promotioncommission"
 	"github.com/auroraride/aurservd/internal/ent/promotionearnings"
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
@@ -112,6 +113,20 @@ func (pec *PromotionEarningsCreate) SetRiderID(u uint64) *PromotionEarningsCreat
 	return pec
 }
 
+// SetOrderID sets the "order_id" field.
+func (pec *PromotionEarningsCreate) SetOrderID(u uint64) *PromotionEarningsCreate {
+	pec.mutation.SetOrderID(u)
+	return pec
+}
+
+// SetNillableOrderID sets the "order_id" field if the given value is not nil.
+func (pec *PromotionEarningsCreate) SetNillableOrderID(u *uint64) *PromotionEarningsCreate {
+	if u != nil {
+		pec.SetOrderID(*u)
+	}
+	return pec
+}
+
 // SetStatus sets the "status" field.
 func (pec *PromotionEarningsCreate) SetStatus(u uint8) *PromotionEarningsCreate {
 	pec.mutation.SetStatus(u)
@@ -167,6 +182,11 @@ func (pec *PromotionEarningsCreate) SetMember(p *PromotionMember) *PromotionEarn
 // SetRider sets the "rider" edge to the Rider entity.
 func (pec *PromotionEarningsCreate) SetRider(r *Rider) *PromotionEarningsCreate {
 	return pec.SetRiderID(r.ID)
+}
+
+// SetOrder sets the "order" edge to the Order entity.
+func (pec *PromotionEarningsCreate) SetOrder(o *Order) *PromotionEarningsCreate {
+	return pec.SetOrderID(o.ID)
 }
 
 // Mutation returns the PromotionEarningsMutation object of the builder.
@@ -377,6 +397,23 @@ func (pec *PromotionEarningsCreate) createSpec() (*PromotionEarnings, *sqlgraph.
 		_node.RiderID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := pec.mutation.OrderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotionearnings.OrderTable,
+			Columns: []string{promotionearnings.OrderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.OrderID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	return _node, _spec
 }
 
@@ -528,6 +565,24 @@ func (u *PromotionEarningsUpsert) SetRiderID(v uint64) *PromotionEarningsUpsert 
 // UpdateRiderID sets the "rider_id" field to the value that was provided on create.
 func (u *PromotionEarningsUpsert) UpdateRiderID() *PromotionEarningsUpsert {
 	u.SetExcluded(promotionearnings.FieldRiderID)
+	return u
+}
+
+// SetOrderID sets the "order_id" field.
+func (u *PromotionEarningsUpsert) SetOrderID(v uint64) *PromotionEarningsUpsert {
+	u.Set(promotionearnings.FieldOrderID, v)
+	return u
+}
+
+// UpdateOrderID sets the "order_id" field to the value that was provided on create.
+func (u *PromotionEarningsUpsert) UpdateOrderID() *PromotionEarningsUpsert {
+	u.SetExcluded(promotionearnings.FieldOrderID)
+	return u
+}
+
+// ClearOrderID clears the value of the "order_id" field.
+func (u *PromotionEarningsUpsert) ClearOrderID() *PromotionEarningsUpsert {
+	u.SetNull(promotionearnings.FieldOrderID)
 	return u
 }
 
@@ -749,6 +804,27 @@ func (u *PromotionEarningsUpsertOne) SetRiderID(v uint64) *PromotionEarningsUpse
 func (u *PromotionEarningsUpsertOne) UpdateRiderID() *PromotionEarningsUpsertOne {
 	return u.Update(func(s *PromotionEarningsUpsert) {
 		s.UpdateRiderID()
+	})
+}
+
+// SetOrderID sets the "order_id" field.
+func (u *PromotionEarningsUpsertOne) SetOrderID(v uint64) *PromotionEarningsUpsertOne {
+	return u.Update(func(s *PromotionEarningsUpsert) {
+		s.SetOrderID(v)
+	})
+}
+
+// UpdateOrderID sets the "order_id" field to the value that was provided on create.
+func (u *PromotionEarningsUpsertOne) UpdateOrderID() *PromotionEarningsUpsertOne {
+	return u.Update(func(s *PromotionEarningsUpsert) {
+		s.UpdateOrderID()
+	})
+}
+
+// ClearOrderID clears the value of the "order_id" field.
+func (u *PromotionEarningsUpsertOne) ClearOrderID() *PromotionEarningsUpsertOne {
+	return u.Update(func(s *PromotionEarningsUpsert) {
+		s.ClearOrderID()
 	})
 }
 
@@ -1141,6 +1217,27 @@ func (u *PromotionEarningsUpsertBulk) SetRiderID(v uint64) *PromotionEarningsUps
 func (u *PromotionEarningsUpsertBulk) UpdateRiderID() *PromotionEarningsUpsertBulk {
 	return u.Update(func(s *PromotionEarningsUpsert) {
 		s.UpdateRiderID()
+	})
+}
+
+// SetOrderID sets the "order_id" field.
+func (u *PromotionEarningsUpsertBulk) SetOrderID(v uint64) *PromotionEarningsUpsertBulk {
+	return u.Update(func(s *PromotionEarningsUpsert) {
+		s.SetOrderID(v)
+	})
+}
+
+// UpdateOrderID sets the "order_id" field to the value that was provided on create.
+func (u *PromotionEarningsUpsertBulk) UpdateOrderID() *PromotionEarningsUpsertBulk {
+	return u.Update(func(s *PromotionEarningsUpsert) {
+		s.UpdateOrderID()
+	})
+}
+
+// ClearOrderID clears the value of the "order_id" field.
+func (u *PromotionEarningsUpsertBulk) ClearOrderID() *PromotionEarningsUpsertBulk {
+	return u.Update(func(s *PromotionEarningsUpsert) {
+		s.ClearOrderID()
 	})
 }
 

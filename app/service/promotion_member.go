@@ -1,7 +1,6 @@
 package service
 
 import (
-	"context"
 	stdsql "database/sql"
 	"errors"
 	"fmt"
@@ -35,13 +34,11 @@ import (
 
 type promotionMemberService struct {
 	*BaseService
-	ctx           context.Context
 	tokenCacheKey string
 }
 
 func NewPromotionMemberService(params ...any) *promotionMemberService {
 	return &promotionMemberService{
-		ctx:           context.Background(),
 		tokenCacheKey: ar.Config.Environment.UpperString() + ":" + "AGENT:TOKEN",
 		BaseService:   newService(params...),
 	}
@@ -160,11 +157,7 @@ func (s *promotionMemberService) updateMemberInfo(tx *ent.Tx, mem *ent.Promotion
 func (s *promotionMemberService) GetMemberByPhone(phone string) (*ent.PromotionMember, error) {
 	return ent.Database.PromotionMember.QueryNotDeleted().
 		Where(promotionmember.Phone(phone)).
-		WithReferred(
-			func(query *ent.PromotionReferralsQuery) {
-				query.WithParent()
-			},
-		).
+		WithReferred().
 		WithLevel().
 		WithCommission().
 		WithPerson().
@@ -486,7 +479,7 @@ func (s *promotionMemberService) TeamList(req *promotion.MemberTeamReq) model.Pa
                 INNER JOIN promotion_referrals as mr ON mh.referred_member_id = mr.referring_member_id
 				WHERE mh.level < 2
 			)
-			SELECT referred_member_id, m.phone, COALESCE(r.name, m.name) AS name, mh.level, s.status as subscribeStatus, s.start_at as subscribeStartAt,(SELECT COUNT(*) FROM subscribe WHERE rider_id = r.id AND status <> 0) AS renewalCount
+			SELECT referred_member_id, m.phone, COALESCE(r.name, m.name) AS name, mh.level, s.status as subscribeStatus, s.start_at as subscribeStartAt,(SELECT COUNT(*) FROM "order" o LEFT JOIN subscribe s ON o.rider_id = s.rider_id WHERE o.rider_id = r.id AND s.status <> 0 AND o.type=2) AS renewalCount
 				FROM member_hierarchy mh
 				JOIN promotion_member m ON m.id = mh.referred_member_id
 				LEFT JOIN rider r ON m.rider_id = r.id

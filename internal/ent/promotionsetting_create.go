@@ -51,20 +51,6 @@ func (psc *PromotionSettingCreate) SetNillableUpdatedAt(t *time.Time) *Promotion
 	return psc
 }
 
-// SetDeletedAt sets the "deleted_at" field.
-func (psc *PromotionSettingCreate) SetDeletedAt(t time.Time) *PromotionSettingCreate {
-	psc.mutation.SetDeletedAt(t)
-	return psc
-}
-
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (psc *PromotionSettingCreate) SetNillableDeletedAt(t *time.Time) *PromotionSettingCreate {
-	if t != nil {
-		psc.SetDeletedAt(*t)
-	}
-	return psc
-}
-
 // SetCreator sets the "creator" field.
 func (psc *PromotionSettingCreate) SetCreator(m *model.Modifier) *PromotionSettingCreate {
 	psc.mutation.SetCreator(m)
@@ -225,10 +211,6 @@ func (psc *PromotionSettingCreate) createSpec() (*PromotionSetting, *sqlgraph.Cr
 		_spec.SetField(promotionsetting.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
-	if value, ok := psc.mutation.DeletedAt(); ok {
-		_spec.SetField(promotionsetting.FieldDeletedAt, field.TypeTime, value)
-		_node.DeletedAt = &value
-	}
 	if value, ok := psc.mutation.Creator(); ok {
 		_spec.SetField(promotionsetting.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
@@ -314,24 +296,6 @@ func (u *PromotionSettingUpsert) SetUpdatedAt(v time.Time) *PromotionSettingUpse
 // UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
 func (u *PromotionSettingUpsert) UpdateUpdatedAt() *PromotionSettingUpsert {
 	u.SetExcluded(promotionsetting.FieldUpdatedAt)
-	return u
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (u *PromotionSettingUpsert) SetDeletedAt(v time.Time) *PromotionSettingUpsert {
-	u.Set(promotionsetting.FieldDeletedAt, v)
-	return u
-}
-
-// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
-func (u *PromotionSettingUpsert) UpdateDeletedAt() *PromotionSettingUpsert {
-	u.SetExcluded(promotionsetting.FieldDeletedAt)
-	return u
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (u *PromotionSettingUpsert) ClearDeletedAt() *PromotionSettingUpsert {
-	u.SetNull(promotionsetting.FieldDeletedAt)
 	return u
 }
 
@@ -478,27 +442,6 @@ func (u *PromotionSettingUpsertOne) SetUpdatedAt(v time.Time) *PromotionSettingU
 func (u *PromotionSettingUpsertOne) UpdateUpdatedAt() *PromotionSettingUpsertOne {
 	return u.Update(func(s *PromotionSettingUpsert) {
 		s.UpdateUpdatedAt()
-	})
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (u *PromotionSettingUpsertOne) SetDeletedAt(v time.Time) *PromotionSettingUpsertOne {
-	return u.Update(func(s *PromotionSettingUpsert) {
-		s.SetDeletedAt(v)
-	})
-}
-
-// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
-func (u *PromotionSettingUpsertOne) UpdateDeletedAt() *PromotionSettingUpsertOne {
-	return u.Update(func(s *PromotionSettingUpsert) {
-		s.UpdateDeletedAt()
-	})
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (u *PromotionSettingUpsertOne) ClearDeletedAt() *PromotionSettingUpsertOne {
-	return u.Update(func(s *PromotionSettingUpsert) {
-		s.ClearDeletedAt()
 	})
 }
 
@@ -821,27 +764,6 @@ func (u *PromotionSettingUpsertBulk) SetUpdatedAt(v time.Time) *PromotionSetting
 func (u *PromotionSettingUpsertBulk) UpdateUpdatedAt() *PromotionSettingUpsertBulk {
 	return u.Update(func(s *PromotionSettingUpsert) {
 		s.UpdateUpdatedAt()
-	})
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (u *PromotionSettingUpsertBulk) SetDeletedAt(v time.Time) *PromotionSettingUpsertBulk {
-	return u.Update(func(s *PromotionSettingUpsert) {
-		s.SetDeletedAt(v)
-	})
-}
-
-// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
-func (u *PromotionSettingUpsertBulk) UpdateDeletedAt() *PromotionSettingUpsertBulk {
-	return u.Update(func(s *PromotionSettingUpsert) {
-		s.UpdateDeletedAt()
-	})
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (u *PromotionSettingUpsertBulk) ClearDeletedAt() *PromotionSettingUpsertBulk {
-	return u.Update(func(s *PromotionSettingUpsert) {
-		s.ClearDeletedAt()
 	})
 }
 

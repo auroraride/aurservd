@@ -23,8 +23,6 @@ type PromotionSetting struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
-	// DeletedAt holds the value of the "deleted_at" field.
-	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// 创建人
 	Creator *model.Modifier `json:"creator,omitempty"`
 	// 最后修改人
@@ -51,7 +49,7 @@ func (*PromotionSetting) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case promotionsetting.FieldRemark, promotionsetting.FieldTitle, promotionsetting.FieldContent, promotionsetting.FieldKey:
 			values[i] = new(sql.NullString)
-		case promotionsetting.FieldCreatedAt, promotionsetting.FieldUpdatedAt, promotionsetting.FieldDeletedAt:
+		case promotionsetting.FieldCreatedAt, promotionsetting.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -85,13 +83,6 @@ func (ps *PromotionSetting) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
 				ps.UpdatedAt = value.Time
-			}
-		case promotionsetting.FieldDeletedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
-			} else if value.Valid {
-				ps.DeletedAt = new(time.Time)
-				*ps.DeletedAt = value.Time
 			}
 		case promotionsetting.FieldCreator:
 			if value, ok := values[i].(*[]byte); !ok {
@@ -174,11 +165,6 @@ func (ps *PromotionSetting) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
 	builder.WriteString(ps.UpdatedAt.Format(time.ANSIC))
-	builder.WriteString(", ")
-	if v := ps.DeletedAt; v != nil {
-		builder.WriteString("deleted_at=")
-		builder.WriteString(v.Format(time.ANSIC))
-	}
 	builder.WriteString(", ")
 	builder.WriteString("creator=")
 	builder.WriteString(fmt.Sprintf("%v", ps.Creator))

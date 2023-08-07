@@ -1180,8 +1180,8 @@ func init() {
 	// promotionlevel.DefaultCommissionRatio holds the default value on creation for the commission_ratio field.
 	promotionlevel.DefaultCommissionRatio = promotionlevelDescCommissionRatio.Default.(float64)
 	promotionleveltaskMixin := schema.PromotionLevelTask{}.Mixin()
-	promotionleveltaskMixinHooks2 := promotionleveltaskMixin[2].Hooks()
-	promotionleveltask.Hooks[0] = promotionleveltaskMixinHooks2[0]
+	promotionleveltaskMixinHooks1 := promotionleveltaskMixin[1].Hooks()
+	promotionleveltask.Hooks[0] = promotionleveltaskMixinHooks1[0]
 	promotionleveltaskMixinFields0 := promotionleveltaskMixin[0].Fields()
 	_ = promotionleveltaskMixinFields0
 	promotionleveltaskFields := schema.PromotionLevelTask{}.Fields()
@@ -1238,8 +1238,6 @@ func init() {
 	// promotionmember.DefaultEnable holds the default value on creation for the enable field.
 	promotionmember.DefaultEnable = promotionmemberDescEnable.Default.(bool)
 	promotionpersonMixin := schema.PromotionPerson{}.Mixin()
-	promotionpersonMixinHooks2 := promotionpersonMixin[2].Hooks()
-	promotionperson.Hooks[0] = promotionpersonMixinHooks2[0]
 	promotionpersonMixinFields0 := promotionpersonMixin[0].Fields()
 	_ = promotionpersonMixinFields0
 	promotionpersonFields := schema.PromotionPerson{}.Fields()
@@ -1292,8 +1290,6 @@ func init() {
 	// promotionprivilege.DefaultValue holds the default value on creation for the value field.
 	promotionprivilege.DefaultValue = promotionprivilegeDescValue.Default.(uint64)
 	promotionreferralsMixin := schema.PromotionReferrals{}.Mixin()
-	promotionreferralsMixinHooks2 := promotionreferralsMixin[2].Hooks()
-	promotionreferrals.Hooks[0] = promotionreferralsMixinHooks2[0]
 	promotionreferralsMixinFields0 := promotionreferralsMixin[0].Fields()
 	_ = promotionreferralsMixinFields0
 	promotionreferralsFields := schema.PromotionReferrals{}.Fields()
@@ -1309,8 +1305,8 @@ func init() {
 	// promotionreferrals.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	promotionreferrals.UpdateDefaultUpdatedAt = promotionreferralsDescUpdatedAt.UpdateDefault.(func() time.Time)
 	promotionsettingMixin := schema.PromotionSetting{}.Mixin()
-	promotionsettingMixinHooks2 := promotionsettingMixin[2].Hooks()
-	promotionsetting.Hooks[0] = promotionsettingMixinHooks2[0]
+	promotionsettingMixinHooks1 := promotionsettingMixin[1].Hooks()
+	promotionsetting.Hooks[0] = promotionsettingMixinHooks1[0]
 	promotionsettingMixinFields0 := promotionsettingMixin[0].Fields()
 	_ = promotionsettingMixinFields0
 	promotionsettingFields := schema.PromotionSetting{}.Fields()

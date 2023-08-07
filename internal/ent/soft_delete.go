@@ -41,12 +41,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/promotionearnings"
 	"github.com/auroraride/aurservd/internal/ent/promotiongrowth"
 	"github.com/auroraride/aurservd/internal/ent/promotionlevel"
-	"github.com/auroraride/aurservd/internal/ent/promotionleveltask"
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
-	"github.com/auroraride/aurservd/internal/ent/promotionperson"
 	"github.com/auroraride/aurservd/internal/ent/promotionprivilege"
-	"github.com/auroraride/aurservd/internal/ent/promotionreferrals"
-	"github.com/auroraride/aurservd/internal/ent/promotionsetting"
 	"github.com/auroraride/aurservd/internal/ent/promotionwithdrawal"
 	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -1456,46 +1452,6 @@ func (c *PromotionLevelClient) GetNotDeletedX(ctx context.Context, id uint64) *P
 	return obj
 }
 
-// SoftDelete returns an soft delete builder for PromotionLevelTask.
-func (c *PromotionLevelTaskClient) SoftDelete() *PromotionLevelTaskUpdate {
-	mutation := newPromotionLevelTaskMutation(c.config, OpUpdate)
-	mutation.SetDeletedAt(time.Now())
-	return &PromotionLevelTaskUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// SoftDeleteOne returns an soft delete builder for the given entity.
-func (c *PromotionLevelTaskClient) SoftDeleteOne(plt *PromotionLevelTask) *PromotionLevelTaskUpdateOne {
-	mutation := newPromotionLevelTaskMutation(c.config, OpUpdateOne, withPromotionLevelTask(plt))
-	mutation.SetDeletedAt(time.Now())
-	return &PromotionLevelTaskUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// SoftDeleteOneID returns an soft delete builder for the given id.
-func (c *PromotionLevelTaskClient) SoftDeleteOneID(id uint64) *PromotionLevelTaskUpdateOne {
-	mutation := newPromotionLevelTaskMutation(c.config, OpUpdateOne, withPromotionLevelTaskID(id))
-	mutation.SetDeletedAt(time.Now())
-	return &PromotionLevelTaskUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// QueryNotDeleted returns a query not deleted builder for PromotionLevelTask.
-func (c *PromotionLevelTaskClient) QueryNotDeleted() *PromotionLevelTaskQuery {
-	return c.Query().Where(promotionleveltask.DeletedAtIsNil())
-}
-
-// GetNotDeleted returns a PromotionLevelTask not deleted entity by its id.
-func (c *PromotionLevelTaskClient) GetNotDeleted(ctx context.Context, id uint64) (*PromotionLevelTask, error) {
-	return c.Query().Where(promotionleveltask.ID(id), promotionleveltask.DeletedAtIsNil()).Only(ctx)
-}
-
-// GetNotDeletedX is like Get, but panics if an error occurs.
-func (c *PromotionLevelTaskClient) GetNotDeletedX(ctx context.Context, id uint64) *PromotionLevelTask {
-	obj, err := c.GetNotDeleted(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
 // SoftDelete returns an soft delete builder for PromotionMember.
 func (c *PromotionMemberClient) SoftDelete() *PromotionMemberUpdate {
 	mutation := newPromotionMemberMutation(c.config, OpUpdate)
@@ -1536,46 +1492,6 @@ func (c *PromotionMemberClient) GetNotDeletedX(ctx context.Context, id uint64) *
 	return obj
 }
 
-// SoftDelete returns an soft delete builder for PromotionPerson.
-func (c *PromotionPersonClient) SoftDelete() *PromotionPersonUpdate {
-	mutation := newPromotionPersonMutation(c.config, OpUpdate)
-	mutation.SetDeletedAt(time.Now())
-	return &PromotionPersonUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// SoftDeleteOne returns an soft delete builder for the given entity.
-func (c *PromotionPersonClient) SoftDeleteOne(pp *PromotionPerson) *PromotionPersonUpdateOne {
-	mutation := newPromotionPersonMutation(c.config, OpUpdateOne, withPromotionPerson(pp))
-	mutation.SetDeletedAt(time.Now())
-	return &PromotionPersonUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// SoftDeleteOneID returns an soft delete builder for the given id.
-func (c *PromotionPersonClient) SoftDeleteOneID(id uint64) *PromotionPersonUpdateOne {
-	mutation := newPromotionPersonMutation(c.config, OpUpdateOne, withPromotionPersonID(id))
-	mutation.SetDeletedAt(time.Now())
-	return &PromotionPersonUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// QueryNotDeleted returns a query not deleted builder for PromotionPerson.
-func (c *PromotionPersonClient) QueryNotDeleted() *PromotionPersonQuery {
-	return c.Query().Where(promotionperson.DeletedAtIsNil())
-}
-
-// GetNotDeleted returns a PromotionPerson not deleted entity by its id.
-func (c *PromotionPersonClient) GetNotDeleted(ctx context.Context, id uint64) (*PromotionPerson, error) {
-	return c.Query().Where(promotionperson.ID(id), promotionperson.DeletedAtIsNil()).Only(ctx)
-}
-
-// GetNotDeletedX is like Get, but panics if an error occurs.
-func (c *PromotionPersonClient) GetNotDeletedX(ctx context.Context, id uint64) *PromotionPerson {
-	obj, err := c.GetNotDeleted(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
 // SoftDelete returns an soft delete builder for PromotionPrivilege.
 func (c *PromotionPrivilegeClient) SoftDelete() *PromotionPrivilegeUpdate {
 	mutation := newPromotionPrivilegeMutation(c.config, OpUpdate)
@@ -1609,86 +1525,6 @@ func (c *PromotionPrivilegeClient) GetNotDeleted(ctx context.Context, id uint64)
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *PromotionPrivilegeClient) GetNotDeletedX(ctx context.Context, id uint64) *PromotionPrivilege {
-	obj, err := c.GetNotDeleted(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// SoftDelete returns an soft delete builder for PromotionReferrals.
-func (c *PromotionReferralsClient) SoftDelete() *PromotionReferralsUpdate {
-	mutation := newPromotionReferralsMutation(c.config, OpUpdate)
-	mutation.SetDeletedAt(time.Now())
-	return &PromotionReferralsUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// SoftDeleteOne returns an soft delete builder for the given entity.
-func (c *PromotionReferralsClient) SoftDeleteOne(pr *PromotionReferrals) *PromotionReferralsUpdateOne {
-	mutation := newPromotionReferralsMutation(c.config, OpUpdateOne, withPromotionReferrals(pr))
-	mutation.SetDeletedAt(time.Now())
-	return &PromotionReferralsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// SoftDeleteOneID returns an soft delete builder for the given id.
-func (c *PromotionReferralsClient) SoftDeleteOneID(id uint64) *PromotionReferralsUpdateOne {
-	mutation := newPromotionReferralsMutation(c.config, OpUpdateOne, withPromotionReferralsID(id))
-	mutation.SetDeletedAt(time.Now())
-	return &PromotionReferralsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// QueryNotDeleted returns a query not deleted builder for PromotionReferrals.
-func (c *PromotionReferralsClient) QueryNotDeleted() *PromotionReferralsQuery {
-	return c.Query().Where(promotionreferrals.DeletedAtIsNil())
-}
-
-// GetNotDeleted returns a PromotionReferrals not deleted entity by its id.
-func (c *PromotionReferralsClient) GetNotDeleted(ctx context.Context, id uint64) (*PromotionReferrals, error) {
-	return c.Query().Where(promotionreferrals.ID(id), promotionreferrals.DeletedAtIsNil()).Only(ctx)
-}
-
-// GetNotDeletedX is like Get, but panics if an error occurs.
-func (c *PromotionReferralsClient) GetNotDeletedX(ctx context.Context, id uint64) *PromotionReferrals {
-	obj, err := c.GetNotDeleted(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// SoftDelete returns an soft delete builder for PromotionSetting.
-func (c *PromotionSettingClient) SoftDelete() *PromotionSettingUpdate {
-	mutation := newPromotionSettingMutation(c.config, OpUpdate)
-	mutation.SetDeletedAt(time.Now())
-	return &PromotionSettingUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// SoftDeleteOne returns an soft delete builder for the given entity.
-func (c *PromotionSettingClient) SoftDeleteOne(ps *PromotionSetting) *PromotionSettingUpdateOne {
-	mutation := newPromotionSettingMutation(c.config, OpUpdateOne, withPromotionSetting(ps))
-	mutation.SetDeletedAt(time.Now())
-	return &PromotionSettingUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// SoftDeleteOneID returns an soft delete builder for the given id.
-func (c *PromotionSettingClient) SoftDeleteOneID(id uint64) *PromotionSettingUpdateOne {
-	mutation := newPromotionSettingMutation(c.config, OpUpdateOne, withPromotionSettingID(id))
-	mutation.SetDeletedAt(time.Now())
-	return &PromotionSettingUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// QueryNotDeleted returns a query not deleted builder for PromotionSetting.
-func (c *PromotionSettingClient) QueryNotDeleted() *PromotionSettingQuery {
-	return c.Query().Where(promotionsetting.DeletedAtIsNil())
-}
-
-// GetNotDeleted returns a PromotionSetting not deleted entity by its id.
-func (c *PromotionSettingClient) GetNotDeleted(ctx context.Context, id uint64) (*PromotionSetting, error) {
-	return c.Query().Where(promotionsetting.ID(id), promotionsetting.DeletedAtIsNil()).Only(ctx)
-}
-
-// GetNotDeletedX is like Get, but panics if an error occurs.
-func (c *PromotionSettingClient) GetNotDeletedX(ctx context.Context, id uint64) *PromotionSetting {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)

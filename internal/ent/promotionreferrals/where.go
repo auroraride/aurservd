@@ -65,16 +65,6 @@ func UpdatedAt(v time.Time) predicate.PromotionReferrals {
 	return predicate.PromotionReferrals(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
-// DeletedAt applies equality check predicate on the "deleted_at" field. It's identical to DeletedAtEQ.
-func DeletedAt(v time.Time) predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldEQ(FieldDeletedAt, v))
-}
-
-// Remark applies equality check predicate on the "remark" field. It's identical to RemarkEQ.
-func Remark(v string) predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldEQ(FieldRemark, v))
-}
-
 // ReferringMemberID applies equality check predicate on the "referring_member_id" field. It's identical to ReferringMemberIDEQ.
 func ReferringMemberID(v uint64) predicate.PromotionReferrals {
 	return predicate.PromotionReferrals(sql.FieldEQ(FieldReferringMemberID, v))
@@ -88,11 +78,6 @@ func ReferredMemberID(v uint64) predicate.PromotionReferrals {
 // RiderID applies equality check predicate on the "rider_id" field. It's identical to RiderIDEQ.
 func RiderID(v uint64) predicate.PromotionReferrals {
 	return predicate.PromotionReferrals(sql.FieldEQ(FieldRiderID, v))
-}
-
-// ParentID applies equality check predicate on the "parent_id" field. It's identical to ParentIDEQ.
-func ParentID(v uint64) predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldEQ(FieldParentID, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -173,151 +158,6 @@ func UpdatedAtLT(v time.Time) predicate.PromotionReferrals {
 // UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
 func UpdatedAtLTE(v time.Time) predicate.PromotionReferrals {
 	return predicate.PromotionReferrals(sql.FieldLTE(FieldUpdatedAt, v))
-}
-
-// DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
-func DeletedAtEQ(v time.Time) predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldEQ(FieldDeletedAt, v))
-}
-
-// DeletedAtNEQ applies the NEQ predicate on the "deleted_at" field.
-func DeletedAtNEQ(v time.Time) predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldNEQ(FieldDeletedAt, v))
-}
-
-// DeletedAtIn applies the In predicate on the "deleted_at" field.
-func DeletedAtIn(vs ...time.Time) predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldIn(FieldDeletedAt, vs...))
-}
-
-// DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
-func DeletedAtNotIn(vs ...time.Time) predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldNotIn(FieldDeletedAt, vs...))
-}
-
-// DeletedAtGT applies the GT predicate on the "deleted_at" field.
-func DeletedAtGT(v time.Time) predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldGT(FieldDeletedAt, v))
-}
-
-// DeletedAtGTE applies the GTE predicate on the "deleted_at" field.
-func DeletedAtGTE(v time.Time) predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldGTE(FieldDeletedAt, v))
-}
-
-// DeletedAtLT applies the LT predicate on the "deleted_at" field.
-func DeletedAtLT(v time.Time) predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldLT(FieldDeletedAt, v))
-}
-
-// DeletedAtLTE applies the LTE predicate on the "deleted_at" field.
-func DeletedAtLTE(v time.Time) predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldLTE(FieldDeletedAt, v))
-}
-
-// DeletedAtIsNil applies the IsNil predicate on the "deleted_at" field.
-func DeletedAtIsNil() predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldIsNull(FieldDeletedAt))
-}
-
-// DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
-func DeletedAtNotNil() predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldNotNull(FieldDeletedAt))
-}
-
-// CreatorIsNil applies the IsNil predicate on the "creator" field.
-func CreatorIsNil() predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldIsNull(FieldCreator))
-}
-
-// CreatorNotNil applies the NotNil predicate on the "creator" field.
-func CreatorNotNil() predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldNotNull(FieldCreator))
-}
-
-// LastModifierIsNil applies the IsNil predicate on the "last_modifier" field.
-func LastModifierIsNil() predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldIsNull(FieldLastModifier))
-}
-
-// LastModifierNotNil applies the NotNil predicate on the "last_modifier" field.
-func LastModifierNotNil() predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldNotNull(FieldLastModifier))
-}
-
-// RemarkEQ applies the EQ predicate on the "remark" field.
-func RemarkEQ(v string) predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldEQ(FieldRemark, v))
-}
-
-// RemarkNEQ applies the NEQ predicate on the "remark" field.
-func RemarkNEQ(v string) predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldNEQ(FieldRemark, v))
-}
-
-// RemarkIn applies the In predicate on the "remark" field.
-func RemarkIn(vs ...string) predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldIn(FieldRemark, vs...))
-}
-
-// RemarkNotIn applies the NotIn predicate on the "remark" field.
-func RemarkNotIn(vs ...string) predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldNotIn(FieldRemark, vs...))
-}
-
-// RemarkGT applies the GT predicate on the "remark" field.
-func RemarkGT(v string) predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldGT(FieldRemark, v))
-}
-
-// RemarkGTE applies the GTE predicate on the "remark" field.
-func RemarkGTE(v string) predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldGTE(FieldRemark, v))
-}
-
-// RemarkLT applies the LT predicate on the "remark" field.
-func RemarkLT(v string) predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldLT(FieldRemark, v))
-}
-
-// RemarkLTE applies the LTE predicate on the "remark" field.
-func RemarkLTE(v string) predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldLTE(FieldRemark, v))
-}
-
-// RemarkContains applies the Contains predicate on the "remark" field.
-func RemarkContains(v string) predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldContains(FieldRemark, v))
-}
-
-// RemarkHasPrefix applies the HasPrefix predicate on the "remark" field.
-func RemarkHasPrefix(v string) predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldHasPrefix(FieldRemark, v))
-}
-
-// RemarkHasSuffix applies the HasSuffix predicate on the "remark" field.
-func RemarkHasSuffix(v string) predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldHasSuffix(FieldRemark, v))
-}
-
-// RemarkIsNil applies the IsNil predicate on the "remark" field.
-func RemarkIsNil() predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldIsNull(FieldRemark))
-}
-
-// RemarkNotNil applies the NotNil predicate on the "remark" field.
-func RemarkNotNil() predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldNotNull(FieldRemark))
-}
-
-// RemarkEqualFold applies the EqualFold predicate on the "remark" field.
-func RemarkEqualFold(v string) predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldEqualFold(FieldRemark, v))
-}
-
-// RemarkContainsFold applies the ContainsFold predicate on the "remark" field.
-func RemarkContainsFold(v string) predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldContainsFold(FieldRemark, v))
 }
 
 // ReferringMemberIDEQ applies the EQ predicate on the "referring_member_id" field.
@@ -430,36 +270,6 @@ func RiderIDNotNil() predicate.PromotionReferrals {
 	return predicate.PromotionReferrals(sql.FieldNotNull(FieldRiderID))
 }
 
-// ParentIDEQ applies the EQ predicate on the "parent_id" field.
-func ParentIDEQ(v uint64) predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldEQ(FieldParentID, v))
-}
-
-// ParentIDNEQ applies the NEQ predicate on the "parent_id" field.
-func ParentIDNEQ(v uint64) predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldNEQ(FieldParentID, v))
-}
-
-// ParentIDIn applies the In predicate on the "parent_id" field.
-func ParentIDIn(vs ...uint64) predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldIn(FieldParentID, vs...))
-}
-
-// ParentIDNotIn applies the NotIn predicate on the "parent_id" field.
-func ParentIDNotIn(vs ...uint64) predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldNotIn(FieldParentID, vs...))
-}
-
-// ParentIDIsNil applies the IsNil predicate on the "parent_id" field.
-func ParentIDIsNil() predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldIsNull(FieldParentID))
-}
-
-// ParentIDNotNil applies the NotNil predicate on the "parent_id" field.
-func ParentIDNotNil() predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldNotNull(FieldParentID))
-}
-
 // HasReferringMember applies the HasEdge predicate on the "referring_member" edge.
 func HasReferringMember() predicate.PromotionReferrals {
 	return predicate.PromotionReferrals(func(s *sql.Selector) {
@@ -498,52 +308,6 @@ func HasReferredMember() predicate.PromotionReferrals {
 func HasReferredMemberWith(preds ...predicate.PromotionMember) predicate.PromotionReferrals {
 	return predicate.PromotionReferrals(func(s *sql.Selector) {
 		step := newReferredMemberStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasParent applies the HasEdge predicate on the "parent" edge.
-func HasParent() predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, ParentTable, ParentColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasParentWith applies the HasEdge predicate on the "parent" edge with a given conditions (other predicates).
-func HasParentWith(preds ...predicate.PromotionReferrals) predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(func(s *sql.Selector) {
-		step := newParentStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasChildren applies the HasEdge predicate on the "children" edge.
-func HasChildren() predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ChildrenTable, ChildrenColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasChildrenWith applies the HasEdge predicate on the "children" edge with a given conditions (other predicates).
-func HasChildrenWith(preds ...predicate.PromotionReferrals) predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(func(s *sql.Selector) {
-		step := newChildrenStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

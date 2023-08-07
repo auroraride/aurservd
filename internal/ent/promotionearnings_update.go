@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/promotioncommission"
 	"github.com/auroraride/aurservd/internal/ent/promotionearnings"
@@ -109,6 +110,26 @@ func (peu *PromotionEarningsUpdate) SetRiderID(u uint64) *PromotionEarningsUpdat
 	return peu
 }
 
+// SetOrderID sets the "order_id" field.
+func (peu *PromotionEarningsUpdate) SetOrderID(u uint64) *PromotionEarningsUpdate {
+	peu.mutation.SetOrderID(u)
+	return peu
+}
+
+// SetNillableOrderID sets the "order_id" field if the given value is not nil.
+func (peu *PromotionEarningsUpdate) SetNillableOrderID(u *uint64) *PromotionEarningsUpdate {
+	if u != nil {
+		peu.SetOrderID(*u)
+	}
+	return peu
+}
+
+// ClearOrderID clears the value of the "order_id" field.
+func (peu *PromotionEarningsUpdate) ClearOrderID() *PromotionEarningsUpdate {
+	peu.mutation.ClearOrderID()
+	return peu
+}
+
 // SetStatus sets the "status" field.
 func (peu *PromotionEarningsUpdate) SetStatus(u uint8) *PromotionEarningsUpdate {
 	peu.mutation.ResetStatus()
@@ -186,6 +207,11 @@ func (peu *PromotionEarningsUpdate) SetRider(r *Rider) *PromotionEarningsUpdate 
 	return peu.SetRiderID(r.ID)
 }
 
+// SetOrder sets the "order" edge to the Order entity.
+func (peu *PromotionEarningsUpdate) SetOrder(o *Order) *PromotionEarningsUpdate {
+	return peu.SetOrderID(o.ID)
+}
+
 // Mutation returns the PromotionEarningsMutation object of the builder.
 func (peu *PromotionEarningsUpdate) Mutation() *PromotionEarningsMutation {
 	return peu.mutation
@@ -206,6 +232,12 @@ func (peu *PromotionEarningsUpdate) ClearMember() *PromotionEarningsUpdate {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (peu *PromotionEarningsUpdate) ClearRider() *PromotionEarningsUpdate {
 	peu.mutation.ClearRider()
+	return peu
+}
+
+// ClearOrder clears the "order" edge to the Order entity.
+func (peu *PromotionEarningsUpdate) ClearOrder() *PromotionEarningsUpdate {
+	peu.mutation.ClearOrder()
 	return peu
 }
 
@@ -412,6 +444,35 @@ func (peu *PromotionEarningsUpdate) sqlSave(ctx context.Context) (n int, err err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if peu.mutation.OrderCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotionearnings.OrderTable,
+			Columns: []string{promotionearnings.OrderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := peu.mutation.OrderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotionearnings.OrderTable,
+			Columns: []string{promotionearnings.OrderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(peu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, peu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -510,6 +571,26 @@ func (peuo *PromotionEarningsUpdateOne) SetRiderID(u uint64) *PromotionEarningsU
 	return peuo
 }
 
+// SetOrderID sets the "order_id" field.
+func (peuo *PromotionEarningsUpdateOne) SetOrderID(u uint64) *PromotionEarningsUpdateOne {
+	peuo.mutation.SetOrderID(u)
+	return peuo
+}
+
+// SetNillableOrderID sets the "order_id" field if the given value is not nil.
+func (peuo *PromotionEarningsUpdateOne) SetNillableOrderID(u *uint64) *PromotionEarningsUpdateOne {
+	if u != nil {
+		peuo.SetOrderID(*u)
+	}
+	return peuo
+}
+
+// ClearOrderID clears the value of the "order_id" field.
+func (peuo *PromotionEarningsUpdateOne) ClearOrderID() *PromotionEarningsUpdateOne {
+	peuo.mutation.ClearOrderID()
+	return peuo
+}
+
 // SetStatus sets the "status" field.
 func (peuo *PromotionEarningsUpdateOne) SetStatus(u uint8) *PromotionEarningsUpdateOne {
 	peuo.mutation.ResetStatus()
@@ -587,6 +668,11 @@ func (peuo *PromotionEarningsUpdateOne) SetRider(r *Rider) *PromotionEarningsUpd
 	return peuo.SetRiderID(r.ID)
 }
 
+// SetOrder sets the "order" edge to the Order entity.
+func (peuo *PromotionEarningsUpdateOne) SetOrder(o *Order) *PromotionEarningsUpdateOne {
+	return peuo.SetOrderID(o.ID)
+}
+
 // Mutation returns the PromotionEarningsMutation object of the builder.
 func (peuo *PromotionEarningsUpdateOne) Mutation() *PromotionEarningsMutation {
 	return peuo.mutation
@@ -607,6 +693,12 @@ func (peuo *PromotionEarningsUpdateOne) ClearMember() *PromotionEarningsUpdateOn
 // ClearRider clears the "rider" edge to the Rider entity.
 func (peuo *PromotionEarningsUpdateOne) ClearRider() *PromotionEarningsUpdateOne {
 	peuo.mutation.ClearRider()
+	return peuo
+}
+
+// ClearOrder clears the "order" edge to the Order entity.
+func (peuo *PromotionEarningsUpdateOne) ClearOrder() *PromotionEarningsUpdateOne {
+	peuo.mutation.ClearOrder()
 	return peuo
 }
 
@@ -836,6 +928,35 @@ func (peuo *PromotionEarningsUpdateOne) sqlSave(ctx context.Context) (_node *Pro
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if peuo.mutation.OrderCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotionearnings.OrderTable,
+			Columns: []string{promotionearnings.OrderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := peuo.mutation.OrderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotionearnings.OrderTable,
+			Columns: []string{promotionearnings.OrderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

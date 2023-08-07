@@ -1,7 +1,6 @@
 package service
 
 import (
-	"context"
 	"fmt"
 	"math/rand"
 	"mime/multipart"
@@ -20,13 +19,11 @@ import (
 )
 
 type promotionAchievementService struct {
-	ctx context.Context
 	*BaseService
 }
 
 func NewPromotionAchievementService(params ...any) *promotionAchievementService {
 	return &promotionAchievementService{
-		ctx:         context.Background(),
 		BaseService: newService(params...),
 	}
 }

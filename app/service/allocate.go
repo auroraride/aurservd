@@ -6,6 +6,7 @@
 package service
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/golang-module/carbon/v2"
@@ -17,6 +18,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
 	"github.com/auroraride/aurservd/internal/ent/contract"
+	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
@@ -330,6 +332,13 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 	}
 
 	go func() {
+		// 查询订单是否支付,如果未支付不返佣
+		do, _ := ent.Database.Order.Query().Where(order.SubscribeID(sub.ID), order.Status(model.OrderStatusPaid)).First(s.ctx)
+		if do == nil {
+			zap.L().Error(fmt.Sprintf("激活成功获取返佣失败,订单不存在或未支付 subid:%d", sub.ID), zap.Any("order", do))
+			return
+		}
+
 		// 激活成功后，返佣计算
 		// 团签用户不返佣 个签用户返佣
 		if sub.EnterpriseID == nil && sub.Type == model.OrderTypeNewly {
@@ -348,6 +357,7 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 					RiderID:        r.ID,
 					CommissionBase: sub.Edges.Plan.CommissionBase,
 					Type:           commissionType,
+					OrderID:        do.ID,
 				})
 				return
 			})

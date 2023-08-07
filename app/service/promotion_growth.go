@@ -1,8 +1,6 @@
 package service
 
 import (
-	"context"
-
 	"github.com/golang-module/carbon/v2"
 
 	"github.com/auroraride/aurservd/app/model"
@@ -15,12 +13,12 @@ import (
 )
 
 type promotionGrowthService struct {
-	ctx context.Context
+	*BaseService
 }
 
 func NewPromotionGrowthService() *promotionGrowthService {
 	return &promotionGrowthService{
-		ctx: context.Background(),
+		BaseService: newService(),
 	}
 }
 

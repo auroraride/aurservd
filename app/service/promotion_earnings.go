@@ -1,7 +1,6 @@
 package service
 
 import (
-	"context"
 	"fmt"
 	"strconv"
 
@@ -19,13 +18,11 @@ import (
 )
 
 type promotionEarningsService struct {
-	ctx context.Context
 	*BaseService
 }
 
 func NewPromotionEarningsService(params ...any) *promotionEarningsService {
 	return &promotionEarningsService{
-		ctx:         context.Background(),
 		BaseService: newService(params...),
 	}
 }
@@ -97,6 +94,7 @@ func (s *promotionEarningsService) Create(tx *ent.Tx, req *promotion.EarningsCre
 		SetCommissionID(req.CommissionID).
 		SetCommissionRuleKey(string(req.CommissionRuleKey)).
 		SetAmount(req.Amount).
+		SetOrderID(req.OrderID).
 		Exec(s.ctx)
 }
 

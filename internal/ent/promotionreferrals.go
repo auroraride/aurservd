@@ -3,14 +3,12 @@
 package ent
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
 	"github.com/auroraride/aurservd/internal/ent/promotionreferrals"
 )
@@ -24,22 +22,12 @@ type PromotionReferrals struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
-	// DeletedAt holds the value of the "deleted_at" field.
-	DeletedAt *time.Time `json:"deleted_at,omitempty"`
-	// 创建人
-	Creator *model.Modifier `json:"creator,omitempty"`
-	// 最后修改人
-	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
-	// 管理员改动原因/备注
-	Remark string `json:"remark,omitempty"`
 	// 推广者id
 	ReferringMemberID *uint64 `json:"referring_member_id,omitempty"`
 	// 被推广者ID
 	ReferredMemberID uint64 `json:"referred_member_id,omitempty"`
 	// 骑手id
 	RiderID *uint64 `json:"rider_id,omitempty"`
-	// 上级id
-	ParentID *uint64 `json:"parent_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PromotionReferralsQuery when eager-loading is set.
 	Edges        PromotionReferralsEdges `json:"edges"`
@@ -52,13 +40,9 @@ type PromotionReferralsEdges struct {
 	ReferringMember *PromotionMember `json:"referring_member,omitempty"`
 	// ReferredMember holds the value of the referred_member edge.
 	ReferredMember *PromotionMember `json:"referred_member,omitempty"`
-	// Parent holds the value of the parent edge.
-	Parent *PromotionReferrals `json:"parent,omitempty"`
-	// Children holds the value of the children edge.
-	Children []*PromotionReferrals `json:"children,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [2]bool
 }
 
 // ReferringMemberOrErr returns the ReferringMember value or an error if the edge
@@ -87,40 +71,14 @@ func (e PromotionReferralsEdges) ReferredMemberOrErr() (*PromotionMember, error)
 	return nil, &NotLoadedError{edge: "referred_member"}
 }
 
-// ParentOrErr returns the Parent value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e PromotionReferralsEdges) ParentOrErr() (*PromotionReferrals, error) {
-	if e.loadedTypes[2] {
-		if e.Parent == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: promotionreferrals.Label}
-		}
-		return e.Parent, nil
-	}
-	return nil, &NotLoadedError{edge: "parent"}
-}
-
-// ChildrenOrErr returns the Children value or an error if the edge
-// was not loaded in eager-loading.
-func (e PromotionReferralsEdges) ChildrenOrErr() ([]*PromotionReferrals, error) {
-	if e.loadedTypes[3] {
-		return e.Children, nil
-	}
-	return nil, &NotLoadedError{edge: "children"}
-}
-
 // scanValues returns the types for scanning values from sql.Rows.
 func (*PromotionReferrals) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case promotionreferrals.FieldCreator, promotionreferrals.FieldLastModifier:
-			values[i] = new([]byte)
-		case promotionreferrals.FieldID, promotionreferrals.FieldReferringMemberID, promotionreferrals.FieldReferredMemberID, promotionreferrals.FieldRiderID, promotionreferrals.FieldParentID:
+		case promotionreferrals.FieldID, promotionreferrals.FieldReferringMemberID, promotionreferrals.FieldReferredMemberID, promotionreferrals.FieldRiderID:
 			values[i] = new(sql.NullInt64)
-		case promotionreferrals.FieldRemark:
-			values[i] = new(sql.NullString)
-		case promotionreferrals.FieldCreatedAt, promotionreferrals.FieldUpdatedAt, promotionreferrals.FieldDeletedAt:
+		case promotionreferrals.FieldCreatedAt, promotionreferrals.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -155,35 +113,6 @@ func (pr *PromotionReferrals) assignValues(columns []string, values []any) error
 			} else if value.Valid {
 				pr.UpdatedAt = value.Time
 			}
-		case promotionreferrals.FieldDeletedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
-			} else if value.Valid {
-				pr.DeletedAt = new(time.Time)
-				*pr.DeletedAt = value.Time
-			}
-		case promotionreferrals.FieldCreator:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field creator", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &pr.Creator); err != nil {
-					return fmt.Errorf("unmarshal field creator: %w", err)
-				}
-			}
-		case promotionreferrals.FieldLastModifier:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field last_modifier", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &pr.LastModifier); err != nil {
-					return fmt.Errorf("unmarshal field last_modifier: %w", err)
-				}
-			}
-		case promotionreferrals.FieldRemark:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field remark", values[i])
-			} else if value.Valid {
-				pr.Remark = value.String
-			}
 		case promotionreferrals.FieldReferringMemberID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field referring_member_id", values[i])
@@ -203,13 +132,6 @@ func (pr *PromotionReferrals) assignValues(columns []string, values []any) error
 			} else if value.Valid {
 				pr.RiderID = new(uint64)
 				*pr.RiderID = uint64(value.Int64)
-			}
-		case promotionreferrals.FieldParentID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field parent_id", values[i])
-			} else if value.Valid {
-				pr.ParentID = new(uint64)
-				*pr.ParentID = uint64(value.Int64)
 			}
 		default:
 			pr.selectValues.Set(columns[i], values[i])
@@ -232,16 +154,6 @@ func (pr *PromotionReferrals) QueryReferringMember() *PromotionMemberQuery {
 // QueryReferredMember queries the "referred_member" edge of the PromotionReferrals entity.
 func (pr *PromotionReferrals) QueryReferredMember() *PromotionMemberQuery {
 	return NewPromotionReferralsClient(pr.config).QueryReferredMember(pr)
-}
-
-// QueryParent queries the "parent" edge of the PromotionReferrals entity.
-func (pr *PromotionReferrals) QueryParent() *PromotionReferralsQuery {
-	return NewPromotionReferralsClient(pr.config).QueryParent(pr)
-}
-
-// QueryChildren queries the "children" edge of the PromotionReferrals entity.
-func (pr *PromotionReferrals) QueryChildren() *PromotionReferralsQuery {
-	return NewPromotionReferralsClient(pr.config).QueryChildren(pr)
 }
 
 // Update returns a builder for updating this PromotionReferrals.
@@ -273,20 +185,6 @@ func (pr *PromotionReferrals) String() string {
 	builder.WriteString("updated_at=")
 	builder.WriteString(pr.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	if v := pr.DeletedAt; v != nil {
-		builder.WriteString("deleted_at=")
-		builder.WriteString(v.Format(time.ANSIC))
-	}
-	builder.WriteString(", ")
-	builder.WriteString("creator=")
-	builder.WriteString(fmt.Sprintf("%v", pr.Creator))
-	builder.WriteString(", ")
-	builder.WriteString("last_modifier=")
-	builder.WriteString(fmt.Sprintf("%v", pr.LastModifier))
-	builder.WriteString(", ")
-	builder.WriteString("remark=")
-	builder.WriteString(pr.Remark)
-	builder.WriteString(", ")
 	if v := pr.ReferringMemberID; v != nil {
 		builder.WriteString("referring_member_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
@@ -297,11 +195,6 @@ func (pr *PromotionReferrals) String() string {
 	builder.WriteString(", ")
 	if v := pr.RiderID; v != nil {
 		builder.WriteString("rider_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
-	builder.WriteString(", ")
-	if v := pr.ParentID; v != nil {
-		builder.WriteString("parent_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteByte(')')

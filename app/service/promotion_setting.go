@@ -1,7 +1,6 @@
 package service
 
 import (
-	"context"
 	"time"
 
 	"go.uber.org/zap"
@@ -14,13 +13,11 @@ import (
 )
 
 type promotionSettingService struct {
-	ctx context.Context
 	*BaseService
 }
 
 func NewPromotionSettingService(params ...any) *promotionSettingService {
 	return &promotionSettingService{
-		ctx:         context.Background(),
 		BaseService: newService(params...),
 	}
 }

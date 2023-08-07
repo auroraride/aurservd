@@ -11,7 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
 	"github.com/auroraride/aurservd/internal/ent/promotionperson"
 )
@@ -48,46 +47,6 @@ func (ppc *PromotionPersonCreate) SetUpdatedAt(t time.Time) *PromotionPersonCrea
 func (ppc *PromotionPersonCreate) SetNillableUpdatedAt(t *time.Time) *PromotionPersonCreate {
 	if t != nil {
 		ppc.SetUpdatedAt(*t)
-	}
-	return ppc
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (ppc *PromotionPersonCreate) SetDeletedAt(t time.Time) *PromotionPersonCreate {
-	ppc.mutation.SetDeletedAt(t)
-	return ppc
-}
-
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (ppc *PromotionPersonCreate) SetNillableDeletedAt(t *time.Time) *PromotionPersonCreate {
-	if t != nil {
-		ppc.SetDeletedAt(*t)
-	}
-	return ppc
-}
-
-// SetCreator sets the "creator" field.
-func (ppc *PromotionPersonCreate) SetCreator(m *model.Modifier) *PromotionPersonCreate {
-	ppc.mutation.SetCreator(m)
-	return ppc
-}
-
-// SetLastModifier sets the "last_modifier" field.
-func (ppc *PromotionPersonCreate) SetLastModifier(m *model.Modifier) *PromotionPersonCreate {
-	ppc.mutation.SetLastModifier(m)
-	return ppc
-}
-
-// SetRemark sets the "remark" field.
-func (ppc *PromotionPersonCreate) SetRemark(s string) *PromotionPersonCreate {
-	ppc.mutation.SetRemark(s)
-	return ppc
-}
-
-// SetNillableRemark sets the "remark" field if the given value is not nil.
-func (ppc *PromotionPersonCreate) SetNillableRemark(s *string) *PromotionPersonCreate {
-	if s != nil {
-		ppc.SetRemark(*s)
 	}
 	return ppc
 }
@@ -170,9 +129,7 @@ func (ppc *PromotionPersonCreate) Mutation() *PromotionPersonMutation {
 
 // Save creates the PromotionPerson in the database.
 func (ppc *PromotionPersonCreate) Save(ctx context.Context) (*PromotionPerson, error) {
-	if err := ppc.defaults(); err != nil {
-		return nil, err
-	}
+	ppc.defaults()
 	return withHooks(ctx, ppc.sqlSave, ppc.mutation, ppc.hooks)
 }
 
@@ -199,18 +156,12 @@ func (ppc *PromotionPersonCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (ppc *PromotionPersonCreate) defaults() error {
+func (ppc *PromotionPersonCreate) defaults() {
 	if _, ok := ppc.mutation.CreatedAt(); !ok {
-		if promotionperson.DefaultCreatedAt == nil {
-			return fmt.Errorf("ent: uninitialized promotionperson.DefaultCreatedAt (forgotten import ent/runtime?)")
-		}
 		v := promotionperson.DefaultCreatedAt()
 		ppc.mutation.SetCreatedAt(v)
 	}
 	if _, ok := ppc.mutation.UpdatedAt(); !ok {
-		if promotionperson.DefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized promotionperson.DefaultUpdatedAt (forgotten import ent/runtime?)")
-		}
 		v := promotionperson.DefaultUpdatedAt()
 		ppc.mutation.SetUpdatedAt(v)
 	}
@@ -218,7 +169,6 @@ func (ppc *PromotionPersonCreate) defaults() error {
 		v := promotionperson.DefaultStatus
 		ppc.mutation.SetStatus(v)
 	}
-	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -276,22 +226,6 @@ func (ppc *PromotionPersonCreate) createSpec() (*PromotionPerson, *sqlgraph.Crea
 	if value, ok := ppc.mutation.UpdatedAt(); ok {
 		_spec.SetField(promotionperson.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
-	}
-	if value, ok := ppc.mutation.DeletedAt(); ok {
-		_spec.SetField(promotionperson.FieldDeletedAt, field.TypeTime, value)
-		_node.DeletedAt = &value
-	}
-	if value, ok := ppc.mutation.Creator(); ok {
-		_spec.SetField(promotionperson.FieldCreator, field.TypeJSON, value)
-		_node.Creator = value
-	}
-	if value, ok := ppc.mutation.LastModifier(); ok {
-		_spec.SetField(promotionperson.FieldLastModifier, field.TypeJSON, value)
-		_node.LastModifier = value
-	}
-	if value, ok := ppc.mutation.Remark(); ok {
-		_spec.SetField(promotionperson.FieldRemark, field.TypeString, value)
-		_node.Remark = value
 	}
 	if value, ok := ppc.mutation.Status(); ok {
 		_spec.SetField(promotionperson.FieldStatus, field.TypeUint8, value)
@@ -389,60 +323,6 @@ func (u *PromotionPersonUpsert) UpdateUpdatedAt() *PromotionPersonUpsert {
 	return u
 }
 
-// SetDeletedAt sets the "deleted_at" field.
-func (u *PromotionPersonUpsert) SetDeletedAt(v time.Time) *PromotionPersonUpsert {
-	u.Set(promotionperson.FieldDeletedAt, v)
-	return u
-}
-
-// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
-func (u *PromotionPersonUpsert) UpdateDeletedAt() *PromotionPersonUpsert {
-	u.SetExcluded(promotionperson.FieldDeletedAt)
-	return u
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (u *PromotionPersonUpsert) ClearDeletedAt() *PromotionPersonUpsert {
-	u.SetNull(promotionperson.FieldDeletedAt)
-	return u
-}
-
-// SetLastModifier sets the "last_modifier" field.
-func (u *PromotionPersonUpsert) SetLastModifier(v *model.Modifier) *PromotionPersonUpsert {
-	u.Set(promotionperson.FieldLastModifier, v)
-	return u
-}
-
-// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
-func (u *PromotionPersonUpsert) UpdateLastModifier() *PromotionPersonUpsert {
-	u.SetExcluded(promotionperson.FieldLastModifier)
-	return u
-}
-
-// ClearLastModifier clears the value of the "last_modifier" field.
-func (u *PromotionPersonUpsert) ClearLastModifier() *PromotionPersonUpsert {
-	u.SetNull(promotionperson.FieldLastModifier)
-	return u
-}
-
-// SetRemark sets the "remark" field.
-func (u *PromotionPersonUpsert) SetRemark(v string) *PromotionPersonUpsert {
-	u.Set(promotionperson.FieldRemark, v)
-	return u
-}
-
-// UpdateRemark sets the "remark" field to the value that was provided on create.
-func (u *PromotionPersonUpsert) UpdateRemark() *PromotionPersonUpsert {
-	u.SetExcluded(promotionperson.FieldRemark)
-	return u
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (u *PromotionPersonUpsert) ClearRemark() *PromotionPersonUpsert {
-	u.SetNull(promotionperson.FieldRemark)
-	return u
-}
-
 // SetStatus sets the "status" field.
 func (u *PromotionPersonUpsert) SetStatus(v uint8) *PromotionPersonUpsert {
 	u.Set(promotionperson.FieldStatus, v)
@@ -529,9 +409,6 @@ func (u *PromotionPersonUpsertOne) UpdateNewValues() *PromotionPersonUpsertOne {
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(promotionperson.FieldCreatedAt)
 		}
-		if _, exists := u.create.mutation.Creator(); exists {
-			s.SetIgnore(promotionperson.FieldCreator)
-		}
 	}))
 	return u
 }
@@ -574,69 +451,6 @@ func (u *PromotionPersonUpsertOne) SetUpdatedAt(v time.Time) *PromotionPersonUps
 func (u *PromotionPersonUpsertOne) UpdateUpdatedAt() *PromotionPersonUpsertOne {
 	return u.Update(func(s *PromotionPersonUpsert) {
 		s.UpdateUpdatedAt()
-	})
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (u *PromotionPersonUpsertOne) SetDeletedAt(v time.Time) *PromotionPersonUpsertOne {
-	return u.Update(func(s *PromotionPersonUpsert) {
-		s.SetDeletedAt(v)
-	})
-}
-
-// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
-func (u *PromotionPersonUpsertOne) UpdateDeletedAt() *PromotionPersonUpsertOne {
-	return u.Update(func(s *PromotionPersonUpsert) {
-		s.UpdateDeletedAt()
-	})
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (u *PromotionPersonUpsertOne) ClearDeletedAt() *PromotionPersonUpsertOne {
-	return u.Update(func(s *PromotionPersonUpsert) {
-		s.ClearDeletedAt()
-	})
-}
-
-// SetLastModifier sets the "last_modifier" field.
-func (u *PromotionPersonUpsertOne) SetLastModifier(v *model.Modifier) *PromotionPersonUpsertOne {
-	return u.Update(func(s *PromotionPersonUpsert) {
-		s.SetLastModifier(v)
-	})
-}
-
-// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
-func (u *PromotionPersonUpsertOne) UpdateLastModifier() *PromotionPersonUpsertOne {
-	return u.Update(func(s *PromotionPersonUpsert) {
-		s.UpdateLastModifier()
-	})
-}
-
-// ClearLastModifier clears the value of the "last_modifier" field.
-func (u *PromotionPersonUpsertOne) ClearLastModifier() *PromotionPersonUpsertOne {
-	return u.Update(func(s *PromotionPersonUpsert) {
-		s.ClearLastModifier()
-	})
-}
-
-// SetRemark sets the "remark" field.
-func (u *PromotionPersonUpsertOne) SetRemark(v string) *PromotionPersonUpsertOne {
-	return u.Update(func(s *PromotionPersonUpsert) {
-		s.SetRemark(v)
-	})
-}
-
-// UpdateRemark sets the "remark" field to the value that was provided on create.
-func (u *PromotionPersonUpsertOne) UpdateRemark() *PromotionPersonUpsertOne {
-	return u.Update(func(s *PromotionPersonUpsert) {
-		s.UpdateRemark()
-	})
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (u *PromotionPersonUpsertOne) ClearRemark() *PromotionPersonUpsertOne {
-	return u.Update(func(s *PromotionPersonUpsert) {
-		s.ClearRemark()
 	})
 }
 
@@ -899,9 +713,6 @@ func (u *PromotionPersonUpsertBulk) UpdateNewValues() *PromotionPersonUpsertBulk
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(promotionperson.FieldCreatedAt)
 			}
-			if _, exists := b.mutation.Creator(); exists {
-				s.SetIgnore(promotionperson.FieldCreator)
-			}
 		}
 	}))
 	return u
@@ -945,69 +756,6 @@ func (u *PromotionPersonUpsertBulk) SetUpdatedAt(v time.Time) *PromotionPersonUp
 func (u *PromotionPersonUpsertBulk) UpdateUpdatedAt() *PromotionPersonUpsertBulk {
 	return u.Update(func(s *PromotionPersonUpsert) {
 		s.UpdateUpdatedAt()
-	})
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (u *PromotionPersonUpsertBulk) SetDeletedAt(v time.Time) *PromotionPersonUpsertBulk {
-	return u.Update(func(s *PromotionPersonUpsert) {
-		s.SetDeletedAt(v)
-	})
-}
-
-// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
-func (u *PromotionPersonUpsertBulk) UpdateDeletedAt() *PromotionPersonUpsertBulk {
-	return u.Update(func(s *PromotionPersonUpsert) {
-		s.UpdateDeletedAt()
-	})
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (u *PromotionPersonUpsertBulk) ClearDeletedAt() *PromotionPersonUpsertBulk {
-	return u.Update(func(s *PromotionPersonUpsert) {
-		s.ClearDeletedAt()
-	})
-}
-
-// SetLastModifier sets the "last_modifier" field.
-func (u *PromotionPersonUpsertBulk) SetLastModifier(v *model.Modifier) *PromotionPersonUpsertBulk {
-	return u.Update(func(s *PromotionPersonUpsert) {
-		s.SetLastModifier(v)
-	})
-}
-
-// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
-func (u *PromotionPersonUpsertBulk) UpdateLastModifier() *PromotionPersonUpsertBulk {
-	return u.Update(func(s *PromotionPersonUpsert) {
-		s.UpdateLastModifier()
-	})
-}
-
-// ClearLastModifier clears the value of the "last_modifier" field.
-func (u *PromotionPersonUpsertBulk) ClearLastModifier() *PromotionPersonUpsertBulk {
-	return u.Update(func(s *PromotionPersonUpsert) {
-		s.ClearLastModifier()
-	})
-}
-
-// SetRemark sets the "remark" field.
-func (u *PromotionPersonUpsertBulk) SetRemark(v string) *PromotionPersonUpsertBulk {
-	return u.Update(func(s *PromotionPersonUpsert) {
-		s.SetRemark(v)
-	})
-}
-
-// UpdateRemark sets the "remark" field to the value that was provided on create.
-func (u *PromotionPersonUpsertBulk) UpdateRemark() *PromotionPersonUpsertBulk {
-	return u.Update(func(s *PromotionPersonUpsert) {
-		s.UpdateRemark()
-	})
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (u *PromotionPersonUpsertBulk) ClearRemark() *PromotionPersonUpsertBulk {
-	return u.Update(func(s *PromotionPersonUpsert) {
-		s.ClearRemark()
 	})
 }
 

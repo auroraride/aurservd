@@ -1,21 +1,17 @@
 package service
 
 import (
-	"context"
-
 	"github.com/auroraride/aurservd/app/model/promotion"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/promotionleveltask"
 )
 
 type promotionLevelTaskService struct {
-	ctx context.Context
 	*BaseService
 }
 
 func NewPromotionLevelTaskService(params ...any) *promotionLevelTaskService {
 	return &promotionLevelTaskService{
-		ctx:         context.Background(),
 		BaseService: newService(params...),
 	}
 }

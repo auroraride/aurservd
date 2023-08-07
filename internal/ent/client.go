@@ -9005,6 +9005,22 @@ func (c *PromotionEarningsClient) QueryRider(pe *PromotionEarnings) *RiderQuery 
 	return query
 }
 
+// QueryOrder queries the order edge of a PromotionEarnings.
+func (c *PromotionEarningsClient) QueryOrder(pe *PromotionEarnings) *OrderQuery {
+	query := (&OrderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pe.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(promotionearnings.Table, promotionearnings.FieldID, id),
+			sqlgraph.To(order.Table, order.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, promotionearnings.OrderTable, promotionearnings.OrderColumn),
+		)
+		fromV = sqlgraph.Neighbors(pe.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *PromotionEarningsClient) Hooks() []Hook {
 	hooks := c.hooks.PromotionEarnings
@@ -9777,8 +9793,7 @@ func (c *PromotionPersonClient) QueryMember(pp *PromotionPerson) *PromotionMembe
 
 // Hooks returns the client hooks.
 func (c *PromotionPersonClient) Hooks() []Hook {
-	hooks := c.hooks.PromotionPerson
-	return append(hooks[:len(hooks):len(hooks)], promotionperson.Hooks[:]...)
+	return c.hooks.PromotionPerson
 }
 
 // Interceptors returns the client interceptors.
@@ -10045,42 +10060,9 @@ func (c *PromotionReferralsClient) QueryReferredMember(pr *PromotionReferrals) *
 	return query
 }
 
-// QueryParent queries the parent edge of a PromotionReferrals.
-func (c *PromotionReferralsClient) QueryParent(pr *PromotionReferrals) *PromotionReferralsQuery {
-	query := (&PromotionReferralsClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := pr.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(promotionreferrals.Table, promotionreferrals.FieldID, id),
-			sqlgraph.To(promotionreferrals.Table, promotionreferrals.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, promotionreferrals.ParentTable, promotionreferrals.ParentColumn),
-		)
-		fromV = sqlgraph.Neighbors(pr.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryChildren queries the children edge of a PromotionReferrals.
-func (c *PromotionReferralsClient) QueryChildren(pr *PromotionReferrals) *PromotionReferralsQuery {
-	query := (&PromotionReferralsClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := pr.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(promotionreferrals.Table, promotionreferrals.FieldID, id),
-			sqlgraph.To(promotionreferrals.Table, promotionreferrals.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, promotionreferrals.ChildrenTable, promotionreferrals.ChildrenColumn),
-		)
-		fromV = sqlgraph.Neighbors(pr.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // Hooks returns the client hooks.
 func (c *PromotionReferralsClient) Hooks() []Hook {
-	hooks := c.hooks.PromotionReferrals
-	return append(hooks[:len(hooks):len(hooks)], promotionreferrals.Hooks[:]...)
+	return c.hooks.PromotionReferrals
 }
 
 // Interceptors returns the client interceptors.

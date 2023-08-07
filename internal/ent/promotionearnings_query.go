@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/promotioncommission"
 	"github.com/auroraride/aurservd/internal/ent/promotionearnings"
@@ -27,6 +28,7 @@ type PromotionEarningsQuery struct {
 	withCommission *PromotionCommissionQuery
 	withMember     *PromotionMemberQuery
 	withRider      *RiderQuery
+	withOrder      *OrderQuery
 	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -123,6 +125,28 @@ func (peq *PromotionEarningsQuery) QueryRider() *RiderQuery {
 			sqlgraph.From(promotionearnings.Table, promotionearnings.FieldID, selector),
 			sqlgraph.To(rider.Table, rider.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, promotionearnings.RiderTable, promotionearnings.RiderColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(peq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryOrder chains the current query on the "order" edge.
+func (peq *PromotionEarningsQuery) QueryOrder() *OrderQuery {
+	query := (&OrderClient{config: peq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := peq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := peq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(promotionearnings.Table, promotionearnings.FieldID, selector),
+			sqlgraph.To(order.Table, order.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, promotionearnings.OrderTable, promotionearnings.OrderColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(peq.driver.Dialect(), step)
 		return fromU, nil
@@ -325,6 +349,7 @@ func (peq *PromotionEarningsQuery) Clone() *PromotionEarningsQuery {
 		withCommission: peq.withCommission.Clone(),
 		withMember:     peq.withMember.Clone(),
 		withRider:      peq.withRider.Clone(),
+		withOrder:      peq.withOrder.Clone(),
 		// clone intermediate query.
 		sql:  peq.sql.Clone(),
 		path: peq.path,
@@ -361,6 +386,17 @@ func (peq *PromotionEarningsQuery) WithRider(opts ...func(*RiderQuery)) *Promoti
 		opt(query)
 	}
 	peq.withRider = query
+	return peq
+}
+
+// WithOrder tells the query-builder to eager-load the nodes that are connected to
+// the "order" edge. The optional arguments are used to configure the query builder of the edge.
+func (peq *PromotionEarningsQuery) WithOrder(opts ...func(*OrderQuery)) *PromotionEarningsQuery {
+	query := (&OrderClient{config: peq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	peq.withOrder = query
 	return peq
 }
 
@@ -442,10 +478,11 @@ func (peq *PromotionEarningsQuery) sqlAll(ctx context.Context, hooks ...queryHoo
 	var (
 		nodes       = []*PromotionEarnings{}
 		_spec       = peq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
 			peq.withCommission != nil,
 			peq.withMember != nil,
 			peq.withRider != nil,
+			peq.withOrder != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -484,6 +521,12 @@ func (peq *PromotionEarningsQuery) sqlAll(ctx context.Context, hooks ...queryHoo
 	if query := peq.withRider; query != nil {
 		if err := peq.loadRider(ctx, query, nodes, nil,
 			func(n *PromotionEarnings, e *Rider) { n.Edges.Rider = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := peq.withOrder; query != nil {
+		if err := peq.loadOrder(ctx, query, nodes, nil,
+			func(n *PromotionEarnings, e *Order) { n.Edges.Order = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -577,6 +620,38 @@ func (peq *PromotionEarningsQuery) loadRider(ctx context.Context, query *RiderQu
 	}
 	return nil
 }
+func (peq *PromotionEarningsQuery) loadOrder(ctx context.Context, query *OrderQuery, nodes []*PromotionEarnings, init func(*PromotionEarnings), assign func(*PromotionEarnings, *Order)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*PromotionEarnings)
+	for i := range nodes {
+		if nodes[i].OrderID == nil {
+			continue
+		}
+		fk := *nodes[i].OrderID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(order.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "order_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 
 func (peq *PromotionEarningsQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := peq.querySpec()
@@ -614,6 +689,9 @@ func (peq *PromotionEarningsQuery) querySpec() *sqlgraph.QuerySpec {
 		}
 		if peq.withRider != nil {
 			_spec.Node.AddColumnOnce(promotionearnings.FieldRiderID)
+		}
+		if peq.withOrder != nil {
+			_spec.Node.AddColumnOnce(promotionearnings.FieldOrderID)
 		}
 	}
 	if ps := peq.predicates; len(ps) > 0 {
@@ -686,6 +764,7 @@ var (
 	PromotionEarningsQueryWithCommission PromotionEarningsQueryWith = "Commission"
 	PromotionEarningsQueryWithMember     PromotionEarningsQueryWith = "Member"
 	PromotionEarningsQueryWithRider      PromotionEarningsQueryWith = "Rider"
+	PromotionEarningsQueryWithOrder      PromotionEarningsQueryWith = "Order"
 )
 
 func (peq *PromotionEarningsQuery) With(withEdges ...PromotionEarningsQueryWith) *PromotionEarningsQuery {
@@ -697,6 +776,8 @@ func (peq *PromotionEarningsQuery) With(withEdges ...PromotionEarningsQueryWith)
 			peq.WithMember()
 		case PromotionEarningsQueryWithRider:
 			peq.WithRider()
+		case PromotionEarningsQueryWithOrder:
+			peq.WithOrder()
 		}
 	}
 	return peq

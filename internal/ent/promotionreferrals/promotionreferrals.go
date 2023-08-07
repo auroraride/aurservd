@@ -5,7 +5,6 @@ package promotionreferrals
 import (
 	"time"
 
-	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 )
@@ -19,30 +18,16 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
-	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
-	FieldDeletedAt = "deleted_at"
-	// FieldCreator holds the string denoting the creator field in the database.
-	FieldCreator = "creator"
-	// FieldLastModifier holds the string denoting the last_modifier field in the database.
-	FieldLastModifier = "last_modifier"
-	// FieldRemark holds the string denoting the remark field in the database.
-	FieldRemark = "remark"
 	// FieldReferringMemberID holds the string denoting the referring_member_id field in the database.
 	FieldReferringMemberID = "referring_member_id"
 	// FieldReferredMemberID holds the string denoting the referred_member_id field in the database.
 	FieldReferredMemberID = "referred_member_id"
 	// FieldRiderID holds the string denoting the rider_id field in the database.
 	FieldRiderID = "rider_id"
-	// FieldParentID holds the string denoting the parent_id field in the database.
-	FieldParentID = "parent_id"
 	// EdgeReferringMember holds the string denoting the referring_member edge name in mutations.
 	EdgeReferringMember = "referring_member"
 	// EdgeReferredMember holds the string denoting the referred_member edge name in mutations.
 	EdgeReferredMember = "referred_member"
-	// EdgeParent holds the string denoting the parent edge name in mutations.
-	EdgeParent = "parent"
-	// EdgeChildren holds the string denoting the children edge name in mutations.
-	EdgeChildren = "children"
 	// Table holds the table name of the promotionreferrals in the database.
 	Table = "promotion_referrals"
 	// ReferringMemberTable is the table that holds the referring_member relation/edge.
@@ -59,14 +44,6 @@ const (
 	ReferredMemberInverseTable = "promotion_member"
 	// ReferredMemberColumn is the table column denoting the referred_member relation/edge.
 	ReferredMemberColumn = "referred_member_id"
-	// ParentTable is the table that holds the parent relation/edge.
-	ParentTable = "promotion_referrals"
-	// ParentColumn is the table column denoting the parent relation/edge.
-	ParentColumn = "parent_id"
-	// ChildrenTable is the table that holds the children relation/edge.
-	ChildrenTable = "promotion_referrals"
-	// ChildrenColumn is the table column denoting the children relation/edge.
-	ChildrenColumn = "parent_id"
 )
 
 // Columns holds all SQL columns for promotionreferrals fields.
@@ -74,14 +51,9 @@ var Columns = []string{
 	FieldID,
 	FieldCreatedAt,
 	FieldUpdatedAt,
-	FieldDeletedAt,
-	FieldCreator,
-	FieldLastModifier,
-	FieldRemark,
 	FieldReferringMemberID,
 	FieldReferredMemberID,
 	FieldRiderID,
-	FieldParentID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -94,13 +66,7 @@ func ValidColumn(column string) bool {
 	return false
 }
 
-// Note that the variables below are initialized by the runtime
-// package on the initialization of the application. Therefore,
-// it should be imported in the main as follows:
-//
-//	import _ "github.com/auroraride/aurservd/internal/ent/runtime"
 var (
-	Hooks [1]ent.Hook
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
@@ -127,16 +93,6 @@ func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
 }
 
-// ByDeletedAt orders the results by the deleted_at field.
-func ByDeletedAt(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldDeletedAt, opts...).ToFunc()
-}
-
-// ByRemark orders the results by the remark field.
-func ByRemark(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldRemark, opts...).ToFunc()
-}
-
 // ByReferringMemberID orders the results by the referring_member_id field.
 func ByReferringMemberID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldReferringMemberID, opts...).ToFunc()
@@ -152,11 +108,6 @@ func ByRiderID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRiderID, opts...).ToFunc()
 }
 
-// ByParentID orders the results by the parent_id field.
-func ByParentID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldParentID, opts...).ToFunc()
-}
-
 // ByReferringMemberField orders the results by referring_member field.
 func ByReferringMemberField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -168,27 +119,6 @@ func ByReferringMemberField(field string, opts ...sql.OrderTermOption) OrderOpti
 func ByReferredMemberField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newReferredMemberStep(), sql.OrderByField(field, opts...))
-	}
-}
-
-// ByParentField orders the results by parent field.
-func ByParentField(field string, opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newParentStep(), sql.OrderByField(field, opts...))
-	}
-}
-
-// ByChildrenCount orders the results by children count.
-func ByChildrenCount(opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newChildrenStep(), opts...)
-	}
-}
-
-// ByChildren orders the results by children terms.
-func ByChildren(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newChildrenStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 func newReferringMemberStep() *sqlgraph.Step {
@@ -203,19 +133,5 @@ func newReferredMemberStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(ReferredMemberInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2O, true, ReferredMemberTable, ReferredMemberColumn),
-	)
-}
-func newParentStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(Table, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, true, ParentTable, ParentColumn),
-	)
-}
-func newChildrenStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(Table, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, ChildrenTable, ChildrenColumn),
 	)
 }

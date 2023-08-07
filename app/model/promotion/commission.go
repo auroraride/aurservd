@@ -132,6 +132,7 @@ const (
 
 // CommissionCalculation 佣金计算
 type CommissionCalculation struct {
+	OrderID        uint64                    `json:"orderID"`        // 订单id
 	RiderID        uint64                    `json:"riderID"`        // 骑手id
 	CommissionBase float64                   `json:"commissionBase"` // 金额
 	Type           CommissionCalculationType `json:"type"`           // 任务类型 1:新签 2:续签

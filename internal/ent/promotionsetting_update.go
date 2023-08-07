@@ -36,26 +36,6 @@ func (psu *PromotionSettingUpdate) SetUpdatedAt(t time.Time) *PromotionSettingUp
 	return psu
 }
 
-// SetDeletedAt sets the "deleted_at" field.
-func (psu *PromotionSettingUpdate) SetDeletedAt(t time.Time) *PromotionSettingUpdate {
-	psu.mutation.SetDeletedAt(t)
-	return psu
-}
-
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (psu *PromotionSettingUpdate) SetNillableDeletedAt(t *time.Time) *PromotionSettingUpdate {
-	if t != nil {
-		psu.SetDeletedAt(*t)
-	}
-	return psu
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (psu *PromotionSettingUpdate) ClearDeletedAt() *PromotionSettingUpdate {
-	psu.mutation.ClearDeletedAt()
-	return psu
-}
-
 // SetLastModifier sets the "last_modifier" field.
 func (psu *PromotionSettingUpdate) SetLastModifier(m *model.Modifier) *PromotionSettingUpdate {
 	psu.mutation.SetLastModifier(m)
@@ -199,12 +179,6 @@ func (psu *PromotionSettingUpdate) sqlSave(ctx context.Context) (n int, err erro
 	if value, ok := psu.mutation.UpdatedAt(); ok {
 		_spec.SetField(promotionsetting.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := psu.mutation.DeletedAt(); ok {
-		_spec.SetField(promotionsetting.FieldDeletedAt, field.TypeTime, value)
-	}
-	if psu.mutation.DeletedAtCleared() {
-		_spec.ClearField(promotionsetting.FieldDeletedAt, field.TypeTime)
-	}
 	if psu.mutation.CreatorCleared() {
 		_spec.ClearField(promotionsetting.FieldCreator, field.TypeJSON)
 	}
@@ -260,26 +234,6 @@ type PromotionSettingUpdateOne struct {
 // SetUpdatedAt sets the "updated_at" field.
 func (psuo *PromotionSettingUpdateOne) SetUpdatedAt(t time.Time) *PromotionSettingUpdateOne {
 	psuo.mutation.SetUpdatedAt(t)
-	return psuo
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (psuo *PromotionSettingUpdateOne) SetDeletedAt(t time.Time) *PromotionSettingUpdateOne {
-	psuo.mutation.SetDeletedAt(t)
-	return psuo
-}
-
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (psuo *PromotionSettingUpdateOne) SetNillableDeletedAt(t *time.Time) *PromotionSettingUpdateOne {
-	if t != nil {
-		psuo.SetDeletedAt(*t)
-	}
-	return psuo
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (psuo *PromotionSettingUpdateOne) ClearDeletedAt() *PromotionSettingUpdateOne {
-	psuo.mutation.ClearDeletedAt()
 	return psuo
 }
 
@@ -455,12 +409,6 @@ func (psuo *PromotionSettingUpdateOne) sqlSave(ctx context.Context) (_node *Prom
 	}
 	if value, ok := psuo.mutation.UpdatedAt(); ok {
 		_spec.SetField(promotionsetting.FieldUpdatedAt, field.TypeTime, value)
-	}
-	if value, ok := psuo.mutation.DeletedAt(); ok {
-		_spec.SetField(promotionsetting.FieldDeletedAt, field.TypeTime, value)
-	}
-	if psuo.mutation.DeletedAtCleared() {
-		_spec.ClearField(promotionsetting.FieldDeletedAt, field.TypeTime)
 	}
 	if psuo.mutation.CreatorCleared() {
 		_spec.ClearField(promotionsetting.FieldCreator, field.TypeJSON)

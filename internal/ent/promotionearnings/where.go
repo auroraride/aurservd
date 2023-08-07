@@ -90,6 +90,11 @@ func RiderID(v uint64) predicate.PromotionEarnings {
 	return predicate.PromotionEarnings(sql.FieldEQ(FieldRiderID, v))
 }
 
+// OrderID applies equality check predicate on the "order_id" field. It's identical to OrderIDEQ.
+func OrderID(v uint64) predicate.PromotionEarnings {
+	return predicate.PromotionEarnings(sql.FieldEQ(FieldOrderID, v))
+}
+
 // Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
 func Status(v uint8) predicate.PromotionEarnings {
 	return predicate.PromotionEarnings(sql.FieldEQ(FieldStatus, v))
@@ -390,6 +395,36 @@ func RiderIDNotIn(vs ...uint64) predicate.PromotionEarnings {
 	return predicate.PromotionEarnings(sql.FieldNotIn(FieldRiderID, vs...))
 }
 
+// OrderIDEQ applies the EQ predicate on the "order_id" field.
+func OrderIDEQ(v uint64) predicate.PromotionEarnings {
+	return predicate.PromotionEarnings(sql.FieldEQ(FieldOrderID, v))
+}
+
+// OrderIDNEQ applies the NEQ predicate on the "order_id" field.
+func OrderIDNEQ(v uint64) predicate.PromotionEarnings {
+	return predicate.PromotionEarnings(sql.FieldNEQ(FieldOrderID, v))
+}
+
+// OrderIDIn applies the In predicate on the "order_id" field.
+func OrderIDIn(vs ...uint64) predicate.PromotionEarnings {
+	return predicate.PromotionEarnings(sql.FieldIn(FieldOrderID, vs...))
+}
+
+// OrderIDNotIn applies the NotIn predicate on the "order_id" field.
+func OrderIDNotIn(vs ...uint64) predicate.PromotionEarnings {
+	return predicate.PromotionEarnings(sql.FieldNotIn(FieldOrderID, vs...))
+}
+
+// OrderIDIsNil applies the IsNil predicate on the "order_id" field.
+func OrderIDIsNil() predicate.PromotionEarnings {
+	return predicate.PromotionEarnings(sql.FieldIsNull(FieldOrderID))
+}
+
+// OrderIDNotNil applies the NotNil predicate on the "order_id" field.
+func OrderIDNotNil() predicate.PromotionEarnings {
+	return predicate.PromotionEarnings(sql.FieldNotNull(FieldOrderID))
+}
+
 // StatusEQ applies the EQ predicate on the "status" field.
 func StatusEQ(v uint8) predicate.PromotionEarnings {
 	return predicate.PromotionEarnings(sql.FieldEQ(FieldStatus, v))
@@ -606,6 +641,29 @@ func HasRider() predicate.PromotionEarnings {
 func HasRiderWith(preds ...predicate.Rider) predicate.PromotionEarnings {
 	return predicate.PromotionEarnings(func(s *sql.Selector) {
 		step := newRiderStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasOrder applies the HasEdge predicate on the "order" edge.
+func HasOrder() predicate.PromotionEarnings {
+	return predicate.PromotionEarnings(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, OrderTable, OrderColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasOrderWith applies the HasEdge predicate on the "order" edge with a given conditions (other predicates).
+func HasOrderWith(preds ...predicate.Order) predicate.PromotionEarnings {
+	return predicate.PromotionEarnings(func(s *sql.Selector) {
+		step := newOrderStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

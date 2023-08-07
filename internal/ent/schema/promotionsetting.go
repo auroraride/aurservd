@@ -73,7 +73,6 @@ func (PromotionSetting) Edges() []ent.Edge {
 func (PromotionSetting) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		internal.TimeMixin{},
-		internal.DeleteMixin{},
 		internal.Modifier{},
 	}
 }

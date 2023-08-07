@@ -1,7 +1,6 @@
 package service
 
 import (
-	"context"
 	"strings"
 
 	"github.com/auroraride/aurservd/app/model"
@@ -13,12 +12,12 @@ import (
 )
 
 type promotionBankCardService struct {
-	ctx context.Context
+	*BaseService
 }
 
 func NewPromotionBankCardService() *promotionBankCardService {
 	return &promotionBankCardService{
-		ctx: context.Background(),
+		BaseService: newService(),
 	}
 }
 
