@@ -117,6 +117,16 @@ func (s *riderAgentService) detail(item *ent.Rider) model.AgentRider {
 			// 计算剩余日期
 			if sub.AgentEndAt != nil {
 				res.Remaining = silk.Pointer(tools.NewTime().LastDays(*sub.AgentEndAt, today))
+				// 判定当前状态
+				if sub.AgentEndAt.After(today) && *res.Remaining > model.WillOverdueNum {
+					// 若代理商处到期日期晚于今天, 则是使用中
+					res.Status = model.AgentRiderStatusUsing
+				} else if *res.Remaining <= model.WillOverdueNum && *res.Remaining >= 0 { // 即将到期暂定3天
+					res.Status = model.AgentRiderStatusWillOverdue
+				} else {
+					// 否则是已逾期
+					res.Status = model.AgentRiderStatusOverdue
+				}
 			}
 		}
 
