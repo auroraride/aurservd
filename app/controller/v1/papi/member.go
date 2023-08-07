@@ -27,10 +27,25 @@ func (m *member) Signin(c echo.Context) (err error) {
 	return ctx.SendResponse(service.NewPromotionMemberService().Signin(req))
 }
 
+// Signup
+// @ID           PromotionMemberSignup
+// @Router       /promotion/v1/member/signup [POST]
+// @Summary      P1002 邀请注册
+// @Tags         [P]推广接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Promotion-Token  header  string  true  "会员校验token"
+// @Param        body  body  promotion.MemberSigninReq true  "查询请求"
+// @Success      200  {object}  promotion.MemberSigninRes  "请求成功"
+func (m *member) Signup(c echo.Context) (err error) {
+	ctx, req := app.PromotionContextAndBinding[promotion.MemberSigninReq](c)
+	return ctx.SendResponse(service.NewPromotionMemberService().Signup(req))
+}
+
 // Profile
 // @ID           PromotionMemberProfile
 // @Router       /promotion/v1/member/profile [GET]
-// @Summary      P1002 会员信息
+// @Summary      P1003 会员信息
 // @Tags         [P]推广接口
 // @Accept       json
 // @Produce      json
@@ -44,7 +59,7 @@ func (m *member) Profile(c echo.Context) (err error) {
 // ShareQrcode
 // @ID           PromotionMemberShareQrcode
 // @Router       /promotion/v1/member/share/qrcode [GET]
-// @Summary      P1003 获取推广二维码
+// @Summary      P1004 获取推广二维码
 // @Tags         [P]推广接口
 // @Accept       json
 // @Produce      json
@@ -73,7 +88,7 @@ func (m *member) UpdateAvatar(c echo.Context) (err error) {
 // Team
 // @ID           PromotionMemberTeam
 // @Router       /promotion/v1/member/team [GET]
-// @Summary      P1008 我的团队列表
+// @Summary      P1006 我的团队列表
 // @Tags         [P]推广接口
 // @Accept       json
 // @Produce      json
@@ -87,19 +102,4 @@ func (m *member) Team(c echo.Context) (err error) {
 		PaginationReq:    req.PaginationReq,
 		MemberTeamFilter: req.MemberTeamFilter,
 	}))
-}
-
-// Signup
-// @ID           PromotionMemberSignup
-// @Router       /promotion/v1/member/signup [POST]
-// @Summary      P1017 邀请注册
-// @Tags         [P]推广接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Promotion-Token  header  string  true  "会员校验token"
-// @Param        body  body  promotion.MemberSigninReq true  "查询请求"
-// @Success      200  {object}  promotion.MemberSigninRes  "请求成功"
-func (m *member) Signup(c echo.Context) (err error) {
-	ctx, req := app.PromotionContextAndBinding[promotion.MemberSigninReq](c)
-	return ctx.SendResponse(service.NewPromotionMemberService().Signup(req))
 }

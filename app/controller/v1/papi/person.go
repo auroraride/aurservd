@@ -16,7 +16,7 @@ var PromotionPerson = new(promotionPerson)
 // RealName  实名认证
 // @ID           PromotionRealNameAuth
 // @Router       /promotion/v1/auth/realname [POST]
-// @Summary      P1013 实名认证
+// @Summary      P6001 实名认证
 // @Tags         [P]推广接口
 // @Accept       json
 // @Produce      json

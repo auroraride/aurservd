@@ -16,7 +16,7 @@ var PromotionLevelTask = new(promotionLevelTask)
 // List
 // @ID           ManagerPromotionTaskList
 // @Router       /manager/v1/promotion/task [GET]
-// @Summary      PM3011 会员任务列表
+// @Summary      PM6001 会员任务列表
 // @Tags         [PM]推广管理接口
 // @Accept       json
 // @Produce      json
@@ -30,7 +30,7 @@ func (m *promotionLevelTask) List(c echo.Context) (err error) {
 // Update
 // @ID           ManagerPromotionTaskUpdate
 // @Router       /manager/v1/promotion/task/{id} [PUT]
-// @Summary      PM3012 更新会员任务
+// @Summary      PM6002 更新会员任务
 // @Tags         [PM]推广管理接口
 // @Accept       json
 // @Produce      json

@@ -17,7 +17,7 @@ var PromotionCommission = new(promotionCommission)
 // List
 // @ID           ManagerPromotionCommissionList
 // @Router       /manager/v1/promotion/commission [GET]
-// @Summary      PM2001 推广返佣方案列表
+// @Summary      PM8001 推广返佣方案列表
 // @Tags         [PM]推广管理接口
 // @Accept       json
 // @Produce      json
@@ -31,7 +31,7 @@ func (p *promotionCommission) List(c echo.Context) (err error) {
 // Detail
 // @ID           ManagerPromotionCommissionDetail
 // @Router       /manager/v1/promotion/commission/{id} [GET]
-// @Summary      PM2002 推广返佣方案详情
+// @Summary      PM8002 推广返佣方案详情
 // @Tags         [PM]推广管理接口
 // @Accept       json
 // @Produce      json
@@ -46,7 +46,7 @@ func (p *promotionCommission) Detail(c echo.Context) (err error) {
 // Create
 // @ID           ManagerPromotionCommissionCreate
 // @Router       /manager/v1/promotion/commission [POST]
-// @Summary      PM2003 创建推广返佣方案
+// @Summary      PM8003 创建推广返佣方案
 // @Tags         [PM]推广管理接口
 // @Accept       json
 // @Produce      json
@@ -62,7 +62,7 @@ func (p *promotionCommission) Create(c echo.Context) (err error) {
 // Update
 // @ID           ManagerPromotionCommissionUpdate
 // @Router       /manager/v1/promotion/commission [PUT]
-// @Summary      PM2004 更新推广返佣方案
+// @Summary      PM8004 更新推广返佣方案
 // @Tags         [PM]推广管理接口
 // @Accept       json
 // @Produce      json
@@ -78,7 +78,7 @@ func (p *promotionCommission) Update(c echo.Context) (err error) {
 // Delete
 // @ID           ManagerPromotionCommissionDelete
 // @Router       /manager/v1/promotion/commission/{id} [DELETE]
-// @Summary      PM2005 删除推广返佣方案
+// @Summary      PM8005 删除推广返佣方案
 // @Tags         [PM]推广管理接口
 // @Accept       json
 // @Produce      json
@@ -94,7 +94,7 @@ func (p *promotionCommission) Delete(c echo.Context) (err error) {
 // Enable
 // @ID           ManagerPromotionCommissionUpdateEnable
 // @Router       /manager/v1/promotion/commission/enable [POST]
-// @Summary      PM2006 更新推广返佣方案状态
+// @Summary      PM8006 更新推广返佣方案状态
 // @Tags         [PM]推广管理接口
 // @Accept       json
 // @Produce      json
@@ -110,7 +110,7 @@ func (p *promotionCommission) Enable(c echo.Context) (err error) {
 // HistoryList
 // @ID           ManagerPromotionCommissionHistoryList
 // @Router       /manager/v1/promotion/commission/history/{id} [GET]
-// @Summary      PM2007 推广返佣方案历史列表
+// @Summary      PM8007 推广返佣方案历史列表
 // @Tags         [PM]推广管理接口
 // @Accept       json
 // @Produce      json
@@ -125,7 +125,7 @@ func (p *promotionCommission) HistoryList(c echo.Context) (err error) {
 // Selection
 // @ID           ManagerPromotionCommissionSelection
 // @Router       /manager/v1/promotion/commission/selection [GET]
-// @Summary      PM2008 推广返佣方案选择
+// @Summary      PM8008 推广返佣方案选择
 // @Tags         [PM]推广管理接口
 // @Accept       json
 // @Produce      json
@@ -139,7 +139,7 @@ func (p *promotionCommission) Selection(c echo.Context) (err error) {
 // TaskSelection
 // @ID           ManagerPromotionCommissionTaskSelection
 // @Router       /manager/v1/promotion/commission/task/selection [GET]
-// @Summary      PM2009 返佣方案任务选择
+// @Summary      PM8009 返佣方案任务选择
 // @Tags         [PM]推广管理接口
 // @Accept       json
 // @Produce      json

@@ -15,7 +15,7 @@ var PromotionCommission = new(promotionCommission)
 // CommissionRule
 // @ID           PromotionCommissionRule
 // @Router       /promotion/v1/commission/rule [GET]
-// @Summary      P1004 获取会员分佣规则
+// @Summary      P1007 获取会员分佣规则
 // @Tags         [P]推广接口
 // @Accept       json
 // @Produce      json

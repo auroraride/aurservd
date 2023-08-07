@@ -16,7 +16,7 @@ var PromotionSetting = new(promotionSetting)
 // Setting
 // @ID           PromotionSetting
 // @Router       /promotion/v1/setting/{key} [GET]
-// @Summary      P1016 获取推广配置
+// @Summary      P7001 获取推广配置
 // @Tags         [P]推广接口
 // @Accept       json
 // @Produce      json

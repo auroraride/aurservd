@@ -17,7 +17,7 @@ var PromotionBankCard = new(promotionBankCard)
 // Create
 // @ID           PromotionBankCardCreate
 // @Router       /promotion/v1/bank/card [POST]
-// @Summary      P1009 创建银行卡
+// @Summary      P4001 创建银行卡
 // @Tags         [P]推广接口
 // @Accept       json
 // @Produce      json
@@ -33,7 +33,7 @@ func (m *promotionBankCard) Create(c echo.Context) (err error) {
 // Update
 // @ID           PromotionBankCardUpdate
 // @Router       /promotion/v1/bank/card/{id} [PUT]
-// @Summary      P1011 修改银行卡默认状态
+// @Summary      P4002 修改银行卡默认状态
 // @Tags         [P]推广接口
 // @Accept       json
 // @Produce      json
@@ -49,7 +49,7 @@ func (m *promotionBankCard) Update(c echo.Context) (err error) {
 // List
 // @ID           PromotionBankCardList
 // @Router       /promotion/v1/bank/card [GET]
-// @Summary      P1012 获取银行卡列表
+// @Summary      P4003 获取银行卡列表
 // @Tags         [P]推广接口
 // @Accept       json
 // @Produce      json
@@ -63,7 +63,7 @@ func (m *promotionBankCard) List(c echo.Context) (err error) {
 // Delete
 // @ID           PromotionBankCardDelete
 // @Router       /promotion/v1/bank/card/{id} [DELETE]
-// @Summary      P1015 删除银行卡
+// @Summary      P4004 删除银行卡
 // @Tags         [P]推广接口
 // @Accept       json
 // @Produce      json

@@ -16,7 +16,7 @@ var PromotionEarnings = new(promotionEarnings)
 // List
 // @ID           PromotionEarningsList
 // @Router       /promotion/v1/earnings [GET]
-// @Summary      P1007 会员收益列表
+// @Summary      P3001 会员收益列表
 // @Tags         [P]推广接口
 // @Accept       json
 // @Produce      json

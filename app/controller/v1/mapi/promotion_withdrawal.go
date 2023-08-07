@@ -16,7 +16,7 @@ var PromotionWithdrawal = new(promotionWithdrawal)
 // List
 // @ID           ManagerPromotionWithdrawalList
 // @Router       /manager/v1/promotion/withdrawal [GET]
-// @Summary      PM3013 会员提现列表
+// @Summary      PM3001 会员提现列表
 // @Tags         [PM]推广管理接口
 // @Accept       json
 // @Produce      json
@@ -31,7 +31,7 @@ func (p *promotionWithdrawal) List(c echo.Context) (err error) {
 // AlterReview
 // @ID           ManagerPromotionWithdrawalAlterReview
 // @Router       /manager/v1/promotion/withdrawal/alter/review [POST]
-// @Summary      PM3014  审批提现
+// @Summary      PM3002  审批提现
 // @Tags         [PM]推广管理接口
 // @Accept       json
 // @Produce      json
@@ -47,7 +47,7 @@ func (p *promotionWithdrawal) AlterReview(c echo.Context) (err error) {
 // Export
 // @ID           ManagerPromotionWithdrawalExport
 // @Router       /manager/v1/promotion/withdrawal/export [GET]
-// @Summary       PM3015  导出提现列表
+// @Summary       PM3003  导出提现列表
 // @Tags          [PM]推广管理接口
 // @Accept       json
 // @Produce      json

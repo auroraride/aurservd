@@ -20,7 +20,7 @@ var Statistics = new(statistics)
 // TemaOverview
 // @ID           PromotionStatisticsTemaOverview
 // @Router       /promotion/v1/statistics/team/overview [GET]
-// @Summary      P3001 首页我的团队统计
+// @Summary      P5001 首页我的团队统计
 // @Tags         [P]推广接口
 // @Accept       json
 // @Produce      json
@@ -35,7 +35,7 @@ func (*statistics) TemaOverview(c echo.Context) (err error) {
 // EarningsOverview
 // @ID           PromotionStatisticsEarningsOverview
 // @Router       /promotion/v1/statistics/earnings/overview [GET]
-// @Summary      P3002 首页我的收益统计
+// @Summary      P5002 首页我的收益统计
 // @Tags         [P]推广接口
 // @Accept       json
 // @Produce      json
@@ -50,7 +50,7 @@ func (*statistics) EarningsOverview(c echo.Context) (err error) {
 // RecordOverview
 // @ID           PromotionStatisticsRecordOverview
 // @Router       /promotion/v1/statistics/record/overview [GET]
-// @Summary      P3003 首页邀请战绩统计
+// @Summary      P5003 首页邀请战绩统计
 // @Tags         [P]推广接口
 // @Accept       json
 // @Produce      json
@@ -64,7 +64,7 @@ func (*statistics) RecordOverview(c echo.Context) (err error) {
 // WalletOverview
 // @ID           PromotionStatisticsWalletOverview
 // @Router       /promotion/v1/statistics/wallet/overview [GET]
-// @Summary      P3004 我的账户-统计
+// @Summary      P5004 我的账户-统计
 // @Tags         [P]推广接口
 // @Accept       json
 // @Produce      json
@@ -78,7 +78,7 @@ func (*statistics) WalletOverview(c echo.Context) (err error) {
 // EarningsDetail
 // @ID           PromotionStatisticsEarningsDetail
 // @Router       /promotion/v1/statistics/earnings/detail [GET]
-// @Summary      P3005 我的钱包-收益报表
+// @Summary      P5005 我的钱包-收益报表
 // @Tags         [P]推广接口
 // @Accept       json
 // @Produce      json
@@ -93,7 +93,7 @@ func (*statistics) EarningsDetail(c echo.Context) (err error) {
 // Team
 // @ID           PromotionStatisticsTeam
 // @Router       /promotion/v1/statistics/team [GET]
-// @Summary      P3006 我的团队-统计
+// @Summary      P5006 我的团队-统计
 // @Tags         [P]推广接口
 // @Accept       json
 // @Produce      json
@@ -107,7 +107,7 @@ func (*statistics) Team(c echo.Context) (err error) {
 // TeamGrowth
 // @ID           PromotionStatisticsTeamGrowth
 // @Router       /promotion/v1/statistics/team/growth [GET]
-// @Summary      P3007 我的团队-增长趋势
+// @Summary      P5007 我的团队-增长趋势
 // @Tags         [P]推广接口
 // @Accept       json
 // @Produce      json

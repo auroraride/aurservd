@@ -16,7 +16,7 @@ var PromotionWithdrawal = new(promotionWithdrawal)
 // List
 // @ID           PromotionWithdrawalList
 // @Router       /promotion/v1/withdrawal [GET]
-// @Summary      P1006 会员提现列表
+// @Summary      P2001 会员提现列表
 // @Tags         [P]推广接口
 // @Accept       json
 // @Produce      json
@@ -32,10 +32,10 @@ func (l *promotionWithdrawal) List(c echo.Context) (err error) {
 	}))
 }
 
-// Alter 申请提现
+// Alter
 // @ID           PromotionWithdrawalAlter
 // @Router       /promotion/v1/withdrawal/alter [POST]
-// @Summary      P1010 申请提现
+// @Summary      P2002 申请提现
 // @Tags         [P]推广接口
 // @Accept       json
 // @Produce      json
@@ -51,7 +51,7 @@ func (l *promotionWithdrawal) Alter(c echo.Context) (err error) {
 // CalculateWithdrawalFee
 // @ID           PromotionWithdrawalFee
 // @Router       /promotion/v1/withdrawal/fee [POST]
-// @Summary      P1014 计算提现手续费
+// @Summary      P2003 计算提现手续费
 // @Tags         [P]推广接口
 // @Accept       json
 // @Produce      json
