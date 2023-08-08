@@ -135,7 +135,7 @@ type CommissionCalculation struct {
 	OrderID        uint64                    `json:"orderID"`        // 订单id
 	RiderID        uint64                    `json:"riderID"`        // 骑手id
 	ActualAmount   float64                   `json:"actualAmount"`   // 实付金额
-	Original       float64                   `json:"original"`       // 实际售价
+	Price          float64                   `json:"price"`          // 售价
 	CommissionBase float64                   `json:"commissionBase"` // 底数
 	Type           CommissionCalculationType `json:"type"`           // 任务类型 1:新签 2:续签
 }

@@ -359,7 +359,7 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 					Type:           commissionType,
 					OrderID:        do.ID,
 					ActualAmount:   do.Total,
-					Original:       sub.Edges.Plan.Original,
+					Price:          sub.Edges.Plan.Price,
 				})
 				return
 			})

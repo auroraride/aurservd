@@ -147,15 +147,23 @@ func (s *promotionEarningsService) Cancel(req *promotion.EarningsCancelReq) {
 // CancelIncome 取消收益方法
 func (s *promotionEarningsService) cancelIncome(balance float64, frozen float64, amount float64) (float64, float64) {
 	dl := tools.NewDecimal()
-	if balance >= amount {
+
+	if dl.Sub(balance, amount) >= 0 {
+		// 优先从余额中扣除取消金额
 		balance = dl.Sub(balance, amount)
-	} else if balance < amount && balance+frozen >= amount {
-		// 如果可提现余额不足以扣除取消金额，则判断可提现余额与在途收益之和是否足够扣除取消金额。
-		// 如果可提现余额加上在途收益大于等于取消金额，从在途收益中扣除差额（取消金额减去可提现余额），同时将可提现余额设置为0
-		frozen = dl.Sub(dl.Sub(frozen, amount), balance)
-		balance = 0
 	} else {
-		frozen = dl.Sub(frozen, amount)
+		// 余额不足，从冻结金额中扣除 可为负数
+		frozen = dl.Sub(frozen, dl.Sub(amount, balance))
+		balance = 0
 	}
+
 	return balance, frozen
+}
+
+// CountCommission 查询返佣次数
+func (s *promotionEarningsService) CountCommission(memberID, riderID uint64) (count int, err error) {
+	return ent.Database.PromotionEarnings.Query().Where(
+		promotionearnings.MemberID(memberID),
+		promotionearnings.RiderID(riderID),
+	).Where().Count(s.ctx)
 }

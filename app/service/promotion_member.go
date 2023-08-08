@@ -18,6 +18,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/promotionlevel"
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
 	"github.com/auroraride/aurservd/internal/ent/promotionperson"
+	"github.com/auroraride/aurservd/internal/ent/promotionreferrals"
 
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
@@ -145,12 +146,10 @@ func (s *promotionMemberService) getRiderOrCreate(tx *ent.Tx, phone string, c *p
 
 // 更新会员信息
 func (s *promotionMemberService) updateMemberInfo(tx *ent.Tx, mem *ent.PromotionMember, req *promotion.MemberCreateReq) {
-	q := tx.PromotionMember.UpdateOne(mem)
 	if req.RiderID != nil && req.RiderID != mem.RiderID {
-		q.SetNillableRiderID(req.RiderID)
+		tx.PromotionMember.UpdateOne(mem).SetNillableRiderID(req.RiderID).ExecX(s.ctx)
+		tx.PromotionReferrals.Update().Where(promotionreferrals.ReferringMemberID(mem.ID)).SetNillableRiderID(req.RiderID).ExecX(s.ctx)
 	}
-
-	q.ExecX(s.ctx)
 }
 
 // GetMemberByPhone  获取会员信息

@@ -664,9 +664,9 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
 					RiderID:        trade.RiderID,
 					CommissionBase: trade.Plan.CommissionBase,
 					Type:           commissionType,
-					OrderID:        do.ID,
-					ActualAmount:   do.Total,
-					Original:       trade.Plan.Original,
+					OrderID:        o.ID,
+					ActualAmount:   o.Total,
+					Price:          trade.Plan.Price,
 				})
 				if err != nil {
 					zap.L().Error("订单已支付, 续费返佣失败: "+trade.OutTradeNo, zap.Error(err))

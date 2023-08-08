@@ -16,7 +16,7 @@ func (pl *Plan) BasicInfo() *model.Plan {
 		Days:           pl.Days,
 		Intelligent:    pl.Intelligent,
 		CommissionBase: pl.CommissionBase,
-		Original:       pl.Original,
+		Price:          pl.Price,
 	}
 }
 
