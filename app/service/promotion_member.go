@@ -132,7 +132,7 @@ func (s *promotionMemberService) Signup(req *promotion.MemberSigninReq) *promoti
 
 // 获取骑手信息或创建骑手
 func (s *promotionMemberService) getRiderOrCreate(tx *ent.Tx, phone string, c *promotion.MemberCreateReq) {
-	rinfo, _ := ent.Database.Rider.QueryNotDeleted().Where(rider.Phone(phone)).WithPerson().First(s.ctx)
+	rinfo, _ := ent.Database.Rider.QueryNotDeleted().Where(rider.Phone(phone)).First(s.ctx)
 	if rinfo == nil {
 		// 创建骑手
 		rinfo = tx.Rider.Create().
@@ -346,12 +346,7 @@ func (s *promotionMemberService) detail(item *ent.PromotionMember) (res promotio
 		res.PrivilegeCommission = level.CommissionRatio
 	}
 
-	var balance, frozen float64
-	balance = item.Balance
-	frozen = item.Frozen
-
-	float, _ := strconv.ParseFloat(fmt.Sprintf("%.2f", balance+frozen), 64)
-	res.TotalBalance = float
+	res.TotalBalance = tools.NewDecimal().Sum(item.Balance, item.Frozen)
 
 	if item.Edges.Commission != nil {
 		res.CommissionID = item.Edges.Commission.ID

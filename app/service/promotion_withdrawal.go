@@ -1,10 +1,8 @@
 package service
 
 import (
-	"fmt"
 	"net/url"
 	"path/filepath"
-	"strconv"
 	"time"
 
 	"github.com/golang-module/carbon/v2"
@@ -144,8 +142,9 @@ func (s *promotionWithdrawalService) Alter(mem *ent.PromotionMember, req *promot
 		if err != nil {
 			snag.Panic("申请提现失败")
 		}
+
 		// 扣除余额
-		err = tx.PromotionMember.UpdateOneID(mem.ID).AddBalance(-req.ApplyAmount).Exec(s.ctx)
+		err = tx.PromotionMember.UpdateOneID(mem.ID).SetBalance(tools.NewDecimal().Sub(mem.Balance, req.ApplyAmount)).Exec(s.ctx)
 		if err != nil {
 			snag.Panic("申请提现失败")
 		}
@@ -167,8 +166,11 @@ func (s *promotionWithdrawalService) AlterReview(req *promotion.WithdrawalApprov
 	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
 		for _, v := range mw {
 			if req.Status == promotion.WithdrawalStatusFailed.Value() {
+				if v.Edges.Member == nil {
+					snag.Panic("会员不存在")
+				}
 				// 审批不通过 退回余额
-				err = tx.PromotionMember.UpdateOneID(v.Edges.Member.ID).AddBalance(v.ApplyAmount).Exec(s.ctx)
+				err = tx.PromotionMember.UpdateOneID(v.Edges.Member.ID).SetBalance(tools.NewDecimal().Sum(v.Edges.Member.Balance, v.ApplyAmount)).Exec(s.ctx)
 				if err != nil {
 					snag.Panic("审批不通过 退回余额失败")
 				}
@@ -181,12 +183,6 @@ func (s *promotionWithdrawalService) AlterReview(req *promotion.WithdrawalApprov
 		return
 	})
 
-}
-
-// roundToTwoDecimalPlaces 保留两位小数
-func (s *promotionWithdrawalService) roundToTwoDecimalPlaces(value float64) float64 {
-	cash, _ := strconv.ParseFloat(fmt.Sprintf("%.2f", value), 64)
-	return cash
 }
 
 // CalculateWithdrawalFee 计算提现费用
@@ -203,10 +199,12 @@ func (s *promotionWithdrawalService) CalculateWithdrawalFee(mem *ent.PromotionMe
 		transferFees  float64 // 转账手续费
 	)
 
+	dl := tools.NewDecimal()
+
 	// 税费
 	if req.ApplyAmount > promotion.TaxExemptAmount {
-		taxableAmount = req.ApplyAmount - promotion.TaxExemptAmount
-		tax = taxableAmount * promotion.TaxRate
+		taxableAmount = dl.Sub(req.ApplyAmount, promotion.TaxExemptAmount)
+		tax = dl.Mul(taxableAmount, promotion.TaxRate)
 	}
 
 	// 转账手续费
@@ -215,16 +213,16 @@ func (s *promotionWithdrawalService) CalculateWithdrawalFee(mem *ent.PromotionMe
 		transferFees = 0
 	}
 
-	// 手续费
-	fee = (req.ApplyAmount-tax)*promotion.FeeRate + transferFees
-	// 实际到账金额
-	amount := req.ApplyAmount - fee - tax
+	// 手续费 = (申请金额 - 税费) * 手续费率 + 转账手续费
+	fee = dl.Sum(dl.Mul(dl.Sub(req.ApplyAmount, tax), promotion.FeeRate), transferFees)
+	// 实际到账金额 = 申请金额 - 手续费 - 税费
+	amount := dl.Sub(dl.Sub(req.ApplyAmount, fee), tax)
 
 	return promotion.WithdrawalFeeRes{
 		ApplyAmount:    req.ApplyAmount,
-		AmountReceived: s.roundToTwoDecimalPlaces(amount),
-		WithdrawalFee:  s.roundToTwoDecimalPlaces(fee),
-		Taxable:        s.roundToTwoDecimalPlaces(tax),
+		AmountReceived: amount,
+		WithdrawalFee:  fee,
+		Taxable:        tax,
 	}
 }
 

@@ -1,14 +1,12 @@
 package service
 
 import (
-	"fmt"
-	"strconv"
-
 	"github.com/golang-module/carbon/v2"
 
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/model/promotion"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/promotioncommission"
 	"github.com/auroraride/aurservd/internal/ent/promotionearnings"
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -127,7 +125,11 @@ func (s *promotionEarningsService) Cancel(req *promotion.EarningsCancelReq) {
 		}
 
 		// 更新返佣总收益
-		_, err = tx.PromotionCommission.UpdateOneID(earning.CommissionID).AddAmountSum(-earning.Amount).Save(s.ctx)
+		com, _ := ent.Database.PromotionCommission.Query().Where(promotioncommission.ID(earning.CommissionID)).First(s.ctx)
+		if com == nil {
+			snag.Panic("返佣不存在")
+		}
+		_, err = tx.PromotionCommission.UpdateOneID(earning.CommissionID).SetAmountSum(tools.NewDecimal().Sub(com.AmountSum, earning.Amount)).Save(s.ctx)
 		if err != nil {
 			snag.Panic("更新返佣总收益失败")
 		}
@@ -144,17 +146,16 @@ func (s *promotionEarningsService) Cancel(req *promotion.EarningsCancelReq) {
 
 // CancelIncome 取消收益方法
 func (s *promotionEarningsService) cancelIncome(balance float64, frozen float64, amount float64) (float64, float64) {
+	dl := tools.NewDecimal()
 	if balance >= amount {
-		balance -= amount
+		balance = dl.Sub(balance, amount)
 	} else if balance < amount && balance+frozen >= amount {
 		// 如果可提现余额不足以扣除取消金额，则判断可提现余额与在途收益之和是否足够扣除取消金额。
 		// 如果可提现余额加上在途收益大于等于取消金额，从在途收益中扣除差额（取消金额减去可提现余额），同时将可提现余额设置为0
-		frozen -= amount - balance
+		frozen = dl.Sub(dl.Sub(frozen, amount), balance)
 		balance = 0
 	} else {
-		frozen -= amount
+		frozen = dl.Sub(frozen, amount)
 	}
-	balance, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", balance), 64)
-	frozen, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", frozen), 64)
 	return balance, frozen
 }

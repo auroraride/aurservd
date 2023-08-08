@@ -64,7 +64,7 @@ func (PromotionCommission) Fields() []ent.Field {
 		field.String("name").Comment("方案名"),
 		field.JSON("rule", &promotion.CommissionRule{}).Comment("返佣方案规则"),
 		field.Bool("enable").Default(true).Comment("启用状态 0:禁用 1:启用"),
-		field.Float("amount_sum").Nillable().Default(0).Comment("累计返佣金额"),
+		field.Float("amount_sum").Default(0).Comment("累计返佣金额"),
 		field.Text("desc").Optional().Nillable().Comment("返佣说明"),
 		field.JSON("history_id", []uint64{}).Optional().Comment("历史记录id"),
 		field.Time("start_at").Optional().Nillable().Comment("开始时间"),

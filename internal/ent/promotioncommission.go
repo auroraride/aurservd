@@ -44,7 +44,7 @@ type PromotionCommission struct {
 	// 启用状态 0:禁用 1:启用
 	Enable bool `json:"enable,omitempty"`
 	// 累计返佣金额
-	AmountSum *float64 `json:"amount_sum,omitempty"`
+	AmountSum float64 `json:"amount_sum,omitempty"`
 	// 返佣说明
 	Desc *string `json:"desc,omitempty"`
 	// 历史记录id
@@ -198,8 +198,7 @@ func (pc *PromotionCommission) assignValues(columns []string, values []any) erro
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
 				return fmt.Errorf("unexpected type %T for field amount_sum", values[i])
 			} else if value.Valid {
-				pc.AmountSum = new(float64)
-				*pc.AmountSum = value.Float64
+				pc.AmountSum = value.Float64
 			}
 		case promotioncommission.FieldDesc:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -310,10 +309,8 @@ func (pc *PromotionCommission) String() string {
 	builder.WriteString("enable=")
 	builder.WriteString(fmt.Sprintf("%v", pc.Enable))
 	builder.WriteString(", ")
-	if v := pc.AmountSum; v != nil {
-		builder.WriteString("amount_sum=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
+	builder.WriteString("amount_sum=")
+	builder.WriteString(fmt.Sprintf("%v", pc.AmountSum))
 	builder.WriteString(", ")
 	if v := pc.Desc; v != nil {
 		builder.WriteString("desc=")

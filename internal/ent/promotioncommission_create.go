@@ -372,7 +372,7 @@ func (pcc *PromotionCommissionCreate) createSpec() (*PromotionCommission, *sqlgr
 	}
 	if value, ok := pcc.mutation.AmountSum(); ok {
 		_spec.SetField(promotioncommission.FieldAmountSum, field.TypeFloat64, value)
-		_node.AmountSum = &value
+		_node.AmountSum = value
 	}
 	if value, ok := pcc.mutation.Desc(); ok {
 		_spec.SetField(promotioncommission.FieldDesc, field.TypeString, value)

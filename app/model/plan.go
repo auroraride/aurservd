@@ -33,6 +33,7 @@ type Plan struct {
 	Days           uint    `json:"days"`           // 骑士卡天数
 	Intelligent    bool    `json:"intelligent"`    // 是否智能电柜套餐
 	CommissionBase float64 `json:"commissionBase"` // 返佣底数
+	Original       float64 `json:"original"`       // 原价
 }
 
 type PlanComplexes []PlanComplex

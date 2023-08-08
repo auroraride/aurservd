@@ -134,7 +134,9 @@ const (
 type CommissionCalculation struct {
 	OrderID        uint64                    `json:"orderID"`        // 订单id
 	RiderID        uint64                    `json:"riderID"`        // 骑手id
-	CommissionBase float64                   `json:"commissionBase"` // 金额
+	ActualAmount   float64                   `json:"actualAmount"`   // 实付金额
+	Original       float64                   `json:"original"`       // 实际售价
+	CommissionBase float64                   `json:"commissionBase"` // 底数
 	Type           CommissionCalculationType `json:"type"`           // 任务类型 1:新签 2:续签
 }
 
@@ -146,8 +148,9 @@ type CommissionRuleRes struct {
 
 // CommissionRuleDetail 返佣规则
 type CommissionRuleDetail struct {
-	Key   CommissionRuleKey `json:"key"`   // key
-	Name  string            `json:"name"`  // 名称
-	Ratio float64           `json:"ratio"` // 比例
-	Desc  string            `json:"desc"`  // 说明
+	Key    CommissionRuleKey `json:"key"`    // key
+	Name   string            `json:"name"`   // 名称
+	Ratio  float64           `json:"ratio"`  // 比例
+	Amount float64           `json:"amount"` // 金额
+	Desc   string            `json:"desc"`   // 说明
 }

@@ -3,7 +3,6 @@ package service
 import (
 	"errors"
 	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/golang-module/carbon/v2"
@@ -11,11 +10,13 @@ import (
 
 	"github.com/auroraride/aurservd/app/model/promotion"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/promotioncommission"
 	"github.com/auroraride/aurservd/internal/ent/promotionearnings"
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/pkg/snag"
+	"github.com/auroraride/aurservd/pkg/tools"
 )
 
 type promotionCommissionService struct {
@@ -118,6 +119,7 @@ func (s *promotionCommissionService) detail(item *ent.PromotionCommission) promo
 		Desc:      item.Desc,
 		Enable:    item.Enable,
 		CreatedAt: item.CreatedAt.Format(carbon.DateTimeLayout),
+		AmountSum: item.AmountSum,
 	}
 
 	if item.StartAt != nil {
@@ -127,8 +129,6 @@ func (s *promotionCommissionService) detail(item *ent.PromotionCommission) promo
 		res.EndAt = item.EndAt.Format(carbon.DateTimeLayout)
 	}
 
-	amountSum, _ := strconv.ParseFloat(fmt.Sprintf("%.2f", *item.AmountSum), 64)
-	res.AmountSum = amountSum
 	// 正在使用
 	count := ent.Database.PromotionMember.QueryNotDeleted().Where(promotionmember.CommissionID(item.ID)).CountX(s.ctx)
 	res.UseCount = uint64(count)
@@ -312,15 +312,30 @@ func (s *promotionCommissionService) calculateFirstLevelCommission(req *promotio
 	conf := mem.Edges.Commission.Rule
 	count := 0
 	if req.Type == promotion.CommissionTypeNewlySigned { // 新签
-		res.Amount = s.calculateCommission(req.CommissionBase, s.getCommissionRatio(conf.NewUserCommission, promotion.FirstLevelNewSubscribeKey, 0))
+
+		res.Amount = s.calculateCommission(
+			req.Original,
+			req.ActualAmount,
+			req.CommissionBase,
+			s.getCommissionRatio(conf.NewUserCommission, promotion.FirstLevelNewSubscribeKey, 0),
+		)
+
 		res.CommissionRuleKey = promotion.FirstLevelNewSubscribeKey
 	} else if req.Type == promotion.CommissionTypeRenewal { // 续签
+
 		if conf.RenewalCommission[promotion.FirstLevelRenewalSubscribeKey].LimitedType == promotion.CommissionLimited { // 有限次数返佣
 			// 查询已经返佣的次数
 			count, _ = ent.Database.PromotionEarnings.Query().Where(promotionearnings.MemberID(mem.ID), promotionearnings.RiderID(req.RiderID)).Count(s.ctx)
 		}
+
 		// count-1 新签次数不算
-		res.Amount = s.calculateCommission(req.CommissionBase, s.getCommissionRatio(conf.RenewalCommission, promotion.FirstLevelRenewalSubscribeKey, count-1))
+		res.Amount = s.calculateCommission(
+			req.Original,
+			req.ActualAmount,
+			req.CommissionBase,
+			s.getCommissionRatio(conf.RenewalCommission, promotion.FirstLevelRenewalSubscribeKey, count-1),
+		)
+
 		res.CommissionRuleKey = promotion.FirstLevelRenewalSubscribeKey
 	}
 	return
@@ -344,7 +359,13 @@ func (s *promotionCommissionService) calculateSecondLevelCommission(req *promoti
 		count := 0
 		if req.Type == promotion.CommissionTypeNewlySigned { // 新签
 
-			res.Amount = s.calculateCommission(req.CommissionBase, s.getCommissionRatio(parentMember.Edges.Commission.Rule.NewUserCommission, promotion.SecondLevelNewSubscribeKey, 0))
+			res.Amount = s.calculateCommission(
+				req.Original,
+				req.ActualAmount,
+				req.CommissionBase,
+				s.getCommissionRatio(parentMember.Edges.Commission.Rule.NewUserCommission, promotion.SecondLevelNewSubscribeKey, 0),
+			)
+
 			res.CommissionRuleKey = promotion.SecondLevelNewSubscribeKey
 
 		} else if req.Type == promotion.CommissionTypeRenewal { // 续签
@@ -354,7 +375,12 @@ func (s *promotionCommissionService) calculateSecondLevelCommission(req *promoti
 				count, _ = ent.Database.PromotionEarnings.Query().Where(promotionearnings.MemberID(parentMember.ID), promotionearnings.RiderID(req.RiderID)).Count(s.ctx)
 			}
 
-			res.Amount = s.calculateCommission(req.CommissionBase, s.getCommissionRatio(conf.RenewalCommission, promotion.SecondLevelRenewalSubscribeKey, count-1))
+			res.Amount = s.calculateCommission(
+				req.Original,
+				req.ActualAmount,
+				req.CommissionBase, s.getCommissionRatio(conf.RenewalCommission, promotion.SecondLevelRenewalSubscribeKey, count-1),
+			)
+
 			res.CommissionRuleKey = promotion.SecondLevelRenewalSubscribeKey
 		}
 	}
@@ -379,14 +405,24 @@ func (s *promotionCommissionService) saveEarningsAndUpdateCommission(tx *ent.Tx,
 		}
 
 		// 更新返佣总收益
-		_, err = tx.PromotionCommission.UpdateOneID(req.CommissionID).AddAmountSum(req.Amount).Save(s.ctx)
+		com, _ := ent.Database.PromotionCommission.Query().Where(promotioncommission.ID(req.CommissionID)).First(s.ctx)
+		if com == nil {
+			zap.L().Error("返佣方案不存在", zap.Error(err), zap.Any("收益记录", req))
+			return
+		}
+		_, err = tx.PromotionCommission.UpdateOneID(req.CommissionID).SetAmountSum(tools.NewDecimal().Sum(com.AmountSum, req.Amount)).Save(s.ctx)
 		if err != nil {
 			zap.L().Error("返佣总收益更新失败", zap.Error(err), zap.Any("收益记录", req))
 			return
 		}
 
 		// 更新会员未结算收益
-		_, err = tx.PromotionMember.UpdateOneID(req.MemberID).AddFrozen(req.Amount).Save(s.ctx)
+		mem, _ := ent.Database.PromotionMember.QueryNotDeleted().Where(promotionmember.ID(req.MemberID)).First(s.ctx)
+		if mem == nil {
+			zap.L().Error("会员不存在", zap.Error(err), zap.Any("收益记录", req))
+			return
+		}
+		_, err = tx.PromotionMember.UpdateOneID(req.MemberID).SetFrozen(tools.NewDecimal().Sum(mem.Frozen, req.Amount)).Save(s.ctx)
 		if err != nil {
 			zap.L().Error("会员未结算收益更新失败", zap.Error(err), zap.Any("收益记录", req))
 			return
@@ -424,9 +460,9 @@ func (s *promotionCommissionService) saveEarningsAndUpdateCommission(tx *ent.Tx,
 }
 
 // 计算返佣金额
-func (s *promotionCommissionService) calculateCommission(baseAmount, ratio float64) float64 {
-	float, _ := strconv.ParseFloat(fmt.Sprintf("%.2f", baseAmount*ratio/100), 64)
-	return float
+func (s *promotionCommissionService) calculateCommission(original, actualAmount, baseAmount, ratio float64) float64 {
+	dl := tools.NewDecimal()
+	return actualAmount / dl.Sum(original, dl.Mul(baseAmount, ratio/100))
 }
 
 // 获取续费返佣比例
@@ -478,15 +514,24 @@ func (s *promotionCommissionService) GetCommissionRule(mem *ent.PromotionMember)
 		snag.Panic("默认返佣方案规则不存在")
 	}
 
+	// 查询最高返佣金额
+	var commissionBase float64
+	pl, _ := ent.Database.Plan.QueryNotDeleted().Where(plan.CommissionBaseNEQ(0)).Order(ent.Desc(plan.FieldCommissionBase)).First(s.ctx)
+	if pl == nil {
+		commissionBase = 0
+	} else {
+		commissionBase = pl.CommissionBase
+	}
+
 	dfRule := commission.Rule
-	rd := s.appendCommissionRuleDetails(dfRule)
+	rd := s.appendCommissionRuleDetails(dfRule, commissionBase)
 	detailDesc := commission.Desc
 
 	if mem != nil && mem.Edges.Commission != nil {
 		detailDesc = mem.Edges.Commission.Desc
 		meRule := mem.Edges.Commission.Rule
 		if meRule != nil {
-			rd = s.appendCommissionRuleDetails(meRule)
+			rd = s.appendCommissionRuleDetails(meRule, commissionBase)
 		}
 	}
 
@@ -497,7 +542,7 @@ func (s *promotionCommissionService) GetCommissionRule(mem *ent.PromotionMember)
 }
 
 // 添加佣金规则详情到结果列表
-func (s *promotionCommissionService) appendCommissionRuleDetails(r *promotion.CommissionRule) []promotion.CommissionRuleDetail {
+func (s *promotionCommissionService) appendCommissionRuleDetails(r *promotion.CommissionRule, amount float64) []promotion.CommissionRuleDetail {
 	res := make([]promotion.CommissionRuleDetail, 0, 4)
 	cfg := &promotion.CommissionRuleConfig{}
 
@@ -520,6 +565,8 @@ func (s *promotionCommissionService) appendCommissionRuleDetails(r *promotion.Co
 				// 取比例最高的值
 				rd.Ratio = s.findMaxNumber(cfg.Ratio)
 			}
+			// 计算返佣金额
+			rd.Amount = tools.NewDecimal().Mul(amount, rd.Ratio/100)
 
 			res = append(res, rd)
 		}

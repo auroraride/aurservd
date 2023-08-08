@@ -45,8 +45,8 @@ func (*promotionEarningsTask) Do() {
 
 	// 查询收益明细 7天前的收益
 	all, _ := ent.Database.PromotionEarnings.Query().Where(
-		promotionearnings.CreatedAtGTE(carbon.Now().StartOfDay().AddDays(-7).Carbon2Time()),
-		promotionearnings.CreatedAtLTE(carbon.Now().EndOfDay().AddDays(-7).Carbon2Time()),
+		promotionearnings.CreatedAtGTE(carbon.Now().StartOfDay().AddDays(-1).Carbon2Time()),
+		promotionearnings.CreatedAtLTE(carbon.Now().EndOfDay().AddDays(-1).Carbon2Time()),
 		promotionearnings.Status(promotion.EarningsStatusUnsettled.Value()),
 	).All(ctx)
 
