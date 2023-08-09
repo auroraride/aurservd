@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/golang-module/carbon/v2"
+	"github.com/labstack/echo/v4"
 
 	"github.com/auroraride/aurservd/internal/ent/promotionbankcard"
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
@@ -30,7 +31,7 @@ func NewPromotionWithdrawalService(params ...any) *promotionWithdrawalService {
 }
 
 // List 提现列表
-func (s *promotionWithdrawalService) List(req *promotion.WithdrawalListReq) *model.PaginationRes {
+func (s *promotionWithdrawalService) List(ctx echo.Context, req *promotion.WithdrawalListReq) *model.PaginationRes {
 	q := ent.Database.PromotionWithdrawal.Query().WithCards().WithMember().Order(ent.Asc(promotionwithdrawal.FieldStatus), ent.Desc(promotionwithdrawal.FieldCreatedAt))
 
 	if req.ID != nil {
@@ -38,7 +39,7 @@ func (s *promotionWithdrawalService) List(req *promotion.WithdrawalListReq) *mod
 	}
 
 	if req.Account != nil {
-		q.Where(promotionwithdrawal.HasCardsWith(promotionbankcard.CardNo(*req.Account)))
+		q.Where(promotionwithdrawal.HasCardsWith(promotionbankcard.CardNoContains(*req.Account)))
 	}
 
 	if req.Status != nil {
@@ -89,7 +90,9 @@ func (s *promotionWithdrawalService) List(req *promotion.WithdrawalListReq) *mod
 					BankLogoURL: item.Edges.Cards.BankLogoURL,
 					Bank:        item.Edges.Cards.Bank,
 				}
-				if item.Method == promotion.WithdrawalMethodBank.Value() && len(account) > 4 {
+
+				res.BankCard.CardNo = account
+				if item.Method == promotion.WithdrawalMethodBank.Value() && len(account) > 4 && ctx.Path() != "/manager/v1/promotion/withdrawal" {
 					// 截取银行卡号后四位
 					res.BankCard.CardNo = account[len(account)-4:]
 				}

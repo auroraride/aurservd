@@ -25,7 +25,7 @@ var PromotionWithdrawal = new(promotionWithdrawal)
 // @Success      200  {object}  []promotion.WithdrawalListRes
 func (l *promotionWithdrawal) List(c echo.Context) (err error) {
 	ctx, req := app.PromotionContextAndBinding[promotion.WithdrawalListReq](c)
-	return ctx.SendResponse(service.NewPromotionWithdrawalService().List(&promotion.WithdrawalListReq{
+	return ctx.SendResponse(service.NewPromotionWithdrawalService().List(ctx, &promotion.WithdrawalListReq{
 		ID:               &ctx.Member.ID,
 		PaginationReq:    req.PaginationReq,
 		WithdrawalFilter: req.WithdrawalFilter,

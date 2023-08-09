@@ -269,7 +269,7 @@ func loadManagerRoutes() {
 	g.POST("/promotion/earnings/cancel", mapi.PromotionEarnings.Cancel) // 取消收益
 
 	// PM3 提现
-	g.GET("/promotion/withdrawl", mapi.PromotionWithdrawal.List)                       // 提现记录列表
+	g.GET("/promotion/withdrawal", mapi.PromotionWithdrawal.List)                      // 提现记录列表
 	g.POST("/promotion/withdrawal/alter/review", mapi.PromotionWithdrawal.AlterReview) // 提现审核
 	g.GET("/promotion/withdrawal/export", mapi.PromotionWithdrawal.Export)             // 导出提现申请
 
