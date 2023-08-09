@@ -339,9 +339,9 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 			return
 		}
 
-		// 激活成功后，返佣计算
+		// 激活成功后，返佣计算 新签和重签
 		// 团签用户不返佣 个签用户返佣
-		if sub.EnterpriseID == nil && sub.Type == model.OrderTypeNewly {
+		if sub.EnterpriseID == nil && sub.Type == model.OrderTypeNewly || sub.Type == model.OrderTypeAgain {
 
 			var commissionType promotion.CommissionCalculationType
 

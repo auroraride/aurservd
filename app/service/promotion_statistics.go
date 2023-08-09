@@ -72,7 +72,7 @@ WITH RECURSIVE member_hierarchy AS (
 SELECT
     COUNT(DISTINCT mh.referred_member_id) AS TotalTeam,
     COUNT(DISTINCT CASE WHEN s.status<>0 AND o.type = 1 THEN mh.referred_member_id END) AS TotalNewSign,
-    COUNT(CASE WHEN s.status<>0 AND o.type = 2 THEN mh.referred_member_id END) AS TotalRenewal
+    COUNT(CASE WHEN s.status<>0 AND (o.type = 2 OR o.type = 3) THEN mh.referred_member_id END) AS TotalRenewal
 FROM member_hierarchy mh
 LEFT JOIN "order" o ON mh.rider_id = o.rider_id
 LEFT JOIN subscribe s ON mh.rider_id = s.rider_id
@@ -241,7 +241,7 @@ SELECT
     level,
     COUNT(DISTINCT mh.referred_member_id) AS TotalTeam,
     COUNT(DISTINCT CASE WHEN s.status<>0 AND o.type = 1 THEN mh.referred_member_id END) AS TotalNewSign,
-    COUNT(CASE WHEN s.status<>0 AND o.type = 2 THEN mh.referred_member_id END) AS TotalRenewal
+    COUNT(CASE WHEN s.status <> 0 OR o.type IN ( 2 , 3 ) THEN mh.referred_member_id END) AS TotalRenewal
 FROM member_hierarchy mh
 LEFT JOIN "order" o ON mh.rider_id = o.rider_id
 LEFT JOIN subscribe s ON mh.rider_id = s.rider_id
