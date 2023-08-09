@@ -59,7 +59,7 @@ type WithdrawalFilter struct {
 	Status  *uint8  `json:"status" query:"status" enums:"0,1,2"` // 提现状态 0:待审核 1:成功 2:失败
 	Start   *string `json:"start" query:"start"`                 // 开始日期
 	End     *string `json:"end" query:"end"`                     // 结束日期
-	Keywork *string `json:"keywork" query:"keywork"`             // 关键字
+	Keyword *string `json:"keywork" query:"keyword"`             // 关键字
 }
 
 // WithdrawalListRes 提现列表响应

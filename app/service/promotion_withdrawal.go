@@ -46,11 +46,11 @@ func (s *promotionWithdrawalService) List(ctx echo.Context, req *promotion.Withd
 		q.Where(promotionwithdrawal.Status(*req.Status))
 	}
 
-	if req.Keywork != nil {
+	if req.Keyword != nil {
 		q.Where(promotionwithdrawal.HasMemberWith(
 			promotionmember.Or(
-				promotionmember.NameContains(*req.Keywork),
-				promotionmember.PhoneContains(*req.Keywork),
+				promotionmember.NameContains(*req.Keyword),
+				promotionmember.PhoneContains(*req.Keyword),
 			),
 		))
 	}
