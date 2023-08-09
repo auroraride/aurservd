@@ -165,5 +165,8 @@ func (s *promotionEarningsService) CountCommission(memberID, riderID uint64) (co
 	return ent.Database.PromotionEarnings.Query().Where(
 		promotionearnings.MemberID(memberID),
 		promotionearnings.RiderID(riderID),
-	).Where().Count(s.ctx)
+	).Where(promotionearnings.Or(
+		promotionearnings.CommissionRuleKeyEQ(promotion.FirstLevelRenewalSubscribeKey.Value()),
+		promotionearnings.CommissionRuleKeyEQ(promotion.SecondLevelRenewalSubscribeKey.Value()),
+	)).Count(s.ctx)
 }

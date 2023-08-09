@@ -25,9 +25,6 @@ func NewPromotionBankCardService() *promotionBankCardService {
 func (s *promotionBankCardService) List(mem *ent.PromotionMember) (res []*promotion.BankCardRes) {
 	res = make([]*promotion.BankCardRes, 0)
 	list, _ := ent.Database.PromotionBankCard.Query().Where(promotionbankcard.MemberID(mem.ID)).Order(ent.Desc(promotionbankcard.FieldCreatedAt)).All(s.ctx)
-	if len(list) == 0 {
-		snag.Panic("获取银行卡列表失败")
-	}
 	for _, item := range list {
 		data := &promotion.BankCardRes{
 			ID:          item.ID,

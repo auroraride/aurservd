@@ -71,7 +71,7 @@ func (m member) Update(c echo.Context) (err error) {
 // @Success      200  {object}  model.PaginationRes{items=[]promotion.MemberTeamRes}
 func (m *member) TeamList(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[promotion.MemberTeamReq](c)
-	return ctx.SendResponse(service.NewPromotionMemberService().TeamList(req))
+	return ctx.SendResponse(service.NewPromotionMemberService().TeamList(ctx, req))
 }
 
 // SetCommission

@@ -97,7 +97,7 @@ func (m *member) UpdateAvatar(c echo.Context) (err error) {
 // @Success      200  {object}  model.PaginationRes{items=[]promotion.MemberTeamRes}
 func (m *member) Team(c echo.Context) (err error) {
 	ctx, req := app.PromotionContextAndBinding[promotion.MemberTeamReq](c)
-	return ctx.SendResponse(service.NewPromotionMemberService().TeamList(&promotion.MemberTeamReq{
+	return ctx.SendResponse(service.NewPromotionMemberService().TeamList(ctx, &promotion.MemberTeamReq{
 		ID:               ctx.Member.ID,
 		PaginationReq:    req.PaginationReq,
 		MemberTeamFilter: req.MemberTeamFilter,

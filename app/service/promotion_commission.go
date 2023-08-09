@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"fmt"
+	"math"
 	"time"
 
 	"github.com/golang-module/carbon/v2"
@@ -459,7 +460,14 @@ func (s *promotionCommissionService) saveEarningsAndUpdateCommission(tx *ent.Tx,
 // 计算返佣金额
 func (s *promotionCommissionService) calculateCommission(price, actualAmount, baseAmount, ratio float64) float64 {
 	dl := tools.NewDecimal()
-	return dl.Mul(actualAmount/price, dl.Mul(baseAmount, ratio/100))
+	amount := dl.Mul(actualAmount/price, dl.Mul(baseAmount, ratio/100))
+	zap.L().Info("计算返佣金额", zap.Any("计算参数", map[string]interface{}{
+		"price":        price,
+		"actualAmount": actualAmount,
+		"baseAmount":   baseAmount,
+		"ratio":        ratio,
+	}))
+	return amount
 }
 
 // 获取续费返佣比例
@@ -563,7 +571,7 @@ func (s *promotionCommissionService) appendCommissionRuleDetails(r *promotion.Co
 				rd.Ratio = s.findMaxNumber(cfg.Ratio)
 			}
 			// 计算返佣金额
-			rd.Amount = tools.NewDecimal().Mul(amount, rd.Ratio/100)
+			rd.Amount = uint64(math.Round(tools.NewDecimal().Mul(amount, rd.Ratio/100)))
 
 			res = append(res, rd)
 		}

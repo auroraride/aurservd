@@ -13,6 +13,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/golang-module/carbon/v2"
+	"github.com/labstack/echo/v4"
 	"go.uber.org/zap"
 
 	"github.com/auroraride/aurservd/internal/ent/promotionlevel"
@@ -148,7 +149,7 @@ func (s *promotionMemberService) getRiderOrCreate(tx *ent.Tx, phone string, c *p
 func (s *promotionMemberService) updateMemberInfo(tx *ent.Tx, mem *ent.PromotionMember, req *promotion.MemberCreateReq) {
 	if req.RiderID != nil && req.RiderID != mem.RiderID {
 		tx.PromotionMember.UpdateOne(mem).SetNillableRiderID(req.RiderID).ExecX(s.ctx)
-		tx.PromotionReferrals.Update().Where(promotionreferrals.ReferringMemberID(mem.ID)).SetNillableRiderID(req.RiderID).ExecX(s.ctx)
+		tx.PromotionReferrals.Update().Where(promotionreferrals.ReferredMemberIDEQ(mem.ID)).SetNillableRiderID(req.RiderID).ExecX(s.ctx)
 	}
 }
 
@@ -461,7 +462,7 @@ func (s *promotionMemberService) Update(req *promotion.MemberUpdateReq) {
 }
 
 // TeamList 会员团队列表
-func (s *promotionMemberService) TeamList(req *promotion.MemberTeamReq) model.PaginationRes {
+func (s *promotionMemberService) TeamList(ctx echo.Context, req *promotion.MemberTeamReq) model.PaginationRes {
 	sqls := `
 			WITH RECURSIVE member_hierarchy AS (
                 SELECT referred_member_id, 1 AS level,rider_id,created_at
@@ -521,10 +522,16 @@ func (s *promotionMemberService) TeamList(req *promotion.MemberTeamReq) model.Pa
 
 		row := &promotion.MemberTeamRes{
 			ID:           item.ID,
-			Phone:        s.MaskSensitiveInfo(item.Phone, 3, 4),
-			Name:         s.MaskName(item.Name.String),
 			Level:        item.Level.String(),
 			RenewalCount: item.RenewalCount,
+		}
+
+		row.Name = item.Name.String
+		row.Phone = item.Phone
+		// 根据路由判断是否需要Mask Name
+		if ctx.Path() != "/manager/v1/promotion/member/team/:id" {
+			row.Name = s.MaskName(item.Name.String)
+			row.Phone = s.MaskSensitiveInfo(item.Phone, 3, 4)
 		}
 
 		if item.SubscribeStatus.Valid {

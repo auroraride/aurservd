@@ -644,18 +644,21 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
 		// 这里订单的新签有可能是续签,因为当退订时间超出设定时间间隔后视为新签,这里只处理续签的情况
 		// 新签在激活时处理
 		if trade.OrderType == model.OrderTypeNewly || trade.OrderType == model.OrderTypeRenewal {
-			var commissionType promotion.CommissionCalculationType
+			commissionType := promotion.CommissionTypeRenewal
 
 			ri := ent.Database.Rider.QueryNotDeleted().Where(rider.IDEQ(trade.RiderID)).FirstX(s.ctx)
 			if ri == nil {
 				zap.L().Error("订单已支付, 骑手不存在: "+trade.OutTradeNo, zap.Error(err))
 				return
 			}
+
 			// 判断返佣类型
-			commissionType, err = NewPromotionCommissionService().GetCommissionType(ri.Phone)
-			if err != nil {
-				zap.L().Error("订单已支付, 返佣失败: "+trade.OutTradeNo, zap.Error(err))
-				return
+			if trade.OrderType == model.OrderTypeNewly {
+				commissionType, err = NewPromotionCommissionService().GetCommissionType(ri.Phone)
+				if err != nil {
+					zap.L().Error("订单已支付, 返佣失败: "+trade.OutTradeNo, zap.Error(err))
+					return
+				}
 			}
 
 			// 续费返佣

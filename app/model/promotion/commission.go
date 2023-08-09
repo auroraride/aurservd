@@ -151,6 +151,6 @@ type CommissionRuleDetail struct {
 	Key    CommissionRuleKey `json:"key"`    // key
 	Name   string            `json:"name"`   // 名称
 	Ratio  float64           `json:"ratio"`  // 比例
-	Amount float64           `json:"amount"` // 金额
+	Amount uint64            `json:"amount"` // 金额
 	Desc   string            `json:"desc"`   // 说明
 }
