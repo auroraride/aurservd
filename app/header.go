@@ -24,8 +24,10 @@ const (
 	HeaderManagerToken = "X-Manager-Token"
 	// HeaderEmployeeToken 店员token
 	HeaderEmployeeToken = "X-Employee-Token"
-	// HeaderAgentToken 代理商token
+	// HeaderAgentToken 代理token
 	HeaderAgentToken = "X-Agent-Token"
+	// HeaderMaintainerToken 运维token
+	HeaderMaintainerToken = "X-Maintainer-Token"
 	// HeaderPromotionToken 推广token
 	HeaderPromotionToken = "X-Promotion-Token"
 )

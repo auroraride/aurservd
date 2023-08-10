@@ -108,6 +108,9 @@ type Feedback func(*sql.Selector)
 // Inventory is the predicate function for inventory builders.
 type Inventory func(*sql.Selector)
 
+// Maintainer is the predicate function for maintainer builders.
+type Maintainer func(*sql.Selector)
+
 // Manager is the predicate function for manager builders.
 type Manager func(*sql.Selector)
 

@@ -2607,7 +2607,7 @@ definitions:
       brand:
         allOf:
         - $ref: '#/definitions/adapter.CabinetBrand'
-        description: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
+        description: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)
         enum:
         - KAIXIN
         - YUNDONG
@@ -2730,7 +2730,7 @@ definitions:
       brand:
         allOf:
         - $ref: '#/definitions/adapter.CabinetBrand'
-        description: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
+        description: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)
         enum:
         - KAIXIN
         - YUNDONG
@@ -2956,7 +2956,7 @@ definitions:
       brand:
         allOf:
         - $ref: '#/definitions/adapter.CabinetBrand'
-        description: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
+        description: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)
         enum:
         - KAIXIN
         - YUNDONG
@@ -5079,6 +5079,77 @@ definitions:
         description: 操作时间
         type: string
     type: object
+  model.Maintainer:
+    properties:
+      cities:
+        description: 城市列表
+        items:
+          $ref: '#/definitions/model.City'
+        type: array
+      enable:
+        description: 是否启用
+        type: boolean
+      id:
+        type: integer
+      name:
+        description: 姓名
+        type: string
+      phone:
+        description: 电话
+        type: string
+    type: object
+  model.MaintainerCreateReq:
+    properties:
+      cityIds:
+        items:
+          type: integer
+        type: array
+      enable:
+        description: 是否启用，默认`true`
+        type: boolean
+      name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+    required:
+      - cityIds
+      - name
+      - password
+      - phone
+    type: object
+  model.MaintainerSigninReq:
+    properties:
+      password:
+        type: string
+      phone:
+        type: string
+    required:
+      - password
+      - phone
+    type: object
+  model.MaintainerSigninRes:
+    properties:
+      cities:
+        description: 城市列表
+        items:
+          $ref: '#/definitions/model.City'
+        type: array
+      enable:
+        description: 是否启用
+        type: boolean
+      id:
+        type: integer
+      name:
+        description: 姓名
+        type: string
+      phone:
+        description: 电话
+        type: string
+      token:
+        type: string
+    type: object
   model.ManagerCreateReq:
     properties:
       name:
@@ -5477,6 +5548,9 @@ definitions:
     type: object
   model.Plan:
     properties:
+      commissionBase:
+        description: 返佣底数
+        type: number
       days:
         description: 骑士卡天数
         type: integer
@@ -5489,11 +5563,17 @@ definitions:
       name:
         description: 骑士卡名称
         type: string
+      price:
+        description: 售价
+        type: number
     type: object
   model.PlanComplex:
     properties:
       commission:
         description: 提成
+        type: number
+      commissionBase:
+        description: 推广返佣底数
         type: number
       days:
         minimum: 1
@@ -7159,7 +7239,7 @@ definitions:
         description: 结束时间
         type: string
       enterpriseId:
-        description: 企业ID (代理该参数不生效)
+        description: 企业ID
         type: integer
       goal:
         allOf:
@@ -8021,6 +8101,948 @@ definitions:
       sn:
         description: 接口编号
         type: string
+    type: object
+  promotion.Achievement:
+    properties:
+      condition:
+        description: 完成条件
+        type: integer
+      icon:
+        description: 成就图标
+        type: string
+      name:
+        description: 成就名称
+        type: string
+      type:
+        allOf:
+          - $ref: '#/definitions/promotion.AchievementType'
+        description: 成就类型 1:邀请成就 2:收益成就
+        enum:
+          - 1
+          - 2
+    required:
+      - condition
+      - icon
+      - name
+      - type
+    type: object
+  promotion.AchievementType:
+    enum:
+      - 1
+      - 2
+    type: integer
+    x-enum-comments:
+      AchievementEarnings: 收益成就
+      AchievementInvite: 邀请成就
+    x-enum-varnames:
+      - AchievementInvite
+      - AchievementEarnings
+  promotion.BankCardReq:
+    type: object
+  promotion.BankCardRes:
+    properties:
+      bank:
+        description: 银行名称
+        type: string
+      bankLogoUrl:
+        description: 银行logo
+        type: string
+      cardNo:
+        description: 银行卡号
+        type: string
+      id:
+        description: id
+        type: integer
+      isDefault:
+        description: 是否默认
+        type: boolean
+    type: object
+  promotion.CommissionCreateReq:
+    properties:
+      desc:
+        description: 返佣说明
+        type: string
+      memberId:
+        description: 会员id
+        type: integer
+      name:
+        description: 方案名称
+        type: string
+      rule:
+        allOf:
+          - $ref: '#/definitions/promotion.CommissionRule'
+        description: 返佣规则
+      type:
+        allOf:
+          - $ref: '#/definitions/promotion.CommissionType'
+        description: 返佣类型 0:默认全局返佣方案 1:通用返佣方案 2:为个人自定义返佣方案
+    required:
+      - desc
+      - name
+      - rule
+      - type
+    type: object
+  promotion.CommissionDetail:
+    properties:
+      amountSum:
+        description: 佣金总额
+        type: number
+      createdAt:
+        description: 创建时间
+        type: string
+      desc:
+        description: 返佣说明
+        type: string
+      enable:
+        description: 启用状态 false:禁用 true:启用
+        type: boolean
+      endAt:
+        description: 结束时间
+        type: string
+      id:
+        description: id
+        type: integer
+      memberId:
+        description: 会员id
+        type: integer
+      name:
+        description: 方案名称
+        type: string
+      rule:
+        allOf:
+          - $ref: '#/definitions/promotion.CommissionRule'
+        description: 返佣规则
+      startAt:
+        description: 开始时间
+        type: string
+      type:
+        allOf:
+          - $ref: '#/definitions/promotion.CommissionType'
+        description: 返佣类型 0:默认全局返佣方案 1:通用返佣方案 2:为个人自定义返佣方案
+      useCount:
+        description: 使用次数
+        type: integer
+    type: object
+  promotion.CommissionEnableReq:
+    properties:
+      enable:
+        description: 启用状态 false:禁用 true:启用
+        type: boolean
+    required:
+      - enable
+    type: object
+  promotion.CommissionLimitedType:
+    enum:
+      - 1
+      - 2
+    type: integer
+    x-enum-comments:
+      CommissionLimited: 有限返佣
+      CommissionUnlimited: 无限返佣
+    x-enum-varnames:
+      - CommissionLimited
+      - CommissionUnlimited
+  promotion.CommissionRule:
+    properties:
+      newUserCommission:
+        additionalProperties:
+          $ref: '#/definitions/promotion.CommissionRuleConfig'
+        description: 新用户返佣规则
+        type: object
+      renewalCommission:
+        additionalProperties:
+          $ref: '#/definitions/promotion.CommissionRuleConfig'
+        description: 续签返佣规则
+        type: object
+    type: object
+  promotion.CommissionRuleConfig:
+    properties:
+      desc:
+        description: 任务内容说明
+        type: string
+      limitedType:
+        allOf:
+          - $ref: '#/definitions/promotion.CommissionLimitedType'
+        description: 返佣次数类型 1:有限返佣 2:无限返佣
+      name:
+        description: 任务名称
+        type: string
+      ratio:
+        description: 返佣比例列表
+        items:
+          type: number
+        type: array
+    type: object
+  promotion.CommissionRuleDetail:
+    properties:
+      amount:
+        description: 金额
+        type: integer
+      desc:
+        description: 说明
+        type: string
+      key:
+        allOf:
+          - $ref: '#/definitions/promotion.CommissionRuleKey'
+        description: key
+      name:
+        description: 名称
+        type: string
+      ratio:
+        description: 比例
+        type: number
+    type: object
+  promotion.CommissionRuleKey:
+    enum:
+      - firstLevelNewSubscribe
+      - firstLevelRenewalSubscribe
+      - secondLevelNewSubscribe
+      - secondLevelRenewalSubscribe
+    type: string
+    x-enum-comments:
+      FirstLevelNewSubscribeKey: 一级团员新签
+      FirstLevelRenewalSubscribeKey: 一级团员续费
+      SecondLevelNewSubscribeKey: 二级团员新签
+      SecondLevelRenewalSubscribeKey: 二级团员续费
+    x-enum-varnames:
+      - FirstLevelNewSubscribeKey
+      - FirstLevelRenewalSubscribeKey
+      - SecondLevelNewSubscribeKey
+      - SecondLevelRenewalSubscribeKey
+  promotion.CommissionRuleRes:
+    properties:
+      detail:
+        description: 返佣规则
+        items:
+          $ref: '#/definitions/promotion.CommissionRuleDetail'
+        type: array
+      detailDesc:
+        description: 详细规则说明
+        type: string
+    type: object
+  promotion.CommissionSelection:
+    properties:
+      id:
+        description: id
+        type: integer
+      name:
+        description: 方案名称
+        type: string
+    type: object
+  promotion.CommissionTaskSelect:
+    properties:
+      key:
+        allOf:
+          - $ref: '#/definitions/promotion.CommissionRuleKey'
+        description: key
+      name:
+        description: 名称
+        type: string
+    type: object
+  promotion.CommissionType:
+    enum:
+      - 0
+      - 1
+      - 2
+    type: integer
+    x-enum-comments:
+      CommissionCommon: 通用返佣方案
+      CommissionCustom: 为个人自定义返佣方案
+      CommissionDefault: 默认全局返佣方案
+    x-enum-varnames:
+      - CommissionDefault
+      - CommissionCommon
+      - CommissionCustom
+  promotion.EarningsReq:
+    properties:
+      commissionRuleKey:
+        description: 任务类型
+        type: string
+      current:
+        description: 当前页, 从1开始, 默认1
+        type: integer
+      end:
+        description: 结束日期
+        type: string
+      keyword:
+        description: 关键词 手机号/姓名
+        type: string
+      pageSize:
+        description: 每页数据, 默认20
+        type: integer
+      start:
+        description: 开始日期
+        type: string
+      status:
+        description: 状态 0:未结算 1:已结算 2:已取消
+        enum:
+          - 0
+          - 1
+          - 2
+        type: integer
+    type: object
+  promotion.EarningsRes:
+    properties:
+      amount:
+        description: 金额
+        type: number
+      commissionId:
+        description: 返佣方案id
+        type: integer
+      commissionRuleName:
+        description: 返佣方案类型
+        type: string
+      createTime:
+        description: 返佣时间
+        type: string
+      id:
+        description: id
+        type: integer
+      memberId:
+        description: 会员id
+        type: integer
+      name:
+        description: 姓名
+        type: string
+      phone:
+        description: 手机号
+        type: string
+      remark:
+        description: 备注
+        type: string
+      status:
+        description: 状态 0:未结算 1:已结算 2:已取消
+        type: integer
+    type: object
+  promotion.GrowthReq:
+    properties:
+      current:
+        description: 当前页, 从1开始, 默认1
+        type: integer
+      end:
+        description: 结束日期
+        type: string
+      keyword:
+        description: 关键词 手机号/姓名
+        type: string
+      levelTaskId:
+        description: 等级任务id
+        type: integer
+      pageSize:
+        description: 每页数据, 默认20
+        type: integer
+      start:
+        description: 开始日期
+        type: string
+    type: object
+  promotion.GrowthRes:
+    properties:
+      createdAt:
+        description: 创建时间
+        type: string
+      growthValue:
+        description: 成长值
+        type: integer
+      id:
+        description: id
+        type: integer
+      levelTaskId:
+        description: 等级任务名称
+        type: string
+      name:
+        description: 姓名
+        type: string
+      phone:
+        description: 手机号
+        type: string
+    type: object
+  promotion.Level:
+    properties:
+      commissionRatio:
+        description: 佣金比例
+        type: number
+      growthValue:
+        description: 成长值
+        type: integer
+      level:
+        description: 会员等级
+        type: integer
+    required:
+      - commissionRatio
+      - growthValue
+    type: object
+  promotion.LevelTask:
+    properties:
+      description:
+        description: 任务描述
+        type: string
+      growthValue:
+        description: 成长值
+        type: integer
+      name:
+        description: 任务名称
+        type: string
+      type:
+        allOf:
+          - $ref: '#/definitions/promotion.LevelTaskType'
+        description: 类型 1:签约 2:续费
+    required:
+      - growthValue
+    type: object
+  promotion.LevelTaskType:
+    enum:
+      - 1
+      - 2
+    type: integer
+    x-enum-comments:
+      LevelTaskTypeRenew: 续费
+      LevelTaskTypeSign: 签约
+    x-enum-varnames:
+      - LevelTaskTypeSign
+      - LevelTaskTypeRenew
+  promotion.MemberBaseInfo:
+    properties:
+      id:
+        description: id
+        type: integer
+      idCardNumber:
+        description: 身份证号
+        type: string
+      name:
+        description: 姓名
+        type: string
+      phone:
+        description: 手机号
+        type: string
+    type: object
+  promotion.MemberCommissionReq:
+    properties:
+      commissionId:
+        description: 返佣方案
+        type: integer
+      desc:
+        description: 返佣说明
+        type: string
+      id:
+        type: integer
+      rule:
+        allOf:
+          - $ref: '#/definitions/promotion.CommissionRule'
+        description: 返佣规则
+    required:
+      - id
+    type: object
+  promotion.MemberProfile:
+    properties:
+      authStatus:
+        allOf:
+          - $ref: '#/definitions/promotion.PersonAuthStatus'
+        description: 实名认证状态 0:未认证 1:已认证 2:认证失败
+      authStatusName:
+        description: 实名认证状态名称
+        type: string
+      avatarUrl:
+        description: 头像
+        type: string
+      id:
+        description: id
+        type: integer
+      idCardNumber:
+        description: 身份证号
+        type: string
+      level:
+        description: 会员等级
+        type: integer
+      name:
+        description: 姓名
+        type: string
+      phone:
+        description: 手机号
+        type: string
+    type: object
+  promotion.MemberReq:
+    properties:
+      authStatus:
+        allOf:
+          - $ref: '#/definitions/promotion.PersonAuthStatus'
+        description: 是否实名认证
+        enum:
+          - 0
+          - 1
+          - 2
+      commissionId:
+        description: 返佣方案id
+        type: integer
+      commissionType:
+        allOf:
+          - $ref: '#/definitions/promotion.CommissionType'
+        description: 返佣方案 0:默认全局返佣方案 1:通用返佣方案 2:为个人自定义返佣方案
+        enum:
+          - 0
+          - 1
+          - 2
+      current:
+        description: 当前页, 从1开始, 默认1
+        type: integer
+      enable:
+        description: 用户状态 false:禁用 true:启用
+        enum:
+          - true
+          - false
+        type: boolean
+      end:
+        description: 结束日期
+        type: string
+      keyword:
+        description: 关键词 姓名/手机号
+        type: string
+      levelId:
+        description: 会员等级
+        type: integer
+      pageSize:
+        description: 每页数据, 默认20
+        type: integer
+      start:
+        description: 开始日期
+        type: string
+    type: object
+  promotion.MemberRes:
+    properties:
+      authStatus:
+        allOf:
+          - $ref: '#/definitions/promotion.PersonAuthStatus'
+        description: 实名认证状态 0:未认证 1:已认证 2:认证失败
+      authStatusName:
+        description: 实名认证状态名称
+        type: string
+      bankCard:
+        description: 银行卡
+        items:
+          $ref: '#/definitions/promotion.BankCardRes'
+        type: array
+      commissionId:
+        description: 返佣方案id
+        type: integer
+      commissionName:
+        description: 返佣方案
+        type: string
+      createdAt:
+        description: 注册时间
+        type: string
+      currentGrowthValue:
+        description: 当前成长值
+        type: integer
+      enable:
+        description: 用户状态 false:禁用 true:启用
+        type: boolean
+      firstLevel:
+        description: 第一级团员人数
+        type: integer
+      id:
+        description: id
+        type: integer
+      level:
+        description: 会员等级
+        type: integer
+      memberInfo:
+        allOf:
+          - $ref: '#/definitions/promotion.MemberBaseInfo'
+        description: 会员信息
+      parentId:
+        allOf:
+          - $ref: '#/definitions/promotion.MemberBaseInfo'
+        description: 上级信息
+      privilegeCommission:
+        description: 等级权益 佣金提高(%)
+        type: number
+      secondLevel:
+        description: 第二级团员人数
+        type: integer
+      totalBalance:
+        description: 总余额
+        type: number
+    type: object
+  promotion.MemberSigninReq:
+    properties:
+      code:
+        description: 图形验证码或者授权登录code
+        type: string
+      name:
+        description: 姓名
+        type: string
+      phone:
+        description: 手机号
+        type: string
+      referringMemberID:
+        description: 推荐人
+        type: integer
+      signinType:
+        description: 登录类型 1:短信登录 2:微信授权登录
+        enum:
+          - 1
+          - 2
+        type: integer
+      smsID:
+        description: 短信ID
+        type: string
+    required:
+      - signinType
+    type: object
+  promotion.MemberSigninRes:
+    properties:
+      profile:
+        allOf:
+          - $ref: '#/definitions/promotion.MemberProfile'
+        description: 会员信息
+      token:
+        description: token
+        type: string
+    type: object
+  promotion.MemberTeamReq:
+    properties:
+      current:
+        description: 当前页, 从1开始, 默认1
+        type: integer
+      end:
+        description: 结束日期
+        type: string
+      keyword:
+        description: 关键词
+        type: string
+      level:
+        description: 团员层级
+        enum:
+          - 1
+          - 2
+        type: integer
+      pageSize:
+        description: 每页数据, 默认20
+        type: integer
+      start:
+        description: 开始日期
+        type: string
+      subscribeStatus:
+        description: 订阅状态 0:未激活 1:计费中 4:已退订
+        type: integer
+    type: object
+  promotion.MemberTeamRes:
+    properties:
+      id:
+        description: id
+        type: integer
+      level:
+        description: 团员层级
+        type: string
+      name:
+        description: 姓名
+        type: string
+      phone:
+        description: 手机号
+        type: string
+      renewalCount:
+        description: 续费次数
+        type: integer
+      subscribeStartAt:
+        description: 订阅开始时间
+        type: string
+      subscribeStatus:
+        description: 订阅状态 0:未激活 1:计费中 4:已退订
+        type: integer
+    type: object
+  promotion.MemberUpdateReq:
+    properties:
+      enable:
+        description: 用户状态 false:禁用 true:启用
+        type: boolean
+      name:
+        description: 姓名
+        type: string
+    type: object
+  promotion.PersonAuthStatus:
+    enum:
+      - 0
+      - 1
+      - 2
+    type: integer
+    x-enum-comments:
+      PersonAuthenticated: 已认证
+      PersonAuthenticationFailed: 认证失败
+      PersonUnauthenticated: 未认证
+    x-enum-varnames:
+      - PersonUnauthenticated
+      - PersonAuthenticated
+      - PersonAuthenticationFailed
+  promotion.RealNameAuthReq:
+    properties:
+      idCard:
+        description: 身份证号
+        type: string
+      realName:
+        description: 真实姓名
+        type: string
+    required:
+      - idCard
+      - realName
+    type: object
+  promotion.RealNameAuthRes:
+    properties:
+      success:
+        description: 是否成功
+        type: boolean
+    type: object
+  promotion.Setting:
+    properties:
+      context:
+        description: 内容
+        type: string
+      title:
+        description: 标题
+        type: string
+    type: object
+  promotion.SettingReq:
+    type: object
+  promotion.StatisticsEarningsDetail:
+    properties:
+      totalEarnings:
+        description: 佣金总收益
+        type: number
+      totalNewSignEarnings:
+        description: 新签佣金总收益
+        type: number
+      totalRenewalEarnings:
+        description: 续费佣金总收益
+        type: number
+    type: object
+  promotion.StatisticsEarningsDetailRes:
+    properties:
+      firstLevelEarnings:
+        allOf:
+          - $ref: '#/definitions/promotion.StatisticsEarningsDetail'
+        description: 一级收益
+      secondLevelEarnings:
+        allOf:
+          - $ref: '#/definitions/promotion.StatisticsEarningsDetail'
+        description: 二级收益
+    type: object
+  promotion.StatisticsEarningsRes:
+    properties:
+      totalEarnings:
+        description: 佣金总收益
+        type: number
+      totalNewSignEarnings:
+        description: 新签佣金总收益
+        type: number
+      totalRenewalEarnings:
+        description: 续费佣金总收益
+        type: number
+    type: object
+  promotion.StatisticsRecordRes:
+    properties:
+      totalEarnings:
+        description: 累计收益
+        type: number
+      totalInvitation:
+        description: 累计邀请人数
+        type: integer
+    type: object
+  promotion.StatisticsReq:
+    properties:
+      end:
+        description: 结束日期
+        type: string
+      start:
+        description: 开始日期
+        type: string
+    type: object
+  promotion.StatisticsTeamGrowthTrendRes:
+    properties:
+      firstLevelNum:
+        description: 一级人数
+        type: integer
+      month:
+        description: 月份
+        type: string
+      secondLevelNum:
+        description: 二级人数
+        type: integer
+    type: object
+  promotion.StatisticsTeamRes:
+    properties:
+      level:
+        description: 级别
+        type: integer
+      totalNewSign:
+        description: 累计新签人数
+        type: integer
+      totalRenewal:
+        description: 累计续费人数
+        type: integer
+      totalTeam:
+        description: 累计团队人数
+        type: integer
+    type: object
+  promotion.StatisticsWalletRes:
+    properties:
+      balance:
+        description: 可提现余额
+        type: number
+      freezeBalance:
+        description: 冻结余额
+        type: number
+      todayEarnings:
+        description: 今日收益
+        type: number
+      totalBalance:
+        description: 总余额 = 可提现余额 + 冻结余额
+        type: number
+      totalEarnings:
+        description: 累计收益
+        type: number
+      totalWithdrawal:
+        description: 累计提现
+        type: number
+      yesterdayEarnings:
+        description: 昨日收益
+        type: number
+    type: object
+  promotion.UploadAvatar:
+    properties:
+      avatar:
+        description: 头像
+        type: string
+    required:
+      - avatar
+    type: object
+  promotion.UploadIcon:
+    properties:
+      icon:
+        description: 成就图标
+        type: string
+    required:
+      - icon
+    type: object
+  promotion.WithdrawalAlterReq:
+    properties:
+      accountId:
+        description: 提现账户ID
+        type: integer
+      applyAmount:
+        description: 提现金额
+        maximum: 4000
+        minimum: 100
+        type: number
+    required:
+      - accountId
+      - applyAmount
+    type: object
+  promotion.WithdrawalApprovalReq:
+    properties:
+      ids:
+        description: 提现id
+        items:
+          type: integer
+        type: array
+      remark:
+        description: 备注
+        type: string
+      status:
+        description: 状态 1:成功 2:失败
+        enum:
+          - 1
+          - 2
+        type: integer
+    required:
+      - ids
+      - status
+    type: object
+  promotion.WithdrawalFeeRes:
+    properties:
+      amountReceived:
+        description: 实际到账金额
+        type: number
+      applyAmount:
+        description: 提现金额
+        type: number
+      taxable:
+        description: 应缴税款
+        type: number
+      withdrawalFee:
+        description: 服务费
+        type: number
+    type: object
+  promotion.WithdrawalListReq:
+    properties:
+      account:
+        description: 提现账户
+        type: string
+      current:
+        description: 当前页, 从1开始, 默认1
+        type: integer
+      end:
+        description: 结束日期
+        type: string
+      id:
+        description: 会员id
+        type: integer
+      keywork:
+        description: 关键字
+        type: string
+      pageSize:
+        description: 每页数据, 默认20
+        type: integer
+      start:
+        description: 开始日期
+        type: string
+      status:
+        description: 提现状态 0:待审核 1:成功 2:失败
+        enum:
+          - 0
+          - 1
+          - 2
+        type: integer
+    type: object
+  promotion.WithdrawalListRes:
+    properties:
+      amount:
+        description: 提现金额
+        type: number
+      applyTime:
+        description: 申请时间
+        type: string
+      bankCard:
+        allOf:
+          - $ref: '#/definitions/promotion.BankCardRes'
+        description: 银行卡
+      createdAt:
+        description: 创建时间
+        type: string
+      fee:
+        description: 提现手续费
+        type: number
+      id:
+        description: id
+        type: integer
+      idCardNumber:
+        description: 身份证号
+        type: string
+      method:
+        description: 提现方式 1:银行卡
+        type: string
+      name:
+        description: 姓名
+        type: string
+      phone:
+        description: 手机号
+        type: string
+      remark:
+        description: 备注
+        type: string
+      reviewTime:
+        description: 审核时间
+        type: string
+      status:
+        description: 状态 0:待审核 1:成功 2:失败
+        type: integer
     type: object
   xcdef.GPSStatus:
     enum:
@@ -9086,6 +10108,31 @@ paths:
       tags:
       - '[A]代理接口'
   /agent/v1/rider/{id}:
+    delete:
+      consumes:
+        - application/json
+      operationId: AgentRiderDelete
+      parameters:
+        - description: 代理校验token
+          in: header
+          name: X-Agent-Token
+          required: true
+          type: string
+        - description: 骑手ID
+          in: path
+          name: id
+          required: true
+          type: integer
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            type: string
+      summary: A2008 删除骑手
+      tags:
+        - '[A]代理接口'
     get:
       consumes:
       - application/json
@@ -10563,6 +11610,61 @@ paths:
       summary: E2003 激活骑士卡
       tags:
       - '[E]店员接口'
+  /maintainer/v1/cabinet:
+    get:
+      consumes:
+        - application/json
+      operationId: MaintainerCabinetList
+      parameters:
+        - description: 运维校验token
+          in: header
+          name: X-Maintainer-Token
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+              - $ref: '#/definitions/model.Pagination'
+              - properties:
+                  items:
+                    items:
+                      $ref: '#/definitions/model.CabinetListByDistanceRes'
+                    type: array
+                type: object
+      summary: O2001 获取电柜列表
+      tags:
+        - '[O]运维接口'
+  /maintainer/v1/maintainer/signin:
+    post:
+      consumes:
+        - application/json
+      operationId: AgentMaintainerSignin
+      parameters:
+        - description: 运维校验token
+          in: header
+          name: X-Maintainer-Token
+          required: true
+          type: string
+        - description: 请求参数
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/model.MaintainerSigninReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.MaintainerSigninRes'
+      summary: O1001 运维登录
+      tags:
+        - '[O]运维接口'
   /manager/crm/customer:
     get:
       consumes:
@@ -15058,6 +16160,103 @@ paths:
             type: array
       summary: M1015 可调拨物资清单
       tags:
+        - '[M]管理接口'
+  /manager/v1/maintainer:
+    get:
+      consumes:
+        - application/json
+      operationId: ManagerMaintainerList
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 城市
+          in: query
+          name: cityId
+          type: integer
+        - description: 当前页, 从1开始, 默认1
+          in: query
+          name: current
+          type: integer
+        - description: 关键词
+          in: query
+          name: keyword
+          type: string
+        - description: 每页数据, 默认20
+          in: query
+          name: pageSize
+          type: integer
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+              - $ref: '#/definitions/model.Pagination'
+              - properties:
+                  items:
+                    items:
+                      $ref: '#/definitions/model.Maintainer'
+                    type: array
+                type: object
+      summary: MJ001 运维人员列表
+      tags:
+        - '[M]管理接口'
+    post:
+      consumes:
+        - application/json
+      operationId: ManagerMaintainerCreate
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 请求参数
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/model.MaintainerCreateReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: MJ002 创建运维人员
+      tags:
+        - '[M]管理接口'
+  /manager/v1/maintainer/{id}:
+    post:
+      consumes:
+        - application/json
+      operationId: ManagerMaintainerModify
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 请求参数
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/model.MaintainerCreateReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: MJ003 修改运维人员信息
+      tags:
       - '[M]管理接口'
   /manager/v1/order:
     get:
@@ -15707,6 +16906,896 @@ paths:
       summary: M7016 修改骑手积分
       tags:
       - '[M]管理接口'
+  /manager/v1/promotion/achievement:
+    delete:
+      consumes:
+        - application/json
+      operationId: ManagerPromotionAchievementDelete
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 成就id
+          in: query
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: PM7004 删除会员成就
+      tags:
+        - '[PM]推广管理接口'
+    get:
+      consumes:
+        - application/json
+      operationId: ManagerPromotionAchievementList
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/promotion.Achievement'
+            type: array
+      summary: PM7001 会员成就列表
+      tags:
+        - '[PM]推广管理接口'
+    post:
+      consumes:
+        - application/json
+      operationId: ManagerPromotionAchievementCreate
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 创建请求
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/promotion.Achievement'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: PM7002 创建会员成就
+      tags:
+        - '[PM]推广管理接口'
+    put:
+      consumes:
+        - application/json
+      operationId: ManagerPromotionAchievementUpdate
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 更新请求
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/promotion.Achievement'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: PM7003 更新会员成就
+      tags:
+        - '[PM]推广管理接口'
+  /manager/v1/promotion/achievement/icon:
+    post:
+      consumes:
+        - multipart/form-data
+      operationId: ManagerPromotionAchievementUploadIcon
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 成就图标
+          in: formData
+          name: icon
+          required: true
+          type: file
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/promotion.UploadIcon'
+      summary: PM7005 上传会员成就图标
+      tags:
+        - '[PM]推广管理接口'
+  /manager/v1/promotion/commission:
+    get:
+      consumes:
+        - application/json
+      operationId: ManagerPromotionCommissionList
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/promotion.CommissionDetail'
+            type: array
+      summary: PM8001 推广返佣方案列表
+      tags:
+        - '[PM]推广管理接口'
+    post:
+      consumes:
+        - application/json
+      operationId: ManagerPromotionCommissionCreate
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 创建请求
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/promotion.CommissionCreateReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: PM8003 创建推广返佣方案
+      tags:
+        - '[PM]推广管理接口'
+    put:
+      consumes:
+        - application/json
+      operationId: ManagerPromotionCommissionUpdate
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 修改请求
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/promotion.CommissionCreateReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: PM8004 更新推广返佣方案
+      tags:
+        - '[PM]推广管理接口'
+  /manager/v1/promotion/commission/{id}:
+    delete:
+      consumes:
+        - application/json
+      operationId: ManagerPromotionCommissionDelete
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 推广返佣方案ID
+          in: path
+          name: id
+          required: true
+          type: integer
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: PM8005 删除推广返佣方案
+      tags:
+        - '[PM]推广管理接口'
+    get:
+      consumes:
+        - application/json
+      operationId: ManagerPromotionCommissionDetail
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 推广返佣方案ID
+          in: path
+          name: id
+          required: true
+          type: integer
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/promotion.CommissionDetail'
+      summary: PM8002 推广返佣方案详情
+      tags:
+        - '[PM]推广管理接口'
+  /manager/v1/promotion/commission/enable:
+    post:
+      consumes:
+        - application/json
+      operationId: ManagerPromotionCommissionUpdateEnable
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 修改请求
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/promotion.CommissionEnableReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: PM8006 更新推广返佣方案状态
+      tags:
+        - '[PM]推广管理接口'
+  /manager/v1/promotion/commission/history/{id}:
+    get:
+      consumes:
+        - application/json
+      operationId: ManagerPromotionCommissionHistoryList
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 推广返佣方案ID
+          in: path
+          name: id
+          required: true
+          type: integer
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/promotion.CommissionDetail'
+            type: array
+      summary: PM8007 推广返佣方案历史列表
+      tags:
+        - '[PM]推广管理接口'
+  /manager/v1/promotion/commission/selection:
+    get:
+      consumes:
+        - application/json
+      operationId: ManagerPromotionCommissionSelection
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/promotion.CommissionSelection'
+            type: array
+      summary: PM8008 推广返佣方案选择
+      tags:
+        - '[PM]推广管理接口'
+  /manager/v1/promotion/commission/task/selection:
+    get:
+      consumes:
+        - application/json
+      operationId: ManagerPromotionCommissionTaskSelection
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/promotion.CommissionTaskSelect'
+            type: array
+      summary: PM8009 返佣方案任务选择
+      tags:
+        - '[PM]推广管理接口'
+  /manager/v1/promotion/earnings/{id}:
+    get:
+      consumes:
+        - application/json
+      operationId: ManagerPromotionEarningsList
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 查询请求
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/promotion.EarningsReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/promotion.EarningsRes'
+            type: array
+      summary: PM2001 会员收益列表
+      tags:
+        - '[PM]推广管理接口'
+  /manager/v1/promotion/earnings/cancel:
+    post:
+      consumes:
+        - application/json
+      operationId: ManagerPromotionEarningsCancel
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 会员收益ID
+          in: path
+          name: id
+          required: true
+          type: integer
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: PM2002 取消会员收益
+      tags:
+        - '[PM]推广管理接口'
+  /manager/v1/promotion/growth/{id}:
+    get:
+      consumes:
+        - application/json
+      operationId: ManagerPromotionGrowthList
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 请求参数
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/promotion.GrowthReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/promotion.GrowthRes'
+            type: array
+      summary: PM5001 会员成长值列表
+      tags:
+        - '[PM]推广管理接口'
+  /manager/v1/promotion/level:
+    delete:
+      consumes:
+        - application/json
+      operationId: ManagerPromotionLevelDelete
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 会员等级配置id
+          in: query
+          name: id
+          required: true
+          type: integer
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: PM4004 删除会员等级配置
+      tags:
+        - '[PM]推广管理接口'
+    get:
+      consumes:
+        - application/json
+      operationId: ManagerPromotionLevelList
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/promotion.Level'
+            type: array
+      summary: PM4001 会员等级配置列表
+      tags:
+        - '[PM]推广管理接口'
+    post:
+      consumes:
+        - application/json
+      operationId: ManagerPromotionLevelCreate
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 会员等级配置
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/promotion.Level'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: PM4003 创建会员等级配置
+      tags:
+        - '[PM]推广管理接口'
+    put:
+      consumes:
+        - application/json
+      operationId: ManagerPromotionLevelUpdate
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 会员等级配置
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/promotion.Level'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: PM4002 更新会员等级配置
+      tags:
+        - '[PM]推广管理接口'
+  /manager/v1/promotion/level/selection:
+    get:
+      consumes:
+        - application/json
+      operationId: ManagerPromotionLevelSelection
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/promotion.Level'
+            type: array
+      summary: PM4005 会员等级配置下拉选择列表
+      tags:
+        - '[PM]推广管理接口'
+  /manager/v1/promotion/member:
+    get:
+      consumes:
+        - application/json
+      operationId: ManagerPromotionMemberList
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 会员列表请求
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/promotion.MemberReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/promotion.MemberRes'
+            type: array
+      summary: PM1001 会员列表
+      tags:
+        - '[PM]推广管理接口'
+  /manager/v1/promotion/member/{id}:
+    get:
+      consumes:
+        - application/json
+      operationId: ManagerPromotionMemberDetail
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 会员ID
+          in: path
+          name: id
+          required: true
+          type: integer
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/promotion.MemberRes'
+      summary: PM1002 会员详情
+      tags:
+        - '[PM]推广管理接口'
+    put:
+      consumes:
+        - application/json
+      operationId: ManagerPromotionMemberUpdate
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 会员更新请求
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/promotion.MemberUpdateReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: PM1003 更新会员信息
+      tags:
+        - '[PM]推广管理接口'
+  /manager/v1/promotion/member/setcommission:
+    post:
+      consumes:
+        - application/json
+      operationId: ManagerPromotionMemberSetCommission
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 设置会员佣金请求
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/promotion.MemberCommissionReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: PM1005 设置会员佣金方案
+      tags:
+        - '[PM]推广管理接口'
+  /manager/v1/promotion/member/team/{id}:
+    get:
+      consumes:
+        - application/json
+      operationId: ManagerPromotionMemberTeamList
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 会员团队列表请求
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/promotion.MemberTeamReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: '#/definitions/model.PaginationRes'
+              - properties:
+                  items:
+                    items:
+                      $ref: '#/definitions/promotion.MemberTeamRes'
+                    type: array
+                type: object
+      summary: PM1004 会员团队列表
+      tags:
+        - '[PM]推广管理接口'
+  /manager/v1/promotion/setting/{key}:
+    get:
+      consumes:
+        - application/json
+      operationId: ManagerPromotionSetting
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 查询请求
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/promotion.SettingReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/promotion.Setting'
+            type: array
+      summary: PM9001 获取推广配置
+      tags:
+        - '[PM]推广管理接口'
+    put:
+      consumes:
+        - application/json
+      operationId: ManagerPromotionSettingUpdate
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 更新请求参数
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/promotion.Setting'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: PM9002 更新推广配置
+      tags:
+        - '[PM]推广管理接口'
+  /manager/v1/promotion/task:
+    get:
+      consumes:
+        - application/json
+      operationId: ManagerPromotionTaskList
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/promotion.LevelTask'
+            type: array
+      summary: PM6001 会员任务列表
+      tags:
+        - '[PM]推广管理接口'
+  /manager/v1/promotion/task/{id}:
+    put:
+      consumes:
+        - application/json
+      operationId: ManagerPromotionTaskUpdate
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 更新参数
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/promotion.LevelTask'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: PM6002 更新会员任务
+      tags:
+        - '[PM]推广管理接口'
+  /manager/v1/promotion/withdrawal:
+    get:
+      consumes:
+        - application/json
+      operationId: ManagerPromotionWithdrawalList
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 请求参数
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/promotion.WithdrawalListReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/promotion.WithdrawalListRes'
+            type: array
+      summary: PM3001 会员提现列表
+      tags:
+        - '[PM]推广管理接口'
+  /manager/v1/promotion/withdrawal/alter/review:
+    post:
+      consumes:
+        - application/json
+      operationId: ManagerPromotionWithdrawalAlterReview
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 请求参数
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/promotion.WithdrawalApprovalReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: PM3002  审批提现
+      tags:
+        - '[PM]推广管理接口'
+  /manager/v1/promotion/withdrawal/export:
+    get:
+      consumes:
+        - application/json
+      operationId: ManagerPromotionWithdrawalExport
+      parameters:
+        - description: 会员校验token
+          in: header
+          name: X-Promotion-Token
+          required: true
+          type: string
+        - description: 请求参数
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/promotion.WithdrawalListReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: PM3003  导出提现列表
+      tags:
+        - '[PM]推广管理接口'
   /manager/v1/rider:
     get:
       consumes:
@@ -16819,7 +18908,7 @@ paths:
         in: query
         name: end
         type: string
-      - description: 企业ID (代理该参数不生效)
+      - description: 企业ID
         in: query
         name: enterpriseId
         type: integer
@@ -17629,6 +19718,627 @@ paths:
       summary: M1001 用户登录
       tags:
       - '[M]管理接口'
+  /promotion/v1/auth/realname:
+    post:
+      consumes:
+        - application/json
+      operationId: PromotionRealNameAuth
+      parameters:
+        - description: 会员校验token
+          in: header
+          name: X-Promotion-Token
+          required: true
+          type: string
+        - description: 请求参数
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/promotion.RealNameAuthReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/promotion.RealNameAuthRes'
+      summary: P6001 实名认证
+      tags:
+        - '[P]推广接口'
+  /promotion/v1/bank/card:
+    get:
+      consumes:
+        - application/json
+      operationId: PromotionBankCardList
+      parameters:
+        - description: 会员校验token
+          in: header
+          name: X-Promotion-Token
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/promotion.BankCardRes'
+            type: array
+      summary: P4003 获取银行卡列表
+      tags:
+        - '[P]推广接口'
+    post:
+      consumes:
+        - application/json
+      operationId: PromotionBankCardCreate
+      parameters:
+        - description: 会员校验token
+          in: header
+          name: X-Promotion-Token
+          required: true
+          type: string
+        - description: 请求参数
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/promotion.BankCardReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: P4001 创建银行卡
+      tags:
+        - '[P]推广接口'
+  /promotion/v1/bank/card/{id}:
+    delete:
+      consumes:
+        - application/json
+      operationId: PromotionBankCardDelete
+      parameters:
+        - description: 会员校验token
+          in: header
+          name: X-Promotion-Token
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/promotion.BankCardRes'
+            type: array
+      summary: P4004 删除银行卡
+      tags:
+        - '[P]推广接口'
+    put:
+      consumes:
+        - application/json
+      operationId: PromotionBankCardUpdate
+      parameters:
+        - description: 会员校验token
+          in: header
+          name: X-Promotion-Token
+          required: true
+          type: string
+        - description: 请求参数
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/promotion.BankCardReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: P4002 修改银行卡默认状态
+      tags:
+        - '[P]推广接口'
+  /promotion/v1/commission/rule:
+    get:
+      consumes:
+        - application/json
+      operationId: PromotionCommissionRule
+      parameters:
+        - description: 会员校验token
+          in: header
+          name: X-Promotion-Token
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/promotion.CommissionRuleRes'
+            type: array
+      summary: P1007 获取会员分佣规则
+      tags:
+        - '[P]推广接口'
+  /promotion/v1/earnings:
+    get:
+      consumes:
+        - application/json
+      operationId: PromotionEarningsList
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 查询请求
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/promotion.EarningsReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/promotion.EarningsRes'
+            type: array
+      summary: P3001 会员收益列表
+      tags:
+        - '[P]推广接口'
+  /promotion/v1/member/avatar:
+    post:
+      consumes:
+        - application/json
+      operationId: PromotionMemberUpdateAvatar
+      parameters:
+        - description: 会员校验token
+          in: header
+          name: X-Promotion-Token
+          required: true
+          type: string
+        - description: 头像
+          in: formData
+          name: avatar
+          required: true
+          type: file
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/promotion.UploadAvatar'
+      summary: P1005 更新头像
+      tags:
+        - '[P]推广接口'
+  /promotion/v1/member/profile:
+    get:
+      consumes:
+        - application/json
+      operationId: PromotionMemberProfile
+      parameters:
+        - description: 会员校验token
+          in: header
+          name: X-Promotion-Token
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/promotion.MemberProfile'
+      summary: P1003 会员信息
+      tags:
+        - '[P]推广接口'
+  /promotion/v1/member/share/qrcode:
+    get:
+      consumes:
+        - application/json
+      operationId: PromotionMemberShareQrcode
+      parameters:
+        - description: 会员校验token
+          in: header
+          name: X-Promotion-Token
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            type: string
+      summary: P1004 获取推广二维码
+      tags:
+        - '[P]推广接口'
+  /promotion/v1/member/signin:
+    get:
+      consumes:
+        - application/json
+      operationId: PromotionMemberSignin
+      parameters:
+        - description: 登录请求
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/promotion.MemberSigninReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/promotion.MemberSigninRes'
+      summary: P1001 登录
+      tags:
+        - '[P]推广接口'
+  /promotion/v1/member/signup:
+    post:
+      consumes:
+        - application/json
+      operationId: PromotionMemberSignup
+      parameters:
+        - description: 会员校验token
+          in: header
+          name: X-Promotion-Token
+          required: true
+          type: string
+        - description: 查询请求
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/promotion.MemberSigninReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/promotion.MemberSigninRes'
+      summary: P1002 邀请注册
+      tags:
+        - '[P]推广接口'
+  /promotion/v1/member/team:
+    get:
+      consumes:
+        - application/json
+      operationId: PromotionMemberTeam
+      parameters:
+        - description: 会员校验token
+          in: header
+          name: X-Promotion-Token
+          required: true
+          type: string
+        - description: 查询请求
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/promotion.MemberTeamReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: '#/definitions/model.PaginationRes'
+              - properties:
+                  items:
+                    items:
+                      $ref: '#/definitions/promotion.MemberTeamRes'
+                    type: array
+                type: object
+      summary: P1006 我的团队列表
+      tags:
+        - '[P]推广接口'
+  /promotion/v1/setting/{key}:
+    get:
+      consumes:
+        - application/json
+      operationId: PromotionSetting
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 查询请求
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/promotion.SettingReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/promotion.Setting'
+            type: array
+      summary: P7001 获取推广配置
+      tags:
+        - '[P]推广接口'
+  /promotion/v1/statistics/earnings/detail:
+    get:
+      consumes:
+        - application/json
+      operationId: PromotionStatisticsEarningsDetail
+      parameters:
+        - description: 代理校验token
+          in: header
+          name: X-Promotion-Token
+          required: true
+          type: string
+        - description: 请求参数
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/promotion.StatisticsReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/promotion.StatisticsEarningsDetailRes'
+      summary: P5005 我的钱包-收益报表
+      tags:
+        - '[P]推广接口'
+  /promotion/v1/statistics/earnings/overview:
+    get:
+      consumes:
+        - application/json
+      operationId: PromotionStatisticsEarningsOverview
+      parameters:
+        - description: 代理校验token
+          in: header
+          name: X-Promotion-Token
+          required: true
+          type: string
+        - description: 请求参数
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/promotion.StatisticsReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/promotion.StatisticsEarningsRes'
+      summary: P5002 首页我的收益统计
+      tags:
+        - '[P]推广接口'
+  /promotion/v1/statistics/record/overview:
+    get:
+      consumes:
+        - application/json
+      operationId: PromotionStatisticsRecordOverview
+      parameters:
+        - description: 代理校验token
+          in: header
+          name: X-Promotion-Token
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/promotion.StatisticsRecordRes'
+      summary: P5003 首页邀请战绩统计
+      tags:
+        - '[P]推广接口'
+  /promotion/v1/statistics/team:
+    get:
+      consumes:
+        - application/json
+      operationId: PromotionStatisticsTeam
+      parameters:
+        - description: 代理校验token
+          in: header
+          name: X-Promotion-Token
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/promotion.StatisticsTeamRes'
+            type: array
+      summary: P5006 我的团队-统计
+      tags:
+        - '[P]推广接口'
+  /promotion/v1/statistics/team/growth:
+    get:
+      consumes:
+        - application/json
+      operationId: PromotionStatisticsTeamGrowth
+      parameters:
+        - description: 代理校验token
+          in: header
+          name: X-Promotion-Token
+          required: true
+          type: string
+        - description: 请求参数
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/promotion.StatisticsReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/promotion.StatisticsTeamGrowthTrendRes'
+            type: array
+      summary: P5007 我的团队-增长趋势
+      tags:
+        - '[P]推广接口'
+  /promotion/v1/statistics/team/overview:
+    get:
+      consumes:
+        - application/json
+      operationId: PromotionStatisticsTemaOverview
+      parameters:
+        - description: 代理校验token
+          in: header
+          name: X-Promotion-Token
+          required: true
+          type: string
+        - description: 请求参数
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/promotion.StatisticsReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/promotion.StatisticsTeamRes'
+      summary: P5001 首页我的团队统计
+      tags:
+        - '[P]推广接口'
+  /promotion/v1/statistics/wallet/overview:
+    get:
+      consumes:
+        - application/json
+      operationId: PromotionStatisticsWalletOverview
+      parameters:
+        - description: 代理校验token
+          in: header
+          name: X-Promotion-Token
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/promotion.StatisticsWalletRes'
+      summary: P5004 我的账户-统计
+      tags:
+        - '[P]推广接口'
+  /promotion/v1/withdrawal:
+    get:
+      consumes:
+        - application/json
+      operationId: PromotionWithdrawalList
+      parameters:
+        - description: 会员校验token
+          in: header
+          name: X-Promotion-Token
+          required: true
+          type: string
+        - description: 请求参数
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/promotion.WithdrawalListReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/promotion.WithdrawalListRes'
+            type: array
+      summary: P2001 会员提现列表
+      tags:
+        - '[P]推广接口'
+  /promotion/v1/withdrawal/alter:
+    post:
+      consumes:
+        - application/json
+      operationId: PromotionWithdrawalAlter
+      parameters:
+        - description: 会员校验token
+          in: header
+          name: X-Promotion-Token
+          required: true
+          type: string
+        - description: 请求参数
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/promotion.WithdrawalAlterReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: P2002 申请提现
+      tags:
+        - '[P]推广接口'
+  /promotion/v1/withdrawal/fee:
+    post:
+      consumes:
+        - application/json
+      operationId: PromotionWithdrawalFee
+      parameters:
+        - description: 会员校验token
+          in: header
+          name: X-Promotion-Token
+          required: true
+          type: string
+        - description: 提现账户ID
+          in: query
+          name: accountId
+          required: true
+          type: integer
+        - description: 提现金额
+          in: query
+          maximum: 4000
+          minimum: 100
+          name: applyAmount
+          required: true
+          type: number
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/promotion.WithdrawalFeeRes'
+      summary: P2003 计算提现手续费
+      tags:
+        - '[P]推广接口'
   /rider/v1/assistance:
     get:
       consumes:

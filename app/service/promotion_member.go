@@ -472,7 +472,7 @@ func (s *promotionMemberService) TeamList(ctx echo.Context, req *promotion.Membe
                 INNER JOIN promotion_referrals as mr ON mh.referred_member_id = mr.referring_member_id
 				WHERE mh.level < 2
 			)
-			SELECT referred_member_id, m.phone, COALESCE(r.name, m.name) AS name, mh.level, s.status as subscribeStatus, s.start_at as subscribeStartAt,(SELECT COUNT(*) FROM "order" o LEFT JOIN subscribe s ON o.rider_id = s.rider_id WHERE o.rider_id = r.id AND s.status <> 0 AND (o.type = 2 OR o.type = 3)) AS renewalCount
+			SELECT referred_member_id, m.phone, COALESCE(r.name, m.name) AS name, mh.level, s.status as subscribeStatus, s.start_at as subscribeStartAt,(SELECT COUNT(DISTINCT o.*) FROM "order" o LEFT JOIN subscribe s ON o.rider_id = s.rider_id WHERE o.rider_id = r.id AND s.status <> 0 AND (o.type = 2 OR o.type = 3)) AS renewalCount
 				FROM member_hierarchy mh
 				JOIN promotion_member m ON m.id = mh.referred_member_id
 				LEFT JOIN rider r ON m.rider_id = r.id

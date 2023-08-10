@@ -256,6 +256,11 @@ func loadManagerRoutes() {
 	// 反馈
 	g.GET("/enterprise/feedback", mapi.Enterprise.FeedbackList)
 
+	// 运维
+	g.GET("/maintainer", mapi.Maintainer.List)
+	g.POST("/maintainer", mapi.Maintainer.Create)
+	g.POST("/maintainer/:id", mapi.Maintainer.Modify)
+
 	// 营销
 	// PM1 推广会员
 	g.GET("/promotion/member", mapi.Member.List)                         // 会员列表

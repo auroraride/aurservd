@@ -244,8 +244,11 @@ func (s *intelligentCabinetService) ExchangeStepSync(items []*cabdef.ExchangeSte
 		c.Results = append(c.Results, req)
 
 		// 排序
-		slices.SortFunc(c.Results, func(a, b *cabdef.ExchangeStepMessage) bool {
-			return a.Step <= b.Step
+		slices.SortStableFunc(c.Results, func(a, b *cabdef.ExchangeStepMessage) int {
+			if a.Step > b.Step {
+				return 1
+			}
+			return -1
 		})
 
 		cache.Set(s.ctx, key, c, 10*time.Minute)
