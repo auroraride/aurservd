@@ -71,11 +71,11 @@ WITH RECURSIVE member_hierarchy AS (
 
 SELECT
     COUNT(DISTINCT mh.referred_member_id) AS TotalTeam,
-    COUNT(DISTINCT CASE WHEN s.status<>0 AND o.type = 1 THEN mh.referred_member_id END) AS TotalNewSign,
-    COUNT(DISTINCT CASE WHEN s.status<>0 AND (o.type = 2 OR o.type = 3) THEN mh.referred_member_id END) AS TotalRenewal
+    SUM(CASE WHEN o.type = 1 AND s.type <> 0 THEN 1 ELSE 0 END) AS TotalNewSign,
+    SUM(CASE WHEN (o.type = 2 OR o.type = 3) AND s.type <> 0 THEN 1 ELSE 0 END) AS TotalRenewal
 FROM member_hierarchy mh
 LEFT JOIN "order" o ON mh.rider_id = o.rider_id
-LEFT JOIN subscribe s ON mh.rider_id = s.rider_id
+LEFT JOIN subscribe s ON o.subscribe_id = s.id
 			`
 
 	if req.Start != nil && req.End != nil {
@@ -240,11 +240,11 @@ WITH RECURSIVE member_hierarchy AS (
 SELECT
     level,
     COUNT(DISTINCT mh.referred_member_id) AS TotalTeam,
-    COUNT(DISTINCT CASE WHEN s.status<>0 AND o.type = 1 THEN mh.referred_member_id END) AS TotalNewSign,
-    COUNT(DISTINCT CASE WHEN s.status<>0 AND (o.type = 2 OR o.type = 3) THEN mh.referred_member_id END) AS TotalRenewal
+    SUM(CASE WHEN o.type = 1 AND s.type <> 0 THEN 1 ELSE 0 END) AS TotalNewSign,
+    SUM(CASE WHEN (o.type = 2 OR o.type = 3) AND s.type <> 0 THEN 1 ELSE 0 END) AS TotalRenewal
 FROM member_hierarchy mh
 LEFT JOIN "order" o ON mh.rider_id = o.rider_id
-LEFT JOIN subscribe s ON mh.rider_id = s.rider_id
+LEFT JOIN subscribe s ON o.subscribe_id = s.id
 GROUP BY level;
 			`
 	rows, err := ent.Database.QueryContext(s.ctx, sqls)
