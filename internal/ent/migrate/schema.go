@@ -2832,6 +2832,44 @@ var (
 			},
 		},
 	}
+	// MaintainerColumns holds the columns for the "maintainer" table.
+	MaintainerColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "enable", Type: field.TypeBool, Comment: "是否启用"},
+		{Name: "name", Type: field.TypeString, Comment: "姓名"},
+		{Name: "phone", Type: field.TypeString, Unique: true, Comment: "电话"},
+		{Name: "password", Type: field.TypeString, Comment: "密码"},
+	}
+	// MaintainerTable holds the schema information for the "maintainer" table.
+	MaintainerTable = &schema.Table{
+		Name:       "maintainer",
+		Columns:    MaintainerColumns,
+		PrimaryKey: []*schema.Column{MaintainerColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "maintainer_phone",
+				Unique:  false,
+				Columns: []*schema.Column{MaintainerColumns[3]},
+				Annotation: &entsql.IndexAnnotation{
+					OpClass: "gin_trgm_ops",
+					Types: map[string]string{
+						"postgres": "GIN",
+					},
+				},
+			},
+			{
+				Name:    "maintainer_name",
+				Unique:  false,
+				Columns: []*schema.Column{MaintainerColumns[2]},
+				Annotation: &entsql.IndexAnnotation{
+					OpClass: "gin_trgm_ops",
+					Types: map[string]string{
+						"postgres": "GIN",
+					},
+				},
+			},
+		},
+	}
 	// ManagerColumns holds the columns for the "manager" table.
 	ManagerColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -4720,6 +4758,31 @@ var (
 			},
 		},
 	}
+	// CityMaintainersColumns holds the columns for the "city_maintainers" table.
+	CityMaintainersColumns = []*schema.Column{
+		{Name: "city_id", Type: field.TypeUint64},
+		{Name: "maintainer_id", Type: field.TypeInt},
+	}
+	// CityMaintainersTable holds the schema information for the "city_maintainers" table.
+	CityMaintainersTable = &schema.Table{
+		Name:       "city_maintainers",
+		Columns:    CityMaintainersColumns,
+		PrimaryKey: []*schema.Column{CityMaintainersColumns[0], CityMaintainersColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "city_maintainers_city_id",
+				Columns:    []*schema.Column{CityMaintainersColumns[0]},
+				RefColumns: []*schema.Column{CityColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "city_maintainers_maintainer_id",
+				Columns:    []*schema.Column{CityMaintainersColumns[1]},
+				RefColumns: []*schema.Column{MaintainerColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// PlanCitiesColumns holds the columns for the "plan_cities" table.
 	PlanCitiesColumns = []*schema.Column{
 		{Name: "plan_id", Type: field.TypeInt},
@@ -4781,6 +4844,7 @@ var (
 		ExportTable,
 		FeedbackTable,
 		InventoryTable,
+		MaintainerTable,
 		ManagerTable,
 		OrderTable,
 		OrderRefundTable,
@@ -4803,6 +4867,7 @@ var (
 		SubscribeSuspendTable,
 		AgentStationsTable,
 		CabinetModelsTable,
+		CityMaintainersTable,
 		PlanCitiesTable,
 	}
 )
@@ -5021,6 +5086,9 @@ func init() {
 	InventoryTable.Annotation = &entsql.Annotation{
 		Table: "inventory",
 	}
+	MaintainerTable.Annotation = &entsql.Annotation{
+		Table: "maintainer",
+	}
 	ManagerTable.ForeignKeys[0].RefTable = RoleTable
 	ManagerTable.Annotation = &entsql.Annotation{
 		Table: "manager",
@@ -5163,6 +5231,8 @@ func init() {
 	AgentStationsTable.ForeignKeys[1].RefTable = EnterpriseStationTable
 	CabinetModelsTable.ForeignKeys[0].RefTable = CabinetTable
 	CabinetModelsTable.ForeignKeys[1].RefTable = BatteryModelTable
+	CityMaintainersTable.ForeignKeys[0].RefTable = CityTable
+	CityMaintainersTable.ForeignKeys[1].RefTable = MaintainerTable
 	PlanCitiesTable.ForeignKeys[0].RefTable = PlanTable
 	PlanCitiesTable.ForeignKeys[1].RefTable = CityTable
 }

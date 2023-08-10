@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/maintainer"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
@@ -19,14 +20,15 @@ import (
 // CityQuery is the builder for querying City entities.
 type CityQuery struct {
 	config
-	ctx          *QueryContext
-	order        []city.OrderOption
-	inters       []Interceptor
-	predicates   []predicate.City
-	withParent   *CityQuery
-	withChildren *CityQuery
-	withPlans    *PlanQuery
-	modifiers    []func(*sql.Selector)
+	ctx             *QueryContext
+	order           []city.OrderOption
+	inters          []Interceptor
+	predicates      []predicate.City
+	withParent      *CityQuery
+	withChildren    *CityQuery
+	withPlans       *PlanQuery
+	withMaintainers *MaintainerQuery
+	modifiers       []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -122,6 +124,28 @@ func (cq *CityQuery) QueryPlans() *PlanQuery {
 			sqlgraph.From(city.Table, city.FieldID, selector),
 			sqlgraph.To(plan.Table, plan.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, true, city.PlansTable, city.PlansPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryMaintainers chains the current query on the "maintainers" edge.
+func (cq *CityQuery) QueryMaintainers() *MaintainerQuery {
+	query := (&MaintainerClient{config: cq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(city.Table, city.FieldID, selector),
+			sqlgraph.To(maintainer.Table, maintainer.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, city.MaintainersTable, city.MaintainersPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -316,14 +340,15 @@ func (cq *CityQuery) Clone() *CityQuery {
 		return nil
 	}
 	return &CityQuery{
-		config:       cq.config,
-		ctx:          cq.ctx.Clone(),
-		order:        append([]city.OrderOption{}, cq.order...),
-		inters:       append([]Interceptor{}, cq.inters...),
-		predicates:   append([]predicate.City{}, cq.predicates...),
-		withParent:   cq.withParent.Clone(),
-		withChildren: cq.withChildren.Clone(),
-		withPlans:    cq.withPlans.Clone(),
+		config:          cq.config,
+		ctx:             cq.ctx.Clone(),
+		order:           append([]city.OrderOption{}, cq.order...),
+		inters:          append([]Interceptor{}, cq.inters...),
+		predicates:      append([]predicate.City{}, cq.predicates...),
+		withParent:      cq.withParent.Clone(),
+		withChildren:    cq.withChildren.Clone(),
+		withPlans:       cq.withPlans.Clone(),
+		withMaintainers: cq.withMaintainers.Clone(),
 		// clone intermediate query.
 		sql:  cq.sql.Clone(),
 		path: cq.path,
@@ -360,6 +385,17 @@ func (cq *CityQuery) WithPlans(opts ...func(*PlanQuery)) *CityQuery {
 		opt(query)
 	}
 	cq.withPlans = query
+	return cq
+}
+
+// WithMaintainers tells the query-builder to eager-load the nodes that are connected to
+// the "maintainers" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *CityQuery) WithMaintainers(opts ...func(*MaintainerQuery)) *CityQuery {
+	query := (&MaintainerClient{config: cq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withMaintainers = query
 	return cq
 }
 
@@ -441,10 +477,11 @@ func (cq *CityQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*City, e
 	var (
 		nodes       = []*City{}
 		_spec       = cq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
 			cq.withParent != nil,
 			cq.withChildren != nil,
 			cq.withPlans != nil,
+			cq.withMaintainers != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -485,6 +522,13 @@ func (cq *CityQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*City, e
 		if err := cq.loadPlans(ctx, query, nodes,
 			func(n *City) { n.Edges.Plans = []*Plan{} },
 			func(n *City, e *Plan) { n.Edges.Plans = append(n.Edges.Plans, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := cq.withMaintainers; query != nil {
+		if err := cq.loadMaintainers(ctx, query, nodes,
+			func(n *City) { n.Edges.Maintainers = []*Maintainer{} },
+			func(n *City, e *Maintainer) { n.Edges.Maintainers = append(n.Edges.Maintainers, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -617,6 +661,67 @@ func (cq *CityQuery) loadPlans(ctx context.Context, query *PlanQuery, nodes []*C
 	}
 	return nil
 }
+func (cq *CityQuery) loadMaintainers(ctx context.Context, query *MaintainerQuery, nodes []*City, init func(*City), assign func(*City, *Maintainer)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[uint64]*City)
+	nids := make(map[uint64]map[*City]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(city.MaintainersTable)
+		s.Join(joinT).On(s.C(maintainer.FieldID), joinT.C(city.MaintainersPrimaryKey[1]))
+		s.Where(sql.InValues(joinT.C(city.MaintainersPrimaryKey[0]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(city.MaintainersPrimaryKey[0]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullInt64)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := uint64(values[0].(*sql.NullInt64).Int64)
+				inValue := uint64(values[1].(*sql.NullInt64).Int64)
+				if nids[inValue] == nil {
+					nids[inValue] = map[*City]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*Maintainer](ctx, query, qr, query.inters)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "maintainers" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
+	}
+	return nil
+}
 
 func (cq *CityQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := cq.querySpec()
@@ -717,9 +822,10 @@ func (cq *CityQuery) Modify(modifiers ...func(s *sql.Selector)) *CitySelect {
 type CityQueryWith string
 
 var (
-	CityQueryWithParent   CityQueryWith = "Parent"
-	CityQueryWithChildren CityQueryWith = "Children"
-	CityQueryWithPlans    CityQueryWith = "Plans"
+	CityQueryWithParent      CityQueryWith = "Parent"
+	CityQueryWithChildren    CityQueryWith = "Children"
+	CityQueryWithPlans       CityQueryWith = "Plans"
+	CityQueryWithMaintainers CityQueryWith = "Maintainers"
 )
 
 func (cq *CityQuery) With(withEdges ...CityQueryWith) *CityQuery {
@@ -731,6 +837,8 @@ func (cq *CityQuery) With(withEdges ...CityQueryWith) *CityQuery {
 			cq.WithChildren()
 		case CityQueryWithPlans:
 			cq.WithPlans()
+		case CityQueryWithMaintainers:
+			cq.WithMaintainers()
 		}
 	}
 	return cq

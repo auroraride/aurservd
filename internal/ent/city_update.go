@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/maintainer"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
@@ -230,6 +231,21 @@ func (cu *CityUpdate) AddPlans(p ...*Plan) *CityUpdate {
 	return cu.AddPlanIDs(ids...)
 }
 
+// AddMaintainerIDs adds the "maintainers" edge to the Maintainer entity by IDs.
+func (cu *CityUpdate) AddMaintainerIDs(ids ...uint64) *CityUpdate {
+	cu.mutation.AddMaintainerIDs(ids...)
+	return cu
+}
+
+// AddMaintainers adds the "maintainers" edges to the Maintainer entity.
+func (cu *CityUpdate) AddMaintainers(m ...*Maintainer) *CityUpdate {
+	ids := make([]uint64, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return cu.AddMaintainerIDs(ids...)
+}
+
 // Mutation returns the CityMutation object of the builder.
 func (cu *CityUpdate) Mutation() *CityMutation {
 	return cu.mutation
@@ -281,6 +297,27 @@ func (cu *CityUpdate) RemovePlans(p ...*Plan) *CityUpdate {
 		ids[i] = p[i].ID
 	}
 	return cu.RemovePlanIDs(ids...)
+}
+
+// ClearMaintainers clears all "maintainers" edges to the Maintainer entity.
+func (cu *CityUpdate) ClearMaintainers() *CityUpdate {
+	cu.mutation.ClearMaintainers()
+	return cu
+}
+
+// RemoveMaintainerIDs removes the "maintainers" edge to Maintainer entities by IDs.
+func (cu *CityUpdate) RemoveMaintainerIDs(ids ...uint64) *CityUpdate {
+	cu.mutation.RemoveMaintainerIDs(ids...)
+	return cu
+}
+
+// RemoveMaintainers removes "maintainers" edges to Maintainer entities.
+func (cu *CityUpdate) RemoveMaintainers(m ...*Maintainer) *CityUpdate {
+	ids := make([]uint64, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return cu.RemoveMaintainerIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -531,6 +568,51 @@ func (cu *CityUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if cu.mutation.MaintainersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   city.MaintainersTable,
+			Columns: city.MaintainersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.RemovedMaintainersIDs(); len(nodes) > 0 && !cu.mutation.MaintainersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   city.MaintainersTable,
+			Columns: city.MaintainersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.MaintainersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   city.MaintainersTable,
+			Columns: city.MaintainersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(cu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, cu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -752,6 +834,21 @@ func (cuo *CityUpdateOne) AddPlans(p ...*Plan) *CityUpdateOne {
 	return cuo.AddPlanIDs(ids...)
 }
 
+// AddMaintainerIDs adds the "maintainers" edge to the Maintainer entity by IDs.
+func (cuo *CityUpdateOne) AddMaintainerIDs(ids ...uint64) *CityUpdateOne {
+	cuo.mutation.AddMaintainerIDs(ids...)
+	return cuo
+}
+
+// AddMaintainers adds the "maintainers" edges to the Maintainer entity.
+func (cuo *CityUpdateOne) AddMaintainers(m ...*Maintainer) *CityUpdateOne {
+	ids := make([]uint64, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return cuo.AddMaintainerIDs(ids...)
+}
+
 // Mutation returns the CityMutation object of the builder.
 func (cuo *CityUpdateOne) Mutation() *CityMutation {
 	return cuo.mutation
@@ -803,6 +900,27 @@ func (cuo *CityUpdateOne) RemovePlans(p ...*Plan) *CityUpdateOne {
 		ids[i] = p[i].ID
 	}
 	return cuo.RemovePlanIDs(ids...)
+}
+
+// ClearMaintainers clears all "maintainers" edges to the Maintainer entity.
+func (cuo *CityUpdateOne) ClearMaintainers() *CityUpdateOne {
+	cuo.mutation.ClearMaintainers()
+	return cuo
+}
+
+// RemoveMaintainerIDs removes the "maintainers" edge to Maintainer entities by IDs.
+func (cuo *CityUpdateOne) RemoveMaintainerIDs(ids ...uint64) *CityUpdateOne {
+	cuo.mutation.RemoveMaintainerIDs(ids...)
+	return cuo
+}
+
+// RemoveMaintainers removes "maintainers" edges to Maintainer entities.
+func (cuo *CityUpdateOne) RemoveMaintainers(m ...*Maintainer) *CityUpdateOne {
+	ids := make([]uint64, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return cuo.RemoveMaintainerIDs(ids...)
 }
 
 // Where appends a list predicates to the CityUpdate builder.
@@ -1076,6 +1194,51 @@ func (cuo *CityUpdateOne) sqlSave(ctx context.Context) (_node *City, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cuo.mutation.MaintainersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   city.MaintainersTable,
+			Columns: city.MaintainersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.RemovedMaintainersIDs(); len(nodes) > 0 && !cuo.mutation.MaintainersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   city.MaintainersTable,
+			Columns: city.MaintainersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.MaintainersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   city.MaintainersTable,
+			Columns: city.MaintainersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

@@ -45,6 +45,8 @@ const (
 	EdgeChildren = "children"
 	// EdgePlans holds the string denoting the plans edge name in mutations.
 	EdgePlans = "plans"
+	// EdgeMaintainers holds the string denoting the maintainers edge name in mutations.
+	EdgeMaintainers = "maintainers"
 	// Table holds the table name of the city in the database.
 	Table = "city"
 	// ParentTable is the table that holds the parent relation/edge.
@@ -60,6 +62,11 @@ const (
 	// PlansInverseTable is the table name for the Plan entity.
 	// It exists in this package in order to avoid circular dependency with the "plan" package.
 	PlansInverseTable = "plan"
+	// MaintainersTable is the table that holds the maintainers relation/edge. The primary key declared below.
+	MaintainersTable = "city_maintainers"
+	// MaintainersInverseTable is the table name for the Maintainer entity.
+	// It exists in this package in order to avoid circular dependency with the "maintainer" package.
+	MaintainersInverseTable = "maintainer"
 )
 
 // Columns holds all SQL columns for city fields.
@@ -83,6 +90,9 @@ var (
 	// PlansPrimaryKey and PlansColumn2 are the table columns denoting the
 	// primary key for the plans relation (M2M).
 	PlansPrimaryKey = []string{"plan_id", "city_id"}
+	// MaintainersPrimaryKey and MaintainersColumn2 are the table columns denoting the
+	// primary key for the maintainers relation (M2M).
+	MaintainersPrimaryKey = []string{"city_id", "maintainer_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -206,6 +216,20 @@ func ByPlans(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newPlansStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByMaintainersCount orders the results by maintainers count.
+func ByMaintainersCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newMaintainersStep(), opts...)
+	}
+}
+
+// ByMaintainers orders the results by maintainers terms.
+func ByMaintainers(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newMaintainersStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newParentStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -225,5 +249,12 @@ func newPlansStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(PlansInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2M, true, PlansTable, PlansPrimaryKey...),
+	)
+}
+func newMaintainersStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(MaintainersInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, false, MaintainersTable, MaintainersPrimaryKey...),
 	)
 }

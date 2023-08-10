@@ -255,4 +255,9 @@ func loadManagerRoutes() {
 
 	// 反馈
 	g.GET("/enterprise/feedback", mapi.Enterprise.FeedbackList)
+
+	// 运维
+	g.GET("/maintainer", mapi.Maintainer.List)
+	g.POST("/maintainer", mapi.Maintainer.Create)
+	g.POST("/maintainer/:id", mapi.Maintainer.Modify)
 }

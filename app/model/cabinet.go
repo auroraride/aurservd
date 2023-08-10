@@ -50,9 +50,9 @@ const (
 
 // Cabinet 电柜基础属性
 type Cabinet struct {
-	BranchID    *uint64              `json:"branchId"`                                                            // 网点
+	BranchID    *uint64              `json:"branchId,omitempty"`                                                  // 网点
 	Status      CabinetStatus        `json:"status" enums:"0,1,2"`                                                // 电柜状态 0未投放 1运营中 2维护中
-	Brand       adapter.CabinetBrand `json:"brand" validate:"required" trans:"品牌" enums:"KAIXIN,YUNDONG,TUOBANG"` // KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
+	Brand       adapter.CabinetBrand `json:"brand" validate:"required" trans:"品牌" enums:"KAIXIN,YUNDONG,TUOBANG"` // KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)
 	Serial      string               `json:"serial" validate:"required" trans:"电柜编码"`
 	Name        string               `json:"name" validate:"required" trans:"电柜名称"`
 	Doors       int                  `json:"doors"` // 柜门数量

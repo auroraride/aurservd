@@ -48,6 +48,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/export"
 	"github.com/auroraride/aurservd/internal/ent/feedback"
 	"github.com/auroraride/aurservd/internal/ent/inventory"
+	"github.com/auroraride/aurservd/internal/ent/maintainer"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
@@ -145,6 +146,8 @@ type Client struct {
 	Feedback *FeedbackClient
 	// Inventory is the client for interacting with the Inventory builders.
 	Inventory *InventoryClient
+	// Maintainer is the client for interacting with the Maintainer builders.
+	Maintainer *MaintainerClient
 	// Manager is the client for interacting with the Manager builders.
 	Manager *ManagerClient
 	// Order is the client for interacting with the Order builders.
@@ -232,6 +235,7 @@ func (c *Client) init() {
 	c.Export = NewExportClient(c.config)
 	c.Feedback = NewFeedbackClient(c.config)
 	c.Inventory = NewInventoryClient(c.config)
+	c.Maintainer = NewMaintainerClient(c.config)
 	c.Manager = NewManagerClient(c.config)
 	c.Order = NewOrderClient(c.config)
 	c.OrderRefund = NewOrderRefundClient(c.config)
@@ -368,6 +372,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Export:                NewExportClient(cfg),
 		Feedback:              NewFeedbackClient(cfg),
 		Inventory:             NewInventoryClient(cfg),
+		Maintainer:            NewMaintainerClient(cfg),
 		Manager:               NewManagerClient(cfg),
 		Order:                 NewOrderClient(cfg),
 		OrderRefund:           NewOrderRefundClient(cfg),
@@ -441,6 +446,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Export:                NewExportClient(cfg),
 		Feedback:              NewFeedbackClient(cfg),
 		Inventory:             NewInventoryClient(cfg),
+		Maintainer:            NewMaintainerClient(cfg),
 		Manager:               NewManagerClient(cfg),
 		Order:                 NewOrderClient(cfg),
 		OrderRefund:           NewOrderRefundClient(cfg),
@@ -497,7 +503,7 @@ func (c *Client) Use(hooks ...Hook) {
 		c.EnterpriseBatterySwap, c.EnterpriseBill, c.EnterpriseContract,
 		c.EnterprisePrepayment, c.EnterprisePrice, c.EnterpriseStatement,
 		c.EnterpriseStation, c.Exception, c.Exchange, c.Export, c.Feedback,
-		c.Inventory, c.Manager, c.Order, c.OrderRefund, c.Person, c.Plan,
+		c.Inventory, c.Maintainer, c.Manager, c.Order, c.OrderRefund, c.Person, c.Plan,
 		c.PlanIntroduce, c.PointLog, c.Reserve, c.Rider, c.RiderFollowUp, c.Role,
 		c.Setting, c.Stock, c.StockSummary, c.Store, c.Subscribe, c.SubscribeAlter,
 		c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend,
@@ -517,7 +523,7 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.EnterpriseBatterySwap, c.EnterpriseBill, c.EnterpriseContract,
 		c.EnterprisePrepayment, c.EnterprisePrice, c.EnterpriseStatement,
 		c.EnterpriseStation, c.Exception, c.Exchange, c.Export, c.Feedback,
-		c.Inventory, c.Manager, c.Order, c.OrderRefund, c.Person, c.Plan,
+		c.Inventory, c.Maintainer, c.Manager, c.Order, c.OrderRefund, c.Person, c.Plan,
 		c.PlanIntroduce, c.PointLog, c.Reserve, c.Rider, c.RiderFollowUp, c.Role,
 		c.Setting, c.Stock, c.StockSummary, c.Store, c.Subscribe, c.SubscribeAlter,
 		c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend,
@@ -597,6 +603,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Feedback.mutate(ctx, m)
 	case *InventoryMutation:
 		return c.Inventory.mutate(ctx, m)
+	case *MaintainerMutation:
+		return c.Maintainer.mutate(ctx, m)
 	case *ManagerMutation:
 		return c.Manager.mutate(ctx, m)
 	case *OrderMutation:
@@ -3210,6 +3218,22 @@ func (c *CityClient) QueryPlans(ci *City) *PlanQuery {
 			sqlgraph.From(city.Table, city.FieldID, id),
 			sqlgraph.To(plan.Table, plan.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, true, city.PlansTable, city.PlansPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(ci.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryMaintainers queries the maintainers edge of a City.
+func (c *CityClient) QueryMaintainers(ci *City) *MaintainerQuery {
+	query := (&MaintainerClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ci.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(city.Table, city.FieldID, id),
+			sqlgraph.To(maintainer.Table, maintainer.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, city.MaintainersTable, city.MaintainersPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(ci.driver.Dialect(), step)
 		return fromV, nil
@@ -7144,6 +7168,140 @@ func (c *InventoryClient) mutate(ctx context.Context, m *InventoryMutation) (Val
 		return (&InventoryDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Inventory mutation op: %q", m.Op())
+	}
+}
+
+// MaintainerClient is a client for the Maintainer schema.
+type MaintainerClient struct {
+	config
+}
+
+// NewMaintainerClient returns a client for the Maintainer from the given config.
+func NewMaintainerClient(c config) *MaintainerClient {
+	return &MaintainerClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `maintainer.Hooks(f(g(h())))`.
+func (c *MaintainerClient) Use(hooks ...Hook) {
+	c.hooks.Maintainer = append(c.hooks.Maintainer, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `maintainer.Intercept(f(g(h())))`.
+func (c *MaintainerClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Maintainer = append(c.inters.Maintainer, interceptors...)
+}
+
+// Create returns a builder for creating a Maintainer entity.
+func (c *MaintainerClient) Create() *MaintainerCreate {
+	mutation := newMaintainerMutation(c.config, OpCreate)
+	return &MaintainerCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Maintainer entities.
+func (c *MaintainerClient) CreateBulk(builders ...*MaintainerCreate) *MaintainerCreateBulk {
+	return &MaintainerCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Maintainer.
+func (c *MaintainerClient) Update() *MaintainerUpdate {
+	mutation := newMaintainerMutation(c.config, OpUpdate)
+	return &MaintainerUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *MaintainerClient) UpdateOne(m *Maintainer) *MaintainerUpdateOne {
+	mutation := newMaintainerMutation(c.config, OpUpdateOne, withMaintainer(m))
+	return &MaintainerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *MaintainerClient) UpdateOneID(id uint64) *MaintainerUpdateOne {
+	mutation := newMaintainerMutation(c.config, OpUpdateOne, withMaintainerID(id))
+	return &MaintainerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Maintainer.
+func (c *MaintainerClient) Delete() *MaintainerDelete {
+	mutation := newMaintainerMutation(c.config, OpDelete)
+	return &MaintainerDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *MaintainerClient) DeleteOne(m *Maintainer) *MaintainerDeleteOne {
+	return c.DeleteOneID(m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *MaintainerClient) DeleteOneID(id uint64) *MaintainerDeleteOne {
+	builder := c.Delete().Where(maintainer.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &MaintainerDeleteOne{builder}
+}
+
+// Query returns a query builder for Maintainer.
+func (c *MaintainerClient) Query() *MaintainerQuery {
+	return &MaintainerQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeMaintainer},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Maintainer entity by its id.
+func (c *MaintainerClient) Get(ctx context.Context, id uint64) (*Maintainer, error) {
+	return c.Query().Where(maintainer.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *MaintainerClient) GetX(ctx context.Context, id uint64) *Maintainer {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryCities queries the cities edge of a Maintainer.
+func (c *MaintainerClient) QueryCities(m *Maintainer) *CityQuery {
+	query := (&CityClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(maintainer.Table, maintainer.FieldID, id),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, maintainer.CitiesTable, maintainer.CitiesPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *MaintainerClient) Hooks() []Hook {
+	return c.hooks.Maintainer
+}
+
+// Interceptors returns the client interceptors.
+func (c *MaintainerClient) Interceptors() []Interceptor {
+	return c.inters.Maintainer
+}
+
+func (c *MaintainerClient) mutate(ctx context.Context, m *MaintainerMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&MaintainerCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&MaintainerUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&MaintainerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&MaintainerDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Maintainer mutation op: %q", m.Op())
 	}
 }
 
@@ -11243,10 +11401,10 @@ type (
 		Contract, Coupon, CouponAssembly, CouponTemplate, Ebike, EbikeBrand, Employee,
 		Enterprise, EnterpriseBatterySwap, EnterpriseBill, EnterpriseContract,
 		EnterprisePrepayment, EnterprisePrice, EnterpriseStatement, EnterpriseStation,
-		Exception, Exchange, Export, Feedback, Inventory, Manager, Order, OrderRefund,
-		Person, Plan, PlanIntroduce, PointLog, Reserve, Rider, RiderFollowUp, Role,
-		Setting, Stock, StockSummary, Store, Subscribe, SubscribeAlter, SubscribePause,
-		SubscribeReminder, SubscribeSuspend []ent.Hook
+		Exception, Exchange, Export, Feedback, Inventory, Maintainer, Manager, Order,
+		OrderRefund, Person, Plan, PlanIntroduce, PointLog, Reserve, Rider,
+		RiderFollowUp, Role, Setting, Stock, StockSummary, Store, Subscribe,
+		SubscribeAlter, SubscribePause, SubscribeReminder, SubscribeSuspend []ent.Hook
 	}
 	inters struct {
 		Agent, Allocate, Assistance, Attendance, Battery, BatteryFlow, BatteryModel,
@@ -11254,10 +11412,11 @@ type (
 		Contract, Coupon, CouponAssembly, CouponTemplate, Ebike, EbikeBrand, Employee,
 		Enterprise, EnterpriseBatterySwap, EnterpriseBill, EnterpriseContract,
 		EnterprisePrepayment, EnterprisePrice, EnterpriseStatement, EnterpriseStation,
-		Exception, Exchange, Export, Feedback, Inventory, Manager, Order, OrderRefund,
-		Person, Plan, PlanIntroduce, PointLog, Reserve, Rider, RiderFollowUp, Role,
-		Setting, Stock, StockSummary, Store, Subscribe, SubscribeAlter, SubscribePause,
-		SubscribeReminder, SubscribeSuspend []ent.Interceptor
+		Exception, Exchange, Export, Feedback, Inventory, Maintainer, Manager, Order,
+		OrderRefund, Person, Plan, PlanIntroduce, PointLog, Reserve, Rider,
+		RiderFollowUp, Role, Setting, Stock, StockSummary, Store, Subscribe,
+		SubscribeAlter, SubscribePause, SubscribeReminder,
+		SubscribeSuspend []ent.Interceptor
 	}
 )
 

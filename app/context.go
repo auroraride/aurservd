@@ -64,7 +64,7 @@ func ContextBinding[T any](c echo.Context) (*BaseContext, *T) {
 }
 
 type ContextWrapper interface {
-	ManagerContext | RiderContext | EmployeeContext | AgentContext
+	ManagerContext | RiderContext | EmployeeContext | AgentContext | MaintainerContext
 }
 
 func ContextX[T ContextWrapper](c any) *T {

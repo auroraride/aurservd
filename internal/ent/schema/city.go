@@ -8,6 +8,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 	"entgo.io/ent/schema/mixin"
+
 	"github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -72,6 +73,7 @@ func (City) Edges() []ent.Edge {
 		edge.To("children", City.Type).From("parent").Field("parent_id").Unique(),
 
 		edge.From("plans", Plan.Type).Ref("cities"),
+		edge.To("maintainers", Maintainer.Type),
 	}
 }
 

@@ -62,8 +62,11 @@ func (el RiderExchangeLimit) Duplicate() bool {
 }
 
 func (el RiderExchangeLimit) Sort() {
-	slices.SortFunc(el, func(a, b *ExchangeLimit) bool {
-		return a.Hours < b.Hours
+	slices.SortStableFunc(el, func(a, b *ExchangeLimit) int {
+		if a.Hours > b.Hours {
+			return 1
+		}
+		return -1
 	})
 }
 
@@ -118,7 +121,10 @@ func (el RiderExchangeFrequency) Duplicate() bool {
 }
 
 func (el RiderExchangeFrequency) Sort() {
-	slices.SortFunc(el, func(a, b *ExchangeFrequency) bool {
-		return a.Hours < b.Hours
+	slices.SortStableFunc(el, func(a, b *ExchangeFrequency) int {
+		if a.Hours > b.Hours {
+			return 1
+		}
+		return -1
 	})
 }
