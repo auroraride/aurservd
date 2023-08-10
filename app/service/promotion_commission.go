@@ -9,8 +9,10 @@ import (
 	"github.com/golang-module/carbon/v2"
 	"go.uber.org/zap"
 
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/model/promotion"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/promotioncommission"
 	"github.com/auroraride/aurservd/internal/ent/promotionearnings"
@@ -596,4 +598,38 @@ func (s *promotionCommissionService) findMaxNumber(numbers []float64) float64 {
 	}
 
 	return maxNumber
+}
+
+// RiderActivateCommission 骑手激活分佣
+func (s *promotionCommissionService) RiderActivateCommission(sub *ent.Subscribe) {
+	// 查询订单是否支付,如果未支付不返佣
+	do, _ := ent.Database.Order.Query().Where(order.SubscribeID(sub.ID), order.Status(model.OrderStatusPaid)).First(s.ctx)
+	if do == nil {
+		zap.L().Error(fmt.Sprintf("激活成功获取返佣失败,订单不存在或未支付 subid:%d", sub.ID), zap.Any("order", do))
+		return
+	}
+
+	if sub.Edges.Rider == nil {
+		zap.L().Error(fmt.Sprintf("激活成功获取返佣失败,骑手不存在 subid:%d", sub.ID))
+		return
+	}
+
+	// 判断返佣类型 新签有可能是续签
+	commissionType, err := NewPromotionCommissionService().GetCommissionType(sub.Edges.Rider.Phone)
+	if err != nil || sub.Edges.Plan == nil {
+		zap.L().Error("激活成功获取返佣失败", zap.Error(err))
+		return
+	}
+
+	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
+		err = NewPromotionCommissionService().CommissionCalculation(tx, &promotion.CommissionCalculation{
+			RiderID:        sub.Edges.Rider.ID,
+			CommissionBase: sub.Edges.Plan.CommissionBase,
+			Type:           commissionType,
+			OrderID:        do.ID,
+			ActualAmount:   do.Total,
+			Price:          sub.Edges.Plan.Price,
+		})
+		return
+	})
 }

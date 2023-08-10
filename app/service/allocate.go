@@ -6,19 +6,17 @@
 package service
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/golang-module/carbon/v2"
 	"go.uber.org/zap"
 
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/app/model/promotion"
 	"github.com/auroraride/aurservd/app/socket"
+	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
 	"github.com/auroraride/aurservd/internal/ent/contract"
-	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
@@ -295,6 +293,12 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 		snag.Panic("分配失败")
 	}
 
+	// 指定电话号码不需要签约
+	debugPhones := ar.Config.App.Debug.Phone
+	if debugPhones[r.Phone] {
+		sub.NeedContract = false
+	}
+
 	switch sub.NeedContract {
 	case true:
 		// 需要签约, 推送签约消息
@@ -330,41 +334,6 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 			SetAgentID(params.AgentID).
 			Active(sub, allo)
 	}
-
-	go func() {
-		// 查询订单是否支付,如果未支付不返佣
-		do, _ := ent.Database.Order.Query().Where(order.SubscribeID(sub.ID), order.Status(model.OrderStatusPaid)).First(s.ctx)
-		if do == nil {
-			zap.L().Error(fmt.Sprintf("激活成功获取返佣失败,订单不存在或未支付 subid:%d", sub.ID), zap.Any("order", do))
-			return
-		}
-
-		// 激活成功后，返佣计算 新签和重签
-		// 团签用户不返佣 个签用户返佣
-		if sub.EnterpriseID == nil && sub.Type == model.OrderTypeNewly || sub.Type == model.OrderTypeAgain {
-
-			var commissionType promotion.CommissionCalculationType
-
-			// 判断返佣类型 新签有可能是续签
-			commissionType, err = NewPromotionCommissionService().GetCommissionType(r.Phone)
-			if err != nil || sub.Edges.Plan == nil {
-				zap.L().Error("激活成功获取返佣失败", zap.Error(err))
-				return
-			}
-
-			ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
-				err = NewPromotionCommissionService().CommissionCalculation(tx, &promotion.CommissionCalculation{
-					RiderID:        r.ID,
-					CommissionBase: sub.Edges.Plan.CommissionBase,
-					Type:           commissionType,
-					OrderID:        do.ID,
-					ActualAmount:   do.Total,
-					Price:          sub.Edges.Plan.Price,
-				})
-				return
-			})
-		}
-	}()
 
 	return model.AllocateCreateRes{
 		ID:           allo.ID,

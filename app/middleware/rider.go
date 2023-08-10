@@ -15,6 +15,8 @@ import (
 	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/person"
+	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/snag"
 )
@@ -118,6 +120,18 @@ func RiderRequireAuthAndContact() echo.MiddlewareFunc {
 			if ctx.Rider.Contact == nil && url != "/rider/contact" {
 				snag.Panic(snag.StatusRequireContact)
 			}
+
+			// 指定电话号码不需要实名认证
+			debugPhones := ar.Config.App.Debug.Phone
+			if debugPhones[ctx.Rider.Phone] {
+				// 查询调试手机号码在数据库中是否实名认证过
+				ri := ent.Database.Rider.Query().Where(rider.PhoneIn(ctx.Rider.Phone), rider.HasPersonWith(person.Status(model.PersonAuthenticated.Value()))).FirstX(context.Background())
+				if ri != nil { // 已经实名认证过
+					ent.Database.Rider.UpdateOneID(ctx.Rider.ID).SetNillablePersonID(ri.PersonID).SetName(ri.Name).SetIDCardNumber(ri.IDCardNumber).ExecX(context.Background())
+					return next(ctx)
+				}
+			}
+
 			if p == nil || model.PersonAuthStatus(p.Status).RequireAuth() {
 				snag.Panic(snag.StatusRequireAuth, ar.Map{"url": service.NewRider().GetFaceAuthUrl(ctx)})
 			}

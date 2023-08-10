@@ -137,9 +137,7 @@ func (s *promotionMemberService) getRiderOrCreate(tx *ent.Tx, phone string, c *p
 	rinfo, _ := ent.Database.Rider.QueryNotDeleted().Where(rider.Phone(phone)).First(s.ctx)
 	if rinfo == nil {
 		// 创建骑手
-		rinfo = tx.Rider.Create().
-			SetPhone(phone).
-			SaveX(s.ctx)
+		rinfo = tx.Rider.Create().SetPhone(phone).SaveX(s.ctx)
 	}
 	// 绑定骑手
 	c.RiderID = &rinfo.ID
