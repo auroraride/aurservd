@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/maintainer"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 )
 
@@ -199,6 +200,21 @@ func (cc *CityCreate) AddPlans(p ...*Plan) *CityCreate {
 		ids[i] = p[i].ID
 	}
 	return cc.AddPlanIDs(ids...)
+}
+
+// AddMaintainerIDs adds the "maintainers" edge to the Maintainer entity by IDs.
+func (cc *CityCreate) AddMaintainerIDs(ids ...uint64) *CityCreate {
+	cc.mutation.AddMaintainerIDs(ids...)
+	return cc
+}
+
+// AddMaintainers adds the "maintainers" edges to the Maintainer entity.
+func (cc *CityCreate) AddMaintainers(m ...*Maintainer) *CityCreate {
+	ids := make([]uint64, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return cc.AddMaintainerIDs(ids...)
 }
 
 // Mutation returns the CityMutation object of the builder.
@@ -398,6 +414,22 @@ func (cc *CityCreate) createSpec() (*City, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := cc.mutation.MaintainersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   city.MaintainersTable,
+			Columns: city.MaintainersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(maintainer.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

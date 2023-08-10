@@ -1063,6 +1063,37 @@ func (iq *InventoryQuery) PaginationResult(req model.PaginationReq) model.Pagina
 	}
 }
 
+// Pagination returns pagination query builder for MaintainerQuery.
+func (mq *MaintainerQuery) Pagination(req model.PaginationReq) *MaintainerQuery {
+	mq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return mq
+}
+
+// PaginationItems returns pagination query builder for MaintainerQuery.
+func (mq *MaintainerQuery) PaginationItemsX(req model.PaginationReq) any {
+	return mq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for MaintainerQuery.
+func (mq *MaintainerQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := mq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for ManagerQuery.
 func (mq *ManagerQuery) Pagination(req model.PaginationReq) *ManagerQuery {
 	mq.Offset(req.GetOffset()).Limit(req.GetLimit())

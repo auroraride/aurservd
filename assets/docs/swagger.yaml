@@ -2607,7 +2607,7 @@ definitions:
       brand:
         allOf:
         - $ref: '#/definitions/adapter.CabinetBrand'
-        description: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
+        description: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)
         enum:
         - KAIXIN
         - YUNDONG
@@ -2730,7 +2730,7 @@ definitions:
       brand:
         allOf:
         - $ref: '#/definitions/adapter.CabinetBrand'
-        description: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
+        description: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)
         enum:
         - KAIXIN
         - YUNDONG
@@ -2956,7 +2956,7 @@ definitions:
       brand:
         allOf:
         - $ref: '#/definitions/adapter.CabinetBrand'
-        description: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
+        description: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)
         enum:
         - KAIXIN
         - YUNDONG
@@ -5077,6 +5077,77 @@ definitions:
         type: string
       time:
         description: 操作时间
+        type: string
+    type: object
+  model.Maintainer:
+    properties:
+      cities:
+        description: 城市列表
+        items:
+          $ref: '#/definitions/model.City'
+        type: array
+      enable:
+        description: 是否启用
+        type: boolean
+      id:
+        type: integer
+      name:
+        description: 姓名
+        type: string
+      phone:
+        description: 电话
+        type: string
+    type: object
+  model.MaintainerCreateReq:
+    properties:
+      cityIds:
+        items:
+          type: integer
+        type: array
+      enable:
+        description: 是否启用，默认`true`
+        type: boolean
+      name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+    required:
+    - cityIds
+    - name
+    - password
+    - phone
+    type: object
+  model.MaintainerSigninReq:
+    properties:
+      password:
+        type: string
+      phone:
+        type: string
+    required:
+    - password
+    - phone
+    type: object
+  model.MaintainerSigninRes:
+    properties:
+      cities:
+        description: 城市列表
+        items:
+          $ref: '#/definitions/model.City'
+        type: array
+      enable:
+        description: 是否启用
+        type: boolean
+      id:
+        type: integer
+      name:
+        description: 姓名
+        type: string
+      phone:
+        description: 电话
+        type: string
+      token:
         type: string
     type: object
   model.ManagerCreateReq:
@@ -10563,6 +10634,33 @@ paths:
       summary: E2003 激活骑士卡
       tags:
       - '[E]店员接口'
+  /maintainer/v1/maintainer/signin:
+    post:
+      consumes:
+      - application/json
+      operationId: AgentMaintainerSignin
+      parameters:
+      - description: 运维校验token
+        in: header
+        name: X-Maintainer-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.MaintainerSigninReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.MaintainerSigninRes'
+      summary: O1001 运维登录
+      tags:
+      - '[O]运维接口'
   /manager/crm/customer:
     get:
       consumes:
@@ -15057,6 +15155,103 @@ paths:
               $ref: '#/definitions/model.InventoryItem'
             type: array
       summary: M1015 可调拨物资清单
+      tags:
+      - '[M]管理接口'
+  /manager/v1/maintainer:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerMaintainerList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 城市
+        in: query
+        name: cityId
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 关键词
+        in: query
+        name: keyword
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.Pagination'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.Maintainer'
+                  type: array
+              type: object
+      summary: MJ001 运维人员列表
+      tags:
+      - '[M]管理接口'
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerMaintainerCreate
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.MaintainerCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: MJ002 创建运维人员
+      tags:
+      - '[M]管理接口'
+  /manager/v1/maintainer/{id}:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerMaintainerModify
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.MaintainerCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: MJ003 修改运维人员信息
       tags:
       - '[M]管理接口'
   /manager/v1/order:

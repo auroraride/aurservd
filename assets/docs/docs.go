@@ -3737,6 +3737,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/maintainer/v1/maintainer/signin": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[O]运维接口"
+                ],
+                "summary": "O1001 运维登录",
+                "operationId": "AgentMaintainerSignin",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "运维校验token",
+                        "name": "X-Maintainer-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.MaintainerSigninReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.MaintainerSigninRes"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/crm/customer": {
             "get": {
                 "consumes": [
@@ -10538,6 +10579,157 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/model.InventoryItem"
                             }
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/maintainer": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MJ001 运维人员列表",
+                "operationId": "ManagerMaintainerList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "关键词",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.Pagination"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.Maintainer"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MJ002 创建运维人员",
+                "operationId": "ManagerMaintainerCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.MaintainerCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/maintainer/{id}": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MJ003 修改运维人员信息",
+                "operationId": "ManagerMaintainerModify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.MaintainerCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
                         }
                     }
                 }
@@ -20680,7 +20872,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "brand": {
-                    "description": "KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
+                    "description": "KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)",
                     "enum": [
                         "KAIXIN",
                         "YUNDONG",
@@ -20855,7 +21047,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "brand": {
-                    "description": "KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
+                    "description": "KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)",
                     "enum": [
                         "KAIXIN",
                         "YUNDONG",
@@ -21183,7 +21375,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "brand": {
-                    "description": "KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
+                    "description": "KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)",
                     "enum": [
                         "KAIXIN",
                         "YUNDONG",
@@ -24223,6 +24415,108 @@ const docTemplate = `{
                 },
                 "time": {
                     "description": "操作时间",
+                    "type": "string"
+                }
+            }
+        },
+        "model.Maintainer": {
+            "type": "object",
+            "properties": {
+                "cities": {
+                    "description": "城市列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.City"
+                    }
+                },
+                "enable": {
+                    "description": "是否启用",
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "姓名",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "电话",
+                    "type": "string"
+                }
+            }
+        },
+        "model.MaintainerCreateReq": {
+            "type": "object",
+            "required": [
+                "cityIds",
+                "name",
+                "password",
+                "phone"
+            ],
+            "properties": {
+                "cityIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "enable": {
+                    "description": "是否启用，默认` + "`" + `true` + "`" + `",
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.MaintainerSigninReq": {
+            "type": "object",
+            "required": [
+                "password",
+                "phone"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.MaintainerSigninRes": {
+            "type": "object",
+            "properties": {
+                "cities": {
+                    "description": "城市列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.City"
+                    }
+                },
+                "enable": {
+                    "description": "是否启用",
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "姓名",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "电话",
+                    "type": "string"
+                },
+                "token": {
                     "type": "string"
                 }
             }

@@ -47,6 +47,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/export"
 	"github.com/auroraride/aurservd/internal/ent/feedback"
 	"github.com/auroraride/aurservd/internal/ent/inventory"
+	"github.com/auroraride/aurservd/internal/ent/maintainer"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
@@ -114,6 +115,7 @@ const (
 	TypeExport                = "Export"
 	TypeFeedback              = "Feedback"
 	TypeInventory             = "Inventory"
+	TypeMaintainer            = "Maintainer"
 	TypeManager               = "Manager"
 	TypeOrder                 = "Order"
 	TypeOrderRefund           = "OrderRefund"
@@ -21602,34 +21604,37 @@ func (m *CabinetFaultMutation) ResetEdge(name string) error {
 // CityMutation represents an operation that mutates the City nodes in the graph.
 type CityMutation struct {
 	config
-	op              Op
-	typ             string
-	id              *uint64
-	created_at      *time.Time
-	updated_at      *time.Time
-	deleted_at      *time.Time
-	creator         **model.Modifier
-	last_modifier   **model.Modifier
-	remark          *string
-	open            *bool
-	name            *string
-	code            *string
-	lng             *float64
-	addlng          *float64
-	lat             *float64
-	addlat          *float64
-	clearedFields   map[string]struct{}
-	parent          *uint64
-	clearedparent   bool
-	children        map[uint64]struct{}
-	removedchildren map[uint64]struct{}
-	clearedchildren bool
-	plans           map[uint64]struct{}
-	removedplans    map[uint64]struct{}
-	clearedplans    bool
-	done            bool
-	oldValue        func(context.Context) (*City, error)
-	predicates      []predicate.City
+	op                 Op
+	typ                string
+	id                 *uint64
+	created_at         *time.Time
+	updated_at         *time.Time
+	deleted_at         *time.Time
+	creator            **model.Modifier
+	last_modifier      **model.Modifier
+	remark             *string
+	open               *bool
+	name               *string
+	code               *string
+	lng                *float64
+	addlng             *float64
+	lat                *float64
+	addlat             *float64
+	clearedFields      map[string]struct{}
+	parent             *uint64
+	clearedparent      bool
+	children           map[uint64]struct{}
+	removedchildren    map[uint64]struct{}
+	clearedchildren    bool
+	plans              map[uint64]struct{}
+	removedplans       map[uint64]struct{}
+	clearedplans       bool
+	maintainers        map[uint64]struct{}
+	removedmaintainers map[uint64]struct{}
+	clearedmaintainers bool
+	done               bool
+	oldValue           func(context.Context) (*City, error)
+	predicates         []predicate.City
 }
 
 var _ ent.Mutation = (*CityMutation)(nil)
@@ -22448,6 +22453,60 @@ func (m *CityMutation) ResetPlans() {
 	m.removedplans = nil
 }
 
+// AddMaintainerIDs adds the "maintainers" edge to the Maintainer entity by ids.
+func (m *CityMutation) AddMaintainerIDs(ids ...uint64) {
+	if m.maintainers == nil {
+		m.maintainers = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.maintainers[ids[i]] = struct{}{}
+	}
+}
+
+// ClearMaintainers clears the "maintainers" edge to the Maintainer entity.
+func (m *CityMutation) ClearMaintainers() {
+	m.clearedmaintainers = true
+}
+
+// MaintainersCleared reports if the "maintainers" edge to the Maintainer entity was cleared.
+func (m *CityMutation) MaintainersCleared() bool {
+	return m.clearedmaintainers
+}
+
+// RemoveMaintainerIDs removes the "maintainers" edge to the Maintainer entity by IDs.
+func (m *CityMutation) RemoveMaintainerIDs(ids ...uint64) {
+	if m.removedmaintainers == nil {
+		m.removedmaintainers = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.maintainers, ids[i])
+		m.removedmaintainers[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedMaintainers returns the removed IDs of the "maintainers" edge to the Maintainer entity.
+func (m *CityMutation) RemovedMaintainersIDs() (ids []uint64) {
+	for id := range m.removedmaintainers {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// MaintainersIDs returns the "maintainers" edge IDs in the mutation.
+func (m *CityMutation) MaintainersIDs() (ids []uint64) {
+	for id := range m.maintainers {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetMaintainers resets all changes to the "maintainers" edge.
+func (m *CityMutation) ResetMaintainers() {
+	m.maintainers = nil
+	m.clearedmaintainers = false
+	m.removedmaintainers = nil
+}
+
 // Where appends a list predicates to the CityMutation builder.
 func (m *CityMutation) Where(ps ...predicate.City) {
 	m.predicates = append(m.predicates, ps...)
@@ -22846,7 +22905,7 @@ func (m *CityMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *CityMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.parent != nil {
 		edges = append(edges, city.EdgeParent)
 	}
@@ -22855,6 +22914,9 @@ func (m *CityMutation) AddedEdges() []string {
 	}
 	if m.plans != nil {
 		edges = append(edges, city.EdgePlans)
+	}
+	if m.maintainers != nil {
+		edges = append(edges, city.EdgeMaintainers)
 	}
 	return edges
 }
@@ -22879,18 +22941,27 @@ func (m *CityMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case city.EdgeMaintainers:
+		ids := make([]ent.Value, 0, len(m.maintainers))
+		for id := range m.maintainers {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *CityMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.removedchildren != nil {
 		edges = append(edges, city.EdgeChildren)
 	}
 	if m.removedplans != nil {
 		edges = append(edges, city.EdgePlans)
+	}
+	if m.removedmaintainers != nil {
+		edges = append(edges, city.EdgeMaintainers)
 	}
 	return edges
 }
@@ -22911,13 +22982,19 @@ func (m *CityMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case city.EdgeMaintainers:
+		ids := make([]ent.Value, 0, len(m.removedmaintainers))
+		for id := range m.removedmaintainers {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *CityMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.clearedparent {
 		edges = append(edges, city.EdgeParent)
 	}
@@ -22926,6 +23003,9 @@ func (m *CityMutation) ClearedEdges() []string {
 	}
 	if m.clearedplans {
 		edges = append(edges, city.EdgePlans)
+	}
+	if m.clearedmaintainers {
+		edges = append(edges, city.EdgeMaintainers)
 	}
 	return edges
 }
@@ -22940,6 +23020,8 @@ func (m *CityMutation) EdgeCleared(name string) bool {
 		return m.clearedchildren
 	case city.EdgePlans:
 		return m.clearedplans
+	case city.EdgeMaintainers:
+		return m.clearedmaintainers
 	}
 	return false
 }
@@ -22967,6 +23049,9 @@ func (m *CityMutation) ResetEdge(name string) error {
 		return nil
 	case city.EdgePlans:
 		m.ResetPlans()
+		return nil
+	case city.EdgeMaintainers:
+		m.ResetMaintainers()
 		return nil
 	}
 	return fmt.Errorf("unknown City edge %s", name)
@@ -53761,6 +53846,587 @@ func (m *InventoryMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *InventoryMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Inventory edge %s", name)
+}
+
+// MaintainerMutation represents an operation that mutates the Maintainer nodes in the graph.
+type MaintainerMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *uint64
+	enable        *bool
+	name          *string
+	phone         *string
+	password      *string
+	clearedFields map[string]struct{}
+	cities        map[uint64]struct{}
+	removedcities map[uint64]struct{}
+	clearedcities bool
+	done          bool
+	oldValue      func(context.Context) (*Maintainer, error)
+	predicates    []predicate.Maintainer
+}
+
+var _ ent.Mutation = (*MaintainerMutation)(nil)
+
+// maintainerOption allows management of the mutation configuration using functional options.
+type maintainerOption func(*MaintainerMutation)
+
+// newMaintainerMutation creates new mutation for the Maintainer entity.
+func newMaintainerMutation(c config, op Op, opts ...maintainerOption) *MaintainerMutation {
+	m := &MaintainerMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeMaintainer,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withMaintainerID sets the ID field of the mutation.
+func withMaintainerID(id uint64) maintainerOption {
+	return func(m *MaintainerMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Maintainer
+		)
+		m.oldValue = func(ctx context.Context) (*Maintainer, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Maintainer.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withMaintainer sets the old Maintainer of the mutation.
+func withMaintainer(node *Maintainer) maintainerOption {
+	return func(m *MaintainerMutation) {
+		m.oldValue = func(context.Context) (*Maintainer, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m MaintainerMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m MaintainerMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *MaintainerMutation) ID() (id uint64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *MaintainerMutation) IDs(ctx context.Context) ([]uint64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uint64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Maintainer.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetEnable sets the "enable" field.
+func (m *MaintainerMutation) SetEnable(b bool) {
+	m.enable = &b
+}
+
+// Enable returns the value of the "enable" field in the mutation.
+func (m *MaintainerMutation) Enable() (r bool, exists bool) {
+	v := m.enable
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEnable returns the old "enable" field's value of the Maintainer entity.
+// If the Maintainer object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MaintainerMutation) OldEnable(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEnable is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEnable requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEnable: %w", err)
+	}
+	return oldValue.Enable, nil
+}
+
+// ResetEnable resets all changes to the "enable" field.
+func (m *MaintainerMutation) ResetEnable() {
+	m.enable = nil
+}
+
+// SetName sets the "name" field.
+func (m *MaintainerMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *MaintainerMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the Maintainer entity.
+// If the Maintainer object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MaintainerMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *MaintainerMutation) ResetName() {
+	m.name = nil
+}
+
+// SetPhone sets the "phone" field.
+func (m *MaintainerMutation) SetPhone(s string) {
+	m.phone = &s
+}
+
+// Phone returns the value of the "phone" field in the mutation.
+func (m *MaintainerMutation) Phone() (r string, exists bool) {
+	v := m.phone
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPhone returns the old "phone" field's value of the Maintainer entity.
+// If the Maintainer object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MaintainerMutation) OldPhone(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPhone is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPhone requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPhone: %w", err)
+	}
+	return oldValue.Phone, nil
+}
+
+// ResetPhone resets all changes to the "phone" field.
+func (m *MaintainerMutation) ResetPhone() {
+	m.phone = nil
+}
+
+// SetPassword sets the "password" field.
+func (m *MaintainerMutation) SetPassword(s string) {
+	m.password = &s
+}
+
+// Password returns the value of the "password" field in the mutation.
+func (m *MaintainerMutation) Password() (r string, exists bool) {
+	v := m.password
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPassword returns the old "password" field's value of the Maintainer entity.
+// If the Maintainer object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MaintainerMutation) OldPassword(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPassword is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPassword requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPassword: %w", err)
+	}
+	return oldValue.Password, nil
+}
+
+// ResetPassword resets all changes to the "password" field.
+func (m *MaintainerMutation) ResetPassword() {
+	m.password = nil
+}
+
+// AddCityIDs adds the "cities" edge to the City entity by ids.
+func (m *MaintainerMutation) AddCityIDs(ids ...uint64) {
+	if m.cities == nil {
+		m.cities = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.cities[ids[i]] = struct{}{}
+	}
+}
+
+// ClearCities clears the "cities" edge to the City entity.
+func (m *MaintainerMutation) ClearCities() {
+	m.clearedcities = true
+}
+
+// CitiesCleared reports if the "cities" edge to the City entity was cleared.
+func (m *MaintainerMutation) CitiesCleared() bool {
+	return m.clearedcities
+}
+
+// RemoveCityIDs removes the "cities" edge to the City entity by IDs.
+func (m *MaintainerMutation) RemoveCityIDs(ids ...uint64) {
+	if m.removedcities == nil {
+		m.removedcities = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.cities, ids[i])
+		m.removedcities[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedCities returns the removed IDs of the "cities" edge to the City entity.
+func (m *MaintainerMutation) RemovedCitiesIDs() (ids []uint64) {
+	for id := range m.removedcities {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// CitiesIDs returns the "cities" edge IDs in the mutation.
+func (m *MaintainerMutation) CitiesIDs() (ids []uint64) {
+	for id := range m.cities {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetCities resets all changes to the "cities" edge.
+func (m *MaintainerMutation) ResetCities() {
+	m.cities = nil
+	m.clearedcities = false
+	m.removedcities = nil
+}
+
+// Where appends a list predicates to the MaintainerMutation builder.
+func (m *MaintainerMutation) Where(ps ...predicate.Maintainer) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the MaintainerMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *MaintainerMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Maintainer, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *MaintainerMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *MaintainerMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (Maintainer).
+func (m *MaintainerMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *MaintainerMutation) Fields() []string {
+	fields := make([]string, 0, 4)
+	if m.enable != nil {
+		fields = append(fields, maintainer.FieldEnable)
+	}
+	if m.name != nil {
+		fields = append(fields, maintainer.FieldName)
+	}
+	if m.phone != nil {
+		fields = append(fields, maintainer.FieldPhone)
+	}
+	if m.password != nil {
+		fields = append(fields, maintainer.FieldPassword)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *MaintainerMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case maintainer.FieldEnable:
+		return m.Enable()
+	case maintainer.FieldName:
+		return m.Name()
+	case maintainer.FieldPhone:
+		return m.Phone()
+	case maintainer.FieldPassword:
+		return m.Password()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *MaintainerMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case maintainer.FieldEnable:
+		return m.OldEnable(ctx)
+	case maintainer.FieldName:
+		return m.OldName(ctx)
+	case maintainer.FieldPhone:
+		return m.OldPhone(ctx)
+	case maintainer.FieldPassword:
+		return m.OldPassword(ctx)
+	}
+	return nil, fmt.Errorf("unknown Maintainer field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *MaintainerMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case maintainer.FieldEnable:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEnable(v)
+		return nil
+	case maintainer.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case maintainer.FieldPhone:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPhone(v)
+		return nil
+	case maintainer.FieldPassword:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPassword(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Maintainer field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *MaintainerMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *MaintainerMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *MaintainerMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Maintainer numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *MaintainerMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *MaintainerMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *MaintainerMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Maintainer nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *MaintainerMutation) ResetField(name string) error {
+	switch name {
+	case maintainer.FieldEnable:
+		m.ResetEnable()
+		return nil
+	case maintainer.FieldName:
+		m.ResetName()
+		return nil
+	case maintainer.FieldPhone:
+		m.ResetPhone()
+		return nil
+	case maintainer.FieldPassword:
+		m.ResetPassword()
+		return nil
+	}
+	return fmt.Errorf("unknown Maintainer field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *MaintainerMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.cities != nil {
+		edges = append(edges, maintainer.EdgeCities)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *MaintainerMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case maintainer.EdgeCities:
+		ids := make([]ent.Value, 0, len(m.cities))
+		for id := range m.cities {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *MaintainerMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.removedcities != nil {
+		edges = append(edges, maintainer.EdgeCities)
+	}
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *MaintainerMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case maintainer.EdgeCities:
+		ids := make([]ent.Value, 0, len(m.removedcities))
+		for id := range m.removedcities {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *MaintainerMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedcities {
+		edges = append(edges, maintainer.EdgeCities)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *MaintainerMutation) EdgeCleared(name string) bool {
+	switch name {
+	case maintainer.EdgeCities:
+		return m.clearedcities
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *MaintainerMutation) ClearEdge(name string) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Maintainer unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *MaintainerMutation) ResetEdge(name string) error {
+	switch name {
+	case maintainer.EdgeCities:
+		m.ResetCities()
+		return nil
+	}
+	return fmt.Errorf("unknown Maintainer edge %s", name)
 }
 
 // ManagerMutation represents an operation that mutates the Manager nodes in the graph.

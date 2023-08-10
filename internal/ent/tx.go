@@ -82,6 +82,8 @@ type Tx struct {
 	Feedback *FeedbackClient
 	// Inventory is the client for interacting with the Inventory builders.
 	Inventory *InventoryClient
+	// Maintainer is the client for interacting with the Maintainer builders.
+	Maintainer *MaintainerClient
 	// Manager is the client for interacting with the Manager builders.
 	Manager *ManagerClient
 	// Order is the client for interacting with the Order builders.
@@ -287,6 +289,7 @@ func (tx *Tx) init() {
 	tx.Export = NewExportClient(tx.config)
 	tx.Feedback = NewFeedbackClient(tx.config)
 	tx.Inventory = NewInventoryClient(tx.config)
+	tx.Maintainer = NewMaintainerClient(tx.config)
 	tx.Manager = NewManagerClient(tx.config)
 	tx.Order = NewOrderClient(tx.config)
 	tx.OrderRefund = NewOrderRefundClient(tx.config)

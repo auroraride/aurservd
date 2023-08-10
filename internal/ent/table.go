@@ -398,6 +398,20 @@ func (i *Inventory) GetName() string {
 	return i.Name
 }
 
+// GetTableName returns table name for Maintainer.
+func (m *Maintainer) GetTableName() string {
+	return "maintainer"
+}
+
+// GetID returns id for Maintainer.
+func (m *Maintainer) GetID() uint64 {
+	return m.ID
+}
+
+func (m *Maintainer) GetName() string {
+	return m.Name
+}
+
 // GetTableName returns table name for Manager.
 func (m *Manager) GetTableName() string {
 	return "manager"

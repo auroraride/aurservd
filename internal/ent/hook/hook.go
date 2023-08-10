@@ -417,6 +417,18 @@ func (f InventoryFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, e
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.InventoryMutation", m)
 }
 
+// The MaintainerFunc type is an adapter to allow the use of ordinary
+// function as Maintainer mutator.
+type MaintainerFunc func(context.Context, *ent.MaintainerMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f MaintainerFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.MaintainerMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.MaintainerMutation", m)
+}
+
 // The ManagerFunc type is an adapter to allow the use of ordinary
 // function as Manager mutator.
 type ManagerFunc func(context.Context, *ent.ManagerMutation) (ent.Value, error)
