@@ -74,7 +74,7 @@ func (*promotionEarningsTask) Do() {
 			balance := dl.Sum(member.Balance, v)
 			frozen := dl.Sub(member.Frozen, v)
 			// 更新用户总收益
-			_, err = tx.PromotionMember.UpdateOneID(k).SetBalance(balance).AddFrozen(frozen).Save(ctx)
+			_, err = tx.PromotionMember.UpdateOneID(k).SetBalance(balance).SetFrozen(frozen).Save(ctx)
 			if err != nil {
 				zap.L().Error("更新用户总收益失败", zap.Error(err), zap.Uint64("会员id", k), zap.Float64("金额", v))
 			}
@@ -87,6 +87,7 @@ func (*promotionEarningsTask) Do() {
 		if _, err = tx.PromotionEarnings.Update().
 			Where(promotionearnings.IDIn(ids...)).
 			SetStatus(promotion.EarningsStatusSettled.Value()).
+			SetRemark("定时任务结算").
 			Save(ctx); err != nil {
 			zap.L().Error("更新收益失败", zap.Error(err), zap.Uint64s("ids", ids))
 			return errors.New("更新收益失败")

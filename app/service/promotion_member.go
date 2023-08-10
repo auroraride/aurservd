@@ -147,7 +147,7 @@ func (s *promotionMemberService) getRiderOrCreate(tx *ent.Tx, phone string, c *p
 
 // 更新会员信息
 func (s *promotionMemberService) updateMemberInfo(tx *ent.Tx, mem *ent.PromotionMember, req *promotion.MemberCreateReq) {
-	if req.RiderID != nil && req.RiderID != mem.RiderID {
+	if req.RiderID != nil && req.RiderID != mem.RiderID && mem.RiderID == nil {
 		tx.PromotionMember.UpdateOne(mem).SetNillableRiderID(req.RiderID).ExecX(s.ctx)
 		tx.PromotionReferrals.Update().Where(promotionreferrals.ReferredMemberIDEQ(mem.ID)).SetNillableRiderID(req.RiderID).ExecX(s.ctx)
 	}
