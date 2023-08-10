@@ -50,7 +50,7 @@ func (*maintainer) Create(c echo.Context) (err error) {
 
 // Modify
 // @ID           ManagerMaintainerModify
-// @Router       /manager/v1/maintainer/{id} [POST]
+// @Router       /manager/v1/maintainer/{id} [PUT]
 // @Summary      MJ003 修改运维人员信息
 // @Tags         [M]管理接口
 // @Accept       json
