@@ -14,11 +14,14 @@ type MaintainerContext struct {
 }
 
 func NewMaintainerContext(c echo.Context, m *ent.Maintainer) *MaintainerContext {
-	return &MaintainerContext{
+	ctx := &MaintainerContext{
 		BaseContext: Context(c),
 		Maintainer:  m,
-		Cities:      m.Edges.Cities,
 	}
+	if m != nil {
+		ctx.Cities = m.Edges.Cities
+	}
+	return ctx
 }
 
 func MaintainerContextAndBinding[T any](c echo.Context) (*MaintainerContext, *T) {

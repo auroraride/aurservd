@@ -19,7 +19,7 @@ var Cabinet = new(cabinet)
 
 // List
 // @ID           MaintainerCabinetList
-// @Router       /maintainer/v1/cabinet [GET]
+// @Router       /maintainer/v1/cabinets [GET]
 // @Summary      O2001 获取电柜列表
 // @Tags         [O]运维接口
 // @Accept       json
@@ -29,4 +29,19 @@ var Cabinet = new(cabinet)
 func (*cabinet) List(c echo.Context) (err error) {
 	ctx, req := app.MaintainerContextAndBinding[model.PaginationReq](c)
 	return ctx.SendResponse(service.NewMaintainerCabinet().List(ctx.CityIDs(), req))
+}
+
+// Detail
+// @ID           MaintainerCabinetDetail
+// @Router       /maintainer/v1/cabinet/{serial} [GET]
+// @Summary      O2002 获取电柜详情
+// @Tags         [O]运维接口
+// @Accept       json
+// @Produce      json
+// @Param        serial  path  string  true  "电柜编号"
+// @Param        X-Maintainer-Token  header  string  true  "运维校验token"
+// @Success      200  {object}  model.MaintainerCabinetDetailRes  "请求成功"
+func (*cabinet) Detail(c echo.Context) (err error) {
+	ctx, req := app.MaintainerContextAndBinding[model.MaintainerCabinetDetailReq](c)
+	return ctx.SendResponse(service.NewMaintainerCabinet().Detail(req))
 }

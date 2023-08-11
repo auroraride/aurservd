@@ -15,4 +15,5 @@ func loadMaintainerRoutes() {
 	// 需校验
 	auth := g.Group("", middleware.Maintainer(), middleware.MaintainerAuth())
 	auth.GET("/cabinets", oapi.Cabinet.List)
+	auth.GET("/cabinet/:serial", oapi.Cabinet.Detail)
 }

@@ -99,6 +99,8 @@ type CabinetItem struct {
 	StationID      *uint64  `json:"stationId,omitempty"`      // 站点id
 	EnterpriseName string   `json:"enterpriseName,omitempty"` // 团签名称
 	EnterpriseID   *uint64  `json:"enterpriseId,omitempty"`   // 团签ID
+	Lng            float64  `json:"lng,omitempty"`            // 经度
+	Lat            float64  `json:"lat,omitempty"`            // 纬度
 }
 
 // CabinetQueryReq 电柜查询请求

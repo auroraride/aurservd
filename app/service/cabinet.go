@@ -347,6 +347,20 @@ func (s *cabinetService) DetailFromID(id uint64) *model.CabinetDetailRes {
 	return s.Detail(item)
 }
 
+func (s *cabinetService) DetailFromSerial(serial string) *model.CabinetDetailRes {
+	item, _ := s.orm.QueryNotDeleted().
+		Where(cabinet.Serial(serial)).
+		WithModels().
+		WithEnterprise().
+		WithStation().
+		First(s.ctx)
+	if item == nil {
+		snag.Panic("未找到电柜")
+	}
+
+	return s.Detail(item)
+}
+
 func (s *cabinetService) Detail(item *ent.Cabinet) *model.CabinetDetailRes {
 	s.Sync(item)
 
