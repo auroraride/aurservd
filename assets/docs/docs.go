@@ -3737,7 +3737,46 @@ const docTemplate = `{
                 }
             }
         },
-        "/maintainer/v1/cabinet": {
+        "/maintainer/v1/cabinet/{serial}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[O]运维接口"
+                ],
+                "summary": "O2002 获取电柜详情",
+                "operationId": "MaintainerCabinetDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "运维校验token",
+                        "name": "X-Maintainer-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "电柜编号",
+                        "name": "serial",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.CabinetDetailRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/maintainer/v1/cabinets": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -3784,7 +3823,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/maintainer/v1/maintainer/signin": {
+        "/maintainer/v1/signin": {
             "post": {
                 "consumes": [
                     "application/json"

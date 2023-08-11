@@ -160,7 +160,7 @@ func (s *maintainerService) Modify(req *model.MaintainerModifyReq) {
 }
 
 // Signin 登录
-func (s *maintainerService) Signin(req *model.MaintainerSigninReq) (res *model.MaintainerSigninRes) {
+func (s *maintainerService) Signin(req *model.MaintainerSigninReq) (res model.MaintainerSigninRes) {
 	m, _ := s.orm.Query().Where(maintainer.Phone(req.Phone), maintainer.Enable(true)).WithCities().First(s.ctx)
 	if m == nil {
 		snag.Panic("未找到有效运维")

@@ -10634,7 +10634,33 @@ paths:
       summary: E2003 激活骑士卡
       tags:
       - '[E]店员接口'
-  /maintainer/v1/cabinet:
+  /maintainer/v1/cabinet/{serial}:
+    get:
+      consumes:
+      - application/json
+      operationId: MaintainerCabinetDetail
+      parameters:
+      - description: 运维校验token
+        in: header
+        name: X-Maintainer-Token
+        required: true
+        type: string
+      - description: 电柜编号
+        in: path
+        name: serial
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.CabinetDetailRes'
+      summary: O2002 获取电柜详情
+      tags:
+      - '[O]运维接口'
+  /maintainer/v1/cabinets:
     get:
       consumes:
       - application/json
@@ -10662,7 +10688,7 @@ paths:
       summary: O2001 获取电柜列表
       tags:
       - '[O]运维接口'
-  /maintainer/v1/maintainer/signin:
+  /maintainer/v1/signin:
     post:
       consumes:
       - application/json

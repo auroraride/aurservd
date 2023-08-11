@@ -41,3 +41,8 @@ func (s *maintainerCabinetService) List(cityIDs []uint64, pg *model.PaginationRe
 		NewCabinet().SyncCabinets(cabinets)
 	})
 }
+
+// Detail 获取电柜详情
+func (s *maintainerCabinetService) Detail(serial string) *model.CabinetDetailRes {
+	return NewCabinet().DetailFromSerial(serial)
+}

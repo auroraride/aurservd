@@ -48,6 +48,10 @@ const (
 	CabinetHealthStatusFault                // 故障
 )
 
+type SerialParamReq struct {
+	Serial string `json:"serial" param:"serial" validate:"required" trans:"电柜编码"`
+}
+
 // Cabinet 电柜基础属性
 type Cabinet struct {
 	BranchID    *uint64              `json:"branchId,omitempty"`                                                  // 网点

@@ -19,7 +19,7 @@ var Maintainer = new(maintainer)
 
 // Signin
 // @ID           AgentMaintainerSignin
-// @Router       /maintainer/v1/maintainer/signin [POST]
+// @Router       /maintainer/v1/signin [POST]
 // @Summary      O1001 运维登录
 // @Tags         [O]运维接口
 // @Accept       json

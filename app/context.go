@@ -21,15 +21,17 @@ type BaseContext struct {
 // Context 获取上下文
 func Context(c echo.Context) *BaseContext {
 	switch v := c.(type) {
+	case *BaseContext:
+		return v
 	case *ManagerContext:
 		return v.BaseContext
 	case *RiderContext:
 		return v.BaseContext
-	case *BaseContext:
-		return v
 	case *EmployeeContext:
 		return v.BaseContext
 	case *AgentContext:
+		return v.BaseContext
+	case *MaintainerContext:
 		return v.BaseContext
 	default:
 		return nil
