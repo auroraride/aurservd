@@ -463,27 +463,29 @@ func (s *promotionMemberService) Update(req *promotion.MemberUpdateReq) {
 func (s *promotionMemberService) TeamList(ctx echo.Context, req *promotion.MemberTeamReq) model.PaginationRes {
 	sqls := `
 			WITH RECURSIVE member_hierarchy AS (
-                SELECT referred_member_id, 1 AS level,rider_id,created_at
-                FROM promotion_referrals
+                SELECT referred_member_id, 1 AS level, re.rider_id, re.created_at, r.person_id
+			    FROM promotion_referrals re
+			    LEFT JOIN rider r ON r.id = re.rider_id
 				` + fmt.Sprintf(" WHERE referring_member_id = %d", req.ID) + `
                 UNION ALL
-                SELECT mr.referred_member_id, mh.level + 1 AS level,mr.rider_id,mr.created_at
+                SELECT mr.referred_member_id, mh.level + 1 AS level, mr.rider_id, mr.created_at, r.person_id
                 FROM member_hierarchy mh
                 INNER JOIN promotion_referrals as mr ON mh.referred_member_id = mr.referring_member_id
+				LEFT JOIN rider r ON r.id = mh.rider_id
 				WHERE mh.level < 2
 			)
 			SELECT referred_member_id, m.phone, COALESCE(r.name, m.name) AS name, mh.level, s.status as subscribeStatus, s.start_at as subscribeStartAt,
-						(SELECT
-						    SUM(CASE WHEN (o.type = 2 OR o.type = 3) THEN 1 ELSE 0 END)
-						    + (SUM(CASE WHEN o.type = 1 THEN 1 ELSE 0 END)
-						       - SUM(DISTINCT CASE WHEN o.type = 1 THEN 1 ELSE 0 END))
+						COALESCE((SELECT
+						    SUM(CASE WHEN (o.type = 2 OR o.type = 3) AND s.type <> 0 THEN 1 ELSE 0 END)+
+							(SUM(CASE WHEN o.type = 1 AND s.type <> 0 THEN 1 ELSE 0 END)-
+					        COUNT(DISTINCT CASE WHEN o.type = 1 AND s.type <> 0 THEN mh.person_id END))
 						FROM
 						    "order" o
 						    LEFT JOIN subscribe s ON o.subscribe_id = s.ID
 						WHERE
 						    o.rider_id = r.id
 						    AND s.status <> 0
-						) AS renewalCount
+						),0) AS renewalCount
 				FROM member_hierarchy mh
 				JOIN promotion_member m ON m.id = mh.referred_member_id
 				LEFT JOIN rider r ON m.rider_id = r.id
@@ -511,6 +513,7 @@ func (s *promotionMemberService) TeamList(ctx echo.Context, req *promotion.Membe
 	// 参数
 	rows, err := ent.Database.QueryContext(s.ctx, sqls)
 	if err != nil {
+		zap.L().Error("查询失败", zap.Error(err))
 		snag.Panic("查询失败")
 	}
 	defer func(rows *stdsql.Rows) {
@@ -526,6 +529,7 @@ func (s *promotionMemberService) TeamList(ctx echo.Context, req *promotion.Membe
 		item := &promotion.MemberTeamRows{}
 		err = rows.Scan(&item.ID, &item.Phone, &item.Name, &item.Level, &item.SubscribeStatus, &item.SubscribeStartAt, &item.RenewalCount)
 		if err != nil {
+			zap.L().Error("查询失败", zap.Error(err))
 			snag.Panic("查询失败")
 		}
 

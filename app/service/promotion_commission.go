@@ -502,6 +502,10 @@ func (s *promotionCommissionService) GetCommissionType(phone string) (promotion.
 
 	riders, _ := ent.Database.Rider.Query().WithSubscribes().Where(rider.PersonID(ri.Edges.Person.ID)).All(s.ctx)
 
+	if len(riders) > 1 {
+		return promotion.CommissionTypeRenewal, nil
+	}
+
 	for _, v := range riders {
 		sub := v.Edges.Subscribes
 		if sub != nil && (len(sub) == 1 && sub[0].RenewalDays > 0 || len(sub) > 1) {
