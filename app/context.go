@@ -31,6 +31,8 @@ func Context(c echo.Context) *BaseContext {
 		return v.BaseContext
 	case *AgentContext:
 		return v.BaseContext
+	case *PromotionContext:
+		return v.BaseContext
 	default:
 		return nil
 	}
@@ -64,7 +66,7 @@ func ContextBinding[T any](c echo.Context) (*BaseContext, *T) {
 }
 
 type ContextWrapper interface {
-	ManagerContext | RiderContext | EmployeeContext | AgentContext | MaintainerContext
+	ManagerContext | RiderContext | EmployeeContext | AgentContext | PromotionContext | MaintainerContext
 }
 
 func ContextX[T ContextWrapper](c any) *T {

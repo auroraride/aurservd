@@ -35,6 +35,15 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/plan"
+	"github.com/auroraride/aurservd/internal/ent/promotionachievement"
+	"github.com/auroraride/aurservd/internal/ent/promotionbankcard"
+	"github.com/auroraride/aurservd/internal/ent/promotioncommission"
+	"github.com/auroraride/aurservd/internal/ent/promotionearnings"
+	"github.com/auroraride/aurservd/internal/ent/promotiongrowth"
+	"github.com/auroraride/aurservd/internal/ent/promotionlevel"
+	"github.com/auroraride/aurservd/internal/ent/promotionmember"
+	"github.com/auroraride/aurservd/internal/ent/promotionprivilege"
+	"github.com/auroraride/aurservd/internal/ent/promotionwithdrawal"
 	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
@@ -1196,6 +1205,366 @@ func (c *PlanClient) GetNotDeleted(ctx context.Context, id uint64) (*Plan, error
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *PlanClient) GetNotDeletedX(ctx context.Context, id uint64) *Plan {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for PromotionAchievement.
+func (c *PromotionAchievementClient) SoftDelete() *PromotionAchievementUpdate {
+	mutation := newPromotionAchievementMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &PromotionAchievementUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *PromotionAchievementClient) SoftDeleteOne(pa *PromotionAchievement) *PromotionAchievementUpdateOne {
+	mutation := newPromotionAchievementMutation(c.config, OpUpdateOne, withPromotionAchievement(pa))
+	mutation.SetDeletedAt(time.Now())
+	return &PromotionAchievementUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *PromotionAchievementClient) SoftDeleteOneID(id uint64) *PromotionAchievementUpdateOne {
+	mutation := newPromotionAchievementMutation(c.config, OpUpdateOne, withPromotionAchievementID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &PromotionAchievementUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for PromotionAchievement.
+func (c *PromotionAchievementClient) QueryNotDeleted() *PromotionAchievementQuery {
+	return c.Query().Where(promotionachievement.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a PromotionAchievement not deleted entity by its id.
+func (c *PromotionAchievementClient) GetNotDeleted(ctx context.Context, id uint64) (*PromotionAchievement, error) {
+	return c.Query().Where(promotionachievement.ID(id), promotionachievement.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *PromotionAchievementClient) GetNotDeletedX(ctx context.Context, id uint64) *PromotionAchievement {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for PromotionBankCard.
+func (c *PromotionBankCardClient) SoftDelete() *PromotionBankCardUpdate {
+	mutation := newPromotionBankCardMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &PromotionBankCardUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *PromotionBankCardClient) SoftDeleteOne(pbc *PromotionBankCard) *PromotionBankCardUpdateOne {
+	mutation := newPromotionBankCardMutation(c.config, OpUpdateOne, withPromotionBankCard(pbc))
+	mutation.SetDeletedAt(time.Now())
+	return &PromotionBankCardUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *PromotionBankCardClient) SoftDeleteOneID(id uint64) *PromotionBankCardUpdateOne {
+	mutation := newPromotionBankCardMutation(c.config, OpUpdateOne, withPromotionBankCardID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &PromotionBankCardUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for PromotionBankCard.
+func (c *PromotionBankCardClient) QueryNotDeleted() *PromotionBankCardQuery {
+	return c.Query().Where(promotionbankcard.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a PromotionBankCard not deleted entity by its id.
+func (c *PromotionBankCardClient) GetNotDeleted(ctx context.Context, id uint64) (*PromotionBankCard, error) {
+	return c.Query().Where(promotionbankcard.ID(id), promotionbankcard.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *PromotionBankCardClient) GetNotDeletedX(ctx context.Context, id uint64) *PromotionBankCard {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for PromotionCommission.
+func (c *PromotionCommissionClient) SoftDelete() *PromotionCommissionUpdate {
+	mutation := newPromotionCommissionMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &PromotionCommissionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *PromotionCommissionClient) SoftDeleteOne(pc *PromotionCommission) *PromotionCommissionUpdateOne {
+	mutation := newPromotionCommissionMutation(c.config, OpUpdateOne, withPromotionCommission(pc))
+	mutation.SetDeletedAt(time.Now())
+	return &PromotionCommissionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *PromotionCommissionClient) SoftDeleteOneID(id uint64) *PromotionCommissionUpdateOne {
+	mutation := newPromotionCommissionMutation(c.config, OpUpdateOne, withPromotionCommissionID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &PromotionCommissionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for PromotionCommission.
+func (c *PromotionCommissionClient) QueryNotDeleted() *PromotionCommissionQuery {
+	return c.Query().Where(promotioncommission.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a PromotionCommission not deleted entity by its id.
+func (c *PromotionCommissionClient) GetNotDeleted(ctx context.Context, id uint64) (*PromotionCommission, error) {
+	return c.Query().Where(promotioncommission.ID(id), promotioncommission.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *PromotionCommissionClient) GetNotDeletedX(ctx context.Context, id uint64) *PromotionCommission {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for PromotionEarnings.
+func (c *PromotionEarningsClient) SoftDelete() *PromotionEarningsUpdate {
+	mutation := newPromotionEarningsMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &PromotionEarningsUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *PromotionEarningsClient) SoftDeleteOne(pe *PromotionEarnings) *PromotionEarningsUpdateOne {
+	mutation := newPromotionEarningsMutation(c.config, OpUpdateOne, withPromotionEarnings(pe))
+	mutation.SetDeletedAt(time.Now())
+	return &PromotionEarningsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *PromotionEarningsClient) SoftDeleteOneID(id uint64) *PromotionEarningsUpdateOne {
+	mutation := newPromotionEarningsMutation(c.config, OpUpdateOne, withPromotionEarningsID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &PromotionEarningsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for PromotionEarnings.
+func (c *PromotionEarningsClient) QueryNotDeleted() *PromotionEarningsQuery {
+	return c.Query().Where(promotionearnings.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a PromotionEarnings not deleted entity by its id.
+func (c *PromotionEarningsClient) GetNotDeleted(ctx context.Context, id uint64) (*PromotionEarnings, error) {
+	return c.Query().Where(promotionearnings.ID(id), promotionearnings.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *PromotionEarningsClient) GetNotDeletedX(ctx context.Context, id uint64) *PromotionEarnings {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for PromotionGrowth.
+func (c *PromotionGrowthClient) SoftDelete() *PromotionGrowthUpdate {
+	mutation := newPromotionGrowthMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &PromotionGrowthUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *PromotionGrowthClient) SoftDeleteOne(pg *PromotionGrowth) *PromotionGrowthUpdateOne {
+	mutation := newPromotionGrowthMutation(c.config, OpUpdateOne, withPromotionGrowth(pg))
+	mutation.SetDeletedAt(time.Now())
+	return &PromotionGrowthUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *PromotionGrowthClient) SoftDeleteOneID(id uint64) *PromotionGrowthUpdateOne {
+	mutation := newPromotionGrowthMutation(c.config, OpUpdateOne, withPromotionGrowthID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &PromotionGrowthUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for PromotionGrowth.
+func (c *PromotionGrowthClient) QueryNotDeleted() *PromotionGrowthQuery {
+	return c.Query().Where(promotiongrowth.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a PromotionGrowth not deleted entity by its id.
+func (c *PromotionGrowthClient) GetNotDeleted(ctx context.Context, id uint64) (*PromotionGrowth, error) {
+	return c.Query().Where(promotiongrowth.ID(id), promotiongrowth.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *PromotionGrowthClient) GetNotDeletedX(ctx context.Context, id uint64) *PromotionGrowth {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for PromotionLevel.
+func (c *PromotionLevelClient) SoftDelete() *PromotionLevelUpdate {
+	mutation := newPromotionLevelMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &PromotionLevelUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *PromotionLevelClient) SoftDeleteOne(pl *PromotionLevel) *PromotionLevelUpdateOne {
+	mutation := newPromotionLevelMutation(c.config, OpUpdateOne, withPromotionLevel(pl))
+	mutation.SetDeletedAt(time.Now())
+	return &PromotionLevelUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *PromotionLevelClient) SoftDeleteOneID(id uint64) *PromotionLevelUpdateOne {
+	mutation := newPromotionLevelMutation(c.config, OpUpdateOne, withPromotionLevelID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &PromotionLevelUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for PromotionLevel.
+func (c *PromotionLevelClient) QueryNotDeleted() *PromotionLevelQuery {
+	return c.Query().Where(promotionlevel.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a PromotionLevel not deleted entity by its id.
+func (c *PromotionLevelClient) GetNotDeleted(ctx context.Context, id uint64) (*PromotionLevel, error) {
+	return c.Query().Where(promotionlevel.ID(id), promotionlevel.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *PromotionLevelClient) GetNotDeletedX(ctx context.Context, id uint64) *PromotionLevel {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for PromotionMember.
+func (c *PromotionMemberClient) SoftDelete() *PromotionMemberUpdate {
+	mutation := newPromotionMemberMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &PromotionMemberUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *PromotionMemberClient) SoftDeleteOne(pm *PromotionMember) *PromotionMemberUpdateOne {
+	mutation := newPromotionMemberMutation(c.config, OpUpdateOne, withPromotionMember(pm))
+	mutation.SetDeletedAt(time.Now())
+	return &PromotionMemberUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *PromotionMemberClient) SoftDeleteOneID(id uint64) *PromotionMemberUpdateOne {
+	mutation := newPromotionMemberMutation(c.config, OpUpdateOne, withPromotionMemberID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &PromotionMemberUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for PromotionMember.
+func (c *PromotionMemberClient) QueryNotDeleted() *PromotionMemberQuery {
+	return c.Query().Where(promotionmember.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a PromotionMember not deleted entity by its id.
+func (c *PromotionMemberClient) GetNotDeleted(ctx context.Context, id uint64) (*PromotionMember, error) {
+	return c.Query().Where(promotionmember.ID(id), promotionmember.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *PromotionMemberClient) GetNotDeletedX(ctx context.Context, id uint64) *PromotionMember {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for PromotionPrivilege.
+func (c *PromotionPrivilegeClient) SoftDelete() *PromotionPrivilegeUpdate {
+	mutation := newPromotionPrivilegeMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &PromotionPrivilegeUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *PromotionPrivilegeClient) SoftDeleteOne(pp *PromotionPrivilege) *PromotionPrivilegeUpdateOne {
+	mutation := newPromotionPrivilegeMutation(c.config, OpUpdateOne, withPromotionPrivilege(pp))
+	mutation.SetDeletedAt(time.Now())
+	return &PromotionPrivilegeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *PromotionPrivilegeClient) SoftDeleteOneID(id uint64) *PromotionPrivilegeUpdateOne {
+	mutation := newPromotionPrivilegeMutation(c.config, OpUpdateOne, withPromotionPrivilegeID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &PromotionPrivilegeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for PromotionPrivilege.
+func (c *PromotionPrivilegeClient) QueryNotDeleted() *PromotionPrivilegeQuery {
+	return c.Query().Where(promotionprivilege.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a PromotionPrivilege not deleted entity by its id.
+func (c *PromotionPrivilegeClient) GetNotDeleted(ctx context.Context, id uint64) (*PromotionPrivilege, error) {
+	return c.Query().Where(promotionprivilege.ID(id), promotionprivilege.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *PromotionPrivilegeClient) GetNotDeletedX(ctx context.Context, id uint64) *PromotionPrivilege {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for PromotionWithdrawal.
+func (c *PromotionWithdrawalClient) SoftDelete() *PromotionWithdrawalUpdate {
+	mutation := newPromotionWithdrawalMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &PromotionWithdrawalUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *PromotionWithdrawalClient) SoftDeleteOne(pw *PromotionWithdrawal) *PromotionWithdrawalUpdateOne {
+	mutation := newPromotionWithdrawalMutation(c.config, OpUpdateOne, withPromotionWithdrawal(pw))
+	mutation.SetDeletedAt(time.Now())
+	return &PromotionWithdrawalUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *PromotionWithdrawalClient) SoftDeleteOneID(id uint64) *PromotionWithdrawalUpdateOne {
+	mutation := newPromotionWithdrawalMutation(c.config, OpUpdateOne, withPromotionWithdrawalID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &PromotionWithdrawalUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for PromotionWithdrawal.
+func (c *PromotionWithdrawalClient) QueryNotDeleted() *PromotionWithdrawalQuery {
+	return c.Query().Where(promotionwithdrawal.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a PromotionWithdrawal not deleted entity by its id.
+func (c *PromotionWithdrawalClient) GetNotDeleted(ctx context.Context, id uint64) (*PromotionWithdrawal, error) {
+	return c.Query().Where(promotionwithdrawal.ID(id), promotionwithdrawal.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *PromotionWithdrawalClient) GetNotDeletedX(ctx context.Context, id uint64) *PromotionWithdrawal {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)

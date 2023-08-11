@@ -48,6 +48,19 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/planintroduce"
 	"github.com/auroraride/aurservd/internal/ent/pointlog"
+	"github.com/auroraride/aurservd/internal/ent/promotionachievement"
+	"github.com/auroraride/aurservd/internal/ent/promotionbankcard"
+	"github.com/auroraride/aurservd/internal/ent/promotioncommission"
+	"github.com/auroraride/aurservd/internal/ent/promotionearnings"
+	"github.com/auroraride/aurservd/internal/ent/promotiongrowth"
+	"github.com/auroraride/aurservd/internal/ent/promotionlevel"
+	"github.com/auroraride/aurservd/internal/ent/promotionleveltask"
+	"github.com/auroraride/aurservd/internal/ent/promotionmember"
+	"github.com/auroraride/aurservd/internal/ent/promotionperson"
+	"github.com/auroraride/aurservd/internal/ent/promotionprivilege"
+	"github.com/auroraride/aurservd/internal/ent/promotionreferrals"
+	"github.com/auroraride/aurservd/internal/ent/promotionsetting"
+	"github.com/auroraride/aurservd/internal/ent/promotionwithdrawal"
 	"github.com/auroraride/aurservd/internal/ent/reserve"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
@@ -988,12 +1001,16 @@ func init() {
 	planDescType := planFields[2].Descriptor()
 	// plan.DefaultType holds the default value on creation for the type field.
 	plan.DefaultType = planDescType.Default.(uint8)
+	// planDescCommissionBase is the schema descriptor for commission_base field.
+	planDescCommissionBase := planFields[9].Descriptor()
+	// plan.DefaultCommissionBase holds the default value on creation for the commission_base field.
+	plan.DefaultCommissionBase = planDescCommissionBase.Default.(float64)
 	// planDescDiscountNewly is the schema descriptor for discount_newly field.
-	planDescDiscountNewly := planFields[12].Descriptor()
+	planDescDiscountNewly := planFields[13].Descriptor()
 	// plan.DefaultDiscountNewly holds the default value on creation for the discount_newly field.
 	plan.DefaultDiscountNewly = planDescDiscountNewly.Default.(float64)
 	// planDescIntelligent is the schema descriptor for intelligent field.
-	planDescIntelligent := planFields[14].Descriptor()
+	planDescIntelligent := planFields[15].Descriptor()
 	// plan.DefaultIntelligent holds the default value on creation for the intelligent field.
 	plan.DefaultIntelligent = planDescIntelligent.Default.(bool)
 	planintroduceMixin := schema.PlanIntroduce{}.Mixin()
@@ -1030,6 +1047,313 @@ func init() {
 	pointlog.DefaultUpdatedAt = pointlogDescUpdatedAt.Default.(func() time.Time)
 	// pointlog.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	pointlog.UpdateDefaultUpdatedAt = pointlogDescUpdatedAt.UpdateDefault.(func() time.Time)
+	promotionachievementMixin := schema.PromotionAchievement{}.Mixin()
+	promotionachievementMixinHooks2 := promotionachievementMixin[2].Hooks()
+	promotionachievement.Hooks[0] = promotionachievementMixinHooks2[0]
+	promotionachievementMixinFields0 := promotionachievementMixin[0].Fields()
+	_ = promotionachievementMixinFields0
+	promotionachievementFields := schema.PromotionAchievement{}.Fields()
+	_ = promotionachievementFields
+	// promotionachievementDescCreatedAt is the schema descriptor for created_at field.
+	promotionachievementDescCreatedAt := promotionachievementMixinFields0[0].Descriptor()
+	// promotionachievement.DefaultCreatedAt holds the default value on creation for the created_at field.
+	promotionachievement.DefaultCreatedAt = promotionachievementDescCreatedAt.Default.(func() time.Time)
+	// promotionachievementDescUpdatedAt is the schema descriptor for updated_at field.
+	promotionachievementDescUpdatedAt := promotionachievementMixinFields0[1].Descriptor()
+	// promotionachievement.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	promotionachievement.DefaultUpdatedAt = promotionachievementDescUpdatedAt.Default.(func() time.Time)
+	// promotionachievement.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	promotionachievement.UpdateDefaultUpdatedAt = promotionachievementDescUpdatedAt.UpdateDefault.(func() time.Time)
+	promotionbankcardMixin := schema.PromotionBankCard{}.Mixin()
+	promotionbankcardMixinHooks2 := promotionbankcardMixin[2].Hooks()
+	promotionbankcard.Hooks[0] = promotionbankcardMixinHooks2[0]
+	promotionbankcardMixinFields0 := promotionbankcardMixin[0].Fields()
+	_ = promotionbankcardMixinFields0
+	promotionbankcardFields := schema.PromotionBankCard{}.Fields()
+	_ = promotionbankcardFields
+	// promotionbankcardDescCreatedAt is the schema descriptor for created_at field.
+	promotionbankcardDescCreatedAt := promotionbankcardMixinFields0[0].Descriptor()
+	// promotionbankcard.DefaultCreatedAt holds the default value on creation for the created_at field.
+	promotionbankcard.DefaultCreatedAt = promotionbankcardDescCreatedAt.Default.(func() time.Time)
+	// promotionbankcardDescUpdatedAt is the schema descriptor for updated_at field.
+	promotionbankcardDescUpdatedAt := promotionbankcardMixinFields0[1].Descriptor()
+	// promotionbankcard.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	promotionbankcard.DefaultUpdatedAt = promotionbankcardDescUpdatedAt.Default.(func() time.Time)
+	// promotionbankcard.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	promotionbankcard.UpdateDefaultUpdatedAt = promotionbankcardDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// promotionbankcardDescIsDefault is the schema descriptor for is_default field.
+	promotionbankcardDescIsDefault := promotionbankcardFields[3].Descriptor()
+	// promotionbankcard.DefaultIsDefault holds the default value on creation for the is_default field.
+	promotionbankcard.DefaultIsDefault = promotionbankcardDescIsDefault.Default.(bool)
+	promotioncommissionMixin := schema.PromotionCommission{}.Mixin()
+	promotioncommissionMixinHooks2 := promotioncommissionMixin[2].Hooks()
+	promotioncommission.Hooks[0] = promotioncommissionMixinHooks2[0]
+	promotioncommissionMixinFields0 := promotioncommissionMixin[0].Fields()
+	_ = promotioncommissionMixinFields0
+	promotioncommissionFields := schema.PromotionCommission{}.Fields()
+	_ = promotioncommissionFields
+	// promotioncommissionDescCreatedAt is the schema descriptor for created_at field.
+	promotioncommissionDescCreatedAt := promotioncommissionMixinFields0[0].Descriptor()
+	// promotioncommission.DefaultCreatedAt holds the default value on creation for the created_at field.
+	promotioncommission.DefaultCreatedAt = promotioncommissionDescCreatedAt.Default.(func() time.Time)
+	// promotioncommissionDescUpdatedAt is the schema descriptor for updated_at field.
+	promotioncommissionDescUpdatedAt := promotioncommissionMixinFields0[1].Descriptor()
+	// promotioncommission.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	promotioncommission.DefaultUpdatedAt = promotioncommissionDescUpdatedAt.Default.(func() time.Time)
+	// promotioncommission.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	promotioncommission.UpdateDefaultUpdatedAt = promotioncommissionDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// promotioncommissionDescType is the schema descriptor for type field.
+	promotioncommissionDescType := promotioncommissionFields[0].Descriptor()
+	// promotioncommission.DefaultType holds the default value on creation for the type field.
+	promotioncommission.DefaultType = promotioncommissionDescType.Default.(uint8)
+	// promotioncommissionDescEnable is the schema descriptor for enable field.
+	promotioncommissionDescEnable := promotioncommissionFields[3].Descriptor()
+	// promotioncommission.DefaultEnable holds the default value on creation for the enable field.
+	promotioncommission.DefaultEnable = promotioncommissionDescEnable.Default.(bool)
+	// promotioncommissionDescAmountSum is the schema descriptor for amount_sum field.
+	promotioncommissionDescAmountSum := promotioncommissionFields[4].Descriptor()
+	// promotioncommission.DefaultAmountSum holds the default value on creation for the amount_sum field.
+	promotioncommission.DefaultAmountSum = promotioncommissionDescAmountSum.Default.(float64)
+	promotionearningsMixin := schema.PromotionEarnings{}.Mixin()
+	promotionearningsMixinHooks2 := promotionearningsMixin[2].Hooks()
+	promotionearnings.Hooks[0] = promotionearningsMixinHooks2[0]
+	promotionearningsMixinFields0 := promotionearningsMixin[0].Fields()
+	_ = promotionearningsMixinFields0
+	promotionearningsFields := schema.PromotionEarnings{}.Fields()
+	_ = promotionearningsFields
+	// promotionearningsDescCreatedAt is the schema descriptor for created_at field.
+	promotionearningsDescCreatedAt := promotionearningsMixinFields0[0].Descriptor()
+	// promotionearnings.DefaultCreatedAt holds the default value on creation for the created_at field.
+	promotionearnings.DefaultCreatedAt = promotionearningsDescCreatedAt.Default.(func() time.Time)
+	// promotionearningsDescUpdatedAt is the schema descriptor for updated_at field.
+	promotionearningsDescUpdatedAt := promotionearningsMixinFields0[1].Descriptor()
+	// promotionearnings.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	promotionearnings.DefaultUpdatedAt = promotionearningsDescUpdatedAt.Default.(func() time.Time)
+	// promotionearnings.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	promotionearnings.UpdateDefaultUpdatedAt = promotionearningsDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// promotionearningsDescStatus is the schema descriptor for status field.
+	promotionearningsDescStatus := promotionearningsFields[0].Descriptor()
+	// promotionearnings.DefaultStatus holds the default value on creation for the status field.
+	promotionearnings.DefaultStatus = promotionearningsDescStatus.Default.(uint8)
+	// promotionearningsDescAmount is the schema descriptor for amount field.
+	promotionearningsDescAmount := promotionearningsFields[1].Descriptor()
+	// promotionearnings.DefaultAmount holds the default value on creation for the amount field.
+	promotionearnings.DefaultAmount = promotionearningsDescAmount.Default.(float64)
+	promotiongrowthMixin := schema.PromotionGrowth{}.Mixin()
+	promotiongrowthMixinFields0 := promotiongrowthMixin[0].Fields()
+	_ = promotiongrowthMixinFields0
+	promotiongrowthFields := schema.PromotionGrowth{}.Fields()
+	_ = promotiongrowthFields
+	// promotiongrowthDescCreatedAt is the schema descriptor for created_at field.
+	promotiongrowthDescCreatedAt := promotiongrowthMixinFields0[0].Descriptor()
+	// promotiongrowth.DefaultCreatedAt holds the default value on creation for the created_at field.
+	promotiongrowth.DefaultCreatedAt = promotiongrowthDescCreatedAt.Default.(func() time.Time)
+	// promotiongrowthDescUpdatedAt is the schema descriptor for updated_at field.
+	promotiongrowthDescUpdatedAt := promotiongrowthMixinFields0[1].Descriptor()
+	// promotiongrowth.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	promotiongrowth.DefaultUpdatedAt = promotiongrowthDescUpdatedAt.Default.(func() time.Time)
+	// promotiongrowth.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	promotiongrowth.UpdateDefaultUpdatedAt = promotiongrowthDescUpdatedAt.UpdateDefault.(func() time.Time)
+	promotionlevelMixin := schema.PromotionLevel{}.Mixin()
+	promotionlevelMixinHooks2 := promotionlevelMixin[2].Hooks()
+	promotionlevel.Hooks[0] = promotionlevelMixinHooks2[0]
+	promotionlevelMixinFields0 := promotionlevelMixin[0].Fields()
+	_ = promotionlevelMixinFields0
+	promotionlevelFields := schema.PromotionLevel{}.Fields()
+	_ = promotionlevelFields
+	// promotionlevelDescCreatedAt is the schema descriptor for created_at field.
+	promotionlevelDescCreatedAt := promotionlevelMixinFields0[0].Descriptor()
+	// promotionlevel.DefaultCreatedAt holds the default value on creation for the created_at field.
+	promotionlevel.DefaultCreatedAt = promotionlevelDescCreatedAt.Default.(func() time.Time)
+	// promotionlevelDescUpdatedAt is the schema descriptor for updated_at field.
+	promotionlevelDescUpdatedAt := promotionlevelMixinFields0[1].Descriptor()
+	// promotionlevel.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	promotionlevel.DefaultUpdatedAt = promotionlevelDescUpdatedAt.Default.(func() time.Time)
+	// promotionlevel.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	promotionlevel.UpdateDefaultUpdatedAt = promotionlevelDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// promotionlevelDescGrowthValue is the schema descriptor for growth_value field.
+	promotionlevelDescGrowthValue := promotionlevelFields[1].Descriptor()
+	// promotionlevel.DefaultGrowthValue holds the default value on creation for the growth_value field.
+	promotionlevel.DefaultGrowthValue = promotionlevelDescGrowthValue.Default.(uint64)
+	// promotionlevelDescCommissionRatio is the schema descriptor for commission_ratio field.
+	promotionlevelDescCommissionRatio := promotionlevelFields[2].Descriptor()
+	// promotionlevel.DefaultCommissionRatio holds the default value on creation for the commission_ratio field.
+	promotionlevel.DefaultCommissionRatio = promotionlevelDescCommissionRatio.Default.(float64)
+	promotionleveltaskMixin := schema.PromotionLevelTask{}.Mixin()
+	promotionleveltaskMixinHooks1 := promotionleveltaskMixin[1].Hooks()
+	promotionleveltask.Hooks[0] = promotionleveltaskMixinHooks1[0]
+	promotionleveltaskMixinFields0 := promotionleveltaskMixin[0].Fields()
+	_ = promotionleveltaskMixinFields0
+	promotionleveltaskFields := schema.PromotionLevelTask{}.Fields()
+	_ = promotionleveltaskFields
+	// promotionleveltaskDescCreatedAt is the schema descriptor for created_at field.
+	promotionleveltaskDescCreatedAt := promotionleveltaskMixinFields0[0].Descriptor()
+	// promotionleveltask.DefaultCreatedAt holds the default value on creation for the created_at field.
+	promotionleveltask.DefaultCreatedAt = promotionleveltaskDescCreatedAt.Default.(func() time.Time)
+	// promotionleveltaskDescUpdatedAt is the schema descriptor for updated_at field.
+	promotionleveltaskDescUpdatedAt := promotionleveltaskMixinFields0[1].Descriptor()
+	// promotionleveltask.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	promotionleveltask.DefaultUpdatedAt = promotionleveltaskDescUpdatedAt.Default.(func() time.Time)
+	// promotionleveltask.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	promotionleveltask.UpdateDefaultUpdatedAt = promotionleveltaskDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// promotionleveltaskDescGrowthValue is the schema descriptor for growth_value field.
+	promotionleveltaskDescGrowthValue := promotionleveltaskFields[3].Descriptor()
+	// promotionleveltask.DefaultGrowthValue holds the default value on creation for the growth_value field.
+	promotionleveltask.DefaultGrowthValue = promotionleveltaskDescGrowthValue.Default.(uint64)
+	promotionmemberMixin := schema.PromotionMember{}.Mixin()
+	promotionmemberMixinHooks2 := promotionmemberMixin[2].Hooks()
+	promotionmember.Hooks[0] = promotionmemberMixinHooks2[0]
+	promotionmemberMixinFields0 := promotionmemberMixin[0].Fields()
+	_ = promotionmemberMixinFields0
+	promotionmemberFields := schema.PromotionMember{}.Fields()
+	_ = promotionmemberFields
+	// promotionmemberDescCreatedAt is the schema descriptor for created_at field.
+	promotionmemberDescCreatedAt := promotionmemberMixinFields0[0].Descriptor()
+	// promotionmember.DefaultCreatedAt holds the default value on creation for the created_at field.
+	promotionmember.DefaultCreatedAt = promotionmemberDescCreatedAt.Default.(func() time.Time)
+	// promotionmemberDescUpdatedAt is the schema descriptor for updated_at field.
+	promotionmemberDescUpdatedAt := promotionmemberMixinFields0[1].Descriptor()
+	// promotionmember.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	promotionmember.DefaultUpdatedAt = promotionmemberDescUpdatedAt.Default.(func() time.Time)
+	// promotionmember.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	promotionmember.UpdateDefaultUpdatedAt = promotionmemberDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// promotionmemberDescBalance is the schema descriptor for balance field.
+	promotionmemberDescBalance := promotionmemberFields[2].Descriptor()
+	// promotionmember.DefaultBalance holds the default value on creation for the balance field.
+	promotionmember.DefaultBalance = promotionmemberDescBalance.Default.(float64)
+	// promotionmemberDescFrozen is the schema descriptor for frozen field.
+	promotionmemberDescFrozen := promotionmemberFields[3].Descriptor()
+	// promotionmember.DefaultFrozen holds the default value on creation for the frozen field.
+	promotionmember.DefaultFrozen = promotionmemberDescFrozen.Default.(float64)
+	// promotionmemberDescTotalGrowthValue is the schema descriptor for total_growth_value field.
+	promotionmemberDescTotalGrowthValue := promotionmemberFields[4].Descriptor()
+	// promotionmember.DefaultTotalGrowthValue holds the default value on creation for the total_growth_value field.
+	promotionmember.DefaultTotalGrowthValue = promotionmemberDescTotalGrowthValue.Default.(uint64)
+	// promotionmemberDescCurrentGrowthValue is the schema descriptor for current_growth_value field.
+	promotionmemberDescCurrentGrowthValue := promotionmemberFields[5].Descriptor()
+	// promotionmember.DefaultCurrentGrowthValue holds the default value on creation for the current_growth_value field.
+	promotionmember.DefaultCurrentGrowthValue = promotionmemberDescCurrentGrowthValue.Default.(uint64)
+	// promotionmemberDescEnable is the schema descriptor for enable field.
+	promotionmemberDescEnable := promotionmemberFields[6].Descriptor()
+	// promotionmember.DefaultEnable holds the default value on creation for the enable field.
+	promotionmember.DefaultEnable = promotionmemberDescEnable.Default.(bool)
+	promotionpersonMixin := schema.PromotionPerson{}.Mixin()
+	promotionpersonMixinFields0 := promotionpersonMixin[0].Fields()
+	_ = promotionpersonMixinFields0
+	promotionpersonFields := schema.PromotionPerson{}.Fields()
+	_ = promotionpersonFields
+	// promotionpersonDescCreatedAt is the schema descriptor for created_at field.
+	promotionpersonDescCreatedAt := promotionpersonMixinFields0[0].Descriptor()
+	// promotionperson.DefaultCreatedAt holds the default value on creation for the created_at field.
+	promotionperson.DefaultCreatedAt = promotionpersonDescCreatedAt.Default.(func() time.Time)
+	// promotionpersonDescUpdatedAt is the schema descriptor for updated_at field.
+	promotionpersonDescUpdatedAt := promotionpersonMixinFields0[1].Descriptor()
+	// promotionperson.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	promotionperson.DefaultUpdatedAt = promotionpersonDescUpdatedAt.Default.(func() time.Time)
+	// promotionperson.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	promotionperson.UpdateDefaultUpdatedAt = promotionpersonDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// promotionpersonDescStatus is the schema descriptor for status field.
+	promotionpersonDescStatus := promotionpersonFields[0].Descriptor()
+	// promotionperson.DefaultStatus holds the default value on creation for the status field.
+	promotionperson.DefaultStatus = promotionpersonDescStatus.Default.(uint8)
+	// promotionpersonDescName is the schema descriptor for name field.
+	promotionpersonDescName := promotionpersonFields[1].Descriptor()
+	// promotionperson.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	promotionperson.NameValidator = promotionpersonDescName.Validators[0].(func(string) error)
+	// promotionpersonDescIDCardNumber is the schema descriptor for id_card_number field.
+	promotionpersonDescIDCardNumber := promotionpersonFields[2].Descriptor()
+	// promotionperson.IDCardNumberValidator is a validator for the "id_card_number" field. It is called by the builders before save.
+	promotionperson.IDCardNumberValidator = promotionpersonDescIDCardNumber.Validators[0].(func(string) error)
+	promotionprivilegeMixin := schema.PromotionPrivilege{}.Mixin()
+	promotionprivilegeMixinHooks2 := promotionprivilegeMixin[2].Hooks()
+	promotionprivilege.Hooks[0] = promotionprivilegeMixinHooks2[0]
+	promotionprivilegeMixinFields0 := promotionprivilegeMixin[0].Fields()
+	_ = promotionprivilegeMixinFields0
+	promotionprivilegeFields := schema.PromotionPrivilege{}.Fields()
+	_ = promotionprivilegeFields
+	// promotionprivilegeDescCreatedAt is the schema descriptor for created_at field.
+	promotionprivilegeDescCreatedAt := promotionprivilegeMixinFields0[0].Descriptor()
+	// promotionprivilege.DefaultCreatedAt holds the default value on creation for the created_at field.
+	promotionprivilege.DefaultCreatedAt = promotionprivilegeDescCreatedAt.Default.(func() time.Time)
+	// promotionprivilegeDescUpdatedAt is the schema descriptor for updated_at field.
+	promotionprivilegeDescUpdatedAt := promotionprivilegeMixinFields0[1].Descriptor()
+	// promotionprivilege.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	promotionprivilege.DefaultUpdatedAt = promotionprivilegeDescUpdatedAt.Default.(func() time.Time)
+	// promotionprivilege.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	promotionprivilege.UpdateDefaultUpdatedAt = promotionprivilegeDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// promotionprivilegeDescType is the schema descriptor for type field.
+	promotionprivilegeDescType := promotionprivilegeFields[0].Descriptor()
+	// promotionprivilege.DefaultType holds the default value on creation for the type field.
+	promotionprivilege.DefaultType = promotionprivilegeDescType.Default.(uint8)
+	// promotionprivilegeDescValue is the schema descriptor for value field.
+	promotionprivilegeDescValue := promotionprivilegeFields[3].Descriptor()
+	// promotionprivilege.DefaultValue holds the default value on creation for the value field.
+	promotionprivilege.DefaultValue = promotionprivilegeDescValue.Default.(uint64)
+	promotionreferralsMixin := schema.PromotionReferrals{}.Mixin()
+	promotionreferralsMixinFields0 := promotionreferralsMixin[0].Fields()
+	_ = promotionreferralsMixinFields0
+	promotionreferralsFields := schema.PromotionReferrals{}.Fields()
+	_ = promotionreferralsFields
+	// promotionreferralsDescCreatedAt is the schema descriptor for created_at field.
+	promotionreferralsDescCreatedAt := promotionreferralsMixinFields0[0].Descriptor()
+	// promotionreferrals.DefaultCreatedAt holds the default value on creation for the created_at field.
+	promotionreferrals.DefaultCreatedAt = promotionreferralsDescCreatedAt.Default.(func() time.Time)
+	// promotionreferralsDescUpdatedAt is the schema descriptor for updated_at field.
+	promotionreferralsDescUpdatedAt := promotionreferralsMixinFields0[1].Descriptor()
+	// promotionreferrals.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	promotionreferrals.DefaultUpdatedAt = promotionreferralsDescUpdatedAt.Default.(func() time.Time)
+	// promotionreferrals.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	promotionreferrals.UpdateDefaultUpdatedAt = promotionreferralsDescUpdatedAt.UpdateDefault.(func() time.Time)
+	promotionsettingMixin := schema.PromotionSetting{}.Mixin()
+	promotionsettingMixinHooks1 := promotionsettingMixin[1].Hooks()
+	promotionsetting.Hooks[0] = promotionsettingMixinHooks1[0]
+	promotionsettingMixinFields0 := promotionsettingMixin[0].Fields()
+	_ = promotionsettingMixinFields0
+	promotionsettingFields := schema.PromotionSetting{}.Fields()
+	_ = promotionsettingFields
+	// promotionsettingDescCreatedAt is the schema descriptor for created_at field.
+	promotionsettingDescCreatedAt := promotionsettingMixinFields0[0].Descriptor()
+	// promotionsetting.DefaultCreatedAt holds the default value on creation for the created_at field.
+	promotionsetting.DefaultCreatedAt = promotionsettingDescCreatedAt.Default.(func() time.Time)
+	// promotionsettingDescUpdatedAt is the schema descriptor for updated_at field.
+	promotionsettingDescUpdatedAt := promotionsettingMixinFields0[1].Descriptor()
+	// promotionsetting.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	promotionsetting.DefaultUpdatedAt = promotionsettingDescUpdatedAt.Default.(func() time.Time)
+	// promotionsetting.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	promotionsetting.UpdateDefaultUpdatedAt = promotionsettingDescUpdatedAt.UpdateDefault.(func() time.Time)
+	promotionwithdrawalMixin := schema.PromotionWithdrawal{}.Mixin()
+	promotionwithdrawalMixinHooks2 := promotionwithdrawalMixin[2].Hooks()
+	promotionwithdrawal.Hooks[0] = promotionwithdrawalMixinHooks2[0]
+	promotionwithdrawalMixinFields0 := promotionwithdrawalMixin[0].Fields()
+	_ = promotionwithdrawalMixinFields0
+	promotionwithdrawalFields := schema.PromotionWithdrawal{}.Fields()
+	_ = promotionwithdrawalFields
+	// promotionwithdrawalDescCreatedAt is the schema descriptor for created_at field.
+	promotionwithdrawalDescCreatedAt := promotionwithdrawalMixinFields0[0].Descriptor()
+	// promotionwithdrawal.DefaultCreatedAt holds the default value on creation for the created_at field.
+	promotionwithdrawal.DefaultCreatedAt = promotionwithdrawalDescCreatedAt.Default.(func() time.Time)
+	// promotionwithdrawalDescUpdatedAt is the schema descriptor for updated_at field.
+	promotionwithdrawalDescUpdatedAt := promotionwithdrawalMixinFields0[1].Descriptor()
+	// promotionwithdrawal.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	promotionwithdrawal.DefaultUpdatedAt = promotionwithdrawalDescUpdatedAt.Default.(func() time.Time)
+	// promotionwithdrawal.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	promotionwithdrawal.UpdateDefaultUpdatedAt = promotionwithdrawalDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// promotionwithdrawalDescStatus is the schema descriptor for status field.
+	promotionwithdrawalDescStatus := promotionwithdrawalFields[0].Descriptor()
+	// promotionwithdrawal.DefaultStatus holds the default value on creation for the status field.
+	promotionwithdrawal.DefaultStatus = promotionwithdrawalDescStatus.Default.(uint8)
+	// promotionwithdrawalDescApplyAmount is the schema descriptor for apply_amount field.
+	promotionwithdrawalDescApplyAmount := promotionwithdrawalFields[1].Descriptor()
+	// promotionwithdrawal.DefaultApplyAmount holds the default value on creation for the apply_amount field.
+	promotionwithdrawal.DefaultApplyAmount = promotionwithdrawalDescApplyAmount.Default.(float64)
+	// promotionwithdrawalDescAmount is the schema descriptor for amount field.
+	promotionwithdrawalDescAmount := promotionwithdrawalFields[2].Descriptor()
+	// promotionwithdrawal.DefaultAmount holds the default value on creation for the amount field.
+	promotionwithdrawal.DefaultAmount = promotionwithdrawalDescAmount.Default.(float64)
+	// promotionwithdrawalDescFee is the schema descriptor for fee field.
+	promotionwithdrawalDescFee := promotionwithdrawalFields[3].Descriptor()
+	// promotionwithdrawal.DefaultFee holds the default value on creation for the fee field.
+	promotionwithdrawal.DefaultFee = promotionwithdrawalDescFee.Default.(float64)
 	reserveMixin := schema.Reserve{}.Mixin()
 	reserveMixinHooks2 := reserveMixin[2].Hooks()
 	reserve.Hooks[0] = reserveMixinHooks2[0]

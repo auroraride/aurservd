@@ -28,10 +28,12 @@ var (
 
 // Plan 骑士卡基础信息
 type Plan struct {
-	ID          uint64 `json:"id"`          // 骑士卡ID
-	Name        string `json:"name"`        // 骑士卡名称
-	Days        uint   `json:"days"`        // 骑士卡天数
-	Intelligent bool   `json:"intelligent"` // 是否智能电柜套餐
+	ID             uint64  `json:"id"`             // 骑士卡ID
+	Name           string  `json:"name"`           // 骑士卡名称
+	Days           uint    `json:"days"`           // 骑士卡天数
+	Intelligent    bool    `json:"intelligent"`    // 是否智能电柜套餐
+	CommissionBase float64 `json:"commissionBase"` // 返佣底数
+	Price          float64 `json:"price"`          // 售价
 }
 
 type PlanComplexes []PlanComplex
@@ -46,6 +48,8 @@ type PlanComplex struct {
 	Desc          string  `json:"desc"`          // 优惠信息
 	Commission    float64 `json:"commission"`    // 提成
 	DiscountNewly float64 `json:"discountNewly"` // 新签优惠
+
+	CommissionBase float64 `json:"commissionBase"` // 推广返佣底数
 
 	Model string `json:"model" validate:"required"` // 电池型号, 单电需要每一项都补充此字段
 }

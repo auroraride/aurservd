@@ -110,7 +110,7 @@ func (*rider) RiderInfo(c echo.Context) (err error) {
 // @Success      200  {object}  string  "请求成功"
 func (*rider) Invite(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.EnterpriseRiderInviteReq](c)
-	return ctx.SendResponse(service.NewminiProgram().Invite(ctx.Enterprise, req))
+	return ctx.SendResponse(service.NewminiProgram().InviteQrcode(ctx.Enterprise, req))
 }
 
 // Reactive 重新激活骑手
@@ -126,5 +126,21 @@ func (*rider) Invite(c echo.Context) (err error) {
 func (*rider) Reactive(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.ReactiveSubscribeReq](c)
 	service.NewSubscribe().ReactiveSubscribe(ctx, req)
+	return ctx.SendResponse()
+}
+
+// Delete
+// @ID           AgentRiderDelete
+// @Router       /agent/v1/rider/{id} [DELETE]
+// @Summary      A2008 删除骑手
+// @Tags         [A]代理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Agent-Token  header  string  true  "代理校验token"
+// @Param        id  path  uint64  true  "骑手ID"
+// @Success      200  {object}  string  "请求成功"
+func (*rider) Delete(c echo.Context) (err error) {
+	ctx, req := app.AgentContextAndBinding[model.IDParamReq](c)
+	service.NewRiderAgentWithAgent(ctx.Agent, ctx.Enterprise).Delete(req, ctx.Agent.EnterpriseID)
 	return ctx.SendResponse()
 }

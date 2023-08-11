@@ -29,13 +29,14 @@ func loadAgentRoutes() {
 	auth.GET("/openid", aapi.Agent.GetOpenid) // 获取微信openid
 
 	// A2 骑手
-	auth.GET("/rider", aapi.Rider.List)               // 列表
-	auth.GET("/rider/:id", aapi.Rider.Detail)         // 骑手详情
-	auth.POST("/rider", aapi.Rider.Create)            // 添加骑手
-	auth.GET("/rider/info", aapi.Rider.RiderInfo)     // 通过二维码获取骑手信息
-	auth.POST("/rider/invite", aapi.Rider.Invite)     // 邀请骑手二维码
-	auth.POST("/rider/alter", aapi.Rider.Alter)       // 增加/减少骑手时长
-	auth.POST("/rider/reactive", aapi.Rider.Reactive) // 重新激活骑手
+	auth.GET("/rider", aapi.Rider.List)                   // 列表
+	auth.GET("/rider/:id", aapi.Rider.Detail)             // 骑手详情
+	auth.POST("/rider", aapi.Rider.Create)                // 添加骑手
+	auth.GET("/rider/info", aapi.Rider.RiderInfo)         // 通过二维码获取骑手信息
+	auth.POST("/rider/invite", aapi.Rider.Invite)         // 邀请骑手二维码
+	auth.POST("/rider/alter", aapi.Rider.Alter)           // 增加/减少骑手时长
+	auth.POST("/rider/reactive", aapi.Rider.Reactive)     // 重新激活骑手
+	auth.DELETE("/rider/delete/{:id}", aapi.Rider.Delete) // 删除骑手
 
 	// A3 账户
 	auth.GET("/prepayment/overview", aapi.Prepayment.Overview)

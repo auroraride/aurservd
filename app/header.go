@@ -28,4 +28,6 @@ const (
 	HeaderAgentToken = "X-Agent-Token"
 	// HeaderMaintainerToken 运维token
 	HeaderMaintainerToken = "X-Maintainer-Token"
+	// HeaderPromotionToken 推广token
+	HeaderPromotionToken = "X-Promotion-Token"
 )
