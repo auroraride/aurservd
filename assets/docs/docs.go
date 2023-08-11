@@ -3737,7 +3737,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/maintainer/v1/cabinet/{serial}/{code}": {
+        "/maintainer/v1/cabinet/{serial}": {
             "get": {
                 "consumes": [
                     "application/json"

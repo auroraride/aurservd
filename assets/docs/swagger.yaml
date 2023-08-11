@@ -10765,7 +10765,7 @@ paths:
       summary: E2003 激活骑士卡
       tags:
       - '[E]店员接口'
-  /maintainer/v1/cabinet/{serial}/{code}:
+  /maintainer/v1/cabinet/{serial}:
     get:
       consumes:
       - application/json

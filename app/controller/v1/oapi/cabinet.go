@@ -33,7 +33,7 @@ func (*cabinet) List(c echo.Context) (err error) {
 
 // Detail
 // @ID           MaintainerCabinetDetail
-// @Router       /maintainer/v1/cabinet/{serial}/{code} [GET]
+// @Router       /maintainer/v1/cabinet/{serial} [GET]
 // @Summary      O2002 获取电柜详情
 // @Tags         [O]运维接口
 // @Accept       json
