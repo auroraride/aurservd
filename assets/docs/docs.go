@@ -10779,7 +10779,7 @@ const docTemplate = `{
             }
         },
         "/manager/v1/maintainer/{id}": {
-            "post": {
+            "put": {
                 "consumes": [
                     "application/json"
                 ],

@@ -259,7 +259,7 @@ func loadManagerRoutes() {
 	// 运维
 	g.GET("/maintainer", mapi.Maintainer.List)
 	g.POST("/maintainer", mapi.Maintainer.Create)
-	g.POST("/maintainer/:id", mapi.Maintainer.Modify)
+	g.PUT("/maintainer/:id", mapi.Maintainer.Modify)
 
 	// 营销
 	// PM1 推广会员
