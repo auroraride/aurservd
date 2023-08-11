@@ -135,6 +135,16 @@ func AvatarURL(v string) predicate.PromotionMember {
 	return predicate.PromotionMember(sql.FieldEQ(FieldAvatarURL, v))
 }
 
+// NewSignCount applies equality check predicate on the "new_sign_count" field. It's identical to NewSignCountEQ.
+func NewSignCount(v uint64) predicate.PromotionMember {
+	return predicate.PromotionMember(sql.FieldEQ(FieldNewSignCount, v))
+}
+
+// RenewCount applies equality check predicate on the "renew_count" field. It's identical to RenewCountEQ.
+func RenewCount(v uint64) predicate.PromotionMember {
+	return predicate.PromotionMember(sql.FieldEQ(FieldRenewCount, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.PromotionMember {
 	return predicate.PromotionMember(sql.FieldEQ(FieldCreatedAt, v))
@@ -863,6 +873,86 @@ func AvatarURLEqualFold(v string) predicate.PromotionMember {
 // AvatarURLContainsFold applies the ContainsFold predicate on the "avatar_url" field.
 func AvatarURLContainsFold(v string) predicate.PromotionMember {
 	return predicate.PromotionMember(sql.FieldContainsFold(FieldAvatarURL, v))
+}
+
+// NewSignCountEQ applies the EQ predicate on the "new_sign_count" field.
+func NewSignCountEQ(v uint64) predicate.PromotionMember {
+	return predicate.PromotionMember(sql.FieldEQ(FieldNewSignCount, v))
+}
+
+// NewSignCountNEQ applies the NEQ predicate on the "new_sign_count" field.
+func NewSignCountNEQ(v uint64) predicate.PromotionMember {
+	return predicate.PromotionMember(sql.FieldNEQ(FieldNewSignCount, v))
+}
+
+// NewSignCountIn applies the In predicate on the "new_sign_count" field.
+func NewSignCountIn(vs ...uint64) predicate.PromotionMember {
+	return predicate.PromotionMember(sql.FieldIn(FieldNewSignCount, vs...))
+}
+
+// NewSignCountNotIn applies the NotIn predicate on the "new_sign_count" field.
+func NewSignCountNotIn(vs ...uint64) predicate.PromotionMember {
+	return predicate.PromotionMember(sql.FieldNotIn(FieldNewSignCount, vs...))
+}
+
+// NewSignCountGT applies the GT predicate on the "new_sign_count" field.
+func NewSignCountGT(v uint64) predicate.PromotionMember {
+	return predicate.PromotionMember(sql.FieldGT(FieldNewSignCount, v))
+}
+
+// NewSignCountGTE applies the GTE predicate on the "new_sign_count" field.
+func NewSignCountGTE(v uint64) predicate.PromotionMember {
+	return predicate.PromotionMember(sql.FieldGTE(FieldNewSignCount, v))
+}
+
+// NewSignCountLT applies the LT predicate on the "new_sign_count" field.
+func NewSignCountLT(v uint64) predicate.PromotionMember {
+	return predicate.PromotionMember(sql.FieldLT(FieldNewSignCount, v))
+}
+
+// NewSignCountLTE applies the LTE predicate on the "new_sign_count" field.
+func NewSignCountLTE(v uint64) predicate.PromotionMember {
+	return predicate.PromotionMember(sql.FieldLTE(FieldNewSignCount, v))
+}
+
+// RenewCountEQ applies the EQ predicate on the "renew_count" field.
+func RenewCountEQ(v uint64) predicate.PromotionMember {
+	return predicate.PromotionMember(sql.FieldEQ(FieldRenewCount, v))
+}
+
+// RenewCountNEQ applies the NEQ predicate on the "renew_count" field.
+func RenewCountNEQ(v uint64) predicate.PromotionMember {
+	return predicate.PromotionMember(sql.FieldNEQ(FieldRenewCount, v))
+}
+
+// RenewCountIn applies the In predicate on the "renew_count" field.
+func RenewCountIn(vs ...uint64) predicate.PromotionMember {
+	return predicate.PromotionMember(sql.FieldIn(FieldRenewCount, vs...))
+}
+
+// RenewCountNotIn applies the NotIn predicate on the "renew_count" field.
+func RenewCountNotIn(vs ...uint64) predicate.PromotionMember {
+	return predicate.PromotionMember(sql.FieldNotIn(FieldRenewCount, vs...))
+}
+
+// RenewCountGT applies the GT predicate on the "renew_count" field.
+func RenewCountGT(v uint64) predicate.PromotionMember {
+	return predicate.PromotionMember(sql.FieldGT(FieldRenewCount, v))
+}
+
+// RenewCountGTE applies the GTE predicate on the "renew_count" field.
+func RenewCountGTE(v uint64) predicate.PromotionMember {
+	return predicate.PromotionMember(sql.FieldGTE(FieldRenewCount, v))
+}
+
+// RenewCountLT applies the LT predicate on the "renew_count" field.
+func RenewCountLT(v uint64) predicate.PromotionMember {
+	return predicate.PromotionMember(sql.FieldLT(FieldRenewCount, v))
+}
+
+// RenewCountLTE applies the LTE predicate on the "renew_count" field.
+func RenewCountLTE(v uint64) predicate.PromotionMember {
+	return predicate.PromotionMember(sql.FieldLTE(FieldRenewCount, v))
 }
 
 // HasRider applies the HasEdge predicate on the "rider" edge.

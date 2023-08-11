@@ -1237,6 +1237,14 @@ func init() {
 	promotionmemberDescEnable := promotionmemberFields[6].Descriptor()
 	// promotionmember.DefaultEnable holds the default value on creation for the enable field.
 	promotionmember.DefaultEnable = promotionmemberDescEnable.Default.(bool)
+	// promotionmemberDescNewSignCount is the schema descriptor for new_sign_count field.
+	promotionmemberDescNewSignCount := promotionmemberFields[9].Descriptor()
+	// promotionmember.DefaultNewSignCount holds the default value on creation for the new_sign_count field.
+	promotionmember.DefaultNewSignCount = promotionmemberDescNewSignCount.Default.(uint64)
+	// promotionmemberDescRenewCount is the schema descriptor for renew_count field.
+	promotionmemberDescRenewCount := promotionmemberFields[10].Descriptor()
+	// promotionmember.DefaultRenewCount holds the default value on creation for the renew_count field.
+	promotionmember.DefaultRenewCount = promotionmemberDescRenewCount.Default.(uint64)
 	promotionpersonMixin := schema.PromotionPerson{}.Mixin()
 	promotionpersonMixinFields0 := promotionpersonMixin[0].Fields()
 	_ = promotionpersonMixinFields0

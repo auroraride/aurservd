@@ -68,6 +68,8 @@ func (PromotionMember) Fields() []ent.Field {
 		field.Bool("enable").Default(true).Comment("是否启用"),
 		field.Uint64("person_id").Optional().Nillable().Comment("实名认证ID"),
 		field.String("avatar_url").Optional().Comment("头像url"),
+		field.Uint64("new_sign_count").Default(0).Comment("新签次数"),
+		field.Uint64("renew_count").Default(0).Comment("续费次数"),
 	}
 }
 

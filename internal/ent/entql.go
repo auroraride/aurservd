@@ -1458,6 +1458,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 			promotionmember.FieldEnable:             {Type: field.TypeBool, Column: promotionmember.FieldEnable},
 			promotionmember.FieldPersonID:           {Type: field.TypeUint64, Column: promotionmember.FieldPersonID},
 			promotionmember.FieldAvatarURL:          {Type: field.TypeString, Column: promotionmember.FieldAvatarURL},
+			promotionmember.FieldNewSignCount:       {Type: field.TypeUint64, Column: promotionmember.FieldNewSignCount},
+			promotionmember.FieldRenewCount:         {Type: field.TypeUint64, Column: promotionmember.FieldRenewCount},
 		},
 	}
 	graph.Nodes[50] = &sqlgraph.Node{
@@ -13663,6 +13665,16 @@ func (f *PromotionMemberFilter) WherePersonID(p entql.Uint64P) {
 // WhereAvatarURL applies the entql string predicate on the avatar_url field.
 func (f *PromotionMemberFilter) WhereAvatarURL(p entql.StringP) {
 	f.Where(p.Field(promotionmember.FieldAvatarURL))
+}
+
+// WhereNewSignCount applies the entql uint64 predicate on the new_sign_count field.
+func (f *PromotionMemberFilter) WhereNewSignCount(p entql.Uint64P) {
+	f.Where(p.Field(promotionmember.FieldNewSignCount))
+}
+
+// WhereRenewCount applies the entql uint64 predicate on the renew_count field.
+func (f *PromotionMemberFilter) WhereRenewCount(p entql.Uint64P) {
+	f.Where(p.Field(promotionmember.FieldRenewCount))
 }
 
 // WhereHasRider applies a predicate to check if query has an edge rider.

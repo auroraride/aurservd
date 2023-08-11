@@ -296,6 +296,18 @@ func (s *promotionCommissionService) CommissionCalculation(tx *ent.Tx, req *prom
 		ec = append(ec, *slc)
 	}
 
+	// 新增续费次数统计
+	q := ent.Database.PromotionMember.Update().Where(promotionmember.RiderID(req.RiderID))
+	if req.Type == promotion.CommissionTypeRenewal {
+		q.AddRenewCount(1)
+	} else {
+		q.AddNewSignCount(1)
+	}
+	err = q.Exec(s.ctx)
+	if err != nil {
+		zap.L().Error("更新会员续费次数失败", zap.Error(err), zap.Int64("会员ID", int64(member.ID)), zap.Int("类型", int(req.Type)))
+	}
+
 	// 保存收益
 	for _, v := range ec {
 		err = s.saveEarningsAndUpdateCommission(tx, v)
@@ -501,6 +513,10 @@ func (s *promotionCommissionService) GetCommissionType(phone string) (promotion.
 	}
 
 	riders, _ := ent.Database.Rider.Query().WithSubscribes().Where(rider.PersonID(ri.Edges.Person.ID)).All(s.ctx)
+
+	if len(riders) > 1 {
+		return promotion.CommissionTypeRenewal, nil
+	}
 
 	for _, v := range riders {
 		sub := v.Edges.Subscribes

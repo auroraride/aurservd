@@ -57,22 +57,26 @@ func (s *promotionStatisticsService) Team(mem *ent.PromotionMember, req *promoti
 	v := promotion.StatisticsTeamRes{}
 	sqls := `
 WITH RECURSIVE member_hierarchy AS (
-    SELECT referred_member_id, 1 AS level, rider_id, created_at
-    FROM promotion_referrals
+    SELECT referred_member_id, 1 AS level, re.rider_id, re.created_at, r.person_id
+    FROM promotion_referrals re
+    LEFT JOIN rider r ON r.id = re.rider_id
     ` + fmt.Sprintf(" WHERE referring_member_id = %d", mem.ID) + `
 
     UNION ALL
 
-    SELECT mr.referred_member_id, mh.level + 1 AS level, mr.rider_id, mr.created_at
+    SELECT mr.referred_member_id, mh.level + 1 AS level, mr.rider_id, mr.created_at, r.person_id
     FROM member_hierarchy mh
     INNER JOIN promotion_referrals mr ON mh.referred_member_id = mr.referring_member_id
+    LEFT JOIN rider r ON r.id = mh.rider_id
     WHERE mh.level < 2
 )
 
 SELECT
     COUNT(DISTINCT mh.referred_member_id) AS TotalTeam,
-    SUM(DISTINCT CASE WHEN o.type = 1 AND s.type <> 0 THEN 1 ELSE 0 END) AS TotalNewSign,
-    SUM(CASE WHEN (o.type = 2 OR o.type = 3) AND s.type <> 0 THEN 1 ELSE 0 END) + (SUM(CASE WHEN o.type = 1 AND s.type <> 0 THEN 1 ELSE 0 END) - SUM(DISTINCT CASE WHEN o.type = 1 AND s.type <> 0 THEN 1 ELSE 0 END) AS TotalRenewal
+    COUNT(DISTINCT CASE WHEN o.type = 1 AND s.type <> 0 THEN mh.person_id END) AS TotalNewSign,
+    SUM(CASE WHEN (o.type = 2 OR o.type = 3) AND s.type <> 0 THEN 1 ELSE 0 END)
+    + (SUM(CASE WHEN o.type = 1 AND s.type <> 0 THEN 1 ELSE 0 END)
+    - COUNT(DISTINCT CASE WHEN o.type = 1 AND s.type <> 0 THEN mh.person_id END)) AS TotalRenewal
 FROM member_hierarchy mh
 LEFT JOIN "order" o ON mh.rider_id = o.rider_id
 LEFT JOIN subscribe s ON o.subscribe_id = s.id
@@ -225,23 +229,27 @@ func (s *promotionStatisticsService) MyTeamStatistics(mem *ent.PromotionMember) 
 	var v []promotion.StatisticsTeamDetailRes
 	sqls := `
 WITH RECURSIVE member_hierarchy AS (
-    SELECT referred_member_id, 1 AS level, rider_id, created_at
-    FROM promotion_referrals
+    SELECT referred_member_id, 1 AS level, re.rider_id, re.created_at, r.person_id
+    FROM promotion_referrals re
+    LEFT JOIN rider r ON r.id = re.rider_id
     ` + fmt.Sprintf(" WHERE referring_member_id = %d", mem.ID) + `
 
     UNION ALL
 
-    SELECT mr.referred_member_id, mh.level + 1 AS level, mr.rider_id, mr.created_at
+    SELECT mr.referred_member_id, mh.level + 1 AS level, mr.rider_id, mr.created_at, r.person_id
     FROM member_hierarchy mh
     INNER JOIN promotion_referrals mr ON mh.referred_member_id = mr.referring_member_id
+	LEFT JOIN rider r ON r.id = mh.rider_id
     WHERE mh.level < 2
 )
 
 SELECT
     level,
     COUNT(DISTINCT mh.referred_member_id) AS TotalTeam,
-    SUM(DISTINCT CASE WHEN o.type = 1 AND s.type <> 0 THEN 1 ELSE 0 END) AS TotalNewSign,
-    SUM(CASE WHEN (o.type = 2 OR o.type = 3) AND s.type <> 0 THEN 1 ELSE 0 END) + (SUM(CASE WHEN o.type = 1 AND s.type <> 0 THEN 1 ELSE 0 END) - SUM(DISTINCT CASE WHEN o.type = 1 AND s.type <> 0 THEN 1 ELSE 0 END) AS TotalRenewal
+    COUNT(DISTINCT CASE WHEN o.type = 1 AND s.type <> 0 THEN mh.person_id END) AS TotalNewSign,
+    SUM(CASE WHEN (o.type = 2 OR o.type = 3) AND s.type <> 0 THEN 1 ELSE 0 END)
+    + (SUM(CASE WHEN o.type = 1 AND s.type <> 0 THEN 1 ELSE 0 END)
+    - COUNT(DISTINCT CASE WHEN o.type = 1 AND s.type <> 0 THEN mh.person_id END)) AS TotalRenewal
 FROM member_hierarchy mh
 LEFT JOIN "order" o ON mh.rider_id = o.rider_id
 LEFT JOIN subscribe s ON o.subscribe_id = s.id

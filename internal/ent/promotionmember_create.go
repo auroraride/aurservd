@@ -257,6 +257,34 @@ func (pmc *PromotionMemberCreate) SetNillableAvatarURL(s *string) *PromotionMemb
 	return pmc
 }
 
+// SetNewSignCount sets the "new_sign_count" field.
+func (pmc *PromotionMemberCreate) SetNewSignCount(u uint64) *PromotionMemberCreate {
+	pmc.mutation.SetNewSignCount(u)
+	return pmc
+}
+
+// SetNillableNewSignCount sets the "new_sign_count" field if the given value is not nil.
+func (pmc *PromotionMemberCreate) SetNillableNewSignCount(u *uint64) *PromotionMemberCreate {
+	if u != nil {
+		pmc.SetNewSignCount(*u)
+	}
+	return pmc
+}
+
+// SetRenewCount sets the "renew_count" field.
+func (pmc *PromotionMemberCreate) SetRenewCount(u uint64) *PromotionMemberCreate {
+	pmc.mutation.SetRenewCount(u)
+	return pmc
+}
+
+// SetNillableRenewCount sets the "renew_count" field if the given value is not nil.
+func (pmc *PromotionMemberCreate) SetNillableRenewCount(u *uint64) *PromotionMemberCreate {
+	if u != nil {
+		pmc.SetRenewCount(*u)
+	}
+	return pmc
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (pmc *PromotionMemberCreate) SetRider(r *Rider) *PromotionMemberCreate {
 	return pmc.SetRiderID(r.ID)
@@ -397,6 +425,14 @@ func (pmc *PromotionMemberCreate) defaults() error {
 		v := promotionmember.DefaultEnable
 		pmc.mutation.SetEnable(v)
 	}
+	if _, ok := pmc.mutation.NewSignCount(); !ok {
+		v := promotionmember.DefaultNewSignCount
+		pmc.mutation.SetNewSignCount(v)
+	}
+	if _, ok := pmc.mutation.RenewCount(); !ok {
+		v := promotionmember.DefaultRenewCount
+		pmc.mutation.SetRenewCount(v)
+	}
 	return nil
 }
 
@@ -425,6 +461,12 @@ func (pmc *PromotionMemberCreate) check() error {
 	}
 	if _, ok := pmc.mutation.Enable(); !ok {
 		return &ValidationError{Name: "enable", err: errors.New(`ent: missing required field "PromotionMember.enable"`)}
+	}
+	if _, ok := pmc.mutation.NewSignCount(); !ok {
+		return &ValidationError{Name: "new_sign_count", err: errors.New(`ent: missing required field "PromotionMember.new_sign_count"`)}
+	}
+	if _, ok := pmc.mutation.RenewCount(); !ok {
+		return &ValidationError{Name: "renew_count", err: errors.New(`ent: missing required field "PromotionMember.renew_count"`)}
 	}
 	return nil
 }
@@ -508,6 +550,14 @@ func (pmc *PromotionMemberCreate) createSpec() (*PromotionMember, *sqlgraph.Crea
 	if value, ok := pmc.mutation.AvatarURL(); ok {
 		_spec.SetField(promotionmember.FieldAvatarURL, field.TypeString, value)
 		_node.AvatarURL = value
+	}
+	if value, ok := pmc.mutation.NewSignCount(); ok {
+		_spec.SetField(promotionmember.FieldNewSignCount, field.TypeUint64, value)
+		_node.NewSignCount = value
+	}
+	if value, ok := pmc.mutation.RenewCount(); ok {
+		_spec.SetField(promotionmember.FieldRenewCount, field.TypeUint64, value)
+		_node.RenewCount = value
 	}
 	if nodes := pmc.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -947,6 +997,42 @@ func (u *PromotionMemberUpsert) ClearAvatarURL() *PromotionMemberUpsert {
 	return u
 }
 
+// SetNewSignCount sets the "new_sign_count" field.
+func (u *PromotionMemberUpsert) SetNewSignCount(v uint64) *PromotionMemberUpsert {
+	u.Set(promotionmember.FieldNewSignCount, v)
+	return u
+}
+
+// UpdateNewSignCount sets the "new_sign_count" field to the value that was provided on create.
+func (u *PromotionMemberUpsert) UpdateNewSignCount() *PromotionMemberUpsert {
+	u.SetExcluded(promotionmember.FieldNewSignCount)
+	return u
+}
+
+// AddNewSignCount adds v to the "new_sign_count" field.
+func (u *PromotionMemberUpsert) AddNewSignCount(v uint64) *PromotionMemberUpsert {
+	u.Add(promotionmember.FieldNewSignCount, v)
+	return u
+}
+
+// SetRenewCount sets the "renew_count" field.
+func (u *PromotionMemberUpsert) SetRenewCount(v uint64) *PromotionMemberUpsert {
+	u.Set(promotionmember.FieldRenewCount, v)
+	return u
+}
+
+// UpdateRenewCount sets the "renew_count" field to the value that was provided on create.
+func (u *PromotionMemberUpsert) UpdateRenewCount() *PromotionMemberUpsert {
+	u.SetExcluded(promotionmember.FieldRenewCount)
+	return u
+}
+
+// AddRenewCount adds v to the "renew_count" field.
+func (u *PromotionMemberUpsert) AddRenewCount(v uint64) *PromotionMemberUpsert {
+	u.Add(promotionmember.FieldRenewCount, v)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1307,6 +1393,48 @@ func (u *PromotionMemberUpsertOne) UpdateAvatarURL() *PromotionMemberUpsertOne {
 func (u *PromotionMemberUpsertOne) ClearAvatarURL() *PromotionMemberUpsertOne {
 	return u.Update(func(s *PromotionMemberUpsert) {
 		s.ClearAvatarURL()
+	})
+}
+
+// SetNewSignCount sets the "new_sign_count" field.
+func (u *PromotionMemberUpsertOne) SetNewSignCount(v uint64) *PromotionMemberUpsertOne {
+	return u.Update(func(s *PromotionMemberUpsert) {
+		s.SetNewSignCount(v)
+	})
+}
+
+// AddNewSignCount adds v to the "new_sign_count" field.
+func (u *PromotionMemberUpsertOne) AddNewSignCount(v uint64) *PromotionMemberUpsertOne {
+	return u.Update(func(s *PromotionMemberUpsert) {
+		s.AddNewSignCount(v)
+	})
+}
+
+// UpdateNewSignCount sets the "new_sign_count" field to the value that was provided on create.
+func (u *PromotionMemberUpsertOne) UpdateNewSignCount() *PromotionMemberUpsertOne {
+	return u.Update(func(s *PromotionMemberUpsert) {
+		s.UpdateNewSignCount()
+	})
+}
+
+// SetRenewCount sets the "renew_count" field.
+func (u *PromotionMemberUpsertOne) SetRenewCount(v uint64) *PromotionMemberUpsertOne {
+	return u.Update(func(s *PromotionMemberUpsert) {
+		s.SetRenewCount(v)
+	})
+}
+
+// AddRenewCount adds v to the "renew_count" field.
+func (u *PromotionMemberUpsertOne) AddRenewCount(v uint64) *PromotionMemberUpsertOne {
+	return u.Update(func(s *PromotionMemberUpsert) {
+		s.AddRenewCount(v)
+	})
+}
+
+// UpdateRenewCount sets the "renew_count" field to the value that was provided on create.
+func (u *PromotionMemberUpsertOne) UpdateRenewCount() *PromotionMemberUpsertOne {
+	return u.Update(func(s *PromotionMemberUpsert) {
+		s.UpdateRenewCount()
 	})
 }
 
@@ -1832,6 +1960,48 @@ func (u *PromotionMemberUpsertBulk) UpdateAvatarURL() *PromotionMemberUpsertBulk
 func (u *PromotionMemberUpsertBulk) ClearAvatarURL() *PromotionMemberUpsertBulk {
 	return u.Update(func(s *PromotionMemberUpsert) {
 		s.ClearAvatarURL()
+	})
+}
+
+// SetNewSignCount sets the "new_sign_count" field.
+func (u *PromotionMemberUpsertBulk) SetNewSignCount(v uint64) *PromotionMemberUpsertBulk {
+	return u.Update(func(s *PromotionMemberUpsert) {
+		s.SetNewSignCount(v)
+	})
+}
+
+// AddNewSignCount adds v to the "new_sign_count" field.
+func (u *PromotionMemberUpsertBulk) AddNewSignCount(v uint64) *PromotionMemberUpsertBulk {
+	return u.Update(func(s *PromotionMemberUpsert) {
+		s.AddNewSignCount(v)
+	})
+}
+
+// UpdateNewSignCount sets the "new_sign_count" field to the value that was provided on create.
+func (u *PromotionMemberUpsertBulk) UpdateNewSignCount() *PromotionMemberUpsertBulk {
+	return u.Update(func(s *PromotionMemberUpsert) {
+		s.UpdateNewSignCount()
+	})
+}
+
+// SetRenewCount sets the "renew_count" field.
+func (u *PromotionMemberUpsertBulk) SetRenewCount(v uint64) *PromotionMemberUpsertBulk {
+	return u.Update(func(s *PromotionMemberUpsert) {
+		s.SetRenewCount(v)
+	})
+}
+
+// AddRenewCount adds v to the "renew_count" field.
+func (u *PromotionMemberUpsertBulk) AddRenewCount(v uint64) *PromotionMemberUpsertBulk {
+	return u.Update(func(s *PromotionMemberUpsert) {
+		s.AddRenewCount(v)
+	})
+}
+
+// UpdateRenewCount sets the "renew_count" field to the value that was provided on create.
+func (u *PromotionMemberUpsertBulk) UpdateRenewCount() *PromotionMemberUpsertBulk {
+	return u.Update(func(s *PromotionMemberUpsert) {
+		s.UpdateRenewCount()
 	})
 }
 

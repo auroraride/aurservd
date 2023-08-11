@@ -3745,6 +3745,8 @@ var (
 		{Name: "current_growth_value", Type: field.TypeUint64, Comment: "当前等级成长值", Default: 0},
 		{Name: "enable", Type: field.TypeBool, Comment: "是否启用", Default: true},
 		{Name: "avatar_url", Type: field.TypeString, Nullable: true, Comment: "头像url"},
+		{Name: "new_sign_count", Type: field.TypeUint64, Comment: "新签次数", Default: 0},
+		{Name: "renew_count", Type: field.TypeUint64, Comment: "续费次数", Default: 0},
 		{Name: "rider_id", Type: field.TypeUint64, Nullable: true, Comment: "骑手ID"},
 		{Name: "level_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "commission_id", Type: field.TypeUint64, Nullable: true},
@@ -3758,25 +3760,25 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "promotion_member_rider_rider",
-				Columns:    []*schema.Column{PromotionMemberColumns[15]},
+				Columns:    []*schema.Column{PromotionMemberColumns[17]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "promotion_member_promotion_level_level",
-				Columns:    []*schema.Column{PromotionMemberColumns[16]},
+				Columns:    []*schema.Column{PromotionMemberColumns[18]},
 				RefColumns: []*schema.Column{PromotionLevelColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "promotion_member_promotion_commission_commission",
-				Columns:    []*schema.Column{PromotionMemberColumns[17]},
+				Columns:    []*schema.Column{PromotionMemberColumns[19]},
 				RefColumns: []*schema.Column{PromotionCommissionColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "promotion_member_promotion_person_member",
-				Columns:    []*schema.Column{PromotionMemberColumns[18]},
+				Columns:    []*schema.Column{PromotionMemberColumns[20]},
 				RefColumns: []*schema.Column{PromotionPersonColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -3795,17 +3797,17 @@ var (
 			{
 				Name:    "promotionmember_rider_id",
 				Unique:  false,
-				Columns: []*schema.Column{PromotionMemberColumns[15]},
+				Columns: []*schema.Column{PromotionMemberColumns[17]},
 			},
 			{
 				Name:    "promotionmember_level_id",
 				Unique:  false,
-				Columns: []*schema.Column{PromotionMemberColumns[16]},
+				Columns: []*schema.Column{PromotionMemberColumns[18]},
 			},
 			{
 				Name:    "promotionmember_commission_id",
 				Unique:  false,
-				Columns: []*schema.Column{PromotionMemberColumns[17]},
+				Columns: []*schema.Column{PromotionMemberColumns[19]},
 			},
 		},
 	}

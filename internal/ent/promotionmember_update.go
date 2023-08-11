@@ -318,6 +318,48 @@ func (pmu *PromotionMemberUpdate) ClearAvatarURL() *PromotionMemberUpdate {
 	return pmu
 }
 
+// SetNewSignCount sets the "new_sign_count" field.
+func (pmu *PromotionMemberUpdate) SetNewSignCount(u uint64) *PromotionMemberUpdate {
+	pmu.mutation.ResetNewSignCount()
+	pmu.mutation.SetNewSignCount(u)
+	return pmu
+}
+
+// SetNillableNewSignCount sets the "new_sign_count" field if the given value is not nil.
+func (pmu *PromotionMemberUpdate) SetNillableNewSignCount(u *uint64) *PromotionMemberUpdate {
+	if u != nil {
+		pmu.SetNewSignCount(*u)
+	}
+	return pmu
+}
+
+// AddNewSignCount adds u to the "new_sign_count" field.
+func (pmu *PromotionMemberUpdate) AddNewSignCount(u int64) *PromotionMemberUpdate {
+	pmu.mutation.AddNewSignCount(u)
+	return pmu
+}
+
+// SetRenewCount sets the "renew_count" field.
+func (pmu *PromotionMemberUpdate) SetRenewCount(u uint64) *PromotionMemberUpdate {
+	pmu.mutation.ResetRenewCount()
+	pmu.mutation.SetRenewCount(u)
+	return pmu
+}
+
+// SetNillableRenewCount sets the "renew_count" field if the given value is not nil.
+func (pmu *PromotionMemberUpdate) SetNillableRenewCount(u *uint64) *PromotionMemberUpdate {
+	if u != nil {
+		pmu.SetRenewCount(*u)
+	}
+	return pmu
+}
+
+// AddRenewCount adds u to the "renew_count" field.
+func (pmu *PromotionMemberUpdate) AddRenewCount(u int64) *PromotionMemberUpdate {
+	pmu.mutation.AddRenewCount(u)
+	return pmu
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (pmu *PromotionMemberUpdate) SetRider(r *Rider) *PromotionMemberUpdate {
 	return pmu.SetRiderID(r.ID)
@@ -586,6 +628,18 @@ func (pmu *PromotionMemberUpdate) sqlSave(ctx context.Context) (n int, err error
 	}
 	if pmu.mutation.AvatarURLCleared() {
 		_spec.ClearField(promotionmember.FieldAvatarURL, field.TypeString)
+	}
+	if value, ok := pmu.mutation.NewSignCount(); ok {
+		_spec.SetField(promotionmember.FieldNewSignCount, field.TypeUint64, value)
+	}
+	if value, ok := pmu.mutation.AddedNewSignCount(); ok {
+		_spec.AddField(promotionmember.FieldNewSignCount, field.TypeUint64, value)
+	}
+	if value, ok := pmu.mutation.RenewCount(); ok {
+		_spec.SetField(promotionmember.FieldRenewCount, field.TypeUint64, value)
+	}
+	if value, ok := pmu.mutation.AddedRenewCount(); ok {
+		_spec.AddField(promotionmember.FieldRenewCount, field.TypeUint64, value)
 	}
 	if pmu.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1126,6 +1180,48 @@ func (pmuo *PromotionMemberUpdateOne) ClearAvatarURL() *PromotionMemberUpdateOne
 	return pmuo
 }
 
+// SetNewSignCount sets the "new_sign_count" field.
+func (pmuo *PromotionMemberUpdateOne) SetNewSignCount(u uint64) *PromotionMemberUpdateOne {
+	pmuo.mutation.ResetNewSignCount()
+	pmuo.mutation.SetNewSignCount(u)
+	return pmuo
+}
+
+// SetNillableNewSignCount sets the "new_sign_count" field if the given value is not nil.
+func (pmuo *PromotionMemberUpdateOne) SetNillableNewSignCount(u *uint64) *PromotionMemberUpdateOne {
+	if u != nil {
+		pmuo.SetNewSignCount(*u)
+	}
+	return pmuo
+}
+
+// AddNewSignCount adds u to the "new_sign_count" field.
+func (pmuo *PromotionMemberUpdateOne) AddNewSignCount(u int64) *PromotionMemberUpdateOne {
+	pmuo.mutation.AddNewSignCount(u)
+	return pmuo
+}
+
+// SetRenewCount sets the "renew_count" field.
+func (pmuo *PromotionMemberUpdateOne) SetRenewCount(u uint64) *PromotionMemberUpdateOne {
+	pmuo.mutation.ResetRenewCount()
+	pmuo.mutation.SetRenewCount(u)
+	return pmuo
+}
+
+// SetNillableRenewCount sets the "renew_count" field if the given value is not nil.
+func (pmuo *PromotionMemberUpdateOne) SetNillableRenewCount(u *uint64) *PromotionMemberUpdateOne {
+	if u != nil {
+		pmuo.SetRenewCount(*u)
+	}
+	return pmuo
+}
+
+// AddRenewCount adds u to the "renew_count" field.
+func (pmuo *PromotionMemberUpdateOne) AddRenewCount(u int64) *PromotionMemberUpdateOne {
+	pmuo.mutation.AddRenewCount(u)
+	return pmuo
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (pmuo *PromotionMemberUpdateOne) SetRider(r *Rider) *PromotionMemberUpdateOne {
 	return pmuo.SetRiderID(r.ID)
@@ -1424,6 +1520,18 @@ func (pmuo *PromotionMemberUpdateOne) sqlSave(ctx context.Context) (_node *Promo
 	}
 	if pmuo.mutation.AvatarURLCleared() {
 		_spec.ClearField(promotionmember.FieldAvatarURL, field.TypeString)
+	}
+	if value, ok := pmuo.mutation.NewSignCount(); ok {
+		_spec.SetField(promotionmember.FieldNewSignCount, field.TypeUint64, value)
+	}
+	if value, ok := pmuo.mutation.AddedNewSignCount(); ok {
+		_spec.AddField(promotionmember.FieldNewSignCount, field.TypeUint64, value)
+	}
+	if value, ok := pmuo.mutation.RenewCount(); ok {
+		_spec.SetField(promotionmember.FieldRenewCount, field.TypeUint64, value)
+	}
+	if value, ok := pmuo.mutation.AddedRenewCount(); ok {
+		_spec.AddField(promotionmember.FieldRenewCount, field.TypeUint64, value)
 	}
 	if pmuo.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
