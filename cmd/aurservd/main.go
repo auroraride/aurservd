@@ -25,6 +25,9 @@ func main() {
 		// 初始化系统设置
 		service.NewSetting().Initialize()
 
+		// 初始化营销设置
+		service.NewPromotionSettingService().Initialize()
+
 		// 启动脚本
 		script.Execute()
 	})

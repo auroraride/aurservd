@@ -513,6 +513,162 @@ func (f PointLogFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, er
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PointLogMutation", m)
 }
 
+// The PromotionAchievementFunc type is an adapter to allow the use of ordinary
+// function as PromotionAchievement mutator.
+type PromotionAchievementFunc func(context.Context, *ent.PromotionAchievementMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PromotionAchievementFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.PromotionAchievementMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PromotionAchievementMutation", m)
+}
+
+// The PromotionBankCardFunc type is an adapter to allow the use of ordinary
+// function as PromotionBankCard mutator.
+type PromotionBankCardFunc func(context.Context, *ent.PromotionBankCardMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PromotionBankCardFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.PromotionBankCardMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PromotionBankCardMutation", m)
+}
+
+// The PromotionCommissionFunc type is an adapter to allow the use of ordinary
+// function as PromotionCommission mutator.
+type PromotionCommissionFunc func(context.Context, *ent.PromotionCommissionMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PromotionCommissionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.PromotionCommissionMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PromotionCommissionMutation", m)
+}
+
+// The PromotionEarningsFunc type is an adapter to allow the use of ordinary
+// function as PromotionEarnings mutator.
+type PromotionEarningsFunc func(context.Context, *ent.PromotionEarningsMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PromotionEarningsFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.PromotionEarningsMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PromotionEarningsMutation", m)
+}
+
+// The PromotionGrowthFunc type is an adapter to allow the use of ordinary
+// function as PromotionGrowth mutator.
+type PromotionGrowthFunc func(context.Context, *ent.PromotionGrowthMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PromotionGrowthFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.PromotionGrowthMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PromotionGrowthMutation", m)
+}
+
+// The PromotionLevelFunc type is an adapter to allow the use of ordinary
+// function as PromotionLevel mutator.
+type PromotionLevelFunc func(context.Context, *ent.PromotionLevelMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PromotionLevelFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.PromotionLevelMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PromotionLevelMutation", m)
+}
+
+// The PromotionLevelTaskFunc type is an adapter to allow the use of ordinary
+// function as PromotionLevelTask mutator.
+type PromotionLevelTaskFunc func(context.Context, *ent.PromotionLevelTaskMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PromotionLevelTaskFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.PromotionLevelTaskMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PromotionLevelTaskMutation", m)
+}
+
+// The PromotionMemberFunc type is an adapter to allow the use of ordinary
+// function as PromotionMember mutator.
+type PromotionMemberFunc func(context.Context, *ent.PromotionMemberMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PromotionMemberFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.PromotionMemberMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PromotionMemberMutation", m)
+}
+
+// The PromotionPersonFunc type is an adapter to allow the use of ordinary
+// function as PromotionPerson mutator.
+type PromotionPersonFunc func(context.Context, *ent.PromotionPersonMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PromotionPersonFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.PromotionPersonMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PromotionPersonMutation", m)
+}
+
+// The PromotionPrivilegeFunc type is an adapter to allow the use of ordinary
+// function as PromotionPrivilege mutator.
+type PromotionPrivilegeFunc func(context.Context, *ent.PromotionPrivilegeMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PromotionPrivilegeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.PromotionPrivilegeMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PromotionPrivilegeMutation", m)
+}
+
+// The PromotionReferralsFunc type is an adapter to allow the use of ordinary
+// function as PromotionReferrals mutator.
+type PromotionReferralsFunc func(context.Context, *ent.PromotionReferralsMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PromotionReferralsFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.PromotionReferralsMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PromotionReferralsMutation", m)
+}
+
+// The PromotionSettingFunc type is an adapter to allow the use of ordinary
+// function as PromotionSetting mutator.
+type PromotionSettingFunc func(context.Context, *ent.PromotionSettingMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PromotionSettingFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.PromotionSettingMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PromotionSettingMutation", m)
+}
+
+// The PromotionWithdrawalFunc type is an adapter to allow the use of ordinary
+// function as PromotionWithdrawal mutator.
+type PromotionWithdrawalFunc func(context.Context, *ent.PromotionWithdrawalMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PromotionWithdrawalFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.PromotionWithdrawalMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PromotionWithdrawalMutation", m)
+}
+
 // The ReserveFunc type is an adapter to allow the use of ordinary
 // function as Reserve mutator.
 type ReserveFunc func(context.Context, *ent.ReserveMutation) (ent.Value, error)

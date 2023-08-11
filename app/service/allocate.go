@@ -8,11 +8,13 @@ package service
 import (
 	"time"
 
+	"github.com/auroraride/adapter"
 	"github.com/golang-module/carbon/v2"
 	"go.uber.org/zap"
 
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/socket"
+	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
 	"github.com/auroraride/aurservd/internal/ent/contract"
@@ -290,6 +292,12 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 	if err != nil {
 		zap.L().Error("分配失败", zap.Error(err))
 		snag.Panic("分配失败")
+	}
+
+	// 指定电话号码不需要签约
+	debugPhones := ar.Config.App.Debug.Phone
+	if debugPhones[r.Phone] && ar.Config.Environment != adapter.Production {
+		sub.NeedContract = false
 	}
 
 	switch sub.NeedContract {

@@ -3225,6 +3225,7 @@ var (
 		{Name: "price", Type: field.TypeFloat64, Comment: "骑士卡价格"},
 		{Name: "days", Type: field.TypeUint, Comment: "骑士卡天数"},
 		{Name: "commission", Type: field.TypeFloat64, Comment: "提成"},
+		{Name: "commission_base", Type: field.TypeFloat64, Nullable: true, Comment: "提成底数", Default: 0},
 		{Name: "original", Type: field.TypeFloat64, Nullable: true, Comment: "原价"},
 		{Name: "desc", Type: field.TypeString, Nullable: true, Comment: "优惠信息"},
 		{Name: "discount_newly", Type: field.TypeFloat64, Comment: "新签减免", Default: 0},
@@ -3241,13 +3242,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "plan_ebike_brand_brand",
-				Columns:    []*schema.Column{PlanColumns[21]},
+				Columns:    []*schema.Column{PlanColumns[22]},
 				RefColumns: []*schema.Column{EbikeBrandColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "plan_plan_complexes",
-				Columns:    []*schema.Column{PlanColumns[22]},
+				Columns:    []*schema.Column{PlanColumns[23]},
 				RefColumns: []*schema.Column{PlanColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -3266,7 +3267,7 @@ var (
 			{
 				Name:    "plan_brand_id",
 				Unique:  false,
-				Columns: []*schema.Column{PlanColumns[21]},
+				Columns: []*schema.Column{PlanColumns[22]},
 			},
 			{
 				Name:    "plan_type",
@@ -3395,6 +3396,588 @@ var (
 				Name:    "pointlog_type",
 				Unique:  false,
 				Columns: []*schema.Column{PointLogColumns[5]},
+			},
+		},
+	}
+	// PromotionAchievementColumns holds the columns for the "promotion_achievement" table.
+	PromotionAchievementColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
+		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
+		{Name: "name", Type: field.TypeString, Comment: "成就名称"},
+		{Name: "type", Type: field.TypeUint8, Comment: "成就类型 1:邀请成就 2:收益成就"},
+		{Name: "icon", Type: field.TypeString, Comment: "成就图标"},
+		{Name: "condition", Type: field.TypeUint64, Comment: "完成条件"},
+	}
+	// PromotionAchievementTable holds the schema information for the "promotion_achievement" table.
+	PromotionAchievementTable = &schema.Table{
+		Name:       "promotion_achievement",
+		Columns:    PromotionAchievementColumns,
+		PrimaryKey: []*schema.Column{PromotionAchievementColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "promotionachievement_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionAchievementColumns[1]},
+			},
+			{
+				Name:    "promotionachievement_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionAchievementColumns[3]},
+			},
+		},
+	}
+	// PromotionBankCardColumns holds the columns for the "promotion_bank_card" table.
+	PromotionBankCardColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
+		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
+		{Name: "card_no", Type: field.TypeString, Comment: "银行卡号"},
+		{Name: "bank", Type: field.TypeString, Nullable: true, Comment: "银行名称"},
+		{Name: "is_default", Type: field.TypeBool, Comment: "是否是默认银行卡", Default: false},
+		{Name: "bank_logo_url", Type: field.TypeString, Nullable: true, Comment: "银行卡logo"},
+		{Name: "province", Type: field.TypeString, Nullable: true, Comment: "省份"},
+		{Name: "city", Type: field.TypeString, Nullable: true, Comment: "城市"},
+		{Name: "member_id", Type: field.TypeUint64, Nullable: true, Comment: "会员ID"},
+	}
+	// PromotionBankCardTable holds the schema information for the "promotion_bank_card" table.
+	PromotionBankCardTable = &schema.Table{
+		Name:       "promotion_bank_card",
+		Columns:    PromotionBankCardColumns,
+		PrimaryKey: []*schema.Column{PromotionBankCardColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "promotion_bank_card_promotion_member_cards",
+				Columns:    []*schema.Column{PromotionBankCardColumns[13]},
+				RefColumns: []*schema.Column{PromotionMemberColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "promotionbankcard_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionBankCardColumns[1]},
+			},
+			{
+				Name:    "promotionbankcard_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionBankCardColumns[3]},
+			},
+		},
+	}
+	// PromotionCommissionColumns holds the columns for the "promotion_commission" table.
+	PromotionCommissionColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
+		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
+		{Name: "type", Type: field.TypeUint8, Comment: "类型 0:全局 1:通用 2:个人", Default: 1},
+		{Name: "name", Type: field.TypeString, Comment: "方案名"},
+		{Name: "rule", Type: field.TypeJSON, Comment: "返佣方案规则"},
+		{Name: "enable", Type: field.TypeBool, Comment: "启用状态 0:禁用 1:启用", Default: true},
+		{Name: "amount_sum", Type: field.TypeFloat64, Comment: "累计返佣金额", Default: 0},
+		{Name: "desc", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "返佣说明"},
+		{Name: "history_id", Type: field.TypeJSON, Nullable: true, Comment: "历史记录id"},
+		{Name: "start_at", Type: field.TypeTime, Nullable: true, Comment: "开始时间"},
+		{Name: "end_at", Type: field.TypeTime, Nullable: true, Comment: "结束时间"},
+		{Name: "member_id", Type: field.TypeUint64, Nullable: true},
+	}
+	// PromotionCommissionTable holds the schema information for the "promotion_commission" table.
+	PromotionCommissionTable = &schema.Table{
+		Name:       "promotion_commission",
+		Columns:    PromotionCommissionColumns,
+		PrimaryKey: []*schema.Column{PromotionCommissionColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "promotion_commission_promotion_member_member",
+				Columns:    []*schema.Column{PromotionCommissionColumns[16]},
+				RefColumns: []*schema.Column{PromotionMemberColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "promotioncommission_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionCommissionColumns[1]},
+			},
+			{
+				Name:    "promotioncommission_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionCommissionColumns[3]},
+			},
+			{
+				Name:    "promotioncommission_member_id",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionCommissionColumns[16]},
+			},
+		},
+	}
+	// PromotionEarningsColumns holds the columns for the "promotion_earnings" table.
+	PromotionEarningsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
+		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
+		{Name: "status", Type: field.TypeUint8, Comment: "收益状态 0:未结算 1:已结算 2:已取消", Default: 0},
+		{Name: "amount", Type: field.TypeFloat64, Comment: "收益金额", Default: 0},
+		{Name: "commission_rule_key", Type: field.TypeString, Nullable: true, Comment: "返佣任务类型"},
+		{Name: "commission_id", Type: field.TypeUint64},
+		{Name: "member_id", Type: field.TypeUint64},
+		{Name: "rider_id", Type: field.TypeUint64, Comment: "骑手ID"},
+		{Name: "order_id", Type: field.TypeUint64, Nullable: true},
+	}
+	// PromotionEarningsTable holds the schema information for the "promotion_earnings" table.
+	PromotionEarningsTable = &schema.Table{
+		Name:       "promotion_earnings",
+		Columns:    PromotionEarningsColumns,
+		PrimaryKey: []*schema.Column{PromotionEarningsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "promotion_earnings_promotion_commission_commission",
+				Columns:    []*schema.Column{PromotionEarningsColumns[10]},
+				RefColumns: []*schema.Column{PromotionCommissionColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "promotion_earnings_promotion_member_member",
+				Columns:    []*schema.Column{PromotionEarningsColumns[11]},
+				RefColumns: []*schema.Column{PromotionMemberColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "promotion_earnings_rider_rider",
+				Columns:    []*schema.Column{PromotionEarningsColumns[12]},
+				RefColumns: []*schema.Column{RiderColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "promotion_earnings_order_order",
+				Columns:    []*schema.Column{PromotionEarningsColumns[13]},
+				RefColumns: []*schema.Column{OrderColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "promotionearnings_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionEarningsColumns[1]},
+			},
+			{
+				Name:    "promotionearnings_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionEarningsColumns[3]},
+			},
+			{
+				Name:    "promotionearnings_commission_id",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionEarningsColumns[10]},
+			},
+			{
+				Name:    "promotionearnings_member_id",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionEarningsColumns[11]},
+			},
+			{
+				Name:    "promotionearnings_rider_id",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionEarningsColumns[12]},
+			},
+			{
+				Name:    "promotionearnings_order_id",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionEarningsColumns[13]},
+			},
+		},
+	}
+	// PromotionGrowthColumns holds the columns for the "promotion_growth" table.
+	PromotionGrowthColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "growth_value", Type: field.TypeUint64, Comment: "成长值"},
+		{Name: "member_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "task_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "rider_id", Type: field.TypeUint64, Nullable: true, Comment: "骑手ID"},
+	}
+	// PromotionGrowthTable holds the schema information for the "promotion_growth" table.
+	PromotionGrowthTable = &schema.Table{
+		Name:       "promotion_growth",
+		Columns:    PromotionGrowthColumns,
+		PrimaryKey: []*schema.Column{PromotionGrowthColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "promotion_growth_promotion_member_member",
+				Columns:    []*schema.Column{PromotionGrowthColumns[5]},
+				RefColumns: []*schema.Column{PromotionMemberColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "promotion_growth_promotion_level_task_task",
+				Columns:    []*schema.Column{PromotionGrowthColumns[6]},
+				RefColumns: []*schema.Column{PromotionLevelTaskColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "promotion_growth_rider_rider",
+				Columns:    []*schema.Column{PromotionGrowthColumns[7]},
+				RefColumns: []*schema.Column{RiderColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "promotiongrowth_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionGrowthColumns[1]},
+			},
+			{
+				Name:    "promotiongrowth_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionGrowthColumns[3]},
+			},
+			{
+				Name:    "promotiongrowth_member_id",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionGrowthColumns[5]},
+			},
+			{
+				Name:    "promotiongrowth_task_id",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionGrowthColumns[6]},
+			},
+			{
+				Name:    "promotiongrowth_rider_id",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionGrowthColumns[7]},
+			},
+		},
+	}
+	// PromotionLevelColumns holds the columns for the "promotion_level" table.
+	PromotionLevelColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
+		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
+		{Name: "level", Type: field.TypeUint64, Comment: "会员等级"},
+		{Name: "growth_value", Type: field.TypeUint64, Comment: "所需成长值", Default: 0},
+		{Name: "commission_ratio", Type: field.TypeFloat64, Comment: "会员权益佣金比例", Default: 0},
+	}
+	// PromotionLevelTable holds the schema information for the "promotion_level" table.
+	PromotionLevelTable = &schema.Table{
+		Name:       "promotion_level",
+		Columns:    PromotionLevelColumns,
+		PrimaryKey: []*schema.Column{PromotionLevelColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "promotionlevel_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionLevelColumns[1]},
+			},
+			{
+				Name:    "promotionlevel_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionLevelColumns[3]},
+			},
+		},
+	}
+	// PromotionLevelTaskColumns holds the columns for the "promotion_level_task" table.
+	PromotionLevelTaskColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
+		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
+		{Name: "name", Type: field.TypeString, Comment: "任务名称"},
+		{Name: "description", Type: field.TypeString, Comment: "任务描述"},
+		{Name: "type", Type: field.TypeUint8, Comment: "完成条件 1: 签约 2:续费"},
+		{Name: "growth_value", Type: field.TypeUint64, Comment: "任务成长值", Default: 0},
+		{Name: "key", Type: field.TypeString, Nullable: true, Comment: "任务key"},
+	}
+	// PromotionLevelTaskTable holds the schema information for the "promotion_level_task" table.
+	PromotionLevelTaskTable = &schema.Table{
+		Name:       "promotion_level_task",
+		Columns:    PromotionLevelTaskColumns,
+		PrimaryKey: []*schema.Column{PromotionLevelTaskColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "promotionleveltask_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionLevelTaskColumns[1]},
+			},
+		},
+	}
+	// PromotionMemberColumns holds the columns for the "promotion_member" table.
+	PromotionMemberColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
+		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
+		{Name: "phone", Type: field.TypeString, Unique: true, Comment: "会员手机号"},
+		{Name: "name", Type: field.TypeString, Nullable: true, Comment: "会员姓名"},
+		{Name: "balance", Type: field.TypeFloat64, Comment: "钱包余额", Default: 0},
+		{Name: "frozen", Type: field.TypeFloat64, Comment: "钱包冻结金额", Default: 0},
+		{Name: "total_growth_value", Type: field.TypeUint64, Comment: "总成长值", Default: 0},
+		{Name: "current_growth_value", Type: field.TypeUint64, Comment: "当前等级成长值", Default: 0},
+		{Name: "enable", Type: field.TypeBool, Comment: "是否启用", Default: true},
+		{Name: "avatar_url", Type: field.TypeString, Nullable: true, Comment: "头像url"},
+		{Name: "rider_id", Type: field.TypeUint64, Nullable: true, Comment: "骑手ID"},
+		{Name: "level_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "commission_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "person_id", Type: field.TypeUint64, Nullable: true, Comment: "实名认证ID"},
+	}
+	// PromotionMemberTable holds the schema information for the "promotion_member" table.
+	PromotionMemberTable = &schema.Table{
+		Name:       "promotion_member",
+		Columns:    PromotionMemberColumns,
+		PrimaryKey: []*schema.Column{PromotionMemberColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "promotion_member_rider_rider",
+				Columns:    []*schema.Column{PromotionMemberColumns[15]},
+				RefColumns: []*schema.Column{RiderColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "promotion_member_promotion_level_level",
+				Columns:    []*schema.Column{PromotionMemberColumns[16]},
+				RefColumns: []*schema.Column{PromotionLevelColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "promotion_member_promotion_commission_commission",
+				Columns:    []*schema.Column{PromotionMemberColumns[17]},
+				RefColumns: []*schema.Column{PromotionCommissionColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "promotion_member_promotion_person_member",
+				Columns:    []*schema.Column{PromotionMemberColumns[18]},
+				RefColumns: []*schema.Column{PromotionPersonColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "promotionmember_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionMemberColumns[1]},
+			},
+			{
+				Name:    "promotionmember_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionMemberColumns[3]},
+			},
+			{
+				Name:    "promotionmember_rider_id",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionMemberColumns[15]},
+			},
+			{
+				Name:    "promotionmember_level_id",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionMemberColumns[16]},
+			},
+			{
+				Name:    "promotionmember_commission_id",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionMemberColumns[17]},
+			},
+		},
+	}
+	// PromotionPersonColumns holds the columns for the "promotion_person" table.
+	PromotionPersonColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "status", Type: field.TypeUint8, Comment: "认证状态 0未认证 1已认证 2认证失败", Default: 0},
+		{Name: "name", Type: field.TypeString, Nullable: true, Size: 40, Comment: "真实姓名"},
+		{Name: "id_card_number", Type: field.TypeString, Unique: true, Nullable: true, Size: 40, Comment: "证件号码"},
+		{Name: "address", Type: field.TypeString, Nullable: true, Comment: "地址"},
+	}
+	// PromotionPersonTable holds the schema information for the "promotion_person" table.
+	PromotionPersonTable = &schema.Table{
+		Name:       "promotion_person",
+		Columns:    PromotionPersonColumns,
+		PrimaryKey: []*schema.Column{PromotionPersonColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "promotionperson_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionPersonColumns[1]},
+			},
+		},
+	}
+	// PromotionPrivilegeColumns holds the columns for the "promotion_privilege" table.
+	PromotionPrivilegeColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
+		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
+		{Name: "type", Type: field.TypeUint8, Comment: "权益类型 0:无权益 1: 佣金提高(%)", Default: 0},
+		{Name: "name", Type: field.TypeString, Comment: "权益名称"},
+		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "权益描述"},
+		{Name: "value", Type: field.TypeUint64, Nullable: true, Comment: "权益值", Default: 0},
+	}
+	// PromotionPrivilegeTable holds the schema information for the "promotion_privilege" table.
+	PromotionPrivilegeTable = &schema.Table{
+		Name:       "promotion_privilege",
+		Columns:    PromotionPrivilegeColumns,
+		PrimaryKey: []*schema.Column{PromotionPrivilegeColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "promotionprivilege_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionPrivilegeColumns[1]},
+			},
+			{
+				Name:    "promotionprivilege_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionPrivilegeColumns[3]},
+			},
+		},
+	}
+	// PromotionReferralsColumns holds the columns for the "promotion_referrals" table.
+	PromotionReferralsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "rider_id", Type: field.TypeUint64, Nullable: true, Comment: "骑手id"},
+		{Name: "referring_member_id", Type: field.TypeUint64, Nullable: true, Comment: "推广者id"},
+		{Name: "referred_member_id", Type: field.TypeUint64, Unique: true, Nullable: true, Comment: "被推广者ID"},
+	}
+	// PromotionReferralsTable holds the schema information for the "promotion_referrals" table.
+	PromotionReferralsTable = &schema.Table{
+		Name:       "promotion_referrals",
+		Columns:    PromotionReferralsColumns,
+		PrimaryKey: []*schema.Column{PromotionReferralsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "promotion_referrals_promotion_member_referring",
+				Columns:    []*schema.Column{PromotionReferralsColumns[4]},
+				RefColumns: []*schema.Column{PromotionMemberColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "promotion_referrals_promotion_member_referred",
+				Columns:    []*schema.Column{PromotionReferralsColumns[5]},
+				RefColumns: []*schema.Column{PromotionMemberColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "promotionreferrals_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionReferralsColumns[1]},
+			},
+		},
+	}
+	// PromotionSettingColumns holds the columns for the "promotion_setting" table.
+	PromotionSettingColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
+		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
+		{Name: "title", Type: field.TypeString, Nullable: true, Comment: "标题"},
+		{Name: "content", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "内容"},
+		{Name: "key", Type: field.TypeString, Comment: "设置项"},
+	}
+	// PromotionSettingTable holds the schema information for the "promotion_setting" table.
+	PromotionSettingTable = &schema.Table{
+		Name:       "promotion_setting",
+		Columns:    PromotionSettingColumns,
+		PrimaryKey: []*schema.Column{PromotionSettingColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "promotionsetting_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionSettingColumns[1]},
+			},
+		},
+	}
+	// PromotionWithdrawalColumns holds the columns for the "promotion_withdrawal" table.
+	PromotionWithdrawalColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
+		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
+		{Name: "status", Type: field.TypeUint8, Comment: "提现状态 0:待审核 1:成功 2:失败", Default: 0},
+		{Name: "apply_amount", Type: field.TypeFloat64, Comment: "提现申请金额", Default: 0},
+		{Name: "amount", Type: field.TypeFloat64, Comment: "提现金额", Default: 0},
+		{Name: "fee", Type: field.TypeFloat64, Comment: "提现手续费", Default: 0},
+		{Name: "method", Type: field.TypeUint8, Comment: "提现方式 1:银行卡"},
+		{Name: "apply_time", Type: field.TypeTime, Nullable: true, Comment: "申请时间"},
+		{Name: "review_time", Type: field.TypeTime, Nullable: true, Comment: "审核时间"},
+		{Name: "account_id", Type: field.TypeUint64, Nullable: true, Comment: "提现账号ID"},
+		{Name: "member_id", Type: field.TypeUint64},
+	}
+	// PromotionWithdrawalTable holds the schema information for the "promotion_withdrawal" table.
+	PromotionWithdrawalTable = &schema.Table{
+		Name:       "promotion_withdrawal",
+		Columns:    PromotionWithdrawalColumns,
+		PrimaryKey: []*schema.Column{PromotionWithdrawalColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "promotion_withdrawal_promotion_bank_card_withdrawals",
+				Columns:    []*schema.Column{PromotionWithdrawalColumns[14]},
+				RefColumns: []*schema.Column{PromotionBankCardColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "promotion_withdrawal_promotion_member_member",
+				Columns:    []*schema.Column{PromotionWithdrawalColumns[15]},
+				RefColumns: []*schema.Column{PromotionMemberColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "promotionwithdrawal_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionWithdrawalColumns[1]},
+			},
+			{
+				Name:    "promotionwithdrawal_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionWithdrawalColumns[3]},
+			},
+			{
+				Name:    "promotionwithdrawal_member_id",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionWithdrawalColumns[15]},
 			},
 		},
 	}
@@ -4852,6 +5435,19 @@ var (
 		PlanTable,
 		PlanIntroduceTable,
 		PointLogTable,
+		PromotionAchievementTable,
+		PromotionBankCardTable,
+		PromotionCommissionTable,
+		PromotionEarningsTable,
+		PromotionGrowthTable,
+		PromotionLevelTable,
+		PromotionLevelTaskTable,
+		PromotionMemberTable,
+		PromotionPersonTable,
+		PromotionPrivilegeTable,
+		PromotionReferralsTable,
+		PromotionSettingTable,
+		PromotionWithdrawalTable,
 		ReserveTable,
 		RiderTable,
 		RiderFollowUpTable,
@@ -5124,6 +5720,62 @@ func init() {
 	PointLogTable.ForeignKeys[1].RefTable = OrderTable
 	PointLogTable.Annotation = &entsql.Annotation{
 		Table: "point_log",
+	}
+	PromotionAchievementTable.Annotation = &entsql.Annotation{
+		Table: "promotion_achievement",
+	}
+	PromotionBankCardTable.ForeignKeys[0].RefTable = PromotionMemberTable
+	PromotionBankCardTable.Annotation = &entsql.Annotation{
+		Table: "promotion_bank_card",
+	}
+	PromotionCommissionTable.ForeignKeys[0].RefTable = PromotionMemberTable
+	PromotionCommissionTable.Annotation = &entsql.Annotation{
+		Table: "promotion_commission",
+	}
+	PromotionEarningsTable.ForeignKeys[0].RefTable = PromotionCommissionTable
+	PromotionEarningsTable.ForeignKeys[1].RefTable = PromotionMemberTable
+	PromotionEarningsTable.ForeignKeys[2].RefTable = RiderTable
+	PromotionEarningsTable.ForeignKeys[3].RefTable = OrderTable
+	PromotionEarningsTable.Annotation = &entsql.Annotation{
+		Table: "promotion_earnings",
+	}
+	PromotionGrowthTable.ForeignKeys[0].RefTable = PromotionMemberTable
+	PromotionGrowthTable.ForeignKeys[1].RefTable = PromotionLevelTaskTable
+	PromotionGrowthTable.ForeignKeys[2].RefTable = RiderTable
+	PromotionGrowthTable.Annotation = &entsql.Annotation{
+		Table: "promotion_growth",
+	}
+	PromotionLevelTable.Annotation = &entsql.Annotation{
+		Table: "promotion_level",
+	}
+	PromotionLevelTaskTable.Annotation = &entsql.Annotation{
+		Table: "promotion_level_task",
+	}
+	PromotionMemberTable.ForeignKeys[0].RefTable = RiderTable
+	PromotionMemberTable.ForeignKeys[1].RefTable = PromotionLevelTable
+	PromotionMemberTable.ForeignKeys[2].RefTable = PromotionCommissionTable
+	PromotionMemberTable.ForeignKeys[3].RefTable = PromotionPersonTable
+	PromotionMemberTable.Annotation = &entsql.Annotation{
+		Table: "promotion_member",
+	}
+	PromotionPersonTable.Annotation = &entsql.Annotation{
+		Table: "promotion_person",
+	}
+	PromotionPrivilegeTable.Annotation = &entsql.Annotation{
+		Table: "promotion_privilege",
+	}
+	PromotionReferralsTable.ForeignKeys[0].RefTable = PromotionMemberTable
+	PromotionReferralsTable.ForeignKeys[1].RefTable = PromotionMemberTable
+	PromotionReferralsTable.Annotation = &entsql.Annotation{
+		Table: "promotion_referrals",
+	}
+	PromotionSettingTable.Annotation = &entsql.Annotation{
+		Table: "promotion_setting",
+	}
+	PromotionWithdrawalTable.ForeignKeys[0].RefTable = PromotionBankCardTable
+	PromotionWithdrawalTable.ForeignKeys[1].RefTable = PromotionMemberTable
+	PromotionWithdrawalTable.Annotation = &entsql.Annotation{
+		Table: "promotion_withdrawal",
 	}
 	ReserveTable.ForeignKeys[0].RefTable = CabinetTable
 	ReserveTable.ForeignKeys[1].RefTable = RiderTable

@@ -16,6 +16,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/model/promotion"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -635,6 +636,24 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
 				return
 			}
 		}
+
+		// 计算推广返佣 续签反佣 新签和重签在激活骑手返佣
+		if trade.OrderType == model.OrderTypeRenewal {
+
+			err = NewPromotionCommissionService().CommissionCalculation(tx, &promotion.CommissionCalculation{
+				RiderID:        trade.RiderID,
+				CommissionBase: trade.Plan.CommissionBase,
+				Type:           promotion.CommissionTypeRenewal,
+				OrderID:        o.ID,
+				ActualAmount:   o.Total,
+				Price:          trade.Plan.Price,
+			})
+			if err != nil {
+				zap.L().Error("订单已支付, 续费返佣失败: "+trade.OutTradeNo, zap.Error(err))
+				return
+			}
+		}
+
 		return
 	})
 

@@ -243,6 +243,7 @@ func (s *businessRiderService) Inactive(id uint64) (*model.SubscribeActiveInfo, 
 			oq.WithPlan().WithCommission()
 		}).
 		WithRider().
+		WithPlan().
 		WithEnterprise().
 		WithCity().
 		WithBrand().
@@ -664,6 +665,12 @@ func (s *businessRiderService) Active(sub *ent.Subscribe, allo *ent.Allocate) {
 	if sub.EnterpriseID != nil {
 		// 更新团签账单
 		go NewEnterprise().UpdateStatement(sub.Edges.Enterprise)
+	}
+
+	// 返佣计算
+	// 团签用户不返佣 个签用户返佣 新签和重签
+	if sub.EnterpriseID == nil && sub.Type == model.OrderTypeNewly || sub.Type == model.OrderTypeAgain {
+		go NewPromotionCommissionService().RiderActivateCommission(sub)
 	}
 }
 

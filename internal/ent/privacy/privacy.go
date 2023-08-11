@@ -1119,6 +1119,318 @@ func (f PointLogMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutati
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.PointLogMutation", m)
 }
 
+// The PromotionAchievementQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type PromotionAchievementQueryRuleFunc func(context.Context, *ent.PromotionAchievementQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f PromotionAchievementQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.PromotionAchievementQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.PromotionAchievementQuery", q)
+}
+
+// The PromotionAchievementMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type PromotionAchievementMutationRuleFunc func(context.Context, *ent.PromotionAchievementMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f PromotionAchievementMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.PromotionAchievementMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.PromotionAchievementMutation", m)
+}
+
+// The PromotionBankCardQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type PromotionBankCardQueryRuleFunc func(context.Context, *ent.PromotionBankCardQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f PromotionBankCardQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.PromotionBankCardQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.PromotionBankCardQuery", q)
+}
+
+// The PromotionBankCardMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type PromotionBankCardMutationRuleFunc func(context.Context, *ent.PromotionBankCardMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f PromotionBankCardMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.PromotionBankCardMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.PromotionBankCardMutation", m)
+}
+
+// The PromotionCommissionQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type PromotionCommissionQueryRuleFunc func(context.Context, *ent.PromotionCommissionQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f PromotionCommissionQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.PromotionCommissionQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.PromotionCommissionQuery", q)
+}
+
+// The PromotionCommissionMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type PromotionCommissionMutationRuleFunc func(context.Context, *ent.PromotionCommissionMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f PromotionCommissionMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.PromotionCommissionMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.PromotionCommissionMutation", m)
+}
+
+// The PromotionEarningsQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type PromotionEarningsQueryRuleFunc func(context.Context, *ent.PromotionEarningsQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f PromotionEarningsQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.PromotionEarningsQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.PromotionEarningsQuery", q)
+}
+
+// The PromotionEarningsMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type PromotionEarningsMutationRuleFunc func(context.Context, *ent.PromotionEarningsMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f PromotionEarningsMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.PromotionEarningsMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.PromotionEarningsMutation", m)
+}
+
+// The PromotionGrowthQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type PromotionGrowthQueryRuleFunc func(context.Context, *ent.PromotionGrowthQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f PromotionGrowthQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.PromotionGrowthQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.PromotionGrowthQuery", q)
+}
+
+// The PromotionGrowthMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type PromotionGrowthMutationRuleFunc func(context.Context, *ent.PromotionGrowthMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f PromotionGrowthMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.PromotionGrowthMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.PromotionGrowthMutation", m)
+}
+
+// The PromotionLevelQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type PromotionLevelQueryRuleFunc func(context.Context, *ent.PromotionLevelQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f PromotionLevelQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.PromotionLevelQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.PromotionLevelQuery", q)
+}
+
+// The PromotionLevelMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type PromotionLevelMutationRuleFunc func(context.Context, *ent.PromotionLevelMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f PromotionLevelMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.PromotionLevelMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.PromotionLevelMutation", m)
+}
+
+// The PromotionLevelTaskQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type PromotionLevelTaskQueryRuleFunc func(context.Context, *ent.PromotionLevelTaskQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f PromotionLevelTaskQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.PromotionLevelTaskQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.PromotionLevelTaskQuery", q)
+}
+
+// The PromotionLevelTaskMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type PromotionLevelTaskMutationRuleFunc func(context.Context, *ent.PromotionLevelTaskMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f PromotionLevelTaskMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.PromotionLevelTaskMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.PromotionLevelTaskMutation", m)
+}
+
+// The PromotionMemberQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type PromotionMemberQueryRuleFunc func(context.Context, *ent.PromotionMemberQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f PromotionMemberQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.PromotionMemberQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.PromotionMemberQuery", q)
+}
+
+// The PromotionMemberMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type PromotionMemberMutationRuleFunc func(context.Context, *ent.PromotionMemberMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f PromotionMemberMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.PromotionMemberMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.PromotionMemberMutation", m)
+}
+
+// The PromotionPersonQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type PromotionPersonQueryRuleFunc func(context.Context, *ent.PromotionPersonQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f PromotionPersonQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.PromotionPersonQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.PromotionPersonQuery", q)
+}
+
+// The PromotionPersonMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type PromotionPersonMutationRuleFunc func(context.Context, *ent.PromotionPersonMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f PromotionPersonMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.PromotionPersonMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.PromotionPersonMutation", m)
+}
+
+// The PromotionPrivilegeQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type PromotionPrivilegeQueryRuleFunc func(context.Context, *ent.PromotionPrivilegeQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f PromotionPrivilegeQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.PromotionPrivilegeQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.PromotionPrivilegeQuery", q)
+}
+
+// The PromotionPrivilegeMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type PromotionPrivilegeMutationRuleFunc func(context.Context, *ent.PromotionPrivilegeMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f PromotionPrivilegeMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.PromotionPrivilegeMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.PromotionPrivilegeMutation", m)
+}
+
+// The PromotionReferralsQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type PromotionReferralsQueryRuleFunc func(context.Context, *ent.PromotionReferralsQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f PromotionReferralsQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.PromotionReferralsQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.PromotionReferralsQuery", q)
+}
+
+// The PromotionReferralsMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type PromotionReferralsMutationRuleFunc func(context.Context, *ent.PromotionReferralsMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f PromotionReferralsMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.PromotionReferralsMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.PromotionReferralsMutation", m)
+}
+
+// The PromotionSettingQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type PromotionSettingQueryRuleFunc func(context.Context, *ent.PromotionSettingQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f PromotionSettingQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.PromotionSettingQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.PromotionSettingQuery", q)
+}
+
+// The PromotionSettingMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type PromotionSettingMutationRuleFunc func(context.Context, *ent.PromotionSettingMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f PromotionSettingMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.PromotionSettingMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.PromotionSettingMutation", m)
+}
+
+// The PromotionWithdrawalQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type PromotionWithdrawalQueryRuleFunc func(context.Context, *ent.PromotionWithdrawalQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f PromotionWithdrawalQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.PromotionWithdrawalQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.PromotionWithdrawalQuery", q)
+}
+
+// The PromotionWithdrawalMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type PromotionWithdrawalMutationRuleFunc func(context.Context, *ent.PromotionWithdrawalMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f PromotionWithdrawalMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.PromotionWithdrawalMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.PromotionWithdrawalMutation", m)
+}
+
 // The ReserveQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type ReserveQueryRuleFunc func(context.Context, *ent.ReserveQuery) error
@@ -1550,6 +1862,32 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.PointLogQuery:
 		return q.Filter(), nil
+	case *ent.PromotionAchievementQuery:
+		return q.Filter(), nil
+	case *ent.PromotionBankCardQuery:
+		return q.Filter(), nil
+	case *ent.PromotionCommissionQuery:
+		return q.Filter(), nil
+	case *ent.PromotionEarningsQuery:
+		return q.Filter(), nil
+	case *ent.PromotionGrowthQuery:
+		return q.Filter(), nil
+	case *ent.PromotionLevelQuery:
+		return q.Filter(), nil
+	case *ent.PromotionLevelTaskQuery:
+		return q.Filter(), nil
+	case *ent.PromotionMemberQuery:
+		return q.Filter(), nil
+	case *ent.PromotionPersonQuery:
+		return q.Filter(), nil
+	case *ent.PromotionPrivilegeQuery:
+		return q.Filter(), nil
+	case *ent.PromotionReferralsQuery:
+		return q.Filter(), nil
+	case *ent.PromotionSettingQuery:
+		return q.Filter(), nil
+	case *ent.PromotionWithdrawalQuery:
+		return q.Filter(), nil
 	case *ent.ReserveQuery:
 		return q.Filter(), nil
 	case *ent.RiderQuery:
@@ -1666,6 +2004,32 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.PlanIntroduceMutation:
 		return m.Filter(), nil
 	case *ent.PointLogMutation:
+		return m.Filter(), nil
+	case *ent.PromotionAchievementMutation:
+		return m.Filter(), nil
+	case *ent.PromotionBankCardMutation:
+		return m.Filter(), nil
+	case *ent.PromotionCommissionMutation:
+		return m.Filter(), nil
+	case *ent.PromotionEarningsMutation:
+		return m.Filter(), nil
+	case *ent.PromotionGrowthMutation:
+		return m.Filter(), nil
+	case *ent.PromotionLevelMutation:
+		return m.Filter(), nil
+	case *ent.PromotionLevelTaskMutation:
+		return m.Filter(), nil
+	case *ent.PromotionMemberMutation:
+		return m.Filter(), nil
+	case *ent.PromotionPersonMutation:
+		return m.Filter(), nil
+	case *ent.PromotionPrivilegeMutation:
+		return m.Filter(), nil
+	case *ent.PromotionReferralsMutation:
+		return m.Filter(), nil
+	case *ent.PromotionSettingMutation:
+		return m.Filter(), nil
+	case *ent.PromotionWithdrawalMutation:
 		return m.Filter(), nil
 	case *ent.ReserveMutation:
 		return m.Filter(), nil

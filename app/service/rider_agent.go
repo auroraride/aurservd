@@ -247,3 +247,11 @@ func (s *riderAgentService) Detail(req *model.IDParamReq, enterpriseID uint64) m
 	}
 	return s.detail(item)
 }
+
+// Delete 删除骑手
+func (s *riderAgentService) Delete(req *model.IDParamReq, enterpriseID uint64) {
+	// 查询骑手
+	ri, _ := s.orm.QueryNotDeleted().Where(rider.EnterpriseID(enterpriseID), rider.ID(req.ID)).First(s.ctx)
+	// 删除骑手并退出团签
+	NewEnterpriseRider().ExitEnterprise(ri)
+}

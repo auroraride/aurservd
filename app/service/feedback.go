@@ -139,7 +139,7 @@ func (s *feedbackService) doFile(f *multipart.FileHeader) (string, error) {
 
 	// 确保只接受指定的图片格式
 	ext := filepath.Ext(f.Filename)
-	if !s.isValidImageExtension(ext) {
+	if !s.IsValidImageExtension(ext) {
 		snag.Panic("只接受jpg、jpeg、png、svg格式的图片")
 	}
 
@@ -151,7 +151,7 @@ func (s *feedbackService) doFile(f *multipart.FileHeader) (string, error) {
 	return r, ali.NewOss().Bucket.PutObject(r, src)
 }
 
-func (*feedbackService) isValidImageExtension(ext string) bool {
+func (*feedbackService) IsValidImageExtension(ext string) bool {
 	validExtensions := []string{".jpg", ".jpeg", ".png", ".svg"}
 	for _, validExt := range validExtensions {
 		if ext == validExt {

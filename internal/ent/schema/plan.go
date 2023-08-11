@@ -9,6 +9,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 	"entgo.io/ent/schema/mixin"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/internal"
 )
@@ -68,6 +69,7 @@ func (Plan) Fields() []ent.Field {
 		field.Float("price").Comment("骑士卡价格"),
 		field.Uint("days").Comment("骑士卡天数"),
 		field.Float("commission").Comment("提成"),
+		field.Float("commission_base").Default(0).Optional().Comment("提成底数"),
 		field.Float("original").Optional().Comment("原价"),
 		field.String("desc").Optional().Comment("优惠信息"),
 		field.Uint64("parent_id").Optional().Nillable().Comment("父级"),

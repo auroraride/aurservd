@@ -215,6 +215,33 @@ func (pu *PlanUpdate) AddCommission(f float64) *PlanUpdate {
 	return pu
 }
 
+// SetCommissionBase sets the "commission_base" field.
+func (pu *PlanUpdate) SetCommissionBase(f float64) *PlanUpdate {
+	pu.mutation.ResetCommissionBase()
+	pu.mutation.SetCommissionBase(f)
+	return pu
+}
+
+// SetNillableCommissionBase sets the "commission_base" field if the given value is not nil.
+func (pu *PlanUpdate) SetNillableCommissionBase(f *float64) *PlanUpdate {
+	if f != nil {
+		pu.SetCommissionBase(*f)
+	}
+	return pu
+}
+
+// AddCommissionBase adds f to the "commission_base" field.
+func (pu *PlanUpdate) AddCommissionBase(f float64) *PlanUpdate {
+	pu.mutation.AddCommissionBase(f)
+	return pu
+}
+
+// ClearCommissionBase clears the value of the "commission_base" field.
+func (pu *PlanUpdate) ClearCommissionBase() *PlanUpdate {
+	pu.mutation.ClearCommissionBase()
+	return pu
+}
+
 // SetOriginal sets the "original" field.
 func (pu *PlanUpdate) SetOriginal(f float64) *PlanUpdate {
 	pu.mutation.ResetOriginal()
@@ -556,6 +583,15 @@ func (pu *PlanUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := pu.mutation.AddedCommission(); ok {
 		_spec.AddField(plan.FieldCommission, field.TypeFloat64, value)
+	}
+	if value, ok := pu.mutation.CommissionBase(); ok {
+		_spec.SetField(plan.FieldCommissionBase, field.TypeFloat64, value)
+	}
+	if value, ok := pu.mutation.AddedCommissionBase(); ok {
+		_spec.AddField(plan.FieldCommissionBase, field.TypeFloat64, value)
+	}
+	if pu.mutation.CommissionBaseCleared() {
+		_spec.ClearField(plan.FieldCommissionBase, field.TypeFloat64)
 	}
 	if value, ok := pu.mutation.Original(); ok {
 		_spec.SetField(plan.FieldOriginal, field.TypeFloat64, value)
@@ -944,6 +980,33 @@ func (puo *PlanUpdateOne) AddCommission(f float64) *PlanUpdateOne {
 	return puo
 }
 
+// SetCommissionBase sets the "commission_base" field.
+func (puo *PlanUpdateOne) SetCommissionBase(f float64) *PlanUpdateOne {
+	puo.mutation.ResetCommissionBase()
+	puo.mutation.SetCommissionBase(f)
+	return puo
+}
+
+// SetNillableCommissionBase sets the "commission_base" field if the given value is not nil.
+func (puo *PlanUpdateOne) SetNillableCommissionBase(f *float64) *PlanUpdateOne {
+	if f != nil {
+		puo.SetCommissionBase(*f)
+	}
+	return puo
+}
+
+// AddCommissionBase adds f to the "commission_base" field.
+func (puo *PlanUpdateOne) AddCommissionBase(f float64) *PlanUpdateOne {
+	puo.mutation.AddCommissionBase(f)
+	return puo
+}
+
+// ClearCommissionBase clears the value of the "commission_base" field.
+func (puo *PlanUpdateOne) ClearCommissionBase() *PlanUpdateOne {
+	puo.mutation.ClearCommissionBase()
+	return puo
+}
+
 // SetOriginal sets the "original" field.
 func (puo *PlanUpdateOne) SetOriginal(f float64) *PlanUpdateOne {
 	puo.mutation.ResetOriginal()
@@ -1315,6 +1378,15 @@ func (puo *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) 
 	}
 	if value, ok := puo.mutation.AddedCommission(); ok {
 		_spec.AddField(plan.FieldCommission, field.TypeFloat64, value)
+	}
+	if value, ok := puo.mutation.CommissionBase(); ok {
+		_spec.SetField(plan.FieldCommissionBase, field.TypeFloat64, value)
+	}
+	if value, ok := puo.mutation.AddedCommissionBase(); ok {
+		_spec.AddField(plan.FieldCommissionBase, field.TypeFloat64, value)
+	}
+	if puo.mutation.CommissionBaseCleared() {
+		_spec.ClearField(plan.FieldCommissionBase, field.TypeFloat64)
 	}
 	if value, ok := puo.mutation.Original(); ok {
 		_spec.SetField(plan.FieldOriginal, field.TypeFloat64, value)
