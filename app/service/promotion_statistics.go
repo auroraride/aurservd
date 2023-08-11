@@ -71,8 +71,8 @@ WITH RECURSIVE member_hierarchy AS (
 
 SELECT
     COUNT(DISTINCT mh.referred_member_id) AS TotalTeam,
-    SUM(CASE WHEN o.type = 1 AND s.type <> 0 THEN 1 ELSE 0 END) AS TotalNewSign,
-    SUM(CASE WHEN (o.type = 2 OR o.type = 3) AND s.type <> 0 THEN 1 ELSE 0 END) AS TotalRenewal
+    SUM(DISTINCT CASE WHEN o.type = 1 AND s.type <> 0 THEN 1 ELSE 0 END) AS TotalNewSign,
+    SUM(CASE WHEN (o.type = 2 OR o.type = 3) AND s.type <> 0 THEN 1 ELSE 0 END) + (SUM(CASE WHEN o.type = 1 AND s.type <> 0 THEN 1 ELSE 0 END) - SUM(DISTINCT CASE WHEN o.type = 1 AND s.type <> 0 THEN 1 ELSE 0 END) AS TotalRenewal
 FROM member_hierarchy mh
 LEFT JOIN "order" o ON mh.rider_id = o.rider_id
 LEFT JOIN subscribe s ON o.subscribe_id = s.id
@@ -240,8 +240,8 @@ WITH RECURSIVE member_hierarchy AS (
 SELECT
     level,
     COUNT(DISTINCT mh.referred_member_id) AS TotalTeam,
-    SUM(CASE WHEN o.type = 1 AND s.type <> 0 THEN 1 ELSE 0 END) AS TotalNewSign,
-    SUM(CASE WHEN (o.type = 2 OR o.type = 3) AND s.type <> 0 THEN 1 ELSE 0 END) AS TotalRenewal
+    SUM(DISTINCT CASE WHEN o.type = 1 AND s.type <> 0 THEN 1 ELSE 0 END) AS TotalNewSign,
+    SUM(CASE WHEN (o.type = 2 OR o.type = 3) AND s.type <> 0 THEN 1 ELSE 0 END) + (SUM(CASE WHEN o.type = 1 AND s.type <> 0 THEN 1 ELSE 0 END) - SUM(DISTINCT CASE WHEN o.type = 1 AND s.type <> 0 THEN 1 ELSE 0 END) AS TotalRenewal
 FROM member_hierarchy mh
 LEFT JOIN "order" o ON mh.rider_id = o.rider_id
 LEFT JOIN subscribe s ON o.subscribe_id = s.id

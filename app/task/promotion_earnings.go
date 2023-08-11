@@ -84,6 +84,11 @@ func (*promotionEarningsTask) Do() {
 		for i, v := range all {
 			ids[i] = v.ID
 		}
+
+		if len(ids) == 0 {
+			return
+		}
+
 		if _, err = tx.PromotionEarnings.Update().
 			Where(promotionearnings.IDIn(ids...)).
 			SetStatus(promotion.EarningsStatusSettled.Value()).
