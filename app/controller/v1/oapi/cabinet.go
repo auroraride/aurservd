@@ -33,15 +33,15 @@ func (*cabinet) List(c echo.Context) (err error) {
 
 // Detail
 // @ID           MaintainerCabinetDetail
-// @Router       /maintainer/v1/cabinet/{serial} [GET]
+// @Router       /maintainer/v1/cabinet/{serial}/{code} [GET]
 // @Summary      O2002 获取电柜详情
 // @Tags         [O]运维接口
 // @Accept       json
 // @Produce      json
-// @Param        X-Maintainer-Token  header  string  true  "运维校验token"
 // @Param        serial  path  string  true  "电柜编号"
-// @Success      200  {object}  model.CabinetDetailRes  "请求成功"
+// @Param        X-Maintainer-Token  header  string  true  "运维校验token"
+// @Success      200  {object}  model.MaintainerCabinetDetailRes  "请求成功"
 func (*cabinet) Detail(c echo.Context) (err error) {
-	ctx, req := app.MaintainerContextAndBinding[model.SerialParamReq](c)
-	return ctx.SendResponse(service.NewMaintainerCabinet().Detail(req.Serial))
+	ctx, req := app.MaintainerContextAndBinding[model.MaintainerCabinetDetailReq](c)
+	return ctx.SendResponse(service.NewMaintainerCabinet().Detail(req))
 }

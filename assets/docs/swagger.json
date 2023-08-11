@@ -3730,7 +3730,7 @@
                 }
             }
         },
-        "/maintainer/v1/cabinet/{serial}": {
+        "/maintainer/v1/cabinet/{serial}/{code}": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -3746,16 +3746,16 @@
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "运维校验token",
-                        "name": "X-Maintainer-Token",
-                        "in": "header",
+                        "description": "电柜编号",
+                        "name": "serial",
+                        "in": "path",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "电柜编号",
-                        "name": "serial",
-                        "in": "path",
+                        "description": "运维校验token",
+                        "name": "X-Maintainer-Token",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -3763,7 +3763,7 @@
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.CabinetDetailRes"
+                            "$ref": "#/definitions/model.MaintainerCabinetDetailRes"
                         }
                     }
                 }
@@ -19944,6 +19944,18 @@
                 }
             }
         },
+        "model.Branch": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "网点名称",
+                    "type": "string"
+                }
+            }
+        },
         "model.BranchContract": {
             "type": "object",
             "required": [
@@ -21174,6 +21186,14 @@
                     "description": "是否智能柜",
                     "type": "boolean"
                 },
+                "lat": {
+                    "description": "纬度",
+                    "type": "number"
+                },
+                "lng": {
+                    "description": "经度",
+                    "type": "number"
+                },
                 "models": {
                     "description": "电池型号",
                     "type": "array",
@@ -21501,6 +21521,14 @@
                 "intelligent": {
                     "description": "是否智能柜",
                     "type": "boolean"
+                },
+                "lat": {
+                    "description": "纬度",
+                    "type": "number"
+                },
+                "lng": {
+                    "description": "经度",
+                    "type": "number"
                 },
                 "models": {
                     "description": "电池型号",
@@ -24522,6 +24550,167 @@
                 "phone": {
                     "description": "电话",
                     "type": "string"
+                }
+            }
+        },
+        "model.MaintainerCabinetDetailRes": {
+            "type": "object",
+            "required": [
+                "brand",
+                "name",
+                "serial"
+            ],
+            "properties": {
+                "batteryNum": {
+                    "description": "电池数量",
+                    "type": "integer"
+                },
+                "bins": {
+                    "description": "仓位信息",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.CabinetBin"
+                    }
+                },
+                "biz": {
+                    "description": "电柜当前业务",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/pb.CabinetBiz"
+                    }
+                },
+                "branch": {
+                    "description": "所属网点",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Branch"
+                        }
+                    ]
+                },
+                "branchId": {
+                    "description": "网点",
+                    "type": "integer"
+                },
+                "brand": {
+                    "description": "KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)",
+                    "enum": [
+                        "KAIXIN",
+                        "YUNDONG",
+                        "TUOBANG"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/adapter.CabinetBrand"
+                        }
+                    ]
+                },
+                "city": {
+                    "description": "城市",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.City"
+                        }
+                    ]
+                },
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "doors": {
+                    "description": "柜门数量",
+                    "type": "integer"
+                },
+                "enterpriseId": {
+                    "description": "团签ID",
+                    "type": "integer"
+                },
+                "enterpriseName": {
+                    "description": "团签名称",
+                    "type": "string"
+                },
+                "health": {
+                    "description": "在线状态 0离线 1在线 2故障",
+                    "type": "integer"
+                },
+                "id": {
+                    "description": "电柜ID",
+                    "type": "integer"
+                },
+                "intelligent": {
+                    "description": "是否智能柜",
+                    "type": "boolean"
+                },
+                "lat": {
+                    "description": "纬度",
+                    "type": "number"
+                },
+                "lng": {
+                    "description": "经度",
+                    "type": "number"
+                },
+                "models": {
+                    "description": "电池型号",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "reserves": {
+                    "description": "当前预约",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.ReserveCabinetItem"
+                    }
+                },
+                "serial": {
+                    "type": "string"
+                },
+                "simDate": {
+                    "description": "SIM卡到期日期, 例: 2022-06-01",
+                    "type": "string"
+                },
+                "simSn": {
+                    "description": "SIM卡号",
+                    "type": "string"
+                },
+                "sn": {
+                    "description": "平台编码",
+                    "type": "string"
+                },
+                "stationId": {
+                    "description": "站点id",
+                    "type": "integer"
+                },
+                "stationName": {
+                    "description": "所属站点名称",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "电柜状态 0未投放 1运营中 2维护中",
+                    "enum": [
+                        0,
+                        1,
+                        2
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.CabinetStatus"
+                        }
+                    ]
+                },
+                "stockNum": {
+                    "description": "库存电池",
+                    "type": "integer"
+                },
+                "transferred": {
+                    "description": "是否初始化过调拨",
+                    "type": "boolean"
                 }
             }
         },

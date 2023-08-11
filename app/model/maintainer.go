@@ -40,3 +40,12 @@ type MaintainerSigninRes struct {
 	*Maintainer
 	Token string `json:"token"`
 }
+
+type MaintainerCabinetDetailReq struct {
+	Serial string `json:"serial" param:"serial" validate:"required" trans:"电柜编码"`
+}
+
+type MaintainerCabinetDetailRes struct {
+	*CabinetDetailRes
+	Branch Branch `json:"branch"` // 所属网点
+}

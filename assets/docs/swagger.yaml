@@ -1915,6 +1915,14 @@ definitions:
         description: 电压(V)
         type: number
     type: object
+  model.Branch:
+    properties:
+      id:
+        type: integer
+      name:
+        description: 网点名称
+        type: string
+    type: object
   model.BranchContract:
     properties:
       area:
@@ -2760,6 +2768,12 @@ definitions:
       intelligent:
         description: 是否智能柜
         type: boolean
+      lat:
+        description: 纬度
+        type: number
+      lng:
+        description: 经度
+        type: number
       models:
         description: 电池型号
         items:
@@ -2986,6 +3000,12 @@ definitions:
       intelligent:
         description: 是否智能柜
         type: boolean
+      lat:
+        description: 纬度
+        type: number
+      lng:
+        description: 经度
+        type: number
       models:
         description: 电池型号
         items:
@@ -5097,6 +5117,117 @@ definitions:
       phone:
         description: 电话
         type: string
+    type: object
+  model.MaintainerCabinetDetailRes:
+    properties:
+      batteryNum:
+        description: 电池数量
+        type: integer
+      bins:
+        description: 仓位信息
+        items:
+          $ref: '#/definitions/model.CabinetBin'
+        type: array
+      biz:
+        description: 电柜当前业务
+        items:
+          $ref: '#/definitions/pb.CabinetBiz'
+        type: array
+      branch:
+        allOf:
+        - $ref: '#/definitions/model.Branch'
+        description: 所属网点
+      branchId:
+        description: 网点
+        type: integer
+      brand:
+        allOf:
+        - $ref: '#/definitions/adapter.CabinetBrand'
+        description: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)
+        enum:
+        - KAIXIN
+        - YUNDONG
+        - TUOBANG
+      city:
+        allOf:
+        - $ref: '#/definitions/model.City'
+        description: 城市
+      createdAt:
+        description: 创建时间
+        type: string
+      doors:
+        description: 柜门数量
+        type: integer
+      enterpriseId:
+        description: 团签ID
+        type: integer
+      enterpriseName:
+        description: 团签名称
+        type: string
+      health:
+        description: 在线状态 0离线 1在线 2故障
+        type: integer
+      id:
+        description: 电柜ID
+        type: integer
+      intelligent:
+        description: 是否智能柜
+        type: boolean
+      lat:
+        description: 纬度
+        type: number
+      lng:
+        description: 经度
+        type: number
+      models:
+        description: 电池型号
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      remark:
+        type: string
+      reserves:
+        description: 当前预约
+        items:
+          $ref: '#/definitions/model.ReserveCabinetItem'
+        type: array
+      serial:
+        type: string
+      simDate:
+        description: 'SIM卡到期日期, 例: 2022-06-01'
+        type: string
+      simSn:
+        description: SIM卡号
+        type: string
+      sn:
+        description: 平台编码
+        type: string
+      stationId:
+        description: 站点id
+        type: integer
+      stationName:
+        description: 所属站点名称
+        type: string
+      status:
+        allOf:
+        - $ref: '#/definitions/model.CabinetStatus'
+        description: 电柜状态 0未投放 1运营中 2维护中
+        enum:
+        - 0
+        - 1
+        - 2
+      stockNum:
+        description: 库存电池
+        type: integer
+      transferred:
+        description: 是否初始化过调拨
+        type: boolean
+    required:
+    - brand
+    - name
+    - serial
     type: object
   model.MaintainerCreateReq:
     properties:
@@ -10634,20 +10765,20 @@ paths:
       summary: E2003 激活骑士卡
       tags:
       - '[E]店员接口'
-  /maintainer/v1/cabinet/{serial}:
+  /maintainer/v1/cabinet/{serial}/{code}:
     get:
       consumes:
       - application/json
       operationId: MaintainerCabinetDetail
       parameters:
-      - description: 运维校验token
-        in: header
-        name: X-Maintainer-Token
-        required: true
-        type: string
       - description: 电柜编号
         in: path
         name: serial
+        required: true
+        type: string
+      - description: 运维校验token
+        in: header
+        name: X-Maintainer-Token
         required: true
         type: string
       produces:
@@ -10656,7 +10787,7 @@ paths:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/model.CabinetDetailRes'
+            $ref: '#/definitions/model.MaintainerCabinetDetailRes'
       summary: O2002 获取电柜详情
       tags:
       - '[O]运维接口'

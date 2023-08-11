@@ -22,6 +22,11 @@ const (
 	BranchFacilityFilterEbikeRepair = "ebikeRepair"
 )
 
+type Branch struct {
+	ID   uint64 `json:"id"`
+	Name string `json:"name"` // 网点名称
+}
+
 // BranchListReq 后台网点列表请求
 type BranchListReq struct {
 	PaginationReq

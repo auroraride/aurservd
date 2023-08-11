@@ -9,6 +9,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/pkg/snag"
 )
 
 type maintainerCabinetService struct {
@@ -43,6 +44,17 @@ func (s *maintainerCabinetService) List(cityIDs []uint64, pg *model.PaginationRe
 }
 
 // Detail 获取电柜详情
-func (s *maintainerCabinetService) Detail(serial string) *model.CabinetDetailRes {
-	return NewCabinet().DetailFromSerial(serial)
+func (s *maintainerCabinetService) Detail(req *model.MaintainerCabinetDetailReq) (res model.MaintainerCabinetDetailRes) {
+	cab := NewCabinet().DetailFromSerial(req.Serial)
+	res.CabinetDetailRes = cab
+	// 查找所属网点
+	if cab.BranchID == nil {
+		snag.Panic("电柜网点未找到")
+	}
+	b := NewBranch().Query(*cab.BranchID)
+	res.Branch = model.Branch{
+		ID:   b.ID,
+		Name: b.Name,
+	}
+	return
 }
