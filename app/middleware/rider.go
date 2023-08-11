@@ -8,6 +8,7 @@ package middleware
 import (
 	"context"
 
+	"github.com/auroraride/adapter"
 	"github.com/labstack/echo/v4"
 
 	"github.com/auroraride/aurservd/app"
@@ -123,7 +124,7 @@ func RiderRequireAuthAndContact() echo.MiddlewareFunc {
 
 			// 指定电话号码不需要实名认证
 			debugPhones := ar.Config.App.Debug.Phone
-			if debugPhones[ctx.Rider.Phone] {
+			if debugPhones[ctx.Rider.Phone] && ar.Config.Environment != adapter.Production {
 				// 查询调试手机号码在数据库中是否实名认证过
 				ri := ent.Database.Rider.Query().Where(rider.PhoneIn(ctx.Rider.Phone), rider.HasPersonWith(person.Status(model.PersonAuthenticated.Value()))).FirstX(context.Background())
 				if ri != nil { // 已经实名认证过

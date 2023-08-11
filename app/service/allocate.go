@@ -8,6 +8,7 @@ package service
 import (
 	"time"
 
+	"github.com/auroraride/adapter"
 	"github.com/golang-module/carbon/v2"
 	"go.uber.org/zap"
 
@@ -295,7 +296,7 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 
 	// 指定电话号码不需要签约
 	debugPhones := ar.Config.App.Debug.Phone
-	if debugPhones[r.Phone] {
+	if debugPhones[r.Phone] && ar.Config.Environment != adapter.Production {
 		sub.NeedContract = false
 	}
 
