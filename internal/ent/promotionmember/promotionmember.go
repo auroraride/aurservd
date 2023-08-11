@@ -51,6 +51,10 @@ const (
 	FieldPersonID = "person_id"
 	// FieldAvatarURL holds the string denoting the avatar_url field in the database.
 	FieldAvatarURL = "avatar_url"
+	// FieldNewSignCount holds the string denoting the new_sign_count field in the database.
+	FieldNewSignCount = "new_sign_count"
+	// FieldRenewCount holds the string denoting the renew_count field in the database.
+	FieldRenewCount = "renew_count"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
 	// EdgeLevel holds the string denoting the level edge name in mutations.
@@ -139,6 +143,8 @@ var Columns = []string{
 	FieldEnable,
 	FieldPersonID,
 	FieldAvatarURL,
+	FieldNewSignCount,
+	FieldRenewCount,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -174,6 +180,10 @@ var (
 	DefaultCurrentGrowthValue uint64
 	// DefaultEnable holds the default value on creation for the "enable" field.
 	DefaultEnable bool
+	// DefaultNewSignCount holds the default value on creation for the "new_sign_count" field.
+	DefaultNewSignCount uint64
+	// DefaultRenewCount holds the default value on creation for the "renew_count" field.
+	DefaultRenewCount uint64
 )
 
 // OrderOption defines the ordering options for the PromotionMember queries.
@@ -262,6 +272,16 @@ func ByPersonID(opts ...sql.OrderTermOption) OrderOption {
 // ByAvatarURL orders the results by the avatar_url field.
 func ByAvatarURL(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldAvatarURL, opts...).ToFunc()
+}
+
+// ByNewSignCount orders the results by the new_sign_count field.
+func ByNewSignCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldNewSignCount, opts...).ToFunc()
+}
+
+// ByRenewCount orders the results by the renew_count field.
+func ByRenewCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRenewCount, opts...).ToFunc()
 }
 
 // ByRiderField orders the results by rider field.

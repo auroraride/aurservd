@@ -73404,6 +73404,10 @@ type PromotionMemberMutation struct {
 	addcurrent_growth_value *int64
 	enable                  *bool
 	avatar_url              *string
+	new_sign_count          *uint64
+	addnew_sign_count       *int64
+	renew_count             *uint64
+	addrenew_count          *int64
 	clearedFields           map[string]struct{}
 	rider                   *uint64
 	clearedrider            bool
@@ -74382,6 +74386,118 @@ func (m *PromotionMemberMutation) ResetAvatarURL() {
 	delete(m.clearedFields, promotionmember.FieldAvatarURL)
 }
 
+// SetNewSignCount sets the "new_sign_count" field.
+func (m *PromotionMemberMutation) SetNewSignCount(u uint64) {
+	m.new_sign_count = &u
+	m.addnew_sign_count = nil
+}
+
+// NewSignCount returns the value of the "new_sign_count" field in the mutation.
+func (m *PromotionMemberMutation) NewSignCount() (r uint64, exists bool) {
+	v := m.new_sign_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNewSignCount returns the old "new_sign_count" field's value of the PromotionMember entity.
+// If the PromotionMember object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PromotionMemberMutation) OldNewSignCount(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNewSignCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNewSignCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNewSignCount: %w", err)
+	}
+	return oldValue.NewSignCount, nil
+}
+
+// AddNewSignCount adds u to the "new_sign_count" field.
+func (m *PromotionMemberMutation) AddNewSignCount(u int64) {
+	if m.addnew_sign_count != nil {
+		*m.addnew_sign_count += u
+	} else {
+		m.addnew_sign_count = &u
+	}
+}
+
+// AddedNewSignCount returns the value that was added to the "new_sign_count" field in this mutation.
+func (m *PromotionMemberMutation) AddedNewSignCount() (r int64, exists bool) {
+	v := m.addnew_sign_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetNewSignCount resets all changes to the "new_sign_count" field.
+func (m *PromotionMemberMutation) ResetNewSignCount() {
+	m.new_sign_count = nil
+	m.addnew_sign_count = nil
+}
+
+// SetRenewCount sets the "renew_count" field.
+func (m *PromotionMemberMutation) SetRenewCount(u uint64) {
+	m.renew_count = &u
+	m.addrenew_count = nil
+}
+
+// RenewCount returns the value of the "renew_count" field in the mutation.
+func (m *PromotionMemberMutation) RenewCount() (r uint64, exists bool) {
+	v := m.renew_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRenewCount returns the old "renew_count" field's value of the PromotionMember entity.
+// If the PromotionMember object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PromotionMemberMutation) OldRenewCount(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRenewCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRenewCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRenewCount: %w", err)
+	}
+	return oldValue.RenewCount, nil
+}
+
+// AddRenewCount adds u to the "renew_count" field.
+func (m *PromotionMemberMutation) AddRenewCount(u int64) {
+	if m.addrenew_count != nil {
+		*m.addrenew_count += u
+	} else {
+		m.addrenew_count = &u
+	}
+}
+
+// AddedRenewCount returns the value that was added to the "renew_count" field in this mutation.
+func (m *PromotionMemberMutation) AddedRenewCount() (r int64, exists bool) {
+	v := m.addrenew_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetRenewCount resets all changes to the "renew_count" field.
+func (m *PromotionMemberMutation) ResetRenewCount() {
+	m.renew_count = nil
+	m.addrenew_count = nil
+}
+
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *PromotionMemberMutation) ClearRider() {
 	m.clearedrider = true
@@ -74667,7 +74783,7 @@ func (m *PromotionMemberMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PromotionMemberMutation) Fields() []string {
-	fields := make([]string, 0, 18)
+	fields := make([]string, 0, 20)
 	if m.created_at != nil {
 		fields = append(fields, promotionmember.FieldCreatedAt)
 	}
@@ -74722,6 +74838,12 @@ func (m *PromotionMemberMutation) Fields() []string {
 	if m.avatar_url != nil {
 		fields = append(fields, promotionmember.FieldAvatarURL)
 	}
+	if m.new_sign_count != nil {
+		fields = append(fields, promotionmember.FieldNewSignCount)
+	}
+	if m.renew_count != nil {
+		fields = append(fields, promotionmember.FieldRenewCount)
+	}
 	return fields
 }
 
@@ -74766,6 +74888,10 @@ func (m *PromotionMemberMutation) Field(name string) (ent.Value, bool) {
 		return m.PersonID()
 	case promotionmember.FieldAvatarURL:
 		return m.AvatarURL()
+	case promotionmember.FieldNewSignCount:
+		return m.NewSignCount()
+	case promotionmember.FieldRenewCount:
+		return m.RenewCount()
 	}
 	return nil, false
 }
@@ -74811,6 +74937,10 @@ func (m *PromotionMemberMutation) OldField(ctx context.Context, name string) (en
 		return m.OldPersonID(ctx)
 	case promotionmember.FieldAvatarURL:
 		return m.OldAvatarURL(ctx)
+	case promotionmember.FieldNewSignCount:
+		return m.OldNewSignCount(ctx)
+	case promotionmember.FieldRenewCount:
+		return m.OldRenewCount(ctx)
 	}
 	return nil, fmt.Errorf("unknown PromotionMember field %s", name)
 }
@@ -74946,6 +75076,20 @@ func (m *PromotionMemberMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetAvatarURL(v)
 		return nil
+	case promotionmember.FieldNewSignCount:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNewSignCount(v)
+		return nil
+	case promotionmember.FieldRenewCount:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRenewCount(v)
+		return nil
 	}
 	return fmt.Errorf("unknown PromotionMember field %s", name)
 }
@@ -74966,6 +75110,12 @@ func (m *PromotionMemberMutation) AddedFields() []string {
 	if m.addcurrent_growth_value != nil {
 		fields = append(fields, promotionmember.FieldCurrentGrowthValue)
 	}
+	if m.addnew_sign_count != nil {
+		fields = append(fields, promotionmember.FieldNewSignCount)
+	}
+	if m.addrenew_count != nil {
+		fields = append(fields, promotionmember.FieldRenewCount)
+	}
 	return fields
 }
 
@@ -74982,6 +75132,10 @@ func (m *PromotionMemberMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedTotalGrowthValue()
 	case promotionmember.FieldCurrentGrowthValue:
 		return m.AddedCurrentGrowthValue()
+	case promotionmember.FieldNewSignCount:
+		return m.AddedNewSignCount()
+	case promotionmember.FieldRenewCount:
+		return m.AddedRenewCount()
 	}
 	return nil, false
 }
@@ -75018,6 +75172,20 @@ func (m *PromotionMemberMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddCurrentGrowthValue(v)
+		return nil
+	case promotionmember.FieldNewSignCount:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddNewSignCount(v)
+		return nil
+	case promotionmember.FieldRenewCount:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRenewCount(v)
 		return nil
 	}
 	return fmt.Errorf("unknown PromotionMember numeric field %s", name)
@@ -75162,6 +75330,12 @@ func (m *PromotionMemberMutation) ResetField(name string) error {
 		return nil
 	case promotionmember.FieldAvatarURL:
 		m.ResetAvatarURL()
+		return nil
+	case promotionmember.FieldNewSignCount:
+		m.ResetNewSignCount()
+		return nil
+	case promotionmember.FieldRenewCount:
+		m.ResetRenewCount()
 		return nil
 	}
 	return fmt.Errorf("unknown PromotionMember field %s", name)

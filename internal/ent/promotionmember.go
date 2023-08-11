@@ -60,6 +60,10 @@ type PromotionMember struct {
 	PersonID *uint64 `json:"person_id,omitempty"`
 	// 头像url
 	AvatarURL string `json:"avatar_url,omitempty"`
+	// 新签次数
+	NewSignCount uint64 `json:"new_sign_count,omitempty"`
+	// 续费次数
+	RenewCount uint64 `json:"renew_count,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PromotionMemberQuery when eager-loading is set.
 	Edges        PromotionMemberEdges `json:"edges"`
@@ -181,7 +185,7 @@ func (*PromotionMember) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case promotionmember.FieldBalance, promotionmember.FieldFrozen:
 			values[i] = new(sql.NullFloat64)
-		case promotionmember.FieldID, promotionmember.FieldRiderID, promotionmember.FieldLevelID, promotionmember.FieldCommissionID, promotionmember.FieldTotalGrowthValue, promotionmember.FieldCurrentGrowthValue, promotionmember.FieldPersonID:
+		case promotionmember.FieldID, promotionmember.FieldRiderID, promotionmember.FieldLevelID, promotionmember.FieldCommissionID, promotionmember.FieldTotalGrowthValue, promotionmember.FieldCurrentGrowthValue, promotionmember.FieldPersonID, promotionmember.FieldNewSignCount, promotionmember.FieldRenewCount:
 			values[i] = new(sql.NullInt64)
 		case promotionmember.FieldRemark, promotionmember.FieldPhone, promotionmember.FieldName, promotionmember.FieldAvatarURL:
 			values[i] = new(sql.NullString)
@@ -325,6 +329,18 @@ func (pm *PromotionMember) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pm.AvatarURL = value.String
 			}
+		case promotionmember.FieldNewSignCount:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field new_sign_count", values[i])
+			} else if value.Valid {
+				pm.NewSignCount = uint64(value.Int64)
+			}
+		case promotionmember.FieldRenewCount:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field renew_count", values[i])
+			} else if value.Valid {
+				pm.RenewCount = uint64(value.Int64)
+			}
 		default:
 			pm.selectValues.Set(columns[i], values[i])
 		}
@@ -459,6 +475,12 @@ func (pm *PromotionMember) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("avatar_url=")
 	builder.WriteString(pm.AvatarURL)
+	builder.WriteString(", ")
+	builder.WriteString("new_sign_count=")
+	builder.WriteString(fmt.Sprintf("%v", pm.NewSignCount))
+	builder.WriteString(", ")
+	builder.WriteString("renew_count=")
+	builder.WriteString(fmt.Sprintf("%v", pm.RenewCount))
 	builder.WriteByte(')')
 	return builder.String()
 }
