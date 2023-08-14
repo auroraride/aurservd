@@ -57,29 +57,24 @@ func (s *promotionStatisticsService) Team(mem *ent.PromotionMember, req *promoti
 	v := promotion.StatisticsTeamRes{}
 	sqls := `
 WITH RECURSIVE member_hierarchy AS (
-    SELECT referred_member_id, 1 AS level, re.rider_id, re.created_at, r.person_id
-    FROM promotion_referrals re
-    LEFT JOIN rider r ON r.id = re.rider_id
+    SELECT referred_member_id, 1 AS level, rider_id, created_at
+    FROM promotion_referrals
     ` + fmt.Sprintf(" WHERE referring_member_id = %d", mem.ID) + `
 
     UNION ALL
 
-    SELECT mr.referred_member_id, mh.level + 1 AS level, mr.rider_id, mr.created_at, r.person_id
+    SELECT mr.referred_member_id, mh.level + 1 AS level, mr.rider_id, mr.created_at
     FROM member_hierarchy mh
     INNER JOIN promotion_referrals mr ON mh.referred_member_id = mr.referring_member_id
-    LEFT JOIN rider r ON r.id = mh.rider_id
     WHERE mh.level < 2
 )
 
 SELECT
     COUNT(DISTINCT mh.referred_member_id) AS TotalTeam,
-    COUNT(DISTINCT CASE WHEN o.type = 1 AND s.type <> 0 THEN mh.person_id END) AS TotalNewSign,
-    SUM(CASE WHEN (o.type = 2 OR o.type = 3) AND s.type <> 0 THEN 1 ELSE 0 END)
-    + (SUM(CASE WHEN o.type = 1 AND s.type <> 0 THEN 1 ELSE 0 END)
-    - COUNT(DISTINCT CASE WHEN o.type = 1 AND s.type <> 0 THEN mh.person_id END)) AS TotalRenewal
+    COUNT(new_sign_count) AS TotalNewSign,
+    COALESCE(SUM(renew_count),0) AS TotalRenewal
 FROM member_hierarchy mh
-LEFT JOIN "order" o ON mh.rider_id = o.rider_id
-LEFT JOIN subscribe s ON o.subscribe_id = s.id
+LEFT JOIN promotion_member m ON m.id = mh.referred_member_id
 			`
 
 	if req.Start != nil && req.End != nil {
@@ -226,33 +221,28 @@ func (s *promotionStatisticsService) SecondLevelEarnings(mem *ent.PromotionMembe
 
 // MyTeamStatistics 我的-团队统计
 func (s *promotionStatisticsService) MyTeamStatistics(mem *ent.PromotionMember) []promotion.StatisticsTeamDetailRes {
-	var v []promotion.StatisticsTeamDetailRes
+	v := make([]promotion.StatisticsTeamDetailRes, 2)
 	sqls := `
 WITH RECURSIVE member_hierarchy AS (
-    SELECT referred_member_id, 1 AS level, re.rider_id, re.created_at, r.person_id
-    FROM promotion_referrals re
-    LEFT JOIN rider r ON r.id = re.rider_id
+    SELECT referred_member_id, 1 AS level, rider_id, created_at
+    FROM promotion_referrals
     ` + fmt.Sprintf(" WHERE referring_member_id = %d", mem.ID) + `
 
     UNION ALL
 
-    SELECT mr.referred_member_id, mh.level + 1 AS level, mr.rider_id, mr.created_at, r.person_id
+    SELECT mr.referred_member_id, mh.level + 1 AS level, mr.rider_id, mr.created_at
     FROM member_hierarchy mh
     INNER JOIN promotion_referrals mr ON mh.referred_member_id = mr.referring_member_id
-	LEFT JOIN rider r ON r.id = mh.rider_id
     WHERE mh.level < 2
 )
 
 SELECT
     level,
     COUNT(DISTINCT mh.referred_member_id) AS TotalTeam,
-    COUNT(DISTINCT CASE WHEN o.type = 1 AND s.type <> 0 THEN mh.person_id END) AS TotalNewSign,
-    SUM(CASE WHEN (o.type = 2 OR o.type = 3) AND s.type <> 0 THEN 1 ELSE 0 END)
-    + (SUM(CASE WHEN o.type = 1 AND s.type <> 0 THEN 1 ELSE 0 END)
-    - COUNT(DISTINCT CASE WHEN o.type = 1 AND s.type <> 0 THEN mh.person_id END)) AS TotalRenewal
+    COUNT(new_sign_count) AS TotalNewSign,
+    COALESCE(SUM(renew_count),0) AS TotalRenewal
 FROM member_hierarchy mh
-LEFT JOIN "order" o ON mh.rider_id = o.rider_id
-LEFT JOIN subscribe s ON o.subscribe_id = s.id
+LEFT JOIN promotion_member m ON m.id = mh.referred_member_id
 GROUP BY level;
 			`
 	rows, err := ent.Database.QueryContext(s.ctx, sqls)
@@ -271,7 +261,11 @@ GROUP BY level;
 		if err != nil {
 			snag.Panic(err)
 		}
-		v = append(v, row)
+		if row.Level == 1 {
+			v[0] = row
+		} else {
+			v[1] = row
+		}
 	}
 	return v
 }

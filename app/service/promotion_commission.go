@@ -559,7 +559,7 @@ func (s *promotionCommissionService) GetCommissionRule(mem *ent.PromotionMember)
 	}
 
 	res.Detail = rd
-	res.DetailDesc = *detailDesc
+	res.DetailDesc = detailDesc
 
 	return res
 }
