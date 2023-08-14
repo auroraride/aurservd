@@ -143,7 +143,7 @@ type CommissionCalculation struct {
 // CommissionRuleRes 返佣规则返回参数
 type CommissionRuleRes struct {
 	Detail     []CommissionRuleDetail `json:"detail"`     // 返佣规则
-	DetailDesc string                 `json:"detailDesc"` // 详细规则说明
+	DetailDesc *string                `json:"detailDesc"` // 详细规则说明
 }
 
 // CommissionRuleDetail 返佣规则
