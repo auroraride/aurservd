@@ -4,7 +4,7 @@ const BankCardLimit = 5 // 银行卡上限数量
 
 // BankCardReq 设置银行卡
 type BankCardReq struct {
-	CardNo string `json:"cardNo" validate:"required" param:"cardNo"` // 银行卡号
+	CardNo string `json:"cardNo" validate:"required,excludesall= " param:"cardNo"` // 银行卡号
 }
 
 // BankCardRes 银行卡返回信息
