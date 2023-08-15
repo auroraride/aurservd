@@ -2576,6 +2576,9 @@ definitions:
       openStatus:
         description: 是否开门
         type: boolean
+      ordinal:
+        description: 仓位序号 (从1开始)
+        type: integer
       remark:
         description: 备注
         type: string
@@ -2592,13 +2595,14 @@ definitions:
         description: 仓门index
         type: integer
       operation:
+        allOf:
+        - $ref: '#/definitions/model.CabinetBinDeactiveOperation'
         description: 操作方式 1:启用 2:禁用
         enum:
         - 1
         - 2
         maximum: 2
         minimum: 1
-        type: integer
       remark:
         description: 操作原因
         type: string
@@ -2607,6 +2611,17 @@ definitions:
     - index
     - operation
     type: object
+  model.CabinetBinDeactiveOperation:
+    enum:
+    - 1
+    - 2
+    type: integer
+    x-enum-comments:
+      CabinetBinDeactiveOperationDisable: 禁用
+      CabinetBinDeactiveOperationEnable: 启用
+    x-enum-varnames:
+    - CabinetBinDeactiveOperationEnable
+    - CabinetBinDeactiveOperationDisable
   model.CabinetCreateReq:
     properties:
       branchId:
@@ -5118,6 +5133,50 @@ definitions:
         description: 电话
         type: string
     type: object
+  model.MaintainerBinOperate:
+    enum:
+    - open
+    - lock
+    - unlock
+    - disable
+    - enable
+    type: string
+    x-enum-comments:
+      MaintainerBinOperateDisable: 禁用
+      MaintainerBinOperateEnable: 启用
+      MaintainerBinOperateLock: 锁定
+      MaintainerBinOperateOpen: 开仓
+      MaintainerBinOperateUnlock: 解锁
+    x-enum-varnames:
+    - MaintainerBinOperateOpen
+    - MaintainerBinOperateLock
+    - MaintainerBinOperateUnlock
+    - MaintainerBinOperateDisable
+    - MaintainerBinOperateEnable
+  model.MaintainerBinOperateReq:
+    properties:
+      lat:
+        type: number
+      lng:
+        type: number
+      operate:
+        allOf:
+        - $ref: '#/definitions/model.MaintainerBinOperate'
+        description: 所有操作均需要提前设电柜为维护状态。open:开仓, lock:锁定, unlock:解锁, disable:禁用, enable:启用
+      ordinal:
+        type: integer
+      reason:
+        type: string
+      serial:
+        type: string
+    required:
+    - lat
+    - lng
+    - operate
+    - ordinal
+    - reason
+    - serial
+    type: object
   model.MaintainerCabinetDetailRes:
     properties:
       batteryNum:
@@ -5228,6 +5287,45 @@ definitions:
     - brand
     - name
     - serial
+    type: object
+  model.MaintainerCabinetOperate:
+    enum:
+    - open-all
+    - maintenance
+    - maintenance-cancel
+    - interrupt
+    - reboot
+    type: string
+    x-enum-comments:
+      MaintainerCabinetOperateInterrupt: 中断维护
+      MaintainerCabinetOperateMaintenance: 维护
+      MaintainerCabinetOperateMaintenanceCancel: 取消维护
+      MaintainerCabinetOperateOpenAll: 全部开仓
+      MaintainerCabinetOperateReboot: 重启
+    x-enum-varnames:
+    - MaintainerCabinetOperateOpenAll
+    - MaintainerCabinetOperateMaintenance
+    - MaintainerCabinetOperateMaintenanceCancel
+    - MaintainerCabinetOperateInterrupt
+    - MaintainerCabinetOperateReboot
+  model.MaintainerCabinetOperateReq:
+    properties:
+      lat:
+        type: number
+      lng:
+        type: number
+      operate:
+        allOf:
+        - $ref: '#/definitions/model.MaintainerCabinetOperate'
+        description: 除`maintenance`之外所有操作均需要提前设电柜为维护状态。 open:开仓, open-all:全部开仓（暂时不做）,
+          maintenance:电柜维护, maintenance-cancel:取消维护, interrupt:中断业务, reboot:重启（暂时不做）
+      reason:
+        type: string
+    required:
+    - lat
+    - lng
+    - operate
+    - reason
     type: object
   model.MaintainerCreateReq:
     properties:
@@ -11767,6 +11865,74 @@ paths:
       summary: O2002 获取电柜详情
       tags:
       - '[O]运维接口'
+    post:
+      consumes:
+      - application/json
+      operationId: MaintainerCabinetOperate
+      parameters:
+      - description: 运维校验token
+        in: header
+        name: X-Maintainer-Token
+        required: true
+        type: string
+      - description: 电柜编号
+        in: path
+        name: serial
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.MaintainerCabinetOperateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: O2003 电柜操作
+      tags:
+      - '[O]运维接口'
+  /maintainer/v1/cabinet/{serial}/{ordinal:
+    post:
+      consumes:
+      - application/json
+      operationId: MaintainerCabinetBinOperate
+      parameters:
+      - description: 运维校验token
+        in: header
+        name: X-Maintainer-Token
+        required: true
+        type: string
+      - description: 电柜编号
+        in: path
+        name: serial
+        required: true
+        type: string
+      - description: 仓位序号，从1开始
+        in: path
+        name: ordinal
+        required: true
+        type: integer
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.MaintainerBinOperateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.MaintainerBinOperateReq'
+      summary: O2004 仓位操作
+      tags:
+      - '[O]运维接口'
   /maintainer/v1/cabinets:
     get:
       consumes:
@@ -13578,7 +13744,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M5006 柜门操作
+      summary: M5006 仓位操作
       tags:
       - '[M]管理接口'
   /manager/v1/cabinet/fault:

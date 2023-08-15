@@ -10,14 +10,16 @@ type Operate uint
 type OperatorType uint8
 
 const (
-	OperatorTypeManager  OperatorType = iota // 管理员
-	OperatorTypeEmployee                     // 店员
-	OperatorTypeCabinet                      // 电柜
-	OperatorTypeAgent                        // 代理
+	OperatorTypeManager    OperatorType = iota // 管理员
+	OperatorTypeEmployee                       // 店员
+	OperatorTypeCabinet                        // 电柜
+	OperatorTypeAgent                          // 代理
+	OperatorTypeMaintainer                     // 运维
+	OperatorTypeRider                          // 骑手
 )
 
 func (ot OperatorType) String() string {
-	return []string{"管理员", "店员", "电柜", "代理"}[int(ot)]
+	return []string{"管理员", "店员", "电柜", "代理", "运维", "骑手"}[int(ot)]
 }
 
 const (

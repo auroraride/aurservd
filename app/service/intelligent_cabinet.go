@@ -474,7 +474,11 @@ func (s *intelligentCabinetService) DoBusiness(uidstr string, bus adapter.Busine
 	return
 }
 
-func (s *intelligentCabinetService) Operate(cab *ent.Cabinet, op cabdef.Operate, req *model.CabinetDoorOperateReq) (success bool) {
+func (s *intelligentCabinetService) Operate(operator *logging.Operator, cab *ent.Cabinet, op cabdef.Operate, req *model.CabinetDoorOperateReq) (success bool) {
+	if operator.Type != model.OperatorTypeManager && operator.Type != model.OperatorTypeMaintainer {
+		snag.Panic("无权限操作")
+	}
+
 	now := time.Now()
 	br := cab.Brand
 	ordinal := *req.Index + 1
@@ -484,9 +488,9 @@ func (s *intelligentCabinetService) Operate(cab *ent.Cabinet, op cabdef.Operate,
 		dlog := &logging.DoorOperateLog{
 			ID:            shortuuid.New(),
 			Brand:         br.String(),
-			OperatorName:  s.modifier.Name,
-			OperatorID:    s.modifier.ID,
-			OperatorPhone: s.modifier.Phone,
+			OperatorName:  operator.Name,
+			OperatorID:    operator.ID,
+			OperatorPhone: operator.Phone,
 			Serial:        cab.Serial,
 			Name:          strconv.Itoa(ordinal) + "号仓",
 			Operation:     req.Operation.String(),
@@ -511,10 +515,11 @@ func (s *intelligentCabinetService) Operate(cab *ent.Cabinet, op cabdef.Operate,
 	return
 }
 
-func (s *intelligentCabinetService) Deactivate(cab *ent.Cabinet, payload *cabdef.BinDeactivateRequest) (success bool) {
-	if s.modifier == nil {
-		snag.Panic("权限校验失败")
+func (s *intelligentCabinetService) Deactivate(operator *logging.Operator, cab *ent.Cabinet, payload *cabdef.BinDeactivateRequest) (success bool) {
+	if operator.Type != model.OperatorTypeManager && operator.Type != model.OperatorTypeMaintainer {
+		snag.Panic("无权限操作")
 	}
+
 	now := time.Now()
 	br := cab.Brand
 
@@ -523,7 +528,7 @@ func (s *intelligentCabinetService) Deactivate(cab *ent.Cabinet, payload *cabdef
 		operation = "禁用仓位"
 	}
 
-	res, _ := adapter.Post[model.StatusResponse](s.GetCabinetAdapterUrlX(cab, "/bin/deactivate"), s.GetAdapterUserX(), payload)
+	res, _ := adapter.Post[model.StatusResponse](s.GetCabinetAdapterUrlX(cab, "/bin/deactivate"), operator.GetAdapterUserX(), payload)
 
 	success = res.Status
 
@@ -532,9 +537,9 @@ func (s *intelligentCabinetService) Deactivate(cab *ent.Cabinet, payload *cabdef
 		dlog := &logging.DoorOperateLog{
 			ID:            shortuuid.New(),
 			Brand:         br.String(),
-			OperatorName:  s.modifier.Name,
-			OperatorID:    s.modifier.ID,
-			OperatorPhone: s.modifier.Phone,
+			OperatorName:  operator.Name,
+			OperatorID:    operator.ID,
+			OperatorPhone: operator.Phone,
 			Serial:        cab.Serial,
 			Name:          strconv.Itoa(payload.Ordinal) + "号仓",
 			Operation:     operation,
@@ -578,7 +583,7 @@ func (s *intelligentCabinetService) OpenBind(req *model.CabinetOpenBindReq) {
 	// 查找电池
 	bat := bs.QuerySnX(req.BatterySN)
 	// 开门
-	success := s.Operate(cab, cabdef.OperateDoorOpen, &model.CabinetDoorOperateReq{
+	success := s.Operate(logging.GetOperatorX(s.modifier), cab, cabdef.OperateDoorOpen, &model.CabinetDoorOperateReq{
 		ID:        req.ID,
 		Index:     req.Index,
 		Remark:    req.Remark,

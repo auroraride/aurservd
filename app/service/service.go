@@ -39,6 +39,8 @@ type BaseService struct {
 
 	agent      *ent.Agent
 	enterprise *ent.Enterprise
+
+	maintainer *ent.Maintainer
 }
 
 func newService(params ...any) (bs *BaseService) {
@@ -85,6 +87,8 @@ func newService(params ...any) (bs *BaseService) {
 			bs.agent = p
 		case *ent.Enterprise:
 			bs.enterprise = p
+		case *ent.Maintainer:
+			bs.maintainer = p
 		}
 	}
 
@@ -207,7 +211,7 @@ func (s *BaseService) GetCabinetAdapterUrlX(cab *ent.Cabinet, apiurl string) str
 	return url
 }
 func (s *BaseService) GetAdapterUser() (user *adapter.User, err error) {
-	switch true {
+	switch {
 	default:
 		return nil, adapter.ErrorUserRequired
 	case s.rider != nil:
@@ -229,6 +233,11 @@ func (s *BaseService) GetAdapterUser() (user *adapter.User, err error) {
 		return &adapter.User{
 			Type: adapter.UserTypeAgent,
 			ID:   s.agent.Phone,
+		}, nil
+	case s.maintainer != nil:
+		return &adapter.User{
+			Type: adapter.UserTypeMaintainer,
+			ID:   s.maintainer.Phone,
 		}, nil
 	}
 }

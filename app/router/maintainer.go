@@ -16,4 +16,6 @@ func loadMaintainerRoutes() {
 	auth := g.Group("", middleware.Maintainer(), middleware.MaintainerAuth())
 	auth.GET("/cabinets", oapi.Cabinet.List)
 	auth.GET("/cabinet/:serial", oapi.Cabinet.Detail)
+	auth.POST("/cabinet/:serial", oapi.Cabinet.Operate)
+	auth.POST("/cabinet/:serial/:ordinal", oapi.Cabinet.BinOperate)
 }

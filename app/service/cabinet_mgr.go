@@ -40,7 +40,7 @@ func NewCabinetMgrWithModifier(m *model.Modifier) *cabinetMgrService {
 }
 
 // Maintain 设置电柜操作维护
-func (s *cabinetMgrService) Maintain(req *model.CabinetMaintainReq) (detail *model.CabinetDetailRes) {
+func (s *cabinetMgrService) Maintain(operator *logging.Operator, req *model.CabinetMaintainReq) (detail *model.CabinetDetailRes) {
 	if req.Maintain == nil {
 		snag.Panic("参数请求错误")
 	}
@@ -55,7 +55,7 @@ func (s *cabinetMgrService) Maintain(req *model.CabinetMaintainReq) (detail *mod
 		status = model.CabinetStatusMaintenance
 	}
 
-	detail = NewCabinetWithModifier(s.modifier).Detail(cab)
+	detail = NewCabinet().Detail(cab)
 
 	_, err := cab.Update().SetStatus(status.Value()).Save(s.ctx)
 	if err != nil {
@@ -67,7 +67,7 @@ func (s *cabinetMgrService) Maintain(req *model.CabinetMaintainReq) (detail *mod
 	// 记录日志
 	go logging.NewOperateLog().
 		SetRef(cab).
-		SetModifier(s.modifier).
+		SetOperator(operator).
 		SetOperate(model.OperateCabinetMaintain).
 		SetDiff(model.CabinetStatus(cab.Status).String(), status.String()).
 		SetRemark(cab.Remark).
@@ -77,14 +77,12 @@ func (s *cabinetMgrService) Maintain(req *model.CabinetMaintainReq) (detail *mod
 }
 
 // BinOperate 仓位操作
-func (s *cabinetMgrService) BinOperate(id uint64, data any) bool {
-	if s.modifier == nil {
-		snag.Panic("权限校验失败")
+func (s *cabinetMgrService) BinOperate(operator *logging.Operator, id uint64, data any) bool {
+	if operator.Type != model.OperatorTypeManager && operator.Type != model.OperatorTypeMaintainer {
+		snag.Panic("无权限操作")
 	}
 
-	cs := NewCabinetWithModifier(s.modifier)
-
-	cab := cs.QueryOne(id)
+	cab := NewCabinet().QueryOne(id)
 
 	if model.CabinetStatus(cab.Status) != model.CabinetStatusMaintenance {
 		snag.Panic("非操作维护中不可操作")
@@ -101,9 +99,9 @@ func (s *cabinetMgrService) BinOperate(id uint64, data any) bool {
 		case model.CabinetDoorOperateUnlock:
 			op = cabdef.OperateBinEnable
 		}
-		return NewIntelligentCabinet(s.modifier).Operate(cab, op, req)
+		return NewIntelligentCabinet().Operate(operator, cab, op, req)
 	case *model.CabinetBinDeactivateReq:
-		return NewIntelligentCabinet(s.modifier).Deactivate(cab, &cabdef.BinDeactivateRequest{
+		return NewIntelligentCabinet().Deactivate(operator, cab, &cabdef.BinDeactivateRequest{
 			Serial:     cab.Serial,
 			Ordinal:    *req.Index + 1,
 			Deactivate: silk.Bool(req.Operation == 2),

@@ -14,14 +14,15 @@ import (
 
 	"github.com/auroraride/adapter"
 	"github.com/auroraride/adapter/log"
+	"github.com/go-resty/resty/v2"
+	jsoniter "github.com/json-iterator/go"
+	"go.uber.org/zap"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/pkg/utils"
-	"github.com/go-resty/resty/v2"
-	jsoniter "github.com/json-iterator/go"
-	"go.uber.org/zap"
 )
 
 type kaixin struct {
@@ -210,6 +211,7 @@ func (p *kaixin) FetchStatus(serial string) (online bool, bins model.CabinetBins
 
 			bin := &model.CabinetBin{
 				Index:         index,
+				Ordinal:       index + 1,
 				Name:          fmt.Sprintf("%d号仓", index+1),
 				BatterySN:     ds.Bcd,
 				Full:          isFull,

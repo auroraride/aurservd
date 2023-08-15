@@ -9,12 +9,14 @@ import (
 	"time"
 
 	sls "github.com/aliyun/aliyun-log-go-sdk"
+	"github.com/auroraride/adapter"
 	"github.com/lithammer/shortuuid/v4"
 
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ali"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/pkg/snag"
 )
 
 type Operator struct {
@@ -22,6 +24,110 @@ type Operator struct {
 	ID    uint64             `json:"operatorId"`
 	Phone string             `json:"operatorPhone"`
 	Name  string             `json:"operatorName"`
+}
+
+func GetOperator(data any) (*Operator, error) {
+	switch v := data.(type) {
+	default:
+		return nil, adapter.ErrorUserRequired
+	case *model.Modifier:
+		return &Operator{
+			Type:  model.OperatorTypeManager,
+			ID:    v.ID,
+			Phone: v.Phone,
+			Name:  v.Name,
+		}, nil
+	case *ent.Employee:
+		return &Operator{
+			Type:  model.OperatorTypeEmployee,
+			ID:    v.ID,
+			Phone: v.Phone,
+			Name:  v.Name,
+		}, nil
+	case *model.Employee:
+		return &Operator{
+			Type:  model.OperatorTypeEmployee,
+			ID:    v.ID,
+			Phone: v.Phone,
+			Name:  v.Name,
+		}, nil
+	case *ent.Cabinet:
+		return &Operator{
+			Type:  model.OperatorTypeCabinet,
+			ID:    v.ID,
+			Phone: v.Serial,
+			Name:  v.Name,
+		}, nil
+	case *ent.Agent:
+		return &Operator{
+			Type:  model.OperatorTypeAgent,
+			ID:    v.ID,
+			Phone: v.Phone,
+			Name:  v.Name,
+		}, nil
+	case *ent.Maintainer:
+		return &Operator{
+			Type:  model.OperatorTypeMaintainer,
+			ID:    v.ID,
+			Phone: v.Phone,
+			Name:  v.Name,
+		}, nil
+	case *ent.Rider:
+		return &Operator{
+			Type:  model.OperatorTypeRider,
+			ID:    v.ID,
+			Phone: v.Phone,
+			Name:  v.Name,
+		}, nil
+	}
+}
+
+func GetOperatorX(data any) *Operator {
+	o, err := GetOperator(data)
+	if err != nil {
+		snag.Panic(err)
+	}
+	return o
+}
+
+func (o *Operator) GetAdapterUser() (*adapter.User, error) {
+	switch o.Type {
+	default:
+		return nil, adapter.ErrorUserRequired
+	case model.OperatorTypeRider:
+		return &adapter.User{
+			Type: adapter.UserTypeRider,
+			ID:   o.Phone,
+		}, nil
+	case model.OperatorTypeEmployee:
+		return &adapter.User{
+			Type: adapter.UserTypeEmployee,
+			ID:   o.Phone,
+		}, nil
+	case model.OperatorTypeManager:
+		return &adapter.User{
+			Type: adapter.UserTypeManager,
+			ID:   o.Phone,
+		}, nil
+	case model.OperatorTypeAgent:
+		return &adapter.User{
+			Type: adapter.UserTypeAgent,
+			ID:   o.Phone,
+		}, nil
+	case model.OperatorTypeMaintainer:
+		return &adapter.User{
+			Type: adapter.UserTypeMaintainer,
+			ID:   o.Phone,
+		}, nil
+	}
+}
+
+func (o *Operator) GetAdapterUserX() *adapter.User {
+	user, err := o.GetAdapterUser()
+	if err != nil {
+		snag.Panic(err)
+	}
+	return user
 }
 
 // OperateLog 系统操作日志
@@ -138,6 +244,16 @@ func (o *OperateLog) SetCabinet(c *model.CabinetBasicInfo) *OperateLog {
 		o.OperatorPhone = c.Serial
 		o.OperatorName = c.Name
 		o.OperatorType = model.OperatorTypeCabinet
+	}
+	return o
+}
+
+func (o *OperateLog) SetMaintainer(c *ent.Maintainer) *OperateLog {
+	if c != nil {
+		o.OperatorID = c.ID
+		o.OperatorPhone = c.Phone
+		o.OperatorName = c.Name
+		o.OperatorType = model.OperatorTypeMaintainer
 	}
 	return o
 }

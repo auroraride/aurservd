@@ -184,6 +184,7 @@ func (cbs CabinetBins) MaxEmpty() (max *CabinetBin, empty *CabinetBin) {
 // (锁定状态 / 备注信息) 需要携带到下次的状态更新中
 type CabinetBin struct {
 	Index         int        `json:"index"`                   // 仓位index (从0开始)
+	Ordinal       int        `json:"ordinal"`                 // 仓位序号 (从1开始)
 	Name          string     `json:"name"`                    // 柜门名称
 	BatterySN     string     `json:"batterySN"`               // 电池序列号
 	Full          bool       `json:"full"`                    // 是否满电
@@ -313,12 +314,19 @@ type CabinetDoorOperateReq struct {
 	Operation *CabinetDoorOperate `json:"operation" validate:"required"` // 操作方式 1:开仓 2:锁定(标记为故障) 3:解锁(取消标记故障)
 }
 
+type CabinetBinDeactiveOperation int
+
+const (
+	CabinetBinDeactiveOperationEnable  CabinetBinDeactiveOperation = iota + 1 // 启用
+	CabinetBinDeactiveOperationDisable                                        // 禁用
+)
+
 // CabinetBinDeactivateReq 仓门操作
 type CabinetBinDeactivateReq struct {
-	ID        uint64 `json:"id" validate:"required"`                                // 电柜ID
-	Index     *int   `json:"index" validate:"required"`                             // 仓门index
-	Remark    string `json:"remark"`                                                // 操作原因
-	Operation int    `json:"operation" validate:"required,gte=1,lte=2" enums:"1,2"` // 操作方式 1:启用 2:禁用
+	ID        uint64                      `json:"id" validate:"required"`                                // 电柜ID
+	Index     *int                        `json:"index" validate:"required"`                             // 仓门index
+	Remark    string                      `json:"remark"`                                                // 操作原因
+	Operation CabinetBinDeactiveOperation `json:"operation" validate:"required,gte=1,lte=2" enums:"1,2"` // 操作方式 1:启用 2:禁用
 }
 
 // BinInfo 任务电柜仓位信息

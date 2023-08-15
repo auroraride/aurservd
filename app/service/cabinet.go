@@ -401,9 +401,14 @@ func (s *cabinetService) Detail(item *ent.Cabinet) *model.CabinetDetailRes {
 		res.StationName = item.Edges.Station.Name
 		res.StationID = &item.Edges.Station.ID
 	}
+
 	if item.Edges.Enterprise != nil {
 		res.EnterpriseName = item.Edges.Enterprise.Name
 		res.EnterpriseID = &item.Edges.Enterprise.ID
+	}
+
+	for i, b := range item.Bin {
+		res.Bin[i].Ordinal = b.Index + 1
 	}
 
 	return res
@@ -752,6 +757,7 @@ func (s *cabinetService) parseSyncData(cab *ent.Cabinet, item *pb.CabinetSyncIte
 	for x, b := range item.Bins {
 		cab.Bin[x] = &model.CabinetBin{
 			Index:         int(b.Index),
+			Ordinal:       int(b.Index + 1),
 			Name:          strconv.Itoa(int(b.Index+1)) + "号仓",
 			BatterySN:     b.BatterySn,
 			Full:          b.Full,
@@ -918,27 +924,26 @@ func (s *cabinetService) CacheAll() {
 }
 
 // Interrupt 中断电柜所有业务
-func (s *cabinetService) Interrupt(req *model.CabinetInterruptRequest) *pb.CabinetBizResponse {
+func (s *cabinetService) Interrupt(operator *logging.Operator, req *model.CabinetInterruptRequest) *pb.CabinetBizResponse {
 	// 查找电柜
 	item := s.QueryOneSerialX(req.Serial)
 	res := rpc.CabinetInterrupt(rpc.CabinetKey(item.Brand, item.Intelligent), &pb.CabinetInterruptRequest{
 		Serial:  item.Serial,
 		Message: req.Message,
 	})
-	cnt := 0
+	items := make([]*pb.CabinetBiz, 0)
 	if res != nil {
-		cnt = len(res.Items)
+		items = res.Items
 		for _, biz := range res.Items {
 			// 记录日志
 			go logging.NewOperateLog().
 				SetInfo(biz.User).
-				SetModifier(s.modifier).
 				SetOperate(model.OperateInterruptBusiness).
+				SetOperator(operator).
 				SetDiff(biz.Desc, "已中断").
 				Send()
 		}
 	}
-	items := make([]*pb.CabinetBiz, cnt)
 	return &pb.CabinetBizResponse{Items: items}
 }
 

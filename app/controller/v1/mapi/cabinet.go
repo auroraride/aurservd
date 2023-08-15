@@ -9,6 +9,7 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/logging"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
 )
@@ -102,7 +103,7 @@ func (*cabinet) Detail(c echo.Context) (err error) {
 // DoorOperate
 // @ID           CabinetDoorOperate
 // @Router       /manager/v1/cabinet/door-operate [POST]
-// @Summary      M5006 柜门操作
+// @Summary      M5006 仓位操作
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -112,7 +113,7 @@ func (*cabinet) Detail(c echo.Context) (err error) {
 func (*cabinet) DoorOperate(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.CabinetDoorOperateReq](c)
 	return ctx.SendResponse(
-		model.StatusResponse{Status: service.NewCabinetMgrWithModifier(ctx.Modifier).BinOperate(req.ID, req)},
+		model.StatusResponse{Status: service.NewCabinetMgrWithModifier(ctx.Modifier).BinOperate(logging.GetOperatorX(ctx.Modifier), req.ID, req)},
 	)
 }
 
@@ -211,7 +212,7 @@ func (*cabinet) Transfer(c echo.Context) (err error) {
 // @Success      200  {object}  model.CabinetDetailRes  "请求成功"
 func (*cabinet) Maintain(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.CabinetMaintainReq](c)
-	return ctx.SendResponse(service.NewCabinetMgrWithModifier(ctx.Modifier).Maintain(req))
+	return ctx.SendResponse(service.NewCabinetMgrWithModifier(ctx.Modifier).Maintain(logging.GetOperatorX(ctx.Modifier), req))
 }
 
 // OpenBind
@@ -244,7 +245,7 @@ func (*cabinet) OpenBind(c echo.Context) (err error) {
 func (*cabinet) Deactivate(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.CabinetBinDeactivateReq](c)
 	return ctx.SendResponse(
-		model.StatusResponse{Status: service.NewCabinetMgrWithModifier(ctx.Modifier).BinOperate(req.ID, req)},
+		model.StatusResponse{Status: service.NewCabinetMgrWithModifier(ctx.Modifier).BinOperate(logging.GetOperatorX(ctx.Modifier), req.ID, req)},
 	)
 }
 
@@ -260,5 +261,5 @@ func (*cabinet) Deactivate(c echo.Context) (err error) {
 // @Success      200  {object}  pb.CabinetBizResponse  "请求成功"
 func (*cabinet) Interrupt(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.CabinetInterruptRequest](c)
-	return ctx.SendResponse(service.NewCabinetWithModifier(ctx.Modifier).Interrupt(req))
+	return ctx.SendResponse(service.NewCabinetWithModifier(ctx.Modifier).Interrupt(logging.GetOperatorX(ctx.Modifier), req))
 }

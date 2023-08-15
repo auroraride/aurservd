@@ -3804,6 +3804,107 @@
                         }
                     }
                 }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[O]运维接口"
+                ],
+                "summary": "O2003 电柜操作",
+                "operationId": "MaintainerCabinetOperate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "运维校验token",
+                        "name": "X-Maintainer-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "电柜编号",
+                        "name": "serial",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.MaintainerCabinetOperateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/maintainer/v1/cabinet/{serial}/{ordinal": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[O]运维接口"
+                ],
+                "summary": "O2004 仓位操作",
+                "operationId": "MaintainerCabinetBinOperate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "运维校验token",
+                        "name": "X-Maintainer-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "电柜编号",
+                        "name": "serial",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "仓位序号，从1开始",
+                        "name": "ordinal",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.MaintainerBinOperateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.MaintainerBinOperateReq"
+                        }
+                    }
+                }
             }
         },
         "/maintainer/v1/cabinets": {
@@ -6369,7 +6470,7 @@
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M5006 柜门操作",
+                "summary": "M5006 仓位操作",
                 "operationId": "CabinetDoorOperate",
                 "parameters": [
                     {
@@ -23236,6 +23337,10 @@
                     "description": "是否开门",
                     "type": "boolean"
                 },
+                "ordinal": {
+                    "description": "仓位序号 (从1开始)",
+                    "type": "integer"
+                },
                 "remark": {
                     "description": "备注",
                     "type": "string"
@@ -23264,12 +23369,16 @@
                 },
                 "operation": {
                     "description": "操作方式 1:启用 2:禁用",
-                    "type": "integer",
                     "maximum": 2,
                     "minimum": 1,
                     "enum": [
                         1,
                         2
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.CabinetBinDeactiveOperation"
+                        }
                     ]
                 },
                 "remark": {
@@ -23277,6 +23386,21 @@
                     "type": "string"
                 }
             }
+        },
+        "model.CabinetBinDeactiveOperation": {
+            "type": "integer",
+            "enum": [
+                1,
+                2
+            ],
+            "x-enum-comments": {
+                "CabinetBinDeactiveOperationDisable": "禁用",
+                "CabinetBinDeactiveOperationEnable": "启用"
+            },
+            "x-enum-varnames": [
+                "CabinetBinDeactiveOperationEnable",
+                "CabinetBinDeactiveOperationDisable"
+            ]
         },
         "model.CabinetCreateReq": {
             "type": "object",
@@ -26882,6 +27006,66 @@
                 }
             }
         },
+        "model.MaintainerBinOperate": {
+            "type": "string",
+            "enum": [
+                "open",
+                "lock",
+                "unlock",
+                "disable",
+                "enable"
+            ],
+            "x-enum-comments": {
+                "MaintainerBinOperateDisable": "禁用",
+                "MaintainerBinOperateEnable": "启用",
+                "MaintainerBinOperateLock": "锁定",
+                "MaintainerBinOperateOpen": "开仓",
+                "MaintainerBinOperateUnlock": "解锁"
+            },
+            "x-enum-varnames": [
+                "MaintainerBinOperateOpen",
+                "MaintainerBinOperateLock",
+                "MaintainerBinOperateUnlock",
+                "MaintainerBinOperateDisable",
+                "MaintainerBinOperateEnable"
+            ]
+        },
+        "model.MaintainerBinOperateReq": {
+            "type": "object",
+            "required": [
+                "lat",
+                "lng",
+                "operate",
+                "ordinal",
+                "reason",
+                "serial"
+            ],
+            "properties": {
+                "lat": {
+                    "type": "number"
+                },
+                "lng": {
+                    "type": "number"
+                },
+                "operate": {
+                    "description": "所有操作均需要提前设电柜为维护状态。open:开仓, lock:锁定, unlock:解锁, disable:禁用, enable:启用",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.MaintainerBinOperate"
+                        }
+                    ]
+                },
+                "ordinal": {
+                    "type": "integer"
+                },
+                "reason": {
+                    "type": "string"
+                },
+                "serial": {
+                    "type": "string"
+                }
+            }
+        },
         "model.MaintainerCabinetDetailRes": {
             "type": "object",
             "required": [
@@ -27040,6 +27224,58 @@
                 "transferred": {
                     "description": "是否初始化过调拨",
                     "type": "boolean"
+                }
+            }
+        },
+        "model.MaintainerCabinetOperate": {
+            "type": "string",
+            "enum": [
+                "open-all",
+                "maintenance",
+                "maintenance-cancel",
+                "interrupt",
+                "reboot"
+            ],
+            "x-enum-comments": {
+                "MaintainerCabinetOperateInterrupt": "中断维护",
+                "MaintainerCabinetOperateMaintenance": "维护",
+                "MaintainerCabinetOperateMaintenanceCancel": "取消维护",
+                "MaintainerCabinetOperateOpenAll": "全部开仓",
+                "MaintainerCabinetOperateReboot": "重启"
+            },
+            "x-enum-varnames": [
+                "MaintainerCabinetOperateOpenAll",
+                "MaintainerCabinetOperateMaintenance",
+                "MaintainerCabinetOperateMaintenanceCancel",
+                "MaintainerCabinetOperateInterrupt",
+                "MaintainerCabinetOperateReboot"
+            ]
+        },
+        "model.MaintainerCabinetOperateReq": {
+            "type": "object",
+            "required": [
+                "lat",
+                "lng",
+                "operate",
+                "reason"
+            ],
+            "properties": {
+                "lat": {
+                    "type": "number"
+                },
+                "lng": {
+                    "type": "number"
+                },
+                "operate": {
+                    "description": "除`maintenance`之外所有操作均需要提前设电柜为维护状态。 open:开仓, open-all:全部开仓（暂时不做）, maintenance:电柜维护, maintenance-cancel:取消维护, interrupt:中断业务, reboot:重启（暂时不做）",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.MaintainerCabinetOperate"
+                        }
+                    ]
+                },
+                "reason": {
+                    "type": "string"
                 }
             }
         },
