@@ -42,9 +42,7 @@ func (s *maintainerCabinetService) List(cityIDs []uint64, pg *model.PaginationRe
 			Status: cab.Status,
 			Health: cab.Health,
 		}
-	}, func(cabinets ent.Cabinets) {
-		NewCabinet().SyncCabinets(cabinets)
-	})
+	}, NewCabinet().SyncCabinets)
 }
 
 // Detail 获取电柜详情
