@@ -3852,7 +3852,7 @@
                 }
             }
         },
-        "/maintainer/v1/cabinet/{serial}/{ordinal": {
+        "/maintainer/v1/cabinet/{serial}/{ordinal}": {
             "post": {
                 "consumes": [
                     "application/json"
@@ -27036,9 +27036,7 @@
                 "lat",
                 "lng",
                 "operate",
-                "ordinal",
-                "reason",
-                "serial"
+                "reason"
             ],
             "properties": {
                 "lat": {
@@ -27055,13 +27053,7 @@
                         }
                     ]
                 },
-                "ordinal": {
-                    "type": "integer"
-                },
                 "reason": {
-                    "type": "string"
-                },
-                "serial": {
                     "type": "string"
                 }
             }

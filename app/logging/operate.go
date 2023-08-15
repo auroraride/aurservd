@@ -26,6 +26,17 @@ type Operator struct {
 	Name  string             `json:"operatorName"`
 }
 
+func (o *Operator) OperatorRole() model.CabinetDoorOperatorRole {
+	switch o.Type {
+	default:
+		return model.CabinetDoorOperatorRoleManager
+	case model.OperatorTypeRider:
+		return model.CabinetDoorOperatorRoleRider
+	case model.OperatorTypeMaintainer:
+		return model.CabinetDoorOperatorRoleMaintainer
+	}
+}
+
 func GetOperator(data any) (*Operator, error) {
 	switch v := data.(type) {
 	default:

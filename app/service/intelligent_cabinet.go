@@ -475,31 +475,31 @@ func (s *intelligentCabinetService) DoBusiness(uidstr string, bus adapter.Busine
 }
 
 func (s *intelligentCabinetService) Operate(operator *logging.Operator, cab *ent.Cabinet, op cabdef.Operate, req *model.CabinetDoorOperateReq) (success bool) {
-	if operator.Type != model.OperatorTypeManager && operator.Type != model.OperatorTypeMaintainer {
-		snag.Panic("无权限操作")
-	}
-
 	now := time.Now()
 	br := cab.Brand
 	ordinal := *req.Index + 1
 
-	go func() {
-		// 上传日志
-		dlog := &logging.DoorOperateLog{
-			ID:            shortuuid.New(),
-			Brand:         br.String(),
-			OperatorName:  operator.Name,
-			OperatorID:    operator.ID,
-			OperatorPhone: operator.Phone,
-			Serial:        cab.Serial,
-			Name:          strconv.Itoa(ordinal) + "号仓",
-			Operation:     req.Operation.String(),
-			OperatorRole:  model.CabinetDoorOperatorRoleManager,
-			Success:       success,
-			Remark:        req.Remark,
-			Time:          now.Format(carbon.DateTimeLayout),
-		}
-		dlog.Send()
+	var err error
+
+	defer func() {
+		go func() {
+			// 上传日志
+			dlog := &logging.DoorOperateLog{
+				ID:            shortuuid.New(),
+				Brand:         br.String(),
+				OperatorName:  operator.Name,
+				OperatorID:    operator.ID,
+				OperatorPhone: operator.Phone,
+				Serial:        cab.Serial,
+				Name:          strconv.Itoa(ordinal) + "号仓",
+				Operation:     req.Operation.String(),
+				OperatorRole:  operator.OperatorRole(),
+				Success:       success,
+				Remark:        req.Remark,
+				Time:          now.Format(carbon.DateTimeLayout),
+			}
+			dlog.Send()
+		}()
 	}()
 
 	payload := &cabdef.OperateBinRequest{
@@ -509,17 +509,14 @@ func (s *intelligentCabinetService) Operate(operator *logging.Operator, cab *ent
 		Remark:  req.Remark,
 	}
 
-	_, err := adapter.Post[[]*cabdef.BinOperateResult](s.GetCabinetAdapterUrlX(cab, "/operate/bin"), s.GetAdapterUserX(), payload)
+	_, err = adapter.Post[[]*cabdef.BinOperateResult](s.GetCabinetAdapterUrlX(cab, "/operate/bin"), operator.GetAdapterUserX(), payload)
 
 	success = err == nil
+
 	return
 }
 
 func (s *intelligentCabinetService) Deactivate(operator *logging.Operator, cab *ent.Cabinet, payload *cabdef.BinDeactivateRequest) (success bool) {
-	if operator.Type != model.OperatorTypeManager && operator.Type != model.OperatorTypeMaintainer {
-		snag.Panic("无权限操作")
-	}
-
 	now := time.Now()
 	br := cab.Brand
 
@@ -543,8 +540,8 @@ func (s *intelligentCabinetService) Deactivate(operator *logging.Operator, cab *
 			Serial:        cab.Serial,
 			Name:          strconv.Itoa(payload.Ordinal) + "号仓",
 			Operation:     operation,
-			OperatorRole:  model.CabinetDoorOperatorRoleManager,
-			Success:       success,
+			OperatorRole:  operator.OperatorRole(),
+			Success:       true,
 			Remark:        *payload.Reason,
 			Time:          now.Format(carbon.DateTimeLayout),
 		}

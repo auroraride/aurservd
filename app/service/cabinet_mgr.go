@@ -167,7 +167,7 @@ func (s *cabinetMgrService) Reboot(req *model.IDPostReq) bool {
 			OperatorName:  s.modifier.Name,
 			OperatorID:    s.modifier.ID,
 			OperatorPhone: s.modifier.Phone,
-			OperatorRole:  model.CabinetDoorOperatorRoleManager,
+			OperatorRole:  model.CabinetDoorOperatorRoleManager, // operator.OperatorRole()
 			Serial:        cab.Serial,
 			Operation:     "重启",
 			Success:       status,

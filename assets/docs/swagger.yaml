@@ -5163,19 +5163,13 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.MaintainerBinOperate'
         description: 所有操作均需要提前设电柜为维护状态。open:开仓, lock:锁定, unlock:解锁, disable:禁用, enable:启用
-      ordinal:
-        type: integer
       reason:
-        type: string
-      serial:
         type: string
     required:
     - lat
     - lng
     - operate
-    - ordinal
     - reason
-    - serial
     type: object
   model.MaintainerCabinetDetailRes:
     properties:
@@ -11896,7 +11890,7 @@ paths:
       summary: O2003 电柜操作
       tags:
       - '[O]运维接口'
-  /maintainer/v1/cabinet/{serial}/{ordinal:
+  /maintainer/v1/cabinet/{serial}/{ordinal}:
     post:
       consumes:
       - application/json

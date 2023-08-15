@@ -65,7 +65,7 @@ func (*cabinet) Operate(c echo.Context) (err error) {
 
 // BinOperate
 // @ID           MaintainerCabinetBinOperate
-// @Router       /maintainer/v1/cabinet/{serial}/{ordinal [POST]
+// @Router       /maintainer/v1/cabinet/{serial}/{ordinal} [POST]
 // @Summary      O2004 仓位操作
 // @Tags         [O]运维接口
 // @Accept       json

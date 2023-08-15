@@ -84,8 +84,8 @@ type MaintainerCabinetOperateReq struct {
 }
 
 type MaintainerBinOperateReq struct {
-	Serial  string               `json:"serial" validate:"required" trans:"电柜编号"`
-	Ordinal int                  `json:"ordinal" validate:"required" trans:"仓位序号"`
+	Serial  string               `json:"serial" param:"serial" validate:"required" trans:"电柜编号"`
+	Ordinal int                  `json:"ordinal" param:"ordinal" validate:"required" trans:"仓位序号"`
 	Operate MaintainerBinOperate `json:"operate" validate:"required" trans:"操作"` // 所有操作均需要提前设电柜为维护状态。open:开仓, lock:锁定, unlock:解锁, disable:禁用, enable:启用
 	Lng     float64              `json:"lng" validate:"required" trans:"经度"`
 	Lat     float64              `json:"lat" validate:"required" trans:"纬度"`

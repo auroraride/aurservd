@@ -3859,7 +3859,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/maintainer/v1/cabinet/{serial}/{ordinal": {
+        "/maintainer/v1/cabinet/{serial}/{ordinal}": {
             "post": {
                 "consumes": [
                     "application/json"
@@ -27043,9 +27043,7 @@ const docTemplate = `{
                 "lat",
                 "lng",
                 "operate",
-                "ordinal",
-                "reason",
-                "serial"
+                "reason"
             ],
             "properties": {
                 "lat": {
@@ -27062,13 +27060,7 @@ const docTemplate = `{
                         }
                     ]
                 },
-                "ordinal": {
-                    "type": "integer"
-                },
                 "reason": {
-                    "type": "string"
-                },
-                "serial": {
                     "type": "string"
                 }
             }

@@ -284,8 +284,10 @@ func (cdo CabinetDoorOperate) Value(brand adapter.CabinetBrand) (v string, ex bo
 type CabinetDoorOperatorRole uint8
 
 const (
-	CabinetDoorOperatorRoleManager CabinetDoorOperatorRole = iota + 1 // 后台人员
-	CabinetDoorOperatorRoleRider                                      // 骑手
+	CabinetDoorOperatorRoleManager    CabinetDoorOperatorRole = iota + 1 // 后台人员
+	CabinetDoorOperatorRoleRider                                         // 骑手
+	CabinetDoorOperatorRoleAgent                                         // 代理
+	CabinetDoorOperatorRoleMaintainer                                    // 运维
 )
 
 func (cdor CabinetDoorOperatorRole) String() string {
@@ -294,6 +296,10 @@ func (cdor CabinetDoorOperatorRole) String() string {
 		return "后台人员"
 	case CabinetDoorOperatorRoleRider:
 		return "骑手"
+	case CabinetDoorOperatorRoleAgent:
+		return "代理"
+	case CabinetDoorOperatorRoleMaintainer:
+		return "运维"
 	}
 	return "未知"
 }
