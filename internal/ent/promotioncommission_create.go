@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/model/promotion"
 	"github.com/auroraride/aurservd/internal/ent/promotioncommission"
+	"github.com/auroraride/aurservd/internal/ent/promotioncommissionplan"
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
 )
 
@@ -214,6 +215,21 @@ func (pcc *PromotionCommissionCreate) SetMember(p *PromotionMember) *PromotionCo
 	return pcc.SetMemberID(p.ID)
 }
 
+// AddCommissionPlanIDs adds the "commission_plans" edge to the PromotionCommissionPlan entity by IDs.
+func (pcc *PromotionCommissionCreate) AddCommissionPlanIDs(ids ...uint64) *PromotionCommissionCreate {
+	pcc.mutation.AddCommissionPlanIDs(ids...)
+	return pcc
+}
+
+// AddCommissionPlans adds the "commission_plans" edges to the PromotionCommissionPlan entity.
+func (pcc *PromotionCommissionCreate) AddCommissionPlans(p ...*PromotionCommissionPlan) *PromotionCommissionCreate {
+	ids := make([]uint64, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pcc.AddCommissionPlanIDs(ids...)
+}
+
 // Mutation returns the PromotionCommissionMutation object of the builder.
 func (pcc *PromotionCommissionCreate) Mutation() *PromotionCommissionMutation {
 	return pcc.mutation
@@ -405,6 +421,22 @@ func (pcc *PromotionCommissionCreate) createSpec() (*PromotionCommission, *sqlgr
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.MemberID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pcc.mutation.CommissionPlansIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   promotioncommission.CommissionPlansTable,
+			Columns: []string{promotioncommission.CommissionPlansColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(promotioncommissionplan.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

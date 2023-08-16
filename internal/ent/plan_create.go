@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/plan"
+	"github.com/auroraride/aurservd/internal/ent/promotioncommissionplan"
 )
 
 // PlanCreate is the builder for creating a Plan entity.
@@ -177,20 +178,6 @@ func (pc *PlanCreate) SetCommission(f float64) *PlanCreate {
 	return pc
 }
 
-// SetCommissionBase sets the "commission_base" field.
-func (pc *PlanCreate) SetCommissionBase(f float64) *PlanCreate {
-	pc.mutation.SetCommissionBase(f)
-	return pc
-}
-
-// SetNillableCommissionBase sets the "commission_base" field if the given value is not nil.
-func (pc *PlanCreate) SetNillableCommissionBase(f *float64) *PlanCreate {
-	if f != nil {
-		pc.SetCommissionBase(*f)
-	}
-	return pc
-}
-
 // SetOriginal sets the "original" field.
 func (pc *PlanCreate) SetOriginal(f float64) *PlanCreate {
 	pc.mutation.SetOriginal(f)
@@ -307,6 +294,21 @@ func (pc *PlanCreate) AddComplexes(p ...*Plan) *PlanCreate {
 	return pc.AddComplexIDs(ids...)
 }
 
+// AddCommissionPlanIDs adds the "commission_plans" edge to the PromotionCommissionPlan entity by IDs.
+func (pc *PlanCreate) AddCommissionPlanIDs(ids ...uint64) *PlanCreate {
+	pc.mutation.AddCommissionPlanIDs(ids...)
+	return pc
+}
+
+// AddCommissionPlans adds the "commission_plans" edges to the PromotionCommissionPlan entity.
+func (pc *PlanCreate) AddCommissionPlans(p ...*PromotionCommissionPlan) *PlanCreate {
+	ids := make([]uint64, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pc.AddCommissionPlanIDs(ids...)
+}
+
 // Mutation returns the PlanMutation object of the builder.
 func (pc *PlanCreate) Mutation() *PlanMutation {
 	return pc.mutation
@@ -361,10 +363,6 @@ func (pc *PlanCreate) defaults() error {
 	if _, ok := pc.mutation.GetType(); !ok {
 		v := plan.DefaultType
 		pc.mutation.SetType(v)
-	}
-	if _, ok := pc.mutation.CommissionBase(); !ok {
-		v := plan.DefaultCommissionBase
-		pc.mutation.SetCommissionBase(v)
 	}
 	if _, ok := pc.mutation.DiscountNewly(); !ok {
 		v := plan.DefaultDiscountNewly
@@ -502,10 +500,6 @@ func (pc *PlanCreate) createSpec() (*Plan, *sqlgraph.CreateSpec) {
 		_spec.SetField(plan.FieldCommission, field.TypeFloat64, value)
 		_node.Commission = value
 	}
-	if value, ok := pc.mutation.CommissionBase(); ok {
-		_spec.SetField(plan.FieldCommissionBase, field.TypeFloat64, value)
-		_node.CommissionBase = value
-	}
 	if value, ok := pc.mutation.Original(); ok {
 		_spec.SetField(plan.FieldOriginal, field.TypeFloat64, value)
 		_node.Original = value
@@ -585,6 +579,22 @@ func (pc *PlanCreate) createSpec() (*Plan, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.CommissionPlansIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   plan.CommissionPlansTable,
+			Columns: []string{plan.CommissionPlansColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(promotioncommissionplan.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -863,30 +873,6 @@ func (u *PlanUpsert) UpdateCommission() *PlanUpsert {
 // AddCommission adds v to the "commission" field.
 func (u *PlanUpsert) AddCommission(v float64) *PlanUpsert {
 	u.Add(plan.FieldCommission, v)
-	return u
-}
-
-// SetCommissionBase sets the "commission_base" field.
-func (u *PlanUpsert) SetCommissionBase(v float64) *PlanUpsert {
-	u.Set(plan.FieldCommissionBase, v)
-	return u
-}
-
-// UpdateCommissionBase sets the "commission_base" field to the value that was provided on create.
-func (u *PlanUpsert) UpdateCommissionBase() *PlanUpsert {
-	u.SetExcluded(plan.FieldCommissionBase)
-	return u
-}
-
-// AddCommissionBase adds v to the "commission_base" field.
-func (u *PlanUpsert) AddCommissionBase(v float64) *PlanUpsert {
-	u.Add(plan.FieldCommissionBase, v)
-	return u
-}
-
-// ClearCommissionBase clears the value of the "commission_base" field.
-func (u *PlanUpsert) ClearCommissionBase() *PlanUpsert {
-	u.SetNull(plan.FieldCommissionBase)
 	return u
 }
 
@@ -1302,34 +1288,6 @@ func (u *PlanUpsertOne) AddCommission(v float64) *PlanUpsertOne {
 func (u *PlanUpsertOne) UpdateCommission() *PlanUpsertOne {
 	return u.Update(func(s *PlanUpsert) {
 		s.UpdateCommission()
-	})
-}
-
-// SetCommissionBase sets the "commission_base" field.
-func (u *PlanUpsertOne) SetCommissionBase(v float64) *PlanUpsertOne {
-	return u.Update(func(s *PlanUpsert) {
-		s.SetCommissionBase(v)
-	})
-}
-
-// AddCommissionBase adds v to the "commission_base" field.
-func (u *PlanUpsertOne) AddCommissionBase(v float64) *PlanUpsertOne {
-	return u.Update(func(s *PlanUpsert) {
-		s.AddCommissionBase(v)
-	})
-}
-
-// UpdateCommissionBase sets the "commission_base" field to the value that was provided on create.
-func (u *PlanUpsertOne) UpdateCommissionBase() *PlanUpsertOne {
-	return u.Update(func(s *PlanUpsert) {
-		s.UpdateCommissionBase()
-	})
-}
-
-// ClearCommissionBase clears the value of the "commission_base" field.
-func (u *PlanUpsertOne) ClearCommissionBase() *PlanUpsertOne {
-	return u.Update(func(s *PlanUpsert) {
-		s.ClearCommissionBase()
 	})
 }
 
@@ -1925,34 +1883,6 @@ func (u *PlanUpsertBulk) AddCommission(v float64) *PlanUpsertBulk {
 func (u *PlanUpsertBulk) UpdateCommission() *PlanUpsertBulk {
 	return u.Update(func(s *PlanUpsert) {
 		s.UpdateCommission()
-	})
-}
-
-// SetCommissionBase sets the "commission_base" field.
-func (u *PlanUpsertBulk) SetCommissionBase(v float64) *PlanUpsertBulk {
-	return u.Update(func(s *PlanUpsert) {
-		s.SetCommissionBase(v)
-	})
-}
-
-// AddCommissionBase adds v to the "commission_base" field.
-func (u *PlanUpsertBulk) AddCommissionBase(v float64) *PlanUpsertBulk {
-	return u.Update(func(s *PlanUpsert) {
-		s.AddCommissionBase(v)
-	})
-}
-
-// UpdateCommissionBase sets the "commission_base" field to the value that was provided on create.
-func (u *PlanUpsertBulk) UpdateCommissionBase() *PlanUpsertBulk {
-	return u.Update(func(s *PlanUpsert) {
-		s.UpdateCommissionBase()
-	})
-}
-
-// ClearCommissionBase clears the value of the "commission_base" field.
-func (u *PlanUpsertBulk) ClearCommissionBase() *PlanUpsertBulk {
-	return u.Update(func(s *PlanUpsert) {
-		s.ClearCommissionBase()
 	})
 }
 

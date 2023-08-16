@@ -1191,6 +1191,30 @@ func (f PromotionCommissionMutationRuleFunc) EvalMutation(ctx context.Context, m
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.PromotionCommissionMutation", m)
 }
 
+// The PromotionCommissionPlanQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type PromotionCommissionPlanQueryRuleFunc func(context.Context, *ent.PromotionCommissionPlanQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f PromotionCommissionPlanQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.PromotionCommissionPlanQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.PromotionCommissionPlanQuery", q)
+}
+
+// The PromotionCommissionPlanMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type PromotionCommissionPlanMutationRuleFunc func(context.Context, *ent.PromotionCommissionPlanMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f PromotionCommissionPlanMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.PromotionCommissionPlanMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.PromotionCommissionPlanMutation", m)
+}
+
 // The PromotionEarningsQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type PromotionEarningsQueryRuleFunc func(context.Context, *ent.PromotionEarningsQuery) error
@@ -1309,6 +1333,30 @@ func (f PromotionMemberMutationRuleFunc) EvalMutation(ctx context.Context, m ent
 		return f(ctx, m)
 	}
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.PromotionMemberMutation", m)
+}
+
+// The PromotionMemberCommissionQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type PromotionMemberCommissionQueryRuleFunc func(context.Context, *ent.PromotionMemberCommissionQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f PromotionMemberCommissionQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.PromotionMemberCommissionQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.PromotionMemberCommissionQuery", q)
+}
+
+// The PromotionMemberCommissionMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type PromotionMemberCommissionMutationRuleFunc func(context.Context, *ent.PromotionMemberCommissionMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f PromotionMemberCommissionMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.PromotionMemberCommissionMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.PromotionMemberCommissionMutation", m)
 }
 
 // The PromotionPersonQueryRuleFunc type is an adapter to allow the use of ordinary
@@ -1868,6 +1916,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.PromotionCommissionQuery:
 		return q.Filter(), nil
+	case *ent.PromotionCommissionPlanQuery:
+		return q.Filter(), nil
 	case *ent.PromotionEarningsQuery:
 		return q.Filter(), nil
 	case *ent.PromotionGrowthQuery:
@@ -1877,6 +1927,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 	case *ent.PromotionLevelTaskQuery:
 		return q.Filter(), nil
 	case *ent.PromotionMemberQuery:
+		return q.Filter(), nil
+	case *ent.PromotionMemberCommissionQuery:
 		return q.Filter(), nil
 	case *ent.PromotionPersonQuery:
 		return q.Filter(), nil
@@ -2011,6 +2063,8 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 		return m.Filter(), nil
 	case *ent.PromotionCommissionMutation:
 		return m.Filter(), nil
+	case *ent.PromotionCommissionPlanMutation:
+		return m.Filter(), nil
 	case *ent.PromotionEarningsMutation:
 		return m.Filter(), nil
 	case *ent.PromotionGrowthMutation:
@@ -2020,6 +2074,8 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.PromotionLevelTaskMutation:
 		return m.Filter(), nil
 	case *ent.PromotionMemberMutation:
+		return m.Filter(), nil
+	case *ent.PromotionMemberCommissionMutation:
 		return m.Filter(), nil
 	case *ent.PromotionPersonMutation:
 		return m.Filter(), nil

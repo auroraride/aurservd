@@ -52,8 +52,6 @@ type Plan struct {
 	Days uint `json:"days,omitempty"`
 	// 提成
 	Commission float64 `json:"commission,omitempty"`
-	// 提成底数
-	CommissionBase float64 `json:"commission_base,omitempty"`
 	// 原价
 	Original float64 `json:"original,omitempty"`
 	// 优惠信息
@@ -82,9 +80,11 @@ type PlanEdges struct {
 	Parent *Plan `json:"parent,omitempty"`
 	// Complexes holds the value of the complexes edge.
 	Complexes []*Plan `json:"complexes,omitempty"`
+	// CommissionPlans holds the value of the commission_plans edge.
+	CommissionPlans []*PromotionCommissionPlan `json:"commission_plans,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [5]bool
 }
 
 // BrandOrErr returns the Brand value or an error if the edge
@@ -131,6 +131,15 @@ func (e PlanEdges) ComplexesOrErr() ([]*Plan, error) {
 	return nil, &NotLoadedError{edge: "complexes"}
 }
 
+// CommissionPlansOrErr returns the CommissionPlans value or an error if the edge
+// was not loaded in eager-loading.
+func (e PlanEdges) CommissionPlansOrErr() ([]*PromotionCommissionPlan, error) {
+	if e.loadedTypes[4] {
+		return e.CommissionPlans, nil
+	}
+	return nil, &NotLoadedError{edge: "commission_plans"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Plan) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -140,7 +149,7 @@ func (*Plan) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case plan.FieldEnable, plan.FieldIntelligent:
 			values[i] = new(sql.NullBool)
-		case plan.FieldPrice, plan.FieldCommission, plan.FieldCommissionBase, plan.FieldOriginal, plan.FieldDiscountNewly:
+		case plan.FieldPrice, plan.FieldCommission, plan.FieldOriginal, plan.FieldDiscountNewly:
 			values[i] = new(sql.NullFloat64)
 		case plan.FieldID, plan.FieldBrandID, plan.FieldType, plan.FieldDays, plan.FieldParentID:
 			values[i] = new(sql.NullInt64)
@@ -271,12 +280,6 @@ func (pl *Plan) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pl.Commission = value.Float64
 			}
-		case plan.FieldCommissionBase:
-			if value, ok := values[i].(*sql.NullFloat64); !ok {
-				return fmt.Errorf("unexpected type %T for field commission_base", values[i])
-			} else if value.Valid {
-				pl.CommissionBase = value.Float64
-			}
 		case plan.FieldOriginal:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
 				return fmt.Errorf("unexpected type %T for field original", values[i])
@@ -347,6 +350,11 @@ func (pl *Plan) QueryParent() *PlanQuery {
 // QueryComplexes queries the "complexes" edge of the Plan entity.
 func (pl *Plan) QueryComplexes() *PlanQuery {
 	return NewPlanClient(pl.config).QueryComplexes(pl)
+}
+
+// QueryCommissionPlans queries the "commission_plans" edge of the Plan entity.
+func (pl *Plan) QueryCommissionPlans() *PromotionCommissionPlanQuery {
+	return NewPlanClient(pl.config).QueryCommissionPlans(pl)
 }
 
 // Update returns a builder for updating this Plan.
@@ -423,9 +431,6 @@ func (pl *Plan) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("commission=")
 	builder.WriteString(fmt.Sprintf("%v", pl.Commission))
-	builder.WriteString(", ")
-	builder.WriteString("commission_base=")
-	builder.WriteString(fmt.Sprintf("%v", pl.CommissionBase))
 	builder.WriteString(", ")
 	builder.WriteString("original=")
 	builder.WriteString(fmt.Sprintf("%v", pl.Original))

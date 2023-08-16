@@ -549,6 +549,18 @@ func (f PromotionCommissionFunc) Mutate(ctx context.Context, m ent.Mutation) (en
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PromotionCommissionMutation", m)
 }
 
+// The PromotionCommissionPlanFunc type is an adapter to allow the use of ordinary
+// function as PromotionCommissionPlan mutator.
+type PromotionCommissionPlanFunc func(context.Context, *ent.PromotionCommissionPlanMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PromotionCommissionPlanFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.PromotionCommissionPlanMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PromotionCommissionPlanMutation", m)
+}
+
 // The PromotionEarningsFunc type is an adapter to allow the use of ordinary
 // function as PromotionEarnings mutator.
 type PromotionEarningsFunc func(context.Context, *ent.PromotionEarningsMutation) (ent.Value, error)
@@ -607,6 +619,18 @@ func (f PromotionMemberFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Va
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PromotionMemberMutation", m)
+}
+
+// The PromotionMemberCommissionFunc type is an adapter to allow the use of ordinary
+// function as PromotionMemberCommission mutator.
+type PromotionMemberCommissionFunc func(context.Context, *ent.PromotionMemberCommissionMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PromotionMemberCommissionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.PromotionMemberCommissionMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PromotionMemberCommissionMutation", m)
 }
 
 // The PromotionPersonFunc type is an adapter to allow the use of ordinary

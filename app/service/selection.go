@@ -116,6 +116,74 @@ func (s *selectionService) Plan(req *model.PlanSelectionReq) (items []model.Casc
 	return
 }
 
+// CommissionPlan 返佣方案筛选骑士卡
+func (s *selectionService) CommissionPlan(req *model.CommissionPlanSelectionReq) (items []model.CascaderOptionLevel3) {
+	items = make([]model.CascaderOptionLevel3, 0)
+
+	now := time.Now()
+	q := ent.Database.Plan.QueryNotDeleted().Where(
+		plan.StartLTE(now),
+		plan.EndGTE(now),
+		plan.Enable(true),
+		plan.ParentIDIsNil(),
+	).WithComplexes(func(pq *ent.PlanQuery) {
+		pq.Where(plan.DeletedAtIsNil())
+	})
+
+	if req.Keyword != nil {
+		q.Where(
+			plan.NameContainsFold(*req.Keyword),
+		)
+	}
+
+	all, _ := q.All(s.ctx)
+	if all == nil {
+		return items
+	}
+
+	cmap := make(map[uint64]model.CascaderOptionLevel3)
+	for _, r := range all {
+		// 根据骑士卡分组
+		if _, ok := cmap[r.ID]; !ok {
+			cmap[r.ID] = model.CascaderOptionLevel3{
+				SelectOption: model.SelectOption{
+					Value: r.ID,
+					Label: r.Name,
+				},
+				Children: silk.Pointer(make([]model.CascaderOptionLevel2, 0)),
+			}
+		}
+
+		l2c := cmap[r.ID].Children
+
+		p := NewPlan().PlanWithComplexes(r)
+		children := make([]model.SelectOption, 0)
+
+		for _, arr := range p.Complexes {
+			for _, cl := range *arr {
+				children = append(children, model.SelectOption{
+					Value: cl.ID,
+					Label: fmt.Sprintf(" %d天 - %.2f元", cl.Days, cl.Price),
+				})
+			}
+		}
+
+		*l2c = append(*l2c, model.CascaderOptionLevel2{
+			SelectOption: model.SelectOption{
+				Value: p.ID,
+				Label: p.Model,
+			},
+			Children: children,
+		})
+
+	}
+	items = make([]model.CascaderOptionLevel3, 0)
+	for _, m := range cmap {
+		items = append(items, m)
+	}
+	return
+}
+
 // Rider 筛选骑手
 func (s *selectionService) Rider(req *model.RiderSelectionReq) (items []model.SelectOption) {
 	q := ent.Database.Rider.QueryNotDeleted()

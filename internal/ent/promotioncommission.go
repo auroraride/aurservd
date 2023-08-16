@@ -35,7 +35,7 @@ type PromotionCommission struct {
 	Remark string `json:"remark,omitempty"`
 	// MemberID holds the value of the "member_id" field.
 	MemberID *uint64 `json:"member_id,omitempty"`
-	// 类型 0:全局 1:通用 2:个人
+	// 类型 0:默认 1:通用 2:个人
 	Type *uint8 `json:"type,omitempty"`
 	// 方案名
 	Name string `json:"name,omitempty"`
@@ -63,9 +63,11 @@ type PromotionCommission struct {
 type PromotionCommissionEdges struct {
 	// Member holds the value of the member edge.
 	Member *PromotionMember `json:"member,omitempty"`
+	// CommissionPlans holds the value of the commission_plans edge.
+	CommissionPlans []*PromotionCommissionPlan `json:"commission_plans,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // MemberOrErr returns the Member value or an error if the edge
@@ -79,6 +81,15 @@ func (e PromotionCommissionEdges) MemberOrErr() (*PromotionMember, error) {
 		return e.Member, nil
 	}
 	return nil, &NotLoadedError{edge: "member"}
+}
+
+// CommissionPlansOrErr returns the CommissionPlans value or an error if the edge
+// was not loaded in eager-loading.
+func (e PromotionCommissionEdges) CommissionPlansOrErr() ([]*PromotionCommissionPlan, error) {
+	if e.loadedTypes[1] {
+		return e.CommissionPlans, nil
+	}
+	return nil, &NotLoadedError{edge: "commission_plans"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -245,6 +256,11 @@ func (pc *PromotionCommission) Value(name string) (ent.Value, error) {
 // QueryMember queries the "member" edge of the PromotionCommission entity.
 func (pc *PromotionCommission) QueryMember() *PromotionMemberQuery {
 	return NewPromotionCommissionClient(pc.config).QueryMember(pc)
+}
+
+// QueryCommissionPlans queries the "commission_plans" edge of the PromotionCommission entity.
+func (pc *PromotionCommission) QueryCommissionPlans() *PromotionCommissionPlanQuery {
+	return NewPromotionCommissionClient(pc.config).QueryCommissionPlans(pc)
 }
 
 // Update returns a builder for updating this PromotionCommission.

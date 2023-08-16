@@ -532,6 +532,16 @@ func (pc *PromotionCommission) GetName() string {
 	return pc.Name
 }
 
+// GetTableName returns table name for PromotionCommissionPlan.
+func (pcp *PromotionCommissionPlan) GetTableName() string {
+	return "promotion_commission_plan"
+}
+
+// GetID returns id for PromotionCommissionPlan.
+func (pcp *PromotionCommissionPlan) GetID() uint64 {
+	return pcp.ID
+}
+
 // GetTableName returns table name for PromotionEarnings.
 func (pe *PromotionEarnings) GetTableName() string {
 	return "promotion_earnings"
@@ -588,6 +598,16 @@ func (pm *PromotionMember) GetID() uint64 {
 
 func (pm *PromotionMember) GetName() string {
 	return pm.Name
+}
+
+// GetTableName returns table name for PromotionMemberCommission.
+func (pmc *PromotionMemberCommission) GetTableName() string {
+	return "promotion_member_commission"
+}
+
+// GetID returns id for PromotionMemberCommission.
+func (pmc *PromotionMemberCommission) GetID() uint64 {
+	return pmc.ID
 }
 
 // GetTableName returns table name for PromotionPerson.

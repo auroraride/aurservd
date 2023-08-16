@@ -248,3 +248,17 @@ func (*selection) BatterySerial(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.BatterySearchReq](c)
 	return ctx.SendResponse(service.NewSelection().BatterySerialSearch(req))
 }
+
+// CommissionPlan
+// @ID           ManagerSelectionCommissionPlan
+// @Router       /manager/v1/selection/commission/plan [GET]
+// @Summary      MB017 返佣方案筛选骑士卡
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        query  query  model.CommissionPlanSelectionReq  true  "请求参数"
+// @Success      200  {object}  []model.SelectOption  "请求成功"
+func (*selection) CommissionPlan(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[model.CommissionPlanSelectionReq](c)
+	return ctx.SendResponse(service.NewSelection().CommissionPlan(req))
+}

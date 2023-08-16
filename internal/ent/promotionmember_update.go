@@ -14,9 +14,9 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/promotionbankcard"
-	"github.com/auroraride/aurservd/internal/ent/promotioncommission"
 	"github.com/auroraride/aurservd/internal/ent/promotionlevel"
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
+	"github.com/auroraride/aurservd/internal/ent/promotionmembercommission"
 	"github.com/auroraride/aurservd/internal/ent/promotionperson"
 	"github.com/auroraride/aurservd/internal/ent/promotionreferrals"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -131,26 +131,6 @@ func (pmu *PromotionMemberUpdate) SetNillableLevelID(u *uint64) *PromotionMember
 // ClearLevelID clears the value of the "level_id" field.
 func (pmu *PromotionMemberUpdate) ClearLevelID() *PromotionMemberUpdate {
 	pmu.mutation.ClearLevelID()
-	return pmu
-}
-
-// SetCommissionID sets the "commission_id" field.
-func (pmu *PromotionMemberUpdate) SetCommissionID(u uint64) *PromotionMemberUpdate {
-	pmu.mutation.SetCommissionID(u)
-	return pmu
-}
-
-// SetNillableCommissionID sets the "commission_id" field if the given value is not nil.
-func (pmu *PromotionMemberUpdate) SetNillableCommissionID(u *uint64) *PromotionMemberUpdate {
-	if u != nil {
-		pmu.SetCommissionID(*u)
-	}
-	return pmu
-}
-
-// ClearCommissionID clears the value of the "commission_id" field.
-func (pmu *PromotionMemberUpdate) ClearCommissionID() *PromotionMemberUpdate {
-	pmu.mutation.ClearCommissionID()
 	return pmu
 }
 
@@ -370,11 +350,6 @@ func (pmu *PromotionMemberUpdate) SetLevel(p *PromotionLevel) *PromotionMemberUp
 	return pmu.SetLevelID(p.ID)
 }
 
-// SetCommission sets the "commission" edge to the PromotionCommission entity.
-func (pmu *PromotionMemberUpdate) SetCommission(p *PromotionCommission) *PromotionMemberUpdate {
-	return pmu.SetCommissionID(p.ID)
-}
-
 // AddReferringIDs adds the "referring" edge to the PromotionReferrals entity by IDs.
 func (pmu *PromotionMemberUpdate) AddReferringIDs(ids ...uint64) *PromotionMemberUpdate {
 	pmu.mutation.AddReferringIDs(ids...)
@@ -429,6 +404,21 @@ func (pmu *PromotionMemberUpdate) AddCards(p ...*PromotionBankCard) *PromotionMe
 	return pmu.AddCardIDs(ids...)
 }
 
+// AddCommissionIDs adds the "commissions" edge to the PromotionMemberCommission entity by IDs.
+func (pmu *PromotionMemberUpdate) AddCommissionIDs(ids ...uint64) *PromotionMemberUpdate {
+	pmu.mutation.AddCommissionIDs(ids...)
+	return pmu
+}
+
+// AddCommissions adds the "commissions" edges to the PromotionMemberCommission entity.
+func (pmu *PromotionMemberUpdate) AddCommissions(p ...*PromotionMemberCommission) *PromotionMemberUpdate {
+	ids := make([]uint64, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pmu.AddCommissionIDs(ids...)
+}
+
 // Mutation returns the PromotionMemberMutation object of the builder.
 func (pmu *PromotionMemberUpdate) Mutation() *PromotionMemberMutation {
 	return pmu.mutation
@@ -443,12 +433,6 @@ func (pmu *PromotionMemberUpdate) ClearRider() *PromotionMemberUpdate {
 // ClearLevel clears the "level" edge to the PromotionLevel entity.
 func (pmu *PromotionMemberUpdate) ClearLevel() *PromotionMemberUpdate {
 	pmu.mutation.ClearLevel()
-	return pmu
-}
-
-// ClearCommission clears the "commission" edge to the PromotionCommission entity.
-func (pmu *PromotionMemberUpdate) ClearCommission() *PromotionMemberUpdate {
-	pmu.mutation.ClearCommission()
 	return pmu
 }
 
@@ -504,6 +488,27 @@ func (pmu *PromotionMemberUpdate) RemoveCards(p ...*PromotionBankCard) *Promotio
 		ids[i] = p[i].ID
 	}
 	return pmu.RemoveCardIDs(ids...)
+}
+
+// ClearCommissions clears all "commissions" edges to the PromotionMemberCommission entity.
+func (pmu *PromotionMemberUpdate) ClearCommissions() *PromotionMemberUpdate {
+	pmu.mutation.ClearCommissions()
+	return pmu
+}
+
+// RemoveCommissionIDs removes the "commissions" edge to PromotionMemberCommission entities by IDs.
+func (pmu *PromotionMemberUpdate) RemoveCommissionIDs(ids ...uint64) *PromotionMemberUpdate {
+	pmu.mutation.RemoveCommissionIDs(ids...)
+	return pmu
+}
+
+// RemoveCommissions removes "commissions" edges to PromotionMemberCommission entities.
+func (pmu *PromotionMemberUpdate) RemoveCommissions(p ...*PromotionMemberCommission) *PromotionMemberUpdate {
+	ids := make([]uint64, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pmu.RemoveCommissionIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -699,35 +704,6 @@ func (pmu *PromotionMemberUpdate) sqlSave(ctx context.Context) (n int, err error
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if pmu.mutation.CommissionCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   promotionmember.CommissionTable,
-			Columns: []string{promotionmember.CommissionColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(promotioncommission.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := pmu.mutation.CommissionIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   promotionmember.CommissionTable,
-			Columns: []string{promotionmember.CommissionColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(promotioncommission.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if pmu.mutation.ReferringCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -876,6 +852,51 @@ func (pmu *PromotionMemberUpdate) sqlSave(ctx context.Context) (n int, err error
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if pmu.mutation.CommissionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   promotionmember.CommissionsTable,
+			Columns: []string{promotionmember.CommissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(promotionmembercommission.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pmu.mutation.RemovedCommissionsIDs(); len(nodes) > 0 && !pmu.mutation.CommissionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   promotionmember.CommissionsTable,
+			Columns: []string{promotionmember.CommissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(promotionmembercommission.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pmu.mutation.CommissionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   promotionmember.CommissionsTable,
+			Columns: []string{promotionmember.CommissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(promotionmembercommission.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(pmu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, pmu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -993,26 +1014,6 @@ func (pmuo *PromotionMemberUpdateOne) SetNillableLevelID(u *uint64) *PromotionMe
 // ClearLevelID clears the value of the "level_id" field.
 func (pmuo *PromotionMemberUpdateOne) ClearLevelID() *PromotionMemberUpdateOne {
 	pmuo.mutation.ClearLevelID()
-	return pmuo
-}
-
-// SetCommissionID sets the "commission_id" field.
-func (pmuo *PromotionMemberUpdateOne) SetCommissionID(u uint64) *PromotionMemberUpdateOne {
-	pmuo.mutation.SetCommissionID(u)
-	return pmuo
-}
-
-// SetNillableCommissionID sets the "commission_id" field if the given value is not nil.
-func (pmuo *PromotionMemberUpdateOne) SetNillableCommissionID(u *uint64) *PromotionMemberUpdateOne {
-	if u != nil {
-		pmuo.SetCommissionID(*u)
-	}
-	return pmuo
-}
-
-// ClearCommissionID clears the value of the "commission_id" field.
-func (pmuo *PromotionMemberUpdateOne) ClearCommissionID() *PromotionMemberUpdateOne {
-	pmuo.mutation.ClearCommissionID()
 	return pmuo
 }
 
@@ -1232,11 +1233,6 @@ func (pmuo *PromotionMemberUpdateOne) SetLevel(p *PromotionLevel) *PromotionMemb
 	return pmuo.SetLevelID(p.ID)
 }
 
-// SetCommission sets the "commission" edge to the PromotionCommission entity.
-func (pmuo *PromotionMemberUpdateOne) SetCommission(p *PromotionCommission) *PromotionMemberUpdateOne {
-	return pmuo.SetCommissionID(p.ID)
-}
-
 // AddReferringIDs adds the "referring" edge to the PromotionReferrals entity by IDs.
 func (pmuo *PromotionMemberUpdateOne) AddReferringIDs(ids ...uint64) *PromotionMemberUpdateOne {
 	pmuo.mutation.AddReferringIDs(ids...)
@@ -1291,6 +1287,21 @@ func (pmuo *PromotionMemberUpdateOne) AddCards(p ...*PromotionBankCard) *Promoti
 	return pmuo.AddCardIDs(ids...)
 }
 
+// AddCommissionIDs adds the "commissions" edge to the PromotionMemberCommission entity by IDs.
+func (pmuo *PromotionMemberUpdateOne) AddCommissionIDs(ids ...uint64) *PromotionMemberUpdateOne {
+	pmuo.mutation.AddCommissionIDs(ids...)
+	return pmuo
+}
+
+// AddCommissions adds the "commissions" edges to the PromotionMemberCommission entity.
+func (pmuo *PromotionMemberUpdateOne) AddCommissions(p ...*PromotionMemberCommission) *PromotionMemberUpdateOne {
+	ids := make([]uint64, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pmuo.AddCommissionIDs(ids...)
+}
+
 // Mutation returns the PromotionMemberMutation object of the builder.
 func (pmuo *PromotionMemberUpdateOne) Mutation() *PromotionMemberMutation {
 	return pmuo.mutation
@@ -1305,12 +1316,6 @@ func (pmuo *PromotionMemberUpdateOne) ClearRider() *PromotionMemberUpdateOne {
 // ClearLevel clears the "level" edge to the PromotionLevel entity.
 func (pmuo *PromotionMemberUpdateOne) ClearLevel() *PromotionMemberUpdateOne {
 	pmuo.mutation.ClearLevel()
-	return pmuo
-}
-
-// ClearCommission clears the "commission" edge to the PromotionCommission entity.
-func (pmuo *PromotionMemberUpdateOne) ClearCommission() *PromotionMemberUpdateOne {
-	pmuo.mutation.ClearCommission()
 	return pmuo
 }
 
@@ -1366,6 +1371,27 @@ func (pmuo *PromotionMemberUpdateOne) RemoveCards(p ...*PromotionBankCard) *Prom
 		ids[i] = p[i].ID
 	}
 	return pmuo.RemoveCardIDs(ids...)
+}
+
+// ClearCommissions clears all "commissions" edges to the PromotionMemberCommission entity.
+func (pmuo *PromotionMemberUpdateOne) ClearCommissions() *PromotionMemberUpdateOne {
+	pmuo.mutation.ClearCommissions()
+	return pmuo
+}
+
+// RemoveCommissionIDs removes the "commissions" edge to PromotionMemberCommission entities by IDs.
+func (pmuo *PromotionMemberUpdateOne) RemoveCommissionIDs(ids ...uint64) *PromotionMemberUpdateOne {
+	pmuo.mutation.RemoveCommissionIDs(ids...)
+	return pmuo
+}
+
+// RemoveCommissions removes "commissions" edges to PromotionMemberCommission entities.
+func (pmuo *PromotionMemberUpdateOne) RemoveCommissions(p ...*PromotionMemberCommission) *PromotionMemberUpdateOne {
+	ids := make([]uint64, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pmuo.RemoveCommissionIDs(ids...)
 }
 
 // Where appends a list predicates to the PromotionMemberUpdate builder.
@@ -1591,35 +1617,6 @@ func (pmuo *PromotionMemberUpdateOne) sqlSave(ctx context.Context) (_node *Promo
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if pmuo.mutation.CommissionCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   promotionmember.CommissionTable,
-			Columns: []string{promotionmember.CommissionColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(promotioncommission.FieldID, field.TypeUint64),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := pmuo.mutation.CommissionIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   promotionmember.CommissionTable,
-			Columns: []string{promotionmember.CommissionColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(promotioncommission.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if pmuo.mutation.ReferringCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -1761,6 +1758,51 @@ func (pmuo *PromotionMemberUpdateOne) sqlSave(ctx context.Context) (_node *Promo
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(promotionbankcard.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if pmuo.mutation.CommissionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   promotionmember.CommissionsTable,
+			Columns: []string{promotionmember.CommissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(promotionmembercommission.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pmuo.mutation.RemovedCommissionsIDs(); len(nodes) > 0 && !pmuo.mutation.CommissionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   promotionmember.CommissionsTable,
+			Columns: []string{promotionmember.CommissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(promotionmembercommission.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pmuo.mutation.CommissionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   promotionmember.CommissionsTable,
+			Columns: []string{promotionmember.CommissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(promotionmembercommission.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

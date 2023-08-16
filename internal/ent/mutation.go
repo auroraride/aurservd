@@ -60,11 +60,13 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/promotionachievement"
 	"github.com/auroraride/aurservd/internal/ent/promotionbankcard"
 	"github.com/auroraride/aurservd/internal/ent/promotioncommission"
+	"github.com/auroraride/aurservd/internal/ent/promotioncommissionplan"
 	"github.com/auroraride/aurservd/internal/ent/promotionearnings"
 	"github.com/auroraride/aurservd/internal/ent/promotiongrowth"
 	"github.com/auroraride/aurservd/internal/ent/promotionlevel"
 	"github.com/auroraride/aurservd/internal/ent/promotionleveltask"
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
+	"github.com/auroraride/aurservd/internal/ent/promotionmembercommission"
 	"github.com/auroraride/aurservd/internal/ent/promotionperson"
 	"github.com/auroraride/aurservd/internal/ent/promotionprivilege"
 	"github.com/auroraride/aurservd/internal/ent/promotionreferrals"
@@ -95,74 +97,76 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeAgent                 = "Agent"
-	TypeAllocate              = "Allocate"
-	TypeAssistance            = "Assistance"
-	TypeAttendance            = "Attendance"
-	TypeBattery               = "Battery"
-	TypeBatteryFlow           = "BatteryFlow"
-	TypeBatteryModel          = "BatteryModel"
-	TypeBranch                = "Branch"
-	TypeBranchContract        = "BranchContract"
-	TypeBusiness              = "Business"
-	TypeCabinet               = "Cabinet"
-	TypeCabinetFault          = "CabinetFault"
-	TypeCity                  = "City"
-	TypeCommission            = "Commission"
-	TypeContract              = "Contract"
-	TypeCoupon                = "Coupon"
-	TypeCouponAssembly        = "CouponAssembly"
-	TypeCouponTemplate        = "CouponTemplate"
-	TypeEbike                 = "Ebike"
-	TypeEbikeBrand            = "EbikeBrand"
-	TypeEmployee              = "Employee"
-	TypeEnterprise            = "Enterprise"
-	TypeEnterpriseBatterySwap = "EnterpriseBatterySwap"
-	TypeEnterpriseBill        = "EnterpriseBill"
-	TypeEnterpriseContract    = "EnterpriseContract"
-	TypeEnterprisePrepayment  = "EnterprisePrepayment"
-	TypeEnterprisePrice       = "EnterprisePrice"
-	TypeEnterpriseStatement   = "EnterpriseStatement"
-	TypeEnterpriseStation     = "EnterpriseStation"
-	TypeException             = "Exception"
-	TypeExchange              = "Exchange"
-	TypeExport                = "Export"
-	TypeFeedback              = "Feedback"
-	TypeInventory             = "Inventory"
-	TypeMaintainer            = "Maintainer"
-	TypeManager               = "Manager"
-	TypeOrder                 = "Order"
-	TypeOrderRefund           = "OrderRefund"
-	TypePerson                = "Person"
-	TypePlan                  = "Plan"
-	TypePlanIntroduce         = "PlanIntroduce"
-	TypePointLog              = "PointLog"
-	TypePromotionAchievement  = "PromotionAchievement"
-	TypePromotionBankCard     = "PromotionBankCard"
-	TypePromotionCommission   = "PromotionCommission"
-	TypePromotionEarnings     = "PromotionEarnings"
-	TypePromotionGrowth       = "PromotionGrowth"
-	TypePromotionLevel        = "PromotionLevel"
-	TypePromotionLevelTask    = "PromotionLevelTask"
-	TypePromotionMember       = "PromotionMember"
-	TypePromotionPerson       = "PromotionPerson"
-	TypePromotionPrivilege    = "PromotionPrivilege"
-	TypePromotionReferrals    = "PromotionReferrals"
-	TypePromotionSetting      = "PromotionSetting"
-	TypePromotionWithdrawal   = "PromotionWithdrawal"
-	TypeReserve               = "Reserve"
-	TypeRider                 = "Rider"
-	TypeRiderFollowUp         = "RiderFollowUp"
-	TypeRole                  = "Role"
-	TypeSetting               = "Setting"
-	TypeStock                 = "Stock"
-	TypeStockSummary          = "StockSummary"
-	TypeStore                 = "Store"
-	TypeSubscribe             = "Subscribe"
-	TypeSubscribeAlter        = "SubscribeAlter"
-	TypeSubscribePause        = "SubscribePause"
-	TypeSubscribeReminder     = "SubscribeReminder"
-	TypeSubscribeSuspend      = "SubscribeSuspend"
+	TypeAgent                     = "Agent"
+	TypeAllocate                  = "Allocate"
+	TypeAssistance                = "Assistance"
+	TypeAttendance                = "Attendance"
+	TypeBattery                   = "Battery"
+	TypeBatteryFlow               = "BatteryFlow"
+	TypeBatteryModel              = "BatteryModel"
+	TypeBranch                    = "Branch"
+	TypeBranchContract            = "BranchContract"
+	TypeBusiness                  = "Business"
+	TypeCabinet                   = "Cabinet"
+	TypeCabinetFault              = "CabinetFault"
+	TypeCity                      = "City"
+	TypeCommission                = "Commission"
+	TypeContract                  = "Contract"
+	TypeCoupon                    = "Coupon"
+	TypeCouponAssembly            = "CouponAssembly"
+	TypeCouponTemplate            = "CouponTemplate"
+	TypeEbike                     = "Ebike"
+	TypeEbikeBrand                = "EbikeBrand"
+	TypeEmployee                  = "Employee"
+	TypeEnterprise                = "Enterprise"
+	TypeEnterpriseBatterySwap     = "EnterpriseBatterySwap"
+	TypeEnterpriseBill            = "EnterpriseBill"
+	TypeEnterpriseContract        = "EnterpriseContract"
+	TypeEnterprisePrepayment      = "EnterprisePrepayment"
+	TypeEnterprisePrice           = "EnterprisePrice"
+	TypeEnterpriseStatement       = "EnterpriseStatement"
+	TypeEnterpriseStation         = "EnterpriseStation"
+	TypeException                 = "Exception"
+	TypeExchange                  = "Exchange"
+	TypeExport                    = "Export"
+	TypeFeedback                  = "Feedback"
+	TypeInventory                 = "Inventory"
+	TypeMaintainer                = "Maintainer"
+	TypeManager                   = "Manager"
+	TypeOrder                     = "Order"
+	TypeOrderRefund               = "OrderRefund"
+	TypePerson                    = "Person"
+	TypePlan                      = "Plan"
+	TypePlanIntroduce             = "PlanIntroduce"
+	TypePointLog                  = "PointLog"
+	TypePromotionAchievement      = "PromotionAchievement"
+	TypePromotionBankCard         = "PromotionBankCard"
+	TypePromotionCommission       = "PromotionCommission"
+	TypePromotionCommissionPlan   = "PromotionCommissionPlan"
+	TypePromotionEarnings         = "PromotionEarnings"
+	TypePromotionGrowth           = "PromotionGrowth"
+	TypePromotionLevel            = "PromotionLevel"
+	TypePromotionLevelTask        = "PromotionLevelTask"
+	TypePromotionMember           = "PromotionMember"
+	TypePromotionMemberCommission = "PromotionMemberCommission"
+	TypePromotionPerson           = "PromotionPerson"
+	TypePromotionPrivilege        = "PromotionPrivilege"
+	TypePromotionReferrals        = "PromotionReferrals"
+	TypePromotionSetting          = "PromotionSetting"
+	TypePromotionWithdrawal       = "PromotionWithdrawal"
+	TypeReserve                   = "Reserve"
+	TypeRider                     = "Rider"
+	TypeRiderFollowUp             = "RiderFollowUp"
+	TypeRole                      = "Role"
+	TypeSetting                   = "Setting"
+	TypeStock                     = "Stock"
+	TypeStockSummary              = "StockSummary"
+	TypeStore                     = "Store"
+	TypeSubscribe                 = "Subscribe"
+	TypeSubscribeAlter            = "SubscribeAlter"
+	TypeSubscribePause            = "SubscribePause"
+	TypeSubscribeReminder         = "SubscribeReminder"
+	TypeSubscribeSuspend          = "SubscribeSuspend"
 )
 
 // AgentMutation represents an operation that mutates the Agent nodes in the graph.
@@ -61501,52 +61505,53 @@ func (m *PersonMutation) ResetEdge(name string) error {
 // PlanMutation represents an operation that mutates the Plan nodes in the graph.
 type PlanMutation struct {
 	config
-	op                 Op
-	typ                string
-	id                 *uint64
-	created_at         *time.Time
-	updated_at         *time.Time
-	deleted_at         *time.Time
-	creator            **model.Modifier
-	last_modifier      **model.Modifier
-	remark             *string
-	model              *string
-	enable             *bool
-	_type              *uint8
-	add_type           *int8
-	name               *string
-	start              *time.Time
-	end                *time.Time
-	price              *float64
-	addprice           *float64
-	days               *uint
-	adddays            *int
-	commission         *float64
-	addcommission      *float64
-	commission_base    *float64
-	addcommission_base *float64
-	original           *float64
-	addoriginal        *float64
-	desc               *string
-	discount_newly     *float64
-	adddiscount_newly  *float64
-	notes              *[]string
-	appendnotes        []string
-	intelligent        *bool
-	clearedFields      map[string]struct{}
-	brand              *uint64
-	clearedbrand       bool
-	cities             map[uint64]struct{}
-	removedcities      map[uint64]struct{}
-	clearedcities      bool
-	parent             *uint64
-	clearedparent      bool
-	complexes          map[uint64]struct{}
-	removedcomplexes   map[uint64]struct{}
-	clearedcomplexes   bool
-	done               bool
-	oldValue           func(context.Context) (*Plan, error)
-	predicates         []predicate.Plan
+	op                      Op
+	typ                     string
+	id                      *uint64
+	created_at              *time.Time
+	updated_at              *time.Time
+	deleted_at              *time.Time
+	creator                 **model.Modifier
+	last_modifier           **model.Modifier
+	remark                  *string
+	model                   *string
+	enable                  *bool
+	_type                   *uint8
+	add_type                *int8
+	name                    *string
+	start                   *time.Time
+	end                     *time.Time
+	price                   *float64
+	addprice                *float64
+	days                    *uint
+	adddays                 *int
+	commission              *float64
+	addcommission           *float64
+	original                *float64
+	addoriginal             *float64
+	desc                    *string
+	discount_newly          *float64
+	adddiscount_newly       *float64
+	notes                   *[]string
+	appendnotes             []string
+	intelligent             *bool
+	clearedFields           map[string]struct{}
+	brand                   *uint64
+	clearedbrand            bool
+	cities                  map[uint64]struct{}
+	removedcities           map[uint64]struct{}
+	clearedcities           bool
+	parent                  *uint64
+	clearedparent           bool
+	complexes               map[uint64]struct{}
+	removedcomplexes        map[uint64]struct{}
+	clearedcomplexes        bool
+	commission_plans        map[uint64]struct{}
+	removedcommission_plans map[uint64]struct{}
+	clearedcommission_plans bool
+	done                    bool
+	oldValue                func(context.Context) (*Plan, error)
+	predicates              []predicate.Plan
 }
 
 var _ ent.Mutation = (*PlanMutation)(nil)
@@ -62381,76 +62386,6 @@ func (m *PlanMutation) ResetCommission() {
 	m.addcommission = nil
 }
 
-// SetCommissionBase sets the "commission_base" field.
-func (m *PlanMutation) SetCommissionBase(f float64) {
-	m.commission_base = &f
-	m.addcommission_base = nil
-}
-
-// CommissionBase returns the value of the "commission_base" field in the mutation.
-func (m *PlanMutation) CommissionBase() (r float64, exists bool) {
-	v := m.commission_base
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCommissionBase returns the old "commission_base" field's value of the Plan entity.
-// If the Plan object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PlanMutation) OldCommissionBase(ctx context.Context) (v float64, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCommissionBase is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCommissionBase requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCommissionBase: %w", err)
-	}
-	return oldValue.CommissionBase, nil
-}
-
-// AddCommissionBase adds f to the "commission_base" field.
-func (m *PlanMutation) AddCommissionBase(f float64) {
-	if m.addcommission_base != nil {
-		*m.addcommission_base += f
-	} else {
-		m.addcommission_base = &f
-	}
-}
-
-// AddedCommissionBase returns the value that was added to the "commission_base" field in this mutation.
-func (m *PlanMutation) AddedCommissionBase() (r float64, exists bool) {
-	v := m.addcommission_base
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ClearCommissionBase clears the value of the "commission_base" field.
-func (m *PlanMutation) ClearCommissionBase() {
-	m.commission_base = nil
-	m.addcommission_base = nil
-	m.clearedFields[plan.FieldCommissionBase] = struct{}{}
-}
-
-// CommissionBaseCleared returns if the "commission_base" field was cleared in this mutation.
-func (m *PlanMutation) CommissionBaseCleared() bool {
-	_, ok := m.clearedFields[plan.FieldCommissionBase]
-	return ok
-}
-
-// ResetCommissionBase resets all changes to the "commission_base" field.
-func (m *PlanMutation) ResetCommissionBase() {
-	m.commission_base = nil
-	m.addcommission_base = nil
-	delete(m.clearedFields, plan.FieldCommissionBase)
-}
-
 // SetOriginal sets the "original" field.
 func (m *PlanMutation) SetOriginal(f float64) {
 	m.original = &f
@@ -62936,6 +62871,60 @@ func (m *PlanMutation) ResetComplexes() {
 	m.removedcomplexes = nil
 }
 
+// AddCommissionPlanIDs adds the "commission_plans" edge to the PromotionCommissionPlan entity by ids.
+func (m *PlanMutation) AddCommissionPlanIDs(ids ...uint64) {
+	if m.commission_plans == nil {
+		m.commission_plans = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.commission_plans[ids[i]] = struct{}{}
+	}
+}
+
+// ClearCommissionPlans clears the "commission_plans" edge to the PromotionCommissionPlan entity.
+func (m *PlanMutation) ClearCommissionPlans() {
+	m.clearedcommission_plans = true
+}
+
+// CommissionPlansCleared reports if the "commission_plans" edge to the PromotionCommissionPlan entity was cleared.
+func (m *PlanMutation) CommissionPlansCleared() bool {
+	return m.clearedcommission_plans
+}
+
+// RemoveCommissionPlanIDs removes the "commission_plans" edge to the PromotionCommissionPlan entity by IDs.
+func (m *PlanMutation) RemoveCommissionPlanIDs(ids ...uint64) {
+	if m.removedcommission_plans == nil {
+		m.removedcommission_plans = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.commission_plans, ids[i])
+		m.removedcommission_plans[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedCommissionPlans returns the removed IDs of the "commission_plans" edge to the PromotionCommissionPlan entity.
+func (m *PlanMutation) RemovedCommissionPlansIDs() (ids []uint64) {
+	for id := range m.removedcommission_plans {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// CommissionPlansIDs returns the "commission_plans" edge IDs in the mutation.
+func (m *PlanMutation) CommissionPlansIDs() (ids []uint64) {
+	for id := range m.commission_plans {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetCommissionPlans resets all changes to the "commission_plans" edge.
+func (m *PlanMutation) ResetCommissionPlans() {
+	m.commission_plans = nil
+	m.clearedcommission_plans = false
+	m.removedcommission_plans = nil
+}
+
 // Where appends a list predicates to the PlanMutation builder.
 func (m *PlanMutation) Where(ps ...predicate.Plan) {
 	m.predicates = append(m.predicates, ps...)
@@ -62970,7 +62959,7 @@ func (m *PlanMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PlanMutation) Fields() []string {
-	fields := make([]string, 0, 23)
+	fields := make([]string, 0, 22)
 	if m.created_at != nil {
 		fields = append(fields, plan.FieldCreatedAt)
 	}
@@ -63018,9 +63007,6 @@ func (m *PlanMutation) Fields() []string {
 	}
 	if m.commission != nil {
 		fields = append(fields, plan.FieldCommission)
-	}
-	if m.commission_base != nil {
-		fields = append(fields, plan.FieldCommissionBase)
 	}
 	if m.original != nil {
 		fields = append(fields, plan.FieldOriginal)
@@ -63080,8 +63066,6 @@ func (m *PlanMutation) Field(name string) (ent.Value, bool) {
 		return m.Days()
 	case plan.FieldCommission:
 		return m.Commission()
-	case plan.FieldCommissionBase:
-		return m.CommissionBase()
 	case plan.FieldOriginal:
 		return m.Original()
 	case plan.FieldDesc:
@@ -63135,8 +63119,6 @@ func (m *PlanMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldDays(ctx)
 	case plan.FieldCommission:
 		return m.OldCommission(ctx)
-	case plan.FieldCommissionBase:
-		return m.OldCommissionBase(ctx)
 	case plan.FieldOriginal:
 		return m.OldOriginal(ctx)
 	case plan.FieldDesc:
@@ -63270,13 +63252,6 @@ func (m *PlanMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetCommission(v)
 		return nil
-	case plan.FieldCommissionBase:
-		v, ok := value.(float64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCommissionBase(v)
-		return nil
 	case plan.FieldOriginal:
 		v, ok := value.(float64)
 		if !ok {
@@ -63339,9 +63314,6 @@ func (m *PlanMutation) AddedFields() []string {
 	if m.addcommission != nil {
 		fields = append(fields, plan.FieldCommission)
 	}
-	if m.addcommission_base != nil {
-		fields = append(fields, plan.FieldCommissionBase)
-	}
 	if m.addoriginal != nil {
 		fields = append(fields, plan.FieldOriginal)
 	}
@@ -63364,8 +63336,6 @@ func (m *PlanMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedDays()
 	case plan.FieldCommission:
 		return m.AddedCommission()
-	case plan.FieldCommissionBase:
-		return m.AddedCommissionBase()
 	case plan.FieldOriginal:
 		return m.AddedOriginal()
 	case plan.FieldDiscountNewly:
@@ -63407,13 +63377,6 @@ func (m *PlanMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddCommission(v)
 		return nil
-	case plan.FieldCommissionBase:
-		v, ok := value.(float64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddCommissionBase(v)
-		return nil
 	case plan.FieldOriginal:
 		v, ok := value.(float64)
 		if !ok {
@@ -63453,9 +63416,6 @@ func (m *PlanMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(plan.FieldModel) {
 		fields = append(fields, plan.FieldModel)
-	}
-	if m.FieldCleared(plan.FieldCommissionBase) {
-		fields = append(fields, plan.FieldCommissionBase)
 	}
 	if m.FieldCleared(plan.FieldOriginal) {
 		fields = append(fields, plan.FieldOriginal)
@@ -63500,9 +63460,6 @@ func (m *PlanMutation) ClearField(name string) error {
 		return nil
 	case plan.FieldModel:
 		m.ClearModel()
-		return nil
-	case plan.FieldCommissionBase:
-		m.ClearCommissionBase()
 		return nil
 	case plan.FieldOriginal:
 		m.ClearOriginal()
@@ -63572,9 +63529,6 @@ func (m *PlanMutation) ResetField(name string) error {
 	case plan.FieldCommission:
 		m.ResetCommission()
 		return nil
-	case plan.FieldCommissionBase:
-		m.ResetCommissionBase()
-		return nil
 	case plan.FieldOriginal:
 		m.ResetOriginal()
 		return nil
@@ -63599,7 +63553,7 @@ func (m *PlanMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PlanMutation) AddedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.brand != nil {
 		edges = append(edges, plan.EdgeBrand)
 	}
@@ -63611,6 +63565,9 @@ func (m *PlanMutation) AddedEdges() []string {
 	}
 	if m.complexes != nil {
 		edges = append(edges, plan.EdgeComplexes)
+	}
+	if m.commission_plans != nil {
+		edges = append(edges, plan.EdgeCommissionPlans)
 	}
 	return edges
 }
@@ -63639,18 +63596,27 @@ func (m *PlanMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case plan.EdgeCommissionPlans:
+		ids := make([]ent.Value, 0, len(m.commission_plans))
+		for id := range m.commission_plans {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PlanMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.removedcities != nil {
 		edges = append(edges, plan.EdgeCities)
 	}
 	if m.removedcomplexes != nil {
 		edges = append(edges, plan.EdgeComplexes)
+	}
+	if m.removedcommission_plans != nil {
+		edges = append(edges, plan.EdgeCommissionPlans)
 	}
 	return edges
 }
@@ -63671,13 +63637,19 @@ func (m *PlanMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case plan.EdgeCommissionPlans:
+		ids := make([]ent.Value, 0, len(m.removedcommission_plans))
+		for id := range m.removedcommission_plans {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PlanMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.clearedbrand {
 		edges = append(edges, plan.EdgeBrand)
 	}
@@ -63689,6 +63661,9 @@ func (m *PlanMutation) ClearedEdges() []string {
 	}
 	if m.clearedcomplexes {
 		edges = append(edges, plan.EdgeComplexes)
+	}
+	if m.clearedcommission_plans {
+		edges = append(edges, plan.EdgeCommissionPlans)
 	}
 	return edges
 }
@@ -63705,6 +63680,8 @@ func (m *PlanMutation) EdgeCleared(name string) bool {
 		return m.clearedparent
 	case plan.EdgeComplexes:
 		return m.clearedcomplexes
+	case plan.EdgeCommissionPlans:
+		return m.clearedcommission_plans
 	}
 	return false
 }
@@ -63738,6 +63715,9 @@ func (m *PlanMutation) ResetEdge(name string) error {
 		return nil
 	case plan.EdgeComplexes:
 		m.ResetComplexes()
+		return nil
+	case plan.EdgeCommissionPlans:
+		m.ResetCommissionPlans()
 		return nil
 	}
 	return fmt.Errorf("unknown Plan edge %s", name)
@@ -67779,33 +67759,36 @@ func (m *PromotionBankCardMutation) ResetEdge(name string) error {
 // PromotionCommissionMutation represents an operation that mutates the PromotionCommission nodes in the graph.
 type PromotionCommissionMutation struct {
 	config
-	op               Op
-	typ              string
-	id               *uint64
-	created_at       *time.Time
-	updated_at       *time.Time
-	deleted_at       *time.Time
-	creator          **model.Modifier
-	last_modifier    **model.Modifier
-	remark           *string
-	_type            *uint8
-	add_type         *int8
-	name             *string
-	rule             **promotion.CommissionRule
-	enable           *bool
-	amount_sum       *float64
-	addamount_sum    *float64
-	desc             *string
-	history_id       *[]uint64
-	appendhistory_id []uint64
-	start_at         *time.Time
-	end_at           *time.Time
-	clearedFields    map[string]struct{}
-	member           *uint64
-	clearedmember    bool
-	done             bool
-	oldValue         func(context.Context) (*PromotionCommission, error)
-	predicates       []predicate.PromotionCommission
+	op                      Op
+	typ                     string
+	id                      *uint64
+	created_at              *time.Time
+	updated_at              *time.Time
+	deleted_at              *time.Time
+	creator                 **model.Modifier
+	last_modifier           **model.Modifier
+	remark                  *string
+	_type                   *uint8
+	add_type                *int8
+	name                    *string
+	rule                    **promotion.CommissionRule
+	enable                  *bool
+	amount_sum              *float64
+	addamount_sum           *float64
+	desc                    *string
+	history_id              *[]uint64
+	appendhistory_id        []uint64
+	start_at                *time.Time
+	end_at                  *time.Time
+	clearedFields           map[string]struct{}
+	member                  *uint64
+	clearedmember           bool
+	commission_plans        map[uint64]struct{}
+	removedcommission_plans map[uint64]struct{}
+	clearedcommission_plans bool
+	done                    bool
+	oldValue                func(context.Context) (*PromotionCommission, error)
+	predicates              []predicate.PromotionCommission
 }
 
 var _ ent.Mutation = (*PromotionCommissionMutation)(nil)
@@ -68681,6 +68664,60 @@ func (m *PromotionCommissionMutation) ResetMember() {
 	m.clearedmember = false
 }
 
+// AddCommissionPlanIDs adds the "commission_plans" edge to the PromotionCommissionPlan entity by ids.
+func (m *PromotionCommissionMutation) AddCommissionPlanIDs(ids ...uint64) {
+	if m.commission_plans == nil {
+		m.commission_plans = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.commission_plans[ids[i]] = struct{}{}
+	}
+}
+
+// ClearCommissionPlans clears the "commission_plans" edge to the PromotionCommissionPlan entity.
+func (m *PromotionCommissionMutation) ClearCommissionPlans() {
+	m.clearedcommission_plans = true
+}
+
+// CommissionPlansCleared reports if the "commission_plans" edge to the PromotionCommissionPlan entity was cleared.
+func (m *PromotionCommissionMutation) CommissionPlansCleared() bool {
+	return m.clearedcommission_plans
+}
+
+// RemoveCommissionPlanIDs removes the "commission_plans" edge to the PromotionCommissionPlan entity by IDs.
+func (m *PromotionCommissionMutation) RemoveCommissionPlanIDs(ids ...uint64) {
+	if m.removedcommission_plans == nil {
+		m.removedcommission_plans = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.commission_plans, ids[i])
+		m.removedcommission_plans[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedCommissionPlans returns the removed IDs of the "commission_plans" edge to the PromotionCommissionPlan entity.
+func (m *PromotionCommissionMutation) RemovedCommissionPlansIDs() (ids []uint64) {
+	for id := range m.removedcommission_plans {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// CommissionPlansIDs returns the "commission_plans" edge IDs in the mutation.
+func (m *PromotionCommissionMutation) CommissionPlansIDs() (ids []uint64) {
+	for id := range m.commission_plans {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetCommissionPlans resets all changes to the "commission_plans" edge.
+func (m *PromotionCommissionMutation) ResetCommissionPlans() {
+	m.commission_plans = nil
+	m.clearedcommission_plans = false
+	m.removedcommission_plans = nil
+}
+
 // Where appends a list predicates to the PromotionCommissionMutation builder.
 func (m *PromotionCommissionMutation) Where(ps ...predicate.PromotionCommission) {
 	m.predicates = append(m.predicates, ps...)
@@ -69153,9 +69190,12 @@ func (m *PromotionCommissionMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PromotionCommissionMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.member != nil {
 		edges = append(edges, promotioncommission.EdgeMember)
+	}
+	if m.commission_plans != nil {
+		edges = append(edges, promotioncommission.EdgeCommissionPlans)
 	}
 	return edges
 }
@@ -69168,27 +69208,47 @@ func (m *PromotionCommissionMutation) AddedIDs(name string) []ent.Value {
 		if id := m.member; id != nil {
 			return []ent.Value{*id}
 		}
+	case promotioncommission.EdgeCommissionPlans:
+		ids := make([]ent.Value, 0, len(m.commission_plans))
+		for id := range m.commission_plans {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PromotionCommissionMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
+	if m.removedcommission_plans != nil {
+		edges = append(edges, promotioncommission.EdgeCommissionPlans)
+	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *PromotionCommissionMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case promotioncommission.EdgeCommissionPlans:
+		ids := make([]ent.Value, 0, len(m.removedcommission_plans))
+		for id := range m.removedcommission_plans {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PromotionCommissionMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.clearedmember {
 		edges = append(edges, promotioncommission.EdgeMember)
+	}
+	if m.clearedcommission_plans {
+		edges = append(edges, promotioncommission.EdgeCommissionPlans)
 	}
 	return edges
 }
@@ -69199,6 +69259,8 @@ func (m *PromotionCommissionMutation) EdgeCleared(name string) bool {
 	switch name {
 	case promotioncommission.EdgeMember:
 		return m.clearedmember
+	case promotioncommission.EdgeCommissionPlans:
+		return m.clearedcommission_plans
 	}
 	return false
 }
@@ -69221,8 +69283,845 @@ func (m *PromotionCommissionMutation) ResetEdge(name string) error {
 	case promotioncommission.EdgeMember:
 		m.ResetMember()
 		return nil
+	case promotioncommission.EdgeCommissionPlans:
+		m.ResetCommissionPlans()
+		return nil
 	}
 	return fmt.Errorf("unknown PromotionCommission edge %s", name)
+}
+
+// PromotionCommissionPlanMutation represents an operation that mutates the PromotionCommissionPlan nodes in the graph.
+type PromotionCommissionPlanMutation struct {
+	config
+	op                          Op
+	typ                         string
+	id                          *uint64
+	created_at                  *time.Time
+	updated_at                  *time.Time
+	deleted_at                  *time.Time
+	clearedFields               map[string]struct{}
+	member                      *uint64
+	clearedmember               bool
+	promotion_commission        *uint64
+	clearedpromotion_commission bool
+	plan                        *uint64
+	clearedplan                 bool
+	done                        bool
+	oldValue                    func(context.Context) (*PromotionCommissionPlan, error)
+	predicates                  []predicate.PromotionCommissionPlan
+}
+
+var _ ent.Mutation = (*PromotionCommissionPlanMutation)(nil)
+
+// promotioncommissionplanOption allows management of the mutation configuration using functional options.
+type promotioncommissionplanOption func(*PromotionCommissionPlanMutation)
+
+// newPromotionCommissionPlanMutation creates new mutation for the PromotionCommissionPlan entity.
+func newPromotionCommissionPlanMutation(c config, op Op, opts ...promotioncommissionplanOption) *PromotionCommissionPlanMutation {
+	m := &PromotionCommissionPlanMutation{
+		config:        c,
+		op:            op,
+		typ:           TypePromotionCommissionPlan,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withPromotionCommissionPlanID sets the ID field of the mutation.
+func withPromotionCommissionPlanID(id uint64) promotioncommissionplanOption {
+	return func(m *PromotionCommissionPlanMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *PromotionCommissionPlan
+		)
+		m.oldValue = func(ctx context.Context) (*PromotionCommissionPlan, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().PromotionCommissionPlan.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withPromotionCommissionPlan sets the old PromotionCommissionPlan of the mutation.
+func withPromotionCommissionPlan(node *PromotionCommissionPlan) promotioncommissionplanOption {
+	return func(m *PromotionCommissionPlanMutation) {
+		m.oldValue = func(context.Context) (*PromotionCommissionPlan, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m PromotionCommissionPlanMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m PromotionCommissionPlanMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *PromotionCommissionPlanMutation) ID() (id uint64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *PromotionCommissionPlanMutation) IDs(ctx context.Context) ([]uint64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uint64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().PromotionCommissionPlan.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *PromotionCommissionPlanMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *PromotionCommissionPlanMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the PromotionCommissionPlan entity.
+// If the PromotionCommissionPlan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PromotionCommissionPlanMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *PromotionCommissionPlanMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *PromotionCommissionPlanMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *PromotionCommissionPlanMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the PromotionCommissionPlan entity.
+// If the PromotionCommissionPlan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PromotionCommissionPlanMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *PromotionCommissionPlanMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *PromotionCommissionPlanMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *PromotionCommissionPlanMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the PromotionCommissionPlan entity.
+// If the PromotionCommissionPlan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PromotionCommissionPlanMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *PromotionCommissionPlanMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[promotioncommissionplan.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *PromotionCommissionPlanMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[promotioncommissionplan.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *PromotionCommissionPlanMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, promotioncommissionplan.FieldDeletedAt)
+}
+
+// SetMemberID sets the "member_id" field.
+func (m *PromotionCommissionPlanMutation) SetMemberID(u uint64) {
+	m.member = &u
+}
+
+// MemberID returns the value of the "member_id" field in the mutation.
+func (m *PromotionCommissionPlanMutation) MemberID() (r uint64, exists bool) {
+	v := m.member
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMemberID returns the old "member_id" field's value of the PromotionCommissionPlan entity.
+// If the PromotionCommissionPlan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PromotionCommissionPlanMutation) OldMemberID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMemberID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMemberID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMemberID: %w", err)
+	}
+	return oldValue.MemberID, nil
+}
+
+// ClearMemberID clears the value of the "member_id" field.
+func (m *PromotionCommissionPlanMutation) ClearMemberID() {
+	m.member = nil
+	m.clearedFields[promotioncommissionplan.FieldMemberID] = struct{}{}
+}
+
+// MemberIDCleared returns if the "member_id" field was cleared in this mutation.
+func (m *PromotionCommissionPlanMutation) MemberIDCleared() bool {
+	_, ok := m.clearedFields[promotioncommissionplan.FieldMemberID]
+	return ok
+}
+
+// ResetMemberID resets all changes to the "member_id" field.
+func (m *PromotionCommissionPlanMutation) ResetMemberID() {
+	m.member = nil
+	delete(m.clearedFields, promotioncommissionplan.FieldMemberID)
+}
+
+// SetCommissionID sets the "commission_id" field.
+func (m *PromotionCommissionPlanMutation) SetCommissionID(u uint64) {
+	m.promotion_commission = &u
+}
+
+// CommissionID returns the value of the "commission_id" field in the mutation.
+func (m *PromotionCommissionPlanMutation) CommissionID() (r uint64, exists bool) {
+	v := m.promotion_commission
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCommissionID returns the old "commission_id" field's value of the PromotionCommissionPlan entity.
+// If the PromotionCommissionPlan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PromotionCommissionPlanMutation) OldCommissionID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCommissionID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCommissionID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCommissionID: %w", err)
+	}
+	return oldValue.CommissionID, nil
+}
+
+// ClearCommissionID clears the value of the "commission_id" field.
+func (m *PromotionCommissionPlanMutation) ClearCommissionID() {
+	m.promotion_commission = nil
+	m.clearedFields[promotioncommissionplan.FieldCommissionID] = struct{}{}
+}
+
+// CommissionIDCleared returns if the "commission_id" field was cleared in this mutation.
+func (m *PromotionCommissionPlanMutation) CommissionIDCleared() bool {
+	_, ok := m.clearedFields[promotioncommissionplan.FieldCommissionID]
+	return ok
+}
+
+// ResetCommissionID resets all changes to the "commission_id" field.
+func (m *PromotionCommissionPlanMutation) ResetCommissionID() {
+	m.promotion_commission = nil
+	delete(m.clearedFields, promotioncommissionplan.FieldCommissionID)
+}
+
+// SetPlanID sets the "plan_id" field.
+func (m *PromotionCommissionPlanMutation) SetPlanID(u uint64) {
+	m.plan = &u
+}
+
+// PlanID returns the value of the "plan_id" field in the mutation.
+func (m *PromotionCommissionPlanMutation) PlanID() (r uint64, exists bool) {
+	v := m.plan
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPlanID returns the old "plan_id" field's value of the PromotionCommissionPlan entity.
+// If the PromotionCommissionPlan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PromotionCommissionPlanMutation) OldPlanID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPlanID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPlanID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPlanID: %w", err)
+	}
+	return oldValue.PlanID, nil
+}
+
+// ClearPlanID clears the value of the "plan_id" field.
+func (m *PromotionCommissionPlanMutation) ClearPlanID() {
+	m.plan = nil
+	m.clearedFields[promotioncommissionplan.FieldPlanID] = struct{}{}
+}
+
+// PlanIDCleared returns if the "plan_id" field was cleared in this mutation.
+func (m *PromotionCommissionPlanMutation) PlanIDCleared() bool {
+	_, ok := m.clearedFields[promotioncommissionplan.FieldPlanID]
+	return ok
+}
+
+// ResetPlanID resets all changes to the "plan_id" field.
+func (m *PromotionCommissionPlanMutation) ResetPlanID() {
+	m.plan = nil
+	delete(m.clearedFields, promotioncommissionplan.FieldPlanID)
+}
+
+// ClearMember clears the "member" edge to the PromotionMember entity.
+func (m *PromotionCommissionPlanMutation) ClearMember() {
+	m.clearedmember = true
+}
+
+// MemberCleared reports if the "member" edge to the PromotionMember entity was cleared.
+func (m *PromotionCommissionPlanMutation) MemberCleared() bool {
+	return m.MemberIDCleared() || m.clearedmember
+}
+
+// MemberIDs returns the "member" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// MemberID instead. It exists only for internal usage by the builders.
+func (m *PromotionCommissionPlanMutation) MemberIDs() (ids []uint64) {
+	if id := m.member; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetMember resets all changes to the "member" edge.
+func (m *PromotionCommissionPlanMutation) ResetMember() {
+	m.member = nil
+	m.clearedmember = false
+}
+
+// SetPromotionCommissionID sets the "promotion_commission" edge to the PromotionCommission entity by id.
+func (m *PromotionCommissionPlanMutation) SetPromotionCommissionID(id uint64) {
+	m.promotion_commission = &id
+}
+
+// ClearPromotionCommission clears the "promotion_commission" edge to the PromotionCommission entity.
+func (m *PromotionCommissionPlanMutation) ClearPromotionCommission() {
+	m.clearedpromotion_commission = true
+}
+
+// PromotionCommissionCleared reports if the "promotion_commission" edge to the PromotionCommission entity was cleared.
+func (m *PromotionCommissionPlanMutation) PromotionCommissionCleared() bool {
+	return m.CommissionIDCleared() || m.clearedpromotion_commission
+}
+
+// PromotionCommissionID returns the "promotion_commission" edge ID in the mutation.
+func (m *PromotionCommissionPlanMutation) PromotionCommissionID() (id uint64, exists bool) {
+	if m.promotion_commission != nil {
+		return *m.promotion_commission, true
+	}
+	return
+}
+
+// PromotionCommissionIDs returns the "promotion_commission" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// PromotionCommissionID instead. It exists only for internal usage by the builders.
+func (m *PromotionCommissionPlanMutation) PromotionCommissionIDs() (ids []uint64) {
+	if id := m.promotion_commission; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetPromotionCommission resets all changes to the "promotion_commission" edge.
+func (m *PromotionCommissionPlanMutation) ResetPromotionCommission() {
+	m.promotion_commission = nil
+	m.clearedpromotion_commission = false
+}
+
+// ClearPlan clears the "plan" edge to the Plan entity.
+func (m *PromotionCommissionPlanMutation) ClearPlan() {
+	m.clearedplan = true
+}
+
+// PlanCleared reports if the "plan" edge to the Plan entity was cleared.
+func (m *PromotionCommissionPlanMutation) PlanCleared() bool {
+	return m.PlanIDCleared() || m.clearedplan
+}
+
+// PlanIDs returns the "plan" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// PlanID instead. It exists only for internal usage by the builders.
+func (m *PromotionCommissionPlanMutation) PlanIDs() (ids []uint64) {
+	if id := m.plan; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetPlan resets all changes to the "plan" edge.
+func (m *PromotionCommissionPlanMutation) ResetPlan() {
+	m.plan = nil
+	m.clearedplan = false
+}
+
+// Where appends a list predicates to the PromotionCommissionPlanMutation builder.
+func (m *PromotionCommissionPlanMutation) Where(ps ...predicate.PromotionCommissionPlan) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the PromotionCommissionPlanMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *PromotionCommissionPlanMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.PromotionCommissionPlan, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *PromotionCommissionPlanMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *PromotionCommissionPlanMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (PromotionCommissionPlan).
+func (m *PromotionCommissionPlanMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *PromotionCommissionPlanMutation) Fields() []string {
+	fields := make([]string, 0, 6)
+	if m.created_at != nil {
+		fields = append(fields, promotioncommissionplan.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, promotioncommissionplan.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, promotioncommissionplan.FieldDeletedAt)
+	}
+	if m.member != nil {
+		fields = append(fields, promotioncommissionplan.FieldMemberID)
+	}
+	if m.promotion_commission != nil {
+		fields = append(fields, promotioncommissionplan.FieldCommissionID)
+	}
+	if m.plan != nil {
+		fields = append(fields, promotioncommissionplan.FieldPlanID)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *PromotionCommissionPlanMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case promotioncommissionplan.FieldCreatedAt:
+		return m.CreatedAt()
+	case promotioncommissionplan.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case promotioncommissionplan.FieldDeletedAt:
+		return m.DeletedAt()
+	case promotioncommissionplan.FieldMemberID:
+		return m.MemberID()
+	case promotioncommissionplan.FieldCommissionID:
+		return m.CommissionID()
+	case promotioncommissionplan.FieldPlanID:
+		return m.PlanID()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *PromotionCommissionPlanMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case promotioncommissionplan.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case promotioncommissionplan.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case promotioncommissionplan.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case promotioncommissionplan.FieldMemberID:
+		return m.OldMemberID(ctx)
+	case promotioncommissionplan.FieldCommissionID:
+		return m.OldCommissionID(ctx)
+	case promotioncommissionplan.FieldPlanID:
+		return m.OldPlanID(ctx)
+	}
+	return nil, fmt.Errorf("unknown PromotionCommissionPlan field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *PromotionCommissionPlanMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case promotioncommissionplan.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case promotioncommissionplan.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case promotioncommissionplan.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case promotioncommissionplan.FieldMemberID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMemberID(v)
+		return nil
+	case promotioncommissionplan.FieldCommissionID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCommissionID(v)
+		return nil
+	case promotioncommissionplan.FieldPlanID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPlanID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown PromotionCommissionPlan field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *PromotionCommissionPlanMutation) AddedFields() []string {
+	var fields []string
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *PromotionCommissionPlanMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *PromotionCommissionPlanMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown PromotionCommissionPlan numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *PromotionCommissionPlanMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(promotioncommissionplan.FieldDeletedAt) {
+		fields = append(fields, promotioncommissionplan.FieldDeletedAt)
+	}
+	if m.FieldCleared(promotioncommissionplan.FieldMemberID) {
+		fields = append(fields, promotioncommissionplan.FieldMemberID)
+	}
+	if m.FieldCleared(promotioncommissionplan.FieldCommissionID) {
+		fields = append(fields, promotioncommissionplan.FieldCommissionID)
+	}
+	if m.FieldCleared(promotioncommissionplan.FieldPlanID) {
+		fields = append(fields, promotioncommissionplan.FieldPlanID)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *PromotionCommissionPlanMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *PromotionCommissionPlanMutation) ClearField(name string) error {
+	switch name {
+	case promotioncommissionplan.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
+	case promotioncommissionplan.FieldMemberID:
+		m.ClearMemberID()
+		return nil
+	case promotioncommissionplan.FieldCommissionID:
+		m.ClearCommissionID()
+		return nil
+	case promotioncommissionplan.FieldPlanID:
+		m.ClearPlanID()
+		return nil
+	}
+	return fmt.Errorf("unknown PromotionCommissionPlan nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *PromotionCommissionPlanMutation) ResetField(name string) error {
+	switch name {
+	case promotioncommissionplan.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case promotioncommissionplan.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case promotioncommissionplan.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case promotioncommissionplan.FieldMemberID:
+		m.ResetMemberID()
+		return nil
+	case promotioncommissionplan.FieldCommissionID:
+		m.ResetCommissionID()
+		return nil
+	case promotioncommissionplan.FieldPlanID:
+		m.ResetPlanID()
+		return nil
+	}
+	return fmt.Errorf("unknown PromotionCommissionPlan field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *PromotionCommissionPlanMutation) AddedEdges() []string {
+	edges := make([]string, 0, 3)
+	if m.member != nil {
+		edges = append(edges, promotioncommissionplan.EdgeMember)
+	}
+	if m.promotion_commission != nil {
+		edges = append(edges, promotioncommissionplan.EdgePromotionCommission)
+	}
+	if m.plan != nil {
+		edges = append(edges, promotioncommissionplan.EdgePlan)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *PromotionCommissionPlanMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case promotioncommissionplan.EdgeMember:
+		if id := m.member; id != nil {
+			return []ent.Value{*id}
+		}
+	case promotioncommissionplan.EdgePromotionCommission:
+		if id := m.promotion_commission; id != nil {
+			return []ent.Value{*id}
+		}
+	case promotioncommissionplan.EdgePlan:
+		if id := m.plan; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *PromotionCommissionPlanMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 3)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *PromotionCommissionPlanMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *PromotionCommissionPlanMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 3)
+	if m.clearedmember {
+		edges = append(edges, promotioncommissionplan.EdgeMember)
+	}
+	if m.clearedpromotion_commission {
+		edges = append(edges, promotioncommissionplan.EdgePromotionCommission)
+	}
+	if m.clearedplan {
+		edges = append(edges, promotioncommissionplan.EdgePlan)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *PromotionCommissionPlanMutation) EdgeCleared(name string) bool {
+	switch name {
+	case promotioncommissionplan.EdgeMember:
+		return m.clearedmember
+	case promotioncommissionplan.EdgePromotionCommission:
+		return m.clearedpromotion_commission
+	case promotioncommissionplan.EdgePlan:
+		return m.clearedplan
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *PromotionCommissionPlanMutation) ClearEdge(name string) error {
+	switch name {
+	case promotioncommissionplan.EdgeMember:
+		m.ClearMember()
+		return nil
+	case promotioncommissionplan.EdgePromotionCommission:
+		m.ClearPromotionCommission()
+		return nil
+	case promotioncommissionplan.EdgePlan:
+		m.ClearPlan()
+		return nil
+	}
+	return fmt.Errorf("unknown PromotionCommissionPlan unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *PromotionCommissionPlanMutation) ResetEdge(name string) error {
+	switch name {
+	case promotioncommissionplan.EdgeMember:
+		m.ResetMember()
+		return nil
+	case promotioncommissionplan.EdgePromotionCommission:
+		m.ResetPromotionCommission()
+		return nil
+	case promotioncommissionplan.EdgePlan:
+		m.ResetPlan()
+		return nil
+	}
+	return fmt.Errorf("unknown PromotionCommissionPlan edge %s", name)
 }
 
 // PromotionEarningsMutation represents an operation that mutates the PromotionEarnings nodes in the graph.
@@ -73413,8 +74312,6 @@ type PromotionMemberMutation struct {
 	clearedrider            bool
 	level                   *uint64
 	clearedlevel            bool
-	commission              *uint64
-	clearedcommission       bool
 	referring               map[uint64]struct{}
 	removedreferring        map[uint64]struct{}
 	clearedreferring        bool
@@ -73425,6 +74322,9 @@ type PromotionMemberMutation struct {
 	cards                   map[uint64]struct{}
 	removedcards            map[uint64]struct{}
 	clearedcards            bool
+	commissions             map[uint64]struct{}
+	removedcommissions      map[uint64]struct{}
+	clearedcommissions      bool
 	done                    bool
 	oldValue                func(context.Context) (*PromotionMember, error)
 	predicates              []predicate.PromotionMember
@@ -73892,55 +74792,6 @@ func (m *PromotionMemberMutation) LevelIDCleared() bool {
 func (m *PromotionMemberMutation) ResetLevelID() {
 	m.level = nil
 	delete(m.clearedFields, promotionmember.FieldLevelID)
-}
-
-// SetCommissionID sets the "commission_id" field.
-func (m *PromotionMemberMutation) SetCommissionID(u uint64) {
-	m.commission = &u
-}
-
-// CommissionID returns the value of the "commission_id" field in the mutation.
-func (m *PromotionMemberMutation) CommissionID() (r uint64, exists bool) {
-	v := m.commission
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCommissionID returns the old "commission_id" field's value of the PromotionMember entity.
-// If the PromotionMember object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PromotionMemberMutation) OldCommissionID(ctx context.Context) (v *uint64, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCommissionID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCommissionID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCommissionID: %w", err)
-	}
-	return oldValue.CommissionID, nil
-}
-
-// ClearCommissionID clears the value of the "commission_id" field.
-func (m *PromotionMemberMutation) ClearCommissionID() {
-	m.commission = nil
-	m.clearedFields[promotionmember.FieldCommissionID] = struct{}{}
-}
-
-// CommissionIDCleared returns if the "commission_id" field was cleared in this mutation.
-func (m *PromotionMemberMutation) CommissionIDCleared() bool {
-	_, ok := m.clearedFields[promotionmember.FieldCommissionID]
-	return ok
-}
-
-// ResetCommissionID resets all changes to the "commission_id" field.
-func (m *PromotionMemberMutation) ResetCommissionID() {
-	m.commission = nil
-	delete(m.clearedFields, promotionmember.FieldCommissionID)
 }
 
 // SetPhone sets the "phone" field.
@@ -74550,32 +75401,6 @@ func (m *PromotionMemberMutation) ResetLevel() {
 	m.clearedlevel = false
 }
 
-// ClearCommission clears the "commission" edge to the PromotionCommission entity.
-func (m *PromotionMemberMutation) ClearCommission() {
-	m.clearedcommission = true
-}
-
-// CommissionCleared reports if the "commission" edge to the PromotionCommission entity was cleared.
-func (m *PromotionMemberMutation) CommissionCleared() bool {
-	return m.CommissionIDCleared() || m.clearedcommission
-}
-
-// CommissionIDs returns the "commission" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// CommissionID instead. It exists only for internal usage by the builders.
-func (m *PromotionMemberMutation) CommissionIDs() (ids []uint64) {
-	if id := m.commission; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetCommission resets all changes to the "commission" edge.
-func (m *PromotionMemberMutation) ResetCommission() {
-	m.commission = nil
-	m.clearedcommission = false
-}
-
 // AddReferringIDs adds the "referring" edge to the PromotionReferrals entity by ids.
 func (m *PromotionMemberMutation) AddReferringIDs(ids ...uint64) {
 	if m.referring == nil {
@@ -74749,6 +75574,60 @@ func (m *PromotionMemberMutation) ResetCards() {
 	m.removedcards = nil
 }
 
+// AddCommissionIDs adds the "commissions" edge to the PromotionMemberCommission entity by ids.
+func (m *PromotionMemberMutation) AddCommissionIDs(ids ...uint64) {
+	if m.commissions == nil {
+		m.commissions = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.commissions[ids[i]] = struct{}{}
+	}
+}
+
+// ClearCommissions clears the "commissions" edge to the PromotionMemberCommission entity.
+func (m *PromotionMemberMutation) ClearCommissions() {
+	m.clearedcommissions = true
+}
+
+// CommissionsCleared reports if the "commissions" edge to the PromotionMemberCommission entity was cleared.
+func (m *PromotionMemberMutation) CommissionsCleared() bool {
+	return m.clearedcommissions
+}
+
+// RemoveCommissionIDs removes the "commissions" edge to the PromotionMemberCommission entity by IDs.
+func (m *PromotionMemberMutation) RemoveCommissionIDs(ids ...uint64) {
+	if m.removedcommissions == nil {
+		m.removedcommissions = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.commissions, ids[i])
+		m.removedcommissions[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedCommissions returns the removed IDs of the "commissions" edge to the PromotionMemberCommission entity.
+func (m *PromotionMemberMutation) RemovedCommissionsIDs() (ids []uint64) {
+	for id := range m.removedcommissions {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// CommissionsIDs returns the "commissions" edge IDs in the mutation.
+func (m *PromotionMemberMutation) CommissionsIDs() (ids []uint64) {
+	for id := range m.commissions {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetCommissions resets all changes to the "commissions" edge.
+func (m *PromotionMemberMutation) ResetCommissions() {
+	m.commissions = nil
+	m.clearedcommissions = false
+	m.removedcommissions = nil
+}
+
 // Where appends a list predicates to the PromotionMemberMutation builder.
 func (m *PromotionMemberMutation) Where(ps ...predicate.PromotionMember) {
 	m.predicates = append(m.predicates, ps...)
@@ -74783,7 +75662,7 @@ func (m *PromotionMemberMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PromotionMemberMutation) Fields() []string {
-	fields := make([]string, 0, 20)
+	fields := make([]string, 0, 19)
 	if m.created_at != nil {
 		fields = append(fields, promotionmember.FieldCreatedAt)
 	}
@@ -74807,9 +75686,6 @@ func (m *PromotionMemberMutation) Fields() []string {
 	}
 	if m.level != nil {
 		fields = append(fields, promotionmember.FieldLevelID)
-	}
-	if m.commission != nil {
-		fields = append(fields, promotionmember.FieldCommissionID)
 	}
 	if m.phone != nil {
 		fields = append(fields, promotionmember.FieldPhone)
@@ -74868,8 +75744,6 @@ func (m *PromotionMemberMutation) Field(name string) (ent.Value, bool) {
 		return m.RiderID()
 	case promotionmember.FieldLevelID:
 		return m.LevelID()
-	case promotionmember.FieldCommissionID:
-		return m.CommissionID()
 	case promotionmember.FieldPhone:
 		return m.Phone()
 	case promotionmember.FieldName:
@@ -74917,8 +75791,6 @@ func (m *PromotionMemberMutation) OldField(ctx context.Context, name string) (en
 		return m.OldRiderID(ctx)
 	case promotionmember.FieldLevelID:
 		return m.OldLevelID(ctx)
-	case promotionmember.FieldCommissionID:
-		return m.OldCommissionID(ctx)
 	case promotionmember.FieldPhone:
 		return m.OldPhone(ctx)
 	case promotionmember.FieldName:
@@ -75005,13 +75877,6 @@ func (m *PromotionMemberMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetLevelID(v)
-		return nil
-	case promotionmember.FieldCommissionID:
-		v, ok := value.(uint64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCommissionID(v)
 		return nil
 	case promotionmember.FieldPhone:
 		v, ok := value.(string)
@@ -75213,9 +76078,6 @@ func (m *PromotionMemberMutation) ClearedFields() []string {
 	if m.FieldCleared(promotionmember.FieldLevelID) {
 		fields = append(fields, promotionmember.FieldLevelID)
 	}
-	if m.FieldCleared(promotionmember.FieldCommissionID) {
-		fields = append(fields, promotionmember.FieldCommissionID)
-	}
 	if m.FieldCleared(promotionmember.FieldName) {
 		fields = append(fields, promotionmember.FieldName)
 	}
@@ -75257,9 +76119,6 @@ func (m *PromotionMemberMutation) ClearField(name string) error {
 	case promotionmember.FieldLevelID:
 		m.ClearLevelID()
 		return nil
-	case promotionmember.FieldCommissionID:
-		m.ClearCommissionID()
-		return nil
 	case promotionmember.FieldName:
 		m.ClearName()
 		return nil
@@ -75300,9 +76159,6 @@ func (m *PromotionMemberMutation) ResetField(name string) error {
 		return nil
 	case promotionmember.FieldLevelID:
 		m.ResetLevelID()
-		return nil
-	case promotionmember.FieldCommissionID:
-		m.ResetCommissionID()
 		return nil
 	case promotionmember.FieldPhone:
 		m.ResetPhone()
@@ -75350,9 +76206,6 @@ func (m *PromotionMemberMutation) AddedEdges() []string {
 	if m.level != nil {
 		edges = append(edges, promotionmember.EdgeLevel)
 	}
-	if m.commission != nil {
-		edges = append(edges, promotionmember.EdgeCommission)
-	}
 	if m.referring != nil {
 		edges = append(edges, promotionmember.EdgeReferring)
 	}
@@ -75364,6 +76217,9 @@ func (m *PromotionMemberMutation) AddedEdges() []string {
 	}
 	if m.cards != nil {
 		edges = append(edges, promotionmember.EdgeCards)
+	}
+	if m.commissions != nil {
+		edges = append(edges, promotionmember.EdgeCommissions)
 	}
 	return edges
 }
@@ -75378,10 +76234,6 @@ func (m *PromotionMemberMutation) AddedIDs(name string) []ent.Value {
 		}
 	case promotionmember.EdgeLevel:
 		if id := m.level; id != nil {
-			return []ent.Value{*id}
-		}
-	case promotionmember.EdgeCommission:
-		if id := m.commission; id != nil {
 			return []ent.Value{*id}
 		}
 	case promotionmember.EdgeReferring:
@@ -75404,6 +76256,12 @@ func (m *PromotionMemberMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case promotionmember.EdgeCommissions:
+		ids := make([]ent.Value, 0, len(m.commissions))
+		for id := range m.commissions {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
@@ -75416,6 +76274,9 @@ func (m *PromotionMemberMutation) RemovedEdges() []string {
 	}
 	if m.removedcards != nil {
 		edges = append(edges, promotionmember.EdgeCards)
+	}
+	if m.removedcommissions != nil {
+		edges = append(edges, promotionmember.EdgeCommissions)
 	}
 	return edges
 }
@@ -75436,6 +76297,12 @@ func (m *PromotionMemberMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case promotionmember.EdgeCommissions:
+		ids := make([]ent.Value, 0, len(m.removedcommissions))
+		for id := range m.removedcommissions {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
@@ -75449,9 +76316,6 @@ func (m *PromotionMemberMutation) ClearedEdges() []string {
 	if m.clearedlevel {
 		edges = append(edges, promotionmember.EdgeLevel)
 	}
-	if m.clearedcommission {
-		edges = append(edges, promotionmember.EdgeCommission)
-	}
 	if m.clearedreferring {
 		edges = append(edges, promotionmember.EdgeReferring)
 	}
@@ -75464,6 +76328,9 @@ func (m *PromotionMemberMutation) ClearedEdges() []string {
 	if m.clearedcards {
 		edges = append(edges, promotionmember.EdgeCards)
 	}
+	if m.clearedcommissions {
+		edges = append(edges, promotionmember.EdgeCommissions)
+	}
 	return edges
 }
 
@@ -75475,8 +76342,6 @@ func (m *PromotionMemberMutation) EdgeCleared(name string) bool {
 		return m.clearedrider
 	case promotionmember.EdgeLevel:
 		return m.clearedlevel
-	case promotionmember.EdgeCommission:
-		return m.clearedcommission
 	case promotionmember.EdgeReferring:
 		return m.clearedreferring
 	case promotionmember.EdgeReferred:
@@ -75485,6 +76350,8 @@ func (m *PromotionMemberMutation) EdgeCleared(name string) bool {
 		return m.clearedperson
 	case promotionmember.EdgeCards:
 		return m.clearedcards
+	case promotionmember.EdgeCommissions:
+		return m.clearedcommissions
 	}
 	return false
 }
@@ -75498,9 +76365,6 @@ func (m *PromotionMemberMutation) ClearEdge(name string) error {
 		return nil
 	case promotionmember.EdgeLevel:
 		m.ClearLevel()
-		return nil
-	case promotionmember.EdgeCommission:
-		m.ClearCommission()
 		return nil
 	case promotionmember.EdgeReferred:
 		m.ClearReferred()
@@ -75522,9 +76386,6 @@ func (m *PromotionMemberMutation) ResetEdge(name string) error {
 	case promotionmember.EdgeLevel:
 		m.ResetLevel()
 		return nil
-	case promotionmember.EdgeCommission:
-		m.ResetCommission()
-		return nil
 	case promotionmember.EdgeReferring:
 		m.ResetReferring()
 		return nil
@@ -75537,8 +76398,695 @@ func (m *PromotionMemberMutation) ResetEdge(name string) error {
 	case promotionmember.EdgeCards:
 		m.ResetCards()
 		return nil
+	case promotionmember.EdgeCommissions:
+		m.ResetCommissions()
+		return nil
 	}
 	return fmt.Errorf("unknown PromotionMember edge %s", name)
+}
+
+// PromotionMemberCommissionMutation represents an operation that mutates the PromotionMemberCommission nodes in the graph.
+type PromotionMemberCommissionMutation struct {
+	config
+	op                Op
+	typ               string
+	id                *uint64
+	created_at        *time.Time
+	updated_at        *time.Time
+	deleted_at        *time.Time
+	clearedFields     map[string]struct{}
+	commission        *uint64
+	clearedcommission bool
+	member            *uint64
+	clearedmember     bool
+	done              bool
+	oldValue          func(context.Context) (*PromotionMemberCommission, error)
+	predicates        []predicate.PromotionMemberCommission
+}
+
+var _ ent.Mutation = (*PromotionMemberCommissionMutation)(nil)
+
+// promotionmembercommissionOption allows management of the mutation configuration using functional options.
+type promotionmembercommissionOption func(*PromotionMemberCommissionMutation)
+
+// newPromotionMemberCommissionMutation creates new mutation for the PromotionMemberCommission entity.
+func newPromotionMemberCommissionMutation(c config, op Op, opts ...promotionmembercommissionOption) *PromotionMemberCommissionMutation {
+	m := &PromotionMemberCommissionMutation{
+		config:        c,
+		op:            op,
+		typ:           TypePromotionMemberCommission,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withPromotionMemberCommissionID sets the ID field of the mutation.
+func withPromotionMemberCommissionID(id uint64) promotionmembercommissionOption {
+	return func(m *PromotionMemberCommissionMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *PromotionMemberCommission
+		)
+		m.oldValue = func(ctx context.Context) (*PromotionMemberCommission, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().PromotionMemberCommission.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withPromotionMemberCommission sets the old PromotionMemberCommission of the mutation.
+func withPromotionMemberCommission(node *PromotionMemberCommission) promotionmembercommissionOption {
+	return func(m *PromotionMemberCommissionMutation) {
+		m.oldValue = func(context.Context) (*PromotionMemberCommission, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m PromotionMemberCommissionMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m PromotionMemberCommissionMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *PromotionMemberCommissionMutation) ID() (id uint64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *PromotionMemberCommissionMutation) IDs(ctx context.Context) ([]uint64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uint64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().PromotionMemberCommission.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *PromotionMemberCommissionMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *PromotionMemberCommissionMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the PromotionMemberCommission entity.
+// If the PromotionMemberCommission object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PromotionMemberCommissionMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *PromotionMemberCommissionMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *PromotionMemberCommissionMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *PromotionMemberCommissionMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the PromotionMemberCommission entity.
+// If the PromotionMemberCommission object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PromotionMemberCommissionMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *PromotionMemberCommissionMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *PromotionMemberCommissionMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *PromotionMemberCommissionMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the PromotionMemberCommission entity.
+// If the PromotionMemberCommission object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PromotionMemberCommissionMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *PromotionMemberCommissionMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[promotionmembercommission.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *PromotionMemberCommissionMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[promotionmembercommission.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *PromotionMemberCommissionMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, promotionmembercommission.FieldDeletedAt)
+}
+
+// SetCommissionID sets the "commission_id" field.
+func (m *PromotionMemberCommissionMutation) SetCommissionID(u uint64) {
+	m.commission = &u
+}
+
+// CommissionID returns the value of the "commission_id" field in the mutation.
+func (m *PromotionMemberCommissionMutation) CommissionID() (r uint64, exists bool) {
+	v := m.commission
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCommissionID returns the old "commission_id" field's value of the PromotionMemberCommission entity.
+// If the PromotionMemberCommission object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PromotionMemberCommissionMutation) OldCommissionID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCommissionID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCommissionID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCommissionID: %w", err)
+	}
+	return oldValue.CommissionID, nil
+}
+
+// ResetCommissionID resets all changes to the "commission_id" field.
+func (m *PromotionMemberCommissionMutation) ResetCommissionID() {
+	m.commission = nil
+}
+
+// SetMemberID sets the "member_id" field.
+func (m *PromotionMemberCommissionMutation) SetMemberID(u uint64) {
+	m.member = &u
+}
+
+// MemberID returns the value of the "member_id" field in the mutation.
+func (m *PromotionMemberCommissionMutation) MemberID() (r uint64, exists bool) {
+	v := m.member
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMemberID returns the old "member_id" field's value of the PromotionMemberCommission entity.
+// If the PromotionMemberCommission object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PromotionMemberCommissionMutation) OldMemberID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMemberID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMemberID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMemberID: %w", err)
+	}
+	return oldValue.MemberID, nil
+}
+
+// ClearMemberID clears the value of the "member_id" field.
+func (m *PromotionMemberCommissionMutation) ClearMemberID() {
+	m.member = nil
+	m.clearedFields[promotionmembercommission.FieldMemberID] = struct{}{}
+}
+
+// MemberIDCleared returns if the "member_id" field was cleared in this mutation.
+func (m *PromotionMemberCommissionMutation) MemberIDCleared() bool {
+	_, ok := m.clearedFields[promotionmembercommission.FieldMemberID]
+	return ok
+}
+
+// ResetMemberID resets all changes to the "member_id" field.
+func (m *PromotionMemberCommissionMutation) ResetMemberID() {
+	m.member = nil
+	delete(m.clearedFields, promotionmembercommission.FieldMemberID)
+}
+
+// ClearCommission clears the "commission" edge to the PromotionCommission entity.
+func (m *PromotionMemberCommissionMutation) ClearCommission() {
+	m.clearedcommission = true
+}
+
+// CommissionCleared reports if the "commission" edge to the PromotionCommission entity was cleared.
+func (m *PromotionMemberCommissionMutation) CommissionCleared() bool {
+	return m.clearedcommission
+}
+
+// CommissionIDs returns the "commission" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CommissionID instead. It exists only for internal usage by the builders.
+func (m *PromotionMemberCommissionMutation) CommissionIDs() (ids []uint64) {
+	if id := m.commission; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCommission resets all changes to the "commission" edge.
+func (m *PromotionMemberCommissionMutation) ResetCommission() {
+	m.commission = nil
+	m.clearedcommission = false
+}
+
+// ClearMember clears the "member" edge to the PromotionMember entity.
+func (m *PromotionMemberCommissionMutation) ClearMember() {
+	m.clearedmember = true
+}
+
+// MemberCleared reports if the "member" edge to the PromotionMember entity was cleared.
+func (m *PromotionMemberCommissionMutation) MemberCleared() bool {
+	return m.MemberIDCleared() || m.clearedmember
+}
+
+// MemberIDs returns the "member" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// MemberID instead. It exists only for internal usage by the builders.
+func (m *PromotionMemberCommissionMutation) MemberIDs() (ids []uint64) {
+	if id := m.member; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetMember resets all changes to the "member" edge.
+func (m *PromotionMemberCommissionMutation) ResetMember() {
+	m.member = nil
+	m.clearedmember = false
+}
+
+// Where appends a list predicates to the PromotionMemberCommissionMutation builder.
+func (m *PromotionMemberCommissionMutation) Where(ps ...predicate.PromotionMemberCommission) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the PromotionMemberCommissionMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *PromotionMemberCommissionMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.PromotionMemberCommission, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *PromotionMemberCommissionMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *PromotionMemberCommissionMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (PromotionMemberCommission).
+func (m *PromotionMemberCommissionMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *PromotionMemberCommissionMutation) Fields() []string {
+	fields := make([]string, 0, 5)
+	if m.created_at != nil {
+		fields = append(fields, promotionmembercommission.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, promotionmembercommission.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, promotionmembercommission.FieldDeletedAt)
+	}
+	if m.commission != nil {
+		fields = append(fields, promotionmembercommission.FieldCommissionID)
+	}
+	if m.member != nil {
+		fields = append(fields, promotionmembercommission.FieldMemberID)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *PromotionMemberCommissionMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case promotionmembercommission.FieldCreatedAt:
+		return m.CreatedAt()
+	case promotionmembercommission.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case promotionmembercommission.FieldDeletedAt:
+		return m.DeletedAt()
+	case promotionmembercommission.FieldCommissionID:
+		return m.CommissionID()
+	case promotionmembercommission.FieldMemberID:
+		return m.MemberID()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *PromotionMemberCommissionMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case promotionmembercommission.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case promotionmembercommission.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case promotionmembercommission.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case promotionmembercommission.FieldCommissionID:
+		return m.OldCommissionID(ctx)
+	case promotionmembercommission.FieldMemberID:
+		return m.OldMemberID(ctx)
+	}
+	return nil, fmt.Errorf("unknown PromotionMemberCommission field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *PromotionMemberCommissionMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case promotionmembercommission.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case promotionmembercommission.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case promotionmembercommission.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case promotionmembercommission.FieldCommissionID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCommissionID(v)
+		return nil
+	case promotionmembercommission.FieldMemberID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMemberID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown PromotionMemberCommission field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *PromotionMemberCommissionMutation) AddedFields() []string {
+	var fields []string
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *PromotionMemberCommissionMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *PromotionMemberCommissionMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown PromotionMemberCommission numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *PromotionMemberCommissionMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(promotionmembercommission.FieldDeletedAt) {
+		fields = append(fields, promotionmembercommission.FieldDeletedAt)
+	}
+	if m.FieldCleared(promotionmembercommission.FieldMemberID) {
+		fields = append(fields, promotionmembercommission.FieldMemberID)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *PromotionMemberCommissionMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *PromotionMemberCommissionMutation) ClearField(name string) error {
+	switch name {
+	case promotionmembercommission.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
+	case promotionmembercommission.FieldMemberID:
+		m.ClearMemberID()
+		return nil
+	}
+	return fmt.Errorf("unknown PromotionMemberCommission nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *PromotionMemberCommissionMutation) ResetField(name string) error {
+	switch name {
+	case promotionmembercommission.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case promotionmembercommission.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case promotionmembercommission.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case promotionmembercommission.FieldCommissionID:
+		m.ResetCommissionID()
+		return nil
+	case promotionmembercommission.FieldMemberID:
+		m.ResetMemberID()
+		return nil
+	}
+	return fmt.Errorf("unknown PromotionMemberCommission field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *PromotionMemberCommissionMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.commission != nil {
+		edges = append(edges, promotionmembercommission.EdgeCommission)
+	}
+	if m.member != nil {
+		edges = append(edges, promotionmembercommission.EdgeMember)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *PromotionMemberCommissionMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case promotionmembercommission.EdgeCommission:
+		if id := m.commission; id != nil {
+			return []ent.Value{*id}
+		}
+	case promotionmembercommission.EdgeMember:
+		if id := m.member; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *PromotionMemberCommissionMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *PromotionMemberCommissionMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *PromotionMemberCommissionMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedcommission {
+		edges = append(edges, promotionmembercommission.EdgeCommission)
+	}
+	if m.clearedmember {
+		edges = append(edges, promotionmembercommission.EdgeMember)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *PromotionMemberCommissionMutation) EdgeCleared(name string) bool {
+	switch name {
+	case promotionmembercommission.EdgeCommission:
+		return m.clearedcommission
+	case promotionmembercommission.EdgeMember:
+		return m.clearedmember
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *PromotionMemberCommissionMutation) ClearEdge(name string) error {
+	switch name {
+	case promotionmembercommission.EdgeCommission:
+		m.ClearCommission()
+		return nil
+	case promotionmembercommission.EdgeMember:
+		m.ClearMember()
+		return nil
+	}
+	return fmt.Errorf("unknown PromotionMemberCommission unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *PromotionMemberCommissionMutation) ResetEdge(name string) error {
+	switch name {
+	case promotionmembercommission.EdgeCommission:
+		m.ResetCommission()
+		return nil
+	case promotionmembercommission.EdgeMember:
+		m.ResetMember()
+		return nil
+	}
+	return fmt.Errorf("unknown PromotionMemberCommission edge %s", name)
 }
 
 // PromotionPersonMutation represents an operation that mutates the PromotionPerson nodes in the graph.

@@ -195,6 +195,7 @@ func loadManagerRoutes() {
 	g.GET("/selection/coupon/template", mapi.Selection.CouponTemplate)
 	g.GET("/selection/ebike/brand", mapi.Selection.EbikeBrand)
 	g.GET("/selection/battery/serial", mapi.Selection.BatterySerial)
+	g.GET("/selection/commission/plan", mapi.Selection.CommissionPlan)
 
 	// 救援
 	g.GET("/assistance", mapi.Assistance.List)
@@ -300,15 +301,16 @@ func loadManagerRoutes() {
 	g.POST("/promotion/achievement/upload", mapi.PromotionAchievement.UploadIcon) // 上传icon
 
 	// PM8 佣金方案
-	g.GET("/promotion/commission", mapi.PromotionCommission.List)                         // 佣金方案列表
-	g.GET("/promotion/commission/:id", mapi.PromotionCommission.Detail)                   // 佣金方案详情
-	g.GET("/promotion/commission/history/:id", mapi.PromotionCommission.HistoryList)      // 历史佣金方案列表
-	g.POST("/promotion/commission", mapi.PromotionCommission.Create)                      // 创建佣金方案
-	g.PUT("/promotion/commission/:id", mapi.PromotionCommission.Update)                   // 修改佣金方案
-	g.DELETE("/promotion/commission/:id", mapi.PromotionCommission.Delete)                // 删除佣金方案
-	g.POST("/promotion/commission/enable", mapi.PromotionCommission.Enable)               // 更新佣金方案状态
-	g.GET("/promotion/commission/selection", mapi.PromotionCommission.Selection)          // 方案选择
-	g.GET("/promotion/commission/task/selection", mapi.PromotionCommission.TaskSelection) // 方案任务选择
+	g.GET("/promotion/commission", mapi.PromotionCommission.List)                             // 佣金方案列表
+	g.GET("/promotion/commission/:id", mapi.PromotionCommission.Detail)                       // 佣金方案详情
+	g.GET("/promotion/commission/history/:id", mapi.PromotionCommission.HistoryList)          // 历史佣金方案列表
+	g.POST("/promotion/commission", mapi.PromotionCommission.Create)                          // 创建佣金方案
+	g.PUT("/promotion/commission/:id", mapi.PromotionCommission.Update)                       // 修改佣金方案
+	g.DELETE("/promotion/commission/:id", mapi.PromotionCommission.Delete)                    // 删除佣金方案
+	g.POST("/promotion/commission/enable", mapi.PromotionCommission.Enable)                   // 更新佣金方案状态
+	g.GET("/promotion/commission/selection", mapi.PromotionCommission.Selection)              // 方案选择
+	g.GET("/promotion/commission/task/selection", mapi.PromotionCommission.TaskSelection)     // 方案任务选择
+	g.GET("/promotion/commission/plan/list/:id", mapi.PromotionCommission.CommissionPlanList) //  佣金方案骑士卡列表
 
 	// PM9 推广设置
 	g.GET("/promotion/setting/:key", mapi.PromotionSetting.Setting) // 获取会员设置

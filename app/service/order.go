@@ -641,12 +641,11 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
 		if trade.OrderType == model.OrderTypeRenewal {
 
 			err = NewPromotionCommissionService().CommissionCalculation(tx, &promotion.CommissionCalculation{
-				RiderID:        trade.RiderID,
-				CommissionBase: trade.Plan.CommissionBase,
-				Type:           promotion.CommissionTypeRenewal,
-				OrderID:        o.ID,
-				ActualAmount:   o.Total,
-				Price:          trade.Plan.Price,
+				RiderID:      trade.RiderID,
+				Type:         promotion.CommissionTypeRenewal,
+				OrderID:      o.ID,
+				ActualAmount: o.Total,
+				PlanID:       trade.Plan.ID,
 			})
 			if err != nil {
 				zap.L().Error("订单已支付, 续费返佣失败: "+trade.OutTradeNo, zap.Error(err))

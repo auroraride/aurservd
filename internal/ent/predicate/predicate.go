@@ -141,6 +141,9 @@ type PromotionBankCard func(*sql.Selector)
 // PromotionCommission is the predicate function for promotioncommission builders.
 type PromotionCommission func(*sql.Selector)
 
+// PromotionCommissionPlan is the predicate function for promotioncommissionplan builders.
+type PromotionCommissionPlan func(*sql.Selector)
+
 // PromotionEarnings is the predicate function for promotionearnings builders.
 type PromotionEarnings func(*sql.Selector)
 
@@ -155,6 +158,9 @@ type PromotionLevelTask func(*sql.Selector)
 
 // PromotionMember is the predicate function for promotionmember builders.
 type PromotionMember func(*sql.Selector)
+
+// PromotionMemberCommission is the predicate function for promotionmembercommission builders.
+type PromotionMemberCommission func(*sql.Selector)
 
 // PromotionPerson is the predicate function for promotionperson builders.
 type PromotionPerson func(*sql.Selector)

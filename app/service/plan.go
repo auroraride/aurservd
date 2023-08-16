@@ -17,9 +17,11 @@ import (
 	"golang.org/x/exp/slices"
 
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/app/model/promotion"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/plan"
+	"github.com/auroraride/aurservd/internal/ent/promotioncommission"
 	"github.com/auroraride/aurservd/internal/ent/setting"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
@@ -185,8 +187,7 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanListRes {
 				SetCommission(cl.Commission).
 				SetDesc(cl.Desc).
 				SetDays(cl.Days).
-				SetDiscountNewly(cl.DiscountNewly).
-				SetCommissionBase(cl.CommissionBase)
+				SetDiscountNewly(cl.DiscountNewly)
 			if i > 0 {
 				c.SetParent(parent)
 			}
@@ -310,6 +311,7 @@ func (s *planService) PlanWithComplexes(item *ent.Plan) (res model.PlanListRes) 
 		Complexes:   make([]*model.PlanComplexes, 0),
 		Notes:       item.Notes,
 		Intelligent: item.Intelligent,
+		Model:       item.Model,
 	}
 
 	// 电车型号
@@ -341,17 +343,25 @@ func (s *planService) PlanWithComplexes(item *ent.Plan) (res model.PlanListRes) 
 			r = &model.PlanComplexes{}
 			m[child.Model] = r
 		}
-		*r = append(*r, model.PlanComplex{
-			ID:             child.ID,
-			Price:          child.Price,
-			Days:           child.Days,
-			Original:       child.Original,
-			Desc:           child.Desc,
-			Commission:     child.Commission,
-			Model:          child.Model,
-			DiscountNewly:  child.DiscountNewly,
-			CommissionBase: child.CommissionBase,
-		})
+
+		pc := model.PlanComplex{
+			ID:            child.ID,
+			Price:         child.Price,
+			Days:          child.Days,
+			Original:      child.Original,
+			Desc:          child.Desc,
+			Commission:    child.Commission,
+			Model:         child.Model,
+			DiscountNewly: child.DiscountNewly,
+		}
+
+		if child.Edges.CommissionPlans != nil {
+			pc.CommissionName = child.Edges.CommissionPlans[0].Edges.PromotionCommission.Name
+			pc.CommissionID = child.Edges.CommissionPlans[0].Edges.PromotionCommission.ID
+		}
+
+		*r = append(*r, pc)
+
 	}
 
 	for _, v := range m {
@@ -369,6 +379,11 @@ func (s *planService) List(req *model.PlanListReq) *model.PaginationRes {
 			pq.Where(plan.DeletedAtIsNil())
 		}).
 		WithCities().
+		WithCommissionPlans(func(q *ent.PromotionCommissionPlanQuery) {
+			q.WithPromotionCommission(func(q *ent.PromotionCommissionQuery) {
+				q.Where(promotioncommission.TypeNEQ(promotion.CommissionCustom.Value()))
+			})
+		}).
 		WithBrand().
 		Order(ent.Desc(plan.FieldStart), ent.Asc(plan.FieldEnd))
 

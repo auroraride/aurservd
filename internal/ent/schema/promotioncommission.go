@@ -1,5 +1,6 @@
 package schema
 
+import "C"
 import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
@@ -60,7 +61,7 @@ func (PromotionCommission) Annotations() []schema.Annotation {
 // Fields of the PromotionCommission.
 func (PromotionCommission) Fields() []ent.Field {
 	return []ent.Field{
-		field.Uint8("type").Default(1).Nillable().Comment("类型 0:全局 1:通用 2:个人"),
+		field.Uint8("type").Default(1).Nillable().Comment("类型 0:默认 1:通用 2:个人"),
 		field.String("name").Comment("方案名"),
 		field.JSON("rule", &promotion.CommissionRule{}).Comment("返佣方案规则"),
 		field.Bool("enable").Default(true).Comment("启用状态 0:禁用 1:启用"),
@@ -74,7 +75,9 @@ func (PromotionCommission) Fields() []ent.Field {
 
 // Edges of the PromotionCommission.
 func (PromotionCommission) Edges() []ent.Edge {
-	return []ent.Edge{}
+	return []ent.Edge{
+		edge.To("commission_plans", PromotionCommissionPlan.Type),
+	}
 }
 
 func (PromotionCommission) Mixin() []ent.Mixin {

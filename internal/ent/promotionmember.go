@@ -11,7 +11,6 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/internal/ent/promotioncommission"
 	"github.com/auroraride/aurservd/internal/ent/promotionlevel"
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
 	"github.com/auroraride/aurservd/internal/ent/promotionperson"
@@ -40,8 +39,6 @@ type PromotionMember struct {
 	RiderID *uint64 `json:"rider_id,omitempty"`
 	// LevelID holds the value of the "level_id" field.
 	LevelID *uint64 `json:"level_id,omitempty"`
-	// CommissionID holds the value of the "commission_id" field.
-	CommissionID *uint64 `json:"commission_id,omitempty"`
 	// 会员手机号
 	Phone string `json:"phone,omitempty"`
 	// 会员姓名
@@ -76,8 +73,6 @@ type PromotionMemberEdges struct {
 	Rider *Rider `json:"rider,omitempty"`
 	// Level holds the value of the level edge.
 	Level *PromotionLevel `json:"level,omitempty"`
-	// Commission holds the value of the commission edge.
-	Commission *PromotionCommission `json:"commission,omitempty"`
 	// Referring holds the value of the referring edge.
 	Referring []*PromotionReferrals `json:"referring,omitempty"`
 	// Referred holds the value of the referred edge.
@@ -86,6 +81,8 @@ type PromotionMemberEdges struct {
 	Person *PromotionPerson `json:"person,omitempty"`
 	// Cards holds the value of the cards edge.
 	Cards []*PromotionBankCard `json:"cards,omitempty"`
+	// Commissions holds the value of the commissions edge.
+	Commissions []*PromotionMemberCommission `json:"commissions,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [7]bool
@@ -117,23 +114,10 @@ func (e PromotionMemberEdges) LevelOrErr() (*PromotionLevel, error) {
 	return nil, &NotLoadedError{edge: "level"}
 }
 
-// CommissionOrErr returns the Commission value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e PromotionMemberEdges) CommissionOrErr() (*PromotionCommission, error) {
-	if e.loadedTypes[2] {
-		if e.Commission == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: promotioncommission.Label}
-		}
-		return e.Commission, nil
-	}
-	return nil, &NotLoadedError{edge: "commission"}
-}
-
 // ReferringOrErr returns the Referring value or an error if the edge
 // was not loaded in eager-loading.
 func (e PromotionMemberEdges) ReferringOrErr() ([]*PromotionReferrals, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[2] {
 		return e.Referring, nil
 	}
 	return nil, &NotLoadedError{edge: "referring"}
@@ -142,7 +126,7 @@ func (e PromotionMemberEdges) ReferringOrErr() ([]*PromotionReferrals, error) {
 // ReferredOrErr returns the Referred value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e PromotionMemberEdges) ReferredOrErr() (*PromotionReferrals, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[3] {
 		if e.Referred == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: promotionreferrals.Label}
@@ -155,7 +139,7 @@ func (e PromotionMemberEdges) ReferredOrErr() (*PromotionReferrals, error) {
 // PersonOrErr returns the Person value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e PromotionMemberEdges) PersonOrErr() (*PromotionPerson, error) {
-	if e.loadedTypes[5] {
+	if e.loadedTypes[4] {
 		if e.Person == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: promotionperson.Label}
@@ -168,10 +152,19 @@ func (e PromotionMemberEdges) PersonOrErr() (*PromotionPerson, error) {
 // CardsOrErr returns the Cards value or an error if the edge
 // was not loaded in eager-loading.
 func (e PromotionMemberEdges) CardsOrErr() ([]*PromotionBankCard, error) {
-	if e.loadedTypes[6] {
+	if e.loadedTypes[5] {
 		return e.Cards, nil
 	}
 	return nil, &NotLoadedError{edge: "cards"}
+}
+
+// CommissionsOrErr returns the Commissions value or an error if the edge
+// was not loaded in eager-loading.
+func (e PromotionMemberEdges) CommissionsOrErr() ([]*PromotionMemberCommission, error) {
+	if e.loadedTypes[6] {
+		return e.Commissions, nil
+	}
+	return nil, &NotLoadedError{edge: "commissions"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -185,7 +178,7 @@ func (*PromotionMember) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case promotionmember.FieldBalance, promotionmember.FieldFrozen:
 			values[i] = new(sql.NullFloat64)
-		case promotionmember.FieldID, promotionmember.FieldRiderID, promotionmember.FieldLevelID, promotionmember.FieldCommissionID, promotionmember.FieldTotalGrowthValue, promotionmember.FieldCurrentGrowthValue, promotionmember.FieldPersonID, promotionmember.FieldNewSignCount, promotionmember.FieldRenewCount:
+		case promotionmember.FieldID, promotionmember.FieldRiderID, promotionmember.FieldLevelID, promotionmember.FieldTotalGrowthValue, promotionmember.FieldCurrentGrowthValue, promotionmember.FieldPersonID, promotionmember.FieldNewSignCount, promotionmember.FieldRenewCount:
 			values[i] = new(sql.NullInt64)
 		case promotionmember.FieldRemark, promotionmember.FieldPhone, promotionmember.FieldName, promotionmember.FieldAvatarURL:
 			values[i] = new(sql.NullString)
@@ -266,13 +259,6 @@ func (pm *PromotionMember) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pm.LevelID = new(uint64)
 				*pm.LevelID = uint64(value.Int64)
-			}
-		case promotionmember.FieldCommissionID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field commission_id", values[i])
-			} else if value.Valid {
-				pm.CommissionID = new(uint64)
-				*pm.CommissionID = uint64(value.Int64)
 			}
 		case promotionmember.FieldPhone:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -364,11 +350,6 @@ func (pm *PromotionMember) QueryLevel() *PromotionLevelQuery {
 	return NewPromotionMemberClient(pm.config).QueryLevel(pm)
 }
 
-// QueryCommission queries the "commission" edge of the PromotionMember entity.
-func (pm *PromotionMember) QueryCommission() *PromotionCommissionQuery {
-	return NewPromotionMemberClient(pm.config).QueryCommission(pm)
-}
-
 // QueryReferring queries the "referring" edge of the PromotionMember entity.
 func (pm *PromotionMember) QueryReferring() *PromotionReferralsQuery {
 	return NewPromotionMemberClient(pm.config).QueryReferring(pm)
@@ -387,6 +368,11 @@ func (pm *PromotionMember) QueryPerson() *PromotionPersonQuery {
 // QueryCards queries the "cards" edge of the PromotionMember entity.
 func (pm *PromotionMember) QueryCards() *PromotionBankCardQuery {
 	return NewPromotionMemberClient(pm.config).QueryCards(pm)
+}
+
+// QueryCommissions queries the "commissions" edge of the PromotionMember entity.
+func (pm *PromotionMember) QueryCommissions() *PromotionMemberCommissionQuery {
+	return NewPromotionMemberClient(pm.config).QueryCommissions(pm)
 }
 
 // Update returns a builder for updating this PromotionMember.
@@ -439,11 +425,6 @@ func (pm *PromotionMember) String() string {
 	builder.WriteString(", ")
 	if v := pm.LevelID; v != nil {
 		builder.WriteString("level_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
-	builder.WriteString(", ")
-	if v := pm.CommissionID; v != nil {
-		builder.WriteString("commission_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")

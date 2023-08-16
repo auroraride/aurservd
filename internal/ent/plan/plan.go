@@ -47,8 +47,6 @@ const (
 	FieldDays = "days"
 	// FieldCommission holds the string denoting the commission field in the database.
 	FieldCommission = "commission"
-	// FieldCommissionBase holds the string denoting the commission_base field in the database.
-	FieldCommissionBase = "commission_base"
 	// FieldOriginal holds the string denoting the original field in the database.
 	FieldOriginal = "original"
 	// FieldDesc holds the string denoting the desc field in the database.
@@ -69,6 +67,8 @@ const (
 	EdgeParent = "parent"
 	// EdgeComplexes holds the string denoting the complexes edge name in mutations.
 	EdgeComplexes = "complexes"
+	// EdgeCommissionPlans holds the string denoting the commission_plans edge name in mutations.
+	EdgeCommissionPlans = "commission_plans"
 	// Table holds the table name of the plan in the database.
 	Table = "plan"
 	// BrandTable is the table that holds the brand relation/edge.
@@ -91,6 +91,13 @@ const (
 	ComplexesTable = "plan"
 	// ComplexesColumn is the table column denoting the complexes relation/edge.
 	ComplexesColumn = "parent_id"
+	// CommissionPlansTable is the table that holds the commission_plans relation/edge.
+	CommissionPlansTable = "promotion_commission_plan"
+	// CommissionPlansInverseTable is the table name for the PromotionCommissionPlan entity.
+	// It exists in this package in order to avoid circular dependency with the "promotioncommissionplan" package.
+	CommissionPlansInverseTable = "promotion_commission_plan"
+	// CommissionPlansColumn is the table column denoting the commission_plans relation/edge.
+	CommissionPlansColumn = "plan_id"
 )
 
 // Columns holds all SQL columns for plan fields.
@@ -112,7 +119,6 @@ var Columns = []string{
 	FieldPrice,
 	FieldDays,
 	FieldCommission,
-	FieldCommissionBase,
 	FieldOriginal,
 	FieldDesc,
 	FieldParentID,
@@ -152,8 +158,6 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 	// DefaultType holds the default value on creation for the "type" field.
 	DefaultType uint8
-	// DefaultCommissionBase holds the default value on creation for the "commission_base" field.
-	DefaultCommissionBase float64
 	// DefaultDiscountNewly holds the default value on creation for the "discount_newly" field.
 	DefaultDiscountNewly float64
 	// DefaultIntelligent holds the default value on creation for the "intelligent" field.
@@ -238,11 +242,6 @@ func ByCommission(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCommission, opts...).ToFunc()
 }
 
-// ByCommissionBase orders the results by the commission_base field.
-func ByCommissionBase(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldCommissionBase, opts...).ToFunc()
-}
-
 // ByOriginal orders the results by the original field.
 func ByOriginal(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldOriginal, opts...).ToFunc()
@@ -309,6 +308,20 @@ func ByComplexes(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newComplexesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByCommissionPlansCount orders the results by commission_plans count.
+func ByCommissionPlansCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newCommissionPlansStep(), opts...)
+	}
+}
+
+// ByCommissionPlans orders the results by commission_plans terms.
+func ByCommissionPlans(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCommissionPlansStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newBrandStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -335,5 +348,12 @@ func newComplexesStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(Table, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, ComplexesTable, ComplexesColumn),
+	)
+}
+func newCommissionPlansStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CommissionPlansInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, CommissionPlansTable, CommissionPlansColumn),
 	)
 }

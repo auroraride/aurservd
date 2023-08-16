@@ -49,7 +49,8 @@ type PlanComplex struct {
 	Commission    float64 `json:"commission"`    // 提成
 	DiscountNewly float64 `json:"discountNewly"` // 新签优惠
 
-	CommissionBase float64 `json:"commissionBase"` // 推广返佣底数
+	CommissionName string `json:"commissionName,omitempty"` // 佣金方案名称
+	CommissionID   uint64 `json:"commissionId,omitempty"`   // 佣金方案ID
 
 	Model string `json:"model" validate:"required"` // 电池型号, 单电需要每一项都补充此字段
 }
@@ -108,6 +109,7 @@ type PlanListRes struct {
 	Brand       *EbikeBrand `json:"brand,omitempty"` // 电车型号
 	Notes       []string    `json:"notes,omitempty"` // 购买须知
 	Intelligent bool        `json:"intelligent"`     // 是否智能柜套餐
+	Model       string      `json:"model"`           // 电池型号
 
 	NotSettedDailyRent []*PlanNotSettedDailyRent `json:"notSettedDailyRent,omitempty"` // 未设定的日租金
 }
@@ -156,6 +158,10 @@ type RiderPlanListRes struct {
 type PlanSelectionReq struct {
 	Effect *uint8 `json:"effect" query:"effect" enums:"0,1,2"` // 筛选生效中 0:全部(默认) 1:生效中 2:未生效
 	Status *uint8 `json:"status" query:"status" enums:"0,1,2"` // 筛选状态 0:全部(默认) 1:启用 2:禁用
+}
+
+type CommissionPlanSelectionReq struct {
+	Keyword *string `json:"keyword" query:"keyword"` // 关键字
 }
 
 type PlanDaysPriceOptions []PlanDaysPriceOption

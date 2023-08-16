@@ -49,6 +49,8 @@ const (
 	FieldEndAt = "end_at"
 	// EdgeMember holds the string denoting the member edge name in mutations.
 	EdgeMember = "member"
+	// EdgeCommissionPlans holds the string denoting the commission_plans edge name in mutations.
+	EdgeCommissionPlans = "commission_plans"
 	// Table holds the table name of the promotioncommission in the database.
 	Table = "promotion_commission"
 	// MemberTable is the table that holds the member relation/edge.
@@ -58,6 +60,13 @@ const (
 	MemberInverseTable = "promotion_member"
 	// MemberColumn is the table column denoting the member relation/edge.
 	MemberColumn = "member_id"
+	// CommissionPlansTable is the table that holds the commission_plans relation/edge.
+	CommissionPlansTable = "promotion_commission_plan"
+	// CommissionPlansInverseTable is the table name for the PromotionCommissionPlan entity.
+	// It exists in this package in order to avoid circular dependency with the "promotioncommissionplan" package.
+	CommissionPlansInverseTable = "promotion_commission_plan"
+	// CommissionPlansColumn is the table column denoting the commission_plans relation/edge.
+	CommissionPlansColumn = "commission_id"
 )
 
 // Columns holds all SQL columns for promotioncommission fields.
@@ -186,10 +195,31 @@ func ByMemberField(field string, opts ...sql.OrderTermOption) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newMemberStep(), sql.OrderByField(field, opts...))
 	}
 }
+
+// ByCommissionPlansCount orders the results by commission_plans count.
+func ByCommissionPlansCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newCommissionPlansStep(), opts...)
+	}
+}
+
+// ByCommissionPlans orders the results by commission_plans terms.
+func ByCommissionPlans(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCommissionPlansStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newMemberStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(MemberInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, false, MemberTable, MemberColumn),
+	)
+}
+func newCommissionPlansStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CommissionPlansInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, CommissionPlansTable, CommissionPlansColumn),
 	)
 }

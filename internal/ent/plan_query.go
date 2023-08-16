@@ -15,20 +15,22 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
+	"github.com/auroraride/aurservd/internal/ent/promotioncommissionplan"
 )
 
 // PlanQuery is the builder for querying Plan entities.
 type PlanQuery struct {
 	config
-	ctx           *QueryContext
-	order         []plan.OrderOption
-	inters        []Interceptor
-	predicates    []predicate.Plan
-	withBrand     *EbikeBrandQuery
-	withCities    *CityQuery
-	withParent    *PlanQuery
-	withComplexes *PlanQuery
-	modifiers     []func(*sql.Selector)
+	ctx                 *QueryContext
+	order               []plan.OrderOption
+	inters              []Interceptor
+	predicates          []predicate.Plan
+	withBrand           *EbikeBrandQuery
+	withCities          *CityQuery
+	withParent          *PlanQuery
+	withComplexes       *PlanQuery
+	withCommissionPlans *PromotionCommissionPlanQuery
+	modifiers           []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -146,6 +148,28 @@ func (pq *PlanQuery) QueryComplexes() *PlanQuery {
 			sqlgraph.From(plan.Table, plan.FieldID, selector),
 			sqlgraph.To(plan.Table, plan.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, plan.ComplexesTable, plan.ComplexesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryCommissionPlans chains the current query on the "commission_plans" edge.
+func (pq *PlanQuery) QueryCommissionPlans() *PromotionCommissionPlanQuery {
+	query := (&PromotionCommissionPlanClient{config: pq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(plan.Table, plan.FieldID, selector),
+			sqlgraph.To(promotioncommissionplan.Table, promotioncommissionplan.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, plan.CommissionPlansTable, plan.CommissionPlansColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
 		return fromU, nil
@@ -340,15 +364,16 @@ func (pq *PlanQuery) Clone() *PlanQuery {
 		return nil
 	}
 	return &PlanQuery{
-		config:        pq.config,
-		ctx:           pq.ctx.Clone(),
-		order:         append([]plan.OrderOption{}, pq.order...),
-		inters:        append([]Interceptor{}, pq.inters...),
-		predicates:    append([]predicate.Plan{}, pq.predicates...),
-		withBrand:     pq.withBrand.Clone(),
-		withCities:    pq.withCities.Clone(),
-		withParent:    pq.withParent.Clone(),
-		withComplexes: pq.withComplexes.Clone(),
+		config:              pq.config,
+		ctx:                 pq.ctx.Clone(),
+		order:               append([]plan.OrderOption{}, pq.order...),
+		inters:              append([]Interceptor{}, pq.inters...),
+		predicates:          append([]predicate.Plan{}, pq.predicates...),
+		withBrand:           pq.withBrand.Clone(),
+		withCities:          pq.withCities.Clone(),
+		withParent:          pq.withParent.Clone(),
+		withComplexes:       pq.withComplexes.Clone(),
+		withCommissionPlans: pq.withCommissionPlans.Clone(),
 		// clone intermediate query.
 		sql:  pq.sql.Clone(),
 		path: pq.path,
@@ -396,6 +421,17 @@ func (pq *PlanQuery) WithComplexes(opts ...func(*PlanQuery)) *PlanQuery {
 		opt(query)
 	}
 	pq.withComplexes = query
+	return pq
+}
+
+// WithCommissionPlans tells the query-builder to eager-load the nodes that are connected to
+// the "commission_plans" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *PlanQuery) WithCommissionPlans(opts ...func(*PromotionCommissionPlanQuery)) *PlanQuery {
+	query := (&PromotionCommissionPlanClient{config: pq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withCommissionPlans = query
 	return pq
 }
 
@@ -477,11 +513,12 @@ func (pq *PlanQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Plan, e
 	var (
 		nodes       = []*Plan{}
 		_spec       = pq.querySpec()
-		loadedTypes = [4]bool{
+		loadedTypes = [5]bool{
 			pq.withBrand != nil,
 			pq.withCities != nil,
 			pq.withParent != nil,
 			pq.withComplexes != nil,
+			pq.withCommissionPlans != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -528,6 +565,15 @@ func (pq *PlanQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Plan, e
 		if err := pq.loadComplexes(ctx, query, nodes,
 			func(n *Plan) { n.Edges.Complexes = []*Plan{} },
 			func(n *Plan, e *Plan) { n.Edges.Complexes = append(n.Edges.Complexes, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := pq.withCommissionPlans; query != nil {
+		if err := pq.loadCommissionPlans(ctx, query, nodes,
+			func(n *Plan) { n.Edges.CommissionPlans = []*PromotionCommissionPlan{} },
+			func(n *Plan, e *PromotionCommissionPlan) {
+				n.Edges.CommissionPlans = append(n.Edges.CommissionPlans, e)
+			}); err != nil {
 			return nil, err
 		}
 	}
@@ -692,6 +738,36 @@ func (pq *PlanQuery) loadComplexes(ctx context.Context, query *PlanQuery, nodes 
 	}
 	return nil
 }
+func (pq *PlanQuery) loadCommissionPlans(ctx context.Context, query *PromotionCommissionPlanQuery, nodes []*Plan, init func(*Plan), assign func(*Plan, *PromotionCommissionPlan)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uint64]*Plan)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(promotioncommissionplan.FieldPlanID)
+	}
+	query.Where(predicate.PromotionCommissionPlan(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(plan.CommissionPlansColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.PlanID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "plan_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
 
 func (pq *PlanQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := pq.querySpec()
@@ -795,10 +871,11 @@ func (pq *PlanQuery) Modify(modifiers ...func(s *sql.Selector)) *PlanSelect {
 type PlanQueryWith string
 
 var (
-	PlanQueryWithBrand     PlanQueryWith = "Brand"
-	PlanQueryWithCities    PlanQueryWith = "Cities"
-	PlanQueryWithParent    PlanQueryWith = "Parent"
-	PlanQueryWithComplexes PlanQueryWith = "Complexes"
+	PlanQueryWithBrand           PlanQueryWith = "Brand"
+	PlanQueryWithCities          PlanQueryWith = "Cities"
+	PlanQueryWithParent          PlanQueryWith = "Parent"
+	PlanQueryWithComplexes       PlanQueryWith = "Complexes"
+	PlanQueryWithCommissionPlans PlanQueryWith = "CommissionPlans"
 )
 
 func (pq *PlanQuery) With(withEdges ...PlanQueryWith) *PlanQuery {
@@ -812,6 +889,8 @@ func (pq *PlanQuery) With(withEdges ...PlanQueryWith) *PlanQuery {
 			pq.WithParent()
 		case PlanQueryWithComplexes:
 			pq.WithComplexes()
+		case PlanQueryWithCommissionPlans:
+			pq.WithCommissionPlans()
 		}
 	}
 	return pq
