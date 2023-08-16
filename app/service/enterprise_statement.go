@@ -559,7 +559,7 @@ func (s *enterpriseStatementService) usageDetail(en *ent.Enterprise, item *ent.S
 	return res
 }
 
-// usageItems 计算使用项
+// 计算使用项
 func (s *enterpriseStatementService) usageItems(sub *ent.Subscribe, start time.Time, end time.Time, prices map[string]float64) (items []*model.StatementUsageItem) {
 	if sub.Edges.Bills != nil {
 		for _, bill := range sub.Edges.Bills {
@@ -569,10 +569,10 @@ func (s *enterpriseStatementService) usageItems(sub *ent.Subscribe, start time.T
 		}
 	}
 	subStart := *sub.StartAt
-	// 订阅 上次结账日如果早于结束日期第二天 直接跳过
+	// 订阅 上次结账日如果晚于结束日期第二天 直接跳过
 	next := end.AddDate(0, 0, 1)
 	if sub.LastBillDate != nil {
-		if sub.LastBillDate.Before(next) {
+		if sub.LastBillDate.After(next) {
 			return
 		}
 		subStart = *sub.LastBillDate
