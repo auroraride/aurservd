@@ -156,7 +156,7 @@ func (s *riderBusinessService) Active(req *model.BusinessCabinetReq) model.Busin
 		allocate.CabinetIDNotNil(),
 	).First(s.ctx)
 	if allo == nil {
-		snag.Panic("未找到分配信息")
+		snag.Panic("请先分配物资")
 	}
 
 	NewBusinessRider(s.rider).
