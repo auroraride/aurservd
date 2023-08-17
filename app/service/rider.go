@@ -82,6 +82,7 @@ func (s *riderService) GetRiderById(id uint64) (u *ent.Rider, err error) {
 		WithPerson().
 		WithEnterprise().
 		WithEnterprise().
+		WithStation().
 		Where(rider.ID(id)).
 		First(s.ctx)
 }
@@ -935,6 +936,17 @@ func (s *riderService) Profile(u *ent.Rider, device *model.Device, token string)
 		Qrcode:          s.GetQrcode(u.ID),
 		Token:           token,
 	}
+
+	// 站点
+	stat := u.Edges.Station
+	if stat != nil {
+		profile.Station = &model.EnterpriseStation{
+			ID:   stat.ID,
+			Name: stat.Name,
+		}
+	}
+
+	// 订阅
 	if sub != nil && slices.Contains(model.SubscribeNotUnSubscribed(), sub.Status) {
 		profile.Subscribe = subd
 		profile.CabinetBusiness = u.EnterpriseID == nil && sub.BrandID == nil

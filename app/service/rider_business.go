@@ -91,8 +91,13 @@ func (s *riderBusinessService) preprocess(serial string, bt business.Type) {
 
 	// 查询电柜业务是否可被允许
 	// 代理商管理的电柜只允许非本代理商骑手进行换电业务
-	if cab.EnterpriseID != nil && cab.EnterpriseID != sub.EnterpriseID && bus != adapter.BusinessExchange {
-		snag.Panic("该电柜无法办理业务, 请前往其他电柜进行")
+	// if cab.EnterpriseID != nil && cab.EnterpriseID != sub.EnterpriseID && bus != adapter.BusinessExchange {
+	// 	snag.Panic("该电柜无法办理业务, 请前往其他电柜进行")
+	// }
+
+	// 激活、退租业务限制当前站点
+	if cab.StationID != nil && (bus == adapter.BusinessActive || bus == adapter.BusinessUnsubscribe) && (sub.StationID == nil || *cab.StationID != *sub.StationID) {
+		snag.Panic("该电柜无法办理业务，请前往站点电柜进行")
 	}
 
 	// 验证是否可以办理业务

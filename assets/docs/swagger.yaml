@@ -6966,6 +6966,10 @@ definitions:
       qrcode:
         description: 二维码
         type: string
+      station:
+        allOf:
+        - $ref: '#/definitions/model.EnterpriseStation'
+        description: 站点
       subscribe:
         allOf:
         - $ref: '#/definitions/model.Subscribe'

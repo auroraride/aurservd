@@ -29677,6 +29677,14 @@ const docTemplate = `{
                     "description": "二维码",
                     "type": "string"
                 },
+                "station": {
+                    "description": "站点",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EnterpriseStation"
+                        }
+                    ]
+                },
                 "subscribe": {
                     "description": "骑士卡",
                     "allOf": [

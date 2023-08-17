@@ -58,6 +58,7 @@ type RiderSigninRes struct {
 	CabinetBusiness   bool               `json:"cabinetBusiness"`             // 是否可以自主使用电柜办理业务
 	EnterpriseContact *EnterpriseContact `json:"enterpriseContact,omitempty"` // 团签联系方式
 	ExitEnterprise    bool               `json:"exitEnterprise"`              // 判断能否退出团签
+	Station           *EnterpriseStation `json:"station,omitempty"`           // 站点
 }
 
 // RiderContact 紧急联系人
