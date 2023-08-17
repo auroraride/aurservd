@@ -934,7 +934,7 @@ func (s *stockService) detailInfo(item *ent.Stock) model.StockDetailRes {
 		res.Type = tmr + tm[item.Type]
 
 		// 出入库对象
-		target := fmt.Sprintf("[骑手] %s - %s", er.Phone, er.Name)
+		target := fmt.Sprintf("[骑手] %s", riderName)
 		switch item.Type {
 		case model.StockTypeRiderActive, model.StockTypeRiderContinue:
 			res.Inbound = target
