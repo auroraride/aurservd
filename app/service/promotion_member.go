@@ -28,7 +28,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ali"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
-	"github.com/auroraride/aurservd/internal/ent/promotioncommission"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
@@ -628,7 +627,7 @@ func (s *promotionMemberService) SetCommission(req *promotion.MemberCommissionRe
 
 	s.CommissionPlanIsConfigured(mem, req)
 
-	ent.Database.PromotionCommission.SoftDelete().Where(promotioncommission.MemberIDEQ(req.ID)).ExecX(s.ctx)
+	// ent.Database.PromotionCommission.SoftDelete().Where(promotioncommission.MemberIDEQ(req.ID)).ExecX(s.ctx)
 	// 自定义返佣方案
 	commissionTypeValue := promotion.CommissionType(2)
 	mc := NewPromotionCommissionService().Create(&promotion.CommissionCreateReq{
@@ -655,27 +654,13 @@ func (s *promotionMemberService) SetCommission(req *promotion.MemberCommissionRe
 
 // CommissionPlanIsConfigured 判断返佣方案骑士卡是否已被配置
 func (s *promotionMemberService) CommissionPlanIsConfigured(mem *ent.PromotionMember, req *promotion.MemberCommissionReq) {
-	if mem.Edges.Commissions == nil {
-		return
-	}
-
-	var commissionID []uint64
-	for _, commission := range mem.Edges.Commissions {
-		if *commission.Edges.Commission.Type == promotion.CommissionCustom.Value() {
-			commissionID = append(commissionID, commission.CommissionID)
-		}
-	}
-
-	if len(commissionID) == 0 {
-		return
-	}
 
 	// 查询返佣方案
 	pc, _ := ent.Database.PromotionCommissionPlan.Query().Where(
-		promotioncommissionplan.CommissionIDIn(commissionID...),
+		promotioncommissionplan.MemberID(mem.ID),
 		promotioncommissionplan.PlanIDIn(req.PlanID...),
 	).Select(promotioncommissionplan.FieldPlanID).WithPlan().All(s.ctx)
-	if len(pc) > 0 {
+	if len(pc) >= len(req.PlanID) {
 		planinfo := make(map[uint64]string)
 		for _, v := range pc {
 			planinfo[v.ID] = fmt.Sprintf("骑士卡 %s - %s - %.2f", v.Edges.Plan.Name, v.Edges.Plan.Model, v.Edges.Plan.Price)

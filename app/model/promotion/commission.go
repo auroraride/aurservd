@@ -191,3 +191,11 @@ type CommissionPlan struct {
 	Name   string  `json:"name"`   // 骑士卡名称
 	Amount float64 `json:"amount"` // 骑士卡价格
 }
+
+// CommissionMaxPlan 每个方案最大返佣金额
+type CommissionMaxPlan struct {
+	FirstNewAmount      float64 `json:"firstNewAmount"`      // 一级团员新签
+	FirstRenewalAmount  float64 `json:"firstRenewalAmount"`  // 一级团员续费
+	SecondNewAmount     float64 `json:"secondNewAmount"`     // 二级团员新签
+	SecondRenewalAmount float64 `json:"secondRenewalAmount"` // 二级团员续费
+}

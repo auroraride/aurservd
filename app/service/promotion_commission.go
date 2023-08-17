@@ -452,7 +452,7 @@ func (s *promotionCommissionService) calculateFirstLevelCommission(mem *ent.Prom
 	count := 0
 	if req.Type == promotion.CommissionTypeNewlySigned { // 新签
 
-		value, optionType := s.getCommissionRatio(conf.NewUserCommission, promotion.FirstLevelNewSubscribeKey, 0)
+		value, optionType := s.getCommissionValue(conf.NewUserCommission, promotion.FirstLevelNewSubscribeKey, 0)
 		res.Amount = s.calculateCommission(req.ActualAmount, value, optionType)
 
 		res.CommissionRuleKey = promotion.FirstLevelNewSubscribeKey
@@ -464,13 +464,14 @@ func (s *promotionCommissionService) calculateFirstLevelCommission(mem *ent.Prom
 			count, _ = NewPromotionEarningsService().CountCommission(mem.ID, req.RiderID)
 		}
 
-		value, optionType := s.getCommissionRatio(conf.RenewalCommission, promotion.FirstLevelRenewalSubscribeKey, count)
+		value, optionType := s.getCommissionValue(conf.RenewalCommission, promotion.FirstLevelRenewalSubscribeKey, count)
 		res.Amount = s.calculateCommission(req.ActualAmount, value, optionType)
 
 		res.CommissionRuleKey = promotion.FirstLevelRenewalSubscribeKey
 	}
 	return
 }
+
 func (s *promotionCommissionService) calculateSecondLevelCommission(mem *ent.PromotionMember, req *promotion.CommissionCalculation) (res *promotion.EarningsCreateReq) {
 	referred := mem.Edges.Referred
 	if referred != nil && referred.ReferringMemberID != nil {
@@ -496,7 +497,7 @@ func (s *promotionCommissionService) calculateSecondLevelCommission(mem *ent.Pro
 		count := 0
 		if req.Type == promotion.CommissionTypeNewlySigned { // 新签
 
-			value, optionType := s.getCommissionRatio(commissions.Rule.NewUserCommission, promotion.SecondLevelNewSubscribeKey, 0)
+			value, optionType := s.getCommissionValue(commissions.Rule.NewUserCommission, promotion.SecondLevelNewSubscribeKey, 0)
 			res.Amount = s.calculateCommission(req.ActualAmount, value, optionType)
 
 			res.CommissionRuleKey = promotion.SecondLevelNewSubscribeKey
@@ -508,7 +509,7 @@ func (s *promotionCommissionService) calculateSecondLevelCommission(mem *ent.Pro
 				count, _ = NewPromotionEarningsService().CountCommission(mem.ID, req.RiderID)
 			}
 
-			value, optionType := s.getCommissionRatio(conf.RenewalCommission, promotion.SecondLevelRenewalSubscribeKey, count)
+			value, optionType := s.getCommissionValue(conf.RenewalCommission, promotion.SecondLevelRenewalSubscribeKey, count)
 			res.Amount = s.calculateCommission(req.ActualAmount, value, optionType)
 
 			res.CommissionRuleKey = promotion.SecondLevelRenewalSubscribeKey
@@ -602,7 +603,7 @@ func (s *promotionCommissionService) calculateCommission(actualAmount, value flo
 }
 
 // 获取续费返佣比例
-func (s *promotionCommissionService) getCommissionRatio(rule map[promotion.CommissionRuleKey]*promotion.CommissionRuleConfig, index promotion.CommissionRuleKey, countIndex int) (float64, promotion.CommissionOptionType) {
+func (s *promotionCommissionService) getCommissionValue(rule map[promotion.CommissionRuleKey]*promotion.CommissionRuleConfig, index promotion.CommissionRuleKey, countIndex int) (float64, promotion.CommissionOptionType) {
 	if rule == nil {
 		return 0, 0
 	}
@@ -614,6 +615,73 @@ func (s *promotionCommissionService) getCommissionRatio(rule map[promotion.Commi
 		return rule[index].Value[countIndex], rule[index].OptionType
 	}
 	return rule[index].Value[0], rule[index].OptionType
+}
+
+// FindPlanMaxAmount 所有骑士卡中最大的值
+func (s *promotionCommissionService) FindPlanMaxAmount(commission []*ent.PromotionCommission) map[promotion.CommissionRuleKey]float64 {
+	maxPlanSlice := make([]promotion.CommissionMaxPlan, 0)
+
+	for _, v := range commission {
+		rule := v.Rule
+		plans := v.Edges.Plans
+		if len(plans) > 0 {
+			for _, p := range plans {
+				if p.Edges.Plan != nil {
+					maxPlanSlice = append(maxPlanSlice, s.CalculateMaxCommission(rule, p.Edges.Plan.Price))
+				}
+			}
+		}
+	}
+	// 分类
+	var firstNewAmount, firstRenewalAmount, secondNewAmount, secondRenewalAmount []float64
+
+	res := make(map[promotion.CommissionRuleKey]float64)
+	for _, v := range maxPlanSlice {
+		firstNewAmount = append(firstNewAmount, v.FirstNewAmount)
+		firstRenewalAmount = append(firstRenewalAmount, v.FirstRenewalAmount)
+		secondNewAmount = append(secondNewAmount, v.SecondNewAmount)
+		secondRenewalAmount = append(secondRenewalAmount, v.SecondRenewalAmount)
+	}
+
+	// 找出最大值
+	res[promotion.FirstLevelNewSubscribeKey] = s.findMaxNumber(firstNewAmount)
+	res[promotion.FirstLevelRenewalSubscribeKey] = s.findMaxNumber(firstRenewalAmount)
+	res[promotion.SecondLevelNewSubscribeKey] = s.findMaxNumber(secondNewAmount)
+	res[promotion.SecondLevelRenewalSubscribeKey] = s.findMaxNumber(secondRenewalAmount)
+	return res
+
+}
+
+// CalculateMaxCommission 计算最高返佣金额
+func (s *promotionCommissionService) CalculateMaxCommission(rule *promotion.CommissionRule, price float64) promotion.CommissionMaxPlan {
+	res := promotion.CommissionMaxPlan{}
+	// 一级新签
+	res.FirstNewAmount = s.getMaxCommissionAmount(rule.NewUserCommission[promotion.FirstLevelNewSubscribeKey], price)
+	// 一级续签
+	res.FirstRenewalAmount = s.getMaxCommissionAmount(rule.RenewalCommission[promotion.FirstLevelRenewalSubscribeKey], price)
+	// 二级新签
+	res.SecondNewAmount = s.getMaxCommissionAmount(rule.NewUserCommission[promotion.SecondLevelNewSubscribeKey], price)
+	// 二级续签
+	res.SecondRenewalAmount = s.getMaxCommissionAmount(rule.RenewalCommission[promotion.SecondLevelRenewalSubscribeKey], price)
+	return res
+}
+
+// 获取最高返佣金额
+func (s *promotionCommissionService) getMaxCommissionAmount(rule *promotion.CommissionRuleConfig, price float64) float64 {
+	if rule == nil {
+		return 0
+	}
+
+	// 获取比例最高的值,固定金额最大值
+	value := rule.Value
+	maxValue := s.findMaxNumber(value)
+	maxPercentageAmount := tools.NewDecimal().Mul(price, maxValue/100)
+	maxFixedAmount := maxValue
+	// 判断哪个最大
+	if maxPercentageAmount > maxFixedAmount {
+		return maxPercentageAmount
+	}
+	return maxFixedAmount
 }
 
 // GetCommissionType 查询骑手是新用户还是续费用户
@@ -654,26 +722,9 @@ func (s *promotionCommissionService) GetCommissionRule(mem *ent.PromotionMember)
 		snag.Panic("默认返佣方案规则不存在")
 	}
 
-	// // 查询最高返佣金额
-	// var commissionBase float64
-	// pl, _ := ent.Database.Plan.QueryNotDeleted().Where(plan.CommissionBaseNEQ(0)).Order(ent.Desc(plan.FieldCommissionBase)).First(s.ctx)
-	// if pl == nil {
-	// 	commissionBase = 0
-	// } else {
-	// 	commissionBase = pl.CommissionBase
-	// }
-
 	dfRule := commission.Rule
-	rd := s.appendCommissionRuleDetails(dfRule)
+	rd := s.appendCommissionRuleDetails(mem, dfRule)
 	detailDesc := commission.Desc
-
-	// if mem != nil && mem.Edges.Commission != nil {
-	// 	detailDesc = mem.Edges.Commission.Desc
-	// 	meRule := mem.Edges.Commission.Rule
-	// 	if meRule != nil {
-	// 		rd = s.appendCommissionRuleDetails(meRule)
-	// 	}
-	// }
 
 	res.Detail = rd
 	res.DetailDesc = detailDesc
@@ -682,9 +733,25 @@ func (s *promotionCommissionService) GetCommissionRule(mem *ent.PromotionMember)
 }
 
 // 添加佣金规则详情到结果列表
-func (s *promotionCommissionService) appendCommissionRuleDetails(r *promotion.CommissionRule) []promotion.CommissionRuleDetail {
+func (s *promotionCommissionService) appendCommissionRuleDetails(mem *ent.PromotionMember, r *promotion.CommissionRule) []promotion.CommissionRuleDetail {
 	res := make([]promotion.CommissionRuleDetail, 0, 4)
 	cfg := &promotion.CommissionRuleConfig{}
+	maxAmount := make(map[promotion.CommissionRuleKey]float64)
+
+	com, _ := ent.Database.PromotionCommission.QueryNotDeleted().
+		Where(
+			promotioncommission.Or(
+				promotioncommission.MemberID(mem.ID),
+				promotioncommission.TypeNEQ(promotion.CommissionCustom.Value()),
+			)).
+		WithPlans(
+			func(query *ent.PromotionCommissionPlanQuery) {
+				query.WithPlan()
+			}).
+		All(s.ctx)
+	if len(com) > 0 {
+		maxAmount = s.FindPlanMaxAmount(com)
+	}
 
 	for k := range promotion.CommissionRuleKeyNames {
 		value, ok := r.NewUserCommission[k]
@@ -698,16 +765,7 @@ func (s *promotionCommissionService) appendCommissionRuleDetails(r *promotion.Co
 				Name: cfg.Name,
 				Desc: cfg.Desc,
 			}
-
-			if cfg.LimitedType == promotion.CommissionUnlimited {
-				rd.Ratio = cfg.Value[0]
-			} else {
-				// 取比例最高的值
-				rd.Ratio = s.findMaxNumber(cfg.Value)
-			}
-
-			// 计算返佣金额
-			// rd.Amount = uint64(math.Round(tools.NewDecimal().Mul(amount, rd.Ratio/100)))
+			rd.Amount = uint64(maxAmount[k])
 
 			res = append(res, rd)
 		}
