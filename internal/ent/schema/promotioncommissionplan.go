@@ -67,8 +67,8 @@ func (PromotionCommissionPlan) Fields() []ent.Field {
 // Edges of the PromotionCommissionPlan.
 func (PromotionCommissionPlan) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("promotion_commission", PromotionCommission.Type).Ref("commission_plans").Unique().Field("commission_id"),
-		edge.From("plan", Plan.Type).Ref("commission_plans").Unique().Field("plan_id"),
+		edge.From("promotion_commission", PromotionCommission.Type).Ref("plans").Unique().Field("commission_id"),
+		edge.From("plan", Plan.Type).Ref("commissions").Unique().Field("plan_id"),
 	}
 }
 

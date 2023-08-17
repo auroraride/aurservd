@@ -64,24 +64,31 @@ func (s *promotionCommissionService) Create(req *promotion.CommissionCreateReq) 
 // CommissionPlanList 返回自定义方案中列表
 func (s *promotionCommissionService) CommissionPlanList(req *model.IDParamReq) (res []*promotion.CommissionPlanListRes) {
 	res = make([]*promotion.CommissionPlanListRes, 0)
-	all, _ := ent.Database.PromotionMemberCommission.Query().WithCommission(
-		func(query *ent.PromotionCommissionQuery) {
-			query.WithCommissionPlans(
-				func(query *ent.PromotionCommissionPlanQuery) {
-					query.WithPlan()
-				},
-			)
-		},
-	).Where(promotionmembercommission.MemberID(req.ID)).All(s.ctx)
+	all, _ := ent.Database.PromotionCommission.
+		QueryNotDeleted().
+		WithPlans(
+			func(query *ent.PromotionCommissionPlanQuery) {
+				query.WithPlan()
+			},
+		).Where(
+		promotioncommission.Or(
+			promotioncommission.MemberID(req.ID),
+			promotioncommission.TypeNEQ(promotion.CommissionCustom.Value()),
+		),
+	).All(s.ctx)
 	if all == nil {
 		return res
 	}
+
 	for _, v := range all {
 		rows := promotion.CommissionPlanListRes{
-			CommissionID:   v.Edges.Commission.ID,
-			CommissionName: v.Edges.Commission.Name,
+			CommissionID:   v.ID,
+			CommissionName: v.Name,
+			Type:           promotion.CommissionType(*v.Type),
+			CreatedAt:      v.CreatedAt.Format(carbon.DateTimeLayout),
+			Rule:           v.Rule,
 		}
-		plans := v.Edges.Commission.Edges.CommissionPlans
+		plans := v.Edges.Plans
 		if len(plans) != 0 {
 			for _, p := range plans {
 				if p.Edges.Plan != nil {
@@ -98,12 +105,17 @@ func (s *promotionCommissionService) CommissionPlanList(req *model.IDParamReq) (
 	return res
 }
 
-// 验证方案互斥
+// CheckCommissionMutex 验证方案互斥
 func (s *promotionCommissionService) CheckCommissionMutex(req *promotion.CommissionCreateReq) {
 	// 验证方案互斥
-	commissionPlan, _ := ent.Database.PromotionCommissionPlan.Query().Where(
-		promotioncommissionplan.PlanIDIn(req.PlanID...),
-	).Where(promotioncommissionplan.HasPromotionCommissionWith(promotioncommission.TypeNEQ(promotion.CommissionCustom.Value()))).First(s.ctx)
+	commissionPlan, _ := ent.Database.PromotionCommissionPlan.QueryNotDeleted().
+		Where(
+			promotioncommissionplan.PlanIDIn(req.PlanID...),
+		).Where(
+		promotioncommissionplan.HasPromotionCommissionWith(
+			promotioncommission.TypeNEQ(promotion.CommissionCustom.Value()),
+		),
+	).First(s.ctx)
 
 	if commissionPlan != nil {
 		snag.Panic("方案已经存在")
@@ -152,6 +164,10 @@ func (s *promotionCommissionService) List() []promotion.CommissionDetail {
 		QueryNotDeleted().
 		Where(promotioncommission.TypeNEQ(promotion.CommissionCustom.Value())).
 		Order(ent.Asc(promotioncommission.FieldType), ent.Desc(promotioncommission.FieldCreatedAt)).
+		WithPlans(
+			func(q *ent.PromotionCommissionPlanQuery) {
+				q.WithPlan()
+			}).
 		AllX(s.ctx)
 	res := make([]promotion.CommissionDetail, 0, len(item))
 	for _, v := range item {
@@ -162,7 +178,10 @@ func (s *promotionCommissionService) List() []promotion.CommissionDetail {
 
 // Detail 返佣方案详情
 func (s *promotionCommissionService) Detail(id uint64) promotion.CommissionDetail {
-	return s.detail(ent.Database.PromotionCommission.QueryNotDeleted().Where(promotioncommission.ID(id)).FirstX(s.ctx))
+	return s.detail(ent.Database.PromotionCommission.QueryNotDeleted().WithPlans(
+		func(q *ent.PromotionCommissionPlanQuery) {
+			q.WithPlan()
+		}).Where(promotioncommission.ID(id)).FirstX(s.ctx))
 }
 
 func (s *promotionCommissionService) detail(item *ent.PromotionCommission) promotion.CommissionDetail {
@@ -183,6 +202,16 @@ func (s *promotionCommissionService) detail(item *ent.PromotionCommission) promo
 	if item.EndAt != nil {
 		res.EndAt = item.EndAt.Format(carbon.DateTimeLayout)
 	}
+	if item.Edges.Plans != nil {
+		res.Plan = make([]*promotion.CommissionPlan, 0)
+		for _, v := range item.Edges.Plans {
+			res.Plan = append(res.Plan, &promotion.CommissionPlan{
+				ID:     v.Edges.Plan.ID,
+				Name:   v.Edges.Plan.Name,
+				Amount: v.Edges.Plan.Price,
+			})
+		}
+	}
 
 	return res
 }
@@ -196,42 +225,45 @@ func (s *promotionCommissionService) Update(req *promotion.CommissionCreateReq) 
 
 	// 校验规则
 	s.CheckCommissionRule(&req.Rule)
-
-	commissionPlan, _ := ent.Database.PromotionCommissionPlan.Query().Where(
+	commissionPlan, _ := ent.Database.PromotionCommissionPlan.QueryNotDeleted().Where(promotioncommissionplan.HasPromotionCommissionWith(promotioncommission.TypeNEQ(promotion.CommissionCustom.Value()))).Where(
 		promotioncommissionplan.PlanIDIn(req.PlanID...),
 		promotioncommissionplan.CommissionIDNEQ(req.ID),
-	).Where(promotioncommissionplan.HasPromotionCommissionWith(promotioncommission.TypeNEQ(promotion.CommissionCustom.Value()))).First(s.ctx)
-
-	if commissionPlan != nil {
+	).First(s.ctx)
+	if commissionPlan != nil && *commissionInfo.Type != promotion.CommissionCustom.Value() {
 		snag.Panic("方案已经存在")
 	}
 
 	startAt := time.Now()
 
-	// 通用方案或者自定义方案 删除重新创建
-	ent.Database.PromotionCommission.SoftDeleteOneID(commissionInfo.ID).SetEndAt(startAt).SaveX(s.ctx)
-	ent.Database.PromotionCommissionPlan.Delete().Where(promotioncommissionplan.CommissionID(commissionInfo.ID)).ExecX(s.ctx)
+	// 通用方案 删除重新创建
+	if *commissionInfo.Type != promotion.CommissionCustom.Value() {
+		ent.Database.PromotionCommission.SoftDeleteOneID(commissionInfo.ID).SetEndAt(startAt).SaveX(s.ctx)
 
-	// 创建新方案
-	nc := ent.Database.PromotionCommission.
-		Create().
-		SetName(req.Name).
-		SetRule(&req.Rule).
-		SetNillableMemberID(req.MemberID).
-		SetNillableDesc(req.Desc).
-		SetHistoryID(append(commissionInfo.HistoryID, commissionInfo.ID)).
-		SetType(req.Type.Value()).
-		SetStartAt(startAt).
-		SaveX(s.ctx)
+		// 创建新方案
+		nc := ent.Database.PromotionCommission.
+			Create().
+			SetName(req.Name).
+			SetRule(&req.Rule).
+			SetNillableMemberID(req.MemberID).
+			SetNillableDesc(req.Desc).
+			SetHistoryID(append(commissionInfo.HistoryID, commissionInfo.ID)).
+			SetType(req.Type.Value()).
+			SetStartAt(startAt).
+			SaveX(s.ctx)
+		req.ID = nc.ID
+	}
 
+	ent.Database.PromotionCommissionPlan.SoftDelete().Where(promotioncommissionplan.CommissionID(commissionInfo.ID)).ExecX(s.ctx)
 	bulk := make([]*ent.PromotionCommissionPlanCreate, len(req.PlanID))
 	for i, v := range req.PlanID {
-		bulk[i] = ent.Database.PromotionCommissionPlan.Create().SetPlanID(v).SetCommissionID(nc.ID)
+		bulk[i] = ent.Database.PromotionCommissionPlan.Create().SetPlanID(v).SetCommissionID(req.ID)
 	}
 	ent.Database.PromotionCommissionPlan.CreateBulk(bulk...).ExecX(s.ctx)
 
 	// 更新会员返佣方案
-	ent.Database.PromotionMemberCommission.Update().Where(promotionmembercommission.CommissionID(commissionInfo.ID)).SetCommissionID(nc.ID).SaveX(s.ctx)
+	if *commissionInfo.Type == promotion.CommissionCustom.Value() {
+		ent.Database.PromotionMemberCommission.Update().Where(promotionmembercommission.CommissionID(commissionInfo.ID)).SetCommissionID(req.ID).SaveX(s.ctx)
+	}
 }
 
 // StatusUpdate 方案状态更新
@@ -245,17 +277,6 @@ func (s *promotionCommissionService) StatusUpdate(req *promotion.CommissionEnabl
 		snag.Panic("全局方案不能修改状态")
 	}
 	ent.Database.PromotionCommission.UpdateOneID(req.ID).SetEnable(*req.Enable).SaveX(s.ctx)
-	// 更新会员返佣方案
-	if commissionInfo.Enable && !*req.Enable { // 禁用当前方案
-		// 查询默认方案
-		defaultCommission, _ := ent.Database.PromotionCommission.QueryNotDeleted().Where(promotioncommission.Type(promotion.CommissionDefault.Value())).First(s.ctx)
-		if defaultCommission == nil {
-			snag.Panic("默认方案不存在")
-		}
-
-		// 禁用当前方案 需要更新使用该方案的会员更换为默认方案
-		ent.Database.PromotionMemberCommission.Update().Where(promotionmembercommission.CommissionID(commissionInfo.ID)).SetCommissionID(defaultCommission.ID).SaveX(s.ctx)
-	}
 }
 
 // CheckCommissionRule 返佣规则校验
@@ -307,10 +328,12 @@ func (s *promotionCommissionService) Delete(id uint64) {
 				promotioncommission.Type(promotion.CommissionDefault.Value()),
 			),
 		).First(s.ctx)
-	if info != nil {
+	if info != nil && *info.Type != promotion.CommissionCustom.Value() {
 		snag.Panic("已经启用方案不能删除或全局方案不能删除")
 	}
 	ent.Database.PromotionCommission.SoftDeleteOneID(id).ExecX(s.ctx)
+	ent.Database.PromotionCommissionPlan.SoftDelete().Where(promotioncommissionplan.CommissionID(id)).ExecX(s.ctx)
+	ent.Database.PromotionMemberCommission.SoftDelete().Where(promotionmembercommission.CommissionID(id)).ExecX(s.ctx)
 }
 
 // HistoryList 历史方案
@@ -347,8 +370,8 @@ func (s *promotionCommissionService) CommissionCalculation(tx *ent.Tx, req *prom
 	}
 
 	parentMember, _ := NewPromotionMemberService().GetMemberById(*referred.ReferringMemberID)
-	if parentMember == nil || (parentMember != nil && len(parentMember.Edges.Commissions) == 0) { // 无上级或者上级没有返佣方案
-		zap.L().Error("分佣计算 上级会员不存在或者上级会员没有返佣方案", zap.Int64("会员ID", int64(member.ID)))
+	if parentMember == nil { // 无上级
+		zap.L().Error("分佣计算 上级会员不存", zap.Int64("会员ID", int64(member.ID)))
 		return
 	}
 
@@ -386,34 +409,27 @@ func (s *promotionCommissionService) CommissionCalculation(tx *ent.Tx, req *prom
 
 // 判断使用哪种返佣方案 优先查询自定义返佣方案 再查询通用返佣方案
 func (s *promotionCommissionService) getCommissionRule(mem *ent.PromotionMember, planID uint64) *ent.PromotionCommission {
-	// 查询自定义返佣方案
-	var commissionID []uint64
-	for _, v := range mem.Edges.Commissions {
-		commissionID = append(commissionID, v.Edges.Commission.ID)
+
+	commission, _ := ent.Database.PromotionCommission.QueryNotDeleted().
+		Where(
+			promotioncommission.Enable(true),
+			promotioncommission.TypeEQ(promotion.CommissionCustom.Value()),
+		).Where(
+		promotioncommission.HasPlansWith(
+			promotioncommissionplan.PlanID(planID),
+			promotioncommissionplan.MemberID(mem.ID),
+		)).First(s.ctx)
+	if commission != nil {
+		return commission
 	}
-	if len(commissionID) == 0 {
-		return nil
-	}
-	commission, _ := ent.Database.PromotionCommissionPlan.Query().Where(
-		promotioncommissionplan.PlanID(planID),
-		promotioncommissionplan.CommissionIDIn(commissionID...),
-		promotioncommissionplan.HasPromotionCommissionWith(
-			promotioncommission.Type(promotion.CommissionCustom.Value()),
-		),
-	).WithPromotionCommission().First(s.ctx)
-	if commission != nil && commission.Edges.PromotionCommission != nil {
-		return commission.Edges.PromotionCommission
-	}
-	// 查询通用返佣方案
-	commission, _ = ent.Database.PromotionCommissionPlan.Query().Where(
-		promotioncommissionplan.PlanID(planID),
-		promotioncommissionplan.CommissionIDIn(commissionID...),
-		promotioncommissionplan.HasPromotionCommissionWith(
+	commission, _ = ent.Database.PromotionCommission.QueryNotDeleted().
+		Where(
+			promotioncommission.Enable(true),
 			promotioncommission.TypeNEQ(promotion.CommissionCustom.Value()),
-		),
-	).WithPromotionCommission().First(s.ctx)
-	if commission != nil && commission.Edges.PromotionCommission != nil {
-		return commission.Edges.PromotionCommission
+		).Where(promotioncommission.HasPlansWith(promotioncommissionplan.PlanID(planID))).First(s.ctx)
+	if commission != nil {
+		return commission
+
 	}
 	return nil
 }
@@ -423,6 +439,7 @@ func (s *promotionCommissionService) calculateFirstLevelCommission(mem *ent.Prom
 	// 判断使用哪种返佣方案 优先查询个人返佣方案 再查询通用返佣方案
 	commissions := s.getCommissionRule(mem, req.PlanID)
 	if commissions == nil {
+		zap.L().Error("会员返佣方案不存在", zap.Any("会员", mem), zap.Any("订单", req))
 		return
 	}
 
@@ -458,8 +475,8 @@ func (s *promotionCommissionService) calculateSecondLevelCommission(mem *ent.Pro
 	referred := mem.Edges.Referred
 	if referred != nil && referred.ReferringMemberID != nil {
 		parentMember := referred.Edges.ReferringMember
-		if parentMember == nil || parentMember.Edges.Commissions == nil {
-			// 无上家或者上家没有返佣方案
+		if parentMember == nil {
+			zap.L().Error("上级会员不存在", zap.Any("会员", mem), zap.Any("订单", req))
 			return
 		}
 

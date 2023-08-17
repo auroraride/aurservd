@@ -376,19 +376,19 @@ func (pu *PlanUpdate) AddComplexes(p ...*Plan) *PlanUpdate {
 	return pu.AddComplexIDs(ids...)
 }
 
-// AddCommissionPlanIDs adds the "commission_plans" edge to the PromotionCommissionPlan entity by IDs.
-func (pu *PlanUpdate) AddCommissionPlanIDs(ids ...uint64) *PlanUpdate {
-	pu.mutation.AddCommissionPlanIDs(ids...)
+// AddCommissionIDs adds the "commissions" edge to the PromotionCommissionPlan entity by IDs.
+func (pu *PlanUpdate) AddCommissionIDs(ids ...uint64) *PlanUpdate {
+	pu.mutation.AddCommissionIDs(ids...)
 	return pu
 }
 
-// AddCommissionPlans adds the "commission_plans" edges to the PromotionCommissionPlan entity.
-func (pu *PlanUpdate) AddCommissionPlans(p ...*PromotionCommissionPlan) *PlanUpdate {
+// AddCommissions adds the "commissions" edges to the PromotionCommissionPlan entity.
+func (pu *PlanUpdate) AddCommissions(p ...*PromotionCommissionPlan) *PlanUpdate {
 	ids := make([]uint64, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return pu.AddCommissionPlanIDs(ids...)
+	return pu.AddCommissionIDs(ids...)
 }
 
 // Mutation returns the PlanMutation object of the builder.
@@ -450,25 +450,25 @@ func (pu *PlanUpdate) RemoveComplexes(p ...*Plan) *PlanUpdate {
 	return pu.RemoveComplexIDs(ids...)
 }
 
-// ClearCommissionPlans clears all "commission_plans" edges to the PromotionCommissionPlan entity.
-func (pu *PlanUpdate) ClearCommissionPlans() *PlanUpdate {
-	pu.mutation.ClearCommissionPlans()
+// ClearCommissions clears all "commissions" edges to the PromotionCommissionPlan entity.
+func (pu *PlanUpdate) ClearCommissions() *PlanUpdate {
+	pu.mutation.ClearCommissions()
 	return pu
 }
 
-// RemoveCommissionPlanIDs removes the "commission_plans" edge to PromotionCommissionPlan entities by IDs.
-func (pu *PlanUpdate) RemoveCommissionPlanIDs(ids ...uint64) *PlanUpdate {
-	pu.mutation.RemoveCommissionPlanIDs(ids...)
+// RemoveCommissionIDs removes the "commissions" edge to PromotionCommissionPlan entities by IDs.
+func (pu *PlanUpdate) RemoveCommissionIDs(ids ...uint64) *PlanUpdate {
+	pu.mutation.RemoveCommissionIDs(ids...)
 	return pu
 }
 
-// RemoveCommissionPlans removes "commission_plans" edges to PromotionCommissionPlan entities.
-func (pu *PlanUpdate) RemoveCommissionPlans(p ...*PromotionCommissionPlan) *PlanUpdate {
+// RemoveCommissions removes "commissions" edges to PromotionCommissionPlan entities.
+func (pu *PlanUpdate) RemoveCommissions(p ...*PromotionCommissionPlan) *PlanUpdate {
 	ids := make([]uint64, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return pu.RemoveCommissionPlanIDs(ids...)
+	return pu.RemoveCommissionIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -777,12 +777,12 @@ func (pu *PlanUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if pu.mutation.CommissionPlansCleared() {
+	if pu.mutation.CommissionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   plan.CommissionPlansTable,
-			Columns: []string{plan.CommissionPlansColumn},
+			Table:   plan.CommissionsTable,
+			Columns: []string{plan.CommissionsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(promotioncommissionplan.FieldID, field.TypeUint64),
@@ -790,12 +790,12 @@ func (pu *PlanUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := pu.mutation.RemovedCommissionPlansIDs(); len(nodes) > 0 && !pu.mutation.CommissionPlansCleared() {
+	if nodes := pu.mutation.RemovedCommissionsIDs(); len(nodes) > 0 && !pu.mutation.CommissionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   plan.CommissionPlansTable,
-			Columns: []string{plan.CommissionPlansColumn},
+			Table:   plan.CommissionsTable,
+			Columns: []string{plan.CommissionsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(promotioncommissionplan.FieldID, field.TypeUint64),
@@ -806,12 +806,12 @@ func (pu *PlanUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := pu.mutation.CommissionPlansIDs(); len(nodes) > 0 {
+	if nodes := pu.mutation.CommissionsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   plan.CommissionPlansTable,
-			Columns: []string{plan.CommissionPlansColumn},
+			Table:   plan.CommissionsTable,
+			Columns: []string{plan.CommissionsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(promotioncommissionplan.FieldID, field.TypeUint64),
@@ -1186,19 +1186,19 @@ func (puo *PlanUpdateOne) AddComplexes(p ...*Plan) *PlanUpdateOne {
 	return puo.AddComplexIDs(ids...)
 }
 
-// AddCommissionPlanIDs adds the "commission_plans" edge to the PromotionCommissionPlan entity by IDs.
-func (puo *PlanUpdateOne) AddCommissionPlanIDs(ids ...uint64) *PlanUpdateOne {
-	puo.mutation.AddCommissionPlanIDs(ids...)
+// AddCommissionIDs adds the "commissions" edge to the PromotionCommissionPlan entity by IDs.
+func (puo *PlanUpdateOne) AddCommissionIDs(ids ...uint64) *PlanUpdateOne {
+	puo.mutation.AddCommissionIDs(ids...)
 	return puo
 }
 
-// AddCommissionPlans adds the "commission_plans" edges to the PromotionCommissionPlan entity.
-func (puo *PlanUpdateOne) AddCommissionPlans(p ...*PromotionCommissionPlan) *PlanUpdateOne {
+// AddCommissions adds the "commissions" edges to the PromotionCommissionPlan entity.
+func (puo *PlanUpdateOne) AddCommissions(p ...*PromotionCommissionPlan) *PlanUpdateOne {
 	ids := make([]uint64, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return puo.AddCommissionPlanIDs(ids...)
+	return puo.AddCommissionIDs(ids...)
 }
 
 // Mutation returns the PlanMutation object of the builder.
@@ -1260,25 +1260,25 @@ func (puo *PlanUpdateOne) RemoveComplexes(p ...*Plan) *PlanUpdateOne {
 	return puo.RemoveComplexIDs(ids...)
 }
 
-// ClearCommissionPlans clears all "commission_plans" edges to the PromotionCommissionPlan entity.
-func (puo *PlanUpdateOne) ClearCommissionPlans() *PlanUpdateOne {
-	puo.mutation.ClearCommissionPlans()
+// ClearCommissions clears all "commissions" edges to the PromotionCommissionPlan entity.
+func (puo *PlanUpdateOne) ClearCommissions() *PlanUpdateOne {
+	puo.mutation.ClearCommissions()
 	return puo
 }
 
-// RemoveCommissionPlanIDs removes the "commission_plans" edge to PromotionCommissionPlan entities by IDs.
-func (puo *PlanUpdateOne) RemoveCommissionPlanIDs(ids ...uint64) *PlanUpdateOne {
-	puo.mutation.RemoveCommissionPlanIDs(ids...)
+// RemoveCommissionIDs removes the "commissions" edge to PromotionCommissionPlan entities by IDs.
+func (puo *PlanUpdateOne) RemoveCommissionIDs(ids ...uint64) *PlanUpdateOne {
+	puo.mutation.RemoveCommissionIDs(ids...)
 	return puo
 }
 
-// RemoveCommissionPlans removes "commission_plans" edges to PromotionCommissionPlan entities.
-func (puo *PlanUpdateOne) RemoveCommissionPlans(p ...*PromotionCommissionPlan) *PlanUpdateOne {
+// RemoveCommissions removes "commissions" edges to PromotionCommissionPlan entities.
+func (puo *PlanUpdateOne) RemoveCommissions(p ...*PromotionCommissionPlan) *PlanUpdateOne {
 	ids := make([]uint64, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return puo.RemoveCommissionPlanIDs(ids...)
+	return puo.RemoveCommissionIDs(ids...)
 }
 
 // Where appends a list predicates to the PlanUpdate builder.
@@ -1617,12 +1617,12 @@ func (puo *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if puo.mutation.CommissionPlansCleared() {
+	if puo.mutation.CommissionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   plan.CommissionPlansTable,
-			Columns: []string{plan.CommissionPlansColumn},
+			Table:   plan.CommissionsTable,
+			Columns: []string{plan.CommissionsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(promotioncommissionplan.FieldID, field.TypeUint64),
@@ -1630,12 +1630,12 @@ func (puo *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := puo.mutation.RemovedCommissionPlansIDs(); len(nodes) > 0 && !puo.mutation.CommissionPlansCleared() {
+	if nodes := puo.mutation.RemovedCommissionsIDs(); len(nodes) > 0 && !puo.mutation.CommissionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   plan.CommissionPlansTable,
-			Columns: []string{plan.CommissionPlansColumn},
+			Table:   plan.CommissionsTable,
+			Columns: []string{plan.CommissionsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(promotioncommissionplan.FieldID, field.TypeUint64),
@@ -1646,12 +1646,12 @@ func (puo *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := puo.mutation.CommissionPlansIDs(); len(nodes) > 0 {
+	if nodes := puo.mutation.CommissionsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   plan.CommissionPlansTable,
-			Columns: []string{plan.CommissionPlansColumn},
+			Table:   plan.CommissionsTable,
+			Columns: []string{plan.CommissionsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(promotioncommissionplan.FieldID, field.TypeUint64),

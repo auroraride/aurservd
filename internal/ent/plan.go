@@ -80,8 +80,8 @@ type PlanEdges struct {
 	Parent *Plan `json:"parent,omitempty"`
 	// Complexes holds the value of the complexes edge.
 	Complexes []*Plan `json:"complexes,omitempty"`
-	// CommissionPlans holds the value of the commission_plans edge.
-	CommissionPlans []*PromotionCommissionPlan `json:"commission_plans,omitempty"`
+	// Commissions holds the value of the commissions edge.
+	Commissions []*PromotionCommissionPlan `json:"commissions,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [5]bool
@@ -131,13 +131,13 @@ func (e PlanEdges) ComplexesOrErr() ([]*Plan, error) {
 	return nil, &NotLoadedError{edge: "complexes"}
 }
 
-// CommissionPlansOrErr returns the CommissionPlans value or an error if the edge
+// CommissionsOrErr returns the Commissions value or an error if the edge
 // was not loaded in eager-loading.
-func (e PlanEdges) CommissionPlansOrErr() ([]*PromotionCommissionPlan, error) {
+func (e PlanEdges) CommissionsOrErr() ([]*PromotionCommissionPlan, error) {
 	if e.loadedTypes[4] {
-		return e.CommissionPlans, nil
+		return e.Commissions, nil
 	}
-	return nil, &NotLoadedError{edge: "commission_plans"}
+	return nil, &NotLoadedError{edge: "commissions"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -352,9 +352,9 @@ func (pl *Plan) QueryComplexes() *PlanQuery {
 	return NewPlanClient(pl.config).QueryComplexes(pl)
 }
 
-// QueryCommissionPlans queries the "commission_plans" edge of the Plan entity.
-func (pl *Plan) QueryCommissionPlans() *PromotionCommissionPlanQuery {
-	return NewPlanClient(pl.config).QueryCommissionPlans(pl)
+// QueryCommissions queries the "commissions" edge of the Plan entity.
+func (pl *Plan) QueryCommissions() *PromotionCommissionPlanQuery {
+	return NewPlanClient(pl.config).QueryCommissions(pl)
 }
 
 // Update returns a builder for updating this Plan.

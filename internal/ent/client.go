@@ -8324,15 +8324,15 @@ func (c *PlanClient) QueryComplexes(pl *Plan) *PlanQuery {
 	return query
 }
 
-// QueryCommissionPlans queries the commission_plans edge of a Plan.
-func (c *PlanClient) QueryCommissionPlans(pl *Plan) *PromotionCommissionPlanQuery {
+// QueryCommissions queries the commissions edge of a Plan.
+func (c *PlanClient) QueryCommissions(pl *Plan) *PromotionCommissionPlanQuery {
 	query := (&PromotionCommissionPlanClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := pl.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(plan.Table, plan.FieldID, id),
 			sqlgraph.To(promotioncommissionplan.Table, promotioncommissionplan.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, plan.CommissionPlansTable, plan.CommissionPlansColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, plan.CommissionsTable, plan.CommissionsColumn),
 		)
 		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
 		return fromV, nil
@@ -9030,15 +9030,15 @@ func (c *PromotionCommissionClient) QueryMember(pc *PromotionCommission) *Promot
 	return query
 }
 
-// QueryCommissionPlans queries the commission_plans edge of a PromotionCommission.
-func (c *PromotionCommissionClient) QueryCommissionPlans(pc *PromotionCommission) *PromotionCommissionPlanQuery {
+// QueryPlans queries the plans edge of a PromotionCommission.
+func (c *PromotionCommissionClient) QueryPlans(pc *PromotionCommission) *PromotionCommissionPlanQuery {
 	query := (&PromotionCommissionPlanClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := pc.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(promotioncommission.Table, promotioncommission.FieldID, id),
 			sqlgraph.To(promotioncommissionplan.Table, promotioncommissionplan.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, promotioncommission.CommissionPlansTable, promotioncommission.CommissionPlansColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, promotioncommission.PlansTable, promotioncommission.PlansColumn),
 		)
 		fromV = sqlgraph.Neighbors(pc.driver.Dialect(), step)
 		return fromV, nil

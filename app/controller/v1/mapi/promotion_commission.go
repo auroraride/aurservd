@@ -159,7 +159,7 @@ func (p *promotionCommission) TaskSelection(c echo.Context) (err error) {
 // @Produce      json
 // @Param        X-Manager-Token  header  string   true  "管理员校验token"
 // @Param        id  path  int  true  "会员id"
-// @Success      200  {object}  []promotion.CommissionPlanSelection
+// @Success      200  {object}  []promotion.CommissionPlanListRes
 func (p *promotionCommission) CommissionPlanList(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
 	return ctx.SendResponse(service.NewPromotionCommissionService().CommissionPlanList(req))

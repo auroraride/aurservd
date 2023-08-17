@@ -215,19 +215,19 @@ func (pcc *PromotionCommissionCreate) SetMember(p *PromotionMember) *PromotionCo
 	return pcc.SetMemberID(p.ID)
 }
 
-// AddCommissionPlanIDs adds the "commission_plans" edge to the PromotionCommissionPlan entity by IDs.
-func (pcc *PromotionCommissionCreate) AddCommissionPlanIDs(ids ...uint64) *PromotionCommissionCreate {
-	pcc.mutation.AddCommissionPlanIDs(ids...)
+// AddPlanIDs adds the "plans" edge to the PromotionCommissionPlan entity by IDs.
+func (pcc *PromotionCommissionCreate) AddPlanIDs(ids ...uint64) *PromotionCommissionCreate {
+	pcc.mutation.AddPlanIDs(ids...)
 	return pcc
 }
 
-// AddCommissionPlans adds the "commission_plans" edges to the PromotionCommissionPlan entity.
-func (pcc *PromotionCommissionCreate) AddCommissionPlans(p ...*PromotionCommissionPlan) *PromotionCommissionCreate {
+// AddPlans adds the "plans" edges to the PromotionCommissionPlan entity.
+func (pcc *PromotionCommissionCreate) AddPlans(p ...*PromotionCommissionPlan) *PromotionCommissionCreate {
 	ids := make([]uint64, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return pcc.AddCommissionPlanIDs(ids...)
+	return pcc.AddPlanIDs(ids...)
 }
 
 // Mutation returns the PromotionCommissionMutation object of the builder.
@@ -423,12 +423,12 @@ func (pcc *PromotionCommissionCreate) createSpec() (*PromotionCommission, *sqlgr
 		_node.MemberID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := pcc.mutation.CommissionPlansIDs(); len(nodes) > 0 {
+	if nodes := pcc.mutation.PlansIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   promotioncommission.CommissionPlansTable,
-			Columns: []string{promotioncommission.CommissionPlansColumn},
+			Table:   promotioncommission.PlansTable,
+			Columns: []string{promotioncommission.PlansColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(promotioncommissionplan.FieldID, field.TypeUint64),

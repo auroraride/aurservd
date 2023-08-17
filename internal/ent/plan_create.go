@@ -294,19 +294,19 @@ func (pc *PlanCreate) AddComplexes(p ...*Plan) *PlanCreate {
 	return pc.AddComplexIDs(ids...)
 }
 
-// AddCommissionPlanIDs adds the "commission_plans" edge to the PromotionCommissionPlan entity by IDs.
-func (pc *PlanCreate) AddCommissionPlanIDs(ids ...uint64) *PlanCreate {
-	pc.mutation.AddCommissionPlanIDs(ids...)
+// AddCommissionIDs adds the "commissions" edge to the PromotionCommissionPlan entity by IDs.
+func (pc *PlanCreate) AddCommissionIDs(ids ...uint64) *PlanCreate {
+	pc.mutation.AddCommissionIDs(ids...)
 	return pc
 }
 
-// AddCommissionPlans adds the "commission_plans" edges to the PromotionCommissionPlan entity.
-func (pc *PlanCreate) AddCommissionPlans(p ...*PromotionCommissionPlan) *PlanCreate {
+// AddCommissions adds the "commissions" edges to the PromotionCommissionPlan entity.
+func (pc *PlanCreate) AddCommissions(p ...*PromotionCommissionPlan) *PlanCreate {
 	ids := make([]uint64, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return pc.AddCommissionPlanIDs(ids...)
+	return pc.AddCommissionIDs(ids...)
 }
 
 // Mutation returns the PlanMutation object of the builder.
@@ -586,12 +586,12 @@ func (pc *PlanCreate) createSpec() (*Plan, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := pc.mutation.CommissionPlansIDs(); len(nodes) > 0 {
+	if nodes := pc.mutation.CommissionsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   plan.CommissionPlansTable,
-			Columns: []string{plan.CommissionPlansColumn},
+			Table:   plan.CommissionsTable,
+			Columns: []string{plan.CommissionsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(promotioncommissionplan.FieldID, field.TypeUint64),

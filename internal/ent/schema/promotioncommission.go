@@ -1,6 +1,5 @@
 package schema
 
-import "C"
 import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
@@ -76,7 +75,7 @@ func (PromotionCommission) Fields() []ent.Field {
 // Edges of the PromotionCommission.
 func (PromotionCommission) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("commission_plans", PromotionCommissionPlan.Type),
+		edge.To("plans", PromotionCommissionPlan.Type),
 	}
 }
 

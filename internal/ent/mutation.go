@@ -61505,53 +61505,53 @@ func (m *PersonMutation) ResetEdge(name string) error {
 // PlanMutation represents an operation that mutates the Plan nodes in the graph.
 type PlanMutation struct {
 	config
-	op                      Op
-	typ                     string
-	id                      *uint64
-	created_at              *time.Time
-	updated_at              *time.Time
-	deleted_at              *time.Time
-	creator                 **model.Modifier
-	last_modifier           **model.Modifier
-	remark                  *string
-	model                   *string
-	enable                  *bool
-	_type                   *uint8
-	add_type                *int8
-	name                    *string
-	start                   *time.Time
-	end                     *time.Time
-	price                   *float64
-	addprice                *float64
-	days                    *uint
-	adddays                 *int
-	commission              *float64
-	addcommission           *float64
-	original                *float64
-	addoriginal             *float64
-	desc                    *string
-	discount_newly          *float64
-	adddiscount_newly       *float64
-	notes                   *[]string
-	appendnotes             []string
-	intelligent             *bool
-	clearedFields           map[string]struct{}
-	brand                   *uint64
-	clearedbrand            bool
-	cities                  map[uint64]struct{}
-	removedcities           map[uint64]struct{}
-	clearedcities           bool
-	parent                  *uint64
-	clearedparent           bool
-	complexes               map[uint64]struct{}
-	removedcomplexes        map[uint64]struct{}
-	clearedcomplexes        bool
-	commission_plans        map[uint64]struct{}
-	removedcommission_plans map[uint64]struct{}
-	clearedcommission_plans bool
-	done                    bool
-	oldValue                func(context.Context) (*Plan, error)
-	predicates              []predicate.Plan
+	op                 Op
+	typ                string
+	id                 *uint64
+	created_at         *time.Time
+	updated_at         *time.Time
+	deleted_at         *time.Time
+	creator            **model.Modifier
+	last_modifier      **model.Modifier
+	remark             *string
+	model              *string
+	enable             *bool
+	_type              *uint8
+	add_type           *int8
+	name               *string
+	start              *time.Time
+	end                *time.Time
+	price              *float64
+	addprice           *float64
+	days               *uint
+	adddays            *int
+	commission         *float64
+	addcommission      *float64
+	original           *float64
+	addoriginal        *float64
+	desc               *string
+	discount_newly     *float64
+	adddiscount_newly  *float64
+	notes              *[]string
+	appendnotes        []string
+	intelligent        *bool
+	clearedFields      map[string]struct{}
+	brand              *uint64
+	clearedbrand       bool
+	cities             map[uint64]struct{}
+	removedcities      map[uint64]struct{}
+	clearedcities      bool
+	parent             *uint64
+	clearedparent      bool
+	complexes          map[uint64]struct{}
+	removedcomplexes   map[uint64]struct{}
+	clearedcomplexes   bool
+	commissions        map[uint64]struct{}
+	removedcommissions map[uint64]struct{}
+	clearedcommissions bool
+	done               bool
+	oldValue           func(context.Context) (*Plan, error)
+	predicates         []predicate.Plan
 }
 
 var _ ent.Mutation = (*PlanMutation)(nil)
@@ -62871,58 +62871,58 @@ func (m *PlanMutation) ResetComplexes() {
 	m.removedcomplexes = nil
 }
 
-// AddCommissionPlanIDs adds the "commission_plans" edge to the PromotionCommissionPlan entity by ids.
-func (m *PlanMutation) AddCommissionPlanIDs(ids ...uint64) {
-	if m.commission_plans == nil {
-		m.commission_plans = make(map[uint64]struct{})
+// AddCommissionIDs adds the "commissions" edge to the PromotionCommissionPlan entity by ids.
+func (m *PlanMutation) AddCommissionIDs(ids ...uint64) {
+	if m.commissions == nil {
+		m.commissions = make(map[uint64]struct{})
 	}
 	for i := range ids {
-		m.commission_plans[ids[i]] = struct{}{}
+		m.commissions[ids[i]] = struct{}{}
 	}
 }
 
-// ClearCommissionPlans clears the "commission_plans" edge to the PromotionCommissionPlan entity.
-func (m *PlanMutation) ClearCommissionPlans() {
-	m.clearedcommission_plans = true
+// ClearCommissions clears the "commissions" edge to the PromotionCommissionPlan entity.
+func (m *PlanMutation) ClearCommissions() {
+	m.clearedcommissions = true
 }
 
-// CommissionPlansCleared reports if the "commission_plans" edge to the PromotionCommissionPlan entity was cleared.
-func (m *PlanMutation) CommissionPlansCleared() bool {
-	return m.clearedcommission_plans
+// CommissionsCleared reports if the "commissions" edge to the PromotionCommissionPlan entity was cleared.
+func (m *PlanMutation) CommissionsCleared() bool {
+	return m.clearedcommissions
 }
 
-// RemoveCommissionPlanIDs removes the "commission_plans" edge to the PromotionCommissionPlan entity by IDs.
-func (m *PlanMutation) RemoveCommissionPlanIDs(ids ...uint64) {
-	if m.removedcommission_plans == nil {
-		m.removedcommission_plans = make(map[uint64]struct{})
+// RemoveCommissionIDs removes the "commissions" edge to the PromotionCommissionPlan entity by IDs.
+func (m *PlanMutation) RemoveCommissionIDs(ids ...uint64) {
+	if m.removedcommissions == nil {
+		m.removedcommissions = make(map[uint64]struct{})
 	}
 	for i := range ids {
-		delete(m.commission_plans, ids[i])
-		m.removedcommission_plans[ids[i]] = struct{}{}
+		delete(m.commissions, ids[i])
+		m.removedcommissions[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedCommissionPlans returns the removed IDs of the "commission_plans" edge to the PromotionCommissionPlan entity.
-func (m *PlanMutation) RemovedCommissionPlansIDs() (ids []uint64) {
-	for id := range m.removedcommission_plans {
+// RemovedCommissions returns the removed IDs of the "commissions" edge to the PromotionCommissionPlan entity.
+func (m *PlanMutation) RemovedCommissionsIDs() (ids []uint64) {
+	for id := range m.removedcommissions {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// CommissionPlansIDs returns the "commission_plans" edge IDs in the mutation.
-func (m *PlanMutation) CommissionPlansIDs() (ids []uint64) {
-	for id := range m.commission_plans {
+// CommissionsIDs returns the "commissions" edge IDs in the mutation.
+func (m *PlanMutation) CommissionsIDs() (ids []uint64) {
+	for id := range m.commissions {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetCommissionPlans resets all changes to the "commission_plans" edge.
-func (m *PlanMutation) ResetCommissionPlans() {
-	m.commission_plans = nil
-	m.clearedcommission_plans = false
-	m.removedcommission_plans = nil
+// ResetCommissions resets all changes to the "commissions" edge.
+func (m *PlanMutation) ResetCommissions() {
+	m.commissions = nil
+	m.clearedcommissions = false
+	m.removedcommissions = nil
 }
 
 // Where appends a list predicates to the PlanMutation builder.
@@ -63566,8 +63566,8 @@ func (m *PlanMutation) AddedEdges() []string {
 	if m.complexes != nil {
 		edges = append(edges, plan.EdgeComplexes)
 	}
-	if m.commission_plans != nil {
-		edges = append(edges, plan.EdgeCommissionPlans)
+	if m.commissions != nil {
+		edges = append(edges, plan.EdgeCommissions)
 	}
 	return edges
 }
@@ -63596,9 +63596,9 @@ func (m *PlanMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case plan.EdgeCommissionPlans:
-		ids := make([]ent.Value, 0, len(m.commission_plans))
-		for id := range m.commission_plans {
+	case plan.EdgeCommissions:
+		ids := make([]ent.Value, 0, len(m.commissions))
+		for id := range m.commissions {
 			ids = append(ids, id)
 		}
 		return ids
@@ -63615,8 +63615,8 @@ func (m *PlanMutation) RemovedEdges() []string {
 	if m.removedcomplexes != nil {
 		edges = append(edges, plan.EdgeComplexes)
 	}
-	if m.removedcommission_plans != nil {
-		edges = append(edges, plan.EdgeCommissionPlans)
+	if m.removedcommissions != nil {
+		edges = append(edges, plan.EdgeCommissions)
 	}
 	return edges
 }
@@ -63637,9 +63637,9 @@ func (m *PlanMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case plan.EdgeCommissionPlans:
-		ids := make([]ent.Value, 0, len(m.removedcommission_plans))
-		for id := range m.removedcommission_plans {
+	case plan.EdgeCommissions:
+		ids := make([]ent.Value, 0, len(m.removedcommissions))
+		for id := range m.removedcommissions {
 			ids = append(ids, id)
 		}
 		return ids
@@ -63662,8 +63662,8 @@ func (m *PlanMutation) ClearedEdges() []string {
 	if m.clearedcomplexes {
 		edges = append(edges, plan.EdgeComplexes)
 	}
-	if m.clearedcommission_plans {
-		edges = append(edges, plan.EdgeCommissionPlans)
+	if m.clearedcommissions {
+		edges = append(edges, plan.EdgeCommissions)
 	}
 	return edges
 }
@@ -63680,8 +63680,8 @@ func (m *PlanMutation) EdgeCleared(name string) bool {
 		return m.clearedparent
 	case plan.EdgeComplexes:
 		return m.clearedcomplexes
-	case plan.EdgeCommissionPlans:
-		return m.clearedcommission_plans
+	case plan.EdgeCommissions:
+		return m.clearedcommissions
 	}
 	return false
 }
@@ -63716,8 +63716,8 @@ func (m *PlanMutation) ResetEdge(name string) error {
 	case plan.EdgeComplexes:
 		m.ResetComplexes()
 		return nil
-	case plan.EdgeCommissionPlans:
-		m.ResetCommissionPlans()
+	case plan.EdgeCommissions:
+		m.ResetCommissions()
 		return nil
 	}
 	return fmt.Errorf("unknown Plan edge %s", name)
@@ -67759,36 +67759,36 @@ func (m *PromotionBankCardMutation) ResetEdge(name string) error {
 // PromotionCommissionMutation represents an operation that mutates the PromotionCommission nodes in the graph.
 type PromotionCommissionMutation struct {
 	config
-	op                      Op
-	typ                     string
-	id                      *uint64
-	created_at              *time.Time
-	updated_at              *time.Time
-	deleted_at              *time.Time
-	creator                 **model.Modifier
-	last_modifier           **model.Modifier
-	remark                  *string
-	_type                   *uint8
-	add_type                *int8
-	name                    *string
-	rule                    **promotion.CommissionRule
-	enable                  *bool
-	amount_sum              *float64
-	addamount_sum           *float64
-	desc                    *string
-	history_id              *[]uint64
-	appendhistory_id        []uint64
-	start_at                *time.Time
-	end_at                  *time.Time
-	clearedFields           map[string]struct{}
-	member                  *uint64
-	clearedmember           bool
-	commission_plans        map[uint64]struct{}
-	removedcommission_plans map[uint64]struct{}
-	clearedcommission_plans bool
-	done                    bool
-	oldValue                func(context.Context) (*PromotionCommission, error)
-	predicates              []predicate.PromotionCommission
+	op               Op
+	typ              string
+	id               *uint64
+	created_at       *time.Time
+	updated_at       *time.Time
+	deleted_at       *time.Time
+	creator          **model.Modifier
+	last_modifier    **model.Modifier
+	remark           *string
+	_type            *uint8
+	add_type         *int8
+	name             *string
+	rule             **promotion.CommissionRule
+	enable           *bool
+	amount_sum       *float64
+	addamount_sum    *float64
+	desc             *string
+	history_id       *[]uint64
+	appendhistory_id []uint64
+	start_at         *time.Time
+	end_at           *time.Time
+	clearedFields    map[string]struct{}
+	member           *uint64
+	clearedmember    bool
+	plans            map[uint64]struct{}
+	removedplans     map[uint64]struct{}
+	clearedplans     bool
+	done             bool
+	oldValue         func(context.Context) (*PromotionCommission, error)
+	predicates       []predicate.PromotionCommission
 }
 
 var _ ent.Mutation = (*PromotionCommissionMutation)(nil)
@@ -68664,58 +68664,58 @@ func (m *PromotionCommissionMutation) ResetMember() {
 	m.clearedmember = false
 }
 
-// AddCommissionPlanIDs adds the "commission_plans" edge to the PromotionCommissionPlan entity by ids.
-func (m *PromotionCommissionMutation) AddCommissionPlanIDs(ids ...uint64) {
-	if m.commission_plans == nil {
-		m.commission_plans = make(map[uint64]struct{})
+// AddPlanIDs adds the "plans" edge to the PromotionCommissionPlan entity by ids.
+func (m *PromotionCommissionMutation) AddPlanIDs(ids ...uint64) {
+	if m.plans == nil {
+		m.plans = make(map[uint64]struct{})
 	}
 	for i := range ids {
-		m.commission_plans[ids[i]] = struct{}{}
+		m.plans[ids[i]] = struct{}{}
 	}
 }
 
-// ClearCommissionPlans clears the "commission_plans" edge to the PromotionCommissionPlan entity.
-func (m *PromotionCommissionMutation) ClearCommissionPlans() {
-	m.clearedcommission_plans = true
+// ClearPlans clears the "plans" edge to the PromotionCommissionPlan entity.
+func (m *PromotionCommissionMutation) ClearPlans() {
+	m.clearedplans = true
 }
 
-// CommissionPlansCleared reports if the "commission_plans" edge to the PromotionCommissionPlan entity was cleared.
-func (m *PromotionCommissionMutation) CommissionPlansCleared() bool {
-	return m.clearedcommission_plans
+// PlansCleared reports if the "plans" edge to the PromotionCommissionPlan entity was cleared.
+func (m *PromotionCommissionMutation) PlansCleared() bool {
+	return m.clearedplans
 }
 
-// RemoveCommissionPlanIDs removes the "commission_plans" edge to the PromotionCommissionPlan entity by IDs.
-func (m *PromotionCommissionMutation) RemoveCommissionPlanIDs(ids ...uint64) {
-	if m.removedcommission_plans == nil {
-		m.removedcommission_plans = make(map[uint64]struct{})
+// RemovePlanIDs removes the "plans" edge to the PromotionCommissionPlan entity by IDs.
+func (m *PromotionCommissionMutation) RemovePlanIDs(ids ...uint64) {
+	if m.removedplans == nil {
+		m.removedplans = make(map[uint64]struct{})
 	}
 	for i := range ids {
-		delete(m.commission_plans, ids[i])
-		m.removedcommission_plans[ids[i]] = struct{}{}
+		delete(m.plans, ids[i])
+		m.removedplans[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedCommissionPlans returns the removed IDs of the "commission_plans" edge to the PromotionCommissionPlan entity.
-func (m *PromotionCommissionMutation) RemovedCommissionPlansIDs() (ids []uint64) {
-	for id := range m.removedcommission_plans {
+// RemovedPlans returns the removed IDs of the "plans" edge to the PromotionCommissionPlan entity.
+func (m *PromotionCommissionMutation) RemovedPlansIDs() (ids []uint64) {
+	for id := range m.removedplans {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// CommissionPlansIDs returns the "commission_plans" edge IDs in the mutation.
-func (m *PromotionCommissionMutation) CommissionPlansIDs() (ids []uint64) {
-	for id := range m.commission_plans {
+// PlansIDs returns the "plans" edge IDs in the mutation.
+func (m *PromotionCommissionMutation) PlansIDs() (ids []uint64) {
+	for id := range m.plans {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetCommissionPlans resets all changes to the "commission_plans" edge.
-func (m *PromotionCommissionMutation) ResetCommissionPlans() {
-	m.commission_plans = nil
-	m.clearedcommission_plans = false
-	m.removedcommission_plans = nil
+// ResetPlans resets all changes to the "plans" edge.
+func (m *PromotionCommissionMutation) ResetPlans() {
+	m.plans = nil
+	m.clearedplans = false
+	m.removedplans = nil
 }
 
 // Where appends a list predicates to the PromotionCommissionMutation builder.
@@ -69194,8 +69194,8 @@ func (m *PromotionCommissionMutation) AddedEdges() []string {
 	if m.member != nil {
 		edges = append(edges, promotioncommission.EdgeMember)
 	}
-	if m.commission_plans != nil {
-		edges = append(edges, promotioncommission.EdgeCommissionPlans)
+	if m.plans != nil {
+		edges = append(edges, promotioncommission.EdgePlans)
 	}
 	return edges
 }
@@ -69208,9 +69208,9 @@ func (m *PromotionCommissionMutation) AddedIDs(name string) []ent.Value {
 		if id := m.member; id != nil {
 			return []ent.Value{*id}
 		}
-	case promotioncommission.EdgeCommissionPlans:
-		ids := make([]ent.Value, 0, len(m.commission_plans))
-		for id := range m.commission_plans {
+	case promotioncommission.EdgePlans:
+		ids := make([]ent.Value, 0, len(m.plans))
+		for id := range m.plans {
 			ids = append(ids, id)
 		}
 		return ids
@@ -69221,8 +69221,8 @@ func (m *PromotionCommissionMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PromotionCommissionMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.removedcommission_plans != nil {
-		edges = append(edges, promotioncommission.EdgeCommissionPlans)
+	if m.removedplans != nil {
+		edges = append(edges, promotioncommission.EdgePlans)
 	}
 	return edges
 }
@@ -69231,9 +69231,9 @@ func (m *PromotionCommissionMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *PromotionCommissionMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
-	case promotioncommission.EdgeCommissionPlans:
-		ids := make([]ent.Value, 0, len(m.removedcommission_plans))
-		for id := range m.removedcommission_plans {
+	case promotioncommission.EdgePlans:
+		ids := make([]ent.Value, 0, len(m.removedplans))
+		for id := range m.removedplans {
 			ids = append(ids, id)
 		}
 		return ids
@@ -69247,8 +69247,8 @@ func (m *PromotionCommissionMutation) ClearedEdges() []string {
 	if m.clearedmember {
 		edges = append(edges, promotioncommission.EdgeMember)
 	}
-	if m.clearedcommission_plans {
-		edges = append(edges, promotioncommission.EdgeCommissionPlans)
+	if m.clearedplans {
+		edges = append(edges, promotioncommission.EdgePlans)
 	}
 	return edges
 }
@@ -69259,8 +69259,8 @@ func (m *PromotionCommissionMutation) EdgeCleared(name string) bool {
 	switch name {
 	case promotioncommission.EdgeMember:
 		return m.clearedmember
-	case promotioncommission.EdgeCommissionPlans:
-		return m.clearedcommission_plans
+	case promotioncommission.EdgePlans:
+		return m.clearedplans
 	}
 	return false
 }
@@ -69283,8 +69283,8 @@ func (m *PromotionCommissionMutation) ResetEdge(name string) error {
 	case promotioncommission.EdgeMember:
 		m.ResetMember()
 		return nil
-	case promotioncommission.EdgeCommissionPlans:
-		m.ResetCommissionPlans()
+	case promotioncommission.EdgePlans:
+		m.ResetPlans()
 		return nil
 	}
 	return fmt.Errorf("unknown PromotionCommission edge %s", name)

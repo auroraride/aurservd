@@ -3541,13 +3541,13 @@ var (
 		PrimaryKey: []*schema.Column{PromotionCommissionPlanColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "promotion_commission_plan_plan_commission_plans",
+				Symbol:     "promotion_commission_plan_plan_commissions",
 				Columns:    []*schema.Column{PromotionCommissionPlanColumns[4]},
 				RefColumns: []*schema.Column{PlanColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "promotion_commission_plan_promotion_commission_commission_plans",
+				Symbol:     "promotion_commission_plan_promotion_commission_plans",
 				Columns:    []*schema.Column{PromotionCommissionPlanColumns[5]},
 				RefColumns: []*schema.Column{PromotionCommissionColumns[0]},
 				OnDelete:   schema.SetNull,

@@ -4102,12 +4102,12 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Plan",
 	)
 	graph.MustAddE(
-		"commission_plans",
+		"commissions",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   plan.CommissionPlansTable,
-			Columns: []string{plan.CommissionPlansColumn},
+			Table:   plan.CommissionsTable,
+			Columns: []string{plan.CommissionsColumn},
 			Bidi:    false,
 		},
 		"Plan",
@@ -4186,12 +4186,12 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"PromotionMember",
 	)
 	graph.MustAddE(
-		"commission_plans",
+		"plans",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   promotioncommission.CommissionPlansTable,
-			Columns: []string{promotioncommission.CommissionPlansColumn},
+			Table:   promotioncommission.PlansTable,
+			Columns: []string{promotioncommission.PlansColumn},
 			Bidi:    false,
 		},
 		"PromotionCommission",
@@ -12641,14 +12641,14 @@ func (f *PlanFilter) WhereHasComplexesWith(preds ...predicate.Plan) {
 	})))
 }
 
-// WhereHasCommissionPlans applies a predicate to check if query has an edge commission_plans.
-func (f *PlanFilter) WhereHasCommissionPlans() {
-	f.Where(entql.HasEdge("commission_plans"))
+// WhereHasCommissions applies a predicate to check if query has an edge commissions.
+func (f *PlanFilter) WhereHasCommissions() {
+	f.Where(entql.HasEdge("commissions"))
 }
 
-// WhereHasCommissionPlansWith applies a predicate to check if query has an edge commission_plans with a given conditions (other predicates).
-func (f *PlanFilter) WhereHasCommissionPlansWith(preds ...predicate.PromotionCommissionPlan) {
-	f.Where(entql.HasEdgeWith("commission_plans", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasCommissionsWith applies a predicate to check if query has an edge commissions with a given conditions (other predicates).
+func (f *PlanFilter) WhereHasCommissionsWith(preds ...predicate.PromotionCommissionPlan) {
+	f.Where(entql.HasEdgeWith("commissions", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -13214,14 +13214,14 @@ func (f *PromotionCommissionFilter) WhereHasMemberWith(preds ...predicate.Promot
 	})))
 }
 
-// WhereHasCommissionPlans applies a predicate to check if query has an edge commission_plans.
-func (f *PromotionCommissionFilter) WhereHasCommissionPlans() {
-	f.Where(entql.HasEdge("commission_plans"))
+// WhereHasPlans applies a predicate to check if query has an edge plans.
+func (f *PromotionCommissionFilter) WhereHasPlans() {
+	f.Where(entql.HasEdge("plans"))
 }
 
-// WhereHasCommissionPlansWith applies a predicate to check if query has an edge commission_plans with a given conditions (other predicates).
-func (f *PromotionCommissionFilter) WhereHasCommissionPlansWith(preds ...predicate.PromotionCommissionPlan) {
-	f.Where(entql.HasEdgeWith("commission_plans", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasPlansWith applies a predicate to check if query has an edge plans with a given conditions (other predicates).
+func (f *PromotionCommissionFilter) WhereHasPlansWith(preds ...predicate.PromotionCommissionPlan) {
+	f.Where(entql.HasEdgeWith("plans", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

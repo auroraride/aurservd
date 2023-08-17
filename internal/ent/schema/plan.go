@@ -84,7 +84,7 @@ func (Plan) Edges() []ent.Edge {
 		edge.To("cities", City.Type),
 		edge.To("complexes", Plan.Type).From("parent").Field("parent_id").Unique(),
 
-		edge.To("commission_plans", PromotionCommissionPlan.Type),
+		edge.To("commissions", PromotionCommissionPlan.Type),
 	}
 }
 

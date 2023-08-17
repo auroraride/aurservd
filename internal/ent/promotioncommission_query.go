@@ -20,13 +20,13 @@ import (
 // PromotionCommissionQuery is the builder for querying PromotionCommission entities.
 type PromotionCommissionQuery struct {
 	config
-	ctx                 *QueryContext
-	order               []promotioncommission.OrderOption
-	inters              []Interceptor
-	predicates          []predicate.PromotionCommission
-	withMember          *PromotionMemberQuery
-	withCommissionPlans *PromotionCommissionPlanQuery
-	modifiers           []func(*sql.Selector)
+	ctx        *QueryContext
+	order      []promotioncommission.OrderOption
+	inters     []Interceptor
+	predicates []predicate.PromotionCommission
+	withMember *PromotionMemberQuery
+	withPlans  *PromotionCommissionPlanQuery
+	modifiers  []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -85,8 +85,8 @@ func (pcq *PromotionCommissionQuery) QueryMember() *PromotionMemberQuery {
 	return query
 }
 
-// QueryCommissionPlans chains the current query on the "commission_plans" edge.
-func (pcq *PromotionCommissionQuery) QueryCommissionPlans() *PromotionCommissionPlanQuery {
+// QueryPlans chains the current query on the "plans" edge.
+func (pcq *PromotionCommissionQuery) QueryPlans() *PromotionCommissionPlanQuery {
 	query := (&PromotionCommissionPlanClient{config: pcq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := pcq.prepareQuery(ctx); err != nil {
@@ -99,7 +99,7 @@ func (pcq *PromotionCommissionQuery) QueryCommissionPlans() *PromotionCommission
 		step := sqlgraph.NewStep(
 			sqlgraph.From(promotioncommission.Table, promotioncommission.FieldID, selector),
 			sqlgraph.To(promotioncommissionplan.Table, promotioncommissionplan.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, promotioncommission.CommissionPlansTable, promotioncommission.CommissionPlansColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, promotioncommission.PlansTable, promotioncommission.PlansColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(pcq.driver.Dialect(), step)
 		return fromU, nil
@@ -294,13 +294,13 @@ func (pcq *PromotionCommissionQuery) Clone() *PromotionCommissionQuery {
 		return nil
 	}
 	return &PromotionCommissionQuery{
-		config:              pcq.config,
-		ctx:                 pcq.ctx.Clone(),
-		order:               append([]promotioncommission.OrderOption{}, pcq.order...),
-		inters:              append([]Interceptor{}, pcq.inters...),
-		predicates:          append([]predicate.PromotionCommission{}, pcq.predicates...),
-		withMember:          pcq.withMember.Clone(),
-		withCommissionPlans: pcq.withCommissionPlans.Clone(),
+		config:     pcq.config,
+		ctx:        pcq.ctx.Clone(),
+		order:      append([]promotioncommission.OrderOption{}, pcq.order...),
+		inters:     append([]Interceptor{}, pcq.inters...),
+		predicates: append([]predicate.PromotionCommission{}, pcq.predicates...),
+		withMember: pcq.withMember.Clone(),
+		withPlans:  pcq.withPlans.Clone(),
 		// clone intermediate query.
 		sql:  pcq.sql.Clone(),
 		path: pcq.path,
@@ -318,14 +318,14 @@ func (pcq *PromotionCommissionQuery) WithMember(opts ...func(*PromotionMemberQue
 	return pcq
 }
 
-// WithCommissionPlans tells the query-builder to eager-load the nodes that are connected to
-// the "commission_plans" edge. The optional arguments are used to configure the query builder of the edge.
-func (pcq *PromotionCommissionQuery) WithCommissionPlans(opts ...func(*PromotionCommissionPlanQuery)) *PromotionCommissionQuery {
+// WithPlans tells the query-builder to eager-load the nodes that are connected to
+// the "plans" edge. The optional arguments are used to configure the query builder of the edge.
+func (pcq *PromotionCommissionQuery) WithPlans(opts ...func(*PromotionCommissionPlanQuery)) *PromotionCommissionQuery {
 	query := (&PromotionCommissionPlanClient{config: pcq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	pcq.withCommissionPlans = query
+	pcq.withPlans = query
 	return pcq
 }
 
@@ -409,7 +409,7 @@ func (pcq *PromotionCommissionQuery) sqlAll(ctx context.Context, hooks ...queryH
 		_spec       = pcq.querySpec()
 		loadedTypes = [2]bool{
 			pcq.withMember != nil,
-			pcq.withCommissionPlans != nil,
+			pcq.withPlans != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -439,12 +439,10 @@ func (pcq *PromotionCommissionQuery) sqlAll(ctx context.Context, hooks ...queryH
 			return nil, err
 		}
 	}
-	if query := pcq.withCommissionPlans; query != nil {
-		if err := pcq.loadCommissionPlans(ctx, query, nodes,
-			func(n *PromotionCommission) { n.Edges.CommissionPlans = []*PromotionCommissionPlan{} },
-			func(n *PromotionCommission, e *PromotionCommissionPlan) {
-				n.Edges.CommissionPlans = append(n.Edges.CommissionPlans, e)
-			}); err != nil {
+	if query := pcq.withPlans; query != nil {
+		if err := pcq.loadPlans(ctx, query, nodes,
+			func(n *PromotionCommission) { n.Edges.Plans = []*PromotionCommissionPlan{} },
+			func(n *PromotionCommission, e *PromotionCommissionPlan) { n.Edges.Plans = append(n.Edges.Plans, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -483,7 +481,7 @@ func (pcq *PromotionCommissionQuery) loadMember(ctx context.Context, query *Prom
 	}
 	return nil
 }
-func (pcq *PromotionCommissionQuery) loadCommissionPlans(ctx context.Context, query *PromotionCommissionPlanQuery, nodes []*PromotionCommission, init func(*PromotionCommission), assign func(*PromotionCommission, *PromotionCommissionPlan)) error {
+func (pcq *PromotionCommissionQuery) loadPlans(ctx context.Context, query *PromotionCommissionPlanQuery, nodes []*PromotionCommission, init func(*PromotionCommission), assign func(*PromotionCommission, *PromotionCommissionPlan)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[uint64]*PromotionCommission)
 	for i := range nodes {
@@ -497,7 +495,7 @@ func (pcq *PromotionCommissionQuery) loadCommissionPlans(ctx context.Context, qu
 		query.ctx.AppendFieldOnce(promotioncommissionplan.FieldCommissionID)
 	}
 	query.Where(predicate.PromotionCommissionPlan(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(promotioncommission.CommissionPlansColumn), fks...))
+		s.Where(sql.InValues(s.C(promotioncommission.PlansColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -613,8 +611,8 @@ func (pcq *PromotionCommissionQuery) Modify(modifiers ...func(s *sql.Selector)) 
 type PromotionCommissionQueryWith string
 
 var (
-	PromotionCommissionQueryWithMember          PromotionCommissionQueryWith = "Member"
-	PromotionCommissionQueryWithCommissionPlans PromotionCommissionQueryWith = "CommissionPlans"
+	PromotionCommissionQueryWithMember PromotionCommissionQueryWith = "Member"
+	PromotionCommissionQueryWithPlans  PromotionCommissionQueryWith = "Plans"
 )
 
 func (pcq *PromotionCommissionQuery) With(withEdges ...PromotionCommissionQueryWith) *PromotionCommissionQuery {
@@ -622,8 +620,8 @@ func (pcq *PromotionCommissionQuery) With(withEdges ...PromotionCommissionQueryW
 		switch v {
 		case PromotionCommissionQueryWithMember:
 			pcq.WithMember()
-		case PromotionCommissionQueryWithCommissionPlans:
-			pcq.WithCommissionPlans()
+		case PromotionCommissionQueryWithPlans:
+			pcq.WithPlans()
 		}
 	}
 	return pcq

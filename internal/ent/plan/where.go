@@ -1102,21 +1102,21 @@ func HasComplexesWith(preds ...predicate.Plan) predicate.Plan {
 	})
 }
 
-// HasCommissionPlans applies the HasEdge predicate on the "commission_plans" edge.
-func HasCommissionPlans() predicate.Plan {
+// HasCommissions applies the HasEdge predicate on the "commissions" edge.
+func HasCommissions() predicate.Plan {
 	return predicate.Plan(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, CommissionPlansTable, CommissionPlansColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, CommissionsTable, CommissionsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasCommissionPlansWith applies the HasEdge predicate on the "commission_plans" edge with a given conditions (other predicates).
-func HasCommissionPlansWith(preds ...predicate.PromotionCommissionPlan) predicate.Plan {
+// HasCommissionsWith applies the HasEdge predicate on the "commissions" edge with a given conditions (other predicates).
+func HasCommissionsWith(preds ...predicate.PromotionCommissionPlan) predicate.Plan {
 	return predicate.Plan(func(s *sql.Selector) {
-		step := newCommissionPlansStep()
+		step := newCommissionsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

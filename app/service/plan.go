@@ -355,9 +355,9 @@ func (s *planService) PlanWithComplexes(item *ent.Plan) (res model.PlanListRes) 
 			DiscountNewly: child.DiscountNewly,
 		}
 
-		if child.Edges.CommissionPlans != nil {
-			pc.CommissionName = child.Edges.CommissionPlans[0].Edges.PromotionCommission.Name
-			pc.CommissionID = child.Edges.CommissionPlans[0].Edges.PromotionCommission.ID
+		if len(child.Edges.Commissions) > 0 && child.Edges.Commissions[0].Edges.PromotionCommission != nil {
+			pc.CommissionName = child.Edges.Commissions[0].Edges.PromotionCommission.Name
+			pc.CommissionID = child.Edges.Commissions[0].Edges.PromotionCommission.ID
 		}
 
 		*r = append(*r, pc)
@@ -379,7 +379,7 @@ func (s *planService) List(req *model.PlanListReq) *model.PaginationRes {
 			pq.Where(plan.DeletedAtIsNil())
 		}).
 		WithCities().
-		WithCommissionPlans(func(q *ent.PromotionCommissionPlanQuery) {
+		WithCommissions(func(q *ent.PromotionCommissionPlanQuery) {
 			q.WithPromotionCommission(func(q *ent.PromotionCommissionQuery) {
 				q.Where(promotioncommission.TypeNEQ(promotion.CommissionCustom.Value()))
 			})

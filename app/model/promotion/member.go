@@ -172,11 +172,10 @@ type MemberProfile struct {
 
 // MemberCommissionReq 会员设置返佣
 type MemberCommissionReq struct {
-	ID           uint64          `json:"id" validate:"required"`
-	CommissionID []uint64        `json:"commissionId" ` // 返佣方案
-	Rule         *CommissionRule `json:"rule"`          // 返佣规则
-	Desc         *string         `json:"desc"`          // 返佣说明
-	PlanID       []uint64        `json:"planId"`        // 骑士卡方案ID
+	ID     uint64          `json:"id" validate:"required"`
+	Rule   *CommissionRule `json:"rule" validate:"required"` // 返佣规则
+	Desc   *string         `json:"desc"`                     // 返佣说明
+	PlanID []uint64        `json:"planId"`                   // 骑士卡方案ID
 }
 
 type UploadAvatar struct {

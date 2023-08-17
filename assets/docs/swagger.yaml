@@ -5795,9 +5795,12 @@ definitions:
       commission:
         description: 提成
         type: number
-      commissionBase:
-        description: 推广返佣底数
-        type: number
+      commissionId:
+        description: 佣金方案ID
+        type: integer
+      commissionName:
+        description: 佣金方案名称
+        type: string
       days:
         minimum: 1
         type: integer
@@ -5980,6 +5983,9 @@ definitions:
       intelligent:
         description: 是否智能柜套餐
         type: boolean
+      model:
+        description: 电池型号
+        type: string
       name:
         description: 名称
         type: string
@@ -8395,6 +8401,11 @@ definitions:
       name:
         description: 方案名称
         type: string
+      planId:
+        description: 骑士卡方案ID
+        items:
+          type: integer
+        type: array
       rule:
         allOf:
         - $ref: '#/definitions/promotion.CommissionRule'
@@ -8404,8 +8415,8 @@ definitions:
         - $ref: '#/definitions/promotion.CommissionType'
         description: 返佣类型 0:默认全局返佣方案 1:通用返佣方案 2:为个人自定义返佣方案
     required:
-    - desc
     - name
+    - planId
     - rule
     - type
     type: object
@@ -8435,6 +8446,11 @@ definitions:
       name:
         description: 方案名称
         type: string
+      plan:
+        description: 骑士卡方案
+        items:
+          $ref: '#/definitions/promotion.CommissionPlan'
+        type: array
       rule:
         allOf:
         - $ref: '#/definitions/promotion.CommissionRule'
@@ -8446,9 +8462,6 @@ definitions:
         allOf:
         - $ref: '#/definitions/promotion.CommissionType'
         description: 返佣类型 0:默认全局返佣方案 1:通用返佣方案 2:为个人自定义返佣方案
-      useCount:
-        description: 使用次数
-        type: integer
     type: object
   promotion.CommissionEnableReq:
     properties:
@@ -8469,6 +8482,54 @@ definitions:
     x-enum-varnames:
     - CommissionLimited
     - CommissionUnlimited
+  promotion.CommissionOptionType:
+    enum:
+      - 1
+      - 2
+    type: integer
+    x-enum-comments:
+      FixedAmount: 固定金额
+      Percentage: 比例
+    x-enum-varnames:
+      - FixedAmount
+      - Percentage
+  promotion.CommissionPlan:
+    properties:
+      amount:
+        description: 骑士卡价格
+        type: number
+      id:
+        description: 骑士卡ID
+        type: integer
+      name:
+        description: 骑士卡名称
+        type: string
+    type: object
+  promotion.CommissionPlanListRes:
+    properties:
+      commissionId:
+        description: 返佣方案ID
+        type: integer
+      createdAt:
+        description: 创建时间
+        type: string
+      name:
+        description: 方案名称
+        type: string
+      plan:
+        description: 骑士卡方案
+        items:
+          $ref: '#/definitions/promotion.CommissionPlan'
+        type: array
+      rule:
+        allOf:
+          - $ref: '#/definitions/promotion.CommissionRule'
+        description: 返佣规则
+      type:
+        allOf:
+          - $ref: '#/definitions/promotion.CommissionType'
+        description: 返佣类型 0:默认通用返佣方案 1:通用返佣方案 2:为个人自定义返佣方案
+    type: object
   promotion.CommissionRule:
     properties:
       newUserCommission:
@@ -8494,8 +8555,12 @@ definitions:
       name:
         description: 任务名称
         type: string
-      ratio:
-        description: 返佣比例列表
+      optionType:
+        allOf:
+          - $ref: '#/definitions/promotion.CommissionOptionType'
+        description: 选项类型 1:固定金额 2:比例
+      value:
+        description: 选项值
         items:
           type: number
         type: array
@@ -8744,20 +8809,23 @@ definitions:
     type: object
   promotion.MemberCommissionReq:
     properties:
-      commissionId:
-        description: 返佣方案
-        type: integer
       desc:
         description: 返佣说明
         type: string
       id:
         type: integer
+      planId:
+        description: 骑士卡方案ID
+        items:
+          type: integer
+        type: array
       rule:
         allOf:
         - $ref: '#/definitions/promotion.CommissionRule'
         description: 返佣规则
     required:
     - id
+    - rule
     type: object
   promotion.MemberProfile:
     properties:
@@ -8800,14 +8868,6 @@ definitions:
       commissionId:
         description: 返佣方案id
         type: integer
-      commissionType:
-        allOf:
-        - $ref: '#/definitions/promotion.CommissionType'
-        description: 返佣方案 0:默认全局返佣方案 1:通用返佣方案 2:为个人自定义返佣方案
-        enum:
-        - 0
-        - 1
-        - 2
       current:
         description: 当前页, 从1开始, 默认1
         type: integer
@@ -17533,6 +17593,34 @@ paths:
             type: array
       summary: PM8007 推广返佣方案历史列表
       tags:
+        - '[PM]推广管理接口'
+  /manager/v1/promotion/commission/plan/list/{:id}:
+    get:
+      consumes:
+        - application/json
+      operationId: ManagerPromotionCommissionPlanList
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+        - description: 会员id
+          in: path
+          name: id
+          required: true
+          type: integer
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/promotion.CommissionPlanListRes'
+            type: array
+      summary: PM8010 返佣方案骑士卡列表
+      tags:
       - '[PM]推广管理接口'
   /manager/v1/promotion/commission/selection:
     get:
@@ -18662,6 +18750,28 @@ paths:
               $ref: '#/definitions/model.CascaderOptionLevel2'
             type: array
       summary: MB005 筛选启用的城市
+      tags:
+        - '[M]管理接口'
+  /manager/v1/selection/commission/plan:
+    get:
+      consumes:
+        - application/json
+      operationId: ManagerSelectionCommissionPlan
+      parameters:
+        - description: 关键字
+          in: query
+          name: keyword
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.SelectOption'
+            type: array
+      summary: MB017 返佣方案筛选骑士卡
       tags:
       - '[M]管理接口'
   /manager/v1/selection/coupon/template:

@@ -63,8 +63,8 @@ type PromotionCommission struct {
 type PromotionCommissionEdges struct {
 	// Member holds the value of the member edge.
 	Member *PromotionMember `json:"member,omitempty"`
-	// CommissionPlans holds the value of the commission_plans edge.
-	CommissionPlans []*PromotionCommissionPlan `json:"commission_plans,omitempty"`
+	// Plans holds the value of the plans edge.
+	Plans []*PromotionCommissionPlan `json:"plans,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool
@@ -83,13 +83,13 @@ func (e PromotionCommissionEdges) MemberOrErr() (*PromotionMember, error) {
 	return nil, &NotLoadedError{edge: "member"}
 }
 
-// CommissionPlansOrErr returns the CommissionPlans value or an error if the edge
+// PlansOrErr returns the Plans value or an error if the edge
 // was not loaded in eager-loading.
-func (e PromotionCommissionEdges) CommissionPlansOrErr() ([]*PromotionCommissionPlan, error) {
+func (e PromotionCommissionEdges) PlansOrErr() ([]*PromotionCommissionPlan, error) {
 	if e.loadedTypes[1] {
-		return e.CommissionPlans, nil
+		return e.Plans, nil
 	}
-	return nil, &NotLoadedError{edge: "commission_plans"}
+	return nil, &NotLoadedError{edge: "plans"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -258,9 +258,9 @@ func (pc *PromotionCommission) QueryMember() *PromotionMemberQuery {
 	return NewPromotionCommissionClient(pc.config).QueryMember(pc)
 }
 
-// QueryCommissionPlans queries the "commission_plans" edge of the PromotionCommission entity.
-func (pc *PromotionCommission) QueryCommissionPlans() *PromotionCommissionPlanQuery {
-	return NewPromotionCommissionClient(pc.config).QueryCommissionPlans(pc)
+// QueryPlans queries the "plans" edge of the PromotionCommission entity.
+func (pc *PromotionCommission) QueryPlans() *PromotionCommissionPlanQuery {
+	return NewPromotionCommissionClient(pc.config).QueryPlans(pc)
 }
 
 // Update returns a builder for updating this PromotionCommission.

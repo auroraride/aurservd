@@ -67,8 +67,8 @@ const (
 	EdgeParent = "parent"
 	// EdgeComplexes holds the string denoting the complexes edge name in mutations.
 	EdgeComplexes = "complexes"
-	// EdgeCommissionPlans holds the string denoting the commission_plans edge name in mutations.
-	EdgeCommissionPlans = "commission_plans"
+	// EdgeCommissions holds the string denoting the commissions edge name in mutations.
+	EdgeCommissions = "commissions"
 	// Table holds the table name of the plan in the database.
 	Table = "plan"
 	// BrandTable is the table that holds the brand relation/edge.
@@ -91,13 +91,13 @@ const (
 	ComplexesTable = "plan"
 	// ComplexesColumn is the table column denoting the complexes relation/edge.
 	ComplexesColumn = "parent_id"
-	// CommissionPlansTable is the table that holds the commission_plans relation/edge.
-	CommissionPlansTable = "promotion_commission_plan"
-	// CommissionPlansInverseTable is the table name for the PromotionCommissionPlan entity.
+	// CommissionsTable is the table that holds the commissions relation/edge.
+	CommissionsTable = "promotion_commission_plan"
+	// CommissionsInverseTable is the table name for the PromotionCommissionPlan entity.
 	// It exists in this package in order to avoid circular dependency with the "promotioncommissionplan" package.
-	CommissionPlansInverseTable = "promotion_commission_plan"
-	// CommissionPlansColumn is the table column denoting the commission_plans relation/edge.
-	CommissionPlansColumn = "plan_id"
+	CommissionsInverseTable = "promotion_commission_plan"
+	// CommissionsColumn is the table column denoting the commissions relation/edge.
+	CommissionsColumn = "plan_id"
 )
 
 // Columns holds all SQL columns for plan fields.
@@ -309,17 +309,17 @@ func ByComplexes(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	}
 }
 
-// ByCommissionPlansCount orders the results by commission_plans count.
-func ByCommissionPlansCount(opts ...sql.OrderTermOption) OrderOption {
+// ByCommissionsCount orders the results by commissions count.
+func ByCommissionsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newCommissionPlansStep(), opts...)
+		sqlgraph.OrderByNeighborsCount(s, newCommissionsStep(), opts...)
 	}
 }
 
-// ByCommissionPlans orders the results by commission_plans terms.
-func ByCommissionPlans(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+// ByCommissions orders the results by commissions terms.
+func ByCommissions(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newCommissionPlansStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newCommissionsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 func newBrandStep() *sqlgraph.Step {
@@ -350,10 +350,10 @@ func newComplexesStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.O2M, false, ComplexesTable, ComplexesColumn),
 	)
 }
-func newCommissionPlansStep() *sqlgraph.Step {
+func newCommissionsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(CommissionPlansInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, CommissionPlansTable, CommissionPlansColumn),
+		sqlgraph.To(CommissionsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, CommissionsTable, CommissionsColumn),
 	)
 }
