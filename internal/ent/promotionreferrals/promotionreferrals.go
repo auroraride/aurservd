@@ -18,18 +18,38 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
+	// FieldRiderID holds the string denoting the rider_id field in the database.
+	FieldRiderID = "rider_id"
+	// FieldSubscribeID holds the string denoting the subscribe_id field in the database.
+	FieldSubscribeID = "subscribe_id"
 	// FieldReferringMemberID holds the string denoting the referring_member_id field in the database.
 	FieldReferringMemberID = "referring_member_id"
 	// FieldReferredMemberID holds the string denoting the referred_member_id field in the database.
 	FieldReferredMemberID = "referred_member_id"
-	// FieldRiderID holds the string denoting the rider_id field in the database.
-	FieldRiderID = "rider_id"
+	// EdgeRider holds the string denoting the rider edge name in mutations.
+	EdgeRider = "rider"
+	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
+	EdgeSubscribe = "subscribe"
 	// EdgeReferringMember holds the string denoting the referring_member edge name in mutations.
 	EdgeReferringMember = "referring_member"
 	// EdgeReferredMember holds the string denoting the referred_member edge name in mutations.
 	EdgeReferredMember = "referred_member"
 	// Table holds the table name of the promotionreferrals in the database.
 	Table = "promotion_referrals"
+	// RiderTable is the table that holds the rider relation/edge.
+	RiderTable = "promotion_referrals"
+	// RiderInverseTable is the table name for the Rider entity.
+	// It exists in this package in order to avoid circular dependency with the "rider" package.
+	RiderInverseTable = "rider"
+	// RiderColumn is the table column denoting the rider relation/edge.
+	RiderColumn = "rider_id"
+	// SubscribeTable is the table that holds the subscribe relation/edge.
+	SubscribeTable = "promotion_referrals"
+	// SubscribeInverseTable is the table name for the Subscribe entity.
+	// It exists in this package in order to avoid circular dependency with the "subscribe" package.
+	SubscribeInverseTable = "subscribe"
+	// SubscribeColumn is the table column denoting the subscribe relation/edge.
+	SubscribeColumn = "subscribe_id"
 	// ReferringMemberTable is the table that holds the referring_member relation/edge.
 	ReferringMemberTable = "promotion_referrals"
 	// ReferringMemberInverseTable is the table name for the PromotionMember entity.
@@ -51,9 +71,10 @@ var Columns = []string{
 	FieldID,
 	FieldCreatedAt,
 	FieldUpdatedAt,
+	FieldRiderID,
+	FieldSubscribeID,
 	FieldReferringMemberID,
 	FieldReferredMemberID,
-	FieldRiderID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -93,6 +114,16 @@ func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
 }
 
+// ByRiderID orders the results by the rider_id field.
+func ByRiderID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRiderID, opts...).ToFunc()
+}
+
+// BySubscribeID orders the results by the subscribe_id field.
+func BySubscribeID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSubscribeID, opts...).ToFunc()
+}
+
 // ByReferringMemberID orders the results by the referring_member_id field.
 func ByReferringMemberID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldReferringMemberID, opts...).ToFunc()
@@ -103,9 +134,18 @@ func ByReferredMemberID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldReferredMemberID, opts...).ToFunc()
 }
 
-// ByRiderID orders the results by the rider_id field.
-func ByRiderID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldRiderID, opts...).ToFunc()
+// ByRiderField orders the results by rider field.
+func ByRiderField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRiderStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// BySubscribeField orders the results by subscribe field.
+func BySubscribeField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newSubscribeStep(), sql.OrderByField(field, opts...))
+	}
 }
 
 // ByReferringMemberField orders the results by referring_member field.
@@ -120,6 +160,20 @@ func ByReferredMemberField(field string, opts ...sql.OrderTermOption) OrderOptio
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newReferredMemberStep(), sql.OrderByField(field, opts...))
 	}
+}
+func newRiderStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(RiderInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, RiderTable, RiderColumn),
+	)
+}
+func newSubscribeStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(SubscribeInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, SubscribeTable, SubscribeColumn),
+	)
 }
 func newReferringMemberStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(

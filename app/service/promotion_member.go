@@ -82,6 +82,7 @@ func (s *promotionMemberService) Signin(req *promotion.MemberSigninReq) *promoti
 		Name:  req.Name,
 	}
 	mem, _ := s.GetMemberByPhone(req.Phone)
+
 	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
 		// 获取骑手信息或创建骑手
 		s.getRiderOrCreate(tx, req.Phone, c)
@@ -93,6 +94,10 @@ func (s *promotionMemberService) Signin(req *promotion.MemberSigninReq) *promoti
 		}
 		return
 	})
+
+	if !mem.Enable {
+		snag.Panic("账号已被禁用")
+	}
 
 	return s.signin(mem)
 }
@@ -141,14 +146,30 @@ func (s *promotionMemberService) getRiderOrCreate(tx *ent.Tx, phone string, c *p
 	}
 	// 绑定骑手
 	c.RiderID = &rinfo.ID
+
+	if c.RiderID != nil { // 订阅
+		sub := NewSubscribe().Recent(*c.RiderID)
+		if sub != nil {
+			c.SubscribeID = &sub.ID
+		}
+	}
 }
 
 // 更新会员信息
 func (s *promotionMemberService) updateMemberInfo(tx *ent.Tx, mem *ent.PromotionMember, req *promotion.MemberCreateReq) {
+	q := tx.PromotionMember.UpdateOne(mem)
+	re := tx.PromotionReferrals.Update().Where(promotionreferrals.ReferredMemberIDEQ(mem.ID))
 	if req.RiderID != nil && req.RiderID != mem.RiderID && mem.RiderID == nil {
-		tx.PromotionMember.UpdateOne(mem).SetNillableRiderID(req.RiderID).ExecX(s.ctx)
-		tx.PromotionReferrals.Update().Where(promotionreferrals.ReferredMemberIDEQ(mem.ID)).SetNillableRiderID(req.RiderID).ExecX(s.ctx)
+		q.SetNillableRiderID(req.RiderID)
+		re.SetNillableRiderID(req.RiderID)
 	}
+
+	if req.SubscribeID != nil && req.SubscribeID != mem.SubscribeID {
+		q.SetNillableSubscribeID(req.SubscribeID)
+		re.SetNillableSubscribeID(req.SubscribeID).ExecX(s.ctx)
+	}
+	q.ExecX(s.ctx)
+	re.ExecX(s.ctx)
 }
 
 // GetMemberByPhone  获取会员信息
@@ -424,11 +445,22 @@ func (s *promotionMemberService) GetMemberById(id uint64) (*ent.PromotionMember,
 
 // Update 编辑会员
 func (s *promotionMemberService) Update(req *promotion.MemberUpdateReq) {
-	ent.Database.PromotionMember.
-		UpdateOneID(req.ID).
-		SetNillableEnable(req.Enable).
-		SetNillableName(req.Name).
-		SaveX(s.ctx)
+	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
+		err = tx.PromotionMember.
+			UpdateOneID(req.ID).
+			SetNillableEnable(req.Enable).
+			SetNillableName(req.Name).
+			Exec(s.ctx)
+		if err != nil {
+			snag.Panic("更新失败")
+		}
+
+		if req.Enable != nil && !*req.Enable {
+			// 禁用会员 删除token禁止登录
+			ar.Redis.HDel(s.ctx, s.tokenCacheKey, strconv.FormatUint(req.ID, 10))
+		}
+		return
+	})
 }
 
 // TeamList 会员团队列表
@@ -627,7 +659,6 @@ func (s *promotionMemberService) SetCommission(req *promotion.MemberCommissionRe
 
 	s.CommissionPlanIsConfigured(mem, req)
 
-	// ent.Database.PromotionCommission.SoftDelete().Where(promotioncommission.MemberIDEQ(req.ID)).ExecX(s.ctx)
 	// 自定义返佣方案
 	commissionTypeValue := promotion.CommissionType(2)
 	mc := NewPromotionCommissionService().Create(&promotion.CommissionCreateReq{
@@ -638,16 +669,12 @@ func (s *promotionMemberService) SetCommission(req *promotion.MemberCommissionRe
 		Desc:     req.Desc,
 	})
 
-	// // 先删除会员已有的返佣方案 再创建新的返佣方案
-	// ent.Database.PromotionCommissionPlan.SoftDelete().Where(promotioncommissionplan.MemberIDEQ(req.ID)).ExecX(s.ctx)
 	bulk := make([]*ent.PromotionCommissionPlanCreate, len(req.PlanID))
 	for i, v := range req.PlanID {
 		bulk[i] = ent.Database.PromotionCommissionPlan.Create().SetPlanID(v).SetCommissionID(mc.ID).SetMemberID(req.ID)
 	}
 	ent.Database.PromotionCommissionPlan.CreateBulk(bulk...).ExecX(s.ctx)
 
-	// // 先删除会员已有的返佣方案 再创建新的返佣方案
-	// ent.Database.PromotionMemberCommission.SoftDelete().Where(promotionmembercommission.MemberIDEQ(req.ID)).ExecX(s.ctx)
 	ent.Database.PromotionMemberCommission.Create().SetCommissionID(mc.ID).SetMemberID(req.ID).ExecX(s.ctx)
 
 }
@@ -669,24 +696,6 @@ func (s *promotionMemberService) CommissionPlanIsConfigured(mem *ent.PromotionMe
 	}
 
 }
-
-// HasIntersection 判断两个切片是否有交集
-// func (s *promotionMemberService) HasIntersection(sliceA, sliceB []uint64) []uint64 {
-// 	set := make(map[uint64]bool)
-// 	var intersection []uint64
-//
-// 	for _, num := range sliceA {
-// 		set[num] = true
-// 	}
-//
-// 	for _, num := range sliceB {
-// 		if set[num] {
-// 			intersection = append(intersection, num)
-// 		}
-// 	}
-//
-// 	return intersection
-// }
 
 // UploadAvatar 更新会员头像
 func (s *promotionMemberService) UploadAvatar(ctx *app.PromotionContext) promotion.UploadAvatar {

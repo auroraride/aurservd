@@ -24,6 +24,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
+	"github.com/auroraride/aurservd/internal/ent/promotionmember"
+	"github.com/auroraride/aurservd/internal/ent/promotionreferrals"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
@@ -603,6 +605,18 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
 			sub, err = sq.Save(s.ctx)
 			if err != nil {
 				zap.L().Error("订单已支付, 但新签或重签订阅创建失败: "+trade.OutTradeNo, zap.Error(err))
+				return
+			}
+
+			// 更新推广中的订阅
+			err = tx.PromotionMember.Update().Where(promotionmember.RiderID(trade.RiderID)).SetSubscribe(sub).Exec(s.ctx)
+			if err != nil {
+				zap.L().Error("订单已支付, 但推广订阅更新失败: "+trade.OutTradeNo, zap.Error(err))
+				return
+			}
+			err = tx.PromotionReferrals.Update().Where(promotionreferrals.ReferredMemberID(trade.RiderID)).SetSubscribe(sub).Exec(s.ctx)
+			if err != nil {
+				zap.L().Error("订单已支付, 但推广订阅更新失败: "+trade.OutTradeNo, zap.Error(err))
 				return
 			}
 		}

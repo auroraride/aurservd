@@ -93,6 +93,7 @@ func (PromotionMember) Mixin() []ent.Mixin {
 		internal.Modifier{},
 
 		RiderMixin{Optional: true},
+		SubscribeMixin{Optional: true},
 		PromotionLevelMixin{Optional: true},
 	}
 }

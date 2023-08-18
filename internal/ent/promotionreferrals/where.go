@@ -65,6 +65,16 @@ func UpdatedAt(v time.Time) predicate.PromotionReferrals {
 	return predicate.PromotionReferrals(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
+// RiderID applies equality check predicate on the "rider_id" field. It's identical to RiderIDEQ.
+func RiderID(v uint64) predicate.PromotionReferrals {
+	return predicate.PromotionReferrals(sql.FieldEQ(FieldRiderID, v))
+}
+
+// SubscribeID applies equality check predicate on the "subscribe_id" field. It's identical to SubscribeIDEQ.
+func SubscribeID(v uint64) predicate.PromotionReferrals {
+	return predicate.PromotionReferrals(sql.FieldEQ(FieldSubscribeID, v))
+}
+
 // ReferringMemberID applies equality check predicate on the "referring_member_id" field. It's identical to ReferringMemberIDEQ.
 func ReferringMemberID(v uint64) predicate.PromotionReferrals {
 	return predicate.PromotionReferrals(sql.FieldEQ(FieldReferringMemberID, v))
@@ -73,11 +83,6 @@ func ReferringMemberID(v uint64) predicate.PromotionReferrals {
 // ReferredMemberID applies equality check predicate on the "referred_member_id" field. It's identical to ReferredMemberIDEQ.
 func ReferredMemberID(v uint64) predicate.PromotionReferrals {
 	return predicate.PromotionReferrals(sql.FieldEQ(FieldReferredMemberID, v))
-}
-
-// RiderID applies equality check predicate on the "rider_id" field. It's identical to RiderIDEQ.
-func RiderID(v uint64) predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldEQ(FieldRiderID, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -160,6 +165,66 @@ func UpdatedAtLTE(v time.Time) predicate.PromotionReferrals {
 	return predicate.PromotionReferrals(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
+// RiderIDEQ applies the EQ predicate on the "rider_id" field.
+func RiderIDEQ(v uint64) predicate.PromotionReferrals {
+	return predicate.PromotionReferrals(sql.FieldEQ(FieldRiderID, v))
+}
+
+// RiderIDNEQ applies the NEQ predicate on the "rider_id" field.
+func RiderIDNEQ(v uint64) predicate.PromotionReferrals {
+	return predicate.PromotionReferrals(sql.FieldNEQ(FieldRiderID, v))
+}
+
+// RiderIDIn applies the In predicate on the "rider_id" field.
+func RiderIDIn(vs ...uint64) predicate.PromotionReferrals {
+	return predicate.PromotionReferrals(sql.FieldIn(FieldRiderID, vs...))
+}
+
+// RiderIDNotIn applies the NotIn predicate on the "rider_id" field.
+func RiderIDNotIn(vs ...uint64) predicate.PromotionReferrals {
+	return predicate.PromotionReferrals(sql.FieldNotIn(FieldRiderID, vs...))
+}
+
+// RiderIDIsNil applies the IsNil predicate on the "rider_id" field.
+func RiderIDIsNil() predicate.PromotionReferrals {
+	return predicate.PromotionReferrals(sql.FieldIsNull(FieldRiderID))
+}
+
+// RiderIDNotNil applies the NotNil predicate on the "rider_id" field.
+func RiderIDNotNil() predicate.PromotionReferrals {
+	return predicate.PromotionReferrals(sql.FieldNotNull(FieldRiderID))
+}
+
+// SubscribeIDEQ applies the EQ predicate on the "subscribe_id" field.
+func SubscribeIDEQ(v uint64) predicate.PromotionReferrals {
+	return predicate.PromotionReferrals(sql.FieldEQ(FieldSubscribeID, v))
+}
+
+// SubscribeIDNEQ applies the NEQ predicate on the "subscribe_id" field.
+func SubscribeIDNEQ(v uint64) predicate.PromotionReferrals {
+	return predicate.PromotionReferrals(sql.FieldNEQ(FieldSubscribeID, v))
+}
+
+// SubscribeIDIn applies the In predicate on the "subscribe_id" field.
+func SubscribeIDIn(vs ...uint64) predicate.PromotionReferrals {
+	return predicate.PromotionReferrals(sql.FieldIn(FieldSubscribeID, vs...))
+}
+
+// SubscribeIDNotIn applies the NotIn predicate on the "subscribe_id" field.
+func SubscribeIDNotIn(vs ...uint64) predicate.PromotionReferrals {
+	return predicate.PromotionReferrals(sql.FieldNotIn(FieldSubscribeID, vs...))
+}
+
+// SubscribeIDIsNil applies the IsNil predicate on the "subscribe_id" field.
+func SubscribeIDIsNil() predicate.PromotionReferrals {
+	return predicate.PromotionReferrals(sql.FieldIsNull(FieldSubscribeID))
+}
+
+// SubscribeIDNotNil applies the NotNil predicate on the "subscribe_id" field.
+func SubscribeIDNotNil() predicate.PromotionReferrals {
+	return predicate.PromotionReferrals(sql.FieldNotNull(FieldSubscribeID))
+}
+
 // ReferringMemberIDEQ applies the EQ predicate on the "referring_member_id" field.
 func ReferringMemberIDEQ(v uint64) predicate.PromotionReferrals {
 	return predicate.PromotionReferrals(sql.FieldEQ(FieldReferringMemberID, v))
@@ -220,54 +285,50 @@ func ReferredMemberIDNotNil() predicate.PromotionReferrals {
 	return predicate.PromotionReferrals(sql.FieldNotNull(FieldReferredMemberID))
 }
 
-// RiderIDEQ applies the EQ predicate on the "rider_id" field.
-func RiderIDEQ(v uint64) predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldEQ(FieldRiderID, v))
+// HasRider applies the HasEdge predicate on the "rider" edge.
+func HasRider() predicate.PromotionReferrals {
+	return predicate.PromotionReferrals(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, RiderTable, RiderColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
 }
 
-// RiderIDNEQ applies the NEQ predicate on the "rider_id" field.
-func RiderIDNEQ(v uint64) predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldNEQ(FieldRiderID, v))
+// HasRiderWith applies the HasEdge predicate on the "rider" edge with a given conditions (other predicates).
+func HasRiderWith(preds ...predicate.Rider) predicate.PromotionReferrals {
+	return predicate.PromotionReferrals(func(s *sql.Selector) {
+		step := newRiderStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
 }
 
-// RiderIDIn applies the In predicate on the "rider_id" field.
-func RiderIDIn(vs ...uint64) predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldIn(FieldRiderID, vs...))
+// HasSubscribe applies the HasEdge predicate on the "subscribe" edge.
+func HasSubscribe() predicate.PromotionReferrals {
+	return predicate.PromotionReferrals(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, SubscribeTable, SubscribeColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
 }
 
-// RiderIDNotIn applies the NotIn predicate on the "rider_id" field.
-func RiderIDNotIn(vs ...uint64) predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldNotIn(FieldRiderID, vs...))
-}
-
-// RiderIDGT applies the GT predicate on the "rider_id" field.
-func RiderIDGT(v uint64) predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldGT(FieldRiderID, v))
-}
-
-// RiderIDGTE applies the GTE predicate on the "rider_id" field.
-func RiderIDGTE(v uint64) predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldGTE(FieldRiderID, v))
-}
-
-// RiderIDLT applies the LT predicate on the "rider_id" field.
-func RiderIDLT(v uint64) predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldLT(FieldRiderID, v))
-}
-
-// RiderIDLTE applies the LTE predicate on the "rider_id" field.
-func RiderIDLTE(v uint64) predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldLTE(FieldRiderID, v))
-}
-
-// RiderIDIsNil applies the IsNil predicate on the "rider_id" field.
-func RiderIDIsNil() predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldIsNull(FieldRiderID))
-}
-
-// RiderIDNotNil applies the NotNil predicate on the "rider_id" field.
-func RiderIDNotNil() predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldNotNull(FieldRiderID))
+// HasSubscribeWith applies the HasEdge predicate on the "subscribe" edge with a given conditions (other predicates).
+func HasSubscribeWith(preds ...predicate.Subscribe) predicate.PromotionReferrals {
+	return predicate.PromotionReferrals(func(s *sql.Selector) {
+		step := newSubscribeStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
 }
 
 // HasReferringMember applies the HasEdge predicate on the "referring_member" edge.

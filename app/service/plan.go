@@ -22,6 +22,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/promotioncommission"
+	"github.com/auroraride/aurservd/internal/ent/promotioncommissionplan"
 	"github.com/auroraride/aurservd/internal/ent/setting"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
@@ -355,9 +356,15 @@ func (s *planService) PlanWithComplexes(item *ent.Plan) (res model.PlanListRes) 
 			DiscountNewly: child.DiscountNewly,
 		}
 
-		if len(child.Edges.Commissions) > 0 && child.Edges.Commissions[0].Edges.PromotionCommission != nil {
-			pc.CommissionName = child.Edges.Commissions[0].Edges.PromotionCommission.Name
-			pc.CommissionID = child.Edges.Commissions[0].Edges.PromotionCommission.ID
+		if len(child.Edges.Commissions) > 0 {
+			for _, v := range child.Edges.Commissions {
+				if v.Edges.PromotionCommission != nil {
+					pc.CommissionName = v.Edges.PromotionCommission.Name
+					pc.CommissionID = v.Edges.PromotionCommission.ID
+					break
+				}
+			}
+
 		}
 
 		*r = append(*r, pc)
@@ -376,12 +383,16 @@ func (s *planService) List(req *model.PlanListReq) *model.PaginationRes {
 	q := s.orm.QueryNotDeleted().
 		Where(plan.ParentIDIsNil()).
 		WithComplexes(func(pq *ent.PlanQuery) {
-			pq.Where(plan.DeletedAtIsNil())
+			pq.Where(plan.DeletedAtIsNil()).WithCommissions(func(q *ent.PromotionCommissionPlanQuery) {
+				q.Where(promotioncommissionplan.DeletedAtIsNil()).WithPromotionCommission(func(q *ent.PromotionCommissionQuery) {
+					q.Where(promotioncommission.TypeNEQ(promotion.CommissionCustom.Value()), promotioncommission.DeletedAtIsNil())
+				})
+			})
 		}).
 		WithCities().
 		WithCommissions(func(q *ent.PromotionCommissionPlanQuery) {
-			q.WithPromotionCommission(func(q *ent.PromotionCommissionQuery) {
-				q.Where(promotioncommission.TypeNEQ(promotion.CommissionCustom.Value()))
+			q.Where(promotioncommissionplan.DeletedAtIsNil()).WithPromotionCommission(func(q *ent.PromotionCommissionQuery) {
+				q.Where(promotioncommission.TypeNEQ(promotion.CommissionCustom.Value()), promotioncommission.DeletedAtIsNil())
 			})
 		}).
 		WithBrand().

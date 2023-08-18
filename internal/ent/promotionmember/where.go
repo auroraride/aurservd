@@ -80,6 +80,11 @@ func RiderID(v uint64) predicate.PromotionMember {
 	return predicate.PromotionMember(sql.FieldEQ(FieldRiderID, v))
 }
 
+// SubscribeID applies equality check predicate on the "subscribe_id" field. It's identical to SubscribeIDEQ.
+func SubscribeID(v uint64) predicate.PromotionMember {
+	return predicate.PromotionMember(sql.FieldEQ(FieldSubscribeID, v))
+}
+
 // LevelID applies equality check predicate on the "level_id" field. It's identical to LevelIDEQ.
 func LevelID(v uint64) predicate.PromotionMember {
 	return predicate.PromotionMember(sql.FieldEQ(FieldLevelID, v))
@@ -393,6 +398,36 @@ func RiderIDIsNil() predicate.PromotionMember {
 // RiderIDNotNil applies the NotNil predicate on the "rider_id" field.
 func RiderIDNotNil() predicate.PromotionMember {
 	return predicate.PromotionMember(sql.FieldNotNull(FieldRiderID))
+}
+
+// SubscribeIDEQ applies the EQ predicate on the "subscribe_id" field.
+func SubscribeIDEQ(v uint64) predicate.PromotionMember {
+	return predicate.PromotionMember(sql.FieldEQ(FieldSubscribeID, v))
+}
+
+// SubscribeIDNEQ applies the NEQ predicate on the "subscribe_id" field.
+func SubscribeIDNEQ(v uint64) predicate.PromotionMember {
+	return predicate.PromotionMember(sql.FieldNEQ(FieldSubscribeID, v))
+}
+
+// SubscribeIDIn applies the In predicate on the "subscribe_id" field.
+func SubscribeIDIn(vs ...uint64) predicate.PromotionMember {
+	return predicate.PromotionMember(sql.FieldIn(FieldSubscribeID, vs...))
+}
+
+// SubscribeIDNotIn applies the NotIn predicate on the "subscribe_id" field.
+func SubscribeIDNotIn(vs ...uint64) predicate.PromotionMember {
+	return predicate.PromotionMember(sql.FieldNotIn(FieldSubscribeID, vs...))
+}
+
+// SubscribeIDIsNil applies the IsNil predicate on the "subscribe_id" field.
+func SubscribeIDIsNil() predicate.PromotionMember {
+	return predicate.PromotionMember(sql.FieldIsNull(FieldSubscribeID))
+}
+
+// SubscribeIDNotNil applies the NotNil predicate on the "subscribe_id" field.
+func SubscribeIDNotNil() predicate.PromotionMember {
+	return predicate.PromotionMember(sql.FieldNotNull(FieldSubscribeID))
 }
 
 // LevelIDEQ applies the EQ predicate on the "level_id" field.
@@ -935,6 +970,29 @@ func HasRider() predicate.PromotionMember {
 func HasRiderWith(preds ...predicate.Rider) predicate.PromotionMember {
 	return predicate.PromotionMember(func(s *sql.Selector) {
 		step := newRiderStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasSubscribe applies the HasEdge predicate on the "subscribe" edge.
+func HasSubscribe() predicate.PromotionMember {
+	return predicate.PromotionMember(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, SubscribeTable, SubscribeColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasSubscribeWith applies the HasEdge predicate on the "subscribe" edge with a given conditions (other predicates).
+func HasSubscribeWith(preds ...predicate.Subscribe) predicate.PromotionMember {
+	return predicate.PromotionMember(func(s *sql.Selector) {
+		step := newSubscribeStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

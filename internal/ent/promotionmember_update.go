@@ -20,6 +20,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/promotionperson"
 	"github.com/auroraride/aurservd/internal/ent/promotionreferrals"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // PromotionMemberUpdate is the builder for updating PromotionMember entities.
@@ -111,6 +112,26 @@ func (pmu *PromotionMemberUpdate) SetNillableRiderID(u *uint64) *PromotionMember
 // ClearRiderID clears the value of the "rider_id" field.
 func (pmu *PromotionMemberUpdate) ClearRiderID() *PromotionMemberUpdate {
 	pmu.mutation.ClearRiderID()
+	return pmu
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (pmu *PromotionMemberUpdate) SetSubscribeID(u uint64) *PromotionMemberUpdate {
+	pmu.mutation.SetSubscribeID(u)
+	return pmu
+}
+
+// SetNillableSubscribeID sets the "subscribe_id" field if the given value is not nil.
+func (pmu *PromotionMemberUpdate) SetNillableSubscribeID(u *uint64) *PromotionMemberUpdate {
+	if u != nil {
+		pmu.SetSubscribeID(*u)
+	}
+	return pmu
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (pmu *PromotionMemberUpdate) ClearSubscribeID() *PromotionMemberUpdate {
+	pmu.mutation.ClearSubscribeID()
 	return pmu
 }
 
@@ -345,6 +366,11 @@ func (pmu *PromotionMemberUpdate) SetRider(r *Rider) *PromotionMemberUpdate {
 	return pmu.SetRiderID(r.ID)
 }
 
+// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
+func (pmu *PromotionMemberUpdate) SetSubscribe(s *Subscribe) *PromotionMemberUpdate {
+	return pmu.SetSubscribeID(s.ID)
+}
+
 // SetLevel sets the "level" edge to the PromotionLevel entity.
 func (pmu *PromotionMemberUpdate) SetLevel(p *PromotionLevel) *PromotionMemberUpdate {
 	return pmu.SetLevelID(p.ID)
@@ -427,6 +453,12 @@ func (pmu *PromotionMemberUpdate) Mutation() *PromotionMemberMutation {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (pmu *PromotionMemberUpdate) ClearRider() *PromotionMemberUpdate {
 	pmu.mutation.ClearRider()
+	return pmu
+}
+
+// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
+func (pmu *PromotionMemberUpdate) ClearSubscribe() *PromotionMemberUpdate {
+	pmu.mutation.ClearSubscribe()
 	return pmu
 }
 
@@ -668,6 +700,35 @@ func (pmu *PromotionMemberUpdate) sqlSave(ctx context.Context) (n int, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if pmu.mutation.SubscribeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotionmember.SubscribeTable,
+			Columns: []string{promotionmember.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pmu.mutation.SubscribeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotionmember.SubscribeTable,
+			Columns: []string{promotionmember.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -997,6 +1058,26 @@ func (pmuo *PromotionMemberUpdateOne) ClearRiderID() *PromotionMemberUpdateOne {
 	return pmuo
 }
 
+// SetSubscribeID sets the "subscribe_id" field.
+func (pmuo *PromotionMemberUpdateOne) SetSubscribeID(u uint64) *PromotionMemberUpdateOne {
+	pmuo.mutation.SetSubscribeID(u)
+	return pmuo
+}
+
+// SetNillableSubscribeID sets the "subscribe_id" field if the given value is not nil.
+func (pmuo *PromotionMemberUpdateOne) SetNillableSubscribeID(u *uint64) *PromotionMemberUpdateOne {
+	if u != nil {
+		pmuo.SetSubscribeID(*u)
+	}
+	return pmuo
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (pmuo *PromotionMemberUpdateOne) ClearSubscribeID() *PromotionMemberUpdateOne {
+	pmuo.mutation.ClearSubscribeID()
+	return pmuo
+}
+
 // SetLevelID sets the "level_id" field.
 func (pmuo *PromotionMemberUpdateOne) SetLevelID(u uint64) *PromotionMemberUpdateOne {
 	pmuo.mutation.SetLevelID(u)
@@ -1228,6 +1309,11 @@ func (pmuo *PromotionMemberUpdateOne) SetRider(r *Rider) *PromotionMemberUpdateO
 	return pmuo.SetRiderID(r.ID)
 }
 
+// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
+func (pmuo *PromotionMemberUpdateOne) SetSubscribe(s *Subscribe) *PromotionMemberUpdateOne {
+	return pmuo.SetSubscribeID(s.ID)
+}
+
 // SetLevel sets the "level" edge to the PromotionLevel entity.
 func (pmuo *PromotionMemberUpdateOne) SetLevel(p *PromotionLevel) *PromotionMemberUpdateOne {
 	return pmuo.SetLevelID(p.ID)
@@ -1310,6 +1396,12 @@ func (pmuo *PromotionMemberUpdateOne) Mutation() *PromotionMemberMutation {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (pmuo *PromotionMemberUpdateOne) ClearRider() *PromotionMemberUpdateOne {
 	pmuo.mutation.ClearRider()
+	return pmuo
+}
+
+// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
+func (pmuo *PromotionMemberUpdateOne) ClearSubscribe() *PromotionMemberUpdateOne {
+	pmuo.mutation.ClearSubscribe()
 	return pmuo
 }
 
@@ -1581,6 +1673,35 @@ func (pmuo *PromotionMemberUpdateOne) sqlSave(ctx context.Context) (_node *Promo
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if pmuo.mutation.SubscribeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotionmember.SubscribeTable,
+			Columns: []string{promotionmember.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pmuo.mutation.SubscribeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotionmember.SubscribeTable,
+			Columns: []string{promotionmember.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

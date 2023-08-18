@@ -29,6 +29,8 @@ const (
 	FieldRemark = "remark"
 	// FieldRiderID holds the string denoting the rider_id field in the database.
 	FieldRiderID = "rider_id"
+	// FieldSubscribeID holds the string denoting the subscribe_id field in the database.
+	FieldSubscribeID = "subscribe_id"
 	// FieldLevelID holds the string denoting the level_id field in the database.
 	FieldLevelID = "level_id"
 	// FieldPhone holds the string denoting the phone field in the database.
@@ -55,6 +57,8 @@ const (
 	FieldRenewCount = "renew_count"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
+	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
+	EdgeSubscribe = "subscribe"
 	// EdgeLevel holds the string denoting the level edge name in mutations.
 	EdgeLevel = "level"
 	// EdgeReferring holds the string denoting the referring edge name in mutations.
@@ -76,6 +80,13 @@ const (
 	RiderInverseTable = "rider"
 	// RiderColumn is the table column denoting the rider relation/edge.
 	RiderColumn = "rider_id"
+	// SubscribeTable is the table that holds the subscribe relation/edge.
+	SubscribeTable = "promotion_member"
+	// SubscribeInverseTable is the table name for the Subscribe entity.
+	// It exists in this package in order to avoid circular dependency with the "subscribe" package.
+	SubscribeInverseTable = "subscribe"
+	// SubscribeColumn is the table column denoting the subscribe relation/edge.
+	SubscribeColumn = "subscribe_id"
 	// LevelTable is the table that holds the level relation/edge.
 	LevelTable = "promotion_member"
 	// LevelInverseTable is the table name for the PromotionLevel entity.
@@ -130,6 +141,7 @@ var Columns = []string{
 	FieldLastModifier,
 	FieldRemark,
 	FieldRiderID,
+	FieldSubscribeID,
 	FieldLevelID,
 	FieldPhone,
 	FieldName,
@@ -216,6 +228,11 @@ func ByRiderID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRiderID, opts...).ToFunc()
 }
 
+// BySubscribeID orders the results by the subscribe_id field.
+func BySubscribeID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSubscribeID, opts...).ToFunc()
+}
+
 // ByLevelID orders the results by the level_id field.
 func ByLevelID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldLevelID, opts...).ToFunc()
@@ -280,6 +297,13 @@ func ByRenewCount(opts ...sql.OrderTermOption) OrderOption {
 func ByRiderField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newRiderStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// BySubscribeField orders the results by subscribe field.
+func BySubscribeField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newSubscribeStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -350,6 +374,13 @@ func newRiderStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(RiderInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, false, RiderTable, RiderColumn),
+	)
+}
+func newSubscribeStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(SubscribeInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, SubscribeTable, SubscribeColumn),
 	)
 }
 func newLevelStep() *sqlgraph.Step {

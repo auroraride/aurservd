@@ -9395,6 +9395,22 @@ func (c *PromotionEarningsClient) QueryOrder(pe *PromotionEarnings) *OrderQuery 
 	return query
 }
 
+// QueryPlan queries the plan edge of a PromotionEarnings.
+func (c *PromotionEarningsClient) QueryPlan(pe *PromotionEarnings) *PlanQuery {
+	query := (&PlanClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pe.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(promotionearnings.Table, promotionearnings.FieldID, id),
+			sqlgraph.To(plan.Table, plan.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, promotionearnings.PlanTable, promotionearnings.PlanColumn),
+		)
+		fromV = sqlgraph.Neighbors(pe.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *PromotionEarningsClient) Hooks() []Hook {
 	hooks := c.hooks.PromotionEarnings
@@ -9927,6 +9943,22 @@ func (c *PromotionMemberClient) QueryRider(pm *PromotionMember) *RiderQuery {
 			sqlgraph.From(promotionmember.Table, promotionmember.FieldID, id),
 			sqlgraph.To(rider.Table, rider.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, promotionmember.RiderTable, promotionmember.RiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(pm.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QuerySubscribe queries the subscribe edge of a PromotionMember.
+func (c *PromotionMemberClient) QuerySubscribe(pm *PromotionMember) *SubscribeQuery {
+	query := (&SubscribeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pm.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(promotionmember.Table, promotionmember.FieldID, id),
+			sqlgraph.To(subscribe.Table, subscribe.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, promotionmember.SubscribeTable, promotionmember.SubscribeColumn),
 		)
 		fromV = sqlgraph.Neighbors(pm.driver.Dialect(), step)
 		return fromV, nil
@@ -10550,6 +10582,38 @@ func (c *PromotionReferralsClient) GetX(ctx context.Context, id uint64) *Promoti
 		panic(err)
 	}
 	return obj
+}
+
+// QueryRider queries the rider edge of a PromotionReferrals.
+func (c *PromotionReferralsClient) QueryRider(pr *PromotionReferrals) *RiderQuery {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pr.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(promotionreferrals.Table, promotionreferrals.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, promotionreferrals.RiderTable, promotionreferrals.RiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(pr.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QuerySubscribe queries the subscribe edge of a PromotionReferrals.
+func (c *PromotionReferralsClient) QuerySubscribe(pr *PromotionReferrals) *SubscribeQuery {
+	query := (&SubscribeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pr.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(promotionreferrals.Table, promotionreferrals.FieldID, id),
+			sqlgraph.To(subscribe.Table, subscribe.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, promotionreferrals.SubscribeTable, promotionreferrals.SubscribeColumn),
+		)
+		fromV = sqlgraph.Neighbors(pr.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
 }
 
 // QueryReferringMember queries the referring_member edge of a PromotionReferrals.

@@ -71,6 +71,7 @@ type EarningsCreateReq struct {
 	CommissionRuleKey CommissionRuleKey `json:"commissionRuleKey" validate:"required"` // 返佣方案类型
 	Amount            float64           `json:"amount" validate:"required"`            // 金额
 	OrderID           uint64            `json:"orderId" validate:"required"`           // 订单id
+	PlanID            uint64            `json:"planId" validate:"required"`            // 骑士卡id
 }
 
 // EarningsCancelReq 取消收益

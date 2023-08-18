@@ -1379,6 +1379,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			promotionearnings.FieldMemberID:          {Type: field.TypeUint64, Column: promotionearnings.FieldMemberID},
 			promotionearnings.FieldRiderID:           {Type: field.TypeUint64, Column: promotionearnings.FieldRiderID},
 			promotionearnings.FieldOrderID:           {Type: field.TypeUint64, Column: promotionearnings.FieldOrderID},
+			promotionearnings.FieldPlanID:            {Type: field.TypeUint64, Column: promotionearnings.FieldPlanID},
 			promotionearnings.FieldStatus:            {Type: field.TypeUint8, Column: promotionearnings.FieldStatus},
 			promotionearnings.FieldAmount:            {Type: field.TypeFloat64, Column: promotionearnings.FieldAmount},
 			promotionearnings.FieldCommissionRuleKey: {Type: field.TypeString, Column: promotionearnings.FieldCommissionRuleKey},
@@ -1467,6 +1468,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			promotionmember.FieldLastModifier:       {Type: field.TypeJSON, Column: promotionmember.FieldLastModifier},
 			promotionmember.FieldRemark:             {Type: field.TypeString, Column: promotionmember.FieldRemark},
 			promotionmember.FieldRiderID:            {Type: field.TypeUint64, Column: promotionmember.FieldRiderID},
+			promotionmember.FieldSubscribeID:        {Type: field.TypeUint64, Column: promotionmember.FieldSubscribeID},
 			promotionmember.FieldLevelID:            {Type: field.TypeUint64, Column: promotionmember.FieldLevelID},
 			promotionmember.FieldPhone:              {Type: field.TypeString, Column: promotionmember.FieldPhone},
 			promotionmember.FieldName:               {Type: field.TypeString, Column: promotionmember.FieldName},
@@ -1554,9 +1556,10 @@ var schemaGraph = func() *sqlgraph.Schema {
 		Fields: map[string]*sqlgraph.FieldSpec{
 			promotionreferrals.FieldCreatedAt:         {Type: field.TypeTime, Column: promotionreferrals.FieldCreatedAt},
 			promotionreferrals.FieldUpdatedAt:         {Type: field.TypeTime, Column: promotionreferrals.FieldUpdatedAt},
+			promotionreferrals.FieldRiderID:           {Type: field.TypeUint64, Column: promotionreferrals.FieldRiderID},
+			promotionreferrals.FieldSubscribeID:       {Type: field.TypeUint64, Column: promotionreferrals.FieldSubscribeID},
 			promotionreferrals.FieldReferringMemberID: {Type: field.TypeUint64, Column: promotionreferrals.FieldReferringMemberID},
 			promotionreferrals.FieldReferredMemberID:  {Type: field.TypeUint64, Column: promotionreferrals.FieldReferredMemberID},
-			promotionreferrals.FieldRiderID:           {Type: field.TypeUint64, Column: promotionreferrals.FieldRiderID},
 		},
 	}
 	graph.Nodes[55] = &sqlgraph.Node{
@@ -4282,6 +4285,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Order",
 	)
 	graph.MustAddE(
+		"plan",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotionearnings.PlanTable,
+			Columns: []string{promotionearnings.PlanColumn},
+			Bidi:    false,
+		},
+		"PromotionEarnings",
+		"Plan",
+	)
+	graph.MustAddE(
 		"member",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -4328,6 +4343,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"PromotionMember",
 		"Rider",
+	)
+	graph.MustAddE(
+		"subscribe",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotionmember.SubscribeTable,
+			Columns: []string{promotionmember.SubscribeColumn},
+			Bidi:    false,
+		},
+		"PromotionMember",
+		"Subscribe",
 	)
 	graph.MustAddE(
 		"level",
@@ -4436,6 +4463,30 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"PromotionPerson",
 		"PromotionMember",
+	)
+	graph.MustAddE(
+		"rider",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotionreferrals.RiderTable,
+			Columns: []string{promotionreferrals.RiderColumn},
+			Bidi:    false,
+		},
+		"PromotionReferrals",
+		"Rider",
+	)
+	graph.MustAddE(
+		"subscribe",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotionreferrals.SubscribeTable,
+			Columns: []string{promotionreferrals.SubscribeColumn},
+			Bidi:    false,
+		},
+		"PromotionReferrals",
+		"Subscribe",
 	)
 	graph.MustAddE(
 		"referring_member",
@@ -13430,6 +13481,11 @@ func (f *PromotionEarningsFilter) WhereOrderID(p entql.Uint64P) {
 	f.Where(p.Field(promotionearnings.FieldOrderID))
 }
 
+// WherePlanID applies the entql uint64 predicate on the plan_id field.
+func (f *PromotionEarningsFilter) WherePlanID(p entql.Uint64P) {
+	f.Where(p.Field(promotionearnings.FieldPlanID))
+}
+
 // WhereStatus applies the entql uint8 predicate on the status field.
 func (f *PromotionEarningsFilter) WhereStatus(p entql.Uint8P) {
 	f.Where(p.Field(promotionearnings.FieldStatus))
@@ -13495,6 +13551,20 @@ func (f *PromotionEarningsFilter) WhereHasOrder() {
 // WhereHasOrderWith applies a predicate to check if query has an edge order with a given conditions (other predicates).
 func (f *PromotionEarningsFilter) WhereHasOrderWith(preds ...predicate.Order) {
 	f.Where(entql.HasEdgeWith("order", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasPlan applies a predicate to check if query has an edge plan.
+func (f *PromotionEarningsFilter) WhereHasPlan() {
+	f.Where(entql.HasEdge("plan"))
+}
+
+// WhereHasPlanWith applies a predicate to check if query has an edge plan with a given conditions (other predicates).
+func (f *PromotionEarningsFilter) WhereHasPlanWith(preds ...predicate.Plan) {
+	f.Where(entql.HasEdgeWith("plan", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -13868,6 +13938,11 @@ func (f *PromotionMemberFilter) WhereRiderID(p entql.Uint64P) {
 	f.Where(p.Field(promotionmember.FieldRiderID))
 }
 
+// WhereSubscribeID applies the entql uint64 predicate on the subscribe_id field.
+func (f *PromotionMemberFilter) WhereSubscribeID(p entql.Uint64P) {
+	f.Where(p.Field(promotionmember.FieldSubscribeID))
+}
+
 // WhereLevelID applies the entql uint64 predicate on the level_id field.
 func (f *PromotionMemberFilter) WhereLevelID(p entql.Uint64P) {
 	f.Where(p.Field(promotionmember.FieldLevelID))
@@ -13936,6 +14011,20 @@ func (f *PromotionMemberFilter) WhereHasRider() {
 // WhereHasRiderWith applies a predicate to check if query has an edge rider with a given conditions (other predicates).
 func (f *PromotionMemberFilter) WhereHasRiderWith(preds ...predicate.Rider) {
 	f.Where(entql.HasEdgeWith("rider", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasSubscribe applies a predicate to check if query has an edge subscribe.
+func (f *PromotionMemberFilter) WhereHasSubscribe() {
+	f.Where(entql.HasEdge("subscribe"))
+}
+
+// WhereHasSubscribeWith applies a predicate to check if query has an edge subscribe with a given conditions (other predicates).
+func (f *PromotionMemberFilter) WhereHasSubscribeWith(preds ...predicate.Subscribe) {
+	f.Where(entql.HasEdgeWith("subscribe", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -14343,6 +14432,16 @@ func (f *PromotionReferralsFilter) WhereUpdatedAt(p entql.TimeP) {
 	f.Where(p.Field(promotionreferrals.FieldUpdatedAt))
 }
 
+// WhereRiderID applies the entql uint64 predicate on the rider_id field.
+func (f *PromotionReferralsFilter) WhereRiderID(p entql.Uint64P) {
+	f.Where(p.Field(promotionreferrals.FieldRiderID))
+}
+
+// WhereSubscribeID applies the entql uint64 predicate on the subscribe_id field.
+func (f *PromotionReferralsFilter) WhereSubscribeID(p entql.Uint64P) {
+	f.Where(p.Field(promotionreferrals.FieldSubscribeID))
+}
+
 // WhereReferringMemberID applies the entql uint64 predicate on the referring_member_id field.
 func (f *PromotionReferralsFilter) WhereReferringMemberID(p entql.Uint64P) {
 	f.Where(p.Field(promotionreferrals.FieldReferringMemberID))
@@ -14353,9 +14452,32 @@ func (f *PromotionReferralsFilter) WhereReferredMemberID(p entql.Uint64P) {
 	f.Where(p.Field(promotionreferrals.FieldReferredMemberID))
 }
 
-// WhereRiderID applies the entql uint64 predicate on the rider_id field.
-func (f *PromotionReferralsFilter) WhereRiderID(p entql.Uint64P) {
-	f.Where(p.Field(promotionreferrals.FieldRiderID))
+// WhereHasRider applies a predicate to check if query has an edge rider.
+func (f *PromotionReferralsFilter) WhereHasRider() {
+	f.Where(entql.HasEdge("rider"))
+}
+
+// WhereHasRiderWith applies a predicate to check if query has an edge rider with a given conditions (other predicates).
+func (f *PromotionReferralsFilter) WhereHasRiderWith(preds ...predicate.Rider) {
+	f.Where(entql.HasEdgeWith("rider", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasSubscribe applies a predicate to check if query has an edge subscribe.
+func (f *PromotionReferralsFilter) WhereHasSubscribe() {
+	f.Where(entql.HasEdge("subscribe"))
+}
+
+// WhereHasSubscribeWith applies a predicate to check if query has an edge subscribe with a given conditions (other predicates).
+func (f *PromotionReferralsFilter) WhereHasSubscribeWith(preds ...predicate.Subscribe) {
+	f.Where(entql.HasEdgeWith("subscribe", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
 }
 
 // WhereHasReferringMember applies a predicate to check if query has an edge referring_member.

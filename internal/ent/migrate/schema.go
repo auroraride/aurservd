@@ -3593,6 +3593,7 @@ var (
 		{Name: "member_id", Type: field.TypeUint64},
 		{Name: "rider_id", Type: field.TypeUint64, Comment: "骑手ID"},
 		{Name: "order_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "plan_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// PromotionEarningsTable holds the schema information for the "promotion_earnings" table.
 	PromotionEarningsTable = &schema.Table{
@@ -3622,6 +3623,12 @@ var (
 				Symbol:     "promotion_earnings_order_order",
 				Columns:    []*schema.Column{PromotionEarningsColumns[13]},
 				RefColumns: []*schema.Column{OrderColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "promotion_earnings_plan_plan",
+				Columns:    []*schema.Column{PromotionEarningsColumns[14]},
+				RefColumns: []*schema.Column{PlanColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -3655,6 +3662,11 @@ var (
 				Name:    "promotionearnings_order_id",
 				Unique:  false,
 				Columns: []*schema.Column{PromotionEarningsColumns[13]},
+			},
+			{
+				Name:    "promotionearnings_plan_id",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionEarningsColumns[14]},
 			},
 		},
 	}
@@ -3800,6 +3812,7 @@ var (
 		{Name: "new_sign_count", Type: field.TypeUint64, Comment: "新签次数", Default: 0},
 		{Name: "renew_count", Type: field.TypeUint64, Comment: "续费次数", Default: 0},
 		{Name: "rider_id", Type: field.TypeUint64, Nullable: true, Comment: "骑手ID"},
+		{Name: "subscribe_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "level_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "person_id", Type: field.TypeUint64, Nullable: true, Comment: "实名认证ID"},
 	}
@@ -3816,14 +3829,20 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "promotion_member_promotion_level_level",
+				Symbol:     "promotion_member_subscribe_subscribe",
 				Columns:    []*schema.Column{PromotionMemberColumns[18]},
+				RefColumns: []*schema.Column{SubscribeColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "promotion_member_promotion_level_level",
+				Columns:    []*schema.Column{PromotionMemberColumns[19]},
 				RefColumns: []*schema.Column{PromotionLevelColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "promotion_member_promotion_person_member",
-				Columns:    []*schema.Column{PromotionMemberColumns[19]},
+				Columns:    []*schema.Column{PromotionMemberColumns[20]},
 				RefColumns: []*schema.Column{PromotionPersonColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -3845,9 +3864,14 @@ var (
 				Columns: []*schema.Column{PromotionMemberColumns[17]},
 			},
 			{
-				Name:    "promotionmember_level_id",
+				Name:    "promotionmember_subscribe_id",
 				Unique:  false,
 				Columns: []*schema.Column{PromotionMemberColumns[18]},
+			},
+			{
+				Name:    "promotionmember_level_id",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionMemberColumns[19]},
 			},
 		},
 	}
@@ -3957,9 +3981,10 @@ var (
 		{Name: "id", Type: field.TypeUint64, Increment: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "rider_id", Type: field.TypeUint64, Nullable: true, Comment: "骑手id"},
 		{Name: "referring_member_id", Type: field.TypeUint64, Nullable: true, Comment: "推广者id"},
 		{Name: "referred_member_id", Type: field.TypeUint64, Unique: true, Nullable: true, Comment: "被推广者ID"},
+		{Name: "rider_id", Type: field.TypeUint64, Nullable: true, Comment: "骑手ID"},
+		{Name: "subscribe_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// PromotionReferralsTable holds the schema information for the "promotion_referrals" table.
 	PromotionReferralsTable = &schema.Table{
@@ -3969,14 +3994,26 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "promotion_referrals_promotion_member_referring",
-				Columns:    []*schema.Column{PromotionReferralsColumns[4]},
+				Columns:    []*schema.Column{PromotionReferralsColumns[3]},
 				RefColumns: []*schema.Column{PromotionMemberColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "promotion_referrals_promotion_member_referred",
-				Columns:    []*schema.Column{PromotionReferralsColumns[5]},
+				Columns:    []*schema.Column{PromotionReferralsColumns[4]},
 				RefColumns: []*schema.Column{PromotionMemberColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "promotion_referrals_rider_rider",
+				Columns:    []*schema.Column{PromotionReferralsColumns[5]},
+				RefColumns: []*schema.Column{RiderColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "promotion_referrals_subscribe_subscribe",
+				Columns:    []*schema.Column{PromotionReferralsColumns[6]},
+				RefColumns: []*schema.Column{SubscribeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -3985,6 +4022,16 @@ var (
 				Name:    "promotionreferrals_created_at",
 				Unique:  false,
 				Columns: []*schema.Column{PromotionReferralsColumns[1]},
+			},
+			{
+				Name:    "promotionreferrals_rider_id",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionReferralsColumns[5]},
+			},
+			{
+				Name:    "promotionreferrals_subscribe_id",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionReferralsColumns[6]},
 			},
 		},
 	}
@@ -5832,6 +5879,7 @@ func init() {
 	PromotionEarningsTable.ForeignKeys[1].RefTable = PromotionMemberTable
 	PromotionEarningsTable.ForeignKeys[2].RefTable = RiderTable
 	PromotionEarningsTable.ForeignKeys[3].RefTable = OrderTable
+	PromotionEarningsTable.ForeignKeys[4].RefTable = PlanTable
 	PromotionEarningsTable.Annotation = &entsql.Annotation{
 		Table: "promotion_earnings",
 	}
@@ -5848,8 +5896,9 @@ func init() {
 		Table: "promotion_level_task",
 	}
 	PromotionMemberTable.ForeignKeys[0].RefTable = RiderTable
-	PromotionMemberTable.ForeignKeys[1].RefTable = PromotionLevelTable
-	PromotionMemberTable.ForeignKeys[2].RefTable = PromotionPersonTable
+	PromotionMemberTable.ForeignKeys[1].RefTable = SubscribeTable
+	PromotionMemberTable.ForeignKeys[2].RefTable = PromotionLevelTable
+	PromotionMemberTable.ForeignKeys[3].RefTable = PromotionPersonTable
 	PromotionMemberTable.Annotation = &entsql.Annotation{
 		Table: "promotion_member",
 	}
@@ -5866,6 +5915,8 @@ func init() {
 	}
 	PromotionReferralsTable.ForeignKeys[0].RefTable = PromotionMemberTable
 	PromotionReferralsTable.ForeignKeys[1].RefTable = PromotionMemberTable
+	PromotionReferralsTable.ForeignKeys[2].RefTable = RiderTable
+	PromotionReferralsTable.ForeignKeys[3].RefTable = SubscribeTable
 	PromotionReferralsTable.Annotation = &entsql.Annotation{
 		Table: "promotion_referrals",
 	}

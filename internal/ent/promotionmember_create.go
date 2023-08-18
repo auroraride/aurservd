@@ -19,6 +19,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/promotionperson"
 	"github.com/auroraride/aurservd/internal/ent/promotionreferrals"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // PromotionMemberCreate is the builder for creating a PromotionMember entity.
@@ -107,6 +108,20 @@ func (pmc *PromotionMemberCreate) SetRiderID(u uint64) *PromotionMemberCreate {
 func (pmc *PromotionMemberCreate) SetNillableRiderID(u *uint64) *PromotionMemberCreate {
 	if u != nil {
 		pmc.SetRiderID(*u)
+	}
+	return pmc
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (pmc *PromotionMemberCreate) SetSubscribeID(u uint64) *PromotionMemberCreate {
+	pmc.mutation.SetSubscribeID(u)
+	return pmc
+}
+
+// SetNillableSubscribeID sets the "subscribe_id" field if the given value is not nil.
+func (pmc *PromotionMemberCreate) SetNillableSubscribeID(u *uint64) *PromotionMemberCreate {
+	if u != nil {
+		pmc.SetSubscribeID(*u)
 	}
 	return pmc
 }
@@ -274,6 +289,11 @@ func (pmc *PromotionMemberCreate) SetNillableRenewCount(u *uint64) *PromotionMem
 // SetRider sets the "rider" edge to the Rider entity.
 func (pmc *PromotionMemberCreate) SetRider(r *Rider) *PromotionMemberCreate {
 	return pmc.SetRiderID(r.ID)
+}
+
+// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
+func (pmc *PromotionMemberCreate) SetSubscribe(s *Subscribe) *PromotionMemberCreate {
+	return pmc.SetSubscribeID(s.ID)
 }
 
 // SetLevel sets the "level" edge to the PromotionLevel entity.
@@ -572,6 +592,23 @@ func (pmc *PromotionMemberCreate) createSpec() (*PromotionMember, *sqlgraph.Crea
 		_node.RiderID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := pmc.mutation.SubscribeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotionmember.SubscribeTable,
+			Columns: []string{promotionmember.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.SubscribeID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := pmc.mutation.LevelIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -803,6 +840,24 @@ func (u *PromotionMemberUpsert) UpdateRiderID() *PromotionMemberUpsert {
 // ClearRiderID clears the value of the "rider_id" field.
 func (u *PromotionMemberUpsert) ClearRiderID() *PromotionMemberUpsert {
 	u.SetNull(promotionmember.FieldRiderID)
+	return u
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (u *PromotionMemberUpsert) SetSubscribeID(v uint64) *PromotionMemberUpsert {
+	u.Set(promotionmember.FieldSubscribeID, v)
+	return u
+}
+
+// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
+func (u *PromotionMemberUpsert) UpdateSubscribeID() *PromotionMemberUpsert {
+	u.SetExcluded(promotionmember.FieldSubscribeID)
+	return u
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (u *PromotionMemberUpsert) ClearSubscribeID() *PromotionMemberUpsert {
+	u.SetNull(promotionmember.FieldSubscribeID)
 	return u
 }
 
@@ -1153,6 +1208,27 @@ func (u *PromotionMemberUpsertOne) UpdateRiderID() *PromotionMemberUpsertOne {
 func (u *PromotionMemberUpsertOne) ClearRiderID() *PromotionMemberUpsertOne {
 	return u.Update(func(s *PromotionMemberUpsert) {
 		s.ClearRiderID()
+	})
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (u *PromotionMemberUpsertOne) SetSubscribeID(v uint64) *PromotionMemberUpsertOne {
+	return u.Update(func(s *PromotionMemberUpsert) {
+		s.SetSubscribeID(v)
+	})
+}
+
+// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
+func (u *PromotionMemberUpsertOne) UpdateSubscribeID() *PromotionMemberUpsertOne {
+	return u.Update(func(s *PromotionMemberUpsert) {
+		s.UpdateSubscribeID()
+	})
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (u *PromotionMemberUpsertOne) ClearSubscribeID() *PromotionMemberUpsertOne {
+	return u.Update(func(s *PromotionMemberUpsert) {
+		s.ClearSubscribeID()
 	})
 }
 
@@ -1699,6 +1775,27 @@ func (u *PromotionMemberUpsertBulk) UpdateRiderID() *PromotionMemberUpsertBulk {
 func (u *PromotionMemberUpsertBulk) ClearRiderID() *PromotionMemberUpsertBulk {
 	return u.Update(func(s *PromotionMemberUpsert) {
 		s.ClearRiderID()
+	})
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (u *PromotionMemberUpsertBulk) SetSubscribeID(v uint64) *PromotionMemberUpsertBulk {
+	return u.Update(func(s *PromotionMemberUpsert) {
+		s.SetSubscribeID(v)
+	})
+}
+
+// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
+func (u *PromotionMemberUpsertBulk) UpdateSubscribeID() *PromotionMemberUpsertBulk {
+	return u.Update(func(s *PromotionMemberUpsert) {
+		s.UpdateSubscribeID()
+	})
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (u *PromotionMemberUpsertBulk) ClearSubscribeID() *PromotionMemberUpsertBulk {
+	return u.Update(func(s *PromotionMemberUpsert) {
+		s.ClearSubscribeID()
 	})
 }
 

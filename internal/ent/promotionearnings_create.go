@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/order"
+	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/promotioncommission"
 	"github.com/auroraride/aurservd/internal/ent/promotionearnings"
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
@@ -127,6 +128,20 @@ func (pec *PromotionEarningsCreate) SetNillableOrderID(u *uint64) *PromotionEarn
 	return pec
 }
 
+// SetPlanID sets the "plan_id" field.
+func (pec *PromotionEarningsCreate) SetPlanID(u uint64) *PromotionEarningsCreate {
+	pec.mutation.SetPlanID(u)
+	return pec
+}
+
+// SetNillablePlanID sets the "plan_id" field if the given value is not nil.
+func (pec *PromotionEarningsCreate) SetNillablePlanID(u *uint64) *PromotionEarningsCreate {
+	if u != nil {
+		pec.SetPlanID(*u)
+	}
+	return pec
+}
+
 // SetStatus sets the "status" field.
 func (pec *PromotionEarningsCreate) SetStatus(u uint8) *PromotionEarningsCreate {
 	pec.mutation.SetStatus(u)
@@ -187,6 +202,11 @@ func (pec *PromotionEarningsCreate) SetRider(r *Rider) *PromotionEarningsCreate 
 // SetOrder sets the "order" edge to the Order entity.
 func (pec *PromotionEarningsCreate) SetOrder(o *Order) *PromotionEarningsCreate {
 	return pec.SetOrderID(o.ID)
+}
+
+// SetPlan sets the "plan" edge to the Plan entity.
+func (pec *PromotionEarningsCreate) SetPlan(p *Plan) *PromotionEarningsCreate {
+	return pec.SetPlanID(p.ID)
 }
 
 // Mutation returns the PromotionEarningsMutation object of the builder.
@@ -414,6 +434,23 @@ func (pec *PromotionEarningsCreate) createSpec() (*PromotionEarnings, *sqlgraph.
 		_node.OrderID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := pec.mutation.PlanIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotionearnings.PlanTable,
+			Columns: []string{promotionearnings.PlanColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.PlanID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	return _node, _spec
 }
 
@@ -583,6 +620,24 @@ func (u *PromotionEarningsUpsert) UpdateOrderID() *PromotionEarningsUpsert {
 // ClearOrderID clears the value of the "order_id" field.
 func (u *PromotionEarningsUpsert) ClearOrderID() *PromotionEarningsUpsert {
 	u.SetNull(promotionearnings.FieldOrderID)
+	return u
+}
+
+// SetPlanID sets the "plan_id" field.
+func (u *PromotionEarningsUpsert) SetPlanID(v uint64) *PromotionEarningsUpsert {
+	u.Set(promotionearnings.FieldPlanID, v)
+	return u
+}
+
+// UpdatePlanID sets the "plan_id" field to the value that was provided on create.
+func (u *PromotionEarningsUpsert) UpdatePlanID() *PromotionEarningsUpsert {
+	u.SetExcluded(promotionearnings.FieldPlanID)
+	return u
+}
+
+// ClearPlanID clears the value of the "plan_id" field.
+func (u *PromotionEarningsUpsert) ClearPlanID() *PromotionEarningsUpsert {
+	u.SetNull(promotionearnings.FieldPlanID)
 	return u
 }
 
@@ -825,6 +880,27 @@ func (u *PromotionEarningsUpsertOne) UpdateOrderID() *PromotionEarningsUpsertOne
 func (u *PromotionEarningsUpsertOne) ClearOrderID() *PromotionEarningsUpsertOne {
 	return u.Update(func(s *PromotionEarningsUpsert) {
 		s.ClearOrderID()
+	})
+}
+
+// SetPlanID sets the "plan_id" field.
+func (u *PromotionEarningsUpsertOne) SetPlanID(v uint64) *PromotionEarningsUpsertOne {
+	return u.Update(func(s *PromotionEarningsUpsert) {
+		s.SetPlanID(v)
+	})
+}
+
+// UpdatePlanID sets the "plan_id" field to the value that was provided on create.
+func (u *PromotionEarningsUpsertOne) UpdatePlanID() *PromotionEarningsUpsertOne {
+	return u.Update(func(s *PromotionEarningsUpsert) {
+		s.UpdatePlanID()
+	})
+}
+
+// ClearPlanID clears the value of the "plan_id" field.
+func (u *PromotionEarningsUpsertOne) ClearPlanID() *PromotionEarningsUpsertOne {
+	return u.Update(func(s *PromotionEarningsUpsert) {
+		s.ClearPlanID()
 	})
 }
 
@@ -1238,6 +1314,27 @@ func (u *PromotionEarningsUpsertBulk) UpdateOrderID() *PromotionEarningsUpsertBu
 func (u *PromotionEarningsUpsertBulk) ClearOrderID() *PromotionEarningsUpsertBulk {
 	return u.Update(func(s *PromotionEarningsUpsert) {
 		s.ClearOrderID()
+	})
+}
+
+// SetPlanID sets the "plan_id" field.
+func (u *PromotionEarningsUpsertBulk) SetPlanID(v uint64) *PromotionEarningsUpsertBulk {
+	return u.Update(func(s *PromotionEarningsUpsert) {
+		s.SetPlanID(v)
+	})
+}
+
+// UpdatePlanID sets the "plan_id" field to the value that was provided on create.
+func (u *PromotionEarningsUpsertBulk) UpdatePlanID() *PromotionEarningsUpsertBulk {
+	return u.Update(func(s *PromotionEarningsUpsert) {
+		s.UpdatePlanID()
+	})
+}
+
+// ClearPlanID clears the value of the "plan_id" field.
+func (u *PromotionEarningsUpsertBulk) ClearPlanID() *PromotionEarningsUpsertBulk {
+	return u.Update(func(s *PromotionEarningsUpsert) {
+		s.ClearPlanID()
 	})
 }
 

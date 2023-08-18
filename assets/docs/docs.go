@@ -16174,6 +16174,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/user/profile": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M1006 管理员信息",
+                "operationId": "ManagerProfile",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.ManagerSigninRes"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/user/signin": {
             "post": {
                 "description": "管理员登录",
@@ -31830,6 +31862,7 @@ const docTemplate = `{
                 "planId": {
                     "description": "骑士卡方案ID",
                     "type": "array",
+                    "uniqueItems": true,
                     "items": {
                         "type": "integer"
                     }
@@ -32427,6 +32460,7 @@ const docTemplate = `{
                 "planId": {
                     "description": "骑士卡方案ID",
                     "type": "array",
+                    "uniqueItems": true,
                     "items": {
                         "type": "integer"
                     }

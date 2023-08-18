@@ -8406,6 +8406,7 @@ definitions:
         items:
           type: integer
         type: array
+        uniqueItems: true
       rule:
         allOf:
         - $ref: '#/definitions/promotion.CommissionRule'
@@ -8819,6 +8820,7 @@ definitions:
         items:
           type: integer
         type: array
+        uniqueItems: true
       rule:
         allOf:
         - $ref: '#/definitions/promotion.CommissionRule'
@@ -20133,6 +20135,27 @@ paths:
       summary: M1005 编辑管理员
       tags:
       - '[M]管理接口'
+  /manager/v1/user/profile:
+    get:
+      consumes:
+        - application/json
+      operationId: ManagerProfile
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Manager-Token
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.ManagerSigninRes'
+      summary: M1006 管理员信息
+      tags:
+        - '[M]管理接口'
   /manager/v1/user/signin:
     post:
       consumes:

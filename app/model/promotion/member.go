@@ -152,6 +152,7 @@ type MemberCreateReq struct {
 	Name              *string `json:"name"`              // 姓名
 	RiderID           *uint64 `json:"riderID"`           // 骑手ID
 	ReferringMemberID *uint64 `json:"referringMemberID"` // 推荐人ID
+	SubscribeID       *uint64 `json:"subscribeID"`       // 订阅ID
 }
 
 // MemberSigninRes 注册会员返回参数
@@ -175,7 +176,7 @@ type MemberCommissionReq struct {
 	ID     uint64          `json:"id" validate:"required"`
 	Rule   *CommissionRule `json:"rule" validate:"required"` // 返佣规则
 	Desc   *string         `json:"desc"`                     // 返佣说明
-	PlanID []uint64        `json:"planId"`                   // 骑士卡方案ID
+	PlanID []uint64        `json:"planId" validate:"unique"` // 骑士卡方案ID
 }
 
 type UploadAvatar struct {

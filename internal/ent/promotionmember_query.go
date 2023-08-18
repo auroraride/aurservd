@@ -19,6 +19,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/promotionperson"
 	"github.com/auroraride/aurservd/internal/ent/promotionreferrals"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // PromotionMemberQuery is the builder for querying PromotionMember entities.
@@ -29,6 +30,7 @@ type PromotionMemberQuery struct {
 	inters          []Interceptor
 	predicates      []predicate.PromotionMember
 	withRider       *RiderQuery
+	withSubscribe   *SubscribeQuery
 	withLevel       *PromotionLevelQuery
 	withReferring   *PromotionReferralsQuery
 	withReferred    *PromotionReferralsQuery
@@ -87,6 +89,28 @@ func (pmq *PromotionMemberQuery) QueryRider() *RiderQuery {
 			sqlgraph.From(promotionmember.Table, promotionmember.FieldID, selector),
 			sqlgraph.To(rider.Table, rider.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, promotionmember.RiderTable, promotionmember.RiderColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(pmq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QuerySubscribe chains the current query on the "subscribe" edge.
+func (pmq *PromotionMemberQuery) QuerySubscribe() *SubscribeQuery {
+	query := (&SubscribeClient{config: pmq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pmq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pmq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(promotionmember.Table, promotionmember.FieldID, selector),
+			sqlgraph.To(subscribe.Table, subscribe.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, promotionmember.SubscribeTable, promotionmember.SubscribeColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(pmq.driver.Dialect(), step)
 		return fromU, nil
@@ -419,6 +443,7 @@ func (pmq *PromotionMemberQuery) Clone() *PromotionMemberQuery {
 		inters:          append([]Interceptor{}, pmq.inters...),
 		predicates:      append([]predicate.PromotionMember{}, pmq.predicates...),
 		withRider:       pmq.withRider.Clone(),
+		withSubscribe:   pmq.withSubscribe.Clone(),
 		withLevel:       pmq.withLevel.Clone(),
 		withReferring:   pmq.withReferring.Clone(),
 		withReferred:    pmq.withReferred.Clone(),
@@ -439,6 +464,17 @@ func (pmq *PromotionMemberQuery) WithRider(opts ...func(*RiderQuery)) *Promotion
 		opt(query)
 	}
 	pmq.withRider = query
+	return pmq
+}
+
+// WithSubscribe tells the query-builder to eager-load the nodes that are connected to
+// the "subscribe" edge. The optional arguments are used to configure the query builder of the edge.
+func (pmq *PromotionMemberQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *PromotionMemberQuery {
+	query := (&SubscribeClient{config: pmq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	pmq.withSubscribe = query
 	return pmq
 }
 
@@ -586,8 +622,9 @@ func (pmq *PromotionMemberQuery) sqlAll(ctx context.Context, hooks ...queryHook)
 	var (
 		nodes       = []*PromotionMember{}
 		_spec       = pmq.querySpec()
-		loadedTypes = [7]bool{
+		loadedTypes = [8]bool{
 			pmq.withRider != nil,
+			pmq.withSubscribe != nil,
 			pmq.withLevel != nil,
 			pmq.withReferring != nil,
 			pmq.withReferred != nil,
@@ -620,6 +657,12 @@ func (pmq *PromotionMemberQuery) sqlAll(ctx context.Context, hooks ...queryHook)
 	if query := pmq.withRider; query != nil {
 		if err := pmq.loadRider(ctx, query, nodes, nil,
 			func(n *PromotionMember, e *Rider) { n.Edges.Rider = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := pmq.withSubscribe; query != nil {
+		if err := pmq.loadSubscribe(ctx, query, nodes, nil,
+			func(n *PromotionMember, e *Subscribe) { n.Edges.Subscribe = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -692,6 +735,38 @@ func (pmq *PromotionMemberQuery) loadRider(ctx context.Context, query *RiderQuer
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "rider_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (pmq *PromotionMemberQuery) loadSubscribe(ctx context.Context, query *SubscribeQuery, nodes []*PromotionMember, init func(*PromotionMember), assign func(*PromotionMember, *Subscribe)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*PromotionMember)
+	for i := range nodes {
+		if nodes[i].SubscribeID == nil {
+			continue
+		}
+		fk := *nodes[i].SubscribeID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(subscribe.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "subscribe_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -915,6 +990,9 @@ func (pmq *PromotionMemberQuery) querySpec() *sqlgraph.QuerySpec {
 		if pmq.withRider != nil {
 			_spec.Node.AddColumnOnce(promotionmember.FieldRiderID)
 		}
+		if pmq.withSubscribe != nil {
+			_spec.Node.AddColumnOnce(promotionmember.FieldSubscribeID)
+		}
 		if pmq.withLevel != nil {
 			_spec.Node.AddColumnOnce(promotionmember.FieldLevelID)
 		}
@@ -990,6 +1068,7 @@ type PromotionMemberQueryWith string
 
 var (
 	PromotionMemberQueryWithRider       PromotionMemberQueryWith = "Rider"
+	PromotionMemberQueryWithSubscribe   PromotionMemberQueryWith = "Subscribe"
 	PromotionMemberQueryWithLevel       PromotionMemberQueryWith = "Level"
 	PromotionMemberQueryWithReferring   PromotionMemberQueryWith = "Referring"
 	PromotionMemberQueryWithReferred    PromotionMemberQueryWith = "Referred"
@@ -1003,6 +1082,8 @@ func (pmq *PromotionMemberQuery) With(withEdges ...PromotionMemberQueryWith) *Pr
 		switch v {
 		case PromotionMemberQueryWithRider:
 			pmq.WithRider()
+		case PromotionMemberQueryWithSubscribe:
+			pmq.WithSubscribe()
 		case PromotionMemberQueryWithLevel:
 			pmq.WithLevel()
 		case PromotionMemberQueryWithReferring:

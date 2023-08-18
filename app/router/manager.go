@@ -20,6 +20,7 @@ func loadManagerRoutes() {
 	g.GET("/user", mapi.Manager.List)
 	g.DELETE("/user/:id", mapi.Manager.Delete)
 	g.PUT("/user/:id", mapi.Manager.Modify)
+	g.GET("/user/profile", mapi.Manager.Profile)
 
 	// 设置
 	g.GET("/setting", mapi.Setting.List)

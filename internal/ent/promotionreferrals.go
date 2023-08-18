@@ -11,6 +11,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
 	"github.com/auroraride/aurservd/internal/ent/promotionreferrals"
+	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // PromotionReferrals is the model entity for the PromotionReferrals schema.
@@ -22,12 +24,14 @@ type PromotionReferrals struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// 骑手ID
+	RiderID *uint64 `json:"rider_id,omitempty"`
+	// SubscribeID holds the value of the "subscribe_id" field.
+	SubscribeID *uint64 `json:"subscribe_id,omitempty"`
 	// 推广者id
 	ReferringMemberID *uint64 `json:"referring_member_id,omitempty"`
 	// 被推广者ID
 	ReferredMemberID uint64 `json:"referred_member_id,omitempty"`
-	// 骑手id
-	RiderID *uint64 `json:"rider_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PromotionReferralsQuery when eager-loading is set.
 	Edges        PromotionReferralsEdges `json:"edges"`
@@ -36,19 +40,49 @@ type PromotionReferrals struct {
 
 // PromotionReferralsEdges holds the relations/edges for other nodes in the graph.
 type PromotionReferralsEdges struct {
+	// 骑手
+	Rider *Rider `json:"rider,omitempty"`
+	// Subscribe holds the value of the subscribe edge.
+	Subscribe *Subscribe `json:"subscribe,omitempty"`
 	// ReferringMember holds the value of the referring_member edge.
 	ReferringMember *PromotionMember `json:"referring_member,omitempty"`
 	// ReferredMember holds the value of the referred_member edge.
 	ReferredMember *PromotionMember `json:"referred_member,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [4]bool
+}
+
+// RiderOrErr returns the Rider value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e PromotionReferralsEdges) RiderOrErr() (*Rider, error) {
+	if e.loadedTypes[0] {
+		if e.Rider == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: rider.Label}
+		}
+		return e.Rider, nil
+	}
+	return nil, &NotLoadedError{edge: "rider"}
+}
+
+// SubscribeOrErr returns the Subscribe value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e PromotionReferralsEdges) SubscribeOrErr() (*Subscribe, error) {
+	if e.loadedTypes[1] {
+		if e.Subscribe == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: subscribe.Label}
+		}
+		return e.Subscribe, nil
+	}
+	return nil, &NotLoadedError{edge: "subscribe"}
 }
 
 // ReferringMemberOrErr returns the ReferringMember value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e PromotionReferralsEdges) ReferringMemberOrErr() (*PromotionMember, error) {
-	if e.loadedTypes[0] {
+	if e.loadedTypes[2] {
 		if e.ReferringMember == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: promotionmember.Label}
@@ -61,7 +95,7 @@ func (e PromotionReferralsEdges) ReferringMemberOrErr() (*PromotionMember, error
 // ReferredMemberOrErr returns the ReferredMember value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e PromotionReferralsEdges) ReferredMemberOrErr() (*PromotionMember, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[3] {
 		if e.ReferredMember == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: promotionmember.Label}
@@ -76,7 +110,7 @@ func (*PromotionReferrals) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case promotionreferrals.FieldID, promotionreferrals.FieldReferringMemberID, promotionreferrals.FieldReferredMemberID, promotionreferrals.FieldRiderID:
+		case promotionreferrals.FieldID, promotionreferrals.FieldRiderID, promotionreferrals.FieldSubscribeID, promotionreferrals.FieldReferringMemberID, promotionreferrals.FieldReferredMemberID:
 			values[i] = new(sql.NullInt64)
 		case promotionreferrals.FieldCreatedAt, promotionreferrals.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -113,6 +147,20 @@ func (pr *PromotionReferrals) assignValues(columns []string, values []any) error
 			} else if value.Valid {
 				pr.UpdatedAt = value.Time
 			}
+		case promotionreferrals.FieldRiderID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field rider_id", values[i])
+			} else if value.Valid {
+				pr.RiderID = new(uint64)
+				*pr.RiderID = uint64(value.Int64)
+			}
+		case promotionreferrals.FieldSubscribeID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field subscribe_id", values[i])
+			} else if value.Valid {
+				pr.SubscribeID = new(uint64)
+				*pr.SubscribeID = uint64(value.Int64)
+			}
 		case promotionreferrals.FieldReferringMemberID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field referring_member_id", values[i])
@@ -126,13 +174,6 @@ func (pr *PromotionReferrals) assignValues(columns []string, values []any) error
 			} else if value.Valid {
 				pr.ReferredMemberID = uint64(value.Int64)
 			}
-		case promotionreferrals.FieldRiderID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field rider_id", values[i])
-			} else if value.Valid {
-				pr.RiderID = new(uint64)
-				*pr.RiderID = uint64(value.Int64)
-			}
 		default:
 			pr.selectValues.Set(columns[i], values[i])
 		}
@@ -144,6 +185,16 @@ func (pr *PromotionReferrals) assignValues(columns []string, values []any) error
 // This includes values selected through modifiers, order, etc.
 func (pr *PromotionReferrals) Value(name string) (ent.Value, error) {
 	return pr.selectValues.Get(name)
+}
+
+// QueryRider queries the "rider" edge of the PromotionReferrals entity.
+func (pr *PromotionReferrals) QueryRider() *RiderQuery {
+	return NewPromotionReferralsClient(pr.config).QueryRider(pr)
+}
+
+// QuerySubscribe queries the "subscribe" edge of the PromotionReferrals entity.
+func (pr *PromotionReferrals) QuerySubscribe() *SubscribeQuery {
+	return NewPromotionReferralsClient(pr.config).QuerySubscribe(pr)
 }
 
 // QueryReferringMember queries the "referring_member" edge of the PromotionReferrals entity.
@@ -185,6 +236,16 @@ func (pr *PromotionReferrals) String() string {
 	builder.WriteString("updated_at=")
 	builder.WriteString(pr.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
+	if v := pr.RiderID; v != nil {
+		builder.WriteString("rider_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := pr.SubscribeID; v != nil {
+		builder.WriteString("subscribe_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
 	if v := pr.ReferringMemberID; v != nil {
 		builder.WriteString("referring_member_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
@@ -192,11 +253,6 @@ func (pr *PromotionReferrals) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("referred_member_id=")
 	builder.WriteString(fmt.Sprintf("%v", pr.ReferredMemberID))
-	builder.WriteString(", ")
-	if v := pr.RiderID; v != nil {
-		builder.WriteString("rider_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
 	builder.WriteByte(')')
 	return builder.String()
 }

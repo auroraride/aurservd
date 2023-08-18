@@ -70150,6 +70150,8 @@ type PromotionEarningsMutation struct {
 	clearedrider        bool
 	_order              *uint64
 	cleared_order       bool
+	plan                *uint64
+	clearedplan         bool
 	done                bool
 	oldValue            func(context.Context) (*PromotionEarnings, error)
 	predicates          []predicate.PromotionEarnings
@@ -70678,6 +70680,55 @@ func (m *PromotionEarningsMutation) ResetOrderID() {
 	delete(m.clearedFields, promotionearnings.FieldOrderID)
 }
 
+// SetPlanID sets the "plan_id" field.
+func (m *PromotionEarningsMutation) SetPlanID(u uint64) {
+	m.plan = &u
+}
+
+// PlanID returns the value of the "plan_id" field in the mutation.
+func (m *PromotionEarningsMutation) PlanID() (r uint64, exists bool) {
+	v := m.plan
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPlanID returns the old "plan_id" field's value of the PromotionEarnings entity.
+// If the PromotionEarnings object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PromotionEarningsMutation) OldPlanID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPlanID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPlanID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPlanID: %w", err)
+	}
+	return oldValue.PlanID, nil
+}
+
+// ClearPlanID clears the value of the "plan_id" field.
+func (m *PromotionEarningsMutation) ClearPlanID() {
+	m.plan = nil
+	m.clearedFields[promotionearnings.FieldPlanID] = struct{}{}
+}
+
+// PlanIDCleared returns if the "plan_id" field was cleared in this mutation.
+func (m *PromotionEarningsMutation) PlanIDCleared() bool {
+	_, ok := m.clearedFields[promotionearnings.FieldPlanID]
+	return ok
+}
+
+// ResetPlanID resets all changes to the "plan_id" field.
+func (m *PromotionEarningsMutation) ResetPlanID() {
+	m.plan = nil
+	delete(m.clearedFields, promotionearnings.FieldPlanID)
+}
+
 // SetStatus sets the "status" field.
 func (m *PromotionEarningsMutation) SetStatus(u uint8) {
 	m.status = &u
@@ -70943,6 +70994,32 @@ func (m *PromotionEarningsMutation) ResetOrder() {
 	m.cleared_order = false
 }
 
+// ClearPlan clears the "plan" edge to the Plan entity.
+func (m *PromotionEarningsMutation) ClearPlan() {
+	m.clearedplan = true
+}
+
+// PlanCleared reports if the "plan" edge to the Plan entity was cleared.
+func (m *PromotionEarningsMutation) PlanCleared() bool {
+	return m.PlanIDCleared() || m.clearedplan
+}
+
+// PlanIDs returns the "plan" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// PlanID instead. It exists only for internal usage by the builders.
+func (m *PromotionEarningsMutation) PlanIDs() (ids []uint64) {
+	if id := m.plan; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetPlan resets all changes to the "plan" edge.
+func (m *PromotionEarningsMutation) ResetPlan() {
+	m.plan = nil
+	m.clearedplan = false
+}
+
 // Where appends a list predicates to the PromotionEarningsMutation builder.
 func (m *PromotionEarningsMutation) Where(ps ...predicate.PromotionEarnings) {
 	m.predicates = append(m.predicates, ps...)
@@ -70977,7 +71054,7 @@ func (m *PromotionEarningsMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PromotionEarningsMutation) Fields() []string {
-	fields := make([]string, 0, 13)
+	fields := make([]string, 0, 14)
 	if m.created_at != nil {
 		fields = append(fields, promotionearnings.FieldCreatedAt)
 	}
@@ -71007,6 +71084,9 @@ func (m *PromotionEarningsMutation) Fields() []string {
 	}
 	if m._order != nil {
 		fields = append(fields, promotionearnings.FieldOrderID)
+	}
+	if m.plan != nil {
+		fields = append(fields, promotionearnings.FieldPlanID)
 	}
 	if m.status != nil {
 		fields = append(fields, promotionearnings.FieldStatus)
@@ -71045,6 +71125,8 @@ func (m *PromotionEarningsMutation) Field(name string) (ent.Value, bool) {
 		return m.RiderID()
 	case promotionearnings.FieldOrderID:
 		return m.OrderID()
+	case promotionearnings.FieldPlanID:
+		return m.PlanID()
 	case promotionearnings.FieldStatus:
 		return m.Status()
 	case promotionearnings.FieldAmount:
@@ -71080,6 +71162,8 @@ func (m *PromotionEarningsMutation) OldField(ctx context.Context, name string) (
 		return m.OldRiderID(ctx)
 	case promotionearnings.FieldOrderID:
 		return m.OldOrderID(ctx)
+	case promotionearnings.FieldPlanID:
+		return m.OldPlanID(ctx)
 	case promotionearnings.FieldStatus:
 		return m.OldStatus(ctx)
 	case promotionearnings.FieldAmount:
@@ -71164,6 +71248,13 @@ func (m *PromotionEarningsMutation) SetField(name string, value ent.Value) error
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetOrderID(v)
+		return nil
+	case promotionearnings.FieldPlanID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPlanID(v)
 		return nil
 	case promotionearnings.FieldStatus:
 		v, ok := value.(uint8)
@@ -71258,6 +71349,9 @@ func (m *PromotionEarningsMutation) ClearedFields() []string {
 	if m.FieldCleared(promotionearnings.FieldOrderID) {
 		fields = append(fields, promotionearnings.FieldOrderID)
 	}
+	if m.FieldCleared(promotionearnings.FieldPlanID) {
+		fields = append(fields, promotionearnings.FieldPlanID)
+	}
 	if m.FieldCleared(promotionearnings.FieldCommissionRuleKey) {
 		fields = append(fields, promotionearnings.FieldCommissionRuleKey)
 	}
@@ -71289,6 +71383,9 @@ func (m *PromotionEarningsMutation) ClearField(name string) error {
 		return nil
 	case promotionearnings.FieldOrderID:
 		m.ClearOrderID()
+		return nil
+	case promotionearnings.FieldPlanID:
+		m.ClearPlanID()
 		return nil
 	case promotionearnings.FieldCommissionRuleKey:
 		m.ClearCommissionRuleKey()
@@ -71331,6 +71428,9 @@ func (m *PromotionEarningsMutation) ResetField(name string) error {
 	case promotionearnings.FieldOrderID:
 		m.ResetOrderID()
 		return nil
+	case promotionearnings.FieldPlanID:
+		m.ResetPlanID()
+		return nil
 	case promotionearnings.FieldStatus:
 		m.ResetStatus()
 		return nil
@@ -71346,7 +71446,7 @@ func (m *PromotionEarningsMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PromotionEarningsMutation) AddedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.commission != nil {
 		edges = append(edges, promotionearnings.EdgeCommission)
 	}
@@ -71358,6 +71458,9 @@ func (m *PromotionEarningsMutation) AddedEdges() []string {
 	}
 	if m._order != nil {
 		edges = append(edges, promotionearnings.EdgeOrder)
+	}
+	if m.plan != nil {
+		edges = append(edges, promotionearnings.EdgePlan)
 	}
 	return edges
 }
@@ -71382,13 +71485,17 @@ func (m *PromotionEarningsMutation) AddedIDs(name string) []ent.Value {
 		if id := m._order; id != nil {
 			return []ent.Value{*id}
 		}
+	case promotionearnings.EdgePlan:
+		if id := m.plan; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PromotionEarningsMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	return edges
 }
 
@@ -71400,7 +71507,7 @@ func (m *PromotionEarningsMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PromotionEarningsMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.clearedcommission {
 		edges = append(edges, promotionearnings.EdgeCommission)
 	}
@@ -71412,6 +71519,9 @@ func (m *PromotionEarningsMutation) ClearedEdges() []string {
 	}
 	if m.cleared_order {
 		edges = append(edges, promotionearnings.EdgeOrder)
+	}
+	if m.clearedplan {
+		edges = append(edges, promotionearnings.EdgePlan)
 	}
 	return edges
 }
@@ -71428,6 +71538,8 @@ func (m *PromotionEarningsMutation) EdgeCleared(name string) bool {
 		return m.clearedrider
 	case promotionearnings.EdgeOrder:
 		return m.cleared_order
+	case promotionearnings.EdgePlan:
+		return m.clearedplan
 	}
 	return false
 }
@@ -71448,6 +71560,9 @@ func (m *PromotionEarningsMutation) ClearEdge(name string) error {
 	case promotionearnings.EdgeOrder:
 		m.ClearOrder()
 		return nil
+	case promotionearnings.EdgePlan:
+		m.ClearPlan()
+		return nil
 	}
 	return fmt.Errorf("unknown PromotionEarnings unique edge %s", name)
 }
@@ -71467,6 +71582,9 @@ func (m *PromotionEarningsMutation) ResetEdge(name string) error {
 		return nil
 	case promotionearnings.EdgeOrder:
 		m.ResetOrder()
+		return nil
+	case promotionearnings.EdgePlan:
+		m.ResetPlan()
 		return nil
 	}
 	return fmt.Errorf("unknown PromotionEarnings edge %s", name)
@@ -74310,6 +74428,8 @@ type PromotionMemberMutation struct {
 	clearedFields           map[string]struct{}
 	rider                   *uint64
 	clearedrider            bool
+	subscribe               *uint64
+	clearedsubscribe        bool
 	level                   *uint64
 	clearedlevel            bool
 	referring               map[uint64]struct{}
@@ -74743,6 +74863,55 @@ func (m *PromotionMemberMutation) RiderIDCleared() bool {
 func (m *PromotionMemberMutation) ResetRiderID() {
 	m.rider = nil
 	delete(m.clearedFields, promotionmember.FieldRiderID)
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (m *PromotionMemberMutation) SetSubscribeID(u uint64) {
+	m.subscribe = &u
+}
+
+// SubscribeID returns the value of the "subscribe_id" field in the mutation.
+func (m *PromotionMemberMutation) SubscribeID() (r uint64, exists bool) {
+	v := m.subscribe
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSubscribeID returns the old "subscribe_id" field's value of the PromotionMember entity.
+// If the PromotionMember object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PromotionMemberMutation) OldSubscribeID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSubscribeID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSubscribeID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSubscribeID: %w", err)
+	}
+	return oldValue.SubscribeID, nil
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (m *PromotionMemberMutation) ClearSubscribeID() {
+	m.subscribe = nil
+	m.clearedFields[promotionmember.FieldSubscribeID] = struct{}{}
+}
+
+// SubscribeIDCleared returns if the "subscribe_id" field was cleared in this mutation.
+func (m *PromotionMemberMutation) SubscribeIDCleared() bool {
+	_, ok := m.clearedFields[promotionmember.FieldSubscribeID]
+	return ok
+}
+
+// ResetSubscribeID resets all changes to the "subscribe_id" field.
+func (m *PromotionMemberMutation) ResetSubscribeID() {
+	m.subscribe = nil
+	delete(m.clearedFields, promotionmember.FieldSubscribeID)
 }
 
 // SetLevelID sets the "level_id" field.
@@ -75375,6 +75544,32 @@ func (m *PromotionMemberMutation) ResetRider() {
 	m.clearedrider = false
 }
 
+// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
+func (m *PromotionMemberMutation) ClearSubscribe() {
+	m.clearedsubscribe = true
+}
+
+// SubscribeCleared reports if the "subscribe" edge to the Subscribe entity was cleared.
+func (m *PromotionMemberMutation) SubscribeCleared() bool {
+	return m.SubscribeIDCleared() || m.clearedsubscribe
+}
+
+// SubscribeIDs returns the "subscribe" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// SubscribeID instead. It exists only for internal usage by the builders.
+func (m *PromotionMemberMutation) SubscribeIDs() (ids []uint64) {
+	if id := m.subscribe; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetSubscribe resets all changes to the "subscribe" edge.
+func (m *PromotionMemberMutation) ResetSubscribe() {
+	m.subscribe = nil
+	m.clearedsubscribe = false
+}
+
 // ClearLevel clears the "level" edge to the PromotionLevel entity.
 func (m *PromotionMemberMutation) ClearLevel() {
 	m.clearedlevel = true
@@ -75662,7 +75857,7 @@ func (m *PromotionMemberMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PromotionMemberMutation) Fields() []string {
-	fields := make([]string, 0, 19)
+	fields := make([]string, 0, 20)
 	if m.created_at != nil {
 		fields = append(fields, promotionmember.FieldCreatedAt)
 	}
@@ -75683,6 +75878,9 @@ func (m *PromotionMemberMutation) Fields() []string {
 	}
 	if m.rider != nil {
 		fields = append(fields, promotionmember.FieldRiderID)
+	}
+	if m.subscribe != nil {
+		fields = append(fields, promotionmember.FieldSubscribeID)
 	}
 	if m.level != nil {
 		fields = append(fields, promotionmember.FieldLevelID)
@@ -75742,6 +75940,8 @@ func (m *PromotionMemberMutation) Field(name string) (ent.Value, bool) {
 		return m.Remark()
 	case promotionmember.FieldRiderID:
 		return m.RiderID()
+	case promotionmember.FieldSubscribeID:
+		return m.SubscribeID()
 	case promotionmember.FieldLevelID:
 		return m.LevelID()
 	case promotionmember.FieldPhone:
@@ -75789,6 +75989,8 @@ func (m *PromotionMemberMutation) OldField(ctx context.Context, name string) (en
 		return m.OldRemark(ctx)
 	case promotionmember.FieldRiderID:
 		return m.OldRiderID(ctx)
+	case promotionmember.FieldSubscribeID:
+		return m.OldSubscribeID(ctx)
 	case promotionmember.FieldLevelID:
 		return m.OldLevelID(ctx)
 	case promotionmember.FieldPhone:
@@ -75870,6 +76072,13 @@ func (m *PromotionMemberMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetRiderID(v)
+		return nil
+	case promotionmember.FieldSubscribeID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSubscribeID(v)
 		return nil
 	case promotionmember.FieldLevelID:
 		v, ok := value.(uint64)
@@ -76075,6 +76284,9 @@ func (m *PromotionMemberMutation) ClearedFields() []string {
 	if m.FieldCleared(promotionmember.FieldRiderID) {
 		fields = append(fields, promotionmember.FieldRiderID)
 	}
+	if m.FieldCleared(promotionmember.FieldSubscribeID) {
+		fields = append(fields, promotionmember.FieldSubscribeID)
+	}
 	if m.FieldCleared(promotionmember.FieldLevelID) {
 		fields = append(fields, promotionmember.FieldLevelID)
 	}
@@ -76116,6 +76328,9 @@ func (m *PromotionMemberMutation) ClearField(name string) error {
 	case promotionmember.FieldRiderID:
 		m.ClearRiderID()
 		return nil
+	case promotionmember.FieldSubscribeID:
+		m.ClearSubscribeID()
+		return nil
 	case promotionmember.FieldLevelID:
 		m.ClearLevelID()
 		return nil
@@ -76156,6 +76371,9 @@ func (m *PromotionMemberMutation) ResetField(name string) error {
 		return nil
 	case promotionmember.FieldRiderID:
 		m.ResetRiderID()
+		return nil
+	case promotionmember.FieldSubscribeID:
+		m.ResetSubscribeID()
 		return nil
 	case promotionmember.FieldLevelID:
 		m.ResetLevelID()
@@ -76199,9 +76417,12 @@ func (m *PromotionMemberMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PromotionMemberMutation) AddedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 8)
 	if m.rider != nil {
 		edges = append(edges, promotionmember.EdgeRider)
+	}
+	if m.subscribe != nil {
+		edges = append(edges, promotionmember.EdgeSubscribe)
 	}
 	if m.level != nil {
 		edges = append(edges, promotionmember.EdgeLevel)
@@ -76230,6 +76451,10 @@ func (m *PromotionMemberMutation) AddedIDs(name string) []ent.Value {
 	switch name {
 	case promotionmember.EdgeRider:
 		if id := m.rider; id != nil {
+			return []ent.Value{*id}
+		}
+	case promotionmember.EdgeSubscribe:
+		if id := m.subscribe; id != nil {
 			return []ent.Value{*id}
 		}
 	case promotionmember.EdgeLevel:
@@ -76268,7 +76493,7 @@ func (m *PromotionMemberMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PromotionMemberMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 8)
 	if m.removedreferring != nil {
 		edges = append(edges, promotionmember.EdgeReferring)
 	}
@@ -76309,9 +76534,12 @@ func (m *PromotionMemberMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PromotionMemberMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 8)
 	if m.clearedrider {
 		edges = append(edges, promotionmember.EdgeRider)
+	}
+	if m.clearedsubscribe {
+		edges = append(edges, promotionmember.EdgeSubscribe)
 	}
 	if m.clearedlevel {
 		edges = append(edges, promotionmember.EdgeLevel)
@@ -76340,6 +76568,8 @@ func (m *PromotionMemberMutation) EdgeCleared(name string) bool {
 	switch name {
 	case promotionmember.EdgeRider:
 		return m.clearedrider
+	case promotionmember.EdgeSubscribe:
+		return m.clearedsubscribe
 	case promotionmember.EdgeLevel:
 		return m.clearedlevel
 	case promotionmember.EdgeReferring:
@@ -76363,6 +76593,9 @@ func (m *PromotionMemberMutation) ClearEdge(name string) error {
 	case promotionmember.EdgeRider:
 		m.ClearRider()
 		return nil
+	case promotionmember.EdgeSubscribe:
+		m.ClearSubscribe()
+		return nil
 	case promotionmember.EdgeLevel:
 		m.ClearLevel()
 		return nil
@@ -76382,6 +76615,9 @@ func (m *PromotionMemberMutation) ResetEdge(name string) error {
 	switch name {
 	case promotionmember.EdgeRider:
 		m.ResetRider()
+		return nil
+	case promotionmember.EdgeSubscribe:
+		m.ResetSubscribe()
 		return nil
 	case promotionmember.EdgeLevel:
 		m.ResetLevel()
@@ -78881,9 +79117,11 @@ type PromotionReferralsMutation struct {
 	id                      *uint64
 	created_at              *time.Time
 	updated_at              *time.Time
-	rider_id                *uint64
-	addrider_id             *int64
 	clearedFields           map[string]struct{}
+	rider                   *uint64
+	clearedrider            bool
+	subscribe               *uint64
+	clearedsubscribe        bool
 	referring_member        *uint64
 	clearedreferring_member bool
 	referred_member         *uint64
@@ -79063,6 +79301,104 @@ func (m *PromotionReferralsMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
+// SetRiderID sets the "rider_id" field.
+func (m *PromotionReferralsMutation) SetRiderID(u uint64) {
+	m.rider = &u
+}
+
+// RiderID returns the value of the "rider_id" field in the mutation.
+func (m *PromotionReferralsMutation) RiderID() (r uint64, exists bool) {
+	v := m.rider
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRiderID returns the old "rider_id" field's value of the PromotionReferrals entity.
+// If the PromotionReferrals object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PromotionReferralsMutation) OldRiderID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRiderID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRiderID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRiderID: %w", err)
+	}
+	return oldValue.RiderID, nil
+}
+
+// ClearRiderID clears the value of the "rider_id" field.
+func (m *PromotionReferralsMutation) ClearRiderID() {
+	m.rider = nil
+	m.clearedFields[promotionreferrals.FieldRiderID] = struct{}{}
+}
+
+// RiderIDCleared returns if the "rider_id" field was cleared in this mutation.
+func (m *PromotionReferralsMutation) RiderIDCleared() bool {
+	_, ok := m.clearedFields[promotionreferrals.FieldRiderID]
+	return ok
+}
+
+// ResetRiderID resets all changes to the "rider_id" field.
+func (m *PromotionReferralsMutation) ResetRiderID() {
+	m.rider = nil
+	delete(m.clearedFields, promotionreferrals.FieldRiderID)
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (m *PromotionReferralsMutation) SetSubscribeID(u uint64) {
+	m.subscribe = &u
+}
+
+// SubscribeID returns the value of the "subscribe_id" field in the mutation.
+func (m *PromotionReferralsMutation) SubscribeID() (r uint64, exists bool) {
+	v := m.subscribe
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSubscribeID returns the old "subscribe_id" field's value of the PromotionReferrals entity.
+// If the PromotionReferrals object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PromotionReferralsMutation) OldSubscribeID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSubscribeID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSubscribeID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSubscribeID: %w", err)
+	}
+	return oldValue.SubscribeID, nil
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (m *PromotionReferralsMutation) ClearSubscribeID() {
+	m.subscribe = nil
+	m.clearedFields[promotionreferrals.FieldSubscribeID] = struct{}{}
+}
+
+// SubscribeIDCleared returns if the "subscribe_id" field was cleared in this mutation.
+func (m *PromotionReferralsMutation) SubscribeIDCleared() bool {
+	_, ok := m.clearedFields[promotionreferrals.FieldSubscribeID]
+	return ok
+}
+
+// ResetSubscribeID resets all changes to the "subscribe_id" field.
+func (m *PromotionReferralsMutation) ResetSubscribeID() {
+	m.subscribe = nil
+	delete(m.clearedFields, promotionreferrals.FieldSubscribeID)
+}
+
 // SetReferringMemberID sets the "referring_member_id" field.
 func (m *PromotionReferralsMutation) SetReferringMemberID(u uint64) {
 	m.referring_member = &u
@@ -79161,74 +79497,56 @@ func (m *PromotionReferralsMutation) ResetReferredMemberID() {
 	delete(m.clearedFields, promotionreferrals.FieldReferredMemberID)
 }
 
-// SetRiderID sets the "rider_id" field.
-func (m *PromotionReferralsMutation) SetRiderID(u uint64) {
-	m.rider_id = &u
-	m.addrider_id = nil
+// ClearRider clears the "rider" edge to the Rider entity.
+func (m *PromotionReferralsMutation) ClearRider() {
+	m.clearedrider = true
 }
 
-// RiderID returns the value of the "rider_id" field in the mutation.
-func (m *PromotionReferralsMutation) RiderID() (r uint64, exists bool) {
-	v := m.rider_id
-	if v == nil {
-		return
+// RiderCleared reports if the "rider" edge to the Rider entity was cleared.
+func (m *PromotionReferralsMutation) RiderCleared() bool {
+	return m.RiderIDCleared() || m.clearedrider
+}
+
+// RiderIDs returns the "rider" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// RiderID instead. It exists only for internal usage by the builders.
+func (m *PromotionReferralsMutation) RiderIDs() (ids []uint64) {
+	if id := m.rider; id != nil {
+		ids = append(ids, *id)
 	}
-	return *v, true
+	return
 }
 
-// OldRiderID returns the old "rider_id" field's value of the PromotionReferrals entity.
-// If the PromotionReferrals object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PromotionReferralsMutation) OldRiderID(ctx context.Context) (v *uint64, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldRiderID is only allowed on UpdateOne operations")
+// ResetRider resets all changes to the "rider" edge.
+func (m *PromotionReferralsMutation) ResetRider() {
+	m.rider = nil
+	m.clearedrider = false
+}
+
+// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
+func (m *PromotionReferralsMutation) ClearSubscribe() {
+	m.clearedsubscribe = true
+}
+
+// SubscribeCleared reports if the "subscribe" edge to the Subscribe entity was cleared.
+func (m *PromotionReferralsMutation) SubscribeCleared() bool {
+	return m.SubscribeIDCleared() || m.clearedsubscribe
+}
+
+// SubscribeIDs returns the "subscribe" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// SubscribeID instead. It exists only for internal usage by the builders.
+func (m *PromotionReferralsMutation) SubscribeIDs() (ids []uint64) {
+	if id := m.subscribe; id != nil {
+		ids = append(ids, *id)
 	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldRiderID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldRiderID: %w", err)
-	}
-	return oldValue.RiderID, nil
+	return
 }
 
-// AddRiderID adds u to the "rider_id" field.
-func (m *PromotionReferralsMutation) AddRiderID(u int64) {
-	if m.addrider_id != nil {
-		*m.addrider_id += u
-	} else {
-		m.addrider_id = &u
-	}
-}
-
-// AddedRiderID returns the value that was added to the "rider_id" field in this mutation.
-func (m *PromotionReferralsMutation) AddedRiderID() (r int64, exists bool) {
-	v := m.addrider_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ClearRiderID clears the value of the "rider_id" field.
-func (m *PromotionReferralsMutation) ClearRiderID() {
-	m.rider_id = nil
-	m.addrider_id = nil
-	m.clearedFields[promotionreferrals.FieldRiderID] = struct{}{}
-}
-
-// RiderIDCleared returns if the "rider_id" field was cleared in this mutation.
-func (m *PromotionReferralsMutation) RiderIDCleared() bool {
-	_, ok := m.clearedFields[promotionreferrals.FieldRiderID]
-	return ok
-}
-
-// ResetRiderID resets all changes to the "rider_id" field.
-func (m *PromotionReferralsMutation) ResetRiderID() {
-	m.rider_id = nil
-	m.addrider_id = nil
-	delete(m.clearedFields, promotionreferrals.FieldRiderID)
+// ResetSubscribe resets all changes to the "subscribe" edge.
+func (m *PromotionReferralsMutation) ResetSubscribe() {
+	m.subscribe = nil
+	m.clearedsubscribe = false
 }
 
 // ClearReferringMember clears the "referring_member" edge to the PromotionMember entity.
@@ -79317,21 +79635,24 @@ func (m *PromotionReferralsMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PromotionReferralsMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 6)
 	if m.created_at != nil {
 		fields = append(fields, promotionreferrals.FieldCreatedAt)
 	}
 	if m.updated_at != nil {
 		fields = append(fields, promotionreferrals.FieldUpdatedAt)
 	}
+	if m.rider != nil {
+		fields = append(fields, promotionreferrals.FieldRiderID)
+	}
+	if m.subscribe != nil {
+		fields = append(fields, promotionreferrals.FieldSubscribeID)
+	}
 	if m.referring_member != nil {
 		fields = append(fields, promotionreferrals.FieldReferringMemberID)
 	}
 	if m.referred_member != nil {
 		fields = append(fields, promotionreferrals.FieldReferredMemberID)
-	}
-	if m.rider_id != nil {
-		fields = append(fields, promotionreferrals.FieldRiderID)
 	}
 	return fields
 }
@@ -79345,12 +79666,14 @@ func (m *PromotionReferralsMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case promotionreferrals.FieldUpdatedAt:
 		return m.UpdatedAt()
+	case promotionreferrals.FieldRiderID:
+		return m.RiderID()
+	case promotionreferrals.FieldSubscribeID:
+		return m.SubscribeID()
 	case promotionreferrals.FieldReferringMemberID:
 		return m.ReferringMemberID()
 	case promotionreferrals.FieldReferredMemberID:
 		return m.ReferredMemberID()
-	case promotionreferrals.FieldRiderID:
-		return m.RiderID()
 	}
 	return nil, false
 }
@@ -79364,12 +79687,14 @@ func (m *PromotionReferralsMutation) OldField(ctx context.Context, name string) 
 		return m.OldCreatedAt(ctx)
 	case promotionreferrals.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
+	case promotionreferrals.FieldRiderID:
+		return m.OldRiderID(ctx)
+	case promotionreferrals.FieldSubscribeID:
+		return m.OldSubscribeID(ctx)
 	case promotionreferrals.FieldReferringMemberID:
 		return m.OldReferringMemberID(ctx)
 	case promotionreferrals.FieldReferredMemberID:
 		return m.OldReferredMemberID(ctx)
-	case promotionreferrals.FieldRiderID:
-		return m.OldRiderID(ctx)
 	}
 	return nil, fmt.Errorf("unknown PromotionReferrals field %s", name)
 }
@@ -79393,6 +79718,20 @@ func (m *PromotionReferralsMutation) SetField(name string, value ent.Value) erro
 		}
 		m.SetUpdatedAt(v)
 		return nil
+	case promotionreferrals.FieldRiderID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRiderID(v)
+		return nil
+	case promotionreferrals.FieldSubscribeID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSubscribeID(v)
+		return nil
 	case promotionreferrals.FieldReferringMemberID:
 		v, ok := value.(uint64)
 		if !ok {
@@ -79407,13 +79746,6 @@ func (m *PromotionReferralsMutation) SetField(name string, value ent.Value) erro
 		}
 		m.SetReferredMemberID(v)
 		return nil
-	case promotionreferrals.FieldRiderID:
-		v, ok := value.(uint64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetRiderID(v)
-		return nil
 	}
 	return fmt.Errorf("unknown PromotionReferrals field %s", name)
 }
@@ -79422,9 +79754,6 @@ func (m *PromotionReferralsMutation) SetField(name string, value ent.Value) erro
 // this mutation.
 func (m *PromotionReferralsMutation) AddedFields() []string {
 	var fields []string
-	if m.addrider_id != nil {
-		fields = append(fields, promotionreferrals.FieldRiderID)
-	}
 	return fields
 }
 
@@ -79433,8 +79762,6 @@ func (m *PromotionReferralsMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *PromotionReferralsMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
-	case promotionreferrals.FieldRiderID:
-		return m.AddedRiderID()
 	}
 	return nil, false
 }
@@ -79444,13 +79771,6 @@ func (m *PromotionReferralsMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *PromotionReferralsMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case promotionreferrals.FieldRiderID:
-		v, ok := value.(int64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddRiderID(v)
-		return nil
 	}
 	return fmt.Errorf("unknown PromotionReferrals numeric field %s", name)
 }
@@ -79459,14 +79779,17 @@ func (m *PromotionReferralsMutation) AddField(name string, value ent.Value) erro
 // mutation.
 func (m *PromotionReferralsMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(promotionreferrals.FieldRiderID) {
+		fields = append(fields, promotionreferrals.FieldRiderID)
+	}
+	if m.FieldCleared(promotionreferrals.FieldSubscribeID) {
+		fields = append(fields, promotionreferrals.FieldSubscribeID)
+	}
 	if m.FieldCleared(promotionreferrals.FieldReferringMemberID) {
 		fields = append(fields, promotionreferrals.FieldReferringMemberID)
 	}
 	if m.FieldCleared(promotionreferrals.FieldReferredMemberID) {
 		fields = append(fields, promotionreferrals.FieldReferredMemberID)
-	}
-	if m.FieldCleared(promotionreferrals.FieldRiderID) {
-		fields = append(fields, promotionreferrals.FieldRiderID)
 	}
 	return fields
 }
@@ -79482,14 +79805,17 @@ func (m *PromotionReferralsMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *PromotionReferralsMutation) ClearField(name string) error {
 	switch name {
+	case promotionreferrals.FieldRiderID:
+		m.ClearRiderID()
+		return nil
+	case promotionreferrals.FieldSubscribeID:
+		m.ClearSubscribeID()
+		return nil
 	case promotionreferrals.FieldReferringMemberID:
 		m.ClearReferringMemberID()
 		return nil
 	case promotionreferrals.FieldReferredMemberID:
 		m.ClearReferredMemberID()
-		return nil
-	case promotionreferrals.FieldRiderID:
-		m.ClearRiderID()
 		return nil
 	}
 	return fmt.Errorf("unknown PromotionReferrals nullable field %s", name)
@@ -79505,14 +79831,17 @@ func (m *PromotionReferralsMutation) ResetField(name string) error {
 	case promotionreferrals.FieldUpdatedAt:
 		m.ResetUpdatedAt()
 		return nil
+	case promotionreferrals.FieldRiderID:
+		m.ResetRiderID()
+		return nil
+	case promotionreferrals.FieldSubscribeID:
+		m.ResetSubscribeID()
+		return nil
 	case promotionreferrals.FieldReferringMemberID:
 		m.ResetReferringMemberID()
 		return nil
 	case promotionreferrals.FieldReferredMemberID:
 		m.ResetReferredMemberID()
-		return nil
-	case promotionreferrals.FieldRiderID:
-		m.ResetRiderID()
 		return nil
 	}
 	return fmt.Errorf("unknown PromotionReferrals field %s", name)
@@ -79520,7 +79849,13 @@ func (m *PromotionReferralsMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PromotionReferralsMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 4)
+	if m.rider != nil {
+		edges = append(edges, promotionreferrals.EdgeRider)
+	}
+	if m.subscribe != nil {
+		edges = append(edges, promotionreferrals.EdgeSubscribe)
+	}
 	if m.referring_member != nil {
 		edges = append(edges, promotionreferrals.EdgeReferringMember)
 	}
@@ -79534,6 +79869,14 @@ func (m *PromotionReferralsMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *PromotionReferralsMutation) AddedIDs(name string) []ent.Value {
 	switch name {
+	case promotionreferrals.EdgeRider:
+		if id := m.rider; id != nil {
+			return []ent.Value{*id}
+		}
+	case promotionreferrals.EdgeSubscribe:
+		if id := m.subscribe; id != nil {
+			return []ent.Value{*id}
+		}
 	case promotionreferrals.EdgeReferringMember:
 		if id := m.referring_member; id != nil {
 			return []ent.Value{*id}
@@ -79548,7 +79891,7 @@ func (m *PromotionReferralsMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PromotionReferralsMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 4)
 	return edges
 }
 
@@ -79560,7 +79903,13 @@ func (m *PromotionReferralsMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PromotionReferralsMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 4)
+	if m.clearedrider {
+		edges = append(edges, promotionreferrals.EdgeRider)
+	}
+	if m.clearedsubscribe {
+		edges = append(edges, promotionreferrals.EdgeSubscribe)
+	}
 	if m.clearedreferring_member {
 		edges = append(edges, promotionreferrals.EdgeReferringMember)
 	}
@@ -79574,6 +79923,10 @@ func (m *PromotionReferralsMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *PromotionReferralsMutation) EdgeCleared(name string) bool {
 	switch name {
+	case promotionreferrals.EdgeRider:
+		return m.clearedrider
+	case promotionreferrals.EdgeSubscribe:
+		return m.clearedsubscribe
 	case promotionreferrals.EdgeReferringMember:
 		return m.clearedreferring_member
 	case promotionreferrals.EdgeReferredMember:
@@ -79586,6 +79939,12 @@ func (m *PromotionReferralsMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *PromotionReferralsMutation) ClearEdge(name string) error {
 	switch name {
+	case promotionreferrals.EdgeRider:
+		m.ClearRider()
+		return nil
+	case promotionreferrals.EdgeSubscribe:
+		m.ClearSubscribe()
+		return nil
 	case promotionreferrals.EdgeReferringMember:
 		m.ClearReferringMember()
 		return nil
@@ -79600,6 +79959,12 @@ func (m *PromotionReferralsMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *PromotionReferralsMutation) ResetEdge(name string) error {
 	switch name {
+	case promotionreferrals.EdgeRider:
+		m.ResetRider()
+		return nil
+	case promotionreferrals.EdgeSubscribe:
+		m.ResetSubscribe()
+		return nil
 	case promotionreferrals.EdgeReferringMember:
 		m.ResetReferringMember()
 		return nil

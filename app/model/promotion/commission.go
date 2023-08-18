@@ -82,13 +82,13 @@ type CommissionTaskSelect struct {
 
 // CommissionCreateReq  创建返佣方案请求参数
 type CommissionCreateReq struct {
-	ID       uint64          `json:"id" param:"id"`              // id
-	Name     string          `json:"name" validate:"required"`   // 方案名称
-	Rule     CommissionRule  `json:"rule" validate:"required"`   // 返佣规则
-	Type     *CommissionType `json:"type" validate:"required"`   // 返佣类型 0:默认全局返佣方案 1:通用返佣方案 2:为个人自定义返佣方案
-	MemberID *uint64         `json:"memberId"`                   // 会员id
-	Desc     *string         `json:"desc"`                       // 返佣说明
-	PlanID   []uint64        `json:"planId" validate:"required"` // 骑士卡方案ID
+	ID       uint64          `json:"id" param:"id"`                     // id
+	Name     string          `json:"name" validate:"required"`          // 方案名称
+	Rule     CommissionRule  `json:"rule" validate:"required"`          // 返佣规则
+	Type     *CommissionType `json:"type" validate:"required"`          // 返佣类型 0:默认全局返佣方案 1:通用返佣方案 2:为个人自定义返佣方案
+	MemberID *uint64         `json:"memberId"`                          // 会员id
+	Desc     *string         `json:"desc"`                              // 返佣说明
+	PlanID   []uint64        `json:"planId" validate:"required,unique"` // 骑士卡方案ID
 }
 
 // CommissionDetail 详情

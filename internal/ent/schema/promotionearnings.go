@@ -81,6 +81,7 @@ func (PromotionEarnings) Mixin() []ent.Mixin {
 		PromotionMemberMixin{},
 		RiderMixin{},
 		OrderMixin{Optional: true},
+		PlanMixin{Optional: true},
 	}
 }
 
