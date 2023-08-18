@@ -625,26 +625,40 @@ func (s *promotionCommissionService) RiderActivateCommission(sub *ent.Subscribe)
 		return
 	}
 
-	if sub.Edges.Rider == nil {
+	// TODO edges查询写成公共方法
+
+	// 查询骑手
+	r := sub.Edges.Rider
+	if r == nil {
+		r, _ = sub.QueryRider().First(s.ctx)
+	}
+
+	if r == nil {
 		zap.L().Error(fmt.Sprintf("激活成功获取返佣失败,骑手不存在 subid:%d", sub.ID))
 		return
 	}
 
+	// 查询订阅
+	p := sub.Edges.Plan
+	if p == nil {
+		p, _ = sub.QueryPlan().First(s.ctx)
+	}
+
 	// 判断返佣类型 新签有可能是续签
-	commissionType, err := NewPromotionCommissionService().GetCommissionType(sub.Edges.Rider.Phone)
-	if err != nil || sub.Edges.Plan == nil {
+	commissionType, err := NewPromotionCommissionService().GetCommissionType(r.Phone)
+	if err != nil || p == nil {
 		zap.L().Error("激活成功获取返佣失败", zap.Error(err))
 		return
 	}
 
 	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
 		err = NewPromotionCommissionService().CommissionCalculation(tx, &promotion.CommissionCalculation{
-			RiderID:        sub.Edges.Rider.ID,
-			CommissionBase: sub.Edges.Plan.CommissionBase,
+			RiderID:        r.ID,
+			CommissionBase: p.CommissionBase,
 			Type:           commissionType,
 			OrderID:        do.ID,
 			ActualAmount:   do.Total,
-			Price:          sub.Edges.Plan.Price,
+			Price:          p.Price,
 		})
 		return
 	})
