@@ -733,6 +733,29 @@ func HasMemberWith(preds ...predicate.PromotionMember) predicate.PromotionCommis
 	})
 }
 
+// HasPlans applies the HasEdge predicate on the "plans" edge.
+func HasPlans() predicate.PromotionCommission {
+	return predicate.PromotionCommission(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, PlansTable, PlansColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasPlansWith applies the HasEdge predicate on the "plans" edge with a given conditions (other predicates).
+func HasPlansWith(preds ...predicate.PromotionCommissionPlan) predicate.PromotionCommission {
+	return predicate.PromotionCommission(func(s *sql.Selector) {
+		step := newPlansStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.PromotionCommission) predicate.PromotionCommission {
 	return predicate.PromotionCommission(func(s *sql.Selector) {

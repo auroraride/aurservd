@@ -93,6 +93,7 @@ func (s *promotionEarningsService) Create(tx *ent.Tx, req *promotion.EarningsCre
 		SetCommissionRuleKey(string(req.CommissionRuleKey)).
 		SetAmount(req.Amount).
 		SetOrderID(req.OrderID).
+		SetPlanID(req.PlanID).
 		Exec(s.ctx)
 }
 

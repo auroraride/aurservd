@@ -42,6 +42,14 @@ const (
 	SecondLevelRenewalSubscribeKey CommissionRuleKey = "secondLevelRenewalSubscribe" // 二级团员续费
 )
 
+// MaxCommission 返佣最高金额
+type MaxCommission struct {
+	FirstLevelNewSubscribe      float64 `json:"firstLevelNewSubscribe"`      // 一级团员新签
+	FirstLevelRenewalSubscribe  float64 `json:"firstLevelRenewalSubscribe"`  // 一级团员续费
+	SecondLevelNewSubscribe     float64 `json:"secondLevelNewSubscribe"`     // 二级团员新签`
+	SecondLevelRenewalSubscribe float64 `json:"secondLevelRenewalSubscribe"` // 二级团员续费
+}
+
 var CommissionRuleKeyNames = map[CommissionRuleKey]string{
 	FirstLevelNewSubscribeKey:      "一级团员新签",
 	SecondLevelNewSubscribeKey:     "二级团员新签",
@@ -74,28 +82,29 @@ type CommissionTaskSelect struct {
 
 // CommissionCreateReq  创建返佣方案请求参数
 type CommissionCreateReq struct {
-	ID       uint64          `json:"id" param:"id"`            // id
-	Name     string          `json:"name" validate:"required"` // 方案名称
-	Rule     CommissionRule  `json:"rule" validate:"required"` // 返佣规则
-	Type     *CommissionType `json:"type" validate:"required"` // 返佣类型 0:默认全局返佣方案 1:通用返佣方案 2:为个人自定义返佣方案
-	MemberID *uint64         `json:"memberId"`                 // 会员id
-	Desc     *string         `json:"desc" validate:"required"` // 返佣说明
+	ID       uint64          `json:"id" param:"id"`                     // id
+	Name     string          `json:"name" validate:"required"`          // 方案名称
+	Rule     CommissionRule  `json:"rule" validate:"required"`          // 返佣规则
+	Type     *CommissionType `json:"type" validate:"required"`          // 返佣类型 0:默认全局返佣方案 1:通用返佣方案 2:为个人自定义返佣方案
+	MemberID *uint64         `json:"memberId"`                          // 会员id
+	Desc     *string         `json:"desc"`                              // 返佣说明
+	PlanID   []uint64        `json:"planId" validate:"required,unique"` // 骑士卡方案ID
 }
 
 // CommissionDetail 详情
 type CommissionDetail struct {
-	ID        uint64         `json:"id" `                // id
-	Name      string         `json:"name"`               // 方案名称
-	Rule      CommissionRule `json:"rule" `              // 返佣规则
-	Type      CommissionType `json:"type" `              // 返佣类型 0:默认全局返佣方案 1:通用返佣方案 2:为个人自定义返佣方案
-	MemberID  *uint64        `json:"memberId,omitempty"` // 会员id
-	Desc      *string        `json:"desc"`               // 返佣说明
-	Enable    bool           `json:"enable" `            // 启用状态 false:禁用 true:启用
-	UseCount  uint64         `json:"useCount"`           // 使用次数
-	AmountSum float64        `json:"amountSum"`          // 佣金总额
-	CreatedAt string         `json:"createdAt"`          // 创建时间
-	StartAt   string         `json:"startAt"`            // 开始时间
-	EndAt     string         `json:"endAt"`              // 结束时间
+	ID        uint64            `json:"id" `                // id
+	Name      string            `json:"name"`               // 方案名称
+	Rule      CommissionRule    `json:"rule" `              // 返佣规则
+	Type      CommissionType    `json:"type" `              // 返佣类型 0:默认全局返佣方案 1:通用返佣方案 2:为个人自定义返佣方案
+	MemberID  *uint64           `json:"memberId,omitempty"` // 会员id
+	Desc      *string           `json:"desc"`               // 返佣说明
+	Enable    bool              `json:"enable" `            // 启用状态 false:禁用 true:启用
+	AmountSum float64           `json:"amountSum"`          // 佣金总额
+	CreatedAt string            `json:"createdAt"`          // 创建时间
+	StartAt   string            `json:"startAt"`            // 开始时间
+	EndAt     string            `json:"endAt"`              // 结束时间
+	Plan      []*CommissionPlan `json:"plan"`               // 骑士卡方案
 }
 
 // CommissionDeleteReq 删除会员返佣方案请求参数
@@ -119,9 +128,18 @@ type CommissionRule struct {
 type CommissionRuleConfig struct {
 	Name        string                `json:"name"`        // 任务名称
 	LimitedType CommissionLimitedType `json:"limitedType"` // 返佣次数类型 1:有限返佣 2:无限返佣
-	Ratio       []float64             `json:"ratio"`       // 返佣比例列表
+	OptionType  CommissionOptionType  `json:"optionType"`  // 选项类型 1:固定金额 2:比例
+	Value       []float64             `json:"value"`       // 选项值
 	Desc        string                `json:"desc"`        // 任务内容说明
 }
+
+// CommissionOptionType 表示选项类型的枚举
+type CommissionOptionType int
+
+const (
+	FixedAmount CommissionOptionType = iota + 1 // 固定金额
+	Percentage                                  // 比例
+)
 
 type CommissionCalculationType uint8
 
@@ -132,12 +150,12 @@ const (
 
 // CommissionCalculation 佣金计算
 type CommissionCalculation struct {
-	OrderID        uint64                    `json:"orderID"`        // 订单id
-	RiderID        uint64                    `json:"riderID"`        // 骑手id
-	ActualAmount   float64                   `json:"actualAmount"`   // 实付金额
-	Price          float64                   `json:"price"`          // 售价
-	CommissionBase float64                   `json:"commissionBase"` // 底数
-	Type           CommissionCalculationType `json:"type"`           // 任务类型 1:新签 2:续签
+	OrderID      uint64  `json:"orderID"`      // 订单id
+	RiderID      uint64  `json:"riderID"`      // 骑手id
+	ActualAmount float64 `json:"actualAmount"` // 实付金额
+	PlanID       uint64  `json:"planID"`       // 骑士卡方案ID
+
+	Type CommissionCalculationType `json:"type"` // 任务类型 1:新签 2:续签
 }
 
 // CommissionRuleRes 返佣规则返回参数
@@ -153,4 +171,31 @@ type CommissionRuleDetail struct {
 	Ratio  float64           `json:"ratio"`  // 比例
 	Amount uint64            `json:"amount"` // 金额
 	Desc   string            `json:"desc"`   // 说明
+}
+
+type CommissionPlanSelectionReq struct {
+	ID uint64 `json:"id" validate:"required" param:"id"` // id
+}
+
+type CommissionPlanListRes struct {
+	CommissionID   uint64            `json:"commissionId"`   // 返佣方案ID
+	CommissionName string            `json:"name"`           // 方案名称
+	Type           CommissionType    `json:"type"`           // 返佣类型 0:默认通用返佣方案 1:通用返佣方案 2:为个人自定义返佣方案
+	Plan           []*CommissionPlan `json:"plan,omitempty"` // 骑士卡方案
+	CreatedAt      string            `json:"createdAt"`      // 创建时间
+	Rule           *CommissionRule   `json:"rule"`           // 返佣规则
+}
+
+type CommissionPlan struct {
+	ID     uint64  `json:"id"`     // 骑士卡ID
+	Name   string  `json:"name"`   // 骑士卡名称
+	Amount float64 `json:"amount"` // 骑士卡价格
+}
+
+// CommissionMaxPlan 每个方案最大返佣金额
+type CommissionMaxPlan struct {
+	FirstNewAmount      float64 `json:"firstNewAmount"`      // 一级团员新签
+	FirstRenewalAmount  float64 `json:"firstRenewalAmount"`  // 一级团员续费
+	SecondNewAmount     float64 `json:"secondNewAmount"`     // 二级团员新签
+	SecondRenewalAmount float64 `json:"secondRenewalAmount"` // 二级团员续费
 }

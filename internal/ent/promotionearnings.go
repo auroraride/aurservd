@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/order"
+	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/promotioncommission"
 	"github.com/auroraride/aurservd/internal/ent/promotionearnings"
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
@@ -43,6 +44,8 @@ type PromotionEarnings struct {
 	RiderID uint64 `json:"rider_id,omitempty"`
 	// OrderID holds the value of the "order_id" field.
 	OrderID *uint64 `json:"order_id,omitempty"`
+	// PlanID holds the value of the "plan_id" field.
+	PlanID *uint64 `json:"plan_id,omitempty"`
 	// 收益状态 0:未结算 1:已结算 2:已取消
 	Status uint8 `json:"status,omitempty"`
 	// 收益金额
@@ -65,9 +68,11 @@ type PromotionEarningsEdges struct {
 	Rider *Rider `json:"rider,omitempty"`
 	// Order holds the value of the order edge.
 	Order *Order `json:"order,omitempty"`
+	// Plan holds the value of the plan edge.
+	Plan *Plan `json:"plan,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [5]bool
 }
 
 // CommissionOrErr returns the Commission value or an error if the edge
@@ -122,6 +127,19 @@ func (e PromotionEarningsEdges) OrderOrErr() (*Order, error) {
 	return nil, &NotLoadedError{edge: "order"}
 }
 
+// PlanOrErr returns the Plan value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e PromotionEarningsEdges) PlanOrErr() (*Plan, error) {
+	if e.loadedTypes[4] {
+		if e.Plan == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: plan.Label}
+		}
+		return e.Plan, nil
+	}
+	return nil, &NotLoadedError{edge: "plan"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*PromotionEarnings) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -131,7 +149,7 @@ func (*PromotionEarnings) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case promotionearnings.FieldAmount:
 			values[i] = new(sql.NullFloat64)
-		case promotionearnings.FieldID, promotionearnings.FieldCommissionID, promotionearnings.FieldMemberID, promotionearnings.FieldRiderID, promotionearnings.FieldOrderID, promotionearnings.FieldStatus:
+		case promotionearnings.FieldID, promotionearnings.FieldCommissionID, promotionearnings.FieldMemberID, promotionearnings.FieldRiderID, promotionearnings.FieldOrderID, promotionearnings.FieldPlanID, promotionearnings.FieldStatus:
 			values[i] = new(sql.NullInt64)
 		case promotionearnings.FieldRemark, promotionearnings.FieldCommissionRuleKey:
 			values[i] = new(sql.NullString)
@@ -224,6 +242,13 @@ func (pe *PromotionEarnings) assignValues(columns []string, values []any) error 
 				pe.OrderID = new(uint64)
 				*pe.OrderID = uint64(value.Int64)
 			}
+		case promotionearnings.FieldPlanID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field plan_id", values[i])
+			} else if value.Valid {
+				pe.PlanID = new(uint64)
+				*pe.PlanID = uint64(value.Int64)
+			}
 		case promotionearnings.FieldStatus:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field status", values[i])
@@ -273,6 +298,11 @@ func (pe *PromotionEarnings) QueryRider() *RiderQuery {
 // QueryOrder queries the "order" edge of the PromotionEarnings entity.
 func (pe *PromotionEarnings) QueryOrder() *OrderQuery {
 	return NewPromotionEarningsClient(pe.config).QueryOrder(pe)
+}
+
+// QueryPlan queries the "plan" edge of the PromotionEarnings entity.
+func (pe *PromotionEarnings) QueryPlan() *PlanQuery {
+	return NewPromotionEarningsClient(pe.config).QueryPlan(pe)
 }
 
 // Update returns a builder for updating this PromotionEarnings.
@@ -329,6 +359,11 @@ func (pe *PromotionEarnings) String() string {
 	builder.WriteString(", ")
 	if v := pe.OrderID; v != nil {
 		builder.WriteString("order_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := pe.PlanID; v != nil {
+		builder.WriteString("plan_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")

@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/model/promotion"
 	"github.com/auroraride/aurservd/internal/ent/promotioncommission"
+	"github.com/auroraride/aurservd/internal/ent/promotioncommissionplan"
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
 )
 
@@ -214,6 +215,21 @@ func (pcc *PromotionCommissionCreate) SetMember(p *PromotionMember) *PromotionCo
 	return pcc.SetMemberID(p.ID)
 }
 
+// AddPlanIDs adds the "plans" edge to the PromotionCommissionPlan entity by IDs.
+func (pcc *PromotionCommissionCreate) AddPlanIDs(ids ...uint64) *PromotionCommissionCreate {
+	pcc.mutation.AddPlanIDs(ids...)
+	return pcc
+}
+
+// AddPlans adds the "plans" edges to the PromotionCommissionPlan entity.
+func (pcc *PromotionCommissionCreate) AddPlans(p ...*PromotionCommissionPlan) *PromotionCommissionCreate {
+	ids := make([]uint64, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pcc.AddPlanIDs(ids...)
+}
+
 // Mutation returns the PromotionCommissionMutation object of the builder.
 func (pcc *PromotionCommissionCreate) Mutation() *PromotionCommissionMutation {
 	return pcc.mutation
@@ -405,6 +421,22 @@ func (pcc *PromotionCommissionCreate) createSpec() (*PromotionCommission, *sqlgr
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.MemberID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pcc.mutation.PlansIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   promotioncommission.PlansTable,
+			Columns: []string{promotioncommission.PlansColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(promotioncommissionplan.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

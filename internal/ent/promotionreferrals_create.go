@@ -13,6 +13,8 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
 	"github.com/auroraride/aurservd/internal/ent/promotionreferrals"
+	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // PromotionReferralsCreate is the builder for creating a PromotionReferrals entity.
@@ -51,6 +53,34 @@ func (prc *PromotionReferralsCreate) SetNillableUpdatedAt(t *time.Time) *Promoti
 	return prc
 }
 
+// SetRiderID sets the "rider_id" field.
+func (prc *PromotionReferralsCreate) SetRiderID(u uint64) *PromotionReferralsCreate {
+	prc.mutation.SetRiderID(u)
+	return prc
+}
+
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (prc *PromotionReferralsCreate) SetNillableRiderID(u *uint64) *PromotionReferralsCreate {
+	if u != nil {
+		prc.SetRiderID(*u)
+	}
+	return prc
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (prc *PromotionReferralsCreate) SetSubscribeID(u uint64) *PromotionReferralsCreate {
+	prc.mutation.SetSubscribeID(u)
+	return prc
+}
+
+// SetNillableSubscribeID sets the "subscribe_id" field if the given value is not nil.
+func (prc *PromotionReferralsCreate) SetNillableSubscribeID(u *uint64) *PromotionReferralsCreate {
+	if u != nil {
+		prc.SetSubscribeID(*u)
+	}
+	return prc
+}
+
 // SetReferringMemberID sets the "referring_member_id" field.
 func (prc *PromotionReferralsCreate) SetReferringMemberID(u uint64) *PromotionReferralsCreate {
 	prc.mutation.SetReferringMemberID(u)
@@ -79,18 +109,14 @@ func (prc *PromotionReferralsCreate) SetNillableReferredMemberID(u *uint64) *Pro
 	return prc
 }
 
-// SetRiderID sets the "rider_id" field.
-func (prc *PromotionReferralsCreate) SetRiderID(u uint64) *PromotionReferralsCreate {
-	prc.mutation.SetRiderID(u)
-	return prc
+// SetRider sets the "rider" edge to the Rider entity.
+func (prc *PromotionReferralsCreate) SetRider(r *Rider) *PromotionReferralsCreate {
+	return prc.SetRiderID(r.ID)
 }
 
-// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
-func (prc *PromotionReferralsCreate) SetNillableRiderID(u *uint64) *PromotionReferralsCreate {
-	if u != nil {
-		prc.SetRiderID(*u)
-	}
-	return prc
+// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
+func (prc *PromotionReferralsCreate) SetSubscribe(s *Subscribe) *PromotionReferralsCreate {
+	return prc.SetSubscribeID(s.ID)
 }
 
 // SetReferringMember sets the "referring_member" edge to the PromotionMember entity.
@@ -191,9 +217,39 @@ func (prc *PromotionReferralsCreate) createSpec() (*PromotionReferrals, *sqlgrap
 		_spec.SetField(promotionreferrals.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
-	if value, ok := prc.mutation.RiderID(); ok {
-		_spec.SetField(promotionreferrals.FieldRiderID, field.TypeUint64, value)
-		_node.RiderID = &value
+	if nodes := prc.mutation.RiderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotionreferrals.RiderTable,
+			Columns: []string{promotionreferrals.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.RiderID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := prc.mutation.SubscribeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotionreferrals.SubscribeTable,
+			Columns: []string{promotionreferrals.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.SubscribeID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := prc.mutation.ReferringMemberIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -293,6 +349,42 @@ func (u *PromotionReferralsUpsert) UpdateUpdatedAt() *PromotionReferralsUpsert {
 	return u
 }
 
+// SetRiderID sets the "rider_id" field.
+func (u *PromotionReferralsUpsert) SetRiderID(v uint64) *PromotionReferralsUpsert {
+	u.Set(promotionreferrals.FieldRiderID, v)
+	return u
+}
+
+// UpdateRiderID sets the "rider_id" field to the value that was provided on create.
+func (u *PromotionReferralsUpsert) UpdateRiderID() *PromotionReferralsUpsert {
+	u.SetExcluded(promotionreferrals.FieldRiderID)
+	return u
+}
+
+// ClearRiderID clears the value of the "rider_id" field.
+func (u *PromotionReferralsUpsert) ClearRiderID() *PromotionReferralsUpsert {
+	u.SetNull(promotionreferrals.FieldRiderID)
+	return u
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (u *PromotionReferralsUpsert) SetSubscribeID(v uint64) *PromotionReferralsUpsert {
+	u.Set(promotionreferrals.FieldSubscribeID, v)
+	return u
+}
+
+// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
+func (u *PromotionReferralsUpsert) UpdateSubscribeID() *PromotionReferralsUpsert {
+	u.SetExcluded(promotionreferrals.FieldSubscribeID)
+	return u
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (u *PromotionReferralsUpsert) ClearSubscribeID() *PromotionReferralsUpsert {
+	u.SetNull(promotionreferrals.FieldSubscribeID)
+	return u
+}
+
 // SetReferringMemberID sets the "referring_member_id" field.
 func (u *PromotionReferralsUpsert) SetReferringMemberID(v uint64) *PromotionReferralsUpsert {
 	u.Set(promotionreferrals.FieldReferringMemberID, v)
@@ -326,30 +418,6 @@ func (u *PromotionReferralsUpsert) UpdateReferredMemberID() *PromotionReferralsU
 // ClearReferredMemberID clears the value of the "referred_member_id" field.
 func (u *PromotionReferralsUpsert) ClearReferredMemberID() *PromotionReferralsUpsert {
 	u.SetNull(promotionreferrals.FieldReferredMemberID)
-	return u
-}
-
-// SetRiderID sets the "rider_id" field.
-func (u *PromotionReferralsUpsert) SetRiderID(v uint64) *PromotionReferralsUpsert {
-	u.Set(promotionreferrals.FieldRiderID, v)
-	return u
-}
-
-// UpdateRiderID sets the "rider_id" field to the value that was provided on create.
-func (u *PromotionReferralsUpsert) UpdateRiderID() *PromotionReferralsUpsert {
-	u.SetExcluded(promotionreferrals.FieldRiderID)
-	return u
-}
-
-// AddRiderID adds v to the "rider_id" field.
-func (u *PromotionReferralsUpsert) AddRiderID(v uint64) *PromotionReferralsUpsert {
-	u.Add(promotionreferrals.FieldRiderID, v)
-	return u
-}
-
-// ClearRiderID clears the value of the "rider_id" field.
-func (u *PromotionReferralsUpsert) ClearRiderID() *PromotionReferralsUpsert {
-	u.SetNull(promotionreferrals.FieldRiderID)
 	return u
 }
 
@@ -412,6 +480,48 @@ func (u *PromotionReferralsUpsertOne) UpdateUpdatedAt() *PromotionReferralsUpser
 	})
 }
 
+// SetRiderID sets the "rider_id" field.
+func (u *PromotionReferralsUpsertOne) SetRiderID(v uint64) *PromotionReferralsUpsertOne {
+	return u.Update(func(s *PromotionReferralsUpsert) {
+		s.SetRiderID(v)
+	})
+}
+
+// UpdateRiderID sets the "rider_id" field to the value that was provided on create.
+func (u *PromotionReferralsUpsertOne) UpdateRiderID() *PromotionReferralsUpsertOne {
+	return u.Update(func(s *PromotionReferralsUpsert) {
+		s.UpdateRiderID()
+	})
+}
+
+// ClearRiderID clears the value of the "rider_id" field.
+func (u *PromotionReferralsUpsertOne) ClearRiderID() *PromotionReferralsUpsertOne {
+	return u.Update(func(s *PromotionReferralsUpsert) {
+		s.ClearRiderID()
+	})
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (u *PromotionReferralsUpsertOne) SetSubscribeID(v uint64) *PromotionReferralsUpsertOne {
+	return u.Update(func(s *PromotionReferralsUpsert) {
+		s.SetSubscribeID(v)
+	})
+}
+
+// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
+func (u *PromotionReferralsUpsertOne) UpdateSubscribeID() *PromotionReferralsUpsertOne {
+	return u.Update(func(s *PromotionReferralsUpsert) {
+		s.UpdateSubscribeID()
+	})
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (u *PromotionReferralsUpsertOne) ClearSubscribeID() *PromotionReferralsUpsertOne {
+	return u.Update(func(s *PromotionReferralsUpsert) {
+		s.ClearSubscribeID()
+	})
+}
+
 // SetReferringMemberID sets the "referring_member_id" field.
 func (u *PromotionReferralsUpsertOne) SetReferringMemberID(v uint64) *PromotionReferralsUpsertOne {
 	return u.Update(func(s *PromotionReferralsUpsert) {
@@ -451,34 +561,6 @@ func (u *PromotionReferralsUpsertOne) UpdateReferredMemberID() *PromotionReferra
 func (u *PromotionReferralsUpsertOne) ClearReferredMemberID() *PromotionReferralsUpsertOne {
 	return u.Update(func(s *PromotionReferralsUpsert) {
 		s.ClearReferredMemberID()
-	})
-}
-
-// SetRiderID sets the "rider_id" field.
-func (u *PromotionReferralsUpsertOne) SetRiderID(v uint64) *PromotionReferralsUpsertOne {
-	return u.Update(func(s *PromotionReferralsUpsert) {
-		s.SetRiderID(v)
-	})
-}
-
-// AddRiderID adds v to the "rider_id" field.
-func (u *PromotionReferralsUpsertOne) AddRiderID(v uint64) *PromotionReferralsUpsertOne {
-	return u.Update(func(s *PromotionReferralsUpsert) {
-		s.AddRiderID(v)
-	})
-}
-
-// UpdateRiderID sets the "rider_id" field to the value that was provided on create.
-func (u *PromotionReferralsUpsertOne) UpdateRiderID() *PromotionReferralsUpsertOne {
-	return u.Update(func(s *PromotionReferralsUpsert) {
-		s.UpdateRiderID()
-	})
-}
-
-// ClearRiderID clears the value of the "rider_id" field.
-func (u *PromotionReferralsUpsertOne) ClearRiderID() *PromotionReferralsUpsertOne {
-	return u.Update(func(s *PromotionReferralsUpsert) {
-		s.ClearRiderID()
 	})
 }
 
@@ -703,6 +785,48 @@ func (u *PromotionReferralsUpsertBulk) UpdateUpdatedAt() *PromotionReferralsUpse
 	})
 }
 
+// SetRiderID sets the "rider_id" field.
+func (u *PromotionReferralsUpsertBulk) SetRiderID(v uint64) *PromotionReferralsUpsertBulk {
+	return u.Update(func(s *PromotionReferralsUpsert) {
+		s.SetRiderID(v)
+	})
+}
+
+// UpdateRiderID sets the "rider_id" field to the value that was provided on create.
+func (u *PromotionReferralsUpsertBulk) UpdateRiderID() *PromotionReferralsUpsertBulk {
+	return u.Update(func(s *PromotionReferralsUpsert) {
+		s.UpdateRiderID()
+	})
+}
+
+// ClearRiderID clears the value of the "rider_id" field.
+func (u *PromotionReferralsUpsertBulk) ClearRiderID() *PromotionReferralsUpsertBulk {
+	return u.Update(func(s *PromotionReferralsUpsert) {
+		s.ClearRiderID()
+	})
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (u *PromotionReferralsUpsertBulk) SetSubscribeID(v uint64) *PromotionReferralsUpsertBulk {
+	return u.Update(func(s *PromotionReferralsUpsert) {
+		s.SetSubscribeID(v)
+	})
+}
+
+// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
+func (u *PromotionReferralsUpsertBulk) UpdateSubscribeID() *PromotionReferralsUpsertBulk {
+	return u.Update(func(s *PromotionReferralsUpsert) {
+		s.UpdateSubscribeID()
+	})
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (u *PromotionReferralsUpsertBulk) ClearSubscribeID() *PromotionReferralsUpsertBulk {
+	return u.Update(func(s *PromotionReferralsUpsert) {
+		s.ClearSubscribeID()
+	})
+}
+
 // SetReferringMemberID sets the "referring_member_id" field.
 func (u *PromotionReferralsUpsertBulk) SetReferringMemberID(v uint64) *PromotionReferralsUpsertBulk {
 	return u.Update(func(s *PromotionReferralsUpsert) {
@@ -742,34 +866,6 @@ func (u *PromotionReferralsUpsertBulk) UpdateReferredMemberID() *PromotionReferr
 func (u *PromotionReferralsUpsertBulk) ClearReferredMemberID() *PromotionReferralsUpsertBulk {
 	return u.Update(func(s *PromotionReferralsUpsert) {
 		s.ClearReferredMemberID()
-	})
-}
-
-// SetRiderID sets the "rider_id" field.
-func (u *PromotionReferralsUpsertBulk) SetRiderID(v uint64) *PromotionReferralsUpsertBulk {
-	return u.Update(func(s *PromotionReferralsUpsert) {
-		s.SetRiderID(v)
-	})
-}
-
-// AddRiderID adds v to the "rider_id" field.
-func (u *PromotionReferralsUpsertBulk) AddRiderID(v uint64) *PromotionReferralsUpsertBulk {
-	return u.Update(func(s *PromotionReferralsUpsert) {
-		s.AddRiderID(v)
-	})
-}
-
-// UpdateRiderID sets the "rider_id" field to the value that was provided on create.
-func (u *PromotionReferralsUpsertBulk) UpdateRiderID() *PromotionReferralsUpsertBulk {
-	return u.Update(func(s *PromotionReferralsUpsert) {
-		s.UpdateRiderID()
-	})
-}
-
-// ClearRiderID clears the value of the "rider_id" field.
-func (u *PromotionReferralsUpsertBulk) ClearRiderID() *PromotionReferralsUpsertBulk {
-	return u.Update(func(s *PromotionReferralsUpsert) {
-		s.ClearRiderID()
 	})
 }
 

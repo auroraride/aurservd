@@ -35,6 +35,8 @@ const (
 	FieldRiderID = "rider_id"
 	// FieldOrderID holds the string denoting the order_id field in the database.
 	FieldOrderID = "order_id"
+	// FieldPlanID holds the string denoting the plan_id field in the database.
+	FieldPlanID = "plan_id"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
 	// FieldAmount holds the string denoting the amount field in the database.
@@ -49,6 +51,8 @@ const (
 	EdgeRider = "rider"
 	// EdgeOrder holds the string denoting the order edge name in mutations.
 	EdgeOrder = "order"
+	// EdgePlan holds the string denoting the plan edge name in mutations.
+	EdgePlan = "plan"
 	// Table holds the table name of the promotionearnings in the database.
 	Table = "promotion_earnings"
 	// CommissionTable is the table that holds the commission relation/edge.
@@ -79,6 +83,13 @@ const (
 	OrderInverseTable = "order"
 	// OrderColumn is the table column denoting the order relation/edge.
 	OrderColumn = "order_id"
+	// PlanTable is the table that holds the plan relation/edge.
+	PlanTable = "promotion_earnings"
+	// PlanInverseTable is the table name for the Plan entity.
+	// It exists in this package in order to avoid circular dependency with the "plan" package.
+	PlanInverseTable = "plan"
+	// PlanColumn is the table column denoting the plan relation/edge.
+	PlanColumn = "plan_id"
 )
 
 // Columns holds all SQL columns for promotionearnings fields.
@@ -94,6 +105,7 @@ var Columns = []string{
 	FieldMemberID,
 	FieldRiderID,
 	FieldOrderID,
+	FieldPlanID,
 	FieldStatus,
 	FieldAmount,
 	FieldCommissionRuleKey,
@@ -176,6 +188,11 @@ func ByOrderID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldOrderID, opts...).ToFunc()
 }
 
+// ByPlanID orders the results by the plan_id field.
+func ByPlanID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPlanID, opts...).ToFunc()
+}
+
 // ByStatus orders the results by the status field.
 func ByStatus(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldStatus, opts...).ToFunc()
@@ -218,6 +235,13 @@ func ByOrderField(field string, opts ...sql.OrderTermOption) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newOrderStep(), sql.OrderByField(field, opts...))
 	}
 }
+
+// ByPlanField orders the results by plan field.
+func ByPlanField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newPlanStep(), sql.OrderByField(field, opts...))
+	}
+}
 func newCommissionStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -244,5 +268,12 @@ func newOrderStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(OrderInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, false, OrderTable, OrderColumn),
+	)
+}
+func newPlanStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(PlanInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, PlanTable, PlanColumn),
 	)
 }

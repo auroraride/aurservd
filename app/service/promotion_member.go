@@ -16,6 +16,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"go.uber.org/zap"
 
+	"github.com/auroraride/aurservd/internal/ent/promotioncommissionplan"
 	"github.com/auroraride/aurservd/internal/ent/promotionlevel"
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
 	"github.com/auroraride/aurservd/internal/ent/promotionperson"
@@ -27,7 +28,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ali"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
-	"github.com/auroraride/aurservd/internal/ent/promotioncommission"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
@@ -82,6 +82,7 @@ func (s *promotionMemberService) Signin(req *promotion.MemberSigninReq) *promoti
 		Name:  req.Name,
 	}
 	mem, _ := s.GetMemberByPhone(req.Phone)
+
 	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
 		// 获取骑手信息或创建骑手
 		s.getRiderOrCreate(tx, req.Phone, c)
@@ -93,6 +94,10 @@ func (s *promotionMemberService) Signin(req *promotion.MemberSigninReq) *promoti
 		}
 		return
 	})
+
+	if !mem.Enable {
+		snag.Panic("账号已被禁用")
+	}
 
 	return s.signin(mem)
 }
@@ -141,14 +146,30 @@ func (s *promotionMemberService) getRiderOrCreate(tx *ent.Tx, phone string, c *p
 	}
 	// 绑定骑手
 	c.RiderID = &rinfo.ID
+
+	if c.RiderID != nil { // 订阅
+		sub := NewSubscribe().Recent(*c.RiderID)
+		if sub != nil {
+			c.SubscribeID = &sub.ID
+		}
+	}
 }
 
 // 更新会员信息
 func (s *promotionMemberService) updateMemberInfo(tx *ent.Tx, mem *ent.PromotionMember, req *promotion.MemberCreateReq) {
+	q := tx.PromotionMember.UpdateOne(mem)
+	re := tx.PromotionReferrals.Update().Where(promotionreferrals.ReferredMemberIDEQ(mem.ID))
 	if req.RiderID != nil && req.RiderID != mem.RiderID && mem.RiderID == nil {
-		tx.PromotionMember.UpdateOne(mem).SetNillableRiderID(req.RiderID).ExecX(s.ctx)
-		tx.PromotionReferrals.Update().Where(promotionreferrals.ReferredMemberIDEQ(mem.ID)).SetNillableRiderID(req.RiderID).ExecX(s.ctx)
+		q.SetNillableRiderID(req.RiderID)
+		re.SetNillableRiderID(req.RiderID)
 	}
+
+	if req.SubscribeID != nil && req.SubscribeID != mem.SubscribeID {
+		q.SetNillableSubscribeID(req.SubscribeID)
+		re.SetNillableSubscribeID(req.SubscribeID).ExecX(s.ctx)
+	}
+	q.ExecX(s.ctx)
+	re.ExecX(s.ctx)
 }
 
 // GetMemberByPhone  获取会员信息
@@ -157,7 +178,6 @@ func (s *promotionMemberService) GetMemberByPhone(phone string) (*ent.PromotionM
 		Where(promotionmember.Phone(phone)).
 		WithReferred().
 		WithLevel().
-		WithCommission().
 		WithPerson().
 		First(s.ctx)
 }
@@ -260,7 +280,7 @@ func (s *promotionMemberService) MaskName(name string) string {
 
 // List 会员列表
 func (s *promotionMemberService) List(req *promotion.MemberReq) *model.PaginationRes {
-	q := ent.Database.PromotionMember.QueryNotDeleted().WithPerson().WithLevel().WithCommission().Order(ent.Desc(promotionmember.FieldCreatedAt))
+	q := ent.Database.PromotionMember.QueryNotDeleted().WithPerson().WithLevel().Order(ent.Desc(promotionmember.FieldCreatedAt))
 	if req.Keyword != nil {
 		q.Where(
 			promotionmember.Or(
@@ -271,14 +291,6 @@ func (s *promotionMemberService) List(req *promotion.MemberReq) *model.Paginatio
 	}
 	if req.Enable != nil {
 		q.Where(promotionmember.Enable(*req.Enable))
-	}
-
-	if req.CommissionType != nil {
-		q.Where(
-			promotionmember.HasCommissionWith(
-				promotioncommission.TypeEQ((*req.CommissionType).Value()),
-			),
-		)
 	}
 
 	if req.LevelID != nil {
@@ -318,7 +330,7 @@ func (s *promotionMemberService) Detail(req *promotion.MemberReq) promotion.Memb
 	info, _ := ent.Database.PromotionMember.QueryNotDeleted().WithReferred(
 		func(query *ent.PromotionReferralsQuery) {
 			query.WithReferringMember()
-		}).WithLevel().WithCommission().WithPerson().Where(promotionmember.IDEQ(req.ID)).First(s.ctx)
+		}).WithLevel().WithPerson().Where(promotionmember.IDEQ(req.ID)).First(s.ctx)
 	if info == nil {
 		snag.Panic("会员不存在")
 	}
@@ -345,18 +357,6 @@ func (s *promotionMemberService) detail(item *ent.PromotionMember) (res promotio
 	}
 
 	res.TotalBalance = tools.NewDecimal().Sum(item.Balance, item.Frozen)
-
-	if item.Edges.Commission != nil {
-		res.CommissionID = item.Edges.Commission.ID
-		switch *item.Edges.Commission.Type {
-		case promotion.CommissionDefault.Value():
-			res.CommissionName = promotion.CommissionDefault.String()
-		case promotion.CommissionCustom.Value():
-			res.CommissionName = promotion.CommissionCustom.String()
-		case promotion.CommissionCommon.Value():
-			res.CommissionName = item.Edges.Commission.Name
-		}
-	}
 
 	if item.Edges.Referred != nil && item.Edges.Referred.Edges.ReferringMember != nil {
 		res.ParentInfo = &promotion.MemberBaseInfo{
@@ -397,16 +397,9 @@ func (s *promotionMemberService) detail(item *ent.PromotionMember) (res promotio
 // Create 创建会员
 func (s *promotionMemberService) Create(tx *ent.Tx, req *promotion.MemberCreateReq) *ent.PromotionMember {
 
-	// 获取默认分佣方案
-	commission, _ := NewPromotionCommissionService().DefaultPromotionCommission()
-
 	q := tx.PromotionMember.Create().
 		SetNillableName(req.Name).
 		SetPhone(req.Phone)
-
-	if commission != nil {
-		q.SetCommission(commission)
-	}
 
 	if req.ReferringMemberID != nil {
 		// 获取推荐会员信息
@@ -437,13 +430,13 @@ func (s *promotionMemberService) GetMemberById(id uint64) (*ent.PromotionMember,
 	return ent.Database.PromotionMember.QueryNotDeleted().
 		WithReferred(
 			func(query *ent.PromotionReferralsQuery) {
-				query.WithReferringMember(func(q *ent.PromotionMemberQuery) {
-					q.WithCommission()
-				})
+				query.WithReferringMember()
 			},
 		).
 		WithLevel().
-		WithCommission().
+		WithCommissions(func(query *ent.PromotionMemberCommissionQuery) {
+			query.WithCommission()
+		}).
 		WithPerson().
 		WithCards().
 		Where(promotionmember.IDEQ(id)).
@@ -452,11 +445,22 @@ func (s *promotionMemberService) GetMemberById(id uint64) (*ent.PromotionMember,
 
 // Update 编辑会员
 func (s *promotionMemberService) Update(req *promotion.MemberUpdateReq) {
-	ent.Database.PromotionMember.
-		UpdateOneID(req.ID).
-		SetNillableEnable(req.Enable).
-		SetNillableName(req.Name).
-		SaveX(s.ctx)
+	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
+		err = tx.PromotionMember.
+			UpdateOneID(req.ID).
+			SetNillableEnable(req.Enable).
+			SetNillableName(req.Name).
+			Exec(s.ctx)
+		if err != nil {
+			snag.Panic("更新失败")
+		}
+
+		if req.Enable != nil && !*req.Enable {
+			// 禁用会员 删除token禁止登录
+			ar.Redis.HDel(s.ctx, s.tokenCacheKey, strconv.FormatUint(req.ID, 10))
+		}
+		return
+	})
 }
 
 // TeamList 会员团队列表
@@ -642,38 +646,55 @@ func (s *promotionMemberService) TeamStatistics(req *promotion.MemberTeamReq) *p
 
 // SetCommission 会员设置返佣方案
 func (s *promotionMemberService) SetCommission(req *promotion.MemberCommissionReq) {
-	info, _ := ent.Database.PromotionMember.QueryNotDeleted().Where(promotionmember.IDEQ(req.ID)).First(s.ctx)
-	if info == nil {
+	mem, _ := ent.Database.PromotionMember.QueryNotDeleted().WithCommissions(
+		func(query *ent.PromotionMemberCommissionQuery) {
+			query.WithCommission()
+		}).Where(promotionmember.IDEQ(req.ID)).First(s.ctx)
+	if mem == nil {
 		snag.Panic("会员不存在")
 	}
-	if req.CommissionID == nil && req.Rule == nil {
-		snag.Panic("方案id和规则不能同时为空")
+	if req.Rule == nil {
+		snag.Panic("规则不能为空")
 	}
 
-	if req.CommissionID == nil {
-		// 自定义返佣方案
-		commissionTypeValue := promotion.CommissionType(2)
-		mc := NewPromotionCommissionService().Create(&promotion.CommissionCreateReq{
-			Name:     fmt.Sprintf("自定义返佣方案%d", &req.ID),
-			Rule:     *req.Rule,
-			Type:     &commissionTypeValue,
-			MemberID: &req.ID,
-			Desc:     req.Desc,
-		})
-		req.CommissionID = &mc.ID
+	s.CommissionPlanIsConfigured(mem, req)
+
+	// 自定义返佣方案
+	commissionTypeValue := promotion.CommissionType(2)
+	mc := NewPromotionCommissionService().Create(&promotion.CommissionCreateReq{
+		Name:     "自定义返佣",
+		Rule:     *req.Rule,
+		Type:     &commissionTypeValue,
+		MemberID: &req.ID,
+		Desc:     req.Desc,
+	})
+
+	bulk := make([]*ent.PromotionCommissionPlanCreate, len(req.PlanID))
+	for i, v := range req.PlanID {
+		bulk[i] = ent.Database.PromotionCommissionPlan.Create().SetPlanID(v).SetCommissionID(mc.ID).SetMemberID(req.ID)
+	}
+	ent.Database.PromotionCommissionPlan.CreateBulk(bulk...).ExecX(s.ctx)
+
+	ent.Database.PromotionMemberCommission.Create().SetCommissionID(mc.ID).SetMemberID(req.ID).ExecX(s.ctx)
+
+}
+
+// CommissionPlanIsConfigured 判断返佣方案骑士卡是否已被配置
+func (s *promotionMemberService) CommissionPlanIsConfigured(mem *ent.PromotionMember, req *promotion.MemberCommissionReq) {
+
+	// 查询返佣方案
+	pc, _ := ent.Database.PromotionCommissionPlan.Query().Where(
+		promotioncommissionplan.MemberID(mem.ID),
+		promotioncommissionplan.PlanIDIn(req.PlanID...),
+	).Select(promotioncommissionplan.FieldPlanID).WithPlan().All(s.ctx)
+	if len(pc) >= len(req.PlanID) {
+		planinfo := make(map[uint64]string)
+		for _, v := range pc {
+			planinfo[v.ID] = fmt.Sprintf("骑士卡 %s - %s - %.2f", v.Edges.Plan.Name, v.Edges.Plan.Model, v.Edges.Plan.Price)
+		}
+		snag.Panic(fmt.Sprintf("骑士卡 %v 已被配置", planinfo))
 	}
 
-	// 返佣方案查询
-	c := ent.Database.PromotionCommission.QueryNotDeleted().
-		Where(
-			promotioncommission.IDEQ(*req.CommissionID),
-			promotioncommission.Enable(true),
-		).FirstX(s.ctx)
-	if c == nil {
-		snag.Panic("返佣方案不存在,或已被禁用")
-	}
-
-	ent.Database.PromotionMember.UpdateOneID(info.ID).SetCommissionID(c.ID).SaveX(s.ctx)
 }
 
 // UploadAvatar 更新会员头像

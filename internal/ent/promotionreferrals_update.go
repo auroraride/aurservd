@@ -14,6 +14,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
 	"github.com/auroraride/aurservd/internal/ent/promotionreferrals"
+	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // PromotionReferralsUpdate is the builder for updating PromotionReferrals entities.
@@ -33,6 +35,46 @@ func (pru *PromotionReferralsUpdate) Where(ps ...predicate.PromotionReferrals) *
 // SetUpdatedAt sets the "updated_at" field.
 func (pru *PromotionReferralsUpdate) SetUpdatedAt(t time.Time) *PromotionReferralsUpdate {
 	pru.mutation.SetUpdatedAt(t)
+	return pru
+}
+
+// SetRiderID sets the "rider_id" field.
+func (pru *PromotionReferralsUpdate) SetRiderID(u uint64) *PromotionReferralsUpdate {
+	pru.mutation.SetRiderID(u)
+	return pru
+}
+
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (pru *PromotionReferralsUpdate) SetNillableRiderID(u *uint64) *PromotionReferralsUpdate {
+	if u != nil {
+		pru.SetRiderID(*u)
+	}
+	return pru
+}
+
+// ClearRiderID clears the value of the "rider_id" field.
+func (pru *PromotionReferralsUpdate) ClearRiderID() *PromotionReferralsUpdate {
+	pru.mutation.ClearRiderID()
+	return pru
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (pru *PromotionReferralsUpdate) SetSubscribeID(u uint64) *PromotionReferralsUpdate {
+	pru.mutation.SetSubscribeID(u)
+	return pru
+}
+
+// SetNillableSubscribeID sets the "subscribe_id" field if the given value is not nil.
+func (pru *PromotionReferralsUpdate) SetNillableSubscribeID(u *uint64) *PromotionReferralsUpdate {
+	if u != nil {
+		pru.SetSubscribeID(*u)
+	}
+	return pru
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (pru *PromotionReferralsUpdate) ClearSubscribeID() *PromotionReferralsUpdate {
+	pru.mutation.ClearSubscribeID()
 	return pru
 }
 
@@ -76,31 +118,14 @@ func (pru *PromotionReferralsUpdate) ClearReferredMemberID() *PromotionReferrals
 	return pru
 }
 
-// SetRiderID sets the "rider_id" field.
-func (pru *PromotionReferralsUpdate) SetRiderID(u uint64) *PromotionReferralsUpdate {
-	pru.mutation.ResetRiderID()
-	pru.mutation.SetRiderID(u)
-	return pru
+// SetRider sets the "rider" edge to the Rider entity.
+func (pru *PromotionReferralsUpdate) SetRider(r *Rider) *PromotionReferralsUpdate {
+	return pru.SetRiderID(r.ID)
 }
 
-// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
-func (pru *PromotionReferralsUpdate) SetNillableRiderID(u *uint64) *PromotionReferralsUpdate {
-	if u != nil {
-		pru.SetRiderID(*u)
-	}
-	return pru
-}
-
-// AddRiderID adds u to the "rider_id" field.
-func (pru *PromotionReferralsUpdate) AddRiderID(u int64) *PromotionReferralsUpdate {
-	pru.mutation.AddRiderID(u)
-	return pru
-}
-
-// ClearRiderID clears the value of the "rider_id" field.
-func (pru *PromotionReferralsUpdate) ClearRiderID() *PromotionReferralsUpdate {
-	pru.mutation.ClearRiderID()
-	return pru
+// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
+func (pru *PromotionReferralsUpdate) SetSubscribe(s *Subscribe) *PromotionReferralsUpdate {
+	return pru.SetSubscribeID(s.ID)
 }
 
 // SetReferringMember sets the "referring_member" edge to the PromotionMember entity.
@@ -116,6 +141,18 @@ func (pru *PromotionReferralsUpdate) SetReferredMember(p *PromotionMember) *Prom
 // Mutation returns the PromotionReferralsMutation object of the builder.
 func (pru *PromotionReferralsUpdate) Mutation() *PromotionReferralsMutation {
 	return pru.mutation
+}
+
+// ClearRider clears the "rider" edge to the Rider entity.
+func (pru *PromotionReferralsUpdate) ClearRider() *PromotionReferralsUpdate {
+	pru.mutation.ClearRider()
+	return pru
+}
+
+// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
+func (pru *PromotionReferralsUpdate) ClearSubscribe() *PromotionReferralsUpdate {
+	pru.mutation.ClearSubscribe()
+	return pru
 }
 
 // ClearReferringMember clears the "referring_member" edge to the PromotionMember entity.
@@ -184,14 +221,63 @@ func (pru *PromotionReferralsUpdate) sqlSave(ctx context.Context) (n int, err er
 	if value, ok := pru.mutation.UpdatedAt(); ok {
 		_spec.SetField(promotionreferrals.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := pru.mutation.RiderID(); ok {
-		_spec.SetField(promotionreferrals.FieldRiderID, field.TypeUint64, value)
+	if pru.mutation.RiderCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotionreferrals.RiderTable,
+			Columns: []string{promotionreferrals.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if value, ok := pru.mutation.AddedRiderID(); ok {
-		_spec.AddField(promotionreferrals.FieldRiderID, field.TypeUint64, value)
+	if nodes := pru.mutation.RiderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotionreferrals.RiderTable,
+			Columns: []string{promotionreferrals.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if pru.mutation.RiderIDCleared() {
-		_spec.ClearField(promotionreferrals.FieldRiderID, field.TypeUint64)
+	if pru.mutation.SubscribeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotionreferrals.SubscribeTable,
+			Columns: []string{promotionreferrals.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pru.mutation.SubscribeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotionreferrals.SubscribeTable,
+			Columns: []string{promotionreferrals.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if pru.mutation.ReferringMemberCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -279,6 +365,46 @@ func (pruo *PromotionReferralsUpdateOne) SetUpdatedAt(t time.Time) *PromotionRef
 	return pruo
 }
 
+// SetRiderID sets the "rider_id" field.
+func (pruo *PromotionReferralsUpdateOne) SetRiderID(u uint64) *PromotionReferralsUpdateOne {
+	pruo.mutation.SetRiderID(u)
+	return pruo
+}
+
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (pruo *PromotionReferralsUpdateOne) SetNillableRiderID(u *uint64) *PromotionReferralsUpdateOne {
+	if u != nil {
+		pruo.SetRiderID(*u)
+	}
+	return pruo
+}
+
+// ClearRiderID clears the value of the "rider_id" field.
+func (pruo *PromotionReferralsUpdateOne) ClearRiderID() *PromotionReferralsUpdateOne {
+	pruo.mutation.ClearRiderID()
+	return pruo
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (pruo *PromotionReferralsUpdateOne) SetSubscribeID(u uint64) *PromotionReferralsUpdateOne {
+	pruo.mutation.SetSubscribeID(u)
+	return pruo
+}
+
+// SetNillableSubscribeID sets the "subscribe_id" field if the given value is not nil.
+func (pruo *PromotionReferralsUpdateOne) SetNillableSubscribeID(u *uint64) *PromotionReferralsUpdateOne {
+	if u != nil {
+		pruo.SetSubscribeID(*u)
+	}
+	return pruo
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (pruo *PromotionReferralsUpdateOne) ClearSubscribeID() *PromotionReferralsUpdateOne {
+	pruo.mutation.ClearSubscribeID()
+	return pruo
+}
+
 // SetReferringMemberID sets the "referring_member_id" field.
 func (pruo *PromotionReferralsUpdateOne) SetReferringMemberID(u uint64) *PromotionReferralsUpdateOne {
 	pruo.mutation.SetReferringMemberID(u)
@@ -319,31 +445,14 @@ func (pruo *PromotionReferralsUpdateOne) ClearReferredMemberID() *PromotionRefer
 	return pruo
 }
 
-// SetRiderID sets the "rider_id" field.
-func (pruo *PromotionReferralsUpdateOne) SetRiderID(u uint64) *PromotionReferralsUpdateOne {
-	pruo.mutation.ResetRiderID()
-	pruo.mutation.SetRiderID(u)
-	return pruo
+// SetRider sets the "rider" edge to the Rider entity.
+func (pruo *PromotionReferralsUpdateOne) SetRider(r *Rider) *PromotionReferralsUpdateOne {
+	return pruo.SetRiderID(r.ID)
 }
 
-// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
-func (pruo *PromotionReferralsUpdateOne) SetNillableRiderID(u *uint64) *PromotionReferralsUpdateOne {
-	if u != nil {
-		pruo.SetRiderID(*u)
-	}
-	return pruo
-}
-
-// AddRiderID adds u to the "rider_id" field.
-func (pruo *PromotionReferralsUpdateOne) AddRiderID(u int64) *PromotionReferralsUpdateOne {
-	pruo.mutation.AddRiderID(u)
-	return pruo
-}
-
-// ClearRiderID clears the value of the "rider_id" field.
-func (pruo *PromotionReferralsUpdateOne) ClearRiderID() *PromotionReferralsUpdateOne {
-	pruo.mutation.ClearRiderID()
-	return pruo
+// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
+func (pruo *PromotionReferralsUpdateOne) SetSubscribe(s *Subscribe) *PromotionReferralsUpdateOne {
+	return pruo.SetSubscribeID(s.ID)
 }
 
 // SetReferringMember sets the "referring_member" edge to the PromotionMember entity.
@@ -359,6 +468,18 @@ func (pruo *PromotionReferralsUpdateOne) SetReferredMember(p *PromotionMember) *
 // Mutation returns the PromotionReferralsMutation object of the builder.
 func (pruo *PromotionReferralsUpdateOne) Mutation() *PromotionReferralsMutation {
 	return pruo.mutation
+}
+
+// ClearRider clears the "rider" edge to the Rider entity.
+func (pruo *PromotionReferralsUpdateOne) ClearRider() *PromotionReferralsUpdateOne {
+	pruo.mutation.ClearRider()
+	return pruo
+}
+
+// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
+func (pruo *PromotionReferralsUpdateOne) ClearSubscribe() *PromotionReferralsUpdateOne {
+	pruo.mutation.ClearSubscribe()
+	return pruo
 }
 
 // ClearReferringMember clears the "referring_member" edge to the PromotionMember entity.
@@ -457,14 +578,63 @@ func (pruo *PromotionReferralsUpdateOne) sqlSave(ctx context.Context) (_node *Pr
 	if value, ok := pruo.mutation.UpdatedAt(); ok {
 		_spec.SetField(promotionreferrals.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := pruo.mutation.RiderID(); ok {
-		_spec.SetField(promotionreferrals.FieldRiderID, field.TypeUint64, value)
+	if pruo.mutation.RiderCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotionreferrals.RiderTable,
+			Columns: []string{promotionreferrals.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if value, ok := pruo.mutation.AddedRiderID(); ok {
-		_spec.AddField(promotionreferrals.FieldRiderID, field.TypeUint64, value)
+	if nodes := pruo.mutation.RiderIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotionreferrals.RiderTable,
+			Columns: []string{promotionreferrals.RiderColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if pruo.mutation.RiderIDCleared() {
-		_spec.ClearField(promotionreferrals.FieldRiderID, field.TypeUint64)
+	if pruo.mutation.SubscribeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotionreferrals.SubscribeTable,
+			Columns: []string{promotionreferrals.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pruo.mutation.SubscribeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotionreferrals.SubscribeTable,
+			Columns: []string{promotionreferrals.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if pruo.mutation.ReferringMemberCleared() {
 		edge := &sqlgraph.EdgeSpec{

@@ -13,29 +13,31 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/promotionbankcard"
-	"github.com/auroraride/aurservd/internal/ent/promotioncommission"
 	"github.com/auroraride/aurservd/internal/ent/promotionlevel"
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
+	"github.com/auroraride/aurservd/internal/ent/promotionmembercommission"
 	"github.com/auroraride/aurservd/internal/ent/promotionperson"
 	"github.com/auroraride/aurservd/internal/ent/promotionreferrals"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // PromotionMemberQuery is the builder for querying PromotionMember entities.
 type PromotionMemberQuery struct {
 	config
-	ctx            *QueryContext
-	order          []promotionmember.OrderOption
-	inters         []Interceptor
-	predicates     []predicate.PromotionMember
-	withRider      *RiderQuery
-	withLevel      *PromotionLevelQuery
-	withCommission *PromotionCommissionQuery
-	withReferring  *PromotionReferralsQuery
-	withReferred   *PromotionReferralsQuery
-	withPerson     *PromotionPersonQuery
-	withCards      *PromotionBankCardQuery
-	modifiers      []func(*sql.Selector)
+	ctx             *QueryContext
+	order           []promotionmember.OrderOption
+	inters          []Interceptor
+	predicates      []predicate.PromotionMember
+	withRider       *RiderQuery
+	withSubscribe   *SubscribeQuery
+	withLevel       *PromotionLevelQuery
+	withReferring   *PromotionReferralsQuery
+	withReferred    *PromotionReferralsQuery
+	withPerson      *PromotionPersonQuery
+	withCards       *PromotionBankCardQuery
+	withCommissions *PromotionMemberCommissionQuery
+	modifiers       []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -94,6 +96,28 @@ func (pmq *PromotionMemberQuery) QueryRider() *RiderQuery {
 	return query
 }
 
+// QuerySubscribe chains the current query on the "subscribe" edge.
+func (pmq *PromotionMemberQuery) QuerySubscribe() *SubscribeQuery {
+	query := (&SubscribeClient{config: pmq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pmq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pmq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(promotionmember.Table, promotionmember.FieldID, selector),
+			sqlgraph.To(subscribe.Table, subscribe.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, promotionmember.SubscribeTable, promotionmember.SubscribeColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(pmq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // QueryLevel chains the current query on the "level" edge.
 func (pmq *PromotionMemberQuery) QueryLevel() *PromotionLevelQuery {
 	query := (&PromotionLevelClient{config: pmq.config}).Query()
@@ -109,28 +133,6 @@ func (pmq *PromotionMemberQuery) QueryLevel() *PromotionLevelQuery {
 			sqlgraph.From(promotionmember.Table, promotionmember.FieldID, selector),
 			sqlgraph.To(promotionlevel.Table, promotionlevel.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, promotionmember.LevelTable, promotionmember.LevelColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(pmq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryCommission chains the current query on the "commission" edge.
-func (pmq *PromotionMemberQuery) QueryCommission() *PromotionCommissionQuery {
-	query := (&PromotionCommissionClient{config: pmq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := pmq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := pmq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(promotionmember.Table, promotionmember.FieldID, selector),
-			sqlgraph.To(promotioncommission.Table, promotioncommission.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, promotionmember.CommissionTable, promotionmember.CommissionColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(pmq.driver.Dialect(), step)
 		return fromU, nil
@@ -219,6 +221,28 @@ func (pmq *PromotionMemberQuery) QueryCards() *PromotionBankCardQuery {
 			sqlgraph.From(promotionmember.Table, promotionmember.FieldID, selector),
 			sqlgraph.To(promotionbankcard.Table, promotionbankcard.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, promotionmember.CardsTable, promotionmember.CardsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(pmq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryCommissions chains the current query on the "commissions" edge.
+func (pmq *PromotionMemberQuery) QueryCommissions() *PromotionMemberCommissionQuery {
+	query := (&PromotionMemberCommissionClient{config: pmq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pmq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pmq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(promotionmember.Table, promotionmember.FieldID, selector),
+			sqlgraph.To(promotionmembercommission.Table, promotionmembercommission.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, promotionmember.CommissionsTable, promotionmember.CommissionsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(pmq.driver.Dialect(), step)
 		return fromU, nil
@@ -413,18 +437,19 @@ func (pmq *PromotionMemberQuery) Clone() *PromotionMemberQuery {
 		return nil
 	}
 	return &PromotionMemberQuery{
-		config:         pmq.config,
-		ctx:            pmq.ctx.Clone(),
-		order:          append([]promotionmember.OrderOption{}, pmq.order...),
-		inters:         append([]Interceptor{}, pmq.inters...),
-		predicates:     append([]predicate.PromotionMember{}, pmq.predicates...),
-		withRider:      pmq.withRider.Clone(),
-		withLevel:      pmq.withLevel.Clone(),
-		withCommission: pmq.withCommission.Clone(),
-		withReferring:  pmq.withReferring.Clone(),
-		withReferred:   pmq.withReferred.Clone(),
-		withPerson:     pmq.withPerson.Clone(),
-		withCards:      pmq.withCards.Clone(),
+		config:          pmq.config,
+		ctx:             pmq.ctx.Clone(),
+		order:           append([]promotionmember.OrderOption{}, pmq.order...),
+		inters:          append([]Interceptor{}, pmq.inters...),
+		predicates:      append([]predicate.PromotionMember{}, pmq.predicates...),
+		withRider:       pmq.withRider.Clone(),
+		withSubscribe:   pmq.withSubscribe.Clone(),
+		withLevel:       pmq.withLevel.Clone(),
+		withReferring:   pmq.withReferring.Clone(),
+		withReferred:    pmq.withReferred.Clone(),
+		withPerson:      pmq.withPerson.Clone(),
+		withCards:       pmq.withCards.Clone(),
+		withCommissions: pmq.withCommissions.Clone(),
 		// clone intermediate query.
 		sql:  pmq.sql.Clone(),
 		path: pmq.path,
@@ -442,6 +467,17 @@ func (pmq *PromotionMemberQuery) WithRider(opts ...func(*RiderQuery)) *Promotion
 	return pmq
 }
 
+// WithSubscribe tells the query-builder to eager-load the nodes that are connected to
+// the "subscribe" edge. The optional arguments are used to configure the query builder of the edge.
+func (pmq *PromotionMemberQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *PromotionMemberQuery {
+	query := (&SubscribeClient{config: pmq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	pmq.withSubscribe = query
+	return pmq
+}
+
 // WithLevel tells the query-builder to eager-load the nodes that are connected to
 // the "level" edge. The optional arguments are used to configure the query builder of the edge.
 func (pmq *PromotionMemberQuery) WithLevel(opts ...func(*PromotionLevelQuery)) *PromotionMemberQuery {
@@ -450,17 +486,6 @@ func (pmq *PromotionMemberQuery) WithLevel(opts ...func(*PromotionLevelQuery)) *
 		opt(query)
 	}
 	pmq.withLevel = query
-	return pmq
-}
-
-// WithCommission tells the query-builder to eager-load the nodes that are connected to
-// the "commission" edge. The optional arguments are used to configure the query builder of the edge.
-func (pmq *PromotionMemberQuery) WithCommission(opts ...func(*PromotionCommissionQuery)) *PromotionMemberQuery {
-	query := (&PromotionCommissionClient{config: pmq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	pmq.withCommission = query
 	return pmq
 }
 
@@ -505,6 +530,17 @@ func (pmq *PromotionMemberQuery) WithCards(opts ...func(*PromotionBankCardQuery)
 		opt(query)
 	}
 	pmq.withCards = query
+	return pmq
+}
+
+// WithCommissions tells the query-builder to eager-load the nodes that are connected to
+// the "commissions" edge. The optional arguments are used to configure the query builder of the edge.
+func (pmq *PromotionMemberQuery) WithCommissions(opts ...func(*PromotionMemberCommissionQuery)) *PromotionMemberQuery {
+	query := (&PromotionMemberCommissionClient{config: pmq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	pmq.withCommissions = query
 	return pmq
 }
 
@@ -586,14 +622,15 @@ func (pmq *PromotionMemberQuery) sqlAll(ctx context.Context, hooks ...queryHook)
 	var (
 		nodes       = []*PromotionMember{}
 		_spec       = pmq.querySpec()
-		loadedTypes = [7]bool{
+		loadedTypes = [8]bool{
 			pmq.withRider != nil,
+			pmq.withSubscribe != nil,
 			pmq.withLevel != nil,
-			pmq.withCommission != nil,
 			pmq.withReferring != nil,
 			pmq.withReferred != nil,
 			pmq.withPerson != nil,
 			pmq.withCards != nil,
+			pmq.withCommissions != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -623,15 +660,15 @@ func (pmq *PromotionMemberQuery) sqlAll(ctx context.Context, hooks ...queryHook)
 			return nil, err
 		}
 	}
-	if query := pmq.withLevel; query != nil {
-		if err := pmq.loadLevel(ctx, query, nodes, nil,
-			func(n *PromotionMember, e *PromotionLevel) { n.Edges.Level = e }); err != nil {
+	if query := pmq.withSubscribe; query != nil {
+		if err := pmq.loadSubscribe(ctx, query, nodes, nil,
+			func(n *PromotionMember, e *Subscribe) { n.Edges.Subscribe = e }); err != nil {
 			return nil, err
 		}
 	}
-	if query := pmq.withCommission; query != nil {
-		if err := pmq.loadCommission(ctx, query, nodes, nil,
-			func(n *PromotionMember, e *PromotionCommission) { n.Edges.Commission = e }); err != nil {
+	if query := pmq.withLevel; query != nil {
+		if err := pmq.loadLevel(ctx, query, nodes, nil,
+			func(n *PromotionMember, e *PromotionLevel) { n.Edges.Level = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -658,6 +695,15 @@ func (pmq *PromotionMemberQuery) sqlAll(ctx context.Context, hooks ...queryHook)
 		if err := pmq.loadCards(ctx, query, nodes,
 			func(n *PromotionMember) { n.Edges.Cards = []*PromotionBankCard{} },
 			func(n *PromotionMember, e *PromotionBankCard) { n.Edges.Cards = append(n.Edges.Cards, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := pmq.withCommissions; query != nil {
+		if err := pmq.loadCommissions(ctx, query, nodes,
+			func(n *PromotionMember) { n.Edges.Commissions = []*PromotionMemberCommission{} },
+			func(n *PromotionMember, e *PromotionMemberCommission) {
+				n.Edges.Commissions = append(n.Edges.Commissions, e)
+			}); err != nil {
 			return nil, err
 		}
 	}
@@ -696,6 +742,38 @@ func (pmq *PromotionMemberQuery) loadRider(ctx context.Context, query *RiderQuer
 	}
 	return nil
 }
+func (pmq *PromotionMemberQuery) loadSubscribe(ctx context.Context, query *SubscribeQuery, nodes []*PromotionMember, init func(*PromotionMember), assign func(*PromotionMember, *Subscribe)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*PromotionMember)
+	for i := range nodes {
+		if nodes[i].SubscribeID == nil {
+			continue
+		}
+		fk := *nodes[i].SubscribeID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(subscribe.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "subscribe_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 func (pmq *PromotionMemberQuery) loadLevel(ctx context.Context, query *PromotionLevelQuery, nodes []*PromotionMember, init func(*PromotionMember), assign func(*PromotionMember, *PromotionLevel)) error {
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*PromotionMember)
@@ -721,38 +799,6 @@ func (pmq *PromotionMemberQuery) loadLevel(ctx context.Context, query *Promotion
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "level_id" returned %v`, n.ID)
-		}
-		for i := range nodes {
-			assign(nodes[i], n)
-		}
-	}
-	return nil
-}
-func (pmq *PromotionMemberQuery) loadCommission(ctx context.Context, query *PromotionCommissionQuery, nodes []*PromotionMember, init func(*PromotionMember), assign func(*PromotionMember, *PromotionCommission)) error {
-	ids := make([]uint64, 0, len(nodes))
-	nodeids := make(map[uint64][]*PromotionMember)
-	for i := range nodes {
-		if nodes[i].CommissionID == nil {
-			continue
-		}
-		fk := *nodes[i].CommissionID
-		if _, ok := nodeids[fk]; !ok {
-			ids = append(ids, fk)
-		}
-		nodeids[fk] = append(nodeids[fk], nodes[i])
-	}
-	if len(ids) == 0 {
-		return nil
-	}
-	query.Where(promotioncommission.IDIn(ids...))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		nodes, ok := nodeids[n.ID]
-		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "commission_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -882,6 +928,36 @@ func (pmq *PromotionMemberQuery) loadCards(ctx context.Context, query *Promotion
 	}
 	return nil
 }
+func (pmq *PromotionMemberQuery) loadCommissions(ctx context.Context, query *PromotionMemberCommissionQuery, nodes []*PromotionMember, init func(*PromotionMember), assign func(*PromotionMember, *PromotionMemberCommission)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uint64]*PromotionMember)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(promotionmembercommission.FieldMemberID)
+	}
+	query.Where(predicate.PromotionMemberCommission(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(promotionmember.CommissionsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.MemberID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "member_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
 
 func (pmq *PromotionMemberQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := pmq.querySpec()
@@ -914,11 +990,11 @@ func (pmq *PromotionMemberQuery) querySpec() *sqlgraph.QuerySpec {
 		if pmq.withRider != nil {
 			_spec.Node.AddColumnOnce(promotionmember.FieldRiderID)
 		}
+		if pmq.withSubscribe != nil {
+			_spec.Node.AddColumnOnce(promotionmember.FieldSubscribeID)
+		}
 		if pmq.withLevel != nil {
 			_spec.Node.AddColumnOnce(promotionmember.FieldLevelID)
-		}
-		if pmq.withCommission != nil {
-			_spec.Node.AddColumnOnce(promotionmember.FieldCommissionID)
 		}
 		if pmq.withPerson != nil {
 			_spec.Node.AddColumnOnce(promotionmember.FieldPersonID)
@@ -991,13 +1067,14 @@ func (pmq *PromotionMemberQuery) Modify(modifiers ...func(s *sql.Selector)) *Pro
 type PromotionMemberQueryWith string
 
 var (
-	PromotionMemberQueryWithRider      PromotionMemberQueryWith = "Rider"
-	PromotionMemberQueryWithLevel      PromotionMemberQueryWith = "Level"
-	PromotionMemberQueryWithCommission PromotionMemberQueryWith = "Commission"
-	PromotionMemberQueryWithReferring  PromotionMemberQueryWith = "Referring"
-	PromotionMemberQueryWithReferred   PromotionMemberQueryWith = "Referred"
-	PromotionMemberQueryWithPerson     PromotionMemberQueryWith = "Person"
-	PromotionMemberQueryWithCards      PromotionMemberQueryWith = "Cards"
+	PromotionMemberQueryWithRider       PromotionMemberQueryWith = "Rider"
+	PromotionMemberQueryWithSubscribe   PromotionMemberQueryWith = "Subscribe"
+	PromotionMemberQueryWithLevel       PromotionMemberQueryWith = "Level"
+	PromotionMemberQueryWithReferring   PromotionMemberQueryWith = "Referring"
+	PromotionMemberQueryWithReferred    PromotionMemberQueryWith = "Referred"
+	PromotionMemberQueryWithPerson      PromotionMemberQueryWith = "Person"
+	PromotionMemberQueryWithCards       PromotionMemberQueryWith = "Cards"
+	PromotionMemberQueryWithCommissions PromotionMemberQueryWith = "Commissions"
 )
 
 func (pmq *PromotionMemberQuery) With(withEdges ...PromotionMemberQueryWith) *PromotionMemberQuery {
@@ -1005,10 +1082,10 @@ func (pmq *PromotionMemberQuery) With(withEdges ...PromotionMemberQueryWith) *Pr
 		switch v {
 		case PromotionMemberQueryWithRider:
 			pmq.WithRider()
+		case PromotionMemberQueryWithSubscribe:
+			pmq.WithSubscribe()
 		case PromotionMemberQueryWithLevel:
 			pmq.WithLevel()
-		case PromotionMemberQueryWithCommission:
-			pmq.WithCommission()
 		case PromotionMemberQueryWithReferring:
 			pmq.WithReferring()
 		case PromotionMemberQueryWithReferred:
@@ -1017,6 +1094,8 @@ func (pmq *PromotionMemberQuery) With(withEdges ...PromotionMemberQueryWith) *Pr
 			pmq.WithPerson()
 		case PromotionMemberQueryWithCards:
 			pmq.WithCards()
+		case PromotionMemberQueryWithCommissions:
+			pmq.WithCommissions()
 		}
 	}
 	return pmq

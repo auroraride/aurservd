@@ -13,6 +13,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
 	"github.com/auroraride/aurservd/internal/ent/promotionreferrals"
+	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // PromotionReferralsQuery is the builder for querying PromotionReferrals entities.
@@ -22,6 +24,8 @@ type PromotionReferralsQuery struct {
 	order               []promotionreferrals.OrderOption
 	inters              []Interceptor
 	predicates          []predicate.PromotionReferrals
+	withRider           *RiderQuery
+	withSubscribe       *SubscribeQuery
 	withReferringMember *PromotionMemberQuery
 	withReferredMember  *PromotionMemberQuery
 	modifiers           []func(*sql.Selector)
@@ -59,6 +63,50 @@ func (prq *PromotionReferralsQuery) Unique(unique bool) *PromotionReferralsQuery
 func (prq *PromotionReferralsQuery) Order(o ...promotionreferrals.OrderOption) *PromotionReferralsQuery {
 	prq.order = append(prq.order, o...)
 	return prq
+}
+
+// QueryRider chains the current query on the "rider" edge.
+func (prq *PromotionReferralsQuery) QueryRider() *RiderQuery {
+	query := (&RiderClient{config: prq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := prq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := prq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(promotionreferrals.Table, promotionreferrals.FieldID, selector),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, promotionreferrals.RiderTable, promotionreferrals.RiderColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(prq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QuerySubscribe chains the current query on the "subscribe" edge.
+func (prq *PromotionReferralsQuery) QuerySubscribe() *SubscribeQuery {
+	query := (&SubscribeClient{config: prq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := prq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := prq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(promotionreferrals.Table, promotionreferrals.FieldID, selector),
+			sqlgraph.To(subscribe.Table, subscribe.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, promotionreferrals.SubscribeTable, promotionreferrals.SubscribeColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(prq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // QueryReferringMember chains the current query on the "referring_member" edge.
@@ -297,12 +345,36 @@ func (prq *PromotionReferralsQuery) Clone() *PromotionReferralsQuery {
 		order:               append([]promotionreferrals.OrderOption{}, prq.order...),
 		inters:              append([]Interceptor{}, prq.inters...),
 		predicates:          append([]predicate.PromotionReferrals{}, prq.predicates...),
+		withRider:           prq.withRider.Clone(),
+		withSubscribe:       prq.withSubscribe.Clone(),
 		withReferringMember: prq.withReferringMember.Clone(),
 		withReferredMember:  prq.withReferredMember.Clone(),
 		// clone intermediate query.
 		sql:  prq.sql.Clone(),
 		path: prq.path,
 	}
+}
+
+// WithRider tells the query-builder to eager-load the nodes that are connected to
+// the "rider" edge. The optional arguments are used to configure the query builder of the edge.
+func (prq *PromotionReferralsQuery) WithRider(opts ...func(*RiderQuery)) *PromotionReferralsQuery {
+	query := (&RiderClient{config: prq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	prq.withRider = query
+	return prq
+}
+
+// WithSubscribe tells the query-builder to eager-load the nodes that are connected to
+// the "subscribe" edge. The optional arguments are used to configure the query builder of the edge.
+func (prq *PromotionReferralsQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *PromotionReferralsQuery {
+	query := (&SubscribeClient{config: prq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	prq.withSubscribe = query
+	return prq
 }
 
 // WithReferringMember tells the query-builder to eager-load the nodes that are connected to
@@ -405,7 +477,9 @@ func (prq *PromotionReferralsQuery) sqlAll(ctx context.Context, hooks ...queryHo
 	var (
 		nodes       = []*PromotionReferrals{}
 		_spec       = prq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [4]bool{
+			prq.withRider != nil,
+			prq.withSubscribe != nil,
 			prq.withReferringMember != nil,
 			prq.withReferredMember != nil,
 		}
@@ -431,6 +505,18 @@ func (prq *PromotionReferralsQuery) sqlAll(ctx context.Context, hooks ...queryHo
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := prq.withRider; query != nil {
+		if err := prq.loadRider(ctx, query, nodes, nil,
+			func(n *PromotionReferrals, e *Rider) { n.Edges.Rider = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := prq.withSubscribe; query != nil {
+		if err := prq.loadSubscribe(ctx, query, nodes, nil,
+			func(n *PromotionReferrals, e *Subscribe) { n.Edges.Subscribe = e }); err != nil {
+			return nil, err
+		}
+	}
 	if query := prq.withReferringMember; query != nil {
 		if err := prq.loadReferringMember(ctx, query, nodes, nil,
 			func(n *PromotionReferrals, e *PromotionMember) { n.Edges.ReferringMember = e }); err != nil {
@@ -446,6 +532,70 @@ func (prq *PromotionReferralsQuery) sqlAll(ctx context.Context, hooks ...queryHo
 	return nodes, nil
 }
 
+func (prq *PromotionReferralsQuery) loadRider(ctx context.Context, query *RiderQuery, nodes []*PromotionReferrals, init func(*PromotionReferrals), assign func(*PromotionReferrals, *Rider)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*PromotionReferrals)
+	for i := range nodes {
+		if nodes[i].RiderID == nil {
+			continue
+		}
+		fk := *nodes[i].RiderID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(rider.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "rider_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (prq *PromotionReferralsQuery) loadSubscribe(ctx context.Context, query *SubscribeQuery, nodes []*PromotionReferrals, init func(*PromotionReferrals), assign func(*PromotionReferrals, *Subscribe)) error {
+	ids := make([]uint64, 0, len(nodes))
+	nodeids := make(map[uint64][]*PromotionReferrals)
+	for i := range nodes {
+		if nodes[i].SubscribeID == nil {
+			continue
+		}
+		fk := *nodes[i].SubscribeID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(subscribe.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "subscribe_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 func (prq *PromotionReferralsQuery) loadReferringMember(ctx context.Context, query *PromotionMemberQuery, nodes []*PromotionReferrals, init func(*PromotionReferrals), assign func(*PromotionReferrals, *PromotionMember)) error {
 	ids := make([]uint64, 0, len(nodes))
 	nodeids := make(map[uint64][]*PromotionReferrals)
@@ -536,6 +686,12 @@ func (prq *PromotionReferralsQuery) querySpec() *sqlgraph.QuerySpec {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
 		}
+		if prq.withRider != nil {
+			_spec.Node.AddColumnOnce(promotionreferrals.FieldRiderID)
+		}
+		if prq.withSubscribe != nil {
+			_spec.Node.AddColumnOnce(promotionreferrals.FieldSubscribeID)
+		}
 		if prq.withReferringMember != nil {
 			_spec.Node.AddColumnOnce(promotionreferrals.FieldReferringMemberID)
 		}
@@ -610,6 +766,8 @@ func (prq *PromotionReferralsQuery) Modify(modifiers ...func(s *sql.Selector)) *
 type PromotionReferralsQueryWith string
 
 var (
+	PromotionReferralsQueryWithRider           PromotionReferralsQueryWith = "Rider"
+	PromotionReferralsQueryWithSubscribe       PromotionReferralsQueryWith = "Subscribe"
 	PromotionReferralsQueryWithReferringMember PromotionReferralsQueryWith = "ReferringMember"
 	PromotionReferralsQueryWithReferredMember  PromotionReferralsQueryWith = "ReferredMember"
 )
@@ -617,6 +775,10 @@ var (
 func (prq *PromotionReferralsQuery) With(withEdges ...PromotionReferralsQueryWith) *PromotionReferralsQuery {
 	for _, v := range withEdges {
 		switch v {
+		case PromotionReferralsQueryWithRider:
+			prq.WithRider()
+		case PromotionReferralsQueryWithSubscribe:
+			prq.WithSubscribe()
 		case PromotionReferralsQueryWithReferringMember:
 			prq.WithReferringMember()
 		case PromotionReferralsQueryWithReferredMember:

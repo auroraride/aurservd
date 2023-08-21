@@ -11,12 +11,12 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/internal/ent/promotioncommission"
 	"github.com/auroraride/aurservd/internal/ent/promotionlevel"
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
 	"github.com/auroraride/aurservd/internal/ent/promotionperson"
 	"github.com/auroraride/aurservd/internal/ent/promotionreferrals"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // PromotionMember is the model entity for the PromotionMember schema.
@@ -38,10 +38,10 @@ type PromotionMember struct {
 	Remark string `json:"remark,omitempty"`
 	// 骑手ID
 	RiderID *uint64 `json:"rider_id,omitempty"`
+	// SubscribeID holds the value of the "subscribe_id" field.
+	SubscribeID *uint64 `json:"subscribe_id,omitempty"`
 	// LevelID holds the value of the "level_id" field.
 	LevelID *uint64 `json:"level_id,omitempty"`
-	// CommissionID holds the value of the "commission_id" field.
-	CommissionID *uint64 `json:"commission_id,omitempty"`
 	// 会员手机号
 	Phone string `json:"phone,omitempty"`
 	// 会员姓名
@@ -74,10 +74,10 @@ type PromotionMember struct {
 type PromotionMemberEdges struct {
 	// 骑手
 	Rider *Rider `json:"rider,omitempty"`
+	// Subscribe holds the value of the subscribe edge.
+	Subscribe *Subscribe `json:"subscribe,omitempty"`
 	// Level holds the value of the level edge.
 	Level *PromotionLevel `json:"level,omitempty"`
-	// Commission holds the value of the commission edge.
-	Commission *PromotionCommission `json:"commission,omitempty"`
 	// Referring holds the value of the referring edge.
 	Referring []*PromotionReferrals `json:"referring,omitempty"`
 	// Referred holds the value of the referred edge.
@@ -86,9 +86,11 @@ type PromotionMemberEdges struct {
 	Person *PromotionPerson `json:"person,omitempty"`
 	// Cards holds the value of the cards edge.
 	Cards []*PromotionBankCard `json:"cards,omitempty"`
+	// Commissions holds the value of the commissions edge.
+	Commissions []*PromotionMemberCommission `json:"commissions,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [7]bool
+	loadedTypes [8]bool
 }
 
 // RiderOrErr returns the Rider value or an error if the edge
@@ -104,10 +106,23 @@ func (e PromotionMemberEdges) RiderOrErr() (*Rider, error) {
 	return nil, &NotLoadedError{edge: "rider"}
 }
 
+// SubscribeOrErr returns the Subscribe value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e PromotionMemberEdges) SubscribeOrErr() (*Subscribe, error) {
+	if e.loadedTypes[1] {
+		if e.Subscribe == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: subscribe.Label}
+		}
+		return e.Subscribe, nil
+	}
+	return nil, &NotLoadedError{edge: "subscribe"}
+}
+
 // LevelOrErr returns the Level value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e PromotionMemberEdges) LevelOrErr() (*PromotionLevel, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[2] {
 		if e.Level == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: promotionlevel.Label}
@@ -115,19 +130,6 @@ func (e PromotionMemberEdges) LevelOrErr() (*PromotionLevel, error) {
 		return e.Level, nil
 	}
 	return nil, &NotLoadedError{edge: "level"}
-}
-
-// CommissionOrErr returns the Commission value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e PromotionMemberEdges) CommissionOrErr() (*PromotionCommission, error) {
-	if e.loadedTypes[2] {
-		if e.Commission == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: promotioncommission.Label}
-		}
-		return e.Commission, nil
-	}
-	return nil, &NotLoadedError{edge: "commission"}
 }
 
 // ReferringOrErr returns the Referring value or an error if the edge
@@ -174,6 +176,15 @@ func (e PromotionMemberEdges) CardsOrErr() ([]*PromotionBankCard, error) {
 	return nil, &NotLoadedError{edge: "cards"}
 }
 
+// CommissionsOrErr returns the Commissions value or an error if the edge
+// was not loaded in eager-loading.
+func (e PromotionMemberEdges) CommissionsOrErr() ([]*PromotionMemberCommission, error) {
+	if e.loadedTypes[7] {
+		return e.Commissions, nil
+	}
+	return nil, &NotLoadedError{edge: "commissions"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*PromotionMember) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -185,7 +196,7 @@ func (*PromotionMember) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case promotionmember.FieldBalance, promotionmember.FieldFrozen:
 			values[i] = new(sql.NullFloat64)
-		case promotionmember.FieldID, promotionmember.FieldRiderID, promotionmember.FieldLevelID, promotionmember.FieldCommissionID, promotionmember.FieldTotalGrowthValue, promotionmember.FieldCurrentGrowthValue, promotionmember.FieldPersonID, promotionmember.FieldNewSignCount, promotionmember.FieldRenewCount:
+		case promotionmember.FieldID, promotionmember.FieldRiderID, promotionmember.FieldSubscribeID, promotionmember.FieldLevelID, promotionmember.FieldTotalGrowthValue, promotionmember.FieldCurrentGrowthValue, promotionmember.FieldPersonID, promotionmember.FieldNewSignCount, promotionmember.FieldRenewCount:
 			values[i] = new(sql.NullInt64)
 		case promotionmember.FieldRemark, promotionmember.FieldPhone, promotionmember.FieldName, promotionmember.FieldAvatarURL:
 			values[i] = new(sql.NullString)
@@ -260,19 +271,19 @@ func (pm *PromotionMember) assignValues(columns []string, values []any) error {
 				pm.RiderID = new(uint64)
 				*pm.RiderID = uint64(value.Int64)
 			}
+		case promotionmember.FieldSubscribeID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field subscribe_id", values[i])
+			} else if value.Valid {
+				pm.SubscribeID = new(uint64)
+				*pm.SubscribeID = uint64(value.Int64)
+			}
 		case promotionmember.FieldLevelID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field level_id", values[i])
 			} else if value.Valid {
 				pm.LevelID = new(uint64)
 				*pm.LevelID = uint64(value.Int64)
-			}
-		case promotionmember.FieldCommissionID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field commission_id", values[i])
-			} else if value.Valid {
-				pm.CommissionID = new(uint64)
-				*pm.CommissionID = uint64(value.Int64)
 			}
 		case promotionmember.FieldPhone:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -359,14 +370,14 @@ func (pm *PromotionMember) QueryRider() *RiderQuery {
 	return NewPromotionMemberClient(pm.config).QueryRider(pm)
 }
 
+// QuerySubscribe queries the "subscribe" edge of the PromotionMember entity.
+func (pm *PromotionMember) QuerySubscribe() *SubscribeQuery {
+	return NewPromotionMemberClient(pm.config).QuerySubscribe(pm)
+}
+
 // QueryLevel queries the "level" edge of the PromotionMember entity.
 func (pm *PromotionMember) QueryLevel() *PromotionLevelQuery {
 	return NewPromotionMemberClient(pm.config).QueryLevel(pm)
-}
-
-// QueryCommission queries the "commission" edge of the PromotionMember entity.
-func (pm *PromotionMember) QueryCommission() *PromotionCommissionQuery {
-	return NewPromotionMemberClient(pm.config).QueryCommission(pm)
 }
 
 // QueryReferring queries the "referring" edge of the PromotionMember entity.
@@ -387,6 +398,11 @@ func (pm *PromotionMember) QueryPerson() *PromotionPersonQuery {
 // QueryCards queries the "cards" edge of the PromotionMember entity.
 func (pm *PromotionMember) QueryCards() *PromotionBankCardQuery {
 	return NewPromotionMemberClient(pm.config).QueryCards(pm)
+}
+
+// QueryCommissions queries the "commissions" edge of the PromotionMember entity.
+func (pm *PromotionMember) QueryCommissions() *PromotionMemberCommissionQuery {
+	return NewPromotionMemberClient(pm.config).QueryCommissions(pm)
 }
 
 // Update returns a builder for updating this PromotionMember.
@@ -437,13 +453,13 @@ func (pm *PromotionMember) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	if v := pm.LevelID; v != nil {
-		builder.WriteString("level_id=")
+	if v := pm.SubscribeID; v != nil {
+		builder.WriteString("subscribe_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	if v := pm.CommissionID; v != nil {
-		builder.WriteString("commission_id=")
+	if v := pm.LevelID; v != nil {
+		builder.WriteString("level_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")

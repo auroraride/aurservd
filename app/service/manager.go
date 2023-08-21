@@ -197,3 +197,15 @@ func (s *managerService) Query(id uint64) *ent.Manager {
 func (s *managerService) Delete(req *model.IDParamReq) {
 	s.orm.SoftDeleteOne(s.Query(req.ID)).SaveX(s.ctx)
 }
+
+// Profile 管理员信息
+func (s *managerService) Profile(m *ent.Manager) model.ManagerSigninRes {
+	perms, super := s.GetPermissions(m)
+	return model.ManagerSigninRes{
+		ID:          m.ID,
+		Name:        m.Name,
+		Phone:       m.Phone,
+		Permissions: perms,
+		Super:       super,
+	}
+}

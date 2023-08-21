@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/order"
+	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/promotioncommission"
 	"github.com/auroraride/aurservd/internal/ent/promotionearnings"
@@ -130,6 +131,26 @@ func (peu *PromotionEarningsUpdate) ClearOrderID() *PromotionEarningsUpdate {
 	return peu
 }
 
+// SetPlanID sets the "plan_id" field.
+func (peu *PromotionEarningsUpdate) SetPlanID(u uint64) *PromotionEarningsUpdate {
+	peu.mutation.SetPlanID(u)
+	return peu
+}
+
+// SetNillablePlanID sets the "plan_id" field if the given value is not nil.
+func (peu *PromotionEarningsUpdate) SetNillablePlanID(u *uint64) *PromotionEarningsUpdate {
+	if u != nil {
+		peu.SetPlanID(*u)
+	}
+	return peu
+}
+
+// ClearPlanID clears the value of the "plan_id" field.
+func (peu *PromotionEarningsUpdate) ClearPlanID() *PromotionEarningsUpdate {
+	peu.mutation.ClearPlanID()
+	return peu
+}
+
 // SetStatus sets the "status" field.
 func (peu *PromotionEarningsUpdate) SetStatus(u uint8) *PromotionEarningsUpdate {
 	peu.mutation.ResetStatus()
@@ -212,6 +233,11 @@ func (peu *PromotionEarningsUpdate) SetOrder(o *Order) *PromotionEarningsUpdate 
 	return peu.SetOrderID(o.ID)
 }
 
+// SetPlan sets the "plan" edge to the Plan entity.
+func (peu *PromotionEarningsUpdate) SetPlan(p *Plan) *PromotionEarningsUpdate {
+	return peu.SetPlanID(p.ID)
+}
+
 // Mutation returns the PromotionEarningsMutation object of the builder.
 func (peu *PromotionEarningsUpdate) Mutation() *PromotionEarningsMutation {
 	return peu.mutation
@@ -238,6 +264,12 @@ func (peu *PromotionEarningsUpdate) ClearRider() *PromotionEarningsUpdate {
 // ClearOrder clears the "order" edge to the Order entity.
 func (peu *PromotionEarningsUpdate) ClearOrder() *PromotionEarningsUpdate {
 	peu.mutation.ClearOrder()
+	return peu
+}
+
+// ClearPlan clears the "plan" edge to the Plan entity.
+func (peu *PromotionEarningsUpdate) ClearPlan() *PromotionEarningsUpdate {
+	peu.mutation.ClearPlan()
 	return peu
 }
 
@@ -473,6 +505,35 @@ func (peu *PromotionEarningsUpdate) sqlSave(ctx context.Context) (n int, err err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if peu.mutation.PlanCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotionearnings.PlanTable,
+			Columns: []string{promotionearnings.PlanColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := peu.mutation.PlanIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotionearnings.PlanTable,
+			Columns: []string{promotionearnings.PlanColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(peu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, peu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -591,6 +652,26 @@ func (peuo *PromotionEarningsUpdateOne) ClearOrderID() *PromotionEarningsUpdateO
 	return peuo
 }
 
+// SetPlanID sets the "plan_id" field.
+func (peuo *PromotionEarningsUpdateOne) SetPlanID(u uint64) *PromotionEarningsUpdateOne {
+	peuo.mutation.SetPlanID(u)
+	return peuo
+}
+
+// SetNillablePlanID sets the "plan_id" field if the given value is not nil.
+func (peuo *PromotionEarningsUpdateOne) SetNillablePlanID(u *uint64) *PromotionEarningsUpdateOne {
+	if u != nil {
+		peuo.SetPlanID(*u)
+	}
+	return peuo
+}
+
+// ClearPlanID clears the value of the "plan_id" field.
+func (peuo *PromotionEarningsUpdateOne) ClearPlanID() *PromotionEarningsUpdateOne {
+	peuo.mutation.ClearPlanID()
+	return peuo
+}
+
 // SetStatus sets the "status" field.
 func (peuo *PromotionEarningsUpdateOne) SetStatus(u uint8) *PromotionEarningsUpdateOne {
 	peuo.mutation.ResetStatus()
@@ -673,6 +754,11 @@ func (peuo *PromotionEarningsUpdateOne) SetOrder(o *Order) *PromotionEarningsUpd
 	return peuo.SetOrderID(o.ID)
 }
 
+// SetPlan sets the "plan" edge to the Plan entity.
+func (peuo *PromotionEarningsUpdateOne) SetPlan(p *Plan) *PromotionEarningsUpdateOne {
+	return peuo.SetPlanID(p.ID)
+}
+
 // Mutation returns the PromotionEarningsMutation object of the builder.
 func (peuo *PromotionEarningsUpdateOne) Mutation() *PromotionEarningsMutation {
 	return peuo.mutation
@@ -699,6 +785,12 @@ func (peuo *PromotionEarningsUpdateOne) ClearRider() *PromotionEarningsUpdateOne
 // ClearOrder clears the "order" edge to the Order entity.
 func (peuo *PromotionEarningsUpdateOne) ClearOrder() *PromotionEarningsUpdateOne {
 	peuo.mutation.ClearOrder()
+	return peuo
+}
+
+// ClearPlan clears the "plan" edge to the Plan entity.
+func (peuo *PromotionEarningsUpdateOne) ClearPlan() *PromotionEarningsUpdateOne {
+	peuo.mutation.ClearPlan()
 	return peuo
 }
 
@@ -957,6 +1049,35 @@ func (peuo *PromotionEarningsUpdateOne) sqlSave(ctx context.Context) (_node *Pro
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if peuo.mutation.PlanCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotionearnings.PlanTable,
+			Columns: []string{promotionearnings.PlanColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := peuo.mutation.PlanIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotionearnings.PlanTable,
+			Columns: []string{promotionearnings.PlanColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plan.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

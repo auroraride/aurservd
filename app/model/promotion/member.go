@@ -22,14 +22,13 @@ type MemberUpdateReq struct {
 }
 
 type MemberFilter struct {
-	Keyword        *string           `json:"keyword" query:"keyword"`                              // 关键词 姓名/手机号
-	Enable         *bool             `json:"enable" query:"enable"  enums:"true,false"`            // 用户状态 false:禁用 true:启用
-	CommissionType *CommissionType   `json:"commissionType" query:"commissionType"  enums:"0,1,2"` // 返佣方案 0:默认全局返佣方案 1:通用返佣方案 2:为个人自定义返佣方案
-	CommissionID   *uint64           `json:"commissionId" query:"commissionId" `                   // 返佣方案id
-	LevelID        *uint64           `json:"levelId" query:"levelId"`                              // 会员等级
-	Start          *string           `json:"start" query:"start" `                                 // 开始日期
-	End            *string           `json:"end"  query:"end"`                                     // 结束日期
-	AuthStatus     *PersonAuthStatus `json:"authStatus" query:"authStatus" enums:"0,1,2"`          // 是否实名认证
+	Keyword      *string           `json:"keyword" query:"keyword"`                     // 关键词 姓名/手机号
+	Enable       *bool             `json:"enable" query:"enable"  enums:"true,false"`   // 用户状态 false:禁用 true:启用
+	CommissionID *uint64           `json:"commissionId" query:"commissionId" `          // 返佣方案id
+	LevelID      *uint64           `json:"levelId" query:"levelId"`                     // 会员等级
+	Start        *string           `json:"start" query:"start" `                        // 开始日期
+	End          *string           `json:"end"  query:"end"`                            // 结束日期
+	AuthStatus   *PersonAuthStatus `json:"authStatus" query:"authStatus" enums:"0,1,2"` // 是否实名认证
 }
 
 // MemberRes 会员返回参数
@@ -153,6 +152,7 @@ type MemberCreateReq struct {
 	Name              *string `json:"name"`              // 姓名
 	RiderID           *uint64 `json:"riderID"`           // 骑手ID
 	ReferringMemberID *uint64 `json:"referringMemberID"` // 推荐人ID
+	SubscribeID       *uint64 `json:"subscribeID"`       // 订阅ID
 }
 
 // MemberSigninRes 注册会员返回参数
@@ -173,10 +173,10 @@ type MemberProfile struct {
 
 // MemberCommissionReq 会员设置返佣
 type MemberCommissionReq struct {
-	ID           uint64          `json:"id" validate:"required"`
-	CommissionID *uint64         `json:"commissionId" ` // 返佣方案
-	Rule         *CommissionRule `json:"rule"`          // 返佣规则
-	Desc         *string         `json:"desc"`          // 返佣说明
+	ID     uint64          `json:"id" validate:"required"`
+	Rule   *CommissionRule `json:"rule" validate:"required"` // 返佣规则
+	Desc   *string         `json:"desc"`                     // 返佣说明
+	PlanID []uint64        `json:"planId" validate:"unique"` // 骑士卡方案ID
 }
 
 type UploadAvatar struct {

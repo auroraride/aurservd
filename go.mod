@@ -168,7 +168,6 @@ require (
 	github.com/xuri/efp v0.0.0-20230802181842-ad255f2331ca // indirect
 	github.com/xuri/nfp v0.0.0-20230802015359-2d5eeba905e9 // indirect
 	github.com/zclconf/go-cty v1.13.2 // indirect
-	go.uber.org/atomic v1.11.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/image v0.11.0 // indirect
 	golang.org/x/mod v0.12.0 // indirect

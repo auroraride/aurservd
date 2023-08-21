@@ -104,6 +104,8 @@ type Tx struct {
 	PromotionBankCard *PromotionBankCardClient
 	// PromotionCommission is the client for interacting with the PromotionCommission builders.
 	PromotionCommission *PromotionCommissionClient
+	// PromotionCommissionPlan is the client for interacting with the PromotionCommissionPlan builders.
+	PromotionCommissionPlan *PromotionCommissionPlanClient
 	// PromotionEarnings is the client for interacting with the PromotionEarnings builders.
 	PromotionEarnings *PromotionEarningsClient
 	// PromotionGrowth is the client for interacting with the PromotionGrowth builders.
@@ -114,6 +116,8 @@ type Tx struct {
 	PromotionLevelTask *PromotionLevelTaskClient
 	// PromotionMember is the client for interacting with the PromotionMember builders.
 	PromotionMember *PromotionMemberClient
+	// PromotionMemberCommission is the client for interacting with the PromotionMemberCommission builders.
+	PromotionMemberCommission *PromotionMemberCommissionClient
 	// PromotionPerson is the client for interacting with the PromotionPerson builders.
 	PromotionPerson *PromotionPersonClient
 	// PromotionPrivilege is the client for interacting with the PromotionPrivilege builders.
@@ -326,11 +330,13 @@ func (tx *Tx) init() {
 	tx.PromotionAchievement = NewPromotionAchievementClient(tx.config)
 	tx.PromotionBankCard = NewPromotionBankCardClient(tx.config)
 	tx.PromotionCommission = NewPromotionCommissionClient(tx.config)
+	tx.PromotionCommissionPlan = NewPromotionCommissionPlanClient(tx.config)
 	tx.PromotionEarnings = NewPromotionEarningsClient(tx.config)
 	tx.PromotionGrowth = NewPromotionGrowthClient(tx.config)
 	tx.PromotionLevel = NewPromotionLevelClient(tx.config)
 	tx.PromotionLevelTask = NewPromotionLevelTaskClient(tx.config)
 	tx.PromotionMember = NewPromotionMemberClient(tx.config)
+	tx.PromotionMemberCommission = NewPromotionMemberCommissionClient(tx.config)
 	tx.PromotionPerson = NewPromotionPersonClient(tx.config)
 	tx.PromotionPrivilege = NewPromotionPrivilegeClient(tx.config)
 	tx.PromotionReferrals = NewPromotionReferralsClient(tx.config)

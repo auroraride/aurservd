@@ -12329,6 +12329,48 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/promotion/commission/plan/list/{:id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[PM]推广管理接口"
+                ],
+                "summary": "PM8010 返佣方案骑士卡列表",
+                "operationId": "ManagerPromotionCommissionPlanList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "会员id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/promotion.CommissionPlanListRes"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/promotion/commission/selection": {
             "get": {
                 "consumes": [
@@ -14113,6 +14155,40 @@ const docTemplate = `{
                             "type": "array",
                             "items": {
                                 "$ref": "#/definitions/model.CascaderOptionLevel2"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/selection/commission/plan": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MB017 返佣方案筛选骑士卡",
+                "operationId": "ManagerSelectionCommissionPlan",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "关键字",
+                        "name": "keyword",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.SelectOption"
                             }
                         }
                     }
@@ -16093,6 +16169,38 @@ const docTemplate = `{
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/user/profile": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M1006 管理员信息",
+                "operationId": "ManagerProfile",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.ManagerSigninRes"
                         }
                     }
                 }
@@ -27968,9 +28076,13 @@ const docTemplate = `{
                     "description": "提成",
                     "type": "number"
                 },
-                "commissionBase": {
-                    "description": "推广返佣底数",
-                    "type": "number"
+                "commissionId": {
+                    "description": "佣金方案ID",
+                    "type": "integer"
+                },
+                "commissionName": {
+                    "description": "佣金方案名称",
+                    "type": "string"
                 },
                 "days": {
                     "type": "integer",
@@ -28224,6 +28336,10 @@ const docTemplate = `{
                 "intelligent": {
                     "description": "是否智能柜套餐",
                     "type": "boolean"
+                },
+                "model": {
+                    "description": "电池型号",
+                    "type": "string"
                 },
                 "name": {
                     "description": "名称",
@@ -31725,8 +31841,8 @@ const docTemplate = `{
         "promotion.CommissionCreateReq": {
             "type": "object",
             "required": [
-                "desc",
                 "name",
+                "planId",
                 "rule",
                 "type"
             ],
@@ -31742,6 +31858,14 @@ const docTemplate = `{
                 "name": {
                     "description": "方案名称",
                     "type": "string"
+                },
+                "planId": {
+                    "description": "骑士卡方案ID",
+                    "type": "array",
+                    "uniqueItems": true,
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "rule": {
                     "description": "返佣规则",
@@ -31796,6 +31920,13 @@ const docTemplate = `{
                     "description": "方案名称",
                     "type": "string"
                 },
+                "plan": {
+                    "description": "骑士卡方案",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/promotion.CommissionPlan"
+                    }
+                },
                 "rule": {
                     "description": "返佣规则",
                     "allOf": [
@@ -31815,10 +31946,6 @@ const docTemplate = `{
                             "$ref": "#/definitions/promotion.CommissionType"
                         }
                     ]
-                },
-                "useCount": {
-                    "description": "使用次数",
-                    "type": "integer"
                 }
             }
         },
@@ -31848,6 +31975,78 @@ const docTemplate = `{
                 "CommissionLimited",
                 "CommissionUnlimited"
             ]
+        },
+        "promotion.CommissionOptionType": {
+            "type": "integer",
+            "enum": [
+                1,
+                2
+            ],
+            "x-enum-comments": {
+                "FixedAmount": "固定金额",
+                "Percentage": "比例"
+            },
+            "x-enum-varnames": [
+                "FixedAmount",
+                "Percentage"
+            ]
+        },
+        "promotion.CommissionPlan": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "description": "骑士卡价格",
+                    "type": "number"
+                },
+                "id": {
+                    "description": "骑士卡ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "骑士卡名称",
+                    "type": "string"
+                }
+            }
+        },
+        "promotion.CommissionPlanListRes": {
+            "type": "object",
+            "properties": {
+                "commissionId": {
+                    "description": "返佣方案ID",
+                    "type": "integer"
+                },
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "方案名称",
+                    "type": "string"
+                },
+                "plan": {
+                    "description": "骑士卡方案",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/promotion.CommissionPlan"
+                    }
+                },
+                "rule": {
+                    "description": "返佣规则",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/promotion.CommissionRule"
+                        }
+                    ]
+                },
+                "type": {
+                    "description": "返佣类型 0:默认通用返佣方案 1:通用返佣方案 2:为个人自定义返佣方案",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/promotion.CommissionType"
+                        }
+                    ]
+                }
+            }
         },
         "promotion.CommissionRule": {
             "type": "object",
@@ -31887,8 +32086,16 @@ const docTemplate = `{
                     "description": "任务名称",
                     "type": "string"
                 },
-                "ratio": {
-                    "description": "返佣比例列表",
+                "optionType": {
+                    "description": "选项类型 1:固定金额 2:比例",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/promotion.CommissionOptionType"
+                        }
+                    ]
+                },
+                "value": {
+                    "description": "选项值",
                     "type": "array",
                     "items": {
                         "type": "number"
@@ -32239,19 +32446,24 @@ const docTemplate = `{
         "promotion.MemberCommissionReq": {
             "type": "object",
             "required": [
-                "id"
+                "id",
+                "rule"
             ],
             "properties": {
-                "commissionId": {
-                    "description": "返佣方案",
-                    "type": "integer"
-                },
                 "desc": {
                     "description": "返佣说明",
                     "type": "string"
                 },
                 "id": {
                     "type": "integer"
+                },
+                "planId": {
+                    "description": "骑士卡方案ID",
+                    "type": "array",
+                    "uniqueItems": true,
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "rule": {
                     "description": "返佣规则",
@@ -32323,19 +32535,6 @@ const docTemplate = `{
                 "commissionId": {
                     "description": "返佣方案id",
                     "type": "integer"
-                },
-                "commissionType": {
-                    "description": "返佣方案 0:默认全局返佣方案 1:通用返佣方案 2:为个人自定义返佣方案",
-                    "enum": [
-                        0,
-                        1,
-                        2
-                    ],
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/promotion.CommissionType"
-                        }
-                    ]
                 },
                 "current": {
                     "description": "当前页, 从1开始, 默认1",

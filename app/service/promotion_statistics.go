@@ -71,7 +71,7 @@ WITH RECURSIVE member_hierarchy AS (
 
 SELECT
     COUNT(DISTINCT mh.referred_member_id) AS TotalTeam,
-    COUNT(new_sign_count) AS TotalNewSign,
+    COALESCE(SUM(new_sign_count),0) AS TotalNewSign,
     COALESCE(SUM(renew_count),0) AS TotalRenewal
 FROM member_hierarchy mh
 LEFT JOIN promotion_member m ON m.id = mh.referred_member_id
@@ -239,7 +239,7 @@ WITH RECURSIVE member_hierarchy AS (
 SELECT
     level,
     COUNT(DISTINCT mh.referred_member_id) AS TotalTeam,
-    COUNT(new_sign_count) AS TotalNewSign,
+    COALESCE(SUM(new_sign_count),0) AS TotalNewSign,
     COALESCE(SUM(renew_count),0) AS TotalRenewal
 FROM member_hierarchy mh
 LEFT JOIN promotion_member m ON m.id = mh.referred_member_id

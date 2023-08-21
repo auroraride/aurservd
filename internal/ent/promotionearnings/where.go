@@ -95,6 +95,11 @@ func OrderID(v uint64) predicate.PromotionEarnings {
 	return predicate.PromotionEarnings(sql.FieldEQ(FieldOrderID, v))
 }
 
+// PlanID applies equality check predicate on the "plan_id" field. It's identical to PlanIDEQ.
+func PlanID(v uint64) predicate.PromotionEarnings {
+	return predicate.PromotionEarnings(sql.FieldEQ(FieldPlanID, v))
+}
+
 // Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
 func Status(v uint8) predicate.PromotionEarnings {
 	return predicate.PromotionEarnings(sql.FieldEQ(FieldStatus, v))
@@ -425,6 +430,36 @@ func OrderIDNotNil() predicate.PromotionEarnings {
 	return predicate.PromotionEarnings(sql.FieldNotNull(FieldOrderID))
 }
 
+// PlanIDEQ applies the EQ predicate on the "plan_id" field.
+func PlanIDEQ(v uint64) predicate.PromotionEarnings {
+	return predicate.PromotionEarnings(sql.FieldEQ(FieldPlanID, v))
+}
+
+// PlanIDNEQ applies the NEQ predicate on the "plan_id" field.
+func PlanIDNEQ(v uint64) predicate.PromotionEarnings {
+	return predicate.PromotionEarnings(sql.FieldNEQ(FieldPlanID, v))
+}
+
+// PlanIDIn applies the In predicate on the "plan_id" field.
+func PlanIDIn(vs ...uint64) predicate.PromotionEarnings {
+	return predicate.PromotionEarnings(sql.FieldIn(FieldPlanID, vs...))
+}
+
+// PlanIDNotIn applies the NotIn predicate on the "plan_id" field.
+func PlanIDNotIn(vs ...uint64) predicate.PromotionEarnings {
+	return predicate.PromotionEarnings(sql.FieldNotIn(FieldPlanID, vs...))
+}
+
+// PlanIDIsNil applies the IsNil predicate on the "plan_id" field.
+func PlanIDIsNil() predicate.PromotionEarnings {
+	return predicate.PromotionEarnings(sql.FieldIsNull(FieldPlanID))
+}
+
+// PlanIDNotNil applies the NotNil predicate on the "plan_id" field.
+func PlanIDNotNil() predicate.PromotionEarnings {
+	return predicate.PromotionEarnings(sql.FieldNotNull(FieldPlanID))
+}
+
 // StatusEQ applies the EQ predicate on the "status" field.
 func StatusEQ(v uint8) predicate.PromotionEarnings {
 	return predicate.PromotionEarnings(sql.FieldEQ(FieldStatus, v))
@@ -664,6 +699,29 @@ func HasOrder() predicate.PromotionEarnings {
 func HasOrderWith(preds ...predicate.Order) predicate.PromotionEarnings {
 	return predicate.PromotionEarnings(func(s *sql.Selector) {
 		step := newOrderStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasPlan applies the HasEdge predicate on the "plan" edge.
+func HasPlan() predicate.PromotionEarnings {
+	return predicate.PromotionEarnings(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, PlanTable, PlanColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasPlanWith applies the HasEdge predicate on the "plan" edge with a given conditions (other predicates).
+func HasPlanWith(preds ...predicate.Plan) predicate.PromotionEarnings {
+	return predicate.PromotionEarnings(func(s *sql.Selector) {
+		step := newPlanStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

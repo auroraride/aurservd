@@ -61,8 +61,6 @@ func (PromotionReferrals) Fields() []ent.Field {
 	return []ent.Field{
 		field.Uint64("referring_member_id").Optional().Nillable().Comment("推广者id"),
 		field.Uint64("referred_member_id").Optional().Unique().Comment("被推广者ID"),
-		field.Uint64("rider_id").Optional().Nillable().Comment("骑手id"),
-		// field.Uint64("parent_id").Optional().Nillable().Comment("上级id"),
 	}
 }
 
@@ -71,14 +69,15 @@ func (PromotionReferrals) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("referring_member", PromotionMember.Type).Ref("referring").Unique().Field("referring_member_id"),
 		edge.From("referred_member", PromotionMember.Type).Ref("referred").Unique().Field("referred_member_id"),
-
-		// edge.To("children", PromotionReferrals.Type).From("parent").Unique().Field("parent_id"),
 	}
 }
 
 func (PromotionReferrals) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		internal.TimeMixin{},
+
+		RiderMixin{Optional: true},
+		SubscribeMixin{Optional: true},
 	}
 }
 

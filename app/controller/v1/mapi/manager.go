@@ -6,11 +6,12 @@
 package mapi
 
 import (
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/pkg/snag"
-	"github.com/labstack/echo/v4"
 )
 
 type manager struct {
@@ -103,4 +104,18 @@ func (*manager) Modify(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.ManagerModifyReq](c)
 	service.NewManagerWithModifier(ctx.Modifier).Modify(req)
 	return ctx.SendResponse()
+}
+
+// Profile
+// @ID           ManagerProfile
+// @Router       /manager/v1/user/profile [GET]
+// @Summary      M1006 管理员信息
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Success      200  {object}  model.ManagerSigninRes
+func (*manager) Profile(c echo.Context) (err error) {
+	ctx := app.ContextX[app.ManagerContext](c)
+	return ctx.SendResponse(service.NewManager().Profile(ctx.Manager))
 }

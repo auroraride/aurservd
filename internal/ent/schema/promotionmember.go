@@ -81,6 +81,8 @@ func (PromotionMember) Edges() []ent.Edge {
 
 		edge.From("person", PromotionPerson.Type).Ref("member").Unique().Field("person_id"),
 		edge.To("cards", PromotionBankCard.Type),
+
+		edge.To("commissions", PromotionMemberCommission.Type),
 	}
 }
 
@@ -91,8 +93,8 @@ func (PromotionMember) Mixin() []ent.Mixin {
 		internal.Modifier{},
 
 		RiderMixin{Optional: true},
+		SubscribeMixin{Optional: true},
 		PromotionLevelMixin{Optional: true},
-		PromotionCommissionMixin{Optional: true},
 	}
 }
 

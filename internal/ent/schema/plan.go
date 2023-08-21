@@ -69,7 +69,6 @@ func (Plan) Fields() []ent.Field {
 		field.Float("price").Comment("骑士卡价格"),
 		field.Uint("days").Comment("骑士卡天数"),
 		field.Float("commission").Comment("提成"),
-		field.Float("commission_base").Default(0).Optional().Comment("提成底数"),
 		field.Float("original").Optional().Comment("原价"),
 		field.String("desc").Optional().Comment("优惠信息"),
 		field.Uint64("parent_id").Optional().Nillable().Comment("父级"),
@@ -84,6 +83,8 @@ func (Plan) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("cities", City.Type),
 		edge.To("complexes", Plan.Type).From("parent").Field("parent_id").Unique(),
+
+		edge.To("commissions", PromotionCommissionPlan.Type),
 	}
 }
 

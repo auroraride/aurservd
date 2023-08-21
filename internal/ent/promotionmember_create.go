@@ -13,12 +13,13 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/promotionbankcard"
-	"github.com/auroraride/aurservd/internal/ent/promotioncommission"
 	"github.com/auroraride/aurservd/internal/ent/promotionlevel"
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
+	"github.com/auroraride/aurservd/internal/ent/promotionmembercommission"
 	"github.com/auroraride/aurservd/internal/ent/promotionperson"
 	"github.com/auroraride/aurservd/internal/ent/promotionreferrals"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // PromotionMemberCreate is the builder for creating a PromotionMember entity.
@@ -111,6 +112,20 @@ func (pmc *PromotionMemberCreate) SetNillableRiderID(u *uint64) *PromotionMember
 	return pmc
 }
 
+// SetSubscribeID sets the "subscribe_id" field.
+func (pmc *PromotionMemberCreate) SetSubscribeID(u uint64) *PromotionMemberCreate {
+	pmc.mutation.SetSubscribeID(u)
+	return pmc
+}
+
+// SetNillableSubscribeID sets the "subscribe_id" field if the given value is not nil.
+func (pmc *PromotionMemberCreate) SetNillableSubscribeID(u *uint64) *PromotionMemberCreate {
+	if u != nil {
+		pmc.SetSubscribeID(*u)
+	}
+	return pmc
+}
+
 // SetLevelID sets the "level_id" field.
 func (pmc *PromotionMemberCreate) SetLevelID(u uint64) *PromotionMemberCreate {
 	pmc.mutation.SetLevelID(u)
@@ -121,20 +136,6 @@ func (pmc *PromotionMemberCreate) SetLevelID(u uint64) *PromotionMemberCreate {
 func (pmc *PromotionMemberCreate) SetNillableLevelID(u *uint64) *PromotionMemberCreate {
 	if u != nil {
 		pmc.SetLevelID(*u)
-	}
-	return pmc
-}
-
-// SetCommissionID sets the "commission_id" field.
-func (pmc *PromotionMemberCreate) SetCommissionID(u uint64) *PromotionMemberCreate {
-	pmc.mutation.SetCommissionID(u)
-	return pmc
-}
-
-// SetNillableCommissionID sets the "commission_id" field if the given value is not nil.
-func (pmc *PromotionMemberCreate) SetNillableCommissionID(u *uint64) *PromotionMemberCreate {
-	if u != nil {
-		pmc.SetCommissionID(*u)
 	}
 	return pmc
 }
@@ -290,14 +291,14 @@ func (pmc *PromotionMemberCreate) SetRider(r *Rider) *PromotionMemberCreate {
 	return pmc.SetRiderID(r.ID)
 }
 
+// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
+func (pmc *PromotionMemberCreate) SetSubscribe(s *Subscribe) *PromotionMemberCreate {
+	return pmc.SetSubscribeID(s.ID)
+}
+
 // SetLevel sets the "level" edge to the PromotionLevel entity.
 func (pmc *PromotionMemberCreate) SetLevel(p *PromotionLevel) *PromotionMemberCreate {
 	return pmc.SetLevelID(p.ID)
-}
-
-// SetCommission sets the "commission" edge to the PromotionCommission entity.
-func (pmc *PromotionMemberCreate) SetCommission(p *PromotionCommission) *PromotionMemberCreate {
-	return pmc.SetCommissionID(p.ID)
 }
 
 // AddReferringIDs adds the "referring" edge to the PromotionReferrals entity by IDs.
@@ -352,6 +353,21 @@ func (pmc *PromotionMemberCreate) AddCards(p ...*PromotionBankCard) *PromotionMe
 		ids[i] = p[i].ID
 	}
 	return pmc.AddCardIDs(ids...)
+}
+
+// AddCommissionIDs adds the "commissions" edge to the PromotionMemberCommission entity by IDs.
+func (pmc *PromotionMemberCreate) AddCommissionIDs(ids ...uint64) *PromotionMemberCreate {
+	pmc.mutation.AddCommissionIDs(ids...)
+	return pmc
+}
+
+// AddCommissions adds the "commissions" edges to the PromotionMemberCommission entity.
+func (pmc *PromotionMemberCreate) AddCommissions(p ...*PromotionMemberCommission) *PromotionMemberCreate {
+	ids := make([]uint64, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pmc.AddCommissionIDs(ids...)
 }
 
 // Mutation returns the PromotionMemberMutation object of the builder.
@@ -576,6 +592,23 @@ func (pmc *PromotionMemberCreate) createSpec() (*PromotionMember, *sqlgraph.Crea
 		_node.RiderID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := pmc.mutation.SubscribeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotionmember.SubscribeTable,
+			Columns: []string{promotionmember.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscribe.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.SubscribeID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := pmc.mutation.LevelIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -591,23 +624,6 @@ func (pmc *PromotionMemberCreate) createSpec() (*PromotionMember, *sqlgraph.Crea
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.LevelID = &nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := pmc.mutation.CommissionIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   promotionmember.CommissionTable,
-			Columns: []string{promotionmember.CommissionColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(promotioncommission.FieldID, field.TypeUint64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.CommissionID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := pmc.mutation.ReferringIDs(); len(nodes) > 0 {
@@ -668,6 +684,22 @@ func (pmc *PromotionMemberCreate) createSpec() (*PromotionMember, *sqlgraph.Crea
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(promotionbankcard.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pmc.mutation.CommissionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   promotionmember.CommissionsTable,
+			Columns: []string{promotionmember.CommissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(promotionmembercommission.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {
@@ -811,6 +843,24 @@ func (u *PromotionMemberUpsert) ClearRiderID() *PromotionMemberUpsert {
 	return u
 }
 
+// SetSubscribeID sets the "subscribe_id" field.
+func (u *PromotionMemberUpsert) SetSubscribeID(v uint64) *PromotionMemberUpsert {
+	u.Set(promotionmember.FieldSubscribeID, v)
+	return u
+}
+
+// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
+func (u *PromotionMemberUpsert) UpdateSubscribeID() *PromotionMemberUpsert {
+	u.SetExcluded(promotionmember.FieldSubscribeID)
+	return u
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (u *PromotionMemberUpsert) ClearSubscribeID() *PromotionMemberUpsert {
+	u.SetNull(promotionmember.FieldSubscribeID)
+	return u
+}
+
 // SetLevelID sets the "level_id" field.
 func (u *PromotionMemberUpsert) SetLevelID(v uint64) *PromotionMemberUpsert {
 	u.Set(promotionmember.FieldLevelID, v)
@@ -826,24 +876,6 @@ func (u *PromotionMemberUpsert) UpdateLevelID() *PromotionMemberUpsert {
 // ClearLevelID clears the value of the "level_id" field.
 func (u *PromotionMemberUpsert) ClearLevelID() *PromotionMemberUpsert {
 	u.SetNull(promotionmember.FieldLevelID)
-	return u
-}
-
-// SetCommissionID sets the "commission_id" field.
-func (u *PromotionMemberUpsert) SetCommissionID(v uint64) *PromotionMemberUpsert {
-	u.Set(promotionmember.FieldCommissionID, v)
-	return u
-}
-
-// UpdateCommissionID sets the "commission_id" field to the value that was provided on create.
-func (u *PromotionMemberUpsert) UpdateCommissionID() *PromotionMemberUpsert {
-	u.SetExcluded(promotionmember.FieldCommissionID)
-	return u
-}
-
-// ClearCommissionID clears the value of the "commission_id" field.
-func (u *PromotionMemberUpsert) ClearCommissionID() *PromotionMemberUpsert {
-	u.SetNull(promotionmember.FieldCommissionID)
 	return u
 }
 
@@ -1179,6 +1211,27 @@ func (u *PromotionMemberUpsertOne) ClearRiderID() *PromotionMemberUpsertOne {
 	})
 }
 
+// SetSubscribeID sets the "subscribe_id" field.
+func (u *PromotionMemberUpsertOne) SetSubscribeID(v uint64) *PromotionMemberUpsertOne {
+	return u.Update(func(s *PromotionMemberUpsert) {
+		s.SetSubscribeID(v)
+	})
+}
+
+// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
+func (u *PromotionMemberUpsertOne) UpdateSubscribeID() *PromotionMemberUpsertOne {
+	return u.Update(func(s *PromotionMemberUpsert) {
+		s.UpdateSubscribeID()
+	})
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (u *PromotionMemberUpsertOne) ClearSubscribeID() *PromotionMemberUpsertOne {
+	return u.Update(func(s *PromotionMemberUpsert) {
+		s.ClearSubscribeID()
+	})
+}
+
 // SetLevelID sets the "level_id" field.
 func (u *PromotionMemberUpsertOne) SetLevelID(v uint64) *PromotionMemberUpsertOne {
 	return u.Update(func(s *PromotionMemberUpsert) {
@@ -1197,27 +1250,6 @@ func (u *PromotionMemberUpsertOne) UpdateLevelID() *PromotionMemberUpsertOne {
 func (u *PromotionMemberUpsertOne) ClearLevelID() *PromotionMemberUpsertOne {
 	return u.Update(func(s *PromotionMemberUpsert) {
 		s.ClearLevelID()
-	})
-}
-
-// SetCommissionID sets the "commission_id" field.
-func (u *PromotionMemberUpsertOne) SetCommissionID(v uint64) *PromotionMemberUpsertOne {
-	return u.Update(func(s *PromotionMemberUpsert) {
-		s.SetCommissionID(v)
-	})
-}
-
-// UpdateCommissionID sets the "commission_id" field to the value that was provided on create.
-func (u *PromotionMemberUpsertOne) UpdateCommissionID() *PromotionMemberUpsertOne {
-	return u.Update(func(s *PromotionMemberUpsert) {
-		s.UpdateCommissionID()
-	})
-}
-
-// ClearCommissionID clears the value of the "commission_id" field.
-func (u *PromotionMemberUpsertOne) ClearCommissionID() *PromotionMemberUpsertOne {
-	return u.Update(func(s *PromotionMemberUpsert) {
-		s.ClearCommissionID()
 	})
 }
 
@@ -1746,6 +1778,27 @@ func (u *PromotionMemberUpsertBulk) ClearRiderID() *PromotionMemberUpsertBulk {
 	})
 }
 
+// SetSubscribeID sets the "subscribe_id" field.
+func (u *PromotionMemberUpsertBulk) SetSubscribeID(v uint64) *PromotionMemberUpsertBulk {
+	return u.Update(func(s *PromotionMemberUpsert) {
+		s.SetSubscribeID(v)
+	})
+}
+
+// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
+func (u *PromotionMemberUpsertBulk) UpdateSubscribeID() *PromotionMemberUpsertBulk {
+	return u.Update(func(s *PromotionMemberUpsert) {
+		s.UpdateSubscribeID()
+	})
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (u *PromotionMemberUpsertBulk) ClearSubscribeID() *PromotionMemberUpsertBulk {
+	return u.Update(func(s *PromotionMemberUpsert) {
+		s.ClearSubscribeID()
+	})
+}
+
 // SetLevelID sets the "level_id" field.
 func (u *PromotionMemberUpsertBulk) SetLevelID(v uint64) *PromotionMemberUpsertBulk {
 	return u.Update(func(s *PromotionMemberUpsert) {
@@ -1764,27 +1817,6 @@ func (u *PromotionMemberUpsertBulk) UpdateLevelID() *PromotionMemberUpsertBulk {
 func (u *PromotionMemberUpsertBulk) ClearLevelID() *PromotionMemberUpsertBulk {
 	return u.Update(func(s *PromotionMemberUpsert) {
 		s.ClearLevelID()
-	})
-}
-
-// SetCommissionID sets the "commission_id" field.
-func (u *PromotionMemberUpsertBulk) SetCommissionID(v uint64) *PromotionMemberUpsertBulk {
-	return u.Update(func(s *PromotionMemberUpsert) {
-		s.SetCommissionID(v)
-	})
-}
-
-// UpdateCommissionID sets the "commission_id" field to the value that was provided on create.
-func (u *PromotionMemberUpsertBulk) UpdateCommissionID() *PromotionMemberUpsertBulk {
-	return u.Update(func(s *PromotionMemberUpsert) {
-		s.UpdateCommissionID()
-	})
-}
-
-// ClearCommissionID clears the value of the "commission_id" field.
-func (u *PromotionMemberUpsertBulk) ClearCommissionID() *PromotionMemberUpsertBulk {
-	return u.Update(func(s *PromotionMemberUpsert) {
-		s.ClearCommissionID()
 	})
 }
 

@@ -29,10 +29,10 @@ const (
 	FieldRemark = "remark"
 	// FieldRiderID holds the string denoting the rider_id field in the database.
 	FieldRiderID = "rider_id"
+	// FieldSubscribeID holds the string denoting the subscribe_id field in the database.
+	FieldSubscribeID = "subscribe_id"
 	// FieldLevelID holds the string denoting the level_id field in the database.
 	FieldLevelID = "level_id"
-	// FieldCommissionID holds the string denoting the commission_id field in the database.
-	FieldCommissionID = "commission_id"
 	// FieldPhone holds the string denoting the phone field in the database.
 	FieldPhone = "phone"
 	// FieldName holds the string denoting the name field in the database.
@@ -57,10 +57,10 @@ const (
 	FieldRenewCount = "renew_count"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
+	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
+	EdgeSubscribe = "subscribe"
 	// EdgeLevel holds the string denoting the level edge name in mutations.
 	EdgeLevel = "level"
-	// EdgeCommission holds the string denoting the commission edge name in mutations.
-	EdgeCommission = "commission"
 	// EdgeReferring holds the string denoting the referring edge name in mutations.
 	EdgeReferring = "referring"
 	// EdgeReferred holds the string denoting the referred edge name in mutations.
@@ -69,6 +69,8 @@ const (
 	EdgePerson = "person"
 	// EdgeCards holds the string denoting the cards edge name in mutations.
 	EdgeCards = "cards"
+	// EdgeCommissions holds the string denoting the commissions edge name in mutations.
+	EdgeCommissions = "commissions"
 	// Table holds the table name of the promotionmember in the database.
 	Table = "promotion_member"
 	// RiderTable is the table that holds the rider relation/edge.
@@ -78,6 +80,13 @@ const (
 	RiderInverseTable = "rider"
 	// RiderColumn is the table column denoting the rider relation/edge.
 	RiderColumn = "rider_id"
+	// SubscribeTable is the table that holds the subscribe relation/edge.
+	SubscribeTable = "promotion_member"
+	// SubscribeInverseTable is the table name for the Subscribe entity.
+	// It exists in this package in order to avoid circular dependency with the "subscribe" package.
+	SubscribeInverseTable = "subscribe"
+	// SubscribeColumn is the table column denoting the subscribe relation/edge.
+	SubscribeColumn = "subscribe_id"
 	// LevelTable is the table that holds the level relation/edge.
 	LevelTable = "promotion_member"
 	// LevelInverseTable is the table name for the PromotionLevel entity.
@@ -85,13 +94,6 @@ const (
 	LevelInverseTable = "promotion_level"
 	// LevelColumn is the table column denoting the level relation/edge.
 	LevelColumn = "level_id"
-	// CommissionTable is the table that holds the commission relation/edge.
-	CommissionTable = "promotion_member"
-	// CommissionInverseTable is the table name for the PromotionCommission entity.
-	// It exists in this package in order to avoid circular dependency with the "promotioncommission" package.
-	CommissionInverseTable = "promotion_commission"
-	// CommissionColumn is the table column denoting the commission relation/edge.
-	CommissionColumn = "commission_id"
 	// ReferringTable is the table that holds the referring relation/edge.
 	ReferringTable = "promotion_referrals"
 	// ReferringInverseTable is the table name for the PromotionReferrals entity.
@@ -120,6 +122,13 @@ const (
 	CardsInverseTable = "promotion_bank_card"
 	// CardsColumn is the table column denoting the cards relation/edge.
 	CardsColumn = "member_id"
+	// CommissionsTable is the table that holds the commissions relation/edge.
+	CommissionsTable = "promotion_member_commission"
+	// CommissionsInverseTable is the table name for the PromotionMemberCommission entity.
+	// It exists in this package in order to avoid circular dependency with the "promotionmembercommission" package.
+	CommissionsInverseTable = "promotion_member_commission"
+	// CommissionsColumn is the table column denoting the commissions relation/edge.
+	CommissionsColumn = "member_id"
 )
 
 // Columns holds all SQL columns for promotionmember fields.
@@ -132,8 +141,8 @@ var Columns = []string{
 	FieldLastModifier,
 	FieldRemark,
 	FieldRiderID,
+	FieldSubscribeID,
 	FieldLevelID,
-	FieldCommissionID,
 	FieldPhone,
 	FieldName,
 	FieldBalance,
@@ -219,14 +228,14 @@ func ByRiderID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRiderID, opts...).ToFunc()
 }
 
+// BySubscribeID orders the results by the subscribe_id field.
+func BySubscribeID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSubscribeID, opts...).ToFunc()
+}
+
 // ByLevelID orders the results by the level_id field.
 func ByLevelID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldLevelID, opts...).ToFunc()
-}
-
-// ByCommissionID orders the results by the commission_id field.
-func ByCommissionID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldCommissionID, opts...).ToFunc()
 }
 
 // ByPhone orders the results by the phone field.
@@ -291,17 +300,17 @@ func ByRiderField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
+// BySubscribeField orders the results by subscribe field.
+func BySubscribeField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newSubscribeStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByLevelField orders the results by level field.
 func ByLevelField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newLevelStep(), sql.OrderByField(field, opts...))
-	}
-}
-
-// ByCommissionField orders the results by commission field.
-func ByCommissionField(field string, opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newCommissionStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -346,6 +355,20 @@ func ByCards(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newCardsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByCommissionsCount orders the results by commissions count.
+func ByCommissionsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newCommissionsStep(), opts...)
+	}
+}
+
+// ByCommissions orders the results by commissions terms.
+func ByCommissions(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCommissionsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newRiderStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -353,18 +376,18 @@ func newRiderStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.M2O, false, RiderTable, RiderColumn),
 	)
 }
+func newSubscribeStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(SubscribeInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, SubscribeTable, SubscribeColumn),
+	)
+}
 func newLevelStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(LevelInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, false, LevelTable, LevelColumn),
-	)
-}
-func newCommissionStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(CommissionInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, CommissionTable, CommissionColumn),
 	)
 }
 func newReferringStep() *sqlgraph.Step {
@@ -393,5 +416,12 @@ func newCardsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CardsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, CardsTable, CardsColumn),
+	)
+}
+func newCommissionsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CommissionsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, CommissionsTable, CommissionsColumn),
 	)
 }

@@ -149,3 +149,18 @@ func (p *promotionCommission) TaskSelection(c echo.Context) (err error) {
 	ctx := app.ContextX[app.ManagerContext](c)
 	return ctx.SendResponse(service.NewPromotionCommissionService().CommissionTaskSelection())
 }
+
+// CommissionPlanList
+// @ID           ManagerPromotionCommissionPlanList
+// @Router       /manager/v1/promotion/commission/plan/list/{:id} [GET]
+// @Summary      PM8010 返佣方案骑士卡列表
+// @Tags         [PM]推广管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string   true  "管理员校验token"
+// @Param        id  path  int  true  "会员id"
+// @Success      200  {object}  []promotion.CommissionPlanListRes
+func (p *promotionCommission) CommissionPlanList(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
+	return ctx.SendResponse(service.NewPromotionCommissionService().CommissionPlanList(req))
+}
