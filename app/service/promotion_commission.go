@@ -423,6 +423,7 @@ func (s *promotionCommissionService) getCommissionRule(mem *ent.PromotionMember,
 		promotioncommission.HasPlansWith(
 			promotioncommissionplan.PlanID(planID),
 			promotioncommissionplan.MemberID(mem.ID),
+			promotioncommissionplan.DeletedAtIsNil(),
 		)).First(s.ctx)
 	if commission != nil {
 		return commission
@@ -494,7 +495,7 @@ func (s *promotionCommissionService) calculateSecondLevelCommission(mem *ent.Pro
 		}
 
 		// 判断使用哪种返佣方案 优先查询个人返佣方案 再查询通用返佣方案
-		commissions := s.getCommissionRule(mem, req.PlanID)
+		commissions := s.getCommissionRule(parentMember, req.PlanID)
 		if commissions == nil {
 			return
 		}
