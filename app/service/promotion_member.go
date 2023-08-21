@@ -159,12 +159,12 @@ func (s *promotionMemberService) getRiderOrCreate(tx *ent.Tx, phone string, c *p
 func (s *promotionMemberService) updateMemberInfo(tx *ent.Tx, mem *ent.PromotionMember, req *promotion.MemberCreateReq) {
 	q := tx.PromotionMember.UpdateOne(mem)
 	re := tx.PromotionReferrals.Update().Where(promotionreferrals.ReferredMemberIDEQ(mem.ID))
-	if req.RiderID != nil && req.RiderID != mem.RiderID && mem.RiderID == nil {
+	if req.RiderID != nil && mem.RiderID == nil {
 		q.SetNillableRiderID(req.RiderID)
 		re.SetNillableRiderID(req.RiderID)
 	}
 
-	if req.SubscribeID != nil && req.SubscribeID != mem.SubscribeID {
+	if req.SubscribeID != nil && *req.SubscribeID != *mem.SubscribeID {
 		q.SetNillableSubscribeID(req.SubscribeID)
 		re.SetNillableSubscribeID(req.SubscribeID).ExecX(s.ctx)
 	}
@@ -683,7 +683,7 @@ func (s *promotionMemberService) SetCommission(req *promotion.MemberCommissionRe
 func (s *promotionMemberService) CommissionPlanIsConfigured(mem *ent.PromotionMember, req *promotion.MemberCommissionReq) {
 
 	// 查询返佣方案
-	pc, _ := ent.Database.PromotionCommissionPlan.Query().Where(
+	pc, _ := ent.Database.PromotionCommissionPlan.QueryNotDeleted().Where(
 		promotioncommissionplan.MemberID(mem.ID),
 		promotioncommissionplan.PlanIDIn(req.PlanID...),
 	).Select(promotioncommissionplan.FieldPlanID).WithPlan().All(s.ctx)
