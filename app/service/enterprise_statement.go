@@ -618,13 +618,13 @@ func (s *enterpriseStatementService) usageItemCalculate(srcStart time.Time, srcE
 
 func (s *enterpriseStatementService) HistoryCost(enterpriseID uint64) float64 {
 	var result []struct {
-		ID  uint64  `json:"id"`
-		Sum float64 `json:"sum"`
+		EnterpriseID uint64  `json:"enterprise_id"`
+		Sum          float64 `json:"sum"`
 	}
 
 	_ = s.orm.Query().Modify().
 		Where(enterprisestatement.EnterpriseID(enterpriseID), enterprisestatement.SettledAtNotNil()).
-		GroupBy(enterprisestatement.FieldID).
+		GroupBy(enterprisestatement.FieldEnterpriseID).
 		Aggregate(ent.Sum(enterprisestatement.FieldCost)).
 		Scan(s.ctx, &result)
 

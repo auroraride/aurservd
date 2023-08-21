@@ -470,7 +470,7 @@ func (s *enterpriseService) UpdateStatement(e *ent.Enterprise) {
 	}
 
 	// 统计历史轧账
-	cost += NewEnterpriseStatement().HistoryCost(e.ID)
+	cost = tools.NewDecimal().Sum(cost, NewEnterpriseStatement().HistoryCost(e.ID))
 
 	// 企业付款方式
 	var balance float64
