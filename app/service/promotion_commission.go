@@ -249,6 +249,7 @@ func (s *promotionCommissionService) Update(req *promotion.CommissionCreateReq) 
 		SetHistoryID(append(commissionInfo.HistoryID, commissionInfo.ID)).
 		SetType(req.Type.Value()).
 		SetStartAt(startAt).
+		SetEnable(commissionInfo.Enable).
 		SaveX(s.ctx)
 
 	// 更新会员返佣方案
@@ -554,26 +555,16 @@ func (s *promotionCommissionService) saveEarningsAndUpdateCommission(tx *ent.Tx,
 		}
 
 		// 更新返佣总收益
-		com, _ := ent.Database.PromotionCommission.Query().Where(promotioncommission.ID(req.CommissionID)).First(s.ctx)
-		if com == nil {
-			zap.L().Error("返佣方案不存在", zap.Error(err), zap.Any("收益记录", req))
-			return
-		}
-		_, err = tx.PromotionCommission.UpdateOneID(req.CommissionID).SetAmountSum(tools.NewDecimal().Sum(com.AmountSum, req.Amount)).Save(s.ctx)
+		_, err = tx.PromotionCommission.UpdateOneID(req.CommissionID).AddAmountSum(req.Amount).Save(s.ctx)
 		if err != nil {
 			zap.L().Error("返佣总收益更新失败", zap.Error(err), zap.Any("收益记录", req))
 			return
 		}
 
 		// 更新会员未结算收益
-		mem, _ := ent.Database.PromotionMember.QueryNotDeleted().Where(promotionmember.ID(req.MemberID)).First(s.ctx)
-		if mem == nil {
-			zap.L().Error("会员不存在", zap.Error(err), zap.Any("收益记录", req))
-			return
-		}
-		_, err = tx.PromotionMember.UpdateOneID(req.MemberID).SetFrozen(tools.NewDecimal().Sum(mem.Frozen, req.Amount)).Save(s.ctx)
+		_, err = tx.PromotionMember.UpdateOneID(req.MemberID).AddFrozen(req.Amount).Save(s.ctx)
 		if err != nil {
-			zap.L().Error("会员未结算收益更新失败", zap.Error(err), zap.Any("收益记录", req), zap.Any("收益记录", req))
+			zap.L().Error("会员未结算收益更新失败", zap.Error(err), zap.Any("收益记录", req))
 			return
 		}
 	}
