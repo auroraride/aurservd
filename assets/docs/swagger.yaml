@@ -8485,15 +8485,15 @@ definitions:
     - CommissionUnlimited
   promotion.CommissionOptionType:
     enum:
-      - 1
-      - 2
+    - 1
+    - 2
     type: integer
     x-enum-comments:
       FixedAmount: 固定金额
       Percentage: 比例
     x-enum-varnames:
-      - FixedAmount
-      - Percentage
+    - FixedAmount
+    - Percentage
   promotion.CommissionPlan:
     properties:
       amount:
@@ -8524,11 +8524,11 @@ definitions:
         type: array
       rule:
         allOf:
-          - $ref: '#/definitions/promotion.CommissionRule'
+        - $ref: '#/definitions/promotion.CommissionRule'
         description: 返佣规则
       type:
         allOf:
-          - $ref: '#/definitions/promotion.CommissionType'
+        - $ref: '#/definitions/promotion.CommissionType'
         description: 返佣类型 0:默认通用返佣方案 1:通用返佣方案 2:为个人自定义返佣方案
     type: object
   promotion.CommissionRule:
@@ -8558,7 +8558,7 @@ definitions:
         type: string
       optionType:
         allOf:
-          - $ref: '#/definitions/promotion.CommissionOptionType'
+        - $ref: '#/definitions/promotion.CommissionOptionType'
         description: 选项类型 1:固定金额 2:比例
       value:
         description: 选项值
@@ -17595,25 +17595,25 @@ paths:
             type: array
       summary: PM8007 推广返佣方案历史列表
       tags:
-        - '[PM]推广管理接口'
+      - '[PM]推广管理接口'
   /manager/v1/promotion/commission/plan/list/{:id}:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: ManagerPromotionCommissionPlanList
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
-        - description: 会员id
-          in: path
-          name: id
-          required: true
-          type: integer
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 会员id
+        in: path
+        name: id
+        required: true
+        type: integer
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: OK
@@ -18753,19 +18753,19 @@ paths:
             type: array
       summary: MB005 筛选启用的城市
       tags:
-        - '[M]管理接口'
+      - '[M]管理接口'
   /manager/v1/selection/commission/plan:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: ManagerSelectionCommissionPlan
       parameters:
-        - description: 关键字
-          in: query
-          name: keyword
-          type: string
+      - description: 关键字
+        in: query
+        name: keyword
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -20138,16 +20138,16 @@ paths:
   /manager/v1/user/profile:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: ManagerProfile
       parameters:
-        - description: 管理员校验token
-          in: header
-          name: X-Manager-Token
-          required: true
-          type: string
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: OK
@@ -20155,7 +20155,7 @@ paths:
             $ref: '#/definitions/model.ManagerSigninRes'
       summary: M1006 管理员信息
       tags:
-        - '[M]管理接口'
+      - '[M]管理接口'
   /manager/v1/user/signin:
     post:
       consumes:
