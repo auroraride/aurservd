@@ -1605,6 +1605,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			promotionwithdrawal.FieldApplyAmount:  {Type: field.TypeFloat64, Column: promotionwithdrawal.FieldApplyAmount},
 			promotionwithdrawal.FieldAmount:       {Type: field.TypeFloat64, Column: promotionwithdrawal.FieldAmount},
 			promotionwithdrawal.FieldFee:          {Type: field.TypeFloat64, Column: promotionwithdrawal.FieldFee},
+			promotionwithdrawal.FieldTex:          {Type: field.TypeFloat64, Column: promotionwithdrawal.FieldTex},
 			promotionwithdrawal.FieldMethod:       {Type: field.TypeUint8, Column: promotionwithdrawal.FieldMethod},
 			promotionwithdrawal.FieldAccountID:    {Type: field.TypeUint64, Column: promotionwithdrawal.FieldAccountID},
 			promotionwithdrawal.FieldApplyTime:    {Type: field.TypeTime, Column: promotionwithdrawal.FieldApplyTime},
@@ -14681,6 +14682,11 @@ func (f *PromotionWithdrawalFilter) WhereAmount(p entql.Float64P) {
 // WhereFee applies the entql float64 predicate on the fee field.
 func (f *PromotionWithdrawalFilter) WhereFee(p entql.Float64P) {
 	f.Where(p.Field(promotionwithdrawal.FieldFee))
+}
+
+// WhereTex applies the entql float64 predicate on the tex field.
+func (f *PromotionWithdrawalFilter) WhereTex(p entql.Float64P) {
+	f.Where(p.Field(promotionwithdrawal.FieldTex))
 }
 
 // WhereMethod applies the entql uint8 predicate on the method field.

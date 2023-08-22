@@ -63,6 +63,7 @@ func (PromotionWithdrawal) Fields() []ent.Field {
 		field.Float("apply_amount").Default(0).Comment("提现申请金额"),
 		field.Float("amount").Default(0).Comment("提现金额"),
 		field.Float("fee").Default(0).Comment("提现手续费"),
+		field.Float("tex").Default(0).Comment("提现税费"),
 		field.Uint8("method").Comment("提现方式 1:银行卡"),
 		field.Uint64("account_id").Optional().Comment("提现账号ID"),
 		field.Time("apply_time").Optional().Comment("申请时间"),

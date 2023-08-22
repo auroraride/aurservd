@@ -180,6 +180,27 @@ func (pwu *PromotionWithdrawalUpdate) AddFee(f float64) *PromotionWithdrawalUpda
 	return pwu
 }
 
+// SetTex sets the "tex" field.
+func (pwu *PromotionWithdrawalUpdate) SetTex(f float64) *PromotionWithdrawalUpdate {
+	pwu.mutation.ResetTex()
+	pwu.mutation.SetTex(f)
+	return pwu
+}
+
+// SetNillableTex sets the "tex" field if the given value is not nil.
+func (pwu *PromotionWithdrawalUpdate) SetNillableTex(f *float64) *PromotionWithdrawalUpdate {
+	if f != nil {
+		pwu.SetTex(*f)
+	}
+	return pwu
+}
+
+// AddTex adds f to the "tex" field.
+func (pwu *PromotionWithdrawalUpdate) AddTex(f float64) *PromotionWithdrawalUpdate {
+	pwu.mutation.AddTex(f)
+	return pwu
+}
+
 // SetMethod sets the "method" field.
 func (pwu *PromotionWithdrawalUpdate) SetMethod(u uint8) *PromotionWithdrawalUpdate {
 	pwu.mutation.ResetMethod()
@@ -409,6 +430,12 @@ func (pwu *PromotionWithdrawalUpdate) sqlSave(ctx context.Context) (n int, err e
 	}
 	if value, ok := pwu.mutation.AddedFee(); ok {
 		_spec.AddField(promotionwithdrawal.FieldFee, field.TypeFloat64, value)
+	}
+	if value, ok := pwu.mutation.Tex(); ok {
+		_spec.SetField(promotionwithdrawal.FieldTex, field.TypeFloat64, value)
+	}
+	if value, ok := pwu.mutation.AddedTex(); ok {
+		_spec.AddField(promotionwithdrawal.FieldTex, field.TypeFloat64, value)
 	}
 	if value, ok := pwu.mutation.Method(); ok {
 		_spec.SetField(promotionwithdrawal.FieldMethod, field.TypeUint8, value)
@@ -653,6 +680,27 @@ func (pwuo *PromotionWithdrawalUpdateOne) SetNillableFee(f *float64) *PromotionW
 // AddFee adds f to the "fee" field.
 func (pwuo *PromotionWithdrawalUpdateOne) AddFee(f float64) *PromotionWithdrawalUpdateOne {
 	pwuo.mutation.AddFee(f)
+	return pwuo
+}
+
+// SetTex sets the "tex" field.
+func (pwuo *PromotionWithdrawalUpdateOne) SetTex(f float64) *PromotionWithdrawalUpdateOne {
+	pwuo.mutation.ResetTex()
+	pwuo.mutation.SetTex(f)
+	return pwuo
+}
+
+// SetNillableTex sets the "tex" field if the given value is not nil.
+func (pwuo *PromotionWithdrawalUpdateOne) SetNillableTex(f *float64) *PromotionWithdrawalUpdateOne {
+	if f != nil {
+		pwuo.SetTex(*f)
+	}
+	return pwuo
+}
+
+// AddTex adds f to the "tex" field.
+func (pwuo *PromotionWithdrawalUpdateOne) AddTex(f float64) *PromotionWithdrawalUpdateOne {
+	pwuo.mutation.AddTex(f)
 	return pwuo
 }
 
@@ -915,6 +963,12 @@ func (pwuo *PromotionWithdrawalUpdateOne) sqlSave(ctx context.Context) (_node *P
 	}
 	if value, ok := pwuo.mutation.AddedFee(); ok {
 		_spec.AddField(promotionwithdrawal.FieldFee, field.TypeFloat64, value)
+	}
+	if value, ok := pwuo.mutation.Tex(); ok {
+		_spec.SetField(promotionwithdrawal.FieldTex, field.TypeFloat64, value)
+	}
+	if value, ok := pwuo.mutation.AddedTex(); ok {
+		_spec.AddField(promotionwithdrawal.FieldTex, field.TypeFloat64, value)
 	}
 	if value, ok := pwuo.mutation.Method(); ok {
 		_spec.SetField(promotionwithdrawal.FieldMethod, field.TypeUint8, value)

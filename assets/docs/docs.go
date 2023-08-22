@@ -33143,6 +33143,10 @@ const docTemplate = `{
                     "description": "提现金额",
                     "type": "number"
                 },
+                "applyAmount": {
+                    "description": "申请提现金额",
+                    "type": "number"
+                },
                 "applyTime": {
                     "description": "申请时间",
                     "type": "string"
@@ -33194,6 +33198,10 @@ const docTemplate = `{
                 "status": {
                     "description": "状态 0:待审核 1:成功 2:失败",
                     "type": "integer"
+                },
+                "tax": {
+                    "description": "提现税费",
+                    "type": "number"
                 }
             }
         },

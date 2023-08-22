@@ -1390,6 +1390,10 @@ func init() {
 	promotionwithdrawalDescFee := promotionwithdrawalFields[3].Descriptor()
 	// promotionwithdrawal.DefaultFee holds the default value on creation for the fee field.
 	promotionwithdrawal.DefaultFee = promotionwithdrawalDescFee.Default.(float64)
+	// promotionwithdrawalDescTex is the schema descriptor for tex field.
+	promotionwithdrawalDescTex := promotionwithdrawalFields[4].Descriptor()
+	// promotionwithdrawal.DefaultTex holds the default value on creation for the tex field.
+	promotionwithdrawal.DefaultTex = promotionwithdrawalDescTex.Default.(float64)
 	reserveMixin := schema.Reserve{}.Mixin()
 	reserveMixinHooks2 := reserveMixin[2].Hooks()
 	reserve.Hooks[0] = reserveMixinHooks2[0]

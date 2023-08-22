@@ -43,6 +43,8 @@ type PromotionWithdrawal struct {
 	Amount float64 `json:"amount,omitempty"`
 	// 提现手续费
 	Fee float64 `json:"fee,omitempty"`
+	// 提现税费
+	Tex float64 `json:"tex,omitempty"`
 	// 提现方式 1:银行卡
 	Method uint8 `json:"method,omitempty"`
 	// 提现账号ID
@@ -101,7 +103,7 @@ func (*PromotionWithdrawal) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case promotionwithdrawal.FieldCreator, promotionwithdrawal.FieldLastModifier:
 			values[i] = new([]byte)
-		case promotionwithdrawal.FieldApplyAmount, promotionwithdrawal.FieldAmount, promotionwithdrawal.FieldFee:
+		case promotionwithdrawal.FieldApplyAmount, promotionwithdrawal.FieldAmount, promotionwithdrawal.FieldFee, promotionwithdrawal.FieldTex:
 			values[i] = new(sql.NullFloat64)
 		case promotionwithdrawal.FieldID, promotionwithdrawal.FieldMemberID, promotionwithdrawal.FieldStatus, promotionwithdrawal.FieldMethod, promotionwithdrawal.FieldAccountID:
 			values[i] = new(sql.NullInt64)
@@ -200,6 +202,12 @@ func (pw *PromotionWithdrawal) assignValues(columns []string, values []any) erro
 				return fmt.Errorf("unexpected type %T for field fee", values[i])
 			} else if value.Valid {
 				pw.Fee = value.Float64
+			}
+		case promotionwithdrawal.FieldTex:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field tex", values[i])
+			} else if value.Valid {
+				pw.Tex = value.Float64
 			}
 		case promotionwithdrawal.FieldMethod:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -306,6 +314,9 @@ func (pw *PromotionWithdrawal) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("fee=")
 	builder.WriteString(fmt.Sprintf("%v", pw.Fee))
+	builder.WriteString(", ")
+	builder.WriteString("tex=")
+	builder.WriteString(fmt.Sprintf("%v", pw.Tex))
 	builder.WriteString(", ")
 	builder.WriteString("method=")
 	builder.WriteString(fmt.Sprintf("%v", pw.Method))

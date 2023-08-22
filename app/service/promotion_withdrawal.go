@@ -70,13 +70,16 @@ func (s *promotionWithdrawalService) List(ctx echo.Context, req *promotion.Withd
 		func(item *ent.PromotionWithdrawal) promotion.WithdrawalListRes {
 			res := promotion.WithdrawalListRes{
 				WithdrawalDetail: promotion.WithdrawalDetail{
-					ID:        item.ID,
-					Amount:    item.Amount,
-					Method:    promotion.WithdrawalMethod(item.Method).String(),
-					Status:    item.Status,
-					Remark:    item.Remark,
-					CreatedAt: item.CreatedAt.Format(carbon.DateTimeLayout),
-					ApplyTime: item.ApplyTime.Format(carbon.DateTimeLayout),
+					ID:          item.ID,
+					ApplyAmount: item.ApplyAmount,
+					Amount:      item.Amount,
+					Fee:         item.Fee,
+					Tax:         item.Tex,
+					Method:      promotion.WithdrawalMethod(item.Method).String(),
+					Status:      item.Status,
+					Remark:      item.Remark,
+					CreatedAt:   item.CreatedAt.Format(carbon.DateTimeLayout),
+					ApplyTime:   item.ApplyTime.Format(carbon.DateTimeLayout),
 				},
 			}
 			if item.ReviewTime != nil {
@@ -137,7 +140,8 @@ func (s *promotionWithdrawalService) Alter(mem *ent.PromotionMember, req *promot
 			SetAccountID(req.AccountID).
 			SetApplyAmount(req.ApplyAmount).
 			SetAmount(wf.AmountReceived).
-			SetFee(wf.Taxable + wf.WithdrawalFee).
+			SetFee(wf.WithdrawalFee).
+			SetTex(wf.Taxable).
 			SetMethod(promotion.WithdrawalMethodBank.Value()).
 			SetStatus(promotion.WithdrawalStatusPending.Value()).
 			SetApplyTime(time.Now()).

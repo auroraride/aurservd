@@ -155,6 +155,20 @@ func (pwc *PromotionWithdrawalCreate) SetNillableFee(f *float64) *PromotionWithd
 	return pwc
 }
 
+// SetTex sets the "tex" field.
+func (pwc *PromotionWithdrawalCreate) SetTex(f float64) *PromotionWithdrawalCreate {
+	pwc.mutation.SetTex(f)
+	return pwc
+}
+
+// SetNillableTex sets the "tex" field if the given value is not nil.
+func (pwc *PromotionWithdrawalCreate) SetNillableTex(f *float64) *PromotionWithdrawalCreate {
+	if f != nil {
+		pwc.SetTex(*f)
+	}
+	return pwc
+}
+
 // SetMethod sets the "method" field.
 func (pwc *PromotionWithdrawalCreate) SetMethod(u uint8) *PromotionWithdrawalCreate {
 	pwc.mutation.SetMethod(u)
@@ -294,6 +308,10 @@ func (pwc *PromotionWithdrawalCreate) defaults() error {
 		v := promotionwithdrawal.DefaultFee
 		pwc.mutation.SetFee(v)
 	}
+	if _, ok := pwc.mutation.Tex(); !ok {
+		v := promotionwithdrawal.DefaultTex
+		pwc.mutation.SetTex(v)
+	}
 	return nil
 }
 
@@ -319,6 +337,9 @@ func (pwc *PromotionWithdrawalCreate) check() error {
 	}
 	if _, ok := pwc.mutation.Fee(); !ok {
 		return &ValidationError{Name: "fee", err: errors.New(`ent: missing required field "PromotionWithdrawal.fee"`)}
+	}
+	if _, ok := pwc.mutation.Tex(); !ok {
+		return &ValidationError{Name: "tex", err: errors.New(`ent: missing required field "PromotionWithdrawal.tex"`)}
 	}
 	if _, ok := pwc.mutation.Method(); !ok {
 		return &ValidationError{Name: "method", err: errors.New(`ent: missing required field "PromotionWithdrawal.method"`)}
@@ -392,6 +413,10 @@ func (pwc *PromotionWithdrawalCreate) createSpec() (*PromotionWithdrawal, *sqlgr
 	if value, ok := pwc.mutation.Fee(); ok {
 		_spec.SetField(promotionwithdrawal.FieldFee, field.TypeFloat64, value)
 		_node.Fee = value
+	}
+	if value, ok := pwc.mutation.Tex(); ok {
+		_spec.SetField(promotionwithdrawal.FieldTex, field.TypeFloat64, value)
+		_node.Tex = value
 	}
 	if value, ok := pwc.mutation.Method(); ok {
 		_spec.SetField(promotionwithdrawal.FieldMethod, field.TypeUint8, value)
@@ -638,6 +663,24 @@ func (u *PromotionWithdrawalUpsert) UpdateFee() *PromotionWithdrawalUpsert {
 // AddFee adds v to the "fee" field.
 func (u *PromotionWithdrawalUpsert) AddFee(v float64) *PromotionWithdrawalUpsert {
 	u.Add(promotionwithdrawal.FieldFee, v)
+	return u
+}
+
+// SetTex sets the "tex" field.
+func (u *PromotionWithdrawalUpsert) SetTex(v float64) *PromotionWithdrawalUpsert {
+	u.Set(promotionwithdrawal.FieldTex, v)
+	return u
+}
+
+// UpdateTex sets the "tex" field to the value that was provided on create.
+func (u *PromotionWithdrawalUpsert) UpdateTex() *PromotionWithdrawalUpsert {
+	u.SetExcluded(promotionwithdrawal.FieldTex)
+	return u
+}
+
+// AddTex adds v to the "tex" field.
+func (u *PromotionWithdrawalUpsert) AddTex(v float64) *PromotionWithdrawalUpsert {
+	u.Add(promotionwithdrawal.FieldTex, v)
 	return u
 }
 
@@ -933,6 +976,27 @@ func (u *PromotionWithdrawalUpsertOne) AddFee(v float64) *PromotionWithdrawalUps
 func (u *PromotionWithdrawalUpsertOne) UpdateFee() *PromotionWithdrawalUpsertOne {
 	return u.Update(func(s *PromotionWithdrawalUpsert) {
 		s.UpdateFee()
+	})
+}
+
+// SetTex sets the "tex" field.
+func (u *PromotionWithdrawalUpsertOne) SetTex(v float64) *PromotionWithdrawalUpsertOne {
+	return u.Update(func(s *PromotionWithdrawalUpsert) {
+		s.SetTex(v)
+	})
+}
+
+// AddTex adds v to the "tex" field.
+func (u *PromotionWithdrawalUpsertOne) AddTex(v float64) *PromotionWithdrawalUpsertOne {
+	return u.Update(func(s *PromotionWithdrawalUpsert) {
+		s.AddTex(v)
+	})
+}
+
+// UpdateTex sets the "tex" field to the value that was provided on create.
+func (u *PromotionWithdrawalUpsertOne) UpdateTex() *PromotionWithdrawalUpsertOne {
+	return u.Update(func(s *PromotionWithdrawalUpsert) {
+		s.UpdateTex()
 	})
 }
 
@@ -1402,6 +1466,27 @@ func (u *PromotionWithdrawalUpsertBulk) AddFee(v float64) *PromotionWithdrawalUp
 func (u *PromotionWithdrawalUpsertBulk) UpdateFee() *PromotionWithdrawalUpsertBulk {
 	return u.Update(func(s *PromotionWithdrawalUpsert) {
 		s.UpdateFee()
+	})
+}
+
+// SetTex sets the "tex" field.
+func (u *PromotionWithdrawalUpsertBulk) SetTex(v float64) *PromotionWithdrawalUpsertBulk {
+	return u.Update(func(s *PromotionWithdrawalUpsert) {
+		s.SetTex(v)
+	})
+}
+
+// AddTex adds v to the "tex" field.
+func (u *PromotionWithdrawalUpsertBulk) AddTex(v float64) *PromotionWithdrawalUpsertBulk {
+	return u.Update(func(s *PromotionWithdrawalUpsert) {
+		s.AddTex(v)
+	})
+}
+
+// UpdateTex sets the "tex" field to the value that was provided on create.
+func (u *PromotionWithdrawalUpsertBulk) UpdateTex() *PromotionWithdrawalUpsertBulk {
+	return u.Update(func(s *PromotionWithdrawalUpsert) {
+		s.UpdateTex()
 	})
 }
 
