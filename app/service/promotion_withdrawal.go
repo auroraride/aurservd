@@ -32,7 +32,7 @@ func NewPromotionWithdrawalService(params ...any) *promotionWithdrawalService {
 
 // List 提现列表
 func (s *promotionWithdrawalService) List(ctx echo.Context, req *promotion.WithdrawalListReq) *model.PaginationRes {
-	q := ent.Database.PromotionWithdrawal.Query().WithCards().WithMember().Order(ent.Asc(promotionwithdrawal.FieldStatus), ent.Desc(promotionwithdrawal.FieldCreatedAt))
+	q := ent.Database.PromotionWithdrawal.Query().WithCards().WithMember().Order(ent.Desc(promotionwithdrawal.FieldCreatedAt))
 
 	if req.ID != nil {
 		q.Where(promotionwithdrawal.MemberID(*req.ID))
