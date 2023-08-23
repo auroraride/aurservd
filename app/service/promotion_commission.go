@@ -12,6 +12,7 @@ import (
 	"github.com/auroraride/aurservd/app/model/promotion"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/order"
+	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/promotioncommission"
 	"github.com/auroraride/aurservd/internal/ent/promotioncommissionplan"
 	"github.com/auroraride/aurservd/internal/ent/promotionearnings"
@@ -684,11 +685,9 @@ func (s *promotionCommissionService) getMaxCommissionAmount(rule *promotion.Comm
 	// 获取比例最高的值,固定金额最大值
 	value := rule.Value
 	maxValue := s.findMaxNumber(value)
-	maxPercentageAmount := tools.NewDecimal().Mul(price, maxValue/100)
 	maxFixedAmount := maxValue
-	// 判断哪个最大
-	if maxPercentageAmount > maxFixedAmount {
-		return maxPercentageAmount
+	if rule.OptionType == promotion.Percentage {
+		maxFixedAmount = tools.NewDecimal().Mul(price, maxValue/100)
 	}
 	return maxFixedAmount
 }
@@ -759,10 +758,14 @@ func (s *promotionCommissionService) appendCommissionRuleDetails(mem *ent.Promot
 	} else {
 		q.Where(promotioncommission.TypeNEQ(promotion.CommissionCustom.Value()))
 	}
-
+	now := time.Now()
 	com, _ := q.WithPlans(
 		func(query *ent.PromotionCommissionPlanQuery) {
-			query.Where(promotioncommissionplan.DeletedAtIsNil()).WithPlan()
+			query.Where(promotioncommissionplan.DeletedAtIsNil()).WithPlan(func(query *ent.PlanQuery) {
+				query.Where(plan.StartLTE(now),
+					plan.EndGTE(now),
+					plan.Enable(true))
+			})
 		}).
 		All(s.ctx)
 	if len(com) > 0 {

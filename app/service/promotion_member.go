@@ -164,7 +164,7 @@ func (s *promotionMemberService) updateMemberInfo(tx *ent.Tx, mem *ent.Promotion
 		re.SetNillableRiderID(req.RiderID)
 	}
 
-	if req.SubscribeID != nil && *req.SubscribeID != *mem.SubscribeID {
+	if req.SubscribeID != nil {
 		q.SetNillableSubscribeID(req.SubscribeID)
 		re.SetNillableSubscribeID(req.SubscribeID).ExecX(s.ctx)
 	}
