@@ -541,7 +541,20 @@ func (s *promotionMemberService) TeamList(ctx echo.Context, req *promotion.Membe
 		}
 
 		if item.SubscribeStatus.Valid {
-			row.SubscribeStatus = uint64(item.SubscribeStatus.Int64)
+			status := uint8(item.SubscribeStatus.Int64)
+			var name string
+			if status == model.SubscribeStatusInactive || status == model.SubscribeStatusCanceled {
+				status = promotion.SubscribeStatusInactive.Value()
+				name = promotion.SubscribeStatusInactive.String()
+			} else if status == model.SubscribeStatusUsing || status == model.SubscribeStatusPaused || status == model.SubscribeStatusOverdue {
+				status = promotion.SubscribeStatusUsing.Value()
+				name = promotion.SubscribeStatusUsing.String()
+			} else {
+				status = promotion.SubscribeStatusUnSubscribed.Value()
+				name = promotion.SubscribeStatusUnSubscribed.String()
+			}
+			row.SubscribeStatus = status
+			row.SubscribeStatusName = name
 		}
 		if item.SubscribeStartAt.Valid {
 			row.SubscribeStartAt = item.SubscribeStartAt.Time.Format("2006-01-02")
@@ -574,8 +587,10 @@ func (s *promotionMemberService) MemberTeamFilter(req *promotion.MemberTeamReq, 
 		*sql += fmt.Sprintf(" AND (m.phone LIKE '%%%s%%' OR m.name LIKE '%%%s%%' OR r.name LIKE '%%%s%%') ", *req.Keyword, *req.Keyword, *req.Keyword)
 	}
 	if req.SubscribeStatus != nil {
-		if *req.SubscribeStatus == 0 {
-			*sql += fmt.Sprintf(" AND s.status = %d OR s.status IS NULL", *req.SubscribeStatus)
+		if *req.SubscribeStatus == promotion.SubscribeStatusInactive.Value() {
+			*sql += fmt.Sprintf(" AND s.status = %d OR s.status IS NULL OR s.status = %d", model.SubscribeStatusInactive, model.SubscribeStatusCanceled)
+		} else if *req.SubscribeStatus == promotion.SubscribeStatusUsing.Value() {
+			*sql += fmt.Sprintf(" AND s.status = %d OR s.status = %d OR s.status = %d", model.SubscribeStatusUsing, model.SubscribeStatusPaused, model.SubscribeStatusOverdue)
 		} else {
 			*sql += fmt.Sprintf(" AND s.status = %d ", *req.SubscribeStatus)
 		}

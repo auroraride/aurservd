@@ -98,6 +98,8 @@ func (s *promotionCommissionService) CommissionPlanList(req *model.IDParamReq) (
 						ID:     p.Edges.Plan.ID,
 						Name:   p.Edges.Plan.Name,
 						Amount: p.Edges.Plan.Price,
+						Enable: p.Edges.Plan.Enable,
+						End:    p.Edges.Plan.End.Format(carbon.DateTimeLayout),
 					})
 				}
 			}

@@ -92,19 +92,44 @@ func (l TemaLevel) String() string {
 
 // MemberTeamRes 会员团队列表信息
 type MemberTeamRes struct {
-	ID               uint64 `json:"id" `               // id
-	Phone            string `json:"phone" `            // 手机号
-	Name             string `json:"name" `             // 姓名
-	Level            string `json:"level" `            // 团员层级
-	RenewalCount     uint64 `json:"renewalCount" `     // 续费次数
-	SubscribeStatus  uint64 `json:"subscribeStatus" `  // 订阅状态 0:未激活 1:计费中 4:已退订
-	SubscribeStartAt string `json:"subscribeStartAt" ` // 订阅开始时间
+	ID                  uint64 `json:"id" `                 // id
+	Phone               string `json:"phone" `              // 手机号
+	Name                string `json:"name" `               // 姓名
+	Level               string `json:"level" `              // 团员层级
+	RenewalCount        uint64 `json:"renewalCount" `       // 续费次数
+	SubscribeStatus     uint8  `json:"subscribeStatus" `    // 订阅状态 0:未激活 1:计费中 4:已退订
+	SubscribeStatusName string `json:"subscribeStatusName"` // 订阅状态名称
+	SubscribeStartAt    string `json:"subscribeStartAt" `   // 订阅开始时间
+}
+
+type SubscribeStatus uint8
+
+const (
+	SubscribeStatusInactive SubscribeStatus = iota
+	SubscribeStatusUsing
+	SubscribeStatusUnSubscribed SubscribeStatus = 4
+)
+
+func (s SubscribeStatus) Value() uint8 {
+	return uint8(s)
+}
+func (s SubscribeStatus) String() string {
+	switch s {
+	case SubscribeStatusInactive:
+		return "未激活"
+	case SubscribeStatusUsing:
+		return "计费中"
+	case SubscribeStatusUnSubscribed:
+		return "已退订"
+	default:
+		return ""
+	}
 }
 
 // MemberTeamFilter 会员团队筛选条件
 type MemberTeamFilter struct {
 	Keyword         *string `json:"keyword" query:"keyword"`                 // 关键词
-	SubscribeStatus *uint64 `json:"subscribeStatus" query:"subscribeStatus"` // 订阅状态 0:未激活 1:计费中 4:已退订
+	SubscribeStatus *uint8  `json:"subscribeStatus" query:"subscribeStatus"` // 订阅状态 0:未激活 1:计费中 4:已退订
 	Level           *uint8  `json:"level" query:"level" enums:"1,2"`         // 团员层级
 	Start           *string `json:"start" query:"start"`                     // 开始日期
 	End             *string `json:"end" query:"end"`                         // 结束日期

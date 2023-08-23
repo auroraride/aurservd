@@ -32911,6 +32911,10 @@ const docTemplate = `{
                 "subscribeStatus": {
                     "description": "订阅状态 0:未激活 1:计费中 4:已退订",
                     "type": "integer"
+                },
+                "subscribeStatusName": {
+                    "description": "订阅状态名称",
+                    "type": "string"
                 }
             }
         },
