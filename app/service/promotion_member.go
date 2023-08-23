@@ -588,9 +588,9 @@ func (s *promotionMemberService) MemberTeamFilter(req *promotion.MemberTeamReq, 
 	}
 	if req.SubscribeStatus != nil {
 		if *req.SubscribeStatus == promotion.SubscribeStatusInactive.Value() {
-			*sql += fmt.Sprintf(" AND s.status = %d OR s.status IS NULL OR s.status = %d", model.SubscribeStatusInactive, model.SubscribeStatusCanceled)
+			*sql += fmt.Sprintf(" AND (s.status = %d OR s.status IS NULL OR s.status = %d)", model.SubscribeStatusInactive, model.SubscribeStatusCanceled)
 		} else if *req.SubscribeStatus == promotion.SubscribeStatusUsing.Value() {
-			*sql += fmt.Sprintf(" AND s.status = %d OR s.status = %d OR s.status = %d", model.SubscribeStatusUsing, model.SubscribeStatusPaused, model.SubscribeStatusOverdue)
+			*sql += fmt.Sprintf(" AND (s.status = %d OR s.status = %d OR s.status = %d)", model.SubscribeStatusUsing, model.SubscribeStatusPaused, model.SubscribeStatusOverdue)
 		} else {
 			*sql += fmt.Sprintf(" AND s.status = %d ", *req.SubscribeStatus)
 		}
