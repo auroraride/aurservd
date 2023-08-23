@@ -16597,7 +16597,51 @@
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                      "name": "X-Promotion-Token",
+                      "in": "header",
+                      "required": true
+                    },
+                  {
+                    "description": "查询请求",
+                    "name": "body",
+                    "in": "body",
+                    "required": true,
+                    "schema": {
+                      "$ref": "#/definitions/promotion.EarningsReq"
+                    }
+                  }
+                ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/promotion.EarningsRes"
+                    }
+                  }
+                }
+              }
+            }
+        },
+      "/promotion/v1/earnings/total": {
+        "get": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "[P]推广接口"
+          ],
+          "summary": "P3002 获取总收益",
+          "operationId": "PromotionEarningsTotal",
+          "parameters": [
+            {
+              "type": "string",
+              "description": "管理员校验token",
+              "name": "X-Promotion-Token",
                         "in": "header",
                         "required": true
                     },
@@ -16875,7 +16919,7 @@
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                      "name": "X-Promotion-Token",
                         "in": "header",
                         "required": true
                     },
@@ -17301,6 +17345,91 @@
                 }
             }
         },
+      "/promotion/v1/withdrawal/total": {
+        "get": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "[P]推广接口"
+          ],
+          "summary": "P2004 查询总提现金额",
+          "operationId": "PromotionWithdrawalTotal",
+          "parameters": [
+            {
+              "type": "string",
+              "description": "会员校验token",
+              "name": "X-Promotion-Token",
+              "in": "header",
+              "required": true
+            },
+            {
+              "type": "string",
+              "description": "提现账户",
+              "name": "account",
+              "in": "query"
+            },
+            {
+              "type": "integer",
+              "description": "当前页, 从1开始, 默认1",
+              "name": "current",
+              "in": "query"
+            },
+            {
+              "type": "string",
+              "description": "结束日期",
+              "name": "end",
+              "in": "query"
+            },
+            {
+              "type": "integer",
+              "description": "会员id",
+              "name": "id",
+              "in": "query"
+            },
+            {
+              "type": "string",
+              "description": "关键字",
+              "name": "keywork",
+              "in": "query"
+            },
+            {
+              "type": "integer",
+              "description": "每页数据, 默认20",
+              "name": "pageSize",
+              "in": "query"
+            },
+            {
+              "type": "string",
+              "description": "开始日期",
+              "name": "start",
+              "in": "query"
+            },
+            {
+              "enum": [
+                0,
+                1,
+                2
+              ],
+              "type": "integer",
+              "description": "提现状态 0:待审核 1:成功 2:失败",
+              "name": "status",
+              "in": "query"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "$ref": "#/definitions/promotion.TotalRes"
+              }
+            }
+          }
+        }
+      },
         "/rider/v1/assistance": {
             "get": {
                 "consumes": [
@@ -32992,6 +33121,15 @@
                 "yesterdayEarnings": {
                     "description": "昨日收益",
                     "type": "number"
+                }
+            }
+        },
+      "promotion.TotalRes": {
+        "type": "object",
+        "properties": {
+          "sum": {
+            "description": "金额",
+            "type": "number"
                 }
             }
         },

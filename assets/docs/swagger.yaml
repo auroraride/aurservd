@@ -9194,6 +9194,12 @@ definitions:
         description: 昨日收益
         type: number
     type: object
+  promotion.TotalRes:
+    properties:
+      sum:
+        description: 金额
+        type: number
+    type: object
   promotion.UploadAvatar:
     properties:
       avatar:
@@ -20334,7 +20340,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-Manager-Token
+        name: X-Promotion-Token
         required: true
         type: string
       - description: 查询请求
@@ -20353,6 +20359,35 @@ paths:
               $ref: '#/definitions/promotion.EarningsRes'
             type: array
       summary: P3001 会员收益列表
+      tags:
+        - '[P]推广接口'
+  /promotion/v1/earnings/total:
+    get:
+      consumes:
+        - application/json
+      operationId: PromotionEarningsTotal
+      parameters:
+        - description: 管理员校验token
+          in: header
+          name: X-Promotion-Token
+          required: true
+          type: string
+        - description: 查询请求
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/promotion.EarningsReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/promotion.EarningsRes'
+            type: array
+      summary: P3002 获取总收益
       tags:
       - '[P]推广接口'
   /promotion/v1/member/avatar:
@@ -20514,7 +20549,7 @@ paths:
       parameters:
       - description: 管理员校验token
         in: header
-        name: X-Manager-Token
+        name: X-Promotion-Token
         required: true
         type: string
       - description: 查询请求
@@ -20797,6 +20832,63 @@ paths:
           schema:
             $ref: '#/definitions/promotion.WithdrawalFeeRes'
       summary: P2003 计算提现手续费
+      tags:
+        - '[P]推广接口'
+  /promotion/v1/withdrawal/total:
+    get:
+      consumes:
+        - application/json
+      operationId: PromotionWithdrawalTotal
+      parameters:
+        - description: 会员校验token
+          in: header
+          name: X-Promotion-Token
+          required: true
+          type: string
+        - description: 提现账户
+          in: query
+          name: account
+          type: string
+        - description: 当前页, 从1开始, 默认1
+          in: query
+          name: current
+          type: integer
+        - description: 结束日期
+          in: query
+          name: end
+          type: string
+        - description: 会员id
+          in: query
+          name: id
+          type: integer
+        - description: 关键字
+          in: query
+          name: keywork
+          type: string
+        - description: 每页数据, 默认20
+          in: query
+          name: pageSize
+          type: integer
+        - description: 开始日期
+          in: query
+          name: start
+          type: string
+        - description: 提现状态 0:待审核 1:成功 2:失败
+          enum:
+            - 0
+            - 1
+            - 2
+          in: query
+          name: status
+          type: integer
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/promotion.TotalRes'
+      summary: P2004 查询总提现金额
       tags:
       - '[P]推广接口'
   /rider/v1/assistance:

@@ -79,3 +79,8 @@ type EarningsCancelReq struct {
 	ID     uint64  `json:"id" validate:"required"`     // id
 	Remark *string `json:"remark" validate:"required"` // 备注
 }
+
+// TotalRes 收益总计
+type TotalRes struct {
+	Sum float64 `json:"sum" ` // 金额
+}

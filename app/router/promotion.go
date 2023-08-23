@@ -28,9 +28,11 @@ func loadPromotionRoutes() {
 	auth.GET("/withdrawal", papi.PromotionWithdrawal.List)                        // 会员提现列表
 	auth.POST("/withdrawal/alter", papi.PromotionWithdrawal.Alter)                // 申请提现
 	auth.POST("/withdrawal/fee", papi.PromotionWithdrawal.CalculateWithdrawalFee) // 计算提现手续费
+	auth.GET("/withdrawal/total", papi.PromotionWithdrawal.Total)                 // 查询用户总提现
 
 	// P3 收益
-	auth.GET("/earnings", papi.PromotionEarnings.List) // 会员收益列表
+	auth.GET("/earnings", papi.PromotionEarnings.List)        // 会员收益列表
+	auth.GET("/earnings/total", papi.PromotionEarnings.Total) // 会员总收益
 
 	// P4 银行卡
 	auth.POST("/bank/card", papi.PromotionBankCard.Create)       // 创建银行卡
