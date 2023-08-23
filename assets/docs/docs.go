@@ -32127,6 +32127,14 @@ const docTemplate = `{
                     "description": "骑士卡价格",
                     "type": "number"
                 },
+                "enable": {
+                    "description": "是否禁用 true 启用 false 禁用",
+                    "type": "boolean"
+                },
+                "end": {
+                    "description": "有效期结束日期",
+                    "type": "string"
+                },
                 "id": {
                     "description": "骑士卡ID",
                     "type": "integer"

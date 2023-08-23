@@ -190,6 +190,8 @@ type CommissionPlan struct {
 	ID     uint64  `json:"id"`     // 骑士卡ID
 	Name   string  `json:"name"`   // 骑士卡名称
 	Amount float64 `json:"amount"` // 骑士卡价格
+	Enable bool    `json:"enable"` // 是否禁用 true 启用 false 禁用
+	End    string  `json:"end"`    // 有效期结束日期
 }
 
 // CommissionMaxPlan 每个方案最大返佣金额

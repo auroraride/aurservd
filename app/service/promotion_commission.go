@@ -211,6 +211,8 @@ func (s *promotionCommissionService) detail(item *ent.PromotionCommission) promo
 				ID:     v.Edges.Plan.ID,
 				Name:   v.Edges.Plan.Name,
 				Amount: v.Edges.Plan.Price,
+				Enable: v.Edges.Plan.Enable,
+				End:    v.Edges.Plan.End.Format(carbon.DateTimeLayout),
 			})
 		}
 	}
