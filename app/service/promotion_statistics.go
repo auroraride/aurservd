@@ -161,7 +161,7 @@ func (s *promotionStatisticsService) Withdrawal(mem *ent.PromotionMember) promot
 	ent.Database.PromotionWithdrawal.Query().Where(
 		promotionwithdrawal.MemberID(mem.ID),
 		promotionwithdrawal.Status(promotion.WithdrawalStatusSuccess.Value()),
-	).Aggregate(ent.As(ent.Sum(promotionwithdrawal.FieldAmount), "totalWithdrawal")).ScanX(s.ctx, &v)
+	).Aggregate(ent.As(ent.Sum(promotionwithdrawal.FieldApplyAmount), "totalWithdrawal")).ScanX(s.ctx, &v)
 	return v[0]
 }
 

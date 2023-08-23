@@ -16604,7 +16604,51 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-Promotion-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "查询请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/promotion.EarningsReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/promotion.EarningsRes"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/promotion/v1/earnings/total": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[P]推广接口"
+                ],
+                "summary": "P3002 获取总收益",
+                "operationId": "PromotionEarningsTotal",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Promotion-Token",
                         "in": "header",
                         "required": true
                     },
@@ -16882,7 +16926,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                        "name": "X-Manager-Token",
+                        "name": "X-Promotion-Token",
                         "in": "header",
                         "required": true
                     },
@@ -17303,6 +17347,91 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/promotion.WithdrawalFeeRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/promotion/v1/withdrawal/total": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[P]推广接口"
+                ],
+                "summary": "P2004 查询总提现金额",
+                "operationId": "PromotionWithdrawalTotal",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "会员校验token",
+                        "name": "X-Promotion-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "提现账户",
+                        "name": "account",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束日期",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "会员id",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "关键字",
+                        "name": "keywork",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始日期",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "description": "提现状态 0:待审核 1:成功 2:失败",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/promotion.TotalRes"
                         }
                     }
                 }
@@ -31998,6 +32127,14 @@ const docTemplate = `{
                     "description": "骑士卡价格",
                     "type": "number"
                 },
+                "enable": {
+                    "description": "是否禁用 true 启用 false 禁用",
+                    "type": "boolean"
+                },
+                "end": {
+                    "description": "有效期结束日期",
+                    "type": "string"
+                },
                 "id": {
                     "description": "骑士卡ID",
                     "type": "integer"
@@ -32774,6 +32911,10 @@ const docTemplate = `{
                 "subscribeStatus": {
                     "description": "订阅状态 0:未激活 1:计费中 4:已退订",
                     "type": "integer"
+                },
+                "subscribeStatusName": {
+                    "description": "订阅状态名称",
+                    "type": "string"
                 }
             }
         },
@@ -33002,6 +33143,15 @@ const docTemplate = `{
                 }
             }
         },
+        "promotion.TotalRes": {
+            "type": "object",
+            "properties": {
+                "sum": {
+                    "description": "金额",
+                    "type": "number"
+                }
+            }
+        },
         "promotion.UploadAvatar": {
             "type": "object",
             "required": [
@@ -33143,6 +33293,10 @@ const docTemplate = `{
                     "description": "提现金额",
                     "type": "number"
                 },
+                "applyAmount": {
+                    "description": "申请提现金额",
+                    "type": "number"
+                },
                 "applyTime": {
                     "description": "申请时间",
                     "type": "string"
@@ -33194,6 +33348,10 @@ const docTemplate = `{
                 "status": {
                     "description": "状态 0:待审核 1:成功 2:失败",
                     "type": "integer"
+                },
+                "tax": {
+                    "description": "提现税费",
+                    "type": "number"
                 }
             }
         },

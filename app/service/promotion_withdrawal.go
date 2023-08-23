@@ -32,37 +32,8 @@ func NewPromotionWithdrawalService(params ...any) *promotionWithdrawalService {
 
 // List 提现列表
 func (s *promotionWithdrawalService) List(ctx echo.Context, req *promotion.WithdrawalListReq) *model.PaginationRes {
-	q := ent.Database.PromotionWithdrawal.Query().WithCards().WithMember().Order(ent.Asc(promotionwithdrawal.FieldStatus), ent.Desc(promotionwithdrawal.FieldCreatedAt))
-
-	if req.ID != nil {
-		q.Where(promotionwithdrawal.MemberID(*req.ID))
-	}
-
-	if req.Account != nil {
-		q.Where(promotionwithdrawal.HasCardsWith(promotionbankcard.CardNoContains(*req.Account)))
-	}
-
-	if req.Status != nil {
-		q.Where(promotionwithdrawal.Status(*req.Status))
-	}
-
-	if req.Keyword != nil {
-		q.Where(promotionwithdrawal.HasMemberWith(
-			promotionmember.Or(
-				promotionmember.NameContains(*req.Keyword),
-				promotionmember.PhoneContains(*req.Keyword),
-			),
-		))
-	}
-
-	if req.Start != nil && req.End != nil {
-		start := tools.NewTime().ParseDateStringX(*req.Start)
-		end := tools.NewTime().ParseNextDateStringX(*req.End)
-		q.Where(
-			promotionwithdrawal.CreatedAtGTE(start),
-			promotionwithdrawal.CreatedAtLTE(end),
-		)
-	}
+	q := ent.Database.PromotionWithdrawal.Query().WithCards().WithMember().Order(ent.Desc(promotionwithdrawal.FieldCreatedAt))
+	s.FilterWithdrawal(q, req)
 
 	return model.ParsePaginationResponse(
 		q,
@@ -70,13 +41,16 @@ func (s *promotionWithdrawalService) List(ctx echo.Context, req *promotion.Withd
 		func(item *ent.PromotionWithdrawal) promotion.WithdrawalListRes {
 			res := promotion.WithdrawalListRes{
 				WithdrawalDetail: promotion.WithdrawalDetail{
-					ID:        item.ID,
-					Amount:    item.Amount,
-					Method:    promotion.WithdrawalMethod(item.Method).String(),
-					Status:    item.Status,
-					Remark:    item.Remark,
-					CreatedAt: item.CreatedAt.Format(carbon.DateTimeLayout),
-					ApplyTime: item.ApplyTime.Format(carbon.DateTimeLayout),
+					ID:          item.ID,
+					ApplyAmount: item.ApplyAmount,
+					Amount:      item.Amount,
+					Fee:         item.Fee,
+					Tax:         item.Tex,
+					Method:      promotion.WithdrawalMethod(item.Method).String(),
+					Status:      item.Status,
+					Remark:      item.Remark,
+					CreatedAt:   item.CreatedAt.Format(carbon.DateTimeLayout),
+					ApplyTime:   item.ApplyTime.Format(carbon.DateTimeLayout),
 				},
 			}
 			if item.ReviewTime != nil {
@@ -109,6 +83,50 @@ func (s *promotionWithdrawalService) List(ctx echo.Context, req *promotion.Withd
 	)
 }
 
+func (s *promotionWithdrawalService) FilterWithdrawal(q *ent.PromotionWithdrawalQuery, req *promotion.WithdrawalListReq) {
+
+	if req.ID != nil {
+		q.Where(promotionwithdrawal.MemberID(*req.ID))
+	}
+
+	if req.Account != nil {
+		q.Where(promotionwithdrawal.HasCardsWith(promotionbankcard.CardNoContains(*req.Account)))
+	}
+
+	if req.Status != nil {
+		q.Where(promotionwithdrawal.Status(*req.Status))
+	}
+
+	if req.Keyword != nil {
+		q.Where(promotionwithdrawal.HasMemberWith(
+			promotionmember.Or(
+				promotionmember.NameContains(*req.Keyword),
+				promotionmember.PhoneContains(*req.Keyword),
+			),
+		))
+	}
+
+	if req.Start != nil && req.End != nil {
+		start := tools.NewTime().ParseDateStringX(*req.Start)
+		end := tools.NewTime().ParseNextDateStringX(*req.End)
+		q.Where(
+			promotionwithdrawal.CreatedAtGTE(start),
+			promotionwithdrawal.CreatedAtLTE(end),
+		)
+	}
+}
+
+func (s *promotionWithdrawalService) TotalWithdrawal(req *promotion.WithdrawalListReq) promotion.TotalRes {
+	var v []promotion.TotalRes
+	q := ent.Database.PromotionWithdrawal.Query().Where(promotionwithdrawal.StatusNEQ(promotion.WithdrawalStatusFailed.Value()))
+	s.FilterWithdrawal(q, req)
+	err := q.Aggregate(ent.Sum(promotionwithdrawal.FieldApplyAmount)).Scan(s.ctx, &v)
+	if err != nil {
+		snag.Panic("查询总提现失败")
+	}
+	return v[0]
+}
+
 // Alter 申请提现
 func (s *promotionWithdrawalService) Alter(mem *ent.PromotionMember, req *promotion.WithdrawalAlterReq) {
 
@@ -137,7 +155,8 @@ func (s *promotionWithdrawalService) Alter(mem *ent.PromotionMember, req *promot
 			SetAccountID(req.AccountID).
 			SetApplyAmount(req.ApplyAmount).
 			SetAmount(wf.AmountReceived).
-			SetFee(wf.Taxable + wf.WithdrawalFee).
+			SetFee(wf.WithdrawalFee).
+			SetTex(wf.Taxable).
 			SetMethod(promotion.WithdrawalMethodBank.Value()).
 			SetStatus(promotion.WithdrawalStatusPending.Value()).
 			SetApplyTime(time.Now()).

@@ -4073,6 +4073,7 @@ var (
 		{Name: "apply_amount", Type: field.TypeFloat64, Comment: "提现申请金额", Default: 0},
 		{Name: "amount", Type: field.TypeFloat64, Comment: "提现金额", Default: 0},
 		{Name: "fee", Type: field.TypeFloat64, Comment: "提现手续费", Default: 0},
+		{Name: "tex", Type: field.TypeFloat64, Comment: "提现税费", Default: 0},
 		{Name: "method", Type: field.TypeUint8, Comment: "提现方式 1:银行卡"},
 		{Name: "apply_time", Type: field.TypeTime, Nullable: true, Comment: "申请时间"},
 		{Name: "review_time", Type: field.TypeTime, Nullable: true, Comment: "审核时间"},
@@ -4087,13 +4088,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "promotion_withdrawal_promotion_bank_card_withdrawals",
-				Columns:    []*schema.Column{PromotionWithdrawalColumns[14]},
+				Columns:    []*schema.Column{PromotionWithdrawalColumns[15]},
 				RefColumns: []*schema.Column{PromotionBankCardColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "promotion_withdrawal_promotion_member_member",
-				Columns:    []*schema.Column{PromotionWithdrawalColumns[15]},
+				Columns:    []*schema.Column{PromotionWithdrawalColumns[16]},
 				RefColumns: []*schema.Column{PromotionMemberColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -4112,7 +4113,7 @@ var (
 			{
 				Name:    "promotionwithdrawal_member_id",
 				Unique:  false,
-				Columns: []*schema.Column{PromotionWithdrawalColumns[15]},
+				Columns: []*schema.Column{PromotionWithdrawalColumns[16]},
 			},
 		},
 	}

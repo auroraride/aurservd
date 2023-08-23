@@ -100,6 +100,11 @@ func Fee(v float64) predicate.PromotionWithdrawal {
 	return predicate.PromotionWithdrawal(sql.FieldEQ(FieldFee, v))
 }
 
+// Tex applies equality check predicate on the "tex" field. It's identical to TexEQ.
+func Tex(v float64) predicate.PromotionWithdrawal {
+	return predicate.PromotionWithdrawal(sql.FieldEQ(FieldTex, v))
+}
+
 // Method applies equality check predicate on the "method" field. It's identical to MethodEQ.
 func Method(v uint8) predicate.PromotionWithdrawal {
 	return predicate.PromotionWithdrawal(sql.FieldEQ(FieldMethod, v))
@@ -523,6 +528,46 @@ func FeeLT(v float64) predicate.PromotionWithdrawal {
 // FeeLTE applies the LTE predicate on the "fee" field.
 func FeeLTE(v float64) predicate.PromotionWithdrawal {
 	return predicate.PromotionWithdrawal(sql.FieldLTE(FieldFee, v))
+}
+
+// TexEQ applies the EQ predicate on the "tex" field.
+func TexEQ(v float64) predicate.PromotionWithdrawal {
+	return predicate.PromotionWithdrawal(sql.FieldEQ(FieldTex, v))
+}
+
+// TexNEQ applies the NEQ predicate on the "tex" field.
+func TexNEQ(v float64) predicate.PromotionWithdrawal {
+	return predicate.PromotionWithdrawal(sql.FieldNEQ(FieldTex, v))
+}
+
+// TexIn applies the In predicate on the "tex" field.
+func TexIn(vs ...float64) predicate.PromotionWithdrawal {
+	return predicate.PromotionWithdrawal(sql.FieldIn(FieldTex, vs...))
+}
+
+// TexNotIn applies the NotIn predicate on the "tex" field.
+func TexNotIn(vs ...float64) predicate.PromotionWithdrawal {
+	return predicate.PromotionWithdrawal(sql.FieldNotIn(FieldTex, vs...))
+}
+
+// TexGT applies the GT predicate on the "tex" field.
+func TexGT(v float64) predicate.PromotionWithdrawal {
+	return predicate.PromotionWithdrawal(sql.FieldGT(FieldTex, v))
+}
+
+// TexGTE applies the GTE predicate on the "tex" field.
+func TexGTE(v float64) predicate.PromotionWithdrawal {
+	return predicate.PromotionWithdrawal(sql.FieldGTE(FieldTex, v))
+}
+
+// TexLT applies the LT predicate on the "tex" field.
+func TexLT(v float64) predicate.PromotionWithdrawal {
+	return predicate.PromotionWithdrawal(sql.FieldLT(FieldTex, v))
+}
+
+// TexLTE applies the LTE predicate on the "tex" field.
+func TexLTE(v float64) predicate.PromotionWithdrawal {
+	return predicate.PromotionWithdrawal(sql.FieldLTE(FieldTex, v))
 }
 
 // MethodEQ applies the EQ predicate on the "method" field.

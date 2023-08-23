@@ -20,7 +20,7 @@ var PromotionSetting = new(promotionSetting)
 // @Tags         [P]推广接口
 // @Accept       json
 // @Produce      json
-// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        X-Promotion-Token  header  string  true  "管理员校验token"
 // @Param        body  body  promotion.SettingReq true  "查询请求"
 // @Success      200  {object}  []promotion.Setting
 func (p *promotionSetting) Setting(c echo.Context) (err error) {

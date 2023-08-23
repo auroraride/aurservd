@@ -12,6 +12,7 @@ import (
 	"github.com/auroraride/aurservd/app/model/promotion"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/order"
+	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/promotioncommission"
 	"github.com/auroraride/aurservd/internal/ent/promotioncommissionplan"
 	"github.com/auroraride/aurservd/internal/ent/promotionearnings"
@@ -97,6 +98,8 @@ func (s *promotionCommissionService) CommissionPlanList(req *model.IDParamReq) (
 						ID:     p.Edges.Plan.ID,
 						Name:   p.Edges.Plan.Name,
 						Amount: p.Edges.Plan.Price,
+						Enable: p.Edges.Plan.Enable,
+						End:    p.Edges.Plan.End.Format(carbon.DateTimeLayout),
 					})
 				}
 			}
@@ -210,6 +213,8 @@ func (s *promotionCommissionService) detail(item *ent.PromotionCommission) promo
 				ID:     v.Edges.Plan.ID,
 				Name:   v.Edges.Plan.Name,
 				Amount: v.Edges.Plan.Price,
+				Enable: v.Edges.Plan.Enable,
+				End:    v.Edges.Plan.End.Format(carbon.DateTimeLayout),
 			})
 		}
 	}
@@ -249,6 +254,7 @@ func (s *promotionCommissionService) Update(req *promotion.CommissionCreateReq) 
 		SetHistoryID(append(commissionInfo.HistoryID, commissionInfo.ID)).
 		SetType(req.Type.Value()).
 		SetStartAt(startAt).
+		SetEnable(commissionInfo.Enable).
 		SaveX(s.ctx)
 
 	// 更新会员返佣方案
@@ -554,26 +560,16 @@ func (s *promotionCommissionService) saveEarningsAndUpdateCommission(tx *ent.Tx,
 		}
 
 		// 更新返佣总收益
-		com, _ := ent.Database.PromotionCommission.Query().Where(promotioncommission.ID(req.CommissionID)).First(s.ctx)
-		if com == nil {
-			zap.L().Error("返佣方案不存在", zap.Error(err), zap.Any("收益记录", req))
-			return
-		}
-		_, err = tx.PromotionCommission.UpdateOneID(req.CommissionID).SetAmountSum(tools.NewDecimal().Sum(com.AmountSum, req.Amount)).Save(s.ctx)
+		_, err = tx.PromotionCommission.UpdateOneID(req.CommissionID).AddAmountSum(req.Amount).Save(s.ctx)
 		if err != nil {
 			zap.L().Error("返佣总收益更新失败", zap.Error(err), zap.Any("收益记录", req))
 			return
 		}
 
 		// 更新会员未结算收益
-		mem, _ := ent.Database.PromotionMember.QueryNotDeleted().Where(promotionmember.ID(req.MemberID)).First(s.ctx)
-		if mem == nil {
-			zap.L().Error("会员不存在", zap.Error(err), zap.Any("收益记录", req))
-			return
-		}
-		_, err = tx.PromotionMember.UpdateOneID(req.MemberID).SetFrozen(tools.NewDecimal().Sum(mem.Frozen, req.Amount)).Save(s.ctx)
+		_, err = tx.PromotionMember.UpdateOneID(req.MemberID).AddFrozen(req.Amount).Save(s.ctx)
 		if err != nil {
-			zap.L().Error("会员未结算收益更新失败", zap.Error(err), zap.Any("收益记录", req), zap.Any("收益记录", req))
+			zap.L().Error("会员未结算收益更新失败", zap.Error(err), zap.Any("收益记录", req))
 			return
 		}
 	}
@@ -693,11 +689,9 @@ func (s *promotionCommissionService) getMaxCommissionAmount(rule *promotion.Comm
 	// 获取比例最高的值,固定金额最大值
 	value := rule.Value
 	maxValue := s.findMaxNumber(value)
-	maxPercentageAmount := tools.NewDecimal().Mul(price, maxValue/100)
 	maxFixedAmount := maxValue
-	// 判断哪个最大
-	if maxPercentageAmount > maxFixedAmount {
-		return maxPercentageAmount
+	if rule.OptionType == promotion.Percentage {
+		maxFixedAmount = tools.NewDecimal().Mul(price, maxValue/100)
 	}
 	return maxFixedAmount
 }
@@ -768,10 +762,14 @@ func (s *promotionCommissionService) appendCommissionRuleDetails(mem *ent.Promot
 	} else {
 		q.Where(promotioncommission.TypeNEQ(promotion.CommissionCustom.Value()))
 	}
-
+	now := time.Now()
 	com, _ := q.WithPlans(
 		func(query *ent.PromotionCommissionPlanQuery) {
-			query.Where(promotioncommissionplan.DeletedAtIsNil()).WithPlan()
+			query.Where(promotioncommissionplan.DeletedAtIsNil()).WithPlan(func(query *ent.PlanQuery) {
+				query.Where(plan.StartLTE(now),
+					plan.EndGTE(now),
+					plan.Enable(true))
+			})
 		}).
 		All(s.ctx)
 	if len(com) > 0 {

@@ -80797,6 +80797,8 @@ type PromotionWithdrawalMutation struct {
 	addamount       *float64
 	fee             *float64
 	addfee          *float64
+	tex             *float64
+	addtex          *float64
 	method          *uint8
 	addmethod       *int8
 	apply_time      *time.Time
@@ -81437,6 +81439,62 @@ func (m *PromotionWithdrawalMutation) ResetFee() {
 	m.addfee = nil
 }
 
+// SetTex sets the "tex" field.
+func (m *PromotionWithdrawalMutation) SetTex(f float64) {
+	m.tex = &f
+	m.addtex = nil
+}
+
+// Tex returns the value of the "tex" field in the mutation.
+func (m *PromotionWithdrawalMutation) Tex() (r float64, exists bool) {
+	v := m.tex
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTex returns the old "tex" field's value of the PromotionWithdrawal entity.
+// If the PromotionWithdrawal object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PromotionWithdrawalMutation) OldTex(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTex is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTex requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTex: %w", err)
+	}
+	return oldValue.Tex, nil
+}
+
+// AddTex adds f to the "tex" field.
+func (m *PromotionWithdrawalMutation) AddTex(f float64) {
+	if m.addtex != nil {
+		*m.addtex += f
+	} else {
+		m.addtex = &f
+	}
+}
+
+// AddedTex returns the value that was added to the "tex" field in this mutation.
+func (m *PromotionWithdrawalMutation) AddedTex() (r float64, exists bool) {
+	v := m.addtex
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetTex resets all changes to the "tex" field.
+func (m *PromotionWithdrawalMutation) ResetTex() {
+	m.tex = nil
+	m.addtex = nil
+}
+
 // SetMethod sets the "method" field.
 func (m *PromotionWithdrawalMutation) SetMethod(u uint8) {
 	m.method = &u
@@ -81739,7 +81797,7 @@ func (m *PromotionWithdrawalMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PromotionWithdrawalMutation) Fields() []string {
-	fields := make([]string, 0, 15)
+	fields := make([]string, 0, 16)
 	if m.created_at != nil {
 		fields = append(fields, promotionwithdrawal.FieldCreatedAt)
 	}
@@ -81772,6 +81830,9 @@ func (m *PromotionWithdrawalMutation) Fields() []string {
 	}
 	if m.fee != nil {
 		fields = append(fields, promotionwithdrawal.FieldFee)
+	}
+	if m.tex != nil {
+		fields = append(fields, promotionwithdrawal.FieldTex)
 	}
 	if m.method != nil {
 		fields = append(fields, promotionwithdrawal.FieldMethod)
@@ -81815,6 +81876,8 @@ func (m *PromotionWithdrawalMutation) Field(name string) (ent.Value, bool) {
 		return m.Amount()
 	case promotionwithdrawal.FieldFee:
 		return m.Fee()
+	case promotionwithdrawal.FieldTex:
+		return m.Tex()
 	case promotionwithdrawal.FieldMethod:
 		return m.Method()
 	case promotionwithdrawal.FieldAccountID:
@@ -81854,6 +81917,8 @@ func (m *PromotionWithdrawalMutation) OldField(ctx context.Context, name string)
 		return m.OldAmount(ctx)
 	case promotionwithdrawal.FieldFee:
 		return m.OldFee(ctx)
+	case promotionwithdrawal.FieldTex:
+		return m.OldTex(ctx)
 	case promotionwithdrawal.FieldMethod:
 		return m.OldMethod(ctx)
 	case promotionwithdrawal.FieldAccountID:
@@ -81948,6 +82013,13 @@ func (m *PromotionWithdrawalMutation) SetField(name string, value ent.Value) err
 		}
 		m.SetFee(v)
 		return nil
+	case promotionwithdrawal.FieldTex:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTex(v)
+		return nil
 	case promotionwithdrawal.FieldMethod:
 		v, ok := value.(uint8)
 		if !ok {
@@ -81996,6 +82068,9 @@ func (m *PromotionWithdrawalMutation) AddedFields() []string {
 	if m.addfee != nil {
 		fields = append(fields, promotionwithdrawal.FieldFee)
 	}
+	if m.addtex != nil {
+		fields = append(fields, promotionwithdrawal.FieldTex)
+	}
 	if m.addmethod != nil {
 		fields = append(fields, promotionwithdrawal.FieldMethod)
 	}
@@ -82015,6 +82090,8 @@ func (m *PromotionWithdrawalMutation) AddedField(name string) (ent.Value, bool) 
 		return m.AddedAmount()
 	case promotionwithdrawal.FieldFee:
 		return m.AddedFee()
+	case promotionwithdrawal.FieldTex:
+		return m.AddedTex()
 	case promotionwithdrawal.FieldMethod:
 		return m.AddedMethod()
 	}
@@ -82053,6 +82130,13 @@ func (m *PromotionWithdrawalMutation) AddField(name string, value ent.Value) err
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddFee(v)
+		return nil
+	case promotionwithdrawal.FieldTex:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTex(v)
 		return nil
 	case promotionwithdrawal.FieldMethod:
 		v, ok := value.(int8)
@@ -82165,6 +82249,9 @@ func (m *PromotionWithdrawalMutation) ResetField(name string) error {
 		return nil
 	case promotionwithdrawal.FieldFee:
 		m.ResetFee()
+		return nil
+	case promotionwithdrawal.FieldTex:
+		m.ResetTex()
 		return nil
 	case promotionwithdrawal.FieldMethod:
 		m.ResetMethod()

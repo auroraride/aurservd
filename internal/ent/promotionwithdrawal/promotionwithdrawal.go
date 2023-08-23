@@ -37,6 +37,8 @@ const (
 	FieldAmount = "amount"
 	// FieldFee holds the string denoting the fee field in the database.
 	FieldFee = "fee"
+	// FieldTex holds the string denoting the tex field in the database.
+	FieldTex = "tex"
 	// FieldMethod holds the string denoting the method field in the database.
 	FieldMethod = "method"
 	// FieldAccountID holds the string denoting the account_id field in the database.
@@ -81,6 +83,7 @@ var Columns = []string{
 	FieldApplyAmount,
 	FieldAmount,
 	FieldFee,
+	FieldTex,
 	FieldMethod,
 	FieldAccountID,
 	FieldApplyTime,
@@ -118,6 +121,8 @@ var (
 	DefaultAmount float64
 	// DefaultFee holds the default value on creation for the "fee" field.
 	DefaultFee float64
+	// DefaultTex holds the default value on creation for the "tex" field.
+	DefaultTex float64
 )
 
 // OrderOption defines the ordering options for the PromotionWithdrawal queries.
@@ -171,6 +176,11 @@ func ByAmount(opts ...sql.OrderTermOption) OrderOption {
 // ByFee orders the results by the fee field.
 func ByFee(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldFee, opts...).ToFunc()
+}
+
+// ByTex orders the results by the tex field.
+func ByTex(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTex, opts...).ToFunc()
 }
 
 // ByMethod orders the results by the method field.

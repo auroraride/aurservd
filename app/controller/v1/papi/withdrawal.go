@@ -56,9 +56,27 @@ func (l *promotionWithdrawal) Alter(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Promotion-Token  header  string  true  "会员校验token"
-// @Param        amount  query  promotion.WithdrawalAlterReq  true  "提现金额"
+// @Param        body  query  promotion.WithdrawalAlterReq  true  "提现金额"
 // @Success      200  {object}  promotion.WithdrawalFeeRes
 func (l *promotionWithdrawal) CalculateWithdrawalFee(c echo.Context) (err error) {
 	ctx, req := app.PromotionContextAndBinding[promotion.WithdrawalAlterReq](c)
 	return ctx.SendResponse(service.NewPromotionWithdrawalService().CalculateWithdrawalFee(ctx.Member, req))
+}
+
+// Total
+// @ID           PromotionWithdrawalTotal
+// @Router       /promotion/v1/withdrawal/total [GET]
+// @Summary      P2004 查询总提现金额
+// @Tags         [P]推广接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Promotion-Token  header  string  true  "会员校验token"
+// @Param        body  query  promotion.WithdrawalListReq  true  "提现金额"
+// @Success      200  {object}  promotion.TotalRes
+func (l *promotionWithdrawal) Total(c echo.Context) (err error) {
+	ctx, req := app.PromotionContextAndBinding[promotion.WithdrawalListReq](c)
+	return ctx.SendResponse(service.NewPromotionWithdrawalService().TotalWithdrawal(&promotion.WithdrawalListReq{
+		ID:               &ctx.Member.ID,
+		WithdrawalFilter: req.WithdrawalFilter,
+	}))
 }

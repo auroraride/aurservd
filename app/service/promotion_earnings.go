@@ -29,6 +29,36 @@ func NewPromotionEarningsService(params ...any) *promotionEarningsService {
 func (s *promotionEarningsService) List(req *promotion.EarningsReq) *model.PaginationRes {
 	q := ent.Database.PromotionEarnings.Query().WithRider().WithCommission().Order(ent.Desc(promotionearnings.FieldCreatedAt))
 
+	s.FilterEarnings(q, req)
+
+	s.TotalEarnings(req)
+
+	return model.ParsePaginationResponse(
+		q,
+		req.PaginationReq,
+		func(item *ent.PromotionEarnings) (res promotion.EarningsRes) {
+			res = promotion.EarningsRes{
+				EarningsDetail: promotion.EarningsDetail{
+					ID:                 item.ID,
+					MemberID:           item.MemberID,
+					CommissionRuleName: promotion.CommissionRuleKey(item.CommissionRuleKey).String(),
+					CommissionID:       item.CommissionID,
+					Amount:             item.Amount,
+					CreateTime:         item.CreatedAt.Format(carbon.DateTimeLayout),
+					Remark:             item.Remark,
+					Status:             item.Status,
+				},
+			}
+			if item.Edges.Rider != nil {
+				res.Phone = item.Edges.Rider.Phone
+				res.Name = item.Edges.Rider.Name
+			}
+			return
+		},
+	)
+}
+
+func (s *promotionEarningsService) FilterEarnings(q *ent.PromotionEarningsQuery, req *promotion.EarningsReq) {
 	if req.ID != nil {
 		q.Where(promotionearnings.MemberID(*req.ID))
 	}
@@ -58,30 +88,19 @@ func (s *promotionEarningsService) List(req *promotion.EarningsReq) *model.Pagin
 			promotionearnings.CreatedAtLTE(end),
 		)
 	}
+}
 
-	return model.ParsePaginationResponse(
-		q,
-		req.PaginationReq,
-		func(item *ent.PromotionEarnings) (res promotion.EarningsRes) {
-			res = promotion.EarningsRes{
-				EarningsDetail: promotion.EarningsDetail{
-					ID:                 item.ID,
-					MemberID:           item.MemberID,
-					CommissionRuleName: promotion.CommissionRuleKey(item.CommissionRuleKey).String(),
-					CommissionID:       item.CommissionID,
-					Amount:             item.Amount,
-					CreateTime:         item.CreatedAt.Format(carbon.DateTimeLayout),
-					Remark:             item.Remark,
-					Status:             item.Status,
-				},
-			}
-			if item.Edges.Rider != nil {
-				res.Phone = item.Edges.Rider.Phone
-				res.Name = item.Edges.Rider.Name
-			}
-			return
-		},
-	)
+// TotalEarnings 获取用户总收益
+func (s *promotionEarningsService) TotalEarnings(req *promotion.EarningsReq) promotion.TotalRes {
+	var v []promotion.TotalRes
+
+	q := ent.Database.PromotionEarnings.Query()
+	s.FilterEarnings(q, req)
+	err := q.Aggregate(ent.Sum(promotionearnings.FieldAmount)).Scan(s.ctx, &v)
+	if err != nil {
+		snag.Panic("查询总收益失败")
+	}
+	return v[0]
 }
 
 // Create 创建会员收益
