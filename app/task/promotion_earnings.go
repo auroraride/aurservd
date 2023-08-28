@@ -46,10 +46,10 @@ func (t *promotionEarningsTask) Start() {
 func (*promotionEarningsTask) Do() {
 	ctx := context.Background()
 
-	// 查询收益明细 7天前的收益
+	// 查询收益明细 2天前的收益
 	all, _ := ent.Database.PromotionEarnings.Query().Where(
-		promotionearnings.CreatedAtGTE(carbon.Now().StartOfDay().AddDays(-7).Carbon2Time()),
-		promotionearnings.CreatedAtLTE(carbon.Now().EndOfDay().AddDays(-7).Carbon2Time()),
+		// promotionearnings.CreatedAtGTE(carbon.Now().StartOfDay().AddDays(-7).Carbon2Time()),
+		promotionearnings.CreatedAtLTE(carbon.Now().EndOfDay().AddDays(-2).Carbon2Time()),
 		promotionearnings.Status(promotion.EarningsStatusUnsettled.Value()),
 	).All(ctx)
 
