@@ -496,6 +496,9 @@ func (s *promotionMemberService) TeamList(ctx echo.Context, req *promotion.Membe
 	// 条件筛选
 	s.MemberTeamFilter(req, &sqls)
 
+	// 排序 asc
+	sqls += " ORDER BY mh.created_at DESC "
+
 	if req.Current == 0 && req.PageSize == 0 {
 		// 默认分页
 		req.Current = 1
