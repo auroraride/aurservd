@@ -252,6 +252,10 @@ type config struct {
 		Agent     Wechat
 		Promotion Wechat
 	} `koanf:"wechatMiniprogram"`
+	Kafka struct {
+		Brokers []string
+		Topic   string
+	}
 }
 
 func LoadConfig() {

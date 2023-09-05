@@ -9,6 +9,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/IBM/sarama"
 	"github.com/auroraride/adapter/log"
 	"github.com/go-redis/redis/v9"
 	"github.com/golang-module/carbon/v2"
@@ -46,9 +47,29 @@ func Bootstrap() {
 		LoggerName: ar.Config.LoggerName,
 		NoCaller:   true,
 	}
+
 	if !ar.Config.LoggerDebug {
 		logcfg.Writers = append(logcfg.Writers, log.NewRedisWriter(redis.NewClient(&redis.Options{})))
 	}
+
+	if len(ar.Config.Kafka.Brokers) > 0 {
+		config := sarama.NewConfig()                     // 设置日志输入到Kafka的配置
+		config.Producer.RequiredAcks = sarama.WaitForAll // 等待服务器所有副本都保存成功后的响应
+		config.Producer.Return.Successes = true          // 是否等待成功后的响应,只有上面的RequiredAcks设置不是NoReponse这里才有用.
+		config.Producer.Return.Errors = true
+		producer, err := sarama.NewSyncProducer(ar.Config.Kafka.Brokers, config)
+		if err != nil {
+			return
+		}
+
+		kw := log.NewKafkaWriter(&log.KafkaWriter{
+			Topic:    ar.Config.Kafka.Topic,
+			Producer: producer,
+		})
+
+		logcfg.Writers = append(logcfg.Writers, log.NewKafkaWriter(kw))
+	}
+
 	log.New(logcfg)
 
 	// 加载数据库

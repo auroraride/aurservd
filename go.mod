@@ -5,6 +5,7 @@ go 1.20
 require (
 	ariga.io/atlas v0.13.1
 	entgo.io/ent v0.12.4-0.20230515210056-2924da51758b
+	github.com/IBM/sarama v1.41.1
 	github.com/LucaTheHacker/go-haversine v0.0.0-20220213075817-0d811fb84a1a
 	github.com/PuerkitoBio/goquery v1.8.1
 	github.com/alibabacloud-go/darabonba-openapi v0.2.1
@@ -14,7 +15,7 @@ require (
 	github.com/aliyun/alibaba-cloud-sdk-go v1.62.510
 	github.com/aliyun/aliyun-log-go-sdk v0.1.51
 	github.com/aliyun/aliyun-oss-go-sdk v2.2.8+incompatible
-	github.com/auroraride/adapter v0.0.0-20230814051318-0399ad6c918c
+	github.com/auroraride/adapter v0.0.0-20230905100019-1a6948455b8c
 	github.com/ethereum/go-ethereum v1.12.0
 	github.com/fsnotify/fsnotify v1.6.0
 	github.com/getkin/kin-openapi v0.118.0
@@ -78,8 +79,12 @@ require (
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/clbanning/mxj/v2 v2.7.0 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.2.0 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
+	github.com/eapache/go-resiliency v1.4.0 // indirect
+	github.com/eapache/go-xerial-snappy v0.0.0-20230731223053-c322873962e3 // indirect
+	github.com/eapache/queue v1.1.0 // indirect
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
 	github.com/go-kit/kit v0.12.0 // indirect
@@ -96,9 +101,13 @@ require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
+	github.com/golang/snappy v0.0.5-0.20220116011046-fa5810519dcb // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0 // indirect
+	github.com/hashicorp/errwrap v1.1.0 // indirect
+	github.com/hashicorp/go-multierror v1.1.1 // indirect
+	github.com/hashicorp/go-uuid v1.0.3 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/hashicorp/hcl/v2 v2.17.0 // indirect
 	github.com/holiman/uint256 v1.2.3 // indirect
@@ -111,6 +120,11 @@ require (
 	github.com/jackc/pgproto3/v2 v2.3.2 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
 	github.com/jackc/pgtype v1.14.0 // indirect
+	github.com/jcmturner/aescts/v2 v2.0.0 // indirect
+	github.com/jcmturner/dnsutils/v2 v2.0.0 // indirect
+	github.com/jcmturner/gofork v1.7.6 // indirect
+	github.com/jcmturner/gokrb5/v8 v8.4.4 // indirect
+	github.com/jcmturner/rpc/v2 v2.0.3 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/klauspost/compress v1.16.7 // indirect
@@ -132,8 +146,10 @@ require (
 	github.com/pelletier/go-toml/v2 v2.0.9 // indirect
 	github.com/perimeterx/marshmallow v1.1.5 // indirect
 	github.com/pierrec/lz4 v2.6.1+incompatible // indirect
+	github.com/pierrec/lz4/v4 v4.1.18 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/qichengzx/coordtransform v0.0.0-20220708113031-010878418826 // indirect
+	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
 	github.com/richardlehane/mscfb v1.0.4 // indirect
 	github.com/richardlehane/msoleps v1.0.3 // indirect
 	github.com/russross/blackfriday v1.6.0 // indirect
@@ -172,9 +188,9 @@ require (
 	golang.org/x/image v0.11.0 // indirect
 	golang.org/x/mod v0.12.0 // indirect
 	golang.org/x/net v0.14.0 // indirect
-	golang.org/x/sys v0.11.0 // indirect
-	golang.org/x/text v0.12.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20230807174057-1744710a1577 // indirect
+	golang.org/x/sys v0.12.0 // indirect
+	golang.org/x/text v0.13.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20230822172742-b8732ec3820d // indirect
 	google.golang.org/grpc v1.57.0 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
