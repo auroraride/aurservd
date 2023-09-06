@@ -19,6 +19,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
 	"github.com/auroraride/aurservd/internal/ent/promotionmembercommission"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
 )
@@ -709,11 +710,11 @@ func (s *promotionCommissionService) GetCommissionType(phone string) (promotion.
 		return 0, errors.New("骑手未实名认证")
 	}
 
-	riders, _ := ent.Database.Rider.Query().WithSubscribes().Where(rider.PersonID(ri.Edges.Person.ID)).All(s.ctx)
-
-	if len(riders) > 1 {
-		return promotion.CommissionTypeRenewal, nil
-	}
+	riders, _ := ent.Database.Rider.Query().WithSubscribes(
+		func(query *ent.SubscribeQuery) {
+			query.Where(subscribe.StatusNEQ(model.SubscribeStatusCanceled))
+		},
+	).Where(rider.PersonID(ri.Edges.Person.ID)).All(s.ctx)
 
 	for _, v := range riders {
 		sub := v.Edges.Subscribes
