@@ -20,6 +20,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/promotionmembercommission"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
+	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
 )
@@ -710,19 +711,27 @@ func (s *promotionCommissionService) GetCommissionType(phone string) (promotion.
 		return 0, errors.New("骑手未实名认证")
 	}
 
-	riders, _ := ent.Database.Rider.Query().WithSubscribes(
-		func(query *ent.SubscribeQuery) {
-			query.Where(subscribe.StatusNEQ(model.SubscribeStatusCanceled))
-		},
-	).Where(rider.PersonID(ri.Edges.Person.ID)).All(s.ctx)
+	riders := ent.Database.Rider.Query().Where(rider.PersonID(ri.Edges.Person.ID)).Select(rider.FieldID).IDsX(s.ctx)
 
-	for _, v := range riders {
-		sub := v.Edges.Subscribes
-		if sub != nil && (len(sub) == 1 && sub[0].RenewalDays > 0 || len(sub) > 1) {
-			return promotion.CommissionTypeRenewal, nil
+	subs, _ := ent.Database.Subscribe.QueryNotDeleted().Where(subscribe.StatusNEQ(model.SubscribeStatusCanceled), subscribe.RiderIDIn(riders...)).Order(ent.Desc(subscribe.FieldCreatedAt)).All(s.ctx)
+
+	// 新用户 无订阅记录 或者 订阅记录中有一个是新签
+	if subs == nil || subs != nil && (len(subs) == 1 && subs[0].RenewalDays == 0) {
+		return promotion.CommissionTypeNewlySigned, nil
+	}
+
+	// 这里是判断最新的退订时间是否超出设置天数 如果超出设置天数则是新用户
+	// 上面根据订阅创建时间进行倒序排序,所以这里只需要判断第一个订阅记录的退订时间是否超出设置天数
+	for _, sub := range subs {
+		if sub.EndAt != nil && sub.Status == model.SubscribeStatusUnSubscribed { // 判断最新的退订时间是否超出设置天数
+			past := silk.Int(int(carbon.Time2Carbon(*sub.EndAt).AddDay().DiffInDays(carbon.Now())))
+			// 判定退订时间是否超出设置天数
+			if model.NewRecentSubscribePastDays(*past).Commission() {
+				return promotion.CommissionTypeNewlySigned, nil
+			}
 		}
 	}
-	return promotion.CommissionTypeNewlySigned, nil
+	return promotion.CommissionTypeRenewal, nil
 }
 
 // GetCommissionRule 获取返佣方案

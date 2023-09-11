@@ -598,6 +598,137 @@
                 }
             }
         },
+      "/agent/v1/business": {
+        "get": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "[A]代理接口"
+          ],
+          "summary": "A8003 业务列表",
+          "operationId": "AgentBusinessList",
+          "parameters": [
+            {
+              "type": "string",
+              "description": "代理校验token",
+              "name": "X-Agent-Token",
+              "in": "header",
+              "required": true
+            },
+            {
+              "type": "integer",
+              "description": "筛选业务对象 0:全部 1:个签 2:团签",
+              "name": "aimed",
+              "in": "query"
+            },
+            {
+              "type": "integer",
+              "description": "筛选电柜",
+              "name": "cabinetId",
+              "in": "query"
+            },
+            {
+              "type": "integer",
+              "description": "筛选城市",
+              "name": "cityId",
+              "in": "query"
+            },
+            {
+              "type": "integer",
+              "description": "当前页, 从1开始, 默认1",
+              "name": "current",
+              "in": "query"
+            },
+            {
+              "type": "integer",
+              "description": "店员ID, 店员端请求忽略此参数",
+              "name": "employeeId",
+              "in": "query"
+            },
+            {
+              "type": "string",
+              "description": "筛选结束日期, 格式为yyyy-mm-dd, 例如: 2022-06-01",
+              "name": "end",
+              "in": "query"
+            },
+            {
+              "type": "integer",
+              "description": "企业ID",
+              "name": "enterpriseId",
+              "in": "query"
+            },
+            {
+              "enum": [
+                0,
+                1,
+                2,
+                3
+              ],
+              "type": "integer",
+              "x-enum-varnames": [
+                "StockGoalAll",
+                "StockGoalStore",
+                "StockGoalCabinet",
+                "StockGoalStation"
+              ],
+              "description": "查询目标, 0:不筛选 1:门店 2:电柜",
+              "name": "goal",
+              "in": "query"
+            },
+            {
+              "type": "string",
+              "description": "筛选骑手姓名或电话",
+              "name": "keyword",
+              "in": "query"
+            },
+            {
+              "type": "integer",
+              "description": "每页数据, 默认20",
+              "name": "pageSize",
+              "in": "query"
+            },
+            {
+              "type": "string",
+              "description": "筛选开始日期, 格式为yyyy-mm-dd, 例如: 2022-06-01",
+              "name": "start",
+              "in": "query"
+            },
+            {
+              "type": "integer",
+              "description": "筛选门店",
+              "name": "storeId",
+              "in": "query"
+            },
+            {
+              "enum": [
+                "active",
+                "pause",
+                "continue",
+                "unsubscribe"
+              ],
+              "type": "string",
+              "description": "筛选业务类别 active:激活 pause:寄存 continue:结束寄存 unsubscribe:退订",
+              "name": "type",
+              "in": "query"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/model.BusinessListRes"
+                }
+                        }
+                    }
+                }
+            }
+        },
         "/agent/v1/business/exchange": {
             "get": {
                 "consumes": [
@@ -16840,7 +16971,7 @@
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/promotion.MemberSigninRes"
+                          "$ref": "#/definitions/promotion.MemberInviteRes"
                         }
                     }
                 }
@@ -32488,6 +32619,27 @@
                 }
             }
         },
+      "promotion.InviteType": {
+        "type": "integer",
+        "enum": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "x-enum-comments": {
+          "MemberActivationFail": "已被激活",
+          "MemberBindSuccess": "绑定成功",
+          "MemberInviteFail": "已被邀请",
+          "MemberSignSuccess": "注册成功"
+        },
+        "x-enum-varnames": [
+          "MemberSignSuccess",
+          "MemberBindSuccess",
+          "MemberInviteFail",
+          "MemberActivationFail"
+        ]
+      },
         "promotion.Level": {
             "type": "object",
             "required": [
@@ -32605,6 +32757,19 @@
                 }
             }
         },
+      "promotion.MemberInviteRes": {
+        "type": "object",
+        "properties": {
+          "inviteType": {
+            "description": "邀请类型 1:注册成功 2:绑定成功 3:已被邀请 4:已被激活",
+            "allOf": [
+              {
+                "$ref": "#/definitions/promotion.InviteType"
+              }
+            ]
+          }
+        }
+      },
         "promotion.MemberProfile": {
             "type": "object",
             "properties": {

@@ -6,8 +6,6 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 )
 
-const ErrorCode = 10001
-
 // MemberReq  会员请求参数
 type MemberReq struct {
 	model.PaginationReq
@@ -206,4 +204,18 @@ type MemberCommissionReq struct {
 
 type UploadAvatar struct {
 	Avatar string `json:"avatar" validate:"required" ` // 头像
+}
+
+type InviteType uint8
+
+const (
+	MemberSignSuccess    InviteType = iota + 1 // 注册成功
+	MemberBindSuccess                          // 绑定成功
+	MemberInviteFail                           // 已被邀请
+	MemberActivationFail                       // 已被激活
+	MemberInviteSelfFail                       // 自己不能邀请自己
+)
+
+type MemberInviteRes struct {
+	InviteType InviteType `json:"inviteType" ` // 邀请类型 1:注册成功 2:绑定成功 3:已被邀请 4:已被激活
 }

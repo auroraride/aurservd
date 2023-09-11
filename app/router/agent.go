@@ -66,6 +66,7 @@ func loadAgentRoutes() {
 	auth.POST("/subscribe/halt", aapi.Subscribe.Halt)                // 强制退租
 
 	// A8 业务
+	auth.GET("/business", aapi.Business.List)              // 业务记录列表
 	auth.GET("/business/exchange", aapi.Business.Exchange) // 换电列表
 	auth.GET("/business/price", aapi.Business.Price)       // 价格列表
 

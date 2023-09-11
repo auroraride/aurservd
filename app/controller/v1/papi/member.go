@@ -36,7 +36,7 @@ func (m *member) Signin(c echo.Context) (err error) {
 // @Produce      json
 // @Param        X-Promotion-Token  header  string  true  "会员校验token"
 // @Param        body  body  promotion.MemberSigninReq true  "查询请求"
-// @Success      200  {object}  promotion.MemberSigninRes  "请求成功"
+// @Success      200  {object}  promotion.MemberInviteRes  "请求成功"
 func (m *member) Signup(c echo.Context) (err error) {
 	ctx, req := app.PromotionContextAndBinding[promotion.MemberSigninReq](c)
 	return ctx.SendResponse(service.NewPromotionMemberService().Signup(req))
