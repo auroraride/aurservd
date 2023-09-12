@@ -711,9 +711,13 @@ func (s *promotionCommissionService) GetCommissionType(phone string) (promotion.
 		return 0, errors.New("骑手未实名认证")
 	}
 
-	riders := ent.Database.Rider.Query().Where(rider.PersonID(ri.Edges.Person.ID)).Select(rider.FieldID).IDsX(s.ctx)
+	riders := ent.Database.Rider.Query().Where(rider.PersonID(ri.Edges.Person.ID)).IDsX(s.ctx)
 
 	subs, _ := ent.Database.Subscribe.QueryNotDeleted().Where(subscribe.StatusNEQ(model.SubscribeStatusCanceled), subscribe.RiderIDIn(riders...)).Order(ent.Desc(subscribe.FieldCreatedAt)).All(s.ctx)
+
+	if len(subs) == 0 {
+		return 0, errors.New("骑手未订阅")
+	}
 
 	// 订阅记录中有一个是新签
 	if subs != nil && (len(subs) == 1 && subs[0].RenewalDays == 0) {
