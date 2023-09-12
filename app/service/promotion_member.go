@@ -198,7 +198,7 @@ func (s *promotionMemberService) getRiderOrCreate(tx *ent.Tx, phone string, c *p
 func (s *promotionMemberService) updateMemberInfo(tx *ent.Tx, mem *ent.PromotionMember, req *promotion.MemberCreateReq) {
 	q := tx.PromotionMember.UpdateOne(mem)
 	re := tx.PromotionReferrals.Update().Where(promotionreferrals.ReferredMemberIDEQ(mem.ID))
-	if req.RiderID != nil && mem.RiderID == nil {
+	if req.RiderID != nil {
 		q.SetNillableRiderID(req.RiderID)
 		re.SetNillableRiderID(req.RiderID)
 	}
