@@ -123,11 +123,14 @@ func (s *promotionMemberService) Signup(req *promotion.MemberSigninReq) promotio
 		return res
 	}
 
+	// 有可能是团签转个签 个签转团签 骑手id变更过未更新
+	ri, _ := ent.Database.Rider.QueryNotDeleted().Where(rider.Phone(req.Phone)).First(s.ctx)
+
 	if mem != nil && mem.Edges.Referred != nil && mem.Edges.Referred.ReferringMemberID != nil {
 		res.InviteType = promotion.MemberInviteFail
 		return res
-	} else if mem != nil && mem.Edges.Rider != nil {
-		sub := mem.Edges.Rider.QuerySubscribes().Where(subscribe.StatusNEQ(model.SubscribeStatusCanceled)).Order(ent.Desc(subscribe.FieldCreatedAt)).AllX(s.ctx)
+	} else if mem != nil && ri != nil {
+		sub := ri.QuerySubscribes().Where(subscribe.StatusNEQ(model.SubscribeStatusCanceled)).Order(ent.Desc(subscribe.FieldCreatedAt)).AllX(s.ctx)
 
 		for _, v := range sub {
 
