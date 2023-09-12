@@ -715,8 +715,8 @@ func (s *promotionCommissionService) GetCommissionType(phone string) (promotion.
 
 	subs, _ := ent.Database.Subscribe.QueryNotDeleted().Where(subscribe.StatusNEQ(model.SubscribeStatusCanceled), subscribe.RiderIDIn(riders...)).Order(ent.Desc(subscribe.FieldCreatedAt)).All(s.ctx)
 
-	// 新用户 无订阅记录 或者 订阅记录中有一个是新签
-	if subs == nil || subs != nil && (len(subs) == 1 && subs[0].RenewalDays == 0) {
+	// 订阅记录中有一个是新签
+	if subs != nil && (len(subs) == 1 && subs[0].RenewalDays == 0) {
 		return promotion.CommissionTypeNewlySigned, nil
 	}
 
