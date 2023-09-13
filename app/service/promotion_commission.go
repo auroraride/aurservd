@@ -710,48 +710,53 @@ func (s *promotionCommissionService) getMaxCommissionAmount(rule *promotion.Comm
 }
 
 // GetCommissionType 查询骑手是新用户还是续费用户
-func (s *promotionCommissionService) GetCommissionType(phone string) (promotion.CommissionCalculationType, error) {
-
-	// 通过实名认证 查询骑手是否是新用户
-	ri, _ := ent.Database.Rider.Query().WithPerson().Where(rider.Phone(phone)).First(s.ctx)
-	if ri == nil {
-		return 0, errors.New("骑手不存在")
-	}
-
-	if ri.Edges.Person == nil {
-		return 0, errors.New("骑手未实名认证")
-	}
-
-	mem, _ := ent.Database.PromotionMember.QueryNotDeleted().WithReferred().Where(promotionmember.Phone(phone)).First(s.ctx)
+func (s *promotionCommissionService) GetCommissionType(r *ent.Rider, current *ent.Subscribe) (promotion.CommissionCalculationType, error) {
+	// 查询骑手会员信息
+	mem, _ := ent.Database.PromotionMember.QueryNotDeleted().WithReferred().Where(promotionmember.Phone(r.Phone)).First(s.ctx)
 	if mem == nil {
 		return 0, errors.New("用户不存在")
 	}
 
-	riders := ent.Database.Rider.Query().Where(rider.PersonID(ri.Edges.Person.ID)).IDsX(s.ctx)
-
-	q := ent.Database.Subscribe.QueryNotDeleted().Where(
-		subscribe.StatusNEQ(model.SubscribeStatusCanceled),
-		subscribe.RiderIDIn(riders...),
-	)
-
-	// 9.12 修改逻辑如下
-	// 1.未绑定关系的,当用户购买后要在设定时间范围外购买算新签 所以绑定用户之前的订阅可以排除
-	// 2.需要排除购买后退订的订阅
-	if mem.Edges.Referred != nil && mem.Edges.Referred.ReferralTime != nil {
-		q.Where(subscribe.CreatedAtGT(*mem.Edges.Referred.ReferralTime))
+	// 查询被推广信息<谁推荐的我>
+	if mem.Edges.Referred == nil {
+		return 0, errors.New("推广员不存在")
 	}
 
-	subs, _ := q.Order(ent.Desc(subscribe.FieldCreatedAt)).All(s.ctx)
-	if len(subs) == 0 {
-		return 0, errors.New("骑手未订阅")
-	}
+	// 查询实人订阅记录
+	// 因实人名下存在未激活或已激活（包含团签）订阅时，无法购买新的订阅，所以只需要查询使用过并且已退租的订阅记录即可
+	// TODO: 此处判定不够健壮，后期重构需要优化，若需求改动为同一个用户可以同时拥有多个手机号同时激活时，此处有可能会发生意外
+	riders := ent.Database.Rider.Query().Where(rider.PersonID(*r.PersonID)).IDsX(s.ctx)
+	sub, _ := ent.Database.Subscribe.QueryNotDeleted().
+		Where(
+			subscribe.StatusNEQ(model.SubscribeStatusCanceled),
+			subscribe.RiderIDIn(riders...),
+			subscribe.IDNEQ(current.ID),
+		).
+		Order(ent.Desc(subscribe.FieldEndAt)).
+		First(s.ctx)
 
-	// 订阅记录中有一个是新签
-	if subs != nil && (len(subs) == 1 && subs[0].RenewalDays == 0) {
+	// 如果没有订阅记录则是新签返佣
+	if sub == nil {
 		return promotion.CommissionTypeNewlySigned, nil
 	}
 
-	return promotion.CommissionTypeRenewal, nil
+	// 若激活时间晚于或等于关系绑定时间，视为续签
+	if carbon.Time2Carbon(*sub.StartAt).Gte(carbon.Time2Carbon(mem.Edges.Referred.CreatedAt)) {
+		return promotion.CommissionTypeRenewal, nil
+	}
+
+	// 判定已退租天数是否符合新签返佣条件
+	// 如果激活时间早于关系绑定时间，并且大于90天，视为新签
+	past := int(carbon.Time2Carbon(*sub.EndAt).AddDay().DiffInDays(carbon.Now()))
+	if model.NewRecentSubscribePastDays(past).Commission() {
+		return promotion.CommissionTypeNewlySigned, nil
+	}
+
+	// 如果激活时间早于绑定关系时间，但是小于90天时，报错
+	// 按理来说，这种情况不应该出现，确立绑定关系时已经排除90天内的情况
+	// 但不排除后面如果改动逻辑或数据库会造成损失的意外情况
+	// 因此，此处需要抛出错误
+	return 0, errors.New("激活时间早于绑定关系时间，但是小于90天")
 }
 
 // GetCommissionRule 获取返佣方案
@@ -874,7 +879,7 @@ func (s *promotionCommissionService) RiderActivateCommission(sub *ent.Subscribe)
 	}
 
 	// 判断返佣类型 新签有可能是续签
-	commissionType, err := NewPromotionCommissionService().GetCommissionType(r.Phone)
+	commissionType, err := NewPromotionCommissionService().GetCommissionType(r, sub)
 	if err != nil || p == nil {
 		zap.L().Error("激活成功获取返佣失败", zap.Error(err))
 		return

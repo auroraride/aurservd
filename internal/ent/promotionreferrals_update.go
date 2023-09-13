@@ -104,40 +104,6 @@ func (pru *PromotionReferralsUpdate) SetReferredMemberID(u uint64) *PromotionRef
 	return pru
 }
 
-// SetNillableReferredMemberID sets the "referred_member_id" field if the given value is not nil.
-func (pru *PromotionReferralsUpdate) SetNillableReferredMemberID(u *uint64) *PromotionReferralsUpdate {
-	if u != nil {
-		pru.SetReferredMemberID(*u)
-	}
-	return pru
-}
-
-// ClearReferredMemberID clears the value of the "referred_member_id" field.
-func (pru *PromotionReferralsUpdate) ClearReferredMemberID() *PromotionReferralsUpdate {
-	pru.mutation.ClearReferredMemberID()
-	return pru
-}
-
-// SetReferralTime sets the "referral_time" field.
-func (pru *PromotionReferralsUpdate) SetReferralTime(t time.Time) *PromotionReferralsUpdate {
-	pru.mutation.SetReferralTime(t)
-	return pru
-}
-
-// SetNillableReferralTime sets the "referral_time" field if the given value is not nil.
-func (pru *PromotionReferralsUpdate) SetNillableReferralTime(t *time.Time) *PromotionReferralsUpdate {
-	if t != nil {
-		pru.SetReferralTime(*t)
-	}
-	return pru
-}
-
-// ClearReferralTime clears the value of the "referral_time" field.
-func (pru *PromotionReferralsUpdate) ClearReferralTime() *PromotionReferralsUpdate {
-	pru.mutation.ClearReferralTime()
-	return pru
-}
-
 // SetRider sets the "rider" edge to the Rider entity.
 func (pru *PromotionReferralsUpdate) SetRider(r *Rider) *PromotionReferralsUpdate {
 	return pru.SetRiderID(r.ID)
@@ -223,6 +189,14 @@ func (pru *PromotionReferralsUpdate) defaults() {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (pru *PromotionReferralsUpdate) check() error {
+	if _, ok := pru.mutation.ReferredMemberID(); pru.mutation.ReferredMemberCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "PromotionReferrals.referred_member"`)
+	}
+	return nil
+}
+
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (pru *PromotionReferralsUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *PromotionReferralsUpdate {
 	pru.modifiers = append(pru.modifiers, modifiers...)
@@ -230,6 +204,9 @@ func (pru *PromotionReferralsUpdate) Modify(modifiers ...func(u *sql.UpdateBuild
 }
 
 func (pru *PromotionReferralsUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := pru.check(); err != nil {
+		return n, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(promotionreferrals.Table, promotionreferrals.Columns, sqlgraph.NewFieldSpec(promotionreferrals.FieldID, field.TypeUint64))
 	if ps := pru.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -240,12 +217,6 @@ func (pru *PromotionReferralsUpdate) sqlSave(ctx context.Context) (n int, err er
 	}
 	if value, ok := pru.mutation.UpdatedAt(); ok {
 		_spec.SetField(promotionreferrals.FieldUpdatedAt, field.TypeTime, value)
-	}
-	if value, ok := pru.mutation.ReferralTime(); ok {
-		_spec.SetField(promotionreferrals.FieldReferralTime, field.TypeTime, value)
-	}
-	if pru.mutation.ReferralTimeCleared() {
-		_spec.ClearField(promotionreferrals.FieldReferralTime, field.TypeTime)
 	}
 	if pru.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -457,40 +428,6 @@ func (pruo *PromotionReferralsUpdateOne) SetReferredMemberID(u uint64) *Promotio
 	return pruo
 }
 
-// SetNillableReferredMemberID sets the "referred_member_id" field if the given value is not nil.
-func (pruo *PromotionReferralsUpdateOne) SetNillableReferredMemberID(u *uint64) *PromotionReferralsUpdateOne {
-	if u != nil {
-		pruo.SetReferredMemberID(*u)
-	}
-	return pruo
-}
-
-// ClearReferredMemberID clears the value of the "referred_member_id" field.
-func (pruo *PromotionReferralsUpdateOne) ClearReferredMemberID() *PromotionReferralsUpdateOne {
-	pruo.mutation.ClearReferredMemberID()
-	return pruo
-}
-
-// SetReferralTime sets the "referral_time" field.
-func (pruo *PromotionReferralsUpdateOne) SetReferralTime(t time.Time) *PromotionReferralsUpdateOne {
-	pruo.mutation.SetReferralTime(t)
-	return pruo
-}
-
-// SetNillableReferralTime sets the "referral_time" field if the given value is not nil.
-func (pruo *PromotionReferralsUpdateOne) SetNillableReferralTime(t *time.Time) *PromotionReferralsUpdateOne {
-	if t != nil {
-		pruo.SetReferralTime(*t)
-	}
-	return pruo
-}
-
-// ClearReferralTime clears the value of the "referral_time" field.
-func (pruo *PromotionReferralsUpdateOne) ClearReferralTime() *PromotionReferralsUpdateOne {
-	pruo.mutation.ClearReferralTime()
-	return pruo
-}
-
 // SetRider sets the "rider" edge to the Rider entity.
 func (pruo *PromotionReferralsUpdateOne) SetRider(r *Rider) *PromotionReferralsUpdateOne {
 	return pruo.SetRiderID(r.ID)
@@ -589,6 +526,14 @@ func (pruo *PromotionReferralsUpdateOne) defaults() {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (pruo *PromotionReferralsUpdateOne) check() error {
+	if _, ok := pruo.mutation.ReferredMemberID(); pruo.mutation.ReferredMemberCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "PromotionReferrals.referred_member"`)
+	}
+	return nil
+}
+
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (pruo *PromotionReferralsUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *PromotionReferralsUpdateOne {
 	pruo.modifiers = append(pruo.modifiers, modifiers...)
@@ -596,6 +541,9 @@ func (pruo *PromotionReferralsUpdateOne) Modify(modifiers ...func(u *sql.UpdateB
 }
 
 func (pruo *PromotionReferralsUpdateOne) sqlSave(ctx context.Context) (_node *PromotionReferrals, err error) {
+	if err := pruo.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(promotionreferrals.Table, promotionreferrals.Columns, sqlgraph.NewFieldSpec(promotionreferrals.FieldID, field.TypeUint64))
 	id, ok := pruo.mutation.ID()
 	if !ok {
@@ -623,12 +571,6 @@ func (pruo *PromotionReferralsUpdateOne) sqlSave(ctx context.Context) (_node *Pr
 	}
 	if value, ok := pruo.mutation.UpdatedAt(); ok {
 		_spec.SetField(promotionreferrals.FieldUpdatedAt, field.TypeTime, value)
-	}
-	if value, ok := pruo.mutation.ReferralTime(); ok {
-		_spec.SetField(promotionreferrals.FieldReferralTime, field.TypeTime, value)
-	}
-	if pruo.mutation.ReferralTimeCleared() {
-		_spec.ClearField(promotionreferrals.FieldReferralTime, field.TypeTime)
 	}
 	if pruo.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{

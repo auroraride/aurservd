@@ -30,10 +30,8 @@ type PromotionReferrals struct {
 	SubscribeID *uint64 `json:"subscribe_id,omitempty"`
 	// 推广者id
 	ReferringMemberID *uint64 `json:"referring_member_id,omitempty"`
-	// 被推广者ID
+	// 被推广者ID<骑手>
 	ReferredMemberID uint64 `json:"referred_member_id,omitempty"`
-	// 推荐时间
-	ReferralTime *time.Time `json:"referral_time,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PromotionReferralsQuery when eager-loading is set.
 	Edges        PromotionReferralsEdges `json:"edges"`
@@ -114,7 +112,7 @@ func (*PromotionReferrals) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case promotionreferrals.FieldID, promotionreferrals.FieldRiderID, promotionreferrals.FieldSubscribeID, promotionreferrals.FieldReferringMemberID, promotionreferrals.FieldReferredMemberID:
 			values[i] = new(sql.NullInt64)
-		case promotionreferrals.FieldCreatedAt, promotionreferrals.FieldUpdatedAt, promotionreferrals.FieldReferralTime:
+		case promotionreferrals.FieldCreatedAt, promotionreferrals.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -175,13 +173,6 @@ func (pr *PromotionReferrals) assignValues(columns []string, values []any) error
 				return fmt.Errorf("unexpected type %T for field referred_member_id", values[i])
 			} else if value.Valid {
 				pr.ReferredMemberID = uint64(value.Int64)
-			}
-		case promotionreferrals.FieldReferralTime:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field referral_time", values[i])
-			} else if value.Valid {
-				pr.ReferralTime = new(time.Time)
-				*pr.ReferralTime = value.Time
 			}
 		default:
 			pr.selectValues.Set(columns[i], values[i])
@@ -262,11 +253,6 @@ func (pr *PromotionReferrals) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("referred_member_id=")
 	builder.WriteString(fmt.Sprintf("%v", pr.ReferredMemberID))
-	builder.WriteString(", ")
-	if v := pr.ReferralTime; v != nil {
-		builder.WriteString("referral_time=")
-		builder.WriteString(v.Format(time.ANSIC))
-	}
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -61,8 +61,8 @@ const (
 	EdgeSubscribe = "subscribe"
 	// EdgeLevel holds the string denoting the level edge name in mutations.
 	EdgeLevel = "level"
-	// EdgeReferring holds the string denoting the referring edge name in mutations.
-	EdgeReferring = "referring"
+	// EdgeReferrals holds the string denoting the referrals edge name in mutations.
+	EdgeReferrals = "referrals"
 	// EdgeReferred holds the string denoting the referred edge name in mutations.
 	EdgeReferred = "referred"
 	// EdgePerson holds the string denoting the person edge name in mutations.
@@ -94,13 +94,13 @@ const (
 	LevelInverseTable = "promotion_level"
 	// LevelColumn is the table column denoting the level relation/edge.
 	LevelColumn = "level_id"
-	// ReferringTable is the table that holds the referring relation/edge.
-	ReferringTable = "promotion_referrals"
-	// ReferringInverseTable is the table name for the PromotionReferrals entity.
+	// ReferralsTable is the table that holds the referrals relation/edge.
+	ReferralsTable = "promotion_referrals"
+	// ReferralsInverseTable is the table name for the PromotionReferrals entity.
 	// It exists in this package in order to avoid circular dependency with the "promotionreferrals" package.
-	ReferringInverseTable = "promotion_referrals"
-	// ReferringColumn is the table column denoting the referring relation/edge.
-	ReferringColumn = "referring_member_id"
+	ReferralsInverseTable = "promotion_referrals"
+	// ReferralsColumn is the table column denoting the referrals relation/edge.
+	ReferralsColumn = "referring_member_id"
 	// ReferredTable is the table that holds the referred relation/edge.
 	ReferredTable = "promotion_referrals"
 	// ReferredInverseTable is the table name for the PromotionReferrals entity.
@@ -314,17 +314,17 @@ func ByLevelField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
-// ByReferringCount orders the results by referring count.
-func ByReferringCount(opts ...sql.OrderTermOption) OrderOption {
+// ByReferralsCount orders the results by referrals count.
+func ByReferralsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newReferringStep(), opts...)
+		sqlgraph.OrderByNeighborsCount(s, newReferralsStep(), opts...)
 	}
 }
 
-// ByReferring orders the results by referring terms.
-func ByReferring(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+// ByReferrals orders the results by referrals terms.
+func ByReferrals(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newReferringStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newReferralsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 
@@ -390,11 +390,11 @@ func newLevelStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.M2O, false, LevelTable, LevelColumn),
 	)
 }
-func newReferringStep() *sqlgraph.Step {
+func newReferralsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(ReferringInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, ReferringTable, ReferringColumn),
+		sqlgraph.To(ReferralsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, ReferralsTable, ReferralsColumn),
 	)
 }
 func newReferredStep() *sqlgraph.Step {

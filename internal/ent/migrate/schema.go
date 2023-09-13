@@ -3981,9 +3981,8 @@ var (
 		{Name: "id", Type: field.TypeUint64, Increment: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "referral_time", Type: field.TypeTime, Nullable: true, Comment: "推荐时间"},
 		{Name: "referring_member_id", Type: field.TypeUint64, Nullable: true, Comment: "推广者id"},
-		{Name: "referred_member_id", Type: field.TypeUint64, Unique: true, Nullable: true, Comment: "被推广者ID"},
+		{Name: "referred_member_id", Type: field.TypeUint64, Unique: true, Comment: "被推广者ID<骑手>"},
 		{Name: "rider_id", Type: field.TypeUint64, Nullable: true, Comment: "骑手ID"},
 		{Name: "subscribe_id", Type: field.TypeUint64, Nullable: true},
 	}
@@ -3994,26 +3993,26 @@ var (
 		PrimaryKey: []*schema.Column{PromotionReferralsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "promotion_referrals_promotion_member_referring",
-				Columns:    []*schema.Column{PromotionReferralsColumns[4]},
+				Symbol:     "promotion_referrals_promotion_member_referrals",
+				Columns:    []*schema.Column{PromotionReferralsColumns[3]},
 				RefColumns: []*schema.Column{PromotionMemberColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "promotion_referrals_promotion_member_referred",
-				Columns:    []*schema.Column{PromotionReferralsColumns[5]},
+				Columns:    []*schema.Column{PromotionReferralsColumns[4]},
 				RefColumns: []*schema.Column{PromotionMemberColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "promotion_referrals_rider_rider",
-				Columns:    []*schema.Column{PromotionReferralsColumns[6]},
+				Columns:    []*schema.Column{PromotionReferralsColumns[5]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "promotion_referrals_subscribe_subscribe",
-				Columns:    []*schema.Column{PromotionReferralsColumns[7]},
+				Columns:    []*schema.Column{PromotionReferralsColumns[6]},
 				RefColumns: []*schema.Column{SubscribeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -4027,12 +4026,12 @@ var (
 			{
 				Name:    "promotionreferrals_rider_id",
 				Unique:  false,
-				Columns: []*schema.Column{PromotionReferralsColumns[6]},
+				Columns: []*schema.Column{PromotionReferralsColumns[5]},
 			},
 			{
 				Name:    "promotionreferrals_subscribe_id",
 				Unique:  false,
-				Columns: []*schema.Column{PromotionReferralsColumns[7]},
+				Columns: []*schema.Column{PromotionReferralsColumns[6]},
 			},
 		},
 	}

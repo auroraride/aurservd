@@ -9982,15 +9982,15 @@ func (c *PromotionMemberClient) QueryLevel(pm *PromotionMember) *PromotionLevelQ
 	return query
 }
 
-// QueryReferring queries the referring edge of a PromotionMember.
-func (c *PromotionMemberClient) QueryReferring(pm *PromotionMember) *PromotionReferralsQuery {
+// QueryReferrals queries the referrals edge of a PromotionMember.
+func (c *PromotionMemberClient) QueryReferrals(pm *PromotionMember) *PromotionReferralsQuery {
 	query := (&PromotionReferralsClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := pm.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(promotionmember.Table, promotionmember.FieldID, id),
 			sqlgraph.To(promotionreferrals.Table, promotionreferrals.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, promotionmember.ReferringTable, promotionmember.ReferringColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, promotionmember.ReferralsTable, promotionmember.ReferralsColumn),
 		)
 		fromV = sqlgraph.Neighbors(pm.driver.Dialect(), step)
 		return fromV, nil

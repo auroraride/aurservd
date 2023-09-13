@@ -60,16 +60,15 @@ func (PromotionReferrals) Annotations() []schema.Annotation {
 func (PromotionReferrals) Fields() []ent.Field {
 	return []ent.Field{
 		field.Uint64("referring_member_id").Optional().Nillable().Comment("推广者id"),
-		field.Uint64("referred_member_id").Optional().Unique().Comment("被推广者ID"),
-		field.Time("referral_time").Optional().Nillable().Comment("推荐时间"),
+		field.Uint64("referred_member_id").Unique().Comment("被推广者ID<骑手>"),
 	}
 }
 
 // Edges of the PromotionReferrals.
 func (PromotionReferrals) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("referring_member", PromotionMember.Type).Ref("referring").Unique().Field("referring_member_id"),
-		edge.From("referred_member", PromotionMember.Type).Ref("referred").Unique().Field("referred_member_id"),
+		edge.From("referring_member", PromotionMember.Type).Ref("referrals").Unique().Field("referring_member_id"),
+		edge.From("referred_member", PromotionMember.Type).Ref("referred").Required().Unique().Field("referred_member_id"),
 	}
 }
 

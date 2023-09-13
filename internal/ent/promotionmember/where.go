@@ -1024,21 +1024,21 @@ func HasLevelWith(preds ...predicate.PromotionLevel) predicate.PromotionMember {
 	})
 }
 
-// HasReferring applies the HasEdge predicate on the "referring" edge.
-func HasReferring() predicate.PromotionMember {
+// HasReferrals applies the HasEdge predicate on the "referrals" edge.
+func HasReferrals() predicate.PromotionMember {
 	return predicate.PromotionMember(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ReferringTable, ReferringColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, ReferralsTable, ReferralsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasReferringWith applies the HasEdge predicate on the "referring" edge with a given conditions (other predicates).
-func HasReferringWith(preds ...predicate.PromotionReferrals) predicate.PromotionMember {
+// HasReferralsWith applies the HasEdge predicate on the "referrals" edge with a given conditions (other predicates).
+func HasReferralsWith(preds ...predicate.PromotionReferrals) predicate.PromotionMember {
 	return predicate.PromotionMember(func(s *sql.Selector) {
-		step := newReferringStep()
+		step := newReferralsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

@@ -78,9 +78,9 @@ type PromotionMemberEdges struct {
 	Subscribe *Subscribe `json:"subscribe,omitempty"`
 	// Level holds the value of the level edge.
 	Level *PromotionLevel `json:"level,omitempty"`
-	// Referring holds the value of the referring edge.
-	Referring []*PromotionReferrals `json:"referring,omitempty"`
-	// Referred holds the value of the referred edge.
+	// 我邀请的记录
+	Referrals []*PromotionReferrals `json:"referrals,omitempty"`
+	// 我的被邀请记录
 	Referred *PromotionReferrals `json:"referred,omitempty"`
 	// Person holds the value of the person edge.
 	Person *PromotionPerson `json:"person,omitempty"`
@@ -132,13 +132,13 @@ func (e PromotionMemberEdges) LevelOrErr() (*PromotionLevel, error) {
 	return nil, &NotLoadedError{edge: "level"}
 }
 
-// ReferringOrErr returns the Referring value or an error if the edge
+// ReferralsOrErr returns the Referrals value or an error if the edge
 // was not loaded in eager-loading.
-func (e PromotionMemberEdges) ReferringOrErr() ([]*PromotionReferrals, error) {
+func (e PromotionMemberEdges) ReferralsOrErr() ([]*PromotionReferrals, error) {
 	if e.loadedTypes[3] {
-		return e.Referring, nil
+		return e.Referrals, nil
 	}
-	return nil, &NotLoadedError{edge: "referring"}
+	return nil, &NotLoadedError{edge: "referrals"}
 }
 
 // ReferredOrErr returns the Referred value or an error if the edge
@@ -380,9 +380,9 @@ func (pm *PromotionMember) QueryLevel() *PromotionLevelQuery {
 	return NewPromotionMemberClient(pm.config).QueryLevel(pm)
 }
 
-// QueryReferring queries the "referring" edge of the PromotionMember entity.
-func (pm *PromotionMember) QueryReferring() *PromotionReferralsQuery {
-	return NewPromotionMemberClient(pm.config).QueryReferring(pm)
+// QueryReferrals queries the "referrals" edge of the PromotionMember entity.
+func (pm *PromotionMember) QueryReferrals() *PromotionReferralsQuery {
+	return NewPromotionMemberClient(pm.config).QueryReferrals(pm)
 }
 
 // QueryReferred queries the "referred" edge of the PromotionMember entity.

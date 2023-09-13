@@ -74432,9 +74432,9 @@ type PromotionMemberMutation struct {
 	clearedsubscribe        bool
 	level                   *uint64
 	clearedlevel            bool
-	referring               map[uint64]struct{}
-	removedreferring        map[uint64]struct{}
-	clearedreferring        bool
+	referrals               map[uint64]struct{}
+	removedreferrals        map[uint64]struct{}
+	clearedreferrals        bool
 	referred                *uint64
 	clearedreferred         bool
 	person                  *uint64
@@ -75596,58 +75596,58 @@ func (m *PromotionMemberMutation) ResetLevel() {
 	m.clearedlevel = false
 }
 
-// AddReferringIDs adds the "referring" edge to the PromotionReferrals entity by ids.
-func (m *PromotionMemberMutation) AddReferringIDs(ids ...uint64) {
-	if m.referring == nil {
-		m.referring = make(map[uint64]struct{})
+// AddReferralIDs adds the "referrals" edge to the PromotionReferrals entity by ids.
+func (m *PromotionMemberMutation) AddReferralIDs(ids ...uint64) {
+	if m.referrals == nil {
+		m.referrals = make(map[uint64]struct{})
 	}
 	for i := range ids {
-		m.referring[ids[i]] = struct{}{}
+		m.referrals[ids[i]] = struct{}{}
 	}
 }
 
-// ClearReferring clears the "referring" edge to the PromotionReferrals entity.
-func (m *PromotionMemberMutation) ClearReferring() {
-	m.clearedreferring = true
+// ClearReferrals clears the "referrals" edge to the PromotionReferrals entity.
+func (m *PromotionMemberMutation) ClearReferrals() {
+	m.clearedreferrals = true
 }
 
-// ReferringCleared reports if the "referring" edge to the PromotionReferrals entity was cleared.
-func (m *PromotionMemberMutation) ReferringCleared() bool {
-	return m.clearedreferring
+// ReferralsCleared reports if the "referrals" edge to the PromotionReferrals entity was cleared.
+func (m *PromotionMemberMutation) ReferralsCleared() bool {
+	return m.clearedreferrals
 }
 
-// RemoveReferringIDs removes the "referring" edge to the PromotionReferrals entity by IDs.
-func (m *PromotionMemberMutation) RemoveReferringIDs(ids ...uint64) {
-	if m.removedreferring == nil {
-		m.removedreferring = make(map[uint64]struct{})
+// RemoveReferralIDs removes the "referrals" edge to the PromotionReferrals entity by IDs.
+func (m *PromotionMemberMutation) RemoveReferralIDs(ids ...uint64) {
+	if m.removedreferrals == nil {
+		m.removedreferrals = make(map[uint64]struct{})
 	}
 	for i := range ids {
-		delete(m.referring, ids[i])
-		m.removedreferring[ids[i]] = struct{}{}
+		delete(m.referrals, ids[i])
+		m.removedreferrals[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedReferring returns the removed IDs of the "referring" edge to the PromotionReferrals entity.
-func (m *PromotionMemberMutation) RemovedReferringIDs() (ids []uint64) {
-	for id := range m.removedreferring {
+// RemovedReferrals returns the removed IDs of the "referrals" edge to the PromotionReferrals entity.
+func (m *PromotionMemberMutation) RemovedReferralsIDs() (ids []uint64) {
+	for id := range m.removedreferrals {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ReferringIDs returns the "referring" edge IDs in the mutation.
-func (m *PromotionMemberMutation) ReferringIDs() (ids []uint64) {
-	for id := range m.referring {
+// ReferralsIDs returns the "referrals" edge IDs in the mutation.
+func (m *PromotionMemberMutation) ReferralsIDs() (ids []uint64) {
+	for id := range m.referrals {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetReferring resets all changes to the "referring" edge.
-func (m *PromotionMemberMutation) ResetReferring() {
-	m.referring = nil
-	m.clearedreferring = false
-	m.removedreferring = nil
+// ResetReferrals resets all changes to the "referrals" edge.
+func (m *PromotionMemberMutation) ResetReferrals() {
+	m.referrals = nil
+	m.clearedreferrals = false
+	m.removedreferrals = nil
 }
 
 // SetReferredID sets the "referred" edge to the PromotionReferrals entity by id.
@@ -76427,8 +76427,8 @@ func (m *PromotionMemberMutation) AddedEdges() []string {
 	if m.level != nil {
 		edges = append(edges, promotionmember.EdgeLevel)
 	}
-	if m.referring != nil {
-		edges = append(edges, promotionmember.EdgeReferring)
+	if m.referrals != nil {
+		edges = append(edges, promotionmember.EdgeReferrals)
 	}
 	if m.referred != nil {
 		edges = append(edges, promotionmember.EdgeReferred)
@@ -76461,9 +76461,9 @@ func (m *PromotionMemberMutation) AddedIDs(name string) []ent.Value {
 		if id := m.level; id != nil {
 			return []ent.Value{*id}
 		}
-	case promotionmember.EdgeReferring:
-		ids := make([]ent.Value, 0, len(m.referring))
-		for id := range m.referring {
+	case promotionmember.EdgeReferrals:
+		ids := make([]ent.Value, 0, len(m.referrals))
+		for id := range m.referrals {
 			ids = append(ids, id)
 		}
 		return ids
@@ -76494,8 +76494,8 @@ func (m *PromotionMemberMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PromotionMemberMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 8)
-	if m.removedreferring != nil {
-		edges = append(edges, promotionmember.EdgeReferring)
+	if m.removedreferrals != nil {
+		edges = append(edges, promotionmember.EdgeReferrals)
 	}
 	if m.removedcards != nil {
 		edges = append(edges, promotionmember.EdgeCards)
@@ -76510,9 +76510,9 @@ func (m *PromotionMemberMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *PromotionMemberMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
-	case promotionmember.EdgeReferring:
-		ids := make([]ent.Value, 0, len(m.removedreferring))
-		for id := range m.removedreferring {
+	case promotionmember.EdgeReferrals:
+		ids := make([]ent.Value, 0, len(m.removedreferrals))
+		for id := range m.removedreferrals {
 			ids = append(ids, id)
 		}
 		return ids
@@ -76544,8 +76544,8 @@ func (m *PromotionMemberMutation) ClearedEdges() []string {
 	if m.clearedlevel {
 		edges = append(edges, promotionmember.EdgeLevel)
 	}
-	if m.clearedreferring {
-		edges = append(edges, promotionmember.EdgeReferring)
+	if m.clearedreferrals {
+		edges = append(edges, promotionmember.EdgeReferrals)
 	}
 	if m.clearedreferred {
 		edges = append(edges, promotionmember.EdgeReferred)
@@ -76572,8 +76572,8 @@ func (m *PromotionMemberMutation) EdgeCleared(name string) bool {
 		return m.clearedsubscribe
 	case promotionmember.EdgeLevel:
 		return m.clearedlevel
-	case promotionmember.EdgeReferring:
-		return m.clearedreferring
+	case promotionmember.EdgeReferrals:
+		return m.clearedreferrals
 	case promotionmember.EdgeReferred:
 		return m.clearedreferred
 	case promotionmember.EdgePerson:
@@ -76622,8 +76622,8 @@ func (m *PromotionMemberMutation) ResetEdge(name string) error {
 	case promotionmember.EdgeLevel:
 		m.ResetLevel()
 		return nil
-	case promotionmember.EdgeReferring:
-		m.ResetReferring()
+	case promotionmember.EdgeReferrals:
+		m.ResetReferrals()
 		return nil
 	case promotionmember.EdgeReferred:
 		m.ResetReferred()
@@ -79117,7 +79117,6 @@ type PromotionReferralsMutation struct {
 	id                      *uint64
 	created_at              *time.Time
 	updated_at              *time.Time
-	referral_time           *time.Time
 	clearedFields           map[string]struct{}
 	rider                   *uint64
 	clearedrider            bool
@@ -79480,71 +79479,9 @@ func (m *PromotionReferralsMutation) OldReferredMemberID(ctx context.Context) (v
 	return oldValue.ReferredMemberID, nil
 }
 
-// ClearReferredMemberID clears the value of the "referred_member_id" field.
-func (m *PromotionReferralsMutation) ClearReferredMemberID() {
-	m.referred_member = nil
-	m.clearedFields[promotionreferrals.FieldReferredMemberID] = struct{}{}
-}
-
-// ReferredMemberIDCleared returns if the "referred_member_id" field was cleared in this mutation.
-func (m *PromotionReferralsMutation) ReferredMemberIDCleared() bool {
-	_, ok := m.clearedFields[promotionreferrals.FieldReferredMemberID]
-	return ok
-}
-
 // ResetReferredMemberID resets all changes to the "referred_member_id" field.
 func (m *PromotionReferralsMutation) ResetReferredMemberID() {
 	m.referred_member = nil
-	delete(m.clearedFields, promotionreferrals.FieldReferredMemberID)
-}
-
-// SetReferralTime sets the "referral_time" field.
-func (m *PromotionReferralsMutation) SetReferralTime(t time.Time) {
-	m.referral_time = &t
-}
-
-// ReferralTime returns the value of the "referral_time" field in the mutation.
-func (m *PromotionReferralsMutation) ReferralTime() (r time.Time, exists bool) {
-	v := m.referral_time
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldReferralTime returns the old "referral_time" field's value of the PromotionReferrals entity.
-// If the PromotionReferrals object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PromotionReferralsMutation) OldReferralTime(ctx context.Context) (v *time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldReferralTime is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldReferralTime requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldReferralTime: %w", err)
-	}
-	return oldValue.ReferralTime, nil
-}
-
-// ClearReferralTime clears the value of the "referral_time" field.
-func (m *PromotionReferralsMutation) ClearReferralTime() {
-	m.referral_time = nil
-	m.clearedFields[promotionreferrals.FieldReferralTime] = struct{}{}
-}
-
-// ReferralTimeCleared returns if the "referral_time" field was cleared in this mutation.
-func (m *PromotionReferralsMutation) ReferralTimeCleared() bool {
-	_, ok := m.clearedFields[promotionreferrals.FieldReferralTime]
-	return ok
-}
-
-// ResetReferralTime resets all changes to the "referral_time" field.
-func (m *PromotionReferralsMutation) ResetReferralTime() {
-	m.referral_time = nil
-	delete(m.clearedFields, promotionreferrals.FieldReferralTime)
 }
 
 // ClearRider clears the "rider" edge to the Rider entity.
@@ -79632,7 +79569,7 @@ func (m *PromotionReferralsMutation) ClearReferredMember() {
 
 // ReferredMemberCleared reports if the "referred_member" edge to the PromotionMember entity was cleared.
 func (m *PromotionReferralsMutation) ReferredMemberCleared() bool {
-	return m.ReferredMemberIDCleared() || m.clearedreferred_member
+	return m.clearedreferred_member
 }
 
 // ReferredMemberIDs returns the "referred_member" edge IDs in the mutation.
@@ -79685,7 +79622,7 @@ func (m *PromotionReferralsMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PromotionReferralsMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 6)
 	if m.created_at != nil {
 		fields = append(fields, promotionreferrals.FieldCreatedAt)
 	}
@@ -79703,9 +79640,6 @@ func (m *PromotionReferralsMutation) Fields() []string {
 	}
 	if m.referred_member != nil {
 		fields = append(fields, promotionreferrals.FieldReferredMemberID)
-	}
-	if m.referral_time != nil {
-		fields = append(fields, promotionreferrals.FieldReferralTime)
 	}
 	return fields
 }
@@ -79727,8 +79661,6 @@ func (m *PromotionReferralsMutation) Field(name string) (ent.Value, bool) {
 		return m.ReferringMemberID()
 	case promotionreferrals.FieldReferredMemberID:
 		return m.ReferredMemberID()
-	case promotionreferrals.FieldReferralTime:
-		return m.ReferralTime()
 	}
 	return nil, false
 }
@@ -79750,8 +79682,6 @@ func (m *PromotionReferralsMutation) OldField(ctx context.Context, name string) 
 		return m.OldReferringMemberID(ctx)
 	case promotionreferrals.FieldReferredMemberID:
 		return m.OldReferredMemberID(ctx)
-	case promotionreferrals.FieldReferralTime:
-		return m.OldReferralTime(ctx)
 	}
 	return nil, fmt.Errorf("unknown PromotionReferrals field %s", name)
 }
@@ -79803,13 +79733,6 @@ func (m *PromotionReferralsMutation) SetField(name string, value ent.Value) erro
 		}
 		m.SetReferredMemberID(v)
 		return nil
-	case promotionreferrals.FieldReferralTime:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetReferralTime(v)
-		return nil
 	}
 	return fmt.Errorf("unknown PromotionReferrals field %s", name)
 }
@@ -79852,12 +79775,6 @@ func (m *PromotionReferralsMutation) ClearedFields() []string {
 	if m.FieldCleared(promotionreferrals.FieldReferringMemberID) {
 		fields = append(fields, promotionreferrals.FieldReferringMemberID)
 	}
-	if m.FieldCleared(promotionreferrals.FieldReferredMemberID) {
-		fields = append(fields, promotionreferrals.FieldReferredMemberID)
-	}
-	if m.FieldCleared(promotionreferrals.FieldReferralTime) {
-		fields = append(fields, promotionreferrals.FieldReferralTime)
-	}
 	return fields
 }
 
@@ -79880,12 +79797,6 @@ func (m *PromotionReferralsMutation) ClearField(name string) error {
 		return nil
 	case promotionreferrals.FieldReferringMemberID:
 		m.ClearReferringMemberID()
-		return nil
-	case promotionreferrals.FieldReferredMemberID:
-		m.ClearReferredMemberID()
-		return nil
-	case promotionreferrals.FieldReferralTime:
-		m.ClearReferralTime()
 		return nil
 	}
 	return fmt.Errorf("unknown PromotionReferrals nullable field %s", name)
@@ -79912,9 +79823,6 @@ func (m *PromotionReferralsMutation) ResetField(name string) error {
 		return nil
 	case promotionreferrals.FieldReferredMemberID:
 		m.ResetReferredMemberID()
-		return nil
-	case promotionreferrals.FieldReferralTime:
-		m.ResetReferralTime()
 		return nil
 	}
 	return fmt.Errorf("unknown PromotionReferrals field %s", name)

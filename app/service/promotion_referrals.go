@@ -21,6 +21,5 @@ func (s *promotionReferralsService) MemberReferrals(tx *ent.Tx, req promotion.Re
 		SetNillableReferringMemberID(req.ReferringMemberId).
 		SetReferredMemberID(req.ReferredMemberId).
 		SetNillableRiderID(req.RiderID).
-		SetNillableReferralTime(req.ReferralTime).
 		ExecX(s.ctx)
 }

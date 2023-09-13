@@ -26,8 +26,6 @@ const (
 	FieldReferringMemberID = "referring_member_id"
 	// FieldReferredMemberID holds the string denoting the referred_member_id field in the database.
 	FieldReferredMemberID = "referred_member_id"
-	// FieldReferralTime holds the string denoting the referral_time field in the database.
-	FieldReferralTime = "referral_time"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
 	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
@@ -77,7 +75,6 @@ var Columns = []string{
 	FieldSubscribeID,
 	FieldReferringMemberID,
 	FieldReferredMemberID,
-	FieldReferralTime,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -135,11 +132,6 @@ func ByReferringMemberID(opts ...sql.OrderTermOption) OrderOption {
 // ByReferredMemberID orders the results by the referred_member_id field.
 func ByReferredMemberID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldReferredMemberID, opts...).ToFunc()
-}
-
-// ByReferralTime orders the results by the referral_time field.
-func ByReferralTime(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldReferralTime, opts...).ToFunc()
 }
 
 // ByRiderField orders the results by rider field.

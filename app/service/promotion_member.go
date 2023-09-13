@@ -29,7 +29,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/promotionreferrals"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
-	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
 	"github.com/auroraride/aurservd/pkg/utils"
@@ -124,20 +123,20 @@ func (s *promotionMemberService) Signup(req *promotion.MemberSigninReq) promotio
 	}
 
 	// 有可能是团签转个签 个签转团签 骑手id变更过未更新
-	ri, _ := ent.Database.Rider.QueryNotDeleted().Where(rider.Phone(req.Phone)).First(s.ctx)
+	ri, _ := ent.Database.Rider.Query().Where(rider.Phone(req.Phone)).IDs(s.ctx)
 
 	if mem != nil && mem.Edges.Referred != nil && mem.Edges.Referred.ReferringMemberID != nil {
 		res.InviteType = promotion.MemberInviteFail
 		return res
-	} else if mem != nil && ri != nil {
-		sub := ri.QuerySubscribes().Where(subscribe.StatusNEQ(model.SubscribeStatusCanceled)).Order(ent.Desc(subscribe.FieldCreatedAt)).AllX(s.ctx)
+	} else if len(ri) > 0 {
+		sub := ent.Database.Subscribe.Query().Where(subscribe.RiderIDIn(ri...), subscribe.StatusNEQ(model.SubscribeStatusCanceled)).Order(ent.Desc(subscribe.FieldCreatedAt)).AllX(s.ctx)
 
 		for _, v := range sub {
 
-			if v.EndAt != nil && v.Status == model.SubscribeStatusUnSubscribed { // 判断最新的退订时间是否超出设置天数
-				past := silk.Int(int(carbon.Time2Carbon(*v.EndAt).AddDay().DiffInDays(carbon.Now())))
+			if v.EndAt != nil { // 判断最新的退订时间是否超出设置天数
+				past := int(carbon.Time2Carbon(*v.EndAt).AddDay().DiffInDays(carbon.Now()))
 				// 判定退订时间是否超出设置天数
-				if !model.NewRecentSubscribePastDays(*past).Commission() {
+				if !model.NewRecentSubscribePastDays(past).Commission() {
 					res.InviteType = promotion.MemberActivationFail
 					return res
 				}
@@ -205,7 +204,6 @@ func (s *promotionMemberService) updateMemberInfo(tx *ent.Tx, mem *ent.Promotion
 
 	if req.ReferringMemberID != nil && *req.ReferringMemberID != mem.ID {
 		re.SetNillableReferringMemberID(req.ReferringMemberID)
-		re.SetReferralTime(time.Now())
 	}
 
 	if req.SubscribeID != nil {
@@ -457,13 +455,9 @@ func (s *promotionMemberService) Create(tx *ent.Tx, req *promotion.MemberCreateR
 
 	mem := q.SetNillableRiderID(req.RiderID).SaveX(s.ctx)
 
-	var referralTime *time.Time
-	retime := time.Now()
-	referralTime = &retime
 	// 如果推荐人是自己，设置推荐人为nil
 	if req.ReferringMemberID != nil && *req.ReferringMemberID == mem.ID {
 		req.ReferringMemberID = nil
-		referralTime = nil
 	}
 
 	// 创建推荐关系
@@ -471,7 +465,6 @@ func (s *promotionMemberService) Create(tx *ent.Tx, req *promotion.MemberCreateR
 		ReferringMemberId: req.ReferringMemberID,
 		ReferredMemberId:  mem.ID,
 		RiderID:           req.RiderID,
-		ReferralTime:      referralTime,
 	})
 	return mem
 }

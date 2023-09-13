@@ -32,7 +32,7 @@ type PromotionMemberQuery struct {
 	withRider       *RiderQuery
 	withSubscribe   *SubscribeQuery
 	withLevel       *PromotionLevelQuery
-	withReferring   *PromotionReferralsQuery
+	withReferrals   *PromotionReferralsQuery
 	withReferred    *PromotionReferralsQuery
 	withPerson      *PromotionPersonQuery
 	withCards       *PromotionBankCardQuery
@@ -140,8 +140,8 @@ func (pmq *PromotionMemberQuery) QueryLevel() *PromotionLevelQuery {
 	return query
 }
 
-// QueryReferring chains the current query on the "referring" edge.
-func (pmq *PromotionMemberQuery) QueryReferring() *PromotionReferralsQuery {
+// QueryReferrals chains the current query on the "referrals" edge.
+func (pmq *PromotionMemberQuery) QueryReferrals() *PromotionReferralsQuery {
 	query := (&PromotionReferralsClient{config: pmq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := pmq.prepareQuery(ctx); err != nil {
@@ -154,7 +154,7 @@ func (pmq *PromotionMemberQuery) QueryReferring() *PromotionReferralsQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(promotionmember.Table, promotionmember.FieldID, selector),
 			sqlgraph.To(promotionreferrals.Table, promotionreferrals.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, promotionmember.ReferringTable, promotionmember.ReferringColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, promotionmember.ReferralsTable, promotionmember.ReferralsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(pmq.driver.Dialect(), step)
 		return fromU, nil
@@ -445,7 +445,7 @@ func (pmq *PromotionMemberQuery) Clone() *PromotionMemberQuery {
 		withRider:       pmq.withRider.Clone(),
 		withSubscribe:   pmq.withSubscribe.Clone(),
 		withLevel:       pmq.withLevel.Clone(),
-		withReferring:   pmq.withReferring.Clone(),
+		withReferrals:   pmq.withReferrals.Clone(),
 		withReferred:    pmq.withReferred.Clone(),
 		withPerson:      pmq.withPerson.Clone(),
 		withCards:       pmq.withCards.Clone(),
@@ -489,14 +489,14 @@ func (pmq *PromotionMemberQuery) WithLevel(opts ...func(*PromotionLevelQuery)) *
 	return pmq
 }
 
-// WithReferring tells the query-builder to eager-load the nodes that are connected to
-// the "referring" edge. The optional arguments are used to configure the query builder of the edge.
-func (pmq *PromotionMemberQuery) WithReferring(opts ...func(*PromotionReferralsQuery)) *PromotionMemberQuery {
+// WithReferrals tells the query-builder to eager-load the nodes that are connected to
+// the "referrals" edge. The optional arguments are used to configure the query builder of the edge.
+func (pmq *PromotionMemberQuery) WithReferrals(opts ...func(*PromotionReferralsQuery)) *PromotionMemberQuery {
 	query := (&PromotionReferralsClient{config: pmq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	pmq.withReferring = query
+	pmq.withReferrals = query
 	return pmq
 }
 
@@ -626,7 +626,7 @@ func (pmq *PromotionMemberQuery) sqlAll(ctx context.Context, hooks ...queryHook)
 			pmq.withRider != nil,
 			pmq.withSubscribe != nil,
 			pmq.withLevel != nil,
-			pmq.withReferring != nil,
+			pmq.withReferrals != nil,
 			pmq.withReferred != nil,
 			pmq.withPerson != nil,
 			pmq.withCards != nil,
@@ -672,10 +672,10 @@ func (pmq *PromotionMemberQuery) sqlAll(ctx context.Context, hooks ...queryHook)
 			return nil, err
 		}
 	}
-	if query := pmq.withReferring; query != nil {
-		if err := pmq.loadReferring(ctx, query, nodes,
-			func(n *PromotionMember) { n.Edges.Referring = []*PromotionReferrals{} },
-			func(n *PromotionMember, e *PromotionReferrals) { n.Edges.Referring = append(n.Edges.Referring, e) }); err != nil {
+	if query := pmq.withReferrals; query != nil {
+		if err := pmq.loadReferrals(ctx, query, nodes,
+			func(n *PromotionMember) { n.Edges.Referrals = []*PromotionReferrals{} },
+			func(n *PromotionMember, e *PromotionReferrals) { n.Edges.Referrals = append(n.Edges.Referrals, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -806,7 +806,7 @@ func (pmq *PromotionMemberQuery) loadLevel(ctx context.Context, query *Promotion
 	}
 	return nil
 }
-func (pmq *PromotionMemberQuery) loadReferring(ctx context.Context, query *PromotionReferralsQuery, nodes []*PromotionMember, init func(*PromotionMember), assign func(*PromotionMember, *PromotionReferrals)) error {
+func (pmq *PromotionMemberQuery) loadReferrals(ctx context.Context, query *PromotionReferralsQuery, nodes []*PromotionMember, init func(*PromotionMember), assign func(*PromotionMember, *PromotionReferrals)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[uint64]*PromotionMember)
 	for i := range nodes {
@@ -820,7 +820,7 @@ func (pmq *PromotionMemberQuery) loadReferring(ctx context.Context, query *Promo
 		query.ctx.AppendFieldOnce(promotionreferrals.FieldReferringMemberID)
 	}
 	query.Where(predicate.PromotionReferrals(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(promotionmember.ReferringColumn), fks...))
+		s.Where(sql.InValues(s.C(promotionmember.ReferralsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1070,7 +1070,7 @@ var (
 	PromotionMemberQueryWithRider       PromotionMemberQueryWith = "Rider"
 	PromotionMemberQueryWithSubscribe   PromotionMemberQueryWith = "Subscribe"
 	PromotionMemberQueryWithLevel       PromotionMemberQueryWith = "Level"
-	PromotionMemberQueryWithReferring   PromotionMemberQueryWith = "Referring"
+	PromotionMemberQueryWithReferrals   PromotionMemberQueryWith = "Referrals"
 	PromotionMemberQueryWithReferred    PromotionMemberQueryWith = "Referred"
 	PromotionMemberQueryWithPerson      PromotionMemberQueryWith = "Person"
 	PromotionMemberQueryWithCards       PromotionMemberQueryWith = "Cards"
@@ -1086,8 +1086,8 @@ func (pmq *PromotionMemberQuery) With(withEdges ...PromotionMemberQueryWith) *Pr
 			pmq.WithSubscribe()
 		case PromotionMemberQueryWithLevel:
 			pmq.WithLevel()
-		case PromotionMemberQueryWithReferring:
-			pmq.WithReferring()
+		case PromotionMemberQueryWithReferrals:
+			pmq.WithReferrals()
 		case PromotionMemberQueryWithReferred:
 			pmq.WithReferred()
 		case PromotionMemberQueryWithPerson:

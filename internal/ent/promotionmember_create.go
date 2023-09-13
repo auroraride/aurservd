@@ -301,19 +301,19 @@ func (pmc *PromotionMemberCreate) SetLevel(p *PromotionLevel) *PromotionMemberCr
 	return pmc.SetLevelID(p.ID)
 }
 
-// AddReferringIDs adds the "referring" edge to the PromotionReferrals entity by IDs.
-func (pmc *PromotionMemberCreate) AddReferringIDs(ids ...uint64) *PromotionMemberCreate {
-	pmc.mutation.AddReferringIDs(ids...)
+// AddReferralIDs adds the "referrals" edge to the PromotionReferrals entity by IDs.
+func (pmc *PromotionMemberCreate) AddReferralIDs(ids ...uint64) *PromotionMemberCreate {
+	pmc.mutation.AddReferralIDs(ids...)
 	return pmc
 }
 
-// AddReferring adds the "referring" edges to the PromotionReferrals entity.
-func (pmc *PromotionMemberCreate) AddReferring(p ...*PromotionReferrals) *PromotionMemberCreate {
+// AddReferrals adds the "referrals" edges to the PromotionReferrals entity.
+func (pmc *PromotionMemberCreate) AddReferrals(p ...*PromotionReferrals) *PromotionMemberCreate {
 	ids := make([]uint64, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return pmc.AddReferringIDs(ids...)
+	return pmc.AddReferralIDs(ids...)
 }
 
 // SetReferredID sets the "referred" edge to the PromotionReferrals entity by ID.
@@ -626,12 +626,12 @@ func (pmc *PromotionMemberCreate) createSpec() (*PromotionMember, *sqlgraph.Crea
 		_node.LevelID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := pmc.mutation.ReferringIDs(); len(nodes) > 0 {
+	if nodes := pmc.mutation.ReferralsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   promotionmember.ReferringTable,
-			Columns: []string{promotionmember.ReferringColumn},
+			Table:   promotionmember.ReferralsTable,
+			Columns: []string{promotionmember.ReferralsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(promotionreferrals.FieldID, field.TypeUint64),
