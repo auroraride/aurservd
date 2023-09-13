@@ -118,6 +118,26 @@ func (pru *PromotionReferralsUpdate) ClearReferredMemberID() *PromotionReferrals
 	return pru
 }
 
+// SetReferralTime sets the "referral_time" field.
+func (pru *PromotionReferralsUpdate) SetReferralTime(t time.Time) *PromotionReferralsUpdate {
+	pru.mutation.SetReferralTime(t)
+	return pru
+}
+
+// SetNillableReferralTime sets the "referral_time" field if the given value is not nil.
+func (pru *PromotionReferralsUpdate) SetNillableReferralTime(t *time.Time) *PromotionReferralsUpdate {
+	if t != nil {
+		pru.SetReferralTime(*t)
+	}
+	return pru
+}
+
+// ClearReferralTime clears the value of the "referral_time" field.
+func (pru *PromotionReferralsUpdate) ClearReferralTime() *PromotionReferralsUpdate {
+	pru.mutation.ClearReferralTime()
+	return pru
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (pru *PromotionReferralsUpdate) SetRider(r *Rider) *PromotionReferralsUpdate {
 	return pru.SetRiderID(r.ID)
@@ -220,6 +240,12 @@ func (pru *PromotionReferralsUpdate) sqlSave(ctx context.Context) (n int, err er
 	}
 	if value, ok := pru.mutation.UpdatedAt(); ok {
 		_spec.SetField(promotionreferrals.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if value, ok := pru.mutation.ReferralTime(); ok {
+		_spec.SetField(promotionreferrals.FieldReferralTime, field.TypeTime, value)
+	}
+	if pru.mutation.ReferralTimeCleared() {
+		_spec.ClearField(promotionreferrals.FieldReferralTime, field.TypeTime)
 	}
 	if pru.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -445,6 +471,26 @@ func (pruo *PromotionReferralsUpdateOne) ClearReferredMemberID() *PromotionRefer
 	return pruo
 }
 
+// SetReferralTime sets the "referral_time" field.
+func (pruo *PromotionReferralsUpdateOne) SetReferralTime(t time.Time) *PromotionReferralsUpdateOne {
+	pruo.mutation.SetReferralTime(t)
+	return pruo
+}
+
+// SetNillableReferralTime sets the "referral_time" field if the given value is not nil.
+func (pruo *PromotionReferralsUpdateOne) SetNillableReferralTime(t *time.Time) *PromotionReferralsUpdateOne {
+	if t != nil {
+		pruo.SetReferralTime(*t)
+	}
+	return pruo
+}
+
+// ClearReferralTime clears the value of the "referral_time" field.
+func (pruo *PromotionReferralsUpdateOne) ClearReferralTime() *PromotionReferralsUpdateOne {
+	pruo.mutation.ClearReferralTime()
+	return pruo
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (pruo *PromotionReferralsUpdateOne) SetRider(r *Rider) *PromotionReferralsUpdateOne {
 	return pruo.SetRiderID(r.ID)
@@ -577,6 +623,12 @@ func (pruo *PromotionReferralsUpdateOne) sqlSave(ctx context.Context) (_node *Pr
 	}
 	if value, ok := pruo.mutation.UpdatedAt(); ok {
 		_spec.SetField(promotionreferrals.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if value, ok := pruo.mutation.ReferralTime(); ok {
+		_spec.SetField(promotionreferrals.FieldReferralTime, field.TypeTime, value)
+	}
+	if pruo.mutation.ReferralTimeCleared() {
+		_spec.ClearField(promotionreferrals.FieldReferralTime, field.TypeTime)
 	}
 	if pruo.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{

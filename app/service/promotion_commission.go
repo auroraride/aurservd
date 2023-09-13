@@ -20,7 +20,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/promotionmembercommission"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
-	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
 )
@@ -367,11 +366,23 @@ func (s *promotionCommissionService) HistoryList(id uint64) []promotion.Commissi
 func (s *promotionCommissionService) CommissionCalculation(tx *ent.Tx, req *promotion.CommissionCalculation) (err error) {
 	ec := make([]promotion.EarningsCreateReq, 0)
 
-	// 查询会员信息
-	member, _ := ent.Database.PromotionMember.QueryNotDeleted().WithReferred().Where(promotionmember.RiderID(req.RiderID)).First(s.ctx)
+	// 查询会员信息 有可能骑手转团签 骑手id和推广返佣保存的骑手id不一致
+	r, _ := ent.Database.Rider.Query().Where(rider.ID(req.RiderID)).First(s.ctx)
+	if r == nil {
+		zap.L().Error("分佣计算 骑手不存在", zap.Int64("骑手ID", int64(req.RiderID)))
+		return
+	}
+
+	member, _ := ent.Database.PromotionMember.QueryNotDeleted().WithReferred().Where(promotionmember.Phone(r.Phone)).First(s.ctx)
 	if member == nil {
 		zap.L().Error("分佣计算 会员不存在", zap.Int64("骑手ID", int64(req.RiderID)))
 		return
+	}
+
+	// 更新会员信息
+	if r.ID != *member.RiderID {
+		id := ent.Database.Rider.QueryNotDeleted().Where(rider.Phone(r.Phone)).FirstIDX(s.ctx)
+		member.Update().SetRiderID(id).SaveX(s.ctx)
 	}
 
 	referred := member.Edges.Referred
@@ -711,10 +722,26 @@ func (s *promotionCommissionService) GetCommissionType(phone string) (promotion.
 		return 0, errors.New("骑手未实名认证")
 	}
 
+	mem, _ := ent.Database.PromotionMember.QueryNotDeleted().WithReferred().Where(promotionmember.Phone(phone)).First(s.ctx)
+	if mem == nil {
+		return 0, errors.New("用户不存在")
+	}
+
 	riders := ent.Database.Rider.Query().Where(rider.PersonID(ri.Edges.Person.ID)).IDsX(s.ctx)
 
-	subs, _ := ent.Database.Subscribe.QueryNotDeleted().Where(subscribe.StatusNEQ(model.SubscribeStatusCanceled), subscribe.RiderIDIn(riders...)).Order(ent.Desc(subscribe.FieldCreatedAt)).All(s.ctx)
+	q := ent.Database.Subscribe.QueryNotDeleted().Where(
+		subscribe.StatusNEQ(model.SubscribeStatusCanceled),
+		subscribe.RiderIDIn(riders...),
+	)
 
+	// 9.12 修改逻辑如下
+	// 1.未绑定关系的,当用户购买后要在设定时间范围外购买算新签 所以绑定用户之前的订阅可以排除
+	// 2.需要排除购买后退订的订阅
+	if mem.Edges.Referred != nil && mem.Edges.Referred.ReferralTime != nil {
+		q.Where(subscribe.CreatedAtGT(*mem.Edges.Referred.ReferralTime))
+	}
+
+	subs, _ := q.Order(ent.Desc(subscribe.FieldCreatedAt)).All(s.ctx)
 	if len(subs) == 0 {
 		return 0, errors.New("骑手未订阅")
 	}
@@ -724,17 +751,6 @@ func (s *promotionCommissionService) GetCommissionType(phone string) (promotion.
 		return promotion.CommissionTypeNewlySigned, nil
 	}
 
-	// 这里是判断最新的退订时间是否超出设置天数 如果超出设置天数则是新用户
-	// 上面根据订阅创建时间进行倒序排序,所以这里只需要判断第一个订阅记录的退订时间是否超出设置天数
-	for _, sub := range subs {
-		if sub.EndAt != nil && sub.Status == model.SubscribeStatusUnSubscribed { // 判断最新的退订时间是否超出设置天数
-			past := silk.Int(int(carbon.Time2Carbon(*sub.EndAt).AddDay().DiffInDays(carbon.Now())))
-			// 判定退订时间是否超出设置天数
-			if model.NewRecentSubscribePastDays(*past).Commission() {
-				return promotion.CommissionTypeNewlySigned, nil
-			}
-		}
-	}
 	return promotion.CommissionTypeRenewal, nil
 }
 

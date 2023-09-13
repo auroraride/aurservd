@@ -79117,6 +79117,7 @@ type PromotionReferralsMutation struct {
 	id                      *uint64
 	created_at              *time.Time
 	updated_at              *time.Time
+	referral_time           *time.Time
 	clearedFields           map[string]struct{}
 	rider                   *uint64
 	clearedrider            bool
@@ -79497,6 +79498,55 @@ func (m *PromotionReferralsMutation) ResetReferredMemberID() {
 	delete(m.clearedFields, promotionreferrals.FieldReferredMemberID)
 }
 
+// SetReferralTime sets the "referral_time" field.
+func (m *PromotionReferralsMutation) SetReferralTime(t time.Time) {
+	m.referral_time = &t
+}
+
+// ReferralTime returns the value of the "referral_time" field in the mutation.
+func (m *PromotionReferralsMutation) ReferralTime() (r time.Time, exists bool) {
+	v := m.referral_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldReferralTime returns the old "referral_time" field's value of the PromotionReferrals entity.
+// If the PromotionReferrals object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PromotionReferralsMutation) OldReferralTime(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldReferralTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldReferralTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldReferralTime: %w", err)
+	}
+	return oldValue.ReferralTime, nil
+}
+
+// ClearReferralTime clears the value of the "referral_time" field.
+func (m *PromotionReferralsMutation) ClearReferralTime() {
+	m.referral_time = nil
+	m.clearedFields[promotionreferrals.FieldReferralTime] = struct{}{}
+}
+
+// ReferralTimeCleared returns if the "referral_time" field was cleared in this mutation.
+func (m *PromotionReferralsMutation) ReferralTimeCleared() bool {
+	_, ok := m.clearedFields[promotionreferrals.FieldReferralTime]
+	return ok
+}
+
+// ResetReferralTime resets all changes to the "referral_time" field.
+func (m *PromotionReferralsMutation) ResetReferralTime() {
+	m.referral_time = nil
+	delete(m.clearedFields, promotionreferrals.FieldReferralTime)
+}
+
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *PromotionReferralsMutation) ClearRider() {
 	m.clearedrider = true
@@ -79635,7 +79685,7 @@ func (m *PromotionReferralsMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PromotionReferralsMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 7)
 	if m.created_at != nil {
 		fields = append(fields, promotionreferrals.FieldCreatedAt)
 	}
@@ -79653,6 +79703,9 @@ func (m *PromotionReferralsMutation) Fields() []string {
 	}
 	if m.referred_member != nil {
 		fields = append(fields, promotionreferrals.FieldReferredMemberID)
+	}
+	if m.referral_time != nil {
+		fields = append(fields, promotionreferrals.FieldReferralTime)
 	}
 	return fields
 }
@@ -79674,6 +79727,8 @@ func (m *PromotionReferralsMutation) Field(name string) (ent.Value, bool) {
 		return m.ReferringMemberID()
 	case promotionreferrals.FieldReferredMemberID:
 		return m.ReferredMemberID()
+	case promotionreferrals.FieldReferralTime:
+		return m.ReferralTime()
 	}
 	return nil, false
 }
@@ -79695,6 +79750,8 @@ func (m *PromotionReferralsMutation) OldField(ctx context.Context, name string) 
 		return m.OldReferringMemberID(ctx)
 	case promotionreferrals.FieldReferredMemberID:
 		return m.OldReferredMemberID(ctx)
+	case promotionreferrals.FieldReferralTime:
+		return m.OldReferralTime(ctx)
 	}
 	return nil, fmt.Errorf("unknown PromotionReferrals field %s", name)
 }
@@ -79746,6 +79803,13 @@ func (m *PromotionReferralsMutation) SetField(name string, value ent.Value) erro
 		}
 		m.SetReferredMemberID(v)
 		return nil
+	case promotionreferrals.FieldReferralTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetReferralTime(v)
+		return nil
 	}
 	return fmt.Errorf("unknown PromotionReferrals field %s", name)
 }
@@ -79791,6 +79855,9 @@ func (m *PromotionReferralsMutation) ClearedFields() []string {
 	if m.FieldCleared(promotionreferrals.FieldReferredMemberID) {
 		fields = append(fields, promotionreferrals.FieldReferredMemberID)
 	}
+	if m.FieldCleared(promotionreferrals.FieldReferralTime) {
+		fields = append(fields, promotionreferrals.FieldReferralTime)
+	}
 	return fields
 }
 
@@ -79817,6 +79884,9 @@ func (m *PromotionReferralsMutation) ClearField(name string) error {
 	case promotionreferrals.FieldReferredMemberID:
 		m.ClearReferredMemberID()
 		return nil
+	case promotionreferrals.FieldReferralTime:
+		m.ClearReferralTime()
+		return nil
 	}
 	return fmt.Errorf("unknown PromotionReferrals nullable field %s", name)
 }
@@ -79842,6 +79912,9 @@ func (m *PromotionReferralsMutation) ResetField(name string) error {
 		return nil
 	case promotionreferrals.FieldReferredMemberID:
 		m.ResetReferredMemberID()
+		return nil
+	case promotionreferrals.FieldReferralTime:
+		m.ResetReferralTime()
 		return nil
 	}
 	return fmt.Errorf("unknown PromotionReferrals field %s", name)

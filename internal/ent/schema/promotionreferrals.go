@@ -61,6 +61,7 @@ func (PromotionReferrals) Fields() []ent.Field {
 	return []ent.Field{
 		field.Uint64("referring_member_id").Optional().Nillable().Comment("推广者id"),
 		field.Uint64("referred_member_id").Optional().Unique().Comment("被推广者ID"),
+		field.Time("referral_time").Optional().Nillable().Comment("推荐时间"),
 	}
 }
 

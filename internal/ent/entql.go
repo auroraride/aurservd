@@ -1560,6 +1560,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			promotionreferrals.FieldSubscribeID:       {Type: field.TypeUint64, Column: promotionreferrals.FieldSubscribeID},
 			promotionreferrals.FieldReferringMemberID: {Type: field.TypeUint64, Column: promotionreferrals.FieldReferringMemberID},
 			promotionreferrals.FieldReferredMemberID:  {Type: field.TypeUint64, Column: promotionreferrals.FieldReferredMemberID},
+			promotionreferrals.FieldReferralTime:      {Type: field.TypeTime, Column: promotionreferrals.FieldReferralTime},
 		},
 	}
 	graph.Nodes[55] = &sqlgraph.Node{
@@ -14451,6 +14452,11 @@ func (f *PromotionReferralsFilter) WhereReferringMemberID(p entql.Uint64P) {
 // WhereReferredMemberID applies the entql uint64 predicate on the referred_member_id field.
 func (f *PromotionReferralsFilter) WhereReferredMemberID(p entql.Uint64P) {
 	f.Where(p.Field(promotionreferrals.FieldReferredMemberID))
+}
+
+// WhereReferralTime applies the entql time.Time predicate on the referral_time field.
+func (f *PromotionReferralsFilter) WhereReferralTime(p entql.TimeP) {
+	f.Where(p.Field(promotionreferrals.FieldReferralTime))
 }
 
 // WhereHasRider applies a predicate to check if query has an edge rider.

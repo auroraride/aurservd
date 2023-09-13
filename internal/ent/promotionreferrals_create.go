@@ -109,6 +109,20 @@ func (prc *PromotionReferralsCreate) SetNillableReferredMemberID(u *uint64) *Pro
 	return prc
 }
 
+// SetReferralTime sets the "referral_time" field.
+func (prc *PromotionReferralsCreate) SetReferralTime(t time.Time) *PromotionReferralsCreate {
+	prc.mutation.SetReferralTime(t)
+	return prc
+}
+
+// SetNillableReferralTime sets the "referral_time" field if the given value is not nil.
+func (prc *PromotionReferralsCreate) SetNillableReferralTime(t *time.Time) *PromotionReferralsCreate {
+	if t != nil {
+		prc.SetReferralTime(*t)
+	}
+	return prc
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (prc *PromotionReferralsCreate) SetRider(r *Rider) *PromotionReferralsCreate {
 	return prc.SetRiderID(r.ID)
@@ -216,6 +230,10 @@ func (prc *PromotionReferralsCreate) createSpec() (*PromotionReferrals, *sqlgrap
 	if value, ok := prc.mutation.UpdatedAt(); ok {
 		_spec.SetField(promotionreferrals.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
+	}
+	if value, ok := prc.mutation.ReferralTime(); ok {
+		_spec.SetField(promotionreferrals.FieldReferralTime, field.TypeTime, value)
+		_node.ReferralTime = &value
 	}
 	if nodes := prc.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -421,6 +439,24 @@ func (u *PromotionReferralsUpsert) ClearReferredMemberID() *PromotionReferralsUp
 	return u
 }
 
+// SetReferralTime sets the "referral_time" field.
+func (u *PromotionReferralsUpsert) SetReferralTime(v time.Time) *PromotionReferralsUpsert {
+	u.Set(promotionreferrals.FieldReferralTime, v)
+	return u
+}
+
+// UpdateReferralTime sets the "referral_time" field to the value that was provided on create.
+func (u *PromotionReferralsUpsert) UpdateReferralTime() *PromotionReferralsUpsert {
+	u.SetExcluded(promotionreferrals.FieldReferralTime)
+	return u
+}
+
+// ClearReferralTime clears the value of the "referral_time" field.
+func (u *PromotionReferralsUpsert) ClearReferralTime() *PromotionReferralsUpsert {
+	u.SetNull(promotionreferrals.FieldReferralTime)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -561,6 +597,27 @@ func (u *PromotionReferralsUpsertOne) UpdateReferredMemberID() *PromotionReferra
 func (u *PromotionReferralsUpsertOne) ClearReferredMemberID() *PromotionReferralsUpsertOne {
 	return u.Update(func(s *PromotionReferralsUpsert) {
 		s.ClearReferredMemberID()
+	})
+}
+
+// SetReferralTime sets the "referral_time" field.
+func (u *PromotionReferralsUpsertOne) SetReferralTime(v time.Time) *PromotionReferralsUpsertOne {
+	return u.Update(func(s *PromotionReferralsUpsert) {
+		s.SetReferralTime(v)
+	})
+}
+
+// UpdateReferralTime sets the "referral_time" field to the value that was provided on create.
+func (u *PromotionReferralsUpsertOne) UpdateReferralTime() *PromotionReferralsUpsertOne {
+	return u.Update(func(s *PromotionReferralsUpsert) {
+		s.UpdateReferralTime()
+	})
+}
+
+// ClearReferralTime clears the value of the "referral_time" field.
+func (u *PromotionReferralsUpsertOne) ClearReferralTime() *PromotionReferralsUpsertOne {
+	return u.Update(func(s *PromotionReferralsUpsert) {
+		s.ClearReferralTime()
 	})
 }
 
@@ -866,6 +923,27 @@ func (u *PromotionReferralsUpsertBulk) UpdateReferredMemberID() *PromotionReferr
 func (u *PromotionReferralsUpsertBulk) ClearReferredMemberID() *PromotionReferralsUpsertBulk {
 	return u.Update(func(s *PromotionReferralsUpsert) {
 		s.ClearReferredMemberID()
+	})
+}
+
+// SetReferralTime sets the "referral_time" field.
+func (u *PromotionReferralsUpsertBulk) SetReferralTime(v time.Time) *PromotionReferralsUpsertBulk {
+	return u.Update(func(s *PromotionReferralsUpsert) {
+		s.SetReferralTime(v)
+	})
+}
+
+// UpdateReferralTime sets the "referral_time" field to the value that was provided on create.
+func (u *PromotionReferralsUpsertBulk) UpdateReferralTime() *PromotionReferralsUpsertBulk {
+	return u.Update(func(s *PromotionReferralsUpsert) {
+		s.UpdateReferralTime()
+	})
+}
+
+// ClearReferralTime clears the value of the "referral_time" field.
+func (u *PromotionReferralsUpsertBulk) ClearReferralTime() *PromotionReferralsUpsertBulk {
+	return u.Update(func(s *PromotionReferralsUpsert) {
+		s.ClearReferralTime()
 	})
 }
 

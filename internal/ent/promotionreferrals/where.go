@@ -85,6 +85,11 @@ func ReferredMemberID(v uint64) predicate.PromotionReferrals {
 	return predicate.PromotionReferrals(sql.FieldEQ(FieldReferredMemberID, v))
 }
 
+// ReferralTime applies equality check predicate on the "referral_time" field. It's identical to ReferralTimeEQ.
+func ReferralTime(v time.Time) predicate.PromotionReferrals {
+	return predicate.PromotionReferrals(sql.FieldEQ(FieldReferralTime, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.PromotionReferrals {
 	return predicate.PromotionReferrals(sql.FieldEQ(FieldCreatedAt, v))
@@ -283,6 +288,56 @@ func ReferredMemberIDIsNil() predicate.PromotionReferrals {
 // ReferredMemberIDNotNil applies the NotNil predicate on the "referred_member_id" field.
 func ReferredMemberIDNotNil() predicate.PromotionReferrals {
 	return predicate.PromotionReferrals(sql.FieldNotNull(FieldReferredMemberID))
+}
+
+// ReferralTimeEQ applies the EQ predicate on the "referral_time" field.
+func ReferralTimeEQ(v time.Time) predicate.PromotionReferrals {
+	return predicate.PromotionReferrals(sql.FieldEQ(FieldReferralTime, v))
+}
+
+// ReferralTimeNEQ applies the NEQ predicate on the "referral_time" field.
+func ReferralTimeNEQ(v time.Time) predicate.PromotionReferrals {
+	return predicate.PromotionReferrals(sql.FieldNEQ(FieldReferralTime, v))
+}
+
+// ReferralTimeIn applies the In predicate on the "referral_time" field.
+func ReferralTimeIn(vs ...time.Time) predicate.PromotionReferrals {
+	return predicate.PromotionReferrals(sql.FieldIn(FieldReferralTime, vs...))
+}
+
+// ReferralTimeNotIn applies the NotIn predicate on the "referral_time" field.
+func ReferralTimeNotIn(vs ...time.Time) predicate.PromotionReferrals {
+	return predicate.PromotionReferrals(sql.FieldNotIn(FieldReferralTime, vs...))
+}
+
+// ReferralTimeGT applies the GT predicate on the "referral_time" field.
+func ReferralTimeGT(v time.Time) predicate.PromotionReferrals {
+	return predicate.PromotionReferrals(sql.FieldGT(FieldReferralTime, v))
+}
+
+// ReferralTimeGTE applies the GTE predicate on the "referral_time" field.
+func ReferralTimeGTE(v time.Time) predicate.PromotionReferrals {
+	return predicate.PromotionReferrals(sql.FieldGTE(FieldReferralTime, v))
+}
+
+// ReferralTimeLT applies the LT predicate on the "referral_time" field.
+func ReferralTimeLT(v time.Time) predicate.PromotionReferrals {
+	return predicate.PromotionReferrals(sql.FieldLT(FieldReferralTime, v))
+}
+
+// ReferralTimeLTE applies the LTE predicate on the "referral_time" field.
+func ReferralTimeLTE(v time.Time) predicate.PromotionReferrals {
+	return predicate.PromotionReferrals(sql.FieldLTE(FieldReferralTime, v))
+}
+
+// ReferralTimeIsNil applies the IsNil predicate on the "referral_time" field.
+func ReferralTimeIsNil() predicate.PromotionReferrals {
+	return predicate.PromotionReferrals(sql.FieldIsNull(FieldReferralTime))
+}
+
+// ReferralTimeNotNil applies the NotNil predicate on the "referral_time" field.
+func ReferralTimeNotNil() predicate.PromotionReferrals {
+	return predicate.PromotionReferrals(sql.FieldNotNull(FieldReferralTime))
 }
 
 // HasRider applies the HasEdge predicate on the "rider" edge.

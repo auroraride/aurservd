@@ -205,6 +205,7 @@ func (s *promotionMemberService) updateMemberInfo(tx *ent.Tx, mem *ent.Promotion
 
 	if req.ReferringMemberID != nil && *req.ReferringMemberID != mem.ID {
 		re.SetNillableReferringMemberID(req.ReferringMemberID)
+		re.SetReferralTime(time.Now())
 	}
 
 	if req.SubscribeID != nil {
@@ -455,9 +456,14 @@ func (s *promotionMemberService) Create(tx *ent.Tx, req *promotion.MemberCreateR
 	}
 
 	mem := q.SetNillableRiderID(req.RiderID).SaveX(s.ctx)
+
+	var referralTime *time.Time
+	retime := time.Now()
+	referralTime = &retime
 	// 如果推荐人是自己，设置推荐人为nil
 	if req.ReferringMemberID != nil && *req.ReferringMemberID == mem.ID {
 		req.ReferringMemberID = nil
+		referralTime = nil
 	}
 
 	// 创建推荐关系
@@ -465,6 +471,7 @@ func (s *promotionMemberService) Create(tx *ent.Tx, req *promotion.MemberCreateR
 		ReferringMemberId: req.ReferringMemberID,
 		ReferredMemberId:  mem.ID,
 		RiderID:           req.RiderID,
+		ReferralTime:      referralTime,
 	})
 	return mem
 }
