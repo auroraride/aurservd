@@ -51,7 +51,7 @@ func doLogs() {
 		if info.IsDir() {
 			return nil
 		}
-		if carbon.Time2Carbon(info.ModTime()).IsToday() {
+		if carbon.CreateFromStdTime(info.ModTime()).IsToday() {
 			return nil
 		}
 

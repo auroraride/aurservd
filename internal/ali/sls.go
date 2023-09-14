@@ -9,6 +9,7 @@ import (
 	openapi "github.com/alibabacloud-go/darabonba-openapi/client"
 	"github.com/alibabacloud-go/tea/tea"
 	sls "github.com/aliyun/aliyun-log-go-sdk"
+
 	"github.com/auroraride/aurservd/internal/ar"
 )
 
@@ -25,7 +26,7 @@ func NewSls() *slsClient {
 	}
 	// 访问的域名
 	config.Endpoint = tea.String(cfg.Endpoint)
-	result := sls.CreateNormalInterface(cfg.Endpoint, cfg.AccessKeyId, cfg.AccessKeySecret, "")
+	result := sls.CreateNormalInterfaceV2(cfg.Endpoint, sls.NewStaticCredentialsProvider(cfg.AccessKeyId, cfg.AccessKeySecret, ""))
 
 	client := &slsClient{
 		ClientInterface: result,

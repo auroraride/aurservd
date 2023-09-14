@@ -741,13 +741,13 @@ func (s *promotionCommissionService) GetCommissionType(r *ent.Rider, current *en
 	}
 
 	// 若激活时间晚于或等于关系绑定时间，视为续签
-	if carbon.Time2Carbon(*sub.StartAt).Gte(carbon.Time2Carbon(mem.Edges.Referred.CreatedAt)) {
+	if carbon.CreateFromStdTime(*sub.StartAt).Gte(carbon.CreateFromStdTime(mem.Edges.Referred.CreatedAt)) {
 		return promotion.CommissionTypeRenewal, nil
 	}
 
 	// 判定已退租天数是否符合新签返佣条件
 	// 如果激活时间早于关系绑定时间，并且大于90天，视为新签
-	past := int(carbon.Time2Carbon(*sub.EndAt).AddDay().DiffInDays(carbon.Now()))
+	past := int(carbon.CreateFromStdTime(*sub.EndAt).AddDay().DiffInDays(carbon.Now()))
 	if model.NewRecentSubscribePastDays(past).Commission() {
 		return promotion.CommissionTypeNewlySigned, nil
 	}

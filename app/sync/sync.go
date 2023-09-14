@@ -9,9 +9,10 @@ import (
 	"github.com/auroraride/adapter/defs/batdef"
 	"github.com/auroraride/adapter/defs/cabdef"
 	"github.com/auroraride/adapter/sync"
+	"github.com/redis/go-redis/v9"
+
 	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/internal/ar"
-	"github.com/go-redis/redis/v9"
 )
 
 func Run() {

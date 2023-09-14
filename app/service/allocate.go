@@ -52,7 +52,7 @@ func (s *allocateService) QueryEffectiveSubscribeID(subscribeID uint64) (*ent.Al
 	return s.orm.Query().
 		Where(
 			allocate.SubscribeID(subscribeID),
-			allocate.TimeGTE(carbon.Now().SubSeconds(model.AllocateExpiration).Carbon2Time()),
+			allocate.TimeGTE(carbon.Now().SubSeconds(model.AllocateExpiration).ToStdTime()),
 		).
 		First(s.ctx)
 }
@@ -123,7 +123,7 @@ func (s *allocateService) Create(params *model.AllocateCreateParams) model.Alloc
 	if exists, _ := s.orm.Query().
 		Where(
 			allocate.SubscribeID(*params.SubscribeID),
-			allocate.TimeGT(carbon.Now().SubSeconds(model.AllocateExpiration).Carbon2Time()),
+			allocate.TimeGT(carbon.Now().SubSeconds(model.AllocateExpiration).ToStdTime()),
 			allocate.StatusIn(model.AllocateStatusPending.Value(), model.AllocateStatusSigned.Value()),
 		).
 		Exist(s.ctx); exists {
@@ -399,7 +399,7 @@ func (s *allocateService) LoopStatus(riderID, subscribeID uint64) (res model.All
 		allo, _ := s.orm.Query().Where(
 			allocate.RiderID(riderID),
 			allocate.SubscribeID(subscribeID),
-			allocate.TimeGT(carbon.Now().SubSeconds(model.AllocateExpiration).Carbon2Time()),
+			allocate.TimeGT(carbon.Now().SubSeconds(model.AllocateExpiration).ToStdTime()),
 		).First(s.ctx)
 
 		// 如果有分配信息 并且 状态为待签约 并且 非电柜扫码

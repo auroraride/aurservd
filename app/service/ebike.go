@@ -84,7 +84,7 @@ func (s *ebikeService) IsAllocated(id uint64) bool {
 	exists, _ := ent.Database.Allocate.Query().Where(
 		allocate.EbikeID(id),
 		allocate.Status(model.AllocateStatusPending.Value()),
-		allocate.TimeGTE(carbon.Now().SubSeconds(model.AllocateExpiration).Carbon2Time()),
+		allocate.TimeGTE(carbon.Now().SubSeconds(model.AllocateExpiration).ToStdTime()),
 	).Exist(s.ctx)
 	return exists
 }
@@ -372,7 +372,7 @@ func (s *ebikeService) SearchUnallocated(params *model.EbikeUnallocatedParams) (
 	q := s.AllocatableBaseFilter().WithAllocates(func(query *ent.AllocateQuery) {
 		query.Where(
 			allocate.Status(model.AllocateStatusPending.Value()),
-			allocate.TimeGTE(carbon.Now().SubSeconds(model.AllocateExpiration).Carbon2Time()),
+			allocate.TimeGTE(carbon.Now().SubSeconds(model.AllocateExpiration).ToStdTime()),
 		)
 	})
 	// Where(
@@ -381,7 +381,7 @@ func (s *ebikeService) SearchUnallocated(params *model.EbikeUnallocatedParams) (
 	// 		ebike.Not(
 	// 			ebike.HasAllocatesWith(
 	// 				allocate.Status(model.AllocateStatusPending.Value()),
-	// 				allocate.TimeGTE(carbon.Now().SubSeconds(model.AllocateExpiration).Carbon2Time()),
+	// 				allocate.TimeGTE(carbon.Now().SubSeconds(model.AllocateExpiration).ToStdTime()),
 	// 			),
 	// 		),
 	// 		ebike.HasAllocates(),

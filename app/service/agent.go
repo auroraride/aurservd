@@ -187,7 +187,7 @@ func (s *agentService) Signin(req *model.AgentSigninReq) *model.AgentSigninRes {
 // Profile 代理商资料
 func (s *agentService) Profile(ag *ent.Agent, en *ent.Enterprise) model.AgentProfile {
 	// 查询合同
-	today := carbon.Now().StartOfDay().Carbon2Time()
+	today := carbon.Now().StartOfDay().ToStdTime()
 	cr, _ := ent.Database.EnterpriseContract.QueryNotDeleted().
 		Where(
 			enterprisecontract.EnterpriseID(en.ID),
@@ -207,12 +207,12 @@ func (s *agentService) Profile(ag *ent.Agent, en *ent.Enterprise) model.AgentPro
 		subscribe.StartAtNotNil(),
 		subscribe.Or(
 			subscribe.EndAtIsNil(),
-			subscribe.EndAtGTE(carbon.Now().StartOfDay().Carbon2Time()),
+			subscribe.EndAtGTE(carbon.Now().StartOfDay().ToStdTime()),
 		),
 	).Count(s.ctx)
 
-	yt := carbon.Yesterday().StartOfDay().Carbon2Time()
-	td := carbon.Now().StartOfDay().Carbon2Time()
+	yt := carbon.Yesterday().StartOfDay().ToStdTime()
+	td := carbon.Now().StartOfDay().ToStdTime()
 	subs, _ := ent.Database.Subscribe.QueryNotDeleted().Where(
 		subscribe.EnterpriseID(en.ID),
 		// 启用时间早于今日零点

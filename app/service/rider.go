@@ -482,7 +482,7 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
 					subscribe.And(
 						subscribe.EnterpriseIDNotNil(),
 						subscribe.Status(model.SubscribeStatusUsing),
-						subscribe.AgentEndAtLTE(carbon.Time2Carbon(tools.NewTime().WillEnd(time.Now(), 3, true)).EndOfDay().Carbon2Time()),
+						subscribe.AgentEndAtLTE(carbon.CreateFromStdTime(tools.NewTime().WillEnd(time.Now(), 3, true)).EndOfDay().ToStdTime()),
 					),
 				),
 			)

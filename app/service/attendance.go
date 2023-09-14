@@ -109,7 +109,7 @@ func (s *attendanceService) QueryDuty(storeID, employeeID uint64, panic ...bool)
 
 // dutyDate 获取上下班日期
 func (s *attendanceService) dutyDate(duty bool, storeID, employeeID uint64) time.Time {
-	now := carbon.Now().StartOfDay().Carbon2Time()
+	now := carbon.Now().StartOfDay().ToStdTime()
 	// 下班需要计算日期
 	if !duty {
 		at := s.QueryDuty(storeID, employeeID)

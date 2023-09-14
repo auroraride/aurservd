@@ -134,7 +134,7 @@ func (s *promotionMemberService) Signup(req *promotion.MemberSigninReq) promotio
 		for _, v := range sub {
 
 			if v.EndAt != nil { // 判断最新的退订时间是否超出设置天数
-				past := int(carbon.Time2Carbon(*v.EndAt).AddDay().DiffInDays(carbon.Now()))
+				past := int(carbon.CreateFromStdTime(*v.EndAt).AddDay().DiffInDays(carbon.Now()))
 				// 判定退订时间是否超出设置天数
 				if !model.NewRecentSubscribePastDays(past).Commission() {
 					res.InviteType = promotion.MemberActivationFail

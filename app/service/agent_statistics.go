@@ -53,7 +53,7 @@ func (s *agentStatisticsService) Overview(ac *app.AgentContext) *model.AgentStat
 // RiderSummary 骑手数据统计
 func (s *agentStatisticsService) RiderSummary(en *ent.Enterprise) model.AgentStatisticsOverviewRider {
 	var v []model.AgentStatisticsOverviewRider
-	start := carbon.Now().StartOfDay().Carbon2Time()
+	start := carbon.Now().StartOfDay().ToStdTime()
 	endtime := tools.NewTime().WillEnd(start, 4, true)
 	ent.Database.Rider.Query().Where(rider.EnterpriseID(en.ID)).Modify(
 		func(s *sql.Selector) {

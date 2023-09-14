@@ -39,7 +39,7 @@ func (*cabinet) Exchange(c echo.Context) (err error) {
 	}
 
 	items, _ := ent.Database.Cabinet.QueryNotDeleted().WithExchanges(func(eq *ent.ExchangeQuery) {
-		eq.Where(exchange.CreatedAtGTE(d.Carbon2Time()), exchange.CreatedAtLTE(d.EndOfDay().Carbon2Time()))
+		eq.Where(exchange.CreatedAtGTE(d.ToStdTime()), exchange.CreatedAtLTE(d.EndOfDay().ToStdTime()))
 	}).WithCity().All(context.Background())
 
 	out := make(map[string]map[string]*exchangeResult)

@@ -9,7 +9,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/go-redis/redis/v9"
+	"github.com/redis/go-redis/v9"
 )
 
 type SetFunc func(ctx context.Context, key string, value interface{}, expiration time.Duration) *redis.StatusCmd

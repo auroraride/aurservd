@@ -206,7 +206,7 @@ func (c *alipayClient) Notification(req *http.Request) *model.PaymentCache {
 	case model.PaymentCacheTypeRefund:
 		pc.Refund.Success = true
 		pc.Refund.Request = true
-		pc.Refund.Time = carbon.Parse(result.GmtRefund).Carbon2Time()
+		pc.Refund.Time = carbon.Parse(result.GmtRefund).ToStdTime()
 		return pc
 	}
 

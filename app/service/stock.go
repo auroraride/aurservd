@@ -104,7 +104,7 @@ func (s *stockService) StoreList(req *model.StockListReq) *model.PaginationRes {
 	}
 
 	if req.Start != nil {
-		start := carbon.Parse(*req.Start).StartOfDay().Carbon2Time()
+		start := carbon.Parse(*req.Start).StartOfDay().ToStdTime()
 		if start.IsZero() {
 			snag.Panic("开始时间错误")
 		}
@@ -115,7 +115,7 @@ func (s *stockService) StoreList(req *model.StockListReq) *model.PaginationRes {
 		)
 	}
 	if req.End != nil {
-		end := carbon.Parse(*req.End).EndOfDay().Carbon2Time()
+		end := carbon.Parse(*req.End).EndOfDay().ToStdTime()
 		if end.IsZero() {
 			snag.Panic("结束时间错误")
 		}
@@ -606,7 +606,7 @@ func (s *stockService) EmployeeList(req *model.StockEmployeeListReq) model.Stock
 			Sum int    `json:"sum"`
 		}
 		cq := s.orm.Query().Where(
-			stock.CreatedAtGTE(carbon.Now().StartOfDay().Carbon2Time()),
+			stock.CreatedAtGTE(carbon.Now().StartOfDay().ToStdTime()),
 			stock.StoreID(st.ID),
 		)
 		if req.Outbound {

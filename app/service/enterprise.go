@@ -293,7 +293,7 @@ func (s *enterpriseService) QueryAllBillingSubscribe(enterpriseID uint64, args .
 			end = d
 		}
 	}
-	endDate := carbon.Time2Carbon(end).StartOfDay().Carbon2Time()
+	endDate := carbon.CreateFromStdTime(end).StartOfDay().ToStdTime()
 	// 获取未结算订阅
 	q.Where(
 		subscribe.Or(
@@ -398,18 +398,18 @@ func (s *enterpriseService) CalculateStatement(e *ent.Enterprise, end time.Time)
 		var used int
 
 		// 开始时间
-		from := carbon.Time2Carbon(*sub.StartAt).StartOfDay().Carbon2Time()
+		from := carbon.CreateFromStdTime(*sub.StartAt).StartOfDay().ToStdTime()
 
 		// 上次结算日期存在则从上次结算日次日开始计算
 		if sub.LastBillDate != nil {
-			from = carbon.Time2Carbon(*sub.LastBillDate).Tomorrow().AddDay().Carbon2Time()
+			from = carbon.CreateFromStdTime(*sub.LastBillDate).Tomorrow().AddDay().ToStdTime()
 		}
 
 		// 结束时间
 		to := end
 		// 判定是否退订
 		if sub.EndAt != nil && sub.EndAt.Before(end) {
-			to = carbon.Time2Carbon(*sub.EndAt).StartOfDay().Carbon2Time()
+			to = carbon.CreateFromStdTime(*sub.EndAt).StartOfDay().ToStdTime()
 		}
 		if to.Before(from) {
 			continue
@@ -485,7 +485,7 @@ func (s *enterpriseService) UpdateStatement(e *ent.Enterprise) {
 		zap.L().Error("企业更新失败: "+strconv.FormatUint(e.ID, 10), zap.Error(err))
 	}
 
-	now := carbon.Now().StartOfDay().Carbon2Time()
+	now := carbon.Now().StartOfDay().ToStdTime()
 	_, err = sta.Update().
 		SetRiderNumber(len(bills)).
 		SetDays(days).

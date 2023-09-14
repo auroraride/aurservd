@@ -45,8 +45,8 @@ func (t *simTask) Start() {
 // Do 检查SIM卡过期
 func (*simTask) Do() {
 	items, _ := ent.Database.Cabinet.QueryNotDeleted().Where(
-		cabinet.SimDateGTE(carbon.Now().StartOfDay().AddDays(3).Carbon2Time()),
-		cabinet.SimDateLTE(carbon.Now().EndOfDay().AddDays(3).Carbon2Time()),
+		cabinet.SimDateGTE(carbon.Now().StartOfDay().AddDays(3).ToStdTime()),
+		cabinet.SimDateLTE(carbon.Now().EndOfDay().AddDays(3).ToStdTime()),
 	).WithCity().All(context.Background())
 	for _, item := range items {
 		data := model.CabinetSimNotice{

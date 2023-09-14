@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/auroraride/adapter/log"
-	"github.com/go-redis/redis/v9"
 	"github.com/golang-module/carbon/v2"
+	"github.com/redis/go-redis/v9"
 
 	"github.com/auroraride/aurservd/app/logging"
 	_ "github.com/auroraride/aurservd/app/permission"

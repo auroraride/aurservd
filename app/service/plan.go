@@ -68,7 +68,7 @@ func (s *planService) Query(id uint64) *ent.Plan {
 
 // QueryEffectiveWithID 获取当前生效的骑行卡
 func (s *planService) QueryEffectiveWithID(id uint64) *ent.Plan {
-	today := carbon.Now().StartOfDay().Carbon2Time()
+	today := carbon.Now().StartOfDay().ToStdTime()
 	item, err := s.orm.QueryNotDeleted().
 		Where(
 			plan.Enable(true),
@@ -130,7 +130,7 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanListRes {
 	}
 
 	start := tools.NewTime().ParseDateStringX(req.Start)
-	end := carbon.Time2Carbon(tools.NewTime().ParseDateStringX(req.End)).EndOfDay().Carbon2Time()
+	end := carbon.CreateFromStdTime(tools.NewTime().ParseDateStringX(req.End)).EndOfDay().ToStdTime()
 
 	// 获取型号列表
 	var bms []string
@@ -248,8 +248,8 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanListRes {
 //         snag.Panic("骑士卡子项无法单独修改, 请携带原始骑士卡ID")
 //     }
 //
-//     start := carbon.ParseByLayout(req.Start, carbon.DateLayout).Carbon2Time()
-//     end := carbon.ParseByLayout(req.End, carbon.DateLayout).Carbon2Time()
+//     start := carbon.ParseByLayout(req.Start, carbon.DateLayout).ToStdTime()
+//     end := carbon.ParseByLayout(req.End, carbon.DateLayout).ToStdTime()
 //
 //     // 查询是否重复
 //     s.checkDuplicate(req.Cities, req.Models, start, end, req.ID)
@@ -439,7 +439,7 @@ func (s *planService) renewalMapKey(m string, brandID *uint64) string {
 // Renewal 续签选项
 func (s *planService) Renewal(req *model.PlanListRiderReq) map[string]*[]model.RiderPlanItem {
 	rmap := make(map[string]*[]model.RiderPlanItem)
-	today := carbon.Now().StartOfDay().Carbon2Time()
+	today := carbon.Now().StartOfDay().ToStdTime()
 
 	q := s.orm.QueryNotDeleted().
 		Where(
@@ -507,7 +507,7 @@ func (s *planService) RiderListNewly(req *model.PlanListRiderReq) model.PlanNewl
 
 	// 需缴纳押金金额
 	deposit := NewRider().Deposit(s.rider.ID)
-	today := carbon.Now().StartOfDay().Carbon2Time()
+	today := carbon.Now().StartOfDay().ToStdTime()
 
 	items := s.orm.QueryNotDeleted().
 		Where(
@@ -689,7 +689,7 @@ func (s *planService) ModifyTime(req *model.PlanModifyTimeReq) {
 				plan.ParentID(req.ID),
 			),
 		).
-		SetEnd(carbon.Time2Carbon(tools.NewTime().ParseDateStringX(req.End)).EndOfDay().Carbon2Time()).
+		SetEnd(carbon.CreateFromStdTime(tools.NewTime().ParseDateStringX(req.End)).EndOfDay().ToStdTime()).
 		SetStart(tools.NewTime().ParseDateStringX(req.Start)).
 		ExecX(s.ctx)
 }

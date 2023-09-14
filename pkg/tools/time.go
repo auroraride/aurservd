@@ -8,8 +8,9 @@ package tools
 import (
 	"time"
 
-	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/golang-module/carbon/v2"
+
+	"github.com/auroraride/aurservd/pkg/snag"
 )
 
 type timeTool struct {
@@ -22,7 +23,7 @@ func NewTime() *timeTool {
 // DiffDays 按照标准时间计算天数 b hh:mm:ss -> a hh:mm:ss
 // 用来计算[寄存时间]
 func (t *timeTool) DiffDays(after, before time.Time) int {
-	return int(carbon.Time2Carbon(before).DiffInDays(carbon.Time2Carbon(after)))
+	return int(carbon.CreateFromStdTime(before).DiffInDays(carbon.CreateFromStdTime(after)))
 }
 
 func (t *timeTool) DiffDaysToNow(before time.Time) int {
@@ -30,17 +31,17 @@ func (t *timeTool) DiffDaysToNow(before time.Time) int {
 }
 
 func (t *timeTool) DiffDaysToNowString(before string) int {
-	return int(carbon.Parse(before).DiffInDays(carbon.Time2Carbon(time.Now())))
+	return int(carbon.Parse(before).DiffInDays(carbon.CreateFromStdTime(time.Now())))
 }
 
 // LastDays 获取两个日期相差天数(a - b), b 00:00:00 -> a 00:00:00
 // 用来计算[剩余时间]
 func (t *timeTool) LastDays(after, before time.Time) int {
-	return int(carbon.Time2Carbon(before).StartOfDay().DiffInDays(carbon.Time2Carbon(after).StartOfDay()))
+	return int(carbon.CreateFromStdTime(before).StartOfDay().DiffInDays(carbon.CreateFromStdTime(after).StartOfDay()))
 }
 
 func (t *timeTool) LastDaysToNow(after time.Time) int {
-	return int(carbon.Now().StartOfDay().DiffInDays(carbon.Time2Carbon(after).StartOfDay()))
+	return int(carbon.Now().StartOfDay().DiffInDays(carbon.CreateFromStdTime(after).StartOfDay()))
 }
 
 func (t *timeTool) LastDaysToNowString(after string) int {
@@ -50,11 +51,11 @@ func (t *timeTool) LastDaysToNowString(after string) int {
 // UsedDays 获取两个日期相差天数(a - b), b 00:00:00 -> a+1 00:00:00
 // 用来计算[已使用时间]
 func (t *timeTool) UsedDays(after, before time.Time) int {
-	return int(carbon.Time2Carbon(before).StartOfDay().DiffInDays(carbon.Time2Carbon(after).StartOfDay().AddDay()))
+	return int(carbon.CreateFromStdTime(before).StartOfDay().DiffInDays(carbon.CreateFromStdTime(after).StartOfDay().AddDay()))
 }
 
 func (t *timeTool) UsedDaysToNow(before time.Time) int {
-	return int(carbon.Time2Carbon(before).StartOfDay().DiffInDays(carbon.Now().StartOfDay().AddDay()))
+	return int(carbon.CreateFromStdTime(before).StartOfDay().DiffInDays(carbon.Now().StartOfDay().AddDay()))
 }
 
 func (t *timeTool) UsedDaysToNowString(before string) int {
@@ -79,7 +80,7 @@ func (*timeTool) ParseDateString(str string) (time.Time, error) {
 	if res.Error != nil {
 		return time.Time{}, res.Error
 	}
-	return res.StartOfDay().Carbon2Time(), nil
+	return res.StartOfDay().ToStdTime(), nil
 }
 
 func (t *timeTool) ParseDateStringX(str string) time.Time {
@@ -96,7 +97,7 @@ func (t *timeTool) ParseNextDateString(str string) (time.Time, error) {
 	if res.Error != nil {
 		return time.Time{}, res.Error
 	}
-	return res.StartOfDay().AddDay().Carbon2Time(), nil
+	return res.StartOfDay().AddDay().ToStdTime(), nil
 }
 
 func (t *timeTool) ParseNextDateStringX(str string) time.Time {
@@ -110,10 +111,10 @@ func (t *timeTool) ParseNextDateStringX(str string) time.Time {
 // PauseBeginning 暂停或寄存开始日期计算
 // start 暂停或寄存开始时间
 func (t *timeTool) PauseBeginning(start time.Time) time.Time {
-	startDay := carbon.Time2Carbon(start).StartOfDay().Carbon2Time()
+	startDay := carbon.CreateFromStdTime(start).StartOfDay().ToStdTime()
 	// 判定开始时间是否0点
 	if startDay.Equal(start) {
 		return startDay
 	}
-	return carbon.Time2Carbon(startDay).Tomorrow().Carbon2Time()
+	return carbon.CreateFromStdTime(startDay).Tomorrow().ToStdTime()
 }

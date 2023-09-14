@@ -8,10 +8,11 @@ package model
 import (
 	"time"
 
-	"github.com/auroraride/aurservd/pkg/silk"
-	"github.com/auroraride/aurservd/pkg/tools"
 	"github.com/golang-module/carbon/v2"
 	"golang.org/x/exp/slices"
+
+	"github.com/auroraride/aurservd/pkg/silk"
+	"github.com/auroraride/aurservd/pkg/tools"
 )
 
 // CouponRule 优惠券规则
@@ -57,10 +58,10 @@ type CouponDuration struct {
 // toRider 是否发放到骑手
 func (d *CouponDuration) ExpiresAt(toRider bool) *time.Time {
 	if d.DurationRule == CouponDurationFixed {
-		return silk.Pointer(carbon.Time2Carbon(tools.NewTime().ParseDateStringX(d.DurationTime)).EndOfDay().Carbon2Time())
+		return silk.Pointer(carbon.CreateFromStdTime(tools.NewTime().ParseDateStringX(d.DurationTime)).EndOfDay().ToStdTime())
 	}
 	if toRider {
-		return silk.Pointer(carbon.Now().AddDays(d.DurationDays).EndOfDay().Carbon2Time())
+		return silk.Pointer(carbon.Now().AddDays(d.DurationDays).EndOfDay().ToStdTime())
 	}
 	return nil
 }

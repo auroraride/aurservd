@@ -8,14 +8,15 @@ package task
 import (
 	"context"
 
+	"github.com/golang-module/carbon/v2"
+	"github.com/robfig/cron/v3"
+	"go.uber.org/zap"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/workwx"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
-	"github.com/golang-module/carbon/v2"
-	"github.com/robfig/cron/v3"
-	"go.uber.org/zap"
 )
 
 type branchTask struct {
@@ -44,8 +45,8 @@ func (t *branchTask) Start() {
 
 func (*branchTask) Do() {
 	items, _ := ent.Database.BranchContract.QueryNotDeleted().Where(
-		branchcontract.EndTimeGTE(carbon.Now().StartOfDay().AddDays(3).Carbon2Time()),
-		branchcontract.EndTimeLTE(carbon.Now().EndOfDay().AddDays(3).Carbon2Time()),
+		branchcontract.EndTimeGTE(carbon.Now().StartOfDay().AddDays(3).ToStdTime()),
+		branchcontract.EndTimeLTE(carbon.Now().EndOfDay().AddDays(3).ToStdTime()),
 	).WithBranch(func(bq *ent.BranchQuery) {
 		bq.WithCity()
 	}).All(context.Background())

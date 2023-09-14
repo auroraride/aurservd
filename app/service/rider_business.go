@@ -316,15 +316,15 @@ func (s *riderBusinessService) PauseInfo() (res model.BusinessPauseInfoRes) {
 	}
 	start := p.StartAt
 	// 判断寄存开始日期
-	if carbon.Time2Carbon(start).Timestamp() != carbon.Time2Carbon(start).StartOfDay().Timestamp() {
-		start = carbon.Time2Carbon(start).Tomorrow().StartOfDay().Carbon2Time()
+	if carbon.CreateFromStdTime(start).Timestamp() != carbon.CreateFromStdTime(start).StartOfDay().Timestamp() {
+		start = carbon.CreateFromStdTime(start).Tomorrow().StartOfDay().ToStdTime()
 	}
 	res.Start = start.Format(carbon.DateLayout)
 	now := carbon.Now()
 	if now.Timestamp() != now.StartOfDay().Timestamp() {
 		now = now.Yesterday()
 	}
-	res.End = now.Carbon2Time().Format(carbon.DateLayout)
+	res.End = now.ToStdTime().Format(carbon.DateLayout)
 
 	if p.Days < 1 {
 		res.Start = ""

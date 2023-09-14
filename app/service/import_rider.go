@@ -233,7 +233,7 @@ func (s *importRiderService) Create(req *model.ImportRiderCreateReq) error {
 		}
 
 		// 计算开始时间
-		start := end.SubDays(int(s.plan.Days)).Tomorrow().Carbon2Time()
+		start := end.SubDays(int(s.plan.Days)).Tomorrow().ToStdTime()
 
 		// 创建用户
 		if r == nil || r.Edges.Person == nil {
@@ -278,7 +278,7 @@ func (s *importRiderService) Create(req *model.ImportRiderCreateReq) error {
 			SetModel(s.plan.Model).
 			SetIntelligent(s.plan.Intelligent).
 			SetNeedContract(false).
-			SetRemaining(tools.NewTime().LastDays(end.Carbon2Time(), time.Now())).
+			SetRemaining(tools.NewTime().LastDays(end.ToStdTime(), time.Now())).
 			SetNillableBrandID(brandID).
 			SetNillableEbikeID(bikeID).
 			Save(s.ctx)

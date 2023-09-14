@@ -10,8 +10,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/auroraride/aurservd/pkg/tools"
 	"github.com/golang-module/carbon/v2"
+
+	"github.com/auroraride/aurservd/pkg/tools"
 )
 
 type Date struct {
@@ -49,7 +50,7 @@ func (t Date) Value() (driver.Value, error) {
 }
 
 func (t Date) Carbon() carbon.Carbon {
-	return carbon.Time2Carbon(t.Time)
+	return carbon.CreateFromStdTime(t.Time)
 }
 
 func (t Date) Tomorrow() Date {

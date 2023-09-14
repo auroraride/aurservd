@@ -71,7 +71,7 @@ type SubscribeAdditionalItem struct {
 
 func NewSubscribeAdditionalItem[T SubscribeAdditional](item T) *SubscribeAdditionalItem {
 	// 获取开始日期
-	start := carbon.Time2Carbon(item.GetStartAt())
+	start := carbon.CreateFromStdTime(item.GetStartAt())
 	// 如果开始日期不是0点, 则开始日期为第二天0点
 	if start.Timestamp() != start.StartOfDay().Timestamp() {
 		start = start.Tomorrow().StartOfDay()
@@ -85,7 +85,7 @@ func NewSubscribeAdditionalItem[T SubscribeAdditional](item T) *SubscribeAdditio
 		maxDays = item.GetMaxDays()
 	)
 
-	stop := carbon.Time2Carbon(endAt)
+	stop := carbon.CreateFromStdTime(endAt)
 	if endAt.IsZero() {
 		// 未结束使用当前时间计算
 		current = true

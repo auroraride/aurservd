@@ -51,7 +51,7 @@ func NewRiderAgentWithModifier(m *model.Modifier) *riderAgentService {
 }
 
 func (s *riderAgentService) detail(item *ent.Rider) model.AgentRider {
-	today := carbon.Now().StartOfDay().Carbon2Time()
+	today := carbon.Now().StartOfDay().ToStdTime()
 	isAuthed := NewRider().IsAuthed(item)
 	res := model.AgentRider{
 		ID:       item.ID,
@@ -183,7 +183,7 @@ func (s *riderAgentService) List(enterpriseID uint64, req *model.AgentRiderListR
 		WithPerson().
 		Order(ent.Desc(rider.FieldCreatedAt))
 
-	today := carbon.Now().StartOfDay().Carbon2Time()
+	today := carbon.Now().StartOfDay().ToStdTime()
 
 	var subquery []predicate.Subscribe
 
@@ -240,7 +240,7 @@ func (s *riderAgentService) List(enterpriseID uint64, req *model.AgentRiderListR
 			subquery,
 			subscribe.Status(model.SubscribeStatusUsing),
 			subscribe.AgentEndAtGTE(today),
-			subscribe.AgentEndAtLTE(carbon.Time2Carbon(tools.NewTime().WillEnd(today, model.WillOverdueNum, true)).EndOfDay().Carbon2Time()),
+			subscribe.AgentEndAtLTE(carbon.CreateFromStdTime(tools.NewTime().WillEnd(today, model.WillOverdueNum, true)).EndOfDay().ToStdTime()),
 		)
 		q.Where(rider.HasSubscribesWith(subquery...))
 	}

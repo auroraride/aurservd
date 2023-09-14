@@ -70,7 +70,7 @@ func (s *suspendService) Suspend(req *model.SuspendReq) {
 		// 判断是否寄存中, 如果是寄存中的话时间计算为当日寄存生效时间
 		if pause != nil {
 			// 判断当日0点是否是寄存状态
-			beginning := carbon.Now().StartOfDay().Carbon2Time()
+			beginning := carbon.Now().StartOfDay().ToStdTime()
 			if beginning.After(pause.StartAt) {
 				now = beginning
 			}

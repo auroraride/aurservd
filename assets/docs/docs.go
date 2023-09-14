@@ -32632,19 +32632,22 @@ const docTemplate = `{
                 1,
                 2,
                 3,
-                4
+                4,
+                5
             ],
             "x-enum-comments": {
                 "MemberActivationFail": "已被激活",
                 "MemberBindSuccess": "绑定成功",
                 "MemberInviteFail": "已被邀请",
+                "MemberInviteSelfFail": "自己不能邀请自己",
                 "MemberSignSuccess": "注册成功"
             },
             "x-enum-varnames": [
                 "MemberSignSuccess",
                 "MemberBindSuccess",
                 "MemberInviteFail",
-                "MemberActivationFail"
+                "MemberActivationFail",
+                "MemberInviteSelfFail"
             ]
         },
         "promotion.Level": {
