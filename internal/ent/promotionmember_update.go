@@ -376,19 +376,19 @@ func (pmu *PromotionMemberUpdate) SetLevel(p *PromotionLevel) *PromotionMemberUp
 	return pmu.SetLevelID(p.ID)
 }
 
-// AddReferringIDs adds the "referring" edge to the PromotionReferrals entity by IDs.
-func (pmu *PromotionMemberUpdate) AddReferringIDs(ids ...uint64) *PromotionMemberUpdate {
-	pmu.mutation.AddReferringIDs(ids...)
+// AddReferralIDs adds the "referrals" edge to the PromotionReferrals entity by IDs.
+func (pmu *PromotionMemberUpdate) AddReferralIDs(ids ...uint64) *PromotionMemberUpdate {
+	pmu.mutation.AddReferralIDs(ids...)
 	return pmu
 }
 
-// AddReferring adds the "referring" edges to the PromotionReferrals entity.
-func (pmu *PromotionMemberUpdate) AddReferring(p ...*PromotionReferrals) *PromotionMemberUpdate {
+// AddReferrals adds the "referrals" edges to the PromotionReferrals entity.
+func (pmu *PromotionMemberUpdate) AddReferrals(p ...*PromotionReferrals) *PromotionMemberUpdate {
 	ids := make([]uint64, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return pmu.AddReferringIDs(ids...)
+	return pmu.AddReferralIDs(ids...)
 }
 
 // SetReferredID sets the "referred" edge to the PromotionReferrals entity by ID.
@@ -468,25 +468,25 @@ func (pmu *PromotionMemberUpdate) ClearLevel() *PromotionMemberUpdate {
 	return pmu
 }
 
-// ClearReferring clears all "referring" edges to the PromotionReferrals entity.
-func (pmu *PromotionMemberUpdate) ClearReferring() *PromotionMemberUpdate {
-	pmu.mutation.ClearReferring()
+// ClearReferrals clears all "referrals" edges to the PromotionReferrals entity.
+func (pmu *PromotionMemberUpdate) ClearReferrals() *PromotionMemberUpdate {
+	pmu.mutation.ClearReferrals()
 	return pmu
 }
 
-// RemoveReferringIDs removes the "referring" edge to PromotionReferrals entities by IDs.
-func (pmu *PromotionMemberUpdate) RemoveReferringIDs(ids ...uint64) *PromotionMemberUpdate {
-	pmu.mutation.RemoveReferringIDs(ids...)
+// RemoveReferralIDs removes the "referrals" edge to PromotionReferrals entities by IDs.
+func (pmu *PromotionMemberUpdate) RemoveReferralIDs(ids ...uint64) *PromotionMemberUpdate {
+	pmu.mutation.RemoveReferralIDs(ids...)
 	return pmu
 }
 
-// RemoveReferring removes "referring" edges to PromotionReferrals entities.
-func (pmu *PromotionMemberUpdate) RemoveReferring(p ...*PromotionReferrals) *PromotionMemberUpdate {
+// RemoveReferrals removes "referrals" edges to PromotionReferrals entities.
+func (pmu *PromotionMemberUpdate) RemoveReferrals(p ...*PromotionReferrals) *PromotionMemberUpdate {
 	ids := make([]uint64, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return pmu.RemoveReferringIDs(ids...)
+	return pmu.RemoveReferralIDs(ids...)
 }
 
 // ClearReferred clears the "referred" edge to the PromotionReferrals entity.
@@ -765,12 +765,12 @@ func (pmu *PromotionMemberUpdate) sqlSave(ctx context.Context) (n int, err error
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if pmu.mutation.ReferringCleared() {
+	if pmu.mutation.ReferralsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   promotionmember.ReferringTable,
-			Columns: []string{promotionmember.ReferringColumn},
+			Table:   promotionmember.ReferralsTable,
+			Columns: []string{promotionmember.ReferralsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(promotionreferrals.FieldID, field.TypeUint64),
@@ -778,12 +778,12 @@ func (pmu *PromotionMemberUpdate) sqlSave(ctx context.Context) (n int, err error
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := pmu.mutation.RemovedReferringIDs(); len(nodes) > 0 && !pmu.mutation.ReferringCleared() {
+	if nodes := pmu.mutation.RemovedReferralsIDs(); len(nodes) > 0 && !pmu.mutation.ReferralsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   promotionmember.ReferringTable,
-			Columns: []string{promotionmember.ReferringColumn},
+			Table:   promotionmember.ReferralsTable,
+			Columns: []string{promotionmember.ReferralsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(promotionreferrals.FieldID, field.TypeUint64),
@@ -794,12 +794,12 @@ func (pmu *PromotionMemberUpdate) sqlSave(ctx context.Context) (n int, err error
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := pmu.mutation.ReferringIDs(); len(nodes) > 0 {
+	if nodes := pmu.mutation.ReferralsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   promotionmember.ReferringTable,
-			Columns: []string{promotionmember.ReferringColumn},
+			Table:   promotionmember.ReferralsTable,
+			Columns: []string{promotionmember.ReferralsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(promotionreferrals.FieldID, field.TypeUint64),
@@ -1319,19 +1319,19 @@ func (pmuo *PromotionMemberUpdateOne) SetLevel(p *PromotionLevel) *PromotionMemb
 	return pmuo.SetLevelID(p.ID)
 }
 
-// AddReferringIDs adds the "referring" edge to the PromotionReferrals entity by IDs.
-func (pmuo *PromotionMemberUpdateOne) AddReferringIDs(ids ...uint64) *PromotionMemberUpdateOne {
-	pmuo.mutation.AddReferringIDs(ids...)
+// AddReferralIDs adds the "referrals" edge to the PromotionReferrals entity by IDs.
+func (pmuo *PromotionMemberUpdateOne) AddReferralIDs(ids ...uint64) *PromotionMemberUpdateOne {
+	pmuo.mutation.AddReferralIDs(ids...)
 	return pmuo
 }
 
-// AddReferring adds the "referring" edges to the PromotionReferrals entity.
-func (pmuo *PromotionMemberUpdateOne) AddReferring(p ...*PromotionReferrals) *PromotionMemberUpdateOne {
+// AddReferrals adds the "referrals" edges to the PromotionReferrals entity.
+func (pmuo *PromotionMemberUpdateOne) AddReferrals(p ...*PromotionReferrals) *PromotionMemberUpdateOne {
 	ids := make([]uint64, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return pmuo.AddReferringIDs(ids...)
+	return pmuo.AddReferralIDs(ids...)
 }
 
 // SetReferredID sets the "referred" edge to the PromotionReferrals entity by ID.
@@ -1411,25 +1411,25 @@ func (pmuo *PromotionMemberUpdateOne) ClearLevel() *PromotionMemberUpdateOne {
 	return pmuo
 }
 
-// ClearReferring clears all "referring" edges to the PromotionReferrals entity.
-func (pmuo *PromotionMemberUpdateOne) ClearReferring() *PromotionMemberUpdateOne {
-	pmuo.mutation.ClearReferring()
+// ClearReferrals clears all "referrals" edges to the PromotionReferrals entity.
+func (pmuo *PromotionMemberUpdateOne) ClearReferrals() *PromotionMemberUpdateOne {
+	pmuo.mutation.ClearReferrals()
 	return pmuo
 }
 
-// RemoveReferringIDs removes the "referring" edge to PromotionReferrals entities by IDs.
-func (pmuo *PromotionMemberUpdateOne) RemoveReferringIDs(ids ...uint64) *PromotionMemberUpdateOne {
-	pmuo.mutation.RemoveReferringIDs(ids...)
+// RemoveReferralIDs removes the "referrals" edge to PromotionReferrals entities by IDs.
+func (pmuo *PromotionMemberUpdateOne) RemoveReferralIDs(ids ...uint64) *PromotionMemberUpdateOne {
+	pmuo.mutation.RemoveReferralIDs(ids...)
 	return pmuo
 }
 
-// RemoveReferring removes "referring" edges to PromotionReferrals entities.
-func (pmuo *PromotionMemberUpdateOne) RemoveReferring(p ...*PromotionReferrals) *PromotionMemberUpdateOne {
+// RemoveReferrals removes "referrals" edges to PromotionReferrals entities.
+func (pmuo *PromotionMemberUpdateOne) RemoveReferrals(p ...*PromotionReferrals) *PromotionMemberUpdateOne {
 	ids := make([]uint64, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return pmuo.RemoveReferringIDs(ids...)
+	return pmuo.RemoveReferralIDs(ids...)
 }
 
 // ClearReferred clears the "referred" edge to the PromotionReferrals entity.
@@ -1738,12 +1738,12 @@ func (pmuo *PromotionMemberUpdateOne) sqlSave(ctx context.Context) (_node *Promo
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if pmuo.mutation.ReferringCleared() {
+	if pmuo.mutation.ReferralsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   promotionmember.ReferringTable,
-			Columns: []string{promotionmember.ReferringColumn},
+			Table:   promotionmember.ReferralsTable,
+			Columns: []string{promotionmember.ReferralsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(promotionreferrals.FieldID, field.TypeUint64),
@@ -1751,12 +1751,12 @@ func (pmuo *PromotionMemberUpdateOne) sqlSave(ctx context.Context) (_node *Promo
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := pmuo.mutation.RemovedReferringIDs(); len(nodes) > 0 && !pmuo.mutation.ReferringCleared() {
+	if nodes := pmuo.mutation.RemovedReferralsIDs(); len(nodes) > 0 && !pmuo.mutation.ReferralsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   promotionmember.ReferringTable,
-			Columns: []string{promotionmember.ReferringColumn},
+			Table:   promotionmember.ReferralsTable,
+			Columns: []string{promotionmember.ReferralsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(promotionreferrals.FieldID, field.TypeUint64),
@@ -1767,12 +1767,12 @@ func (pmuo *PromotionMemberUpdateOne) sqlSave(ctx context.Context) (_node *Promo
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := pmuo.mutation.ReferringIDs(); len(nodes) > 0 {
+	if nodes := pmuo.mutation.ReferralsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   promotionmember.ReferringTable,
-			Columns: []string{promotionmember.ReferringColumn},
+			Table:   promotionmember.ReferralsTable,
+			Columns: []string{promotionmember.ReferralsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(promotionreferrals.FieldID, field.TypeUint64),

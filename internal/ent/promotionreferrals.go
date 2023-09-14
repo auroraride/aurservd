@@ -30,7 +30,7 @@ type PromotionReferrals struct {
 	SubscribeID *uint64 `json:"subscribe_id,omitempty"`
 	// 推广者id
 	ReferringMemberID *uint64 `json:"referring_member_id,omitempty"`
-	// 被推广者ID
+	// 被推广者ID<骑手>
 	ReferredMemberID uint64 `json:"referred_member_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PromotionReferralsQuery when eager-loading is set.

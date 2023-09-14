@@ -19,6 +19,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
 	"github.com/auroraride/aurservd/internal/ent/promotionmembercommission"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
 )
@@ -365,11 +366,23 @@ func (s *promotionCommissionService) HistoryList(id uint64) []promotion.Commissi
 func (s *promotionCommissionService) CommissionCalculation(tx *ent.Tx, req *promotion.CommissionCalculation) (err error) {
 	ec := make([]promotion.EarningsCreateReq, 0)
 
-	// 查询会员信息
-	member, _ := ent.Database.PromotionMember.QueryNotDeleted().WithReferred().Where(promotionmember.RiderID(req.RiderID)).First(s.ctx)
+	// 查询会员信息 有可能骑手转团签 骑手id和推广返佣保存的骑手id不一致
+	r, _ := ent.Database.Rider.Query().Where(rider.ID(req.RiderID)).First(s.ctx)
+	if r == nil {
+		zap.L().Error("分佣计算 骑手不存在", zap.Int64("骑手ID", int64(req.RiderID)))
+		return
+	}
+
+	member, _ := ent.Database.PromotionMember.QueryNotDeleted().WithReferred().Where(promotionmember.Phone(r.Phone)).First(s.ctx)
 	if member == nil {
 		zap.L().Error("分佣计算 会员不存在", zap.Int64("骑手ID", int64(req.RiderID)))
 		return
+	}
+
+	// 更新会员信息
+	if r.ID != *member.RiderID {
+		id := ent.Database.Rider.QueryNotDeleted().Where(rider.Phone(r.Phone)).FirstIDX(s.ctx)
+		member.Update().SetRiderID(id).SaveX(s.ctx)
 	}
 
 	referred := member.Edges.Referred
@@ -697,31 +710,53 @@ func (s *promotionCommissionService) getMaxCommissionAmount(rule *promotion.Comm
 }
 
 // GetCommissionType 查询骑手是新用户还是续费用户
-func (s *promotionCommissionService) GetCommissionType(phone string) (promotion.CommissionCalculationType, error) {
-
-	// 通过实名认证 查询骑手是否是新用户
-	ri, _ := ent.Database.Rider.Query().WithPerson().Where(rider.Phone(phone)).First(s.ctx)
-	if ri == nil {
-		return 0, errors.New("骑手不存在")
+func (s *promotionCommissionService) GetCommissionType(r *ent.Rider, current *ent.Subscribe) (promotion.CommissionCalculationType, error) {
+	// 查询骑手会员信息
+	mem, _ := ent.Database.PromotionMember.QueryNotDeleted().WithReferred().Where(promotionmember.Phone(r.Phone)).First(s.ctx)
+	if mem == nil {
+		return 0, errors.New("用户不存在")
 	}
 
-	if ri.Edges.Person == nil {
-		return 0, errors.New("骑手未实名认证")
+	// 查询被推广信息<谁推荐的我>
+	if mem.Edges.Referred == nil {
+		return 0, errors.New("推广员不存在")
 	}
 
-	riders, _ := ent.Database.Rider.Query().WithSubscribes().Where(rider.PersonID(ri.Edges.Person.ID)).All(s.ctx)
+	// 查询实人订阅记录
+	// 因实人名下存在未激活或已激活（包含团签）订阅时，无法购买新的订阅，所以只需要查询使用过并且已退租的订阅记录即可
+	// TODO: 此处判定不够健壮，后期重构需要优化，若需求改动为同一个用户可以同时拥有多个手机号同时激活时，此处有可能会发生意外
+	riders := ent.Database.Rider.Query().Where(rider.PersonID(*r.PersonID)).IDsX(s.ctx)
+	sub, _ := ent.Database.Subscribe.QueryNotDeleted().
+		Where(
+			subscribe.StatusNEQ(model.SubscribeStatusCanceled),
+			subscribe.RiderIDIn(riders...),
+			subscribe.IDNEQ(current.ID),
+		).
+		Order(ent.Desc(subscribe.FieldEndAt)).
+		First(s.ctx)
 
-	if len(riders) > 1 {
+	// 如果没有订阅记录则是新签返佣
+	if sub == nil {
+		return promotion.CommissionTypeNewlySigned, nil
+	}
+
+	// 若激活时间晚于或等于关系绑定时间，视为续签
+	if carbon.Time2Carbon(*sub.StartAt).Gte(carbon.Time2Carbon(mem.Edges.Referred.CreatedAt)) {
 		return promotion.CommissionTypeRenewal, nil
 	}
 
-	for _, v := range riders {
-		sub := v.Edges.Subscribes
-		if sub != nil && (len(sub) == 1 && sub[0].RenewalDays > 0 || len(sub) > 1) {
-			return promotion.CommissionTypeRenewal, nil
-		}
+	// 判定已退租天数是否符合新签返佣条件
+	// 如果激活时间早于关系绑定时间，并且大于90天，视为新签
+	past := int(carbon.Time2Carbon(*sub.EndAt).AddDay().DiffInDays(carbon.Now()))
+	if model.NewRecentSubscribePastDays(past).Commission() {
+		return promotion.CommissionTypeNewlySigned, nil
 	}
-	return promotion.CommissionTypeNewlySigned, nil
+
+	// 如果激活时间早于绑定关系时间，但是小于90天时，报错
+	// 按理来说，这种情况不应该出现，确立绑定关系时已经排除90天内的情况
+	// 但不排除后面如果改动逻辑或数据库会造成损失的意外情况
+	// 因此，此处需要抛出错误
+	return 0, errors.New("激活时间早于绑定关系时间，但是小于90天")
 }
 
 // GetCommissionRule 获取返佣方案
@@ -844,7 +879,7 @@ func (s *promotionCommissionService) RiderActivateCommission(sub *ent.Subscribe)
 	}
 
 	// 判断返佣类型 新签有可能是续签
-	commissionType, err := NewPromotionCommissionService().GetCommissionType(r.Phone)
+	commissionType, err := NewPromotionCommissionService().GetCommissionType(r, sub)
 	if err != nil || p == nil {
 		zap.L().Error("激活成功获取返佣失败", zap.Error(err))
 		return

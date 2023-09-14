@@ -275,16 +275,6 @@ func ReferredMemberIDNotIn(vs ...uint64) predicate.PromotionReferrals {
 	return predicate.PromotionReferrals(sql.FieldNotIn(FieldReferredMemberID, vs...))
 }
 
-// ReferredMemberIDIsNil applies the IsNil predicate on the "referred_member_id" field.
-func ReferredMemberIDIsNil() predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldIsNull(FieldReferredMemberID))
-}
-
-// ReferredMemberIDNotNil applies the NotNil predicate on the "referred_member_id" field.
-func ReferredMemberIDNotNil() predicate.PromotionReferrals {
-	return predicate.PromotionReferrals(sql.FieldNotNull(FieldReferredMemberID))
-}
-
 // HasRider applies the HasEdge predicate on the "rider" edge.
 func HasRider() predicate.PromotionReferrals {
 	return predicate.PromotionReferrals(func(s *sql.Selector) {

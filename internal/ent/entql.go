@@ -4370,12 +4370,12 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"PromotionLevel",
 	)
 	graph.MustAddE(
-		"referring",
+		"referrals",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   promotionmember.ReferringTable,
-			Columns: []string{promotionmember.ReferringColumn},
+			Table:   promotionmember.ReferralsTable,
+			Columns: []string{promotionmember.ReferralsColumn},
 			Bidi:    false,
 		},
 		"PromotionMember",
@@ -14046,14 +14046,14 @@ func (f *PromotionMemberFilter) WhereHasLevelWith(preds ...predicate.PromotionLe
 	})))
 }
 
-// WhereHasReferring applies a predicate to check if query has an edge referring.
-func (f *PromotionMemberFilter) WhereHasReferring() {
-	f.Where(entql.HasEdge("referring"))
+// WhereHasReferrals applies a predicate to check if query has an edge referrals.
+func (f *PromotionMemberFilter) WhereHasReferrals() {
+	f.Where(entql.HasEdge("referrals"))
 }
 
-// WhereHasReferringWith applies a predicate to check if query has an edge referring with a given conditions (other predicates).
-func (f *PromotionMemberFilter) WhereHasReferringWith(preds ...predicate.PromotionReferrals) {
-	f.Where(entql.HasEdgeWith("referring", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasReferralsWith applies a predicate to check if query has an edge referrals with a given conditions (other predicates).
+func (f *PromotionMemberFilter) WhereHasReferralsWith(preds ...predicate.PromotionReferrals) {
+	f.Where(entql.HasEdgeWith("referrals", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

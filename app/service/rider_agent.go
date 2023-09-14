@@ -7,6 +7,7 @@ package service
 
 import (
 	"context"
+	"time"
 
 	"github.com/golang-module/carbon/v2"
 
@@ -95,16 +96,33 @@ func (s *riderAgentService) detail(item *ent.Rider) model.AgentRider {
 			ID:   ci.ID,
 			Name: ci.Name,
 		}
+
+		var before, after time.Time
+
+		if sub.StartAt != nil {
+			res.StartAt = sub.StartAt.Format(carbon.DateLayout)
+			before = *sub.StartAt
+		}
+
 		if sub.EndAt != nil {
 			res.EndAt = sub.EndAt.Format(carbon.DateLayout)
+			after = *sub.EndAt
 		}
+
 		if sub.AgentEndAt != nil {
 			res.StopAt = sub.AgentEndAt.Format(carbon.DateLayout)
 		}
-		if sub.StartAt != nil {
-			res.StartAt = sub.StartAt.Format(carbon.DateLayout)
-			res.Used = tools.NewTime().UsedDaysToNow(*sub.StartAt)
+
+		// 截止日期默认为当前日期或请求日期
+		if after.IsZero() {
+			after = time.Now()
 		}
+		// 如果订阅有结束日期并且结束日期在请求日期之前
+		if sub.EndAt != nil && after.After(*sub.EndAt) {
+			after = *sub.EndAt
+		}
+		res.Used = tools.NewTime().UsedDays(after, before)
+
 		switch sub.Status {
 		case model.SubscribeStatusInactive:
 			// 未激活

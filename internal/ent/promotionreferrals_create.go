@@ -101,14 +101,6 @@ func (prc *PromotionReferralsCreate) SetReferredMemberID(u uint64) *PromotionRef
 	return prc
 }
 
-// SetNillableReferredMemberID sets the "referred_member_id" field if the given value is not nil.
-func (prc *PromotionReferralsCreate) SetNillableReferredMemberID(u *uint64) *PromotionReferralsCreate {
-	if u != nil {
-		prc.SetReferredMemberID(*u)
-	}
-	return prc
-}
-
 // SetRider sets the "rider" edge to the Rider entity.
 func (prc *PromotionReferralsCreate) SetRider(r *Rider) *PromotionReferralsCreate {
 	return prc.SetRiderID(r.ID)
@@ -181,6 +173,12 @@ func (prc *PromotionReferralsCreate) check() error {
 	}
 	if _, ok := prc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "PromotionReferrals.updated_at"`)}
+	}
+	if _, ok := prc.mutation.ReferredMemberID(); !ok {
+		return &ValidationError{Name: "referred_member_id", err: errors.New(`ent: missing required field "PromotionReferrals.referred_member_id"`)}
+	}
+	if _, ok := prc.mutation.ReferredMemberID(); !ok {
+		return &ValidationError{Name: "referred_member", err: errors.New(`ent: missing required edge "PromotionReferrals.referred_member"`)}
 	}
 	return nil
 }
@@ -415,12 +413,6 @@ func (u *PromotionReferralsUpsert) UpdateReferredMemberID() *PromotionReferralsU
 	return u
 }
 
-// ClearReferredMemberID clears the value of the "referred_member_id" field.
-func (u *PromotionReferralsUpsert) ClearReferredMemberID() *PromotionReferralsUpsert {
-	u.SetNull(promotionreferrals.FieldReferredMemberID)
-	return u
-}
-
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -554,13 +546,6 @@ func (u *PromotionReferralsUpsertOne) SetReferredMemberID(v uint64) *PromotionRe
 func (u *PromotionReferralsUpsertOne) UpdateReferredMemberID() *PromotionReferralsUpsertOne {
 	return u.Update(func(s *PromotionReferralsUpsert) {
 		s.UpdateReferredMemberID()
-	})
-}
-
-// ClearReferredMemberID clears the value of the "referred_member_id" field.
-func (u *PromotionReferralsUpsertOne) ClearReferredMemberID() *PromotionReferralsUpsertOne {
-	return u.Update(func(s *PromotionReferralsUpsert) {
-		s.ClearReferredMemberID()
 	})
 }
 
@@ -859,13 +844,6 @@ func (u *PromotionReferralsUpsertBulk) SetReferredMemberID(v uint64) *PromotionR
 func (u *PromotionReferralsUpsertBulk) UpdateReferredMemberID() *PromotionReferralsUpsertBulk {
 	return u.Update(func(s *PromotionReferralsUpsert) {
 		s.UpdateReferredMemberID()
-	})
-}
-
-// ClearReferredMemberID clears the value of the "referred_member_id" field.
-func (u *PromotionReferralsUpsertBulk) ClearReferredMemberID() *PromotionReferralsUpsertBulk {
-	return u.Update(func(s *PromotionReferralsUpsert) {
-		s.ClearReferredMemberID()
 	})
 }
 

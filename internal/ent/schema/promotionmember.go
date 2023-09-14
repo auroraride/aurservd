@@ -76,8 +76,8 @@ func (PromotionMember) Fields() []ent.Field {
 // Edges of the PromotionMember.
 func (PromotionMember) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("referring", PromotionReferrals.Type),
-		edge.To("referred", PromotionReferrals.Type).Unique(),
+		edge.To("referrals", PromotionReferrals.Type).Comment("我邀请的记录"),
+		edge.To("referred", PromotionReferrals.Type).Unique().Comment("我的被邀请记录"),
 
 		edge.From("person", PromotionPerson.Type).Ref("member").Unique().Field("person_id"),
 		edge.To("cards", PromotionBankCard.Type),

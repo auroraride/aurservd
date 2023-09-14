@@ -293,6 +293,18 @@ func (s *businessService) ListEmployee(req *model.BusinessListReq) *model.Pagina
 	)
 }
 
+// ListEnterprise 业务列表 - 团签
+func (s *businessService) ListEnterprise(req *model.BusinessListReq) *model.PaginationRes {
+	q, _ := s.listFilter(req.BusinessFilter)
+	return model.ParsePaginationResponse(
+		q,
+		req.PaginationReq,
+		func(item *ent.Business) (res model.BusinessListRes) {
+			return s.detailInfo(item)
+		},
+	)
+}
+
 func (s *businessService) detailInfo(item *ent.Business) model.BusinessListRes {
 	detail := model.BusinessListRes{
 		BusinessEmployeeListRes: s.basicDetail(item),
