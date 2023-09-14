@@ -417,6 +417,7 @@ func (s *stockService) RiderBusiness(tx *ent.Tx, req *model.StockBusinessReq) (s
 		}
 	}
 
+	// 判定电柜库存
 	if req.CabinetID != nil {
 		creator.SetCabinetID(*req.CabinetID)
 		if num < 0 && !s.CheckCabinet(*req.CabinetID, req.Model, int(math.Round(math.Abs(float64(num))))) {
@@ -425,8 +426,9 @@ func (s *stockService) RiderBusiness(tx *ent.Tx, req *model.StockBusinessReq) (s
 		}
 	}
 
-	// 团签
-	if req.EnterpriseID != nil && req.StationID != nil {
+	// 判定团签库存
+	// 未使用电柜激活的时候才需要判定团签站点库存
+	if req.CabinetID == nil && req.EnterpriseID != nil && req.StationID != nil {
 		creator.SetEnterpriseID(*req.EnterpriseID).SetStationID(*req.StationID)
 		// 判断团签非智能电池库存是否足够
 		if req.Battery == nil && num < 0 && !s.CheckStation(*req.StationID, req.Model, int(math.Round(math.Abs(float64(num))))) {

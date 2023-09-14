@@ -12322,43 +12322,43 @@
                 }
             }
         },
-      "/manager/v1/promotion/commission/plan/list/{:id}": {
-        "get": {
-          "consumes": [
-            "application/json"
-          ],
-          "produces": [
-            "application/json"
-          ],
-          "tags": [
-            "[PM]推广管理接口"
-          ],
-          "summary": "PM8010 返佣方案骑士卡列表",
-          "operationId": "ManagerPromotionCommissionPlanList",
-          "parameters": [
-            {
-              "type": "string",
-              "description": "管理员校验token",
-              "name": "X-Manager-Token",
-              "in": "header",
-              "required": true
-            },
-            {
-              "type": "integer",
-              "description": "会员id",
-              "name": "id",
-              "in": "path",
-              "required": true
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "OK",
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/promotion.CommissionPlanListRes"
-                }
+        "/manager/v1/promotion/commission/plan/list/{:id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[PM]推广管理接口"
+                ],
+                "summary": "PM8010 返佣方案骑士卡列表",
+                "operationId": "ManagerPromotionCommissionPlanList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "会员id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/promotion.CommissionPlanListRes"
+                            }
                         }
                     }
                 }
@@ -14154,40 +14154,40 @@
                 }
             }
         },
-      "/manager/v1/selection/commission/plan": {
-        "get": {
-          "consumes": [
-            "application/json"
-          ],
-          "produces": [
-            "application/json"
-          ],
-          "tags": [
-            "[M]管理接口"
-          ],
-          "summary": "MB017 返佣方案筛选骑士卡",
-          "operationId": "ManagerSelectionCommissionPlan",
-          "parameters": [
-            {
-              "type": "string",
-              "description": "关键字",
-              "name": "keyword",
-              "in": "query"
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "请求成功",
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/model.SelectOption"
+        "/manager/v1/selection/commission/plan": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MB017 返佣方案筛选骑士卡",
+                "operationId": "ManagerSelectionCommissionPlan",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "关键字",
+                        "name": "keyword",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.SelectOption"
+                            }
+                        }
+                    }
                 }
-              }
             }
-          }
-        }
-      },
+        },
         "/manager/v1/selection/coupon/template": {
             "get": {
                 "description": "筛选样式参考 \u003ca target=\"_blank\" href=\"https://element.eleme.cn/#/zh-CN/component/select#fen-zu\"\u003eElementUI-select-分组\u003c/a\u003e \u003ca target=\"_blank\" href=\"https://element.eleme.cn/#/zh-CN/component/select#zi-ding-yi-mo-ban\"\u003eElementUI-select-自定义模板\u003c/a\u003e",
@@ -16167,38 +16167,38 @@
                 }
             }
         },
-      "/manager/v1/user/profile": {
-        "get": {
-          "consumes": [
-            "application/json"
-          ],
-          "produces": [
-            "application/json"
-          ],
-          "tags": [
-            "[M]管理接口"
-          ],
-          "summary": "M1006 管理员信息",
-          "operationId": "ManagerProfile",
-          "parameters": [
-            {
-              "type": "string",
-              "description": "管理员校验token",
-              "name": "X-Manager-Token",
-              "in": "header",
-              "required": true
+        "/manager/v1/user/profile": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M1006 管理员信息",
+                "operationId": "ManagerProfile",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.ManagerSigninRes"
+                        }
+                    }
+                }
             }
-          ],
-          "responses": {
-            "200": {
-              "description": "OK",
-              "schema": {
-                "$ref": "#/definitions/model.ManagerSigninRes"
-              }
-            }
-          }
-        }
-      },
+        },
         "/manager/v1/user/signin": {
             "post": {
                 "description": "管理员登录",
@@ -16597,51 +16597,51 @@
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                      "name": "X-Promotion-Token",
-                      "in": "header",
-                      "required": true
+                        "name": "X-Promotion-Token",
+                        "in": "header",
+                        "required": true
                     },
-                  {
-                    "description": "查询请求",
-                    "name": "body",
-                    "in": "body",
-                    "required": true,
-                    "schema": {
-                      "$ref": "#/definitions/promotion.EarningsReq"
+                    {
+                        "description": "查询请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/promotion.EarningsReq"
+                        }
                     }
-                  }
                 ],
-              "responses": {
-                "200": {
-                  "description": "OK",
-                  "schema": {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/definitions/promotion.EarningsRes"
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/promotion.EarningsRes"
+                            }
+                        }
                     }
-                  }
                 }
-              }
             }
         },
-      "/promotion/v1/earnings/total": {
-        "get": {
-          "consumes": [
-            "application/json"
-          ],
-          "produces": [
-            "application/json"
-          ],
-          "tags": [
-            "[P]推广接口"
-          ],
-          "summary": "P3002 获取总收益",
-          "operationId": "PromotionEarningsTotal",
-          "parameters": [
-            {
-              "type": "string",
-              "description": "管理员校验token",
-              "name": "X-Promotion-Token",
+        "/promotion/v1/earnings/total": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[P]推广接口"
+                ],
+                "summary": "P3002 获取总收益",
+                "operationId": "PromotionEarningsTotal",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Promotion-Token",
                         "in": "header",
                         "required": true
                     },
@@ -16919,7 +16919,7 @@
                     {
                         "type": "string",
                         "description": "管理员校验token",
-                      "name": "X-Promotion-Token",
+                        "name": "X-Promotion-Token",
                         "in": "header",
                         "required": true
                     },
@@ -17345,91 +17345,91 @@
                 }
             }
         },
-      "/promotion/v1/withdrawal/total": {
-        "get": {
-          "consumes": [
-            "application/json"
-          ],
-          "produces": [
-            "application/json"
-          ],
-          "tags": [
-            "[P]推广接口"
-          ],
-          "summary": "P2004 查询总提现金额",
-          "operationId": "PromotionWithdrawalTotal",
-          "parameters": [
-            {
-              "type": "string",
-              "description": "会员校验token",
-              "name": "X-Promotion-Token",
-              "in": "header",
-              "required": true
-            },
-            {
-              "type": "string",
-              "description": "提现账户",
-              "name": "account",
-              "in": "query"
-            },
-            {
-              "type": "integer",
-              "description": "当前页, 从1开始, 默认1",
-              "name": "current",
-              "in": "query"
-            },
-            {
-              "type": "string",
-              "description": "结束日期",
-              "name": "end",
-              "in": "query"
-            },
-            {
-              "type": "integer",
-              "description": "会员id",
-              "name": "id",
-              "in": "query"
-            },
-            {
-              "type": "string",
-              "description": "关键字",
-              "name": "keywork",
-              "in": "query"
-            },
-            {
-              "type": "integer",
-              "description": "每页数据, 默认20",
-              "name": "pageSize",
-              "in": "query"
-            },
-            {
-              "type": "string",
-              "description": "开始日期",
-              "name": "start",
-              "in": "query"
-            },
-            {
-              "enum": [
-                0,
-                1,
-                2
-              ],
-              "type": "integer",
-              "description": "提现状态 0:待审核 1:成功 2:失败",
-              "name": "status",
-              "in": "query"
+        "/promotion/v1/withdrawal/total": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[P]推广接口"
+                ],
+                "summary": "P2004 查询总提现金额",
+                "operationId": "PromotionWithdrawalTotal",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "会员校验token",
+                        "name": "X-Promotion-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "提现账户",
+                        "name": "account",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束日期",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "会员id",
+                        "name": "id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "关键字",
+                        "name": "keywork",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始日期",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "description": "提现状态 0:待审核 1:成功 2:失败",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/promotion.TotalRes"
+                        }
+                    }
+                }
             }
-          ],
-          "responses": {
-            "200": {
-              "description": "OK",
-              "schema": {
-                "$ref": "#/definitions/promotion.TotalRes"
-              }
-            }
-          }
-        }
-      },
+        },
         "/rider/v1/assistance": {
             "get": {
                 "consumes": [
@@ -28198,13 +28198,13 @@
                     "description": "提成",
                     "type": "number"
                 },
-              "commissionId": {
-                "description": "佣金方案ID",
-                "type": "integer"
-              },
-              "commissionName": {
-                "description": "佣金方案名称",
-                "type": "string"
+                "commissionId": {
+                    "description": "佣金方案ID",
+                    "type": "integer"
+                },
+                "commissionName": {
+                    "description": "佣金方案名称",
+                    "type": "string"
                 },
                 "days": {
                     "type": "integer",
@@ -28459,10 +28459,10 @@
                     "description": "是否智能柜套餐",
                     "type": "boolean"
                 },
-              "model": {
-                "description": "电池型号",
-                "type": "string"
-              },
+                "model": {
+                    "description": "电池型号",
+                    "type": "string"
+                },
                 "name": {
                     "description": "名称",
                     "type": "string"
@@ -31964,7 +31964,7 @@
             "type": "object",
             "required": [
                 "name",
-              "planId",
+                "planId",
                 "rule",
                 "type"
             ],
@@ -31981,14 +31981,14 @@
                     "description": "方案名称",
                     "type": "string"
                 },
-              "planId": {
-                "description": "骑士卡方案ID",
-                "type": "array",
-                "uniqueItems": true,
-                "items": {
-                  "type": "integer"
-                }
-              },
+                "planId": {
+                    "description": "骑士卡方案ID",
+                    "type": "array",
+                    "uniqueItems": true,
+                    "items": {
+                        "type": "integer"
+                    }
+                },
                 "rule": {
                     "description": "返佣规则",
                     "allOf": [
@@ -32042,13 +32042,13 @@
                     "description": "方案名称",
                     "type": "string"
                 },
-              "plan": {
-                "description": "骑士卡方案",
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/promotion.CommissionPlan"
-                }
-              },
+                "plan": {
+                    "description": "骑士卡方案",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/promotion.CommissionPlan"
+                    }
+                },
                 "rule": {
                     "description": "返佣规则",
                     "allOf": [
@@ -32098,86 +32098,86 @@
                 "CommissionUnlimited"
             ]
         },
-      "promotion.CommissionOptionType": {
-        "type": "integer",
-        "enum": [
-          1,
-          2
-        ],
-        "x-enum-comments": {
-          "FixedAmount": "固定金额",
-          "Percentage": "比例"
+        "promotion.CommissionOptionType": {
+            "type": "integer",
+            "enum": [
+                1,
+                2
+            ],
+            "x-enum-comments": {
+                "FixedAmount": "固定金额",
+                "Percentage": "比例"
+            },
+            "x-enum-varnames": [
+                "FixedAmount",
+                "Percentage"
+            ]
         },
-        "x-enum-varnames": [
-          "FixedAmount",
-          "Percentage"
-        ]
-      },
-      "promotion.CommissionPlan": {
-        "type": "object",
-        "properties": {
-          "amount": {
-            "description": "骑士卡价格",
-            "type": "number"
-          },
-          "enable": {
-            "description": "是否禁用 true 启用 false 禁用",
-            "type": "boolean"
-          },
-          "end": {
-            "description": "有效期结束日期",
-            "type": "string"
-          },
-          "id": {
-            "description": "骑士卡ID",
-            "type": "integer"
-          },
-          "name": {
-            "description": "骑士卡名称",
-            "type": "string"
-          }
-        }
-      },
-      "promotion.CommissionPlanListRes": {
-        "type": "object",
-        "properties": {
-          "commissionId": {
-            "description": "返佣方案ID",
-            "type": "integer"
-          },
-          "createdAt": {
-            "description": "创建时间",
-            "type": "string"
-          },
-          "name": {
-            "description": "方案名称",
-            "type": "string"
-          },
-          "plan": {
-            "description": "骑士卡方案",
-            "type": "array",
-            "items": {
-              "$ref": "#/definitions/promotion.CommissionPlan"
+        "promotion.CommissionPlan": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "description": "骑士卡价格",
+                    "type": "number"
+                },
+                "enable": {
+                    "description": "是否禁用 true 启用 false 禁用",
+                    "type": "boolean"
+                },
+                "end": {
+                    "description": "有效期结束日期",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "骑士卡ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "骑士卡名称",
+                    "type": "string"
+                }
             }
-          },
-          "rule": {
-            "description": "返佣规则",
-            "allOf": [
-              {
-                "$ref": "#/definitions/promotion.CommissionRule"
-              }
-            ]
-          },
-          "type": {
-            "description": "返佣类型 0:默认通用返佣方案 1:通用返佣方案 2:为个人自定义返佣方案",
-            "allOf": [
-              {
-                "$ref": "#/definitions/promotion.CommissionType"
-              }
-            ]
-          }
-        }
-      },
+        },
+        "promotion.CommissionPlanListRes": {
+            "type": "object",
+            "properties": {
+                "commissionId": {
+                    "description": "返佣方案ID",
+                    "type": "integer"
+                },
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "方案名称",
+                    "type": "string"
+                },
+                "plan": {
+                    "description": "骑士卡方案",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/promotion.CommissionPlan"
+                    }
+                },
+                "rule": {
+                    "description": "返佣规则",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/promotion.CommissionRule"
+                        }
+                    ]
+                },
+                "type": {
+                    "description": "返佣类型 0:默认通用返佣方案 1:通用返佣方案 2:为个人自定义返佣方案",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/promotion.CommissionType"
+                        }
+                    ]
+                }
+            }
+        },
         "promotion.CommissionRule": {
             "type": "object",
             "properties": {
@@ -32216,16 +32216,16 @@
                     "description": "任务名称",
                     "type": "string"
                 },
-              "optionType": {
-                "description": "选项类型 1:固定金额 2:比例",
-                "allOf": [
-                  {
-                    "$ref": "#/definitions/promotion.CommissionOptionType"
-                  }
-                ]
-              },
-              "value": {
-                "description": "选项值",
+                "optionType": {
+                    "description": "选项类型 1:固定金额 2:比例",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/promotion.CommissionOptionType"
+                        }
+                    ]
+                },
+                "value": {
+                    "description": "选项值",
                     "type": "array",
                     "items": {
                         "type": "number"
@@ -32576,8 +32576,8 @@
         "promotion.MemberCommissionReq": {
             "type": "object",
             "required": [
-              "id",
-              "rule"
+                "id",
+                "rule"
             ],
             "properties": {
                 "desc": {
@@ -32587,14 +32587,14 @@
                 "id": {
                     "type": "integer"
                 },
-              "planId": {
-                "description": "骑士卡方案ID",
-                "type": "array",
-                "uniqueItems": true,
-                "items": {
-                  "type": "integer"
-                }
-              },
+                "planId": {
+                    "description": "骑士卡方案ID",
+                    "type": "array",
+                    "uniqueItems": true,
+                    "items": {
+                        "type": "integer"
+                    }
+                },
                 "rule": {
                     "description": "返佣规则",
                     "allOf": [
@@ -32905,9 +32905,9 @@
                     "description": "订阅状态 0:未激活 1:计费中 4:已退订",
                     "type": "integer"
                 },
-              "subscribeStatusName": {
-                "description": "订阅状态名称",
-                "type": "string"
+                "subscribeStatusName": {
+                    "description": "订阅状态名称",
+                    "type": "string"
                 }
             }
         },
@@ -33136,12 +33136,12 @@
                 }
             }
         },
-      "promotion.TotalRes": {
-        "type": "object",
-        "properties": {
-          "sum": {
-            "description": "金额",
-            "type": "number"
+        "promotion.TotalRes": {
+            "type": "object",
+            "properties": {
+                "sum": {
+                    "description": "金额",
+                    "type": "number"
                 }
             }
         },
@@ -33286,10 +33286,10 @@
                     "description": "提现金额",
                     "type": "number"
                 },
-              "applyAmount": {
-                "description": "申请提现金额",
-                "type": "number"
-              },
+                "applyAmount": {
+                    "description": "申请提现金额",
+                    "type": "number"
+                },
                 "applyTime": {
                     "description": "申请时间",
                     "type": "string"
@@ -33342,9 +33342,9 @@
                     "description": "状态 0:待审核 1:成功 2:失败",
                     "type": "integer"
                 },
-              "tax": {
-                "description": "提现税费",
-                "type": "number"
+                "tax": {
+                    "description": "提现税费",
+                    "type": "number"
                 }
             }
         },
