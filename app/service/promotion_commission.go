@@ -2,9 +2,9 @@ package service
 
 import (
 	"errors"
-	"fmt"
 	"time"
 
+	"github.com/auroraride/adapter/log"
 	"github.com/golang-module/carbon/v2"
 	"go.uber.org/zap"
 
@@ -426,7 +426,7 @@ func (s *promotionCommissionService) CommissionCalculation(tx *ent.Tx, req *prom
 		if err != nil {
 			zap.L().Error("保存收益失败", zap.Error(err))
 		}
-		zap.L().Info("返佣成功", zap.Any(fmt.Sprintf("收益记录 member_id: %d", v.MemberID), v), zap.Any(fmt.Sprintf("订单信息 order_id: %d", req.OrderID), req))
+		zap.L().Info("返佣成功 收益记录", log.JsonData(v), log.JsonData(req))
 	}
 	return
 }
@@ -464,7 +464,7 @@ func (s *promotionCommissionService) calculateFirstLevelCommission(mem *ent.Prom
 	// 判断使用哪种返佣方案 优先查询个人返佣方案 再查询通用返佣方案
 	commissions := s.getCommissionRule(mem, req.PlanID)
 	if commissions == nil {
-		zap.L().Error("会员返佣方案不存在", zap.Any("会员", mem), zap.Any("订单", req))
+		zap.L().Error("会员返佣方案不存在", log.JsonData(mem), log.JsonData(req))
 		return
 	}
 
@@ -509,7 +509,7 @@ func (s *promotionCommissionService) calculateSecondLevelCommission(mem *ent.Pro
 	if referred != nil && referred.ReferringMemberID != nil {
 		parentMember := referred.Edges.ReferringMember
 		if parentMember == nil {
-			zap.L().Error("上级会员不存在", zap.Any("会员", mem), zap.Any("订单", req))
+			zap.L().Error("上级会员不存在", log.JsonData(mem), log.JsonData(req))
 			return
 		}
 
@@ -561,28 +561,28 @@ func (s *promotionCommissionService) saveEarningsAndUpdateCommission(tx *ent.Tx,
 		// 查询是是否重复返佣
 		es, _ := ent.Database.PromotionEarnings.Query().Where(promotionearnings.OrderID(req.OrderID), promotionearnings.CommissionRuleKey(req.CommissionRuleKey.Value())).First(s.ctx)
 		if es != nil {
-			zap.L().Error("返佣失败,重复返佣", zap.Any("收益记录", req))
+			zap.L().Error("返佣失败,重复返佣", log.JsonData(req))
 			return
 		}
 
 		// 保存收益
 		err = NewPromotionEarningsService().Create(tx, &req)
 		if err != nil {
-			zap.L().Error("收益记录创建失败", zap.Error(err), zap.Any("收益记录", req))
+			zap.L().Error("收益记录创建失败", zap.Error(err), log.JsonData(req))
 			return
 		}
 
 		// 更新返佣总收益
 		_, err = tx.PromotionCommission.UpdateOneID(req.CommissionID).AddAmountSum(req.Amount).Save(s.ctx)
 		if err != nil {
-			zap.L().Error("返佣总收益更新失败", zap.Error(err), zap.Any("收益记录", req))
+			zap.L().Error("返佣总收益更新失败", zap.Error(err), log.JsonData(req))
 			return
 		}
 
 		// 更新会员未结算收益
 		_, err = tx.PromotionMember.UpdateOneID(req.MemberID).AddFrozen(req.Amount).Save(s.ctx)
 		if err != nil {
-			zap.L().Error("会员未结算收益更新失败", zap.Error(err), zap.Any("收益记录", req))
+			zap.L().Error("会员未结算收益更新失败", zap.Error(err), log.JsonData(req))
 			return
 		}
 	}
@@ -601,14 +601,14 @@ func (s *promotionCommissionService) saveEarningsAndUpdateCommission(tx *ent.Tx,
 		RiderID:     req.RiderID,
 	})
 	if err != nil {
-		zap.L().Error("会员成长值记录失败", zap.Error(err), zap.Any("积分记录", lt))
+		zap.L().Error("会员成长值记录失败", zap.Error(err), log.JsonData(lt))
 		return
 	}
 
 	// 更新会员成长值并升级
 	err = NewPromotionMemberService().UpgradeMemberLevel(tx, req.MemberID, lt.GrowthValue)
 	if err != nil {
-		zap.L().Error("会员成长值更新失败", zap.Error(err), zap.Any("积分记录", lt))
+		zap.L().Error("会员成长值更新失败", zap.Error(err), log.JsonData(lt))
 		return
 	}
 
@@ -621,7 +621,7 @@ func (s *promotionCommissionService) calculateCommission(actualAmount, value flo
 		dl := tools.NewDecimal()
 		value = dl.Mul(actualAmount, value/100)
 	}
-	zap.L().Info("计算返佣金额", zap.Any("计算参数", map[string]interface{}{
+	zap.L().Info("计算返佣金额", log.JsonData(map[string]interface{}{
 		"actualAmount": actualAmount,
 		"value":        value,
 		"optionType":   optionType,
@@ -855,7 +855,7 @@ func (s *promotionCommissionService) RiderActivateCommission(sub *ent.Subscribe)
 	// 查询订单是否支付,如果未支付不返佣
 	do, _ := ent.Database.Order.Query().Where(order.SubscribeID(sub.ID), order.Status(model.OrderStatusPaid)).First(s.ctx)
 	if do == nil {
-		zap.L().Error(fmt.Sprintf("激活成功获取返佣失败,订单不存在或未支付 subid:%d", sub.ID), zap.Any("order", do))
+		zap.L().Error("激活成功获取返佣失败,订单不存在或未支付", zap.Uint64("subid", sub.ID), log.JsonData(do))
 		return
 	}
 
@@ -868,7 +868,7 @@ func (s *promotionCommissionService) RiderActivateCommission(sub *ent.Subscribe)
 	}
 
 	if r == nil {
-		zap.L().Error(fmt.Sprintf("激活成功获取返佣失败,骑手不存在 subid:%d", sub.ID))
+		zap.L().Error("激活成功获取返佣失败,骑手不存在", zap.Uint64("subid", sub.ID))
 		return
 	}
 
