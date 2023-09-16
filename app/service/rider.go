@@ -214,12 +214,23 @@ func (s *riderService) FaceAuthResult(c *app.RiderContext, token string) (succes
 
 	status := model.PersonAuthenticated.Value()
 	success = data.Success
+
 	if !success {
 		status = model.PersonAuthenticationFailed.Value()
 	}
 
 	res := data.Result
 	detail := res.IdcardOcrResult
+
+	var remark string
+	// 判定是否年满18周岁
+	birthday := carbon.Parse(detail.Birthday).ToStdTime().AddDate(18, 0, 0)
+	// 未年满18岁认证标记为失败
+	if birthday.After(time.Now()) {
+		remark = "未年满18岁"
+		status = model.PersonAuthenticationFailed.Value()
+	}
+
 	vr := &model.FaceVerifyResult{
 		Birthday:       detail.Birthday,
 		IssueAuthority: detail.IssueAuthority,
@@ -265,6 +276,7 @@ func (s *riderService) FaceAuthResult(c *app.RiderContext, token string) (succes
 		UpdateNewValues().
 		SetBaiduLogID(data.LogId).
 		SetBaiduVerifyToken(token).
+		SetRemark(remark).
 		ID(context.Background())
 	if err != nil {
 		snag.Panic(err)
