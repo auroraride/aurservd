@@ -118,15 +118,14 @@ func (s *riderAgentService) detail(item *ent.Rider) model.AgentRider {
 			after = time.Now()
 		}
 
-		if before.IsZero() || before.Before(*sub.StartAt) {
-			before = *sub.StartAt
-		}
-
 		// 如果订阅有结束日期并且结束日期在请求日期之前
 		if sub.EndAt != nil && after.After(*sub.EndAt) {
 			after = *sub.EndAt
 		}
-		res.Used = tools.NewTime().UsedDays(after, before)
+
+		if !before.IsZero() {
+			res.Used = tools.NewTime().UsedDays(after, before)
+		}
 
 		switch sub.Status {
 		case model.SubscribeStatusInactive:
