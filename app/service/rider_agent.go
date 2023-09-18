@@ -117,6 +117,11 @@ func (s *riderAgentService) detail(item *ent.Rider) model.AgentRider {
 		if after.IsZero() {
 			after = time.Now()
 		}
+
+		if before.IsZero() || before.Before(*sub.StartAt) {
+			before = *sub.StartAt
+		}
+
 		// 如果订阅有结束日期并且结束日期在请求日期之前
 		if sub.EndAt != nil && after.After(*sub.EndAt) {
 			after = *sub.EndAt
