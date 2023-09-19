@@ -1039,19 +1039,37 @@ func (s *riderService) Delete(req *model.IDParamReq) {
 
 	if u.EnterpriseID != nil {
 		q.Where(
-			subscribe.StatusIn(model.SubscribeStatusUsing),
+			subscribe.StatusIn(model.SubscribeStatusUsing, model.SubscribeStatusOverdue),
 		)
 	} else {
 		q.Where(
 			subscribe.StatusNotIn(model.SubscribeStatusUnSubscribed, model.SubscribeStatusCanceled),
 		)
 	}
+
 	sub, _ := q.First(s.ctx)
 	if sub != nil {
-		snag.Panic("骑手当前有订阅")
+		snag.Panic("骑手当前有使用中的订阅")
 	}
+
 	_, err := s.orm.SoftDeleteOneID(req.ID).Save(s.ctx)
+
+	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
+		// 软删除用户
+		err = tx.Rider.SoftDeleteOne(u).Exec(s.ctx)
+		if err != nil {
+			return
+		}
+
+		// 软删除订阅
+		if sub.EnterpriseID != nil && sub.Status == model.SubscribeStatusInactive {
+			err = tx.Subscribe.DeleteOne(sub).Exec(s.ctx)
+		}
+		return
+	})
+
 	s.Signout(u)
+
 	if err != nil {
 		snag.Panic(err)
 	}
