@@ -135,6 +135,10 @@ func (s *couponService) Generate(req *model.CouponGenerateReq) (phones []string)
 
 	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
 		var as *ent.CouponAssembly
+		plans := make([]*model.Plan, 0)
+		if ct.Meta.Plans != nil {
+			plans = ct.Meta.Plans
+		}
 		as, err = tx.CouponAssembly.Create().
 			SetNumber(n).
 			SetAmount(req.Amount).
@@ -161,7 +165,7 @@ func (s *couponService) Generate(req *model.CouponGenerateReq) (phones []string)
 				SetDuration(ct.Meta.CouponDuration).
 				SetRemark(req.Remark).
 				SetAssembly(as).
-				SetPlans(ct.Meta.Plans).
+				SetPlans(plans).
 				SetCities(ct.Meta.Cities)
 			if toRider {
 				bulk[i].SetRiderID(ids[i])
@@ -351,11 +355,28 @@ func (s *couponService) RiderList(req *model.CouponRiderListReq) (res []model.Co
 		)
 	}
 
-	items, _ := q.All(s.ctx)
-	res = make([]model.CouponRider, len(items))
+	// 获取现有plan list
+	plans := NewPlan().QueryEffectiveList()
+	pm := make(map[uint64]*ent.Plan)
+	for _, p := range plans {
+		pm[p.ID] = p
+	}
 
-	for i, item := range items {
-		res[i] = s.RiderDetail(item)
+	items, _ := q.All(s.ctx)
+	res = make([]model.CouponRider, 0)
+
+	for _, item := range items {
+		contains := false
+		for _, p := range item.Plans {
+			if _, ok := pm[p.ID]; ok {
+				contains = true
+				break
+			}
+		}
+
+		if contains {
+			res = append(res, s.RiderDetail(item))
+		}
 	}
 
 	return

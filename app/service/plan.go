@@ -84,6 +84,19 @@ func (s *planService) QueryEffectiveWithID(id uint64) *ent.Plan {
 	return item
 }
 
+func (s *planService) QueryEffectiveList() ent.Plans {
+	today := carbon.Now().StartOfDay().ToStdTime()
+	items, _ := s.orm.QueryNotDeleted().
+		Where(
+			plan.Enable(true),
+			plan.StartLTE(today),
+			plan.EndGTE(today),
+		).
+		WithBrand().
+		All(s.ctx)
+	return items
+}
+
 // checkDuplicate 查询骑士卡是否冲突
 func (s *planService) checkDuplicate(brandID uint64, cities []uint64, models []string, start, end time.Time, params ...uint64) {
 	q := s.orm.QueryNotDeleted().
