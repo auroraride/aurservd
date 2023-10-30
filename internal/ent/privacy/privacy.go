@@ -1431,6 +1431,30 @@ func (f PromotionReferralsMutationRuleFunc) EvalMutation(ctx context.Context, m 
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.PromotionReferralsMutation", m)
 }
 
+// The PromotionReferralsProgressQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type PromotionReferralsProgressQueryRuleFunc func(context.Context, *ent.PromotionReferralsProgressQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f PromotionReferralsProgressQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.PromotionReferralsProgressQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.PromotionReferralsProgressQuery", q)
+}
+
+// The PromotionReferralsProgressMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type PromotionReferralsProgressMutationRuleFunc func(context.Context, *ent.PromotionReferralsProgressMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f PromotionReferralsProgressMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.PromotionReferralsProgressMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.PromotionReferralsProgressMutation", m)
+}
+
 // The PromotionSettingQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type PromotionSettingQueryRuleFunc func(context.Context, *ent.PromotionSettingQuery) error
@@ -1936,6 +1960,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.PromotionReferralsQuery:
 		return q.Filter(), nil
+	case *ent.PromotionReferralsProgressQuery:
+		return q.Filter(), nil
 	case *ent.PromotionSettingQuery:
 		return q.Filter(), nil
 	case *ent.PromotionWithdrawalQuery:
@@ -2082,6 +2108,8 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.PromotionPrivilegeMutation:
 		return m.Filter(), nil
 	case *ent.PromotionReferralsMutation:
+		return m.Filter(), nil
+	case *ent.PromotionReferralsProgressMutation:
 		return m.Filter(), nil
 	case *ent.PromotionSettingMutation:
 		return m.Filter(), nil

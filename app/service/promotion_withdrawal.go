@@ -249,10 +249,40 @@ func (s *promotionWithdrawalService) CalculateWithdrawalFee(mem *ent.PromotionMe
 }
 
 // Export 导出
-func (s *promotionWithdrawalService) Export() (string, string) {
-	items, _ := ent.Database.PromotionWithdrawal.Query().WithMember(func(q *ent.PromotionMemberQuery) {
+func (s *promotionWithdrawalService) Export(req *promotion.WithdrawalExportReq) (string, string) {
+	q := ent.Database.PromotionWithdrawal.Query().WithMember(func(q *ent.PromotionMemberQuery) {
 		q.WithPerson()
-	}).WithCards().Where(promotionwithdrawal.Status(promotion.WithdrawalStatusPending.Value())).All(s.ctx)
+	}).WithCards()
+
+	if req.Status != nil {
+		q.Where(promotionwithdrawal.Status(*req.Status))
+	}
+
+	if req.Start != nil && req.End != nil {
+		start := tools.NewTime().ParseDateStringX(*req.Start)
+		end := tools.NewTime().ParseNextDateStringX(*req.End)
+		q.Where(
+			promotionwithdrawal.CreatedAtGTE(start),
+			promotionwithdrawal.CreatedAtLTE(end),
+		)
+	}
+
+	if req.Account != nil {
+		q.Where(promotionwithdrawal.HasCardsWith(promotionbankcard.CardNoContains(*req.Account)))
+	}
+	if req.Status != nil {
+		q.Where(promotionwithdrawal.Status(*req.Status))
+	}
+	if req.Keyword != nil {
+		q.Where(promotionwithdrawal.HasMemberWith(
+			promotionmember.Or(
+				promotionmember.NameContainsFold(*req.Keyword),
+				promotionmember.PhoneContainsFold(*req.Keyword),
+			),
+		))
+	}
+
+	items, _ := q.All(s.ctx)
 	if len(items) == 0 {
 		snag.Panic("没有可导出的数据")
 	}

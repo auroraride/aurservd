@@ -61,6 +61,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/promotionperson"
 	"github.com/auroraride/aurservd/internal/ent/promotionprivilege"
 	"github.com/auroraride/aurservd/internal/ent/promotionreferrals"
+	"github.com/auroraride/aurservd/internal/ent/promotionreferralsprogress"
 	"github.com/auroraride/aurservd/internal/ent/promotionsetting"
 	"github.com/auroraride/aurservd/internal/ent/promotionwithdrawal"
 	"github.com/auroraride/aurservd/internal/ent/reserve"
@@ -1112,6 +1113,38 @@ func init() {
 	promotioncommissionDescAmountSum := promotioncommissionFields[4].Descriptor()
 	// promotioncommission.DefaultAmountSum holds the default value on creation for the amount_sum field.
 	promotioncommission.DefaultAmountSum = promotioncommissionDescAmountSum.Default.(float64)
+	// promotioncommissionDescFirstNewNum is the schema descriptor for first_new_num field.
+	promotioncommissionDescFirstNewNum := promotioncommissionFields[5].Descriptor()
+	// promotioncommission.DefaultFirstNewNum holds the default value on creation for the first_new_num field.
+	promotioncommission.DefaultFirstNewNum = promotioncommissionDescFirstNewNum.Default.(uint64)
+	// promotioncommissionDescSecondNewNum is the schema descriptor for second_new_num field.
+	promotioncommissionDescSecondNewNum := promotioncommissionFields[6].Descriptor()
+	// promotioncommission.DefaultSecondNewNum holds the default value on creation for the second_new_num field.
+	promotioncommission.DefaultSecondNewNum = promotioncommissionDescSecondNewNum.Default.(uint64)
+	// promotioncommissionDescFirstRenewNum is the schema descriptor for first_renew_num field.
+	promotioncommissionDescFirstRenewNum := promotioncommissionFields[7].Descriptor()
+	// promotioncommission.DefaultFirstRenewNum holds the default value on creation for the first_renew_num field.
+	promotioncommission.DefaultFirstRenewNum = promotioncommissionDescFirstRenewNum.Default.(uint64)
+	// promotioncommissionDescSecondRenewNum is the schema descriptor for second_renew_num field.
+	promotioncommissionDescSecondRenewNum := promotioncommissionFields[8].Descriptor()
+	// promotioncommission.DefaultSecondRenewNum holds the default value on creation for the second_renew_num field.
+	promotioncommission.DefaultSecondRenewNum = promotioncommissionDescSecondRenewNum.Default.(uint64)
+	// promotioncommissionDescFirstNewAmountSum is the schema descriptor for first_new_amount_sum field.
+	promotioncommissionDescFirstNewAmountSum := promotioncommissionFields[9].Descriptor()
+	// promotioncommission.DefaultFirstNewAmountSum holds the default value on creation for the first_new_amount_sum field.
+	promotioncommission.DefaultFirstNewAmountSum = promotioncommissionDescFirstNewAmountSum.Default.(float64)
+	// promotioncommissionDescSecondNewAmountSum is the schema descriptor for second_new_amount_sum field.
+	promotioncommissionDescSecondNewAmountSum := promotioncommissionFields[10].Descriptor()
+	// promotioncommission.DefaultSecondNewAmountSum holds the default value on creation for the second_new_amount_sum field.
+	promotioncommission.DefaultSecondNewAmountSum = promotioncommissionDescSecondNewAmountSum.Default.(float64)
+	// promotioncommissionDescFirstRenewAmountSum is the schema descriptor for first_renew_amount_sum field.
+	promotioncommissionDescFirstRenewAmountSum := promotioncommissionFields[11].Descriptor()
+	// promotioncommission.DefaultFirstRenewAmountSum holds the default value on creation for the first_renew_amount_sum field.
+	promotioncommission.DefaultFirstRenewAmountSum = promotioncommissionDescFirstRenewAmountSum.Default.(float64)
+	// promotioncommissionDescSecondRenewAmountSum is the schema descriptor for second_renew_amount_sum field.
+	promotioncommissionDescSecondRenewAmountSum := promotioncommissionFields[12].Descriptor()
+	// promotioncommission.DefaultSecondRenewAmountSum holds the default value on creation for the second_renew_amount_sum field.
+	promotioncommission.DefaultSecondRenewAmountSum = promotioncommissionDescSecondRenewAmountSum.Default.(float64)
 	promotioncommissionplanMixin := schema.PromotionCommissionPlan{}.Mixin()
 	promotioncommissionplanMixinFields0 := promotioncommissionplanMixin[0].Fields()
 	_ = promotioncommissionplanMixinFields0
@@ -1326,6 +1359,8 @@ func init() {
 	// promotionprivilege.DefaultValue holds the default value on creation for the value field.
 	promotionprivilege.DefaultValue = promotionprivilegeDescValue.Default.(uint64)
 	promotionreferralsMixin := schema.PromotionReferrals{}.Mixin()
+	promotionreferralsMixinHooks1 := promotionreferralsMixin[1].Hooks()
+	promotionreferrals.Hooks[0] = promotionreferralsMixinHooks1[0]
 	promotionreferralsMixinFields0 := promotionreferralsMixin[0].Fields()
 	_ = promotionreferralsMixinFields0
 	promotionreferralsFields := schema.PromotionReferrals{}.Fields()
@@ -1340,6 +1375,27 @@ func init() {
 	promotionreferrals.DefaultUpdatedAt = promotionreferralsDescUpdatedAt.Default.(func() time.Time)
 	// promotionreferrals.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	promotionreferrals.UpdateDefaultUpdatedAt = promotionreferralsDescUpdatedAt.UpdateDefault.(func() time.Time)
+	promotionreferralsprogressMixin := schema.PromotionReferralsProgress{}.Mixin()
+	promotionreferralsprogressMixinHooks1 := promotionreferralsprogressMixin[1].Hooks()
+	promotionreferralsprogress.Hooks[0] = promotionreferralsprogressMixinHooks1[0]
+	promotionreferralsprogressMixinFields0 := promotionreferralsprogressMixin[0].Fields()
+	_ = promotionreferralsprogressMixinFields0
+	promotionreferralsprogressFields := schema.PromotionReferralsProgress{}.Fields()
+	_ = promotionreferralsprogressFields
+	// promotionreferralsprogressDescCreatedAt is the schema descriptor for created_at field.
+	promotionreferralsprogressDescCreatedAt := promotionreferralsprogressMixinFields0[0].Descriptor()
+	// promotionreferralsprogress.DefaultCreatedAt holds the default value on creation for the created_at field.
+	promotionreferralsprogress.DefaultCreatedAt = promotionreferralsprogressDescCreatedAt.Default.(func() time.Time)
+	// promotionreferralsprogressDescUpdatedAt is the schema descriptor for updated_at field.
+	promotionreferralsprogressDescUpdatedAt := promotionreferralsprogressMixinFields0[1].Descriptor()
+	// promotionreferralsprogress.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	promotionreferralsprogress.DefaultUpdatedAt = promotionreferralsprogressDescUpdatedAt.Default.(func() time.Time)
+	// promotionreferralsprogress.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	promotionreferralsprogress.UpdateDefaultUpdatedAt = promotionreferralsprogressDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// promotionreferralsprogressDescStatus is the schema descriptor for status field.
+	promotionreferralsprogressDescStatus := promotionreferralsprogressFields[3].Descriptor()
+	// promotionreferralsprogress.DefaultStatus holds the default value on creation for the status field.
+	promotionreferralsprogress.DefaultStatus = promotionreferralsprogressDescStatus.Default.(uint8)
 	promotionsettingMixin := schema.PromotionSetting{}.Mixin()
 	promotionsettingMixinHooks1 := promotionsettingMixin[1].Hooks()
 	promotionsetting.Hooks[0] = promotionsettingMixinHooks1[0]

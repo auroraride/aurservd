@@ -1714,6 +1714,37 @@ func (prq *PromotionReferralsQuery) PaginationResult(req model.PaginationReq) mo
 	}
 }
 
+// Pagination returns pagination query builder for PromotionReferralsProgressQuery.
+func (prpq *PromotionReferralsProgressQuery) Pagination(req model.PaginationReq) *PromotionReferralsProgressQuery {
+	prpq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return prpq
+}
+
+// PaginationItems returns pagination query builder for PromotionReferralsProgressQuery.
+func (prpq *PromotionReferralsProgressQuery) PaginationItemsX(req model.PaginationReq) any {
+	return prpq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for PromotionReferralsProgressQuery.
+func (prpq *PromotionReferralsProgressQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	query := prpq.Clone()
+	query.order = nil
+	query.ctx.Limit = nil
+	query.ctx.Offset = nil
+	var result []struct {
+		Count int `json:"count"`
+	}
+	query.Modify(func(s *sql.Selector) {
+		s.SelectExpr(sql.Raw("COUNT(1) AS count"))
+	}).ScanX(context.Background(), &result)
+	total := result[0].Count
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for PromotionSettingQuery.
 func (psq *PromotionSettingQuery) Pagination(req model.PaginationReq) *PromotionSettingQuery {
 	psq.Offset(req.GetOffset()).Limit(req.GetLimit())

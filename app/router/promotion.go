@@ -54,4 +54,7 @@ func loadPromotionRoutes() {
 
 	// P7 设置
 	auth.GET("/setting/:key", papi.PromotionSetting.Setting) // 获取设置列表
+
+	// P8 会员关系
+	auth.GET("/referrals/progress", papi.ReferralsProgress.List) // 获取会员关系进度
 }

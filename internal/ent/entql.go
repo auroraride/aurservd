@@ -59,6 +59,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/promotionperson"
 	"github.com/auroraride/aurservd/internal/ent/promotionprivilege"
 	"github.com/auroraride/aurservd/internal/ent/promotionreferrals"
+	"github.com/auroraride/aurservd/internal/ent/promotionreferralsprogress"
 	"github.com/auroraride/aurservd/internal/ent/promotionsetting"
 	"github.com/auroraride/aurservd/internal/ent/promotionwithdrawal"
 	"github.com/auroraride/aurservd/internal/ent/reserve"
@@ -83,7 +84,7 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 70)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 71)}
 	graph.Nodes[0] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   agent.Table,
@@ -1321,22 +1322,30 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "PromotionCommission",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			promotioncommission.FieldCreatedAt:    {Type: field.TypeTime, Column: promotioncommission.FieldCreatedAt},
-			promotioncommission.FieldUpdatedAt:    {Type: field.TypeTime, Column: promotioncommission.FieldUpdatedAt},
-			promotioncommission.FieldDeletedAt:    {Type: field.TypeTime, Column: promotioncommission.FieldDeletedAt},
-			promotioncommission.FieldCreator:      {Type: field.TypeJSON, Column: promotioncommission.FieldCreator},
-			promotioncommission.FieldLastModifier: {Type: field.TypeJSON, Column: promotioncommission.FieldLastModifier},
-			promotioncommission.FieldRemark:       {Type: field.TypeString, Column: promotioncommission.FieldRemark},
-			promotioncommission.FieldMemberID:     {Type: field.TypeUint64, Column: promotioncommission.FieldMemberID},
-			promotioncommission.FieldType:         {Type: field.TypeUint8, Column: promotioncommission.FieldType},
-			promotioncommission.FieldName:         {Type: field.TypeString, Column: promotioncommission.FieldName},
-			promotioncommission.FieldRule:         {Type: field.TypeJSON, Column: promotioncommission.FieldRule},
-			promotioncommission.FieldEnable:       {Type: field.TypeBool, Column: promotioncommission.FieldEnable},
-			promotioncommission.FieldAmountSum:    {Type: field.TypeFloat64, Column: promotioncommission.FieldAmountSum},
-			promotioncommission.FieldDesc:         {Type: field.TypeString, Column: promotioncommission.FieldDesc},
-			promotioncommission.FieldHistoryID:    {Type: field.TypeJSON, Column: promotioncommission.FieldHistoryID},
-			promotioncommission.FieldStartAt:      {Type: field.TypeTime, Column: promotioncommission.FieldStartAt},
-			promotioncommission.FieldEndAt:        {Type: field.TypeTime, Column: promotioncommission.FieldEndAt},
+			promotioncommission.FieldCreatedAt:            {Type: field.TypeTime, Column: promotioncommission.FieldCreatedAt},
+			promotioncommission.FieldUpdatedAt:            {Type: field.TypeTime, Column: promotioncommission.FieldUpdatedAt},
+			promotioncommission.FieldDeletedAt:            {Type: field.TypeTime, Column: promotioncommission.FieldDeletedAt},
+			promotioncommission.FieldCreator:              {Type: field.TypeJSON, Column: promotioncommission.FieldCreator},
+			promotioncommission.FieldLastModifier:         {Type: field.TypeJSON, Column: promotioncommission.FieldLastModifier},
+			promotioncommission.FieldRemark:               {Type: field.TypeString, Column: promotioncommission.FieldRemark},
+			promotioncommission.FieldMemberID:             {Type: field.TypeUint64, Column: promotioncommission.FieldMemberID},
+			promotioncommission.FieldType:                 {Type: field.TypeUint8, Column: promotioncommission.FieldType},
+			promotioncommission.FieldName:                 {Type: field.TypeString, Column: promotioncommission.FieldName},
+			promotioncommission.FieldRule:                 {Type: field.TypeJSON, Column: promotioncommission.FieldRule},
+			promotioncommission.FieldEnable:               {Type: field.TypeBool, Column: promotioncommission.FieldEnable},
+			promotioncommission.FieldAmountSum:            {Type: field.TypeFloat64, Column: promotioncommission.FieldAmountSum},
+			promotioncommission.FieldFirstNewNum:          {Type: field.TypeUint64, Column: promotioncommission.FieldFirstNewNum},
+			promotioncommission.FieldSecondNewNum:         {Type: field.TypeUint64, Column: promotioncommission.FieldSecondNewNum},
+			promotioncommission.FieldFirstRenewNum:        {Type: field.TypeUint64, Column: promotioncommission.FieldFirstRenewNum},
+			promotioncommission.FieldSecondRenewNum:       {Type: field.TypeUint64, Column: promotioncommission.FieldSecondRenewNum},
+			promotioncommission.FieldFirstNewAmountSum:    {Type: field.TypeFloat64, Column: promotioncommission.FieldFirstNewAmountSum},
+			promotioncommission.FieldSecondNewAmountSum:   {Type: field.TypeFloat64, Column: promotioncommission.FieldSecondNewAmountSum},
+			promotioncommission.FieldFirstRenewAmountSum:  {Type: field.TypeFloat64, Column: promotioncommission.FieldFirstRenewAmountSum},
+			promotioncommission.FieldSecondRenewAmountSum: {Type: field.TypeFloat64, Column: promotioncommission.FieldSecondRenewAmountSum},
+			promotioncommission.FieldDesc:                 {Type: field.TypeString, Column: promotioncommission.FieldDesc},
+			promotioncommission.FieldHistoryID:            {Type: field.TypeJSON, Column: promotioncommission.FieldHistoryID},
+			promotioncommission.FieldStartAt:              {Type: field.TypeTime, Column: promotioncommission.FieldStartAt},
+			promotioncommission.FieldEndAt:                {Type: field.TypeTime, Column: promotioncommission.FieldEndAt},
 		},
 	}
 	graph.Nodes[45] = &sqlgraph.Node{
@@ -1556,6 +1565,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 		Fields: map[string]*sqlgraph.FieldSpec{
 			promotionreferrals.FieldCreatedAt:         {Type: field.TypeTime, Column: promotionreferrals.FieldCreatedAt},
 			promotionreferrals.FieldUpdatedAt:         {Type: field.TypeTime, Column: promotionreferrals.FieldUpdatedAt},
+			promotionreferrals.FieldCreator:           {Type: field.TypeJSON, Column: promotionreferrals.FieldCreator},
+			promotionreferrals.FieldLastModifier:      {Type: field.TypeJSON, Column: promotionreferrals.FieldLastModifier},
+			promotionreferrals.FieldRemark:            {Type: field.TypeString, Column: promotionreferrals.FieldRemark},
 			promotionreferrals.FieldRiderID:           {Type: field.TypeUint64, Column: promotionreferrals.FieldRiderID},
 			promotionreferrals.FieldSubscribeID:       {Type: field.TypeUint64, Column: promotionreferrals.FieldSubscribeID},
 			promotionreferrals.FieldReferringMemberID: {Type: field.TypeUint64, Column: promotionreferrals.FieldReferringMemberID},
@@ -1563,6 +1575,29 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 	}
 	graph.Nodes[55] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   promotionreferralsprogress.Table,
+			Columns: promotionreferralsprogress.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint64,
+				Column: promotionreferralsprogress.FieldID,
+			},
+		},
+		Type: "PromotionReferralsProgress",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			promotionreferralsprogress.FieldCreatedAt:         {Type: field.TypeTime, Column: promotionreferralsprogress.FieldCreatedAt},
+			promotionreferralsprogress.FieldUpdatedAt:         {Type: field.TypeTime, Column: promotionreferralsprogress.FieldUpdatedAt},
+			promotionreferralsprogress.FieldCreator:           {Type: field.TypeJSON, Column: promotionreferralsprogress.FieldCreator},
+			promotionreferralsprogress.FieldLastModifier:      {Type: field.TypeJSON, Column: promotionreferralsprogress.FieldLastModifier},
+			promotionreferralsprogress.FieldRemark:            {Type: field.TypeString, Column: promotionreferralsprogress.FieldRemark},
+			promotionreferralsprogress.FieldRiderID:           {Type: field.TypeUint64, Column: promotionreferralsprogress.FieldRiderID},
+			promotionreferralsprogress.FieldReferringMemberID: {Type: field.TypeUint64, Column: promotionreferralsprogress.FieldReferringMemberID},
+			promotionreferralsprogress.FieldReferredMemberID:  {Type: field.TypeUint64, Column: promotionreferralsprogress.FieldReferredMemberID},
+			promotionreferralsprogress.FieldName:              {Type: field.TypeString, Column: promotionreferralsprogress.FieldName},
+			promotionreferralsprogress.FieldStatus:            {Type: field.TypeUint8, Column: promotionreferralsprogress.FieldStatus},
+		},
+	}
+	graph.Nodes[56] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   promotionsetting.Table,
 			Columns: promotionsetting.Columns,
@@ -1583,7 +1618,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			promotionsetting.FieldKey:          {Type: field.TypeString, Column: promotionsetting.FieldKey},
 		},
 	}
-	graph.Nodes[56] = &sqlgraph.Node{
+	graph.Nodes[57] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   promotionwithdrawal.Table,
 			Columns: promotionwithdrawal.Columns,
@@ -1612,7 +1647,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			promotionwithdrawal.FieldReviewTime:   {Type: field.TypeTime, Column: promotionwithdrawal.FieldReviewTime},
 		},
 	}
-	graph.Nodes[57] = &sqlgraph.Node{
+	graph.Nodes[58] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   reserve.Table,
 			Columns: reserve.Columns,
@@ -1637,7 +1672,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			reserve.FieldType:         {Type: field.TypeString, Column: reserve.FieldType},
 		},
 	}
-	graph.Nodes[58] = &sqlgraph.Node{
+	graph.Nodes[59] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   rider.Table,
 			Columns: rider.Columns,
@@ -1674,7 +1709,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			rider.FieldJoinEnterpriseAt:  {Type: field.TypeTime, Column: rider.FieldJoinEnterpriseAt},
 		},
 	}
-	graph.Nodes[59] = &sqlgraph.Node{
+	graph.Nodes[60] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   riderfollowup.Table,
 			Columns: riderfollowup.Columns,
@@ -1695,7 +1730,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			riderfollowup.FieldRiderID:      {Type: field.TypeUint64, Column: riderfollowup.FieldRiderID},
 		},
 	}
-	graph.Nodes[60] = &sqlgraph.Node{
+	graph.Nodes[61] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   role.Table,
 			Columns: role.Columns,
@@ -1713,7 +1748,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			role.FieldCreatedAt:   {Type: field.TypeTime, Column: role.FieldCreatedAt},
 		},
 	}
-	graph.Nodes[61] = &sqlgraph.Node{
+	graph.Nodes[62] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   setting.Table,
 			Columns: setting.Columns,
@@ -1734,7 +1769,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			setting.FieldContent:      {Type: field.TypeString, Column: setting.FieldContent},
 		},
 	}
-	graph.Nodes[62] = &sqlgraph.Node{
+	graph.Nodes[63] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   stock.Table,
 			Columns: stock.Columns,
@@ -1771,7 +1806,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			stock.FieldMaterial:     {Type: field.TypeEnum, Column: stock.FieldMaterial},
 		},
 	}
-	graph.Nodes[63] = &sqlgraph.Node{
+	graph.Nodes[64] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   stocksummary.Table,
 			Columns: stocksummary.Columns,
@@ -1797,7 +1832,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			stocksummary.FieldMaterial:     {Type: field.TypeEnum, Column: stocksummary.FieldMaterial},
 		},
 	}
-	graph.Nodes[64] = &sqlgraph.Node{
+	graph.Nodes[65] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   store.Table,
 			Columns: store.Columns,
@@ -1827,7 +1862,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			store.FieldEbikeRepair:  {Type: field.TypeBool, Column: store.FieldEbikeRepair},
 		},
 	}
-	graph.Nodes[65] = &sqlgraph.Node{
+	graph.Nodes[66] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   subscribe.Table,
 			Columns: subscribe.Columns,
@@ -1879,7 +1914,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribe.FieldIntelligent:       {Type: field.TypeBool, Column: subscribe.FieldIntelligent},
 		},
 	}
-	graph.Nodes[66] = &sqlgraph.Node{
+	graph.Nodes[67] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   subscribealter.Table,
 			Columns: subscribealter.Columns,
@@ -1906,7 +1941,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribealter.FieldSubscribeEndAt: {Type: field.TypeTime, Column: subscribealter.FieldSubscribeEndAt},
 		},
 	}
-	graph.Nodes[67] = &sqlgraph.Node{
+	graph.Nodes[68] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   subscribepause.Table,
 			Columns: subscribepause.Columns,
@@ -1941,7 +1976,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribepause.FieldSuspendDays:   {Type: field.TypeInt, Column: subscribepause.FieldSuspendDays},
 		},
 	}
-	graph.Nodes[68] = &sqlgraph.Node{
+	graph.Nodes[69] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   subscribereminder.Table,
 			Columns: subscribereminder.Columns,
@@ -1968,7 +2003,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribereminder.FieldFeeFormula:  {Type: field.TypeString, Column: subscribereminder.FieldFeeFormula},
 		},
 	}
-	graph.Nodes[69] = &sqlgraph.Node{
+	graph.Nodes[70] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   subscribesuspend.Table,
 			Columns: subscribesuspend.Columns,
@@ -4512,6 +4547,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"PromotionReferrals",
 		"PromotionMember",
+	)
+	graph.MustAddE(
+		"rider",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   promotionreferralsprogress.RiderTable,
+			Columns: []string{promotionreferralsprogress.RiderColumn},
+			Bidi:    false,
+		},
+		"PromotionReferralsProgress",
+		"Rider",
 	)
 	graph.MustAddE(
 		"member",
@@ -13232,6 +13279,46 @@ func (f *PromotionCommissionFilter) WhereAmountSum(p entql.Float64P) {
 	f.Where(p.Field(promotioncommission.FieldAmountSum))
 }
 
+// WhereFirstNewNum applies the entql uint64 predicate on the first_new_num field.
+func (f *PromotionCommissionFilter) WhereFirstNewNum(p entql.Uint64P) {
+	f.Where(p.Field(promotioncommission.FieldFirstNewNum))
+}
+
+// WhereSecondNewNum applies the entql uint64 predicate on the second_new_num field.
+func (f *PromotionCommissionFilter) WhereSecondNewNum(p entql.Uint64P) {
+	f.Where(p.Field(promotioncommission.FieldSecondNewNum))
+}
+
+// WhereFirstRenewNum applies the entql uint64 predicate on the first_renew_num field.
+func (f *PromotionCommissionFilter) WhereFirstRenewNum(p entql.Uint64P) {
+	f.Where(p.Field(promotioncommission.FieldFirstRenewNum))
+}
+
+// WhereSecondRenewNum applies the entql uint64 predicate on the second_renew_num field.
+func (f *PromotionCommissionFilter) WhereSecondRenewNum(p entql.Uint64P) {
+	f.Where(p.Field(promotioncommission.FieldSecondRenewNum))
+}
+
+// WhereFirstNewAmountSum applies the entql float64 predicate on the first_new_amount_sum field.
+func (f *PromotionCommissionFilter) WhereFirstNewAmountSum(p entql.Float64P) {
+	f.Where(p.Field(promotioncommission.FieldFirstNewAmountSum))
+}
+
+// WhereSecondNewAmountSum applies the entql float64 predicate on the second_new_amount_sum field.
+func (f *PromotionCommissionFilter) WhereSecondNewAmountSum(p entql.Float64P) {
+	f.Where(p.Field(promotioncommission.FieldSecondNewAmountSum))
+}
+
+// WhereFirstRenewAmountSum applies the entql float64 predicate on the first_renew_amount_sum field.
+func (f *PromotionCommissionFilter) WhereFirstRenewAmountSum(p entql.Float64P) {
+	f.Where(p.Field(promotioncommission.FieldFirstRenewAmountSum))
+}
+
+// WhereSecondRenewAmountSum applies the entql float64 predicate on the second_renew_amount_sum field.
+func (f *PromotionCommissionFilter) WhereSecondRenewAmountSum(p entql.Float64P) {
+	f.Where(p.Field(promotioncommission.FieldSecondRenewAmountSum))
+}
+
 // WhereDesc applies the entql string predicate on the desc field.
 func (f *PromotionCommissionFilter) WhereDesc(p entql.StringP) {
 	f.Where(p.Field(promotioncommission.FieldDesc))
@@ -14433,6 +14520,21 @@ func (f *PromotionReferralsFilter) WhereUpdatedAt(p entql.TimeP) {
 	f.Where(p.Field(promotionreferrals.FieldUpdatedAt))
 }
 
+// WhereCreator applies the entql json.RawMessage predicate on the creator field.
+func (f *PromotionReferralsFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(promotionreferrals.FieldCreator))
+}
+
+// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
+func (f *PromotionReferralsFilter) WhereLastModifier(p entql.BytesP) {
+	f.Where(p.Field(promotionreferrals.FieldLastModifier))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *PromotionReferralsFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(promotionreferrals.FieldRemark))
+}
+
 // WhereRiderID applies the entql uint64 predicate on the rider_id field.
 func (f *PromotionReferralsFilter) WhereRiderID(p entql.Uint64P) {
 	f.Where(p.Field(promotionreferrals.FieldRiderID))
@@ -14510,6 +14612,110 @@ func (f *PromotionReferralsFilter) WhereHasReferredMemberWith(preds ...predicate
 }
 
 // addPredicate implements the predicateAdder interface.
+func (prpq *PromotionReferralsProgressQuery) addPredicate(pred func(s *sql.Selector)) {
+	prpq.predicates = append(prpq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the PromotionReferralsProgressQuery builder.
+func (prpq *PromotionReferralsProgressQuery) Filter() *PromotionReferralsProgressFilter {
+	return &PromotionReferralsProgressFilter{config: prpq.config, predicateAdder: prpq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *PromotionReferralsProgressMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the PromotionReferralsProgressMutation builder.
+func (m *PromotionReferralsProgressMutation) Filter() *PromotionReferralsProgressFilter {
+	return &PromotionReferralsProgressFilter{config: m.config, predicateAdder: m}
+}
+
+// PromotionReferralsProgressFilter provides a generic filtering capability at runtime for PromotionReferralsProgressQuery.
+type PromotionReferralsProgressFilter struct {
+	predicateAdder
+	config
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *PromotionReferralsProgressFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[55].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *PromotionReferralsProgressFilter) WhereID(p entql.Uint64P) {
+	f.Where(p.Field(promotionreferralsprogress.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *PromotionReferralsProgressFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(promotionreferralsprogress.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *PromotionReferralsProgressFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(promotionreferralsprogress.FieldUpdatedAt))
+}
+
+// WhereCreator applies the entql json.RawMessage predicate on the creator field.
+func (f *PromotionReferralsProgressFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(promotionreferralsprogress.FieldCreator))
+}
+
+// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
+func (f *PromotionReferralsProgressFilter) WhereLastModifier(p entql.BytesP) {
+	f.Where(p.Field(promotionreferralsprogress.FieldLastModifier))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *PromotionReferralsProgressFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(promotionreferralsprogress.FieldRemark))
+}
+
+// WhereRiderID applies the entql uint64 predicate on the rider_id field.
+func (f *PromotionReferralsProgressFilter) WhereRiderID(p entql.Uint64P) {
+	f.Where(p.Field(promotionreferralsprogress.FieldRiderID))
+}
+
+// WhereReferringMemberID applies the entql uint64 predicate on the referring_member_id field.
+func (f *PromotionReferralsProgressFilter) WhereReferringMemberID(p entql.Uint64P) {
+	f.Where(p.Field(promotionreferralsprogress.FieldReferringMemberID))
+}
+
+// WhereReferredMemberID applies the entql uint64 predicate on the referred_member_id field.
+func (f *PromotionReferralsProgressFilter) WhereReferredMemberID(p entql.Uint64P) {
+	f.Where(p.Field(promotionreferralsprogress.FieldReferredMemberID))
+}
+
+// WhereName applies the entql string predicate on the name field.
+func (f *PromotionReferralsProgressFilter) WhereName(p entql.StringP) {
+	f.Where(p.Field(promotionreferralsprogress.FieldName))
+}
+
+// WhereStatus applies the entql uint8 predicate on the status field.
+func (f *PromotionReferralsProgressFilter) WhereStatus(p entql.Uint8P) {
+	f.Where(p.Field(promotionreferralsprogress.FieldStatus))
+}
+
+// WhereHasRider applies a predicate to check if query has an edge rider.
+func (f *PromotionReferralsProgressFilter) WhereHasRider() {
+	f.Where(entql.HasEdge("rider"))
+}
+
+// WhereHasRiderWith applies a predicate to check if query has an edge rider with a given conditions (other predicates).
+func (f *PromotionReferralsProgressFilter) WhereHasRiderWith(preds ...predicate.Rider) {
+	f.Where(entql.HasEdgeWith("rider", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// addPredicate implements the predicateAdder interface.
 func (psq *PromotionSettingQuery) addPredicate(pred func(s *sql.Selector)) {
 	psq.predicates = append(psq.predicates, pred)
 }
@@ -14538,7 +14744,7 @@ type PromotionSettingFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *PromotionSettingFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[55].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[56].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -14618,7 +14824,7 @@ type PromotionWithdrawalFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *PromotionWithdrawalFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[56].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[57].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -14766,7 +14972,7 @@ type ReserveFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *ReserveFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[57].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[58].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -14922,7 +15128,7 @@ type RiderFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *RiderFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[58].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[59].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -15250,7 +15456,7 @@ type RiderFollowUpFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *RiderFollowUpFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[59].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[60].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -15358,7 +15564,7 @@ type RoleFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *RoleFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[60].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[61].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -15437,7 +15643,7 @@ type SettingFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SettingFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[61].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[62].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -15517,7 +15723,7 @@ type StockFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *StockFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[62].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[63].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -15887,7 +16093,7 @@ type StockSummaryFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *StockSummaryFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[63].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[64].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -16062,7 +16268,7 @@ type StoreFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *StoreFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[64].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[65].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -16271,7 +16477,7 @@ type SubscribeFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SubscribeFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[65].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[66].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -16744,7 +16950,7 @@ type SubscribeAlterFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SubscribeAlterFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[66].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[67].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -16924,7 +17130,7 @@ type SubscribePauseFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SubscribePauseFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[67].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[68].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -17214,7 +17420,7 @@ type SubscribeReminderFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SubscribeReminderFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[68].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[69].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -17366,7 +17572,7 @@ type SubscribeSuspendFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SubscribeSuspendFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[69].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[70].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})

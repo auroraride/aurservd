@@ -75,6 +75,7 @@ func (PromotionReferrals) Edges() []ent.Edge {
 func (PromotionReferrals) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		internal.TimeMixin{},
+		internal.Modifier{},
 
 		RiderMixin{Optional: true},
 		SubscribeMixin{Optional: true},

@@ -105,6 +105,10 @@ type WithdrawalFeeRes struct {
 	Taxable        float64 `json:"taxable"`        // 应缴税款
 }
 
+type WithdrawalExportReq struct {
+	WithdrawalFilter
+}
+
 type WithdrawalExport struct {
 	Remark string `json:"remark"`
 }

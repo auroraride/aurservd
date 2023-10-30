@@ -669,6 +669,18 @@ func (f PromotionReferralsFunc) Mutate(ctx context.Context, m ent.Mutation) (ent
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PromotionReferralsMutation", m)
 }
 
+// The PromotionReferralsProgressFunc type is an adapter to allow the use of ordinary
+// function as PromotionReferralsProgress mutator.
+type PromotionReferralsProgressFunc func(context.Context, *ent.PromotionReferralsProgressMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PromotionReferralsProgressFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.PromotionReferralsProgressMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PromotionReferralsProgressMutation", m)
+}
+
 // The PromotionSettingFunc type is an adapter to allow the use of ordinary
 // function as PromotionSetting mutator.
 type PromotionSettingFunc func(context.Context, *ent.PromotionSettingMutation) (ent.Value, error)

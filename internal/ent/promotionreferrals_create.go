@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
 	"github.com/auroraride/aurservd/internal/ent/promotionreferrals"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -49,6 +50,32 @@ func (prc *PromotionReferralsCreate) SetUpdatedAt(t time.Time) *PromotionReferra
 func (prc *PromotionReferralsCreate) SetNillableUpdatedAt(t *time.Time) *PromotionReferralsCreate {
 	if t != nil {
 		prc.SetUpdatedAt(*t)
+	}
+	return prc
+}
+
+// SetCreator sets the "creator" field.
+func (prc *PromotionReferralsCreate) SetCreator(m *model.Modifier) *PromotionReferralsCreate {
+	prc.mutation.SetCreator(m)
+	return prc
+}
+
+// SetLastModifier sets the "last_modifier" field.
+func (prc *PromotionReferralsCreate) SetLastModifier(m *model.Modifier) *PromotionReferralsCreate {
+	prc.mutation.SetLastModifier(m)
+	return prc
+}
+
+// SetRemark sets the "remark" field.
+func (prc *PromotionReferralsCreate) SetRemark(s string) *PromotionReferralsCreate {
+	prc.mutation.SetRemark(s)
+	return prc
+}
+
+// SetNillableRemark sets the "remark" field if the given value is not nil.
+func (prc *PromotionReferralsCreate) SetNillableRemark(s *string) *PromotionReferralsCreate {
+	if s != nil {
+		prc.SetRemark(*s)
 	}
 	return prc
 }
@@ -128,7 +155,9 @@ func (prc *PromotionReferralsCreate) Mutation() *PromotionReferralsMutation {
 
 // Save creates the PromotionReferrals in the database.
 func (prc *PromotionReferralsCreate) Save(ctx context.Context) (*PromotionReferrals, error) {
-	prc.defaults()
+	if err := prc.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, prc.sqlSave, prc.mutation, prc.hooks)
 }
 
@@ -155,15 +184,22 @@ func (prc *PromotionReferralsCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (prc *PromotionReferralsCreate) defaults() {
+func (prc *PromotionReferralsCreate) defaults() error {
 	if _, ok := prc.mutation.CreatedAt(); !ok {
+		if promotionreferrals.DefaultCreatedAt == nil {
+			return fmt.Errorf("ent: uninitialized promotionreferrals.DefaultCreatedAt (forgotten import ent/runtime?)")
+		}
 		v := promotionreferrals.DefaultCreatedAt()
 		prc.mutation.SetCreatedAt(v)
 	}
 	if _, ok := prc.mutation.UpdatedAt(); !ok {
+		if promotionreferrals.DefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized promotionreferrals.DefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := promotionreferrals.DefaultUpdatedAt()
 		prc.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -214,6 +250,18 @@ func (prc *PromotionReferralsCreate) createSpec() (*PromotionReferrals, *sqlgrap
 	if value, ok := prc.mutation.UpdatedAt(); ok {
 		_spec.SetField(promotionreferrals.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
+	}
+	if value, ok := prc.mutation.Creator(); ok {
+		_spec.SetField(promotionreferrals.FieldCreator, field.TypeJSON, value)
+		_node.Creator = value
+	}
+	if value, ok := prc.mutation.LastModifier(); ok {
+		_spec.SetField(promotionreferrals.FieldLastModifier, field.TypeJSON, value)
+		_node.LastModifier = value
+	}
+	if value, ok := prc.mutation.Remark(); ok {
+		_spec.SetField(promotionreferrals.FieldRemark, field.TypeString, value)
+		_node.Remark = value
 	}
 	if nodes := prc.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -347,6 +395,42 @@ func (u *PromotionReferralsUpsert) UpdateUpdatedAt() *PromotionReferralsUpsert {
 	return u
 }
 
+// SetLastModifier sets the "last_modifier" field.
+func (u *PromotionReferralsUpsert) SetLastModifier(v *model.Modifier) *PromotionReferralsUpsert {
+	u.Set(promotionreferrals.FieldLastModifier, v)
+	return u
+}
+
+// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
+func (u *PromotionReferralsUpsert) UpdateLastModifier() *PromotionReferralsUpsert {
+	u.SetExcluded(promotionreferrals.FieldLastModifier)
+	return u
+}
+
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (u *PromotionReferralsUpsert) ClearLastModifier() *PromotionReferralsUpsert {
+	u.SetNull(promotionreferrals.FieldLastModifier)
+	return u
+}
+
+// SetRemark sets the "remark" field.
+func (u *PromotionReferralsUpsert) SetRemark(v string) *PromotionReferralsUpsert {
+	u.Set(promotionreferrals.FieldRemark, v)
+	return u
+}
+
+// UpdateRemark sets the "remark" field to the value that was provided on create.
+func (u *PromotionReferralsUpsert) UpdateRemark() *PromotionReferralsUpsert {
+	u.SetExcluded(promotionreferrals.FieldRemark)
+	return u
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (u *PromotionReferralsUpsert) ClearRemark() *PromotionReferralsUpsert {
+	u.SetNull(promotionreferrals.FieldRemark)
+	return u
+}
+
 // SetRiderID sets the "rider_id" field.
 func (u *PromotionReferralsUpsert) SetRiderID(v uint64) *PromotionReferralsUpsert {
 	u.Set(promotionreferrals.FieldRiderID, v)
@@ -427,6 +511,9 @@ func (u *PromotionReferralsUpsertOne) UpdateNewValues() *PromotionReferralsUpser
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(promotionreferrals.FieldCreatedAt)
 		}
+		if _, exists := u.create.mutation.Creator(); exists {
+			s.SetIgnore(promotionreferrals.FieldCreator)
+		}
 	}))
 	return u
 }
@@ -469,6 +556,48 @@ func (u *PromotionReferralsUpsertOne) SetUpdatedAt(v time.Time) *PromotionReferr
 func (u *PromotionReferralsUpsertOne) UpdateUpdatedAt() *PromotionReferralsUpsertOne {
 	return u.Update(func(s *PromotionReferralsUpsert) {
 		s.UpdateUpdatedAt()
+	})
+}
+
+// SetLastModifier sets the "last_modifier" field.
+func (u *PromotionReferralsUpsertOne) SetLastModifier(v *model.Modifier) *PromotionReferralsUpsertOne {
+	return u.Update(func(s *PromotionReferralsUpsert) {
+		s.SetLastModifier(v)
+	})
+}
+
+// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
+func (u *PromotionReferralsUpsertOne) UpdateLastModifier() *PromotionReferralsUpsertOne {
+	return u.Update(func(s *PromotionReferralsUpsert) {
+		s.UpdateLastModifier()
+	})
+}
+
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (u *PromotionReferralsUpsertOne) ClearLastModifier() *PromotionReferralsUpsertOne {
+	return u.Update(func(s *PromotionReferralsUpsert) {
+		s.ClearLastModifier()
+	})
+}
+
+// SetRemark sets the "remark" field.
+func (u *PromotionReferralsUpsertOne) SetRemark(v string) *PromotionReferralsUpsertOne {
+	return u.Update(func(s *PromotionReferralsUpsert) {
+		s.SetRemark(v)
+	})
+}
+
+// UpdateRemark sets the "remark" field to the value that was provided on create.
+func (u *PromotionReferralsUpsertOne) UpdateRemark() *PromotionReferralsUpsertOne {
+	return u.Update(func(s *PromotionReferralsUpsert) {
+		s.UpdateRemark()
+	})
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (u *PromotionReferralsUpsertOne) ClearRemark() *PromotionReferralsUpsertOne {
+	return u.Update(func(s *PromotionReferralsUpsert) {
+		s.ClearRemark()
 	})
 }
 
@@ -724,6 +853,9 @@ func (u *PromotionReferralsUpsertBulk) UpdateNewValues() *PromotionReferralsUpse
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(promotionreferrals.FieldCreatedAt)
 			}
+			if _, exists := b.mutation.Creator(); exists {
+				s.SetIgnore(promotionreferrals.FieldCreator)
+			}
 		}
 	}))
 	return u
@@ -767,6 +899,48 @@ func (u *PromotionReferralsUpsertBulk) SetUpdatedAt(v time.Time) *PromotionRefer
 func (u *PromotionReferralsUpsertBulk) UpdateUpdatedAt() *PromotionReferralsUpsertBulk {
 	return u.Update(func(s *PromotionReferralsUpsert) {
 		s.UpdateUpdatedAt()
+	})
+}
+
+// SetLastModifier sets the "last_modifier" field.
+func (u *PromotionReferralsUpsertBulk) SetLastModifier(v *model.Modifier) *PromotionReferralsUpsertBulk {
+	return u.Update(func(s *PromotionReferralsUpsert) {
+		s.SetLastModifier(v)
+	})
+}
+
+// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
+func (u *PromotionReferralsUpsertBulk) UpdateLastModifier() *PromotionReferralsUpsertBulk {
+	return u.Update(func(s *PromotionReferralsUpsert) {
+		s.UpdateLastModifier()
+	})
+}
+
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (u *PromotionReferralsUpsertBulk) ClearLastModifier() *PromotionReferralsUpsertBulk {
+	return u.Update(func(s *PromotionReferralsUpsert) {
+		s.ClearLastModifier()
+	})
+}
+
+// SetRemark sets the "remark" field.
+func (u *PromotionReferralsUpsertBulk) SetRemark(v string) *PromotionReferralsUpsertBulk {
+	return u.Update(func(s *PromotionReferralsUpsert) {
+		s.SetRemark(v)
+	})
+}
+
+// UpdateRemark sets the "remark" field to the value that was provided on create.
+func (u *PromotionReferralsUpsertBulk) UpdateRemark() *PromotionReferralsUpsertBulk {
+	return u.Update(func(s *PromotionReferralsUpsert) {
+		s.UpdateRemark()
+	})
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (u *PromotionReferralsUpsertBulk) ClearRemark() *PromotionReferralsUpsertBulk {
+	return u.Update(func(s *PromotionReferralsUpsert) {
+		s.ClearRemark()
 	})
 }
 
