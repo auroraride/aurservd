@@ -331,7 +331,7 @@ func (s *contractService) Sign(req *model.ContractSignReq) model.ContractSignRes
 		// 创建 / 获取 签约个人账号
 		if accountId == "" {
 			accountId = s.esign.CreatePersonAccount(esign.PersonAccountReq{
-				ThirdPartyUserId: u.Phone,
+				ThirdPartyUserId: u.IDCardNumber,
 				Name:             p.Name,
 				IdType:           "CRED_PSN_CH_IDCARD",
 				IdNumber:         p.IDCardNumber,
