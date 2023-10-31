@@ -40,16 +40,15 @@ type Referrals struct {
 
 type ReferralsProgressReq struct {
 	model.PaginationReq
-	MemberId uint64           `json:"memberId" param:"member_id"` // 会员id
-	Status   *ReferralsStatus `json:"status" enums:"0,1,2" param:"status"`
-	Start    *string          `json:"start" param:"start"` // 开始时间
-	End      *string          `json:"end" param:"end"`     // 结束时间
+	Status *ReferralsStatus `json:"status" enums:"0,1,2" query:"status"`
+	Start  *string          `json:"start" query:"start"` // 开始时间
+	End    *string          `json:"end" query:"end"`     // 结束时间
 }
 
 type ReferralsProgressRes struct {
-	Name      string `json:"name"`      // 姓名
-	Phone     string `json:"phone"`     // 手机号
-	Status    string `json:"status"`    // 状态
-	CreatedAt string `json:"createdAt"` // 创建时间
-	Remark    string `json:"remark"`    // 备注
+	Name      string `json:"name"`       // 姓名
+	Phone     string `json:"phone"`      // 手机号
+	Status    string `json:"status"`     // 状态
+	CreatedAt string `json:"created_at"` // 创建时间
+	Remark    string `json:"remark"`     // 备注
 }

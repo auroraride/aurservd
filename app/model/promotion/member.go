@@ -209,7 +209,7 @@ type InviteType int64
 
 const (
 	MemberAllowBind           InviteType = 10000 // 允许绑定
-	MemberSignSuccess         InviteType = 10100 // 注册成功
+	MemberSignSuccess         InviteType = 10100 // 注册成功，绑定关系待实名后生效
 	MemberBindSuccess         InviteType = 10101 // 绑定成功
 	MemberSignSuccessWaitAuth InviteType = 10102 // 提交成功，绑定关系待实名后生效
 	MemberInviteFail          InviteType = 10200 // 已被邀请
@@ -226,7 +226,7 @@ func (i InviteType) Value() uint8 {
 func (i InviteType) String() string {
 	switch i {
 	case MemberSignSuccess:
-		return "注册成功"
+		return "注册成功,绑定关系待实名后生效"
 	case MemberBindSuccess:
 		return "绑定成功"
 	case MemberInviteFail:

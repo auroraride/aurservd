@@ -77,11 +77,12 @@ func (s *promotionMemberService) Signin(req *promotion.MemberSigninReq) *promoti
 	default:
 		snag.Panic("不支持的登录方式")
 	}
-	mem, _ := s.GetMemberByPhone(req.Phone)
 
 	// 获取骑手信息或创建骑手
-	ri := s.getRiderOrCreate(req.Phone)
-
+	ri, _ := ent.Database.Rider.QueryNotDeleted().Where(rider.Phone(req.Phone)).First(s.ctx)
+	if ri == nil {
+		ri = s.createRider(req.Phone)
+	}
 	// 查询是否有最新的订阅
 	var subscribeID *uint64
 	sub := NewSubscribe().Recent(ri.ID)
@@ -89,6 +90,7 @@ func (s *promotionMemberService) Signin(req *promotion.MemberSigninReq) *promoti
 		subscribeID = &sub.ID
 	}
 
+	mem, _ := s.GetMemberByPhone(req.Phone)
 	if mem == nil {
 		// 创建会员
 		mem = s.createMember(&promotion.MemberCreateReq{
@@ -124,24 +126,23 @@ func (s *promotionMemberService) Signup(req *promotion.MemberSigninReq) promotio
 
 	res := promotion.MemberInviteRes{}
 
-	//  获取会员信息
-	mem, _ := s.GetMemberByPhone(req.Phone)
-
-	// 获取骑手信息或创建骑手
-	ri := s.getRiderOrCreate(req.Phone)
-
+	ri, _ := ent.Database.Rider.QueryNotDeleted().Where(rider.Phone(req.Phone)).First(s.ctx)
+	// 用于判断是新注册还是已经注册过
+	isSignup := true
+	if ri == nil {
+		isSignup = false
+		// 获取骑手信息或创建骑手
+		ri = s.createRider(req.Phone)
+	}
 	// 查询是否有最新的订阅
 	var subscribeID *uint64
 	sub := NewSubscribe().Recent(ri.ID)
 	if sub != nil {
 		subscribeID = &sub.ID
 	}
-
-	// 用于判断是新注册还是已经注册过
-	isSignup := true
+	//  获取会员信息
+	mem, _ := s.GetMemberByPhone(req.Phone)
 	if mem == nil {
-		isSignup = false
-
 		// 创建会员
 		mem = s.createMember(&promotion.MemberCreateReq{
 			Phone:       req.Phone,
@@ -186,6 +187,7 @@ func (s *promotionMemberService) Signup(req *promotion.MemberSigninReq) promotio
 		referralsProgress.Remark = it.String()
 		// 邀请失败
 		NewPromotionReferralsService().MemberReferralsProgress(referralsProgress)
+		return res
 	}
 
 	// 判断骑手是否能被绑定
@@ -302,12 +304,9 @@ func (s *promotionMemberService) IsActivation(riderId []uint64) bool {
 }
 
 // 获取骑手信息或创建骑手
-func (s *promotionMemberService) getRiderOrCreate(phone string) *ent.Rider {
-	rinfo, _ := ent.Database.Rider.QueryNotDeleted().Where(rider.Phone(phone)).First(s.ctx)
-	if rinfo == nil {
-		// 创建骑手
-		rinfo = ent.Database.Rider.Create().SetPhone(phone).SaveX(s.ctx)
-	}
+func (s *promotionMemberService) createRider(phone string) *ent.Rider {
+	// 创建骑手
+	rinfo := ent.Database.Rider.Create().SetPhone(phone).SaveX(s.ctx)
 	return rinfo
 }
 
