@@ -125,7 +125,7 @@ func (s *promotionReferralsService) ReferralsProgressList(mem *ent.PromotionMemb
 		req.PaginationReq,
 		func(item *ent.PromotionReferralsProgress) (res promotion.ReferralsProgressRes) {
 			res = promotion.ReferralsProgressRes{
-				Status:    promotion.ReferralsStatus(*item.Status).String(),
+				Status:    *item.Status,
 				Remark:    item.Remark,
 				CreatedAt: item.CreatedAt.Format("2006-01-02 15:04:05"),
 			}

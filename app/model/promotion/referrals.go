@@ -48,7 +48,7 @@ type ReferralsProgressReq struct {
 type ReferralsProgressRes struct {
 	Name      string `json:"name"`       // 姓名
 	Phone     string `json:"phone"`      // 手机号
-	Status    string `json:"status"`     // 状态
+	Status    uint8  `json:"status"`     // 状态
 	CreatedAt string `json:"created_at"` // 创建时间
 	Remark    string `json:"remark"`     // 备注
 }
