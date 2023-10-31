@@ -191,14 +191,22 @@ func (s *promotionCommissionService) Detail(id uint64) promotion.CommissionDetai
 
 func (s *promotionCommissionService) detail(item *ent.PromotionCommission) promotion.CommissionDetail {
 	res := promotion.CommissionDetail{
-		ID:        item.ID,
-		Name:      item.Name,
-		Type:      promotion.CommissionType(*item.Type),
-		Rule:      *item.Rule,
-		Desc:      item.Desc,
-		Enable:    item.Enable,
-		CreatedAt: item.CreatedAt.Format(carbon.DateTimeLayout),
-		AmountSum: item.AmountSum,
+		ID:                   item.ID,
+		Name:                 item.Name,
+		Type:                 promotion.CommissionType(*item.Type),
+		Rule:                 *item.Rule,
+		Desc:                 item.Desc,
+		Enable:               item.Enable,
+		CreatedAt:            item.CreatedAt.Format(carbon.DateTimeLayout),
+		AmountSum:            item.AmountSum,
+		FistNewNumSum:        item.FirstNewNum,
+		FistNewAmountSum:     item.FirstNewAmountSum,
+		FistRenewNumSum:      item.FirstRenewNum,
+		FistRenewAmountSum:   item.FirstRenewAmountSum,
+		SecondNewNumSum:      item.SecondNewNum,
+		SecondNewAmountSum:   item.SecondNewAmountSum,
+		SecondRenewNumSum:    item.SecondRenewNum,
+		SecondRenewAmountSum: item.SecondRenewAmountSum,
 	}
 
 	if item.StartAt != nil {

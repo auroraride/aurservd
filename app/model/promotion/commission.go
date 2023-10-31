@@ -93,18 +93,27 @@ type CommissionCreateReq struct {
 
 // CommissionDetail 详情
 type CommissionDetail struct {
-	ID        uint64            `json:"id" `                // id
-	Name      string            `json:"name"`               // 方案名称
-	Rule      CommissionRule    `json:"rule" `              // 返佣规则
-	Type      CommissionType    `json:"type" `              // 返佣类型 0:默认全局返佣方案 1:通用返佣方案 2:为个人自定义返佣方案
-	MemberID  *uint64           `json:"memberId,omitempty"` // 会员id
-	Desc      *string           `json:"desc"`               // 返佣说明
-	Enable    bool              `json:"enable" `            // 启用状态 false:禁用 true:启用
-	AmountSum float64           `json:"amountSum"`          // 佣金总额
-	CreatedAt string            `json:"createdAt"`          // 创建时间
-	StartAt   string            `json:"startAt"`            // 开始时间
-	EndAt     string            `json:"endAt"`              // 结束时间
-	Plan      []*CommissionPlan `json:"plan"`               // 骑士卡方案
+	ID                   uint64            `json:"id" `                  // id
+	Name                 string            `json:"name"`                 // 方案名称
+	Rule                 CommissionRule    `json:"rule" `                // 返佣规则
+	Type                 CommissionType    `json:"type" `                // 返佣类型 0:默认全局返佣方案 1:通用返佣方案 2:为个人自定义返佣方案
+	MemberID             *uint64           `json:"memberId,omitempty"`   // 会员id
+	Desc                 *string           `json:"desc"`                 // 返佣说明
+	Enable               bool              `json:"enable" `              // 启用状态 false:禁用 true:启用
+	AmountSum            float64           `json:"amountSum"`            // 佣金总额
+	CreatedAt            string            `json:"createdAt"`            // 创建时间
+	StartAt              string            `json:"startAt"`              // 开始时间
+	EndAt                string            `json:"endAt"`                // 结束时间
+	Plan                 []*CommissionPlan `json:"plan"`                 // 骑士卡方案
+	FistNewNumSum        uint64            `json:"fistNewNumSum"`        // 一级团员新签人数
+	FistNewAmountSum     float64           `json:"fistNewAmountSum"`     // 一级团员新签金额
+	FistRenewNumSum      uint64            `json:"fistRenewNumSum"`      // 一级团员续费人数
+	FistRenewAmountSum   float64           `json:"fistRenewAmountSum"`   // 一级团员续费金额
+	SecondNewNumSum      uint64            `json:"secondNewNumSum"`      // 二级团员新签人数
+	SecondNewAmountSum   float64           `json:"secondNewAmountSum"`   // 二级团员新签金额
+	SecondRenewNumSum    uint64            `json:"secondRenewNumSum"`    // 二级团员续费人数
+	SecondRenewAmountSum float64           `json:"secondRenewAmountSum"` // 二级团员续费金额
+
 }
 
 // CommissionDeleteReq 删除会员返佣方案请求参数
