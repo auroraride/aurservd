@@ -123,9 +123,23 @@ func (prpu *PromotionReferralsProgressUpdate) SetReferredMemberID(u uint64) *Pro
 	return prpu
 }
 
+// SetNillableReferredMemberID sets the "referred_member_id" field if the given value is not nil.
+func (prpu *PromotionReferralsProgressUpdate) SetNillableReferredMemberID(u *uint64) *PromotionReferralsProgressUpdate {
+	if u != nil {
+		prpu.SetReferredMemberID(*u)
+	}
+	return prpu
+}
+
 // AddReferredMemberID adds u to the "referred_member_id" field.
 func (prpu *PromotionReferralsProgressUpdate) AddReferredMemberID(u int64) *PromotionReferralsProgressUpdate {
 	prpu.mutation.AddReferredMemberID(u)
+	return prpu
+}
+
+// ClearReferredMemberID clears the value of the "referred_member_id" field.
+func (prpu *PromotionReferralsProgressUpdate) ClearReferredMemberID() *PromotionReferralsProgressUpdate {
+	prpu.mutation.ClearReferredMemberID()
 	return prpu
 }
 
@@ -275,6 +289,9 @@ func (prpu *PromotionReferralsProgressUpdate) sqlSave(ctx context.Context) (n in
 	}
 	if value, ok := prpu.mutation.AddedReferredMemberID(); ok {
 		_spec.AddField(promotionreferralsprogress.FieldReferredMemberID, field.TypeUint64, value)
+	}
+	if prpu.mutation.ReferredMemberIDCleared() {
+		_spec.ClearField(promotionreferralsprogress.FieldReferredMemberID, field.TypeUint64)
 	}
 	if value, ok := prpu.mutation.Name(); ok {
 		_spec.SetField(promotionreferralsprogress.FieldName, field.TypeString, value)
@@ -431,9 +448,23 @@ func (prpuo *PromotionReferralsProgressUpdateOne) SetReferredMemberID(u uint64) 
 	return prpuo
 }
 
+// SetNillableReferredMemberID sets the "referred_member_id" field if the given value is not nil.
+func (prpuo *PromotionReferralsProgressUpdateOne) SetNillableReferredMemberID(u *uint64) *PromotionReferralsProgressUpdateOne {
+	if u != nil {
+		prpuo.SetReferredMemberID(*u)
+	}
+	return prpuo
+}
+
 // AddReferredMemberID adds u to the "referred_member_id" field.
 func (prpuo *PromotionReferralsProgressUpdateOne) AddReferredMemberID(u int64) *PromotionReferralsProgressUpdateOne {
 	prpuo.mutation.AddReferredMemberID(u)
+	return prpuo
+}
+
+// ClearReferredMemberID clears the value of the "referred_member_id" field.
+func (prpuo *PromotionReferralsProgressUpdateOne) ClearReferredMemberID() *PromotionReferralsProgressUpdateOne {
+	prpuo.mutation.ClearReferredMemberID()
 	return prpuo
 }
 
@@ -613,6 +644,9 @@ func (prpuo *PromotionReferralsProgressUpdateOne) sqlSave(ctx context.Context) (
 	}
 	if value, ok := prpuo.mutation.AddedReferredMemberID(); ok {
 		_spec.AddField(promotionreferralsprogress.FieldReferredMemberID, field.TypeUint64, value)
+	}
+	if prpuo.mutation.ReferredMemberIDCleared() {
+		_spec.ClearField(promotionreferralsprogress.FieldReferredMemberID, field.TypeUint64)
 	}
 	if value, ok := prpuo.mutation.Name(); ok {
 		_spec.SetField(promotionreferralsprogress.FieldName, field.TypeString, value)

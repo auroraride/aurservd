@@ -390,6 +390,16 @@ func ReferredMemberIDLTE(v uint64) predicate.PromotionReferralsProgress {
 	return predicate.PromotionReferralsProgress(sql.FieldLTE(FieldReferredMemberID, v))
 }
 
+// ReferredMemberIDIsNil applies the IsNil predicate on the "referred_member_id" field.
+func ReferredMemberIDIsNil() predicate.PromotionReferralsProgress {
+	return predicate.PromotionReferralsProgress(sql.FieldIsNull(FieldReferredMemberID))
+}
+
+// ReferredMemberIDNotNil applies the NotNil predicate on the "referred_member_id" field.
+func ReferredMemberIDNotNil() predicate.PromotionReferralsProgress {
+	return predicate.PromotionReferralsProgress(sql.FieldNotNull(FieldReferredMemberID))
+}
+
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.PromotionReferralsProgress {
 	return predicate.PromotionReferralsProgress(sql.FieldEQ(FieldName, v))

@@ -112,6 +112,14 @@ func (prpc *PromotionReferralsProgressCreate) SetReferredMemberID(u uint64) *Pro
 	return prpc
 }
 
+// SetNillableReferredMemberID sets the "referred_member_id" field if the given value is not nil.
+func (prpc *PromotionReferralsProgressCreate) SetNillableReferredMemberID(u *uint64) *PromotionReferralsProgressCreate {
+	if u != nil {
+		prpc.SetReferredMemberID(*u)
+	}
+	return prpc
+}
+
 // SetName sets the "name" field.
 func (prpc *PromotionReferralsProgressCreate) SetName(s string) *PromotionReferralsProgressCreate {
 	prpc.mutation.SetName(s)
@@ -211,9 +219,6 @@ func (prpc *PromotionReferralsProgressCreate) check() error {
 	if _, ok := prpc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "PromotionReferralsProgress.updated_at"`)}
 	}
-	if _, ok := prpc.mutation.ReferredMemberID(); !ok {
-		return &ValidationError{Name: "referred_member_id", err: errors.New(`ent: missing required field "PromotionReferralsProgress.referred_member_id"`)}
-	}
 	if _, ok := prpc.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "PromotionReferralsProgress.status"`)}
 	}
@@ -266,7 +271,7 @@ func (prpc *PromotionReferralsProgressCreate) createSpec() (*PromotionReferralsP
 	}
 	if value, ok := prpc.mutation.ReferringMemberID(); ok {
 		_spec.SetField(promotionreferralsprogress.FieldReferringMemberID, field.TypeUint64, value)
-		_node.ReferringMemberID = &value
+		_node.ReferringMemberID = value
 	}
 	if value, ok := prpc.mutation.ReferredMemberID(); ok {
 		_spec.SetField(promotionreferralsprogress.FieldReferredMemberID, field.TypeUint64, value)
@@ -454,6 +459,12 @@ func (u *PromotionReferralsProgressUpsert) UpdateReferredMemberID() *PromotionRe
 // AddReferredMemberID adds v to the "referred_member_id" field.
 func (u *PromotionReferralsProgressUpsert) AddReferredMemberID(v uint64) *PromotionReferralsProgressUpsert {
 	u.Add(promotionreferralsprogress.FieldReferredMemberID, v)
+	return u
+}
+
+// ClearReferredMemberID clears the value of the "referred_member_id" field.
+func (u *PromotionReferralsProgressUpsert) ClearReferredMemberID() *PromotionReferralsProgressUpsert {
+	u.SetNull(promotionreferralsprogress.FieldReferredMemberID)
 	return u
 }
 
@@ -664,6 +675,13 @@ func (u *PromotionReferralsProgressUpsertOne) AddReferredMemberID(v uint64) *Pro
 func (u *PromotionReferralsProgressUpsertOne) UpdateReferredMemberID() *PromotionReferralsProgressUpsertOne {
 	return u.Update(func(s *PromotionReferralsProgressUpsert) {
 		s.UpdateReferredMemberID()
+	})
+}
+
+// ClearReferredMemberID clears the value of the "referred_member_id" field.
+func (u *PromotionReferralsProgressUpsertOne) ClearReferredMemberID() *PromotionReferralsProgressUpsertOne {
+	return u.Update(func(s *PromotionReferralsProgressUpsert) {
+		s.ClearReferredMemberID()
 	})
 }
 
@@ -1042,6 +1060,13 @@ func (u *PromotionReferralsProgressUpsertBulk) AddReferredMemberID(v uint64) *Pr
 func (u *PromotionReferralsProgressUpsertBulk) UpdateReferredMemberID() *PromotionReferralsProgressUpsertBulk {
 	return u.Update(func(s *PromotionReferralsProgressUpsert) {
 		s.UpdateReferredMemberID()
+	})
+}
+
+// ClearReferredMemberID clears the value of the "referred_member_id" field.
+func (u *PromotionReferralsProgressUpsertBulk) ClearReferredMemberID() *PromotionReferralsProgressUpsertBulk {
+	return u.Update(func(s *PromotionReferralsProgressUpsert) {
+		s.ClearReferredMemberID()
 	})
 }
 

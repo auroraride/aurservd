@@ -33,7 +33,7 @@ type PromotionReferralsProgress struct {
 	// 骑手ID
 	RiderID *uint64 `json:"rider_id,omitempty"`
 	// 推广者id
-	ReferringMemberID *uint64 `json:"referring_member_id,omitempty"`
+	ReferringMemberID uint64 `json:"referring_member_id,omitempty"`
 	// 被推广者ID<骑手>
 	ReferredMemberID uint64 `json:"referred_member_id,omitempty"`
 	// 姓名
@@ -147,8 +147,7 @@ func (prp *PromotionReferralsProgress) assignValues(columns []string, values []a
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field referring_member_id", values[i])
 			} else if value.Valid {
-				prp.ReferringMemberID = new(uint64)
-				*prp.ReferringMemberID = uint64(value.Int64)
+				prp.ReferringMemberID = uint64(value.Int64)
 			}
 		case promotionreferralsprogress.FieldReferredMemberID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -230,10 +229,8 @@ func (prp *PromotionReferralsProgress) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	if v := prp.ReferringMemberID; v != nil {
-		builder.WriteString("referring_member_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
+	builder.WriteString("referring_member_id=")
+	builder.WriteString(fmt.Sprintf("%v", prp.ReferringMemberID))
 	builder.WriteString(", ")
 	builder.WriteString("referred_member_id=")
 	builder.WriteString(fmt.Sprintf("%v", prp.ReferredMemberID))

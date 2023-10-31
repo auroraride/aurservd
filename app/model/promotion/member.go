@@ -234,11 +234,11 @@ func (i InviteType) String() string {
 	case MemberActivationFail:
 		return "已被激活"
 	case MemberInviteSelfFail:
-		return "自己不能邀请自己"
+		return "不能邀请自己"
 	case MemberActivationOtherFail:
-		return "您有其他账号已被激活，本次邀请无效"
+		return "有其他账号已被激活，本次邀请无效"
 	case MemberInviteOtherFail:
-		return "您有其他账号已被邀请，本次邀请无效"
+		return "有其他账号已被邀请，本次邀请无效"
 	default:
 		return ""
 	}

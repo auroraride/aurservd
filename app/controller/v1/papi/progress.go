@@ -16,7 +16,7 @@ var ReferralsProgress = new(referralsProgress)
 // List
 // @ID           ReferralsProgressList
 // @Router       /promotion/v1/referrals/progress [GET]
-// @Summary      P8 推荐进度
+// @Summary      P8001 推荐进度
 // @Tags         [P]推广接口
 // @Accept       json
 // @Produce      json

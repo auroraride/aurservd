@@ -22,7 +22,6 @@ import (
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/logging"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/app/model/promotion"
 	"github.com/auroraride/aurservd/internal/ali"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/baidu"
@@ -36,8 +35,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
-	"github.com/auroraride/aurservd/internal/ent/promotionmember"
-	"github.com/auroraride/aurservd/internal/ent/promotionreferralsprogress"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/pkg/cache"
@@ -302,30 +299,8 @@ func (s *riderService) FaceAuthResult(c *app.RiderContext, token string) (succes
 		if err != nil {
 			snag.Panic(err)
 		}
-
-		// 推广小程序 判断骑手是否可以绑定
-		memId := ent.Database.PromotionMember.Query().Where(promotionmember.ID(ri.ID)).FirstIDX(s.ctx)
-		if memId != 0 {
-			referralsProgress := &promotion.Referrals{
-				ReferredMemberId: &memId,
-			}
-			if ir := NewPromotionMemberService().IsRiderCanBind(ri); ir != promotion.MemberAllowBind {
-				// 邀请失败
-				referralsProgress.Remark = ir.String()
-				referralsProgress.Status = promotion.ReferralsStatusFail
-			} else {
-				re := ent.Database.PromotionReferralsProgress.Query().Where(promotionreferralsprogress.ReferredMemberID(memId)).FirstX(s.ctx)
-				// 邀请成功
-				referralsProgress.Status = promotion.ReferralsStatusSuccess
-				// 绑定关系
-				NewPromotionReferralsService().CreateReferrals(&promotion.Referrals{
-					ReferringMemberId: re.ReferringMemberID,
-					ReferredMemberId:  &re.ReferredMemberID,
-					RiderID:           &ri.ID,
-				})
-			}
-			NewPromotionReferralsService().UpdatedReferralsStatus(referralsProgress)
-		}
+		// 如果骑手注册过推广小程序 判断是否需要绑定推荐关系
+		NewPromotionReferralsService().RiderBindReferrals(ri)
 	}
 
 	return success

@@ -17,7 +17,6 @@ import (
 
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/controller"
-	"github.com/auroraride/aurservd/app/middleware"
 	"github.com/auroraride/aurservd/app/request"
 	"github.com/auroraride/aurservd/assets"
 	"github.com/auroraride/aurservd/internal/ar"
@@ -104,7 +103,7 @@ func Run() {
 		//     CustomTimeFormat: "2006-01-02 15:04:05.00000",
 		// }),
 		// mw.Recover(),
-		middleware.Recover(),
+		// middleware.Recover(),
 		mw.CORSWithConfig(corsConfig),
 	)
 

@@ -4055,7 +4055,7 @@ var (
 		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
 		{Name: "referring_member_id", Type: field.TypeUint64, Nullable: true, Comment: "推广者id"},
-		{Name: "referred_member_id", Type: field.TypeUint64, Unique: true, Comment: "被推广者ID<骑手>"},
+		{Name: "referred_member_id", Type: field.TypeUint64, Nullable: true, Comment: "被推广者ID<骑手>"},
 		{Name: "name", Type: field.TypeString, Nullable: true, Comment: "姓名"},
 		{Name: "status", Type: field.TypeUint8, Comment: "状态  0: 邀请中 1:邀请成功 2:邀请失败", Default: 0},
 		{Name: "rider_id", Type: field.TypeUint64, Nullable: true, Comment: "骑手ID"},

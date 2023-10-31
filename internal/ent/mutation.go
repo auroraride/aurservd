@@ -81283,7 +81283,7 @@ func (m *PromotionReferralsProgressMutation) ReferringMemberID() (r uint64, exis
 // OldReferringMemberID returns the old "referring_member_id" field's value of the PromotionReferralsProgress entity.
 // If the PromotionReferralsProgress object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PromotionReferralsProgressMutation) OldReferringMemberID(ctx context.Context) (v *uint64, err error) {
+func (m *PromotionReferralsProgressMutation) OldReferringMemberID(ctx context.Context) (v uint64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldReferringMemberID is only allowed on UpdateOne operations")
 	}
@@ -81385,10 +81385,24 @@ func (m *PromotionReferralsProgressMutation) AddedReferredMemberID() (r int64, e
 	return *v, true
 }
 
+// ClearReferredMemberID clears the value of the "referred_member_id" field.
+func (m *PromotionReferralsProgressMutation) ClearReferredMemberID() {
+	m.referred_member_id = nil
+	m.addreferred_member_id = nil
+	m.clearedFields[promotionreferralsprogress.FieldReferredMemberID] = struct{}{}
+}
+
+// ReferredMemberIDCleared returns if the "referred_member_id" field was cleared in this mutation.
+func (m *PromotionReferralsProgressMutation) ReferredMemberIDCleared() bool {
+	_, ok := m.clearedFields[promotionreferralsprogress.FieldReferredMemberID]
+	return ok
+}
+
 // ResetReferredMemberID resets all changes to the "referred_member_id" field.
 func (m *PromotionReferralsProgressMutation) ResetReferredMemberID() {
 	m.referred_member_id = nil
 	m.addreferred_member_id = nil
+	delete(m.clearedFields, promotionreferralsprogress.FieldReferredMemberID)
 }
 
 // SetName sets the "name" field.
@@ -81807,6 +81821,9 @@ func (m *PromotionReferralsProgressMutation) ClearedFields() []string {
 	if m.FieldCleared(promotionreferralsprogress.FieldReferringMemberID) {
 		fields = append(fields, promotionreferralsprogress.FieldReferringMemberID)
 	}
+	if m.FieldCleared(promotionreferralsprogress.FieldReferredMemberID) {
+		fields = append(fields, promotionreferralsprogress.FieldReferredMemberID)
+	}
 	if m.FieldCleared(promotionreferralsprogress.FieldName) {
 		fields = append(fields, promotionreferralsprogress.FieldName)
 	}
@@ -81838,6 +81855,9 @@ func (m *PromotionReferralsProgressMutation) ClearField(name string) error {
 		return nil
 	case promotionreferralsprogress.FieldReferringMemberID:
 		m.ClearReferringMemberID()
+		return nil
+	case promotionreferralsprogress.FieldReferredMemberID:
+		m.ClearReferredMemberID()
 		return nil
 	case promotionreferralsprogress.FieldName:
 		m.ClearName()

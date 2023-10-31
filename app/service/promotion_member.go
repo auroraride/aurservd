@@ -157,16 +157,13 @@ func (s *promotionMemberService) Signup(req *promotion.MemberSigninReq) promotio
 		})
 	}
 
-	status := promotion.ReferralsStatusSuccess
-	remark := "邀请成功"
-
 	referralsProgress := &promotion.Referrals{
 		ReferringMemberId: req.ReferringMemberID,
 		ReferredMemberId:  &mem.ID,
 		Name:              req.Name,
 		RiderID:           &ri.ID,
-		Status:            status,
-		Remark:            remark,
+		Status:            promotion.ReferralsStatusSuccess,
+		Remark:            "邀请成功",
 	}
 	// 判断当前账号
 	var it promotion.InviteType
@@ -183,11 +180,13 @@ func (s *promotionMemberService) Signup(req *promotion.MemberSigninReq) promotio
 	if s.IsActivation([]uint64{mem.ID}) {
 		it = promotion.MemberActivationFail
 	}
-	res.InviteType = it
-	referralsProgress.Status = promotion.ReferralsStatusFail
-	referralsProgress.Remark = it.String()
-	// 邀请失败
-	NewPromotionReferralsService().MemberReferralsProgress(referralsProgress)
+	if it != 0 {
+		res.InviteType = it
+		referralsProgress.Status = promotion.ReferralsStatusFail
+		referralsProgress.Remark = it.String()
+		// 邀请失败
+		NewPromotionReferralsService().MemberReferralsProgress(referralsProgress)
+	}
 
 	// 判断骑手是否能被绑定
 	if ircb := s.IsRiderCanBind(ri); ircb != promotion.MemberAllowBind {

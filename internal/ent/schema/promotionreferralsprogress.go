@@ -59,8 +59,8 @@ func (PromotionReferralsProgress) Annotations() []schema.Annotation {
 // Fields of the PromotionReferralsProgress.
 func (PromotionReferralsProgress) Fields() []ent.Field {
 	return []ent.Field{
-		field.Uint64("referring_member_id").Optional().Nillable().Comment("推广者id"),
-		field.Uint64("referred_member_id").Unique().Comment("被推广者ID<骑手>"),
+		field.Uint64("referring_member_id").Optional().Comment("推广者id"),
+		field.Uint64("referred_member_id").Optional().Comment("被推广者ID<骑手>"),
 		field.String("name").Optional().Comment("姓名"),
 		field.Uint8("status").Nillable().Default(0).Comment("状态  0: 邀请中 1:邀请成功 2:邀请失败"),
 	}
