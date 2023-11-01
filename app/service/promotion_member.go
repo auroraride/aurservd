@@ -224,7 +224,7 @@ func (s *promotionMemberService) Signup(req *promotion.MemberSigninReq) promotio
 		res.InviteType = promotion.MemberSignSuccessWaitAuth
 	}
 	// 已经注册过的提示
-	if !isSignup {
+	if isSignup {
 		res.InviteType = promotion.MemberBindSuccess
 	}
 	return res
