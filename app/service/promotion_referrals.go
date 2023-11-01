@@ -71,7 +71,7 @@ func (s *promotionReferralsService) MemberReferralsProgress(req *promotion.Refer
 				promotionreferralsprogress.Status(promotion.ReferralsStatusInviting.Value()),
 			).
 				SetStatus(promotion.ReferralsStatusFail.Value()).
-				SetRemark("骑手已他人被邀请").
+				SetRemark("骑手已被他人邀请").
 				ExecX(s.ctx)
 			s.CreateReferralsProgress(req)
 		}
@@ -105,8 +105,18 @@ func (s *promotionReferralsService) UpdatedReferralsStatus(req *promotion.Referr
 
 // ReferralsProgressList 推荐关系进度列表查询
 func (s *promotionReferralsService) ReferralsProgressList(mem *ent.PromotionMember, req *promotion.ReferralsProgressReq) *model.PaginationRes {
-	q := ent.Database.PromotionReferralsProgress.Query().
-		Where(promotionreferralsprogress.ReferringMemberID(mem.ID))
+	q := ent.Database.PromotionReferralsProgress.Query()
+
+	if mem != nil {
+		q.Where(promotionreferralsprogress.ReferringMemberID(mem.ID))
+	}
+
+	if req.Keyword != nil {
+		q.Where(promotionreferralsprogress.Or(
+			promotionreferralsprogress.NameContains(*req.Keyword),
+			promotionreferralsprogress.HasRiderWith(rider.PhoneContains(*req.Keyword)),
+		))
+	}
 
 	if req.Start != nil && req.End != nil {
 		start := tools.NewTime().ParseDateStringX(*req.Start)
@@ -133,7 +143,7 @@ func (s *promotionReferralsService) ReferralsProgressList(mem *ent.PromotionMemb
 				res.Phone = NewPromotionMemberService().MaskSensitiveInfo(item.Edges.Rider.Phone, 3, 4)
 			}
 			name := item.Name
-			if item.Edges.Rider.Name != "" {
+			if item.Edges.Rider != nil && item.Edges.Rider.Name != "" {
 				name = item.Edges.Rider.Name
 			}
 			res.Name = NewPromotionMemberService().MaskName(name)

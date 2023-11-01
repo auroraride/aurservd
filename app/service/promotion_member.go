@@ -178,7 +178,7 @@ func (s *promotionMemberService) Signup(req *promotion.MemberSigninReq) promotio
 		it = promotion.MemberInviteFail
 	}
 
-	if s.IsActivation([]uint64{mem.ID}) {
+	if s.IsActivation([]uint64{ri.ID}) {
 		it = promotion.MemberActivationFail
 	}
 	if it != 0 {
@@ -213,20 +213,21 @@ func (s *promotionMemberService) Signup(req *promotion.MemberSigninReq) promotio
 	} else {
 		// 未实名不绑定关系
 		referralsProgress.Status = promotion.ReferralsStatusInviting
-		referralsProgress.Remark = "待用户实名后确认本次邀请是否生效"
+		referralsProgress.Remark = "待用户实名后判定邀请是否生效"
 	}
 	NewPromotionReferralsService().MemberReferralsProgress(referralsProgress)
 
-	// 注册成功提示
-	res.InviteType = promotion.MemberSignSuccess
-	// 没实名提示
-	if !s.IsRiderPerson(req.Phone) {
-		res.InviteType = promotion.MemberSignSuccessWaitAuth
-	}
-	// 已经注册过的提示
 	if isSignup {
-		res.InviteType = promotion.MemberBindSuccess
+		// 没实名提示
+		if !s.IsRiderPerson(req.Phone) {
+			res.InviteType = promotion.MemberSignSuccessWaitAuth
+			return res
+		}
+	} else {
+		res.InviteType = promotion.MemberSignSuccess
+		return res
 	}
+	res.InviteType = promotion.MemberBindSuccess
 	return res
 }
 
@@ -269,6 +270,7 @@ func (s *promotionMemberService) IsRiderCanBind(riderInfo *ent.Rider) (it promot
 			if v.Edges.Referred != nil && v.Edges.Referred.ReferringMemberID != nil {
 				// 判断是否已经被邀请
 				it = promotion.MemberInviteOtherFail
+				return
 			}
 		}
 

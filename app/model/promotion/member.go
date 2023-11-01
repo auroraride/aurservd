@@ -230,20 +230,22 @@ func (i InviteType) String() string {
 	case MemberBindSuccess:
 		return "绑定成功"
 	case MemberInviteFail:
-		return "已被邀请"
+		return "当前账号已被邀请，本次邀请无效"
 	case MemberActivationFail:
-		return "已被激活"
+		return "当前账号已被激活，本次邀请无效"
 	case MemberInviteSelfFail:
 		return "不能邀请自己"
 	case MemberActivationOtherFail:
-		return "有其他账号已被激活，本次邀请无效"
+		return "该用户其他账号已被激活，本次邀请无效"
 	case MemberInviteOtherFail:
-		return "有其他账号已被邀请，本次邀请无效"
+		return "该用户其他账号已被邀请，本次邀请无效"
+	case MemberSignSuccessWaitAuth:
+		return "提交成功，绑定关系待实名后生效"
 	default:
 		return ""
 	}
 }
 
 type MemberInviteRes struct {
-	InviteType InviteType `json:"inviteType" ` // 邀请类型 1:注册成功 2:绑定成功 3:已被邀请 4:已被激活
+	InviteType InviteType `json:"inviteType" `
 }

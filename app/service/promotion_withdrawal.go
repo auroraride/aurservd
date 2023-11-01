@@ -397,7 +397,7 @@ func (s *promotionWithdrawalService) ExportList(items []*ent.PromotionWithdrawal
 		row[0] = name + phone
 		row[1] = bank + account
 		if item.ReviewTime != nil {
-			row[9] = item.ReviewTime.Format(carbon.DateTimeLayout)
+			row[8] = item.ReviewTime.Format(carbon.DateTimeLayout)
 		}
 		rows = append(rows, row)
 	}

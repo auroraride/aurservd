@@ -40,9 +40,10 @@ type Referrals struct {
 
 type ReferralsProgressReq struct {
 	model.PaginationReq
-	Status *ReferralsStatus `json:"status" enums:"0,1,2" query:"status"`
-	Start  *string          `json:"start" query:"start"` // 开始时间
-	End    *string          `json:"end" query:"end"`     // 结束时间
+	Status  *ReferralsStatus `json:"status" enums:"0,1,2" query:"status"`
+	Start   *string          `json:"start" query:"start"`     // 开始时间
+	End     *string          `json:"end" query:"end"`         // 结束时间
+	Keyword *string          `json:"keyword" query:"keyword"` // 关键词
 }
 
 type ReferralsProgressRes struct {
