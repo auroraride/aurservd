@@ -45,6 +45,17 @@ const (
 func (w WithdrawalStatus) Value() uint8 {
 	return uint8(w)
 }
+func (w WithdrawalStatus) String() string {
+	switch w {
+	case WithdrawalStatusPending:
+		return "待审核"
+	case WithdrawalStatusSuccess:
+		return "成功"
+	case WithdrawalStatusFailed:
+		return "失败"
+	}
+	return ""
+}
 
 // WithdrawalListReq 提现列表请求
 type WithdrawalListReq struct {
