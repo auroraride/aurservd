@@ -1,6 +1,8 @@
 package service
 
 import (
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
 	"github.com/auroraride/aurservd/internal/ent/promotionreferralsprogress"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -104,7 +106,7 @@ func (s *promotionReferralsService) UpdatedReferralsStatus(req *promotion.Referr
 }
 
 // ReferralsProgressList 推荐关系进度列表查询
-func (s *promotionReferralsService) ReferralsProgressList(req *promotion.ReferralsProgressReq) *model.PaginationRes {
+func (s *promotionReferralsService) ReferralsProgressList(ctx echo.Context, req *promotion.ReferralsProgressReq) *model.PaginationRes {
 	q := ent.Database.PromotionReferralsProgress.Query()
 
 	if req.MemberID != nil {
@@ -113,7 +115,7 @@ func (s *promotionReferralsService) ReferralsProgressList(req *promotion.Referra
 
 	if req.Keyword != nil {
 		q.Where(promotionreferralsprogress.Or(
-			promotionreferralsprogress.NameContains(*req.Keyword),
+			promotionreferralsprogress.HasRiderWith(rider.NameContains(*req.Keyword)),
 			promotionreferralsprogress.HasRiderWith(rider.PhoneContains(*req.Keyword)),
 		))
 	}
@@ -139,14 +141,23 @@ func (s *promotionReferralsService) ReferralsProgressList(req *promotion.Referra
 				Remark:    item.Remark,
 				CreatedAt: item.CreatedAt.Format("2006-01-02 15:04:05"),
 			}
-			if item.Edges.Rider != nil {
-				res.Phone = NewPromotionMemberService().MaskSensitiveInfo(item.Edges.Rider.Phone, 3, 4)
-			}
+
 			name := item.Name
 			if item.Edges.Rider != nil && item.Edges.Rider.Name != "" {
 				name = item.Edges.Rider.Name
 			}
-			res.Name = NewPromotionMemberService().MaskName(name)
+
+			var phone string
+			if item.Edges.Rider != nil {
+				phone = item.Edges.Rider.Phone
+			}
+
+			if ctx.Path() != "/manager/v1/promotion/progress/list/:id" {
+				phone = NewPromotionMemberService().MaskSensitiveInfo(phone, 3, 4)
+				name = NewPromotionMemberService().MaskName(name)
+			}
+			res.Name = name
+			res.Phone = phone
 			return res
 		},
 	)

@@ -25,7 +25,7 @@ var ReferralsProgress = new(referralsProgress)
 // @Success      200  {object}  promotion.ReferralsProgressRes  "请求成功"
 func (*referralsProgress) List(c echo.Context) (err error) {
 	ctx, req := app.PromotionContextAndBinding[promotion.ReferralsProgressReq](c)
-	return ctx.SendResponse(service.NewPromotionReferralsService().ReferralsProgressList(&promotion.ReferralsProgressReq{
+	return ctx.SendResponse(service.NewPromotionReferralsService().ReferralsProgressList(ctx, &promotion.ReferralsProgressReq{
 		PaginationReq:           req.PaginationReq,
 		MemberID:                &ctx.Member.ID,
 		ReferralsProgressFilter: req.ReferralsProgressFilter,

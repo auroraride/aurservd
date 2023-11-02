@@ -265,6 +265,13 @@ func (s *promotionWithdrawalService) Export(req *promotion.WithdrawalExportReq) 
 			promotionwithdrawal.CreatedAtGTE(start),
 			promotionwithdrawal.CreatedAtLTE(end),
 		)
+	} else {
+		// 默认查询最近一个月的数据
+		q.Where(
+			promotionwithdrawal.CreatedAtGTE(carbon.Now().SubMonth().ToStdTime()),
+			promotionwithdrawal.CreatedAtLTE(carbon.Now().ToStdTime()),
+		)
+
 	}
 
 	if req.Account != nil {
