@@ -149,7 +149,20 @@ func (s *promotionEarningsService) Cancel(req *promotion.EarningsCancelReq) {
 		if com == nil {
 			snag.Panic("返佣不存在")
 		}
-		_, err = tx.PromotionCommission.UpdateOneID(earning.CommissionID).SetAmountSum(tools.NewDecimal().Sub(com.AmountSum, earning.Amount)).Save(s.ctx)
+
+		q := tx.PromotionCommission.UpdateOneID(earning.CommissionID).SetAmountSum(tools.NewDecimal().Sub(com.AmountSum, earning.Amount))
+
+		switch promotion.CommissionRuleKey(earning.CommissionRuleKey) {
+		case promotion.FirstLevelNewSubscribeKey:
+			q.AddFirstNewNum(-1).SetFirstNewAmountSum(tools.NewDecimal().Sub(com.FirstNewAmountSum, earning.Amount))
+		case promotion.SecondLevelNewSubscribeKey:
+			q.AddSecondNewNum(-1).SetSecondNewAmountSum(tools.NewDecimal().Sub(com.SecondNewAmountSum, earning.Amount))
+		case promotion.FirstLevelRenewalSubscribeKey:
+			q.AddFirstRenewNum(-1).SetFirstRenewAmountSum(tools.NewDecimal().Sub(com.FirstRenewAmountSum, earning.Amount))
+		case promotion.SecondLevelRenewalSubscribeKey:
+			q.AddSecondRenewNum(-1).SetSecondRenewAmountSum(tools.NewDecimal().Sub(com.SecondRenewAmountSum, earning.Amount))
+		}
+		_, err = q.Save(s.ctx)
 		if err != nil {
 			snag.Panic("更新返佣总收益失败")
 		}

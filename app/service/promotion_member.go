@@ -126,6 +126,10 @@ func (s *promotionMemberService) Signup(req *promotion.MemberSigninReq) promotio
 
 	res := promotion.MemberInviteRes{}
 
+	if req.ReferringMemberID != nil && !ent.Database.PromotionMember.Query().Where(promotionmember.ID(*req.ReferringMemberID)).ExistX(s.ctx) {
+		snag.Panic("推荐人不存在")
+	}
+
 	ri, _ := ent.Database.Rider.QueryNotDeleted().Where(rider.Phone(req.Phone)).First(s.ctx)
 	// 用于判断是新注册还是已经注册过
 	isSignup := true
