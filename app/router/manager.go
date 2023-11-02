@@ -318,6 +318,6 @@ func loadManagerRoutes() {
 	g.PUT("/promotion/setting/:key", mapi.PromotionSetting.Update)  // 修改会员设置
 
 	// PMA 推广关系
-	g.GET("/promotion/progress/list", mapi.PromotionReferrals.ProgressList) // 推广关系列表
+	g.GET("/promotion/progress/list/:id", mapi.PromotionReferrals.ProgressList) // 推广关系列表
 
 }

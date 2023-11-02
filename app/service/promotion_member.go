@@ -166,36 +166,21 @@ func (s *promotionMemberService) Signup(req *promotion.MemberSigninReq) promotio
 		Status:            promotion.ReferralsStatusSuccess,
 		Remark:            "邀请成功",
 	}
+
 	// 判断当前账号
-	var it promotion.InviteType
-	if mem.ID == *req.ReferringMemberID {
-		// 判断是否绑定自己
-		it = promotion.MemberInviteSelfFail
-	}
-
-	if mem.Edges.Referred != nil && mem.Edges.Referred.ReferringMemberID != nil {
-		// 判断是否已经被邀请
-		it = promotion.MemberInviteFail
-	}
-
-	if s.IsActivation([]uint64{ri.ID}) {
-		it = promotion.MemberActivationFail
-	}
-	if it != 0 {
+	if it := s.SelfCanBeInvited(mem, ri, req); it != promotion.MemberAllowBind {
 		res.InviteType = it
 		referralsProgress.Status = promotion.ReferralsStatusFail
 		referralsProgress.Remark = it.String()
-		// 邀请失败
 		NewPromotionReferralsService().MemberReferralsProgress(referralsProgress)
 		return res
 	}
 
-	// 判断骑手是否能被绑定
+	// 判断名下所有是否能被绑定
 	if ircb := s.IsRiderCanBind(ri); ircb != promotion.MemberAllowBind {
 		res.InviteType = ircb
 		referralsProgress.Status = promotion.ReferralsStatusFail
 		referralsProgress.Remark = ircb.String()
-		// 邀请失败
 		NewPromotionReferralsService().MemberReferralsProgress(referralsProgress)
 		return res
 	}
@@ -280,6 +265,27 @@ func (s *promotionMemberService) IsRiderCanBind(riderInfo *ent.Rider) (it promot
 		}
 	}
 
+	return it
+}
+
+func (s *promotionMemberService) SelfCanBeInvited(mem *ent.PromotionMember, ri *ent.Rider, req *promotion.MemberSigninReq) (it promotion.InviteType) {
+	it = promotion.MemberAllowBind
+	if mem.ID == *req.ReferringMemberID {
+		// 判断是否绑定自己
+		it = promotion.MemberInviteSelfFail
+		return
+	}
+
+	if mem.Edges.Referred != nil && mem.Edges.Referred.ReferringMemberID != nil {
+		// 判断是否已经被邀请
+		it = promotion.MemberInviteFail
+		return
+	}
+
+	if s.IsActivation([]uint64{ri.ID}) {
+		it = promotion.MemberActivationFail
+		return
+	}
 	return it
 }
 

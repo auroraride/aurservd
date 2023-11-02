@@ -25,5 +25,5 @@ var PromotionReferrals = new(promotionReferrals)
 // @Success      200  {object}  []promotion.ReferralsProgressRes
 func (r *promotionReferrals) ProgressList(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[promotion.ReferralsProgressReq](c)
-	return ctx.SendResponse(service.NewPromotionReferralsService().ReferralsProgressList(nil, req))
+	return ctx.SendResponse(service.NewPromotionReferralsService().ReferralsProgressList(req))
 }

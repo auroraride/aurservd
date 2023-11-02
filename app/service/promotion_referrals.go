@@ -104,11 +104,11 @@ func (s *promotionReferralsService) UpdatedReferralsStatus(req *promotion.Referr
 }
 
 // ReferralsProgressList 推荐关系进度列表查询
-func (s *promotionReferralsService) ReferralsProgressList(mem *ent.PromotionMember, req *promotion.ReferralsProgressReq) *model.PaginationRes {
+func (s *promotionReferralsService) ReferralsProgressList(req *promotion.ReferralsProgressReq) *model.PaginationRes {
 	q := ent.Database.PromotionReferralsProgress.Query()
 
-	if mem != nil {
-		q.Where(promotionreferralsprogress.ReferringMemberID(mem.ID))
+	if req.MemberID != nil {
+		q.Where(promotionreferralsprogress.ReferringMemberID(*req.MemberID))
 	}
 
 	if req.Keyword != nil {
