@@ -163,8 +163,8 @@ func (s *promotionMemberService) Signup(req *promotion.MemberSigninReq) promotio
 	}
 
 	referralsProgress := &promotion.Referrals{
-		ReferringMemberId: req.ReferringMemberID,
-		ReferredMemberId:  &mem.ID,
+		ReferringMemberID: req.ReferringMemberID,
+		ReferredMemberID:  &mem.ID,
 		Name:              req.Name,
 		RiderID:           &ri.ID,
 		Status:            promotion.ReferralsStatusSuccess,
@@ -193,8 +193,8 @@ func (s *promotionMemberService) Signup(req *promotion.MemberSigninReq) promotio
 	if s.IsRiderPerson(req.Phone) {
 		// 已经实名的 直接记录推荐关系 并且将推荐关系状态改为已激活
 		NewPromotionReferralsService().CreateReferrals(&promotion.Referrals{
-			ReferringMemberId: req.ReferringMemberID,
-			ReferredMemberId:  &mem.ID,
+			ReferringMemberID: req.ReferringMemberID,
+			ReferredMemberID:  &mem.ID,
 			RiderID:           &ri.ID,
 		})
 		referralsProgress.Status = promotion.ReferralsStatusSuccess

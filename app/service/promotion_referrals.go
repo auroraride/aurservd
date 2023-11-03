@@ -25,24 +25,24 @@ func NewPromotionReferralsService() *promotionReferralsService {
 
 // CreateReferrals 处理推荐关系
 func (s *promotionReferralsService) CreateReferrals(req *promotion.Referrals) {
-	if req.ReferringMemberId != nil {
+	if req.ReferringMemberID != nil {
 		// 获取推荐会员信息
-		pinfo, _ := NewPromotionMemberService().GetMemberById(*req.ReferringMemberId)
+		pinfo, _ := NewPromotionMemberService().GetMemberById(*req.ReferringMemberID)
 		if pinfo == nil {
 			// 上级会员不存在，设置上级会员为nil
-			req.ReferringMemberId = nil
+			req.ReferringMemberID = nil
 		}
 	}
 
 	// 如果推荐人是自己，设置推荐人为nil
-	if req.ReferringMemberId != nil && req.ReferringMemberId == req.ReferredMemberId {
-		req.ReferringMemberId = nil
+	if req.ReferringMemberID != nil && req.ReferringMemberID == req.ReferredMemberID {
+		req.ReferringMemberID = nil
 	}
 
 	// 创建推荐关系
 	NewPromotionReferralsService().MemberReferrals(&promotion.Referrals{
-		ReferringMemberId: req.ReferringMemberId,
-		ReferredMemberId:  req.ReferredMemberId,
+		ReferringMemberID: req.ReferringMemberID,
+		ReferredMemberID:  req.ReferredMemberID,
 		RiderID:           req.RiderID,
 	})
 }
@@ -50,8 +50,8 @@ func (s *promotionReferralsService) CreateReferrals(req *promotion.Referrals) {
 // MemberReferrals 记录会员推荐关系
 func (s *promotionReferralsService) MemberReferrals(req *promotion.Referrals) {
 	ent.Database.PromotionReferrals.Create().
-		SetNillableReferringMemberID(req.ReferringMemberId).
-		SetReferredMemberID(*req.ReferredMemberId).
+		SetNillableReferringMemberID(req.ReferringMemberID).
+		SetReferredMemberID(*req.ReferredMemberID).
 		SetNillableRiderID(req.RiderID).
 		ExecX(s.ctx)
 }
@@ -59,17 +59,17 @@ func (s *promotionReferralsService) MemberReferrals(req *promotion.Referrals) {
 // MemberReferralsProgress 记录会员关系进度
 func (s *promotionReferralsService) MemberReferralsProgress(req *promotion.Referrals) {
 	rp, _ := ent.Database.PromotionReferralsProgress.Query().Where(
-		promotionreferralsprogress.ReferredMemberID(*req.ReferredMemberId),
+		promotionreferralsprogress.ReferredMemberID(*req.ReferredMemberID),
 		// 这里不用查询已被绑定的状态 因为已被绑定的状态不会再次进入这个方法
 		promotionreferralsprogress.Status(promotion.ReferralsStatusInviting.Value()),
 	).First(s.ctx)
 
 	if rp != nil {
 		// 如果骑手重复绑定同一个邀请人 不重新记录
-		if rp.ReferringMemberID != *req.ReferringMemberId {
+		if rp.ReferringMemberID != *req.ReferringMemberID {
 			// 假如有关系待绑定 修改原有绑定关系为失效  重新新增一条为现有绑定关系
 			rp.Update().Where(
-				promotionreferralsprogress.ReferredMemberID(*req.ReferredMemberId),
+				promotionreferralsprogress.ReferredMemberID(*req.ReferredMemberID),
 				promotionreferralsprogress.Status(promotion.ReferralsStatusInviting.Value()),
 			).
 				SetStatus(promotion.ReferralsStatusFail.Value()).
@@ -87,8 +87,8 @@ func (s *promotionReferralsService) CreateReferralsProgress(req *promotion.Refer
 	// 记录骑手邀请进度
 	ent.Database.PromotionReferralsProgress.Create().
 		SetNillableRiderID(req.RiderID).
-		SetNillableReferringMemberID(req.ReferringMemberId).
-		SetNillableReferredMemberID(req.ReferredMemberId).
+		SetNillableReferringMemberID(req.ReferringMemberID).
+		SetNillableReferredMemberID(req.ReferredMemberID).
 		SetName(req.Name).
 		SetStatus(req.Status.Value()).
 		SetRemark(req.Remark).
@@ -98,7 +98,7 @@ func (s *promotionReferralsService) CreateReferralsProgress(req *promotion.Refer
 func (s *promotionReferralsService) UpdatedReferralsStatus(req *promotion.Referrals) {
 	ent.Database.PromotionReferralsProgress.Update().
 		Where(
-			promotionreferralsprogress.ReferredMemberID(*req.ReferredMemberId),
+			promotionreferralsprogress.ReferredMemberID(*req.ReferredMemberID),
 			promotionreferralsprogress.Status(promotion.ReferralsStatusInviting.Value()),
 		).SetStatus(req.Status.Value()).
 		SetRemark(req.Remark).
@@ -175,7 +175,7 @@ func (s *promotionReferralsService) RiderBindReferrals(ri *ent.Rider) {
 		).FirstID(s.ctx)
 	if memId != 0 {
 		referralsProgress := &promotion.Referrals{
-			ReferredMemberId: &memId,
+			ReferredMemberID: &memId,
 			Name:             ri.Name,
 		}
 		if ir := NewPromotionMemberService().IsRiderCanBind(ri); ir != promotion.MemberAllowBind {
@@ -190,8 +190,8 @@ func (s *promotionReferralsService) RiderBindReferrals(ri *ent.Rider) {
 				referralsProgress.Remark = "邀请成功"
 				// 绑定关系
 				NewPromotionReferralsService().CreateReferrals(&promotion.Referrals{
-					ReferringMemberId: &re.ReferringMemberID,
-					ReferredMemberId:  &re.ReferredMemberID,
+					ReferringMemberID: &re.ReferringMemberID,
+					ReferredMemberID:  &re.ReferredMemberID,
 					RiderID:           &ri.ID,
 				})
 			}

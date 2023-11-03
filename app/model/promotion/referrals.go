@@ -30,8 +30,8 @@ func (s ReferralsStatus) String() string {
 }
 
 type Referrals struct {
-	ReferringMemberId *uint64         `json:"referringMemberId"` // 推荐人id
-	ReferredMemberId  *uint64         `json:"referredMemberId"`  // 被推荐人id
+	ReferringMemberID *uint64         `json:"referringMemberId"` // 推荐人id
+	ReferredMemberID  *uint64         `json:"referredMemberId"`  // 被推荐人id
 	RiderID           *uint64         `json:"riderId"`           // 被推荐人骑手id
 	Status            ReferralsStatus `json:"status"`            // 推荐关系状态 0: 邀请中 1:邀请成功 2:邀请失败
 	Name              string          `json:"name"`              // 姓名
