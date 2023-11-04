@@ -1064,7 +1064,7 @@ func (s *riderService) Delete(req *model.IDParamReq) {
 		}
 
 		// 软删除订阅
-		if sub.EnterpriseID != nil && sub.Status == model.SubscribeStatusInactive {
+		if sub != nil && sub.EnterpriseID != nil && sub.Status == model.SubscribeStatusInactive {
 			err = tx.Subscribe.DeleteOne(sub).Exec(s.ctx)
 		}
 		return
