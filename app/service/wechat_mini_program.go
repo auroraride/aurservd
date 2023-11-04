@@ -127,7 +127,13 @@ func (s *miniProgramService) InviteQrcode(enterprise *ent.Enterprise, req *model
 // PromotionQrcode 获取推广返佣二维码
 func (s *miniProgramService) PromotionQrcode(id uint64) []byte {
 	url := fmt.Sprintf("m=%d", id)
-	coderParam := qrcode.QRCoder{Scene: url, Page: "pages/login/index"}
+
+	envVersion := "release"
+	if ar.Config.Environment == "environment" {
+		envVersion = "trial"
+	}
+
+	coderParam := qrcode.QRCoder{Scene: url, EnvVersion: envVersion, Page: "pages/login/index"}
 	code, err := s.MiniProgram.GetQRCode().GetWXACodeUnlimit(coderParam)
 	if err != nil {
 		zap.L().Error("生成二维码失败", zap.Error(err))
