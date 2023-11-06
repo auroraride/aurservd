@@ -129,7 +129,7 @@ func (s *miniProgramService) PromotionQrcode(id uint64) []byte {
 	url := fmt.Sprintf("m=%d", id)
 
 	envVersion := "release"
-	if ar.Config.Environment == "environment" {
+	if ar.Config.Environment == "development" {
 		envVersion = "trial"
 	}
 
