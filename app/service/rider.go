@@ -288,17 +288,19 @@ func (s *riderService) FaceAuthResult(c *app.RiderContext, token string) (succes
 			_ = ent.Database.Person.DeleteOneID(*u.PersonID).Exec(s.ctx)
 		}
 		// 更新骑手信息
-		err = ent.Database.Rider.
+		ri, err := ent.Database.Rider.
 			UpdateOneID(u.ID).
 			SetPersonID(id).
 			SetLastFace(fm).
 			SetIsNewDevice(false).
 			SetName(vr.Name).
 			SetIDCardNumber(icNum).
-			Exec(context.Background())
+			Save(context.Background())
 		if err != nil {
 			snag.Panic(err)
 		}
+		// 如果骑手注册过推广小程序 判断是否需要绑定推荐关系
+		NewPromotionReferralsService().RiderBindReferrals(ri)
 	}
 
 	return success
@@ -1062,7 +1064,7 @@ func (s *riderService) Delete(req *model.IDParamReq) {
 		}
 
 		// 软删除订阅
-		if sub.EnterpriseID != nil && sub.Status == model.SubscribeStatusInactive {
+		if sub != nil && sub.EnterpriseID != nil && sub.Status == model.SubscribeStatusInactive {
 			err = tx.Subscribe.DeleteOne(sub).Exec(s.ctx)
 		}
 		return

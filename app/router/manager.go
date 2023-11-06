@@ -317,4 +317,7 @@ func loadManagerRoutes() {
 	g.GET("/promotion/setting/:key", mapi.PromotionSetting.Setting) // 获取会员设置
 	g.PUT("/promotion/setting/:key", mapi.PromotionSetting.Update)  // 修改会员设置
 
+	// PMA 推广关系
+	g.GET("/promotion/progress/list/:id", mapi.PromotionReferrals.ProgressList) // 推广关系列表
+
 }

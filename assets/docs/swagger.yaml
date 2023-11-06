@@ -8757,24 +8757,36 @@ definitions:
     type: object
   promotion.InviteType:
     enum:
-    - 1
-    - 2
-    - 3
-    - 4
-    - 5
+      - 10000
+      - 10100
+      - 10101
+      - 10102
+      - 10200
+      - 10201
+      - 10202
+      - 10203
+      - 10204
     type: integer
     x-enum-comments:
       MemberActivationFail: 已被激活
+      MemberActivationOtherFail: 您有其他账号已被激活，本次邀请无效
+      MemberAllowBind: 允许绑定
       MemberBindSuccess: 绑定成功
       MemberInviteFail: 已被邀请
+      MemberInviteOtherFail: 您有其他账号已被邀请，本次邀请无效
       MemberInviteSelfFail: 自己不能邀请自己
       MemberSignSuccess: 注册成功
+      MemberSignSuccessWaitAuth: 提交成功，绑定关系待实名后生效
     x-enum-varnames:
+      - MemberAllowBind
     - MemberSignSuccess
     - MemberBindSuccess
+      - MemberSignSuccessWaitAuth
     - MemberInviteFail
     - MemberActivationFail
     - MemberInviteSelfFail
+      - MemberActivationOtherFail
+      - MemberInviteOtherFail
   promotion.Level:
     properties:
       commissionRatio:
@@ -9115,6 +9127,33 @@ definitions:
         description: 是否成功
         type: boolean
     type: object
+  promotion.ReferralsProgressReq:
+    properties:
+      current:
+        description: 当前页, 从1开始, 默认1
+        type: integer
+      pageSize:
+        description: 每页数据, 默认20
+        type: integer
+    type: object
+  promotion.ReferralsProgressRes:
+    properties:
+      createdAt:
+        description: 创建时间
+        type: string
+      name:
+        description: 姓名
+        type: string
+      phone:
+        description: 手机号
+        type: string
+      remark:
+        description: 备注
+        type: string
+      status:
+        description: 状态
+        type: string
+    type: object
   promotion.Setting:
     properties:
       context:
@@ -9285,6 +9324,28 @@ definitions:
     required:
     - ids
     - status
+    type: object
+  promotion.WithdrawalExportReq:
+    properties:
+      account:
+        description: 提现账户
+        type: string
+      end:
+        description: 结束日期
+        type: string
+      keywork:
+        description: 关键字
+        type: string
+      start:
+        description: 开始日期
+        type: string
+      status:
+        description: 提现状态 0:待审核 1:成功 2:失败
+        enum:
+          - 0
+          - 1
+          - 2
+        type: integer
     type: object
   promotion.WithdrawalFeeRes:
     properties:
@@ -18334,7 +18395,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/promotion.WithdrawalListReq'
+          $ref: '#/definitions/promotion.WithdrawalExportReq'
       produces:
       - application/json
       responses:
@@ -20665,6 +20726,33 @@ paths:
                   type: array
               type: object
       summary: P1006 我的团队列表
+      tags:
+        - '[P]推广接口'
+  /promotion/v1/referrals/progress:
+    get:
+      consumes:
+        - application/json
+      operationId: ReferralsProgressList
+      parameters:
+        - description: 会员校验token
+          in: header
+          name: X-Promotion-Token
+          required: true
+          type: string
+        - description: 查询请求
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/promotion.ReferralsProgressReq'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/promotion.ReferralsProgressRes'
+      summary: P8001 推荐进度
       tags:
       - '[P]推广接口'
   /promotion/v1/setting/{key}:

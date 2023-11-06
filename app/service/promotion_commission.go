@@ -191,14 +191,22 @@ func (s *promotionCommissionService) Detail(id uint64) promotion.CommissionDetai
 
 func (s *promotionCommissionService) detail(item *ent.PromotionCommission) promotion.CommissionDetail {
 	res := promotion.CommissionDetail{
-		ID:        item.ID,
-		Name:      item.Name,
-		Type:      promotion.CommissionType(*item.Type),
-		Rule:      *item.Rule,
-		Desc:      item.Desc,
-		Enable:    item.Enable,
-		CreatedAt: item.CreatedAt.Format(carbon.DateTimeLayout),
-		AmountSum: item.AmountSum,
+		ID:                   item.ID,
+		Name:                 item.Name,
+		Type:                 promotion.CommissionType(*item.Type),
+		Rule:                 *item.Rule,
+		Desc:                 item.Desc,
+		Enable:               item.Enable,
+		CreatedAt:            item.CreatedAt.Format(carbon.DateTimeLayout),
+		AmountSum:            item.AmountSum,
+		FistNewNumSum:        item.FirstNewNum,
+		FistNewAmountSum:     item.FirstNewAmountSum,
+		FistRenewNumSum:      item.FirstRenewNum,
+		FistRenewAmountSum:   item.FirstRenewAmountSum,
+		SecondNewNumSum:      item.SecondNewNum,
+		SecondNewAmountSum:   item.SecondNewAmountSum,
+		SecondRenewNumSum:    item.SecondRenewNum,
+		SecondRenewAmountSum: item.SecondRenewAmountSum,
 	}
 
 	if item.StartAt != nil {
@@ -572,6 +580,11 @@ func (s *promotionCommissionService) saveEarningsAndUpdateCommission(tx *ent.Tx,
 			return
 		}
 
+		if err = s.CommissionCountAndAmount(tx, req); err != nil {
+			zap.L().Error("返佣人次 金额更新失败", zap.Error(err), log.JsonData(req))
+			return
+		}
+
 		// 更新返佣总收益
 		_, err = tx.PromotionCommission.UpdateOneID(req.CommissionID).AddAmountSum(req.Amount).Save(s.ctx)
 		if err != nil {
@@ -610,6 +623,29 @@ func (s *promotionCommissionService) saveEarningsAndUpdateCommission(tx *ent.Tx,
 	if err != nil {
 		zap.L().Error("会员成长值更新失败", zap.Error(err), log.JsonData(lt))
 		return
+	}
+
+	return
+}
+
+// CommissionCountAndAmount  返佣人次 金额
+func (s *promotionCommissionService) CommissionCountAndAmount(tx *ent.Tx, req promotion.EarningsCreateReq) (err error) {
+
+	q := tx.PromotionCommission.UpdateOneID(req.CommissionID)
+
+	switch req.CommissionRuleKey {
+	case promotion.FirstLevelNewSubscribeKey:
+		q.AddFirstNewAmountSum(req.Amount).AddFirstNewNum(1)
+	case promotion.FirstLevelRenewalSubscribeKey:
+		q.AddFirstRenewAmountSum(req.Amount).AddFirstRenewNum(1)
+	case promotion.SecondLevelNewSubscribeKey:
+		q.AddSecondNewAmountSum(req.Amount).AddSecondNewNum(1)
+	case promotion.SecondLevelRenewalSubscribeKey:
+		q.AddSecondRenewAmountSum(req.Amount).AddSecondRenewNum(1)
+	}
+	_, err = q.Save(s.ctx)
+	if err != nil {
+		return err
 	}
 
 	return

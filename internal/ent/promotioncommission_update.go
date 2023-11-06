@@ -180,6 +180,174 @@ func (pcu *PromotionCommissionUpdate) AddAmountSum(f float64) *PromotionCommissi
 	return pcu
 }
 
+// SetFirstNewNum sets the "first_new_num" field.
+func (pcu *PromotionCommissionUpdate) SetFirstNewNum(u uint64) *PromotionCommissionUpdate {
+	pcu.mutation.ResetFirstNewNum()
+	pcu.mutation.SetFirstNewNum(u)
+	return pcu
+}
+
+// SetNillableFirstNewNum sets the "first_new_num" field if the given value is not nil.
+func (pcu *PromotionCommissionUpdate) SetNillableFirstNewNum(u *uint64) *PromotionCommissionUpdate {
+	if u != nil {
+		pcu.SetFirstNewNum(*u)
+	}
+	return pcu
+}
+
+// AddFirstNewNum adds u to the "first_new_num" field.
+func (pcu *PromotionCommissionUpdate) AddFirstNewNum(u int64) *PromotionCommissionUpdate {
+	pcu.mutation.AddFirstNewNum(u)
+	return pcu
+}
+
+// SetSecondNewNum sets the "second_new_num" field.
+func (pcu *PromotionCommissionUpdate) SetSecondNewNum(u uint64) *PromotionCommissionUpdate {
+	pcu.mutation.ResetSecondNewNum()
+	pcu.mutation.SetSecondNewNum(u)
+	return pcu
+}
+
+// SetNillableSecondNewNum sets the "second_new_num" field if the given value is not nil.
+func (pcu *PromotionCommissionUpdate) SetNillableSecondNewNum(u *uint64) *PromotionCommissionUpdate {
+	if u != nil {
+		pcu.SetSecondNewNum(*u)
+	}
+	return pcu
+}
+
+// AddSecondNewNum adds u to the "second_new_num" field.
+func (pcu *PromotionCommissionUpdate) AddSecondNewNum(u int64) *PromotionCommissionUpdate {
+	pcu.mutation.AddSecondNewNum(u)
+	return pcu
+}
+
+// SetFirstRenewNum sets the "first_renew_num" field.
+func (pcu *PromotionCommissionUpdate) SetFirstRenewNum(u uint64) *PromotionCommissionUpdate {
+	pcu.mutation.ResetFirstRenewNum()
+	pcu.mutation.SetFirstRenewNum(u)
+	return pcu
+}
+
+// SetNillableFirstRenewNum sets the "first_renew_num" field if the given value is not nil.
+func (pcu *PromotionCommissionUpdate) SetNillableFirstRenewNum(u *uint64) *PromotionCommissionUpdate {
+	if u != nil {
+		pcu.SetFirstRenewNum(*u)
+	}
+	return pcu
+}
+
+// AddFirstRenewNum adds u to the "first_renew_num" field.
+func (pcu *PromotionCommissionUpdate) AddFirstRenewNum(u int64) *PromotionCommissionUpdate {
+	pcu.mutation.AddFirstRenewNum(u)
+	return pcu
+}
+
+// SetSecondRenewNum sets the "second_renew_num" field.
+func (pcu *PromotionCommissionUpdate) SetSecondRenewNum(u uint64) *PromotionCommissionUpdate {
+	pcu.mutation.ResetSecondRenewNum()
+	pcu.mutation.SetSecondRenewNum(u)
+	return pcu
+}
+
+// SetNillableSecondRenewNum sets the "second_renew_num" field if the given value is not nil.
+func (pcu *PromotionCommissionUpdate) SetNillableSecondRenewNum(u *uint64) *PromotionCommissionUpdate {
+	if u != nil {
+		pcu.SetSecondRenewNum(*u)
+	}
+	return pcu
+}
+
+// AddSecondRenewNum adds u to the "second_renew_num" field.
+func (pcu *PromotionCommissionUpdate) AddSecondRenewNum(u int64) *PromotionCommissionUpdate {
+	pcu.mutation.AddSecondRenewNum(u)
+	return pcu
+}
+
+// SetFirstNewAmountSum sets the "first_new_amount_sum" field.
+func (pcu *PromotionCommissionUpdate) SetFirstNewAmountSum(f float64) *PromotionCommissionUpdate {
+	pcu.mutation.ResetFirstNewAmountSum()
+	pcu.mutation.SetFirstNewAmountSum(f)
+	return pcu
+}
+
+// SetNillableFirstNewAmountSum sets the "first_new_amount_sum" field if the given value is not nil.
+func (pcu *PromotionCommissionUpdate) SetNillableFirstNewAmountSum(f *float64) *PromotionCommissionUpdate {
+	if f != nil {
+		pcu.SetFirstNewAmountSum(*f)
+	}
+	return pcu
+}
+
+// AddFirstNewAmountSum adds f to the "first_new_amount_sum" field.
+func (pcu *PromotionCommissionUpdate) AddFirstNewAmountSum(f float64) *PromotionCommissionUpdate {
+	pcu.mutation.AddFirstNewAmountSum(f)
+	return pcu
+}
+
+// SetSecondNewAmountSum sets the "second_new_amount_sum" field.
+func (pcu *PromotionCommissionUpdate) SetSecondNewAmountSum(f float64) *PromotionCommissionUpdate {
+	pcu.mutation.ResetSecondNewAmountSum()
+	pcu.mutation.SetSecondNewAmountSum(f)
+	return pcu
+}
+
+// SetNillableSecondNewAmountSum sets the "second_new_amount_sum" field if the given value is not nil.
+func (pcu *PromotionCommissionUpdate) SetNillableSecondNewAmountSum(f *float64) *PromotionCommissionUpdate {
+	if f != nil {
+		pcu.SetSecondNewAmountSum(*f)
+	}
+	return pcu
+}
+
+// AddSecondNewAmountSum adds f to the "second_new_amount_sum" field.
+func (pcu *PromotionCommissionUpdate) AddSecondNewAmountSum(f float64) *PromotionCommissionUpdate {
+	pcu.mutation.AddSecondNewAmountSum(f)
+	return pcu
+}
+
+// SetFirstRenewAmountSum sets the "first_renew_amount_sum" field.
+func (pcu *PromotionCommissionUpdate) SetFirstRenewAmountSum(f float64) *PromotionCommissionUpdate {
+	pcu.mutation.ResetFirstRenewAmountSum()
+	pcu.mutation.SetFirstRenewAmountSum(f)
+	return pcu
+}
+
+// SetNillableFirstRenewAmountSum sets the "first_renew_amount_sum" field if the given value is not nil.
+func (pcu *PromotionCommissionUpdate) SetNillableFirstRenewAmountSum(f *float64) *PromotionCommissionUpdate {
+	if f != nil {
+		pcu.SetFirstRenewAmountSum(*f)
+	}
+	return pcu
+}
+
+// AddFirstRenewAmountSum adds f to the "first_renew_amount_sum" field.
+func (pcu *PromotionCommissionUpdate) AddFirstRenewAmountSum(f float64) *PromotionCommissionUpdate {
+	pcu.mutation.AddFirstRenewAmountSum(f)
+	return pcu
+}
+
+// SetSecondRenewAmountSum sets the "second_renew_amount_sum" field.
+func (pcu *PromotionCommissionUpdate) SetSecondRenewAmountSum(f float64) *PromotionCommissionUpdate {
+	pcu.mutation.ResetSecondRenewAmountSum()
+	pcu.mutation.SetSecondRenewAmountSum(f)
+	return pcu
+}
+
+// SetNillableSecondRenewAmountSum sets the "second_renew_amount_sum" field if the given value is not nil.
+func (pcu *PromotionCommissionUpdate) SetNillableSecondRenewAmountSum(f *float64) *PromotionCommissionUpdate {
+	if f != nil {
+		pcu.SetSecondRenewAmountSum(*f)
+	}
+	return pcu
+}
+
+// AddSecondRenewAmountSum adds f to the "second_renew_amount_sum" field.
+func (pcu *PromotionCommissionUpdate) AddSecondRenewAmountSum(f float64) *PromotionCommissionUpdate {
+	pcu.mutation.AddSecondRenewAmountSum(f)
+	return pcu
+}
+
 // SetDesc sets the "desc" field.
 func (pcu *PromotionCommissionUpdate) SetDesc(s string) *PromotionCommissionUpdate {
 	pcu.mutation.SetDesc(s)
@@ -411,6 +579,54 @@ func (pcu *PromotionCommissionUpdate) sqlSave(ctx context.Context) (n int, err e
 	}
 	if value, ok := pcu.mutation.AddedAmountSum(); ok {
 		_spec.AddField(promotioncommission.FieldAmountSum, field.TypeFloat64, value)
+	}
+	if value, ok := pcu.mutation.FirstNewNum(); ok {
+		_spec.SetField(promotioncommission.FieldFirstNewNum, field.TypeUint64, value)
+	}
+	if value, ok := pcu.mutation.AddedFirstNewNum(); ok {
+		_spec.AddField(promotioncommission.FieldFirstNewNum, field.TypeUint64, value)
+	}
+	if value, ok := pcu.mutation.SecondNewNum(); ok {
+		_spec.SetField(promotioncommission.FieldSecondNewNum, field.TypeUint64, value)
+	}
+	if value, ok := pcu.mutation.AddedSecondNewNum(); ok {
+		_spec.AddField(promotioncommission.FieldSecondNewNum, field.TypeUint64, value)
+	}
+	if value, ok := pcu.mutation.FirstRenewNum(); ok {
+		_spec.SetField(promotioncommission.FieldFirstRenewNum, field.TypeUint64, value)
+	}
+	if value, ok := pcu.mutation.AddedFirstRenewNum(); ok {
+		_spec.AddField(promotioncommission.FieldFirstRenewNum, field.TypeUint64, value)
+	}
+	if value, ok := pcu.mutation.SecondRenewNum(); ok {
+		_spec.SetField(promotioncommission.FieldSecondRenewNum, field.TypeUint64, value)
+	}
+	if value, ok := pcu.mutation.AddedSecondRenewNum(); ok {
+		_spec.AddField(promotioncommission.FieldSecondRenewNum, field.TypeUint64, value)
+	}
+	if value, ok := pcu.mutation.FirstNewAmountSum(); ok {
+		_spec.SetField(promotioncommission.FieldFirstNewAmountSum, field.TypeFloat64, value)
+	}
+	if value, ok := pcu.mutation.AddedFirstNewAmountSum(); ok {
+		_spec.AddField(promotioncommission.FieldFirstNewAmountSum, field.TypeFloat64, value)
+	}
+	if value, ok := pcu.mutation.SecondNewAmountSum(); ok {
+		_spec.SetField(promotioncommission.FieldSecondNewAmountSum, field.TypeFloat64, value)
+	}
+	if value, ok := pcu.mutation.AddedSecondNewAmountSum(); ok {
+		_spec.AddField(promotioncommission.FieldSecondNewAmountSum, field.TypeFloat64, value)
+	}
+	if value, ok := pcu.mutation.FirstRenewAmountSum(); ok {
+		_spec.SetField(promotioncommission.FieldFirstRenewAmountSum, field.TypeFloat64, value)
+	}
+	if value, ok := pcu.mutation.AddedFirstRenewAmountSum(); ok {
+		_spec.AddField(promotioncommission.FieldFirstRenewAmountSum, field.TypeFloat64, value)
+	}
+	if value, ok := pcu.mutation.SecondRenewAmountSum(); ok {
+		_spec.SetField(promotioncommission.FieldSecondRenewAmountSum, field.TypeFloat64, value)
+	}
+	if value, ok := pcu.mutation.AddedSecondRenewAmountSum(); ok {
+		_spec.AddField(promotioncommission.FieldSecondRenewAmountSum, field.TypeFloat64, value)
 	}
 	if value, ok := pcu.mutation.Desc(); ok {
 		_spec.SetField(promotioncommission.FieldDesc, field.TypeString, value)
@@ -683,6 +899,174 @@ func (pcuo *PromotionCommissionUpdateOne) AddAmountSum(f float64) *PromotionComm
 	return pcuo
 }
 
+// SetFirstNewNum sets the "first_new_num" field.
+func (pcuo *PromotionCommissionUpdateOne) SetFirstNewNum(u uint64) *PromotionCommissionUpdateOne {
+	pcuo.mutation.ResetFirstNewNum()
+	pcuo.mutation.SetFirstNewNum(u)
+	return pcuo
+}
+
+// SetNillableFirstNewNum sets the "first_new_num" field if the given value is not nil.
+func (pcuo *PromotionCommissionUpdateOne) SetNillableFirstNewNum(u *uint64) *PromotionCommissionUpdateOne {
+	if u != nil {
+		pcuo.SetFirstNewNum(*u)
+	}
+	return pcuo
+}
+
+// AddFirstNewNum adds u to the "first_new_num" field.
+func (pcuo *PromotionCommissionUpdateOne) AddFirstNewNum(u int64) *PromotionCommissionUpdateOne {
+	pcuo.mutation.AddFirstNewNum(u)
+	return pcuo
+}
+
+// SetSecondNewNum sets the "second_new_num" field.
+func (pcuo *PromotionCommissionUpdateOne) SetSecondNewNum(u uint64) *PromotionCommissionUpdateOne {
+	pcuo.mutation.ResetSecondNewNum()
+	pcuo.mutation.SetSecondNewNum(u)
+	return pcuo
+}
+
+// SetNillableSecondNewNum sets the "second_new_num" field if the given value is not nil.
+func (pcuo *PromotionCommissionUpdateOne) SetNillableSecondNewNum(u *uint64) *PromotionCommissionUpdateOne {
+	if u != nil {
+		pcuo.SetSecondNewNum(*u)
+	}
+	return pcuo
+}
+
+// AddSecondNewNum adds u to the "second_new_num" field.
+func (pcuo *PromotionCommissionUpdateOne) AddSecondNewNum(u int64) *PromotionCommissionUpdateOne {
+	pcuo.mutation.AddSecondNewNum(u)
+	return pcuo
+}
+
+// SetFirstRenewNum sets the "first_renew_num" field.
+func (pcuo *PromotionCommissionUpdateOne) SetFirstRenewNum(u uint64) *PromotionCommissionUpdateOne {
+	pcuo.mutation.ResetFirstRenewNum()
+	pcuo.mutation.SetFirstRenewNum(u)
+	return pcuo
+}
+
+// SetNillableFirstRenewNum sets the "first_renew_num" field if the given value is not nil.
+func (pcuo *PromotionCommissionUpdateOne) SetNillableFirstRenewNum(u *uint64) *PromotionCommissionUpdateOne {
+	if u != nil {
+		pcuo.SetFirstRenewNum(*u)
+	}
+	return pcuo
+}
+
+// AddFirstRenewNum adds u to the "first_renew_num" field.
+func (pcuo *PromotionCommissionUpdateOne) AddFirstRenewNum(u int64) *PromotionCommissionUpdateOne {
+	pcuo.mutation.AddFirstRenewNum(u)
+	return pcuo
+}
+
+// SetSecondRenewNum sets the "second_renew_num" field.
+func (pcuo *PromotionCommissionUpdateOne) SetSecondRenewNum(u uint64) *PromotionCommissionUpdateOne {
+	pcuo.mutation.ResetSecondRenewNum()
+	pcuo.mutation.SetSecondRenewNum(u)
+	return pcuo
+}
+
+// SetNillableSecondRenewNum sets the "second_renew_num" field if the given value is not nil.
+func (pcuo *PromotionCommissionUpdateOne) SetNillableSecondRenewNum(u *uint64) *PromotionCommissionUpdateOne {
+	if u != nil {
+		pcuo.SetSecondRenewNum(*u)
+	}
+	return pcuo
+}
+
+// AddSecondRenewNum adds u to the "second_renew_num" field.
+func (pcuo *PromotionCommissionUpdateOne) AddSecondRenewNum(u int64) *PromotionCommissionUpdateOne {
+	pcuo.mutation.AddSecondRenewNum(u)
+	return pcuo
+}
+
+// SetFirstNewAmountSum sets the "first_new_amount_sum" field.
+func (pcuo *PromotionCommissionUpdateOne) SetFirstNewAmountSum(f float64) *PromotionCommissionUpdateOne {
+	pcuo.mutation.ResetFirstNewAmountSum()
+	pcuo.mutation.SetFirstNewAmountSum(f)
+	return pcuo
+}
+
+// SetNillableFirstNewAmountSum sets the "first_new_amount_sum" field if the given value is not nil.
+func (pcuo *PromotionCommissionUpdateOne) SetNillableFirstNewAmountSum(f *float64) *PromotionCommissionUpdateOne {
+	if f != nil {
+		pcuo.SetFirstNewAmountSum(*f)
+	}
+	return pcuo
+}
+
+// AddFirstNewAmountSum adds f to the "first_new_amount_sum" field.
+func (pcuo *PromotionCommissionUpdateOne) AddFirstNewAmountSum(f float64) *PromotionCommissionUpdateOne {
+	pcuo.mutation.AddFirstNewAmountSum(f)
+	return pcuo
+}
+
+// SetSecondNewAmountSum sets the "second_new_amount_sum" field.
+func (pcuo *PromotionCommissionUpdateOne) SetSecondNewAmountSum(f float64) *PromotionCommissionUpdateOne {
+	pcuo.mutation.ResetSecondNewAmountSum()
+	pcuo.mutation.SetSecondNewAmountSum(f)
+	return pcuo
+}
+
+// SetNillableSecondNewAmountSum sets the "second_new_amount_sum" field if the given value is not nil.
+func (pcuo *PromotionCommissionUpdateOne) SetNillableSecondNewAmountSum(f *float64) *PromotionCommissionUpdateOne {
+	if f != nil {
+		pcuo.SetSecondNewAmountSum(*f)
+	}
+	return pcuo
+}
+
+// AddSecondNewAmountSum adds f to the "second_new_amount_sum" field.
+func (pcuo *PromotionCommissionUpdateOne) AddSecondNewAmountSum(f float64) *PromotionCommissionUpdateOne {
+	pcuo.mutation.AddSecondNewAmountSum(f)
+	return pcuo
+}
+
+// SetFirstRenewAmountSum sets the "first_renew_amount_sum" field.
+func (pcuo *PromotionCommissionUpdateOne) SetFirstRenewAmountSum(f float64) *PromotionCommissionUpdateOne {
+	pcuo.mutation.ResetFirstRenewAmountSum()
+	pcuo.mutation.SetFirstRenewAmountSum(f)
+	return pcuo
+}
+
+// SetNillableFirstRenewAmountSum sets the "first_renew_amount_sum" field if the given value is not nil.
+func (pcuo *PromotionCommissionUpdateOne) SetNillableFirstRenewAmountSum(f *float64) *PromotionCommissionUpdateOne {
+	if f != nil {
+		pcuo.SetFirstRenewAmountSum(*f)
+	}
+	return pcuo
+}
+
+// AddFirstRenewAmountSum adds f to the "first_renew_amount_sum" field.
+func (pcuo *PromotionCommissionUpdateOne) AddFirstRenewAmountSum(f float64) *PromotionCommissionUpdateOne {
+	pcuo.mutation.AddFirstRenewAmountSum(f)
+	return pcuo
+}
+
+// SetSecondRenewAmountSum sets the "second_renew_amount_sum" field.
+func (pcuo *PromotionCommissionUpdateOne) SetSecondRenewAmountSum(f float64) *PromotionCommissionUpdateOne {
+	pcuo.mutation.ResetSecondRenewAmountSum()
+	pcuo.mutation.SetSecondRenewAmountSum(f)
+	return pcuo
+}
+
+// SetNillableSecondRenewAmountSum sets the "second_renew_amount_sum" field if the given value is not nil.
+func (pcuo *PromotionCommissionUpdateOne) SetNillableSecondRenewAmountSum(f *float64) *PromotionCommissionUpdateOne {
+	if f != nil {
+		pcuo.SetSecondRenewAmountSum(*f)
+	}
+	return pcuo
+}
+
+// AddSecondRenewAmountSum adds f to the "second_renew_amount_sum" field.
+func (pcuo *PromotionCommissionUpdateOne) AddSecondRenewAmountSum(f float64) *PromotionCommissionUpdateOne {
+	pcuo.mutation.AddSecondRenewAmountSum(f)
+	return pcuo
+}
+
 // SetDesc sets the "desc" field.
 func (pcuo *PromotionCommissionUpdateOne) SetDesc(s string) *PromotionCommissionUpdateOne {
 	pcuo.mutation.SetDesc(s)
@@ -944,6 +1328,54 @@ func (pcuo *PromotionCommissionUpdateOne) sqlSave(ctx context.Context) (_node *P
 	}
 	if value, ok := pcuo.mutation.AddedAmountSum(); ok {
 		_spec.AddField(promotioncommission.FieldAmountSum, field.TypeFloat64, value)
+	}
+	if value, ok := pcuo.mutation.FirstNewNum(); ok {
+		_spec.SetField(promotioncommission.FieldFirstNewNum, field.TypeUint64, value)
+	}
+	if value, ok := pcuo.mutation.AddedFirstNewNum(); ok {
+		_spec.AddField(promotioncommission.FieldFirstNewNum, field.TypeUint64, value)
+	}
+	if value, ok := pcuo.mutation.SecondNewNum(); ok {
+		_spec.SetField(promotioncommission.FieldSecondNewNum, field.TypeUint64, value)
+	}
+	if value, ok := pcuo.mutation.AddedSecondNewNum(); ok {
+		_spec.AddField(promotioncommission.FieldSecondNewNum, field.TypeUint64, value)
+	}
+	if value, ok := pcuo.mutation.FirstRenewNum(); ok {
+		_spec.SetField(promotioncommission.FieldFirstRenewNum, field.TypeUint64, value)
+	}
+	if value, ok := pcuo.mutation.AddedFirstRenewNum(); ok {
+		_spec.AddField(promotioncommission.FieldFirstRenewNum, field.TypeUint64, value)
+	}
+	if value, ok := pcuo.mutation.SecondRenewNum(); ok {
+		_spec.SetField(promotioncommission.FieldSecondRenewNum, field.TypeUint64, value)
+	}
+	if value, ok := pcuo.mutation.AddedSecondRenewNum(); ok {
+		_spec.AddField(promotioncommission.FieldSecondRenewNum, field.TypeUint64, value)
+	}
+	if value, ok := pcuo.mutation.FirstNewAmountSum(); ok {
+		_spec.SetField(promotioncommission.FieldFirstNewAmountSum, field.TypeFloat64, value)
+	}
+	if value, ok := pcuo.mutation.AddedFirstNewAmountSum(); ok {
+		_spec.AddField(promotioncommission.FieldFirstNewAmountSum, field.TypeFloat64, value)
+	}
+	if value, ok := pcuo.mutation.SecondNewAmountSum(); ok {
+		_spec.SetField(promotioncommission.FieldSecondNewAmountSum, field.TypeFloat64, value)
+	}
+	if value, ok := pcuo.mutation.AddedSecondNewAmountSum(); ok {
+		_spec.AddField(promotioncommission.FieldSecondNewAmountSum, field.TypeFloat64, value)
+	}
+	if value, ok := pcuo.mutation.FirstRenewAmountSum(); ok {
+		_spec.SetField(promotioncommission.FieldFirstRenewAmountSum, field.TypeFloat64, value)
+	}
+	if value, ok := pcuo.mutation.AddedFirstRenewAmountSum(); ok {
+		_spec.AddField(promotioncommission.FieldFirstRenewAmountSum, field.TypeFloat64, value)
+	}
+	if value, ok := pcuo.mutation.SecondRenewAmountSum(); ok {
+		_spec.SetField(promotioncommission.FieldSecondRenewAmountSum, field.TypeFloat64, value)
+	}
+	if value, ok := pcuo.mutation.AddedSecondRenewAmountSum(); ok {
+		_spec.AddField(promotioncommission.FieldSecondRenewAmountSum, field.TypeFloat64, value)
 	}
 	if value, ok := pcuo.mutation.Desc(); ok {
 		_spec.SetField(promotioncommission.FieldDesc, field.TypeString, value)

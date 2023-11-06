@@ -249,17 +249,61 @@ func (s *promotionWithdrawalService) CalculateWithdrawalFee(mem *ent.PromotionMe
 }
 
 // Export 导出
-func (s *promotionWithdrawalService) Export() (string, string) {
-	items, _ := ent.Database.PromotionWithdrawal.Query().WithMember(func(q *ent.PromotionMemberQuery) {
+func (s *promotionWithdrawalService) Export(req *promotion.WithdrawalExportReq) (string, string) {
+	q := ent.Database.PromotionWithdrawal.Query().WithMember(func(q *ent.PromotionMemberQuery) {
 		q.WithPerson()
-	}).WithCards().Where(promotionwithdrawal.Status(promotion.WithdrawalStatusPending.Value())).All(s.ctx)
+	}).WithCards()
+
+	if req.Status != nil {
+		q.Where(promotionwithdrawal.Status(*req.Status))
+	}
+
+	if req.Start != nil && req.End != nil {
+		start := tools.NewTime().ParseDateStringX(*req.Start)
+		end := tools.NewTime().ParseNextDateStringX(*req.End)
+		q.Where(
+			promotionwithdrawal.CreatedAtGTE(start),
+			promotionwithdrawal.CreatedAtLTE(end),
+		)
+	} else {
+		// 默认查询最近一个月的数据
+		q.Where(
+			promotionwithdrawal.CreatedAtGTE(carbon.Now().SubMonth().ToStdTime()),
+			promotionwithdrawal.CreatedAtLTE(carbon.Now().ToStdTime()),
+		)
+
+	}
+
+	if req.Account != nil {
+		q.Where(promotionwithdrawal.HasCardsWith(promotionbankcard.CardNoContains(*req.Account)))
+	}
+	if req.Status != nil {
+		q.Where(promotionwithdrawal.Status(*req.Status))
+	}
+	if req.Keyword != nil {
+		q.Where(promotionwithdrawal.HasMemberWith(
+			promotionmember.Or(
+				promotionmember.NameContainsFold(*req.Keyword),
+				promotionmember.PhoneContainsFold(*req.Keyword),
+			),
+		))
+	}
+
+	items, _ := q.All(s.ctx)
 	if len(items) == 0 {
 		snag.Panic("没有可导出的数据")
 	}
-	file1 := s.ExportTex(items)
-	file2 := s.ExportWithdrawal(items)
+	file1 := s.ExportList(items)
 
-	files := []string{file1, file2}
+	// 待审核的提现
+	items, _ = ent.Database.PromotionWithdrawal.Query().WithMember(func(q *ent.PromotionMemberQuery) {
+		q.WithPerson()
+	}).WithCards().Where(promotionwithdrawal.Status(promotion.WithdrawalStatusPending.Value())).All(s.ctx)
+
+	file2 := s.ExportTex(items)
+	file3 := s.ExportWithdrawal(items)
+
+	files := []string{file1, file2, file3}
 	output := "/tmp/转账代发_报税明细.zip"
 	if err := zip.ZipFiles(output, files); err != nil {
 		snag.Panic("压缩文件失败")
@@ -326,4 +370,46 @@ func (s *promotionWithdrawalService) ExportWithdrawal(items []*ent.PromotionWith
 	tempFile := "/tmp/转账代发明细" + time.Now().Format(carbon.ShortDateLayout) + ".xlsx"
 	tools.NewExcel(tempFile).AddValues(rows).Done()
 	return tempFile
+}
+
+func (s *promotionWithdrawalService) ExportList(items []*ent.PromotionWithdrawal) string {
+	var rows tools.ExcelItems
+	title := []any{"姓名电话", "银行信息", "申请金额", "手续费", "税费", "提现金额", "提现状态", "申请时间", "审核时间", "备注"}
+	rows = append(rows, title)
+	for _, item := range items {
+		row := []any{
+			"",
+			"",
+			item.ApplyAmount,
+			item.Fee,
+			item.Tex,
+			item.Amount,
+			promotion.WithdrawalStatus(item.Status).String(),
+			item.ApplyTime.Format(carbon.DateTimeLayout),
+			"",
+			item.Remark,
+		}
+
+		var name, phone, account, bank string
+		if item.Edges.Member != nil {
+			name = item.Edges.Member.Name
+			phone = item.Edges.Member.Phone
+		}
+
+		if item.Edges.Cards != nil {
+			account = item.Edges.Cards.CardNo
+			bank = item.Edges.Cards.Bank
+		}
+
+		row[0] = name + "-" + phone
+		row[1] = bank + "-" + account
+		if item.ReviewTime != nil {
+			row[8] = item.ReviewTime.Format(carbon.DateTimeLayout)
+		}
+		rows = append(rows, row)
+	}
+	tempFile := "/tmp/提现列表" + time.Now().Format(carbon.ShortDateLayout) + ".xlsx"
+	tools.NewExcel(tempFile).AddValues(rows).Done()
+	return tempFile
+
 }

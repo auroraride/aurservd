@@ -436,6 +436,13 @@ func (c *PromotionReferralsClient) ModifyOne(old *PromotionReferrals, data any) 
 	return EntitySetAttributes[PromotionReferralsUpdateOne, PromotionReferrals](up, old, data)
 }
 
+// ModifyOne returns an update with pointer struct builder for PromotionReferralsProgress.
+func (c *PromotionReferralsProgressClient) ModifyOne(old *PromotionReferralsProgress, data any) *PromotionReferralsProgressUpdateOne {
+	mutation := newPromotionReferralsProgressMutation(c.config, OpUpdateOne, withPromotionReferralsProgress(old))
+	up := &PromotionReferralsProgressUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[PromotionReferralsProgressUpdateOne, PromotionReferralsProgress](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for PromotionSetting.
 func (c *PromotionSettingClient) ModifyOne(old *PromotionSetting, data any) *PromotionSettingUpdateOne {
 	mutation := newPromotionSettingMutation(c.config, OpUpdateOne, withPromotionSetting(old))

@@ -13450,7 +13450,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/promotion.WithdrawalListReq"
+                            "$ref": "#/definitions/promotion.WithdrawalExportReq"
                         }
                     }
                 ],
@@ -17035,6 +17035,47 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            }
+        },
+        "/promotion/v1/referrals/progress": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[P]推广接口"
+                ],
+                "summary": "P8001 推荐进度",
+                "operationId": "ReferralsProgressList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "会员校验token",
+                        "name": "X-Promotion-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "查询请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/promotion.ReferralsProgressReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/promotion.ReferralsProgressRes"
                         }
                     }
                 }
@@ -32629,25 +32670,37 @@ const docTemplate = `{
         "promotion.InviteType": {
             "type": "integer",
             "enum": [
-                1,
-                2,
-                3,
-                4,
-                5
+                10000,
+                10100,
+                10101,
+                10102,
+                10200,
+                10201,
+                10202,
+                10203,
+                10204
             ],
             "x-enum-comments": {
                 "MemberActivationFail": "已被激活",
+                "MemberActivationOtherFail": "您有其他账号已被激活，本次邀请无效",
+                "MemberAllowBind": "允许绑定",
                 "MemberBindSuccess": "绑定成功",
                 "MemberInviteFail": "已被邀请",
+                "MemberInviteOtherFail": "您有其他账号已被邀请，本次邀请无效",
                 "MemberInviteSelfFail": "自己不能邀请自己",
-                "MemberSignSuccess": "注册成功"
+                "MemberSignSuccess": "注册成功",
+                "MemberSignSuccessWaitAuth": "提交成功，绑定关系待实名后生效"
             },
             "x-enum-varnames": [
+                "MemberAllowBind",
                 "MemberSignSuccess",
                 "MemberBindSuccess",
+                "MemberSignSuccessWaitAuth",
                 "MemberInviteFail",
                 "MemberActivationFail",
-                "MemberInviteSelfFail"
+                "MemberInviteSelfFail",
+                "MemberActivationOtherFail",
+                "MemberInviteOtherFail"
             ]
         },
         "promotion.Level": {
@@ -33143,6 +33196,44 @@ const docTemplate = `{
                 }
             }
         },
+        "promotion.ReferralsProgressReq": {
+            "type": "object",
+            "properties": {
+                "current": {
+                    "description": "当前页, 从1开始, 默认1",
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "description": "每页数据, 默认20",
+                    "type": "integer"
+                }
+            }
+        },
+        "promotion.ReferralsProgressRes": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "姓名",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "手机号",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "状态",
+                    "type": "string"
+                }
+            }
+        },
         "promotion.Setting": {
             "type": "object",
             "properties": {
@@ -33385,6 +33476,36 @@ const docTemplate = `{
                     "description": "状态 1:成功 2:失败",
                     "type": "integer",
                     "enum": [
+                        1,
+                        2
+                    ]
+                }
+            }
+        },
+        "promotion.WithdrawalExportReq": {
+            "type": "object",
+            "properties": {
+                "account": {
+                    "description": "提现账户",
+                    "type": "string"
+                },
+                "end": {
+                    "description": "结束日期",
+                    "type": "string"
+                },
+                "keywork": {
+                    "description": "关键字",
+                    "type": "string"
+                },
+                "start": {
+                    "description": "开始日期",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "提现状态 0:待审核 1:成功 2:失败",
+                    "type": "integer",
+                    "enum": [
+                        0,
                         1,
                         2
                     ]

@@ -3487,6 +3487,14 @@ var (
 		{Name: "rule", Type: field.TypeJSON, Comment: "返佣方案规则"},
 		{Name: "enable", Type: field.TypeBool, Comment: "启用状态 0:禁用 1:启用", Default: true},
 		{Name: "amount_sum", Type: field.TypeFloat64, Comment: "累计返佣金额", Default: 0},
+		{Name: "first_new_num", Type: field.TypeUint64, Comment: "一级新签人数", Default: 0},
+		{Name: "second_new_num", Type: field.TypeUint64, Comment: "二级新签人数", Default: 0},
+		{Name: "first_renew_num", Type: field.TypeUint64, Comment: "一级续费人数", Default: 0},
+		{Name: "second_renew_num", Type: field.TypeUint64, Comment: "二级续费人数", Default: 0},
+		{Name: "first_new_amount_sum", Type: field.TypeFloat64, Comment: "一级新签金额", Default: 0},
+		{Name: "second_new_amount_sum", Type: field.TypeFloat64, Comment: "二级新签金额", Default: 0},
+		{Name: "first_renew_amount_sum", Type: field.TypeFloat64, Comment: "一级续费金额", Default: 0},
+		{Name: "second_renew_amount_sum", Type: field.TypeFloat64, Comment: "二级续费金额", Default: 0},
 		{Name: "desc", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "返佣说明"},
 		{Name: "history_id", Type: field.TypeJSON, Nullable: true, Comment: "历史记录id"},
 		{Name: "start_at", Type: field.TypeTime, Nullable: true, Comment: "开始时间"},
@@ -3501,7 +3509,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "promotion_commission_promotion_member_member",
-				Columns:    []*schema.Column{PromotionCommissionColumns[16]},
+				Columns:    []*schema.Column{PromotionCommissionColumns[24]},
 				RefColumns: []*schema.Column{PromotionMemberColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -3520,7 +3528,7 @@ var (
 			{
 				Name:    "promotioncommission_member_id",
 				Unique:  false,
-				Columns: []*schema.Column{PromotionCommissionColumns[16]},
+				Columns: []*schema.Column{PromotionCommissionColumns[24]},
 			},
 		},
 	}
@@ -3981,6 +3989,9 @@ var (
 		{Name: "id", Type: field.TypeUint64, Increment: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
+		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
 		{Name: "referring_member_id", Type: field.TypeUint64, Nullable: true, Comment: "推广者id"},
 		{Name: "referred_member_id", Type: field.TypeUint64, Unique: true, Comment: "被推广者ID<骑手>"},
 		{Name: "rider_id", Type: field.TypeUint64, Nullable: true, Comment: "骑手ID"},
@@ -3994,25 +4005,25 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "promotion_referrals_promotion_member_referrals",
-				Columns:    []*schema.Column{PromotionReferralsColumns[3]},
+				Columns:    []*schema.Column{PromotionReferralsColumns[6]},
 				RefColumns: []*schema.Column{PromotionMemberColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "promotion_referrals_promotion_member_referred",
-				Columns:    []*schema.Column{PromotionReferralsColumns[4]},
+				Columns:    []*schema.Column{PromotionReferralsColumns[7]},
 				RefColumns: []*schema.Column{PromotionMemberColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "promotion_referrals_rider_rider",
-				Columns:    []*schema.Column{PromotionReferralsColumns[5]},
+				Columns:    []*schema.Column{PromotionReferralsColumns[8]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "promotion_referrals_subscribe_subscribe",
-				Columns:    []*schema.Column{PromotionReferralsColumns[6]},
+				Columns:    []*schema.Column{PromotionReferralsColumns[9]},
 				RefColumns: []*schema.Column{SubscribeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -4026,12 +4037,52 @@ var (
 			{
 				Name:    "promotionreferrals_rider_id",
 				Unique:  false,
-				Columns: []*schema.Column{PromotionReferralsColumns[5]},
+				Columns: []*schema.Column{PromotionReferralsColumns[8]},
 			},
 			{
 				Name:    "promotionreferrals_subscribe_id",
 				Unique:  false,
-				Columns: []*schema.Column{PromotionReferralsColumns[6]},
+				Columns: []*schema.Column{PromotionReferralsColumns[9]},
+			},
+		},
+	}
+	// PromotionReferralsProgressColumns holds the columns for the "promotion_referrals_progress" table.
+	PromotionReferralsProgressColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
+		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
+		{Name: "referring_member_id", Type: field.TypeUint64, Nullable: true, Comment: "推广者id"},
+		{Name: "referred_member_id", Type: field.TypeUint64, Nullable: true, Comment: "被推广者ID<骑手>"},
+		{Name: "name", Type: field.TypeString, Nullable: true, Comment: "姓名"},
+		{Name: "status", Type: field.TypeUint8, Comment: "状态  0: 邀请中 1:邀请成功 2:邀请失败", Default: 0},
+		{Name: "rider_id", Type: field.TypeUint64, Nullable: true, Comment: "骑手ID"},
+	}
+	// PromotionReferralsProgressTable holds the schema information for the "promotion_referrals_progress" table.
+	PromotionReferralsProgressTable = &schema.Table{
+		Name:       "promotion_referrals_progress",
+		Columns:    PromotionReferralsProgressColumns,
+		PrimaryKey: []*schema.Column{PromotionReferralsProgressColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "promotion_referrals_progress_rider_rider",
+				Columns:    []*schema.Column{PromotionReferralsProgressColumns[10]},
+				RefColumns: []*schema.Column{RiderColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "promotionreferralsprogress_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionReferralsProgressColumns[1]},
+			},
+			{
+				Name:    "promotionreferralsprogress_rider_id",
+				Unique:  false,
+				Columns: []*schema.Column{PromotionReferralsProgressColumns[10]},
 			},
 		},
 	}
@@ -5584,6 +5635,7 @@ var (
 		PromotionPersonTable,
 		PromotionPrivilegeTable,
 		PromotionReferralsTable,
+		PromotionReferralsProgressTable,
 		PromotionSettingTable,
 		PromotionWithdrawalTable,
 		ReserveTable,
@@ -5920,6 +5972,10 @@ func init() {
 	PromotionReferralsTable.ForeignKeys[3].RefTable = SubscribeTable
 	PromotionReferralsTable.Annotation = &entsql.Annotation{
 		Table: "promotion_referrals",
+	}
+	PromotionReferralsProgressTable.ForeignKeys[0].RefTable = RiderTable
+	PromotionReferralsProgressTable.Annotation = &entsql.Annotation{
+		Table: "promotion_referrals_progress",
 	}
 	PromotionSettingTable.Annotation = &entsql.Annotation{
 		Table: "promotion_setting",

@@ -162,6 +162,118 @@ func (pcc *PromotionCommissionCreate) SetNillableAmountSum(f *float64) *Promotio
 	return pcc
 }
 
+// SetFirstNewNum sets the "first_new_num" field.
+func (pcc *PromotionCommissionCreate) SetFirstNewNum(u uint64) *PromotionCommissionCreate {
+	pcc.mutation.SetFirstNewNum(u)
+	return pcc
+}
+
+// SetNillableFirstNewNum sets the "first_new_num" field if the given value is not nil.
+func (pcc *PromotionCommissionCreate) SetNillableFirstNewNum(u *uint64) *PromotionCommissionCreate {
+	if u != nil {
+		pcc.SetFirstNewNum(*u)
+	}
+	return pcc
+}
+
+// SetSecondNewNum sets the "second_new_num" field.
+func (pcc *PromotionCommissionCreate) SetSecondNewNum(u uint64) *PromotionCommissionCreate {
+	pcc.mutation.SetSecondNewNum(u)
+	return pcc
+}
+
+// SetNillableSecondNewNum sets the "second_new_num" field if the given value is not nil.
+func (pcc *PromotionCommissionCreate) SetNillableSecondNewNum(u *uint64) *PromotionCommissionCreate {
+	if u != nil {
+		pcc.SetSecondNewNum(*u)
+	}
+	return pcc
+}
+
+// SetFirstRenewNum sets the "first_renew_num" field.
+func (pcc *PromotionCommissionCreate) SetFirstRenewNum(u uint64) *PromotionCommissionCreate {
+	pcc.mutation.SetFirstRenewNum(u)
+	return pcc
+}
+
+// SetNillableFirstRenewNum sets the "first_renew_num" field if the given value is not nil.
+func (pcc *PromotionCommissionCreate) SetNillableFirstRenewNum(u *uint64) *PromotionCommissionCreate {
+	if u != nil {
+		pcc.SetFirstRenewNum(*u)
+	}
+	return pcc
+}
+
+// SetSecondRenewNum sets the "second_renew_num" field.
+func (pcc *PromotionCommissionCreate) SetSecondRenewNum(u uint64) *PromotionCommissionCreate {
+	pcc.mutation.SetSecondRenewNum(u)
+	return pcc
+}
+
+// SetNillableSecondRenewNum sets the "second_renew_num" field if the given value is not nil.
+func (pcc *PromotionCommissionCreate) SetNillableSecondRenewNum(u *uint64) *PromotionCommissionCreate {
+	if u != nil {
+		pcc.SetSecondRenewNum(*u)
+	}
+	return pcc
+}
+
+// SetFirstNewAmountSum sets the "first_new_amount_sum" field.
+func (pcc *PromotionCommissionCreate) SetFirstNewAmountSum(f float64) *PromotionCommissionCreate {
+	pcc.mutation.SetFirstNewAmountSum(f)
+	return pcc
+}
+
+// SetNillableFirstNewAmountSum sets the "first_new_amount_sum" field if the given value is not nil.
+func (pcc *PromotionCommissionCreate) SetNillableFirstNewAmountSum(f *float64) *PromotionCommissionCreate {
+	if f != nil {
+		pcc.SetFirstNewAmountSum(*f)
+	}
+	return pcc
+}
+
+// SetSecondNewAmountSum sets the "second_new_amount_sum" field.
+func (pcc *PromotionCommissionCreate) SetSecondNewAmountSum(f float64) *PromotionCommissionCreate {
+	pcc.mutation.SetSecondNewAmountSum(f)
+	return pcc
+}
+
+// SetNillableSecondNewAmountSum sets the "second_new_amount_sum" field if the given value is not nil.
+func (pcc *PromotionCommissionCreate) SetNillableSecondNewAmountSum(f *float64) *PromotionCommissionCreate {
+	if f != nil {
+		pcc.SetSecondNewAmountSum(*f)
+	}
+	return pcc
+}
+
+// SetFirstRenewAmountSum sets the "first_renew_amount_sum" field.
+func (pcc *PromotionCommissionCreate) SetFirstRenewAmountSum(f float64) *PromotionCommissionCreate {
+	pcc.mutation.SetFirstRenewAmountSum(f)
+	return pcc
+}
+
+// SetNillableFirstRenewAmountSum sets the "first_renew_amount_sum" field if the given value is not nil.
+func (pcc *PromotionCommissionCreate) SetNillableFirstRenewAmountSum(f *float64) *PromotionCommissionCreate {
+	if f != nil {
+		pcc.SetFirstRenewAmountSum(*f)
+	}
+	return pcc
+}
+
+// SetSecondRenewAmountSum sets the "second_renew_amount_sum" field.
+func (pcc *PromotionCommissionCreate) SetSecondRenewAmountSum(f float64) *PromotionCommissionCreate {
+	pcc.mutation.SetSecondRenewAmountSum(f)
+	return pcc
+}
+
+// SetNillableSecondRenewAmountSum sets the "second_renew_amount_sum" field if the given value is not nil.
+func (pcc *PromotionCommissionCreate) SetNillableSecondRenewAmountSum(f *float64) *PromotionCommissionCreate {
+	if f != nil {
+		pcc.SetSecondRenewAmountSum(*f)
+	}
+	return pcc
+}
+
 // SetDesc sets the "desc" field.
 func (pcc *PromotionCommissionCreate) SetDesc(s string) *PromotionCommissionCreate {
 	pcc.mutation.SetDesc(s)
@@ -293,6 +405,38 @@ func (pcc *PromotionCommissionCreate) defaults() error {
 		v := promotioncommission.DefaultAmountSum
 		pcc.mutation.SetAmountSum(v)
 	}
+	if _, ok := pcc.mutation.FirstNewNum(); !ok {
+		v := promotioncommission.DefaultFirstNewNum
+		pcc.mutation.SetFirstNewNum(v)
+	}
+	if _, ok := pcc.mutation.SecondNewNum(); !ok {
+		v := promotioncommission.DefaultSecondNewNum
+		pcc.mutation.SetSecondNewNum(v)
+	}
+	if _, ok := pcc.mutation.FirstRenewNum(); !ok {
+		v := promotioncommission.DefaultFirstRenewNum
+		pcc.mutation.SetFirstRenewNum(v)
+	}
+	if _, ok := pcc.mutation.SecondRenewNum(); !ok {
+		v := promotioncommission.DefaultSecondRenewNum
+		pcc.mutation.SetSecondRenewNum(v)
+	}
+	if _, ok := pcc.mutation.FirstNewAmountSum(); !ok {
+		v := promotioncommission.DefaultFirstNewAmountSum
+		pcc.mutation.SetFirstNewAmountSum(v)
+	}
+	if _, ok := pcc.mutation.SecondNewAmountSum(); !ok {
+		v := promotioncommission.DefaultSecondNewAmountSum
+		pcc.mutation.SetSecondNewAmountSum(v)
+	}
+	if _, ok := pcc.mutation.FirstRenewAmountSum(); !ok {
+		v := promotioncommission.DefaultFirstRenewAmountSum
+		pcc.mutation.SetFirstRenewAmountSum(v)
+	}
+	if _, ok := pcc.mutation.SecondRenewAmountSum(); !ok {
+		v := promotioncommission.DefaultSecondRenewAmountSum
+		pcc.mutation.SetSecondRenewAmountSum(v)
+	}
 	return nil
 }
 
@@ -318,6 +462,30 @@ func (pcc *PromotionCommissionCreate) check() error {
 	}
 	if _, ok := pcc.mutation.AmountSum(); !ok {
 		return &ValidationError{Name: "amount_sum", err: errors.New(`ent: missing required field "PromotionCommission.amount_sum"`)}
+	}
+	if _, ok := pcc.mutation.FirstNewNum(); !ok {
+		return &ValidationError{Name: "first_new_num", err: errors.New(`ent: missing required field "PromotionCommission.first_new_num"`)}
+	}
+	if _, ok := pcc.mutation.SecondNewNum(); !ok {
+		return &ValidationError{Name: "second_new_num", err: errors.New(`ent: missing required field "PromotionCommission.second_new_num"`)}
+	}
+	if _, ok := pcc.mutation.FirstRenewNum(); !ok {
+		return &ValidationError{Name: "first_renew_num", err: errors.New(`ent: missing required field "PromotionCommission.first_renew_num"`)}
+	}
+	if _, ok := pcc.mutation.SecondRenewNum(); !ok {
+		return &ValidationError{Name: "second_renew_num", err: errors.New(`ent: missing required field "PromotionCommission.second_renew_num"`)}
+	}
+	if _, ok := pcc.mutation.FirstNewAmountSum(); !ok {
+		return &ValidationError{Name: "first_new_amount_sum", err: errors.New(`ent: missing required field "PromotionCommission.first_new_amount_sum"`)}
+	}
+	if _, ok := pcc.mutation.SecondNewAmountSum(); !ok {
+		return &ValidationError{Name: "second_new_amount_sum", err: errors.New(`ent: missing required field "PromotionCommission.second_new_amount_sum"`)}
+	}
+	if _, ok := pcc.mutation.FirstRenewAmountSum(); !ok {
+		return &ValidationError{Name: "first_renew_amount_sum", err: errors.New(`ent: missing required field "PromotionCommission.first_renew_amount_sum"`)}
+	}
+	if _, ok := pcc.mutation.SecondRenewAmountSum(); !ok {
+		return &ValidationError{Name: "second_renew_amount_sum", err: errors.New(`ent: missing required field "PromotionCommission.second_renew_amount_sum"`)}
 	}
 	return nil
 }
@@ -389,6 +557,38 @@ func (pcc *PromotionCommissionCreate) createSpec() (*PromotionCommission, *sqlgr
 	if value, ok := pcc.mutation.AmountSum(); ok {
 		_spec.SetField(promotioncommission.FieldAmountSum, field.TypeFloat64, value)
 		_node.AmountSum = value
+	}
+	if value, ok := pcc.mutation.FirstNewNum(); ok {
+		_spec.SetField(promotioncommission.FieldFirstNewNum, field.TypeUint64, value)
+		_node.FirstNewNum = value
+	}
+	if value, ok := pcc.mutation.SecondNewNum(); ok {
+		_spec.SetField(promotioncommission.FieldSecondNewNum, field.TypeUint64, value)
+		_node.SecondNewNum = value
+	}
+	if value, ok := pcc.mutation.FirstRenewNum(); ok {
+		_spec.SetField(promotioncommission.FieldFirstRenewNum, field.TypeUint64, value)
+		_node.FirstRenewNum = value
+	}
+	if value, ok := pcc.mutation.SecondRenewNum(); ok {
+		_spec.SetField(promotioncommission.FieldSecondRenewNum, field.TypeUint64, value)
+		_node.SecondRenewNum = value
+	}
+	if value, ok := pcc.mutation.FirstNewAmountSum(); ok {
+		_spec.SetField(promotioncommission.FieldFirstNewAmountSum, field.TypeFloat64, value)
+		_node.FirstNewAmountSum = value
+	}
+	if value, ok := pcc.mutation.SecondNewAmountSum(); ok {
+		_spec.SetField(promotioncommission.FieldSecondNewAmountSum, field.TypeFloat64, value)
+		_node.SecondNewAmountSum = value
+	}
+	if value, ok := pcc.mutation.FirstRenewAmountSum(); ok {
+		_spec.SetField(promotioncommission.FieldFirstRenewAmountSum, field.TypeFloat64, value)
+		_node.FirstRenewAmountSum = value
+	}
+	if value, ok := pcc.mutation.SecondRenewAmountSum(); ok {
+		_spec.SetField(promotioncommission.FieldSecondRenewAmountSum, field.TypeFloat64, value)
+		_node.SecondRenewAmountSum = value
 	}
 	if value, ok := pcc.mutation.Desc(); ok {
 		_spec.SetField(promotioncommission.FieldDesc, field.TypeString, value)
@@ -644,6 +844,150 @@ func (u *PromotionCommissionUpsert) UpdateAmountSum() *PromotionCommissionUpsert
 // AddAmountSum adds v to the "amount_sum" field.
 func (u *PromotionCommissionUpsert) AddAmountSum(v float64) *PromotionCommissionUpsert {
 	u.Add(promotioncommission.FieldAmountSum, v)
+	return u
+}
+
+// SetFirstNewNum sets the "first_new_num" field.
+func (u *PromotionCommissionUpsert) SetFirstNewNum(v uint64) *PromotionCommissionUpsert {
+	u.Set(promotioncommission.FieldFirstNewNum, v)
+	return u
+}
+
+// UpdateFirstNewNum sets the "first_new_num" field to the value that was provided on create.
+func (u *PromotionCommissionUpsert) UpdateFirstNewNum() *PromotionCommissionUpsert {
+	u.SetExcluded(promotioncommission.FieldFirstNewNum)
+	return u
+}
+
+// AddFirstNewNum adds v to the "first_new_num" field.
+func (u *PromotionCommissionUpsert) AddFirstNewNum(v uint64) *PromotionCommissionUpsert {
+	u.Add(promotioncommission.FieldFirstNewNum, v)
+	return u
+}
+
+// SetSecondNewNum sets the "second_new_num" field.
+func (u *PromotionCommissionUpsert) SetSecondNewNum(v uint64) *PromotionCommissionUpsert {
+	u.Set(promotioncommission.FieldSecondNewNum, v)
+	return u
+}
+
+// UpdateSecondNewNum sets the "second_new_num" field to the value that was provided on create.
+func (u *PromotionCommissionUpsert) UpdateSecondNewNum() *PromotionCommissionUpsert {
+	u.SetExcluded(promotioncommission.FieldSecondNewNum)
+	return u
+}
+
+// AddSecondNewNum adds v to the "second_new_num" field.
+func (u *PromotionCommissionUpsert) AddSecondNewNum(v uint64) *PromotionCommissionUpsert {
+	u.Add(promotioncommission.FieldSecondNewNum, v)
+	return u
+}
+
+// SetFirstRenewNum sets the "first_renew_num" field.
+func (u *PromotionCommissionUpsert) SetFirstRenewNum(v uint64) *PromotionCommissionUpsert {
+	u.Set(promotioncommission.FieldFirstRenewNum, v)
+	return u
+}
+
+// UpdateFirstRenewNum sets the "first_renew_num" field to the value that was provided on create.
+func (u *PromotionCommissionUpsert) UpdateFirstRenewNum() *PromotionCommissionUpsert {
+	u.SetExcluded(promotioncommission.FieldFirstRenewNum)
+	return u
+}
+
+// AddFirstRenewNum adds v to the "first_renew_num" field.
+func (u *PromotionCommissionUpsert) AddFirstRenewNum(v uint64) *PromotionCommissionUpsert {
+	u.Add(promotioncommission.FieldFirstRenewNum, v)
+	return u
+}
+
+// SetSecondRenewNum sets the "second_renew_num" field.
+func (u *PromotionCommissionUpsert) SetSecondRenewNum(v uint64) *PromotionCommissionUpsert {
+	u.Set(promotioncommission.FieldSecondRenewNum, v)
+	return u
+}
+
+// UpdateSecondRenewNum sets the "second_renew_num" field to the value that was provided on create.
+func (u *PromotionCommissionUpsert) UpdateSecondRenewNum() *PromotionCommissionUpsert {
+	u.SetExcluded(promotioncommission.FieldSecondRenewNum)
+	return u
+}
+
+// AddSecondRenewNum adds v to the "second_renew_num" field.
+func (u *PromotionCommissionUpsert) AddSecondRenewNum(v uint64) *PromotionCommissionUpsert {
+	u.Add(promotioncommission.FieldSecondRenewNum, v)
+	return u
+}
+
+// SetFirstNewAmountSum sets the "first_new_amount_sum" field.
+func (u *PromotionCommissionUpsert) SetFirstNewAmountSum(v float64) *PromotionCommissionUpsert {
+	u.Set(promotioncommission.FieldFirstNewAmountSum, v)
+	return u
+}
+
+// UpdateFirstNewAmountSum sets the "first_new_amount_sum" field to the value that was provided on create.
+func (u *PromotionCommissionUpsert) UpdateFirstNewAmountSum() *PromotionCommissionUpsert {
+	u.SetExcluded(promotioncommission.FieldFirstNewAmountSum)
+	return u
+}
+
+// AddFirstNewAmountSum adds v to the "first_new_amount_sum" field.
+func (u *PromotionCommissionUpsert) AddFirstNewAmountSum(v float64) *PromotionCommissionUpsert {
+	u.Add(promotioncommission.FieldFirstNewAmountSum, v)
+	return u
+}
+
+// SetSecondNewAmountSum sets the "second_new_amount_sum" field.
+func (u *PromotionCommissionUpsert) SetSecondNewAmountSum(v float64) *PromotionCommissionUpsert {
+	u.Set(promotioncommission.FieldSecondNewAmountSum, v)
+	return u
+}
+
+// UpdateSecondNewAmountSum sets the "second_new_amount_sum" field to the value that was provided on create.
+func (u *PromotionCommissionUpsert) UpdateSecondNewAmountSum() *PromotionCommissionUpsert {
+	u.SetExcluded(promotioncommission.FieldSecondNewAmountSum)
+	return u
+}
+
+// AddSecondNewAmountSum adds v to the "second_new_amount_sum" field.
+func (u *PromotionCommissionUpsert) AddSecondNewAmountSum(v float64) *PromotionCommissionUpsert {
+	u.Add(promotioncommission.FieldSecondNewAmountSum, v)
+	return u
+}
+
+// SetFirstRenewAmountSum sets the "first_renew_amount_sum" field.
+func (u *PromotionCommissionUpsert) SetFirstRenewAmountSum(v float64) *PromotionCommissionUpsert {
+	u.Set(promotioncommission.FieldFirstRenewAmountSum, v)
+	return u
+}
+
+// UpdateFirstRenewAmountSum sets the "first_renew_amount_sum" field to the value that was provided on create.
+func (u *PromotionCommissionUpsert) UpdateFirstRenewAmountSum() *PromotionCommissionUpsert {
+	u.SetExcluded(promotioncommission.FieldFirstRenewAmountSum)
+	return u
+}
+
+// AddFirstRenewAmountSum adds v to the "first_renew_amount_sum" field.
+func (u *PromotionCommissionUpsert) AddFirstRenewAmountSum(v float64) *PromotionCommissionUpsert {
+	u.Add(promotioncommission.FieldFirstRenewAmountSum, v)
+	return u
+}
+
+// SetSecondRenewAmountSum sets the "second_renew_amount_sum" field.
+func (u *PromotionCommissionUpsert) SetSecondRenewAmountSum(v float64) *PromotionCommissionUpsert {
+	u.Set(promotioncommission.FieldSecondRenewAmountSum, v)
+	return u
+}
+
+// UpdateSecondRenewAmountSum sets the "second_renew_amount_sum" field to the value that was provided on create.
+func (u *PromotionCommissionUpsert) UpdateSecondRenewAmountSum() *PromotionCommissionUpsert {
+	u.SetExcluded(promotioncommission.FieldSecondRenewAmountSum)
+	return u
+}
+
+// AddSecondRenewAmountSum adds v to the "second_renew_amount_sum" field.
+func (u *PromotionCommissionUpsert) AddSecondRenewAmountSum(v float64) *PromotionCommissionUpsert {
+	u.Add(promotioncommission.FieldSecondRenewAmountSum, v)
 	return u
 }
 
@@ -946,6 +1290,174 @@ func (u *PromotionCommissionUpsertOne) AddAmountSum(v float64) *PromotionCommiss
 func (u *PromotionCommissionUpsertOne) UpdateAmountSum() *PromotionCommissionUpsertOne {
 	return u.Update(func(s *PromotionCommissionUpsert) {
 		s.UpdateAmountSum()
+	})
+}
+
+// SetFirstNewNum sets the "first_new_num" field.
+func (u *PromotionCommissionUpsertOne) SetFirstNewNum(v uint64) *PromotionCommissionUpsertOne {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.SetFirstNewNum(v)
+	})
+}
+
+// AddFirstNewNum adds v to the "first_new_num" field.
+func (u *PromotionCommissionUpsertOne) AddFirstNewNum(v uint64) *PromotionCommissionUpsertOne {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.AddFirstNewNum(v)
+	})
+}
+
+// UpdateFirstNewNum sets the "first_new_num" field to the value that was provided on create.
+func (u *PromotionCommissionUpsertOne) UpdateFirstNewNum() *PromotionCommissionUpsertOne {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.UpdateFirstNewNum()
+	})
+}
+
+// SetSecondNewNum sets the "second_new_num" field.
+func (u *PromotionCommissionUpsertOne) SetSecondNewNum(v uint64) *PromotionCommissionUpsertOne {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.SetSecondNewNum(v)
+	})
+}
+
+// AddSecondNewNum adds v to the "second_new_num" field.
+func (u *PromotionCommissionUpsertOne) AddSecondNewNum(v uint64) *PromotionCommissionUpsertOne {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.AddSecondNewNum(v)
+	})
+}
+
+// UpdateSecondNewNum sets the "second_new_num" field to the value that was provided on create.
+func (u *PromotionCommissionUpsertOne) UpdateSecondNewNum() *PromotionCommissionUpsertOne {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.UpdateSecondNewNum()
+	})
+}
+
+// SetFirstRenewNum sets the "first_renew_num" field.
+func (u *PromotionCommissionUpsertOne) SetFirstRenewNum(v uint64) *PromotionCommissionUpsertOne {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.SetFirstRenewNum(v)
+	})
+}
+
+// AddFirstRenewNum adds v to the "first_renew_num" field.
+func (u *PromotionCommissionUpsertOne) AddFirstRenewNum(v uint64) *PromotionCommissionUpsertOne {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.AddFirstRenewNum(v)
+	})
+}
+
+// UpdateFirstRenewNum sets the "first_renew_num" field to the value that was provided on create.
+func (u *PromotionCommissionUpsertOne) UpdateFirstRenewNum() *PromotionCommissionUpsertOne {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.UpdateFirstRenewNum()
+	})
+}
+
+// SetSecondRenewNum sets the "second_renew_num" field.
+func (u *PromotionCommissionUpsertOne) SetSecondRenewNum(v uint64) *PromotionCommissionUpsertOne {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.SetSecondRenewNum(v)
+	})
+}
+
+// AddSecondRenewNum adds v to the "second_renew_num" field.
+func (u *PromotionCommissionUpsertOne) AddSecondRenewNum(v uint64) *PromotionCommissionUpsertOne {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.AddSecondRenewNum(v)
+	})
+}
+
+// UpdateSecondRenewNum sets the "second_renew_num" field to the value that was provided on create.
+func (u *PromotionCommissionUpsertOne) UpdateSecondRenewNum() *PromotionCommissionUpsertOne {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.UpdateSecondRenewNum()
+	})
+}
+
+// SetFirstNewAmountSum sets the "first_new_amount_sum" field.
+func (u *PromotionCommissionUpsertOne) SetFirstNewAmountSum(v float64) *PromotionCommissionUpsertOne {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.SetFirstNewAmountSum(v)
+	})
+}
+
+// AddFirstNewAmountSum adds v to the "first_new_amount_sum" field.
+func (u *PromotionCommissionUpsertOne) AddFirstNewAmountSum(v float64) *PromotionCommissionUpsertOne {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.AddFirstNewAmountSum(v)
+	})
+}
+
+// UpdateFirstNewAmountSum sets the "first_new_amount_sum" field to the value that was provided on create.
+func (u *PromotionCommissionUpsertOne) UpdateFirstNewAmountSum() *PromotionCommissionUpsertOne {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.UpdateFirstNewAmountSum()
+	})
+}
+
+// SetSecondNewAmountSum sets the "second_new_amount_sum" field.
+func (u *PromotionCommissionUpsertOne) SetSecondNewAmountSum(v float64) *PromotionCommissionUpsertOne {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.SetSecondNewAmountSum(v)
+	})
+}
+
+// AddSecondNewAmountSum adds v to the "second_new_amount_sum" field.
+func (u *PromotionCommissionUpsertOne) AddSecondNewAmountSum(v float64) *PromotionCommissionUpsertOne {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.AddSecondNewAmountSum(v)
+	})
+}
+
+// UpdateSecondNewAmountSum sets the "second_new_amount_sum" field to the value that was provided on create.
+func (u *PromotionCommissionUpsertOne) UpdateSecondNewAmountSum() *PromotionCommissionUpsertOne {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.UpdateSecondNewAmountSum()
+	})
+}
+
+// SetFirstRenewAmountSum sets the "first_renew_amount_sum" field.
+func (u *PromotionCommissionUpsertOne) SetFirstRenewAmountSum(v float64) *PromotionCommissionUpsertOne {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.SetFirstRenewAmountSum(v)
+	})
+}
+
+// AddFirstRenewAmountSum adds v to the "first_renew_amount_sum" field.
+func (u *PromotionCommissionUpsertOne) AddFirstRenewAmountSum(v float64) *PromotionCommissionUpsertOne {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.AddFirstRenewAmountSum(v)
+	})
+}
+
+// UpdateFirstRenewAmountSum sets the "first_renew_amount_sum" field to the value that was provided on create.
+func (u *PromotionCommissionUpsertOne) UpdateFirstRenewAmountSum() *PromotionCommissionUpsertOne {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.UpdateFirstRenewAmountSum()
+	})
+}
+
+// SetSecondRenewAmountSum sets the "second_renew_amount_sum" field.
+func (u *PromotionCommissionUpsertOne) SetSecondRenewAmountSum(v float64) *PromotionCommissionUpsertOne {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.SetSecondRenewAmountSum(v)
+	})
+}
+
+// AddSecondRenewAmountSum adds v to the "second_renew_amount_sum" field.
+func (u *PromotionCommissionUpsertOne) AddSecondRenewAmountSum(v float64) *PromotionCommissionUpsertOne {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.AddSecondRenewAmountSum(v)
+	})
+}
+
+// UpdateSecondRenewAmountSum sets the "second_renew_amount_sum" field to the value that was provided on create.
+func (u *PromotionCommissionUpsertOne) UpdateSecondRenewAmountSum() *PromotionCommissionUpsertOne {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.UpdateSecondRenewAmountSum()
 	})
 }
 
@@ -1422,6 +1934,174 @@ func (u *PromotionCommissionUpsertBulk) AddAmountSum(v float64) *PromotionCommis
 func (u *PromotionCommissionUpsertBulk) UpdateAmountSum() *PromotionCommissionUpsertBulk {
 	return u.Update(func(s *PromotionCommissionUpsert) {
 		s.UpdateAmountSum()
+	})
+}
+
+// SetFirstNewNum sets the "first_new_num" field.
+func (u *PromotionCommissionUpsertBulk) SetFirstNewNum(v uint64) *PromotionCommissionUpsertBulk {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.SetFirstNewNum(v)
+	})
+}
+
+// AddFirstNewNum adds v to the "first_new_num" field.
+func (u *PromotionCommissionUpsertBulk) AddFirstNewNum(v uint64) *PromotionCommissionUpsertBulk {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.AddFirstNewNum(v)
+	})
+}
+
+// UpdateFirstNewNum sets the "first_new_num" field to the value that was provided on create.
+func (u *PromotionCommissionUpsertBulk) UpdateFirstNewNum() *PromotionCommissionUpsertBulk {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.UpdateFirstNewNum()
+	})
+}
+
+// SetSecondNewNum sets the "second_new_num" field.
+func (u *PromotionCommissionUpsertBulk) SetSecondNewNum(v uint64) *PromotionCommissionUpsertBulk {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.SetSecondNewNum(v)
+	})
+}
+
+// AddSecondNewNum adds v to the "second_new_num" field.
+func (u *PromotionCommissionUpsertBulk) AddSecondNewNum(v uint64) *PromotionCommissionUpsertBulk {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.AddSecondNewNum(v)
+	})
+}
+
+// UpdateSecondNewNum sets the "second_new_num" field to the value that was provided on create.
+func (u *PromotionCommissionUpsertBulk) UpdateSecondNewNum() *PromotionCommissionUpsertBulk {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.UpdateSecondNewNum()
+	})
+}
+
+// SetFirstRenewNum sets the "first_renew_num" field.
+func (u *PromotionCommissionUpsertBulk) SetFirstRenewNum(v uint64) *PromotionCommissionUpsertBulk {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.SetFirstRenewNum(v)
+	})
+}
+
+// AddFirstRenewNum adds v to the "first_renew_num" field.
+func (u *PromotionCommissionUpsertBulk) AddFirstRenewNum(v uint64) *PromotionCommissionUpsertBulk {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.AddFirstRenewNum(v)
+	})
+}
+
+// UpdateFirstRenewNum sets the "first_renew_num" field to the value that was provided on create.
+func (u *PromotionCommissionUpsertBulk) UpdateFirstRenewNum() *PromotionCommissionUpsertBulk {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.UpdateFirstRenewNum()
+	})
+}
+
+// SetSecondRenewNum sets the "second_renew_num" field.
+func (u *PromotionCommissionUpsertBulk) SetSecondRenewNum(v uint64) *PromotionCommissionUpsertBulk {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.SetSecondRenewNum(v)
+	})
+}
+
+// AddSecondRenewNum adds v to the "second_renew_num" field.
+func (u *PromotionCommissionUpsertBulk) AddSecondRenewNum(v uint64) *PromotionCommissionUpsertBulk {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.AddSecondRenewNum(v)
+	})
+}
+
+// UpdateSecondRenewNum sets the "second_renew_num" field to the value that was provided on create.
+func (u *PromotionCommissionUpsertBulk) UpdateSecondRenewNum() *PromotionCommissionUpsertBulk {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.UpdateSecondRenewNum()
+	})
+}
+
+// SetFirstNewAmountSum sets the "first_new_amount_sum" field.
+func (u *PromotionCommissionUpsertBulk) SetFirstNewAmountSum(v float64) *PromotionCommissionUpsertBulk {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.SetFirstNewAmountSum(v)
+	})
+}
+
+// AddFirstNewAmountSum adds v to the "first_new_amount_sum" field.
+func (u *PromotionCommissionUpsertBulk) AddFirstNewAmountSum(v float64) *PromotionCommissionUpsertBulk {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.AddFirstNewAmountSum(v)
+	})
+}
+
+// UpdateFirstNewAmountSum sets the "first_new_amount_sum" field to the value that was provided on create.
+func (u *PromotionCommissionUpsertBulk) UpdateFirstNewAmountSum() *PromotionCommissionUpsertBulk {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.UpdateFirstNewAmountSum()
+	})
+}
+
+// SetSecondNewAmountSum sets the "second_new_amount_sum" field.
+func (u *PromotionCommissionUpsertBulk) SetSecondNewAmountSum(v float64) *PromotionCommissionUpsertBulk {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.SetSecondNewAmountSum(v)
+	})
+}
+
+// AddSecondNewAmountSum adds v to the "second_new_amount_sum" field.
+func (u *PromotionCommissionUpsertBulk) AddSecondNewAmountSum(v float64) *PromotionCommissionUpsertBulk {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.AddSecondNewAmountSum(v)
+	})
+}
+
+// UpdateSecondNewAmountSum sets the "second_new_amount_sum" field to the value that was provided on create.
+func (u *PromotionCommissionUpsertBulk) UpdateSecondNewAmountSum() *PromotionCommissionUpsertBulk {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.UpdateSecondNewAmountSum()
+	})
+}
+
+// SetFirstRenewAmountSum sets the "first_renew_amount_sum" field.
+func (u *PromotionCommissionUpsertBulk) SetFirstRenewAmountSum(v float64) *PromotionCommissionUpsertBulk {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.SetFirstRenewAmountSum(v)
+	})
+}
+
+// AddFirstRenewAmountSum adds v to the "first_renew_amount_sum" field.
+func (u *PromotionCommissionUpsertBulk) AddFirstRenewAmountSum(v float64) *PromotionCommissionUpsertBulk {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.AddFirstRenewAmountSum(v)
+	})
+}
+
+// UpdateFirstRenewAmountSum sets the "first_renew_amount_sum" field to the value that was provided on create.
+func (u *PromotionCommissionUpsertBulk) UpdateFirstRenewAmountSum() *PromotionCommissionUpsertBulk {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.UpdateFirstRenewAmountSum()
+	})
+}
+
+// SetSecondRenewAmountSum sets the "second_renew_amount_sum" field.
+func (u *PromotionCommissionUpsertBulk) SetSecondRenewAmountSum(v float64) *PromotionCommissionUpsertBulk {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.SetSecondRenewAmountSum(v)
+	})
+}
+
+// AddSecondRenewAmountSum adds v to the "second_renew_amount_sum" field.
+func (u *PromotionCommissionUpsertBulk) AddSecondRenewAmountSum(v float64) *PromotionCommissionUpsertBulk {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.AddSecondRenewAmountSum(v)
+	})
+}
+
+// UpdateSecondRenewAmountSum sets the "second_renew_amount_sum" field to the value that was provided on create.
+func (u *PromotionCommissionUpsertBulk) UpdateSecondRenewAmountSum() *PromotionCommissionUpsertBulk {
+	return u.Update(func(s *PromotionCommissionUpsert) {
+		s.UpdateSecondRenewAmountSum()
 	})
 }
 

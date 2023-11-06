@@ -69,6 +69,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/promotionperson"
 	"github.com/auroraride/aurservd/internal/ent/promotionprivilege"
 	"github.com/auroraride/aurservd/internal/ent/promotionreferrals"
+	"github.com/auroraride/aurservd/internal/ent/promotionreferralsprogress"
 	"github.com/auroraride/aurservd/internal/ent/promotionsetting"
 	"github.com/auroraride/aurservd/internal/ent/promotionwithdrawal"
 	"github.com/auroraride/aurservd/internal/ent/reserve"
@@ -203,6 +204,8 @@ type Client struct {
 	PromotionPrivilege *PromotionPrivilegeClient
 	// PromotionReferrals is the client for interacting with the PromotionReferrals builders.
 	PromotionReferrals *PromotionReferralsClient
+	// PromotionReferralsProgress is the client for interacting with the PromotionReferralsProgress builders.
+	PromotionReferralsProgress *PromotionReferralsProgressClient
 	// PromotionSetting is the client for interacting with the PromotionSetting builders.
 	PromotionSetting *PromotionSettingClient
 	// PromotionWithdrawal is the client for interacting with the PromotionWithdrawal builders.
@@ -301,6 +304,7 @@ func (c *Client) init() {
 	c.PromotionPerson = NewPromotionPersonClient(c.config)
 	c.PromotionPrivilege = NewPromotionPrivilegeClient(c.config)
 	c.PromotionReferrals = NewPromotionReferralsClient(c.config)
+	c.PromotionReferralsProgress = NewPromotionReferralsProgressClient(c.config)
 	c.PromotionSetting = NewPromotionSettingClient(c.config)
 	c.PromotionWithdrawal = NewPromotionWithdrawalClient(c.config)
 	c.Reserve = NewReserveClient(c.config)
@@ -396,78 +400,79 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:                       ctx,
-		config:                    cfg,
-		Agent:                     NewAgentClient(cfg),
-		Allocate:                  NewAllocateClient(cfg),
-		Assistance:                NewAssistanceClient(cfg),
-		Attendance:                NewAttendanceClient(cfg),
-		Battery:                   NewBatteryClient(cfg),
-		BatteryFlow:               NewBatteryFlowClient(cfg),
-		BatteryModel:              NewBatteryModelClient(cfg),
-		Branch:                    NewBranchClient(cfg),
-		BranchContract:            NewBranchContractClient(cfg),
-		Business:                  NewBusinessClient(cfg),
-		Cabinet:                   NewCabinetClient(cfg),
-		CabinetFault:              NewCabinetFaultClient(cfg),
-		City:                      NewCityClient(cfg),
-		Commission:                NewCommissionClient(cfg),
-		Contract:                  NewContractClient(cfg),
-		Coupon:                    NewCouponClient(cfg),
-		CouponAssembly:            NewCouponAssemblyClient(cfg),
-		CouponTemplate:            NewCouponTemplateClient(cfg),
-		Ebike:                     NewEbikeClient(cfg),
-		EbikeBrand:                NewEbikeBrandClient(cfg),
-		Employee:                  NewEmployeeClient(cfg),
-		Enterprise:                NewEnterpriseClient(cfg),
-		EnterpriseBatterySwap:     NewEnterpriseBatterySwapClient(cfg),
-		EnterpriseBill:            NewEnterpriseBillClient(cfg),
-		EnterpriseContract:        NewEnterpriseContractClient(cfg),
-		EnterprisePrepayment:      NewEnterprisePrepaymentClient(cfg),
-		EnterprisePrice:           NewEnterprisePriceClient(cfg),
-		EnterpriseStatement:       NewEnterpriseStatementClient(cfg),
-		EnterpriseStation:         NewEnterpriseStationClient(cfg),
-		Exception:                 NewExceptionClient(cfg),
-		Exchange:                  NewExchangeClient(cfg),
-		Export:                    NewExportClient(cfg),
-		Feedback:                  NewFeedbackClient(cfg),
-		Inventory:                 NewInventoryClient(cfg),
-		Maintainer:                NewMaintainerClient(cfg),
-		Manager:                   NewManagerClient(cfg),
-		Order:                     NewOrderClient(cfg),
-		OrderRefund:               NewOrderRefundClient(cfg),
-		Person:                    NewPersonClient(cfg),
-		Plan:                      NewPlanClient(cfg),
-		PlanIntroduce:             NewPlanIntroduceClient(cfg),
-		PointLog:                  NewPointLogClient(cfg),
-		PromotionAchievement:      NewPromotionAchievementClient(cfg),
-		PromotionBankCard:         NewPromotionBankCardClient(cfg),
-		PromotionCommission:       NewPromotionCommissionClient(cfg),
-		PromotionCommissionPlan:   NewPromotionCommissionPlanClient(cfg),
-		PromotionEarnings:         NewPromotionEarningsClient(cfg),
-		PromotionGrowth:           NewPromotionGrowthClient(cfg),
-		PromotionLevel:            NewPromotionLevelClient(cfg),
-		PromotionLevelTask:        NewPromotionLevelTaskClient(cfg),
-		PromotionMember:           NewPromotionMemberClient(cfg),
-		PromotionMemberCommission: NewPromotionMemberCommissionClient(cfg),
-		PromotionPerson:           NewPromotionPersonClient(cfg),
-		PromotionPrivilege:        NewPromotionPrivilegeClient(cfg),
-		PromotionReferrals:        NewPromotionReferralsClient(cfg),
-		PromotionSetting:          NewPromotionSettingClient(cfg),
-		PromotionWithdrawal:       NewPromotionWithdrawalClient(cfg),
-		Reserve:                   NewReserveClient(cfg),
-		Rider:                     NewRiderClient(cfg),
-		RiderFollowUp:             NewRiderFollowUpClient(cfg),
-		Role:                      NewRoleClient(cfg),
-		Setting:                   NewSettingClient(cfg),
-		Stock:                     NewStockClient(cfg),
-		StockSummary:              NewStockSummaryClient(cfg),
-		Store:                     NewStoreClient(cfg),
-		Subscribe:                 NewSubscribeClient(cfg),
-		SubscribeAlter:            NewSubscribeAlterClient(cfg),
-		SubscribePause:            NewSubscribePauseClient(cfg),
-		SubscribeReminder:         NewSubscribeReminderClient(cfg),
-		SubscribeSuspend:          NewSubscribeSuspendClient(cfg),
+		ctx:                        ctx,
+		config:                     cfg,
+		Agent:                      NewAgentClient(cfg),
+		Allocate:                   NewAllocateClient(cfg),
+		Assistance:                 NewAssistanceClient(cfg),
+		Attendance:                 NewAttendanceClient(cfg),
+		Battery:                    NewBatteryClient(cfg),
+		BatteryFlow:                NewBatteryFlowClient(cfg),
+		BatteryModel:               NewBatteryModelClient(cfg),
+		Branch:                     NewBranchClient(cfg),
+		BranchContract:             NewBranchContractClient(cfg),
+		Business:                   NewBusinessClient(cfg),
+		Cabinet:                    NewCabinetClient(cfg),
+		CabinetFault:               NewCabinetFaultClient(cfg),
+		City:                       NewCityClient(cfg),
+		Commission:                 NewCommissionClient(cfg),
+		Contract:                   NewContractClient(cfg),
+		Coupon:                     NewCouponClient(cfg),
+		CouponAssembly:             NewCouponAssemblyClient(cfg),
+		CouponTemplate:             NewCouponTemplateClient(cfg),
+		Ebike:                      NewEbikeClient(cfg),
+		EbikeBrand:                 NewEbikeBrandClient(cfg),
+		Employee:                   NewEmployeeClient(cfg),
+		Enterprise:                 NewEnterpriseClient(cfg),
+		EnterpriseBatterySwap:      NewEnterpriseBatterySwapClient(cfg),
+		EnterpriseBill:             NewEnterpriseBillClient(cfg),
+		EnterpriseContract:         NewEnterpriseContractClient(cfg),
+		EnterprisePrepayment:       NewEnterprisePrepaymentClient(cfg),
+		EnterprisePrice:            NewEnterprisePriceClient(cfg),
+		EnterpriseStatement:        NewEnterpriseStatementClient(cfg),
+		EnterpriseStation:          NewEnterpriseStationClient(cfg),
+		Exception:                  NewExceptionClient(cfg),
+		Exchange:                   NewExchangeClient(cfg),
+		Export:                     NewExportClient(cfg),
+		Feedback:                   NewFeedbackClient(cfg),
+		Inventory:                  NewInventoryClient(cfg),
+		Maintainer:                 NewMaintainerClient(cfg),
+		Manager:                    NewManagerClient(cfg),
+		Order:                      NewOrderClient(cfg),
+		OrderRefund:                NewOrderRefundClient(cfg),
+		Person:                     NewPersonClient(cfg),
+		Plan:                       NewPlanClient(cfg),
+		PlanIntroduce:              NewPlanIntroduceClient(cfg),
+		PointLog:                   NewPointLogClient(cfg),
+		PromotionAchievement:       NewPromotionAchievementClient(cfg),
+		PromotionBankCard:          NewPromotionBankCardClient(cfg),
+		PromotionCommission:        NewPromotionCommissionClient(cfg),
+		PromotionCommissionPlan:    NewPromotionCommissionPlanClient(cfg),
+		PromotionEarnings:          NewPromotionEarningsClient(cfg),
+		PromotionGrowth:            NewPromotionGrowthClient(cfg),
+		PromotionLevel:             NewPromotionLevelClient(cfg),
+		PromotionLevelTask:         NewPromotionLevelTaskClient(cfg),
+		PromotionMember:            NewPromotionMemberClient(cfg),
+		PromotionMemberCommission:  NewPromotionMemberCommissionClient(cfg),
+		PromotionPerson:            NewPromotionPersonClient(cfg),
+		PromotionPrivilege:         NewPromotionPrivilegeClient(cfg),
+		PromotionReferrals:         NewPromotionReferralsClient(cfg),
+		PromotionReferralsProgress: NewPromotionReferralsProgressClient(cfg),
+		PromotionSetting:           NewPromotionSettingClient(cfg),
+		PromotionWithdrawal:        NewPromotionWithdrawalClient(cfg),
+		Reserve:                    NewReserveClient(cfg),
+		Rider:                      NewRiderClient(cfg),
+		RiderFollowUp:              NewRiderFollowUpClient(cfg),
+		Role:                       NewRoleClient(cfg),
+		Setting:                    NewSettingClient(cfg),
+		Stock:                      NewStockClient(cfg),
+		StockSummary:               NewStockSummaryClient(cfg),
+		Store:                      NewStoreClient(cfg),
+		Subscribe:                  NewSubscribeClient(cfg),
+		SubscribeAlter:             NewSubscribeAlterClient(cfg),
+		SubscribePause:             NewSubscribePauseClient(cfg),
+		SubscribeReminder:          NewSubscribeReminderClient(cfg),
+		SubscribeSuspend:           NewSubscribeSuspendClient(cfg),
 	}, nil
 }
 
@@ -485,78 +490,79 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:                       ctx,
-		config:                    cfg,
-		Agent:                     NewAgentClient(cfg),
-		Allocate:                  NewAllocateClient(cfg),
-		Assistance:                NewAssistanceClient(cfg),
-		Attendance:                NewAttendanceClient(cfg),
-		Battery:                   NewBatteryClient(cfg),
-		BatteryFlow:               NewBatteryFlowClient(cfg),
-		BatteryModel:              NewBatteryModelClient(cfg),
-		Branch:                    NewBranchClient(cfg),
-		BranchContract:            NewBranchContractClient(cfg),
-		Business:                  NewBusinessClient(cfg),
-		Cabinet:                   NewCabinetClient(cfg),
-		CabinetFault:              NewCabinetFaultClient(cfg),
-		City:                      NewCityClient(cfg),
-		Commission:                NewCommissionClient(cfg),
-		Contract:                  NewContractClient(cfg),
-		Coupon:                    NewCouponClient(cfg),
-		CouponAssembly:            NewCouponAssemblyClient(cfg),
-		CouponTemplate:            NewCouponTemplateClient(cfg),
-		Ebike:                     NewEbikeClient(cfg),
-		EbikeBrand:                NewEbikeBrandClient(cfg),
-		Employee:                  NewEmployeeClient(cfg),
-		Enterprise:                NewEnterpriseClient(cfg),
-		EnterpriseBatterySwap:     NewEnterpriseBatterySwapClient(cfg),
-		EnterpriseBill:            NewEnterpriseBillClient(cfg),
-		EnterpriseContract:        NewEnterpriseContractClient(cfg),
-		EnterprisePrepayment:      NewEnterprisePrepaymentClient(cfg),
-		EnterprisePrice:           NewEnterprisePriceClient(cfg),
-		EnterpriseStatement:       NewEnterpriseStatementClient(cfg),
-		EnterpriseStation:         NewEnterpriseStationClient(cfg),
-		Exception:                 NewExceptionClient(cfg),
-		Exchange:                  NewExchangeClient(cfg),
-		Export:                    NewExportClient(cfg),
-		Feedback:                  NewFeedbackClient(cfg),
-		Inventory:                 NewInventoryClient(cfg),
-		Maintainer:                NewMaintainerClient(cfg),
-		Manager:                   NewManagerClient(cfg),
-		Order:                     NewOrderClient(cfg),
-		OrderRefund:               NewOrderRefundClient(cfg),
-		Person:                    NewPersonClient(cfg),
-		Plan:                      NewPlanClient(cfg),
-		PlanIntroduce:             NewPlanIntroduceClient(cfg),
-		PointLog:                  NewPointLogClient(cfg),
-		PromotionAchievement:      NewPromotionAchievementClient(cfg),
-		PromotionBankCard:         NewPromotionBankCardClient(cfg),
-		PromotionCommission:       NewPromotionCommissionClient(cfg),
-		PromotionCommissionPlan:   NewPromotionCommissionPlanClient(cfg),
-		PromotionEarnings:         NewPromotionEarningsClient(cfg),
-		PromotionGrowth:           NewPromotionGrowthClient(cfg),
-		PromotionLevel:            NewPromotionLevelClient(cfg),
-		PromotionLevelTask:        NewPromotionLevelTaskClient(cfg),
-		PromotionMember:           NewPromotionMemberClient(cfg),
-		PromotionMemberCommission: NewPromotionMemberCommissionClient(cfg),
-		PromotionPerson:           NewPromotionPersonClient(cfg),
-		PromotionPrivilege:        NewPromotionPrivilegeClient(cfg),
-		PromotionReferrals:        NewPromotionReferralsClient(cfg),
-		PromotionSetting:          NewPromotionSettingClient(cfg),
-		PromotionWithdrawal:       NewPromotionWithdrawalClient(cfg),
-		Reserve:                   NewReserveClient(cfg),
-		Rider:                     NewRiderClient(cfg),
-		RiderFollowUp:             NewRiderFollowUpClient(cfg),
-		Role:                      NewRoleClient(cfg),
-		Setting:                   NewSettingClient(cfg),
-		Stock:                     NewStockClient(cfg),
-		StockSummary:              NewStockSummaryClient(cfg),
-		Store:                     NewStoreClient(cfg),
-		Subscribe:                 NewSubscribeClient(cfg),
-		SubscribeAlter:            NewSubscribeAlterClient(cfg),
-		SubscribePause:            NewSubscribePauseClient(cfg),
-		SubscribeReminder:         NewSubscribeReminderClient(cfg),
-		SubscribeSuspend:          NewSubscribeSuspendClient(cfg),
+		ctx:                        ctx,
+		config:                     cfg,
+		Agent:                      NewAgentClient(cfg),
+		Allocate:                   NewAllocateClient(cfg),
+		Assistance:                 NewAssistanceClient(cfg),
+		Attendance:                 NewAttendanceClient(cfg),
+		Battery:                    NewBatteryClient(cfg),
+		BatteryFlow:                NewBatteryFlowClient(cfg),
+		BatteryModel:               NewBatteryModelClient(cfg),
+		Branch:                     NewBranchClient(cfg),
+		BranchContract:             NewBranchContractClient(cfg),
+		Business:                   NewBusinessClient(cfg),
+		Cabinet:                    NewCabinetClient(cfg),
+		CabinetFault:               NewCabinetFaultClient(cfg),
+		City:                       NewCityClient(cfg),
+		Commission:                 NewCommissionClient(cfg),
+		Contract:                   NewContractClient(cfg),
+		Coupon:                     NewCouponClient(cfg),
+		CouponAssembly:             NewCouponAssemblyClient(cfg),
+		CouponTemplate:             NewCouponTemplateClient(cfg),
+		Ebike:                      NewEbikeClient(cfg),
+		EbikeBrand:                 NewEbikeBrandClient(cfg),
+		Employee:                   NewEmployeeClient(cfg),
+		Enterprise:                 NewEnterpriseClient(cfg),
+		EnterpriseBatterySwap:      NewEnterpriseBatterySwapClient(cfg),
+		EnterpriseBill:             NewEnterpriseBillClient(cfg),
+		EnterpriseContract:         NewEnterpriseContractClient(cfg),
+		EnterprisePrepayment:       NewEnterprisePrepaymentClient(cfg),
+		EnterprisePrice:            NewEnterprisePriceClient(cfg),
+		EnterpriseStatement:        NewEnterpriseStatementClient(cfg),
+		EnterpriseStation:          NewEnterpriseStationClient(cfg),
+		Exception:                  NewExceptionClient(cfg),
+		Exchange:                   NewExchangeClient(cfg),
+		Export:                     NewExportClient(cfg),
+		Feedback:                   NewFeedbackClient(cfg),
+		Inventory:                  NewInventoryClient(cfg),
+		Maintainer:                 NewMaintainerClient(cfg),
+		Manager:                    NewManagerClient(cfg),
+		Order:                      NewOrderClient(cfg),
+		OrderRefund:                NewOrderRefundClient(cfg),
+		Person:                     NewPersonClient(cfg),
+		Plan:                       NewPlanClient(cfg),
+		PlanIntroduce:              NewPlanIntroduceClient(cfg),
+		PointLog:                   NewPointLogClient(cfg),
+		PromotionAchievement:       NewPromotionAchievementClient(cfg),
+		PromotionBankCard:          NewPromotionBankCardClient(cfg),
+		PromotionCommission:        NewPromotionCommissionClient(cfg),
+		PromotionCommissionPlan:    NewPromotionCommissionPlanClient(cfg),
+		PromotionEarnings:          NewPromotionEarningsClient(cfg),
+		PromotionGrowth:            NewPromotionGrowthClient(cfg),
+		PromotionLevel:             NewPromotionLevelClient(cfg),
+		PromotionLevelTask:         NewPromotionLevelTaskClient(cfg),
+		PromotionMember:            NewPromotionMemberClient(cfg),
+		PromotionMemberCommission:  NewPromotionMemberCommissionClient(cfg),
+		PromotionPerson:            NewPromotionPersonClient(cfg),
+		PromotionPrivilege:         NewPromotionPrivilegeClient(cfg),
+		PromotionReferrals:         NewPromotionReferralsClient(cfg),
+		PromotionReferralsProgress: NewPromotionReferralsProgressClient(cfg),
+		PromotionSetting:           NewPromotionSettingClient(cfg),
+		PromotionWithdrawal:        NewPromotionWithdrawalClient(cfg),
+		Reserve:                    NewReserveClient(cfg),
+		Rider:                      NewRiderClient(cfg),
+		RiderFollowUp:              NewRiderFollowUpClient(cfg),
+		Role:                       NewRoleClient(cfg),
+		Setting:                    NewSettingClient(cfg),
+		Stock:                      NewStockClient(cfg),
+		StockSummary:               NewStockSummaryClient(cfg),
+		Store:                      NewStoreClient(cfg),
+		Subscribe:                  NewSubscribeClient(cfg),
+		SubscribeAlter:             NewSubscribeAlterClient(cfg),
+		SubscribePause:             NewSubscribePauseClient(cfg),
+		SubscribeReminder:          NewSubscribeReminderClient(cfg),
+		SubscribeSuspend:           NewSubscribeSuspendClient(cfg),
 	}, nil
 }
 
@@ -598,10 +604,10 @@ func (c *Client) Use(hooks ...Hook) {
 		c.PromotionCommission, c.PromotionCommissionPlan, c.PromotionEarnings,
 		c.PromotionGrowth, c.PromotionLevel, c.PromotionLevelTask, c.PromotionMember,
 		c.PromotionMemberCommission, c.PromotionPerson, c.PromotionPrivilege,
-		c.PromotionReferrals, c.PromotionSetting, c.PromotionWithdrawal, c.Reserve,
-		c.Rider, c.RiderFollowUp, c.Role, c.Setting, c.Stock, c.StockSummary, c.Store,
-		c.Subscribe, c.SubscribeAlter, c.SubscribePause, c.SubscribeReminder,
-		c.SubscribeSuspend,
+		c.PromotionReferrals, c.PromotionReferralsProgress, c.PromotionSetting,
+		c.PromotionWithdrawal, c.Reserve, c.Rider, c.RiderFollowUp, c.Role, c.Setting,
+		c.Stock, c.StockSummary, c.Store, c.Subscribe, c.SubscribeAlter,
+		c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend,
 	} {
 		n.Use(hooks...)
 	}
@@ -623,10 +629,10 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.PromotionCommission, c.PromotionCommissionPlan, c.PromotionEarnings,
 		c.PromotionGrowth, c.PromotionLevel, c.PromotionLevelTask, c.PromotionMember,
 		c.PromotionMemberCommission, c.PromotionPerson, c.PromotionPrivilege,
-		c.PromotionReferrals, c.PromotionSetting, c.PromotionWithdrawal, c.Reserve,
-		c.Rider, c.RiderFollowUp, c.Role, c.Setting, c.Stock, c.StockSummary, c.Store,
-		c.Subscribe, c.SubscribeAlter, c.SubscribePause, c.SubscribeReminder,
-		c.SubscribeSuspend,
+		c.PromotionReferrals, c.PromotionReferralsProgress, c.PromotionSetting,
+		c.PromotionWithdrawal, c.Reserve, c.Rider, c.RiderFollowUp, c.Role, c.Setting,
+		c.Stock, c.StockSummary, c.Store, c.Subscribe, c.SubscribeAlter,
+		c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -745,6 +751,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.PromotionPrivilege.mutate(ctx, m)
 	case *PromotionReferralsMutation:
 		return c.PromotionReferrals.mutate(ctx, m)
+	case *PromotionReferralsProgressMutation:
+		return c.PromotionReferralsProgress.mutate(ctx, m)
 	case *PromotionSettingMutation:
 		return c.PromotionSetting.mutate(ctx, m)
 	case *PromotionWithdrawalMutation:
@@ -10650,7 +10658,8 @@ func (c *PromotionReferralsClient) QueryReferredMember(pr *PromotionReferrals) *
 
 // Hooks returns the client hooks.
 func (c *PromotionReferralsClient) Hooks() []Hook {
-	return c.hooks.PromotionReferrals
+	hooks := c.hooks.PromotionReferrals
+	return append(hooks[:len(hooks):len(hooks)], promotionreferrals.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -10670,6 +10679,141 @@ func (c *PromotionReferralsClient) mutate(ctx context.Context, m *PromotionRefer
 		return (&PromotionReferralsDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown PromotionReferrals mutation op: %q", m.Op())
+	}
+}
+
+// PromotionReferralsProgressClient is a client for the PromotionReferralsProgress schema.
+type PromotionReferralsProgressClient struct {
+	config
+}
+
+// NewPromotionReferralsProgressClient returns a client for the PromotionReferralsProgress from the given config.
+func NewPromotionReferralsProgressClient(c config) *PromotionReferralsProgressClient {
+	return &PromotionReferralsProgressClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `promotionreferralsprogress.Hooks(f(g(h())))`.
+func (c *PromotionReferralsProgressClient) Use(hooks ...Hook) {
+	c.hooks.PromotionReferralsProgress = append(c.hooks.PromotionReferralsProgress, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `promotionreferralsprogress.Intercept(f(g(h())))`.
+func (c *PromotionReferralsProgressClient) Intercept(interceptors ...Interceptor) {
+	c.inters.PromotionReferralsProgress = append(c.inters.PromotionReferralsProgress, interceptors...)
+}
+
+// Create returns a builder for creating a PromotionReferralsProgress entity.
+func (c *PromotionReferralsProgressClient) Create() *PromotionReferralsProgressCreate {
+	mutation := newPromotionReferralsProgressMutation(c.config, OpCreate)
+	return &PromotionReferralsProgressCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of PromotionReferralsProgress entities.
+func (c *PromotionReferralsProgressClient) CreateBulk(builders ...*PromotionReferralsProgressCreate) *PromotionReferralsProgressCreateBulk {
+	return &PromotionReferralsProgressCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for PromotionReferralsProgress.
+func (c *PromotionReferralsProgressClient) Update() *PromotionReferralsProgressUpdate {
+	mutation := newPromotionReferralsProgressMutation(c.config, OpUpdate)
+	return &PromotionReferralsProgressUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *PromotionReferralsProgressClient) UpdateOne(prp *PromotionReferralsProgress) *PromotionReferralsProgressUpdateOne {
+	mutation := newPromotionReferralsProgressMutation(c.config, OpUpdateOne, withPromotionReferralsProgress(prp))
+	return &PromotionReferralsProgressUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *PromotionReferralsProgressClient) UpdateOneID(id uint64) *PromotionReferralsProgressUpdateOne {
+	mutation := newPromotionReferralsProgressMutation(c.config, OpUpdateOne, withPromotionReferralsProgressID(id))
+	return &PromotionReferralsProgressUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for PromotionReferralsProgress.
+func (c *PromotionReferralsProgressClient) Delete() *PromotionReferralsProgressDelete {
+	mutation := newPromotionReferralsProgressMutation(c.config, OpDelete)
+	return &PromotionReferralsProgressDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *PromotionReferralsProgressClient) DeleteOne(prp *PromotionReferralsProgress) *PromotionReferralsProgressDeleteOne {
+	return c.DeleteOneID(prp.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *PromotionReferralsProgressClient) DeleteOneID(id uint64) *PromotionReferralsProgressDeleteOne {
+	builder := c.Delete().Where(promotionreferralsprogress.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &PromotionReferralsProgressDeleteOne{builder}
+}
+
+// Query returns a query builder for PromotionReferralsProgress.
+func (c *PromotionReferralsProgressClient) Query() *PromotionReferralsProgressQuery {
+	return &PromotionReferralsProgressQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypePromotionReferralsProgress},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a PromotionReferralsProgress entity by its id.
+func (c *PromotionReferralsProgressClient) Get(ctx context.Context, id uint64) (*PromotionReferralsProgress, error) {
+	return c.Query().Where(promotionreferralsprogress.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *PromotionReferralsProgressClient) GetX(ctx context.Context, id uint64) *PromotionReferralsProgress {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryRider queries the rider edge of a PromotionReferralsProgress.
+func (c *PromotionReferralsProgressClient) QueryRider(prp *PromotionReferralsProgress) *RiderQuery {
+	query := (&RiderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := prp.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(promotionreferralsprogress.Table, promotionreferralsprogress.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, promotionreferralsprogress.RiderTable, promotionreferralsprogress.RiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(prp.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *PromotionReferralsProgressClient) Hooks() []Hook {
+	hooks := c.hooks.PromotionReferralsProgress
+	return append(hooks[:len(hooks):len(hooks)], promotionreferralsprogress.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *PromotionReferralsProgressClient) Interceptors() []Interceptor {
+	return c.inters.PromotionReferralsProgress
+}
+
+func (c *PromotionReferralsProgressClient) mutate(ctx context.Context, m *PromotionReferralsProgressMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&PromotionReferralsProgressCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&PromotionReferralsProgressUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&PromotionReferralsProgressUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&PromotionReferralsProgressDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown PromotionReferralsProgress mutation op: %q", m.Op())
 	}
 }
 
@@ -13844,10 +13988,10 @@ type (
 		PromotionBankCard, PromotionCommission, PromotionCommissionPlan,
 		PromotionEarnings, PromotionGrowth, PromotionLevel, PromotionLevelTask,
 		PromotionMember, PromotionMemberCommission, PromotionPerson,
-		PromotionPrivilege, PromotionReferrals, PromotionSetting, PromotionWithdrawal,
-		Reserve, Rider, RiderFollowUp, Role, Setting, Stock, StockSummary, Store,
-		Subscribe, SubscribeAlter, SubscribePause, SubscribeReminder,
-		SubscribeSuspend []ent.Hook
+		PromotionPrivilege, PromotionReferrals, PromotionReferralsProgress,
+		PromotionSetting, PromotionWithdrawal, Reserve, Rider, RiderFollowUp, Role,
+		Setting, Stock, StockSummary, Store, Subscribe, SubscribeAlter, SubscribePause,
+		SubscribeReminder, SubscribeSuspend []ent.Hook
 	}
 	inters struct {
 		Agent, Allocate, Assistance, Attendance, Battery, BatteryFlow, BatteryModel,
@@ -13860,10 +14004,10 @@ type (
 		PromotionBankCard, PromotionCommission, PromotionCommissionPlan,
 		PromotionEarnings, PromotionGrowth, PromotionLevel, PromotionLevelTask,
 		PromotionMember, PromotionMemberCommission, PromotionPerson,
-		PromotionPrivilege, PromotionReferrals, PromotionSetting, PromotionWithdrawal,
-		Reserve, Rider, RiderFollowUp, Role, Setting, Stock, StockSummary, Store,
-		Subscribe, SubscribeAlter, SubscribePause, SubscribeReminder,
-		SubscribeSuspend []ent.Interceptor
+		PromotionPrivilege, PromotionReferrals, PromotionReferralsProgress,
+		PromotionSetting, PromotionWithdrawal, Reserve, Rider, RiderFollowUp, Role,
+		Setting, Stock, StockSummary, Store, Subscribe, SubscribeAlter, SubscribePause,
+		SubscribeReminder, SubscribeSuspend []ent.Interceptor
 	}
 )
 

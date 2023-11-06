@@ -3,12 +3,14 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
 	"github.com/auroraride/aurservd/internal/ent/promotionreferrals"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -24,6 +26,12 @@ type PromotionReferrals struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// 创建人
+	Creator *model.Modifier `json:"creator,omitempty"`
+	// 最后修改人
+	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
+	// 管理员改动原因/备注
+	Remark string `json:"remark,omitempty"`
 	// 骑手ID
 	RiderID *uint64 `json:"rider_id,omitempty"`
 	// SubscribeID holds the value of the "subscribe_id" field.
@@ -110,8 +118,12 @@ func (*PromotionReferrals) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case promotionreferrals.FieldCreator, promotionreferrals.FieldLastModifier:
+			values[i] = new([]byte)
 		case promotionreferrals.FieldID, promotionreferrals.FieldRiderID, promotionreferrals.FieldSubscribeID, promotionreferrals.FieldReferringMemberID, promotionreferrals.FieldReferredMemberID:
 			values[i] = new(sql.NullInt64)
+		case promotionreferrals.FieldRemark:
+			values[i] = new(sql.NullString)
 		case promotionreferrals.FieldCreatedAt, promotionreferrals.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		default:
@@ -146,6 +158,28 @@ func (pr *PromotionReferrals) assignValues(columns []string, values []any) error
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
 				pr.UpdatedAt = value.Time
+			}
+		case promotionreferrals.FieldCreator:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field creator", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &pr.Creator); err != nil {
+					return fmt.Errorf("unmarshal field creator: %w", err)
+				}
+			}
+		case promotionreferrals.FieldLastModifier:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field last_modifier", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &pr.LastModifier); err != nil {
+					return fmt.Errorf("unmarshal field last_modifier: %w", err)
+				}
+			}
+		case promotionreferrals.FieldRemark:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field remark", values[i])
+			} else if value.Valid {
+				pr.Remark = value.String
 			}
 		case promotionreferrals.FieldRiderID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -235,6 +269,15 @@ func (pr *PromotionReferrals) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
 	builder.WriteString(pr.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("creator=")
+	builder.WriteString(fmt.Sprintf("%v", pr.Creator))
+	builder.WriteString(", ")
+	builder.WriteString("last_modifier=")
+	builder.WriteString(fmt.Sprintf("%v", pr.LastModifier))
+	builder.WriteString(", ")
+	builder.WriteString("remark=")
+	builder.WriteString(pr.Remark)
 	builder.WriteString(", ")
 	if v := pr.RiderID; v != nil {
 		builder.WriteString("rider_id=")

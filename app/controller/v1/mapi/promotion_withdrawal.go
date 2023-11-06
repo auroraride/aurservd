@@ -52,9 +52,9 @@ func (p *promotionWithdrawal) AlterReview(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Promotion-Token  header  string  true  "会员校验token"
-// @Param        body  body  promotion.WithdrawalListReq true  "请求参数"
+// @Param        body  body  promotion.WithdrawalExportReq true  "请求参数"
 // @Success      200  {object}  string
 func (p *promotionWithdrawal) Export(c echo.Context) (err error) {
-	ctx := app.ContextX[app.ManagerContext](c)
-	return ctx.Attachment(service.NewPromotionWithdrawalService().Export())
+	ctx, req := app.ManagerContextAndBinding[promotion.WithdrawalExportReq](c)
+	return ctx.Attachment(service.NewPromotionWithdrawalService().Export(req))
 }

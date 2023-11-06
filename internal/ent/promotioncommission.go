@@ -45,6 +45,22 @@ type PromotionCommission struct {
 	Enable bool `json:"enable,omitempty"`
 	// 累计返佣金额
 	AmountSum float64 `json:"amount_sum,omitempty"`
+	// 一级新签人数
+	FirstNewNum uint64 `json:"first_new_num,omitempty"`
+	// 二级新签人数
+	SecondNewNum uint64 `json:"second_new_num,omitempty"`
+	// 一级续费人数
+	FirstRenewNum uint64 `json:"first_renew_num,omitempty"`
+	// 二级续费人数
+	SecondRenewNum uint64 `json:"second_renew_num,omitempty"`
+	// 一级新签金额
+	FirstNewAmountSum float64 `json:"first_new_amount_sum,omitempty"`
+	// 二级新签金额
+	SecondNewAmountSum float64 `json:"second_new_amount_sum,omitempty"`
+	// 一级续费金额
+	FirstRenewAmountSum float64 `json:"first_renew_amount_sum,omitempty"`
+	// 二级续费金额
+	SecondRenewAmountSum float64 `json:"second_renew_amount_sum,omitempty"`
 	// 返佣说明
 	Desc *string `json:"desc,omitempty"`
 	// 历史记录id
@@ -101,9 +117,9 @@ func (*PromotionCommission) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case promotioncommission.FieldEnable:
 			values[i] = new(sql.NullBool)
-		case promotioncommission.FieldAmountSum:
+		case promotioncommission.FieldAmountSum, promotioncommission.FieldFirstNewAmountSum, promotioncommission.FieldSecondNewAmountSum, promotioncommission.FieldFirstRenewAmountSum, promotioncommission.FieldSecondRenewAmountSum:
 			values[i] = new(sql.NullFloat64)
-		case promotioncommission.FieldID, promotioncommission.FieldMemberID, promotioncommission.FieldType:
+		case promotioncommission.FieldID, promotioncommission.FieldMemberID, promotioncommission.FieldType, promotioncommission.FieldFirstNewNum, promotioncommission.FieldSecondNewNum, promotioncommission.FieldFirstRenewNum, promotioncommission.FieldSecondRenewNum:
 			values[i] = new(sql.NullInt64)
 		case promotioncommission.FieldRemark, promotioncommission.FieldName, promotioncommission.FieldDesc:
 			values[i] = new(sql.NullString)
@@ -210,6 +226,54 @@ func (pc *PromotionCommission) assignValues(columns []string, values []any) erro
 				return fmt.Errorf("unexpected type %T for field amount_sum", values[i])
 			} else if value.Valid {
 				pc.AmountSum = value.Float64
+			}
+		case promotioncommission.FieldFirstNewNum:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field first_new_num", values[i])
+			} else if value.Valid {
+				pc.FirstNewNum = uint64(value.Int64)
+			}
+		case promotioncommission.FieldSecondNewNum:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field second_new_num", values[i])
+			} else if value.Valid {
+				pc.SecondNewNum = uint64(value.Int64)
+			}
+		case promotioncommission.FieldFirstRenewNum:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field first_renew_num", values[i])
+			} else if value.Valid {
+				pc.FirstRenewNum = uint64(value.Int64)
+			}
+		case promotioncommission.FieldSecondRenewNum:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field second_renew_num", values[i])
+			} else if value.Valid {
+				pc.SecondRenewNum = uint64(value.Int64)
+			}
+		case promotioncommission.FieldFirstNewAmountSum:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field first_new_amount_sum", values[i])
+			} else if value.Valid {
+				pc.FirstNewAmountSum = value.Float64
+			}
+		case promotioncommission.FieldSecondNewAmountSum:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field second_new_amount_sum", values[i])
+			} else if value.Valid {
+				pc.SecondNewAmountSum = value.Float64
+			}
+		case promotioncommission.FieldFirstRenewAmountSum:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field first_renew_amount_sum", values[i])
+			} else if value.Valid {
+				pc.FirstRenewAmountSum = value.Float64
+			}
+		case promotioncommission.FieldSecondRenewAmountSum:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field second_renew_amount_sum", values[i])
+			} else if value.Valid {
+				pc.SecondRenewAmountSum = value.Float64
 			}
 		case promotioncommission.FieldDesc:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -327,6 +391,30 @@ func (pc *PromotionCommission) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("amount_sum=")
 	builder.WriteString(fmt.Sprintf("%v", pc.AmountSum))
+	builder.WriteString(", ")
+	builder.WriteString("first_new_num=")
+	builder.WriteString(fmt.Sprintf("%v", pc.FirstNewNum))
+	builder.WriteString(", ")
+	builder.WriteString("second_new_num=")
+	builder.WriteString(fmt.Sprintf("%v", pc.SecondNewNum))
+	builder.WriteString(", ")
+	builder.WriteString("first_renew_num=")
+	builder.WriteString(fmt.Sprintf("%v", pc.FirstRenewNum))
+	builder.WriteString(", ")
+	builder.WriteString("second_renew_num=")
+	builder.WriteString(fmt.Sprintf("%v", pc.SecondRenewNum))
+	builder.WriteString(", ")
+	builder.WriteString("first_new_amount_sum=")
+	builder.WriteString(fmt.Sprintf("%v", pc.FirstNewAmountSum))
+	builder.WriteString(", ")
+	builder.WriteString("second_new_amount_sum=")
+	builder.WriteString(fmt.Sprintf("%v", pc.SecondNewAmountSum))
+	builder.WriteString(", ")
+	builder.WriteString("first_renew_amount_sum=")
+	builder.WriteString(fmt.Sprintf("%v", pc.FirstRenewAmountSum))
+	builder.WriteString(", ")
+	builder.WriteString("second_renew_amount_sum=")
+	builder.WriteString(fmt.Sprintf("%v", pc.SecondRenewAmountSum))
 	builder.WriteString(", ")
 	if v := pc.Desc; v != nil {
 		builder.WriteString("desc=")

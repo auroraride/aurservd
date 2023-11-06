@@ -648,6 +648,20 @@ func (pr *PromotionReferrals) GetID() uint64 {
 	return pr.ID
 }
 
+// GetTableName returns table name for PromotionReferralsProgress.
+func (prp *PromotionReferralsProgress) GetTableName() string {
+	return "promotion_referrals_progress"
+}
+
+// GetID returns id for PromotionReferralsProgress.
+func (prp *PromotionReferralsProgress) GetID() uint64 {
+	return prp.ID
+}
+
+func (prp *PromotionReferralsProgress) GetName() string {
+	return prp.Name
+}
+
 // GetTableName returns table name for PromotionSetting.
 func (ps *PromotionSetting) GetTableName() string {
 	return "promotion_setting"

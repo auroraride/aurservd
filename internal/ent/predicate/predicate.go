@@ -171,6 +171,9 @@ type PromotionPrivilege func(*sql.Selector)
 // PromotionReferrals is the predicate function for promotionreferrals builders.
 type PromotionReferrals func(*sql.Selector)
 
+// PromotionReferralsProgress is the predicate function for promotionreferralsprogress builders.
+type PromotionReferralsProgress func(*sql.Selector)
+
 // PromotionSetting is the predicate function for promotionsetting builders.
 type PromotionSetting func(*sql.Selector)
 

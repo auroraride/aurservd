@@ -124,6 +124,8 @@ type Tx struct {
 	PromotionPrivilege *PromotionPrivilegeClient
 	// PromotionReferrals is the client for interacting with the PromotionReferrals builders.
 	PromotionReferrals *PromotionReferralsClient
+	// PromotionReferralsProgress is the client for interacting with the PromotionReferralsProgress builders.
+	PromotionReferralsProgress *PromotionReferralsProgressClient
 	// PromotionSetting is the client for interacting with the PromotionSetting builders.
 	PromotionSetting *PromotionSettingClient
 	// PromotionWithdrawal is the client for interacting with the PromotionWithdrawal builders.
@@ -340,6 +342,7 @@ func (tx *Tx) init() {
 	tx.PromotionPerson = NewPromotionPersonClient(tx.config)
 	tx.PromotionPrivilege = NewPromotionPrivilegeClient(tx.config)
 	tx.PromotionReferrals = NewPromotionReferralsClient(tx.config)
+	tx.PromotionReferralsProgress = NewPromotionReferralsProgressClient(tx.config)
 	tx.PromotionSetting = NewPromotionSettingClient(tx.config)
 	tx.PromotionWithdrawal = NewPromotionWithdrawalClient(tx.config)
 	tx.Reserve = NewReserveClient(tx.config)

@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
 	"github.com/auroraride/aurservd/internal/ent/promotionreferrals"
@@ -35,6 +36,38 @@ func (pru *PromotionReferralsUpdate) Where(ps ...predicate.PromotionReferrals) *
 // SetUpdatedAt sets the "updated_at" field.
 func (pru *PromotionReferralsUpdate) SetUpdatedAt(t time.Time) *PromotionReferralsUpdate {
 	pru.mutation.SetUpdatedAt(t)
+	return pru
+}
+
+// SetLastModifier sets the "last_modifier" field.
+func (pru *PromotionReferralsUpdate) SetLastModifier(m *model.Modifier) *PromotionReferralsUpdate {
+	pru.mutation.SetLastModifier(m)
+	return pru
+}
+
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (pru *PromotionReferralsUpdate) ClearLastModifier() *PromotionReferralsUpdate {
+	pru.mutation.ClearLastModifier()
+	return pru
+}
+
+// SetRemark sets the "remark" field.
+func (pru *PromotionReferralsUpdate) SetRemark(s string) *PromotionReferralsUpdate {
+	pru.mutation.SetRemark(s)
+	return pru
+}
+
+// SetNillableRemark sets the "remark" field if the given value is not nil.
+func (pru *PromotionReferralsUpdate) SetNillableRemark(s *string) *PromotionReferralsUpdate {
+	if s != nil {
+		pru.SetRemark(*s)
+	}
+	return pru
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (pru *PromotionReferralsUpdate) ClearRemark() *PromotionReferralsUpdate {
+	pru.mutation.ClearRemark()
 	return pru
 }
 
@@ -155,7 +188,9 @@ func (pru *PromotionReferralsUpdate) ClearReferredMember() *PromotionReferralsUp
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (pru *PromotionReferralsUpdate) Save(ctx context.Context) (int, error) {
-	pru.defaults()
+	if err := pru.defaults(); err != nil {
+		return 0, err
+	}
 	return withHooks(ctx, pru.sqlSave, pru.mutation, pru.hooks)
 }
 
@@ -182,11 +217,15 @@ func (pru *PromotionReferralsUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (pru *PromotionReferralsUpdate) defaults() {
+func (pru *PromotionReferralsUpdate) defaults() error {
 	if _, ok := pru.mutation.UpdatedAt(); !ok {
+		if promotionreferrals.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized promotionreferrals.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := promotionreferrals.UpdateDefaultUpdatedAt()
 		pru.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -217,6 +256,21 @@ func (pru *PromotionReferralsUpdate) sqlSave(ctx context.Context) (n int, err er
 	}
 	if value, ok := pru.mutation.UpdatedAt(); ok {
 		_spec.SetField(promotionreferrals.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if pru.mutation.CreatorCleared() {
+		_spec.ClearField(promotionreferrals.FieldCreator, field.TypeJSON)
+	}
+	if value, ok := pru.mutation.LastModifier(); ok {
+		_spec.SetField(promotionreferrals.FieldLastModifier, field.TypeJSON, value)
+	}
+	if pru.mutation.LastModifierCleared() {
+		_spec.ClearField(promotionreferrals.FieldLastModifier, field.TypeJSON)
+	}
+	if value, ok := pru.mutation.Remark(); ok {
+		_spec.SetField(promotionreferrals.FieldRemark, field.TypeString, value)
+	}
+	if pru.mutation.RemarkCleared() {
+		_spec.ClearField(promotionreferrals.FieldRemark, field.TypeString)
 	}
 	if pru.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -362,6 +416,38 @@ func (pruo *PromotionReferralsUpdateOne) SetUpdatedAt(t time.Time) *PromotionRef
 	return pruo
 }
 
+// SetLastModifier sets the "last_modifier" field.
+func (pruo *PromotionReferralsUpdateOne) SetLastModifier(m *model.Modifier) *PromotionReferralsUpdateOne {
+	pruo.mutation.SetLastModifier(m)
+	return pruo
+}
+
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (pruo *PromotionReferralsUpdateOne) ClearLastModifier() *PromotionReferralsUpdateOne {
+	pruo.mutation.ClearLastModifier()
+	return pruo
+}
+
+// SetRemark sets the "remark" field.
+func (pruo *PromotionReferralsUpdateOne) SetRemark(s string) *PromotionReferralsUpdateOne {
+	pruo.mutation.SetRemark(s)
+	return pruo
+}
+
+// SetNillableRemark sets the "remark" field if the given value is not nil.
+func (pruo *PromotionReferralsUpdateOne) SetNillableRemark(s *string) *PromotionReferralsUpdateOne {
+	if s != nil {
+		pruo.SetRemark(*s)
+	}
+	return pruo
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (pruo *PromotionReferralsUpdateOne) ClearRemark() *PromotionReferralsUpdateOne {
+	pruo.mutation.ClearRemark()
+	return pruo
+}
+
 // SetRiderID sets the "rider_id" field.
 func (pruo *PromotionReferralsUpdateOne) SetRiderID(u uint64) *PromotionReferralsUpdateOne {
 	pruo.mutation.SetRiderID(u)
@@ -492,7 +578,9 @@ func (pruo *PromotionReferralsUpdateOne) Select(field string, fields ...string) 
 
 // Save executes the query and returns the updated PromotionReferrals entity.
 func (pruo *PromotionReferralsUpdateOne) Save(ctx context.Context) (*PromotionReferrals, error) {
-	pruo.defaults()
+	if err := pruo.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, pruo.sqlSave, pruo.mutation, pruo.hooks)
 }
 
@@ -519,11 +607,15 @@ func (pruo *PromotionReferralsUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (pruo *PromotionReferralsUpdateOne) defaults() {
+func (pruo *PromotionReferralsUpdateOne) defaults() error {
 	if _, ok := pruo.mutation.UpdatedAt(); !ok {
+		if promotionreferrals.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized promotionreferrals.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := promotionreferrals.UpdateDefaultUpdatedAt()
 		pruo.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -571,6 +663,21 @@ func (pruo *PromotionReferralsUpdateOne) sqlSave(ctx context.Context) (_node *Pr
 	}
 	if value, ok := pruo.mutation.UpdatedAt(); ok {
 		_spec.SetField(promotionreferrals.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if pruo.mutation.CreatorCleared() {
+		_spec.ClearField(promotionreferrals.FieldCreator, field.TypeJSON)
+	}
+	if value, ok := pruo.mutation.LastModifier(); ok {
+		_spec.SetField(promotionreferrals.FieldLastModifier, field.TypeJSON, value)
+	}
+	if pruo.mutation.LastModifierCleared() {
+		_spec.ClearField(promotionreferrals.FieldLastModifier, field.TypeJSON)
+	}
+	if value, ok := pruo.mutation.Remark(); ok {
+		_spec.SetField(promotionreferrals.FieldRemark, field.TypeString, value)
+	}
+	if pruo.mutation.RemarkCleared() {
+		_spec.ClearField(promotionreferrals.FieldRemark, field.TypeString)
 	}
 	if pruo.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{

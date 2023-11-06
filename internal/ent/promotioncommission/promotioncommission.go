@@ -39,6 +39,22 @@ const (
 	FieldEnable = "enable"
 	// FieldAmountSum holds the string denoting the amount_sum field in the database.
 	FieldAmountSum = "amount_sum"
+	// FieldFirstNewNum holds the string denoting the first_new_num field in the database.
+	FieldFirstNewNum = "first_new_num"
+	// FieldSecondNewNum holds the string denoting the second_new_num field in the database.
+	FieldSecondNewNum = "second_new_num"
+	// FieldFirstRenewNum holds the string denoting the first_renew_num field in the database.
+	FieldFirstRenewNum = "first_renew_num"
+	// FieldSecondRenewNum holds the string denoting the second_renew_num field in the database.
+	FieldSecondRenewNum = "second_renew_num"
+	// FieldFirstNewAmountSum holds the string denoting the first_new_amount_sum field in the database.
+	FieldFirstNewAmountSum = "first_new_amount_sum"
+	// FieldSecondNewAmountSum holds the string denoting the second_new_amount_sum field in the database.
+	FieldSecondNewAmountSum = "second_new_amount_sum"
+	// FieldFirstRenewAmountSum holds the string denoting the first_renew_amount_sum field in the database.
+	FieldFirstRenewAmountSum = "first_renew_amount_sum"
+	// FieldSecondRenewAmountSum holds the string denoting the second_renew_amount_sum field in the database.
+	FieldSecondRenewAmountSum = "second_renew_amount_sum"
 	// FieldDesc holds the string denoting the desc field in the database.
 	FieldDesc = "desc"
 	// FieldHistoryID holds the string denoting the history_id field in the database.
@@ -84,6 +100,14 @@ var Columns = []string{
 	FieldRule,
 	FieldEnable,
 	FieldAmountSum,
+	FieldFirstNewNum,
+	FieldSecondNewNum,
+	FieldFirstRenewNum,
+	FieldSecondRenewNum,
+	FieldFirstNewAmountSum,
+	FieldSecondNewAmountSum,
+	FieldFirstRenewAmountSum,
+	FieldSecondRenewAmountSum,
 	FieldDesc,
 	FieldHistoryID,
 	FieldStartAt,
@@ -119,6 +143,22 @@ var (
 	DefaultEnable bool
 	// DefaultAmountSum holds the default value on creation for the "amount_sum" field.
 	DefaultAmountSum float64
+	// DefaultFirstNewNum holds the default value on creation for the "first_new_num" field.
+	DefaultFirstNewNum uint64
+	// DefaultSecondNewNum holds the default value on creation for the "second_new_num" field.
+	DefaultSecondNewNum uint64
+	// DefaultFirstRenewNum holds the default value on creation for the "first_renew_num" field.
+	DefaultFirstRenewNum uint64
+	// DefaultSecondRenewNum holds the default value on creation for the "second_renew_num" field.
+	DefaultSecondRenewNum uint64
+	// DefaultFirstNewAmountSum holds the default value on creation for the "first_new_amount_sum" field.
+	DefaultFirstNewAmountSum float64
+	// DefaultSecondNewAmountSum holds the default value on creation for the "second_new_amount_sum" field.
+	DefaultSecondNewAmountSum float64
+	// DefaultFirstRenewAmountSum holds the default value on creation for the "first_renew_amount_sum" field.
+	DefaultFirstRenewAmountSum float64
+	// DefaultSecondRenewAmountSum holds the default value on creation for the "second_renew_amount_sum" field.
+	DefaultSecondRenewAmountSum float64
 )
 
 // OrderOption defines the ordering options for the PromotionCommission queries.
@@ -172,6 +212,46 @@ func ByEnable(opts ...sql.OrderTermOption) OrderOption {
 // ByAmountSum orders the results by the amount_sum field.
 func ByAmountSum(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldAmountSum, opts...).ToFunc()
+}
+
+// ByFirstNewNum orders the results by the first_new_num field.
+func ByFirstNewNum(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFirstNewNum, opts...).ToFunc()
+}
+
+// BySecondNewNum orders the results by the second_new_num field.
+func BySecondNewNum(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSecondNewNum, opts...).ToFunc()
+}
+
+// ByFirstRenewNum orders the results by the first_renew_num field.
+func ByFirstRenewNum(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFirstRenewNum, opts...).ToFunc()
+}
+
+// BySecondRenewNum orders the results by the second_renew_num field.
+func BySecondRenewNum(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSecondRenewNum, opts...).ToFunc()
+}
+
+// ByFirstNewAmountSum orders the results by the first_new_amount_sum field.
+func ByFirstNewAmountSum(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFirstNewAmountSum, opts...).ToFunc()
+}
+
+// BySecondNewAmountSum orders the results by the second_new_amount_sum field.
+func BySecondNewAmountSum(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSecondNewAmountSum, opts...).ToFunc()
+}
+
+// ByFirstRenewAmountSum orders the results by the first_renew_amount_sum field.
+func ByFirstRenewAmountSum(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFirstRenewAmountSum, opts...).ToFunc()
+}
+
+// BySecondRenewAmountSum orders the results by the second_renew_amount_sum field.
+func BySecondRenewAmountSum(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSecondRenewAmountSum, opts...).ToFunc()
 }
 
 // ByDesc orders the results by the desc field.

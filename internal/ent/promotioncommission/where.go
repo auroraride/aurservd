@@ -100,6 +100,46 @@ func AmountSum(v float64) predicate.PromotionCommission {
 	return predicate.PromotionCommission(sql.FieldEQ(FieldAmountSum, v))
 }
 
+// FirstNewNum applies equality check predicate on the "first_new_num" field. It's identical to FirstNewNumEQ.
+func FirstNewNum(v uint64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldEQ(FieldFirstNewNum, v))
+}
+
+// SecondNewNum applies equality check predicate on the "second_new_num" field. It's identical to SecondNewNumEQ.
+func SecondNewNum(v uint64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldEQ(FieldSecondNewNum, v))
+}
+
+// FirstRenewNum applies equality check predicate on the "first_renew_num" field. It's identical to FirstRenewNumEQ.
+func FirstRenewNum(v uint64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldEQ(FieldFirstRenewNum, v))
+}
+
+// SecondRenewNum applies equality check predicate on the "second_renew_num" field. It's identical to SecondRenewNumEQ.
+func SecondRenewNum(v uint64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldEQ(FieldSecondRenewNum, v))
+}
+
+// FirstNewAmountSum applies equality check predicate on the "first_new_amount_sum" field. It's identical to FirstNewAmountSumEQ.
+func FirstNewAmountSum(v float64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldEQ(FieldFirstNewAmountSum, v))
+}
+
+// SecondNewAmountSum applies equality check predicate on the "second_new_amount_sum" field. It's identical to SecondNewAmountSumEQ.
+func SecondNewAmountSum(v float64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldEQ(FieldSecondNewAmountSum, v))
+}
+
+// FirstRenewAmountSum applies equality check predicate on the "first_renew_amount_sum" field. It's identical to FirstRenewAmountSumEQ.
+func FirstRenewAmountSum(v float64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldEQ(FieldFirstRenewAmountSum, v))
+}
+
+// SecondRenewAmountSum applies equality check predicate on the "second_renew_amount_sum" field. It's identical to SecondRenewAmountSumEQ.
+func SecondRenewAmountSum(v float64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldEQ(FieldSecondRenewAmountSum, v))
+}
+
 // Desc applies equality check predicate on the "desc" field. It's identical to DescEQ.
 func Desc(v string) predicate.PromotionCommission {
 	return predicate.PromotionCommission(sql.FieldEQ(FieldDesc, v))
@@ -523,6 +563,326 @@ func AmountSumLT(v float64) predicate.PromotionCommission {
 // AmountSumLTE applies the LTE predicate on the "amount_sum" field.
 func AmountSumLTE(v float64) predicate.PromotionCommission {
 	return predicate.PromotionCommission(sql.FieldLTE(FieldAmountSum, v))
+}
+
+// FirstNewNumEQ applies the EQ predicate on the "first_new_num" field.
+func FirstNewNumEQ(v uint64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldEQ(FieldFirstNewNum, v))
+}
+
+// FirstNewNumNEQ applies the NEQ predicate on the "first_new_num" field.
+func FirstNewNumNEQ(v uint64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldNEQ(FieldFirstNewNum, v))
+}
+
+// FirstNewNumIn applies the In predicate on the "first_new_num" field.
+func FirstNewNumIn(vs ...uint64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldIn(FieldFirstNewNum, vs...))
+}
+
+// FirstNewNumNotIn applies the NotIn predicate on the "first_new_num" field.
+func FirstNewNumNotIn(vs ...uint64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldNotIn(FieldFirstNewNum, vs...))
+}
+
+// FirstNewNumGT applies the GT predicate on the "first_new_num" field.
+func FirstNewNumGT(v uint64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldGT(FieldFirstNewNum, v))
+}
+
+// FirstNewNumGTE applies the GTE predicate on the "first_new_num" field.
+func FirstNewNumGTE(v uint64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldGTE(FieldFirstNewNum, v))
+}
+
+// FirstNewNumLT applies the LT predicate on the "first_new_num" field.
+func FirstNewNumLT(v uint64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldLT(FieldFirstNewNum, v))
+}
+
+// FirstNewNumLTE applies the LTE predicate on the "first_new_num" field.
+func FirstNewNumLTE(v uint64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldLTE(FieldFirstNewNum, v))
+}
+
+// SecondNewNumEQ applies the EQ predicate on the "second_new_num" field.
+func SecondNewNumEQ(v uint64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldEQ(FieldSecondNewNum, v))
+}
+
+// SecondNewNumNEQ applies the NEQ predicate on the "second_new_num" field.
+func SecondNewNumNEQ(v uint64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldNEQ(FieldSecondNewNum, v))
+}
+
+// SecondNewNumIn applies the In predicate on the "second_new_num" field.
+func SecondNewNumIn(vs ...uint64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldIn(FieldSecondNewNum, vs...))
+}
+
+// SecondNewNumNotIn applies the NotIn predicate on the "second_new_num" field.
+func SecondNewNumNotIn(vs ...uint64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldNotIn(FieldSecondNewNum, vs...))
+}
+
+// SecondNewNumGT applies the GT predicate on the "second_new_num" field.
+func SecondNewNumGT(v uint64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldGT(FieldSecondNewNum, v))
+}
+
+// SecondNewNumGTE applies the GTE predicate on the "second_new_num" field.
+func SecondNewNumGTE(v uint64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldGTE(FieldSecondNewNum, v))
+}
+
+// SecondNewNumLT applies the LT predicate on the "second_new_num" field.
+func SecondNewNumLT(v uint64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldLT(FieldSecondNewNum, v))
+}
+
+// SecondNewNumLTE applies the LTE predicate on the "second_new_num" field.
+func SecondNewNumLTE(v uint64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldLTE(FieldSecondNewNum, v))
+}
+
+// FirstRenewNumEQ applies the EQ predicate on the "first_renew_num" field.
+func FirstRenewNumEQ(v uint64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldEQ(FieldFirstRenewNum, v))
+}
+
+// FirstRenewNumNEQ applies the NEQ predicate on the "first_renew_num" field.
+func FirstRenewNumNEQ(v uint64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldNEQ(FieldFirstRenewNum, v))
+}
+
+// FirstRenewNumIn applies the In predicate on the "first_renew_num" field.
+func FirstRenewNumIn(vs ...uint64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldIn(FieldFirstRenewNum, vs...))
+}
+
+// FirstRenewNumNotIn applies the NotIn predicate on the "first_renew_num" field.
+func FirstRenewNumNotIn(vs ...uint64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldNotIn(FieldFirstRenewNum, vs...))
+}
+
+// FirstRenewNumGT applies the GT predicate on the "first_renew_num" field.
+func FirstRenewNumGT(v uint64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldGT(FieldFirstRenewNum, v))
+}
+
+// FirstRenewNumGTE applies the GTE predicate on the "first_renew_num" field.
+func FirstRenewNumGTE(v uint64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldGTE(FieldFirstRenewNum, v))
+}
+
+// FirstRenewNumLT applies the LT predicate on the "first_renew_num" field.
+func FirstRenewNumLT(v uint64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldLT(FieldFirstRenewNum, v))
+}
+
+// FirstRenewNumLTE applies the LTE predicate on the "first_renew_num" field.
+func FirstRenewNumLTE(v uint64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldLTE(FieldFirstRenewNum, v))
+}
+
+// SecondRenewNumEQ applies the EQ predicate on the "second_renew_num" field.
+func SecondRenewNumEQ(v uint64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldEQ(FieldSecondRenewNum, v))
+}
+
+// SecondRenewNumNEQ applies the NEQ predicate on the "second_renew_num" field.
+func SecondRenewNumNEQ(v uint64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldNEQ(FieldSecondRenewNum, v))
+}
+
+// SecondRenewNumIn applies the In predicate on the "second_renew_num" field.
+func SecondRenewNumIn(vs ...uint64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldIn(FieldSecondRenewNum, vs...))
+}
+
+// SecondRenewNumNotIn applies the NotIn predicate on the "second_renew_num" field.
+func SecondRenewNumNotIn(vs ...uint64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldNotIn(FieldSecondRenewNum, vs...))
+}
+
+// SecondRenewNumGT applies the GT predicate on the "second_renew_num" field.
+func SecondRenewNumGT(v uint64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldGT(FieldSecondRenewNum, v))
+}
+
+// SecondRenewNumGTE applies the GTE predicate on the "second_renew_num" field.
+func SecondRenewNumGTE(v uint64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldGTE(FieldSecondRenewNum, v))
+}
+
+// SecondRenewNumLT applies the LT predicate on the "second_renew_num" field.
+func SecondRenewNumLT(v uint64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldLT(FieldSecondRenewNum, v))
+}
+
+// SecondRenewNumLTE applies the LTE predicate on the "second_renew_num" field.
+func SecondRenewNumLTE(v uint64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldLTE(FieldSecondRenewNum, v))
+}
+
+// FirstNewAmountSumEQ applies the EQ predicate on the "first_new_amount_sum" field.
+func FirstNewAmountSumEQ(v float64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldEQ(FieldFirstNewAmountSum, v))
+}
+
+// FirstNewAmountSumNEQ applies the NEQ predicate on the "first_new_amount_sum" field.
+func FirstNewAmountSumNEQ(v float64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldNEQ(FieldFirstNewAmountSum, v))
+}
+
+// FirstNewAmountSumIn applies the In predicate on the "first_new_amount_sum" field.
+func FirstNewAmountSumIn(vs ...float64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldIn(FieldFirstNewAmountSum, vs...))
+}
+
+// FirstNewAmountSumNotIn applies the NotIn predicate on the "first_new_amount_sum" field.
+func FirstNewAmountSumNotIn(vs ...float64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldNotIn(FieldFirstNewAmountSum, vs...))
+}
+
+// FirstNewAmountSumGT applies the GT predicate on the "first_new_amount_sum" field.
+func FirstNewAmountSumGT(v float64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldGT(FieldFirstNewAmountSum, v))
+}
+
+// FirstNewAmountSumGTE applies the GTE predicate on the "first_new_amount_sum" field.
+func FirstNewAmountSumGTE(v float64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldGTE(FieldFirstNewAmountSum, v))
+}
+
+// FirstNewAmountSumLT applies the LT predicate on the "first_new_amount_sum" field.
+func FirstNewAmountSumLT(v float64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldLT(FieldFirstNewAmountSum, v))
+}
+
+// FirstNewAmountSumLTE applies the LTE predicate on the "first_new_amount_sum" field.
+func FirstNewAmountSumLTE(v float64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldLTE(FieldFirstNewAmountSum, v))
+}
+
+// SecondNewAmountSumEQ applies the EQ predicate on the "second_new_amount_sum" field.
+func SecondNewAmountSumEQ(v float64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldEQ(FieldSecondNewAmountSum, v))
+}
+
+// SecondNewAmountSumNEQ applies the NEQ predicate on the "second_new_amount_sum" field.
+func SecondNewAmountSumNEQ(v float64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldNEQ(FieldSecondNewAmountSum, v))
+}
+
+// SecondNewAmountSumIn applies the In predicate on the "second_new_amount_sum" field.
+func SecondNewAmountSumIn(vs ...float64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldIn(FieldSecondNewAmountSum, vs...))
+}
+
+// SecondNewAmountSumNotIn applies the NotIn predicate on the "second_new_amount_sum" field.
+func SecondNewAmountSumNotIn(vs ...float64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldNotIn(FieldSecondNewAmountSum, vs...))
+}
+
+// SecondNewAmountSumGT applies the GT predicate on the "second_new_amount_sum" field.
+func SecondNewAmountSumGT(v float64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldGT(FieldSecondNewAmountSum, v))
+}
+
+// SecondNewAmountSumGTE applies the GTE predicate on the "second_new_amount_sum" field.
+func SecondNewAmountSumGTE(v float64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldGTE(FieldSecondNewAmountSum, v))
+}
+
+// SecondNewAmountSumLT applies the LT predicate on the "second_new_amount_sum" field.
+func SecondNewAmountSumLT(v float64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldLT(FieldSecondNewAmountSum, v))
+}
+
+// SecondNewAmountSumLTE applies the LTE predicate on the "second_new_amount_sum" field.
+func SecondNewAmountSumLTE(v float64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldLTE(FieldSecondNewAmountSum, v))
+}
+
+// FirstRenewAmountSumEQ applies the EQ predicate on the "first_renew_amount_sum" field.
+func FirstRenewAmountSumEQ(v float64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldEQ(FieldFirstRenewAmountSum, v))
+}
+
+// FirstRenewAmountSumNEQ applies the NEQ predicate on the "first_renew_amount_sum" field.
+func FirstRenewAmountSumNEQ(v float64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldNEQ(FieldFirstRenewAmountSum, v))
+}
+
+// FirstRenewAmountSumIn applies the In predicate on the "first_renew_amount_sum" field.
+func FirstRenewAmountSumIn(vs ...float64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldIn(FieldFirstRenewAmountSum, vs...))
+}
+
+// FirstRenewAmountSumNotIn applies the NotIn predicate on the "first_renew_amount_sum" field.
+func FirstRenewAmountSumNotIn(vs ...float64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldNotIn(FieldFirstRenewAmountSum, vs...))
+}
+
+// FirstRenewAmountSumGT applies the GT predicate on the "first_renew_amount_sum" field.
+func FirstRenewAmountSumGT(v float64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldGT(FieldFirstRenewAmountSum, v))
+}
+
+// FirstRenewAmountSumGTE applies the GTE predicate on the "first_renew_amount_sum" field.
+func FirstRenewAmountSumGTE(v float64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldGTE(FieldFirstRenewAmountSum, v))
+}
+
+// FirstRenewAmountSumLT applies the LT predicate on the "first_renew_amount_sum" field.
+func FirstRenewAmountSumLT(v float64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldLT(FieldFirstRenewAmountSum, v))
+}
+
+// FirstRenewAmountSumLTE applies the LTE predicate on the "first_renew_amount_sum" field.
+func FirstRenewAmountSumLTE(v float64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldLTE(FieldFirstRenewAmountSum, v))
+}
+
+// SecondRenewAmountSumEQ applies the EQ predicate on the "second_renew_amount_sum" field.
+func SecondRenewAmountSumEQ(v float64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldEQ(FieldSecondRenewAmountSum, v))
+}
+
+// SecondRenewAmountSumNEQ applies the NEQ predicate on the "second_renew_amount_sum" field.
+func SecondRenewAmountSumNEQ(v float64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldNEQ(FieldSecondRenewAmountSum, v))
+}
+
+// SecondRenewAmountSumIn applies the In predicate on the "second_renew_amount_sum" field.
+func SecondRenewAmountSumIn(vs ...float64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldIn(FieldSecondRenewAmountSum, vs...))
+}
+
+// SecondRenewAmountSumNotIn applies the NotIn predicate on the "second_renew_amount_sum" field.
+func SecondRenewAmountSumNotIn(vs ...float64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldNotIn(FieldSecondRenewAmountSum, vs...))
+}
+
+// SecondRenewAmountSumGT applies the GT predicate on the "second_renew_amount_sum" field.
+func SecondRenewAmountSumGT(v float64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldGT(FieldSecondRenewAmountSum, v))
+}
+
+// SecondRenewAmountSumGTE applies the GTE predicate on the "second_renew_amount_sum" field.
+func SecondRenewAmountSumGTE(v float64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldGTE(FieldSecondRenewAmountSum, v))
+}
+
+// SecondRenewAmountSumLT applies the LT predicate on the "second_renew_amount_sum" field.
+func SecondRenewAmountSumLT(v float64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldLT(FieldSecondRenewAmountSum, v))
+}
+
+// SecondRenewAmountSumLTE applies the LTE predicate on the "second_renew_amount_sum" field.
+func SecondRenewAmountSumLTE(v float64) predicate.PromotionCommission {
+	return predicate.PromotionCommission(sql.FieldLTE(FieldSecondRenewAmountSum, v))
 }
 
 // DescEQ applies the EQ predicate on the "desc" field.

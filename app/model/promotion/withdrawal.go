@@ -45,6 +45,17 @@ const (
 func (w WithdrawalStatus) Value() uint8 {
 	return uint8(w)
 }
+func (w WithdrawalStatus) String() string {
+	switch w {
+	case WithdrawalStatusPending:
+		return "待审核"
+	case WithdrawalStatusSuccess:
+		return "成功"
+	case WithdrawalStatusFailed:
+		return "失败"
+	}
+	return ""
+}
 
 // WithdrawalListReq 提现列表请求
 type WithdrawalListReq struct {
@@ -103,6 +114,10 @@ type WithdrawalFeeRes struct {
 	AmountReceived float64 `json:"amountReceived"` // 实际到账金额
 	WithdrawalFee  float64 `json:"withdrawalFee"`  // 服务费
 	Taxable        float64 `json:"taxable"`        // 应缴税款
+}
+
+type WithdrawalExportReq struct {
+	WithdrawalFilter
 }
 
 type WithdrawalExport struct {

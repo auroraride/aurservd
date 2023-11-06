@@ -166,16 +166,15 @@ type MemberSigninReq struct {
 	SmsID             string  `json:"smsID,omitempty" validate:"required_if=SigninType 1"`                         // 短信ID
 	Code              string  `json:"code,omitempty" validate:"required_if=SigninType 1,required_if=SigninType 2"` // 图形验证码或者授权登录code
 	SigninType        uint64  `json:"signinType" validate:"required,oneof=1 2" enums:"1,2"`                        // 登录类型 1:短信登录 2:微信授权登录
-	Name              *string `json:"name"`                                                                        // 姓名
+	Name              string  `json:"name"`                                                                        // 姓名
 	ReferringMemberID *uint64 `json:"referringMemberID"`                                                           // 推荐人
 }
 
 type MemberCreateReq struct {
-	Phone             string  `json:"phone"`             // 手机号
-	Name              *string `json:"name"`              // 姓名
-	RiderID           *uint64 `json:"riderID"`           // 骑手ID
-	ReferringMemberID *uint64 `json:"referringMemberID"` // 推荐人ID
-	SubscribeID       *uint64 `json:"subscribeID"`       // 订阅ID
+	Phone       string  `json:"phone"`       // 手机号
+	Name        string  `json:"name"`        // 姓名
+	RiderID     *uint64 `json:"riderID"`     // 骑手ID
+	SubscribeID *uint64 `json:"subscribeID"` // 订阅ID
 }
 
 // MemberSigninRes 注册会员返回参数
@@ -206,16 +205,47 @@ type UploadAvatar struct {
 	Avatar string `json:"avatar" validate:"required" ` // 头像
 }
 
-type InviteType uint8
+type InviteType int64
 
 const (
-	MemberSignSuccess    InviteType = iota + 1 // 注册成功
-	MemberBindSuccess                          // 绑定成功
-	MemberInviteFail                           // 已被邀请
-	MemberActivationFail                       // 已被激活
-	MemberInviteSelfFail                       // 自己不能邀请自己
+	MemberAllowBind           InviteType = 10000 // 允许绑定
+	MemberSignSuccess         InviteType = 10100 // 注册成功，绑定关系待实名后生效
+	MemberBindSuccess         InviteType = 10101 // 绑定成功
+	MemberSignSuccessWaitAuth InviteType = 10102 // 提交成功，绑定关系待实名后生效
+	MemberInviteFail          InviteType = 10200 // 已被邀请
+	MemberActivationFail      InviteType = 10201 // 已被激活
+	MemberInviteSelfFail      InviteType = 10202 // 自己不能邀请自己
+	MemberActivationOtherFail InviteType = 10203 // 您有其他账号已被激活，本次邀请无效
+	MemberInviteOtherFail     InviteType = 10204 // 您有其他账号已被邀请，本次邀请无效
 )
 
+func (i InviteType) Value() uint8 {
+	return uint8(i)
+}
+
+func (i InviteType) String() string {
+	switch i {
+	case MemberSignSuccess:
+		return "注册成功,绑定关系待实名后生效"
+	case MemberBindSuccess:
+		return "绑定成功"
+	case MemberInviteFail:
+		return "当前账号已被邀请，本次邀请无效"
+	case MemberActivationFail:
+		return "当前账号已被激活，本次邀请无效"
+	case MemberInviteSelfFail:
+		return "不能邀请自己"
+	case MemberActivationOtherFail:
+		return "该用户其他账号已被激活，本次邀请无效"
+	case MemberInviteOtherFail:
+		return "该用户其他账号已被邀请，本次邀请无效"
+	case MemberSignSuccessWaitAuth:
+		return "提交成功，绑定关系待实名后生效"
+	default:
+		return ""
+	}
+}
+
 type MemberInviteRes struct {
-	InviteType InviteType `json:"inviteType" ` // 邀请类型 1:注册成功 2:绑定成功 3:已被邀请 4:已被激活
+	InviteType InviteType `json:"inviteType" `
 }

@@ -22,11 +22,11 @@ import (
 	"github.com/auroraride/aurservd/internal/ali"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/promotioncommissionplan"
 	"github.com/auroraride/aurservd/internal/ent/promotionlevel"
 	"github.com/auroraride/aurservd/internal/ent/promotionmember"
 	"github.com/auroraride/aurservd/internal/ent/promotionperson"
-	"github.com/auroraride/aurservd/internal/ent/promotionreferrals"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/pkg/snag"
@@ -77,23 +77,35 @@ func (s *promotionMemberService) Signin(req *promotion.MemberSigninReq) *promoti
 	default:
 		snag.Panic("不支持的登录方式")
 	}
-	c := &promotion.MemberCreateReq{
-		Phone: req.Phone,
-		Name:  req.Name,
-	}
-	mem, _ := s.GetMemberByPhone(req.Phone)
 
-	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
-		// 获取骑手信息或创建骑手
-		s.getRiderOrCreate(tx, req.Phone, c)
-		if mem == nil {
-			// 创建会员
-			mem = s.createMember(tx, c)
-		} else {
-			s.updateMemberInfo(tx, mem, c)
-		}
-		return
-	})
+	// 获取骑手信息或创建骑手
+	ri, _ := ent.Database.Rider.QueryNotDeleted().Where(rider.Phone(req.Phone)).First(s.ctx)
+	if ri == nil {
+		ri = s.createRider(req.Phone)
+	}
+	// 查询是否有最新的订阅
+	var subscribeID *uint64
+	sub := NewSubscribe().Recent(ri.ID)
+	if sub != nil {
+		subscribeID = &sub.ID
+	}
+
+	mem, _ := s.GetMemberByPhone(req.Phone)
+	if mem == nil {
+		// 创建会员
+		mem = s.createMember(&promotion.MemberCreateReq{
+			Phone:       req.Phone,
+			Name:        req.Name,
+			SubscribeID: subscribeID,
+			RiderID:     &ri.ID,
+		})
+	} else {
+		s.updateMemberInfo(&promotion.MemberCreateReq{
+			Phone:       req.Phone,
+			SubscribeID: subscribeID,
+			RiderID:     &ri.ID,
+		})
+	}
 
 	if !mem.Enable {
 		snag.Panic("账号已被禁用")
@@ -114,104 +126,210 @@ func (s *promotionMemberService) Signup(req *promotion.MemberSigninReq) promotio
 
 	res := promotion.MemberInviteRes{}
 
-	// 推广账号
-	mem, _ := s.GetMemberByPhone(req.Phone)
-
-	if mem != nil && mem.ID == *req.ReferringMemberID {
-		res.InviteType = promotion.MemberInviteSelfFail
-		return res
+	if req.ReferringMemberID != nil && !ent.Database.PromotionMember.Query().Where(promotionmember.ID(*req.ReferringMemberID)).ExistX(s.ctx) {
+		snag.Panic("推荐人不存在")
 	}
 
-	// 有可能是团签转个签 个签转团签 骑手id变更过未更新
-	ri, _ := ent.Database.Rider.Query().Where(rider.Phone(req.Phone)).IDs(s.ctx)
-
-	if mem != nil && mem.Edges.Referred != nil && mem.Edges.Referred.ReferringMemberID != nil {
-		res.InviteType = promotion.MemberInviteFail
-		return res
-	} else if len(ri) > 0 {
-		sub := ent.Database.Subscribe.Query().Where(subscribe.RiderIDIn(ri...), subscribe.StatusNEQ(model.SubscribeStatusCanceled)).Order(ent.Desc(subscribe.FieldCreatedAt)).AllX(s.ctx)
-
-		for _, v := range sub {
-
-			if v.EndAt != nil { // 判断最新的退订时间是否超出设置天数
-				past := int(carbon.CreateFromStdTime(*v.EndAt).AddDay().DiffInDays(carbon.Now()))
-				// 判定退订时间是否超出设置天数
-				if !model.NewRecentSubscribePastDays(past).Commission() {
-					res.InviteType = promotion.MemberActivationFail
-					return res
-				}
-
-			} else if v.Status != model.SubscribeStatusInactive { // 判断是否已经激活
-				res.InviteType = promotion.MemberActivationFail
-				return res
-			}
-
-		}
-	}
-
-	c := &promotion.MemberCreateReq{
-		Phone:             req.Phone,
-		Name:              req.Name,
-		ReferringMemberID: req.ReferringMemberID,
-	}
-
-	ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
+	ri, _ := ent.Database.Rider.QueryNotDeleted().Where(rider.Phone(req.Phone)).First(s.ctx)
+	// 用于判断是新注册还是已经注册过
+	isSignup := true
+	if ri == nil {
+		isSignup = false
 		// 获取骑手信息或创建骑手
-		s.getRiderOrCreate(tx, req.Phone, c)
-		if mem == nil {
-			// 创建会员
-			s.createMember(tx, c)
-		} else {
-			s.updateMemberInfo(tx, mem, c)
-		}
-		return
-	})
-
-	res.InviteType = promotion.MemberSignSuccess
-	if mem != nil {
-		res.InviteType = promotion.MemberBindSuccess
+		ri = s.createRider(req.Phone)
+	}
+	// 查询是否有最新的订阅
+	var subscribeID *uint64
+	sub := NewSubscribe().Recent(ri.ID)
+	if sub != nil {
+		subscribeID = &sub.ID
+	}
+	//  获取会员信息
+	mem, _ := s.GetMemberByPhone(req.Phone)
+	if mem == nil {
+		// 创建会员
+		mem = s.createMember(&promotion.MemberCreateReq{
+			Phone:       req.Phone,
+			Name:        req.Name,
+			SubscribeID: subscribeID,
+			RiderID:     &ri.ID,
+		})
+	} else {
+		s.updateMemberInfo(&promotion.MemberCreateReq{
+			Phone:       req.Phone,
+			SubscribeID: subscribeID,
+			RiderID:     &ri.ID,
+		})
 	}
 
+	referralsProgress := &promotion.Referrals{
+		ReferringMemberID: req.ReferringMemberID,
+		ReferredMemberID:  &mem.ID,
+		Name:              req.Name,
+		RiderID:           &ri.ID,
+		Status:            promotion.ReferralsStatusSuccess,
+		Remark:            "邀请成功",
+	}
+
+	// 判断当前账号
+	if it := s.SelfCanBeInvited(mem, ri, req); it != promotion.MemberAllowBind {
+		res.InviteType = it
+		referralsProgress.Status = promotion.ReferralsStatusFail
+		referralsProgress.Remark = it.String()
+		NewPromotionReferralsService().MemberReferralsProgress(referralsProgress)
+		return res
+	}
+
+	// 判断名下所有是否能被绑定
+	if ircb := s.IsRiderCanBind(ri); ircb != promotion.MemberAllowBind {
+		res.InviteType = ircb
+		referralsProgress.Status = promotion.ReferralsStatusFail
+		referralsProgress.Remark = ircb.String()
+		NewPromotionReferralsService().MemberReferralsProgress(referralsProgress)
+		return res
+	}
+
+	// 判断骑手是否实名
+	if s.IsRiderPerson(req.Phone) {
+		// 已经实名的 直接记录推荐关系 并且将推荐关系状态改为已激活
+		NewPromotionReferralsService().CreateReferrals(&promotion.Referrals{
+			ReferringMemberID: req.ReferringMemberID,
+			ReferredMemberID:  &mem.ID,
+			RiderID:           &ri.ID,
+		})
+		referralsProgress.Status = promotion.ReferralsStatusSuccess
+		referralsProgress.Remark = "邀请成功"
+	} else {
+		// 未实名不绑定关系
+		referralsProgress.Status = promotion.ReferralsStatusInviting
+		referralsProgress.Remark = "待用户实名后判定邀请是否生效"
+	}
+	NewPromotionReferralsService().MemberReferralsProgress(referralsProgress)
+
+	if isSignup {
+		// 没实名提示
+		if !s.IsRiderPerson(req.Phone) {
+			res.InviteType = promotion.MemberSignSuccessWaitAuth
+			return res
+		}
+	} else {
+		res.InviteType = promotion.MemberSignSuccess
+		return res
+	}
+	res.InviteType = promotion.MemberBindSuccess
 	return res
 }
 
-// 获取骑手信息或创建骑手
-func (s *promotionMemberService) getRiderOrCreate(tx *ent.Tx, phone string, c *promotion.MemberCreateReq) {
-	rinfo, _ := ent.Database.Rider.QueryNotDeleted().Where(rider.Phone(phone)).First(s.ctx)
-	if rinfo == nil {
-		// 创建骑手
-		rinfo = tx.Rider.Create().SetPhone(phone).SaveX(s.ctx)
+// IsRiderPerson 判断骑手是否实名
+func (s *promotionMemberService) IsRiderPerson(phone string) bool {
+	if exists, _ := ent.Database.Rider.QueryNotDeleted().
+		Where(rider.Phone(phone)).
+		QueryPerson().
+		Where(
+			person.Status(model.PersonAuthenticated.Value()),
+		).Exist(s.ctx); !exists {
+		return false
 	}
-	// 绑定骑手
-	c.RiderID = &rinfo.ID
+	return true
+}
 
-	if c.RiderID != nil { // 订阅
-		sub := NewSubscribe().Recent(*c.RiderID)
-		if sub != nil {
-			c.SubscribeID = &sub.ID
+// IsRiderCanBind 判断被邀请的骑手是否能被绑定
+func (s *promotionMemberService) IsRiderCanBind(riderInfo *ent.Rider) (it promotion.InviteType) {
+	it = promotion.MemberAllowBind
+
+	q := ent.Database.Rider.Query()
+	if riderInfo.PersonID != nil {
+		// 查询实名用户 和 电话
+		q.Where(
+			rider.Or(
+				rider.Phone(riderInfo.Phone),
+				rider.PersonID(*riderInfo.PersonID),
+			),
+		)
+	} else {
+		q.Where(rider.Phone(riderInfo.Phone))
+	}
+
+	// 判断这个人名下所有账号
+	riAll, _ := q.IDs(s.ctx)
+	if len(riAll) > 0 {
+		// 查询所有 注册会员
+		pm := ent.Database.PromotionMember.Query().Where(promotionmember.RiderIDIn(riAll...)).WithReferred().AllX(s.ctx)
+		for _, v := range pm {
+			if v.Edges.Referred != nil && v.Edges.Referred.ReferringMemberID != nil {
+				// 判断是否已经被邀请
+				it = promotion.MemberInviteOtherFail
+				return
+			}
+		}
+
+		// 判断是否已经激活
+		if s.IsActivation(riAll) {
+			it = promotion.MemberActivationOtherFail
 		}
 	}
+
+	return it
+}
+
+func (s *promotionMemberService) SelfCanBeInvited(mem *ent.PromotionMember, ri *ent.Rider, req *promotion.MemberSigninReq) (it promotion.InviteType) {
+	it = promotion.MemberAllowBind
+	if mem.ID == *req.ReferringMemberID {
+		// 判断是否绑定自己
+		it = promotion.MemberInviteSelfFail
+		return
+	}
+
+	if mem.Edges.Referred != nil && mem.Edges.Referred.ReferringMemberID != nil {
+		// 判断是否已经被邀请
+		it = promotion.MemberInviteFail
+		return
+	}
+
+	if s.IsActivation([]uint64{ri.ID}) {
+		it = promotion.MemberActivationFail
+		return
+	}
+	return it
+}
+
+// IsActivation 判断是否已经激活
+func (s *promotionMemberService) IsActivation(riderId []uint64) bool {
+	// 判断是否已经被激活
+	sub := ent.Database.Subscribe.Query().Where(subscribe.RiderIDIn(riderId...), subscribe.StatusNEQ(model.SubscribeStatusCanceled)).Order(ent.Desc(subscribe.FieldCreatedAt)).AllX(s.ctx)
+
+	for _, v := range sub {
+
+		if v.EndAt != nil { // 判断最新的退订时间是否超出设置天数
+			past := int(carbon.CreateFromStdTime(*v.EndAt).AddDay().DiffInDays(carbon.Now()))
+			// 判定退订时间是否超出设置天数
+			if !model.NewRecentSubscribePastDays(past).Commission() {
+				return true
+			}
+
+		} else if v.Status != model.SubscribeStatusInactive { // 判断是否已经激活
+			return true
+		}
+
+	}
+	return false
+}
+
+// 获取骑手信息或创建骑手
+func (s *promotionMemberService) createRider(phone string) *ent.Rider {
+	// 创建骑手
+	rinfo := ent.Database.Rider.Create().SetPhone(phone).SaveX(s.ctx)
+	return rinfo
 }
 
 // 更新会员信息
-func (s *promotionMemberService) updateMemberInfo(tx *ent.Tx, mem *ent.PromotionMember, req *promotion.MemberCreateReq) {
-	q := tx.PromotionMember.UpdateOne(mem)
-	re := tx.PromotionReferrals.Update().Where(promotionreferrals.ReferredMemberIDEQ(mem.ID))
-	if req.RiderID != nil {
-		q.SetNillableRiderID(req.RiderID)
-		re.SetNillableRiderID(req.RiderID)
-	}
+func (s *promotionMemberService) updateMemberInfo(req *promotion.MemberCreateReq) {
 
-	if req.ReferringMemberID != nil && *req.ReferringMemberID != mem.ID {
-		re.SetNillableReferringMemberID(req.ReferringMemberID)
-	}
-
-	if req.SubscribeID != nil {
-		q.SetNillableSubscribeID(req.SubscribeID)
-		re.SetNillableSubscribeID(req.SubscribeID).ExecX(s.ctx)
-	}
-	q.ExecX(s.ctx)
-	re.ExecX(s.ctx)
+	ent.Database.PromotionMember.Update().
+		Where(promotionmember.Phone(req.Phone)).
+		SetNillableRiderID(req.RiderID).
+		SetNillableSubscribeID(req.SubscribeID).
+		ExecX(s.ctx)
 }
 
 // GetMemberByPhone  获取会员信息
@@ -226,12 +344,12 @@ func (s *promotionMemberService) GetMemberByPhone(phone string) (*ent.PromotionM
 }
 
 // 创建会员
-func (s *promotionMemberService) createMember(tx *ent.Tx, req *promotion.MemberCreateReq) *ent.PromotionMember {
-	mem := NewPromotionMemberService().Create(tx, &promotion.MemberCreateReq{
-		Phone:             req.Phone,
-		Name:              req.Name,
-		RiderID:           req.RiderID,
-		ReferringMemberID: req.ReferringMemberID,
+func (s *promotionMemberService) createMember(req *promotion.MemberCreateReq) *ent.PromotionMember {
+	// 创建会员
+	mem := NewPromotionMemberService().Create(&promotion.MemberCreateReq{
+		Phone:   req.Phone,
+		Name:    req.Name,
+		RiderID: req.RiderID,
 	})
 	return mem
 }
@@ -438,34 +556,13 @@ func (s *promotionMemberService) detail(item *ent.PromotionMember) (res promotio
 }
 
 // Create 创建会员
-func (s *promotionMemberService) Create(tx *ent.Tx, req *promotion.MemberCreateReq) *ent.PromotionMember {
+func (s *promotionMemberService) Create(req *promotion.MemberCreateReq) *ent.PromotionMember {
+	mem := ent.Database.PromotionMember.Create().
+		SetName(req.Name).
+		SetPhone(req.Phone).
+		SetNillableRiderID(req.RiderID).
+		SaveX(s.ctx)
 
-	q := tx.PromotionMember.Create().
-		SetNillableName(req.Name).
-		SetPhone(req.Phone)
-
-	if req.ReferringMemberID != nil {
-		// 获取推荐会员信息
-		pinfo, _ := s.GetMemberById(*req.ReferringMemberID)
-		if pinfo == nil {
-			// 上级会员不存在，设置上级会员为nil
-			req.ReferringMemberID = nil
-		}
-	}
-
-	mem := q.SetNillableRiderID(req.RiderID).SaveX(s.ctx)
-
-	// 如果推荐人是自己，设置推荐人为nil
-	if req.ReferringMemberID != nil && *req.ReferringMemberID == mem.ID {
-		req.ReferringMemberID = nil
-	}
-
-	// 创建推荐关系
-	NewPromotionReferralsService().MemberReferrals(tx, promotion.Referrals{
-		ReferringMemberId: req.ReferringMemberID,
-		ReferredMemberId:  mem.ID,
-		RiderID:           req.RiderID,
-	})
 	return mem
 }
 
