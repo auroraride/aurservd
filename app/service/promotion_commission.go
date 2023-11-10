@@ -395,6 +395,11 @@ func (s *promotionCommissionService) CommissionCalculation(tx *ent.Tx, req *prom
 
 	referred := member.Edges.Referred
 
+	if referred == nil {
+		zap.L().Error("未查询到关系")
+		return
+	}
+
 	// 无上级不计算
 	if referred.ReferringMemberID == nil {
 		zap.L().Error("分佣计算 会员无上级", zap.Int64("会员ID", int64(member.ID)))
