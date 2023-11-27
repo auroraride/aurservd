@@ -8438,6 +8438,18 @@ definitions:
       endAt:
         description: 结束时间
         type: string
+      fistNewAmountSum:
+        description: 一级团员新签金额
+        type: number
+      fistNewNumSum:
+        description: 一级团员新签人数
+        type: integer
+      fistRenewAmountSum:
+        description: 一级团员续费金额
+        type: number
+      fistRenewNumSum:
+        description: 一级团员续费人数
+        type: integer
       id:
         description: id
         type: integer
@@ -8456,6 +8468,18 @@ definitions:
         allOf:
         - $ref: '#/definitions/promotion.CommissionRule'
         description: 返佣规则
+      secondNewAmountSum:
+        description: 二级团员新签金额
+        type: number
+      secondNewNumSum:
+        description: 二级团员新签人数
+        type: integer
+      secondRenewAmountSum:
+        description: 二级团员续费金额
+        type: number
+      secondRenewNumSum:
+        description: 二级团员续费人数
+        type: integer
       startAt:
         description: 开始时间
         type: string
@@ -8757,15 +8781,15 @@ definitions:
     type: object
   promotion.InviteType:
     enum:
-      - 10000
-      - 10100
-      - 10101
-      - 10102
-      - 10200
-      - 10201
-      - 10202
-      - 10203
-      - 10204
+    - 10000
+    - 10100
+    - 10101
+    - 10102
+    - 10200
+    - 10201
+    - 10202
+    - 10203
+    - 10204
     type: integer
     x-enum-comments:
       MemberActivationFail: 已被激活
@@ -8775,18 +8799,18 @@ definitions:
       MemberInviteFail: 已被邀请
       MemberInviteOtherFail: 您有其他账号已被邀请，本次邀请无效
       MemberInviteSelfFail: 自己不能邀请自己
-      MemberSignSuccess: 注册成功
+      MemberSignSuccess: 注册成功，绑定关系待实名后生效
       MemberSignSuccessWaitAuth: 提交成功，绑定关系待实名后生效
     x-enum-varnames:
-      - MemberAllowBind
+    - MemberAllowBind
     - MemberSignSuccess
     - MemberBindSuccess
-      - MemberSignSuccessWaitAuth
+    - MemberSignSuccessWaitAuth
     - MemberInviteFail
     - MemberActivationFail
     - MemberInviteSelfFail
-      - MemberActivationOtherFail
-      - MemberInviteOtherFail
+    - MemberActivationOtherFail
+    - MemberInviteOtherFail
   promotion.Level:
     properties:
       commissionRatio:
@@ -8870,9 +8894,7 @@ definitions:
   promotion.MemberInviteRes:
     properties:
       inviteType:
-        allOf:
-        - $ref: '#/definitions/promotion.InviteType'
-        description: 邀请类型 1:注册成功 2:绑定成功 3:已被邀请 4:已被激活
+        $ref: '#/definitions/promotion.InviteType'
     type: object
   promotion.MemberProfile:
     properties:
@@ -9132,9 +9154,26 @@ definitions:
       current:
         description: 当前页, 从1开始, 默认1
         type: integer
+      end:
+        description: 结束时间
+        type: string
+      keyword:
+        description: 关键词
+        type: string
       pageSize:
         description: 每页数据, 默认20
         type: integer
+      start:
+        description: 开始时间
+        type: string
+      status:
+        allOf:
+        - $ref: '#/definitions/promotion.ReferralsStatus'
+        description: '推荐关系状态 0: 邀请中 1:邀请成功 2:邀请失败'
+        enum:
+        - 0
+        - 1
+        - 2
     type: object
   promotion.ReferralsProgressRes:
     properties:
@@ -9152,8 +9191,22 @@ definitions:
         type: string
       status:
         description: 状态
-        type: string
+        type: integer
     type: object
+  promotion.ReferralsStatus:
+    enum:
+    - 0
+    - 1
+    - 2
+    type: integer
+    x-enum-comments:
+      ReferralsStatusFail: 邀请失败
+      ReferralsStatusInviting: 邀请中
+      ReferralsStatusSuccess: 邀请成功
+    x-enum-varnames:
+    - ReferralsStatusInviting
+    - ReferralsStatusSuccess
+    - ReferralsStatusFail
   promotion.Setting:
     properties:
       context:
@@ -9342,9 +9395,9 @@ definitions:
       status:
         description: 提现状态 0:待审核 1:成功 2:失败
         enum:
-          - 0
-          - 1
-          - 2
+        - 0
+        - 1
+        - 2
         type: integer
     type: object
   promotion.WithdrawalFeeRes:
@@ -18218,6 +18271,35 @@ paths:
       summary: PM1004 会员团队列表
       tags:
       - '[PM]推广管理接口'
+  /manager/v1/promotion/progress/list:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerProgressList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 会员等级配置
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/promotion.ReferralsProgressReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/promotion.ReferralsProgressRes'
+            type: array
+      summary: PMA001  会员推荐进度列表
+      tags:
+      - '[PM]推广管理接口'
   /manager/v1/promotion/setting/{key}:
     get:
       consumes:
@@ -20727,26 +20809,26 @@ paths:
               type: object
       summary: P1006 我的团队列表
       tags:
-        - '[P]推广接口'
+      - '[P]推广接口'
   /promotion/v1/referrals/progress:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: ReferralsProgressList
       parameters:
-        - description: 会员校验token
-          in: header
-          name: X-Promotion-Token
-          required: true
-          type: string
-        - description: 查询请求
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/promotion.ReferralsProgressReq'
+      - description: 会员校验token
+        in: header
+        name: X-Promotion-Token
+        required: true
+        type: string
+      - description: 查询请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/promotion.ReferralsProgressReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功

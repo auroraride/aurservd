@@ -13179,6 +13179,50 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/promotion/progress/list": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[PM]推广管理接口"
+                ],
+                "summary": "PMA001  会员推荐进度列表",
+                "operationId": "ManagerProgressList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "会员等级配置",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/promotion.ReferralsProgressReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/promotion.ReferralsProgressRes"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/promotion/setting/{key}": {
             "get": {
                 "consumes": [
@@ -32209,6 +32253,22 @@ const docTemplate = `{
                     "description": "结束时间",
                     "type": "string"
                 },
+                "fistNewAmountSum": {
+                    "description": "一级团员新签金额",
+                    "type": "number"
+                },
+                "fistNewNumSum": {
+                    "description": "一级团员新签人数",
+                    "type": "integer"
+                },
+                "fistRenewAmountSum": {
+                    "description": "一级团员续费金额",
+                    "type": "number"
+                },
+                "fistRenewNumSum": {
+                    "description": "一级团员续费人数",
+                    "type": "integer"
+                },
                 "id": {
                     "description": "id",
                     "type": "integer"
@@ -32235,6 +32295,22 @@ const docTemplate = `{
                             "$ref": "#/definitions/promotion.CommissionRule"
                         }
                     ]
+                },
+                "secondNewAmountSum": {
+                    "description": "二级团员新签金额",
+                    "type": "number"
+                },
+                "secondNewNumSum": {
+                    "description": "二级团员新签人数",
+                    "type": "integer"
+                },
+                "secondRenewAmountSum": {
+                    "description": "二级团员续费金额",
+                    "type": "number"
+                },
+                "secondRenewNumSum": {
+                    "description": "二级团员续费人数",
+                    "type": "integer"
                 },
                 "startAt": {
                     "description": "开始时间",
@@ -32688,7 +32764,7 @@ const docTemplate = `{
                 "MemberInviteFail": "已被邀请",
                 "MemberInviteOtherFail": "您有其他账号已被邀请，本次邀请无效",
                 "MemberInviteSelfFail": "自己不能邀请自己",
-                "MemberSignSuccess": "注册成功",
+                "MemberSignSuccess": "注册成功，绑定关系待实名后生效",
                 "MemberSignSuccessWaitAuth": "提交成功，绑定关系待实名后生效"
             },
             "x-enum-varnames": [
@@ -32824,12 +32900,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "inviteType": {
-                    "description": "邀请类型 1:注册成功 2:绑定成功 3:已被邀请 4:已被激活",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/promotion.InviteType"
-                        }
-                    ]
+                    "$ref": "#/definitions/promotion.InviteType"
                 }
             }
         },
@@ -33203,9 +33274,34 @@ const docTemplate = `{
                     "description": "当前页, 从1开始, 默认1",
                     "type": "integer"
                 },
+                "end": {
+                    "description": "结束时间",
+                    "type": "string"
+                },
+                "keyword": {
+                    "description": "关键词",
+                    "type": "string"
+                },
                 "pageSize": {
                     "description": "每页数据, 默认20",
                     "type": "integer"
+                },
+                "start": {
+                    "description": "开始时间",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "推荐关系状态 0: 邀请中 1:邀请成功 2:邀请失败",
+                    "enum": [
+                        0,
+                        1,
+                        2
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/promotion.ReferralsStatus"
+                        }
+                    ]
                 }
             }
         },
@@ -33230,9 +33326,27 @@ const docTemplate = `{
                 },
                 "status": {
                     "description": "状态",
-                    "type": "string"
+                    "type": "integer"
                 }
             }
+        },
+        "promotion.ReferralsStatus": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2
+            ],
+            "x-enum-comments": {
+                "ReferralsStatusFail": "邀请失败",
+                "ReferralsStatusInviting": "邀请中",
+                "ReferralsStatusSuccess": "邀请成功"
+            },
+            "x-enum-varnames": [
+                "ReferralsStatusInviting",
+                "ReferralsStatusSuccess",
+                "ReferralsStatusFail"
+            ]
         },
         "promotion.Setting": {
             "type": "object",

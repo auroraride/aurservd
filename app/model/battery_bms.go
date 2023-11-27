@@ -9,6 +9,7 @@ import (
 	"github.com/auroraride/adapter"
 	"github.com/auroraride/adapter/defs/xcdef"
 	"github.com/auroraride/adapter/rpc/pb"
+
 	"github.com/auroraride/aurservd/pkg/silk"
 )
 
@@ -105,17 +106,17 @@ type BatteryBmsDetail struct {
 	// 电池包循环次数 (80%累加一次)
 	Cycles uint16 `json:"cycles,omitempty"`
 	// 本次充电时长
-	ChargingTime uint32 `json:"chargingTime,omitempty"`
+	ChargingTime uint64 `json:"chargingTime,omitempty"`
 	// 本次放电时长
-	DisChargingTime uint32 `json:"disChargingTime,omitempty"`
+	DisChargingTime uint64 `json:"disChargingTime,omitempty"`
 	// 本次使用时长
-	UsingTime uint32 `json:"usingTime,omitempty"`
+	UsingTime uint64 `json:"usingTime,omitempty"`
 	// 总充电时长
-	TotalChargingTime uint32 `json:"totalChargingTime,omitempty"`
+	TotalChargingTime uint64 `json:"totalChargingTime,omitempty"`
 	// 总放电时长
-	TotalDisChargingTime uint32 `json:"totalDisChargingTime,omitempty"`
+	TotalDisChargingTime uint64 `json:"totalDisChargingTime,omitempty"`
 	// 总使用时长
-	TotalUsingTime uint32 `json:"totalUsingTime,omitempty"`
+	TotalUsingTime uint64 `json:"totalUsingTime,omitempty"`
 	// 当前位置
 	BelongsTo string `json:"belongsTo,omitempty"`
 	// 功率 (Kw)
