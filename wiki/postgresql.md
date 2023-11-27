@@ -1,5 +1,16 @@
 # PostgreSQL 数据库
 
+## 初始化
+
+`sudo -u postgresql psql`
+
+
+```postgresql
+CREATE USER auroraride WITH PASSWORD 'QGyof&AYf8rSEg*#^zzjiXRN1ykWn*4#';
+CREATE DATABASE auroraride OWNER auroraride;
+GRANT ALL PRIVILEGES ON DATABASE auroraride TO auroraride;
+```
+
 ## 预处理
 
 ```postgresql
