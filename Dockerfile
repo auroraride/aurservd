@@ -8,10 +8,9 @@ RUN  sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/r
      && rm -rf /var/cache/apk/* \
      && rm -rf /var/lib/apt/lists/*
 
-COPY ./build/release/aurservd /app/aurservd
+COPY ./build/release/aurservd /app/
 
 RUN chmod +x /app/aurservd
-
 
 WORKDIR /app
 
