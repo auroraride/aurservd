@@ -47,7 +47,7 @@ func Bootstrap() {
 		NoCaller:   true,
 	}
 	if !ar.Config.LoggerDebug {
-		logcfg.Writers = append(logcfg.Writers, log.NewRedisWriter(redis.NewClient(&redis.Options{})))
+		logcfg.Writers = append(logcfg.Writers, log.NewRedisWriter(ar.Redis))
 	}
 	log.New(logcfg)
 
