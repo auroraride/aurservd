@@ -6,6 +6,7 @@
 package controller
 
 import (
+	"log"
 	"net/http"
 	"time"
 
@@ -21,6 +22,8 @@ type maintain struct{}
 var Maintain = new(maintain)
 
 func (*maintain) Update(c echo.Context) (err error) {
+	log.Println("已请求维护:", c.Request().RemoteAddr)
+
 	// 标记为维护中
 	service.NewMaintain().CreateMaintainFile()
 
