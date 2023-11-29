@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-export PATH=$PATH:/usr/local/go/bin
-
 GOMODCACHE=$(go env GOMODCACHE)
 
 dir() {
