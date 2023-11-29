@@ -1,4 +1,5 @@
 FROM alpine
+
 RUN  sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories \
      && mkdir /app \
      && apk add --no-cache bash tzdata \
@@ -8,6 +9,9 @@ RUN  sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/r
      && rm -rf /var/lib/apt/lists/*
 
 COPY ./build/release/aurservd /app/aurservd
+
+RUN chmod +x /app/aurservd
+
 
 WORKDIR /app
 
