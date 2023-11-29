@@ -6,6 +6,9 @@ RUN  sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/r
      && echo "Asia/Shanghai" > /etc/timezone \
      && rm -rf /var/cache/apk/* \
      && rm -rf /var/lib/apt/lists/*
+
+COPY ./build/release/aurservd /app/aurservd
+
 WORKDIR /app
-COPY build/release/aurservd /app/aurservd
+
 ENTRYPOINT ["/app/aurservd", "server"]
