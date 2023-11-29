@@ -9,9 +9,10 @@ import (
 	"time"
 
 	"github.com/auroraride/adapter/async"
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/internal/ar"
-	"github.com/labstack/echo/v4"
 )
 
 type maintain struct{}
