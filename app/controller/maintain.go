@@ -35,7 +35,7 @@ func (*maintain) Update(c echo.Context) (err error) {
 		// 是否有进行中的异步业务
 		if async.IsDone() {
 			ar.Quit <- true
-			return c.String(http.StatusOK, ">>> 已设为维护状态 <<<")
+			return c.String(http.StatusOK, ">>> 已设为维护状态 <<<\n")
 		}
 	}
 
