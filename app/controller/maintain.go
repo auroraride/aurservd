@@ -6,6 +6,7 @@
 package controller
 
 import (
+	"net/http"
 	"time"
 
 	"github.com/auroraride/adapter/async"
@@ -19,7 +20,7 @@ type maintain struct{}
 
 var Maintain = new(maintain)
 
-func (*maintain) Update(echo.Context) (err error) {
+func (*maintain) Update(c echo.Context) (err error) {
 	// 标记为维护中
 	service.NewMaintain().CreateMaintainFile()
 
@@ -31,7 +32,7 @@ func (*maintain) Update(echo.Context) (err error) {
 		// 是否有进行中的异步业务
 		if async.IsDone() {
 			ar.Quit <- true
-			return
+			return c.String(http.StatusOK, ">>> 已设为维护状态 <<<")
 		}
 	}
 
