@@ -54,8 +54,6 @@ func Bootstrap() {
 	// 加载数据库
 	entInit()
 
-	// 加载其他数据
-
 	// 初始化日志
 	logging.Boot()
 
