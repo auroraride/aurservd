@@ -11,6 +11,8 @@ import (
 	"fmt"
 	"time"
 
+	"go.uber.org/zap"
+
 	"github.com/auroraride/aurservd/internal/ali"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/pkg/cache"
@@ -52,6 +54,8 @@ func (s *sms) SendCode(phone string) (string, error) {
 	// 保存下次请求有效期
 	cache.Set(context.Background(), phone, time.Now().Unix()+59, 1*time.Minute)
 	cache.Set(context.Background(), id, code, 5*time.Minute)
+
+	zap.L().Info("SMS", zap.String("phone", phone), zap.String("code", code))
 	return id, nil
 }
 
