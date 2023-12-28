@@ -21,8 +21,6 @@ const (
 	PermFile = "config/permission.yaml"
 )
 
-// fix
-
 var Groups map[string]*Group
 var Items map[string]Item
 var Keys []string

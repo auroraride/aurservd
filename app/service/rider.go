@@ -36,7 +36,9 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
+	"github.com/auroraride/aurservd/internal/ent/subscribereminder"
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
@@ -677,6 +679,13 @@ func (s *riderService) detailRiderItem(item *ent.Rider) model.RiderItem {
 		ri.Contract = contracts[0].Files[0]
 	}
 
+	// 门店、办理人
+	if len(contracts) > 0 {
+		c := contracts[0]
+		ri.StoreName = c.Edges.Employee.Edges.Store.Name
+		ri.EmployeeName = c.Edges.Employee.Name
+	}
+
 	if item.Edges.Orders != nil && len(item.Edges.Orders) > 0 {
 		ri.Deposit = item.Edges.Orders[0].Amount
 	}
@@ -727,6 +736,11 @@ func (s *riderService) detailRiderItem(item *ent.Rider) model.RiderItem {
 		}
 
 		ri.PlanName = pn
+
+		// 订单开始时间、订单结束时间
+		end := item.Edges.Subscribes[len(item.Edges.Subscribes)-1]
+		ri.OrderStartAt = end.StartAt
+		ri.OrderEndAt = end.EndAt
 	}
 	if item.DeletedAt != nil {
 		ri.DeletedAt = item.DeletedAt.Format(carbon.DateTimeLayout)
@@ -752,29 +766,38 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
 
 		var rows tools.ExcelItems
 		title := []any{
-			"城市",   // 0
-			"骑手",   // 1
-			"电话",   // 2
-			"证件",   // 3
-			"户籍",   // 4
-			"企业",   // 5
-			"押金",   // 6
-			"订阅",   // 7
-			"暂停",   // 8
-			"电池",   // 9
-			"剩余",   // 10
-			"状态",   // 11
-			"认证",   // 12
-			"紧急联系", // 13
-			"注册时间", // 14
-			"电车型号", // 15
-			"车架号",  // 16
+			"城市",     // 0
+			"门店",     // 1
+			"办理人",    // 2
+			"骑手",     // 3
+			"电话",     // 4
+			"证件",     // 5
+			"户籍",     // 6
+			"企业",     // 7
+			"押金",     // 8
+			"订阅",     // 9
+			"暂停",     // 10
+			"订单开始时间", // 11
+			"订单到期时间", // 12
+			"电池",     // 13
+			"剩余",     // 14
+			"逾期费用",   // 15
+			"状态",     // 16
+			"认证",     // 17
+			"紧急联系",   // 18
+			"注册时间",   // 19
+			"电车型号",   // 20
+			"车牌号",    // 21
+			"车架号",    // 22
+			"跟进详情",   // 23
 		}
 		rows = append(rows, title)
 		for _, item := range items {
 			detail := s.detailRiderItem(item)
 			row := []any{
 				"",
+				detail.StoreName,
+				detail.EmployeeName,
 				detail.Name,
 				detail.Phone,
 				"",
@@ -783,6 +806,9 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
 				detail.Deposit,
 				"",
 				"否",
+				detail.OrderStartAt.Format(carbon.DateTimeLayout),
+				detail.OrderEndAt.Format(carbon.DateTimeLayout),
+				"",
 				"",
 				"",
 				[]string{"正常", "正常", "禁用", "黑名单"}[detail.Status],
@@ -791,33 +817,53 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
 				item.CreatedAt.Format(carbon.DateTimeLayout),
 				"",
 				"",
+				"",
+				"",
 			}
 			if detail.City != nil {
 				row[0] = detail.City.Name
 			}
 			if detail.Person != nil {
-				row[3] = detail.Person.IDCardNumber
+				row[5] = detail.Person.IDCardNumber
 			}
 			if detail.Enterprise != nil {
-				row[5] = detail.Enterprise.Name
+				row[7] = detail.Enterprise.Name
 			}
 			if detail.Subscribe != nil {
-				row[7] = model.SubscribeStatusText(detail.Subscribe.Status)
+				row[9] = model.SubscribeStatusText(detail.Subscribe.Status)
 				if detail.Subscribe.Suspend {
-					row[8] = "是"
+					row[10] = "是"
 				}
-				row[9] = detail.Subscribe.Model
-				row[10] = detail.Subscribe.Remaining
+				row[13] = detail.Subscribe.Model
+				row[14] = detail.Subscribe.Remaining
 				bike := detail.Subscribe.Ebike
 				if bike != nil {
-					row[15] = bike.Brand.Name
+					row[19] = bike.Brand.Name
 					if bike.SN != "" {
-						row[16] = bike.SN
+						row[22] = bike.SN
+					}
+					if bike.Plate != nil {
+						row[21] = *bike.Plate
 					}
 				}
 			}
 			if item.Contact != nil {
-				row[13] = item.Contact.String()
+				row[18] = item.Contact.String()
+			}
+			// 逾期费用
+			subscribeReminder, _ := ent.Database.SubscribeReminder.Query().Where(subscribereminder.RiderID(item.ID)).First(s.ctx)
+			if subscribeReminder != nil {
+				row[15] = subscribeReminder.Fee
+			}
+			// 跟进详情
+			riderFollowUps, _ := ent.Database.RiderFollowUp.QueryNotDeleted().Where(riderfollowup.RiderID(item.ID)).All(s.ctx)
+			if riderFollowUps != nil && len(riderFollowUps) > 0 {
+				var temp = make([]string, len(riderFollowUps))
+				for k, v := range riderFollowUps {
+					temp[k] = fmt.Sprintf("%s", v.Remark)
+				}
+				var riderFollowUpsDetail = strings.Join(temp, "-")
+				row[23] = riderFollowUpsDetail
 			}
 			rows = append(rows, row)
 		}
