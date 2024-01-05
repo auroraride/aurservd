@@ -8,12 +8,13 @@ package permission
 import (
 	"os"
 
-	"github.com/auroraride/aurservd/pkg/utils"
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"golang.org/x/exp/slices"
 	"gopkg.in/yaml.v3"
+
+	"github.com/auroraride/aurservd/pkg/utils"
 )
 
 const (
