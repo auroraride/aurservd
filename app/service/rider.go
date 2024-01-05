@@ -854,8 +854,12 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
 			subscribes, _ := ent.Database.Subscribe.QueryNotDeleted().Where(subscribe.RiderID(item.ID)).All(s.ctx)
 			if subscribes != nil && len(subscribes) > 0 {
 				sub := subscribes[len(subscribes)-1]
-				row[11] = sub.StartAt.Format(carbon.DateTimeLayout)
-				row[12] = sub.EndAt.Format(carbon.DateTimeLayout)
+				if sub.StartAt != nil {
+					row[11] = sub.StartAt.Format(carbon.DateTimeLayout)
+				}
+				if sub.EndAt != nil {
+					row[12] = sub.EndAt.Format(carbon.DateTimeLayout)
+				}
 			}
 			// 逾期费用
 			subscribeReminder, _ := ent.Database.SubscribeReminder.Query().Where(subscribereminder.RiderID(item.ID)).First(s.ctx)
