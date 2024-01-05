@@ -125,23 +125,19 @@ type RiderItemSubscribe struct {
 
 // RiderItem 骑手信息
 type RiderItem struct {
-	ID           uint64           `json:"id"`
-	Name         string           `json:"name"`                   // 姓名
-	Phone        string           `json:"phone"`                  // 手机号
-	Status       uint8            `json:"status"`                 // 用户状态, 优先显示状态值大的 1:正常 2:已禁用 3:黑名单
-	AuthStatus   PersonAuthStatus `json:"authStatus"`             // 认证状态 0:未认证 1:认证中 2:已认证 3:认证失败
-	Deposit      float64          `json:"deposit"`                // 押金
-	Address      string           `json:"address"`                // 户籍地址
-	DeletedAt    string           `json:"deleteAt,omitempty"`     // 账户删除时间
-	Remark       string           `json:"remark"`                 // 账户备注
-	Contract     string           `json:"contract,omitempty"`     // 合同(有可能不存在)
-	Points       int64            `json:"points"`                 // 积分
-	Balance      float64          `json:"balance"`                // 余额
-	PlanName     string           `json:"planName,omitempty"`     // 骑士卡名称
-	StoreName    string           `json:"storeName,omitempty"`    // 门店
-	EmployeeName string           `json:"employeeName,omitempty"` // 办理人
-	OrderStartAt *time.Time       `json:"OrderStartAt,omitempty"` // 订单开始时间
-	OrderEndAt   *time.Time       `json:"OrderEndAt,omitempty"`   // 订单结束时间
+	ID         uint64           `json:"id"`
+	Name       string           `json:"name"`               // 姓名
+	Phone      string           `json:"phone"`              // 手机号
+	Status     uint8            `json:"status"`             // 用户状态, 优先显示状态值大的 1:正常 2:已禁用 3:黑名单
+	AuthStatus PersonAuthStatus `json:"authStatus"`         // 认证状态 0:未认证 1:认证中 2:已认证 3:认证失败
+	Deposit    float64          `json:"deposit"`            // 押金
+	Address    string           `json:"address"`            // 户籍地址
+	DeletedAt  string           `json:"deleteAt,omitempty"` // 账户删除时间
+	Remark     string           `json:"remark"`             // 账户备注
+	Contract   string           `json:"contract,omitempty"` // 合同(有可能不存在)
+	Points     int64            `json:"points"`             // 积分
+	Balance    float64          `json:"balance"`            // 余额
+	PlanName   string           `json:"planName,omitempty"` // 骑士卡名称
 	// 团签企业信息, 若无此字段则为个签用户
 	Enterprise *Enterprise `json:"enterprise,omitempty"`
 	// 团签代理信息

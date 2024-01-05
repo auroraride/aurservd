@@ -37,6 +37,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
+	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribereminder"
 	"github.com/auroraride/aurservd/pkg/cache"
@@ -679,13 +680,6 @@ func (s *riderService) detailRiderItem(item *ent.Rider) model.RiderItem {
 		ri.Contract = contracts[0].Files[0]
 	}
 
-	// 门店、办理人
-	if len(contracts) > 0 {
-		c := contracts[0]
-		ri.StoreName = c.Edges.Employee.Edges.Store.Name
-		ri.EmployeeName = c.Edges.Employee.Name
-	}
-
 	if item.Edges.Orders != nil && len(item.Edges.Orders) > 0 {
 		ri.Deposit = item.Edges.Orders[0].Amount
 	}
@@ -736,11 +730,6 @@ func (s *riderService) detailRiderItem(item *ent.Rider) model.RiderItem {
 		}
 
 		ri.PlanName = pn
-
-		// 订单开始时间、订单结束时间
-		end := item.Edges.Subscribes[len(item.Edges.Subscribes)-1]
-		ri.OrderStartAt = end.StartAt
-		ri.OrderEndAt = end.EndAt
 	}
 	if item.DeletedAt != nil {
 		ri.DeletedAt = item.DeletedAt.Format(carbon.DateTimeLayout)
@@ -796,8 +785,8 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
 			detail := s.detailRiderItem(item)
 			row := []any{
 				"",
-				detail.StoreName,
-				detail.EmployeeName,
+				"",
+				"",
 				detail.Name,
 				detail.Phone,
 				"",
@@ -806,8 +795,8 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
 				detail.Deposit,
 				"",
 				"否",
-				detail.OrderStartAt.Format(carbon.DateTimeLayout),
-				detail.OrderEndAt.Format(carbon.DateTimeLayout),
+				"",
+				"",
 				"",
 				"",
 				"",
@@ -849,6 +838,24 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
 			}
 			if item.Contact != nil {
 				row[18] = item.Contact.String()
+			}
+			// 办理人
+			employees, _ := ent.Database.Contract.QueryNotDeleted().Where(contract.RiderID(item.ID)).WithEmployee().QueryEmployee().All(s.ctx)
+			if employees != nil && len(employees) > 0 {
+				employee := employees[len(employees)-1]
+				row[2] = employee.Name
+				// 门店
+				sto, _ := ent.Database.Store.QueryNotDeleted().Where(store.EmployeeID(employee.ID)).First(s.ctx)
+				if sto != nil {
+					row[1] = sto.Name
+				}
+			}
+			// 订单开始时间、订单结束时间
+			subscribes, _ := ent.Database.Subscribe.QueryNotDeleted().Where(subscribe.RiderID(item.ID)).All(s.ctx)
+			if subscribes != nil && len(subscribes) > 0 {
+				sub := subscribes[len(subscribes)-1]
+				row[11] = sub.StartAt.Format(carbon.DateTimeLayout)
+				row[12] = sub.EndAt.Format(carbon.DateTimeLayout)
 			}
 			// 逾期费用
 			subscribeReminder, _ := ent.Database.SubscribeReminder.Query().Where(subscribereminder.RiderID(item.ID)).First(s.ctx)
