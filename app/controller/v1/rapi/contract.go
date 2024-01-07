@@ -6,10 +6,11 @@
 package rapi
 
 import (
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
-	"github.com/labstack/echo/v4"
 )
 
 type contract struct {
@@ -21,7 +22,7 @@ var Contract = new(contract)
 // @ID           RiderContractSign
 // @Router       /rider/v1/contract/sign [POST]
 // @Summary      R3003 签署合同
-// @Tags         [R]骑手接口
+// @Tags         合同
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -36,7 +37,7 @@ func (*contract) Sign(c echo.Context) error {
 // @ID           RiderContractSignResult
 // @Router       /rider/v1/constract/{sn} [GET]
 // @Summary      R3004 合同签署结果
-// @Tags         [R]骑手接口
+// @Tags         合同
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"

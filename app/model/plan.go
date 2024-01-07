@@ -28,12 +28,11 @@ var (
 
 // Plan 骑士卡基础信息
 type Plan struct {
-	ID             uint64  `json:"id"`             // 骑士卡ID
-	Name           string  `json:"name"`           // 骑士卡名称
-	Days           uint    `json:"days"`           // 骑士卡天数
-	Intelligent    bool    `json:"intelligent"`    // 是否智能电柜套餐
-	CommissionBase float64 `json:"commissionBase"` // 返佣底数
-	Price          float64 `json:"price"`          // 售价
+	ID          uint64  `json:"id"`          // 骑士卡ID
+	Name        string  `json:"name"`        // 骑士卡名称
+	Days        uint    `json:"days"`        // 骑士卡天数
+	Intelligent bool    `json:"intelligent"` // 是否智能电柜套餐
+	Price       float64 `json:"price"`       // 售价
 }
 
 type PlanComplexes []PlanComplex

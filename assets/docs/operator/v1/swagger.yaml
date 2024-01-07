@@ -1,0 +1,743 @@
+basePath: /
+definitions:
+  adapter.CabinetBrand:
+    enum:
+    - UNKNOWN
+    - KAIXIN
+    - YUNDONG
+    - TUOBANG
+    - XILIULOUSERV
+    type: string
+    x-enum-comments:
+      CabinetBrandXiliulouServer: 西六楼服务器版
+    x-enum-varnames:
+    - CabinetBrandUnknown
+    - CabinetBrandKaixin
+    - CabinetBrandYundong
+    - CabinetBrandTuobang
+    - CabinetBrandXiliulouServer
+  model.AliyunOssStsRes:
+    properties:
+      accessKeyId:
+        type: string
+      accessKeySecret:
+        type: string
+      bucket:
+        type: string
+      expiration:
+        type: string
+      region:
+        type: string
+      stsToken:
+        type: string
+    type: object
+  model.Branch:
+    properties:
+      id:
+        type: integer
+      name:
+        description: 网点名称
+        type: string
+    type: object
+  model.CabinetBin:
+    properties:
+      battery:
+        description: 是否有电池
+        type: boolean
+      batterySN:
+        description: 电池序列号
+        type: string
+      chargerErrors:
+        description: 故障信息
+        items:
+          type: string
+        type: array
+      current:
+        description: 充电电流(A)
+        type: number
+      deactivate:
+        description: 是否禁用
+        type: boolean
+      deactivateReason:
+        description: 禁用原因
+        type: string
+      doorHealth:
+        description: 是否锁仓 (柜门是否正常)
+        type: boolean
+      electricity:
+        description: 当前电量
+        type: number
+      full:
+        description: 是否满电
+        type: boolean
+      index:
+        description: 仓位index (从0开始)
+        type: integer
+      name:
+        description: 柜门名称
+        type: string
+      openStatus:
+        description: 是否开门
+        type: boolean
+      ordinal:
+        description: 仓位序号 (从1开始)
+        type: integer
+      remark:
+        description: 备注
+        type: string
+      voltage:
+        description: 电压(V)
+        type: number
+    type: object
+  model.CabinetListByDistanceRes:
+    properties:
+      brand:
+        allOf:
+        - $ref: '#/definitions/adapter.CabinetBrand'
+        description: '品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)'
+        enum:
+        - KAIXIN
+        - YUNDONG
+        - TUOBANG
+      health:
+        description: 在线状态 0离线 1在线 2故障
+        type: integer
+      id:
+        type: integer
+      name:
+        description: 电柜名称
+        type: string
+      serial:
+        description: 电柜编码
+        type: string
+      status:
+        description: 电柜状态 0未投放 1运营中 2维护中
+        type: integer
+    type: object
+  model.CabinetStatus:
+    enum:
+    - 0
+    - 1
+    - 2
+    type: integer
+    x-enum-comments:
+      CabinetStatusMaintenance: 维护中
+      CabinetStatusNormal: 运营中
+      CabinetStatusPending: 未投放
+    x-enum-varnames:
+    - CabinetStatusPending
+    - CabinetStatusNormal
+    - CabinetStatusMaintenance
+  model.City:
+    properties:
+      id:
+        description: 城市ID
+        type: integer
+      name:
+        description: 城市
+        type: string
+    type: object
+  model.MaintainerBinOperate:
+    enum:
+    - open
+    - lock
+    - unlock
+    - disable
+    - enable
+    type: string
+    x-enum-comments:
+      MaintainerBinOperateDisable: 禁用
+      MaintainerBinOperateEnable: 启用
+      MaintainerBinOperateLock: 锁定
+      MaintainerBinOperateOpen: 开仓
+      MaintainerBinOperateUnlock: 解锁
+    x-enum-varnames:
+    - MaintainerBinOperateOpen
+    - MaintainerBinOperateLock
+    - MaintainerBinOperateUnlock
+    - MaintainerBinOperateDisable
+    - MaintainerBinOperateEnable
+  model.MaintainerBinOperateReq:
+    properties:
+      lat:
+        type: number
+      lng:
+        type: number
+      operate:
+        allOf:
+        - $ref: '#/definitions/model.MaintainerBinOperate'
+        description: 所有操作均需要提前设电柜为维护状态。open:开仓, lock:锁定, unlock:解锁, disable:禁用, enable:启用
+      reason:
+        type: string
+    required:
+    - lat
+    - lng
+    - operate
+    - reason
+    type: object
+  model.MaintainerCabinetDetailRes:
+    properties:
+      batteryNum:
+        description: 电池数量
+        type: integer
+      bins:
+        description: 仓位信息
+        items:
+          $ref: '#/definitions/model.CabinetBin'
+        type: array
+      biz:
+        description: 电柜当前业务
+        items:
+          $ref: '#/definitions/pb.CabinetBiz'
+        type: array
+      branch:
+        allOf:
+        - $ref: '#/definitions/model.Branch'
+        description: 所属网点
+      branchId:
+        description: 网点
+        type: integer
+      brand:
+        allOf:
+        - $ref: '#/definitions/adapter.CabinetBrand'
+        description: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)
+        enum:
+        - KAIXIN
+        - YUNDONG
+        - TUOBANG
+      city:
+        allOf:
+        - $ref: '#/definitions/model.City'
+        description: 城市
+      createdAt:
+        description: 创建时间
+        type: string
+      doors:
+        description: 柜门数量
+        type: integer
+      enterpriseId:
+        description: 团签ID
+        type: integer
+      enterpriseName:
+        description: 团签名称
+        type: string
+      health:
+        description: 在线状态 0离线 1在线 2故障
+        type: integer
+      id:
+        description: 电柜ID
+        type: integer
+      intelligent:
+        description: 是否智能柜
+        type: boolean
+      lat:
+        description: 纬度
+        type: number
+      lng:
+        description: 经度
+        type: number
+      models:
+        description: 电池型号
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      remark:
+        type: string
+      reserves:
+        description: 当前预约
+        items:
+          $ref: '#/definitions/model.ReserveCabinetItem'
+        type: array
+      serial:
+        type: string
+      simDate:
+        description: 'SIM卡到期日期, 例: 2022-06-01'
+        type: string
+      simSn:
+        description: SIM卡号
+        type: string
+      sn:
+        description: 平台编码
+        type: string
+      stationId:
+        description: 站点id
+        type: integer
+      stationName:
+        description: 所属站点名称
+        type: string
+      status:
+        allOf:
+        - $ref: '#/definitions/model.CabinetStatus'
+        description: 电柜状态 0未投放 1运营中 2维护中
+        enum:
+        - 0
+        - 1
+        - 2
+      stockNum:
+        description: 库存电池
+        type: integer
+      transferred:
+        description: 是否初始化过调拨
+        type: boolean
+    required:
+    - brand
+    - name
+    - serial
+    type: object
+  model.MaintainerCabinetOperate:
+    enum:
+    - open-all
+    - maintenance
+    - maintenance-cancel
+    - interrupt
+    - reboot
+    type: string
+    x-enum-comments:
+      MaintainerCabinetOperateInterrupt: 中断维护
+      MaintainerCabinetOperateMaintenance: 维护
+      MaintainerCabinetOperateMaintenanceCancel: 取消维护
+      MaintainerCabinetOperateOpenAll: 全部开仓
+      MaintainerCabinetOperateReboot: 重启
+    x-enum-varnames:
+    - MaintainerCabinetOperateOpenAll
+    - MaintainerCabinetOperateMaintenance
+    - MaintainerCabinetOperateMaintenanceCancel
+    - MaintainerCabinetOperateInterrupt
+    - MaintainerCabinetOperateReboot
+  model.MaintainerCabinetOperateReq:
+    properties:
+      lat:
+        type: number
+      lng:
+        type: number
+      operate:
+        allOf:
+        - $ref: '#/definitions/model.MaintainerCabinetOperate'
+        description: 除`maintenance`之外所有操作均需要提前设电柜为维护状态。 open:开仓, open-all:全部开仓（暂时不做）,
+          maintenance:电柜维护, maintenance-cancel:取消维护, interrupt:中断业务, reboot:重启（暂时不做）
+      reason:
+        type: string
+    required:
+    - lat
+    - lng
+    - operate
+    - reason
+    type: object
+  model.MaintainerSigninReq:
+    properties:
+      password:
+        type: string
+      phone:
+        type: string
+    required:
+    - password
+    - phone
+    type: object
+  model.MaintainerSigninRes:
+    properties:
+      cities:
+        description: 城市列表
+        items:
+          $ref: '#/definitions/model.City'
+        type: array
+      enable:
+        description: 是否启用
+        type: boolean
+      id:
+        type: integer
+      name:
+        description: 姓名
+        type: string
+      phone:
+        description: 电话
+        type: string
+      token:
+        type: string
+    type: object
+  model.Pagination:
+    properties:
+      current:
+        description: 当前页
+        type: integer
+      pages:
+        description: 总页数
+        type: integer
+      total:
+        description: 总条数
+        type: integer
+    type: object
+  model.ReserveCabinetItem:
+    properties:
+      business:
+        description: 业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
+        enum:
+        - active
+        - pause
+        - continue
+        - unsubscribe
+        type: string
+      name:
+        description: 姓名
+        type: string
+      phone:
+        description: 电话
+        type: string
+      time:
+        description: 预约时间
+        type: string
+    type: object
+  model.SmsReq:
+    properties:
+      captchaCode:
+        description: captcha 验证码
+        type: string
+      phone:
+        description: 手机号
+        type: string
+    required:
+    - captchaCode
+    - phone
+    type: object
+  model.SmsRes:
+    properties:
+      id:
+        description: 任务ID
+        type: string
+    type: object
+  model.StatusResponse:
+    properties:
+      status:
+        type: boolean
+    type: object
+  pb.CabinetBiz:
+    properties:
+      desc:
+        description: 业务描述
+        type: string
+      ordinal:
+        type: integer
+      serial:
+        type: string
+      user:
+        description: 业务人员
+        type: string
+    type: object
+info:
+  contact: {}
+  description: |-
+    ### 说明
+    接口采用非标准Restful API，所有http返回代码均为`200`，当返回为非`200`时应为network错误，需要及时排查。
+    <br>
+    接口返回说明查看 **[返回](#返回)**
+    <br>
+    图片/附件前缀 `https://cdn.auroraride.com/`
+
+    <br />
+
+    <br />
+
+    ### 接口编号
+
+    第一位代表接口端分类
+
+    - M 管理端
+    - R 骑手端
+    - E 门店端
+    - C 通用
+
+    第二位代表子分类（36进制）
+
+    后三位代表子编号（10进制）
+
+    <br />
+
+    <br />
+
+
+    ### 认证
+    项目接口使用简单认证，认证方式为`header`中添加对应的认证`token`
+    |  header   |  类型  |  接口  |
+    | :-----: | :----: | :--: |
+    |  X-Rider-Token   |  string   |  骑手API  |
+    | X-Manager-Token | string |  后台API  |
+    |  X-Employee-Token   | string |  员工API  |
+
+    <br />
+
+    <br />
+
+    ### 返回
+
+    一个标准的返回应包含以下结构
+
+    |  字段   |  类型  |  必填  |  说明  |
+    | :-----: | :----: | :--: | :--: |
+    |  code   |  int   |  是  |  返回代码  |
+    | message | string |  是  |  返回消息  |
+    |  data   | object |  是  |  返回数据  |
+
+    `code`代码取值说明
+
+    | 十进制 | 十六进制 | 说明 |
+    | :----: | :------: | :--: |
+    | 0  |  0x000  | 请求成功 |
+    | 256 |  0x100  | 请求失败 |
+    | 512 |  0x200  | *需要认证(跳转登录) |
+    | 768 |  0x300  | *用户被封禁 |
+    | 1024 |  0x400  | 资源未获 |
+    | 1280 |  0x500  | 未知错误 |
+    | 1536 |  0x600  | *需要实名 |
+    | 1792 |  0x700  | *需要验证 (更换设备, 需要人脸验证) |
+    | 2048 |  0x800  | *需要联系人 |
+    | 2304 |  0x900  | 请求过期 |
+
+    > 当返回值是`1792(0x700)需要人脸验证`或`1536(0x600)需要实名`的时候`data`返回值为`{"url": "string"}`, 直接跳转url
+
+
+    比如：
+    > 默认成功返回
+    ```json
+    {
+      "code": 0,
+      "message": "OK",
+      "data": {
+        "status": true
+      }
+    }
+    ```
+  title: 极光出行API - 代理端api
+  version: "1.0"
+paths:
+  /common/battery/model:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerBatteryModel
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 型号列表
+          schema:
+            items:
+              type: string
+            type: array
+      summary: C4 获取生效中的电池型号
+      tags:
+      - '[C]公共接口'
+  /common/captcha:
+    get:
+      consumes:
+      - image/png
+      description: 生成的图片验证码有效时间为10分钟
+      operationId: CaptchaGenerate
+      produces:
+      - image/png
+      responses:
+        "200":
+          description: ok
+          headers:
+            X-Captcha-Id  true:
+              description: Captcha验证码ID
+              type: string
+          schema:
+            type: string
+      summary: C1 生成图片验证码
+      tags:
+      - '[C]公共接口'
+  /common/oss/token:
+    get:
+      consumes:
+      - application/json
+      description: 上传文件必须，单次获取有效时间为1个小时
+      operationId: AliyunOssToken
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.AliyunOssStsRes'
+      summary: C3 获取阿里云oss临时凭证
+      tags:
+      - '[C]公共接口'
+  /common/sms:
+    post:
+      consumes:
+      - application/json
+      description: 上传文件必须，单次获取有效时间为1个小时
+      operationId: SendSmsCode
+      parameters:
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.SmsReq'
+      - description: Captcha验证码ID
+        in: header
+        name: X-Captcha-Id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.SmsRes'
+      summary: C2 发送短信验证码
+      tags:
+      - '[C]公共接口'
+  /maintainer/v1/cabinet/{serial}:
+    get:
+      consumes:
+      - application/json
+      operationId: MaintainerCabinetDetail
+      parameters:
+      - description: 电柜编号
+        in: path
+        name: serial
+        required: true
+        type: string
+      - description: 运维校验token
+        in: header
+        name: X-Maintainer-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.MaintainerCabinetDetailRes'
+      summary: O2002 获取电柜详情
+      tags:
+      - '[O]运维接口'
+    post:
+      consumes:
+      - application/json
+      operationId: MaintainerCabinetOperate
+      parameters:
+      - description: 运维校验token
+        in: header
+        name: X-Maintainer-Token
+        required: true
+        type: string
+      - description: 电柜编号
+        in: path
+        name: serial
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.MaintainerCabinetOperateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: O2003 电柜操作
+      tags:
+      - '[O]运维接口'
+  /maintainer/v1/cabinet/{serial}/{ordinal}:
+    post:
+      consumes:
+      - application/json
+      operationId: MaintainerCabinetBinOperate
+      parameters:
+      - description: 运维校验token
+        in: header
+        name: X-Maintainer-Token
+        required: true
+        type: string
+      - description: 电柜编号
+        in: path
+        name: serial
+        required: true
+        type: string
+      - description: 仓位序号，从1开始
+        in: path
+        name: ordinal
+        required: true
+        type: integer
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.MaintainerBinOperateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.MaintainerBinOperateReq'
+      summary: O2004 仓位操作
+      tags:
+      - '[O]运维接口'
+  /maintainer/v1/cabinets:
+    get:
+      consumes:
+      - application/json
+      operationId: MaintainerCabinetList
+      parameters:
+      - description: 运维校验token
+        in: header
+        name: X-Maintainer-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.Pagination'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.CabinetListByDistanceRes'
+                  type: array
+              type: object
+      summary: O2001 获取电柜列表
+      tags:
+      - '[O]运维接口'
+  /maintainer/v1/signin:
+    post:
+      consumes:
+      - application/json
+      operationId: AgentMaintainerSignin
+      parameters:
+      - description: 运维校验token
+        in: header
+        name: X-Maintainer-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.MaintainerSigninReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.MaintainerSigninRes'
+      summary: O1001 运维登录
+      tags:
+      - '[O]运维接口'
+swagger: "2.0"

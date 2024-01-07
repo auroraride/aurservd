@@ -1,0 +1,3427 @@
+basePath: /
+definitions:
+  adapter.CabinetBrand:
+    enum:
+    - UNKNOWN
+    - KAIXIN
+    - YUNDONG
+    - TUOBANG
+    - XILIULOUSERV
+    type: string
+    x-enum-comments:
+      CabinetBrandXiliulouServer: 西六楼服务器版
+    x-enum-varnames:
+    - CabinetBrandUnknown
+    - CabinetBrandKaixin
+    - CabinetBrandYundong
+    - CabinetBrandTuobang
+    - CabinetBrandXiliulouServer
+  model.AliyunOssStsRes:
+    properties:
+      accessKeyId:
+        type: string
+      accessKeySecret:
+        type: string
+      bucket:
+        type: string
+      expiration:
+        type: string
+      region:
+        type: string
+      stsToken:
+        type: string
+    type: object
+  model.AllocateRiderRes:
+    properties:
+      allocated:
+        description: 是否已分配
+        type: boolean
+    type: object
+  model.AssistanceCancelReq:
+    properties:
+      desc:
+        description: 取消原因详细描述
+        type: string
+      id:
+        type: integer
+      reason:
+        type: string
+    required:
+    - id
+    - reason
+    type: object
+  model.AssistanceCreateReq:
+    properties:
+      address:
+        type: string
+      breakdown:
+        type: string
+      breakdownDesc:
+        type: string
+      breakdownPhotos:
+        items:
+          type: string
+        maxItems: 3
+        minItems: 1
+        type: array
+      lat:
+        type: number
+      lng:
+        type: number
+    required:
+    - address
+    - breakdown
+    - breakdownDesc
+    - breakdownPhotos
+    - lat
+    - lng
+    type: object
+  model.AssistanceCreateRes:
+    properties:
+      id:
+        type: integer
+    type: object
+  model.AssistanceSimpleListRes:
+    properties:
+      cost:
+        description: 费用
+        type: number
+      distance:
+        description: 救援距离
+        type: string
+      id:
+        type: integer
+      model:
+        description: 电池型号
+        type: string
+      reason:
+        description: 救援原因
+        type: string
+      rider:
+        allOf:
+        - $ref: '#/definitions/model.Rider'
+        description: 骑手信息
+      status:
+        description: 状态 0:待分配 1:已分配 2:已拒绝 3:已失败 4:待支付 5:已支付
+        type: integer
+      store:
+        allOf:
+        - $ref: '#/definitions/model.Store'
+        description: 门店
+      time:
+        description: 发起时间
+        type: string
+    type: object
+  model.AssistanceSocketMessage:
+    properties:
+      breakdown:
+        description: 故障原因
+        type: string
+      employee:
+        allOf:
+        - $ref: '#/definitions/model.Employee'
+        description: 店员信息
+      id:
+        type: integer
+      rider:
+        allOf:
+        - $ref: '#/definitions/model.LngLat'
+        description: 骑手坐标
+      seconds:
+        description: 距离分配等待时间
+        type: integer
+      status:
+        description: 状态 0:待分配 1:已分配 2:已拒绝 3:已失败 4:待支付 5:已支付
+        type: integer
+      store:
+        allOf:
+        - $ref: '#/definitions/model.StoreLngLat'
+        description: 门店信息
+    type: object
+  model.BatteryDetail:
+    properties:
+      id:
+        description: 电池ID
+        type: integer
+      model:
+        description: 电池型号
+        type: string
+      sn:
+        description: 电池编码
+        type: string
+      soc:
+        description: 当前电量, 暂时隐藏
+        type: number
+    type: object
+  model.BatteryModel:
+    properties:
+      id:
+        type: integer
+      model:
+        description: 电池型号
+        type: string
+    type: object
+  model.BinInfo:
+    properties:
+      electricity:
+        description: 电量
+        type: number
+      index:
+        description: 仓位index
+        type: integer
+      voltage:
+        description: 电压(V)
+        type: number
+    type: object
+  model.BranchFacility:
+    properties:
+      fid:
+        description: 设施标识
+        type: string
+      id:
+        type: integer
+      name:
+        description: 名称
+        type: string
+      num:
+        description: 满电数量
+        type: integer
+      phone:
+        description: 联系电话
+        type: string
+      state:
+        description: 状态 0不可用 1可用
+        type: integer
+      total:
+        description: 总电池
+        type: integer
+      type:
+        description: 类别
+        type: string
+    type: object
+  model.BranchFacilityCabinet:
+    properties:
+      batteries:
+        description: 电池情况
+        items:
+          $ref: '#/definitions/model.BranchFacilityCabinetBattery'
+        type: array
+      bins:
+        description: 仓位详情
+        items:
+          $ref: '#/definitions/model.BranchFacilityCabinetBin'
+        type: array
+      businesses:
+        description: 可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
+        items:
+          type: string
+        type: array
+      id:
+        description: 电柜ID
+        type: integer
+      name:
+        description: 电柜名称
+        type: string
+      reserve:
+        allOf:
+        - $ref: '#/definitions/model.ReserveUnfinishedRes'
+        description: 当前预约, 预约不存在时无此字段
+      serial:
+        description: 电柜编号
+        type: string
+      status:
+        description: 电柜状态 0:离线 1:在线 2:维护中
+        type: integer
+    type: object
+  model.BranchFacilityCabinetBattery:
+    properties:
+      capacity:
+        description: 容量, 单位AH
+        type: string
+      charging:
+        description: 充电数量
+        type: integer
+      fully:
+        description: 可换数量
+        type: integer
+      voltage:
+        description: 电压, 单位V
+        type: string
+    type: object
+  model.BranchFacilityCabinetBin:
+    properties:
+      electricity:
+        description: 当前电量 锁仓或空仓无此字段
+        type: number
+      status:
+        description: 状态 0:空仓 1:充电 2:可用 3:锁仓
+        type: integer
+    type: object
+  model.BranchFacilityRes:
+    properties:
+      address:
+        description: 地址
+        type: string
+      cabinet:
+        description: 电柜, 当type=cabinet时存在, 根据序号显示 1号柜/2号柜 等, 当仅有一个电柜时, 电柜切换tab隐藏
+        items:
+          $ref: '#/definitions/model.BranchFacilityCabinet'
+        type: array
+      distance:
+        description: '距离(前端处理: 超过1000米显示nKM)'
+        type: number
+      image:
+        description: 网点图片
+        type: string
+      lat:
+        description: 纬度
+        type: number
+      lng:
+        description: 经度
+        type: number
+      name:
+        description: 网点名称
+        type: string
+      store:
+        allOf:
+        - $ref: '#/definitions/model.BranchFacilityStore'
+        description: 门店, 当type=store时存在
+      type:
+        description: 设施类型 store:门店 cabinet:电柜(此时cabinet字段为数组)
+        enum:
+        - store
+        - cabinet
+        type: string
+    type: object
+  model.BranchFacilityStore:
+    properties:
+      models:
+        description: 可用电池型号
+        items:
+          type: string
+        type: array
+      name:
+        description: 门店名称
+        type: string
+    type: object
+  model.BranchRidingRes:
+    properties:
+      minutes:
+        description: 骑行规划时间(分钟)
+        type: number
+    type: object
+  model.BranchWithDistanceRes:
+    properties:
+      address:
+        description: 网点地址
+        type: string
+      distance:
+        description: '距离(前端处理: 超过1000米显示nKM)'
+        type: number
+      facility:
+        description: 网点设施
+        items:
+          $ref: '#/definitions/model.BranchFacility'
+        type: array
+      id:
+        description: 网点ID
+        type: integer
+      image:
+        description: 网点图片
+        type: string
+      lat:
+        description: 纬度
+        type: number
+      lng:
+        description: 经度
+        type: number
+      name:
+        description: 网点名称
+        type: string
+    type: object
+  model.BusinessCabinetReq:
+    properties:
+      id:
+        type: integer
+      serial:
+        type: string
+    required:
+    - id
+    - serial
+    type: object
+  model.BusinessCabinetStatus:
+    properties:
+      index:
+        description: 仓位Index, +1是仓位号
+        type: integer
+      uuid:
+        description: 操作ID, 使用此参数轮询获取状态
+        type: string
+    type: object
+  model.BusinessCabinetStatusRes:
+    properties:
+      message:
+        description: 失败消息
+        type: string
+      stop:
+        description: 是否终止
+        type: boolean
+      success:
+        description: 是否成功
+        type: boolean
+    type: object
+  model.BusinessPauseInfoRes:
+    properties:
+      days:
+        description: 寄存天数
+        type: integer
+      end:
+        description: 寄存结束日期
+        type: string
+      overdue:
+        description: 超期天数, 当此字段不存在时或为空时, 前端不显示`超出单词最长寄存时长`
+        type: integer
+      remaining:
+        description: 剩余天数
+        type: integer
+      start:
+        description: 寄存开始日期, 若此字段和`end`都不存在或为空时, 前端`寄存开始日期和结束寄存日期`显示未生效
+        type: string
+    type: object
+  model.CabinetFaultReportReq:
+    properties:
+      attachments:
+        description: 附件
+        items:
+          type: string
+        maxItems: 3
+        type: array
+      cabinetId:
+        type: integer
+      description:
+        type: string
+      fault:
+        type: string
+    required:
+    - cabinetId
+    - description
+    - fault
+    type: object
+  model.City:
+    properties:
+      id:
+        description: 城市ID
+        type: integer
+      name:
+        description: 城市
+        type: string
+    type: object
+  model.CityWithLocation:
+    properties:
+      id:
+        description: 城市ID
+        type: integer
+      lat:
+        description: 纬度
+        type: number
+      lng:
+        description: 经度
+        type: number
+      name:
+        description: 城市
+        type: string
+    type: object
+  model.ContractSignReq:
+    properties:
+      subscribeId:
+        type: integer
+    required:
+    - subscribeId
+    type: object
+  model.ContractSignRes:
+    properties:
+      effective:
+        description: 是否存在生效中的合同, 若返回值为true则代表无需签合同
+        type: boolean
+      sn:
+        description: 签署识别码
+        type: string
+      url:
+        description: 签署URL
+        type: string
+    type: object
+  model.Coupon:
+    properties:
+      amount:
+        description: 金额
+        type: number
+      cate:
+        description: 类型标识
+        type: string
+      cities:
+        description: 可用城市, 不存在此字段则不限制
+        items:
+          $ref: '#/definitions/model.City'
+        type: array
+      code:
+        description: 券码
+        type: string
+      exclusive:
+        description: 与其他类型券是否互斥
+        type: boolean
+      expiredAt:
+        description: 过期时间
+        type: string
+      id:
+        type: integer
+      name:
+        description: 名称
+        type: string
+      plans:
+        description: 可用骑士卡, 不存在此字段则不限制
+        items:
+          $ref: '#/definitions/model.Plan'
+        type: array
+      useable:
+        description: 是否可使用
+        type: boolean
+    type: object
+  model.CouponRider:
+    properties:
+      amount:
+        description: 金额
+        type: number
+      code:
+        description: 券码
+        type: string
+      expiredAt:
+        description: 到期时间
+        type: string
+      name:
+        description: 名称
+        type: string
+      usedAt:
+        description: 使用时间
+        type: string
+    type: object
+  model.Ebike:
+    properties:
+      brand:
+        allOf:
+        - $ref: '#/definitions/model.EbikeBrand'
+        description: 品牌信息
+      color:
+        description: 颜色
+        type: string
+      enterpriseId:
+        description: 团签ID
+        type: integer
+      exFactory:
+        description: 生产批次
+        type: string
+      id:
+        type: integer
+      plate:
+        description: 车牌号
+        type: string
+      sn:
+        description: 车架号
+        type: string
+      stationId:
+        description: 站点ID
+        type: integer
+    type: object
+  model.EbikeBrand:
+    properties:
+      cover:
+        description: 封面图
+        type: string
+      id:
+        type: integer
+      name:
+        description: 名称
+        type: string
+    type: object
+  model.Employee:
+    properties:
+      id:
+        type: integer
+      name:
+        description: 店员名称
+        type: string
+      phone:
+        description: 店员电话
+        type: string
+    type: object
+  model.Enterprise:
+    properties:
+      agent:
+        description: 是否代理商模式
+        type: boolean
+      days:
+        description: 代理商时间选项
+        items:
+          type: integer
+        type: array
+      enterpriseContactName:
+        description: 团签联系人
+        type: string
+      enterpriseContactPhone:
+        description: 团签联系电话
+        type: string
+      enterpriseName:
+        description: 团签名称
+        type: string
+      id:
+        description: 企业ID
+        type: integer
+      name:
+        description: 企业名称
+        type: string
+    type: object
+  model.EnterpriseContact:
+    properties:
+      name:
+        description: 联系姓名
+        type: string
+      phone:
+        description: 联系电话
+        type: string
+    type: object
+  model.EnterprisePriceWithCity:
+    properties:
+      city:
+        allOf:
+        - $ref: '#/definitions/model.City'
+        description: 城市
+      ebikeBrand:
+        allOf:
+        - $ref: '#/definitions/model.EbikeBrand'
+        description: 车辆型号
+      id:
+        description: 价格ID
+        type: integer
+      intelligent:
+        description: 是否智能电池
+        type: boolean
+      model:
+        description: 电池型号
+        type: string
+      price:
+        description: 单价(元/天)
+        type: number
+    type: object
+  model.EnterpriseRiderSubscribeChooseReq:
+    properties:
+      model:
+        type: string
+    required:
+    - model
+    type: object
+  model.EnterpriseRiderSubscribeChooseRes:
+    properties:
+      qrcode:
+        description: 二维码, 格式为SUBSCRIBE:订阅ID, 后续使用订阅ID请求状态
+        type: string
+    type: object
+  model.EnterpriseStation:
+    properties:
+      id:
+        description: 站点ID
+        type: integer
+      name:
+        description: 站点名称
+        type: string
+    type: object
+  model.EnterproseInfoReq:
+    properties:
+      enterpriseId:
+        description: 团签id
+        type: integer
+      stationId:
+        description: 站点id
+        type: integer
+    required:
+    - enterpriseId
+    - stationId
+    type: object
+  model.EnterproseInfoRsp:
+    properties:
+      days:
+        description: 天数
+        items:
+          type: integer
+        type: array
+      enterproseName:
+        description: 团签名称
+        type: string
+      isJoin:
+        description: 是否可以加入团签
+        type: boolean
+      priceList:
+        description: 价格
+        items:
+          $ref: '#/definitions/model.EnterprisePriceWithCity'
+        type: array
+      stationName:
+        description: 站点名称
+        type: string
+    type: object
+  model.ExchangeLogBinInfo:
+    properties:
+      emptyIndex:
+        description: 空电仓位
+        type: integer
+      fullIndex:
+        description: 满电仓位
+        type: integer
+    type: object
+  model.ExchangeOverview:
+    properties:
+      days:
+        description: 换电天数
+        type: integer
+      times:
+        description: 换电次数
+        type: integer
+    type: object
+  model.ExchangeRiderListRes:
+    properties:
+      binInfo:
+        allOf:
+        - $ref: '#/definitions/model.ExchangeLogBinInfo'
+        description: 仓位信息
+      city:
+        allOf:
+        - $ref: '#/definitions/model.City'
+        description: 城市
+      id:
+        type: integer
+      name:
+        description: 门店或电柜名称
+        type: string
+      success:
+        description: 是否成功
+        type: boolean
+      time:
+        description: 换电时间
+        type: string
+      type:
+        description: 门店或电柜
+        type: string
+    type: object
+  model.ExchangeStoreReq:
+    properties:
+      code:
+        description: 二维码
+        type: string
+    required:
+    - code
+    type: object
+  model.ExchangeStoreRes:
+    properties:
+      model:
+        description: 电池型号
+        type: string
+      storeName:
+        description: 门店名称
+        type: string
+      time:
+        description: 时间戳
+        type: integer
+      uuid:
+        description: 编码
+        type: string
+    type: object
+  model.FaceAuthUrlResponse:
+    properties:
+      url:
+        description: 实名认证跳转链接
+        type: string
+    type: object
+  model.LngLat:
+    properties:
+      lat:
+        description: 纬度
+        type: number
+      lng:
+        description: 经度
+        type: number
+    type: object
+  model.Modifier:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      phone:
+        type: string
+    type: object
+  model.Order:
+    properties:
+      agent:
+        allOf:
+        - $ref: '#/definitions/model.OrderAgent'
+        description: 代理信息
+      amount:
+        description: 支付金额
+        type: number
+      city:
+        allOf:
+        - $ref: '#/definitions/model.City'
+        description: 城市
+      couponAmount:
+        description: 优惠券抵扣金额
+        type: number
+      coupons:
+        description: 使用的优惠券
+        items:
+          $ref: '#/definitions/model.CouponRider'
+        type: array
+      discountNewly:
+        description: 新签优惠
+        type: number
+      ebike:
+        allOf:
+        - $ref: '#/definitions/model.Ebike'
+        description: 车辆详情
+      employee:
+        allOf:
+        - $ref: '#/definitions/model.Employee'
+        description: 店员 (可为空)
+      id:
+        description: 订单ID
+        type: integer
+      model:
+        description: 电池型号 (可为空)
+        type: string
+      outTradeNo:
+        description: 订单编号
+        type: string
+      payAt:
+        description: 支付时间
+        type: string
+      payway:
+        description: 支付方式 1支付宝 2微信
+        type: integer
+      plan:
+        allOf:
+        - $ref: '#/definitions/model.Plan'
+        description: 骑士卡, 非骑士卡订阅订单无此字段 (可为空)
+      pointAmount:
+        description: 积分抵扣金额
+        type: number
+      refund:
+        allOf:
+        - $ref: '#/definitions/model.Refund'
+        description: 退款详情 (可为空)
+      rider:
+        allOf:
+        - $ref: '#/definitions/model.Rider'
+        description: 骑手
+      status:
+        description: 订单状态 0未支付 1已支付 2申请退款 3已退款 4退款被拒绝
+        type: integer
+      store:
+        allOf:
+        - $ref: '#/definitions/model.Store'
+        description: 门店 (可为空)
+      tradeNo:
+        description: 订单编号 (支付平台)
+        type: string
+      type:
+        description: 订单类型 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金
+        type: integer
+    type: object
+  model.OrderAgent:
+    properties:
+      enterpriseId:
+        description: 团签ID
+        type: integer
+      enterpriseName:
+        description: 团签名称
+        type: string
+      id:
+        description: 代理ID
+        type: integer
+      name:
+        description: 代理姓名
+        type: string
+      phone:
+        description: 代理电话
+        type: string
+    type: object
+  model.OrderCreateReq:
+    properties:
+      cityId:
+        description: 城市ID, 新签必填
+        type: integer
+      coupons:
+        description: 优惠券
+        items:
+          type: integer
+        type: array
+      orderType:
+        description: 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        type: integer
+      payway:
+        description: 1支付宝 2微信
+        enum:
+        - 1
+        - 2
+        type: integer
+      planId:
+        type: integer
+      point:
+        description: 是否使用积分
+        type: boolean
+    required:
+    - orderType
+    - payway
+    - planId
+    type: object
+  model.OrderCreateRes:
+    properties:
+      outTradeNo:
+        description: 交易编码
+        type: string
+      prepay:
+        description: 预支付字符串
+        type: string
+    type: object
+  model.OrderStatusRes:
+    properties:
+      outTradeNo:
+        description: 订单编号
+        type: string
+      paid:
+        description: 是否支付
+        type: boolean
+    type: object
+  model.Pagination:
+    properties:
+      current:
+        description: 当前页
+        type: integer
+      pages:
+        description: 总页数
+        type: integer
+      total:
+        description: 总条数
+        type: integer
+    type: object
+  model.PaginationRes:
+    properties:
+      items:
+        description: 返回数据
+      pagination:
+        allOf:
+        - $ref: '#/definitions/model.Pagination'
+        description: 分页属性
+    type: object
+  model.PaymentConfigure:
+    properties:
+      coupons:
+        description: 用户优惠券
+        items:
+          $ref: '#/definitions/model.Coupon'
+        type: array
+      maxDiscount:
+        description: 最大优惠金额
+        type: number
+      points:
+        description: 可用积分
+        type: integer
+      ratio:
+        description: 兑换比例(实际抵扣金额 = 兑换比例 × 积分数量)
+        type: number
+    type: object
+  model.Plan:
+    properties:
+      days:
+        description: 骑士卡天数
+        type: integer
+      id:
+        description: 骑士卡ID
+        type: integer
+      intelligent:
+        description: 是否智能电柜套餐
+        type: boolean
+      name:
+        description: 骑士卡名称
+        type: string
+      price:
+        description: 售价
+        type: number
+    type: object
+  model.PlanDaysPriceOption:
+    properties:
+      days:
+        description: 天数
+        type: integer
+      discountNewly:
+        description: 新签优惠
+        type: number
+      hasEbike:
+        description: 是否包含电车
+        type: boolean
+      id:
+        type: integer
+      name:
+        description: 骑士卡名称
+        type: string
+      original:
+        description: 原价
+        type: number
+      price:
+        description: 价格, 应支付价格 = 价格 - 新签优惠
+        type: number
+    type: object
+  model.PlanEbikeBrandOption:
+    properties:
+      children:
+        description: 子项
+        items:
+          $ref: '#/definitions/model.PlanModelOption'
+        type: array
+      cover:
+        description: 封面图
+        type: string
+      name:
+        description: 名称
+        type: string
+    type: object
+  model.PlanModelOption:
+    properties:
+      children:
+        description: 天数和价格信息
+        items:
+          $ref: '#/definitions/model.PlanDaysPriceOption'
+        type: array
+      intro:
+        description: 介绍图
+        type: string
+      model:
+        description: 型号
+        type: string
+      notes:
+        description: 购买须知
+        items:
+          type: string
+        type: array
+    type: object
+  model.PlanNewlyRes:
+    properties:
+      batteryDescription:
+        allOf:
+        - $ref: '#/definitions/model.SettingPlanDescription'
+        description: 单电介绍
+      brands:
+        description: 车电选项
+        items:
+          $ref: '#/definitions/model.PlanEbikeBrandOption'
+        type: array
+      configure:
+        allOf:
+        - $ref: '#/definitions/model.PaymentConfigure'
+        description: 支付配置
+      deposit:
+        description: 需缴纳押金
+        type: number
+      ebikeDescription:
+        allOf:
+        - $ref: '#/definitions/model.SettingPlanDescription'
+        description: 车电介绍
+      models:
+        description: 单电选项
+        items:
+          $ref: '#/definitions/model.PlanModelOption'
+        type: array
+    type: object
+  model.PointLogListRes:
+    properties:
+      after:
+        description: 变动后
+        type: integer
+      id:
+        type: integer
+      modifier:
+        description: 操作人
+        type: string
+      plan:
+        description: 订单骑士卡
+        type: string
+      points:
+        description: 积分
+        type: integer
+      reason:
+        description: 原因
+        type: string
+      time:
+        description: 时间
+        type: string
+      type:
+        description: 类别
+        type: string
+    type: object
+  model.PointRes:
+    properties:
+      locked:
+        description: 锁定积分
+        type: integer
+      points:
+        description: 剩余积分
+        type: integer
+    type: object
+  model.Refund:
+    properties:
+      amount:
+        description: 退款金额
+        type: number
+      createdAt:
+        description: 申请退款时间
+        type: string
+      modifier:
+        allOf:
+        - $ref: '#/definitions/model.Modifier'
+        description: 处理人 (可为空)
+      outRefundNo:
+        description: 退款单号
+        type: string
+      reason:
+        description: 退款理由
+        type: string
+      refundAt:
+        description: 退款成功时间
+        type: string
+      remark:
+        description: 备注
+        type: string
+      status:
+        description: 退款状态 0:处理中 1:已同意 2:已拒绝 3:已失败
+        enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        type: integer
+    type: object
+  model.RefundReq:
+    properties:
+      deposit:
+        description: '是否退押金, 押金退款条件: 1. 无最近订单; 2. 存在订单且状态为已退款或已退租'
+        type: boolean
+      subscribeId:
+        description: 骑士卡ID, 和deposit不能同时存在, 也不能同时为空
+        type: integer
+    type: object
+  model.RefundRes:
+    properties:
+      outRefundNo:
+        description: 退款单号
+        type: string
+    type: object
+  model.ReserveCreateReq:
+    properties:
+      business:
+        description: 业务选项 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
+        enum:
+        - active
+        - pause
+        - continue
+        - unsubscribe
+        type: string
+      cabinetId:
+        description: 电柜ID
+        type: integer
+    type: object
+  model.ReserveStatus:
+    enum:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    type: integer
+    x-enum-comments:
+      ReserveStatusCancel: 已取消
+      ReserveStatusFail: 已失败
+      ReserveStatusInvalid: 已失效
+      ReserveStatusPending: 已预约
+      ReserveStatusProcessing: 进行中
+      ReserveStatusSuccess: 已完成
+      ReserveStatusTimeout: 已超时
+    x-enum-varnames:
+    - ReserveStatusPending
+    - ReserveStatusProcessing
+    - ReserveStatusSuccess
+    - ReserveStatusFail
+    - ReserveStatusTimeout
+    - ReserveStatusCancel
+    - ReserveStatusInvalid
+  model.ReserveUnfinishedRes:
+    properties:
+      business:
+        description: 预约业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
+        type: string
+      cabinetId:
+        description: 电柜ID
+        type: integer
+      fid:
+        description: 设施ID
+        type: string
+      id:
+        description: 预约ID
+        type: integer
+      status:
+        allOf:
+        - $ref: '#/definitions/model.ReserveStatus'
+        description: 状态 0:已预约 1:进行中
+      time:
+        description: 预约时间
+        type: string
+    type: object
+  model.Rider:
+    properties:
+      id:
+        type: integer
+      name:
+        description: 姓名
+        type: string
+      phone:
+        description: 电话
+        type: string
+    type: object
+  model.RiderContact:
+    properties:
+      name:
+        type: string
+      phone:
+        type: string
+      relation:
+        type: string
+    required:
+    - name
+    - phone
+    - relation
+    type: object
+  model.RiderDepositRes:
+    properties:
+      deposit:
+        type: number
+    type: object
+  model.RiderExchangeInfo:
+    properties:
+      alternative:
+        allOf:
+        - $ref: '#/definitions/model.BinInfo'
+        description: 备选方案
+      batteryFullNum:
+        description: 总满电电池数
+        type: integer
+      batteryNum:
+        description: 总电池数
+        type: integer
+      brand:
+        allOf:
+        - $ref: '#/definitions/adapter.CabinetBrand'
+        description: 电柜型号
+      cityId:
+        description: 城市ID
+        type: integer
+      doors:
+        description: 总仓位
+        type: integer
+      emptyBin:
+        allOf:
+        - $ref: '#/definitions/model.BinInfo'
+        description: 空仓位
+      full:
+        description: 是否有满电电池
+        type: boolean
+      fullBin:
+        allOf:
+        - $ref: '#/definitions/model.BinInfo'
+        description: 满电仓位
+      health:
+        description: 电柜健康状态 0离线 1正常 2故障
+        type: integer
+      id:
+        description: 电柜ID
+        type: integer
+      model:
+        description: 电池型号
+        type: string
+      name:
+        description: 电柜名称
+        type: string
+      serial:
+        description: 电柜编码
+        type: string
+      uuid:
+        description: 操作ID
+        type: string
+    type: object
+  model.RiderExchangeProcessReq:
+    properties:
+      alternative:
+        description: 是否使用备选方案
+        type: boolean
+      uuid:
+        description: 操作ID
+        type: string
+    required:
+    - uuid
+    type: object
+  model.RiderExchangeProcessRes:
+    properties:
+      message:
+        description: 消息
+        type: string
+      status:
+        description: 状态 1:处理中 2:成功 3:失败
+        type: integer
+      step:
+        description: 操作步骤 1:开空电仓 2:放旧电池 3:开满电仓 4:取新电池
+        type: integer
+      stop:
+        description: 步骤是否终止
+        type: boolean
+    type: object
+  model.RiderPlanItem:
+    properties:
+      days:
+        description: 天数
+        type: integer
+      desc:
+        description: 优惠信息
+        type: string
+      discountNewly:
+        description: 新签优惠
+        type: number
+      id:
+        type: integer
+      name:
+        description: 骑士卡名称
+        type: string
+      original:
+        description: 原价
+        type: number
+      price:
+        description: 价格
+        type: number
+    type: object
+  model.RiderPlanRenewalRes:
+    properties:
+      configure:
+        allOf:
+        - $ref: '#/definitions/model.PaymentConfigure'
+        description: 支付配置
+      days:
+        description: 逾期天数, 可能为空
+        type: integer
+      fee:
+        description: 逾期费用, 可能为空
+        type: number
+      formula:
+        description: 逾期费用计算公式, 可能为空
+        type: string
+      items:
+        description: 骑士卡列表
+        items:
+          $ref: '#/definitions/model.RiderPlanItem'
+        type: array
+      overdue:
+        description: 是否需要支付逾期费用
+        type: boolean
+    type: object
+  model.RiderSigninRes:
+    properties:
+      cabinetBusiness:
+        description: 是否可以自主使用电柜办理业务
+        type: boolean
+      contact:
+        allOf:
+        - $ref: '#/definitions/model.RiderContact'
+        description: 联系人
+      deposit:
+        description: 需缴押金
+        type: number
+      enterprise:
+        allOf:
+        - $ref: '#/definitions/model.Enterprise'
+        description: 所属企业
+      enterpriseContact:
+        allOf:
+        - $ref: '#/definitions/model.EnterpriseContact'
+        description: 团签联系方式
+      exitEnterprise:
+        description: 判断能否退出团签
+        type: boolean
+      id:
+        type: integer
+      isAuthed:
+        description: 是否已认证
+        type: boolean
+      isContactFilled:
+        description: 联系人是否添加
+        type: boolean
+      isNewDevice:
+        description: 是否新设备
+        type: boolean
+      name:
+        description: 姓名, 实名认证后才会有
+        type: string
+      orderNotActived:
+        description: 是否存在未激活订单
+        type: boolean
+      phone:
+        description: 电话
+        type: string
+      qrcode:
+        description: 二维码
+        type: string
+      station:
+        allOf:
+        - $ref: '#/definitions/model.EnterpriseStation'
+        description: 站点
+      subscribe:
+        allOf:
+        - $ref: '#/definitions/model.Subscribe'
+        description: 骑士卡
+      token:
+        description: 认证token
+        type: string
+      useStore:
+        description: 是否可使用门店办理业务
+        type: boolean
+    type: object
+  model.RiderSignupReq:
+    properties:
+      cityId:
+        type: integer
+      phone:
+        type: string
+      smsCode:
+        type: string
+      smsId:
+        type: string
+    required:
+    - phone
+    - smsCode
+    - smsId
+    type: object
+  model.SettingPlanDescription:
+    properties:
+      attention:
+        description: 注意事项
+        type: string
+      banner:
+        description: banner图
+        type: string
+      pickup:
+        description: 提货方式
+        type: string
+      product:
+        description: 商品介绍
+        type: string
+    type: object
+  model.SettingQuestion:
+    properties:
+      answer:
+        description: 解答
+        type: string
+      question:
+        description: 问题
+        type: string
+    type: object
+  model.SettingRiderApp:
+    properties:
+      assistanceFee:
+        description: 救援费用
+        type: number
+      reserveDuration:
+        description: 预约最长时间(分钟)
+        type: integer
+    type: object
+  model.SmsReq:
+    properties:
+      captchaCode:
+        description: captcha 验证码
+        type: string
+      phone:
+        description: 手机号
+        type: string
+    required:
+    - captchaCode
+    - phone
+    type: object
+  model.SmsRes:
+    properties:
+      id:
+        description: 任务ID
+        type: string
+    type: object
+  model.StatusResponse:
+    properties:
+      status:
+        type: boolean
+    type: object
+  model.Store:
+    properties:
+      id:
+        type: integer
+      name:
+        description: 门店名称
+        type: string
+    type: object
+  model.StoreLngLat:
+    properties:
+      id:
+        type: integer
+      lat:
+        type: number
+      lng:
+        type: number
+      name:
+        description: 门店名称
+        type: string
+    type: object
+  model.Subscribe:
+    properties:
+      alterDays:
+        description: 改动天数
+        type: integer
+      business:
+        description: 是否可办理业务
+        type: boolean
+      city:
+        allOf:
+        - $ref: '#/definitions/model.City'
+        description: 所属城市
+      days:
+        description: 总天数 = 骑士卡天数 + 改动天数 + 暂停天数 + 续费天数 + 已缴纳逾期滞纳金天数
+        type: integer
+      ebike:
+        allOf:
+        - $ref: '#/definitions/model.Ebike'
+        description: 电车属性
+      endAt:
+        description: 结束时间 / 预计套餐结束时间
+        type: string
+      enterprise:
+        allOf:
+        - $ref: '#/definitions/model.Enterprise'
+        description: 企业信息
+      id:
+        description: 订阅ID
+        type: integer
+      initialDays:
+        description: 初始购买骑士卡天数
+        type: integer
+      intelligent:
+        description: 是否智能柜订阅
+        type: boolean
+      model:
+        description: 可用电池型号
+        type: string
+      models:
+        description: 可用电池型号
+        items:
+          $ref: '#/definitions/model.BatteryModel'
+        type: array
+      needContract:
+        description: 是否需要签约
+        type: boolean
+      order:
+        allOf:
+        - $ref: '#/definitions/model.SubscribeOrderInfo'
+        description: 订单信息
+      overdueDays:
+        description: 已缴纳逾期滞纳金天数
+        type: integer
+      pauseDays:
+        description: 暂停天数
+        type: integer
+      plan:
+        allOf:
+        - $ref: '#/definitions/model.Plan'
+        description: 骑士卡信息
+      remaining:
+        description: 剩余天数 = 总天数 - 已过时间
+        type: integer
+      riderId:
+        description: 骑手ID
+        type: integer
+      startAt:
+        description: 开始时间
+        type: string
+      status:
+        description: 状态 0未激活 1计费中 2寄存中 3已逾期 4已退订 5已取消
+        enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        type: integer
+      suspend:
+        description: 是否暂停扣费
+        type: boolean
+    type: object
+  model.SubscribeAlterApplyListRes:
+    properties:
+      applyTime:
+        description: 申请时间
+        type: string
+      days:
+        description: 天数
+        type: integer
+      id:
+        type: integer
+      operator:
+        description: 操作人
+        type: string
+      reviewTime:
+        description: 审核时间
+        type: string
+      rider:
+        allOf:
+        - $ref: '#/definitions/model.Rider'
+        description: 骑手
+      status:
+        description: 审核状态
+        type: integer
+      subscribeEndAt:
+        description: 团签到期时间
+        type: string
+    type: object
+  model.SubscribeAlterRiderReq:
+    properties:
+      days:
+        type: integer
+    required:
+    - days
+    type: object
+  model.SubscribeOrderInfo:
+    properties:
+      amount:
+        description: 骑士卡金额
+        type: number
+      deposit:
+        description: 押金(只在未启用骑士卡中显示), 若押金为0则押金一行不显示
+        type: number
+      id:
+        description: 订阅ID
+        type: integer
+      payAt:
+        description: 支付时间
+        type: string
+      payway:
+        description: 支付方式
+        type: integer
+      status:
+        description: 订单状态 0未支付 1已支付 2申请退款 3已退款 4退款被拒绝
+        type: integer
+      total:
+        description: 总支付金额, 总金额为 amount + deposit
+        type: number
+    type: object
+  model.SubscribeSigned:
+    properties:
+      signed:
+        description: 签约状态, 0:无签约信息(直接弹窗提示用户"未找到签约信息"并返回首页) 1:签署中(继续轮询) 2:签约成功(弹出扫码)
+        enum:
+        - 0
+        - 1
+        - 2
+        type: integer
+    type: object
+  model.WalletOverview:
+    properties:
+      balance:
+        description: 账户余额
+        type: number
+      coupons:
+        description: 可使用优惠券数量
+        type: integer
+      deposit:
+        description: 已缴纳押金
+        type: number
+      points:
+        description: 积分数量
+        type: integer
+    type: object
+info:
+  contact: {}
+  description: |-
+    ### 说明
+    接口采用非标准Restful API，所有http返回代码均为`200`，当返回为非`200`时应为network错误，需要及时排查。
+    <br>
+    接口返回说明查看 **[返回](#返回)**
+    <br>
+    图片/附件前缀 `https://cdn.auroraride.com/`
+
+    <br />
+
+    <br />
+
+    ### 接口编号
+
+    第一位代表接口端分类
+
+    - M 管理端
+    - R 骑手端
+    - E 门店端
+    - C 通用
+
+    第二位代表子分类（36进制）
+
+    后三位代表子编号（10进制）
+
+    <br />
+
+    <br />
+
+
+    ### 认证
+    项目接口使用简单认证，认证方式为`header`中添加对应的认证`token`
+    |  header   |  类型  |  接口  |
+    | :-----: | :----: | :--: |
+    |  X-Rider-Token   |  string   |  骑手API  |
+    | X-Manager-Token | string |  后台API  |
+    |  X-Employee-Token   | string |  员工API  |
+
+    <br />
+
+    <br />
+
+    ### 返回
+
+    一个标准的返回应包含以下结构
+
+    |  字段   |  类型  |  必填  |  说明  |
+    | :-----: | :----: | :--: | :--: |
+    |  code   |  int   |  是  |  返回代码  |
+    | message | string |  是  |  返回消息  |
+    |  data   | object |  是  |  返回数据  |
+
+    `code`代码取值说明
+
+    | 十进制 | 十六进制 | 说明 |
+    | :----: | :------: | :--: |
+    | 0  |  0x000  | 请求成功 |
+    | 256 |  0x100  | 请求失败 |
+    | 512 |  0x200  | *需要认证(跳转登录) |
+    | 768 |  0x300  | *用户被封禁 |
+    | 1024 |  0x400  | 资源未获 |
+    | 1280 |  0x500  | 未知错误 |
+    | 1536 |  0x600  | *需要实名 |
+    | 1792 |  0x700  | *需要验证 (更换设备, 需要人脸验证) |
+    | 2048 |  0x800  | *需要联系人 |
+    | 2304 |  0x900  | 请求过期 |
+
+    > 当返回值是`1792(0x700)需要人脸验证`或`1536(0x600)需要实名`的时候`data`返回值为`{"url": "string"}`, 直接跳转url
+
+
+    比如：
+    > 默认成功返回
+    ```json
+    {
+      "code": 0,
+      "message": "OK",
+      "data": {
+        "status": true
+      }
+    }
+    ```
+  title: 极光出行API - 骑手端api
+  version: "1.0"
+paths:
+  /common/battery/model:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerBatteryModel
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 型号列表
+          schema:
+            items:
+              type: string
+            type: array
+      summary: C4 获取生效中的电池型号
+      tags:
+      - '[C]公共接口'
+  /common/captcha:
+    get:
+      consumes:
+      - image/png
+      description: 生成的图片验证码有效时间为10分钟
+      operationId: CaptchaGenerate
+      produces:
+      - image/png
+      responses:
+        "200":
+          description: ok
+          headers:
+            X-Captcha-Id  true:
+              description: Captcha验证码ID
+              type: string
+          schema:
+            type: string
+      summary: C1 生成图片验证码
+      tags:
+      - '[C]公共接口'
+  /common/oss/token:
+    get:
+      consumes:
+      - application/json
+      description: 上传文件必须，单次获取有效时间为1个小时
+      operationId: AliyunOssToken
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.AliyunOssStsRes'
+      summary: C3 获取阿里云oss临时凭证
+      tags:
+      - '[C]公共接口'
+  /common/sms:
+    post:
+      consumes:
+      - application/json
+      description: 上传文件必须，单次获取有效时间为1个小时
+      operationId: SendSmsCode
+      parameters:
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.SmsReq'
+      - description: Captcha验证码ID
+        in: header
+        name: X-Captcha-Id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.SmsRes'
+      summary: C2 发送短信验证码
+      tags:
+      - '[C]公共接口'
+  /rider/v1/assistance:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderAssistanceList
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.Pagination'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.AssistanceSimpleListRes'
+                  type: array
+              type: object
+      summary: R5005 救援列表
+      tags:
+      - 救援
+    post:
+      consumes:
+      - application/json
+      operationId: RiderAssistanceCreate
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 救援参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AssistanceCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.AssistanceCreateRes'
+      summary: R5002 发起救援
+      tags:
+      - 救援
+  /rider/v1/assistance/breakdown:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderAssistanceBreakdown
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              type: string
+            type: array
+      summary: R5001 获取救援原因
+      tags:
+      - 救援
+  /rider/v1/assistance/cancel:
+    post:
+      consumes:
+      - application/json
+      operationId: RiderAssistanceCancel
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 取消请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AssistanceCancelReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: R5003 取消救援
+      tags:
+      - 救援
+  /rider/v1/assistance/current:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderAssistanceCurrent
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 救援信息, 救援不存在的时候返回data为null
+          schema:
+            $ref: '#/definitions/model.AssistanceSocketMessage'
+      summary: R5004 当前救援
+      tags:
+      - 救援
+  /rider/v1/authenticator:
+    post:
+      consumes:
+      - application/json
+      operationId: RiderAuthenticator
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.RiderContact'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.FaceAuthUrlResponse'
+      summary: R1003 实名认证
+      tags:
+      - 骑手
+  /rider/v1/authenticator/{token}:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderAuthResult
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 实名认证token
+        in: path
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: R1004 实名认证结果
+      tags:
+      - 骑手
+  /rider/v1/battery:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderBatteryDetail
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.BatteryDetail'
+      summary: RA001 获取电池详情
+      tags:
+      - 电池
+  /rider/v1/branch:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderBranchList
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 业务选项 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
+        enum:
+        - active
+        - pause
+        - continue
+        - unsubscribe
+        in: query
+        name: business
+        type: string
+      - in: query
+        name: cityId
+        type: integer
+      - in: query
+        name: distance
+        type: number
+      - description: 额外筛选参数
+        in: query
+        name: filter
+        type: string
+      - in: query
+        name: lat
+        required: true
+        type: number
+      - in: query
+        name: lng
+        required: true
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.BranchWithDistanceRes'
+            type: array
+      summary: R2001 列举网点
+      tags:
+      - 网点
+  /rider/v1/branch/facility/{fid}:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderBranchFacility
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 设置标识
+        in: path
+        name: fid
+        required: true
+        type: string
+      - description: 经度
+        in: query
+        name: lng
+        required: true
+        type: number
+      - description: 纬度
+        in: query
+        name: lat
+        required: true
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.BranchFacilityRes'
+      summary: R2004 设施详情
+      tags:
+      - 网点
+  /rider/v1/branch/riding:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderBranchRiding
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - in: query
+        name: destination
+        type: string
+      - in: query
+        name: origin
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.BranchRidingRes'
+      summary: R2002 网点骑行规划时间
+      tags:
+      - 网点
+  /rider/v1/business/active:
+    post:
+      consumes:
+      - application/json
+      operationId: RiderBusinessActive
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 业务请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.BusinessCabinetReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.BusinessCabinetStatus'
+      summary: R7001 激活骑士卡
+      tags:
+      - 业务
+  /rider/v1/business/allocated/{id}:
+    get:
+      consumes:
+      - application/json
+      description: 用以判定待激活骑士卡是否需要签约 (allocated = true)
+      operationId: RiderBusinessAllocated
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 订阅ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.AllocateRiderRes'
+      summary: R7009 长连接轮询是否已分配
+      tags:
+      - 业务
+  /rider/v1/business/continue:
+    post:
+      consumes:
+      - application/json
+      operationId: RiderBusinessContinue
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 业务请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.BusinessCabinetReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.BusinessCabinetStatus'
+      summary: R7004 取消寄存
+      tags:
+      - 业务
+  /rider/v1/business/pause:
+    post:
+      consumes:
+      - application/json
+      operationId: RiderBusinessPause
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 业务请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.BusinessCabinetReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.BusinessCabinetStatus'
+      summary: R7003 寄存
+      tags:
+      - 业务
+  /rider/v1/business/pause/info:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderBusinessPauseInfo
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.BusinessPauseInfoRes'
+      summary: R7006 寄存信息
+      tags:
+      - 业务
+  /rider/v1/business/status:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderBusinessStatus
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - in: query
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.BusinessCabinetStatusRes'
+      summary: R7005 业务状态
+      tags:
+      - 业务
+  /rider/v1/business/subscribe/signed/{id}:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderBusinessSubscribeSigned
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 订阅ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.SubscribeSigned'
+      summary: R7010 长连接轮询是否已签约
+      tags:
+      - 业务
+  /rider/v1/business/unsubscribe:
+    post:
+      consumes:
+      - application/json
+      operationId: RiderBusinessUnsubscribe
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 业务请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.BusinessCabinetReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.BusinessCabinetStatus'
+      summary: R7002 退租
+      tags:
+      - 业务
+  /rider/v1/cabinet/fault:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderCabinetFault
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              type: string
+            type: array
+      summary: R4008 电柜故障列表
+      tags:
+      - 电柜
+  /rider/v1/cabinet/process:
+    post:
+      consumes:
+      - application/json
+      operationId: RiderCabinetProcess
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.RiderExchangeProcessReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: R4002 操作换电
+      tags:
+      - 电柜
+  /rider/v1/cabinet/process/{serial}:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderCabinetGetProcess
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 电柜二维码
+        in: path
+        name: serial
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.RiderExchangeInfo'
+      summary: R4001 获取换电信息
+      tags:
+      - 电柜
+  /rider/v1/cabinet/process/status:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderCabinetProcessStatus
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - in: query
+        name: uuid
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.RiderExchangeProcessRes'
+      summary: R4003 换电状态
+      tags:
+      - 电柜
+  /rider/v1/cabinet/report:
+    post:
+      consumes:
+      - application/json
+      operationId: CabinetReport
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.CabinetFaultReportReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: R4004 电柜故障上报
+      tags:
+      - 电柜
+  /rider/v1/city:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderCityList
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.CityWithLocation'
+            type: array
+      summary: R2003 获取已开通城市
+      tags:
+      - 城市
+  /rider/v1/constract/{sn}:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderContractSignResult
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 合同编号
+        in: path
+        name: sn
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: R3004 合同签署结果
+      tags:
+      - 合同
+  /rider/v1/contact:
+    post:
+      consumes:
+      - application/json
+      operationId: RiderContact
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.RiderContact'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: R1002 添加紧急联系人
+      tags:
+      - 骑手
+  /rider/v1/contract/sign:
+    post:
+      consumes:
+      - application/json
+      operationId: RiderContractSign
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.ContractSignReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.ContractSignRes'
+      summary: R3003 签署合同
+      tags:
+      - 合同
+  /rider/v1/deposit:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderRiderDeposit
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.RiderDepositRes'
+      summary: R1007 获取已缴押金
+      tags:
+      - 骑手
+  /rider/v1/deregister:
+    delete:
+      consumes:
+      - application/json
+      operationId: RiderRiderDeregister
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: R1008 注销账户
+      tags:
+      - 骑手
+  /rider/v1/enterprise/battery:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderEnterpriseBattery
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 城市ID
+        in: query
+        name: cityId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              type: string
+            type: array
+      summary: R3010 企业骑手获取可用电池
+      tags:
+      - 团签
+  /rider/v1/enterprise/exit:
+    post:
+      consumes:
+      - application/json
+      operationId: RiderEnterpriseExitEnterprise
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: R3017 退出团签
+      tags:
+      - 团签
+  /rider/v1/enterprise/info:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderEnterpriseRiderEnterpriseInfo
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 团签id
+        in: query
+        name: enterpriseId
+        required: true
+        type: integer
+      - description: 站点id
+        in: query
+        name: stationId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.EnterproseInfoRsp'
+      summary: R3016 骑手团签信息
+      tags:
+      - 团签
+  /rider/v1/enterprise/join:
+    post:
+      consumes:
+      - application/json
+      operationId: RiderEnterpriseJoinEnterprise
+      parameters:
+      - description: 加入团签请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.EnterproseInfoReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            type: boolean
+      summary: R3015 企业骑手加入团签
+      tags:
+      - 团签
+  /rider/v1/enterprise/subscribe:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderEnterpriseSubscribeStatus
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 订阅ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: TRUE已激活, FALSE未激活
+          schema:
+            type: boolean
+      summary: R3012 企业骑手订阅激活状态
+      tags:
+      - 团签
+    post:
+      consumes:
+      - application/json
+      operationId: RiderEnterpriseSubscribe
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 电池选择请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.EnterpriseRiderSubscribeChooseReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.EnterpriseRiderSubscribeChooseRes'
+      summary: R3011 企业骑手选择电池
+      tags:
+      - 团签
+  /rider/v1/enterprise/subscribe/alter:
+    post:
+      consumes:
+      - application/json
+      operationId: RiderEnterpriseSubscribeAlter
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 申请增加订阅时长请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.SubscribeAlterRiderReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: R3013 加时申请
+      tags:
+      - 团签
+  /rider/v1/enterprise/subscribe/alter/list:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderEnterpriseSubscribeAlterList
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 结束时间
+        in: query
+        name: end
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 开始时间
+        in: query
+        name: start
+        type: string
+      - description: 审核状态
+        in: query
+        name: status
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.SubscribeAlterApplyListRes'
+                  type: array
+              type: object
+      summary: R3014 加时申请列表
+      tags:
+      - 团签
+  /rider/v1/exchange/log:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderExchangeLog
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.ExchangeRiderListRes'
+                  type: array
+              type: object
+      summary: R4007 换电记录
+      tags:
+      - 换电
+  /rider/v1/exchange/overview:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderExchangeOverview
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.ExchangeOverview'
+      summary: R4006 换电概览
+      tags:
+      - 换电
+  /rider/v1/exchange/store:
+    post:
+      consumes:
+      - application/json
+      operationId: RiderExchangeStore
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.ExchangeStoreReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.ExchangeStoreRes'
+      summary: R4005 门店换电
+      tags:
+      - 换电
+  /rider/v1/face/{token}:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderFaceResult
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 人脸校验token
+        in: path
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: R1005 获取人脸校验结果
+      tags:
+      - 骑手
+  /rider/v1/order:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderOrderList
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.Order'
+                  type: array
+              type: object
+      summary: R3007 骑士卡购买历史
+      tags:
+      - 订单
+    post:
+      consumes:
+      - application/json
+      operationId: RiderOrderCreate
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 订单创建请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.OrderCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.OrderCreateRes'
+      summary: R3005 支付请求
+      tags:
+      - 订单
+  /rider/v1/order/{id}:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderOrderDetail
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 订单ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.Order'
+      summary: R3008 订单详情
+      tags:
+      - 订单
+  /rider/v1/order/refund:
+    post:
+      consumes:
+      - application/json
+      operationId: RiderOrderRefund
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.RefundReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.RefundRes'
+      summary: R3006 申请退款
+      tags:
+      - 订单
+  /rider/v1/order/status:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderOrderStatus
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 订单编号
+        in: query
+        name: outTradeNo
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.OrderStatusRes'
+      summary: R3009 订单支付状态
+      tags:
+      - 订单
+  /rider/v1/plan:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderPlanList
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - in: query
+        name: cityId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.PlanNewlyRes'
+      summary: R3001 新购骑士卡
+      tags:
+      - 骑士卡
+  /rider/v1/plan/renewly:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderPlanRenewly
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.RiderPlanRenewalRes'
+      summary: R3002 续费骑士卡
+      tags:
+      - 骑士卡
+  /rider/v1/profile:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderRiderProfile
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.RiderSigninRes'
+      summary: R1006 获取个人信息
+      tags:
+      - 骑手
+  /rider/v1/reserve:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderReserveUnfinished
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功, 预约不存在时为`null`
+          schema:
+            $ref: '#/definitions/model.ReserveUnfinishedRes'
+      summary: R8001 获取未完成预约
+      tags:
+      - 预约
+    post:
+      consumes:
+      - application/json
+      operationId: RiderReserveCreate
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 预约信息
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.ReserveCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.ReserveUnfinishedRes'
+      summary: R8002 创建预约
+      tags:
+      - 预约
+  /rider/v1/reserve/{id}:
+    delete:
+      consumes:
+      - application/json
+      operationId: ManagerReserveCancel
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 预约ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: R8003 取消预约
+      tags:
+      - 预约
+  /rider/v1/setting/app:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderSettingApp
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.SettingRiderApp'
+      summary: R6001 获取APP设置
+      tags:
+      - 设置
+  /rider/v1/setting/question:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderSettingQuestion
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.SettingQuestion'
+            type: array
+      summary: R6002 获取常见问题
+      tags:
+      - 设置
+  /rider/v1/signin:
+    post:
+      consumes:
+      - application/json
+      operationId: RiderSignin
+      parameters:
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.RiderSignupReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.RiderSigninRes'
+      summary: R1001 登录或注册
+      tags:
+      - 骑手
+  /rider/v1/wallet/coupons:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderWalletCoupons
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 查询类别 0:可使用 1:已使用 2:已过期
+        enum:
+        - 0
+        - 1
+        - 2
+        in: query
+        name: type
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.CouponRider'
+            type: array
+      summary: R9004 优惠券列表
+      tags:
+      - 钱包
+  /rider/v1/wallet/overview:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderWalletOverview
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.WalletOverview'
+      summary: R9001 钱包概览
+      tags:
+      - 钱包
+  /rider/v1/wallet/pointlog:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderWalletPointLog
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.PointLogListRes'
+                  type: array
+              type: object
+      summary: R9002 积分日志
+      tags:
+      - 钱包
+  /rider/v1/wallet/points:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderWalletPoints
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.PointRes'
+      summary: R9003 积分详情
+      tags:
+      - 钱包
+swagger: "2.0"

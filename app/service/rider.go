@@ -841,7 +841,7 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
 			}
 			// 办理人
 			employees, _ := ent.Database.Contract.QueryNotDeleted().Where(contract.RiderID(item.ID)).WithEmployee().QueryEmployee().All(s.ctx)
-			if employees != nil && len(employees) > 0 {
+			if len(employees) > 0 {
 				employee := employees[len(employees)-1]
 				row[2] = employee.Name
 				// 门店
@@ -852,7 +852,7 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
 			}
 			// 订单开始时间、订单结束时间
 			subscribes, _ := ent.Database.Subscribe.QueryNotDeleted().Where(subscribe.RiderID(item.ID)).All(s.ctx)
-			if subscribes != nil && len(subscribes) > 0 {
+			if len(subscribes) > 0 {
 				sub := subscribes[len(subscribes)-1]
 				if sub.StartAt != nil {
 					row[11] = sub.StartAt.Format(carbon.DateTimeLayout)
@@ -868,10 +868,10 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
 			}
 			// 跟进详情
 			riderFollowUps, _ := ent.Database.RiderFollowUp.QueryNotDeleted().Where(riderfollowup.RiderID(item.ID)).All(s.ctx)
-			if riderFollowUps != nil && len(riderFollowUps) > 0 {
+			if len(riderFollowUps) > 0 {
 				var temp = make([]string, len(riderFollowUps))
 				for k, v := range riderFollowUps {
-					temp[k] = fmt.Sprintf("%s", v.Remark)
+					temp[k] = v.Remark
 				}
 				var riderFollowUpsDetail = strings.Join(temp, "-")
 				row[23] = riderFollowUpsDetail

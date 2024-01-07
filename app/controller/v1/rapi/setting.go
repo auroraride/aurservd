@@ -6,11 +6,12 @@
 package rapi
 
 import (
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/pkg/cache"
-	"github.com/labstack/echo/v4"
 )
 
 type setting struct{}
@@ -21,7 +22,7 @@ var Setting = new(setting)
 // @ID           RiderSettingApp
 // @Router       /rider/v1/setting/app [GET]
 // @Summary      R6001 获取APP设置
-// @Tags         [R]骑手接口
+// @Tags         设置
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -39,7 +40,7 @@ func (*setting) App(c echo.Context) (err error) {
 // @ID           RiderSettingQuestion
 // @Router       /rider/v1/setting/question [GET]
 // @Summary      R6002 获取常见问题
-// @Tags         [R]骑手接口
+// @Tags         设置
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
