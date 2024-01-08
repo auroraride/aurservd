@@ -46,6 +46,9 @@ type AgentProfile struct {
 	Name           string              `json:"name"`               // 姓名
 	Contract       string              `json:"contract,omitempty"` // 合同URL, 可能为空
 	Enterprise     Enterprise          `json:"enterprise"`         // 企业
+	CompanyName    string              `json:"companyName"`        // 公司名称
+	ContactName    string              `json:"contactName"`        // 企业联系人
+	ContactPhone   string              `json:"contactPhone"`       // 企业联系人电话
 	Balance        float64             `json:"balance"`            // 可用余额
 	Riders         int                 `json:"riders"`             // 骑手数量
 	Using          int                 `json:"using"`              // 计费中骑手数
