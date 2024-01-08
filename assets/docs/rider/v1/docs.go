@@ -15,32 +15,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/common/battery/model": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "[C]公共接口"
-                ],
-                "summary": "C4 获取生效中的电池型号",
-                "operationId": "ManagerBatteryModel",
-                "responses": {
-                    "200": {
-                        "description": "型号列表",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/common/captcha": {
             "get": {
                 "description": "生成的图片验证码有效时间为10分钟",
@@ -51,7 +25,7 @@ const docTemplate = `{
                     "image/png"
                 ],
                 "tags": [
-                    "[C]公共接口"
+                    "Communal - 公共接口"
                 ],
                 "summary": "C1 生成图片验证码",
                 "operationId": "CaptchaGenerate",
@@ -81,7 +55,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[C]公共接口"
+                    "Communal - 公共接口"
                 ],
                 "summary": "C3 获取阿里云oss临时凭证",
                 "operationId": "AliyunOssToken",
@@ -105,7 +79,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[C]公共接口"
+                    "Communal - 公共接口"
                 ],
                 "summary": "C2 发送短信验证码",
                 "operationId": "SendSmsCode",
@@ -146,7 +120,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "救援"
+                    "Assistance - 救援"
                 ],
                 "summary": "R5005 救援列表",
                 "operationId": "RiderAssistanceList",
@@ -203,7 +177,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "救援"
+                    "Assistance - 救援"
                 ],
                 "summary": "R5002 发起救援",
                 "operationId": "RiderAssistanceCreate",
@@ -244,7 +218,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "救援"
+                    "Assistance - 救援"
                 ],
                 "summary": "R5001 获取救援原因",
                 "operationId": "RiderAssistanceBreakdown",
@@ -279,7 +253,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "救援"
+                    "Assistance - 救援"
                 ],
                 "summary": "R5003 取消救援",
                 "operationId": "RiderAssistanceCancel",
@@ -320,7 +294,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "救援"
+                    "Assistance - 救援"
                 ],
                 "summary": "R5004 当前救援",
                 "operationId": "RiderAssistanceCurrent",
@@ -352,7 +326,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "骑手"
+                    "Rider - 骑手"
                 ],
                 "summary": "R1003 实名认证",
                 "operationId": "RiderAuthenticator",
@@ -393,7 +367,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "骑手"
+                    "Rider - 骑手"
                 ],
                 "summary": "R1004 实名认证结果",
                 "operationId": "RiderAuthResult",
@@ -432,7 +406,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "电池"
+                    "Battery - 电池"
                 ],
                 "summary": "RA001 获取电池详情",
                 "operationId": "RiderBatteryDetail",
@@ -464,7 +438,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "网点"
+                    "Branch - 网点"
                 ],
                 "summary": "R2001 列举网点",
                 "operationId": "RiderBranchList",
@@ -539,7 +513,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "网点"
+                    "Branch - 网点"
                 ],
                 "summary": "R2004 设施详情",
                 "operationId": "RiderBranchFacility",
@@ -592,7 +566,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "网点"
+                    "Branch - 网点"
                 ],
                 "summary": "R2002 网点骑行规划时间",
                 "operationId": "RiderBranchRiding",
@@ -634,7 +608,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "业务"
+                    "Business - 业务"
                 ],
                 "summary": "R7001 激活骑士卡",
                 "operationId": "RiderBusinessActive",
@@ -676,7 +650,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "业务"
+                    "Business - 业务"
                 ],
                 "summary": "R7009 长连接轮询是否已分配",
                 "operationId": "RiderBusinessAllocated",
@@ -715,7 +689,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "业务"
+                    "Business - 业务"
                 ],
                 "summary": "R7004 取消寄存",
                 "operationId": "RiderBusinessContinue",
@@ -756,7 +730,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "业务"
+                    "Business - 业务"
                 ],
                 "summary": "R7003 寄存",
                 "operationId": "RiderBusinessPause",
@@ -797,7 +771,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "业务"
+                    "Business - 业务"
                 ],
                 "summary": "R7006 寄存信息",
                 "operationId": "RiderBusinessPauseInfo",
@@ -829,7 +803,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "业务"
+                    "Business - 业务"
                 ],
                 "summary": "R7005 业务状态",
                 "operationId": "RiderBusinessStatus",
@@ -867,7 +841,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "业务"
+                    "Business - 业务"
                 ],
                 "summary": "R7010 长连接轮询是否已签约",
                 "operationId": "RiderBusinessSubscribeSigned",
@@ -906,7 +880,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "业务"
+                    "Business - 业务"
                 ],
                 "summary": "R7002 退租",
                 "operationId": "RiderBusinessUnsubscribe",
@@ -947,7 +921,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "电柜"
+                    "Cabinet - 电柜"
                 ],
                 "summary": "R4008 电柜故障列表",
                 "operationId": "RiderCabinetFault",
@@ -982,7 +956,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "电柜"
+                    "Cabinet - 电柜"
                 ],
                 "summary": "R4002 操作换电",
                 "operationId": "RiderCabinetProcess",
@@ -1023,7 +997,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "电柜"
+                    "Cabinet - 电柜"
                 ],
                 "summary": "R4003 换电状态",
                 "operationId": "RiderCabinetProcessStatus",
@@ -1060,7 +1034,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "电柜"
+                    "Cabinet - 电柜"
                 ],
                 "summary": "R4001 获取换电信息",
                 "operationId": "RiderCabinetGetProcess",
@@ -1099,7 +1073,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "电柜"
+                    "Cabinet - 电柜"
                 ],
                 "summary": "R4004 电柜故障上报",
                 "operationId": "CabinetReport",
@@ -1140,7 +1114,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "城市"
+                    "City - 城市"
                 ],
                 "summary": "R2003 获取已开通城市",
                 "operationId": "RiderCityList",
@@ -1175,7 +1149,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "合同"
+                    "Contract - 合同"
                 ],
                 "summary": "R3004 合同签署结果",
                 "operationId": "RiderContractSignResult",
@@ -1214,7 +1188,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "骑手"
+                    "Rider - 骑手"
                 ],
                 "summary": "R1002 添加紧急联系人",
                 "operationId": "RiderContact",
@@ -1255,7 +1229,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "合同"
+                    "Contract - 合同"
                 ],
                 "summary": "R3003 签署合同",
                 "operationId": "RiderContractSign",
@@ -1296,7 +1270,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "骑手"
+                    "Rider - 骑手"
                 ],
                 "summary": "R1007 获取已缴押金",
                 "operationId": "RiderRiderDeposit",
@@ -1328,7 +1302,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "骑手"
+                    "Rider - 骑手"
                 ],
                 "summary": "R1008 注销账户",
                 "operationId": "RiderRiderDeregister",
@@ -1360,7 +1334,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "团签"
+                    "Enterprise - 团签"
                 ],
                 "summary": "R3010 企业骑手获取可用电池",
                 "operationId": "RiderEnterpriseBattery",
@@ -1402,7 +1376,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "团签"
+                    "Enterprise - 团签"
                 ],
                 "summary": "R3017 退出团签",
                 "operationId": "RiderEnterpriseExitEnterprise",
@@ -1434,7 +1408,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "团签"
+                    "Enterprise - 团签"
                 ],
                 "summary": "R3016 骑手团签信息",
                 "operationId": "RiderEnterpriseRiderEnterpriseInfo",
@@ -1480,7 +1454,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "团签"
+                    "Enterprise - 团签"
                 ],
                 "summary": "R3015 企业骑手加入团签",
                 "operationId": "RiderEnterpriseJoinEnterprise",
@@ -1514,7 +1488,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "团签"
+                    "Enterprise - 团签"
                 ],
                 "summary": "R3012 企业骑手订阅激活状态",
                 "operationId": "RiderEnterpriseSubscribeStatus",
@@ -1551,7 +1525,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "团签"
+                    "Enterprise - 团签"
                 ],
                 "summary": "R3011 企业骑手选择电池",
                 "operationId": "RiderEnterpriseSubscribe",
@@ -1592,7 +1566,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "团签"
+                    "Enterprise - 团签"
                 ],
                 "summary": "R3013 加时申请",
                 "operationId": "RiderEnterpriseSubscribeAlter",
@@ -1633,7 +1607,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "团签"
+                    "Enterprise - 团签"
                 ],
                 "summary": "R3014 加时申请列表",
                 "operationId": "RiderEnterpriseSubscribeAlterList",
@@ -1710,7 +1684,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "换电"
+                    "Exchange - 换电"
                 ],
                 "summary": "R4007 换电记录",
                 "operationId": "RiderExchangeLog",
@@ -1769,7 +1743,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "换电"
+                    "Exchange - 换电"
                 ],
                 "summary": "R4006 换电概览",
                 "operationId": "RiderExchangeOverview",
@@ -1801,7 +1775,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "换电"
+                    "Exchange - 换电"
                 ],
                 "summary": "R4005 门店换电",
                 "operationId": "RiderExchangeStore",
@@ -1842,7 +1816,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "骑手"
+                    "Rider - 骑手"
                 ],
                 "summary": "R1005 获取人脸校验结果",
                 "operationId": "RiderFaceResult",
@@ -1881,7 +1855,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "订单"
+                    "Order - 订单"
                 ],
                 "summary": "R3007 骑士卡购买历史",
                 "operationId": "RiderOrderList",
@@ -1938,7 +1912,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "订单"
+                    "Order - 订单"
                 ],
                 "summary": "R3005 支付请求",
                 "operationId": "RiderOrderCreate",
@@ -1979,7 +1953,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "订单"
+                    "Order - 订单"
                 ],
                 "summary": "R3006 申请退款",
                 "operationId": "RiderOrderRefund",
@@ -2020,7 +1994,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "订单"
+                    "Order - 订单"
                 ],
                 "summary": "R3009 订单支付状态",
                 "operationId": "RiderOrderStatus",
@@ -2059,7 +2033,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "订单"
+                    "Order - 订单"
                 ],
                 "summary": "R3008 订单详情",
                 "operationId": "RiderOrderDetail",
@@ -2098,7 +2072,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "骑士卡"
+                    "Plan - 骑士卡"
                 ],
                 "summary": "R3001 新购骑士卡",
                 "operationId": "RiderPlanList",
@@ -2136,7 +2110,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "骑士卡"
+                    "Plan - 骑士卡"
                 ],
                 "summary": "R3002 续费骑士卡",
                 "operationId": "RiderPlanRenewly",
@@ -2168,7 +2142,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "骑手"
+                    "Rider - 骑手"
                 ],
                 "summary": "R1006 获取个人信息",
                 "operationId": "RiderRiderProfile",
@@ -2200,7 +2174,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "预约"
+                    "Reserve - 预约"
                 ],
                 "summary": "R8001 获取未完成预约",
                 "operationId": "RiderReserveUnfinished",
@@ -2230,7 +2204,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "预约"
+                    "Reserve - 预约"
                 ],
                 "summary": "R8002 创建预约",
                 "operationId": "RiderReserveCreate",
@@ -2271,7 +2245,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "预约"
+                    "Reserve - 预约"
                 ],
                 "summary": "R8003 取消预约",
                 "operationId": "ManagerReserveCancel",
@@ -2310,7 +2284,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "设置"
+                    "Setting - 设置"
                 ],
                 "summary": "R6001 获取APP设置",
                 "operationId": "RiderSettingApp",
@@ -2342,7 +2316,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "设置"
+                    "Setting - 设置"
                 ],
                 "summary": "R6002 获取常见问题",
                 "operationId": "RiderSettingQuestion",
@@ -2377,7 +2351,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "骑手"
+                    "Rider - 骑手"
                 ],
                 "summary": "R1001 登录或注册",
                 "operationId": "RiderSignin",
@@ -2411,7 +2385,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "钱包"
+                    "Wallet - 钱包"
                 ],
                 "summary": "R9004 优惠券列表",
                 "operationId": "RiderWalletCoupons",
@@ -2457,7 +2431,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "钱包"
+                    "Wallet - 钱包"
                 ],
                 "summary": "R9001 钱包概览",
                 "operationId": "RiderWalletOverview",
@@ -2489,7 +2463,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "钱包"
+                    "Wallet - 钱包"
                 ],
                 "summary": "R9002 积分日志",
                 "operationId": "RiderWalletPointLog",
@@ -2548,7 +2522,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "钱包"
+                    "Wallet - 钱包"
                 ],
                 "summary": "R9003 积分详情",
                 "operationId": "RiderWalletPoints",
@@ -5018,7 +4992,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "极光出行API - 骑手端api",
-	Description:      "### 说明\n接口采用非标准Restful API，所有http返回代码均为`200`，当返回为非`200`时应为network错误，需要及时排查。\n<br>\n接口返回说明查看 **[返回](#返回)**\n<br>\n图片/附件前缀 `https://cdn.auroraride.com/`\n\n<br />\n\n<br />\n\n### 接口编号\n\n第一位代表接口端分类\n\n- M 管理端\n- R 骑手端\n- E 门店端\n- C 通用\n\n第二位代表子分类（36进制）\n\n后三位代表子编号（10进制）\n\n<br />\n\n<br />\n\n\n### 认证\n项目接口使用简单认证，认证方式为`header`中添加对应的认证`token`\n|  header   |  类型  |  接口  |\n| :-----: | :----: | :--: |\n|  X-Rider-Token   |  string   |  骑手API  |\n| X-Manager-Token | string |  后台API  |\n|  X-Employee-Token   | string |  员工API  |\n\n<br />\n\n<br />\n\n### 返回\n\n一个标准的返回应包含以下结构\n\n|  字段   |  类型  |  必填  |  说明  |\n| :-----: | :----: | :--: | :--: |\n|  code   |  int   |  是  |  返回代码  |\n| message | string |  是  |  返回消息  |\n|  data   | object |  是  |  返回数据  |\n\n`code`代码取值说明\n\n| 十进制 | 十六进制 | 说明 |\n| :----: | :------: | :--: |\n| 0  |  0x000  | 请求成功 |\n| 256 |  0x100  | 请求失败 |\n| 512 |  0x200  | *需要认证(跳转登录) |\n| 768 |  0x300  | *用户被封禁 |\n| 1024 |  0x400  | 资源未获 |\n| 1280 |  0x500  | 未知错误 |\n| 1536 |  0x600  | *需要实名 |\n| 1792 |  0x700  | *需要验证 (更换设备, 需要人脸验证) |\n| 2048 |  0x800  | *需要联系人 |\n| 2304 |  0x900  | 请求过期 |\n\n> 当返回值是`1792(0x700)需要人脸验证`或`1536(0x600)需要实名`的时候`data`返回值为`{\"url\": \"string\"}`, 直接跳转url\n\n\n比如：\n> 默认成功返回\n```json\n{\n  \"code\": 0,\n  \"message\": \"OK\",\n  \"data\": {\n    \"status\": true\n  }\n}\n```",
+	Description:      "### 说明\n接口采用非标准Restful API，所有http返回代码均为`200`，当返回为非`200`时应为network错误，需要及时排查。\n<br>\n接口返回说明查看 **[返回](#返回)**\n<br>\n图片/附件前缀 `https://cdn.auroraride.com/`\n\n<br />\n\n<br />\n\n### 接口编号\n\n第一位代表接口端分类\n\n- M 管理端\n- R 骑手端\n- E 门店端\n- C 通用\n\n第二位代表子分类（36进制）\n\n后三位代表子编号（10进制）\n\n<br />\n\n<br />\n\n\n### 认证\n项目接口使用简单认证，认证方式为`header`中添加对应的认证`token`\n|  header   |  类型  |  接口  |\n| :-----: | :----: | :--: |\n|  X-Rider-Token   |  string   |  骑手API  |\n| X-Manager-Token | string |  后台API  |\n|  X-Employee-Token   | string |  员工API  |\n\n<br />\n\n<br />\n\n### 返回\n\n一个标准的返回应包含以下结构\n\n|  字段   |  类型  |  必填  |  说明  |\n| :-----: | :----: | :--: | :--: |\n|  code   |  int   |  是  |  返回代码  |\n| message | string |  是  |  返回消息  |\n|  data   | object |  是  |  返回数据  |\n\n`code`代码取值说明\n\n| 十进制 | 十六进制 | 说明 |\n| :----: | :------: | :--: |\n| 0  |  0x000  | 请求成功 |\n| 256 |  0x100  | 请求失败 |\n| 512 |  0x200  | *需要认证(跳转登录) |\n| 768 |  0x300  | *用户被封禁 |\n| 1024 |  0x400  | 资源未获 |\n| 1280 |  0x500  | 未知错误 |\n| 1536 |  0x600  | *需要实名 |\n| 1792 |  0x700  | *需要验证 (更换设备, 需要人脸验证) |\n| 2048 |  0x800  | *需要联系人 |\n| 2304 |  0x900  | 请求过期 |\n\n> 当返回值是`1792(0x700)需要人脸验证`或`1536(0x600)需要实名`的时候`data`返回值为`{\"url\": \"string\"}`, 直接跳转url\n\n\n比如：\n> 默认成功返回\n```json\n{\n  \"code\": 0,\n  \"message\": \"OK\",\n  \"data\": {\n    \"status\": true\n  }\n}\n```\n",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

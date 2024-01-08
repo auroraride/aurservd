@@ -20,7 +20,7 @@ var City = new(city)
 // @ID           RiderCityList
 // @Router       /rider/v1/city [GET]
 // @Summary      R2003 获取已开通城市
-// @Tags         城市
+// @Tags         City - 城市
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"

@@ -24,7 +24,7 @@ var Branch = new(branch)
 // @ID           RiderBranchList
 // @Router       /rider/v1/branch [GET]
 // @Summary      R2001 列举网点
-// @Tags         网点
+// @Tags         Branch - 网点
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -39,7 +39,7 @@ func (*branch) List(c echo.Context) (err error) {
 // @ID           RiderBranchRiding
 // @Router       /rider/v1/branch/riding [GET]
 // @Summary      R2002 网点骑行规划时间
-// @Tags         网点
+// @Tags         Branch - 网点
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -55,7 +55,7 @@ func (*branch) Riding(c echo.Context) (err error) {
 // @ID           RiderBranchFacility
 // @Router       /rider/v1/branch/facility/{fid} [GET]
 // @Summary      R2004 设施详情
-// @Tags         网点
+// @Tags         Branch - 网点
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"

@@ -21,7 +21,7 @@ var Assistance = new(assistance)
 // @ID           RiderAssistanceBreakdown
 // @Router       /rider/v1/assistance/breakdown [GET]
 // @Summary      R5001 获取救援原因
-// @Tags         救援
+// @Tags         Assistance - 救援
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -35,7 +35,7 @@ func (*assistance) Breakdown(c echo.Context) (err error) {
 // @ID           RiderAssistanceCreate
 // @Router       /rider/v1/assistance [POST]
 // @Summary      R5002 发起救援
-// @Tags         救援
+// @Tags         Assistance - 救援
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -50,7 +50,7 @@ func (*assistance) Create(c echo.Context) (err error) {
 // @ID           RiderAssistanceCancel
 // @Router       /rider/v1/assistance/cancel [POST]
 // @Summary      R5003 取消救援
-// @Tags         救援
+// @Tags         Assistance - 救援
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -66,7 +66,7 @@ func (*assistance) Cancel(c echo.Context) (err error) {
 // @ID           RiderAssistanceCurrent
 // @Router       /rider/v1/assistance/current [GET]
 // @Summary      R5004 当前救援
-// @Tags         救援
+// @Tags         Assistance - 救援
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -80,7 +80,7 @@ func (*assistance) Current(c echo.Context) (err error) {
 // @ID           RiderAssistanceList
 // @Router       /rider/v1/assistance [GET]
 // @Summary      R5005 救援列表
-// @Tags         救援
+// @Tags         Assistance - 救援
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"

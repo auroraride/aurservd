@@ -21,7 +21,7 @@ var Business = new(business)
 // @ID           RiderBusinessActive
 // @Router       /rider/v1/business/active [POST]
 // @Summary      R7001 激活骑士卡
-// @Tags         业务
+// @Tags         Business - 业务
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -38,7 +38,7 @@ func (*business) Active(c echo.Context) (err error) {
 // @ID           RiderBusinessUnsubscribe
 // @Router       /rider/v1/business/unsubscribe [POST]
 // @Summary      R7002 退租
-// @Tags         业务
+// @Tags         Business - 业务
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -55,7 +55,7 @@ func (*business) Unsubscribe(c echo.Context) (err error) {
 // @ID           RiderBusinessPause
 // @Router       /rider/v1/business/pause [POST]
 // @Summary      R7003 寄存
-// @Tags         业务
+// @Tags         Business - 业务
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -72,7 +72,7 @@ func (*business) Pause(c echo.Context) (err error) {
 // @ID           RiderBusinessContinue
 // @Router       /rider/v1/business/continue [POST]
 // @Summary      R7004 取消寄存
-// @Tags         业务
+// @Tags         Business - 业务
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -89,7 +89,7 @@ func (*business) Continue(c echo.Context) (err error) {
 // @ID           RiderBusinessStatus
 // @Router       /rider/v1/business/status [GET]
 // @Summary      R7005 业务状态
-// @Tags         业务
+// @Tags         Business - 业务
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -106,7 +106,7 @@ func (*business) Status(c echo.Context) (err error) {
 // @ID           RiderBusinessPauseInfo
 // @Router       /rider/v1/business/pause/info [GET]
 // @Summary      R7006 寄存信息
-// @Tags         业务
+// @Tags         Business - 业务
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -121,7 +121,7 @@ func (*business) PauseInfo(c echo.Context) (err error) {
 // @Router       /rider/v1/business/allocated/{id} [GET]
 // @Summary      R7009 长连接轮询是否已分配
 // @Description  用以判定待激活骑士卡是否需要签约 (allocated = true)
-// @Tags         业务
+// @Tags         Business - 业务
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token header string true "骑手校验token"
@@ -136,7 +136,7 @@ func (*business) Allocated(c echo.Context) (err error) {
 // @ID           RiderBusinessSubscribeSigned
 // @Router       /rider/v1/business/subscribe/signed/{id} [GET]
 // @Summary      R7010 长连接轮询是否已签约
-// @Tags         业务
+// @Tags         Business - 业务
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token header string true "骑手校验token"

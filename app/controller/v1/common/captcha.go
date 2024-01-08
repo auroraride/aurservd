@@ -9,11 +9,12 @@ import (
 	"bytes"
 	"net/http"
 
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/pkg/snag"
-	"github.com/labstack/echo/v4"
 )
 
 // CaptchaGenerate
@@ -21,7 +22,7 @@ import (
 // @Router       /common/captcha [GET]
 // @Summary      C1 生成图片验证码
 // @Description  生成的图片验证码有效时间为10分钟
-// @Tags         [C]公共接口
+// @Tags         Communal - 公共接口
 // @Accept       png
 // @Produce      png
 // @Success      200  {string}  string  "ok"

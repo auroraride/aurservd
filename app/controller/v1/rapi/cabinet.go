@@ -21,7 +21,7 @@ var Cabinet = new(cabinet)
 // @ID           RiderCabinetGetProcess
 // @Router       /rider/v1/cabinet/process/{serial} [GET]
 // @Summary      R4001 获取换电信息
-// @Tags         电柜
+// @Tags         Cabinet - 电柜
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -36,7 +36,7 @@ func (*cabinet) GetProcess(c echo.Context) (err error) {
 // @ID           RiderCabinetProcess
 // @Router       /rider/v1/cabinet/process [POST]
 // @Summary      R4002 操作换电
-// @Tags         电柜
+// @Tags         Cabinet - 电柜
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -52,7 +52,7 @@ func (*cabinet) Process(c echo.Context) (err error) {
 // @ID           RiderCabinetProcessStatus
 // @Router       /rider/v1/cabinet/process/status [GET]
 // @Summary      R4003 换电状态
-// @Tags         电柜
+// @Tags         Cabinet - 电柜
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -70,7 +70,7 @@ func (*cabinet) ProcessStatus(c echo.Context) (err error) {
 // @ID           CabinetReport
 // @Router       /rider/v1/cabinet/report [POST]
 // @Summary      R4004 电柜故障上报
-// @Tags         电柜
+// @Tags         Cabinet - 电柜
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -87,7 +87,7 @@ func (*cabinet) Report(c echo.Context) (err error) {
 // @ID           RiderCabinetFault
 // @Router       /rider/v1/cabinet/fault [GET]
 // @Summary      R4008 电柜故障列表
-// @Tags         电柜
+// @Tags         Cabinet - 电柜
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"

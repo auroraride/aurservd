@@ -21,7 +21,7 @@ var Plan = new(plan)
 // @ID           RiderPlanList
 // @Router       /rider/v1/plan [GET]
 // @Summary      R3001 新购骑士卡
-// @Tags         骑士卡
+// @Tags         Plan - 骑士卡
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -38,7 +38,7 @@ func (*plan) List(c echo.Context) (err error) {
 // @ID           RiderPlanRenewly
 // @Router       /rider/v1/plan/renewly [GET]
 // @Summary      R3002 续费骑士卡
-// @Tags         骑士卡
+// @Tags         Plan - 骑士卡
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"

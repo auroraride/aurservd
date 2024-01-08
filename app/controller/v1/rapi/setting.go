@@ -22,7 +22,7 @@ var Setting = new(setting)
 // @ID           RiderSettingApp
 // @Router       /rider/v1/setting/app [GET]
 // @Summary      R6001 获取APP设置
-// @Tags         设置
+// @Tags         Setting - 设置
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -40,7 +40,7 @@ func (*setting) App(c echo.Context) (err error) {
 // @ID           RiderSettingQuestion
 // @Router       /rider/v1/setting/question [GET]
 // @Summary      R6002 获取常见问题
-// @Tags         设置
+// @Tags         Setting - 设置
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
