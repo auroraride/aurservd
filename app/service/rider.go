@@ -842,61 +842,55 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
 				row[19] = item.Contact.String()
 			}
 			// 激活办理人
-			var activeTransactor string
+			var activeOperator string
 			// 退租办理人
-			var unsubscribeTransactor string
-			buss, _ := ent.Database.Business.QueryNotDeleted().Where(business.RiderID(item.ID), business.TypeIn(business.TypeActive, business.TypeUnsubscribe)).WithEmployee().WithStore().Order(ent.Desc(business.FieldCreatedAt)).Limit(2).All(s.ctx)
-			if len(buss) > 0 {
-				// 最后一条业务记录判定业务；如果是退租业务，展示激活办理人和退租办理人；如果是激活业务，只展示激活办理人
-				lastRecord := buss[0]
-				// 退租业务
-				if lastRecord.Type == business.TypeUnsubscribe {
-					for _, bus := range buss {
-						if bus.Type == business.TypeActive { // 激活办理人
-							// 若`employee_id` 和 `cabinet_id`为空，取`creator`
-							if bus.EmployeeID == nil && bus.CabinetID == nil && bus.Creator != nil {
-								activeTransactor = bus.Creator.Name
-							}
-							// 若`cabinet_id`不为空，取值为`rider`
-							if bus.CabinetID != nil {
-								activeTransactor = item.Name
-							}
-						}
-						if bus.Type == business.TypeUnsubscribe { // 退租办理人
-							// 若`employee_id` 和 `cabinet_id`为空，取`creator`
-							if bus.EmployeeID == nil && bus.CabinetID == nil && bus.Creator != nil {
-								unsubscribeTransactor = bus.Creator.Name
-							}
-							// 若`cabinet_id`不为空，取值为`rider`
-							if bus.CabinetID != nil {
-								unsubscribeTransactor = item.Name
-							}
-						}
-						// 门店
-						if bus.Edges.Store != nil {
-							row[1] = bus.Edges.Store.Name
-						}
+			var unsubscribeOperator string
+
+			bizList, _ := ent.Database.Business.QueryNotDeleted().
+				WithEmployee().WithStore().
+				Where(business.RiderID(item.ID), business.TypeIn(business.TypeActive, business.TypeUnsubscribe)).
+				Order(ent.Desc(business.FieldCreatedAt)).
+				Limit(2).
+				All(s.ctx)
+
+			// 取2条数据，判定最后一条数据若为退租业务，则需要轮询判定和展示激活办理人和退租办理人；
+			// 若最后一条为激活业务，只需要展示激活办理人，不做其他判定，不展示退租办理人
+			for i, biz := range bizList {
+				// 获取操作人员
+				var operator string
+				switch {
+				case biz.EmployeeID == nil && biz.CabinetID == nil && biz.Creator != nil:
+					// 操作人是平台
+					operator = biz.Creator.Name + "-" + biz.Creator.Phone
+				case biz.CabinetID != nil:
+					// 操作人是骑手
+					operator = item.Name + "-" + item.Phone
+				case biz.EmployeeID != nil:
+					// 操作人是店员
+					if biz.Edges.Employee != nil {
+						operator = biz.Edges.Employee.Name + "-" + biz.Edges.Employee.Phone
 					}
 				}
-				// 激活业务
-				if lastRecord.Type == business.TypeActive {
-					// 若`employee_id` 和 `cabinet_id`为空，取`creator`
-					if lastRecord.EmployeeID == nil && lastRecord.CabinetID == nil && lastRecord.Creator != nil {
-						activeTransactor = lastRecord.Creator.Name
-					}
-					// 若`cabinet_id`不为空，取值为`rider`
-					if lastRecord.CabinetID != nil {
-						activeTransactor = item.Name
-					}
-					// 门店
-					if lastRecord.Edges.Store != nil {
-						row[1] = lastRecord.Edges.Store.Name
-					}
+
+				// （最新记录）记录门店
+				if biz.Edges.Store != nil && i == 0 {
+					row[1] = biz.Edges.Store.Name
+				}
+
+				// 记录激活操作人
+				if biz.Type == business.TypeActive {
+					activeOperator = operator
+				}
+
+				// 非最新记录为退租业务时记录退租操作人
+				if biz.Type == business.TypeUnsubscribe && i != 0 {
+					unsubscribeOperator = operator
 				}
 			}
+
 			// 办理人
-			row[2] = activeTransactor
-			row[3] = unsubscribeTransactor
+			row[2] = activeOperator
+			row[3] = unsubscribeOperator
 
 			// 订单开始时间、订单结束时间
 			subscribes, _ := ent.Database.Subscribe.QueryNotDeleted().Where(subscribe.RiderID(item.ID)).All(s.ctx)
