@@ -27,7 +27,6 @@ import (
 	"github.com/auroraride/aurservd/internal/baidu"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/battery"
-	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
@@ -38,6 +37,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
+	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribereminder"
 	"github.com/auroraride/aurservd/pkg/cache"
@@ -880,7 +880,7 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
 
 			// 订单开始时间、订单结束时间
 			subscribes, _ := ent.Database.Subscribe.QueryNotDeleted().Where(subscribe.RiderID(item.ID)).All(s.ctx)
-			if subscribes != nil && len(subscribes) > 0 {
+			if len(subscribes) > 0 {
 				sub := subscribes[len(subscribes)-1]
 				if sub.StartAt != nil {
 					row[12] = sub.StartAt.Format(carbon.DateTimeLayout)
@@ -896,10 +896,10 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
 			}
 			// 跟进详情
 			riderFollowUps, _ := ent.Database.RiderFollowUp.QueryNotDeleted().Where(riderfollowup.RiderID(item.ID)).All(s.ctx)
-			if riderFollowUps != nil && len(riderFollowUps) > 0 {
+			if len(riderFollowUps) > 0 {
 				var temp = make([]string, len(riderFollowUps))
 				for k, v := range riderFollowUps {
-					temp[k] = fmt.Sprintf("%s", v.Remark)
+					temp[k] = v.Remark
 				}
 				var riderFollowUpsDetail = strings.Join(temp, "-")
 				row[24] = riderFollowUpsDetail

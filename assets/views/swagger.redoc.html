@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>极光出行API</title>
+    <title>{{ .name }}</title>
     <!-- needed for adaptive design -->
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -31,9 +31,9 @@
 </head>
 <body>
 <div id="main"></div>
-<script src="https://cdn.auroraride.com/assets/redoc.standalone.js"></script>
+<script src="https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js"></script>
 <script>
-    Redoc.init("/docs/oai3.json", {
+    Redoc.init({{ .path }}, {
         disableSearch: true,
         sortOperationsAlphabetically: true,
         sortTagsAlphabetically: true,
@@ -54,7 +54,7 @@
                 },
             },
         },
-    }, document.getElementById("main"))
+    }, document.getElementById('main'))
 </script>
 </body>
 </html>

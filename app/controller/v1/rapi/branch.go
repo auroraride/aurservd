@@ -8,11 +8,12 @@ package rapi
 import (
 	"math"
 
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/internal/baidu"
-	"github.com/labstack/echo/v4"
 )
 
 type branch struct{}
@@ -23,7 +24,7 @@ var Branch = new(branch)
 // @ID           RiderBranchList
 // @Router       /rider/v1/branch [GET]
 // @Summary      R2001 列举网点
-// @Tags         [R]骑手接口
+// @Tags         网点
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -38,7 +39,7 @@ func (*branch) List(c echo.Context) (err error) {
 // @ID           RiderBranchRiding
 // @Router       /rider/v1/branch/riding [GET]
 // @Summary      R2002 网点骑行规划时间
-// @Tags         [R]骑手接口
+// @Tags         网点
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -54,7 +55,7 @@ func (*branch) Riding(c echo.Context) (err error) {
 // @ID           RiderBranchFacility
 // @Router       /rider/v1/branch/facility/{fid} [GET]
 // @Summary      R2004 设施详情
-// @Tags         [R]骑手接口
+// @Tags         网点
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"

@@ -6,10 +6,11 @@
 package rapi
 
 import (
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
-	"github.com/labstack/echo/v4"
 )
 
 type assistance struct{}
@@ -20,7 +21,7 @@ var Assistance = new(assistance)
 // @ID           RiderAssistanceBreakdown
 // @Router       /rider/v1/assistance/breakdown [GET]
 // @Summary      R5001 获取救援原因
-// @Tags         [R]骑手接口
+// @Tags         救援
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -34,7 +35,7 @@ func (*assistance) Breakdown(c echo.Context) (err error) {
 // @ID           RiderAssistanceCreate
 // @Router       /rider/v1/assistance [POST]
 // @Summary      R5002 发起救援
-// @Tags         [R]骑手接口
+// @Tags         救援
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -49,7 +50,7 @@ func (*assistance) Create(c echo.Context) (err error) {
 // @ID           RiderAssistanceCancel
 // @Router       /rider/v1/assistance/cancel [POST]
 // @Summary      R5003 取消救援
-// @Tags         [R]骑手接口
+// @Tags         救援
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -65,7 +66,7 @@ func (*assistance) Cancel(c echo.Context) (err error) {
 // @ID           RiderAssistanceCurrent
 // @Router       /rider/v1/assistance/current [GET]
 // @Summary      R5004 当前救援
-// @Tags         [R]骑手接口
+// @Tags         救援
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -79,7 +80,7 @@ func (*assistance) Current(c echo.Context) (err error) {
 // @ID           RiderAssistanceList
 // @Router       /rider/v1/assistance [GET]
 // @Summary      R5005 救援列表
-// @Tags         [R]骑手接口
+// @Tags         救援
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"

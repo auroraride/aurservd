@@ -6,10 +6,11 @@
 package rapi
 
 import (
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
-	"github.com/labstack/echo/v4"
 )
 
 type reserve struct{}
@@ -20,7 +21,7 @@ var Reserve = new(reserve)
 // @ID           RiderReserveUnfinished
 // @Router       /rider/v1/reserve [GET]
 // @Summary      R8001 获取未完成预约
-// @Tags         [R]骑手接口
+// @Tags         预约
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -34,7 +35,7 @@ func (*reserve) Unfinished(c echo.Context) (err error) {
 // @ID           RiderReserveCreate
 // @Router       /rider/v1/reserve [POST]
 // @Summary      R8002 创建预约
-// @Tags         [R]骑手接口
+// @Tags         预约
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -49,7 +50,7 @@ func (*reserve) Create(c echo.Context) (err error) {
 // @ID           ManagerReserveCancel
 // @Router       /rider/v1/reserve/{id} [DELETE]
 // @Summary      R8003 取消预约
-// @Tags         [R]骑手接口
+// @Tags         预约
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"

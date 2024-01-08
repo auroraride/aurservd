@@ -6,9 +6,10 @@
 package rapi
 
 import (
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/service"
-	"github.com/labstack/echo/v4"
 )
 
 type city struct{}
@@ -19,7 +20,7 @@ var City = new(city)
 // @ID           RiderCityList
 // @Router       /rider/v1/city [GET]
 // @Summary      R2003 获取已开通城市
-// @Tags         [R]骑手接口
+// @Tags         城市
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"

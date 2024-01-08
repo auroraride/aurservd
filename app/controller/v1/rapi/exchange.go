@@ -6,10 +6,11 @@
 package rapi
 
 import (
+	"github.com/labstack/echo/v4"
+
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
-	"github.com/labstack/echo/v4"
 )
 
 type exchange struct{}
@@ -20,7 +21,7 @@ var Exchange = new(exchange)
 // @ID           RiderExchangeStore
 // @Router       /rider/v1/exchange/store [POST]
 // @Summary      R4005 门店换电
-// @Tags         [R]骑手接口
+// @Tags         换电
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -35,7 +36,7 @@ func (*exchange) Store(c echo.Context) (err error) {
 // @ID           RiderExchangeOverview
 // @Router       /rider/v1/exchange/overview [GET]
 // @Summary      R4006 换电概览
-// @Tags         [R]骑手接口
+// @Tags         换电
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -49,7 +50,7 @@ func (*exchange) Overview(c echo.Context) (err error) {
 // @ID           RiderExchangeLog
 // @Router       /rider/v1/exchange/log [GET]
 // @Summary      R4007 换电记录
-// @Tags         [R]骑手接口
+// @Tags         换电
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"

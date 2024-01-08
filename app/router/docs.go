@@ -8,6 +8,7 @@ package router
 import (
 	"bytes"
 	"fmt"
+	"html/template"
 	"net/http"
 
 	"github.com/getkin/kin-openapi/openapi2"
@@ -19,43 +20,54 @@ import (
 	echoSwagger "github.com/swaggo/echo-swagger"
 
 	"github.com/auroraride/aurservd/assets"
-	"github.com/auroraride/aurservd/assets/docs"
 	"github.com/auroraride/aurservd/internal/ar"
 )
 
-// @title                极光出行API
-// @version              1.0
-// @BasePath             /
-// @description.markdown
-// @doc https://github.com/swaggo/swag/issues/386 https://github.com/swaggo/swag/issues/548 https://github.com/go-openapi/runtime/blob/master/middleware/redoc.go
 func loadDocRoutes() {
 	g := e.Group("/docs")
 
-	docs.SwaggerInfo.Host = ar.Config.App.Host
+	items := map[string]string{
+		"/agent/v1":     "代理接口 ver1",
+		"/employee/v1":  "店员接口 ver1",
+		"/manager/v1":   "管理接口 ver1",
+		"/operator/v1":  "运维接口 ver1",
+		"/promotion/v1": "推广接口 ver1",
+		"/rider/v1":     "骑手接口 ver1",
+	}
 
 	g.GET("", func(c echo.Context) error {
-		return c.HTML(200, assets.SwaggerRedocUI)
+		return c.Render(http.StatusOK, "docs.html", ar.Map{"items": items})
 	})
 
-	g.GET("/swagger.json", func(c echo.Context) error {
-		return c.JSONBlob(200, assets.SwaggerSpec)
-	})
+	for path, name := range items {
+		k := path
+		v := name
+		spec, _ := assets.SwaggerSpecs.ReadFile("docs" + k + "/swagger.json")
+
+		g.GET(k, func(c echo.Context) error {
+			// return c.HTML(200, assets.SwaggerRedocUI)
+			return c.Render(http.StatusOK, "swagger.redoc.html", ar.Map{
+				"path": template.URL("/docs" + k + "/oai3.json"),
+				"name": v,
+			})
+		})
+
+		g.GET(k+"/swagger.json", func(c echo.Context) error {
+			return c.JSONBlob(200, spec)
+		})
+
+		g.GET(k+"/oai3.json", func(c echo.Context) (err error) {
+			var doc2 openapi2.T
+			if err = jsoniter.Unmarshal(spec, &doc2); err != nil {
+				return
+			}
+			doc, _ := openapi2conv.ToV3(&doc2)
+			b, _ := jsoniter.Marshal(doc)
+			return c.Blob(200, "application/json", b)
+		})
+	}
 
 	g.GET("/swagger/*", echoSwagger.WrapHandler)
-
-	g.GET("/oai3.json", func(c echo.Context) (err error) {
-		var doc2 openapi2.T
-		if err = jsoniter.Unmarshal(assets.SwaggerSpec, &doc2); err != nil {
-			return
-		}
-		doc, _ := openapi2conv.ToV3(&doc2)
-		b, _ := jsoniter.Marshal(doc)
-		return c.Blob(200, "application/json", b)
-	})
-
-	g.GET("/api.paw", func(c echo.Context) error {
-		return c.Blob(200, "application/octet-stream", assets.Paw)
-	})
 
 	g.GET("/docs/octicons.css", func(c echo.Context) error {
 		return c.Blob(http.StatusOK, "text/css; charset=utf-8", assets.OcticonsCss)

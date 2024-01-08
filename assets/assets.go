@@ -6,24 +6,15 @@
 package assets
 
 import (
-	_ "embed"
+	"embed"
 )
 
 var (
 	//go:embed city.json
 	City []byte
 
-	//go:embed swagger.redoc.html
-	SwaggerRedocUI string
-
-	//go:embed docs/swagger.json
-	SwaggerSpec []byte
-
-	//go:embed docs/swagger.yaml
-	SwaggerSpecYaml []byte
-
-	//go:embed api.paw
-	Paw []byte
+	//go:embed docs/*
+	SwaggerSpecs embed.FS
 
 	//go:embed changelog/manager.md
 	ChangelogManager []byte
