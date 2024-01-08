@@ -27,6 +27,7 @@ import (
 	"github.com/auroraride/aurservd/internal/baidu"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/battery"
+	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
@@ -37,7 +38,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
-	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribereminder"
 	"github.com/auroraride/aurservd/pkg/cache"
@@ -757,33 +757,35 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
 		title := []any{
 			"城市",     // 0
 			"门店",     // 1
-			"办理人",    // 2
-			"骑手",     // 3
-			"电话",     // 4
-			"证件",     // 5
-			"户籍",     // 6
-			"企业",     // 7
-			"押金",     // 8
-			"订阅",     // 9
-			"暂停",     // 10
-			"订单开始时间", // 11
-			"订单到期时间", // 12
-			"电池",     // 13
-			"剩余",     // 14
-			"逾期费用",   // 15
-			"状态",     // 16
-			"认证",     // 17
-			"紧急联系",   // 18
-			"注册时间",   // 19
-			"电车型号",   // 20
-			"车牌号",    // 21
-			"车架号",    // 22
-			"跟进详情",   // 23
+			"激活办理人",  // 2
+			"退租办理人",  // 3
+			"骑手",     // 4
+			"电话",     // 5
+			"证件",     // 6
+			"户籍",     // 7
+			"企业",     // 8
+			"押金",     // 9
+			"订阅",     // 10
+			"暂停",     // 11
+			"订单开始时间", // 12
+			"订单到期时间", // 13
+			"电池",     // 14
+			"剩余",     // 15
+			"逾期费用",   // 16
+			"状态",     // 17
+			"认证",     // 18
+			"紧急联系",   // 19
+			"注册时间",   // 20
+			"电车型号",   // 21
+			"车牌号",    // 22
+			"车架号",    // 23
+			"跟进详情",   // 24
 		}
 		rows = append(rows, title)
 		for _, item := range items {
 			detail := s.detailRiderItem(item)
 			row := []any{
+				"",
 				"",
 				"",
 				"",
@@ -813,58 +815,98 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
 				row[0] = detail.City.Name
 			}
 			if detail.Person != nil {
-				row[5] = detail.Person.IDCardNumber
+				row[6] = detail.Person.IDCardNumber
 			}
 			if detail.Enterprise != nil {
-				row[7] = detail.Enterprise.Name
+				row[8] = detail.Enterprise.Name
 			}
 			if detail.Subscribe != nil {
-				row[9] = model.SubscribeStatusText(detail.Subscribe.Status)
+				row[10] = model.SubscribeStatusText(detail.Subscribe.Status)
 				if detail.Subscribe.Suspend {
-					row[10] = "是"
+					row[11] = "是"
 				}
-				row[13] = detail.Subscribe.Model
-				row[14] = detail.Subscribe.Remaining
+				row[14] = detail.Subscribe.Model
+				row[15] = detail.Subscribe.Remaining
 				bike := detail.Subscribe.Ebike
 				if bike != nil {
-					row[19] = bike.Brand.Name
+					row[20] = bike.Brand.Name
 					if bike.SN != "" {
-						row[22] = bike.SN
+						row[23] = bike.SN
 					}
 					if bike.Plate != nil {
-						row[21] = *bike.Plate
+						row[22] = *bike.Plate
 					}
 				}
 			}
 			if item.Contact != nil {
-				row[18] = item.Contact.String()
+				row[19] = item.Contact.String()
 			}
-			// 办理人
-			employees, _ := ent.Database.Contract.QueryNotDeleted().Where(contract.RiderID(item.ID)).WithEmployee().QueryEmployee().All(s.ctx)
-			if len(employees) > 0 {
-				employee := employees[len(employees)-1]
-				row[2] = employee.Name
-				// 门店
-				sto, _ := ent.Database.Store.QueryNotDeleted().Where(store.EmployeeID(employee.ID)).First(s.ctx)
-				if sto != nil {
-					row[1] = sto.Name
+			// 激活办理人
+			var activeOperator string
+			// 退租办理人
+			var unsubscribeOperator string
+
+			bizList, _ := ent.Database.Business.QueryNotDeleted().
+				WithEmployee().WithStore().
+				Where(business.RiderID(item.ID), business.TypeIn(business.TypeActive, business.TypeUnsubscribe)).
+				Order(ent.Desc(business.FieldCreatedAt)).
+				Limit(2).
+				All(s.ctx)
+
+			// 取2条数据，判定最后一条数据若为退租业务，则需要轮询判定和展示激活办理人和退租办理人；
+			// 若最后一条为激活业务，只需要展示激活办理人，不做其他判定，不展示退租办理人
+			for i, biz := range bizList {
+				// 获取操作人员
+				var operator string
+				switch {
+				case biz.EmployeeID == nil && biz.CabinetID == nil && biz.Creator != nil:
+					// 操作人是平台
+					operator = biz.Creator.Name + "-" + biz.Creator.Phone
+				case biz.CabinetID != nil:
+					// 操作人是骑手
+					operator = item.Name + "-" + item.Phone
+				case biz.EmployeeID != nil:
+					// 操作人是店员
+					if biz.Edges.Employee != nil {
+						operator = biz.Edges.Employee.Name + "-" + biz.Edges.Employee.Phone
+					}
+				}
+
+				// （最新记录）记录门店
+				if biz.Edges.Store != nil && i == 0 {
+					row[1] = biz.Edges.Store.Name
+				}
+
+				// 记录激活操作人
+				if biz.Type == business.TypeActive {
+					activeOperator = operator
+				}
+
+				// 非最新记录为退租业务时记录退租操作人
+				if biz.Type == business.TypeUnsubscribe && i != 0 {
+					unsubscribeOperator = operator
 				}
 			}
+
+			// 办理人
+			row[2] = activeOperator
+			row[3] = unsubscribeOperator
+
 			// 订单开始时间、订单结束时间
 			subscribes, _ := ent.Database.Subscribe.QueryNotDeleted().Where(subscribe.RiderID(item.ID)).All(s.ctx)
 			if len(subscribes) > 0 {
 				sub := subscribes[len(subscribes)-1]
 				if sub.StartAt != nil {
-					row[11] = sub.StartAt.Format(carbon.DateTimeLayout)
+					row[12] = sub.StartAt.Format(carbon.DateTimeLayout)
 				}
 				if sub.EndAt != nil {
-					row[12] = sub.EndAt.Format(carbon.DateTimeLayout)
+					row[13] = sub.EndAt.Format(carbon.DateTimeLayout)
 				}
 			}
 			// 逾期费用
 			subscribeReminder, _ := ent.Database.SubscribeReminder.Query().Where(subscribereminder.RiderID(item.ID)).First(s.ctx)
 			if subscribeReminder != nil {
-				row[15] = subscribeReminder.Fee
+				row[16] = subscribeReminder.Fee
 			}
 			// 跟进详情
 			riderFollowUps, _ := ent.Database.RiderFollowUp.QueryNotDeleted().Where(riderfollowup.RiderID(item.ID)).All(s.ctx)
@@ -874,7 +916,7 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
 					temp[k] = v.Remark
 				}
 				var riderFollowUpsDetail = strings.Join(temp, "-")
-				row[23] = riderFollowUpsDetail
+				row[24] = riderFollowUpsDetail
 			}
 			rows = append(rows, row)
 		}
