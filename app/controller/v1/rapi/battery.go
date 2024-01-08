@@ -17,7 +17,7 @@ type battery struct{}
 var Battery = new(battery)
 
 // Detail
-// @ID           RiderBatteryDetail
+// @ID           BatteryDetail
 // @Router       /rider/v1/battery [GET]
 // @Summary      RA001 获取电池详情
 // @Tags         Battery - 电池

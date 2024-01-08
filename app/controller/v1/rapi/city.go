@@ -17,7 +17,7 @@ type city struct{}
 var City = new(city)
 
 // List
-// @ID           RiderCityList
+// @ID           CityList
 // @Router       /rider/v1/city [GET]
 // @Summary      R2003 获取已开通城市
 // @Tags         City - 城市

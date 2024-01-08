@@ -18,7 +18,7 @@ type plan struct{}
 var Plan = new(plan)
 
 // List
-// @ID           RiderPlanList
+// @ID           PlanList
 // @Router       /rider/v1/plan [GET]
 // @Summary      R3001 新购骑士卡
 // @Tags         Plan - 骑士卡
@@ -35,7 +35,7 @@ func (*plan) List(c echo.Context) (err error) {
 }
 
 // Renewly
-// @ID           RiderPlanRenewly
+// @ID           PlanRenewly
 // @Router       /rider/v1/plan/renewly [GET]
 // @Summary      R3002 续费骑士卡
 // @Tags         Plan - 骑士卡

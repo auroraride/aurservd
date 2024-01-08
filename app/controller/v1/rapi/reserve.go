@@ -18,7 +18,7 @@ type reserve struct{}
 var Reserve = new(reserve)
 
 // Unfinished
-// @ID           RiderReserveUnfinished
+// @ID           ReserveUnfinished
 // @Router       /rider/v1/reserve [GET]
 // @Summary      R8001 获取未完成预约
 // @Tags         Reserve - 预约
@@ -32,7 +32,7 @@ func (*reserve) Unfinished(c echo.Context) (err error) {
 }
 
 // Create
-// @ID           RiderReserveCreate
+// @ID           ReserveCreate
 // @Router       /rider/v1/reserve [POST]
 // @Summary      R8002 创建预约
 // @Tags         Reserve - 预约

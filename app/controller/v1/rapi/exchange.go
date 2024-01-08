@@ -18,7 +18,7 @@ type exchange struct{}
 var Exchange = new(exchange)
 
 // Store
-// @ID           RiderExchangeStore
+// @ID           ExchangeStore
 // @Router       /rider/v1/exchange/store [POST]
 // @Summary      R4005 门店换电
 // @Tags         Exchange - 换电
@@ -33,7 +33,7 @@ func (*exchange) Store(c echo.Context) (err error) {
 }
 
 // Overview
-// @ID           RiderExchangeOverview
+// @ID           ExchangeOverview
 // @Router       /rider/v1/exchange/overview [GET]
 // @Summary      R4006 换电概览
 // @Tags         Exchange - 换电
@@ -47,7 +47,7 @@ func (*exchange) Overview(c echo.Context) (err error) {
 }
 
 // Log
-// @ID           RiderExchangeLog
+// @ID           ExchangeLog
 // @Router       /rider/v1/exchange/log [GET]
 // @Summary      R4007 换电记录
 // @Tags         Exchange - 换电

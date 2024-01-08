@@ -18,7 +18,7 @@ type wallet struct{}
 var Wallet = new(wallet)
 
 // Overview
-// @ID           RiderWalletOverview
+// @ID           WalletOverview
 // @Router       /rider/v1/wallet/overview [GET]
 // @Summary      R9001 钱包概览
 // @Tags         Wallet - 钱包
@@ -32,7 +32,7 @@ func (*wallet) Overview(c echo.Context) (err error) {
 }
 
 // PointLog
-// @ID           RiderWalletPointLog
+// @ID           WalletPointLog
 // @Router       /rider/v1/wallet/pointlog [GET]
 // @Summary      R9002 积分日志
 // @Tags         Wallet - 钱包
@@ -50,7 +50,7 @@ func (*wallet) PointLog(c echo.Context) (err error) {
 }
 
 // Points
-// @ID           RiderWalletPoints
+// @ID           WalletPoints
 // @Router       /rider/v1/wallet/points [GET]
 // @Summary      R9003 积分详情
 // @Tags         Wallet - 钱包
@@ -64,7 +64,7 @@ func (*wallet) Points(c echo.Context) (err error) {
 }
 
 // Coupons
-// @ID           RiderWalletCoupons
+// @ID           WalletCoupons
 // @Router       /rider/v1/wallet/coupons [GET]
 // @Summary      R9004 优惠券列表
 // @Tags         Wallet - 钱包

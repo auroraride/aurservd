@@ -123,7 +123,7 @@ const docTemplate = `{
                     "Assistance - 救援"
                 ],
                 "summary": "R5005 救援列表",
-                "operationId": "RiderAssistanceList",
+                "operationId": "AssistanceList",
                 "parameters": [
                     {
                         "type": "string",
@@ -180,7 +180,7 @@ const docTemplate = `{
                     "Assistance - 救援"
                 ],
                 "summary": "R5002 发起救援",
-                "operationId": "RiderAssistanceCreate",
+                "operationId": "AssistanceCreate",
                 "parameters": [
                     {
                         "type": "string",
@@ -221,7 +221,7 @@ const docTemplate = `{
                     "Assistance - 救援"
                 ],
                 "summary": "R5001 获取救援原因",
-                "operationId": "RiderAssistanceBreakdown",
+                "operationId": "AssistanceBreakdown",
                 "parameters": [
                     {
                         "type": "string",
@@ -256,7 +256,7 @@ const docTemplate = `{
                     "Assistance - 救援"
                 ],
                 "summary": "R5003 取消救援",
-                "operationId": "RiderAssistanceCancel",
+                "operationId": "AssistanceCancel",
                 "parameters": [
                     {
                         "type": "string",
@@ -297,7 +297,7 @@ const docTemplate = `{
                     "Assistance - 救援"
                 ],
                 "summary": "R5004 当前救援",
-                "operationId": "RiderAssistanceCurrent",
+                "operationId": "AssistanceCurrent",
                 "parameters": [
                     {
                         "type": "string",
@@ -329,7 +329,7 @@ const docTemplate = `{
                     "Rider - 骑手"
                 ],
                 "summary": "R1003 实名认证",
-                "operationId": "RiderAuthenticator",
+                "operationId": "Authenticator",
                 "parameters": [
                     {
                         "type": "string",
@@ -370,7 +370,7 @@ const docTemplate = `{
                     "Rider - 骑手"
                 ],
                 "summary": "R1004 实名认证结果",
-                "operationId": "RiderAuthResult",
+                "operationId": "AuthResult",
                 "parameters": [
                     {
                         "type": "string",
@@ -409,7 +409,7 @@ const docTemplate = `{
                     "Battery - 电池"
                 ],
                 "summary": "RA001 获取电池详情",
-                "operationId": "RiderBatteryDetail",
+                "operationId": "BatteryDetail",
                 "parameters": [
                     {
                         "type": "string",
@@ -441,7 +441,7 @@ const docTemplate = `{
                     "Branch - 网点"
                 ],
                 "summary": "R2001 列举网点",
-                "operationId": "RiderBranchList",
+                "operationId": "BranchList",
                 "parameters": [
                     {
                         "type": "string",
@@ -516,7 +516,7 @@ const docTemplate = `{
                     "Branch - 网点"
                 ],
                 "summary": "R2004 设施详情",
-                "operationId": "RiderBranchFacility",
+                "operationId": "BranchFacility",
                 "parameters": [
                     {
                         "type": "string",
@@ -569,7 +569,7 @@ const docTemplate = `{
                     "Branch - 网点"
                 ],
                 "summary": "R2002 网点骑行规划时间",
-                "operationId": "RiderBranchRiding",
+                "operationId": "BranchRiding",
                 "parameters": [
                     {
                         "type": "string",
@@ -611,7 +611,7 @@ const docTemplate = `{
                     "Business - 业务"
                 ],
                 "summary": "R7001 激活骑士卡",
-                "operationId": "RiderBusinessActive",
+                "operationId": "BusinessActive",
                 "parameters": [
                     {
                         "type": "string",
@@ -653,7 +653,7 @@ const docTemplate = `{
                     "Business - 业务"
                 ],
                 "summary": "R7009 长连接轮询是否已分配",
-                "operationId": "RiderBusinessAllocated",
+                "operationId": "BusinessAllocated",
                 "parameters": [
                     {
                         "type": "string",
@@ -692,7 +692,7 @@ const docTemplate = `{
                     "Business - 业务"
                 ],
                 "summary": "R7004 取消寄存",
-                "operationId": "RiderBusinessContinue",
+                "operationId": "BusinessContinue",
                 "parameters": [
                     {
                         "type": "string",
@@ -733,7 +733,7 @@ const docTemplate = `{
                     "Business - 业务"
                 ],
                 "summary": "R7003 寄存",
-                "operationId": "RiderBusinessPause",
+                "operationId": "BusinessPause",
                 "parameters": [
                     {
                         "type": "string",
@@ -774,7 +774,7 @@ const docTemplate = `{
                     "Business - 业务"
                 ],
                 "summary": "R7006 寄存信息",
-                "operationId": "RiderBusinessPauseInfo",
+                "operationId": "BusinessPauseInfo",
                 "parameters": [
                     {
                         "type": "string",
@@ -806,7 +806,7 @@ const docTemplate = `{
                     "Business - 业务"
                 ],
                 "summary": "R7005 业务状态",
-                "operationId": "RiderBusinessStatus",
+                "operationId": "BusinessStatus",
                 "parameters": [
                     {
                         "type": "string",
@@ -844,7 +844,7 @@ const docTemplate = `{
                     "Business - 业务"
                 ],
                 "summary": "R7010 长连接轮询是否已签约",
-                "operationId": "RiderBusinessSubscribeSigned",
+                "operationId": "BusinessSubscribeSigned",
                 "parameters": [
                     {
                         "type": "string",
@@ -883,7 +883,7 @@ const docTemplate = `{
                     "Business - 业务"
                 ],
                 "summary": "R7002 退租",
-                "operationId": "RiderBusinessUnsubscribe",
+                "operationId": "BusinessUnsubscribe",
                 "parameters": [
                     {
                         "type": "string",
@@ -924,7 +924,7 @@ const docTemplate = `{
                     "Cabinet - 电柜"
                 ],
                 "summary": "R4008 电柜故障列表",
-                "operationId": "RiderCabinetFault",
+                "operationId": "CabinetFault",
                 "parameters": [
                     {
                         "type": "string",
@@ -959,7 +959,7 @@ const docTemplate = `{
                     "Cabinet - 电柜"
                 ],
                 "summary": "R4002 操作换电",
-                "operationId": "RiderCabinetProcess",
+                "operationId": "CabinetProcess",
                 "parameters": [
                     {
                         "type": "string",
@@ -1000,7 +1000,7 @@ const docTemplate = `{
                     "Cabinet - 电柜"
                 ],
                 "summary": "R4003 换电状态",
-                "operationId": "RiderCabinetProcessStatus",
+                "operationId": "CabinetProcessStatus",
                 "parameters": [
                     {
                         "type": "string",
@@ -1037,7 +1037,7 @@ const docTemplate = `{
                     "Cabinet - 电柜"
                 ],
                 "summary": "R4001 获取换电信息",
-                "operationId": "RiderCabinetGetProcess",
+                "operationId": "CabinetGetProcess",
                 "parameters": [
                     {
                         "type": "string",
@@ -1117,7 +1117,7 @@ const docTemplate = `{
                     "City - 城市"
                 ],
                 "summary": "R2003 获取已开通城市",
-                "operationId": "RiderCityList",
+                "operationId": "CityList",
                 "parameters": [
                     {
                         "type": "string",
@@ -1152,7 +1152,7 @@ const docTemplate = `{
                     "Contract - 合同"
                 ],
                 "summary": "R3004 合同签署结果",
-                "operationId": "RiderContractSignResult",
+                "operationId": "ContractSignResult",
                 "parameters": [
                     {
                         "type": "string",
@@ -1191,7 +1191,7 @@ const docTemplate = `{
                     "Rider - 骑手"
                 ],
                 "summary": "R1002 添加紧急联系人",
-                "operationId": "RiderContact",
+                "operationId": "Contact",
                 "parameters": [
                     {
                         "type": "string",
@@ -1232,7 +1232,7 @@ const docTemplate = `{
                     "Contract - 合同"
                 ],
                 "summary": "R3003 签署合同",
-                "operationId": "RiderContractSign",
+                "operationId": "ContractSign",
                 "parameters": [
                     {
                         "type": "string",
@@ -1273,7 +1273,7 @@ const docTemplate = `{
                     "Rider - 骑手"
                 ],
                 "summary": "R1007 获取已缴押金",
-                "operationId": "RiderRiderDeposit",
+                "operationId": "Deposit",
                 "parameters": [
                     {
                         "type": "string",
@@ -1305,7 +1305,7 @@ const docTemplate = `{
                     "Rider - 骑手"
                 ],
                 "summary": "R1008 注销账户",
-                "operationId": "RiderRiderDeregister",
+                "operationId": "Deregister",
                 "parameters": [
                     {
                         "type": "string",
@@ -1337,7 +1337,7 @@ const docTemplate = `{
                     "Enterprise - 团签"
                 ],
                 "summary": "R3010 企业骑手获取可用电池",
-                "operationId": "RiderEnterpriseBattery",
+                "operationId": "EnterpriseBattery",
                 "parameters": [
                     {
                         "type": "string",
@@ -1379,7 +1379,7 @@ const docTemplate = `{
                     "Enterprise - 团签"
                 ],
                 "summary": "R3017 退出团签",
-                "operationId": "RiderEnterpriseExitEnterprise",
+                "operationId": "EnterpriseExitEnterprise",
                 "parameters": [
                     {
                         "type": "string",
@@ -1411,7 +1411,7 @@ const docTemplate = `{
                     "Enterprise - 团签"
                 ],
                 "summary": "R3016 骑手团签信息",
-                "operationId": "RiderEnterpriseRiderEnterpriseInfo",
+                "operationId": "EnterpriseRiderEnterpriseInfo",
                 "parameters": [
                     {
                         "type": "string",
@@ -1457,7 +1457,7 @@ const docTemplate = `{
                     "Enterprise - 团签"
                 ],
                 "summary": "R3015 企业骑手加入团签",
-                "operationId": "RiderEnterpriseJoinEnterprise",
+                "operationId": "EnterpriseJoinEnterprise",
                 "parameters": [
                     {
                         "description": "加入团签请求",
@@ -1491,7 +1491,7 @@ const docTemplate = `{
                     "Enterprise - 团签"
                 ],
                 "summary": "R3012 企业骑手订阅激活状态",
-                "operationId": "RiderEnterpriseSubscribeStatus",
+                "operationId": "EnterpriseSubscribeStatus",
                 "parameters": [
                     {
                         "type": "string",
@@ -1528,7 +1528,7 @@ const docTemplate = `{
                     "Enterprise - 团签"
                 ],
                 "summary": "R3011 企业骑手选择电池",
-                "operationId": "RiderEnterpriseSubscribe",
+                "operationId": "EnterpriseSubscribe",
                 "parameters": [
                     {
                         "type": "string",
@@ -1569,7 +1569,7 @@ const docTemplate = `{
                     "Enterprise - 团签"
                 ],
                 "summary": "R3013 加时申请",
-                "operationId": "RiderEnterpriseSubscribeAlter",
+                "operationId": "EnterpriseSubscribeAlter",
                 "parameters": [
                     {
                         "type": "string",
@@ -1610,7 +1610,7 @@ const docTemplate = `{
                     "Enterprise - 团签"
                 ],
                 "summary": "R3014 加时申请列表",
-                "operationId": "RiderEnterpriseSubscribeAlterList",
+                "operationId": "EnterpriseSubscribeAlterList",
                 "parameters": [
                     {
                         "type": "string",
@@ -1687,7 +1687,7 @@ const docTemplate = `{
                     "Exchange - 换电"
                 ],
                 "summary": "R4007 换电记录",
-                "operationId": "RiderExchangeLog",
+                "operationId": "ExchangeLog",
                 "parameters": [
                     {
                         "type": "string",
@@ -1746,7 +1746,7 @@ const docTemplate = `{
                     "Exchange - 换电"
                 ],
                 "summary": "R4006 换电概览",
-                "operationId": "RiderExchangeOverview",
+                "operationId": "ExchangeOverview",
                 "parameters": [
                     {
                         "type": "string",
@@ -1778,7 +1778,7 @@ const docTemplate = `{
                     "Exchange - 换电"
                 ],
                 "summary": "R4005 门店换电",
-                "operationId": "RiderExchangeStore",
+                "operationId": "ExchangeStore",
                 "parameters": [
                     {
                         "type": "string",
@@ -1819,7 +1819,7 @@ const docTemplate = `{
                     "Rider - 骑手"
                 ],
                 "summary": "R1005 获取人脸校验结果",
-                "operationId": "RiderFaceResult",
+                "operationId": "FaceResult",
                 "parameters": [
                     {
                         "type": "string",
@@ -1858,7 +1858,7 @@ const docTemplate = `{
                     "Order - 订单"
                 ],
                 "summary": "R3007 骑士卡购买历史",
-                "operationId": "RiderOrderList",
+                "operationId": "OrderList",
                 "parameters": [
                     {
                         "type": "string",
@@ -1915,7 +1915,7 @@ const docTemplate = `{
                     "Order - 订单"
                 ],
                 "summary": "R3005 支付请求",
-                "operationId": "RiderOrderCreate",
+                "operationId": "OrderCreate",
                 "parameters": [
                     {
                         "type": "string",
@@ -1956,7 +1956,7 @@ const docTemplate = `{
                     "Order - 订单"
                 ],
                 "summary": "R3006 申请退款",
-                "operationId": "RiderOrderRefund",
+                "operationId": "OrderRefund",
                 "parameters": [
                     {
                         "type": "string",
@@ -1997,7 +1997,7 @@ const docTemplate = `{
                     "Order - 订单"
                 ],
                 "summary": "R3009 订单支付状态",
-                "operationId": "RiderOrderStatus",
+                "operationId": "OrderStatus",
                 "parameters": [
                     {
                         "type": "string",
@@ -2036,7 +2036,7 @@ const docTemplate = `{
                     "Order - 订单"
                 ],
                 "summary": "R3008 订单详情",
-                "operationId": "RiderOrderDetail",
+                "operationId": "OrderDetail",
                 "parameters": [
                     {
                         "type": "string",
@@ -2075,7 +2075,7 @@ const docTemplate = `{
                     "Plan - 骑士卡"
                 ],
                 "summary": "R3001 新购骑士卡",
-                "operationId": "RiderPlanList",
+                "operationId": "PlanList",
                 "parameters": [
                     {
                         "type": "string",
@@ -2113,7 +2113,7 @@ const docTemplate = `{
                     "Plan - 骑士卡"
                 ],
                 "summary": "R3002 续费骑士卡",
-                "operationId": "RiderPlanRenewly",
+                "operationId": "PlanRenewly",
                 "parameters": [
                     {
                         "type": "string",
@@ -2145,7 +2145,7 @@ const docTemplate = `{
                     "Rider - 骑手"
                 ],
                 "summary": "R1006 获取个人信息",
-                "operationId": "RiderRiderProfile",
+                "operationId": "Profile",
                 "parameters": [
                     {
                         "type": "string",
@@ -2177,7 +2177,7 @@ const docTemplate = `{
                     "Reserve - 预约"
                 ],
                 "summary": "R8001 获取未完成预约",
-                "operationId": "RiderReserveUnfinished",
+                "operationId": "ReserveUnfinished",
                 "parameters": [
                     {
                         "type": "string",
@@ -2207,7 +2207,7 @@ const docTemplate = `{
                     "Reserve - 预约"
                 ],
                 "summary": "R8002 创建预约",
-                "operationId": "RiderReserveCreate",
+                "operationId": "ReserveCreate",
                 "parameters": [
                     {
                         "type": "string",
@@ -2287,7 +2287,7 @@ const docTemplate = `{
                     "Setting - 设置"
                 ],
                 "summary": "R6001 获取APP设置",
-                "operationId": "RiderSettingApp",
+                "operationId": "SettingApp",
                 "parameters": [
                     {
                         "type": "string",
@@ -2319,7 +2319,7 @@ const docTemplate = `{
                     "Setting - 设置"
                 ],
                 "summary": "R6002 获取常见问题",
-                "operationId": "RiderSettingQuestion",
+                "operationId": "SettingQuestion",
                 "parameters": [
                     {
                         "type": "string",
@@ -2354,7 +2354,7 @@ const docTemplate = `{
                     "Rider - 骑手"
                 ],
                 "summary": "R1001 登录或注册",
-                "operationId": "RiderSignin",
+                "operationId": "Signin",
                 "parameters": [
                     {
                         "description": "desc",
@@ -2388,7 +2388,7 @@ const docTemplate = `{
                     "Wallet - 钱包"
                 ],
                 "summary": "R9004 优惠券列表",
-                "operationId": "RiderWalletCoupons",
+                "operationId": "WalletCoupons",
                 "parameters": [
                     {
                         "type": "string",
@@ -2434,7 +2434,7 @@ const docTemplate = `{
                     "Wallet - 钱包"
                 ],
                 "summary": "R9001 钱包概览",
-                "operationId": "RiderWalletOverview",
+                "operationId": "WalletOverview",
                 "parameters": [
                     {
                         "type": "string",
@@ -2466,7 +2466,7 @@ const docTemplate = `{
                     "Wallet - 钱包"
                 ],
                 "summary": "R9002 积分日志",
-                "operationId": "RiderWalletPointLog",
+                "operationId": "WalletPointLog",
                 "parameters": [
                     {
                         "type": "string",
@@ -2525,7 +2525,7 @@ const docTemplate = `{
                     "Wallet - 钱包"
                 ],
                 "summary": "R9003 积分详情",
-                "operationId": "RiderWalletPoints",
+                "operationId": "WalletPoints",
                 "parameters": [
                     {
                         "type": "string",

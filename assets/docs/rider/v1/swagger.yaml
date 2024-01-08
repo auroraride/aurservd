@@ -1817,7 +1817,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderAssistanceList
+      operationId: AssistanceList
       parameters:
       - description: 骑手校验token
         in: header
@@ -1852,7 +1852,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: RiderAssistanceCreate
+      operationId: AssistanceCreate
       parameters:
       - description: 骑手校验token
         in: header
@@ -1879,7 +1879,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderAssistanceBreakdown
+      operationId: AssistanceBreakdown
       parameters:
       - description: 骑手校验token
         in: header
@@ -1902,7 +1902,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: RiderAssistanceCancel
+      operationId: AssistanceCancel
       parameters:
       - description: 骑手校验token
         in: header
@@ -1929,7 +1929,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderAssistanceCurrent
+      operationId: AssistanceCurrent
       parameters:
       - description: 骑手校验token
         in: header
@@ -1950,7 +1950,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: RiderAuthenticator
+      operationId: Authenticator
       parameters:
       - description: 骑手校验token
         in: header
@@ -1977,7 +1977,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderAuthResult
+      operationId: AuthResult
       parameters:
       - description: 骑手校验token
         in: header
@@ -2003,7 +2003,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderBatteryDetail
+      operationId: BatteryDetail
       parameters:
       - description: 骑手校验token
         in: header
@@ -2024,7 +2024,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderBranchList
+      operationId: BranchList
       parameters:
       - description: 骑手校验token
         in: header
@@ -2074,7 +2074,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderBranchFacility
+      operationId: BranchFacility
       parameters:
       - description: 骑手校验token
         in: header
@@ -2110,7 +2110,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderBranchRiding
+      operationId: BranchRiding
       parameters:
       - description: 骑手校验token
         in: header
@@ -2137,7 +2137,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: RiderBusinessActive
+      operationId: BusinessActive
       parameters:
       - description: 骑手校验token
         in: header
@@ -2165,7 +2165,7 @@ paths:
       consumes:
       - application/json
       description: 用以判定待激活骑士卡是否需要签约 (allocated = true)
-      operationId: RiderBusinessAllocated
+      operationId: BusinessAllocated
       parameters:
       - description: 骑手校验token
         in: header
@@ -2191,7 +2191,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: RiderBusinessContinue
+      operationId: BusinessContinue
       parameters:
       - description: 骑手校验token
         in: header
@@ -2218,7 +2218,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: RiderBusinessPause
+      operationId: BusinessPause
       parameters:
       - description: 骑手校验token
         in: header
@@ -2245,7 +2245,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderBusinessPauseInfo
+      operationId: BusinessPauseInfo
       parameters:
       - description: 骑手校验token
         in: header
@@ -2266,7 +2266,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderBusinessStatus
+      operationId: BusinessStatus
       parameters:
       - description: 骑手校验token
         in: header
@@ -2291,7 +2291,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderBusinessSubscribeSigned
+      operationId: BusinessSubscribeSigned
       parameters:
       - description: 骑手校验token
         in: header
@@ -2317,7 +2317,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: RiderBusinessUnsubscribe
+      operationId: BusinessUnsubscribe
       parameters:
       - description: 骑手校验token
         in: header
@@ -2344,7 +2344,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderCabinetFault
+      operationId: CabinetFault
       parameters:
       - description: 骑手校验token
         in: header
@@ -2367,7 +2367,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: RiderCabinetProcess
+      operationId: CabinetProcess
       parameters:
       - description: 骑手校验token
         in: header
@@ -2394,7 +2394,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderCabinetGetProcess
+      operationId: CabinetGetProcess
       parameters:
       - description: 骑手校验token
         in: header
@@ -2420,7 +2420,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderCabinetProcessStatus
+      operationId: CabinetProcessStatus
       parameters:
       - description: 骑手校验token
         in: header
@@ -2471,7 +2471,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderCityList
+      operationId: CityList
       parameters:
       - description: 骑手校验token
         in: header
@@ -2494,7 +2494,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderContractSignResult
+      operationId: ContractSignResult
       parameters:
       - description: 骑手校验token
         in: header
@@ -2520,7 +2520,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: RiderContact
+      operationId: Contact
       parameters:
       - description: 骑手校验token
         in: header
@@ -2547,7 +2547,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: RiderContractSign
+      operationId: ContractSign
       parameters:
       - description: 骑手校验token
         in: header
@@ -2574,7 +2574,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderRiderDeposit
+      operationId: Deposit
       parameters:
       - description: 骑手校验token
         in: header
@@ -2595,7 +2595,7 @@ paths:
     delete:
       consumes:
       - application/json
-      operationId: RiderRiderDeregister
+      operationId: Deregister
       parameters:
       - description: 骑手校验token
         in: header
@@ -2616,7 +2616,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderEnterpriseBattery
+      operationId: EnterpriseBattery
       parameters:
       - description: 骑手校验token
         in: header
@@ -2644,7 +2644,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: RiderEnterpriseExitEnterprise
+      operationId: EnterpriseExitEnterprise
       parameters:
       - description: 骑手校验token
         in: header
@@ -2665,7 +2665,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderEnterpriseRiderEnterpriseInfo
+      operationId: EnterpriseRiderEnterpriseInfo
       parameters:
       - description: 骑手校验token
         in: header
@@ -2696,7 +2696,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: RiderEnterpriseJoinEnterprise
+      operationId: EnterpriseJoinEnterprise
       parameters:
       - description: 加入团签请求
         in: body
@@ -2718,7 +2718,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderEnterpriseSubscribeStatus
+      operationId: EnterpriseSubscribeStatus
       parameters:
       - description: 骑手校验token
         in: header
@@ -2743,7 +2743,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: RiderEnterpriseSubscribe
+      operationId: EnterpriseSubscribe
       parameters:
       - description: 骑手校验token
         in: header
@@ -2770,7 +2770,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: RiderEnterpriseSubscribeAlter
+      operationId: EnterpriseSubscribeAlter
       parameters:
       - description: 骑手校验token
         in: header
@@ -2797,7 +2797,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderEnterpriseSubscribeAlterList
+      operationId: EnterpriseSubscribeAlterList
       parameters:
       - description: 骑手校验token
         in: header
@@ -2845,7 +2845,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderExchangeLog
+      operationId: ExchangeLog
       parameters:
       - description: 骑手校验token
         in: header
@@ -2881,7 +2881,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderExchangeOverview
+      operationId: ExchangeOverview
       parameters:
       - description: 骑手校验token
         in: header
@@ -2902,7 +2902,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: RiderExchangeStore
+      operationId: ExchangeStore
       parameters:
       - description: 骑手校验token
         in: header
@@ -2929,7 +2929,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderFaceResult
+      operationId: FaceResult
       parameters:
       - description: 骑手校验token
         in: header
@@ -2955,7 +2955,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderOrderList
+      operationId: OrderList
       parameters:
       - description: 骑手校验token
         in: header
@@ -2990,7 +2990,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: RiderOrderCreate
+      operationId: OrderCreate
       parameters:
       - description: 骑手校验token
         in: header
@@ -3017,7 +3017,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderOrderDetail
+      operationId: OrderDetail
       parameters:
       - description: 骑手校验token
         in: header
@@ -3043,7 +3043,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: RiderOrderRefund
+      operationId: OrderRefund
       parameters:
       - description: 骑手校验token
         in: header
@@ -3070,7 +3070,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderOrderStatus
+      operationId: OrderStatus
       parameters:
       - description: 骑手校验token
         in: header
@@ -3096,7 +3096,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderPlanList
+      operationId: PlanList
       parameters:
       - description: 骑手校验token
         in: header
@@ -3121,7 +3121,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderPlanRenewly
+      operationId: PlanRenewly
       parameters:
       - description: 骑手校验token
         in: header
@@ -3142,7 +3142,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderRiderProfile
+      operationId: Profile
       parameters:
       - description: 骑手校验token
         in: header
@@ -3163,7 +3163,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderReserveUnfinished
+      operationId: ReserveUnfinished
       parameters:
       - description: 骑手校验token
         in: header
@@ -3183,7 +3183,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: RiderReserveCreate
+      operationId: ReserveCreate
       parameters:
       - description: 骑手校验token
         in: header
@@ -3236,7 +3236,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderSettingApp
+      operationId: SettingApp
       parameters:
       - description: 骑手校验token
         in: header
@@ -3257,7 +3257,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderSettingQuestion
+      operationId: SettingQuestion
       parameters:
       - description: 骑手校验token
         in: header
@@ -3280,7 +3280,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: RiderSignin
+      operationId: Signin
       parameters:
       - description: desc
         in: body
@@ -3302,7 +3302,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderWalletCoupons
+      operationId: WalletCoupons
       parameters:
       - description: 骑手校验token
         in: header
@@ -3333,7 +3333,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderWalletOverview
+      operationId: WalletOverview
       parameters:
       - description: 骑手校验token
         in: header
@@ -3354,7 +3354,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderWalletPointLog
+      operationId: WalletPointLog
       parameters:
       - description: 骑手校验token
         in: header
@@ -3390,7 +3390,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderWalletPoints
+      operationId: WalletPoints
       parameters:
       - description: 骑手校验token
         in: header

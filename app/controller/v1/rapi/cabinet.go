@@ -18,7 +18,7 @@ type cabinet struct{}
 var Cabinet = new(cabinet)
 
 // GetProcess
-// @ID           RiderCabinetGetProcess
+// @ID           CabinetGetProcess
 // @Router       /rider/v1/cabinet/process/{serial} [GET]
 // @Summary      R4001 获取换电信息
 // @Tags         Cabinet - 电柜
@@ -33,7 +33,7 @@ func (*cabinet) GetProcess(c echo.Context) (err error) {
 }
 
 // Process
-// @ID           RiderCabinetProcess
+// @ID           CabinetProcess
 // @Router       /rider/v1/cabinet/process [POST]
 // @Summary      R4002 操作换电
 // @Tags         Cabinet - 电柜
@@ -49,7 +49,7 @@ func (*cabinet) Process(c echo.Context) (err error) {
 }
 
 // ProcessStatus
-// @ID           RiderCabinetProcessStatus
+// @ID           CabinetProcessStatus
 // @Router       /rider/v1/cabinet/process/status [GET]
 // @Summary      R4003 换电状态
 // @Tags         Cabinet - 电柜
@@ -84,7 +84,7 @@ func (*cabinet) Report(c echo.Context) (err error) {
 }
 
 // Fault
-// @ID           RiderCabinetFault
+// @ID           CabinetFault
 // @Router       /rider/v1/cabinet/fault [GET]
 // @Summary      R4008 电柜故障列表
 // @Tags         Cabinet - 电柜

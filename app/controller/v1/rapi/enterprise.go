@@ -19,7 +19,7 @@ type enterprise struct{}
 var Enterprise = new(enterprise)
 
 // Battery
-// @ID           RiderEnterpriseBattery
+// @ID           EnterpriseBattery
 // @Router       /rider/v1/enterprise/battery [GET]
 // @Summary      R3010 企业骑手获取可用电池
 // @Tags         Enterprise - 团签
@@ -34,7 +34,7 @@ func (*enterprise) Battery(c echo.Context) (err error) {
 }
 
 // Subscribe
-// @ID           RiderEnterpriseSubscribe
+// @ID           EnterpriseSubscribe
 // @Router       /rider/v1/enterprise/subscribe [POST]
 // @Summary      R3011 企业骑手选择电池
 // @Tags         Enterprise - 团签
@@ -49,7 +49,7 @@ func (*enterprise) Subscribe(c echo.Context) (err error) {
 }
 
 // SubscribeStatus
-// @ID           RiderEnterpriseSubscribeStatus
+// @ID           EnterpriseSubscribeStatus
 // @Router       /rider/v1/enterprise/subscribe [GET]
 // @Summary      R3012 企业骑手订阅激活状态
 // @Tags         Enterprise - 团签
@@ -64,7 +64,7 @@ func (*enterprise) SubscribeStatus(c echo.Context) (err error) {
 }
 
 // SubscribeAlter
-// @ID           RiderEnterpriseSubscribeAlter
+// @ID           EnterpriseSubscribeAlter
 // @Router       /rider/v1/enterprise/subscribe/alter [POST]
 // @Summary      R3013 加时申请
 // @Tags         Enterprise - 团签
@@ -80,7 +80,7 @@ func (*enterprise) SubscribeAlter(c echo.Context) (err error) {
 }
 
 // SubscribeAlterList
-// @ID           RiderEnterpriseSubscribeAlterList
+// @ID           EnterpriseSubscribeAlterList
 // @Router       /rider/v1/enterprise/subscribe/alter/list [GET]
 // @Summary      R3014 加时申请列表
 // @Tags         Enterprise - 团签
@@ -103,7 +103,7 @@ func (*enterprise) SubscribeAlterList(c echo.Context) (err error) {
 }
 
 // JoinEnterprise
-// @ID           RiderEnterpriseJoinEnterprise
+// @ID           EnterpriseJoinEnterprise
 // @Router       /rider/v1/enterprise/join [POST]
 // @Summary      R3015 企业骑手加入团签
 // @Tags         Enterprise - 团签
@@ -118,7 +118,7 @@ func (s *enterprise) JoinEnterprise(c echo.Context) error {
 }
 
 // RiderEnterpriseInfo
-// @ID           RiderEnterpriseRiderEnterpriseInfo
+// @ID           EnterpriseRiderEnterpriseInfo
 // @Router       /rider/v1/enterprise/info [GET]
 // @Summary      R3016 骑手团签信息
 // @Tags         Enterprise - 团签
@@ -133,7 +133,7 @@ func (*enterprise) RiderEnterpriseInfo(c echo.Context) (err error) {
 }
 
 // ExitEnterprise
-// @ID           RiderEnterpriseExitEnterprise
+// @ID           EnterpriseExitEnterprise
 // @Router       /rider/v1/enterprise/exit [POST]
 // @Summary      R3017 退出团签
 // @Tags         Enterprise - 团签

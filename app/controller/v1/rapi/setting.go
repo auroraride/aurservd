@@ -19,7 +19,7 @@ type setting struct{}
 var Setting = new(setting)
 
 // App
-// @ID           RiderSettingApp
+// @ID           SettingApp
 // @Router       /rider/v1/setting/app [GET]
 // @Summary      R6001 获取APP设置
 // @Tags         Setting - 设置
@@ -37,7 +37,7 @@ func (*setting) App(c echo.Context) (err error) {
 }
 
 // Question
-// @ID           RiderSettingQuestion
+// @ID           SettingQuestion
 // @Router       /rider/v1/setting/question [GET]
 // @Summary      R6002 获取常见问题
 // @Tags         Setting - 设置

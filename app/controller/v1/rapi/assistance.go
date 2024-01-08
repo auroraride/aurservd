@@ -18,7 +18,7 @@ type assistance struct{}
 var Assistance = new(assistance)
 
 // Breakdown
-// @ID           RiderAssistanceBreakdown
+// @ID           AssistanceBreakdown
 // @Router       /rider/v1/assistance/breakdown [GET]
 // @Summary      R5001 获取救援原因
 // @Tags         Assistance - 救援
@@ -32,7 +32,7 @@ func (*assistance) Breakdown(c echo.Context) (err error) {
 }
 
 // Create
-// @ID           RiderAssistanceCreate
+// @ID           AssistanceCreate
 // @Router       /rider/v1/assistance [POST]
 // @Summary      R5002 发起救援
 // @Tags         Assistance - 救援
@@ -47,7 +47,7 @@ func (*assistance) Create(c echo.Context) (err error) {
 }
 
 // Cancel
-// @ID           RiderAssistanceCancel
+// @ID           AssistanceCancel
 // @Router       /rider/v1/assistance/cancel [POST]
 // @Summary      R5003 取消救援
 // @Tags         Assistance - 救援
@@ -63,7 +63,7 @@ func (*assistance) Cancel(c echo.Context) (err error) {
 }
 
 // Current
-// @ID           RiderAssistanceCurrent
+// @ID           AssistanceCurrent
 // @Router       /rider/v1/assistance/current [GET]
 // @Summary      R5004 当前救援
 // @Tags         Assistance - 救援
@@ -77,7 +77,7 @@ func (*assistance) Current(c echo.Context) (err error) {
 }
 
 // List
-// @ID           RiderAssistanceList
+// @ID           AssistanceList
 // @Router       /rider/v1/assistance [GET]
 // @Summary      R5005 救援列表
 // @Tags         Assistance - 救援
