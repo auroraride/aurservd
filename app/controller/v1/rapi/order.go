@@ -18,10 +18,10 @@ type order struct{}
 var Order = new(order)
 
 // Create
-// @ID           RiderOrderCreate
+// @ID           OrderCreate
 // @Router       /rider/v1/order [POST]
 // @Summary      R3005 支付请求
-// @Tags         订单
+// @Tags         Order - 订单
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -36,10 +36,10 @@ func (*order) Create(c echo.Context) (err error) {
 }
 
 // Refund
-// @ID           RiderOrderRefund
+// @ID           OrderRefund
 // @Router       /rider/v1/order/refund [POST]
 // @Summary      R3006 申请退款
-// @Tags         订单
+// @Tags         Order - 订单
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -51,10 +51,10 @@ func (*order) Refund(c echo.Context) (err error) {
 }
 
 // List
-// @ID           RiderOrderList
+// @ID           OrderList
 // @Router       /rider/v1/order [GET]
 // @Summary      R3007 骑士卡购买历史
-// @Tags         订单
+// @Tags         Order - 订单
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -69,10 +69,10 @@ func (*order) List(c echo.Context) (err error) {
 }
 
 // Detail
-// @ID           RiderOrderDetail
+// @ID           OrderDetail
 // @Router       /rider/v1/order/{id} [GET]
 // @Summary      R3008 订单详情
-// @Tags         订单
+// @Tags         Order - 订单
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -84,10 +84,10 @@ func (*order) Detail(c echo.Context) (err error) {
 }
 
 // Status
-// @ID           RiderOrderStatus
+// @ID           OrderStatus
 // @Router       /rider/v1/order/status [GET]
 // @Summary      R3009 订单支付状态
-// @Tags         订单
+// @Tags         Order - 订单
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"

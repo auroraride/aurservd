@@ -6279,7 +6279,7 @@ definitions:
     - GPSStatusLBS
 info:
   contact: {}
-  description: |-
+  description: |
     ### 说明
     接口采用非标准Restful API，所有http返回代码均为`200`，当返回为非`200`时应为network错误，需要及时排查。
     <br>
@@ -6363,23 +6363,6 @@ info:
   title: 极光出行API - 代理端api
   version: "1.0"
 paths:
-  /common/battery/model:
-    get:
-      consumes:
-      - application/json
-      operationId: ManagerBatteryModel
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 型号列表
-          schema:
-            items:
-              type: string
-            type: array
-      summary: C4 获取生效中的电池型号
-      tags:
-      - '[C]公共接口'
   /common/captcha:
     get:
       consumes:
@@ -6399,7 +6382,7 @@ paths:
             type: string
       summary: C1 生成图片验证码
       tags:
-      - '[C]公共接口'
+      - Communal - 公共接口
   /common/oss/token:
     get:
       consumes:
@@ -6415,7 +6398,7 @@ paths:
             $ref: '#/definitions/model.AliyunOssStsRes'
       summary: C3 获取阿里云oss临时凭证
       tags:
-      - '[C]公共接口'
+      - Communal - 公共接口
   /common/sms:
     post:
       consumes:
@@ -6443,7 +6426,7 @@ paths:
             $ref: '#/definitions/model.SmsRes'
       summary: C2 发送短信验证码
       tags:
-      - '[C]公共接口'
+      - Communal - 公共接口
   /manager/v1/{id}/contract:
     post:
       consumes:

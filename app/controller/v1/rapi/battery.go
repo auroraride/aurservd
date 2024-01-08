@@ -17,10 +17,10 @@ type battery struct{}
 var Battery = new(battery)
 
 // Detail
-// @ID           RiderBatteryDetail
+// @ID           BatteryDetail
 // @Router       /rider/v1/battery [GET]
 // @Summary      RA001 获取电池详情
-// @Tags         电池
+// @Tags         Battery - 电池
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"

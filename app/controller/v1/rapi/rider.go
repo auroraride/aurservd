@@ -21,10 +21,10 @@ type rider struct {
 }
 
 // Signin
-// @ID           RiderSignin
+// @ID           Signin
 // @Router       /rider/v1/signin [POST]
 // @Summary      R1001 登录或注册
-// @Tags         骑手
+// @Tags         Rider - 骑手
 // @Accept       json
 // @Produce      json
 // @Param        body  body     model.RiderSignupReq  true  "desc"
@@ -40,10 +40,10 @@ func (*rider) Signin(c echo.Context) (err error) {
 }
 
 // Contact
-// @ID           RiderContact
+// @ID           Contact
 // @Router       /rider/v1/contact [POST]
 // @Summary      R1002 添加紧急联系人
-// @Tags         骑手
+// @Tags         Rider - 骑手
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -56,10 +56,10 @@ func (r *rider) Contact(c echo.Context) error {
 }
 
 // Authenticator
-// @ID           RiderAuthenticator
+// @ID           Authenticator
 // @Router       /rider/v1/authenticator [POST]
 // @Summary      R1003 实名认证
-// @Tags         骑手
+// @Tags         Rider - 骑手
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -78,10 +78,10 @@ func (*rider) Authenticator(c echo.Context) error {
 
 // AuthResult
 // TODO 测试认证失败逻辑
-// @ID           RiderAuthResult
+// @ID           AuthResult
 // @Router       /rider/v1/authenticator/{token} [GET]
 // @Summary      R1004 实名认证结果
-// @Tags         骑手
+// @Tags         Rider - 骑手
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -93,10 +93,10 @@ func (r *rider) AuthResult(c echo.Context) error {
 }
 
 // FaceResult
-// @ID           RiderFaceResult
+// @ID           FaceResult
 // @Router       /rider/v1/face/{token} [GET]
 // @Summary      R1005 获取人脸校验结果
-// @Tags         骑手
+// @Tags         Rider - 骑手
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -113,10 +113,10 @@ func (r *rider) Demo(c echo.Context) error {
 }
 
 // Profile
-// @ID           RiderRiderProfile
+// @ID           Profile
 // @Router       /rider/v1/profile [GET]
 // @Summary      R1006 获取个人信息
-// @Tags         骑手
+// @Tags         Rider - 骑手
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -129,10 +129,10 @@ func (r *rider) Profile(c echo.Context) error {
 }
 
 // Deposit
-// @ID           RiderRiderDeposit
+// @ID           Deposit
 // @Router       /rider/v1/deposit [GET]
 // @Summary      R1007 获取已缴押金
-// @Tags         骑手
+// @Tags         Rider - 骑手
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -143,10 +143,10 @@ func (*rider) Deposit(c echo.Context) (err error) {
 }
 
 // Deregister
-// @ID           RiderRiderDeregister
+// @ID           Deregister
 // @Router       /rider/v1/deregister [DELETE]
 // @Summary      R1008 注销账户
-// @Tags         骑手
+// @Tags         Rider - 骑手
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"

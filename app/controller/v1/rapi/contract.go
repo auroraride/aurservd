@@ -19,10 +19,10 @@ type contract struct {
 var Contract = new(contract)
 
 // Sign
-// @ID           RiderContractSign
+// @ID           ContractSign
 // @Router       /rider/v1/contract/sign [POST]
 // @Summary      R3003 签署合同
-// @Tags         合同
+// @Tags         Contract - 合同
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -34,10 +34,10 @@ func (*contract) Sign(c echo.Context) error {
 }
 
 // SignResult
-// @ID           RiderContractSignResult
+// @ID           ContractSignResult
 // @Router       /rider/v1/constract/{sn} [GET]
 // @Summary      R3004 合同签署结果
-// @Tags         合同
+// @Tags         Contract - 合同
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"

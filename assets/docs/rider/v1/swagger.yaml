@@ -1665,7 +1665,7 @@ definitions:
     type: object
 info:
   contact: {}
-  description: |-
+  description: |
     ### 说明
     接口采用非标准Restful API，所有http返回代码均为`200`，当返回为非`200`时应为network错误，需要及时排查。
     <br>
@@ -1749,23 +1749,6 @@ info:
   title: 极光出行API - 骑手端api
   version: "1.0"
 paths:
-  /common/battery/model:
-    get:
-      consumes:
-      - application/json
-      operationId: ManagerBatteryModel
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 型号列表
-          schema:
-            items:
-              type: string
-            type: array
-      summary: C4 获取生效中的电池型号
-      tags:
-      - '[C]公共接口'
   /common/captcha:
     get:
       consumes:
@@ -1785,7 +1768,7 @@ paths:
             type: string
       summary: C1 生成图片验证码
       tags:
-      - '[C]公共接口'
+      - Communal - 公共接口
   /common/oss/token:
     get:
       consumes:
@@ -1801,7 +1784,7 @@ paths:
             $ref: '#/definitions/model.AliyunOssStsRes'
       summary: C3 获取阿里云oss临时凭证
       tags:
-      - '[C]公共接口'
+      - Communal - 公共接口
   /common/sms:
     post:
       consumes:
@@ -1829,12 +1812,12 @@ paths:
             $ref: '#/definitions/model.SmsRes'
       summary: C2 发送短信验证码
       tags:
-      - '[C]公共接口'
+      - Communal - 公共接口
   /rider/v1/assistance:
     get:
       consumes:
       - application/json
-      operationId: RiderAssistanceList
+      operationId: AssistanceList
       parameters:
       - description: 骑手校验token
         in: header
@@ -1865,11 +1848,11 @@ paths:
               type: object
       summary: R5005 救援列表
       tags:
-      - 救援
+      - Assistance - 救援
     post:
       consumes:
       - application/json
-      operationId: RiderAssistanceCreate
+      operationId: AssistanceCreate
       parameters:
       - description: 骑手校验token
         in: header
@@ -1891,12 +1874,12 @@ paths:
             $ref: '#/definitions/model.AssistanceCreateRes'
       summary: R5002 发起救援
       tags:
-      - 救援
+      - Assistance - 救援
   /rider/v1/assistance/breakdown:
     get:
       consumes:
       - application/json
-      operationId: RiderAssistanceBreakdown
+      operationId: AssistanceBreakdown
       parameters:
       - description: 骑手校验token
         in: header
@@ -1914,12 +1897,12 @@ paths:
             type: array
       summary: R5001 获取救援原因
       tags:
-      - 救援
+      - Assistance - 救援
   /rider/v1/assistance/cancel:
     post:
       consumes:
       - application/json
-      operationId: RiderAssistanceCancel
+      operationId: AssistanceCancel
       parameters:
       - description: 骑手校验token
         in: header
@@ -1941,12 +1924,12 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: R5003 取消救援
       tags:
-      - 救援
+      - Assistance - 救援
   /rider/v1/assistance/current:
     get:
       consumes:
       - application/json
-      operationId: RiderAssistanceCurrent
+      operationId: AssistanceCurrent
       parameters:
       - description: 骑手校验token
         in: header
@@ -1962,12 +1945,12 @@ paths:
             $ref: '#/definitions/model.AssistanceSocketMessage'
       summary: R5004 当前救援
       tags:
-      - 救援
+      - Assistance - 救援
   /rider/v1/authenticator:
     post:
       consumes:
       - application/json
-      operationId: RiderAuthenticator
+      operationId: Authenticator
       parameters:
       - description: 骑手校验token
         in: header
@@ -1989,12 +1972,12 @@ paths:
             $ref: '#/definitions/model.FaceAuthUrlResponse'
       summary: R1003 实名认证
       tags:
-      - 骑手
+      - Rider - 骑手
   /rider/v1/authenticator/{token}:
     get:
       consumes:
       - application/json
-      operationId: RiderAuthResult
+      operationId: AuthResult
       parameters:
       - description: 骑手校验token
         in: header
@@ -2015,12 +1998,12 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: R1004 实名认证结果
       tags:
-      - 骑手
+      - Rider - 骑手
   /rider/v1/battery:
     get:
       consumes:
       - application/json
-      operationId: RiderBatteryDetail
+      operationId: BatteryDetail
       parameters:
       - description: 骑手校验token
         in: header
@@ -2036,12 +2019,12 @@ paths:
             $ref: '#/definitions/model.BatteryDetail'
       summary: RA001 获取电池详情
       tags:
-      - 电池
+      - Battery - 电池
   /rider/v1/branch:
     get:
       consumes:
       - application/json
-      operationId: RiderBranchList
+      operationId: BranchList
       parameters:
       - description: 骑手校验token
         in: header
@@ -2086,12 +2069,12 @@ paths:
             type: array
       summary: R2001 列举网点
       tags:
-      - 网点
+      - Branch - 网点
   /rider/v1/branch/facility/{fid}:
     get:
       consumes:
       - application/json
-      operationId: RiderBranchFacility
+      operationId: BranchFacility
       parameters:
       - description: 骑手校验token
         in: header
@@ -2122,12 +2105,12 @@ paths:
             $ref: '#/definitions/model.BranchFacilityRes'
       summary: R2004 设施详情
       tags:
-      - 网点
+      - Branch - 网点
   /rider/v1/branch/riding:
     get:
       consumes:
       - application/json
-      operationId: RiderBranchRiding
+      operationId: BranchRiding
       parameters:
       - description: 骑手校验token
         in: header
@@ -2149,12 +2132,12 @@ paths:
             $ref: '#/definitions/model.BranchRidingRes'
       summary: R2002 网点骑行规划时间
       tags:
-      - 网点
+      - Branch - 网点
   /rider/v1/business/active:
     post:
       consumes:
       - application/json
-      operationId: RiderBusinessActive
+      operationId: BusinessActive
       parameters:
       - description: 骑手校验token
         in: header
@@ -2176,13 +2159,13 @@ paths:
             $ref: '#/definitions/model.BusinessCabinetStatus'
       summary: R7001 激活骑士卡
       tags:
-      - 业务
+      - Business - 业务
   /rider/v1/business/allocated/{id}:
     get:
       consumes:
       - application/json
       description: 用以判定待激活骑士卡是否需要签约 (allocated = true)
-      operationId: RiderBusinessAllocated
+      operationId: BusinessAllocated
       parameters:
       - description: 骑手校验token
         in: header
@@ -2203,12 +2186,12 @@ paths:
             $ref: '#/definitions/model.AllocateRiderRes'
       summary: R7009 长连接轮询是否已分配
       tags:
-      - 业务
+      - Business - 业务
   /rider/v1/business/continue:
     post:
       consumes:
       - application/json
-      operationId: RiderBusinessContinue
+      operationId: BusinessContinue
       parameters:
       - description: 骑手校验token
         in: header
@@ -2230,12 +2213,12 @@ paths:
             $ref: '#/definitions/model.BusinessCabinetStatus'
       summary: R7004 取消寄存
       tags:
-      - 业务
+      - Business - 业务
   /rider/v1/business/pause:
     post:
       consumes:
       - application/json
-      operationId: RiderBusinessPause
+      operationId: BusinessPause
       parameters:
       - description: 骑手校验token
         in: header
@@ -2257,12 +2240,12 @@ paths:
             $ref: '#/definitions/model.BusinessCabinetStatus'
       summary: R7003 寄存
       tags:
-      - 业务
+      - Business - 业务
   /rider/v1/business/pause/info:
     get:
       consumes:
       - application/json
-      operationId: RiderBusinessPauseInfo
+      operationId: BusinessPauseInfo
       parameters:
       - description: 骑手校验token
         in: header
@@ -2278,12 +2261,12 @@ paths:
             $ref: '#/definitions/model.BusinessPauseInfoRes'
       summary: R7006 寄存信息
       tags:
-      - 业务
+      - Business - 业务
   /rider/v1/business/status:
     get:
       consumes:
       - application/json
-      operationId: RiderBusinessStatus
+      operationId: BusinessStatus
       parameters:
       - description: 骑手校验token
         in: header
@@ -2303,12 +2286,12 @@ paths:
             $ref: '#/definitions/model.BusinessCabinetStatusRes'
       summary: R7005 业务状态
       tags:
-      - 业务
+      - Business - 业务
   /rider/v1/business/subscribe/signed/{id}:
     get:
       consumes:
       - application/json
-      operationId: RiderBusinessSubscribeSigned
+      operationId: BusinessSubscribeSigned
       parameters:
       - description: 骑手校验token
         in: header
@@ -2329,12 +2312,12 @@ paths:
             $ref: '#/definitions/model.SubscribeSigned'
       summary: R7010 长连接轮询是否已签约
       tags:
-      - 业务
+      - Business - 业务
   /rider/v1/business/unsubscribe:
     post:
       consumes:
       - application/json
-      operationId: RiderBusinessUnsubscribe
+      operationId: BusinessUnsubscribe
       parameters:
       - description: 骑手校验token
         in: header
@@ -2356,12 +2339,12 @@ paths:
             $ref: '#/definitions/model.BusinessCabinetStatus'
       summary: R7002 退租
       tags:
-      - 业务
+      - Business - 业务
   /rider/v1/cabinet/fault:
     get:
       consumes:
       - application/json
-      operationId: RiderCabinetFault
+      operationId: CabinetFault
       parameters:
       - description: 骑手校验token
         in: header
@@ -2379,12 +2362,12 @@ paths:
             type: array
       summary: R4008 电柜故障列表
       tags:
-      - 电柜
+      - Cabinet - 电柜
   /rider/v1/cabinet/process:
     post:
       consumes:
       - application/json
-      operationId: RiderCabinetProcess
+      operationId: CabinetProcess
       parameters:
       - description: 骑手校验token
         in: header
@@ -2406,12 +2389,12 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: R4002 操作换电
       tags:
-      - 电柜
+      - Cabinet - 电柜
   /rider/v1/cabinet/process/{serial}:
     get:
       consumes:
       - application/json
-      operationId: RiderCabinetGetProcess
+      operationId: CabinetGetProcess
       parameters:
       - description: 骑手校验token
         in: header
@@ -2432,12 +2415,12 @@ paths:
             $ref: '#/definitions/model.RiderExchangeInfo'
       summary: R4001 获取换电信息
       tags:
-      - 电柜
+      - Cabinet - 电柜
   /rider/v1/cabinet/process/status:
     get:
       consumes:
       - application/json
-      operationId: RiderCabinetProcessStatus
+      operationId: CabinetProcessStatus
       parameters:
       - description: 骑手校验token
         in: header
@@ -2456,7 +2439,7 @@ paths:
             $ref: '#/definitions/model.RiderExchangeProcessRes'
       summary: R4003 换电状态
       tags:
-      - 电柜
+      - Cabinet - 电柜
   /rider/v1/cabinet/report:
     post:
       consumes:
@@ -2483,12 +2466,12 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: R4004 电柜故障上报
       tags:
-      - 电柜
+      - Cabinet - 电柜
   /rider/v1/city:
     get:
       consumes:
       - application/json
-      operationId: RiderCityList
+      operationId: CityList
       parameters:
       - description: 骑手校验token
         in: header
@@ -2506,12 +2489,12 @@ paths:
             type: array
       summary: R2003 获取已开通城市
       tags:
-      - 城市
+      - City - 城市
   /rider/v1/constract/{sn}:
     get:
       consumes:
       - application/json
-      operationId: RiderContractSignResult
+      operationId: ContractSignResult
       parameters:
       - description: 骑手校验token
         in: header
@@ -2532,12 +2515,12 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: R3004 合同签署结果
       tags:
-      - 合同
+      - Contract - 合同
   /rider/v1/contact:
     post:
       consumes:
       - application/json
-      operationId: RiderContact
+      operationId: Contact
       parameters:
       - description: 骑手校验token
         in: header
@@ -2559,12 +2542,12 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: R1002 添加紧急联系人
       tags:
-      - 骑手
+      - Rider - 骑手
   /rider/v1/contract/sign:
     post:
       consumes:
       - application/json
-      operationId: RiderContractSign
+      operationId: ContractSign
       parameters:
       - description: 骑手校验token
         in: header
@@ -2586,12 +2569,12 @@ paths:
             $ref: '#/definitions/model.ContractSignRes'
       summary: R3003 签署合同
       tags:
-      - 合同
+      - Contract - 合同
   /rider/v1/deposit:
     get:
       consumes:
       - application/json
-      operationId: RiderRiderDeposit
+      operationId: Deposit
       parameters:
       - description: 骑手校验token
         in: header
@@ -2607,12 +2590,12 @@ paths:
             $ref: '#/definitions/model.RiderDepositRes'
       summary: R1007 获取已缴押金
       tags:
-      - 骑手
+      - Rider - 骑手
   /rider/v1/deregister:
     delete:
       consumes:
       - application/json
-      operationId: RiderRiderDeregister
+      operationId: Deregister
       parameters:
       - description: 骑手校验token
         in: header
@@ -2628,12 +2611,12 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: R1008 注销账户
       tags:
-      - 骑手
+      - Rider - 骑手
   /rider/v1/enterprise/battery:
     get:
       consumes:
       - application/json
-      operationId: RiderEnterpriseBattery
+      operationId: EnterpriseBattery
       parameters:
       - description: 骑手校验token
         in: header
@@ -2656,12 +2639,12 @@ paths:
             type: array
       summary: R3010 企业骑手获取可用电池
       tags:
-      - 团签
+      - Enterprise - 团签
   /rider/v1/enterprise/exit:
     post:
       consumes:
       - application/json
-      operationId: RiderEnterpriseExitEnterprise
+      operationId: EnterpriseExitEnterprise
       parameters:
       - description: 骑手校验token
         in: header
@@ -2677,12 +2660,12 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: R3017 退出团签
       tags:
-      - 团签
+      - Enterprise - 团签
   /rider/v1/enterprise/info:
     get:
       consumes:
       - application/json
-      operationId: RiderEnterpriseRiderEnterpriseInfo
+      operationId: EnterpriseRiderEnterpriseInfo
       parameters:
       - description: 骑手校验token
         in: header
@@ -2708,12 +2691,12 @@ paths:
             $ref: '#/definitions/model.EnterproseInfoRsp'
       summary: R3016 骑手团签信息
       tags:
-      - 团签
+      - Enterprise - 团签
   /rider/v1/enterprise/join:
     post:
       consumes:
       - application/json
-      operationId: RiderEnterpriseJoinEnterprise
+      operationId: EnterpriseJoinEnterprise
       parameters:
       - description: 加入团签请求
         in: body
@@ -2730,12 +2713,12 @@ paths:
             type: boolean
       summary: R3015 企业骑手加入团签
       tags:
-      - 团签
+      - Enterprise - 团签
   /rider/v1/enterprise/subscribe:
     get:
       consumes:
       - application/json
-      operationId: RiderEnterpriseSubscribeStatus
+      operationId: EnterpriseSubscribeStatus
       parameters:
       - description: 骑手校验token
         in: header
@@ -2756,11 +2739,11 @@ paths:
             type: boolean
       summary: R3012 企业骑手订阅激活状态
       tags:
-      - 团签
+      - Enterprise - 团签
     post:
       consumes:
       - application/json
-      operationId: RiderEnterpriseSubscribe
+      operationId: EnterpriseSubscribe
       parameters:
       - description: 骑手校验token
         in: header
@@ -2782,12 +2765,12 @@ paths:
             $ref: '#/definitions/model.EnterpriseRiderSubscribeChooseRes'
       summary: R3011 企业骑手选择电池
       tags:
-      - 团签
+      - Enterprise - 团签
   /rider/v1/enterprise/subscribe/alter:
     post:
       consumes:
       - application/json
-      operationId: RiderEnterpriseSubscribeAlter
+      operationId: EnterpriseSubscribeAlter
       parameters:
       - description: 骑手校验token
         in: header
@@ -2809,12 +2792,12 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: R3013 加时申请
       tags:
-      - 团签
+      - Enterprise - 团签
   /rider/v1/enterprise/subscribe/alter/list:
     get:
       consumes:
       - application/json
-      operationId: RiderEnterpriseSubscribeAlterList
+      operationId: EnterpriseSubscribeAlterList
       parameters:
       - description: 骑手校验token
         in: header
@@ -2857,12 +2840,12 @@ paths:
               type: object
       summary: R3014 加时申请列表
       tags:
-      - 团签
+      - Enterprise - 团签
   /rider/v1/exchange/log:
     get:
       consumes:
       - application/json
-      operationId: RiderExchangeLog
+      operationId: ExchangeLog
       parameters:
       - description: 骑手校验token
         in: header
@@ -2893,12 +2876,12 @@ paths:
               type: object
       summary: R4007 换电记录
       tags:
-      - 换电
+      - Exchange - 换电
   /rider/v1/exchange/overview:
     get:
       consumes:
       - application/json
-      operationId: RiderExchangeOverview
+      operationId: ExchangeOverview
       parameters:
       - description: 骑手校验token
         in: header
@@ -2914,12 +2897,12 @@ paths:
             $ref: '#/definitions/model.ExchangeOverview'
       summary: R4006 换电概览
       tags:
-      - 换电
+      - Exchange - 换电
   /rider/v1/exchange/store:
     post:
       consumes:
       - application/json
-      operationId: RiderExchangeStore
+      operationId: ExchangeStore
       parameters:
       - description: 骑手校验token
         in: header
@@ -2941,12 +2924,12 @@ paths:
             $ref: '#/definitions/model.ExchangeStoreRes'
       summary: R4005 门店换电
       tags:
-      - 换电
+      - Exchange - 换电
   /rider/v1/face/{token}:
     get:
       consumes:
       - application/json
-      operationId: RiderFaceResult
+      operationId: FaceResult
       parameters:
       - description: 骑手校验token
         in: header
@@ -2967,12 +2950,12 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: R1005 获取人脸校验结果
       tags:
-      - 骑手
+      - Rider - 骑手
   /rider/v1/order:
     get:
       consumes:
       - application/json
-      operationId: RiderOrderList
+      operationId: OrderList
       parameters:
       - description: 骑手校验token
         in: header
@@ -3003,11 +2986,11 @@ paths:
               type: object
       summary: R3007 骑士卡购买历史
       tags:
-      - 订单
+      - Order - 订单
     post:
       consumes:
       - application/json
-      operationId: RiderOrderCreate
+      operationId: OrderCreate
       parameters:
       - description: 骑手校验token
         in: header
@@ -3029,12 +3012,12 @@ paths:
             $ref: '#/definitions/model.OrderCreateRes'
       summary: R3005 支付请求
       tags:
-      - 订单
+      - Order - 订单
   /rider/v1/order/{id}:
     get:
       consumes:
       - application/json
-      operationId: RiderOrderDetail
+      operationId: OrderDetail
       parameters:
       - description: 骑手校验token
         in: header
@@ -3055,12 +3038,12 @@ paths:
             $ref: '#/definitions/model.Order'
       summary: R3008 订单详情
       tags:
-      - 订单
+      - Order - 订单
   /rider/v1/order/refund:
     post:
       consumes:
       - application/json
-      operationId: RiderOrderRefund
+      operationId: OrderRefund
       parameters:
       - description: 骑手校验token
         in: header
@@ -3082,12 +3065,12 @@ paths:
             $ref: '#/definitions/model.RefundRes'
       summary: R3006 申请退款
       tags:
-      - 订单
+      - Order - 订单
   /rider/v1/order/status:
     get:
       consumes:
       - application/json
-      operationId: RiderOrderStatus
+      operationId: OrderStatus
       parameters:
       - description: 骑手校验token
         in: header
@@ -3108,12 +3091,12 @@ paths:
             $ref: '#/definitions/model.OrderStatusRes'
       summary: R3009 订单支付状态
       tags:
-      - 订单
+      - Order - 订单
   /rider/v1/plan:
     get:
       consumes:
       - application/json
-      operationId: RiderPlanList
+      operationId: PlanList
       parameters:
       - description: 骑手校验token
         in: header
@@ -3133,12 +3116,12 @@ paths:
             $ref: '#/definitions/model.PlanNewlyRes'
       summary: R3001 新购骑士卡
       tags:
-      - 骑士卡
+      - Plan - 骑士卡
   /rider/v1/plan/renewly:
     get:
       consumes:
       - application/json
-      operationId: RiderPlanRenewly
+      operationId: PlanRenewly
       parameters:
       - description: 骑手校验token
         in: header
@@ -3154,12 +3137,12 @@ paths:
             $ref: '#/definitions/model.RiderPlanRenewalRes'
       summary: R3002 续费骑士卡
       tags:
-      - 骑士卡
+      - Plan - 骑士卡
   /rider/v1/profile:
     get:
       consumes:
       - application/json
-      operationId: RiderRiderProfile
+      operationId: Profile
       parameters:
       - description: 骑手校验token
         in: header
@@ -3175,12 +3158,12 @@ paths:
             $ref: '#/definitions/model.RiderSigninRes'
       summary: R1006 获取个人信息
       tags:
-      - 骑手
+      - Rider - 骑手
   /rider/v1/reserve:
     get:
       consumes:
       - application/json
-      operationId: RiderReserveUnfinished
+      operationId: ReserveUnfinished
       parameters:
       - description: 骑手校验token
         in: header
@@ -3196,11 +3179,11 @@ paths:
             $ref: '#/definitions/model.ReserveUnfinishedRes'
       summary: R8001 获取未完成预约
       tags:
-      - 预约
+      - Reserve - 预约
     post:
       consumes:
       - application/json
-      operationId: RiderReserveCreate
+      operationId: ReserveCreate
       parameters:
       - description: 骑手校验token
         in: header
@@ -3222,7 +3205,7 @@ paths:
             $ref: '#/definitions/model.ReserveUnfinishedRes'
       summary: R8002 创建预约
       tags:
-      - 预约
+      - Reserve - 预约
   /rider/v1/reserve/{id}:
     delete:
       consumes:
@@ -3248,12 +3231,12 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: R8003 取消预约
       tags:
-      - 预约
+      - Reserve - 预约
   /rider/v1/setting/app:
     get:
       consumes:
       - application/json
-      operationId: RiderSettingApp
+      operationId: SettingApp
       parameters:
       - description: 骑手校验token
         in: header
@@ -3269,12 +3252,12 @@ paths:
             $ref: '#/definitions/model.SettingRiderApp'
       summary: R6001 获取APP设置
       tags:
-      - 设置
+      - Setting - 设置
   /rider/v1/setting/question:
     get:
       consumes:
       - application/json
-      operationId: RiderSettingQuestion
+      operationId: SettingQuestion
       parameters:
       - description: 骑手校验token
         in: header
@@ -3292,12 +3275,12 @@ paths:
             type: array
       summary: R6002 获取常见问题
       tags:
-      - 设置
+      - Setting - 设置
   /rider/v1/signin:
     post:
       consumes:
       - application/json
-      operationId: RiderSignin
+      operationId: Signin
       parameters:
       - description: desc
         in: body
@@ -3314,12 +3297,12 @@ paths:
             $ref: '#/definitions/model.RiderSigninRes'
       summary: R1001 登录或注册
       tags:
-      - 骑手
+      - Rider - 骑手
   /rider/v1/wallet/coupons:
     get:
       consumes:
       - application/json
-      operationId: RiderWalletCoupons
+      operationId: WalletCoupons
       parameters:
       - description: 骑手校验token
         in: header
@@ -3345,12 +3328,12 @@ paths:
             type: array
       summary: R9004 优惠券列表
       tags:
-      - 钱包
+      - Wallet - 钱包
   /rider/v1/wallet/overview:
     get:
       consumes:
       - application/json
-      operationId: RiderWalletOverview
+      operationId: WalletOverview
       parameters:
       - description: 骑手校验token
         in: header
@@ -3366,12 +3349,12 @@ paths:
             $ref: '#/definitions/model.WalletOverview'
       summary: R9001 钱包概览
       tags:
-      - 钱包
+      - Wallet - 钱包
   /rider/v1/wallet/pointlog:
     get:
       consumes:
       - application/json
-      operationId: RiderWalletPointLog
+      operationId: WalletPointLog
       parameters:
       - description: 骑手校验token
         in: header
@@ -3402,12 +3385,12 @@ paths:
               type: object
       summary: R9002 积分日志
       tags:
-      - 钱包
+      - Wallet - 钱包
   /rider/v1/wallet/points:
     get:
       consumes:
       - application/json
-      operationId: RiderWalletPoints
+      operationId: WalletPoints
       parameters:
       - description: 骑手校验token
         in: header
@@ -3423,5 +3406,5 @@ paths:
             $ref: '#/definitions/model.PointRes'
       summary: R9003 积分详情
       tags:
-      - 钱包
+      - Wallet - 钱包
 swagger: "2.0"

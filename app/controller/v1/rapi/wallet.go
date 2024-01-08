@@ -18,10 +18,10 @@ type wallet struct{}
 var Wallet = new(wallet)
 
 // Overview
-// @ID           RiderWalletOverview
+// @ID           WalletOverview
 // @Router       /rider/v1/wallet/overview [GET]
 // @Summary      R9001 钱包概览
-// @Tags         钱包
+// @Tags         Wallet - 钱包
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -32,10 +32,10 @@ func (*wallet) Overview(c echo.Context) (err error) {
 }
 
 // PointLog
-// @ID           RiderWalletPointLog
+// @ID           WalletPointLog
 // @Router       /rider/v1/wallet/pointlog [GET]
 // @Summary      R9002 积分日志
-// @Tags         钱包
+// @Tags         Wallet - 钱包
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
@@ -50,10 +50,10 @@ func (*wallet) PointLog(c echo.Context) (err error) {
 }
 
 // Points
-// @ID           RiderWalletPoints
+// @ID           WalletPoints
 // @Router       /rider/v1/wallet/points [GET]
 // @Summary      R9003 积分详情
-// @Tags         钱包
+// @Tags         Wallet - 钱包
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token header string true "骑手校验token"
@@ -64,10 +64,10 @@ func (*wallet) Points(c echo.Context) (err error) {
 }
 
 // Coupons
-// @ID           RiderWalletCoupons
+// @ID           WalletCoupons
 // @Router       /rider/v1/wallet/coupons [GET]
 // @Summary      R9004 优惠券列表
-// @Tags         钱包
+// @Tags         Wallet - 钱包
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token header string true "骑手校验token"
