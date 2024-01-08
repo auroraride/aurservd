@@ -27,6 +27,7 @@ import (
 	"github.com/auroraride/aurservd/internal/baidu"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/battery"
+	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/ebikebrand"
@@ -37,7 +38,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
-	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribereminder"
 	"github.com/auroraride/aurservd/pkg/cache"
@@ -846,7 +846,7 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
 			// 退租办理人
 			var unsubscribeTransactor string
 			businesses, _ := ent.Database.Business.QueryNotDeleted().Where(business.RiderID(item.ID), business.TypeIn(business.TypeActive, business.TypeUnsubscribe)).WithEmployee().WithStore().Order(ent.Desc(business.FieldCreatedAt)).Limit(2).All(s.ctx)
-			if businesses != nil && len(businesses) > 0 {
+			if len(businesses) > 0 {
 				for _, bus := range businesses {
 					if bus.Type == business.TypeActive { // 激活办理人
 						// 若`employee_id` 和 `cabinet_id`为空，取`creator`

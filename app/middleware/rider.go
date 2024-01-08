@@ -36,30 +36,14 @@ var (
 		"/rider/v1/branch/riding":             true,
 		"/rider/v1/branch/facility/:fid":      true,
 		"/rider/v1/setting/question":          true,
-		"/rider/v2/signin":                    true,
-		"/rider/v2/socket":                    true,
-		"/rider/v2/callback":                  true,
-		"/rider/v2/callback/esign":            true,
-		"/rider/v2/callback/alipay":           true,
-		"/rider/v2/callback/wechatpay":        true,
-		"/rider/v2/callback/wechatpay/refund": true,
-		"/rider/v2/city":                      true,
-		"/rider/v2/branch":                    true,
-		"/rider/v2/branch/riding":             true,
-		"/rider/v2/branch/facility/:fid":      true,
-		"/rider/v2/setting/question":          true,
 	}
 	riderAuthSkipper = map[string]bool{
 		"/rider/v1/profile": true,
 		"/rider/v1/reserve": true,
-		"/rider/v2/profile": true,
-		"/rider/v2/reserve": true,
 	}
 	riderFaceSkipper = map[string]bool{
 		"/rider/v1/profile": true,
 		"/rider/v1/reserve": true,
-		"/rider/v2/profile": true,
-		"/rider/v2/reserve": true,
 	}
 )
 
