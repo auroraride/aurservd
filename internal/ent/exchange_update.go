@@ -103,9 +103,25 @@ func (eu *ExchangeUpdate) SetSubscribeID(u uint64) *ExchangeUpdate {
 	return eu
 }
 
+// SetNillableSubscribeID sets the "subscribe_id" field if the given value is not nil.
+func (eu *ExchangeUpdate) SetNillableSubscribeID(u *uint64) *ExchangeUpdate {
+	if u != nil {
+		eu.SetSubscribeID(*u)
+	}
+	return eu
+}
+
 // SetCityID sets the "city_id" field.
 func (eu *ExchangeUpdate) SetCityID(u uint64) *ExchangeUpdate {
 	eu.mutation.SetCityID(u)
+	return eu
+}
+
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (eu *ExchangeUpdate) SetNillableCityID(u *uint64) *ExchangeUpdate {
+	if u != nil {
+		eu.SetCityID(*u)
+	}
 	return eu
 }
 
@@ -175,6 +191,14 @@ func (eu *ExchangeUpdate) SetRiderID(u uint64) *ExchangeUpdate {
 	return eu
 }
 
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (eu *ExchangeUpdate) SetNillableRiderID(u *uint64) *ExchangeUpdate {
+	if u != nil {
+		eu.SetRiderID(*u)
+	}
+	return eu
+}
+
 // SetEmployeeID sets the "employee_id" field.
 func (eu *ExchangeUpdate) SetEmployeeID(u uint64) *ExchangeUpdate {
 	eu.mutation.SetEmployeeID(u)
@@ -198,6 +222,14 @@ func (eu *ExchangeUpdate) ClearEmployeeID() *ExchangeUpdate {
 // SetUUID sets the "uuid" field.
 func (eu *ExchangeUpdate) SetUUID(s string) *ExchangeUpdate {
 	eu.mutation.SetUUID(s)
+	return eu
+}
+
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (eu *ExchangeUpdate) SetNillableUUID(s *string) *ExchangeUpdate {
+	if s != nil {
+		eu.SetUUID(*s)
+	}
 	return eu
 }
 
@@ -238,6 +270,14 @@ func (eu *ExchangeUpdate) SetNillableSuccess(b *bool) *ExchangeUpdate {
 // SetModel sets the "model" field.
 func (eu *ExchangeUpdate) SetModel(s string) *ExchangeUpdate {
 	eu.mutation.SetModel(s)
+	return eu
+}
+
+// SetNillableModel sets the "model" field if the given value is not nil.
+func (eu *ExchangeUpdate) SetNillableModel(s *string) *ExchangeUpdate {
+	if s != nil {
+		eu.SetModel(*s)
+	}
 	return eu
 }
 
@@ -1042,9 +1082,25 @@ func (euo *ExchangeUpdateOne) SetSubscribeID(u uint64) *ExchangeUpdateOne {
 	return euo
 }
 
+// SetNillableSubscribeID sets the "subscribe_id" field if the given value is not nil.
+func (euo *ExchangeUpdateOne) SetNillableSubscribeID(u *uint64) *ExchangeUpdateOne {
+	if u != nil {
+		euo.SetSubscribeID(*u)
+	}
+	return euo
+}
+
 // SetCityID sets the "city_id" field.
 func (euo *ExchangeUpdateOne) SetCityID(u uint64) *ExchangeUpdateOne {
 	euo.mutation.SetCityID(u)
+	return euo
+}
+
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (euo *ExchangeUpdateOne) SetNillableCityID(u *uint64) *ExchangeUpdateOne {
+	if u != nil {
+		euo.SetCityID(*u)
+	}
 	return euo
 }
 
@@ -1114,6 +1170,14 @@ func (euo *ExchangeUpdateOne) SetRiderID(u uint64) *ExchangeUpdateOne {
 	return euo
 }
 
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (euo *ExchangeUpdateOne) SetNillableRiderID(u *uint64) *ExchangeUpdateOne {
+	if u != nil {
+		euo.SetRiderID(*u)
+	}
+	return euo
+}
+
 // SetEmployeeID sets the "employee_id" field.
 func (euo *ExchangeUpdateOne) SetEmployeeID(u uint64) *ExchangeUpdateOne {
 	euo.mutation.SetEmployeeID(u)
@@ -1137,6 +1201,14 @@ func (euo *ExchangeUpdateOne) ClearEmployeeID() *ExchangeUpdateOne {
 // SetUUID sets the "uuid" field.
 func (euo *ExchangeUpdateOne) SetUUID(s string) *ExchangeUpdateOne {
 	euo.mutation.SetUUID(s)
+	return euo
+}
+
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (euo *ExchangeUpdateOne) SetNillableUUID(s *string) *ExchangeUpdateOne {
+	if s != nil {
+		euo.SetUUID(*s)
+	}
 	return euo
 }
 
@@ -1177,6 +1249,14 @@ func (euo *ExchangeUpdateOne) SetNillableSuccess(b *bool) *ExchangeUpdateOne {
 // SetModel sets the "model" field.
 func (euo *ExchangeUpdateOne) SetModel(s string) *ExchangeUpdateOne {
 	euo.mutation.SetModel(s)
+	return euo
+}
+
+// SetNillableModel sets the "model" field if the given value is not nil.
+func (euo *ExchangeUpdateOne) SetNillableModel(s *string) *ExchangeUpdateOne {
+	if s != nil {
+		euo.SetModel(*s)
+	}
 	return euo
 }
 

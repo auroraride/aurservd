@@ -768,6 +768,7 @@ var (
 		{Name: "station_id", Type: field.TypeUint64, Nullable: true, Comment: "站点ID"},
 		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true, Comment: "电柜ID"},
 		{Name: "battery_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "agent_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// BusinessTable holds the schema information for the "business" table.
 	BusinessTable = &schema.Table{
@@ -835,6 +836,12 @@ var (
 				RefColumns: []*schema.Column{BatteryColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
+			{
+				Symbol:     "business_agent_agent",
+				Columns:    []*schema.Column{BusinessColumns[20]},
+				RefColumns: []*schema.Column{AgentColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
 		},
 		Indexes: []*schema.Index{
 			{
@@ -896,6 +903,11 @@ var (
 				Name:    "business_battery_id",
 				Unique:  false,
 				Columns: []*schema.Column{BusinessColumns[19]},
+			},
+			{
+				Name:    "business_agent_id",
+				Unique:  false,
+				Columns: []*schema.Column{BusinessColumns[20]},
 			},
 			{
 				Name:    "business_type",
@@ -5728,6 +5740,7 @@ func init() {
 	BusinessTable.ForeignKeys[7].RefTable = EnterpriseStationTable
 	BusinessTable.ForeignKeys[8].RefTable = CabinetTable
 	BusinessTable.ForeignKeys[9].RefTable = BatteryTable
+	BusinessTable.ForeignKeys[10].RefTable = AgentTable
 	BusinessTable.Annotation = &entsql.Annotation{
 		Table: "business",
 	}

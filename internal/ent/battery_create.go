@@ -1222,12 +1222,16 @@ func (u *BatteryUpsertOne) IDX(ctx context.Context) uint64 {
 // BatteryCreateBulk is the builder for creating many Battery entities in bulk.
 type BatteryCreateBulk struct {
 	config
+	err      error
 	builders []*BatteryCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the Battery entities in the database.
 func (bcb *BatteryCreateBulk) Save(ctx context.Context) ([]*Battery, error) {
+	if bcb.err != nil {
+		return nil, bcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(bcb.builders))
 	nodes := make([]*Battery, len(bcb.builders))
 	mutators := make([]Mutator, len(bcb.builders))
@@ -1685,6 +1689,9 @@ func (u *BatteryUpsertBulk) ClearOrdinal() *BatteryUpsertBulk {
 
 // Exec executes the query.
 func (u *BatteryUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the BatteryCreateBulk instead", i)

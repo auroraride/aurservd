@@ -108,9 +108,25 @@ func (eu *EnterpriseUpdate) SetCityID(u uint64) *EnterpriseUpdate {
 	return eu
 }
 
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (eu *EnterpriseUpdate) SetNillableCityID(u *uint64) *EnterpriseUpdate {
+	if u != nil {
+		eu.SetCityID(*u)
+	}
+	return eu
+}
+
 // SetName sets the "name" field.
 func (eu *EnterpriseUpdate) SetName(s string) *EnterpriseUpdate {
 	eu.mutation.SetName(s)
+	return eu
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (eu *EnterpriseUpdate) SetNillableName(s *string) *EnterpriseUpdate {
+	if s != nil {
+		eu.SetName(*s)
+	}
 	return eu
 }
 
@@ -141,6 +157,14 @@ func (eu *EnterpriseUpdate) SetStatus(u uint8) *EnterpriseUpdate {
 	return eu
 }
 
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (eu *EnterpriseUpdate) SetNillableStatus(u *uint8) *EnterpriseUpdate {
+	if u != nil {
+		eu.SetStatus(*u)
+	}
+	return eu
+}
+
 // AddStatus adds u to the "status" field.
 func (eu *EnterpriseUpdate) AddStatus(u int8) *EnterpriseUpdate {
 	eu.mutation.AddStatus(u)
@@ -153,9 +177,25 @@ func (eu *EnterpriseUpdate) SetContactName(s string) *EnterpriseUpdate {
 	return eu
 }
 
+// SetNillableContactName sets the "contact_name" field if the given value is not nil.
+func (eu *EnterpriseUpdate) SetNillableContactName(s *string) *EnterpriseUpdate {
+	if s != nil {
+		eu.SetContactName(*s)
+	}
+	return eu
+}
+
 // SetContactPhone sets the "contact_phone" field.
 func (eu *EnterpriseUpdate) SetContactPhone(s string) *EnterpriseUpdate {
 	eu.mutation.SetContactPhone(s)
+	return eu
+}
+
+// SetNillableContactPhone sets the "contact_phone" field if the given value is not nil.
+func (eu *EnterpriseUpdate) SetNillableContactPhone(s *string) *EnterpriseUpdate {
+	if s != nil {
+		eu.SetContactPhone(*s)
+	}
 	return eu
 }
 
@@ -165,9 +205,25 @@ func (eu *EnterpriseUpdate) SetIdcardNumber(s string) *EnterpriseUpdate {
 	return eu
 }
 
+// SetNillableIdcardNumber sets the "idcard_number" field if the given value is not nil.
+func (eu *EnterpriseUpdate) SetNillableIdcardNumber(s *string) *EnterpriseUpdate {
+	if s != nil {
+		eu.SetIdcardNumber(*s)
+	}
+	return eu
+}
+
 // SetAddress sets the "address" field.
 func (eu *EnterpriseUpdate) SetAddress(s string) *EnterpriseUpdate {
 	eu.mutation.SetAddress(s)
+	return eu
+}
+
+// SetNillableAddress sets the "address" field if the given value is not nil.
+func (eu *EnterpriseUpdate) SetNillableAddress(s *string) *EnterpriseUpdate {
+	if s != nil {
+		eu.SetAddress(*s)
+	}
 	return eu
 }
 
@@ -175,6 +231,14 @@ func (eu *EnterpriseUpdate) SetAddress(s string) *EnterpriseUpdate {
 func (eu *EnterpriseUpdate) SetPayment(u uint8) *EnterpriseUpdate {
 	eu.mutation.ResetPayment()
 	eu.mutation.SetPayment(u)
+	return eu
+}
+
+// SetNillablePayment sets the "payment" field if the given value is not nil.
+func (eu *EnterpriseUpdate) SetNillablePayment(u *uint8) *EnterpriseUpdate {
+	if u != nil {
+		eu.SetPayment(*u)
+	}
 	return eu
 }
 
@@ -1759,9 +1823,25 @@ func (euo *EnterpriseUpdateOne) SetCityID(u uint64) *EnterpriseUpdateOne {
 	return euo
 }
 
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (euo *EnterpriseUpdateOne) SetNillableCityID(u *uint64) *EnterpriseUpdateOne {
+	if u != nil {
+		euo.SetCityID(*u)
+	}
+	return euo
+}
+
 // SetName sets the "name" field.
 func (euo *EnterpriseUpdateOne) SetName(s string) *EnterpriseUpdateOne {
 	euo.mutation.SetName(s)
+	return euo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (euo *EnterpriseUpdateOne) SetNillableName(s *string) *EnterpriseUpdateOne {
+	if s != nil {
+		euo.SetName(*s)
+	}
 	return euo
 }
 
@@ -1792,6 +1872,14 @@ func (euo *EnterpriseUpdateOne) SetStatus(u uint8) *EnterpriseUpdateOne {
 	return euo
 }
 
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (euo *EnterpriseUpdateOne) SetNillableStatus(u *uint8) *EnterpriseUpdateOne {
+	if u != nil {
+		euo.SetStatus(*u)
+	}
+	return euo
+}
+
 // AddStatus adds u to the "status" field.
 func (euo *EnterpriseUpdateOne) AddStatus(u int8) *EnterpriseUpdateOne {
 	euo.mutation.AddStatus(u)
@@ -1804,9 +1892,25 @@ func (euo *EnterpriseUpdateOne) SetContactName(s string) *EnterpriseUpdateOne {
 	return euo
 }
 
+// SetNillableContactName sets the "contact_name" field if the given value is not nil.
+func (euo *EnterpriseUpdateOne) SetNillableContactName(s *string) *EnterpriseUpdateOne {
+	if s != nil {
+		euo.SetContactName(*s)
+	}
+	return euo
+}
+
 // SetContactPhone sets the "contact_phone" field.
 func (euo *EnterpriseUpdateOne) SetContactPhone(s string) *EnterpriseUpdateOne {
 	euo.mutation.SetContactPhone(s)
+	return euo
+}
+
+// SetNillableContactPhone sets the "contact_phone" field if the given value is not nil.
+func (euo *EnterpriseUpdateOne) SetNillableContactPhone(s *string) *EnterpriseUpdateOne {
+	if s != nil {
+		euo.SetContactPhone(*s)
+	}
 	return euo
 }
 
@@ -1816,9 +1920,25 @@ func (euo *EnterpriseUpdateOne) SetIdcardNumber(s string) *EnterpriseUpdateOne {
 	return euo
 }
 
+// SetNillableIdcardNumber sets the "idcard_number" field if the given value is not nil.
+func (euo *EnterpriseUpdateOne) SetNillableIdcardNumber(s *string) *EnterpriseUpdateOne {
+	if s != nil {
+		euo.SetIdcardNumber(*s)
+	}
+	return euo
+}
+
 // SetAddress sets the "address" field.
 func (euo *EnterpriseUpdateOne) SetAddress(s string) *EnterpriseUpdateOne {
 	euo.mutation.SetAddress(s)
+	return euo
+}
+
+// SetNillableAddress sets the "address" field if the given value is not nil.
+func (euo *EnterpriseUpdateOne) SetNillableAddress(s *string) *EnterpriseUpdateOne {
+	if s != nil {
+		euo.SetAddress(*s)
+	}
 	return euo
 }
 
@@ -1826,6 +1946,14 @@ func (euo *EnterpriseUpdateOne) SetAddress(s string) *EnterpriseUpdateOne {
 func (euo *EnterpriseUpdateOne) SetPayment(u uint8) *EnterpriseUpdateOne {
 	euo.mutation.ResetPayment()
 	euo.mutation.SetPayment(u)
+	return euo
+}
+
+// SetNillablePayment sets the "payment" field if the given value is not nil.
+func (euo *EnterpriseUpdateOne) SetNillablePayment(u *uint8) *EnterpriseUpdateOne {
+	if u != nil {
+		euo.SetPayment(*u)
+	}
 	return euo
 }
 

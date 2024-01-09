@@ -94,10 +94,26 @@ func (pau *PromotionAchievementUpdate) SetName(s string) *PromotionAchievementUp
 	return pau
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (pau *PromotionAchievementUpdate) SetNillableName(s *string) *PromotionAchievementUpdate {
+	if s != nil {
+		pau.SetName(*s)
+	}
+	return pau
+}
+
 // SetType sets the "type" field.
 func (pau *PromotionAchievementUpdate) SetType(u uint8) *PromotionAchievementUpdate {
 	pau.mutation.ResetType()
 	pau.mutation.SetType(u)
+	return pau
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (pau *PromotionAchievementUpdate) SetNillableType(u *uint8) *PromotionAchievementUpdate {
+	if u != nil {
+		pau.SetType(*u)
+	}
 	return pau
 }
 
@@ -113,10 +129,26 @@ func (pau *PromotionAchievementUpdate) SetIcon(s string) *PromotionAchievementUp
 	return pau
 }
 
+// SetNillableIcon sets the "icon" field if the given value is not nil.
+func (pau *PromotionAchievementUpdate) SetNillableIcon(s *string) *PromotionAchievementUpdate {
+	if s != nil {
+		pau.SetIcon(*s)
+	}
+	return pau
+}
+
 // SetCondition sets the "condition" field.
 func (pau *PromotionAchievementUpdate) SetCondition(u uint64) *PromotionAchievementUpdate {
 	pau.mutation.ResetCondition()
 	pau.mutation.SetCondition(u)
+	return pau
+}
+
+// SetNillableCondition sets the "condition" field if the given value is not nil.
+func (pau *PromotionAchievementUpdate) SetNillableCondition(u *uint64) *PromotionAchievementUpdate {
+	if u != nil {
+		pau.SetCondition(*u)
+	}
 	return pau
 }
 
@@ -316,10 +348,26 @@ func (pauo *PromotionAchievementUpdateOne) SetName(s string) *PromotionAchieveme
 	return pauo
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (pauo *PromotionAchievementUpdateOne) SetNillableName(s *string) *PromotionAchievementUpdateOne {
+	if s != nil {
+		pauo.SetName(*s)
+	}
+	return pauo
+}
+
 // SetType sets the "type" field.
 func (pauo *PromotionAchievementUpdateOne) SetType(u uint8) *PromotionAchievementUpdateOne {
 	pauo.mutation.ResetType()
 	pauo.mutation.SetType(u)
+	return pauo
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (pauo *PromotionAchievementUpdateOne) SetNillableType(u *uint8) *PromotionAchievementUpdateOne {
+	if u != nil {
+		pauo.SetType(*u)
+	}
 	return pauo
 }
 
@@ -335,10 +383,26 @@ func (pauo *PromotionAchievementUpdateOne) SetIcon(s string) *PromotionAchieveme
 	return pauo
 }
 
+// SetNillableIcon sets the "icon" field if the given value is not nil.
+func (pauo *PromotionAchievementUpdateOne) SetNillableIcon(s *string) *PromotionAchievementUpdateOne {
+	if s != nil {
+		pauo.SetIcon(*s)
+	}
+	return pauo
+}
+
 // SetCondition sets the "condition" field.
 func (pauo *PromotionAchievementUpdateOne) SetCondition(u uint64) *PromotionAchievementUpdateOne {
 	pauo.mutation.ResetCondition()
 	pauo.mutation.SetCondition(u)
+	return pauo
+}
+
+// SetNillableCondition sets the "condition" field if the given value is not nil.
+func (pauo *PromotionAchievementUpdateOne) SetNillableCondition(u *uint64) *PromotionAchievementUpdateOne {
+	if u != nil {
+		pauo.SetCondition(*u)
+	}
 	return pauo
 }
 

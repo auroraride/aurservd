@@ -98,15 +98,39 @@ func (ru *ReserveUpdate) SetCabinetID(u uint64) *ReserveUpdate {
 	return ru
 }
 
+// SetNillableCabinetID sets the "cabinet_id" field if the given value is not nil.
+func (ru *ReserveUpdate) SetNillableCabinetID(u *uint64) *ReserveUpdate {
+	if u != nil {
+		ru.SetCabinetID(*u)
+	}
+	return ru
+}
+
 // SetRiderID sets the "rider_id" field.
 func (ru *ReserveUpdate) SetRiderID(u uint64) *ReserveUpdate {
 	ru.mutation.SetRiderID(u)
 	return ru
 }
 
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (ru *ReserveUpdate) SetNillableRiderID(u *uint64) *ReserveUpdate {
+	if u != nil {
+		ru.SetRiderID(*u)
+	}
+	return ru
+}
+
 // SetCityID sets the "city_id" field.
 func (ru *ReserveUpdate) SetCityID(u uint64) *ReserveUpdate {
 	ru.mutation.SetCityID(u)
+	return ru
+}
+
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (ru *ReserveUpdate) SetNillableCityID(u *uint64) *ReserveUpdate {
+	if u != nil {
+		ru.SetCityID(*u)
+	}
 	return ru
 }
 
@@ -154,6 +178,14 @@ func (ru *ReserveUpdate) AddStatus(u int8) *ReserveUpdate {
 // SetType sets the "type" field.
 func (ru *ReserveUpdate) SetType(s string) *ReserveUpdate {
 	ru.mutation.SetType(s)
+	return ru
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (ru *ReserveUpdate) SetNillableType(s *string) *ReserveUpdate {
+	if s != nil {
+		ru.SetType(*s)
+	}
 	return ru
 }
 
@@ -515,15 +547,39 @@ func (ruo *ReserveUpdateOne) SetCabinetID(u uint64) *ReserveUpdateOne {
 	return ruo
 }
 
+// SetNillableCabinetID sets the "cabinet_id" field if the given value is not nil.
+func (ruo *ReserveUpdateOne) SetNillableCabinetID(u *uint64) *ReserveUpdateOne {
+	if u != nil {
+		ruo.SetCabinetID(*u)
+	}
+	return ruo
+}
+
 // SetRiderID sets the "rider_id" field.
 func (ruo *ReserveUpdateOne) SetRiderID(u uint64) *ReserveUpdateOne {
 	ruo.mutation.SetRiderID(u)
 	return ruo
 }
 
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (ruo *ReserveUpdateOne) SetNillableRiderID(u *uint64) *ReserveUpdateOne {
+	if u != nil {
+		ruo.SetRiderID(*u)
+	}
+	return ruo
+}
+
 // SetCityID sets the "city_id" field.
 func (ruo *ReserveUpdateOne) SetCityID(u uint64) *ReserveUpdateOne {
 	ruo.mutation.SetCityID(u)
+	return ruo
+}
+
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (ruo *ReserveUpdateOne) SetNillableCityID(u *uint64) *ReserveUpdateOne {
+	if u != nil {
+		ruo.SetCityID(*u)
+	}
 	return ruo
 }
 
@@ -571,6 +627,14 @@ func (ruo *ReserveUpdateOne) AddStatus(u int8) *ReserveUpdateOne {
 // SetType sets the "type" field.
 func (ruo *ReserveUpdateOne) SetType(s string) *ReserveUpdateOne {
 	ruo.mutation.SetType(s)
+	return ruo
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (ruo *ReserveUpdateOne) SetNillableType(s *string) *ReserveUpdateOne {
+	if s != nil {
+		ruo.SetType(*s)
+	}
 	return ruo
 }
 

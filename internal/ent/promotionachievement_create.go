@@ -665,12 +665,16 @@ func (u *PromotionAchievementUpsertOne) IDX(ctx context.Context) uint64 {
 // PromotionAchievementCreateBulk is the builder for creating many PromotionAchievement entities in bulk.
 type PromotionAchievementCreateBulk struct {
 	config
+	err      error
 	builders []*PromotionAchievementCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the PromotionAchievement entities in the database.
 func (pacb *PromotionAchievementCreateBulk) Save(ctx context.Context) ([]*PromotionAchievement, error) {
+	if pacb.err != nil {
+		return nil, pacb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(pacb.builders))
 	nodes := make([]*PromotionAchievement, len(pacb.builders))
 	mutators := make([]Mutator, len(pacb.builders))
@@ -988,6 +992,9 @@ func (u *PromotionAchievementUpsertBulk) UpdateCondition() *PromotionAchievement
 
 // Exec executes the query.
 func (u *PromotionAchievementUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the PromotionAchievementCreateBulk instead", i)

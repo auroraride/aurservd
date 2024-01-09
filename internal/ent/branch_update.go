@@ -100,9 +100,25 @@ func (bu *BranchUpdate) SetCityID(u uint64) *BranchUpdate {
 	return bu
 }
 
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (bu *BranchUpdate) SetNillableCityID(u *uint64) *BranchUpdate {
+	if u != nil {
+		bu.SetCityID(*u)
+	}
+	return bu
+}
+
 // SetName sets the "name" field.
 func (bu *BranchUpdate) SetName(s string) *BranchUpdate {
 	bu.mutation.SetName(s)
+	return bu
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (bu *BranchUpdate) SetNillableName(s *string) *BranchUpdate {
+	if s != nil {
+		bu.SetName(*s)
+	}
 	return bu
 }
 
@@ -110,6 +126,14 @@ func (bu *BranchUpdate) SetName(s string) *BranchUpdate {
 func (bu *BranchUpdate) SetLng(f float64) *BranchUpdate {
 	bu.mutation.ResetLng()
 	bu.mutation.SetLng(f)
+	return bu
+}
+
+// SetNillableLng sets the "lng" field if the given value is not nil.
+func (bu *BranchUpdate) SetNillableLng(f *float64) *BranchUpdate {
+	if f != nil {
+		bu.SetLng(*f)
+	}
 	return bu
 }
 
@@ -126,6 +150,14 @@ func (bu *BranchUpdate) SetLat(f float64) *BranchUpdate {
 	return bu
 }
 
+// SetNillableLat sets the "lat" field if the given value is not nil.
+func (bu *BranchUpdate) SetNillableLat(f *float64) *BranchUpdate {
+	if f != nil {
+		bu.SetLat(*f)
+	}
+	return bu
+}
+
 // AddLat adds f to the "lat" field.
 func (bu *BranchUpdate) AddLat(f float64) *BranchUpdate {
 	bu.mutation.AddLat(f)
@@ -135,6 +167,14 @@ func (bu *BranchUpdate) AddLat(f float64) *BranchUpdate {
 // SetAddress sets the "address" field.
 func (bu *BranchUpdate) SetAddress(s string) *BranchUpdate {
 	bu.mutation.SetAddress(s)
+	return bu
+}
+
+// SetNillableAddress sets the "address" field if the given value is not nil.
+func (bu *BranchUpdate) SetNillableAddress(s *string) *BranchUpdate {
+	if s != nil {
+		bu.SetAddress(*s)
+	}
 	return bu
 }
 
@@ -732,9 +772,25 @@ func (buo *BranchUpdateOne) SetCityID(u uint64) *BranchUpdateOne {
 	return buo
 }
 
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (buo *BranchUpdateOne) SetNillableCityID(u *uint64) *BranchUpdateOne {
+	if u != nil {
+		buo.SetCityID(*u)
+	}
+	return buo
+}
+
 // SetName sets the "name" field.
 func (buo *BranchUpdateOne) SetName(s string) *BranchUpdateOne {
 	buo.mutation.SetName(s)
+	return buo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (buo *BranchUpdateOne) SetNillableName(s *string) *BranchUpdateOne {
+	if s != nil {
+		buo.SetName(*s)
+	}
 	return buo
 }
 
@@ -742,6 +798,14 @@ func (buo *BranchUpdateOne) SetName(s string) *BranchUpdateOne {
 func (buo *BranchUpdateOne) SetLng(f float64) *BranchUpdateOne {
 	buo.mutation.ResetLng()
 	buo.mutation.SetLng(f)
+	return buo
+}
+
+// SetNillableLng sets the "lng" field if the given value is not nil.
+func (buo *BranchUpdateOne) SetNillableLng(f *float64) *BranchUpdateOne {
+	if f != nil {
+		buo.SetLng(*f)
+	}
 	return buo
 }
 
@@ -758,6 +822,14 @@ func (buo *BranchUpdateOne) SetLat(f float64) *BranchUpdateOne {
 	return buo
 }
 
+// SetNillableLat sets the "lat" field if the given value is not nil.
+func (buo *BranchUpdateOne) SetNillableLat(f *float64) *BranchUpdateOne {
+	if f != nil {
+		buo.SetLat(*f)
+	}
+	return buo
+}
+
 // AddLat adds f to the "lat" field.
 func (buo *BranchUpdateOne) AddLat(f float64) *BranchUpdateOne {
 	buo.mutation.AddLat(f)
@@ -767,6 +839,14 @@ func (buo *BranchUpdateOne) AddLat(f float64) *BranchUpdateOne {
 // SetAddress sets the "address" field.
 func (buo *BranchUpdateOne) SetAddress(s string) *BranchUpdateOne {
 	buo.mutation.SetAddress(s)
+	return buo
+}
+
+// SetNillableAddress sets the "address" field if the given value is not nil.
+func (buo *BranchUpdateOne) SetNillableAddress(s *string) *BranchUpdateOne {
+	if s != nil {
+		buo.SetAddress(*s)
+	}
 	return buo
 }
 

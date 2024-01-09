@@ -721,12 +721,16 @@ func (u *CouponAssemblyUpsertOne) IDX(ctx context.Context) uint64 {
 // CouponAssemblyCreateBulk is the builder for creating many CouponAssembly entities in bulk.
 type CouponAssemblyCreateBulk struct {
 	config
+	err      error
 	builders []*CouponAssemblyCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the CouponAssembly entities in the database.
 func (cacb *CouponAssemblyCreateBulk) Save(ctx context.Context) ([]*CouponAssembly, error) {
+	if cacb.err != nil {
+		return nil, cacb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(cacb.builders))
 	nodes := make([]*CouponAssembly, len(cacb.builders))
 	mutators := make([]Mutator, len(cacb.builders))
@@ -1058,6 +1062,9 @@ func (u *CouponAssemblyUpsertBulk) UpdateMeta() *CouponAssemblyUpsertBulk {
 
 // Exec executes the query.
 func (u *CouponAssemblyUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the CouponAssemblyCreateBulk instead", i)

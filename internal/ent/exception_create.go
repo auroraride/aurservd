@@ -987,12 +987,16 @@ func (u *ExceptionUpsertOne) IDX(ctx context.Context) uint64 {
 // ExceptionCreateBulk is the builder for creating many Exception entities in bulk.
 type ExceptionCreateBulk struct {
 	config
+	err      error
 	builders []*ExceptionCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the Exception entities in the database.
 func (ecb *ExceptionCreateBulk) Save(ctx context.Context) ([]*Exception, error) {
+	if ecb.err != nil {
+		return nil, ecb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ecb.builders))
 	nodes := make([]*Exception, len(ecb.builders))
 	mutators := make([]Mutator, len(ecb.builders))
@@ -1397,6 +1401,9 @@ func (u *ExceptionUpsertBulk) ClearAttachments() *ExceptionUpsertBulk {
 
 // Exec executes the query.
 func (u *ExceptionUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the ExceptionCreateBulk instead", i)

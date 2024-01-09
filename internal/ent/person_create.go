@@ -1248,12 +1248,16 @@ func (u *PersonUpsertOne) IDX(ctx context.Context) uint64 {
 // PersonCreateBulk is the builder for creating many Person entities in bulk.
 type PersonCreateBulk struct {
 	config
+	err      error
 	builders []*PersonCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the Person entities in the database.
 func (pcb *PersonCreateBulk) Save(ctx context.Context) ([]*Person, error) {
+	if pcb.err != nil {
+		return nil, pcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(pcb.builders))
 	nodes := make([]*Person, len(pcb.builders))
 	mutators := make([]Mutator, len(pcb.builders))
@@ -1760,6 +1764,9 @@ func (u *PersonUpsertBulk) ClearBaiduLogID() *PersonUpsertBulk {
 
 // Exec executes the query.
 func (u *PersonUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the PersonCreateBulk instead", i)

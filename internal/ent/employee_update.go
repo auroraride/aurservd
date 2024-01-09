@@ -102,6 +102,14 @@ func (eu *EmployeeUpdate) SetCityID(u uint64) *EmployeeUpdate {
 	return eu
 }
 
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (eu *EmployeeUpdate) SetNillableCityID(u *uint64) *EmployeeUpdate {
+	if u != nil {
+		eu.SetCityID(*u)
+	}
+	return eu
+}
+
 // SetSn sets the "sn" field.
 func (eu *EmployeeUpdate) SetSn(u uuid.UUID) *EmployeeUpdate {
 	eu.mutation.SetSn(u)
@@ -128,9 +136,25 @@ func (eu *EmployeeUpdate) SetName(s string) *EmployeeUpdate {
 	return eu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (eu *EmployeeUpdate) SetNillableName(s *string) *EmployeeUpdate {
+	if s != nil {
+		eu.SetName(*s)
+	}
+	return eu
+}
+
 // SetPhone sets the "phone" field.
 func (eu *EmployeeUpdate) SetPhone(s string) *EmployeeUpdate {
 	eu.mutation.SetPhone(s)
+	return eu
+}
+
+// SetNillablePhone sets the "phone" field if the given value is not nil.
+func (eu *EmployeeUpdate) SetNillablePhone(s *string) *EmployeeUpdate {
+	if s != nil {
+		eu.SetPhone(*s)
+	}
 	return eu
 }
 
@@ -845,6 +869,14 @@ func (euo *EmployeeUpdateOne) SetCityID(u uint64) *EmployeeUpdateOne {
 	return euo
 }
 
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (euo *EmployeeUpdateOne) SetNillableCityID(u *uint64) *EmployeeUpdateOne {
+	if u != nil {
+		euo.SetCityID(*u)
+	}
+	return euo
+}
+
 // SetSn sets the "sn" field.
 func (euo *EmployeeUpdateOne) SetSn(u uuid.UUID) *EmployeeUpdateOne {
 	euo.mutation.SetSn(u)
@@ -871,9 +903,25 @@ func (euo *EmployeeUpdateOne) SetName(s string) *EmployeeUpdateOne {
 	return euo
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (euo *EmployeeUpdateOne) SetNillableName(s *string) *EmployeeUpdateOne {
+	if s != nil {
+		euo.SetName(*s)
+	}
+	return euo
+}
+
 // SetPhone sets the "phone" field.
 func (euo *EmployeeUpdateOne) SetPhone(s string) *EmployeeUpdateOne {
 	euo.mutation.SetPhone(s)
+	return euo
+}
+
+// SetNillablePhone sets the "phone" field if the given value is not nil.
+func (euo *EmployeeUpdateOne) SetNillablePhone(s *string) *EmployeeUpdateOne {
+	if s != nil {
+		euo.SetPhone(*s)
+	}
 	return euo
 }
 

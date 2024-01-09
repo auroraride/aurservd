@@ -115,6 +115,14 @@ func (ppu *PromotionPrivilegeUpdate) SetName(s string) *PromotionPrivilegeUpdate
 	return ppu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (ppu *PromotionPrivilegeUpdate) SetNillableName(s *string) *PromotionPrivilegeUpdate {
+	if s != nil {
+		ppu.SetName(*s)
+	}
+	return ppu
+}
+
 // SetDescription sets the "description" field.
 func (ppu *PromotionPrivilegeUpdate) SetDescription(s string) *PromotionPrivilegeUpdate {
 	ppu.mutation.SetDescription(s)
@@ -376,6 +384,14 @@ func (ppuo *PromotionPrivilegeUpdateOne) AddType(u int8) *PromotionPrivilegeUpda
 // SetName sets the "name" field.
 func (ppuo *PromotionPrivilegeUpdateOne) SetName(s string) *PromotionPrivilegeUpdateOne {
 	ppuo.mutation.SetName(s)
+	return ppuo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (ppuo *PromotionPrivilegeUpdateOne) SetNillableName(s *string) *PromotionPrivilegeUpdateOne {
+	if s != nil {
+		ppuo.SetName(*s)
+	}
 	return ppuo
 }
 

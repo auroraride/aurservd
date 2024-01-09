@@ -954,12 +954,16 @@ func (u *CabinetFaultUpsertOne) IDX(ctx context.Context) uint64 {
 // CabinetFaultCreateBulk is the builder for creating many CabinetFault entities in bulk.
 type CabinetFaultCreateBulk struct {
 	config
+	err      error
 	builders []*CabinetFaultCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the CabinetFault entities in the database.
 func (cfcb *CabinetFaultCreateBulk) Save(ctx context.Context) ([]*CabinetFault, error) {
+	if cfcb.err != nil {
+		return nil, cfcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(cfcb.builders))
 	nodes := make([]*CabinetFault, len(cfcb.builders))
 	mutators := make([]Mutator, len(cfcb.builders))
@@ -1347,6 +1351,9 @@ func (u *CabinetFaultUpsertBulk) ClearDescription() *CabinetFaultUpsertBulk {
 
 // Exec executes the query.
 func (u *CabinetFaultUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the CabinetFaultCreateBulk instead", i)

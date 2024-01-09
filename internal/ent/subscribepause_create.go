@@ -1560,12 +1560,16 @@ func (u *SubscribePauseUpsertOne) IDX(ctx context.Context) uint64 {
 // SubscribePauseCreateBulk is the builder for creating many SubscribePause entities in bulk.
 type SubscribePauseCreateBulk struct {
 	config
+	err      error
 	builders []*SubscribePauseCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the SubscribePause entities in the database.
 func (spcb *SubscribePauseCreateBulk) Save(ctx context.Context) ([]*SubscribePause, error) {
+	if spcb.err != nil {
+		return nil, spcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(spcb.builders))
 	nodes := make([]*SubscribePause, len(spcb.builders))
 	mutators := make([]Mutator, len(spcb.builders))
@@ -2128,6 +2132,9 @@ func (u *SubscribePauseUpsertBulk) UpdateSuspendDays() *SubscribePauseUpsertBulk
 
 // Exec executes the query.
 func (u *SubscribePauseUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the SubscribePauseCreateBulk instead", i)

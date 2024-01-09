@@ -2260,12 +2260,16 @@ func (u *AssistanceUpsertOne) IDX(ctx context.Context) uint64 {
 // AssistanceCreateBulk is the builder for creating many Assistance entities in bulk.
 type AssistanceCreateBulk struct {
 	config
+	err      error
 	builders []*AssistanceCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the Assistance entities in the database.
 func (acb *AssistanceCreateBulk) Save(ctx context.Context) ([]*Assistance, error) {
+	if acb.err != nil {
+		return nil, acb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(acb.builders))
 	nodes := make([]*Assistance, len(acb.builders))
 	mutators := make([]Mutator, len(acb.builders))
@@ -3129,6 +3133,9 @@ func (u *AssistanceUpsertBulk) ClearNaviPolylines() *AssistanceUpsertBulk {
 
 // Exec executes the query.
 func (u *AssistanceUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the AssistanceCreateBulk instead", i)

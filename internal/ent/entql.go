@@ -375,6 +375,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			business.FieldStationID:    {Type: field.TypeUint64, Column: business.FieldStationID},
 			business.FieldCabinetID:    {Type: field.TypeUint64, Column: business.FieldCabinetID},
 			business.FieldBatteryID:    {Type: field.TypeUint64, Column: business.FieldBatteryID},
+			business.FieldAgentID:      {Type: field.TypeUint64, Column: business.FieldAgentID},
 			business.FieldType:         {Type: field.TypeEnum, Column: business.FieldType},
 			business.FieldBinInfo:      {Type: field.TypeJSON, Column: business.FieldBinInfo},
 			business.FieldStockSn:      {Type: field.TypeString, Column: business.FieldStockSn},
@@ -2615,6 +2616,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Business",
 		"Battery",
+	)
+	graph.MustAddE(
+		"agent",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   business.AgentTable,
+			Columns: []string{business.AgentColumn},
+			Bidi:    false,
+		},
+		"Business",
+		"Agent",
 	)
 	graph.MustAddE(
 		"city",
@@ -7357,6 +7370,11 @@ func (f *BusinessFilter) WhereBatteryID(p entql.Uint64P) {
 	f.Where(p.Field(business.FieldBatteryID))
 }
 
+// WhereAgentID applies the entql uint64 predicate on the agent_id field.
+func (f *BusinessFilter) WhereAgentID(p entql.Uint64P) {
+	f.Where(p.Field(business.FieldAgentID))
+}
+
 // WhereType applies the entql string predicate on the type field.
 func (f *BusinessFilter) WhereType(p entql.StringP) {
 	f.Where(p.Field(business.FieldType))
@@ -7506,6 +7524,20 @@ func (f *BusinessFilter) WhereHasBattery() {
 // WhereHasBatteryWith applies a predicate to check if query has an edge battery with a given conditions (other predicates).
 func (f *BusinessFilter) WhereHasBatteryWith(preds ...predicate.Battery) {
 	f.Where(entql.HasEdgeWith("battery", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasAgent applies a predicate to check if query has an edge agent.
+func (f *BusinessFilter) WhereHasAgent() {
+	f.Where(entql.HasEdge("agent"))
+}
+
+// WhereHasAgentWith applies a predicate to check if query has an edge agent with a given conditions (other predicates).
+func (f *BusinessFilter) WhereHasAgentWith(preds ...predicate.Agent) {
+	f.Where(entql.HasEdgeWith("agent", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

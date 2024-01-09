@@ -605,12 +605,16 @@ func (u *RiderFollowUpUpsertOne) IDX(ctx context.Context) uint64 {
 // RiderFollowUpCreateBulk is the builder for creating many RiderFollowUp entities in bulk.
 type RiderFollowUpCreateBulk struct {
 	config
+	err      error
 	builders []*RiderFollowUpCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the RiderFollowUp entities in the database.
 func (rfucb *RiderFollowUpCreateBulk) Save(ctx context.Context) ([]*RiderFollowUp, error) {
+	if rfucb.err != nil {
+		return nil, rfucb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(rfucb.builders))
 	nodes := make([]*RiderFollowUp, len(rfucb.builders))
 	mutators := make([]Mutator, len(rfucb.builders))
@@ -886,6 +890,9 @@ func (u *RiderFollowUpUpsertBulk) UpdateRiderID() *RiderFollowUpUpsertBulk {
 
 // Exec executes the query.
 func (u *RiderFollowUpUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the RiderFollowUpCreateBulk instead", i)

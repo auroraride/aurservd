@@ -714,12 +714,16 @@ func (u *PromotionReferralsUpsertOne) IDX(ctx context.Context) uint64 {
 // PromotionReferralsCreateBulk is the builder for creating many PromotionReferrals entities in bulk.
 type PromotionReferralsCreateBulk struct {
 	config
+	err      error
 	builders []*PromotionReferralsCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the PromotionReferrals entities in the database.
 func (prcb *PromotionReferralsCreateBulk) Save(ctx context.Context) ([]*PromotionReferrals, error) {
+	if prcb.err != nil {
+		return nil, prcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(prcb.builders))
 	nodes := make([]*PromotionReferrals, len(prcb.builders))
 	mutators := make([]Mutator, len(prcb.builders))
@@ -1023,6 +1027,9 @@ func (u *PromotionReferralsUpsertBulk) UpdateReferredMemberID() *PromotionReferr
 
 // Exec executes the query.
 func (u *PromotionReferralsUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the PromotionReferralsCreateBulk instead", i)

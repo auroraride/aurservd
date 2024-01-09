@@ -1453,12 +1453,16 @@ func (u *PlanUpsertOne) IDX(ctx context.Context) uint64 {
 // PlanCreateBulk is the builder for creating many Plan entities in bulk.
 type PlanCreateBulk struct {
 	config
+	err      error
 	builders []*PlanCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the Plan entities in the database.
 func (pcb *PlanCreateBulk) Save(ctx context.Context) ([]*Plan, error) {
+	if pcb.err != nil {
+		return nil, pcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(pcb.builders))
 	nodes := make([]*Plan, len(pcb.builders))
 	mutators := make([]Mutator, len(pcb.builders))
@@ -2014,6 +2018,9 @@ func (u *PlanUpsertBulk) UpdateIntelligent() *PlanUpsertBulk {
 
 // Exec executes the query.
 func (u *PlanUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the PlanCreateBulk instead", i)

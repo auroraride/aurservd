@@ -59,9 +59,25 @@ func (au *AllocateUpdate) SetRiderID(u uint64) *AllocateUpdate {
 	return au
 }
 
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (au *AllocateUpdate) SetNillableRiderID(u *uint64) *AllocateUpdate {
+	if u != nil {
+		au.SetRiderID(*u)
+	}
+	return au
+}
+
 // SetSubscribeID sets the "subscribe_id" field.
 func (au *AllocateUpdate) SetSubscribeID(u uint64) *AllocateUpdate {
 	au.mutation.SetSubscribeID(u)
+	return au
+}
+
+// SetNillableSubscribeID sets the "subscribe_id" field if the given value is not nil.
+func (au *AllocateUpdate) SetNillableSubscribeID(u *uint64) *AllocateUpdate {
+	if u != nil {
+		au.SetSubscribeID(*u)
+	}
 	return au
 }
 
@@ -243,10 +259,26 @@ func (au *AllocateUpdate) SetType(a allocate.Type) *AllocateUpdate {
 	return au
 }
 
+// SetNillableType sets the "type" field if the given value is not nil.
+func (au *AllocateUpdate) SetNillableType(a *allocate.Type) *AllocateUpdate {
+	if a != nil {
+		au.SetType(*a)
+	}
+	return au
+}
+
 // SetStatus sets the "status" field.
 func (au *AllocateUpdate) SetStatus(u uint8) *AllocateUpdate {
 	au.mutation.ResetStatus()
 	au.mutation.SetStatus(u)
+	return au
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (au *AllocateUpdate) SetNillableStatus(u *uint8) *AllocateUpdate {
+	if u != nil {
+		au.SetStatus(*u)
+	}
 	return au
 }
 
@@ -262,9 +294,25 @@ func (au *AllocateUpdate) SetTime(t time.Time) *AllocateUpdate {
 	return au
 }
 
+// SetNillableTime sets the "time" field if the given value is not nil.
+func (au *AllocateUpdate) SetNillableTime(t *time.Time) *AllocateUpdate {
+	if t != nil {
+		au.SetTime(*t)
+	}
+	return au
+}
+
 // SetModel sets the "model" field.
 func (au *AllocateUpdate) SetModel(s string) *AllocateUpdate {
 	au.mutation.SetModel(s)
+	return au
+}
+
+// SetNillableModel sets the "model" field if the given value is not nil.
+func (au *AllocateUpdate) SetNillableModel(s *string) *AllocateUpdate {
+	if s != nil {
+		au.SetModel(*s)
+	}
 	return au
 }
 
@@ -902,9 +950,25 @@ func (auo *AllocateUpdateOne) SetRiderID(u uint64) *AllocateUpdateOne {
 	return auo
 }
 
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (auo *AllocateUpdateOne) SetNillableRiderID(u *uint64) *AllocateUpdateOne {
+	if u != nil {
+		auo.SetRiderID(*u)
+	}
+	return auo
+}
+
 // SetSubscribeID sets the "subscribe_id" field.
 func (auo *AllocateUpdateOne) SetSubscribeID(u uint64) *AllocateUpdateOne {
 	auo.mutation.SetSubscribeID(u)
+	return auo
+}
+
+// SetNillableSubscribeID sets the "subscribe_id" field if the given value is not nil.
+func (auo *AllocateUpdateOne) SetNillableSubscribeID(u *uint64) *AllocateUpdateOne {
+	if u != nil {
+		auo.SetSubscribeID(*u)
+	}
 	return auo
 }
 
@@ -1086,10 +1150,26 @@ func (auo *AllocateUpdateOne) SetType(a allocate.Type) *AllocateUpdateOne {
 	return auo
 }
 
+// SetNillableType sets the "type" field if the given value is not nil.
+func (auo *AllocateUpdateOne) SetNillableType(a *allocate.Type) *AllocateUpdateOne {
+	if a != nil {
+		auo.SetType(*a)
+	}
+	return auo
+}
+
 // SetStatus sets the "status" field.
 func (auo *AllocateUpdateOne) SetStatus(u uint8) *AllocateUpdateOne {
 	auo.mutation.ResetStatus()
 	auo.mutation.SetStatus(u)
+	return auo
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (auo *AllocateUpdateOne) SetNillableStatus(u *uint8) *AllocateUpdateOne {
+	if u != nil {
+		auo.SetStatus(*u)
+	}
 	return auo
 }
 
@@ -1105,9 +1185,25 @@ func (auo *AllocateUpdateOne) SetTime(t time.Time) *AllocateUpdateOne {
 	return auo
 }
 
+// SetNillableTime sets the "time" field if the given value is not nil.
+func (auo *AllocateUpdateOne) SetNillableTime(t *time.Time) *AllocateUpdateOne {
+	if t != nil {
+		auo.SetTime(*t)
+	}
+	return auo
+}
+
 // SetModel sets the "model" field.
 func (auo *AllocateUpdateOne) SetModel(s string) *AllocateUpdateOne {
 	auo.mutation.SetModel(s)
+	return auo
+}
+
+// SetNillableModel sets the "model" field if the given value is not nil.
+func (auo *AllocateUpdateOne) SetNillableModel(s *string) *AllocateUpdateOne {
+	if s != nil {
+		auo.SetModel(*s)
+	}
 	return auo
 }
 

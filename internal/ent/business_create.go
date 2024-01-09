@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
@@ -217,6 +218,20 @@ func (bc *BusinessCreate) SetNillableBatteryID(u *uint64) *BusinessCreate {
 	return bc
 }
 
+// SetAgentID sets the "agent_id" field.
+func (bc *BusinessCreate) SetAgentID(u uint64) *BusinessCreate {
+	bc.mutation.SetAgentID(u)
+	return bc
+}
+
+// SetNillableAgentID sets the "agent_id" field if the given value is not nil.
+func (bc *BusinessCreate) SetNillableAgentID(u *uint64) *BusinessCreate {
+	if u != nil {
+		bc.SetAgentID(*u)
+	}
+	return bc
+}
+
 // SetType sets the "type" field.
 func (bc *BusinessCreate) SetType(b business.Type) *BusinessCreate {
 	bc.mutation.SetType(b)
@@ -291,6 +306,11 @@ func (bc *BusinessCreate) SetCabinet(c *Cabinet) *BusinessCreate {
 // SetBattery sets the "battery" edge to the Battery entity.
 func (bc *BusinessCreate) SetBattery(b *Battery) *BusinessCreate {
 	return bc.SetBatteryID(b.ID)
+}
+
+// SetAgent sets the "agent" edge to the Agent entity.
+func (bc *BusinessCreate) SetAgent(a *Agent) *BusinessCreate {
+	return bc.SetAgentID(a.ID)
 }
 
 // Mutation returns the BusinessMutation object of the builder.
@@ -614,6 +634,23 @@ func (bc *BusinessCreate) createSpec() (*Business, *sqlgraph.CreateSpec) {
 		_node.BatteryID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := bc.mutation.AgentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   business.AgentTable,
+			Columns: []string{business.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.AgentID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	return _node, _spec
 }
 
@@ -891,6 +928,24 @@ func (u *BusinessUpsert) UpdateBatteryID() *BusinessUpsert {
 // ClearBatteryID clears the value of the "battery_id" field.
 func (u *BusinessUpsert) ClearBatteryID() *BusinessUpsert {
 	u.SetNull(business.FieldBatteryID)
+	return u
+}
+
+// SetAgentID sets the "agent_id" field.
+func (u *BusinessUpsert) SetAgentID(v uint64) *BusinessUpsert {
+	u.Set(business.FieldAgentID, v)
+	return u
+}
+
+// UpdateAgentID sets the "agent_id" field to the value that was provided on create.
+func (u *BusinessUpsert) UpdateAgentID() *BusinessUpsert {
+	u.SetExcluded(business.FieldAgentID)
+	return u
+}
+
+// ClearAgentID clears the value of the "agent_id" field.
+func (u *BusinessUpsert) ClearAgentID() *BusinessUpsert {
+	u.SetNull(business.FieldAgentID)
 	return u
 }
 
@@ -1256,6 +1311,27 @@ func (u *BusinessUpsertOne) ClearBatteryID() *BusinessUpsertOne {
 	})
 }
 
+// SetAgentID sets the "agent_id" field.
+func (u *BusinessUpsertOne) SetAgentID(v uint64) *BusinessUpsertOne {
+	return u.Update(func(s *BusinessUpsert) {
+		s.SetAgentID(v)
+	})
+}
+
+// UpdateAgentID sets the "agent_id" field to the value that was provided on create.
+func (u *BusinessUpsertOne) UpdateAgentID() *BusinessUpsertOne {
+	return u.Update(func(s *BusinessUpsert) {
+		s.UpdateAgentID()
+	})
+}
+
+// ClearAgentID clears the value of the "agent_id" field.
+func (u *BusinessUpsertOne) ClearAgentID() *BusinessUpsertOne {
+	return u.Update(func(s *BusinessUpsert) {
+		s.ClearAgentID()
+	})
+}
+
 // SetType sets the "type" field.
 func (u *BusinessUpsertOne) SetType(v business.Type) *BusinessUpsertOne {
 	return u.Update(func(s *BusinessUpsert) {
@@ -1348,12 +1424,16 @@ func (u *BusinessUpsertOne) IDX(ctx context.Context) uint64 {
 // BusinessCreateBulk is the builder for creating many Business entities in bulk.
 type BusinessCreateBulk struct {
 	config
+	err      error
 	builders []*BusinessCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the Business entities in the database.
 func (bcb *BusinessCreateBulk) Save(ctx context.Context) ([]*Business, error) {
+	if bcb.err != nil {
+		return nil, bcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(bcb.builders))
 	nodes := make([]*Business, len(bcb.builders))
 	mutators := make([]Mutator, len(bcb.builders))
@@ -1788,6 +1868,27 @@ func (u *BusinessUpsertBulk) ClearBatteryID() *BusinessUpsertBulk {
 	})
 }
 
+// SetAgentID sets the "agent_id" field.
+func (u *BusinessUpsertBulk) SetAgentID(v uint64) *BusinessUpsertBulk {
+	return u.Update(func(s *BusinessUpsert) {
+		s.SetAgentID(v)
+	})
+}
+
+// UpdateAgentID sets the "agent_id" field to the value that was provided on create.
+func (u *BusinessUpsertBulk) UpdateAgentID() *BusinessUpsertBulk {
+	return u.Update(func(s *BusinessUpsert) {
+		s.UpdateAgentID()
+	})
+}
+
+// ClearAgentID clears the value of the "agent_id" field.
+func (u *BusinessUpsertBulk) ClearAgentID() *BusinessUpsertBulk {
+	return u.Update(func(s *BusinessUpsert) {
+		s.ClearAgentID()
+	})
+}
+
 // SetType sets the "type" field.
 func (u *BusinessUpsertBulk) SetType(v business.Type) *BusinessUpsertBulk {
 	return u.Update(func(s *BusinessUpsert) {
@@ -1846,6 +1947,9 @@ func (u *BusinessUpsertBulk) ClearStockSn() *BusinessUpsertBulk {
 
 // Exec executes the query.
 func (u *BusinessUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the BusinessCreateBulk instead", i)

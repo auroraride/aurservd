@@ -98,9 +98,25 @@ func (eu *ExceptionUpdate) SetCityID(u uint64) *ExceptionUpdate {
 	return eu
 }
 
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (eu *ExceptionUpdate) SetNillableCityID(u *uint64) *ExceptionUpdate {
+	if u != nil {
+		eu.SetCityID(*u)
+	}
+	return eu
+}
+
 // SetEmployeeID sets the "employee_id" field.
 func (eu *ExceptionUpdate) SetEmployeeID(u uint64) *ExceptionUpdate {
 	eu.mutation.SetEmployeeID(u)
+	return eu
+}
+
+// SetNillableEmployeeID sets the "employee_id" field if the given value is not nil.
+func (eu *ExceptionUpdate) SetNillableEmployeeID(u *uint64) *ExceptionUpdate {
+	if u != nil {
+		eu.SetEmployeeID(*u)
+	}
 	return eu
 }
 
@@ -131,9 +147,25 @@ func (eu *ExceptionUpdate) SetStoreID(u uint64) *ExceptionUpdate {
 	return eu
 }
 
+// SetNillableStoreID sets the "store_id" field if the given value is not nil.
+func (eu *ExceptionUpdate) SetNillableStoreID(u *uint64) *ExceptionUpdate {
+	if u != nil {
+		eu.SetStoreID(*u)
+	}
+	return eu
+}
+
 // SetName sets the "name" field.
 func (eu *ExceptionUpdate) SetName(s string) *ExceptionUpdate {
 	eu.mutation.SetName(s)
+	return eu
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (eu *ExceptionUpdate) SetNillableName(s *string) *ExceptionUpdate {
+	if s != nil {
+		eu.SetName(*s)
+	}
 	return eu
 }
 
@@ -160,6 +192,14 @@ func (eu *ExceptionUpdate) ClearModel() *ExceptionUpdate {
 // SetReason sets the "reason" field.
 func (eu *ExceptionUpdate) SetReason(s string) *ExceptionUpdate {
 	eu.mutation.SetReason(s)
+	return eu
+}
+
+// SetNillableReason sets the "reason" field if the given value is not nil.
+func (eu *ExceptionUpdate) SetNillableReason(s *string) *ExceptionUpdate {
+	if s != nil {
+		eu.SetReason(*s)
+	}
 	return eu
 }
 
@@ -545,9 +585,25 @@ func (euo *ExceptionUpdateOne) SetCityID(u uint64) *ExceptionUpdateOne {
 	return euo
 }
 
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (euo *ExceptionUpdateOne) SetNillableCityID(u *uint64) *ExceptionUpdateOne {
+	if u != nil {
+		euo.SetCityID(*u)
+	}
+	return euo
+}
+
 // SetEmployeeID sets the "employee_id" field.
 func (euo *ExceptionUpdateOne) SetEmployeeID(u uint64) *ExceptionUpdateOne {
 	euo.mutation.SetEmployeeID(u)
+	return euo
+}
+
+// SetNillableEmployeeID sets the "employee_id" field if the given value is not nil.
+func (euo *ExceptionUpdateOne) SetNillableEmployeeID(u *uint64) *ExceptionUpdateOne {
+	if u != nil {
+		euo.SetEmployeeID(*u)
+	}
 	return euo
 }
 
@@ -578,9 +634,25 @@ func (euo *ExceptionUpdateOne) SetStoreID(u uint64) *ExceptionUpdateOne {
 	return euo
 }
 
+// SetNillableStoreID sets the "store_id" field if the given value is not nil.
+func (euo *ExceptionUpdateOne) SetNillableStoreID(u *uint64) *ExceptionUpdateOne {
+	if u != nil {
+		euo.SetStoreID(*u)
+	}
+	return euo
+}
+
 // SetName sets the "name" field.
 func (euo *ExceptionUpdateOne) SetName(s string) *ExceptionUpdateOne {
 	euo.mutation.SetName(s)
+	return euo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (euo *ExceptionUpdateOne) SetNillableName(s *string) *ExceptionUpdateOne {
+	if s != nil {
+		euo.SetName(*s)
+	}
 	return euo
 }
 
@@ -607,6 +679,14 @@ func (euo *ExceptionUpdateOne) ClearModel() *ExceptionUpdateOne {
 // SetReason sets the "reason" field.
 func (euo *ExceptionUpdateOne) SetReason(s string) *ExceptionUpdateOne {
 	euo.mutation.SetReason(s)
+	return euo
+}
+
+// SetNillableReason sets the "reason" field if the given value is not nil.
+func (euo *ExceptionUpdateOne) SetNillableReason(s *string) *ExceptionUpdateOne {
+	if s != nil {
+		euo.SetReason(*s)
+	}
 	return euo
 }
 

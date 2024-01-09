@@ -639,12 +639,16 @@ func (u *InventoryUpsertOne) IDX(ctx context.Context) uint64 {
 // InventoryCreateBulk is the builder for creating many Inventory entities in bulk.
 type InventoryCreateBulk struct {
 	config
+	err      error
 	builders []*InventoryCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the Inventory entities in the database.
 func (icb *InventoryCreateBulk) Save(ctx context.Context) ([]*Inventory, error) {
+	if icb.err != nil {
+		return nil, icb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(icb.builders))
 	nodes := make([]*Inventory, len(icb.builders))
 	mutators := make([]Mutator, len(icb.builders))
@@ -948,6 +952,9 @@ func (u *InventoryUpsertBulk) UpdatePurchase() *InventoryUpsertBulk {
 
 // Exec executes the query.
 func (u *InventoryUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the InventoryCreateBulk instead", i)

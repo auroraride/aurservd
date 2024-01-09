@@ -956,12 +956,16 @@ func (u *CityUpsertOne) IDX(ctx context.Context) uint64 {
 // CityCreateBulk is the builder for creating many City entities in bulk.
 type CityCreateBulk struct {
 	config
+	err      error
 	builders []*CityCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the City entities in the database.
 func (ccb *CityCreateBulk) Save(ctx context.Context) ([]*City, error) {
+	if ccb.err != nil {
+		return nil, ccb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ccb.builders))
 	nodes := make([]*City, len(ccb.builders))
 	mutators := make([]Mutator, len(ccb.builders))
@@ -1341,6 +1345,9 @@ func (u *CityUpsertBulk) ClearLat() *CityUpsertBulk {
 
 // Exec executes the query.
 func (u *CityUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the CityCreateBulk instead", i)

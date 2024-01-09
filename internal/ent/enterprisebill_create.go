@@ -1137,12 +1137,16 @@ func (u *EnterpriseBillUpsertOne) IDX(ctx context.Context) uint64 {
 // EnterpriseBillCreateBulk is the builder for creating many EnterpriseBill entities in bulk.
 type EnterpriseBillCreateBulk struct {
 	config
+	err      error
 	builders []*EnterpriseBillCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the EnterpriseBill entities in the database.
 func (ebcb *EnterpriseBillCreateBulk) Save(ctx context.Context) ([]*EnterpriseBill, error) {
+	if ebcb.err != nil {
+		return nil, ebcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ebcb.builders))
 	nodes := make([]*EnterpriseBill, len(ebcb.builders))
 	mutators := make([]Mutator, len(ebcb.builders))
@@ -1586,6 +1590,9 @@ func (u *EnterpriseBillUpsertBulk) UpdateModel() *EnterpriseBillUpsertBulk {
 
 // Exec executes the query.
 func (u *EnterpriseBillUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the EnterpriseBillCreateBulk instead", i)

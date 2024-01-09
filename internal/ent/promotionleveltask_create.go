@@ -677,12 +677,16 @@ func (u *PromotionLevelTaskUpsertOne) IDX(ctx context.Context) uint64 {
 // PromotionLevelTaskCreateBulk is the builder for creating many PromotionLevelTask entities in bulk.
 type PromotionLevelTaskCreateBulk struct {
 	config
+	err      error
 	builders []*PromotionLevelTaskCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the PromotionLevelTask entities in the database.
 func (pltcb *PromotionLevelTaskCreateBulk) Save(ctx context.Context) ([]*PromotionLevelTask, error) {
+	if pltcb.err != nil {
+		return nil, pltcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(pltcb.builders))
 	nodes := make([]*PromotionLevelTask, len(pltcb.builders))
 	mutators := make([]Mutator, len(pltcb.builders))
@@ -1000,6 +1004,9 @@ func (u *PromotionLevelTaskUpsertBulk) ClearKey() *PromotionLevelTaskUpsertBulk 
 
 // Exec executes the query.
 func (u *PromotionLevelTaskUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the PromotionLevelTaskCreateBulk instead", i)

@@ -663,12 +663,16 @@ func (u *PromotionLevelUpsertOne) IDX(ctx context.Context) uint64 {
 // PromotionLevelCreateBulk is the builder for creating many PromotionLevel entities in bulk.
 type PromotionLevelCreateBulk struct {
 	config
+	err      error
 	builders []*PromotionLevelCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the PromotionLevel entities in the database.
 func (plcb *PromotionLevelCreateBulk) Save(ctx context.Context) ([]*PromotionLevel, error) {
+	if plcb.err != nil {
+		return nil, plcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(plcb.builders))
 	nodes := make([]*PromotionLevel, len(plcb.builders))
 	mutators := make([]Mutator, len(plcb.builders))
@@ -979,6 +983,9 @@ func (u *PromotionLevelUpsertBulk) UpdateCommissionRatio() *PromotionLevelUpsert
 
 // Exec executes the query.
 func (u *PromotionLevelUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the PromotionLevelCreateBulk instead", i)

@@ -783,12 +783,16 @@ func (u *OrderRefundUpsertOne) IDX(ctx context.Context) uint64 {
 // OrderRefundCreateBulk is the builder for creating many OrderRefund entities in bulk.
 type OrderRefundCreateBulk struct {
 	config
+	err      error
 	builders []*OrderRefundCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the OrderRefund entities in the database.
 func (orcb *OrderRefundCreateBulk) Save(ctx context.Context) ([]*OrderRefund, error) {
+	if orcb.err != nil {
+		return nil, orcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(orcb.builders))
 	nodes := make([]*OrderRefund, len(orcb.builders))
 	mutators := make([]Mutator, len(orcb.builders))
@@ -1141,6 +1145,9 @@ func (u *OrderRefundUpsertBulk) ClearRefundAt() *OrderRefundUpsertBulk {
 
 // Exec executes the query.
 func (u *OrderRefundUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the OrderRefundCreateBulk instead", i)

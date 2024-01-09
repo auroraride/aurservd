@@ -94,9 +94,25 @@ func (iu *InventoryUpdate) SetName(s string) *InventoryUpdate {
 	return iu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (iu *InventoryUpdate) SetNillableName(s *string) *InventoryUpdate {
+	if s != nil {
+		iu.SetName(*s)
+	}
+	return iu
+}
+
 // SetCount sets the "count" field.
 func (iu *InventoryUpdate) SetCount(b bool) *InventoryUpdate {
 	iu.mutation.SetCount(b)
+	return iu
+}
+
+// SetNillableCount sets the "count" field if the given value is not nil.
+func (iu *InventoryUpdate) SetNillableCount(b *bool) *InventoryUpdate {
+	if b != nil {
+		iu.SetCount(*b)
+	}
 	return iu
 }
 
@@ -106,9 +122,25 @@ func (iu *InventoryUpdate) SetTransfer(b bool) *InventoryUpdate {
 	return iu
 }
 
+// SetNillableTransfer sets the "transfer" field if the given value is not nil.
+func (iu *InventoryUpdate) SetNillableTransfer(b *bool) *InventoryUpdate {
+	if b != nil {
+		iu.SetTransfer(*b)
+	}
+	return iu
+}
+
 // SetPurchase sets the "purchase" field.
 func (iu *InventoryUpdate) SetPurchase(b bool) *InventoryUpdate {
 	iu.mutation.SetPurchase(b)
+	return iu
+}
+
+// SetNillablePurchase sets the "purchase" field if the given value is not nil.
+func (iu *InventoryUpdate) SetNillablePurchase(b *bool) *InventoryUpdate {
+	if b != nil {
+		iu.SetPurchase(*b)
+	}
 	return iu
 }
 
@@ -296,9 +328,25 @@ func (iuo *InventoryUpdateOne) SetName(s string) *InventoryUpdateOne {
 	return iuo
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (iuo *InventoryUpdateOne) SetNillableName(s *string) *InventoryUpdateOne {
+	if s != nil {
+		iuo.SetName(*s)
+	}
+	return iuo
+}
+
 // SetCount sets the "count" field.
 func (iuo *InventoryUpdateOne) SetCount(b bool) *InventoryUpdateOne {
 	iuo.mutation.SetCount(b)
+	return iuo
+}
+
+// SetNillableCount sets the "count" field if the given value is not nil.
+func (iuo *InventoryUpdateOne) SetNillableCount(b *bool) *InventoryUpdateOne {
+	if b != nil {
+		iuo.SetCount(*b)
+	}
 	return iuo
 }
 
@@ -308,9 +356,25 @@ func (iuo *InventoryUpdateOne) SetTransfer(b bool) *InventoryUpdateOne {
 	return iuo
 }
 
+// SetNillableTransfer sets the "transfer" field if the given value is not nil.
+func (iuo *InventoryUpdateOne) SetNillableTransfer(b *bool) *InventoryUpdateOne {
+	if b != nil {
+		iuo.SetTransfer(*b)
+	}
+	return iuo
+}
+
 // SetPurchase sets the "purchase" field.
 func (iuo *InventoryUpdateOne) SetPurchase(b bool) *InventoryUpdateOne {
 	iuo.mutation.SetPurchase(b)
+	return iuo
+}
+
+// SetNillablePurchase sets the "purchase" field if the given value is not nil.
+func (iuo *InventoryUpdateOne) SetNillablePurchase(b *bool) *InventoryUpdateOne {
+	if b != nil {
+		iuo.SetPurchase(*b)
+	}
 	return iuo
 }
 

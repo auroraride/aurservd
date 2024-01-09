@@ -100,6 +100,14 @@ func (cu *CouponUpdate) SetAssemblyID(u uint64) *CouponUpdate {
 	return cu
 }
 
+// SetNillableAssemblyID sets the "assembly_id" field if the given value is not nil.
+func (cu *CouponUpdate) SetNillableAssemblyID(u *uint64) *CouponUpdate {
+	if u != nil {
+		cu.SetAssemblyID(*u)
+	}
+	return cu
+}
+
 // SetPlanID sets the "plan_id" field.
 func (cu *CouponUpdate) SetPlanID(u uint64) *CouponUpdate {
 	cu.mutation.SetPlanID(u)
@@ -123,6 +131,14 @@ func (cu *CouponUpdate) ClearPlanID() *CouponUpdate {
 // SetTemplateID sets the "template_id" field.
 func (cu *CouponUpdate) SetTemplateID(u uint64) *CouponUpdate {
 	cu.mutation.SetTemplateID(u)
+	return cu
+}
+
+// SetNillableTemplateID sets the "template_id" field if the given value is not nil.
+func (cu *CouponUpdate) SetNillableTemplateID(u *uint64) *CouponUpdate {
+	if u != nil {
+		cu.SetTemplateID(*u)
+	}
 	return cu
 }
 
@@ -153,6 +169,14 @@ func (cu *CouponUpdate) SetRule(u uint8) *CouponUpdate {
 	return cu
 }
 
+// SetNillableRule sets the "rule" field if the given value is not nil.
+func (cu *CouponUpdate) SetNillableRule(u *uint8) *CouponUpdate {
+	if u != nil {
+		cu.SetRule(*u)
+	}
+	return cu
+}
+
 // AddRule adds u to the "rule" field.
 func (cu *CouponUpdate) AddRule(u int8) *CouponUpdate {
 	cu.mutation.AddRule(u)
@@ -180,6 +204,14 @@ func (cu *CouponUpdate) SetAmount(f float64) *CouponUpdate {
 	return cu
 }
 
+// SetNillableAmount sets the "amount" field if the given value is not nil.
+func (cu *CouponUpdate) SetNillableAmount(f *float64) *CouponUpdate {
+	if f != nil {
+		cu.SetAmount(*f)
+	}
+	return cu
+}
+
 // AddAmount adds f to the "amount" field.
 func (cu *CouponUpdate) AddAmount(f float64) *CouponUpdate {
 	cu.mutation.AddAmount(f)
@@ -189,6 +221,14 @@ func (cu *CouponUpdate) AddAmount(f float64) *CouponUpdate {
 // SetCode sets the "code" field.
 func (cu *CouponUpdate) SetCode(s string) *CouponUpdate {
 	cu.mutation.SetCode(s)
+	return cu
+}
+
+// SetNillableCode sets the "code" field if the given value is not nil.
+func (cu *CouponUpdate) SetNillableCode(s *string) *CouponUpdate {
+	if s != nil {
+		cu.SetCode(*s)
+	}
 	return cu
 }
 
@@ -709,6 +749,14 @@ func (cuo *CouponUpdateOne) SetAssemblyID(u uint64) *CouponUpdateOne {
 	return cuo
 }
 
+// SetNillableAssemblyID sets the "assembly_id" field if the given value is not nil.
+func (cuo *CouponUpdateOne) SetNillableAssemblyID(u *uint64) *CouponUpdateOne {
+	if u != nil {
+		cuo.SetAssemblyID(*u)
+	}
+	return cuo
+}
+
 // SetPlanID sets the "plan_id" field.
 func (cuo *CouponUpdateOne) SetPlanID(u uint64) *CouponUpdateOne {
 	cuo.mutation.SetPlanID(u)
@@ -732,6 +780,14 @@ func (cuo *CouponUpdateOne) ClearPlanID() *CouponUpdateOne {
 // SetTemplateID sets the "template_id" field.
 func (cuo *CouponUpdateOne) SetTemplateID(u uint64) *CouponUpdateOne {
 	cuo.mutation.SetTemplateID(u)
+	return cuo
+}
+
+// SetNillableTemplateID sets the "template_id" field if the given value is not nil.
+func (cuo *CouponUpdateOne) SetNillableTemplateID(u *uint64) *CouponUpdateOne {
+	if u != nil {
+		cuo.SetTemplateID(*u)
+	}
 	return cuo
 }
 
@@ -762,6 +818,14 @@ func (cuo *CouponUpdateOne) SetRule(u uint8) *CouponUpdateOne {
 	return cuo
 }
 
+// SetNillableRule sets the "rule" field if the given value is not nil.
+func (cuo *CouponUpdateOne) SetNillableRule(u *uint8) *CouponUpdateOne {
+	if u != nil {
+		cuo.SetRule(*u)
+	}
+	return cuo
+}
+
 // AddRule adds u to the "rule" field.
 func (cuo *CouponUpdateOne) AddRule(u int8) *CouponUpdateOne {
 	cuo.mutation.AddRule(u)
@@ -789,6 +853,14 @@ func (cuo *CouponUpdateOne) SetAmount(f float64) *CouponUpdateOne {
 	return cuo
 }
 
+// SetNillableAmount sets the "amount" field if the given value is not nil.
+func (cuo *CouponUpdateOne) SetNillableAmount(f *float64) *CouponUpdateOne {
+	if f != nil {
+		cuo.SetAmount(*f)
+	}
+	return cuo
+}
+
 // AddAmount adds f to the "amount" field.
 func (cuo *CouponUpdateOne) AddAmount(f float64) *CouponUpdateOne {
 	cuo.mutation.AddAmount(f)
@@ -798,6 +870,14 @@ func (cuo *CouponUpdateOne) AddAmount(f float64) *CouponUpdateOne {
 // SetCode sets the "code" field.
 func (cuo *CouponUpdateOne) SetCode(s string) *CouponUpdateOne {
 	cuo.mutation.SetCode(s)
+	return cuo
+}
+
+// SetNillableCode sets the "code" field if the given value is not nil.
+func (cuo *CouponUpdateOne) SetNillableCode(s *string) *CouponUpdateOne {
+	if s != nil {
+		cuo.SetCode(*s)
+	}
 	return cuo
 }
 

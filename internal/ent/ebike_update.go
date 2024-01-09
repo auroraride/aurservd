@@ -80,6 +80,14 @@ func (eu *EbikeUpdate) SetBrandID(u uint64) *EbikeUpdate {
 	return eu
 }
 
+// SetNillableBrandID sets the "brand_id" field if the given value is not nil.
+func (eu *EbikeUpdate) SetNillableBrandID(u *uint64) *EbikeUpdate {
+	if u != nil {
+		eu.SetBrandID(*u)
+	}
+	return eu
+}
+
 // SetRiderID sets the "rider_id" field.
 func (eu *EbikeUpdate) SetRiderID(u uint64) *EbikeUpdate {
 	eu.mutation.SetRiderID(u)
@@ -194,6 +202,14 @@ func (eu *EbikeUpdate) SetSn(s string) *EbikeUpdate {
 	return eu
 }
 
+// SetNillableSn sets the "sn" field if the given value is not nil.
+func (eu *EbikeUpdate) SetNillableSn(s *string) *EbikeUpdate {
+	if s != nil {
+		eu.SetSn(*s)
+	}
+	return eu
+}
+
 // SetPlate sets the "plate" field.
 func (eu *EbikeUpdate) SetPlate(s string) *EbikeUpdate {
 	eu.mutation.SetPlate(s)
@@ -271,6 +287,14 @@ func (eu *EbikeUpdate) SetNillableColor(s *string) *EbikeUpdate {
 // SetExFactory sets the "ex_factory" field.
 func (eu *EbikeUpdate) SetExFactory(s string) *EbikeUpdate {
 	eu.mutation.SetExFactory(s)
+	return eu
+}
+
+// SetNillableExFactory sets the "ex_factory" field if the given value is not nil.
+func (eu *EbikeUpdate) SetNillableExFactory(s *string) *EbikeUpdate {
+	if s != nil {
+		eu.SetExFactory(*s)
+	}
 	return eu
 }
 
@@ -745,6 +769,14 @@ func (euo *EbikeUpdateOne) SetBrandID(u uint64) *EbikeUpdateOne {
 	return euo
 }
 
+// SetNillableBrandID sets the "brand_id" field if the given value is not nil.
+func (euo *EbikeUpdateOne) SetNillableBrandID(u *uint64) *EbikeUpdateOne {
+	if u != nil {
+		euo.SetBrandID(*u)
+	}
+	return euo
+}
+
 // SetRiderID sets the "rider_id" field.
 func (euo *EbikeUpdateOne) SetRiderID(u uint64) *EbikeUpdateOne {
 	euo.mutation.SetRiderID(u)
@@ -859,6 +891,14 @@ func (euo *EbikeUpdateOne) SetSn(s string) *EbikeUpdateOne {
 	return euo
 }
 
+// SetNillableSn sets the "sn" field if the given value is not nil.
+func (euo *EbikeUpdateOne) SetNillableSn(s *string) *EbikeUpdateOne {
+	if s != nil {
+		euo.SetSn(*s)
+	}
+	return euo
+}
+
 // SetPlate sets the "plate" field.
 func (euo *EbikeUpdateOne) SetPlate(s string) *EbikeUpdateOne {
 	euo.mutation.SetPlate(s)
@@ -936,6 +976,14 @@ func (euo *EbikeUpdateOne) SetNillableColor(s *string) *EbikeUpdateOne {
 // SetExFactory sets the "ex_factory" field.
 func (euo *EbikeUpdateOne) SetExFactory(s string) *EbikeUpdateOne {
 	euo.mutation.SetExFactory(s)
+	return euo
+}
+
+// SetNillableExFactory sets the "ex_factory" field if the given value is not nil.
+func (euo *EbikeUpdateOne) SetNillableExFactory(s *string) *EbikeUpdateOne {
+	if s != nil {
+		euo.SetExFactory(*s)
+	}
 	return euo
 }
 

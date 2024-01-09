@@ -99,6 +99,14 @@ func (cfu *CabinetFaultUpdate) SetCityID(u uint64) *CabinetFaultUpdate {
 	return cfu
 }
 
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (cfu *CabinetFaultUpdate) SetNillableCityID(u *uint64) *CabinetFaultUpdate {
+	if u != nil {
+		cfu.SetCityID(*u)
+	}
+	return cfu
+}
+
 // SetStatus sets the "status" field.
 func (cfu *CabinetFaultUpdate) SetStatus(u uint8) *CabinetFaultUpdate {
 	cfu.mutation.ResetStatus()
@@ -126,15 +134,39 @@ func (cfu *CabinetFaultUpdate) SetBranchID(u uint64) *CabinetFaultUpdate {
 	return cfu
 }
 
+// SetNillableBranchID sets the "branch_id" field if the given value is not nil.
+func (cfu *CabinetFaultUpdate) SetNillableBranchID(u *uint64) *CabinetFaultUpdate {
+	if u != nil {
+		cfu.SetBranchID(*u)
+	}
+	return cfu
+}
+
 // SetCabinetID sets the "cabinet_id" field.
 func (cfu *CabinetFaultUpdate) SetCabinetID(u uint64) *CabinetFaultUpdate {
 	cfu.mutation.SetCabinetID(u)
 	return cfu
 }
 
+// SetNillableCabinetID sets the "cabinet_id" field if the given value is not nil.
+func (cfu *CabinetFaultUpdate) SetNillableCabinetID(u *uint64) *CabinetFaultUpdate {
+	if u != nil {
+		cfu.SetCabinetID(*u)
+	}
+	return cfu
+}
+
 // SetRiderID sets the "rider_id" field.
 func (cfu *CabinetFaultUpdate) SetRiderID(u uint64) *CabinetFaultUpdate {
 	cfu.mutation.SetRiderID(u)
+	return cfu
+}
+
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (cfu *CabinetFaultUpdate) SetNillableRiderID(u *uint64) *CabinetFaultUpdate {
+	if u != nil {
+		cfu.SetRiderID(*u)
+	}
 	return cfu
 }
 
@@ -577,6 +609,14 @@ func (cfuo *CabinetFaultUpdateOne) SetCityID(u uint64) *CabinetFaultUpdateOne {
 	return cfuo
 }
 
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (cfuo *CabinetFaultUpdateOne) SetNillableCityID(u *uint64) *CabinetFaultUpdateOne {
+	if u != nil {
+		cfuo.SetCityID(*u)
+	}
+	return cfuo
+}
+
 // SetStatus sets the "status" field.
 func (cfuo *CabinetFaultUpdateOne) SetStatus(u uint8) *CabinetFaultUpdateOne {
 	cfuo.mutation.ResetStatus()
@@ -604,15 +644,39 @@ func (cfuo *CabinetFaultUpdateOne) SetBranchID(u uint64) *CabinetFaultUpdateOne 
 	return cfuo
 }
 
+// SetNillableBranchID sets the "branch_id" field if the given value is not nil.
+func (cfuo *CabinetFaultUpdateOne) SetNillableBranchID(u *uint64) *CabinetFaultUpdateOne {
+	if u != nil {
+		cfuo.SetBranchID(*u)
+	}
+	return cfuo
+}
+
 // SetCabinetID sets the "cabinet_id" field.
 func (cfuo *CabinetFaultUpdateOne) SetCabinetID(u uint64) *CabinetFaultUpdateOne {
 	cfuo.mutation.SetCabinetID(u)
 	return cfuo
 }
 
+// SetNillableCabinetID sets the "cabinet_id" field if the given value is not nil.
+func (cfuo *CabinetFaultUpdateOne) SetNillableCabinetID(u *uint64) *CabinetFaultUpdateOne {
+	if u != nil {
+		cfuo.SetCabinetID(*u)
+	}
+	return cfuo
+}
+
 // SetRiderID sets the "rider_id" field.
 func (cfuo *CabinetFaultUpdateOne) SetRiderID(u uint64) *CabinetFaultUpdateOne {
 	cfuo.mutation.SetRiderID(u)
+	return cfuo
+}
+
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (cfuo *CabinetFaultUpdateOne) SetNillableRiderID(u *uint64) *CabinetFaultUpdateOne {
+	if u != nil {
+		cfuo.SetRiderID(*u)
+	}
 	return cfuo
 }
 

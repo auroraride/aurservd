@@ -101,6 +101,14 @@ func (spu *SubscribePauseUpdate) SetRiderID(u uint64) *SubscribePauseUpdate {
 	return spu
 }
 
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (spu *SubscribePauseUpdate) SetNillableRiderID(u *uint64) *SubscribePauseUpdate {
+	if u != nil {
+		spu.SetRiderID(*u)
+	}
+	return spu
+}
+
 // SetEmployeeID sets the "employee_id" field.
 func (spu *SubscribePauseUpdate) SetEmployeeID(u uint64) *SubscribePauseUpdate {
 	spu.mutation.SetEmployeeID(u)
@@ -227,9 +235,25 @@ func (spu *SubscribePauseUpdate) SetSubscribeID(u uint64) *SubscribePauseUpdate 
 	return spu
 }
 
+// SetNillableSubscribeID sets the "subscribe_id" field if the given value is not nil.
+func (spu *SubscribePauseUpdate) SetNillableSubscribeID(u *uint64) *SubscribePauseUpdate {
+	if u != nil {
+		spu.SetSubscribeID(*u)
+	}
+	return spu
+}
+
 // SetStartAt sets the "start_at" field.
 func (spu *SubscribePauseUpdate) SetStartAt(t time.Time) *SubscribePauseUpdate {
 	spu.mutation.SetStartAt(t)
+	return spu
+}
+
+// SetNillableStartAt sets the "start_at" field if the given value is not nil.
+func (spu *SubscribePauseUpdate) SetNillableStartAt(t *time.Time) *SubscribePauseUpdate {
+	if t != nil {
+		spu.SetStartAt(*t)
+	}
 	return spu
 }
 
@@ -1034,6 +1058,14 @@ func (spuo *SubscribePauseUpdateOne) SetRiderID(u uint64) *SubscribePauseUpdateO
 	return spuo
 }
 
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (spuo *SubscribePauseUpdateOne) SetNillableRiderID(u *uint64) *SubscribePauseUpdateOne {
+	if u != nil {
+		spuo.SetRiderID(*u)
+	}
+	return spuo
+}
+
 // SetEmployeeID sets the "employee_id" field.
 func (spuo *SubscribePauseUpdateOne) SetEmployeeID(u uint64) *SubscribePauseUpdateOne {
 	spuo.mutation.SetEmployeeID(u)
@@ -1160,9 +1192,25 @@ func (spuo *SubscribePauseUpdateOne) SetSubscribeID(u uint64) *SubscribePauseUpd
 	return spuo
 }
 
+// SetNillableSubscribeID sets the "subscribe_id" field if the given value is not nil.
+func (spuo *SubscribePauseUpdateOne) SetNillableSubscribeID(u *uint64) *SubscribePauseUpdateOne {
+	if u != nil {
+		spuo.SetSubscribeID(*u)
+	}
+	return spuo
+}
+
 // SetStartAt sets the "start_at" field.
 func (spuo *SubscribePauseUpdateOne) SetStartAt(t time.Time) *SubscribePauseUpdateOne {
 	spuo.mutation.SetStartAt(t)
+	return spuo
+}
+
+// SetNillableStartAt sets the "start_at" field if the given value is not nil.
+func (spuo *SubscribePauseUpdateOne) SetNillableStartAt(t *time.Time) *SubscribePauseUpdateOne {
+	if t != nil {
+		spuo.SetStartAt(*t)
+	}
 	return spuo
 }
 

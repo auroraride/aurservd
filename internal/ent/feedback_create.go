@@ -715,12 +715,16 @@ func (u *FeedbackUpsertOne) IDX(ctx context.Context) uint64 {
 // FeedbackCreateBulk is the builder for creating many Feedback entities in bulk.
 type FeedbackCreateBulk struct {
 	config
+	err      error
 	builders []*FeedbackCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the Feedback entities in the database.
 func (fcb *FeedbackCreateBulk) Save(ctx context.Context) ([]*Feedback, error) {
+	if fcb.err != nil {
+		return nil, fcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(fcb.builders))
 	nodes := make([]*Feedback, len(fcb.builders))
 	mutators := make([]Mutator, len(fcb.builders))
@@ -1042,6 +1046,9 @@ func (u *FeedbackUpsertBulk) ClearPhone() *FeedbackUpsertBulk {
 
 // Exec executes the query.
 func (u *FeedbackUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the FeedbackCreateBulk instead", i)

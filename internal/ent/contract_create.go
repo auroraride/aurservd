@@ -1244,12 +1244,16 @@ func (u *ContractUpsertOne) IDX(ctx context.Context) uint64 {
 // ContractCreateBulk is the builder for creating many Contract entities in bulk.
 type ContractCreateBulk struct {
 	config
+	err      error
 	builders []*ContractCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the Contract entities in the database.
 func (ccb *ContractCreateBulk) Save(ctx context.Context) ([]*Contract, error) {
+	if ccb.err != nil {
+		return nil, ccb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ccb.builders))
 	nodes := make([]*Contract, len(ccb.builders))
 	mutators := make([]Mutator, len(ccb.builders))
@@ -1742,6 +1746,9 @@ func (u *ContractUpsertBulk) ClearSignedAt() *ContractUpsertBulk {
 
 // Exec executes the query.
 func (u *ContractUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the ContractCreateBulk instead", i)

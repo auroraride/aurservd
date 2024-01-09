@@ -1056,12 +1056,16 @@ func (u *AttendanceUpsertOne) IDX(ctx context.Context) uint64 {
 // AttendanceCreateBulk is the builder for creating many Attendance entities in bulk.
 type AttendanceCreateBulk struct {
 	config
+	err      error
 	builders []*AttendanceCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the Attendance entities in the database.
 func (acb *AttendanceCreateBulk) Save(ctx context.Context) ([]*Attendance, error) {
+	if acb.err != nil {
+		return nil, acb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(acb.builders))
 	nodes := make([]*Attendance, len(acb.builders))
 	mutators := make([]Mutator, len(acb.builders))
@@ -1512,6 +1516,9 @@ func (u *AttendanceUpsertBulk) ClearDistance() *AttendanceUpsertBulk {
 
 // Exec executes the query.
 func (u *AttendanceUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the AttendanceCreateBulk instead", i)

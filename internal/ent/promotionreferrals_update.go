@@ -137,6 +137,14 @@ func (pru *PromotionReferralsUpdate) SetReferredMemberID(u uint64) *PromotionRef
 	return pru
 }
 
+// SetNillableReferredMemberID sets the "referred_member_id" field if the given value is not nil.
+func (pru *PromotionReferralsUpdate) SetNillableReferredMemberID(u *uint64) *PromotionReferralsUpdate {
+	if u != nil {
+		pru.SetReferredMemberID(*u)
+	}
+	return pru
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (pru *PromotionReferralsUpdate) SetRider(r *Rider) *PromotionReferralsUpdate {
 	return pru.SetRiderID(r.ID)
@@ -511,6 +519,14 @@ func (pruo *PromotionReferralsUpdateOne) ClearReferringMemberID() *PromotionRefe
 // SetReferredMemberID sets the "referred_member_id" field.
 func (pruo *PromotionReferralsUpdateOne) SetReferredMemberID(u uint64) *PromotionReferralsUpdateOne {
 	pruo.mutation.SetReferredMemberID(u)
+	return pruo
+}
+
+// SetNillableReferredMemberID sets the "referred_member_id" field if the given value is not nil.
+func (pruo *PromotionReferralsUpdateOne) SetNillableReferredMemberID(u *uint64) *PromotionReferralsUpdateOne {
+	if u != nil {
+		pruo.SetReferredMemberID(*u)
+	}
 	return pruo
 }
 

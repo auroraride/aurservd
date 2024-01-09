@@ -44,9 +44,25 @@ func (sru *SubscribeReminderUpdate) SetSubscribeID(u uint64) *SubscribeReminderU
 	return sru
 }
 
+// SetNillableSubscribeID sets the "subscribe_id" field if the given value is not nil.
+func (sru *SubscribeReminderUpdate) SetNillableSubscribeID(u *uint64) *SubscribeReminderUpdate {
+	if u != nil {
+		sru.SetSubscribeID(*u)
+	}
+	return sru
+}
+
 // SetPlanID sets the "plan_id" field.
 func (sru *SubscribeReminderUpdate) SetPlanID(u uint64) *SubscribeReminderUpdate {
 	sru.mutation.SetPlanID(u)
+	return sru
+}
+
+// SetNillablePlanID sets the "plan_id" field if the given value is not nil.
+func (sru *SubscribeReminderUpdate) SetNillablePlanID(u *uint64) *SubscribeReminderUpdate {
+	if u != nil {
+		sru.SetPlanID(*u)
+	}
 	return sru
 }
 
@@ -56,9 +72,25 @@ func (sru *SubscribeReminderUpdate) SetRiderID(u uint64) *SubscribeReminderUpdat
 	return sru
 }
 
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (sru *SubscribeReminderUpdate) SetNillableRiderID(u *uint64) *SubscribeReminderUpdate {
+	if u != nil {
+		sru.SetRiderID(*u)
+	}
+	return sru
+}
+
 // SetType sets the "type" field.
 func (sru *SubscribeReminderUpdate) SetType(s subscribereminder.Type) *SubscribeReminderUpdate {
 	sru.mutation.SetType(s)
+	return sru
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (sru *SubscribeReminderUpdate) SetNillableType(s *subscribereminder.Type) *SubscribeReminderUpdate {
+	if s != nil {
+		sru.SetType(*s)
+	}
 	return sru
 }
 
@@ -68,9 +100,25 @@ func (sru *SubscribeReminderUpdate) SetPhone(s string) *SubscribeReminderUpdate 
 	return sru
 }
 
+// SetNillablePhone sets the "phone" field if the given value is not nil.
+func (sru *SubscribeReminderUpdate) SetNillablePhone(s *string) *SubscribeReminderUpdate {
+	if s != nil {
+		sru.SetPhone(*s)
+	}
+	return sru
+}
+
 // SetName sets the "name" field.
 func (sru *SubscribeReminderUpdate) SetName(s string) *SubscribeReminderUpdate {
 	sru.mutation.SetName(s)
+	return sru
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (sru *SubscribeReminderUpdate) SetNillableName(s *string) *SubscribeReminderUpdate {
+	if s != nil {
+		sru.SetName(*s)
+	}
 	return sru
 }
 
@@ -80,10 +128,26 @@ func (sru *SubscribeReminderUpdate) SetSuccess(b bool) *SubscribeReminderUpdate 
 	return sru
 }
 
+// SetNillableSuccess sets the "success" field if the given value is not nil.
+func (sru *SubscribeReminderUpdate) SetNillableSuccess(b *bool) *SubscribeReminderUpdate {
+	if b != nil {
+		sru.SetSuccess(*b)
+	}
+	return sru
+}
+
 // SetDays sets the "days" field.
 func (sru *SubscribeReminderUpdate) SetDays(i int) *SubscribeReminderUpdate {
 	sru.mutation.ResetDays()
 	sru.mutation.SetDays(i)
+	return sru
+}
+
+// SetNillableDays sets the "days" field if the given value is not nil.
+func (sru *SubscribeReminderUpdate) SetNillableDays(i *int) *SubscribeReminderUpdate {
+	if i != nil {
+		sru.SetDays(*i)
+	}
 	return sru
 }
 
@@ -99,9 +163,25 @@ func (sru *SubscribeReminderUpdate) SetPlanName(s string) *SubscribeReminderUpda
 	return sru
 }
 
+// SetNillablePlanName sets the "plan_name" field if the given value is not nil.
+func (sru *SubscribeReminderUpdate) SetNillablePlanName(s *string) *SubscribeReminderUpdate {
+	if s != nil {
+		sru.SetPlanName(*s)
+	}
+	return sru
+}
+
 // SetDate sets the "date" field.
 func (sru *SubscribeReminderUpdate) SetDate(s string) *SubscribeReminderUpdate {
 	sru.mutation.SetDate(s)
+	return sru
+}
+
+// SetNillableDate sets the "date" field if the given value is not nil.
+func (sru *SubscribeReminderUpdate) SetNillableDate(s *string) *SubscribeReminderUpdate {
+	if s != nil {
+		sru.SetDate(*s)
+	}
 	return sru
 }
 
@@ -417,9 +497,25 @@ func (sruo *SubscribeReminderUpdateOne) SetSubscribeID(u uint64) *SubscribeRemin
 	return sruo
 }
 
+// SetNillableSubscribeID sets the "subscribe_id" field if the given value is not nil.
+func (sruo *SubscribeReminderUpdateOne) SetNillableSubscribeID(u *uint64) *SubscribeReminderUpdateOne {
+	if u != nil {
+		sruo.SetSubscribeID(*u)
+	}
+	return sruo
+}
+
 // SetPlanID sets the "plan_id" field.
 func (sruo *SubscribeReminderUpdateOne) SetPlanID(u uint64) *SubscribeReminderUpdateOne {
 	sruo.mutation.SetPlanID(u)
+	return sruo
+}
+
+// SetNillablePlanID sets the "plan_id" field if the given value is not nil.
+func (sruo *SubscribeReminderUpdateOne) SetNillablePlanID(u *uint64) *SubscribeReminderUpdateOne {
+	if u != nil {
+		sruo.SetPlanID(*u)
+	}
 	return sruo
 }
 
@@ -429,9 +525,25 @@ func (sruo *SubscribeReminderUpdateOne) SetRiderID(u uint64) *SubscribeReminderU
 	return sruo
 }
 
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (sruo *SubscribeReminderUpdateOne) SetNillableRiderID(u *uint64) *SubscribeReminderUpdateOne {
+	if u != nil {
+		sruo.SetRiderID(*u)
+	}
+	return sruo
+}
+
 // SetType sets the "type" field.
 func (sruo *SubscribeReminderUpdateOne) SetType(s subscribereminder.Type) *SubscribeReminderUpdateOne {
 	sruo.mutation.SetType(s)
+	return sruo
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (sruo *SubscribeReminderUpdateOne) SetNillableType(s *subscribereminder.Type) *SubscribeReminderUpdateOne {
+	if s != nil {
+		sruo.SetType(*s)
+	}
 	return sruo
 }
 
@@ -441,9 +553,25 @@ func (sruo *SubscribeReminderUpdateOne) SetPhone(s string) *SubscribeReminderUpd
 	return sruo
 }
 
+// SetNillablePhone sets the "phone" field if the given value is not nil.
+func (sruo *SubscribeReminderUpdateOne) SetNillablePhone(s *string) *SubscribeReminderUpdateOne {
+	if s != nil {
+		sruo.SetPhone(*s)
+	}
+	return sruo
+}
+
 // SetName sets the "name" field.
 func (sruo *SubscribeReminderUpdateOne) SetName(s string) *SubscribeReminderUpdateOne {
 	sruo.mutation.SetName(s)
+	return sruo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (sruo *SubscribeReminderUpdateOne) SetNillableName(s *string) *SubscribeReminderUpdateOne {
+	if s != nil {
+		sruo.SetName(*s)
+	}
 	return sruo
 }
 
@@ -453,10 +581,26 @@ func (sruo *SubscribeReminderUpdateOne) SetSuccess(b bool) *SubscribeReminderUpd
 	return sruo
 }
 
+// SetNillableSuccess sets the "success" field if the given value is not nil.
+func (sruo *SubscribeReminderUpdateOne) SetNillableSuccess(b *bool) *SubscribeReminderUpdateOne {
+	if b != nil {
+		sruo.SetSuccess(*b)
+	}
+	return sruo
+}
+
 // SetDays sets the "days" field.
 func (sruo *SubscribeReminderUpdateOne) SetDays(i int) *SubscribeReminderUpdateOne {
 	sruo.mutation.ResetDays()
 	sruo.mutation.SetDays(i)
+	return sruo
+}
+
+// SetNillableDays sets the "days" field if the given value is not nil.
+func (sruo *SubscribeReminderUpdateOne) SetNillableDays(i *int) *SubscribeReminderUpdateOne {
+	if i != nil {
+		sruo.SetDays(*i)
+	}
 	return sruo
 }
 
@@ -472,9 +616,25 @@ func (sruo *SubscribeReminderUpdateOne) SetPlanName(s string) *SubscribeReminder
 	return sruo
 }
 
+// SetNillablePlanName sets the "plan_name" field if the given value is not nil.
+func (sruo *SubscribeReminderUpdateOne) SetNillablePlanName(s *string) *SubscribeReminderUpdateOne {
+	if s != nil {
+		sruo.SetPlanName(*s)
+	}
+	return sruo
+}
+
 // SetDate sets the "date" field.
 func (sruo *SubscribeReminderUpdateOne) SetDate(s string) *SubscribeReminderUpdateOne {
 	sruo.mutation.SetDate(s)
+	return sruo
+}
+
+// SetNillableDate sets the "date" field if the given value is not nil.
+func (sruo *SubscribeReminderUpdateOne) SetNillableDate(s *string) *SubscribeReminderUpdateOne {
+	if s != nil {
+		sruo.SetDate(*s)
+	}
 	return sruo
 }
 

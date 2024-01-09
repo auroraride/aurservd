@@ -99,15 +99,39 @@ func (peu *PromotionEarningsUpdate) SetCommissionID(u uint64) *PromotionEarnings
 	return peu
 }
 
+// SetNillableCommissionID sets the "commission_id" field if the given value is not nil.
+func (peu *PromotionEarningsUpdate) SetNillableCommissionID(u *uint64) *PromotionEarningsUpdate {
+	if u != nil {
+		peu.SetCommissionID(*u)
+	}
+	return peu
+}
+
 // SetMemberID sets the "member_id" field.
 func (peu *PromotionEarningsUpdate) SetMemberID(u uint64) *PromotionEarningsUpdate {
 	peu.mutation.SetMemberID(u)
 	return peu
 }
 
+// SetNillableMemberID sets the "member_id" field if the given value is not nil.
+func (peu *PromotionEarningsUpdate) SetNillableMemberID(u *uint64) *PromotionEarningsUpdate {
+	if u != nil {
+		peu.SetMemberID(*u)
+	}
+	return peu
+}
+
 // SetRiderID sets the "rider_id" field.
 func (peu *PromotionEarningsUpdate) SetRiderID(u uint64) *PromotionEarningsUpdate {
 	peu.mutation.SetRiderID(u)
+	return peu
+}
+
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (peu *PromotionEarningsUpdate) SetNillableRiderID(u *uint64) *PromotionEarningsUpdate {
+	if u != nil {
+		peu.SetRiderID(*u)
+	}
 	return peu
 }
 
@@ -620,15 +644,39 @@ func (peuo *PromotionEarningsUpdateOne) SetCommissionID(u uint64) *PromotionEarn
 	return peuo
 }
 
+// SetNillableCommissionID sets the "commission_id" field if the given value is not nil.
+func (peuo *PromotionEarningsUpdateOne) SetNillableCommissionID(u *uint64) *PromotionEarningsUpdateOne {
+	if u != nil {
+		peuo.SetCommissionID(*u)
+	}
+	return peuo
+}
+
 // SetMemberID sets the "member_id" field.
 func (peuo *PromotionEarningsUpdateOne) SetMemberID(u uint64) *PromotionEarningsUpdateOne {
 	peuo.mutation.SetMemberID(u)
 	return peuo
 }
 
+// SetNillableMemberID sets the "member_id" field if the given value is not nil.
+func (peuo *PromotionEarningsUpdateOne) SetNillableMemberID(u *uint64) *PromotionEarningsUpdateOne {
+	if u != nil {
+		peuo.SetMemberID(*u)
+	}
+	return peuo
+}
+
 // SetRiderID sets the "rider_id" field.
 func (peuo *PromotionEarningsUpdateOne) SetRiderID(u uint64) *PromotionEarningsUpdateOne {
 	peuo.mutation.SetRiderID(u)
+	return peuo
+}
+
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (peuo *PromotionEarningsUpdateOne) SetNillableRiderID(u *uint64) *PromotionEarningsUpdateOne {
+	if u != nil {
+		peuo.SetRiderID(*u)
+	}
 	return peuo
 }
 

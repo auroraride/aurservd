@@ -186,6 +186,14 @@ func (cu *CabinetUpdate) SetSn(s string) *CabinetUpdate {
 	return cu
 }
 
+// SetNillableSn sets the "sn" field if the given value is not nil.
+func (cu *CabinetUpdate) SetNillableSn(s *string) *CabinetUpdate {
+	if s != nil {
+		cu.SetSn(*s)
+	}
+	return cu
+}
+
 // SetBrand sets the "brand" field.
 func (cu *CabinetUpdate) SetBrand(ab adapter.CabinetBrand) *CabinetUpdate {
 	cu.mutation.SetBrand(ab)
@@ -206,9 +214,25 @@ func (cu *CabinetUpdate) SetSerial(s string) *CabinetUpdate {
 	return cu
 }
 
+// SetNillableSerial sets the "serial" field if the given value is not nil.
+func (cu *CabinetUpdate) SetNillableSerial(s *string) *CabinetUpdate {
+	if s != nil {
+		cu.SetSerial(*s)
+	}
+	return cu
+}
+
 // SetName sets the "name" field.
 func (cu *CabinetUpdate) SetName(s string) *CabinetUpdate {
 	cu.mutation.SetName(s)
+	return cu
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (cu *CabinetUpdate) SetNillableName(s *string) *CabinetUpdate {
+	if s != nil {
+		cu.SetName(*s)
+	}
 	return cu
 }
 
@@ -216,6 +240,14 @@ func (cu *CabinetUpdate) SetName(s string) *CabinetUpdate {
 func (cu *CabinetUpdate) SetDoors(i int) *CabinetUpdate {
 	cu.mutation.ResetDoors()
 	cu.mutation.SetDoors(i)
+	return cu
+}
+
+// SetNillableDoors sets the "doors" field if the given value is not nil.
+func (cu *CabinetUpdate) SetNillableDoors(i *int) *CabinetUpdate {
+	if i != nil {
+		cu.SetDoors(*i)
+	}
 	return cu
 }
 
@@ -229,6 +261,14 @@ func (cu *CabinetUpdate) AddDoors(i int) *CabinetUpdate {
 func (cu *CabinetUpdate) SetStatus(u uint8) *CabinetUpdate {
 	cu.mutation.ResetStatus()
 	cu.mutation.SetStatus(u)
+	return cu
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (cu *CabinetUpdate) SetNillableStatus(u *uint8) *CabinetUpdate {
+	if u != nil {
+		cu.SetStatus(*u)
+	}
 	return cu
 }
 
@@ -1553,6 +1593,14 @@ func (cuo *CabinetUpdateOne) SetSn(s string) *CabinetUpdateOne {
 	return cuo
 }
 
+// SetNillableSn sets the "sn" field if the given value is not nil.
+func (cuo *CabinetUpdateOne) SetNillableSn(s *string) *CabinetUpdateOne {
+	if s != nil {
+		cuo.SetSn(*s)
+	}
+	return cuo
+}
+
 // SetBrand sets the "brand" field.
 func (cuo *CabinetUpdateOne) SetBrand(ab adapter.CabinetBrand) *CabinetUpdateOne {
 	cuo.mutation.SetBrand(ab)
@@ -1573,9 +1621,25 @@ func (cuo *CabinetUpdateOne) SetSerial(s string) *CabinetUpdateOne {
 	return cuo
 }
 
+// SetNillableSerial sets the "serial" field if the given value is not nil.
+func (cuo *CabinetUpdateOne) SetNillableSerial(s *string) *CabinetUpdateOne {
+	if s != nil {
+		cuo.SetSerial(*s)
+	}
+	return cuo
+}
+
 // SetName sets the "name" field.
 func (cuo *CabinetUpdateOne) SetName(s string) *CabinetUpdateOne {
 	cuo.mutation.SetName(s)
+	return cuo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (cuo *CabinetUpdateOne) SetNillableName(s *string) *CabinetUpdateOne {
+	if s != nil {
+		cuo.SetName(*s)
+	}
 	return cuo
 }
 
@@ -1583,6 +1647,14 @@ func (cuo *CabinetUpdateOne) SetName(s string) *CabinetUpdateOne {
 func (cuo *CabinetUpdateOne) SetDoors(i int) *CabinetUpdateOne {
 	cuo.mutation.ResetDoors()
 	cuo.mutation.SetDoors(i)
+	return cuo
+}
+
+// SetNillableDoors sets the "doors" field if the given value is not nil.
+func (cuo *CabinetUpdateOne) SetNillableDoors(i *int) *CabinetUpdateOne {
+	if i != nil {
+		cuo.SetDoors(*i)
+	}
 	return cuo
 }
 
@@ -1596,6 +1668,14 @@ func (cuo *CabinetUpdateOne) AddDoors(i int) *CabinetUpdateOne {
 func (cuo *CabinetUpdateOne) SetStatus(u uint8) *CabinetUpdateOne {
 	cuo.mutation.ResetStatus()
 	cuo.mutation.SetStatus(u)
+	return cuo
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (cuo *CabinetUpdateOne) SetNillableStatus(u *uint8) *CabinetUpdateOne {
+	if u != nil {
+		cuo.SetStatus(*u)
+	}
 	return cuo
 }
 

@@ -743,12 +743,16 @@ func (u *ManagerUpsertOne) IDX(ctx context.Context) uint64 {
 // ManagerCreateBulk is the builder for creating many Manager entities in bulk.
 type ManagerCreateBulk struct {
 	config
+	err      error
 	builders []*ManagerCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the Manager entities in the database.
 func (mcb *ManagerCreateBulk) Save(ctx context.Context) ([]*Manager, error) {
+	if mcb.err != nil {
+		return nil, mcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(mcb.builders))
 	nodes := make([]*Manager, len(mcb.builders))
 	mutators := make([]Mutator, len(mcb.builders))
@@ -1080,6 +1084,9 @@ func (u *ManagerUpsertBulk) ClearLastSigninAt() *ManagerUpsertBulk {
 
 // Exec executes the query.
 func (u *ManagerUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the ManagerCreateBulk instead", i)

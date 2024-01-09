@@ -909,12 +909,16 @@ func (u *PromotionBankCardUpsertOne) IDX(ctx context.Context) uint64 {
 // PromotionBankCardCreateBulk is the builder for creating many PromotionBankCard entities in bulk.
 type PromotionBankCardCreateBulk struct {
 	config
+	err      error
 	builders []*PromotionBankCardCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the PromotionBankCard entities in the database.
 func (pbccb *PromotionBankCardCreateBulk) Save(ctx context.Context) ([]*PromotionBankCard, error) {
+	if pbccb.err != nil {
+		return nil, pbccb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(pbccb.builders))
 	nodes := make([]*PromotionBankCard, len(pbccb.builders))
 	mutators := make([]Mutator, len(pbccb.builders))
@@ -1295,6 +1299,9 @@ func (u *PromotionBankCardUpsertBulk) ClearCity() *PromotionBankCardUpsertBulk {
 
 // Exec executes the query.
 func (u *PromotionBankCardUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the PromotionBankCardCreateBulk instead", i)

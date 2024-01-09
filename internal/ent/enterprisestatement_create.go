@@ -978,12 +978,16 @@ func (u *EnterpriseStatementUpsertOne) IDX(ctx context.Context) uint64 {
 // EnterpriseStatementCreateBulk is the builder for creating many EnterpriseStatement entities in bulk.
 type EnterpriseStatementCreateBulk struct {
 	config
+	err      error
 	builders []*EnterpriseStatementCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the EnterpriseStatement entities in the database.
 func (escb *EnterpriseStatementCreateBulk) Save(ctx context.Context) ([]*EnterpriseStatement, error) {
+	if escb.err != nil {
+		return nil, escb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(escb.builders))
 	nodes := make([]*EnterpriseStatement, len(escb.builders))
 	mutators := make([]Mutator, len(escb.builders))
@@ -1385,6 +1389,9 @@ func (u *EnterpriseStatementUpsertBulk) ClearEnd() *EnterpriseStatementUpsertBul
 
 // Exec executes the query.
 func (u *EnterpriseStatementUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the EnterpriseStatementCreateBulk instead", i)

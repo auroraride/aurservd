@@ -829,7 +829,7 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
 				row[15] = detail.Subscribe.Remaining
 				bike := detail.Subscribe.Ebike
 				if bike != nil {
-					row[20] = bike.Brand.Name
+					row[21] = bike.Brand.Name
 					if bike.SN != "" {
 						row[23] = bike.SN
 					}
@@ -847,7 +847,7 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
 			var unsubscribeOperator string
 
 			bizList, _ := ent.Database.Business.QueryNotDeleted().
-				WithEmployee().WithStore().
+				WithEmployee().WithStore().WithAgent().
 				Where(business.RiderID(item.ID), business.TypeIn(business.TypeActive, business.TypeUnsubscribe)).
 				Order(ent.Desc(business.FieldCreatedAt)).
 				Limit(2).
@@ -869,6 +869,11 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
 					// 操作人是店员
 					if biz.Edges.Employee != nil {
 						operator = biz.Edges.Employee.Name + "-" + biz.Edges.Employee.Phone
+					}
+				case biz.AgentID != nil:
+					// 操作人是代理
+					if biz.Edges.Agent != nil {
+						operator = biz.Edges.Agent.Name + "-" + biz.Edges.Agent.Phone
 					}
 				}
 
@@ -897,11 +902,11 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
 			if len(subscribes) > 0 {
 				sub := subscribes[len(subscribes)-1]
 				if sub.StartAt != nil {
-					row[12] = sub.StartAt.Format(carbon.DateTimeLayout)
+					row[12] = sub.StartAt.Format(carbon.DateLayout)
 				}
-				if sub.EndAt != nil {
-					row[13] = sub.EndAt.Format(carbon.DateTimeLayout)
-				}
+				// 到期时间 当前时间+订阅剩余天数
+				endAt := carbon.Now().AddDays(sub.Remaining).ToDateString()
+				row[13] = endAt
 			}
 			// 逾期费用
 			subscribeReminder, _ := ent.Database.SubscribeReminder.Query().Where(subscribereminder.RiderID(item.ID)).First(s.ctx)

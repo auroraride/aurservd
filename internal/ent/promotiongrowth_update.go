@@ -125,6 +125,14 @@ func (pgu *PromotionGrowthUpdate) SetGrowthValue(u uint64) *PromotionGrowthUpdat
 	return pgu
 }
 
+// SetNillableGrowthValue sets the "growth_value" field if the given value is not nil.
+func (pgu *PromotionGrowthUpdate) SetNillableGrowthValue(u *uint64) *PromotionGrowthUpdate {
+	if u != nil {
+		pgu.SetGrowthValue(*u)
+	}
+	return pgu
+}
+
 // AddGrowthValue adds u to the "growth_value" field.
 func (pgu *PromotionGrowthUpdate) AddGrowthValue(u int64) *PromotionGrowthUpdate {
 	pgu.mutation.AddGrowthValue(u)
@@ -434,6 +442,14 @@ func (pguo *PromotionGrowthUpdateOne) ClearRiderID() *PromotionGrowthUpdateOne {
 func (pguo *PromotionGrowthUpdateOne) SetGrowthValue(u uint64) *PromotionGrowthUpdateOne {
 	pguo.mutation.ResetGrowthValue()
 	pguo.mutation.SetGrowthValue(u)
+	return pguo
+}
+
+// SetNillableGrowthValue sets the "growth_value" field if the given value is not nil.
+func (pguo *PromotionGrowthUpdateOne) SetNillableGrowthValue(u *uint64) *PromotionGrowthUpdateOne {
+	if u != nil {
+		pguo.SetGrowthValue(*u)
+	}
 	return pguo
 }
 

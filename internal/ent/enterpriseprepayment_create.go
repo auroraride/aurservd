@@ -684,12 +684,16 @@ func (u *EnterprisePrepaymentUpsertOne) IDX(ctx context.Context) uint64 {
 // EnterprisePrepaymentCreateBulk is the builder for creating many EnterprisePrepayment entities in bulk.
 type EnterprisePrepaymentCreateBulk struct {
 	config
+	err      error
 	builders []*EnterprisePrepaymentCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the EnterprisePrepayment entities in the database.
 func (epcb *EnterprisePrepaymentCreateBulk) Save(ctx context.Context) ([]*EnterprisePrepayment, error) {
+	if epcb.err != nil {
+		return nil, epcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(epcb.builders))
 	nodes := make([]*EnterprisePrepayment, len(epcb.builders))
 	mutators := make([]Mutator, len(epcb.builders))
@@ -989,6 +993,9 @@ func (u *EnterprisePrepaymentUpsertBulk) ClearTradeNo() *EnterprisePrepaymentUps
 
 // Exec executes the query.
 func (u *EnterprisePrepaymentUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the EnterprisePrepaymentCreateBulk instead", i)

@@ -74,15 +74,39 @@ func (su *SettingUpdate) SetKey(s string) *SettingUpdate {
 	return su
 }
 
+// SetNillableKey sets the "key" field if the given value is not nil.
+func (su *SettingUpdate) SetNillableKey(s *string) *SettingUpdate {
+	if s != nil {
+		su.SetKey(*s)
+	}
+	return su
+}
+
 // SetDesc sets the "desc" field.
 func (su *SettingUpdate) SetDesc(s string) *SettingUpdate {
 	su.mutation.SetDesc(s)
 	return su
 }
 
+// SetNillableDesc sets the "desc" field if the given value is not nil.
+func (su *SettingUpdate) SetNillableDesc(s *string) *SettingUpdate {
+	if s != nil {
+		su.SetDesc(*s)
+	}
+	return su
+}
+
 // SetContent sets the "content" field.
 func (su *SettingUpdate) SetContent(s string) *SettingUpdate {
 	su.mutation.SetContent(s)
+	return su
+}
+
+// SetNillableContent sets the "content" field if the given value is not nil.
+func (su *SettingUpdate) SetNillableContent(s *string) *SettingUpdate {
+	if s != nil {
+		su.SetContent(*s)
+	}
 	return su
 }
 
@@ -254,15 +278,39 @@ func (suo *SettingUpdateOne) SetKey(s string) *SettingUpdateOne {
 	return suo
 }
 
+// SetNillableKey sets the "key" field if the given value is not nil.
+func (suo *SettingUpdateOne) SetNillableKey(s *string) *SettingUpdateOne {
+	if s != nil {
+		suo.SetKey(*s)
+	}
+	return suo
+}
+
 // SetDesc sets the "desc" field.
 func (suo *SettingUpdateOne) SetDesc(s string) *SettingUpdateOne {
 	suo.mutation.SetDesc(s)
 	return suo
 }
 
+// SetNillableDesc sets the "desc" field if the given value is not nil.
+func (suo *SettingUpdateOne) SetNillableDesc(s *string) *SettingUpdateOne {
+	if s != nil {
+		suo.SetDesc(*s)
+	}
+	return suo
+}
+
 // SetContent sets the "content" field.
 func (suo *SettingUpdateOne) SetContent(s string) *SettingUpdateOne {
 	suo.mutation.SetContent(s)
+	return suo
+}
+
+// SetNillableContent sets the "content" field if the given value is not nil.
+func (suo *SettingUpdateOne) SetNillableContent(s *string) *SettingUpdateOne {
+	if s != nil {
+		suo.SetContent(*s)
+	}
 	return suo
 }
 

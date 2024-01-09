@@ -1839,12 +1839,16 @@ func (u *RiderUpsertOne) IDX(ctx context.Context) uint64 {
 // RiderCreateBulk is the builder for creating many Rider entities in bulk.
 type RiderCreateBulk struct {
 	config
+	err      error
 	builders []*RiderCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the Rider entities in the database.
 func (rcb *RiderCreateBulk) Save(ctx context.Context) ([]*Rider, error) {
+	if rcb.err != nil {
+		return nil, rcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(rcb.builders))
 	nodes := make([]*Rider, len(rcb.builders))
 	mutators := make([]Mutator, len(rcb.builders))
@@ -2456,6 +2460,9 @@ func (u *RiderUpsertBulk) ClearJoinEnterpriseAt() *RiderUpsertBulk {
 
 // Exec executes the query.
 func (u *RiderUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the RiderCreateBulk instead", i)

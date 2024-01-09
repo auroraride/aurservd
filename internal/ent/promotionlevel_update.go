@@ -95,6 +95,14 @@ func (plu *PromotionLevelUpdate) SetLevel(u uint64) *PromotionLevelUpdate {
 	return plu
 }
 
+// SetNillableLevel sets the "level" field if the given value is not nil.
+func (plu *PromotionLevelUpdate) SetNillableLevel(u *uint64) *PromotionLevelUpdate {
+	if u != nil {
+		plu.SetLevel(*u)
+	}
+	return plu
+}
+
 // AddLevel adds u to the "level" field.
 func (plu *PromotionLevelUpdate) AddLevel(u int64) *PromotionLevelUpdate {
 	plu.mutation.AddLevel(u)
@@ -331,6 +339,14 @@ func (pluo *PromotionLevelUpdateOne) ClearRemark() *PromotionLevelUpdateOne {
 func (pluo *PromotionLevelUpdateOne) SetLevel(u uint64) *PromotionLevelUpdateOne {
 	pluo.mutation.ResetLevel()
 	pluo.mutation.SetLevel(u)
+	return pluo
+}
+
+// SetNillableLevel sets the "level" field if the given value is not nil.
+func (pluo *PromotionLevelUpdateOne) SetNillableLevel(u *uint64) *PromotionLevelUpdateOne {
+	if u != nil {
+		pluo.SetLevel(*u)
+	}
 	return pluo
 }
 

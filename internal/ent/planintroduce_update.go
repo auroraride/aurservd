@@ -62,9 +62,25 @@ func (piu *PlanIntroduceUpdate) SetModel(s string) *PlanIntroduceUpdate {
 	return piu
 }
 
+// SetNillableModel sets the "model" field if the given value is not nil.
+func (piu *PlanIntroduceUpdate) SetNillableModel(s *string) *PlanIntroduceUpdate {
+	if s != nil {
+		piu.SetModel(*s)
+	}
+	return piu
+}
+
 // SetImage sets the "image" field.
 func (piu *PlanIntroduceUpdate) SetImage(s string) *PlanIntroduceUpdate {
 	piu.mutation.SetImage(s)
+	return piu
+}
+
+// SetNillableImage sets the "image" field if the given value is not nil.
+func (piu *PlanIntroduceUpdate) SetNillableImage(s *string) *PlanIntroduceUpdate {
+	if s != nil {
+		piu.SetImage(*s)
+	}
 	return piu
 }
 
@@ -227,9 +243,25 @@ func (piuo *PlanIntroduceUpdateOne) SetModel(s string) *PlanIntroduceUpdateOne {
 	return piuo
 }
 
+// SetNillableModel sets the "model" field if the given value is not nil.
+func (piuo *PlanIntroduceUpdateOne) SetNillableModel(s *string) *PlanIntroduceUpdateOne {
+	if s != nil {
+		piuo.SetModel(*s)
+	}
+	return piuo
+}
+
 // SetImage sets the "image" field.
 func (piuo *PlanIntroduceUpdateOne) SetImage(s string) *PlanIntroduceUpdateOne {
 	piuo.mutation.SetImage(s)
+	return piuo
+}
+
+// SetNillableImage sets the "image" field if the given value is not nil.
+func (piuo *PlanIntroduceUpdateOne) SetNillableImage(s *string) *PlanIntroduceUpdateOne {
+	if s != nil {
+		piuo.SetImage(*s)
+	}
 	return piuo
 }
 

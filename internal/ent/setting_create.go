@@ -548,12 +548,16 @@ func (u *SettingUpsertOne) IDX(ctx context.Context) uint64 {
 // SettingCreateBulk is the builder for creating many Setting entities in bulk.
 type SettingCreateBulk struct {
 	config
+	err      error
 	builders []*SettingCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the Setting entities in the database.
 func (scb *SettingCreateBulk) Save(ctx context.Context) ([]*Setting, error) {
+	if scb.err != nil {
+		return nil, scb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(scb.builders))
 	nodes := make([]*Setting, len(scb.builders))
 	mutators := make([]Mutator, len(scb.builders))
@@ -822,6 +826,9 @@ func (u *SettingUpsertBulk) UpdateContent() *SettingUpsertBulk {
 
 // Exec executes the query.
 func (u *SettingUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the SettingCreateBulk instead", i)

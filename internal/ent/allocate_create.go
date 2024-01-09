@@ -1373,12 +1373,16 @@ func (u *AllocateUpsertOne) IDX(ctx context.Context) uint64 {
 // AllocateCreateBulk is the builder for creating many Allocate entities in bulk.
 type AllocateCreateBulk struct {
 	config
+	err      error
 	builders []*AllocateCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the Allocate entities in the database.
 func (acb *AllocateCreateBulk) Save(ctx context.Context) ([]*Allocate, error) {
+	if acb.err != nil {
+		return nil, acb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(acb.builders))
 	nodes := make([]*Allocate, len(acb.builders))
 	mutators := make([]Mutator, len(acb.builders))
@@ -1871,6 +1875,9 @@ func (u *AllocateUpsertBulk) ClearEbikeID() *AllocateUpsertBulk {
 
 // Exec executes the query.
 func (u *AllocateUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the AllocateCreateBulk instead", i)

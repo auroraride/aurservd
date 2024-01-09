@@ -79,6 +79,14 @@ func (sau *SubscribeAlterUpdate) SetRiderID(u uint64) *SubscribeAlterUpdate {
 	return sau
 }
 
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (sau *SubscribeAlterUpdate) SetNillableRiderID(u *uint64) *SubscribeAlterUpdate {
+	if u != nil {
+		sau.SetRiderID(*u)
+	}
+	return sau
+}
+
 // SetManagerID sets the "manager_id" field.
 func (sau *SubscribeAlterUpdate) SetManagerID(u uint64) *SubscribeAlterUpdate {
 	sau.mutation.SetManagerID(u)
@@ -145,10 +153,26 @@ func (sau *SubscribeAlterUpdate) SetSubscribeID(u uint64) *SubscribeAlterUpdate 
 	return sau
 }
 
+// SetNillableSubscribeID sets the "subscribe_id" field if the given value is not nil.
+func (sau *SubscribeAlterUpdate) SetNillableSubscribeID(u *uint64) *SubscribeAlterUpdate {
+	if u != nil {
+		sau.SetSubscribeID(*u)
+	}
+	return sau
+}
+
 // SetDays sets the "days" field.
 func (sau *SubscribeAlterUpdate) SetDays(i int) *SubscribeAlterUpdate {
 	sau.mutation.ResetDays()
 	sau.mutation.SetDays(i)
+	return sau
+}
+
+// SetNillableDays sets the "days" field if the given value is not nil.
+func (sau *SubscribeAlterUpdate) SetNillableDays(i *int) *SubscribeAlterUpdate {
+	if i != nil {
+		sau.SetDays(*i)
+	}
 	return sau
 }
 
@@ -603,6 +627,14 @@ func (sauo *SubscribeAlterUpdateOne) SetRiderID(u uint64) *SubscribeAlterUpdateO
 	return sauo
 }
 
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (sauo *SubscribeAlterUpdateOne) SetNillableRiderID(u *uint64) *SubscribeAlterUpdateOne {
+	if u != nil {
+		sauo.SetRiderID(*u)
+	}
+	return sauo
+}
+
 // SetManagerID sets the "manager_id" field.
 func (sauo *SubscribeAlterUpdateOne) SetManagerID(u uint64) *SubscribeAlterUpdateOne {
 	sauo.mutation.SetManagerID(u)
@@ -669,10 +701,26 @@ func (sauo *SubscribeAlterUpdateOne) SetSubscribeID(u uint64) *SubscribeAlterUpd
 	return sauo
 }
 
+// SetNillableSubscribeID sets the "subscribe_id" field if the given value is not nil.
+func (sauo *SubscribeAlterUpdateOne) SetNillableSubscribeID(u *uint64) *SubscribeAlterUpdateOne {
+	if u != nil {
+		sauo.SetSubscribeID(*u)
+	}
+	return sauo
+}
+
 // SetDays sets the "days" field.
 func (sauo *SubscribeAlterUpdateOne) SetDays(i int) *SubscribeAlterUpdateOne {
 	sauo.mutation.ResetDays()
 	sauo.mutation.SetDays(i)
+	return sauo
+}
+
+// SetNillableDays sets the "days" field if the given value is not nil.
+func (sauo *SubscribeAlterUpdateOne) SetNillableDays(i *int) *SubscribeAlterUpdateOne {
+	if i != nil {
+		sauo.SetDays(*i)
+	}
 	return sauo
 }
 

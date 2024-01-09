@@ -84,6 +84,14 @@ func (fu *FeedbackUpdate) SetContent(s string) *FeedbackUpdate {
 	return fu
 }
 
+// SetNillableContent sets the "content" field if the given value is not nil.
+func (fu *FeedbackUpdate) SetNillableContent(s *string) *FeedbackUpdate {
+	if s != nil {
+		fu.SetContent(*s)
+	}
+	return fu
+}
+
 // SetType sets the "type" field.
 func (fu *FeedbackUpdate) SetType(u uint8) *FeedbackUpdate {
 	fu.mutation.ResetType()
@@ -405,6 +413,14 @@ func (fuo *FeedbackUpdateOne) ClearAgentID() *FeedbackUpdateOne {
 // SetContent sets the "content" field.
 func (fuo *FeedbackUpdateOne) SetContent(s string) *FeedbackUpdateOne {
 	fuo.mutation.SetContent(s)
+	return fuo
+}
+
+// SetNillableContent sets the "content" field if the given value is not nil.
+func (fuo *FeedbackUpdateOne) SetNillableContent(s *string) *FeedbackUpdateOne {
+	if s != nil {
+		fuo.SetContent(*s)
+	}
 	return fuo
 }
 

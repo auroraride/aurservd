@@ -66,9 +66,25 @@ func (bfu *BatteryFlowUpdate) SetBatteryID(u uint64) *BatteryFlowUpdate {
 	return bfu
 }
 
+// SetNillableBatteryID sets the "battery_id" field if the given value is not nil.
+func (bfu *BatteryFlowUpdate) SetNillableBatteryID(u *uint64) *BatteryFlowUpdate {
+	if u != nil {
+		bfu.SetBatteryID(*u)
+	}
+	return bfu
+}
+
 // SetSn sets the "sn" field.
 func (bfu *BatteryFlowUpdate) SetSn(s string) *BatteryFlowUpdate {
 	bfu.mutation.SetSn(s)
+	return bfu
+}
+
+// SetNillableSn sets the "sn" field if the given value is not nil.
+func (bfu *BatteryFlowUpdate) SetNillableSn(s *string) *BatteryFlowUpdate {
+	if s != nil {
+		bfu.SetSn(*s)
+	}
 	return bfu
 }
 
@@ -532,9 +548,25 @@ func (bfuo *BatteryFlowUpdateOne) SetBatteryID(u uint64) *BatteryFlowUpdateOne {
 	return bfuo
 }
 
+// SetNillableBatteryID sets the "battery_id" field if the given value is not nil.
+func (bfuo *BatteryFlowUpdateOne) SetNillableBatteryID(u *uint64) *BatteryFlowUpdateOne {
+	if u != nil {
+		bfuo.SetBatteryID(*u)
+	}
+	return bfuo
+}
+
 // SetSn sets the "sn" field.
 func (bfuo *BatteryFlowUpdateOne) SetSn(s string) *BatteryFlowUpdateOne {
 	bfuo.mutation.SetSn(s)
+	return bfuo
+}
+
+// SetNillableSn sets the "sn" field if the given value is not nil.
+func (bfuo *BatteryFlowUpdateOne) SetNillableSn(s *string) *BatteryFlowUpdateOne {
+	if s != nil {
+		bfuo.SetSn(*s)
+	}
 	return bfuo
 }
 

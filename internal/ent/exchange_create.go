@@ -1828,12 +1828,16 @@ func (u *ExchangeUpsertOne) IDX(ctx context.Context) uint64 {
 // ExchangeCreateBulk is the builder for creating many Exchange entities in bulk.
 type ExchangeCreateBulk struct {
 	config
+	err      error
 	builders []*ExchangeCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the Exchange entities in the database.
 func (ecb *ExchangeCreateBulk) Save(ctx context.Context) ([]*Exchange, error) {
+	if ecb.err != nil {
+		return nil, ecb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ecb.builders))
 	nodes := make([]*Exchange, len(ecb.builders))
 	mutators := make([]Mutator, len(ecb.builders))
@@ -2515,6 +2519,9 @@ func (u *ExchangeUpsertBulk) UpdateMessage() *ExchangeUpsertBulk {
 
 // Exec executes the query.
 func (u *ExchangeUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the ExchangeCreateBulk instead", i)

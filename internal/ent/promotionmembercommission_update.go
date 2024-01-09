@@ -63,6 +63,14 @@ func (pmcu *PromotionMemberCommissionUpdate) SetCommissionID(u uint64) *Promotio
 	return pmcu
 }
 
+// SetNillableCommissionID sets the "commission_id" field if the given value is not nil.
+func (pmcu *PromotionMemberCommissionUpdate) SetNillableCommissionID(u *uint64) *PromotionMemberCommissionUpdate {
+	if u != nil {
+		pmcu.SetCommissionID(*u)
+	}
+	return pmcu
+}
+
 // SetMemberID sets the "member_id" field.
 func (pmcu *PromotionMemberCommissionUpdate) SetMemberID(u uint64) *PromotionMemberCommissionUpdate {
 	pmcu.mutation.SetMemberID(u)
@@ -290,6 +298,14 @@ func (pmcuo *PromotionMemberCommissionUpdateOne) ClearDeletedAt() *PromotionMemb
 // SetCommissionID sets the "commission_id" field.
 func (pmcuo *PromotionMemberCommissionUpdateOne) SetCommissionID(u uint64) *PromotionMemberCommissionUpdateOne {
 	pmcuo.mutation.SetCommissionID(u)
+	return pmcuo
+}
+
+// SetNillableCommissionID sets the "commission_id" field if the given value is not nil.
+func (pmcuo *PromotionMemberCommissionUpdateOne) SetNillableCommissionID(u *uint64) *PromotionMemberCommissionUpdateOne {
+	if u != nil {
+		pmcuo.SetCommissionID(*u)
+	}
 	return pmcuo
 }
 

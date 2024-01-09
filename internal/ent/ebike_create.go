@@ -1225,12 +1225,16 @@ func (u *EbikeUpsertOne) IDX(ctx context.Context) uint64 {
 // EbikeCreateBulk is the builder for creating many Ebike entities in bulk.
 type EbikeCreateBulk struct {
 	config
+	err      error
 	builders []*EbikeCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the Ebike entities in the database.
 func (ecb *EbikeCreateBulk) Save(ctx context.Context) ([]*Ebike, error) {
+	if ecb.err != nil {
+		return nil, ecb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ecb.builders))
 	nodes := make([]*Ebike, len(ecb.builders))
 	mutators := make([]Mutator, len(ecb.builders))
@@ -1688,6 +1692,9 @@ func (u *EbikeUpsertBulk) UpdateExFactory() *EbikeUpsertBulk {
 
 // Exec executes the query.
 func (u *EbikeUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the EbikeCreateBulk instead", i)

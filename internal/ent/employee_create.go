@@ -927,12 +927,16 @@ func (u *EmployeeUpsertOne) IDX(ctx context.Context) uint64 {
 // EmployeeCreateBulk is the builder for creating many Employee entities in bulk.
 type EmployeeCreateBulk struct {
 	config
+	err      error
 	builders []*EmployeeCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the Employee entities in the database.
 func (ecb *EmployeeCreateBulk) Save(ctx context.Context) ([]*Employee, error) {
+	if ecb.err != nil {
+		return nil, ecb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ecb.builders))
 	nodes := make([]*Employee, len(ecb.builders))
 	mutators := make([]Mutator, len(ecb.builders))
@@ -1257,6 +1261,9 @@ func (u *EmployeeUpsertBulk) UpdateEnable() *EmployeeUpsertBulk {
 
 // Exec executes the query.
 func (u *EmployeeUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the EmployeeCreateBulk instead", i)

@@ -180,6 +180,14 @@ func (cu *CommissionUpdate) SetOrderID(u uint64) *CommissionUpdate {
 	return cu
 }
 
+// SetNillableOrderID sets the "order_id" field if the given value is not nil.
+func (cu *CommissionUpdate) SetNillableOrderID(u *uint64) *CommissionUpdate {
+	if u != nil {
+		cu.SetOrderID(*u)
+	}
+	return cu
+}
+
 // SetStatus sets the "status" field.
 func (cu *CommissionUpdate) SetStatus(u uint8) *CommissionUpdate {
 	cu.mutation.ResetStatus()
@@ -727,6 +735,14 @@ func (cuo *CommissionUpdateOne) ClearRiderID() *CommissionUpdateOne {
 // SetOrderID sets the "order_id" field.
 func (cuo *CommissionUpdateOne) SetOrderID(u uint64) *CommissionUpdateOne {
 	cuo.mutation.SetOrderID(u)
+	return cuo
+}
+
+// SetNillableOrderID sets the "order_id" field if the given value is not nil.
+func (cuo *CommissionUpdateOne) SetNillableOrderID(u *uint64) *CommissionUpdateOne {
+	if u != nil {
+		cuo.SetOrderID(*u)
+	}
 	return cuo
 }
 
