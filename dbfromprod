@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 
-TARGET='auroraride'
+PORT=26615
 
 if [ "$1" == 'next' ]; then
-    TARGET='auroraride_next'
+    PORT=0
 fi
 
-echo "同步数据库: $TARGET"
+echo "同步数据库: $PORT"
 
-ssh root@39.106.77.239 "export PGPASSWORD='$PASSWORD'; pg_dump -U postgres -d $TARGET --exclude-table exchange -f /root/auroraride.sql; rm -rf auroraride.sql.zip; zip auroraride.sql.zip auroraride.sql"
-scp root@39.106.77.239:/root/auroraride.sql.zip ~/Downloads/_sql/
+ssh root@118.116.4.16 -p "$PORT" "sudo -u postgres pg_dump -U postgres -d auroraride --exclude-table exchange --exclude-table battery_flow -f /var/lib/postgresql/auroraride.sql; cd /var/lib/postgresql/; rm -rf auroraride.sql.zip; zip auroraride.sql.zip auroraride.sql"
+scp -P "$PORT" root@118.116.4.16:/var/lib/postgresql/auroraride.sql.zip ~/Downloads/_sql/
 cd ~/Downloads/_sql/ || return
 rm -rf auroraride.sql
 unzip auroraride.sql.zip
@@ -18,5 +18,5 @@ dropdb -U liasica auroraride
 createdb auroraride
 psql -d auroraride -U liasica -c "SET timezone = 'Asia/Shanghai'; CREATE EXTENSION postgis; CREATE EXTENSION pg_trgm; CREATE EXTENSION btree_gin;"
 psql -d auroraride -U liasica -f auroraride.sql
-ssh root@39.106.77.239 "rm -rf auroraride.sql.zip && rm -rf auroraride.sql"
+ssh root@118.116.4.16 -p "$PORT" "rm -rf /var/lib/postgresql/auroraride.sql.zip && rm -rf /var/lib/postgresql/auroraride.sql"
 #rm -rf ~/Downloads/_sql/auroraride.sql
