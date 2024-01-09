@@ -35,9 +35,25 @@ func (mu *MaintainerUpdate) SetEnable(b bool) *MaintainerUpdate {
 	return mu
 }
 
+// SetNillableEnable sets the "enable" field if the given value is not nil.
+func (mu *MaintainerUpdate) SetNillableEnable(b *bool) *MaintainerUpdate {
+	if b != nil {
+		mu.SetEnable(*b)
+	}
+	return mu
+}
+
 // SetName sets the "name" field.
 func (mu *MaintainerUpdate) SetName(s string) *MaintainerUpdate {
 	mu.mutation.SetName(s)
+	return mu
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (mu *MaintainerUpdate) SetNillableName(s *string) *MaintainerUpdate {
+	if s != nil {
+		mu.SetName(*s)
+	}
 	return mu
 }
 
@@ -47,9 +63,25 @@ func (mu *MaintainerUpdate) SetPhone(s string) *MaintainerUpdate {
 	return mu
 }
 
+// SetNillablePhone sets the "phone" field if the given value is not nil.
+func (mu *MaintainerUpdate) SetNillablePhone(s *string) *MaintainerUpdate {
+	if s != nil {
+		mu.SetPhone(*s)
+	}
+	return mu
+}
+
 // SetPassword sets the "password" field.
 func (mu *MaintainerUpdate) SetPassword(s string) *MaintainerUpdate {
 	mu.mutation.SetPassword(s)
+	return mu
+}
+
+// SetNillablePassword sets the "password" field if the given value is not nil.
+func (mu *MaintainerUpdate) SetNillablePassword(s *string) *MaintainerUpdate {
+	if s != nil {
+		mu.SetPassword(*s)
+	}
 	return mu
 }
 
@@ -221,9 +253,25 @@ func (muo *MaintainerUpdateOne) SetEnable(b bool) *MaintainerUpdateOne {
 	return muo
 }
 
+// SetNillableEnable sets the "enable" field if the given value is not nil.
+func (muo *MaintainerUpdateOne) SetNillableEnable(b *bool) *MaintainerUpdateOne {
+	if b != nil {
+		muo.SetEnable(*b)
+	}
+	return muo
+}
+
 // SetName sets the "name" field.
 func (muo *MaintainerUpdateOne) SetName(s string) *MaintainerUpdateOne {
 	muo.mutation.SetName(s)
+	return muo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (muo *MaintainerUpdateOne) SetNillableName(s *string) *MaintainerUpdateOne {
+	if s != nil {
+		muo.SetName(*s)
+	}
 	return muo
 }
 
@@ -233,9 +281,25 @@ func (muo *MaintainerUpdateOne) SetPhone(s string) *MaintainerUpdateOne {
 	return muo
 }
 
+// SetNillablePhone sets the "phone" field if the given value is not nil.
+func (muo *MaintainerUpdateOne) SetNillablePhone(s *string) *MaintainerUpdateOne {
+	if s != nil {
+		muo.SetPhone(*s)
+	}
+	return muo
+}
+
 // SetPassword sets the "password" field.
 func (muo *MaintainerUpdateOne) SetPassword(s string) *MaintainerUpdateOne {
 	muo.mutation.SetPassword(s)
+	return muo
+}
+
+// SetNillablePassword sets the "password" field if the given value is not nil.
+func (muo *MaintainerUpdateOne) SetNillablePassword(s *string) *MaintainerUpdateOne {
+	if s != nil {
+		muo.SetPassword(*s)
+	}
 	return muo
 }
 

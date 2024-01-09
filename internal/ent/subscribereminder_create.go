@@ -892,12 +892,16 @@ func (u *SubscribeReminderUpsertOne) IDX(ctx context.Context) uint64 {
 // SubscribeReminderCreateBulk is the builder for creating many SubscribeReminder entities in bulk.
 type SubscribeReminderCreateBulk struct {
 	config
+	err      error
 	builders []*SubscribeReminderCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the SubscribeReminder entities in the database.
 func (srcb *SubscribeReminderCreateBulk) Save(ctx context.Context) ([]*SubscribeReminder, error) {
+	if srcb.err != nil {
+		return nil, srcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(srcb.builders))
 	nodes := make([]*SubscribeReminder, len(srcb.builders))
 	mutators := make([]Mutator, len(srcb.builders))
@@ -1268,6 +1272,9 @@ func (u *SubscribeReminderUpsertBulk) ClearFeeFormula() *SubscribeReminderUpsert
 
 // Exec executes the query.
 func (u *SubscribeReminderUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the SubscribeReminderCreateBulk instead", i)

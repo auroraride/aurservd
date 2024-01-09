@@ -35,6 +35,14 @@ func (bmu *BatteryModelUpdate) SetModel(s string) *BatteryModelUpdate {
 	return bmu
 }
 
+// SetNillableModel sets the "model" field if the given value is not nil.
+func (bmu *BatteryModelUpdate) SetNillableModel(s *string) *BatteryModelUpdate {
+	if s != nil {
+		bmu.SetModel(*s)
+	}
+	return bmu
+}
+
 // AddCabinetIDs adds the "cabinets" edge to the Cabinet entity by IDs.
 func (bmu *BatteryModelUpdate) AddCabinetIDs(ids ...uint64) *BatteryModelUpdate {
 	bmu.mutation.AddCabinetIDs(ids...)
@@ -191,6 +199,14 @@ type BatteryModelUpdateOne struct {
 // SetModel sets the "model" field.
 func (bmuo *BatteryModelUpdateOne) SetModel(s string) *BatteryModelUpdateOne {
 	bmuo.mutation.SetModel(s)
+	return bmuo
+}
+
+// SetNillableModel sets the "model" field if the given value is not nil.
+func (bmuo *BatteryModelUpdateOne) SetNillableModel(s *string) *BatteryModelUpdateOne {
+	if s != nil {
+		bmuo.SetModel(*s)
+	}
 	return bmuo
 }
 

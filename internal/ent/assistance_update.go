@@ -121,15 +121,39 @@ func (au *AssistanceUpdate) SetRiderID(u uint64) *AssistanceUpdate {
 	return au
 }
 
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (au *AssistanceUpdate) SetNillableRiderID(u *uint64) *AssistanceUpdate {
+	if u != nil {
+		au.SetRiderID(*u)
+	}
+	return au
+}
+
 // SetSubscribeID sets the "subscribe_id" field.
 func (au *AssistanceUpdate) SetSubscribeID(u uint64) *AssistanceUpdate {
 	au.mutation.SetSubscribeID(u)
 	return au
 }
 
+// SetNillableSubscribeID sets the "subscribe_id" field if the given value is not nil.
+func (au *AssistanceUpdate) SetNillableSubscribeID(u *uint64) *AssistanceUpdate {
+	if u != nil {
+		au.SetSubscribeID(*u)
+	}
+	return au
+}
+
 // SetCityID sets the "city_id" field.
 func (au *AssistanceUpdate) SetCityID(u uint64) *AssistanceUpdate {
 	au.mutation.SetCityID(u)
+	return au
+}
+
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (au *AssistanceUpdate) SetNillableCityID(u *uint64) *AssistanceUpdate {
+	if u != nil {
+		au.SetCityID(*u)
+	}
 	return au
 }
 
@@ -201,6 +225,14 @@ func (au *AssistanceUpdate) SetLng(f float64) *AssistanceUpdate {
 	return au
 }
 
+// SetNillableLng sets the "lng" field if the given value is not nil.
+func (au *AssistanceUpdate) SetNillableLng(f *float64) *AssistanceUpdate {
+	if f != nil {
+		au.SetLng(*f)
+	}
+	return au
+}
+
 // AddLng adds f to the "lng" field.
 func (au *AssistanceUpdate) AddLng(f float64) *AssistanceUpdate {
 	au.mutation.AddLng(f)
@@ -211,6 +243,14 @@ func (au *AssistanceUpdate) AddLng(f float64) *AssistanceUpdate {
 func (au *AssistanceUpdate) SetLat(f float64) *AssistanceUpdate {
 	au.mutation.ResetLat()
 	au.mutation.SetLat(f)
+	return au
+}
+
+// SetNillableLat sets the "lat" field if the given value is not nil.
+func (au *AssistanceUpdate) SetNillableLat(f *float64) *AssistanceUpdate {
+	if f != nil {
+		au.SetLat(*f)
+	}
 	return au
 }
 
@@ -226,9 +266,25 @@ func (au *AssistanceUpdate) SetAddress(s string) *AssistanceUpdate {
 	return au
 }
 
+// SetNillableAddress sets the "address" field if the given value is not nil.
+func (au *AssistanceUpdate) SetNillableAddress(s *string) *AssistanceUpdate {
+	if s != nil {
+		au.SetAddress(*s)
+	}
+	return au
+}
+
 // SetBreakdown sets the "breakdown" field.
 func (au *AssistanceUpdate) SetBreakdown(s string) *AssistanceUpdate {
 	au.mutation.SetBreakdown(s)
+	return au
+}
+
+// SetNillableBreakdown sets the "breakdown" field if the given value is not nil.
+func (au *AssistanceUpdate) SetNillableBreakdown(s *string) *AssistanceUpdate {
+	if s != nil {
+		au.SetBreakdown(*s)
+	}
 	return au
 }
 
@@ -1237,15 +1293,39 @@ func (auo *AssistanceUpdateOne) SetRiderID(u uint64) *AssistanceUpdateOne {
 	return auo
 }
 
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (auo *AssistanceUpdateOne) SetNillableRiderID(u *uint64) *AssistanceUpdateOne {
+	if u != nil {
+		auo.SetRiderID(*u)
+	}
+	return auo
+}
+
 // SetSubscribeID sets the "subscribe_id" field.
 func (auo *AssistanceUpdateOne) SetSubscribeID(u uint64) *AssistanceUpdateOne {
 	auo.mutation.SetSubscribeID(u)
 	return auo
 }
 
+// SetNillableSubscribeID sets the "subscribe_id" field if the given value is not nil.
+func (auo *AssistanceUpdateOne) SetNillableSubscribeID(u *uint64) *AssistanceUpdateOne {
+	if u != nil {
+		auo.SetSubscribeID(*u)
+	}
+	return auo
+}
+
 // SetCityID sets the "city_id" field.
 func (auo *AssistanceUpdateOne) SetCityID(u uint64) *AssistanceUpdateOne {
 	auo.mutation.SetCityID(u)
+	return auo
+}
+
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (auo *AssistanceUpdateOne) SetNillableCityID(u *uint64) *AssistanceUpdateOne {
+	if u != nil {
+		auo.SetCityID(*u)
+	}
 	return auo
 }
 
@@ -1317,6 +1397,14 @@ func (auo *AssistanceUpdateOne) SetLng(f float64) *AssistanceUpdateOne {
 	return auo
 }
 
+// SetNillableLng sets the "lng" field if the given value is not nil.
+func (auo *AssistanceUpdateOne) SetNillableLng(f *float64) *AssistanceUpdateOne {
+	if f != nil {
+		auo.SetLng(*f)
+	}
+	return auo
+}
+
 // AddLng adds f to the "lng" field.
 func (auo *AssistanceUpdateOne) AddLng(f float64) *AssistanceUpdateOne {
 	auo.mutation.AddLng(f)
@@ -1327,6 +1415,14 @@ func (auo *AssistanceUpdateOne) AddLng(f float64) *AssistanceUpdateOne {
 func (auo *AssistanceUpdateOne) SetLat(f float64) *AssistanceUpdateOne {
 	auo.mutation.ResetLat()
 	auo.mutation.SetLat(f)
+	return auo
+}
+
+// SetNillableLat sets the "lat" field if the given value is not nil.
+func (auo *AssistanceUpdateOne) SetNillableLat(f *float64) *AssistanceUpdateOne {
+	if f != nil {
+		auo.SetLat(*f)
+	}
 	return auo
 }
 
@@ -1342,9 +1438,25 @@ func (auo *AssistanceUpdateOne) SetAddress(s string) *AssistanceUpdateOne {
 	return auo
 }
 
+// SetNillableAddress sets the "address" field if the given value is not nil.
+func (auo *AssistanceUpdateOne) SetNillableAddress(s *string) *AssistanceUpdateOne {
+	if s != nil {
+		auo.SetAddress(*s)
+	}
+	return auo
+}
+
 // SetBreakdown sets the "breakdown" field.
 func (auo *AssistanceUpdateOne) SetBreakdown(s string) *AssistanceUpdateOne {
 	auo.mutation.SetBreakdown(s)
+	return auo
+}
+
+// SetNillableBreakdown sets the "breakdown" field if the given value is not nil.
+func (auo *AssistanceUpdateOne) SetNillableBreakdown(s *string) *AssistanceUpdateOne {
+	if s != nil {
+		auo.SetBreakdown(*s)
+	}
 	return auo
 }
 

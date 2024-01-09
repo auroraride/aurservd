@@ -491,12 +491,16 @@ func (u *PromotionMemberCommissionUpsertOne) IDX(ctx context.Context) uint64 {
 // PromotionMemberCommissionCreateBulk is the builder for creating many PromotionMemberCommission entities in bulk.
 type PromotionMemberCommissionCreateBulk struct {
 	config
+	err      error
 	builders []*PromotionMemberCommissionCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the PromotionMemberCommission entities in the database.
 func (pmccb *PromotionMemberCommissionCreateBulk) Save(ctx context.Context) ([]*PromotionMemberCommission, error) {
+	if pmccb.err != nil {
+		return nil, pmccb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(pmccb.builders))
 	nodes := make([]*PromotionMemberCommission, len(pmccb.builders))
 	mutators := make([]Mutator, len(pmccb.builders))
@@ -734,6 +738,9 @@ func (u *PromotionMemberCommissionUpsertBulk) ClearMemberID() *PromotionMemberCo
 
 // Exec executes the query.
 func (u *PromotionMemberCommissionUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the PromotionMemberCommissionCreateBulk instead", i)

@@ -94,9 +94,25 @@ func (ebu *EbikeBrandUpdate) SetName(s string) *EbikeBrandUpdate {
 	return ebu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (ebu *EbikeBrandUpdate) SetNillableName(s *string) *EbikeBrandUpdate {
+	if s != nil {
+		ebu.SetName(*s)
+	}
+	return ebu
+}
+
 // SetCover sets the "cover" field.
 func (ebu *EbikeBrandUpdate) SetCover(s string) *EbikeBrandUpdate {
 	ebu.mutation.SetCover(s)
+	return ebu
+}
+
+// SetNillableCover sets the "cover" field if the given value is not nil.
+func (ebu *EbikeBrandUpdate) SetNillableCover(s *string) *EbikeBrandUpdate {
+	if s != nil {
+		ebu.SetCover(*s)
+	}
 	return ebu
 }
 
@@ -278,9 +294,25 @@ func (ebuo *EbikeBrandUpdateOne) SetName(s string) *EbikeBrandUpdateOne {
 	return ebuo
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (ebuo *EbikeBrandUpdateOne) SetNillableName(s *string) *EbikeBrandUpdateOne {
+	if s != nil {
+		ebuo.SetName(*s)
+	}
+	return ebuo
+}
+
 // SetCover sets the "cover" field.
 func (ebuo *EbikeBrandUpdateOne) SetCover(s string) *EbikeBrandUpdateOne {
 	ebuo.mutation.SetCover(s)
+	return ebuo
+}
+
+// SetNillableCover sets the "cover" field if the given value is not nil.
+func (ebuo *EbikeBrandUpdateOne) SetNillableCover(s *string) *EbikeBrandUpdateOne {
+	if s != nil {
+		ebuo.SetCover(*s)
+	}
 	return ebuo
 }
 

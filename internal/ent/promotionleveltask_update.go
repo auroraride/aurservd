@@ -74,9 +74,25 @@ func (pltu *PromotionLevelTaskUpdate) SetName(s string) *PromotionLevelTaskUpdat
 	return pltu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (pltu *PromotionLevelTaskUpdate) SetNillableName(s *string) *PromotionLevelTaskUpdate {
+	if s != nil {
+		pltu.SetName(*s)
+	}
+	return pltu
+}
+
 // SetDescription sets the "description" field.
 func (pltu *PromotionLevelTaskUpdate) SetDescription(s string) *PromotionLevelTaskUpdate {
 	pltu.mutation.SetDescription(s)
+	return pltu
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (pltu *PromotionLevelTaskUpdate) SetNillableDescription(s *string) *PromotionLevelTaskUpdate {
+	if s != nil {
+		pltu.SetDescription(*s)
+	}
 	return pltu
 }
 
@@ -84,6 +100,14 @@ func (pltu *PromotionLevelTaskUpdate) SetDescription(s string) *PromotionLevelTa
 func (pltu *PromotionLevelTaskUpdate) SetType(u uint8) *PromotionLevelTaskUpdate {
 	pltu.mutation.ResetType()
 	pltu.mutation.SetType(u)
+	return pltu
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (pltu *PromotionLevelTaskUpdate) SetNillableType(u *uint8) *PromotionLevelTaskUpdate {
+	if u != nil {
+		pltu.SetType(*u)
+	}
 	return pltu
 }
 
@@ -304,9 +328,25 @@ func (pltuo *PromotionLevelTaskUpdateOne) SetName(s string) *PromotionLevelTaskU
 	return pltuo
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (pltuo *PromotionLevelTaskUpdateOne) SetNillableName(s *string) *PromotionLevelTaskUpdateOne {
+	if s != nil {
+		pltuo.SetName(*s)
+	}
+	return pltuo
+}
+
 // SetDescription sets the "description" field.
 func (pltuo *PromotionLevelTaskUpdateOne) SetDescription(s string) *PromotionLevelTaskUpdateOne {
 	pltuo.mutation.SetDescription(s)
+	return pltuo
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (pltuo *PromotionLevelTaskUpdateOne) SetNillableDescription(s *string) *PromotionLevelTaskUpdateOne {
+	if s != nil {
+		pltuo.SetDescription(*s)
+	}
 	return pltuo
 }
 
@@ -314,6 +354,14 @@ func (pltuo *PromotionLevelTaskUpdateOne) SetDescription(s string) *PromotionLev
 func (pltuo *PromotionLevelTaskUpdateOne) SetType(u uint8) *PromotionLevelTaskUpdateOne {
 	pltuo.mutation.ResetType()
 	pltuo.mutation.SetType(u)
+	return pltuo
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (pltuo *PromotionLevelTaskUpdateOne) SetNillableType(u *uint8) *PromotionLevelTaskUpdateOne {
+	if u != nil {
+		pltuo.SetType(*u)
+	}
 	return pltuo
 }
 

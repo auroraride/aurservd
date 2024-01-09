@@ -46,9 +46,25 @@ func (ebsu *EnterpriseBatterySwapUpdate) SetExchangeID(u uint64) *EnterpriseBatt
 	return ebsu
 }
 
+// SetNillableExchangeID sets the "exchange_id" field if the given value is not nil.
+func (ebsu *EnterpriseBatterySwapUpdate) SetNillableExchangeID(u *uint64) *EnterpriseBatterySwapUpdate {
+	if u != nil {
+		ebsu.SetExchangeID(*u)
+	}
+	return ebsu
+}
+
 // SetCabinetID sets the "cabinet_id" field.
 func (ebsu *EnterpriseBatterySwapUpdate) SetCabinetID(u uint64) *EnterpriseBatterySwapUpdate {
 	ebsu.mutation.SetCabinetID(u)
+	return ebsu
+}
+
+// SetNillableCabinetID sets the "cabinet_id" field if the given value is not nil.
+func (ebsu *EnterpriseBatterySwapUpdate) SetNillableCabinetID(u *uint64) *EnterpriseBatterySwapUpdate {
+	if u != nil {
+		ebsu.SetCabinetID(*u)
+	}
 	return ebsu
 }
 
@@ -58,9 +74,25 @@ func (ebsu *EnterpriseBatterySwapUpdate) SetPutinID(u uint64) *EnterpriseBattery
 	return ebsu
 }
 
+// SetNillablePutinID sets the "putin_id" field if the given value is not nil.
+func (ebsu *EnterpriseBatterySwapUpdate) SetNillablePutinID(u *uint64) *EnterpriseBatterySwapUpdate {
+	if u != nil {
+		ebsu.SetPutinID(*u)
+	}
+	return ebsu
+}
+
 // SetPutinSn sets the "putin_sn" field.
 func (ebsu *EnterpriseBatterySwapUpdate) SetPutinSn(s string) *EnterpriseBatterySwapUpdate {
 	ebsu.mutation.SetPutinSn(s)
+	return ebsu
+}
+
+// SetNillablePutinSn sets the "putin_sn" field if the given value is not nil.
+func (ebsu *EnterpriseBatterySwapUpdate) SetNillablePutinSn(s *string) *EnterpriseBatterySwapUpdate {
+	if s != nil {
+		ebsu.SetPutinSn(*s)
+	}
 	return ebsu
 }
 
@@ -110,9 +142,25 @@ func (ebsu *EnterpriseBatterySwapUpdate) SetPutoutID(u uint64) *EnterpriseBatter
 	return ebsu
 }
 
+// SetNillablePutoutID sets the "putout_id" field if the given value is not nil.
+func (ebsu *EnterpriseBatterySwapUpdate) SetNillablePutoutID(u *uint64) *EnterpriseBatterySwapUpdate {
+	if u != nil {
+		ebsu.SetPutoutID(*u)
+	}
+	return ebsu
+}
+
 // SetPutoutSn sets the "putout_sn" field.
 func (ebsu *EnterpriseBatterySwapUpdate) SetPutoutSn(s string) *EnterpriseBatterySwapUpdate {
 	ebsu.mutation.SetPutoutSn(s)
+	return ebsu
+}
+
+// SetNillablePutoutSn sets the "putout_sn" field if the given value is not nil.
+func (ebsu *EnterpriseBatterySwapUpdate) SetNillablePutoutSn(s *string) *EnterpriseBatterySwapUpdate {
+	if s != nil {
+		ebsu.SetPutoutSn(*s)
+	}
 	return ebsu
 }
 
@@ -595,9 +643,25 @@ func (ebsuo *EnterpriseBatterySwapUpdateOne) SetExchangeID(u uint64) *Enterprise
 	return ebsuo
 }
 
+// SetNillableExchangeID sets the "exchange_id" field if the given value is not nil.
+func (ebsuo *EnterpriseBatterySwapUpdateOne) SetNillableExchangeID(u *uint64) *EnterpriseBatterySwapUpdateOne {
+	if u != nil {
+		ebsuo.SetExchangeID(*u)
+	}
+	return ebsuo
+}
+
 // SetCabinetID sets the "cabinet_id" field.
 func (ebsuo *EnterpriseBatterySwapUpdateOne) SetCabinetID(u uint64) *EnterpriseBatterySwapUpdateOne {
 	ebsuo.mutation.SetCabinetID(u)
+	return ebsuo
+}
+
+// SetNillableCabinetID sets the "cabinet_id" field if the given value is not nil.
+func (ebsuo *EnterpriseBatterySwapUpdateOne) SetNillableCabinetID(u *uint64) *EnterpriseBatterySwapUpdateOne {
+	if u != nil {
+		ebsuo.SetCabinetID(*u)
+	}
 	return ebsuo
 }
 
@@ -607,9 +671,25 @@ func (ebsuo *EnterpriseBatterySwapUpdateOne) SetPutinID(u uint64) *EnterpriseBat
 	return ebsuo
 }
 
+// SetNillablePutinID sets the "putin_id" field if the given value is not nil.
+func (ebsuo *EnterpriseBatterySwapUpdateOne) SetNillablePutinID(u *uint64) *EnterpriseBatterySwapUpdateOne {
+	if u != nil {
+		ebsuo.SetPutinID(*u)
+	}
+	return ebsuo
+}
+
 // SetPutinSn sets the "putin_sn" field.
 func (ebsuo *EnterpriseBatterySwapUpdateOne) SetPutinSn(s string) *EnterpriseBatterySwapUpdateOne {
 	ebsuo.mutation.SetPutinSn(s)
+	return ebsuo
+}
+
+// SetNillablePutinSn sets the "putin_sn" field if the given value is not nil.
+func (ebsuo *EnterpriseBatterySwapUpdateOne) SetNillablePutinSn(s *string) *EnterpriseBatterySwapUpdateOne {
+	if s != nil {
+		ebsuo.SetPutinSn(*s)
+	}
 	return ebsuo
 }
 
@@ -659,9 +739,25 @@ func (ebsuo *EnterpriseBatterySwapUpdateOne) SetPutoutID(u uint64) *EnterpriseBa
 	return ebsuo
 }
 
+// SetNillablePutoutID sets the "putout_id" field if the given value is not nil.
+func (ebsuo *EnterpriseBatterySwapUpdateOne) SetNillablePutoutID(u *uint64) *EnterpriseBatterySwapUpdateOne {
+	if u != nil {
+		ebsuo.SetPutoutID(*u)
+	}
+	return ebsuo
+}
+
 // SetPutoutSn sets the "putout_sn" field.
 func (ebsuo *EnterpriseBatterySwapUpdateOne) SetPutoutSn(s string) *EnterpriseBatterySwapUpdateOne {
 	ebsuo.mutation.SetPutoutSn(s)
+	return ebsuo
+}
+
+// SetNillablePutoutSn sets the "putout_sn" field if the given value is not nil.
+func (ebsuo *EnterpriseBatterySwapUpdateOne) SetNillablePutoutSn(s *string) *EnterpriseBatterySwapUpdateOne {
+	if s != nil {
+		ebsuo.SetPutoutSn(*s)
+	}
 	return ebsuo
 }
 

@@ -97,9 +97,25 @@ func (au *AttendanceUpdate) SetStoreID(u uint64) *AttendanceUpdate {
 	return au
 }
 
+// SetNillableStoreID sets the "store_id" field if the given value is not nil.
+func (au *AttendanceUpdate) SetNillableStoreID(u *uint64) *AttendanceUpdate {
+	if u != nil {
+		au.SetStoreID(*u)
+	}
+	return au
+}
+
 // SetEmployeeID sets the "employee_id" field.
 func (au *AttendanceUpdate) SetEmployeeID(u uint64) *AttendanceUpdate {
 	au.mutation.SetEmployeeID(u)
+	return au
+}
+
+// SetNillableEmployeeID sets the "employee_id" field if the given value is not nil.
+func (au *AttendanceUpdate) SetNillableEmployeeID(u *uint64) *AttendanceUpdate {
+	if u != nil {
+		au.SetEmployeeID(*u)
+	}
 	return au
 }
 
@@ -147,9 +163,25 @@ func (au *AttendanceUpdate) SetDuty(b bool) *AttendanceUpdate {
 	return au
 }
 
+// SetNillableDuty sets the "duty" field if the given value is not nil.
+func (au *AttendanceUpdate) SetNillableDuty(b *bool) *AttendanceUpdate {
+	if b != nil {
+		au.SetDuty(*b)
+	}
+	return au
+}
+
 // SetDate sets the "date" field.
 func (au *AttendanceUpdate) SetDate(t time.Time) *AttendanceUpdate {
 	au.mutation.SetDate(t)
+	return au
+}
+
+// SetNillableDate sets the "date" field if the given value is not nil.
+func (au *AttendanceUpdate) SetNillableDate(t *time.Time) *AttendanceUpdate {
+	if t != nil {
+		au.SetDate(*t)
+	}
 	return au
 }
 
@@ -576,9 +608,25 @@ func (auo *AttendanceUpdateOne) SetStoreID(u uint64) *AttendanceUpdateOne {
 	return auo
 }
 
+// SetNillableStoreID sets the "store_id" field if the given value is not nil.
+func (auo *AttendanceUpdateOne) SetNillableStoreID(u *uint64) *AttendanceUpdateOne {
+	if u != nil {
+		auo.SetStoreID(*u)
+	}
+	return auo
+}
+
 // SetEmployeeID sets the "employee_id" field.
 func (auo *AttendanceUpdateOne) SetEmployeeID(u uint64) *AttendanceUpdateOne {
 	auo.mutation.SetEmployeeID(u)
+	return auo
+}
+
+// SetNillableEmployeeID sets the "employee_id" field if the given value is not nil.
+func (auo *AttendanceUpdateOne) SetNillableEmployeeID(u *uint64) *AttendanceUpdateOne {
+	if u != nil {
+		auo.SetEmployeeID(*u)
+	}
 	return auo
 }
 
@@ -626,9 +674,25 @@ func (auo *AttendanceUpdateOne) SetDuty(b bool) *AttendanceUpdateOne {
 	return auo
 }
 
+// SetNillableDuty sets the "duty" field if the given value is not nil.
+func (auo *AttendanceUpdateOne) SetNillableDuty(b *bool) *AttendanceUpdateOne {
+	if b != nil {
+		auo.SetDuty(*b)
+	}
+	return auo
+}
+
 // SetDate sets the "date" field.
 func (auo *AttendanceUpdateOne) SetDate(t time.Time) *AttendanceUpdateOne {
 	auo.mutation.SetDate(t)
+	return auo
+}
+
+// SetNillableDate sets the "date" field if the given value is not nil.
+func (auo *AttendanceUpdateOne) SetNillableDate(t *time.Time) *AttendanceUpdateOne {
+	if t != nil {
+		auo.SetDate(*t)
+	}
 	return auo
 }
 

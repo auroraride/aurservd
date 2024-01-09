@@ -226,6 +226,14 @@ func (su *StockUpdate) SetSn(s string) *StockUpdate {
 	return su
 }
 
+// SetNillableSn sets the "sn" field if the given value is not nil.
+func (su *StockUpdate) SetNillableSn(s *string) *StockUpdate {
+	if s != nil {
+		su.SetSn(*s)
+	}
+	return su
+}
+
 // SetType sets the "type" field.
 func (su *StockUpdate) SetType(u uint8) *StockUpdate {
 	su.mutation.ResetType()
@@ -373,6 +381,14 @@ func (su *StockUpdate) SetName(s string) *StockUpdate {
 	return su
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (su *StockUpdate) SetNillableName(s *string) *StockUpdate {
+	if s != nil {
+		su.SetName(*s)
+	}
+	return su
+}
+
 // SetModel sets the "model" field.
 func (su *StockUpdate) SetModel(s string) *StockUpdate {
 	su.mutation.SetModel(s)
@@ -396,6 +412,14 @@ func (su *StockUpdate) ClearModel() *StockUpdate {
 // SetMaterial sets the "material" field.
 func (su *StockUpdate) SetMaterial(s stock.Material) *StockUpdate {
 	su.mutation.SetMaterial(s)
+	return su
+}
+
+// SetNillableMaterial sets the "material" field if the given value is not nil.
+func (su *StockUpdate) SetNillableMaterial(s *stock.Material) *StockUpdate {
+	if s != nil {
+		su.SetMaterial(*s)
+	}
 	return su
 }
 
@@ -1374,6 +1398,14 @@ func (suo *StockUpdateOne) SetSn(s string) *StockUpdateOne {
 	return suo
 }
 
+// SetNillableSn sets the "sn" field if the given value is not nil.
+func (suo *StockUpdateOne) SetNillableSn(s *string) *StockUpdateOne {
+	if s != nil {
+		suo.SetSn(*s)
+	}
+	return suo
+}
+
 // SetType sets the "type" field.
 func (suo *StockUpdateOne) SetType(u uint8) *StockUpdateOne {
 	suo.mutation.ResetType()
@@ -1521,6 +1553,14 @@ func (suo *StockUpdateOne) SetName(s string) *StockUpdateOne {
 	return suo
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (suo *StockUpdateOne) SetNillableName(s *string) *StockUpdateOne {
+	if s != nil {
+		suo.SetName(*s)
+	}
+	return suo
+}
+
 // SetModel sets the "model" field.
 func (suo *StockUpdateOne) SetModel(s string) *StockUpdateOne {
 	suo.mutation.SetModel(s)
@@ -1544,6 +1584,14 @@ func (suo *StockUpdateOne) ClearModel() *StockUpdateOne {
 // SetMaterial sets the "material" field.
 func (suo *StockUpdateOne) SetMaterial(s stock.Material) *StockUpdateOne {
 	suo.mutation.SetMaterial(s)
+	return suo
+}
+
+// SetNillableMaterial sets the "material" field if the given value is not nil.
+func (suo *StockUpdateOne) SetNillableMaterial(s *stock.Material) *StockUpdateOne {
+	if s != nil {
+		suo.SetMaterial(*s)
+	}
 	return suo
 }
 

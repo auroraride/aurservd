@@ -116,9 +116,25 @@ func (cu *CityUpdate) SetName(s string) *CityUpdate {
 	return cu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (cu *CityUpdate) SetNillableName(s *string) *CityUpdate {
+	if s != nil {
+		cu.SetName(*s)
+	}
+	return cu
+}
+
 // SetCode sets the "code" field.
 func (cu *CityUpdate) SetCode(s string) *CityUpdate {
 	cu.mutation.SetCode(s)
+	return cu
+}
+
+// SetNillableCode sets the "code" field if the given value is not nil.
+func (cu *CityUpdate) SetNillableCode(s *string) *CityUpdate {
+	if s != nil {
+		cu.SetCode(*s)
+	}
 	return cu
 }
 
@@ -719,9 +735,25 @@ func (cuo *CityUpdateOne) SetName(s string) *CityUpdateOne {
 	return cuo
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (cuo *CityUpdateOne) SetNillableName(s *string) *CityUpdateOne {
+	if s != nil {
+		cuo.SetName(*s)
+	}
+	return cuo
+}
+
 // SetCode sets the "code" field.
 func (cuo *CityUpdateOne) SetCode(s string) *CityUpdateOne {
 	cuo.mutation.SetCode(s)
+	return cuo
+}
+
+// SetNillableCode sets the "code" field if the given value is not nil.
+func (cuo *CityUpdateOne) SetNillableCode(s *string) *CityUpdateOne {
+	if s != nil {
+		cuo.SetCode(*s)
+	}
 	return cuo
 }
 

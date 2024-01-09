@@ -717,32 +717,15 @@ func HasSubscribeWith(preds ...predicate.Subscribe) predicate.SubscribeAlter {
 
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.SubscribeAlter) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s1 := s.Clone().SetP(nil)
-		for _, p := range predicates {
-			p(s1)
-		}
-		s.Where(s1.P())
-	})
+	return predicate.SubscribeAlter(sql.AndPredicates(predicates...))
 }
 
 // Or groups predicates with the OR operator between them.
 func Or(predicates ...predicate.SubscribeAlter) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s1 := s.Clone().SetP(nil)
-		for i, p := range predicates {
-			if i > 0 {
-				s1.Or()
-			}
-			p(s1)
-		}
-		s.Where(s1.P())
-	})
+	return predicate.SubscribeAlter(sql.OrPredicates(predicates...))
 }
 
 // Not applies the not operator on the given predicate.
 func Not(p predicate.SubscribeAlter) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		p(s.Not())
-	})
+	return predicate.SubscribeAlter(sql.NotPredicates(p))
 }

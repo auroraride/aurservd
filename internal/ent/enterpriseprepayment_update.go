@@ -76,6 +76,14 @@ func (epu *EnterprisePrepaymentUpdate) SetEnterpriseID(u uint64) *EnterprisePrep
 	return epu
 }
 
+// SetNillableEnterpriseID sets the "enterprise_id" field if the given value is not nil.
+func (epu *EnterprisePrepaymentUpdate) SetNillableEnterpriseID(u *uint64) *EnterprisePrepaymentUpdate {
+	if u != nil {
+		epu.SetEnterpriseID(*u)
+	}
+	return epu
+}
+
 // SetAgentID sets the "agent_id" field.
 func (epu *EnterprisePrepaymentUpdate) SetAgentID(u uint64) *EnterprisePrepaymentUpdate {
 	epu.mutation.SetAgentID(u)
@@ -373,6 +381,14 @@ func (epuo *EnterprisePrepaymentUpdateOne) ClearRemark() *EnterprisePrepaymentUp
 // SetEnterpriseID sets the "enterprise_id" field.
 func (epuo *EnterprisePrepaymentUpdateOne) SetEnterpriseID(u uint64) *EnterprisePrepaymentUpdateOne {
 	epuo.mutation.SetEnterpriseID(u)
+	return epuo
+}
+
+// SetNillableEnterpriseID sets the "enterprise_id" field if the given value is not nil.
+func (epuo *EnterprisePrepaymentUpdateOne) SetNillableEnterpriseID(u *uint64) *EnterprisePrepaymentUpdateOne {
+	if u != nil {
+		epuo.SetEnterpriseID(*u)
+	}
 	return epuo
 }
 

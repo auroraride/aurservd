@@ -161,6 +161,14 @@ func (pmu *PromotionMemberUpdate) SetPhone(s string) *PromotionMemberUpdate {
 	return pmu
 }
 
+// SetNillablePhone sets the "phone" field if the given value is not nil.
+func (pmu *PromotionMemberUpdate) SetNillablePhone(s *string) *PromotionMemberUpdate {
+	if s != nil {
+		pmu.SetPhone(*s)
+	}
+	return pmu
+}
+
 // SetName sets the "name" field.
 func (pmu *PromotionMemberUpdate) SetName(s string) *PromotionMemberUpdate {
 	pmu.mutation.SetName(s)
@@ -1101,6 +1109,14 @@ func (pmuo *PromotionMemberUpdateOne) ClearLevelID() *PromotionMemberUpdateOne {
 // SetPhone sets the "phone" field.
 func (pmuo *PromotionMemberUpdateOne) SetPhone(s string) *PromotionMemberUpdateOne {
 	pmuo.mutation.SetPhone(s)
+	return pmuo
+}
+
+// SetNillablePhone sets the "phone" field if the given value is not nil.
+func (pmuo *PromotionMemberUpdateOne) SetNillablePhone(s *string) *PromotionMemberUpdateOne {
+	if s != nil {
+		pmuo.SetPhone(*s)
+	}
 	return pmuo
 }
 

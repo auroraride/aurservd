@@ -866,12 +866,16 @@ func (u *SubscribeSuspendUpsertOne) IDX(ctx context.Context) uint64 {
 // SubscribeSuspendCreateBulk is the builder for creating many SubscribeSuspend entities in bulk.
 type SubscribeSuspendCreateBulk struct {
 	config
+	err      error
 	builders []*SubscribeSuspendCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the SubscribeSuspend entities in the database.
 func (sscb *SubscribeSuspendCreateBulk) Save(ctx context.Context) ([]*SubscribeSuspend, error) {
+	if sscb.err != nil {
+		return nil, sscb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(sscb.builders))
 	nodes := make([]*SubscribeSuspend, len(sscb.builders))
 	mutators := make([]Mutator, len(sscb.builders))
@@ -1242,6 +1246,9 @@ func (u *SubscribeSuspendUpsertBulk) ClearEndModifier() *SubscribeSuspendUpsertB
 
 // Exec executes the query.
 func (u *SubscribeSuspendUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the SubscribeSuspendCreateBulk instead", i)

@@ -150,6 +150,14 @@ func (su *SubscribeUpdate) SetCityID(u uint64) *SubscribeUpdate {
 	return su
 }
 
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (su *SubscribeUpdate) SetNillableCityID(u *uint64) *SubscribeUpdate {
+	if u != nil {
+		su.SetCityID(*u)
+	}
+	return su
+}
+
 // SetStationID sets the "station_id" field.
 func (su *SubscribeUpdate) SetStationID(u uint64) *SubscribeUpdate {
 	su.mutation.SetStationID(u)
@@ -256,6 +264,14 @@ func (su *SubscribeUpdate) SetRiderID(u uint64) *SubscribeUpdate {
 	return su
 }
 
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (su *SubscribeUpdate) SetNillableRiderID(u *uint64) *SubscribeUpdate {
+	if u != nil {
+		su.SetRiderID(*u)
+	}
+	return su
+}
+
 // SetInitialOrderID sets the "initial_order_id" field.
 func (su *SubscribeUpdate) SetInitialOrderID(u uint64) *SubscribeUpdate {
 	su.mutation.SetInitialOrderID(u)
@@ -320,6 +336,14 @@ func (su *SubscribeUpdate) AddStatus(u int8) *SubscribeUpdate {
 // SetModel sets the "model" field.
 func (su *SubscribeUpdate) SetModel(s string) *SubscribeUpdate {
 	su.mutation.SetModel(s)
+	return su
+}
+
+// SetNillableModel sets the "model" field if the given value is not nil.
+func (su *SubscribeUpdate) SetNillableModel(s *string) *SubscribeUpdate {
+	if s != nil {
+		su.SetModel(*s)
+	}
 	return su
 }
 
@@ -1940,6 +1964,14 @@ func (suo *SubscribeUpdateOne) SetCityID(u uint64) *SubscribeUpdateOne {
 	return suo
 }
 
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (suo *SubscribeUpdateOne) SetNillableCityID(u *uint64) *SubscribeUpdateOne {
+	if u != nil {
+		suo.SetCityID(*u)
+	}
+	return suo
+}
+
 // SetStationID sets the "station_id" field.
 func (suo *SubscribeUpdateOne) SetStationID(u uint64) *SubscribeUpdateOne {
 	suo.mutation.SetStationID(u)
@@ -2046,6 +2078,14 @@ func (suo *SubscribeUpdateOne) SetRiderID(u uint64) *SubscribeUpdateOne {
 	return suo
 }
 
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (suo *SubscribeUpdateOne) SetNillableRiderID(u *uint64) *SubscribeUpdateOne {
+	if u != nil {
+		suo.SetRiderID(*u)
+	}
+	return suo
+}
+
 // SetInitialOrderID sets the "initial_order_id" field.
 func (suo *SubscribeUpdateOne) SetInitialOrderID(u uint64) *SubscribeUpdateOne {
 	suo.mutation.SetInitialOrderID(u)
@@ -2110,6 +2150,14 @@ func (suo *SubscribeUpdateOne) AddStatus(u int8) *SubscribeUpdateOne {
 // SetModel sets the "model" field.
 func (suo *SubscribeUpdateOne) SetModel(s string) *SubscribeUpdateOne {
 	suo.mutation.SetModel(s)
+	return suo
+}
+
+// SetNillableModel sets the "model" field if the given value is not nil.
+func (suo *SubscribeUpdateOne) SetNillableModel(s *string) *SubscribeUpdateOne {
+	if s != nil {
+		suo.SetModel(*s)
+	}
 	return suo
 }
 

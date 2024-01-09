@@ -717,12 +717,16 @@ func (u *PromotionPrivilegeUpsertOne) IDX(ctx context.Context) uint64 {
 // PromotionPrivilegeCreateBulk is the builder for creating many PromotionPrivilege entities in bulk.
 type PromotionPrivilegeCreateBulk struct {
 	config
+	err      error
 	builders []*PromotionPrivilegeCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the PromotionPrivilege entities in the database.
 func (ppcb *PromotionPrivilegeCreateBulk) Save(ctx context.Context) ([]*PromotionPrivilege, error) {
+	if ppcb.err != nil {
+		return nil, ppcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ppcb.builders))
 	nodes := make([]*PromotionPrivilege, len(ppcb.builders))
 	mutators := make([]Mutator, len(ppcb.builders))
@@ -1054,6 +1058,9 @@ func (u *PromotionPrivilegeUpsertBulk) ClearValue() *PromotionPrivilegeUpsertBul
 
 // Exec executes the query.
 func (u *PromotionPrivilegeUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the PromotionPrivilegeCreateBulk instead", i)

@@ -139,6 +139,14 @@ func (ssu *StockSummaryUpdate) SetDate(s string) *StockSummaryUpdate {
 	return ssu
 }
 
+// SetNillableDate sets the "date" field if the given value is not nil.
+func (ssu *StockSummaryUpdate) SetNillableDate(s *string) *StockSummaryUpdate {
+	if s != nil {
+		ssu.SetDate(*s)
+	}
+	return ssu
+}
+
 // SetModel sets the "model" field.
 func (ssu *StockSummaryUpdate) SetModel(s string) *StockSummaryUpdate {
 	ssu.mutation.SetModel(s)
@@ -719,6 +727,14 @@ func (ssuo *StockSummaryUpdateOne) ClearCabinetID() *StockSummaryUpdateOne {
 // SetDate sets the "date" field.
 func (ssuo *StockSummaryUpdateOne) SetDate(s string) *StockSummaryUpdateOne {
 	ssuo.mutation.SetDate(s)
+	return ssuo
+}
+
+// SetNillableDate sets the "date" field if the given value is not nil.
+func (ssuo *StockSummaryUpdateOne) SetNillableDate(s *string) *StockSummaryUpdateOne {
+	if s != nil {
+		ssuo.SetDate(*s)
+	}
 	return ssuo
 }
 

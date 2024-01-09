@@ -1006,12 +1006,16 @@ func (u *SubscribeAlterUpsertOne) IDX(ctx context.Context) uint64 {
 // SubscribeAlterCreateBulk is the builder for creating many SubscribeAlter entities in bulk.
 type SubscribeAlterCreateBulk struct {
 	config
+	err      error
 	builders []*SubscribeAlterCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the SubscribeAlter entities in the database.
 func (sacb *SubscribeAlterCreateBulk) Save(ctx context.Context) ([]*SubscribeAlter, error) {
+	if sacb.err != nil {
+		return nil, sacb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(sacb.builders))
 	nodes := make([]*SubscribeAlter, len(sacb.builders))
 	mutators := make([]Mutator, len(sacb.builders))
@@ -1413,6 +1417,9 @@ func (u *SubscribeAlterUpsertBulk) ClearSubscribeEndAt() *SubscribeAlterUpsertBu
 
 // Exec executes the query.
 func (u *SubscribeAlterUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the SubscribeAlterCreateBulk instead", i)

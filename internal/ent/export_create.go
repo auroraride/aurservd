@@ -925,12 +925,16 @@ func (u *ExportUpsertOne) IDX(ctx context.Context) uint64 {
 // ExportCreateBulk is the builder for creating many Export entities in bulk.
 type ExportCreateBulk struct {
 	config
+	err      error
 	builders []*ExportCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the Export entities in the database.
 func (ecb *ExportCreateBulk) Save(ctx context.Context) ([]*Export, error) {
+	if ecb.err != nil {
+		return nil, ecb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ecb.builders))
 	nodes := make([]*Export, len(ecb.builders))
 	mutators := make([]Mutator, len(ecb.builders))
@@ -1336,6 +1340,9 @@ func (u *ExportUpsertBulk) UpdateRemark() *ExportUpsertBulk {
 
 // Exec executes the query.
 func (u *ExportUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the ExportCreateBulk instead", i)

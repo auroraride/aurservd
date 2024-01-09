@@ -138,6 +138,14 @@ func (pu *PlanUpdate) SetEnable(b bool) *PlanUpdate {
 	return pu
 }
 
+// SetNillableEnable sets the "enable" field if the given value is not nil.
+func (pu *PlanUpdate) SetNillableEnable(b *bool) *PlanUpdate {
+	if b != nil {
+		pu.SetEnable(*b)
+	}
+	return pu
+}
+
 // SetType sets the "type" field.
 func (pu *PlanUpdate) SetType(u uint8) *PlanUpdate {
 	pu.mutation.ResetType()
@@ -165,9 +173,25 @@ func (pu *PlanUpdate) SetName(s string) *PlanUpdate {
 	return pu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (pu *PlanUpdate) SetNillableName(s *string) *PlanUpdate {
+	if s != nil {
+		pu.SetName(*s)
+	}
+	return pu
+}
+
 // SetStart sets the "start" field.
 func (pu *PlanUpdate) SetStart(t time.Time) *PlanUpdate {
 	pu.mutation.SetStart(t)
+	return pu
+}
+
+// SetNillableStart sets the "start" field if the given value is not nil.
+func (pu *PlanUpdate) SetNillableStart(t *time.Time) *PlanUpdate {
+	if t != nil {
+		pu.SetStart(*t)
+	}
 	return pu
 }
 
@@ -177,10 +201,26 @@ func (pu *PlanUpdate) SetEnd(t time.Time) *PlanUpdate {
 	return pu
 }
 
+// SetNillableEnd sets the "end" field if the given value is not nil.
+func (pu *PlanUpdate) SetNillableEnd(t *time.Time) *PlanUpdate {
+	if t != nil {
+		pu.SetEnd(*t)
+	}
+	return pu
+}
+
 // SetPrice sets the "price" field.
 func (pu *PlanUpdate) SetPrice(f float64) *PlanUpdate {
 	pu.mutation.ResetPrice()
 	pu.mutation.SetPrice(f)
+	return pu
+}
+
+// SetNillablePrice sets the "price" field if the given value is not nil.
+func (pu *PlanUpdate) SetNillablePrice(f *float64) *PlanUpdate {
+	if f != nil {
+		pu.SetPrice(*f)
+	}
 	return pu
 }
 
@@ -197,6 +237,14 @@ func (pu *PlanUpdate) SetDays(u uint) *PlanUpdate {
 	return pu
 }
 
+// SetNillableDays sets the "days" field if the given value is not nil.
+func (pu *PlanUpdate) SetNillableDays(u *uint) *PlanUpdate {
+	if u != nil {
+		pu.SetDays(*u)
+	}
+	return pu
+}
+
 // AddDays adds u to the "days" field.
 func (pu *PlanUpdate) AddDays(u int) *PlanUpdate {
 	pu.mutation.AddDays(u)
@@ -207,6 +255,14 @@ func (pu *PlanUpdate) AddDays(u int) *PlanUpdate {
 func (pu *PlanUpdate) SetCommission(f float64) *PlanUpdate {
 	pu.mutation.ResetCommission()
 	pu.mutation.SetCommission(f)
+	return pu
+}
+
+// SetNillableCommission sets the "commission" field if the given value is not nil.
+func (pu *PlanUpdate) SetNillableCommission(f *float64) *PlanUpdate {
+	if f != nil {
+		pu.SetCommission(*f)
+	}
 	return pu
 }
 
@@ -948,6 +1004,14 @@ func (puo *PlanUpdateOne) SetEnable(b bool) *PlanUpdateOne {
 	return puo
 }
 
+// SetNillableEnable sets the "enable" field if the given value is not nil.
+func (puo *PlanUpdateOne) SetNillableEnable(b *bool) *PlanUpdateOne {
+	if b != nil {
+		puo.SetEnable(*b)
+	}
+	return puo
+}
+
 // SetType sets the "type" field.
 func (puo *PlanUpdateOne) SetType(u uint8) *PlanUpdateOne {
 	puo.mutation.ResetType()
@@ -975,9 +1039,25 @@ func (puo *PlanUpdateOne) SetName(s string) *PlanUpdateOne {
 	return puo
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (puo *PlanUpdateOne) SetNillableName(s *string) *PlanUpdateOne {
+	if s != nil {
+		puo.SetName(*s)
+	}
+	return puo
+}
+
 // SetStart sets the "start" field.
 func (puo *PlanUpdateOne) SetStart(t time.Time) *PlanUpdateOne {
 	puo.mutation.SetStart(t)
+	return puo
+}
+
+// SetNillableStart sets the "start" field if the given value is not nil.
+func (puo *PlanUpdateOne) SetNillableStart(t *time.Time) *PlanUpdateOne {
+	if t != nil {
+		puo.SetStart(*t)
+	}
 	return puo
 }
 
@@ -987,10 +1067,26 @@ func (puo *PlanUpdateOne) SetEnd(t time.Time) *PlanUpdateOne {
 	return puo
 }
 
+// SetNillableEnd sets the "end" field if the given value is not nil.
+func (puo *PlanUpdateOne) SetNillableEnd(t *time.Time) *PlanUpdateOne {
+	if t != nil {
+		puo.SetEnd(*t)
+	}
+	return puo
+}
+
 // SetPrice sets the "price" field.
 func (puo *PlanUpdateOne) SetPrice(f float64) *PlanUpdateOne {
 	puo.mutation.ResetPrice()
 	puo.mutation.SetPrice(f)
+	return puo
+}
+
+// SetNillablePrice sets the "price" field if the given value is not nil.
+func (puo *PlanUpdateOne) SetNillablePrice(f *float64) *PlanUpdateOne {
+	if f != nil {
+		puo.SetPrice(*f)
+	}
 	return puo
 }
 
@@ -1007,6 +1103,14 @@ func (puo *PlanUpdateOne) SetDays(u uint) *PlanUpdateOne {
 	return puo
 }
 
+// SetNillableDays sets the "days" field if the given value is not nil.
+func (puo *PlanUpdateOne) SetNillableDays(u *uint) *PlanUpdateOne {
+	if u != nil {
+		puo.SetDays(*u)
+	}
+	return puo
+}
+
 // AddDays adds u to the "days" field.
 func (puo *PlanUpdateOne) AddDays(u int) *PlanUpdateOne {
 	puo.mutation.AddDays(u)
@@ -1017,6 +1121,14 @@ func (puo *PlanUpdateOne) AddDays(u int) *PlanUpdateOne {
 func (puo *PlanUpdateOne) SetCommission(f float64) *PlanUpdateOne {
 	puo.mutation.ResetCommission()
 	puo.mutation.SetCommission(f)
+	return puo
+}
+
+// SetNillableCommission sets the "commission" field if the given value is not nil.
+func (puo *PlanUpdateOne) SetNillableCommission(f *float64) *PlanUpdateOne {
+	if f != nil {
+		puo.SetCommission(*f)
+	}
 	return puo
 }
 

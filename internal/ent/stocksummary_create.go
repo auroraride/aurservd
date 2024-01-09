@@ -1078,12 +1078,16 @@ func (u *StockSummaryUpsertOne) IDX(ctx context.Context) uint64 {
 // StockSummaryCreateBulk is the builder for creating many StockSummary entities in bulk.
 type StockSummaryCreateBulk struct {
 	config
+	err      error
 	builders []*StockSummaryCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the StockSummary entities in the database.
 func (sscb *StockSummaryCreateBulk) Save(ctx context.Context) ([]*StockSummary, error) {
+	if sscb.err != nil {
+		return nil, sscb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(sscb.builders))
 	nodes := make([]*StockSummary, len(sscb.builders))
 	mutators := make([]Mutator, len(sscb.builders))
@@ -1510,6 +1514,9 @@ func (u *StockSummaryUpsertBulk) ClearMaterial() *StockSummaryUpsertBulk {
 
 // Exec executes the query.
 func (u *StockSummaryUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the StockSummaryCreateBulk instead", i)

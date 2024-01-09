@@ -634,12 +634,16 @@ func (u *PromotionGrowthUpsertOne) IDX(ctx context.Context) uint64 {
 // PromotionGrowthCreateBulk is the builder for creating many PromotionGrowth entities in bulk.
 type PromotionGrowthCreateBulk struct {
 	config
+	err      error
 	builders []*PromotionGrowthCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the PromotionGrowth entities in the database.
 func (pgcb *PromotionGrowthCreateBulk) Save(ctx context.Context) ([]*PromotionGrowth, error) {
+	if pgcb.err != nil {
+		return nil, pgcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(pgcb.builders))
 	nodes := make([]*PromotionGrowth, len(pgcb.builders))
 	mutators := make([]Mutator, len(pgcb.builders))
@@ -926,6 +930,9 @@ func (u *PromotionGrowthUpsertBulk) UpdateGrowthValue() *PromotionGrowthUpsertBu
 
 // Exec executes the query.
 func (u *PromotionGrowthUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the PromotionGrowthCreateBulk instead", i)

@@ -587,12 +587,16 @@ func (u *CouponTemplateUpsertOne) IDX(ctx context.Context) uint64 {
 // CouponTemplateCreateBulk is the builder for creating many CouponTemplate entities in bulk.
 type CouponTemplateCreateBulk struct {
 	config
+	err      error
 	builders []*CouponTemplateCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the CouponTemplate entities in the database.
 func (ctcb *CouponTemplateCreateBulk) Save(ctx context.Context) ([]*CouponTemplate, error) {
+	if ctcb.err != nil {
+		return nil, ctcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ctcb.builders))
 	nodes := make([]*CouponTemplate, len(ctcb.builders))
 	mutators := make([]Mutator, len(ctcb.builders))
@@ -861,6 +865,9 @@ func (u *CouponTemplateUpsertBulk) UpdateMeta() *CouponTemplateUpsertBulk {
 
 // Exec executes the query.
 func (u *CouponTemplateUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the CouponTemplateCreateBulk instead", i)

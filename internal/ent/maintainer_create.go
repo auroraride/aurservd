@@ -398,12 +398,16 @@ func (u *MaintainerUpsertOne) IDX(ctx context.Context) uint64 {
 // MaintainerCreateBulk is the builder for creating many Maintainer entities in bulk.
 type MaintainerCreateBulk struct {
 	config
+	err      error
 	builders []*MaintainerCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the Maintainer entities in the database.
 func (mcb *MaintainerCreateBulk) Save(ctx context.Context) ([]*Maintainer, error) {
+	if mcb.err != nil {
+		return nil, mcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(mcb.builders))
 	nodes := make([]*Maintainer, len(mcb.builders))
 	mutators := make([]Mutator, len(mcb.builders))
@@ -619,6 +623,9 @@ func (u *MaintainerUpsertBulk) UpdatePassword() *MaintainerUpsertBulk {
 
 // Exec executes the query.
 func (u *MaintainerUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the MaintainerCreateBulk instead", i)

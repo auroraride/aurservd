@@ -1155,12 +1155,16 @@ func (u *BranchContractUpsertOne) IDX(ctx context.Context) uint64 {
 // BranchContractCreateBulk is the builder for creating many BranchContract entities in bulk.
 type BranchContractCreateBulk struct {
 	config
+	err      error
 	builders []*BranchContractCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the BranchContract entities in the database.
 func (bccb *BranchContractCreateBulk) Save(ctx context.Context) ([]*BranchContract, error) {
+	if bccb.err != nil {
+		return nil, bccb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(bccb.builders))
 	nodes := make([]*BranchContract, len(bccb.builders))
 	mutators := make([]Mutator, len(bccb.builders))
@@ -1653,6 +1657,9 @@ func (u *BranchContractUpsertBulk) UpdateSheets() *BranchContractUpsertBulk {
 
 // Exec executes the query.
 func (u *BranchContractUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the BranchContractCreateBulk instead", i)

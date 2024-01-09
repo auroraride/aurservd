@@ -710,6 +710,7 @@ func (m *AgentMutation) ResetSuper() {
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
 func (m *AgentMutation) ClearEnterprise() {
 	m.clearedenterprise = true
+	m.clearedFields[agent.FieldEnterpriseID] = struct{}{}
 }
 
 // EnterpriseCleared reports if the "enterprise" edge to the Enterprise entity was cleared.
@@ -2221,6 +2222,7 @@ func (m *AllocateMutation) ResetEbikeID() {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *AllocateMutation) ClearRider() {
 	m.clearedrider = true
+	m.clearedFields[allocate.FieldRiderID] = struct{}{}
 }
 
 // RiderCleared reports if the "rider" edge to the Rider entity was cleared.
@@ -2247,6 +2249,7 @@ func (m *AllocateMutation) ResetRider() {
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
 func (m *AllocateMutation) ClearSubscribe() {
 	m.clearedsubscribe = true
+	m.clearedFields[allocate.FieldSubscribeID] = struct{}{}
 }
 
 // SubscribeCleared reports if the "subscribe" edge to the Subscribe entity was cleared.
@@ -2273,6 +2276,7 @@ func (m *AllocateMutation) ResetSubscribe() {
 // ClearEmployee clears the "employee" edge to the Employee entity.
 func (m *AllocateMutation) ClearEmployee() {
 	m.clearedemployee = true
+	m.clearedFields[allocate.FieldEmployeeID] = struct{}{}
 }
 
 // EmployeeCleared reports if the "employee" edge to the Employee entity was cleared.
@@ -2299,6 +2303,7 @@ func (m *AllocateMutation) ResetEmployee() {
 // ClearCabinet clears the "cabinet" edge to the Cabinet entity.
 func (m *AllocateMutation) ClearCabinet() {
 	m.clearedcabinet = true
+	m.clearedFields[allocate.FieldCabinetID] = struct{}{}
 }
 
 // CabinetCleared reports if the "cabinet" edge to the Cabinet entity was cleared.
@@ -2325,6 +2330,7 @@ func (m *AllocateMutation) ResetCabinet() {
 // ClearStore clears the "store" edge to the Store entity.
 func (m *AllocateMutation) ClearStore() {
 	m.clearedstore = true
+	m.clearedFields[allocate.FieldStoreID] = struct{}{}
 }
 
 // StoreCleared reports if the "store" edge to the Store entity was cleared.
@@ -2351,6 +2357,7 @@ func (m *AllocateMutation) ResetStore() {
 // ClearBrand clears the "brand" edge to the EbikeBrand entity.
 func (m *AllocateMutation) ClearBrand() {
 	m.clearedbrand = true
+	m.clearedFields[allocate.FieldBrandID] = struct{}{}
 }
 
 // BrandCleared reports if the "brand" edge to the EbikeBrand entity was cleared.
@@ -2377,6 +2384,7 @@ func (m *AllocateMutation) ResetBrand() {
 // ClearBattery clears the "battery" edge to the Battery entity.
 func (m *AllocateMutation) ClearBattery() {
 	m.clearedbattery = true
+	m.clearedFields[allocate.FieldBatteryID] = struct{}{}
 }
 
 // BatteryCleared reports if the "battery" edge to the Battery entity was cleared.
@@ -2403,6 +2411,7 @@ func (m *AllocateMutation) ResetBattery() {
 // ClearStation clears the "station" edge to the EnterpriseStation entity.
 func (m *AllocateMutation) ClearStation() {
 	m.clearedstation = true
+	m.clearedFields[allocate.FieldStationID] = struct{}{}
 }
 
 // StationCleared reports if the "station" edge to the EnterpriseStation entity was cleared.
@@ -2429,6 +2438,7 @@ func (m *AllocateMutation) ResetStation() {
 // ClearAgent clears the "agent" edge to the Agent entity.
 func (m *AllocateMutation) ClearAgent() {
 	m.clearedagent = true
+	m.clearedFields[allocate.FieldAgentID] = struct{}{}
 }
 
 // AgentCleared reports if the "agent" edge to the Agent entity was cleared.
@@ -2494,6 +2504,7 @@ func (m *AllocateMutation) ResetContract() {
 // ClearEbike clears the "ebike" edge to the Ebike entity.
 func (m *AllocateMutation) ClearEbike() {
 	m.clearedebike = true
+	m.clearedFields[allocate.FieldEbikeID] = struct{}{}
 }
 
 // EbikeCleared reports if the "ebike" edge to the Ebike entity was cleared.
@@ -5272,6 +5283,7 @@ func (m *AssistanceMutation) ResetNaviPolylines() {
 // ClearStore clears the "store" edge to the Store entity.
 func (m *AssistanceMutation) ClearStore() {
 	m.clearedstore = true
+	m.clearedFields[assistance.FieldStoreID] = struct{}{}
 }
 
 // StoreCleared reports if the "store" edge to the Store entity was cleared.
@@ -5298,6 +5310,7 @@ func (m *AssistanceMutation) ResetStore() {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *AssistanceMutation) ClearRider() {
 	m.clearedrider = true
+	m.clearedFields[assistance.FieldRiderID] = struct{}{}
 }
 
 // RiderCleared reports if the "rider" edge to the Rider entity was cleared.
@@ -5324,6 +5337,7 @@ func (m *AssistanceMutation) ResetRider() {
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
 func (m *AssistanceMutation) ClearSubscribe() {
 	m.clearedsubscribe = true
+	m.clearedFields[assistance.FieldSubscribeID] = struct{}{}
 }
 
 // SubscribeCleared reports if the "subscribe" edge to the Subscribe entity was cleared.
@@ -5350,6 +5364,7 @@ func (m *AssistanceMutation) ResetSubscribe() {
 // ClearCity clears the "city" edge to the City entity.
 func (m *AssistanceMutation) ClearCity() {
 	m.clearedcity = true
+	m.clearedFields[assistance.FieldCityID] = struct{}{}
 }
 
 // CityCleared reports if the "city" edge to the City entity was cleared.
@@ -5376,6 +5391,7 @@ func (m *AssistanceMutation) ResetCity() {
 // ClearOrder clears the "order" edge to the Order entity.
 func (m *AssistanceMutation) ClearOrder() {
 	m.cleared_order = true
+	m.clearedFields[assistance.FieldOrderID] = struct{}{}
 }
 
 // OrderCleared reports if the "order" edge to the Order entity was cleared.
@@ -5402,6 +5418,7 @@ func (m *AssistanceMutation) ResetOrder() {
 // ClearEmployee clears the "employee" edge to the Employee entity.
 func (m *AssistanceMutation) ClearEmployee() {
 	m.clearedemployee = true
+	m.clearedFields[assistance.FieldEmployeeID] = struct{}{}
 }
 
 // EmployeeCleared reports if the "employee" edge to the Employee entity was cleared.
@@ -7481,6 +7498,7 @@ func (m *AttendanceMutation) ResetDistance() {
 // ClearStore clears the "store" edge to the Store entity.
 func (m *AttendanceMutation) ClearStore() {
 	m.clearedstore = true
+	m.clearedFields[attendance.FieldStoreID] = struct{}{}
 }
 
 // StoreCleared reports if the "store" edge to the Store entity was cleared.
@@ -7507,6 +7525,7 @@ func (m *AttendanceMutation) ResetStore() {
 // ClearEmployee clears the "employee" edge to the Employee entity.
 func (m *AttendanceMutation) ClearEmployee() {
 	m.clearedemployee = true
+	m.clearedFields[attendance.FieldEmployeeID] = struct{}{}
 }
 
 // EmployeeCleared reports if the "employee" edge to the Employee entity was cleared.
@@ -9026,6 +9045,7 @@ func (m *BatteryMutation) ResetOrdinal() {
 // ClearCity clears the "city" edge to the City entity.
 func (m *BatteryMutation) ClearCity() {
 	m.clearedcity = true
+	m.clearedFields[battery.FieldCityID] = struct{}{}
 }
 
 // CityCleared reports if the "city" edge to the City entity was cleared.
@@ -9052,6 +9072,7 @@ func (m *BatteryMutation) ResetCity() {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *BatteryMutation) ClearRider() {
 	m.clearedrider = true
+	m.clearedFields[battery.FieldRiderID] = struct{}{}
 }
 
 // RiderCleared reports if the "rider" edge to the Rider entity was cleared.
@@ -9078,6 +9099,7 @@ func (m *BatteryMutation) ResetRider() {
 // ClearCabinet clears the "cabinet" edge to the Cabinet entity.
 func (m *BatteryMutation) ClearCabinet() {
 	m.clearedcabinet = true
+	m.clearedFields[battery.FieldCabinetID] = struct{}{}
 }
 
 // CabinetCleared reports if the "cabinet" edge to the Cabinet entity was cleared.
@@ -9104,6 +9126,7 @@ func (m *BatteryMutation) ResetCabinet() {
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
 func (m *BatteryMutation) ClearSubscribe() {
 	m.clearedsubscribe = true
+	m.clearedFields[battery.FieldSubscribeID] = struct{}{}
 }
 
 // SubscribeCleared reports if the "subscribe" edge to the Subscribe entity was cleared.
@@ -9130,6 +9153,7 @@ func (m *BatteryMutation) ResetSubscribe() {
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
 func (m *BatteryMutation) ClearEnterprise() {
 	m.clearedenterprise = true
+	m.clearedFields[battery.FieldEnterpriseID] = struct{}{}
 }
 
 // EnterpriseCleared reports if the "enterprise" edge to the Enterprise entity was cleared.
@@ -9210,6 +9234,7 @@ func (m *BatteryMutation) ResetFlows() {
 // ClearStation clears the "station" edge to the EnterpriseStation entity.
 func (m *BatteryMutation) ClearStation() {
 	m.clearedstation = true
+	m.clearedFields[battery.FieldStationID] = struct{}{}
 }
 
 // StationCleared reports if the "station" edge to the EnterpriseStation entity was cleared.
@@ -10607,6 +10632,7 @@ func (m *BatteryFlowMutation) ResetRemark() {
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
 func (m *BatteryFlowMutation) ClearSubscribe() {
 	m.clearedsubscribe = true
+	m.clearedFields[batteryflow.FieldSubscribeID] = struct{}{}
 }
 
 // SubscribeCleared reports if the "subscribe" edge to the Subscribe entity was cleared.
@@ -10633,6 +10659,7 @@ func (m *BatteryFlowMutation) ResetSubscribe() {
 // ClearBattery clears the "battery" edge to the Battery entity.
 func (m *BatteryFlowMutation) ClearBattery() {
 	m.clearedbattery = true
+	m.clearedFields[batteryflow.FieldBatteryID] = struct{}{}
 }
 
 // BatteryCleared reports if the "battery" edge to the Battery entity was cleared.
@@ -10659,6 +10686,7 @@ func (m *BatteryFlowMutation) ResetBattery() {
 // ClearCabinet clears the "cabinet" edge to the Cabinet entity.
 func (m *BatteryFlowMutation) ClearCabinet() {
 	m.clearedcabinet = true
+	m.clearedFields[batteryflow.FieldCabinetID] = struct{}{}
 }
 
 // CabinetCleared reports if the "cabinet" edge to the Cabinet entity was cleared.
@@ -10685,6 +10713,7 @@ func (m *BatteryFlowMutation) ResetCabinet() {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *BatteryFlowMutation) ClearRider() {
 	m.clearedrider = true
+	m.clearedFields[batteryflow.FieldRiderID] = struct{}{}
 }
 
 // RiderCleared reports if the "rider" edge to the Rider entity was cleared.
@@ -12416,6 +12445,7 @@ func (m *BranchMutation) ResetGeom() {
 // ClearCity clears the "city" edge to the City entity.
 func (m *BranchMutation) ClearCity() {
 	m.clearedcity = true
+	m.clearedFields[branch.FieldCityID] = struct{}{}
 }
 
 // CityCleared reports if the "city" edge to the City entity was cleared.
@@ -14288,6 +14318,7 @@ func (m *BranchContractMutation) ResetSheets() {
 // ClearBranch clears the "branch" edge to the Branch entity.
 func (m *BranchContractMutation) ClearBranch() {
 	m.clearedbranch = true
+	m.clearedFields[branchcontract.FieldBranchID] = struct{}{}
 }
 
 // BranchCleared reports if the "branch" edge to the Branch entity was cleared.
@@ -14982,6 +15013,8 @@ type BusinessMutation struct {
 	clearedcabinet    bool
 	battery           *uint64
 	clearedbattery    bool
+	agent             *uint64
+	clearedagent      bool
 	done              bool
 	oldValue          func(context.Context) (*Business, error)
 	predicates        []predicate.Business
@@ -15804,6 +15837,55 @@ func (m *BusinessMutation) ResetBatteryID() {
 	delete(m.clearedFields, business.FieldBatteryID)
 }
 
+// SetAgentID sets the "agent_id" field.
+func (m *BusinessMutation) SetAgentID(u uint64) {
+	m.agent = &u
+}
+
+// AgentID returns the value of the "agent_id" field in the mutation.
+func (m *BusinessMutation) AgentID() (r uint64, exists bool) {
+	v := m.agent
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAgentID returns the old "agent_id" field's value of the Business entity.
+// If the Business object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessMutation) OldAgentID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAgentID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAgentID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAgentID: %w", err)
+	}
+	return oldValue.AgentID, nil
+}
+
+// ClearAgentID clears the value of the "agent_id" field.
+func (m *BusinessMutation) ClearAgentID() {
+	m.agent = nil
+	m.clearedFields[business.FieldAgentID] = struct{}{}
+}
+
+// AgentIDCleared returns if the "agent_id" field was cleared in this mutation.
+func (m *BusinessMutation) AgentIDCleared() bool {
+	_, ok := m.clearedFields[business.FieldAgentID]
+	return ok
+}
+
+// ResetAgentID resets all changes to the "agent_id" field.
+func (m *BusinessMutation) ResetAgentID() {
+	m.agent = nil
+	delete(m.clearedFields, business.FieldAgentID)
+}
+
 // SetType sets the "type" field.
 func (m *BusinessMutation) SetType(b business.Type) {
 	m._type = &b
@@ -15941,6 +16023,7 @@ func (m *BusinessMutation) ResetStockSn() {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *BusinessMutation) ClearRider() {
 	m.clearedrider = true
+	m.clearedFields[business.FieldRiderID] = struct{}{}
 }
 
 // RiderCleared reports if the "rider" edge to the Rider entity was cleared.
@@ -15967,6 +16050,7 @@ func (m *BusinessMutation) ResetRider() {
 // ClearCity clears the "city" edge to the City entity.
 func (m *BusinessMutation) ClearCity() {
 	m.clearedcity = true
+	m.clearedFields[business.FieldCityID] = struct{}{}
 }
 
 // CityCleared reports if the "city" edge to the City entity was cleared.
@@ -15993,6 +16077,7 @@ func (m *BusinessMutation) ResetCity() {
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
 func (m *BusinessMutation) ClearSubscribe() {
 	m.clearedsubscribe = true
+	m.clearedFields[business.FieldSubscribeID] = struct{}{}
 }
 
 // SubscribeCleared reports if the "subscribe" edge to the Subscribe entity was cleared.
@@ -16019,6 +16104,7 @@ func (m *BusinessMutation) ResetSubscribe() {
 // ClearEmployee clears the "employee" edge to the Employee entity.
 func (m *BusinessMutation) ClearEmployee() {
 	m.clearedemployee = true
+	m.clearedFields[business.FieldEmployeeID] = struct{}{}
 }
 
 // EmployeeCleared reports if the "employee" edge to the Employee entity was cleared.
@@ -16045,6 +16131,7 @@ func (m *BusinessMutation) ResetEmployee() {
 // ClearStore clears the "store" edge to the Store entity.
 func (m *BusinessMutation) ClearStore() {
 	m.clearedstore = true
+	m.clearedFields[business.FieldStoreID] = struct{}{}
 }
 
 // StoreCleared reports if the "store" edge to the Store entity was cleared.
@@ -16071,6 +16158,7 @@ func (m *BusinessMutation) ResetStore() {
 // ClearPlan clears the "plan" edge to the Plan entity.
 func (m *BusinessMutation) ClearPlan() {
 	m.clearedplan = true
+	m.clearedFields[business.FieldPlanID] = struct{}{}
 }
 
 // PlanCleared reports if the "plan" edge to the Plan entity was cleared.
@@ -16097,6 +16185,7 @@ func (m *BusinessMutation) ResetPlan() {
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
 func (m *BusinessMutation) ClearEnterprise() {
 	m.clearedenterprise = true
+	m.clearedFields[business.FieldEnterpriseID] = struct{}{}
 }
 
 // EnterpriseCleared reports if the "enterprise" edge to the Enterprise entity was cleared.
@@ -16123,6 +16212,7 @@ func (m *BusinessMutation) ResetEnterprise() {
 // ClearStation clears the "station" edge to the EnterpriseStation entity.
 func (m *BusinessMutation) ClearStation() {
 	m.clearedstation = true
+	m.clearedFields[business.FieldStationID] = struct{}{}
 }
 
 // StationCleared reports if the "station" edge to the EnterpriseStation entity was cleared.
@@ -16149,6 +16239,7 @@ func (m *BusinessMutation) ResetStation() {
 // ClearCabinet clears the "cabinet" edge to the Cabinet entity.
 func (m *BusinessMutation) ClearCabinet() {
 	m.clearedcabinet = true
+	m.clearedFields[business.FieldCabinetID] = struct{}{}
 }
 
 // CabinetCleared reports if the "cabinet" edge to the Cabinet entity was cleared.
@@ -16175,6 +16266,7 @@ func (m *BusinessMutation) ResetCabinet() {
 // ClearBattery clears the "battery" edge to the Battery entity.
 func (m *BusinessMutation) ClearBattery() {
 	m.clearedbattery = true
+	m.clearedFields[business.FieldBatteryID] = struct{}{}
 }
 
 // BatteryCleared reports if the "battery" edge to the Battery entity was cleared.
@@ -16196,6 +16288,33 @@ func (m *BusinessMutation) BatteryIDs() (ids []uint64) {
 func (m *BusinessMutation) ResetBattery() {
 	m.battery = nil
 	m.clearedbattery = false
+}
+
+// ClearAgent clears the "agent" edge to the Agent entity.
+func (m *BusinessMutation) ClearAgent() {
+	m.clearedagent = true
+	m.clearedFields[business.FieldAgentID] = struct{}{}
+}
+
+// AgentCleared reports if the "agent" edge to the Agent entity was cleared.
+func (m *BusinessMutation) AgentCleared() bool {
+	return m.AgentIDCleared() || m.clearedagent
+}
+
+// AgentIDs returns the "agent" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// AgentID instead. It exists only for internal usage by the builders.
+func (m *BusinessMutation) AgentIDs() (ids []uint64) {
+	if id := m.agent; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetAgent resets all changes to the "agent" edge.
+func (m *BusinessMutation) ResetAgent() {
+	m.agent = nil
+	m.clearedagent = false
 }
 
 // Where appends a list predicates to the BusinessMutation builder.
@@ -16232,7 +16351,7 @@ func (m *BusinessMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *BusinessMutation) Fields() []string {
-	fields := make([]string, 0, 19)
+	fields := make([]string, 0, 20)
 	if m.created_at != nil {
 		fields = append(fields, business.FieldCreatedAt)
 	}
@@ -16280,6 +16399,9 @@ func (m *BusinessMutation) Fields() []string {
 	}
 	if m.battery != nil {
 		fields = append(fields, business.FieldBatteryID)
+	}
+	if m.agent != nil {
+		fields = append(fields, business.FieldAgentID)
 	}
 	if m._type != nil {
 		fields = append(fields, business.FieldType)
@@ -16330,6 +16452,8 @@ func (m *BusinessMutation) Field(name string) (ent.Value, bool) {
 		return m.CabinetID()
 	case business.FieldBatteryID:
 		return m.BatteryID()
+	case business.FieldAgentID:
+		return m.AgentID()
 	case business.FieldType:
 		return m.GetType()
 	case business.FieldBinInfo:
@@ -16377,6 +16501,8 @@ func (m *BusinessMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldCabinetID(ctx)
 	case business.FieldBatteryID:
 		return m.OldBatteryID(ctx)
+	case business.FieldAgentID:
+		return m.OldAgentID(ctx)
 	case business.FieldType:
 		return m.OldType(ctx)
 	case business.FieldBinInfo:
@@ -16504,6 +16630,13 @@ func (m *BusinessMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetBatteryID(v)
 		return nil
+	case business.FieldAgentID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAgentID(v)
+		return nil
 	case business.FieldType:
 		v, ok := value.(business.Type)
 		if !ok {
@@ -16591,6 +16724,9 @@ func (m *BusinessMutation) ClearedFields() []string {
 	if m.FieldCleared(business.FieldBatteryID) {
 		fields = append(fields, business.FieldBatteryID)
 	}
+	if m.FieldCleared(business.FieldAgentID) {
+		fields = append(fields, business.FieldAgentID)
+	}
 	if m.FieldCleared(business.FieldBinInfo) {
 		fields = append(fields, business.FieldBinInfo)
 	}
@@ -16643,6 +16779,9 @@ func (m *BusinessMutation) ClearField(name string) error {
 		return nil
 	case business.FieldBatteryID:
 		m.ClearBatteryID()
+		return nil
+	case business.FieldAgentID:
+		m.ClearAgentID()
 		return nil
 	case business.FieldBinInfo:
 		m.ClearBinInfo()
@@ -16706,6 +16845,9 @@ func (m *BusinessMutation) ResetField(name string) error {
 	case business.FieldBatteryID:
 		m.ResetBatteryID()
 		return nil
+	case business.FieldAgentID:
+		m.ResetAgentID()
+		return nil
 	case business.FieldType:
 		m.ResetType()
 		return nil
@@ -16721,7 +16863,7 @@ func (m *BusinessMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *BusinessMutation) AddedEdges() []string {
-	edges := make([]string, 0, 10)
+	edges := make([]string, 0, 11)
 	if m.rider != nil {
 		edges = append(edges, business.EdgeRider)
 	}
@@ -16751,6 +16893,9 @@ func (m *BusinessMutation) AddedEdges() []string {
 	}
 	if m.battery != nil {
 		edges = append(edges, business.EdgeBattery)
+	}
+	if m.agent != nil {
+		edges = append(edges, business.EdgeAgent)
 	}
 	return edges
 }
@@ -16799,13 +16944,17 @@ func (m *BusinessMutation) AddedIDs(name string) []ent.Value {
 		if id := m.battery; id != nil {
 			return []ent.Value{*id}
 		}
+	case business.EdgeAgent:
+		if id := m.agent; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *BusinessMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 10)
+	edges := make([]string, 0, 11)
 	return edges
 }
 
@@ -16817,7 +16966,7 @@ func (m *BusinessMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *BusinessMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 10)
+	edges := make([]string, 0, 11)
 	if m.clearedrider {
 		edges = append(edges, business.EdgeRider)
 	}
@@ -16848,6 +16997,9 @@ func (m *BusinessMutation) ClearedEdges() []string {
 	if m.clearedbattery {
 		edges = append(edges, business.EdgeBattery)
 	}
+	if m.clearedagent {
+		edges = append(edges, business.EdgeAgent)
+	}
 	return edges
 }
 
@@ -16875,6 +17027,8 @@ func (m *BusinessMutation) EdgeCleared(name string) bool {
 		return m.clearedcabinet
 	case business.EdgeBattery:
 		return m.clearedbattery
+	case business.EdgeAgent:
+		return m.clearedagent
 	}
 	return false
 }
@@ -16913,6 +17067,9 @@ func (m *BusinessMutation) ClearEdge(name string) error {
 	case business.EdgeBattery:
 		m.ClearBattery()
 		return nil
+	case business.EdgeAgent:
+		m.ClearAgent()
+		return nil
 	}
 	return fmt.Errorf("unknown Business unique edge %s", name)
 }
@@ -16950,6 +17107,9 @@ func (m *BusinessMutation) ResetEdge(name string) error {
 		return nil
 	case business.EdgeBattery:
 		m.ResetBattery()
+		return nil
+	case business.EdgeAgent:
+		m.ResetAgent()
 		return nil
 	}
 	return fmt.Errorf("unknown Business edge %s", name)
@@ -18661,6 +18821,7 @@ func (m *CabinetMutation) ResetLockedBinNum() {
 // ClearCity clears the "city" edge to the City entity.
 func (m *CabinetMutation) ClearCity() {
 	m.clearedcity = true
+	m.clearedFields[cabinet.FieldCityID] = struct{}{}
 }
 
 // CityCleared reports if the "city" edge to the City entity was cleared.
@@ -18687,6 +18848,7 @@ func (m *CabinetMutation) ResetCity() {
 // ClearBranch clears the "branch" edge to the Branch entity.
 func (m *CabinetMutation) ClearBranch() {
 	m.clearedbranch = true
+	m.clearedFields[cabinet.FieldBranchID] = struct{}{}
 }
 
 // BranchCleared reports if the "branch" edge to the Branch entity was cleared.
@@ -19037,6 +19199,7 @@ func (m *CabinetMutation) ResetBatteryFlows() {
 // ClearStation clears the "station" edge to the EnterpriseStation entity.
 func (m *CabinetMutation) ClearStation() {
 	m.clearedstation = true
+	m.clearedFields[cabinet.FieldStationID] = struct{}{}
 }
 
 // StationCleared reports if the "station" edge to the EnterpriseStation entity was cleared.
@@ -19063,6 +19226,7 @@ func (m *CabinetMutation) ResetStation() {
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
 func (m *CabinetMutation) ClearEnterprise() {
 	m.clearedenterprise = true
+	m.clearedFields[cabinet.FieldEnterpriseID] = struct{}{}
 }
 
 // EnterpriseCleared reports if the "enterprise" edge to the Enterprise entity was cleared.
@@ -20993,6 +21157,7 @@ func (m *CabinetFaultMutation) ResetDescription() {
 // ClearCity clears the "city" edge to the City entity.
 func (m *CabinetFaultMutation) ClearCity() {
 	m.clearedcity = true
+	m.clearedFields[cabinetfault.FieldCityID] = struct{}{}
 }
 
 // CityCleared reports if the "city" edge to the City entity was cleared.
@@ -21019,6 +21184,7 @@ func (m *CabinetFaultMutation) ResetCity() {
 // ClearBranch clears the "branch" edge to the Branch entity.
 func (m *CabinetFaultMutation) ClearBranch() {
 	m.clearedbranch = true
+	m.clearedFields[cabinetfault.FieldBranchID] = struct{}{}
 }
 
 // BranchCleared reports if the "branch" edge to the Branch entity was cleared.
@@ -21045,6 +21211,7 @@ func (m *CabinetFaultMutation) ResetBranch() {
 // ClearCabinet clears the "cabinet" edge to the Cabinet entity.
 func (m *CabinetFaultMutation) ClearCabinet() {
 	m.clearedcabinet = true
+	m.clearedFields[cabinetfault.FieldCabinetID] = struct{}{}
 }
 
 // CabinetCleared reports if the "cabinet" edge to the Cabinet entity was cleared.
@@ -21071,6 +21238,7 @@ func (m *CabinetFaultMutation) ResetCabinet() {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *CabinetFaultMutation) ClearRider() {
 	m.clearedrider = true
+	m.clearedFields[cabinetfault.FieldRiderID] = struct{}{}
 }
 
 // RiderCleared reports if the "rider" edge to the Rider entity was cleared.
@@ -22355,6 +22523,7 @@ func (m *CityMutation) ResetLat() {
 // ClearParent clears the "parent" edge to the City entity.
 func (m *CityMutation) ClearParent() {
 	m.clearedparent = true
+	m.clearedFields[city.FieldParentID] = struct{}{}
 }
 
 // ParentCleared reports if the "parent" edge to the City entity was cleared.
@@ -23886,6 +24055,7 @@ func (m *CommissionMutation) ResetEmployeeID() {
 // ClearBusiness clears the "business" edge to the Business entity.
 func (m *CommissionMutation) ClearBusiness() {
 	m.clearedbusiness = true
+	m.clearedFields[commission.FieldBusinessID] = struct{}{}
 }
 
 // BusinessCleared reports if the "business" edge to the Business entity was cleared.
@@ -23912,6 +24082,7 @@ func (m *CommissionMutation) ResetBusiness() {
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
 func (m *CommissionMutation) ClearSubscribe() {
 	m.clearedsubscribe = true
+	m.clearedFields[commission.FieldSubscribeID] = struct{}{}
 }
 
 // SubscribeCleared reports if the "subscribe" edge to the Subscribe entity was cleared.
@@ -23938,6 +24109,7 @@ func (m *CommissionMutation) ResetSubscribe() {
 // ClearPlan clears the "plan" edge to the Plan entity.
 func (m *CommissionMutation) ClearPlan() {
 	m.clearedplan = true
+	m.clearedFields[commission.FieldPlanID] = struct{}{}
 }
 
 // PlanCleared reports if the "plan" edge to the Plan entity was cleared.
@@ -23964,6 +24136,7 @@ func (m *CommissionMutation) ResetPlan() {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *CommissionMutation) ClearRider() {
 	m.clearedrider = true
+	m.clearedFields[commission.FieldRiderID] = struct{}{}
 }
 
 // RiderCleared reports if the "rider" edge to the Rider entity was cleared.
@@ -23990,6 +24163,7 @@ func (m *CommissionMutation) ResetRider() {
 // ClearOrder clears the "order" edge to the Order entity.
 func (m *CommissionMutation) ClearOrder() {
 	m.cleared_order = true
+	m.clearedFields[commission.FieldOrderID] = struct{}{}
 }
 
 // OrderCleared reports if the "order" edge to the Order entity was cleared.
@@ -24016,6 +24190,7 @@ func (m *CommissionMutation) ResetOrder() {
 // ClearEmployee clears the "employee" edge to the Employee entity.
 func (m *CommissionMutation) ClearEmployee() {
 	m.clearedemployee = true
+	m.clearedFields[commission.FieldEmployeeID] = struct{}{}
 }
 
 // EmployeeCleared reports if the "employee" edge to the Employee entity was cleared.
@@ -25653,6 +25828,7 @@ func (m *ContractMutation) ResetSignedAt() {
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
 func (m *ContractMutation) ClearSubscribe() {
 	m.clearedsubscribe = true
+	m.clearedFields[contract.FieldSubscribeID] = struct{}{}
 }
 
 // SubscribeCleared reports if the "subscribe" edge to the Subscribe entity was cleared.
@@ -25679,6 +25855,7 @@ func (m *ContractMutation) ResetSubscribe() {
 // ClearEmployee clears the "employee" edge to the Employee entity.
 func (m *ContractMutation) ClearEmployee() {
 	m.clearedemployee = true
+	m.clearedFields[contract.FieldEmployeeID] = struct{}{}
 }
 
 // EmployeeCleared reports if the "employee" edge to the Employee entity was cleared.
@@ -25705,6 +25882,7 @@ func (m *ContractMutation) ResetEmployee() {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *ContractMutation) ClearRider() {
 	m.clearedrider = true
+	m.clearedFields[contract.FieldRiderID] = struct{}{}
 }
 
 // RiderCleared reports if the "rider" edge to the Rider entity was cleared.
@@ -25731,6 +25909,7 @@ func (m *ContractMutation) ResetRider() {
 // ClearAllocate clears the "allocate" edge to the Allocate entity.
 func (m *ContractMutation) ClearAllocate() {
 	m.clearedallocate = true
+	m.clearedFields[contract.FieldAllocateID] = struct{}{}
 }
 
 // AllocateCleared reports if the "allocate" edge to the Allocate entity was cleared.
@@ -27473,6 +27652,7 @@ func (m *CouponMutation) ResetCities() {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *CouponMutation) ClearRider() {
 	m.clearedrider = true
+	m.clearedFields[coupon.FieldRiderID] = struct{}{}
 }
 
 // RiderCleared reports if the "rider" edge to the Rider entity was cleared.
@@ -27499,6 +27679,7 @@ func (m *CouponMutation) ResetRider() {
 // ClearAssembly clears the "assembly" edge to the CouponAssembly entity.
 func (m *CouponMutation) ClearAssembly() {
 	m.clearedassembly = true
+	m.clearedFields[coupon.FieldAssemblyID] = struct{}{}
 }
 
 // AssemblyCleared reports if the "assembly" edge to the CouponAssembly entity was cleared.
@@ -27525,6 +27706,7 @@ func (m *CouponMutation) ResetAssembly() {
 // ClearPlan clears the "plan" edge to the Plan entity.
 func (m *CouponMutation) ClearPlan() {
 	m.clearedplan = true
+	m.clearedFields[coupon.FieldPlanID] = struct{}{}
 }
 
 // PlanCleared reports if the "plan" edge to the Plan entity was cleared.
@@ -27551,6 +27733,7 @@ func (m *CouponMutation) ResetPlan() {
 // ClearTemplate clears the "template" edge to the CouponTemplate entity.
 func (m *CouponMutation) ClearTemplate() {
 	m.clearedtemplate = true
+	m.clearedFields[coupon.FieldTemplateID] = struct{}{}
 }
 
 // TemplateCleared reports if the "template" edge to the CouponTemplate entity was cleared.
@@ -27577,6 +27760,7 @@ func (m *CouponMutation) ResetTemplate() {
 // ClearOrder clears the "order" edge to the Order entity.
 func (m *CouponMutation) ClearOrder() {
 	m.cleared_order = true
+	m.clearedFields[coupon.FieldOrderID] = struct{}{}
 }
 
 // OrderCleared reports if the "order" edge to the Order entity was cleared.
@@ -28913,6 +29097,7 @@ func (m *CouponAssemblyMutation) ResetMeta() {
 // ClearTemplate clears the "template" edge to the CouponTemplate entity.
 func (m *CouponAssemblyMutation) ClearTemplate() {
 	m.clearedtemplate = true
+	m.clearedFields[couponassembly.FieldTemplateID] = struct{}{}
 }
 
 // TemplateCleared reports if the "template" edge to the CouponTemplate entity was cleared.
@@ -31145,6 +31330,7 @@ func (m *EbikeMutation) ResetExFactory() {
 // ClearBrand clears the "brand" edge to the EbikeBrand entity.
 func (m *EbikeMutation) ClearBrand() {
 	m.clearedbrand = true
+	m.clearedFields[ebike.FieldBrandID] = struct{}{}
 }
 
 // BrandCleared reports if the "brand" edge to the EbikeBrand entity was cleared.
@@ -31171,6 +31357,7 @@ func (m *EbikeMutation) ResetBrand() {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *EbikeMutation) ClearRider() {
 	m.clearedrider = true
+	m.clearedFields[ebike.FieldRiderID] = struct{}{}
 }
 
 // RiderCleared reports if the "rider" edge to the Rider entity was cleared.
@@ -31197,6 +31384,7 @@ func (m *EbikeMutation) ResetRider() {
 // ClearStore clears the "store" edge to the Store entity.
 func (m *EbikeMutation) ClearStore() {
 	m.clearedstore = true
+	m.clearedFields[ebike.FieldStoreID] = struct{}{}
 }
 
 // StoreCleared reports if the "store" edge to the Store entity was cleared.
@@ -31223,6 +31411,7 @@ func (m *EbikeMutation) ResetStore() {
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
 func (m *EbikeMutation) ClearEnterprise() {
 	m.clearedenterprise = true
+	m.clearedFields[ebike.FieldEnterpriseID] = struct{}{}
 }
 
 // EnterpriseCleared reports if the "enterprise" edge to the Enterprise entity was cleared.
@@ -31249,6 +31438,7 @@ func (m *EbikeMutation) ResetEnterprise() {
 // ClearStation clears the "station" edge to the EnterpriseStation entity.
 func (m *EbikeMutation) ClearStation() {
 	m.clearedstation = true
+	m.clearedFields[ebike.FieldStationID] = struct{}{}
 }
 
 // StationCleared reports if the "station" edge to the EnterpriseStation entity was cleared.
@@ -33372,6 +33562,7 @@ func (m *EmployeeMutation) ResetEnable() {
 // ClearCity clears the "city" edge to the City entity.
 func (m *EmployeeMutation) ClearCity() {
 	m.clearedcity = true
+	m.clearedFields[employee.FieldCityID] = struct{}{}
 }
 
 // CityCleared reports if the "city" edge to the City entity was cleared.
@@ -35633,6 +35824,7 @@ func (m *EnterpriseMutation) ResetSignType() {
 // ClearCity clears the "city" edge to the City entity.
 func (m *EnterpriseMutation) ClearCity() {
 	m.clearedcity = true
+	m.clearedFields[enterprise.FieldCityID] = struct{}{}
 }
 
 // CityCleared reports if the "city" edge to the City entity was cleared.
@@ -38066,6 +38258,7 @@ func (m *EnterpriseBatterySwapMutation) ResetPutoutStationID() {
 // ClearExchange clears the "exchange" edge to the Exchange entity.
 func (m *EnterpriseBatterySwapMutation) ClearExchange() {
 	m.clearedexchange = true
+	m.clearedFields[enterprisebatteryswap.FieldExchangeID] = struct{}{}
 }
 
 // ExchangeCleared reports if the "exchange" edge to the Exchange entity was cleared.
@@ -38092,6 +38285,7 @@ func (m *EnterpriseBatterySwapMutation) ResetExchange() {
 // ClearCabinet clears the "cabinet" edge to the Cabinet entity.
 func (m *EnterpriseBatterySwapMutation) ClearCabinet() {
 	m.clearedcabinet = true
+	m.clearedFields[enterprisebatteryswap.FieldCabinetID] = struct{}{}
 }
 
 // CabinetCleared reports if the "cabinet" edge to the Cabinet entity was cleared.
@@ -38118,6 +38312,7 @@ func (m *EnterpriseBatterySwapMutation) ResetCabinet() {
 // ClearPutin clears the "putin" edge to the Battery entity.
 func (m *EnterpriseBatterySwapMutation) ClearPutin() {
 	m.clearedputin = true
+	m.clearedFields[enterprisebatteryswap.FieldPutinID] = struct{}{}
 }
 
 // PutinCleared reports if the "putin" edge to the Battery entity was cleared.
@@ -38144,6 +38339,7 @@ func (m *EnterpriseBatterySwapMutation) ResetPutin() {
 // ClearPutinEnterprise clears the "putin_enterprise" edge to the Enterprise entity.
 func (m *EnterpriseBatterySwapMutation) ClearPutinEnterprise() {
 	m.clearedputin_enterprise = true
+	m.clearedFields[enterprisebatteryswap.FieldPutinEnterpriseID] = struct{}{}
 }
 
 // PutinEnterpriseCleared reports if the "putin_enterprise" edge to the Enterprise entity was cleared.
@@ -38170,6 +38366,7 @@ func (m *EnterpriseBatterySwapMutation) ResetPutinEnterprise() {
 // ClearPutinStation clears the "putin_station" edge to the EnterpriseStation entity.
 func (m *EnterpriseBatterySwapMutation) ClearPutinStation() {
 	m.clearedputin_station = true
+	m.clearedFields[enterprisebatteryswap.FieldPutinStationID] = struct{}{}
 }
 
 // PutinStationCleared reports if the "putin_station" edge to the EnterpriseStation entity was cleared.
@@ -38196,6 +38393,7 @@ func (m *EnterpriseBatterySwapMutation) ResetPutinStation() {
 // ClearPutout clears the "putout" edge to the Battery entity.
 func (m *EnterpriseBatterySwapMutation) ClearPutout() {
 	m.clearedputout = true
+	m.clearedFields[enterprisebatteryswap.FieldPutoutID] = struct{}{}
 }
 
 // PutoutCleared reports if the "putout" edge to the Battery entity was cleared.
@@ -38222,6 +38420,7 @@ func (m *EnterpriseBatterySwapMutation) ResetPutout() {
 // ClearPutoutEnterprise clears the "putout_enterprise" edge to the Enterprise entity.
 func (m *EnterpriseBatterySwapMutation) ClearPutoutEnterprise() {
 	m.clearedputout_enterprise = true
+	m.clearedFields[enterprisebatteryswap.FieldPutoutEnterpriseID] = struct{}{}
 }
 
 // PutoutEnterpriseCleared reports if the "putout_enterprise" edge to the Enterprise entity was cleared.
@@ -38248,6 +38447,7 @@ func (m *EnterpriseBatterySwapMutation) ResetPutoutEnterprise() {
 // ClearPutoutStation clears the "putout_station" edge to the EnterpriseStation entity.
 func (m *EnterpriseBatterySwapMutation) ClearPutoutStation() {
 	m.clearedputout_station = true
+	m.clearedFields[enterprisebatteryswap.FieldPutoutStationID] = struct{}{}
 }
 
 // PutoutStationCleared reports if the "putout_station" edge to the EnterpriseStation entity was cleared.
@@ -39732,6 +39932,7 @@ func (m *EnterpriseBillMutation) ResetModel() {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *EnterpriseBillMutation) ClearRider() {
 	m.clearedrider = true
+	m.clearedFields[enterprisebill.FieldRiderID] = struct{}{}
 }
 
 // RiderCleared reports if the "rider" edge to the Rider entity was cleared.
@@ -39758,6 +39959,7 @@ func (m *EnterpriseBillMutation) ResetRider() {
 // ClearCity clears the "city" edge to the City entity.
 func (m *EnterpriseBillMutation) ClearCity() {
 	m.clearedcity = true
+	m.clearedFields[enterprisebill.FieldCityID] = struct{}{}
 }
 
 // CityCleared reports if the "city" edge to the City entity was cleared.
@@ -39784,6 +39986,7 @@ func (m *EnterpriseBillMutation) ResetCity() {
 // ClearStation clears the "station" edge to the EnterpriseStation entity.
 func (m *EnterpriseBillMutation) ClearStation() {
 	m.clearedstation = true
+	m.clearedFields[enterprisebill.FieldStationID] = struct{}{}
 }
 
 // StationCleared reports if the "station" edge to the EnterpriseStation entity was cleared.
@@ -39810,6 +40013,7 @@ func (m *EnterpriseBillMutation) ResetStation() {
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
 func (m *EnterpriseBillMutation) ClearEnterprise() {
 	m.clearedenterprise = true
+	m.clearedFields[enterprisebill.FieldEnterpriseID] = struct{}{}
 }
 
 // EnterpriseCleared reports if the "enterprise" edge to the Enterprise entity was cleared.
@@ -39836,6 +40040,7 @@ func (m *EnterpriseBillMutation) ResetEnterprise() {
 // ClearStatement clears the "statement" edge to the EnterpriseStatement entity.
 func (m *EnterpriseBillMutation) ClearStatement() {
 	m.clearedstatement = true
+	m.clearedFields[enterprisebill.FieldStatementID] = struct{}{}
 }
 
 // StatementCleared reports if the "statement" edge to the EnterpriseStatement entity was cleared.
@@ -39862,6 +40067,7 @@ func (m *EnterpriseBillMutation) ResetStatement() {
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
 func (m *EnterpriseBillMutation) ClearSubscribe() {
 	m.clearedsubscribe = true
+	m.clearedFields[enterprisebill.FieldSubscribeID] = struct{}{}
 }
 
 // SubscribeCleared reports if the "subscribe" edge to the Subscribe entity was cleared.
@@ -41077,6 +41283,7 @@ func (m *EnterpriseContractMutation) ResetFile() {
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
 func (m *EnterpriseContractMutation) ClearEnterprise() {
 	m.clearedenterprise = true
+	m.clearedFields[enterprisecontract.FieldEnterpriseID] = struct{}{}
 }
 
 // EnterpriseCleared reports if the "enterprise" edge to the Enterprise entity was cleared.
@@ -42059,6 +42266,7 @@ func (m *EnterprisePrepaymentMutation) ResetTradeNo() {
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
 func (m *EnterprisePrepaymentMutation) ClearEnterprise() {
 	m.clearedenterprise = true
+	m.clearedFields[enterpriseprepayment.FieldEnterpriseID] = struct{}{}
 }
 
 // EnterpriseCleared reports if the "enterprise" edge to the Enterprise entity was cleared.
@@ -42085,6 +42293,7 @@ func (m *EnterprisePrepaymentMutation) ResetEnterprise() {
 // ClearAgent clears the "agent" edge to the Agent entity.
 func (m *EnterprisePrepaymentMutation) ClearAgent() {
 	m.clearedagent = true
+	m.clearedFields[enterpriseprepayment.FieldAgentID] = struct{}{}
 }
 
 // AgentCleared reports if the "agent" edge to the Agent entity was cleared.
@@ -43178,6 +43387,7 @@ func (m *EnterprisePriceMutation) ResetIntelligent() {
 // ClearCity clears the "city" edge to the City entity.
 func (m *EnterprisePriceMutation) ClearCity() {
 	m.clearedcity = true
+	m.clearedFields[enterpriseprice.FieldCityID] = struct{}{}
 }
 
 // CityCleared reports if the "city" edge to the City entity was cleared.
@@ -43204,6 +43414,7 @@ func (m *EnterprisePriceMutation) ResetCity() {
 // ClearBrand clears the "brand" edge to the EbikeBrand entity.
 func (m *EnterprisePriceMutation) ClearBrand() {
 	m.clearedbrand = true
+	m.clearedFields[enterpriseprice.FieldBrandID] = struct{}{}
 }
 
 // BrandCleared reports if the "brand" edge to the EbikeBrand entity was cleared.
@@ -43230,6 +43441,7 @@ func (m *EnterprisePriceMutation) ResetBrand() {
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
 func (m *EnterprisePriceMutation) ClearEnterprise() {
 	m.clearedenterprise = true
+	m.clearedFields[enterpriseprice.FieldEnterpriseID] = struct{}{}
 }
 
 // EnterpriseCleared reports if the "enterprise" edge to the Enterprise entity was cleared.
@@ -44518,6 +44730,7 @@ func (m *EnterpriseStatementMutation) ResetEnd() {
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
 func (m *EnterpriseStatementMutation) ClearEnterprise() {
 	m.clearedenterprise = true
+	m.clearedFields[enterprisestatement.FieldEnterpriseID] = struct{}{}
 }
 
 // EnterpriseCleared reports if the "enterprise" edge to the Enterprise entity was cleared.
@@ -45664,6 +45877,7 @@ func (m *EnterpriseStationMutation) ResetName() {
 // ClearCity clears the "city" edge to the City entity.
 func (m *EnterpriseStationMutation) ClearCity() {
 	m.clearedcity = true
+	m.clearedFields[enterprisestation.FieldCityID] = struct{}{}
 }
 
 // CityCleared reports if the "city" edge to the City entity was cleared.
@@ -45690,6 +45904,7 @@ func (m *EnterpriseStationMutation) ResetCity() {
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
 func (m *EnterpriseStationMutation) ClearEnterprise() {
 	m.clearedenterprise = true
+	m.clearedFields[enterprisestation.FieldEnterpriseID] = struct{}{}
 }
 
 // EnterpriseCleared reports if the "enterprise" edge to the Enterprise entity was cleared.
@@ -47448,6 +47663,7 @@ func (m *ExceptionMutation) ResetAttachments() {
 // ClearCity clears the "city" edge to the City entity.
 func (m *ExceptionMutation) ClearCity() {
 	m.clearedcity = true
+	m.clearedFields[exception.FieldCityID] = struct{}{}
 }
 
 // CityCleared reports if the "city" edge to the City entity was cleared.
@@ -47474,6 +47690,7 @@ func (m *ExceptionMutation) ResetCity() {
 // ClearEmployee clears the "employee" edge to the Employee entity.
 func (m *ExceptionMutation) ClearEmployee() {
 	m.clearedemployee = true
+	m.clearedFields[exception.FieldEmployeeID] = struct{}{}
 }
 
 // EmployeeCleared reports if the "employee" edge to the Employee entity was cleared.
@@ -47500,6 +47717,7 @@ func (m *ExceptionMutation) ResetEmployee() {
 // ClearStore clears the "store" edge to the Store entity.
 func (m *ExceptionMutation) ClearStore() {
 	m.clearedstore = true
+	m.clearedFields[exception.FieldStoreID] = struct{}{}
 }
 
 // StoreCleared reports if the "store" edge to the Store entity was cleared.
@@ -49571,6 +49789,7 @@ func (m *ExchangeMutation) ResetMessage() {
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
 func (m *ExchangeMutation) ClearSubscribe() {
 	m.clearedsubscribe = true
+	m.clearedFields[exchange.FieldSubscribeID] = struct{}{}
 }
 
 // SubscribeCleared reports if the "subscribe" edge to the Subscribe entity was cleared.
@@ -49597,6 +49816,7 @@ func (m *ExchangeMutation) ResetSubscribe() {
 // ClearCity clears the "city" edge to the City entity.
 func (m *ExchangeMutation) ClearCity() {
 	m.clearedcity = true
+	m.clearedFields[exchange.FieldCityID] = struct{}{}
 }
 
 // CityCleared reports if the "city" edge to the City entity was cleared.
@@ -49623,6 +49843,7 @@ func (m *ExchangeMutation) ResetCity() {
 // ClearStore clears the "store" edge to the Store entity.
 func (m *ExchangeMutation) ClearStore() {
 	m.clearedstore = true
+	m.clearedFields[exchange.FieldStoreID] = struct{}{}
 }
 
 // StoreCleared reports if the "store" edge to the Store entity was cleared.
@@ -49649,6 +49870,7 @@ func (m *ExchangeMutation) ResetStore() {
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
 func (m *ExchangeMutation) ClearEnterprise() {
 	m.clearedenterprise = true
+	m.clearedFields[exchange.FieldEnterpriseID] = struct{}{}
 }
 
 // EnterpriseCleared reports if the "enterprise" edge to the Enterprise entity was cleared.
@@ -49675,6 +49897,7 @@ func (m *ExchangeMutation) ResetEnterprise() {
 // ClearStation clears the "station" edge to the EnterpriseStation entity.
 func (m *ExchangeMutation) ClearStation() {
 	m.clearedstation = true
+	m.clearedFields[exchange.FieldStationID] = struct{}{}
 }
 
 // StationCleared reports if the "station" edge to the EnterpriseStation entity was cleared.
@@ -49701,6 +49924,7 @@ func (m *ExchangeMutation) ResetStation() {
 // ClearCabinet clears the "cabinet" edge to the Cabinet entity.
 func (m *ExchangeMutation) ClearCabinet() {
 	m.clearedcabinet = true
+	m.clearedFields[exchange.FieldCabinetID] = struct{}{}
 }
 
 // CabinetCleared reports if the "cabinet" edge to the Cabinet entity was cleared.
@@ -49727,6 +49951,7 @@ func (m *ExchangeMutation) ResetCabinet() {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *ExchangeMutation) ClearRider() {
 	m.clearedrider = true
+	m.clearedFields[exchange.FieldRiderID] = struct{}{}
 }
 
 // RiderCleared reports if the "rider" edge to the Rider entity was cleared.
@@ -49753,6 +49978,7 @@ func (m *ExchangeMutation) ResetRider() {
 // ClearEmployee clears the "employee" edge to the Employee entity.
 func (m *ExchangeMutation) ClearEmployee() {
 	m.clearedemployee = true
+	m.clearedFields[exchange.FieldEmployeeID] = struct{}{}
 }
 
 // EmployeeCleared reports if the "employee" edge to the Employee entity was cleared.
@@ -51468,6 +51694,7 @@ func (m *ExportMutation) ResetRemark() {
 // ClearManager clears the "manager" edge to the Manager entity.
 func (m *ExportMutation) ClearManager() {
 	m.clearedmanager = true
+	m.clearedFields[export.FieldManagerID] = struct{}{}
 }
 
 // ManagerCleared reports if the "manager" edge to the Manager entity was cleared.
@@ -52534,6 +52761,7 @@ func (m *FeedbackMutation) ResetPhone() {
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
 func (m *FeedbackMutation) ClearEnterprise() {
 	m.clearedenterprise = true
+	m.clearedFields[feedback.FieldEnterpriseID] = struct{}{}
 }
 
 // EnterpriseCleared reports if the "enterprise" edge to the Enterprise entity was cleared.
@@ -52560,6 +52788,7 @@ func (m *FeedbackMutation) ResetEnterprise() {
 // ClearAgent clears the "agent" edge to the Agent entity.
 func (m *FeedbackMutation) ClearAgent() {
 	m.clearedagent = true
+	m.clearedFields[feedback.FieldAgentID] = struct{}{}
 }
 
 // AgentCleared reports if the "agent" edge to the Agent entity was cleared.
@@ -55061,6 +55290,7 @@ func (m *ManagerMutation) ResetLastSigninAt() {
 // ClearRole clears the "role" edge to the Role entity.
 func (m *ManagerMutation) ClearRole() {
 	m.clearedrole = true
+	m.clearedFields[manager.FieldRoleID] = struct{}{}
 }
 
 // RoleCleared reports if the "role" edge to the Role entity was cleared.
@@ -57098,6 +57328,7 @@ func (m *OrderMutation) ResetDiscountNewly() {
 // ClearPlan clears the "plan" edge to the Plan entity.
 func (m *OrderMutation) ClearPlan() {
 	m.clearedplan = true
+	m.clearedFields[order.FieldPlanID] = struct{}{}
 }
 
 // PlanCleared reports if the "plan" edge to the Plan entity was cleared.
@@ -57124,6 +57355,7 @@ func (m *OrderMutation) ResetPlan() {
 // ClearCity clears the "city" edge to the City entity.
 func (m *OrderMutation) ClearCity() {
 	m.clearedcity = true
+	m.clearedFields[order.FieldCityID] = struct{}{}
 }
 
 // CityCleared reports if the "city" edge to the City entity was cleared.
@@ -57150,6 +57382,7 @@ func (m *OrderMutation) ResetCity() {
 // ClearBrand clears the "brand" edge to the EbikeBrand entity.
 func (m *OrderMutation) ClearBrand() {
 	m.clearedbrand = true
+	m.clearedFields[order.FieldBrandID] = struct{}{}
 }
 
 // BrandCleared reports if the "brand" edge to the EbikeBrand entity was cleared.
@@ -57176,6 +57409,7 @@ func (m *OrderMutation) ResetBrand() {
 // ClearEbike clears the "ebike" edge to the Ebike entity.
 func (m *OrderMutation) ClearEbike() {
 	m.clearedebike = true
+	m.clearedFields[order.FieldEbikeID] = struct{}{}
 }
 
 // EbikeCleared reports if the "ebike" edge to the Ebike entity was cleared.
@@ -57202,6 +57436,7 @@ func (m *OrderMutation) ResetEbike() {
 // ClearAgent clears the "agent" edge to the Agent entity.
 func (m *OrderMutation) ClearAgent() {
 	m.clearedagent = true
+	m.clearedFields[order.FieldAgentID] = struct{}{}
 }
 
 // AgentCleared reports if the "agent" edge to the Agent entity was cleared.
@@ -57228,6 +57463,7 @@ func (m *OrderMutation) ResetAgent() {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *OrderMutation) ClearRider() {
 	m.clearedrider = true
+	m.clearedFields[order.FieldRiderID] = struct{}{}
 }
 
 // RiderCleared reports if the "rider" edge to the Rider entity was cleared.
@@ -57254,6 +57490,7 @@ func (m *OrderMutation) ResetRider() {
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
 func (m *OrderMutation) ClearSubscribe() {
 	m.clearedsubscribe = true
+	m.clearedFields[order.FieldSubscribeID] = struct{}{}
 }
 
 // SubscribeCleared reports if the "subscribe" edge to the Subscribe entity was cleared.
@@ -57319,6 +57556,7 @@ func (m *OrderMutation) ResetCommission() {
 // ClearParent clears the "parent" edge to the Order entity.
 func (m *OrderMutation) ClearParent() {
 	m.clearedparent = true
+	m.clearedFields[order.FieldParentID] = struct{}{}
 }
 
 // ParentCleared reports if the "parent" edge to the Order entity was cleared.
@@ -59319,6 +59557,7 @@ func (m *OrderRefundMutation) ResetRefundAt() {
 // ClearOrder clears the "order" edge to the Order entity.
 func (m *OrderRefundMutation) ClearOrder() {
 	m.cleared_order = true
+	m.clearedFields[orderrefund.FieldOrderID] = struct{}{}
 }
 
 // OrderCleared reports if the "order" edge to the Order entity was cleared.
@@ -62716,6 +62955,7 @@ func (m *PlanMutation) ResetIntelligent() {
 // ClearBrand clears the "brand" edge to the EbikeBrand entity.
 func (m *PlanMutation) ClearBrand() {
 	m.clearedbrand = true
+	m.clearedFields[plan.FieldBrandID] = struct{}{}
 }
 
 // BrandCleared reports if the "brand" edge to the EbikeBrand entity was cleared.
@@ -62796,6 +63036,7 @@ func (m *PlanMutation) ResetCities() {
 // ClearParent clears the "parent" edge to the Plan entity.
 func (m *PlanMutation) ClearParent() {
 	m.clearedparent = true
+	m.clearedFields[plan.FieldParentID] = struct{}{}
 }
 
 // ParentCleared reports if the "parent" edge to the Plan entity was cleared.
@@ -64037,6 +64278,7 @@ func (m *PlanIntroduceMutation) ResetImage() {
 // ClearBrand clears the "brand" edge to the EbikeBrand entity.
 func (m *PlanIntroduceMutation) ClearBrand() {
 	m.clearedbrand = true
+	m.clearedFields[planintroduce.FieldBrandID] = struct{}{}
 }
 
 // BrandCleared reports if the "brand" edge to the EbikeBrand entity was cleared.
@@ -64995,6 +65237,7 @@ func (m *PointLogMutation) ResetAttach() {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *PointLogMutation) ClearRider() {
 	m.clearedrider = true
+	m.clearedFields[pointlog.FieldRiderID] = struct{}{}
 }
 
 // RiderCleared reports if the "rider" edge to the Rider entity was cleared.
@@ -65021,6 +65264,7 @@ func (m *PointLogMutation) ResetRider() {
 // ClearOrder clears the "order" edge to the Order entity.
 func (m *PointLogMutation) ClearOrder() {
 	m.cleared_order = true
+	m.clearedFields[pointlog.FieldOrderID] = struct{}{}
 }
 
 // OrderCleared reports if the "order" edge to the Order entity was cleared.
@@ -67184,6 +67428,7 @@ func (m *PromotionBankCardMutation) ResetCity() {
 // ClearMember clears the "member" edge to the PromotionMember entity.
 func (m *PromotionBankCardMutation) ClearMember() {
 	m.clearedmember = true
+	m.clearedFields[promotionbankcard.FieldMemberID] = struct{}{}
 }
 
 // MemberCleared reports if the "member" edge to the PromotionMember entity was cleared.
@@ -69107,6 +69352,7 @@ func (m *PromotionCommissionMutation) ResetEndAt() {
 // ClearMember clears the "member" edge to the PromotionMember entity.
 func (m *PromotionCommissionMutation) ClearMember() {
 	m.clearedmember = true
+	m.clearedFields[promotioncommission.FieldMemberID] = struct{}{}
 }
 
 // MemberCleared reports if the "member" edge to the PromotionMember entity was cleared.
@@ -70378,6 +70624,7 @@ func (m *PromotionCommissionPlanMutation) ResetPlanID() {
 // ClearMember clears the "member" edge to the PromotionMember entity.
 func (m *PromotionCommissionPlanMutation) ClearMember() {
 	m.clearedmember = true
+	m.clearedFields[promotioncommissionplan.FieldMemberID] = struct{}{}
 }
 
 // MemberCleared reports if the "member" edge to the PromotionMember entity was cleared.
@@ -70409,6 +70656,7 @@ func (m *PromotionCommissionPlanMutation) SetPromotionCommissionID(id uint64) {
 // ClearPromotionCommission clears the "promotion_commission" edge to the PromotionCommission entity.
 func (m *PromotionCommissionPlanMutation) ClearPromotionCommission() {
 	m.clearedpromotion_commission = true
+	m.clearedFields[promotioncommissionplan.FieldCommissionID] = struct{}{}
 }
 
 // PromotionCommissionCleared reports if the "promotion_commission" edge to the PromotionCommission entity was cleared.
@@ -70443,6 +70691,7 @@ func (m *PromotionCommissionPlanMutation) ResetPromotionCommission() {
 // ClearPlan clears the "plan" edge to the Plan entity.
 func (m *PromotionCommissionPlanMutation) ClearPlan() {
 	m.clearedplan = true
+	m.clearedFields[promotioncommissionplan.FieldPlanID] = struct{}{}
 }
 
 // PlanCleared reports if the "plan" edge to the Plan entity was cleared.
@@ -71591,6 +71840,7 @@ func (m *PromotionEarningsMutation) ResetCommissionRuleKey() {
 // ClearCommission clears the "commission" edge to the PromotionCommission entity.
 func (m *PromotionEarningsMutation) ClearCommission() {
 	m.clearedcommission = true
+	m.clearedFields[promotionearnings.FieldCommissionID] = struct{}{}
 }
 
 // CommissionCleared reports if the "commission" edge to the PromotionCommission entity was cleared.
@@ -71617,6 +71867,7 @@ func (m *PromotionEarningsMutation) ResetCommission() {
 // ClearMember clears the "member" edge to the PromotionMember entity.
 func (m *PromotionEarningsMutation) ClearMember() {
 	m.clearedmember = true
+	m.clearedFields[promotionearnings.FieldMemberID] = struct{}{}
 }
 
 // MemberCleared reports if the "member" edge to the PromotionMember entity was cleared.
@@ -71643,6 +71894,7 @@ func (m *PromotionEarningsMutation) ResetMember() {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *PromotionEarningsMutation) ClearRider() {
 	m.clearedrider = true
+	m.clearedFields[promotionearnings.FieldRiderID] = struct{}{}
 }
 
 // RiderCleared reports if the "rider" edge to the Rider entity was cleared.
@@ -71669,6 +71921,7 @@ func (m *PromotionEarningsMutation) ResetRider() {
 // ClearOrder clears the "order" edge to the Order entity.
 func (m *PromotionEarningsMutation) ClearOrder() {
 	m.cleared_order = true
+	m.clearedFields[promotionearnings.FieldOrderID] = struct{}{}
 }
 
 // OrderCleared reports if the "order" edge to the Order entity was cleared.
@@ -71695,6 +71948,7 @@ func (m *PromotionEarningsMutation) ResetOrder() {
 // ClearPlan clears the "plan" edge to the Plan entity.
 func (m *PromotionEarningsMutation) ClearPlan() {
 	m.clearedplan = true
+	m.clearedFields[promotionearnings.FieldPlanID] = struct{}{}
 }
 
 // PlanCleared reports if the "plan" edge to the Plan entity was cleared.
@@ -72736,6 +72990,7 @@ func (m *PromotionGrowthMutation) ResetGrowthValue() {
 // ClearMember clears the "member" edge to the PromotionMember entity.
 func (m *PromotionGrowthMutation) ClearMember() {
 	m.clearedmember = true
+	m.clearedFields[promotiongrowth.FieldMemberID] = struct{}{}
 }
 
 // MemberCleared reports if the "member" edge to the PromotionMember entity was cleared.
@@ -72762,6 +73017,7 @@ func (m *PromotionGrowthMutation) ResetMember() {
 // ClearTask clears the "task" edge to the PromotionLevelTask entity.
 func (m *PromotionGrowthMutation) ClearTask() {
 	m.clearedtask = true
+	m.clearedFields[promotiongrowth.FieldTaskID] = struct{}{}
 }
 
 // TaskCleared reports if the "task" edge to the PromotionLevelTask entity was cleared.
@@ -72788,6 +73044,7 @@ func (m *PromotionGrowthMutation) ResetTask() {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *PromotionGrowthMutation) ClearRider() {
 	m.clearedrider = true
+	m.clearedFields[promotiongrowth.FieldRiderID] = struct{}{}
 }
 
 // RiderCleared reports if the "rider" edge to the Rider entity was cleared.
@@ -76219,6 +76476,7 @@ func (m *PromotionMemberMutation) ResetRenewCount() {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *PromotionMemberMutation) ClearRider() {
 	m.clearedrider = true
+	m.clearedFields[promotionmember.FieldRiderID] = struct{}{}
 }
 
 // RiderCleared reports if the "rider" edge to the Rider entity was cleared.
@@ -76245,6 +76503,7 @@ func (m *PromotionMemberMutation) ResetRider() {
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
 func (m *PromotionMemberMutation) ClearSubscribe() {
 	m.clearedsubscribe = true
+	m.clearedFields[promotionmember.FieldSubscribeID] = struct{}{}
 }
 
 // SubscribeCleared reports if the "subscribe" edge to the Subscribe entity was cleared.
@@ -76271,6 +76530,7 @@ func (m *PromotionMemberMutation) ResetSubscribe() {
 // ClearLevel clears the "level" edge to the PromotionLevel entity.
 func (m *PromotionMemberMutation) ClearLevel() {
 	m.clearedlevel = true
+	m.clearedFields[promotionmember.FieldLevelID] = struct{}{}
 }
 
 // LevelCleared reports if the "level" edge to the PromotionLevel entity was cleared.
@@ -76390,6 +76650,7 @@ func (m *PromotionMemberMutation) ResetReferred() {
 // ClearPerson clears the "person" edge to the PromotionPerson entity.
 func (m *PromotionMemberMutation) ClearPerson() {
 	m.clearedperson = true
+	m.clearedFields[promotionmember.FieldPersonID] = struct{}{}
 }
 
 // PersonCleared reports if the "person" edge to the PromotionPerson entity was cleared.
@@ -77665,6 +77926,7 @@ func (m *PromotionMemberCommissionMutation) ResetMemberID() {
 // ClearCommission clears the "commission" edge to the PromotionCommission entity.
 func (m *PromotionMemberCommissionMutation) ClearCommission() {
 	m.clearedcommission = true
+	m.clearedFields[promotionmembercommission.FieldCommissionID] = struct{}{}
 }
 
 // CommissionCleared reports if the "commission" edge to the PromotionCommission entity was cleared.
@@ -77691,6 +77953,7 @@ func (m *PromotionMemberCommissionMutation) ResetCommission() {
 // ClearMember clears the "member" edge to the PromotionMember entity.
 func (m *PromotionMemberCommissionMutation) ClearMember() {
 	m.clearedmember = true
+	m.clearedFields[promotionmembercommission.FieldMemberID] = struct{}{}
 }
 
 // MemberCleared reports if the "member" edge to the PromotionMember entity was cleared.
@@ -80335,6 +80598,7 @@ func (m *PromotionReferralsMutation) ResetReferredMemberID() {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *PromotionReferralsMutation) ClearRider() {
 	m.clearedrider = true
+	m.clearedFields[promotionreferrals.FieldRiderID] = struct{}{}
 }
 
 // RiderCleared reports if the "rider" edge to the Rider entity was cleared.
@@ -80361,6 +80625,7 @@ func (m *PromotionReferralsMutation) ResetRider() {
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
 func (m *PromotionReferralsMutation) ClearSubscribe() {
 	m.clearedsubscribe = true
+	m.clearedFields[promotionreferrals.FieldSubscribeID] = struct{}{}
 }
 
 // SubscribeCleared reports if the "subscribe" edge to the Subscribe entity was cleared.
@@ -80387,6 +80652,7 @@ func (m *PromotionReferralsMutation) ResetSubscribe() {
 // ClearReferringMember clears the "referring_member" edge to the PromotionMember entity.
 func (m *PromotionReferralsMutation) ClearReferringMember() {
 	m.clearedreferring_member = true
+	m.clearedFields[promotionreferrals.FieldReferringMemberID] = struct{}{}
 }
 
 // ReferringMemberCleared reports if the "referring_member" edge to the PromotionMember entity was cleared.
@@ -80413,6 +80679,7 @@ func (m *PromotionReferralsMutation) ResetReferringMember() {
 // ClearReferredMember clears the "referred_member" edge to the PromotionMember entity.
 func (m *PromotionReferralsMutation) ClearReferredMember() {
 	m.clearedreferred_member = true
+	m.clearedFields[promotionreferrals.FieldReferredMemberID] = struct{}{}
 }
 
 // ReferredMemberCleared reports if the "referred_member" edge to the PromotionMember entity was cleared.
@@ -81513,6 +81780,7 @@ func (m *PromotionReferralsProgressMutation) ResetStatus() {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *PromotionReferralsProgressMutation) ClearRider() {
 	m.clearedrider = true
+	m.clearedFields[promotionreferralsprogress.FieldRiderID] = struct{}{}
 }
 
 // RiderCleared reports if the "rider" edge to the Rider entity was cleared.
@@ -83704,6 +83972,7 @@ func (m *PromotionWithdrawalMutation) ResetReviewTime() {
 // ClearMember clears the "member" edge to the PromotionMember entity.
 func (m *PromotionWithdrawalMutation) ClearMember() {
 	m.clearedmember = true
+	m.clearedFields[promotionwithdrawal.FieldMemberID] = struct{}{}
 }
 
 // MemberCleared reports if the "member" edge to the PromotionMember entity was cleared.
@@ -83735,6 +84004,7 @@ func (m *PromotionWithdrawalMutation) SetCardsID(id uint64) {
 // ClearCards clears the "cards" edge to the PromotionBankCard entity.
 func (m *PromotionWithdrawalMutation) ClearCards() {
 	m.clearedcards = true
+	m.clearedFields[promotionwithdrawal.FieldAccountID] = struct{}{}
 }
 
 // CardsCleared reports if the "cards" edge to the PromotionBankCard entity was cleared.
@@ -85011,6 +85281,7 @@ func (m *ReserveMutation) ResetType() {
 // ClearCabinet clears the "cabinet" edge to the Cabinet entity.
 func (m *ReserveMutation) ClearCabinet() {
 	m.clearedcabinet = true
+	m.clearedFields[reserve.FieldCabinetID] = struct{}{}
 }
 
 // CabinetCleared reports if the "cabinet" edge to the Cabinet entity was cleared.
@@ -85037,6 +85308,7 @@ func (m *ReserveMutation) ResetCabinet() {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *ReserveMutation) ClearRider() {
 	m.clearedrider = true
+	m.clearedFields[reserve.FieldRiderID] = struct{}{}
 }
 
 // RiderCleared reports if the "rider" edge to the Rider entity was cleared.
@@ -85063,6 +85335,7 @@ func (m *ReserveMutation) ResetRider() {
 // ClearCity clears the "city" edge to the City entity.
 func (m *ReserveMutation) ClearCity() {
 	m.clearedcity = true
+	m.clearedFields[reserve.FieldCityID] = struct{}{}
 }
 
 // CityCleared reports if the "city" edge to the City entity was cleared.
@@ -85089,6 +85362,7 @@ func (m *ReserveMutation) ResetCity() {
 // ClearBusiness clears the "business" edge to the Business entity.
 func (m *ReserveMutation) ClearBusiness() {
 	m.clearedbusiness = true
+	m.clearedFields[reserve.FieldBusinessID] = struct{}{}
 }
 
 // BusinessCleared reports if the "business" edge to the Business entity was cleared.
@@ -86947,6 +87221,7 @@ func (m *RiderMutation) ResetJoinEnterpriseAt() {
 // ClearStation clears the "station" edge to the EnterpriseStation entity.
 func (m *RiderMutation) ClearStation() {
 	m.clearedstation = true
+	m.clearedFields[rider.FieldStationID] = struct{}{}
 }
 
 // StationCleared reports if the "station" edge to the EnterpriseStation entity was cleared.
@@ -86973,6 +87248,7 @@ func (m *RiderMutation) ResetStation() {
 // ClearPerson clears the "person" edge to the Person entity.
 func (m *RiderMutation) ClearPerson() {
 	m.clearedperson = true
+	m.clearedFields[rider.FieldPersonID] = struct{}{}
 }
 
 // PersonCleared reports if the "person" edge to the Person entity was cleared.
@@ -86999,6 +87275,7 @@ func (m *RiderMutation) ResetPerson() {
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
 func (m *RiderMutation) ClearEnterprise() {
 	m.clearedenterprise = true
+	m.clearedFields[rider.FieldEnterpriseID] = struct{}{}
 }
 
 // EnterpriseCleared reports if the "enterprise" edge to the Enterprise entity was cleared.
@@ -88954,6 +89231,7 @@ func (m *RiderFollowUpMutation) ResetRiderID() {
 // ClearManager clears the "manager" edge to the Manager entity.
 func (m *RiderFollowUpMutation) ClearManager() {
 	m.clearedmanager = true
+	m.clearedFields[riderfollowup.FieldManagerID] = struct{}{}
 }
 
 // ManagerCleared reports if the "manager" edge to the Manager entity was cleared.
@@ -88980,6 +89258,7 @@ func (m *RiderFollowUpMutation) ResetManager() {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *RiderFollowUpMutation) ClearRider() {
 	m.clearedrider = true
+	m.clearedFields[riderfollowup.FieldRiderID] = struct{}{}
 }
 
 // RiderCleared reports if the "rider" edge to the Rider entity was cleared.
@@ -92095,6 +92374,7 @@ func (m *StockMutation) ResetMaterial() {
 // ClearCity clears the "city" edge to the City entity.
 func (m *StockMutation) ClearCity() {
 	m.clearedcity = true
+	m.clearedFields[stock.FieldCityID] = struct{}{}
 }
 
 // CityCleared reports if the "city" edge to the City entity was cleared.
@@ -92121,6 +92401,7 @@ func (m *StockMutation) ResetCity() {
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
 func (m *StockMutation) ClearSubscribe() {
 	m.clearedsubscribe = true
+	m.clearedFields[stock.FieldSubscribeID] = struct{}{}
 }
 
 // SubscribeCleared reports if the "subscribe" edge to the Subscribe entity was cleared.
@@ -92147,6 +92428,7 @@ func (m *StockMutation) ResetSubscribe() {
 // ClearEbike clears the "ebike" edge to the Ebike entity.
 func (m *StockMutation) ClearEbike() {
 	m.clearedebike = true
+	m.clearedFields[stock.FieldEbikeID] = struct{}{}
 }
 
 // EbikeCleared reports if the "ebike" edge to the Ebike entity was cleared.
@@ -92173,6 +92455,7 @@ func (m *StockMutation) ResetEbike() {
 // ClearBrand clears the "brand" edge to the EbikeBrand entity.
 func (m *StockMutation) ClearBrand() {
 	m.clearedbrand = true
+	m.clearedFields[stock.FieldBrandID] = struct{}{}
 }
 
 // BrandCleared reports if the "brand" edge to the EbikeBrand entity was cleared.
@@ -92199,6 +92482,7 @@ func (m *StockMutation) ResetBrand() {
 // ClearBattery clears the "battery" edge to the Battery entity.
 func (m *StockMutation) ClearBattery() {
 	m.clearedbattery = true
+	m.clearedFields[stock.FieldBatteryID] = struct{}{}
 }
 
 // BatteryCleared reports if the "battery" edge to the Battery entity was cleared.
@@ -92225,6 +92509,7 @@ func (m *StockMutation) ResetBattery() {
 // ClearAgent clears the "agent" edge to the Agent entity.
 func (m *StockMutation) ClearAgent() {
 	m.clearedagent = true
+	m.clearedFields[stock.FieldAgentID] = struct{}{}
 }
 
 // AgentCleared reports if the "agent" edge to the Agent entity was cleared.
@@ -92251,6 +92536,7 @@ func (m *StockMutation) ResetAgent() {
 // ClearStore clears the "store" edge to the Store entity.
 func (m *StockMutation) ClearStore() {
 	m.clearedstore = true
+	m.clearedFields[stock.FieldStoreID] = struct{}{}
 }
 
 // StoreCleared reports if the "store" edge to the Store entity was cleared.
@@ -92277,6 +92563,7 @@ func (m *StockMutation) ResetStore() {
 // ClearCabinet clears the "cabinet" edge to the Cabinet entity.
 func (m *StockMutation) ClearCabinet() {
 	m.clearedcabinet = true
+	m.clearedFields[stock.FieldCabinetID] = struct{}{}
 }
 
 // CabinetCleared reports if the "cabinet" edge to the Cabinet entity was cleared.
@@ -92303,6 +92590,7 @@ func (m *StockMutation) ResetCabinet() {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *StockMutation) ClearRider() {
 	m.clearedrider = true
+	m.clearedFields[stock.FieldRiderID] = struct{}{}
 }
 
 // RiderCleared reports if the "rider" edge to the Rider entity was cleared.
@@ -92329,6 +92617,7 @@ func (m *StockMutation) ResetRider() {
 // ClearEmployee clears the "employee" edge to the Employee entity.
 func (m *StockMutation) ClearEmployee() {
 	m.clearedemployee = true
+	m.clearedFields[stock.FieldEmployeeID] = struct{}{}
 }
 
 // EmployeeCleared reports if the "employee" edge to the Employee entity was cleared.
@@ -92394,6 +92683,7 @@ func (m *StockMutation) ResetSpouse() {
 // ClearParent clears the "parent" edge to the Stock entity.
 func (m *StockMutation) ClearParent() {
 	m.clearedparent = true
+	m.clearedFields[stock.FieldParentID] = struct{}{}
 }
 
 // ParentCleared reports if the "parent" edge to the Stock entity was cleared.
@@ -92474,6 +92764,7 @@ func (m *StockMutation) ResetChildren() {
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
 func (m *StockMutation) ClearEnterprise() {
 	m.clearedenterprise = true
+	m.clearedFields[stock.FieldEnterpriseID] = struct{}{}
 }
 
 // EnterpriseCleared reports if the "enterprise" edge to the Enterprise entity was cleared.
@@ -92500,6 +92791,7 @@ func (m *StockMutation) ResetEnterprise() {
 // ClearStation clears the "station" edge to the EnterpriseStation entity.
 func (m *StockMutation) ClearStation() {
 	m.clearedstation = true
+	m.clearedFields[stock.FieldStationID] = struct{}{}
 }
 
 // StationCleared reports if the "station" edge to the EnterpriseStation entity was cleared.
@@ -94308,6 +94600,7 @@ func (m *StockSummaryMutation) ResetMaterial() {
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
 func (m *StockSummaryMutation) ClearEnterprise() {
 	m.clearedenterprise = true
+	m.clearedFields[stocksummary.FieldEnterpriseID] = struct{}{}
 }
 
 // EnterpriseCleared reports if the "enterprise" edge to the Enterprise entity was cleared.
@@ -94334,6 +94627,7 @@ func (m *StockSummaryMutation) ResetEnterprise() {
 // ClearStation clears the "station" edge to the EnterpriseStation entity.
 func (m *StockSummaryMutation) ClearStation() {
 	m.clearedstation = true
+	m.clearedFields[stocksummary.FieldStationID] = struct{}{}
 }
 
 // StationCleared reports if the "station" edge to the EnterpriseStation entity was cleared.
@@ -94360,6 +94654,7 @@ func (m *StockSummaryMutation) ResetStation() {
 // ClearStore clears the "store" edge to the Store entity.
 func (m *StockSummaryMutation) ClearStore() {
 	m.clearedstore = true
+	m.clearedFields[stocksummary.FieldStoreID] = struct{}{}
 }
 
 // StoreCleared reports if the "store" edge to the Store entity was cleared.
@@ -94386,6 +94681,7 @@ func (m *StockSummaryMutation) ResetStore() {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *StockSummaryMutation) ClearRider() {
 	m.clearedrider = true
+	m.clearedFields[stocksummary.FieldRiderID] = struct{}{}
 }
 
 // RiderCleared reports if the "rider" edge to the Rider entity was cleared.
@@ -94412,6 +94708,7 @@ func (m *StockSummaryMutation) ResetRider() {
 // ClearCabinet clears the "cabinet" edge to the Cabinet entity.
 func (m *StockSummaryMutation) ClearCabinet() {
 	m.clearedcabinet = true
+	m.clearedFields[stocksummary.FieldCabinetID] = struct{}{}
 }
 
 // CabinetCleared reports if the "cabinet" edge to the Cabinet entity was cleared.
@@ -95906,6 +96203,7 @@ func (m *StoreMutation) ResetEbikeRepair() {
 // ClearCity clears the "city" edge to the City entity.
 func (m *StoreMutation) ClearCity() {
 	m.clearedcity = true
+	m.clearedFields[store.FieldCityID] = struct{}{}
 }
 
 // CityCleared reports if the "city" edge to the City entity was cleared.
@@ -95932,6 +96230,7 @@ func (m *StoreMutation) ResetCity() {
 // ClearBranch clears the "branch" edge to the Branch entity.
 func (m *StoreMutation) ClearBranch() {
 	m.clearedbranch = true
+	m.clearedFields[store.FieldBranchID] = struct{}{}
 }
 
 // BranchCleared reports if the "branch" edge to the Branch entity was cleared.
@@ -95958,6 +96257,7 @@ func (m *StoreMutation) ResetBranch() {
 // ClearEmployee clears the "employee" edge to the Employee entity.
 func (m *StoreMutation) ClearEmployee() {
 	m.clearedemployee = true
+	m.clearedFields[store.FieldEmployeeID] = struct{}{}
 }
 
 // EmployeeCleared reports if the "employee" edge to the Employee entity was cleared.
@@ -98881,6 +99181,7 @@ func (m *SubscribeMutation) ResetIntelligent() {
 // ClearPlan clears the "plan" edge to the Plan entity.
 func (m *SubscribeMutation) ClearPlan() {
 	m.clearedplan = true
+	m.clearedFields[subscribe.FieldPlanID] = struct{}{}
 }
 
 // PlanCleared reports if the "plan" edge to the Plan entity was cleared.
@@ -98907,6 +99208,7 @@ func (m *SubscribeMutation) ResetPlan() {
 // ClearEmployee clears the "employee" edge to the Employee entity.
 func (m *SubscribeMutation) ClearEmployee() {
 	m.clearedemployee = true
+	m.clearedFields[subscribe.FieldEmployeeID] = struct{}{}
 }
 
 // EmployeeCleared reports if the "employee" edge to the Employee entity was cleared.
@@ -98933,6 +99235,7 @@ func (m *SubscribeMutation) ResetEmployee() {
 // ClearCity clears the "city" edge to the City entity.
 func (m *SubscribeMutation) ClearCity() {
 	m.clearedcity = true
+	m.clearedFields[subscribe.FieldCityID] = struct{}{}
 }
 
 // CityCleared reports if the "city" edge to the City entity was cleared.
@@ -98959,6 +99262,7 @@ func (m *SubscribeMutation) ResetCity() {
 // ClearStation clears the "station" edge to the EnterpriseStation entity.
 func (m *SubscribeMutation) ClearStation() {
 	m.clearedstation = true
+	m.clearedFields[subscribe.FieldStationID] = struct{}{}
 }
 
 // StationCleared reports if the "station" edge to the EnterpriseStation entity was cleared.
@@ -98985,6 +99289,7 @@ func (m *SubscribeMutation) ResetStation() {
 // ClearStore clears the "store" edge to the Store entity.
 func (m *SubscribeMutation) ClearStore() {
 	m.clearedstore = true
+	m.clearedFields[subscribe.FieldStoreID] = struct{}{}
 }
 
 // StoreCleared reports if the "store" edge to the Store entity was cleared.
@@ -99011,6 +99316,7 @@ func (m *SubscribeMutation) ResetStore() {
 // ClearCabinet clears the "cabinet" edge to the Cabinet entity.
 func (m *SubscribeMutation) ClearCabinet() {
 	m.clearedcabinet = true
+	m.clearedFields[subscribe.FieldCabinetID] = struct{}{}
 }
 
 // CabinetCleared reports if the "cabinet" edge to the Cabinet entity was cleared.
@@ -99037,6 +99343,7 @@ func (m *SubscribeMutation) ResetCabinet() {
 // ClearBrand clears the "brand" edge to the EbikeBrand entity.
 func (m *SubscribeMutation) ClearBrand() {
 	m.clearedbrand = true
+	m.clearedFields[subscribe.FieldBrandID] = struct{}{}
 }
 
 // BrandCleared reports if the "brand" edge to the EbikeBrand entity was cleared.
@@ -99063,6 +99370,7 @@ func (m *SubscribeMutation) ResetBrand() {
 // ClearEbike clears the "ebike" edge to the Ebike entity.
 func (m *SubscribeMutation) ClearEbike() {
 	m.clearedebike = true
+	m.clearedFields[subscribe.FieldEbikeID] = struct{}{}
 }
 
 // EbikeCleared reports if the "ebike" edge to the Ebike entity was cleared.
@@ -99089,6 +99397,7 @@ func (m *SubscribeMutation) ResetEbike() {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *SubscribeMutation) ClearRider() {
 	m.clearedrider = true
+	m.clearedFields[subscribe.FieldRiderID] = struct{}{}
 }
 
 // RiderCleared reports if the "rider" edge to the Rider entity was cleared.
@@ -99115,6 +99424,7 @@ func (m *SubscribeMutation) ResetRider() {
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
 func (m *SubscribeMutation) ClearEnterprise() {
 	m.clearedenterprise = true
+	m.clearedFields[subscribe.FieldEnterpriseID] = struct{}{}
 }
 
 // EnterpriseCleared reports if the "enterprise" edge to the Enterprise entity was cleared.
@@ -99357,6 +99667,7 @@ func (m *SubscribeMutation) ResetOrders() {
 // ClearInitialOrder clears the "initial_order" edge to the Order entity.
 func (m *SubscribeMutation) ClearInitialOrder() {
 	m.clearedinitial_order = true
+	m.clearedFields[subscribe.FieldInitialOrderID] = struct{}{}
 }
 
 // InitialOrderCleared reports if the "initial_order" edge to the Order entity was cleared.
@@ -101688,6 +101999,7 @@ func (m *SubscribeAlterMutation) ResetSubscribeEndAt() {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *SubscribeAlterMutation) ClearRider() {
 	m.clearedrider = true
+	m.clearedFields[subscribealter.FieldRiderID] = struct{}{}
 }
 
 // RiderCleared reports if the "rider" edge to the Rider entity was cleared.
@@ -101714,6 +102026,7 @@ func (m *SubscribeAlterMutation) ResetRider() {
 // ClearManager clears the "manager" edge to the Manager entity.
 func (m *SubscribeAlterMutation) ClearManager() {
 	m.clearedmanager = true
+	m.clearedFields[subscribealter.FieldManagerID] = struct{}{}
 }
 
 // ManagerCleared reports if the "manager" edge to the Manager entity was cleared.
@@ -101740,6 +102053,7 @@ func (m *SubscribeAlterMutation) ResetManager() {
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
 func (m *SubscribeAlterMutation) ClearEnterprise() {
 	m.clearedenterprise = true
+	m.clearedFields[subscribealter.FieldEnterpriseID] = struct{}{}
 }
 
 // EnterpriseCleared reports if the "enterprise" edge to the Enterprise entity was cleared.
@@ -101766,6 +102080,7 @@ func (m *SubscribeAlterMutation) ResetEnterprise() {
 // ClearAgent clears the "agent" edge to the Agent entity.
 func (m *SubscribeAlterMutation) ClearAgent() {
 	m.clearedagent = true
+	m.clearedFields[subscribealter.FieldAgentID] = struct{}{}
 }
 
 // AgentCleared reports if the "agent" edge to the Agent entity was cleared.
@@ -101792,6 +102107,7 @@ func (m *SubscribeAlterMutation) ResetAgent() {
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
 func (m *SubscribeAlterMutation) ClearSubscribe() {
 	m.clearedsubscribe = true
+	m.clearedFields[subscribealter.FieldSubscribeID] = struct{}{}
 }
 
 // SubscribeCleared reports if the "subscribe" edge to the Subscribe entity was cleared.
@@ -103576,6 +103892,7 @@ func (m *SubscribePauseMutation) ResetSuspendDays() {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *SubscribePauseMutation) ClearRider() {
 	m.clearedrider = true
+	m.clearedFields[subscribepause.FieldRiderID] = struct{}{}
 }
 
 // RiderCleared reports if the "rider" edge to the Rider entity was cleared.
@@ -103602,6 +103919,7 @@ func (m *SubscribePauseMutation) ResetRider() {
 // ClearEmployee clears the "employee" edge to the Employee entity.
 func (m *SubscribePauseMutation) ClearEmployee() {
 	m.clearedemployee = true
+	m.clearedFields[subscribepause.FieldEmployeeID] = struct{}{}
 }
 
 // EmployeeCleared reports if the "employee" edge to the Employee entity was cleared.
@@ -103628,6 +103946,7 @@ func (m *SubscribePauseMutation) ResetEmployee() {
 // ClearCity clears the "city" edge to the City entity.
 func (m *SubscribePauseMutation) ClearCity() {
 	m.clearedcity = true
+	m.clearedFields[subscribepause.FieldCityID] = struct{}{}
 }
 
 // CityCleared reports if the "city" edge to the City entity was cleared.
@@ -103654,6 +103973,7 @@ func (m *SubscribePauseMutation) ResetCity() {
 // ClearStore clears the "store" edge to the Store entity.
 func (m *SubscribePauseMutation) ClearStore() {
 	m.clearedstore = true
+	m.clearedFields[subscribepause.FieldStoreID] = struct{}{}
 }
 
 // StoreCleared reports if the "store" edge to the Store entity was cleared.
@@ -103680,6 +104000,7 @@ func (m *SubscribePauseMutation) ResetStore() {
 // ClearEndStore clears the "endStore" edge to the Store entity.
 func (m *SubscribePauseMutation) ClearEndStore() {
 	m.clearedendStore = true
+	m.clearedFields[subscribepause.FieldEndStoreID] = struct{}{}
 }
 
 // EndStoreCleared reports if the "endStore" edge to the Store entity was cleared.
@@ -103706,6 +104027,7 @@ func (m *SubscribePauseMutation) ResetEndStore() {
 // ClearCabinet clears the "cabinet" edge to the Cabinet entity.
 func (m *SubscribePauseMutation) ClearCabinet() {
 	m.clearedcabinet = true
+	m.clearedFields[subscribepause.FieldCabinetID] = struct{}{}
 }
 
 // CabinetCleared reports if the "cabinet" edge to the Cabinet entity was cleared.
@@ -103732,6 +104054,7 @@ func (m *SubscribePauseMutation) ResetCabinet() {
 // ClearEndCabinet clears the "endCabinet" edge to the Cabinet entity.
 func (m *SubscribePauseMutation) ClearEndCabinet() {
 	m.clearedendCabinet = true
+	m.clearedFields[subscribepause.FieldEndCabinetID] = struct{}{}
 }
 
 // EndCabinetCleared reports if the "endCabinet" edge to the Cabinet entity was cleared.
@@ -103758,6 +104081,7 @@ func (m *SubscribePauseMutation) ResetEndCabinet() {
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
 func (m *SubscribePauseMutation) ClearSubscribe() {
 	m.clearedsubscribe = true
+	m.clearedFields[subscribepause.FieldSubscribeID] = struct{}{}
 }
 
 // SubscribeCleared reports if the "subscribe" edge to the Subscribe entity was cleared.
@@ -103784,6 +104108,7 @@ func (m *SubscribePauseMutation) ResetSubscribe() {
 // ClearEndEmployee clears the "end_employee" edge to the Employee entity.
 func (m *SubscribePauseMutation) ClearEndEmployee() {
 	m.clearedend_employee = true
+	m.clearedFields[subscribepause.FieldEndEmployeeID] = struct{}{}
 }
 
 // EndEmployeeCleared reports if the "end_employee" edge to the Employee entity was cleared.
@@ -105410,6 +105735,7 @@ func (m *SubscribeReminderMutation) ResetFeeFormula() {
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
 func (m *SubscribeReminderMutation) ClearSubscribe() {
 	m.clearedsubscribe = true
+	m.clearedFields[subscribereminder.FieldSubscribeID] = struct{}{}
 }
 
 // SubscribeCleared reports if the "subscribe" edge to the Subscribe entity was cleared.
@@ -105436,6 +105762,7 @@ func (m *SubscribeReminderMutation) ResetSubscribe() {
 // ClearPlan clears the "plan" edge to the Plan entity.
 func (m *SubscribeReminderMutation) ClearPlan() {
 	m.clearedplan = true
+	m.clearedFields[subscribereminder.FieldPlanID] = struct{}{}
 }
 
 // PlanCleared reports if the "plan" edge to the Plan entity was cleared.
@@ -105462,6 +105789,7 @@ func (m *SubscribeReminderMutation) ResetPlan() {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *SubscribeReminderMutation) ClearRider() {
 	m.clearedrider = true
+	m.clearedFields[subscribereminder.FieldRiderID] = struct{}{}
 }
 
 // RiderCleared reports if the "rider" edge to the Rider entity was cleared.
@@ -106656,6 +106984,7 @@ func (m *SubscribeSuspendMutation) ResetEndModifier() {
 // ClearCity clears the "city" edge to the City entity.
 func (m *SubscribeSuspendMutation) ClearCity() {
 	m.clearedcity = true
+	m.clearedFields[subscribesuspend.FieldCityID] = struct{}{}
 }
 
 // CityCleared reports if the "city" edge to the City entity was cleared.
@@ -106682,6 +107011,7 @@ func (m *SubscribeSuspendMutation) ResetCity() {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *SubscribeSuspendMutation) ClearRider() {
 	m.clearedrider = true
+	m.clearedFields[subscribesuspend.FieldRiderID] = struct{}{}
 }
 
 // RiderCleared reports if the "rider" edge to the Rider entity was cleared.
@@ -106708,6 +107038,7 @@ func (m *SubscribeSuspendMutation) ResetRider() {
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
 func (m *SubscribeSuspendMutation) ClearSubscribe() {
 	m.clearedsubscribe = true
+	m.clearedFields[subscribesuspend.FieldSubscribeID] = struct{}{}
 }
 
 // SubscribeCleared reports if the "subscribe" edge to the Subscribe entity was cleared.
@@ -106734,6 +107065,7 @@ func (m *SubscribeSuspendMutation) ResetSubscribe() {
 // ClearPause clears the "pause" edge to the SubscribePause entity.
 func (m *SubscribeSuspendMutation) ClearPause() {
 	m.clearedpause = true
+	m.clearedFields[subscribesuspend.FieldPauseID] = struct{}{}
 }
 
 // PauseCleared reports if the "pause" edge to the SubscribePause entity was cleared.

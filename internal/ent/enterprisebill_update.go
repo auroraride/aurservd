@@ -100,9 +100,25 @@ func (ebu *EnterpriseBillUpdate) SetRiderID(u uint64) *EnterpriseBillUpdate {
 	return ebu
 }
 
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (ebu *EnterpriseBillUpdate) SetNillableRiderID(u *uint64) *EnterpriseBillUpdate {
+	if u != nil {
+		ebu.SetRiderID(*u)
+	}
+	return ebu
+}
+
 // SetCityID sets the "city_id" field.
 func (ebu *EnterpriseBillUpdate) SetCityID(u uint64) *EnterpriseBillUpdate {
 	ebu.mutation.SetCityID(u)
+	return ebu
+}
+
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (ebu *EnterpriseBillUpdate) SetNillableCityID(u *uint64) *EnterpriseBillUpdate {
+	if u != nil {
+		ebu.SetCityID(*u)
+	}
 	return ebu
 }
 
@@ -132,9 +148,25 @@ func (ebu *EnterpriseBillUpdate) SetSubscribeID(u uint64) *EnterpriseBillUpdate 
 	return ebu
 }
 
+// SetNillableSubscribeID sets the "subscribe_id" field if the given value is not nil.
+func (ebu *EnterpriseBillUpdate) SetNillableSubscribeID(u *uint64) *EnterpriseBillUpdate {
+	if u != nil {
+		ebu.SetSubscribeID(*u)
+	}
+	return ebu
+}
+
 // SetEnterpriseID sets the "enterprise_id" field.
 func (ebu *EnterpriseBillUpdate) SetEnterpriseID(u uint64) *EnterpriseBillUpdate {
 	ebu.mutation.SetEnterpriseID(u)
+	return ebu
+}
+
+// SetNillableEnterpriseID sets the "enterprise_id" field if the given value is not nil.
+func (ebu *EnterpriseBillUpdate) SetNillableEnterpriseID(u *uint64) *EnterpriseBillUpdate {
+	if u != nil {
+		ebu.SetEnterpriseID(*u)
+	}
 	return ebu
 }
 
@@ -144,9 +176,25 @@ func (ebu *EnterpriseBillUpdate) SetStatementID(u uint64) *EnterpriseBillUpdate 
 	return ebu
 }
 
+// SetNillableStatementID sets the "statement_id" field if the given value is not nil.
+func (ebu *EnterpriseBillUpdate) SetNillableStatementID(u *uint64) *EnterpriseBillUpdate {
+	if u != nil {
+		ebu.SetStatementID(*u)
+	}
+	return ebu
+}
+
 // SetStart sets the "start" field.
 func (ebu *EnterpriseBillUpdate) SetStart(t time.Time) *EnterpriseBillUpdate {
 	ebu.mutation.SetStart(t)
+	return ebu
+}
+
+// SetNillableStart sets the "start" field if the given value is not nil.
+func (ebu *EnterpriseBillUpdate) SetNillableStart(t *time.Time) *EnterpriseBillUpdate {
+	if t != nil {
+		ebu.SetStart(*t)
+	}
 	return ebu
 }
 
@@ -156,10 +204,26 @@ func (ebu *EnterpriseBillUpdate) SetEnd(t time.Time) *EnterpriseBillUpdate {
 	return ebu
 }
 
+// SetNillableEnd sets the "end" field if the given value is not nil.
+func (ebu *EnterpriseBillUpdate) SetNillableEnd(t *time.Time) *EnterpriseBillUpdate {
+	if t != nil {
+		ebu.SetEnd(*t)
+	}
+	return ebu
+}
+
 // SetDays sets the "days" field.
 func (ebu *EnterpriseBillUpdate) SetDays(i int) *EnterpriseBillUpdate {
 	ebu.mutation.ResetDays()
 	ebu.mutation.SetDays(i)
+	return ebu
+}
+
+// SetNillableDays sets the "days" field if the given value is not nil.
+func (ebu *EnterpriseBillUpdate) SetNillableDays(i *int) *EnterpriseBillUpdate {
+	if i != nil {
+		ebu.SetDays(*i)
+	}
 	return ebu
 }
 
@@ -176,6 +240,14 @@ func (ebu *EnterpriseBillUpdate) SetPrice(f float64) *EnterpriseBillUpdate {
 	return ebu
 }
 
+// SetNillablePrice sets the "price" field if the given value is not nil.
+func (ebu *EnterpriseBillUpdate) SetNillablePrice(f *float64) *EnterpriseBillUpdate {
+	if f != nil {
+		ebu.SetPrice(*f)
+	}
+	return ebu
+}
+
 // AddPrice adds f to the "price" field.
 func (ebu *EnterpriseBillUpdate) AddPrice(f float64) *EnterpriseBillUpdate {
 	ebu.mutation.AddPrice(f)
@@ -189,6 +261,14 @@ func (ebu *EnterpriseBillUpdate) SetCost(f float64) *EnterpriseBillUpdate {
 	return ebu
 }
 
+// SetNillableCost sets the "cost" field if the given value is not nil.
+func (ebu *EnterpriseBillUpdate) SetNillableCost(f *float64) *EnterpriseBillUpdate {
+	if f != nil {
+		ebu.SetCost(*f)
+	}
+	return ebu
+}
+
 // AddCost adds f to the "cost" field.
 func (ebu *EnterpriseBillUpdate) AddCost(f float64) *EnterpriseBillUpdate {
 	ebu.mutation.AddCost(f)
@@ -198,6 +278,14 @@ func (ebu *EnterpriseBillUpdate) AddCost(f float64) *EnterpriseBillUpdate {
 // SetModel sets the "model" field.
 func (ebu *EnterpriseBillUpdate) SetModel(s string) *EnterpriseBillUpdate {
 	ebu.mutation.SetModel(s)
+	return ebu
+}
+
+// SetNillableModel sets the "model" field if the given value is not nil.
+func (ebu *EnterpriseBillUpdate) SetNillableModel(s *string) *EnterpriseBillUpdate {
+	if s != nil {
+		ebu.SetModel(*s)
+	}
 	return ebu
 }
 
@@ -663,9 +751,25 @@ func (ebuo *EnterpriseBillUpdateOne) SetRiderID(u uint64) *EnterpriseBillUpdateO
 	return ebuo
 }
 
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (ebuo *EnterpriseBillUpdateOne) SetNillableRiderID(u *uint64) *EnterpriseBillUpdateOne {
+	if u != nil {
+		ebuo.SetRiderID(*u)
+	}
+	return ebuo
+}
+
 // SetCityID sets the "city_id" field.
 func (ebuo *EnterpriseBillUpdateOne) SetCityID(u uint64) *EnterpriseBillUpdateOne {
 	ebuo.mutation.SetCityID(u)
+	return ebuo
+}
+
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (ebuo *EnterpriseBillUpdateOne) SetNillableCityID(u *uint64) *EnterpriseBillUpdateOne {
+	if u != nil {
+		ebuo.SetCityID(*u)
+	}
 	return ebuo
 }
 
@@ -695,9 +799,25 @@ func (ebuo *EnterpriseBillUpdateOne) SetSubscribeID(u uint64) *EnterpriseBillUpd
 	return ebuo
 }
 
+// SetNillableSubscribeID sets the "subscribe_id" field if the given value is not nil.
+func (ebuo *EnterpriseBillUpdateOne) SetNillableSubscribeID(u *uint64) *EnterpriseBillUpdateOne {
+	if u != nil {
+		ebuo.SetSubscribeID(*u)
+	}
+	return ebuo
+}
+
 // SetEnterpriseID sets the "enterprise_id" field.
 func (ebuo *EnterpriseBillUpdateOne) SetEnterpriseID(u uint64) *EnterpriseBillUpdateOne {
 	ebuo.mutation.SetEnterpriseID(u)
+	return ebuo
+}
+
+// SetNillableEnterpriseID sets the "enterprise_id" field if the given value is not nil.
+func (ebuo *EnterpriseBillUpdateOne) SetNillableEnterpriseID(u *uint64) *EnterpriseBillUpdateOne {
+	if u != nil {
+		ebuo.SetEnterpriseID(*u)
+	}
 	return ebuo
 }
 
@@ -707,9 +827,25 @@ func (ebuo *EnterpriseBillUpdateOne) SetStatementID(u uint64) *EnterpriseBillUpd
 	return ebuo
 }
 
+// SetNillableStatementID sets the "statement_id" field if the given value is not nil.
+func (ebuo *EnterpriseBillUpdateOne) SetNillableStatementID(u *uint64) *EnterpriseBillUpdateOne {
+	if u != nil {
+		ebuo.SetStatementID(*u)
+	}
+	return ebuo
+}
+
 // SetStart sets the "start" field.
 func (ebuo *EnterpriseBillUpdateOne) SetStart(t time.Time) *EnterpriseBillUpdateOne {
 	ebuo.mutation.SetStart(t)
+	return ebuo
+}
+
+// SetNillableStart sets the "start" field if the given value is not nil.
+func (ebuo *EnterpriseBillUpdateOne) SetNillableStart(t *time.Time) *EnterpriseBillUpdateOne {
+	if t != nil {
+		ebuo.SetStart(*t)
+	}
 	return ebuo
 }
 
@@ -719,10 +855,26 @@ func (ebuo *EnterpriseBillUpdateOne) SetEnd(t time.Time) *EnterpriseBillUpdateOn
 	return ebuo
 }
 
+// SetNillableEnd sets the "end" field if the given value is not nil.
+func (ebuo *EnterpriseBillUpdateOne) SetNillableEnd(t *time.Time) *EnterpriseBillUpdateOne {
+	if t != nil {
+		ebuo.SetEnd(*t)
+	}
+	return ebuo
+}
+
 // SetDays sets the "days" field.
 func (ebuo *EnterpriseBillUpdateOne) SetDays(i int) *EnterpriseBillUpdateOne {
 	ebuo.mutation.ResetDays()
 	ebuo.mutation.SetDays(i)
+	return ebuo
+}
+
+// SetNillableDays sets the "days" field if the given value is not nil.
+func (ebuo *EnterpriseBillUpdateOne) SetNillableDays(i *int) *EnterpriseBillUpdateOne {
+	if i != nil {
+		ebuo.SetDays(*i)
+	}
 	return ebuo
 }
 
@@ -739,6 +891,14 @@ func (ebuo *EnterpriseBillUpdateOne) SetPrice(f float64) *EnterpriseBillUpdateOn
 	return ebuo
 }
 
+// SetNillablePrice sets the "price" field if the given value is not nil.
+func (ebuo *EnterpriseBillUpdateOne) SetNillablePrice(f *float64) *EnterpriseBillUpdateOne {
+	if f != nil {
+		ebuo.SetPrice(*f)
+	}
+	return ebuo
+}
+
 // AddPrice adds f to the "price" field.
 func (ebuo *EnterpriseBillUpdateOne) AddPrice(f float64) *EnterpriseBillUpdateOne {
 	ebuo.mutation.AddPrice(f)
@@ -752,6 +912,14 @@ func (ebuo *EnterpriseBillUpdateOne) SetCost(f float64) *EnterpriseBillUpdateOne
 	return ebuo
 }
 
+// SetNillableCost sets the "cost" field if the given value is not nil.
+func (ebuo *EnterpriseBillUpdateOne) SetNillableCost(f *float64) *EnterpriseBillUpdateOne {
+	if f != nil {
+		ebuo.SetCost(*f)
+	}
+	return ebuo
+}
+
 // AddCost adds f to the "cost" field.
 func (ebuo *EnterpriseBillUpdateOne) AddCost(f float64) *EnterpriseBillUpdateOne {
 	ebuo.mutation.AddCost(f)
@@ -761,6 +929,14 @@ func (ebuo *EnterpriseBillUpdateOne) AddCost(f float64) *EnterpriseBillUpdateOne
 // SetModel sets the "model" field.
 func (ebuo *EnterpriseBillUpdateOne) SetModel(s string) *EnterpriseBillUpdateOne {
 	ebuo.mutation.SetModel(s)
+	return ebuo
+}
+
+// SetNillableModel sets the "model" field if the given value is not nil.
+func (ebuo *EnterpriseBillUpdateOne) SetNillableModel(s *string) *EnterpriseBillUpdateOne {
+	if s != nil {
+		ebuo.SetModel(*s)
+	}
 	return ebuo
 }
 

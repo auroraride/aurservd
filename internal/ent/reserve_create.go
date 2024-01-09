@@ -845,12 +845,16 @@ func (u *ReserveUpsertOne) IDX(ctx context.Context) uint64 {
 // ReserveCreateBulk is the builder for creating many Reserve entities in bulk.
 type ReserveCreateBulk struct {
 	config
+	err      error
 	builders []*ReserveCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the Reserve entities in the database.
 func (rcb *ReserveCreateBulk) Save(ctx context.Context) ([]*Reserve, error) {
+	if rcb.err != nil {
+		return nil, rcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(rcb.builders))
 	nodes := make([]*Reserve, len(rcb.builders))
 	mutators := make([]Mutator, len(rcb.builders))
@@ -1196,6 +1200,9 @@ func (u *ReserveUpsertBulk) UpdateType() *ReserveUpsertBulk {
 
 // Exec executes the query.
 func (u *ReserveUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the ReserveCreateBulk instead", i)

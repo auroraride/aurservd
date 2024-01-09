@@ -574,12 +574,16 @@ func (u *PromotionPersonUpsertOne) IDX(ctx context.Context) uint64 {
 // PromotionPersonCreateBulk is the builder for creating many PromotionPerson entities in bulk.
 type PromotionPersonCreateBulk struct {
 	config
+	err      error
 	builders []*PromotionPersonCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the PromotionPerson entities in the database.
 func (ppcb *PromotionPersonCreateBulk) Save(ctx context.Context) ([]*PromotionPerson, error) {
+	if ppcb.err != nil {
+		return nil, ppcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ppcb.builders))
 	nodes := make([]*PromotionPerson, len(ppcb.builders))
 	mutators := make([]Mutator, len(ppcb.builders))
@@ -845,6 +849,9 @@ func (u *PromotionPersonUpsertBulk) ClearAddress() *PromotionPersonUpsertBulk {
 
 // Exec executes the query.
 func (u *PromotionPersonUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the PromotionPersonCreateBulk instead", i)

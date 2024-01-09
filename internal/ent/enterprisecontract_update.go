@@ -95,9 +95,25 @@ func (ecu *EnterpriseContractUpdate) SetEnterpriseID(u uint64) *EnterpriseContra
 	return ecu
 }
 
+// SetNillableEnterpriseID sets the "enterprise_id" field if the given value is not nil.
+func (ecu *EnterpriseContractUpdate) SetNillableEnterpriseID(u *uint64) *EnterpriseContractUpdate {
+	if u != nil {
+		ecu.SetEnterpriseID(*u)
+	}
+	return ecu
+}
+
 // SetStart sets the "start" field.
 func (ecu *EnterpriseContractUpdate) SetStart(t time.Time) *EnterpriseContractUpdate {
 	ecu.mutation.SetStart(t)
+	return ecu
+}
+
+// SetNillableStart sets the "start" field if the given value is not nil.
+func (ecu *EnterpriseContractUpdate) SetNillableStart(t *time.Time) *EnterpriseContractUpdate {
+	if t != nil {
+		ecu.SetStart(*t)
+	}
 	return ecu
 }
 
@@ -107,9 +123,25 @@ func (ecu *EnterpriseContractUpdate) SetEnd(t time.Time) *EnterpriseContractUpda
 	return ecu
 }
 
+// SetNillableEnd sets the "end" field if the given value is not nil.
+func (ecu *EnterpriseContractUpdate) SetNillableEnd(t *time.Time) *EnterpriseContractUpdate {
+	if t != nil {
+		ecu.SetEnd(*t)
+	}
+	return ecu
+}
+
 // SetFile sets the "file" field.
 func (ecu *EnterpriseContractUpdate) SetFile(s string) *EnterpriseContractUpdate {
 	ecu.mutation.SetFile(s)
+	return ecu
+}
+
+// SetNillableFile sets the "file" field if the given value is not nil.
+func (ecu *EnterpriseContractUpdate) SetNillableFile(s *string) *EnterpriseContractUpdate {
+	if s != nil {
+		ecu.SetFile(*s)
+	}
 	return ecu
 }
 
@@ -345,9 +377,25 @@ func (ecuo *EnterpriseContractUpdateOne) SetEnterpriseID(u uint64) *EnterpriseCo
 	return ecuo
 }
 
+// SetNillableEnterpriseID sets the "enterprise_id" field if the given value is not nil.
+func (ecuo *EnterpriseContractUpdateOne) SetNillableEnterpriseID(u *uint64) *EnterpriseContractUpdateOne {
+	if u != nil {
+		ecuo.SetEnterpriseID(*u)
+	}
+	return ecuo
+}
+
 // SetStart sets the "start" field.
 func (ecuo *EnterpriseContractUpdateOne) SetStart(t time.Time) *EnterpriseContractUpdateOne {
 	ecuo.mutation.SetStart(t)
+	return ecuo
+}
+
+// SetNillableStart sets the "start" field if the given value is not nil.
+func (ecuo *EnterpriseContractUpdateOne) SetNillableStart(t *time.Time) *EnterpriseContractUpdateOne {
+	if t != nil {
+		ecuo.SetStart(*t)
+	}
 	return ecuo
 }
 
@@ -357,9 +405,25 @@ func (ecuo *EnterpriseContractUpdateOne) SetEnd(t time.Time) *EnterpriseContract
 	return ecuo
 }
 
+// SetNillableEnd sets the "end" field if the given value is not nil.
+func (ecuo *EnterpriseContractUpdateOne) SetNillableEnd(t *time.Time) *EnterpriseContractUpdateOne {
+	if t != nil {
+		ecuo.SetEnd(*t)
+	}
+	return ecuo
+}
+
 // SetFile sets the "file" field.
 func (ecuo *EnterpriseContractUpdateOne) SetFile(s string) *EnterpriseContractUpdateOne {
 	ecuo.mutation.SetFile(s)
+	return ecuo
+}
+
+// SetNillableFile sets the "file" field if the given value is not nil.
+func (ecuo *EnterpriseContractUpdateOne) SetNillableFile(s *string) *EnterpriseContractUpdateOne {
+	if s != nil {
+		ecuo.SetFile(*s)
+	}
 	return ecuo
 }
 

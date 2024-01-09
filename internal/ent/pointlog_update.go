@@ -44,6 +44,14 @@ func (plu *PointLogUpdate) SetRiderID(u uint64) *PointLogUpdate {
 	return plu
 }
 
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (plu *PointLogUpdate) SetNillableRiderID(u *uint64) *PointLogUpdate {
+	if u != nil {
+		plu.SetRiderID(*u)
+	}
+	return plu
+}
+
 // SetOrderID sets the "order_id" field.
 func (plu *PointLogUpdate) SetOrderID(u uint64) *PointLogUpdate {
 	plu.mutation.SetOrderID(u)
@@ -95,6 +103,14 @@ func (plu *PointLogUpdate) SetType(u uint8) *PointLogUpdate {
 	return plu
 }
 
+// SetNillableType sets the "type" field if the given value is not nil.
+func (plu *PointLogUpdate) SetNillableType(u *uint8) *PointLogUpdate {
+	if u != nil {
+		plu.SetType(*u)
+	}
+	return plu
+}
+
 // AddType adds u to the "type" field.
 func (plu *PointLogUpdate) AddType(u int8) *PointLogUpdate {
 	plu.mutation.AddType(u)
@@ -108,6 +124,14 @@ func (plu *PointLogUpdate) SetPoints(i int64) *PointLogUpdate {
 	return plu
 }
 
+// SetNillablePoints sets the "points" field if the given value is not nil.
+func (plu *PointLogUpdate) SetNillablePoints(i *int64) *PointLogUpdate {
+	if i != nil {
+		plu.SetPoints(*i)
+	}
+	return plu
+}
+
 // AddPoints adds i to the "points" field.
 func (plu *PointLogUpdate) AddPoints(i int64) *PointLogUpdate {
 	plu.mutation.AddPoints(i)
@@ -118,6 +142,14 @@ func (plu *PointLogUpdate) AddPoints(i int64) *PointLogUpdate {
 func (plu *PointLogUpdate) SetAfter(i int64) *PointLogUpdate {
 	plu.mutation.ResetAfter()
 	plu.mutation.SetAfter(i)
+	return plu
+}
+
+// SetNillableAfter sets the "after" field if the given value is not nil.
+func (plu *PointLogUpdate) SetNillableAfter(i *int64) *PointLogUpdate {
+	if i != nil {
+		plu.SetAfter(*i)
+	}
 	return plu
 }
 
@@ -391,6 +423,14 @@ func (pluo *PointLogUpdateOne) SetRiderID(u uint64) *PointLogUpdateOne {
 	return pluo
 }
 
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (pluo *PointLogUpdateOne) SetNillableRiderID(u *uint64) *PointLogUpdateOne {
+	if u != nil {
+		pluo.SetRiderID(*u)
+	}
+	return pluo
+}
+
 // SetOrderID sets the "order_id" field.
 func (pluo *PointLogUpdateOne) SetOrderID(u uint64) *PointLogUpdateOne {
 	pluo.mutation.SetOrderID(u)
@@ -442,6 +482,14 @@ func (pluo *PointLogUpdateOne) SetType(u uint8) *PointLogUpdateOne {
 	return pluo
 }
 
+// SetNillableType sets the "type" field if the given value is not nil.
+func (pluo *PointLogUpdateOne) SetNillableType(u *uint8) *PointLogUpdateOne {
+	if u != nil {
+		pluo.SetType(*u)
+	}
+	return pluo
+}
+
 // AddType adds u to the "type" field.
 func (pluo *PointLogUpdateOne) AddType(u int8) *PointLogUpdateOne {
 	pluo.mutation.AddType(u)
@@ -455,6 +503,14 @@ func (pluo *PointLogUpdateOne) SetPoints(i int64) *PointLogUpdateOne {
 	return pluo
 }
 
+// SetNillablePoints sets the "points" field if the given value is not nil.
+func (pluo *PointLogUpdateOne) SetNillablePoints(i *int64) *PointLogUpdateOne {
+	if i != nil {
+		pluo.SetPoints(*i)
+	}
+	return pluo
+}
+
 // AddPoints adds i to the "points" field.
 func (pluo *PointLogUpdateOne) AddPoints(i int64) *PointLogUpdateOne {
 	pluo.mutation.AddPoints(i)
@@ -465,6 +521,14 @@ func (pluo *PointLogUpdateOne) AddPoints(i int64) *PointLogUpdateOne {
 func (pluo *PointLogUpdateOne) SetAfter(i int64) *PointLogUpdateOne {
 	pluo.mutation.ResetAfter()
 	pluo.mutation.SetAfter(i)
+	return pluo
+}
+
+// SetNillableAfter sets the "after" field if the given value is not nil.
+func (pluo *PointLogUpdateOne) SetNillableAfter(i *int64) *PointLogUpdateOne {
+	if i != nil {
+		pluo.SetAfter(*i)
+	}
 	return pluo
 }
 

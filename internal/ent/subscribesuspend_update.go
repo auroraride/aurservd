@@ -72,15 +72,39 @@ func (ssu *SubscribeSuspendUpdate) SetCityID(u uint64) *SubscribeSuspendUpdate {
 	return ssu
 }
 
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (ssu *SubscribeSuspendUpdate) SetNillableCityID(u *uint64) *SubscribeSuspendUpdate {
+	if u != nil {
+		ssu.SetCityID(*u)
+	}
+	return ssu
+}
+
 // SetRiderID sets the "rider_id" field.
 func (ssu *SubscribeSuspendUpdate) SetRiderID(u uint64) *SubscribeSuspendUpdate {
 	ssu.mutation.SetRiderID(u)
 	return ssu
 }
 
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (ssu *SubscribeSuspendUpdate) SetNillableRiderID(u *uint64) *SubscribeSuspendUpdate {
+	if u != nil {
+		ssu.SetRiderID(*u)
+	}
+	return ssu
+}
+
 // SetSubscribeID sets the "subscribe_id" field.
 func (ssu *SubscribeSuspendUpdate) SetSubscribeID(u uint64) *SubscribeSuspendUpdate {
 	ssu.mutation.SetSubscribeID(u)
+	return ssu
+}
+
+// SetNillableSubscribeID sets the "subscribe_id" field if the given value is not nil.
+func (ssu *SubscribeSuspendUpdate) SetNillableSubscribeID(u *uint64) *SubscribeSuspendUpdate {
+	if u != nil {
+		ssu.SetSubscribeID(*u)
+	}
 	return ssu
 }
 
@@ -128,6 +152,14 @@ func (ssu *SubscribeSuspendUpdate) AddDays(i int) *SubscribeSuspendUpdate {
 // SetStartAt sets the "start_at" field.
 func (ssu *SubscribeSuspendUpdate) SetStartAt(t time.Time) *SubscribeSuspendUpdate {
 	ssu.mutation.SetStartAt(t)
+	return ssu
+}
+
+// SetNillableStartAt sets the "start_at" field if the given value is not nil.
+func (ssu *SubscribeSuspendUpdate) SetNillableStartAt(t *time.Time) *SubscribeSuspendUpdate {
+	if t != nil {
+		ssu.SetStartAt(*t)
+	}
 	return ssu
 }
 
@@ -509,15 +541,39 @@ func (ssuo *SubscribeSuspendUpdateOne) SetCityID(u uint64) *SubscribeSuspendUpda
 	return ssuo
 }
 
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (ssuo *SubscribeSuspendUpdateOne) SetNillableCityID(u *uint64) *SubscribeSuspendUpdateOne {
+	if u != nil {
+		ssuo.SetCityID(*u)
+	}
+	return ssuo
+}
+
 // SetRiderID sets the "rider_id" field.
 func (ssuo *SubscribeSuspendUpdateOne) SetRiderID(u uint64) *SubscribeSuspendUpdateOne {
 	ssuo.mutation.SetRiderID(u)
 	return ssuo
 }
 
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (ssuo *SubscribeSuspendUpdateOne) SetNillableRiderID(u *uint64) *SubscribeSuspendUpdateOne {
+	if u != nil {
+		ssuo.SetRiderID(*u)
+	}
+	return ssuo
+}
+
 // SetSubscribeID sets the "subscribe_id" field.
 func (ssuo *SubscribeSuspendUpdateOne) SetSubscribeID(u uint64) *SubscribeSuspendUpdateOne {
 	ssuo.mutation.SetSubscribeID(u)
+	return ssuo
+}
+
+// SetNillableSubscribeID sets the "subscribe_id" field if the given value is not nil.
+func (ssuo *SubscribeSuspendUpdateOne) SetNillableSubscribeID(u *uint64) *SubscribeSuspendUpdateOne {
+	if u != nil {
+		ssuo.SetSubscribeID(*u)
+	}
 	return ssuo
 }
 
@@ -565,6 +621,14 @@ func (ssuo *SubscribeSuspendUpdateOne) AddDays(i int) *SubscribeSuspendUpdateOne
 // SetStartAt sets the "start_at" field.
 func (ssuo *SubscribeSuspendUpdateOne) SetStartAt(t time.Time) *SubscribeSuspendUpdateOne {
 	ssuo.mutation.SetStartAt(t)
+	return ssuo
+}
+
+// SetNillableStartAt sets the "start_at" field if the given value is not nil.
+func (ssuo *SubscribeSuspendUpdateOne) SetNillableStartAt(t *time.Time) *SubscribeSuspendUpdateOne {
+	if t != nil {
+		ssuo.SetStartAt(*t)
+	}
 	return ssuo
 }
 

@@ -850,12 +850,16 @@ func (u *EnterpriseStationUpsertOne) IDX(ctx context.Context) uint64 {
 // EnterpriseStationCreateBulk is the builder for creating many EnterpriseStation entities in bulk.
 type EnterpriseStationCreateBulk struct {
 	config
+	err      error
 	builders []*EnterpriseStationCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the EnterpriseStation entities in the database.
 func (escb *EnterpriseStationCreateBulk) Save(ctx context.Context) ([]*EnterpriseStation, error) {
+	if escb.err != nil {
+		return nil, escb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(escb.builders))
 	nodes := make([]*EnterpriseStation, len(escb.builders))
 	mutators := make([]Mutator, len(escb.builders))
@@ -1152,6 +1156,9 @@ func (u *EnterpriseStationUpsertBulk) UpdateName() *EnterpriseStationUpsertBulk 
 
 // Exec executes the query.
 func (u *EnterpriseStationUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the EnterpriseStationCreateBulk instead", i)

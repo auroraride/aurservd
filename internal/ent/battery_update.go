@@ -222,6 +222,14 @@ func (bu *BatteryUpdate) SetSn(s string) *BatteryUpdate {
 	return bu
 }
 
+// SetNillableSn sets the "sn" field if the given value is not nil.
+func (bu *BatteryUpdate) SetNillableSn(s *string) *BatteryUpdate {
+	if s != nil {
+		bu.SetSn(*s)
+	}
+	return bu
+}
+
 // SetBrand sets the "brand" field.
 func (bu *BatteryUpdate) SetBrand(ab adapter.BatteryBrand) *BatteryUpdate {
 	bu.mutation.SetBrand(ab)
@@ -253,6 +261,14 @@ func (bu *BatteryUpdate) SetNillableEnable(b *bool) *BatteryUpdate {
 // SetModel sets the "model" field.
 func (bu *BatteryUpdate) SetModel(s string) *BatteryUpdate {
 	bu.mutation.SetModel(s)
+	return bu
+}
+
+// SetNillableModel sets the "model" field if the given value is not nil.
+func (bu *BatteryUpdate) SetNillableModel(s *string) *BatteryUpdate {
+	if s != nil {
+		bu.SetModel(*s)
+	}
 	return bu
 }
 
@@ -917,6 +933,14 @@ func (buo *BatteryUpdateOne) SetSn(s string) *BatteryUpdateOne {
 	return buo
 }
 
+// SetNillableSn sets the "sn" field if the given value is not nil.
+func (buo *BatteryUpdateOne) SetNillableSn(s *string) *BatteryUpdateOne {
+	if s != nil {
+		buo.SetSn(*s)
+	}
+	return buo
+}
+
 // SetBrand sets the "brand" field.
 func (buo *BatteryUpdateOne) SetBrand(ab adapter.BatteryBrand) *BatteryUpdateOne {
 	buo.mutation.SetBrand(ab)
@@ -948,6 +972,14 @@ func (buo *BatteryUpdateOne) SetNillableEnable(b *bool) *BatteryUpdateOne {
 // SetModel sets the "model" field.
 func (buo *BatteryUpdateOne) SetModel(s string) *BatteryUpdateOne {
 	buo.mutation.SetModel(s)
+	return buo
+}
+
+// SetNillableModel sets the "model" field if the given value is not nil.
+func (buo *BatteryUpdateOne) SetNillableModel(s *string) *BatteryUpdateOne {
+	if s != nil {
+		buo.SetModel(*s)
+	}
 	return buo
 }
 

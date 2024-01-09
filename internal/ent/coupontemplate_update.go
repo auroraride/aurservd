@@ -89,6 +89,14 @@ func (ctu *CouponTemplateUpdate) SetName(s string) *CouponTemplateUpdate {
 	return ctu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (ctu *CouponTemplateUpdate) SetNillableName(s *string) *CouponTemplateUpdate {
+	if s != nil {
+		ctu.SetName(*s)
+	}
+	return ctu
+}
+
 // SetMeta sets the "meta" field.
 func (ctu *CouponTemplateUpdate) SetMeta(mtm *model.CouponTemplateMeta) *CouponTemplateUpdate {
 	ctu.mutation.SetMeta(mtm)
@@ -342,6 +350,14 @@ func (ctuo *CouponTemplateUpdateOne) SetNillableEnable(b *bool) *CouponTemplateU
 // SetName sets the "name" field.
 func (ctuo *CouponTemplateUpdateOne) SetName(s string) *CouponTemplateUpdateOne {
 	ctuo.mutation.SetName(s)
+	return ctuo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (ctuo *CouponTemplateUpdateOne) SetNillableName(s *string) *CouponTemplateUpdateOne {
+	if s != nil {
+		ctuo.SetName(*s)
+	}
 	return ctuo
 }
 

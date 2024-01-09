@@ -100,6 +100,14 @@ func (su *StoreUpdate) SetCityID(u uint64) *StoreUpdate {
 	return su
 }
 
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (su *StoreUpdate) SetNillableCityID(u *uint64) *StoreUpdate {
+	if u != nil {
+		su.SetCityID(*u)
+	}
+	return su
+}
+
 // SetEmployeeID sets the "employee_id" field.
 func (su *StoreUpdate) SetEmployeeID(u uint64) *StoreUpdate {
 	su.mutation.SetEmployeeID(u)
@@ -126,9 +134,25 @@ func (su *StoreUpdate) SetBranchID(u uint64) *StoreUpdate {
 	return su
 }
 
+// SetNillableBranchID sets the "branch_id" field if the given value is not nil.
+func (su *StoreUpdate) SetNillableBranchID(u *uint64) *StoreUpdate {
+	if u != nil {
+		su.SetBranchID(*u)
+	}
+	return su
+}
+
 // SetName sets the "name" field.
 func (su *StoreUpdate) SetName(s string) *StoreUpdate {
 	su.mutation.SetName(s)
+	return su
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (su *StoreUpdate) SetNillableName(s *string) *StoreUpdate {
+	if s != nil {
+		su.SetName(*s)
+	}
 	return su
 }
 
@@ -160,6 +184,14 @@ func (su *StoreUpdate) SetLng(f float64) *StoreUpdate {
 	return su
 }
 
+// SetNillableLng sets the "lng" field if the given value is not nil.
+func (su *StoreUpdate) SetNillableLng(f *float64) *StoreUpdate {
+	if f != nil {
+		su.SetLng(*f)
+	}
+	return su
+}
+
 // AddLng adds f to the "lng" field.
 func (su *StoreUpdate) AddLng(f float64) *StoreUpdate {
 	su.mutation.AddLng(f)
@@ -173,6 +205,14 @@ func (su *StoreUpdate) SetLat(f float64) *StoreUpdate {
 	return su
 }
 
+// SetNillableLat sets the "lat" field if the given value is not nil.
+func (su *StoreUpdate) SetNillableLat(f *float64) *StoreUpdate {
+	if f != nil {
+		su.SetLat(*f)
+	}
+	return su
+}
+
 // AddLat adds f to the "lat" field.
 func (su *StoreUpdate) AddLat(f float64) *StoreUpdate {
 	su.mutation.AddLat(f)
@@ -182,6 +222,14 @@ func (su *StoreUpdate) AddLat(f float64) *StoreUpdate {
 // SetAddress sets the "address" field.
 func (su *StoreUpdate) SetAddress(s string) *StoreUpdate {
 	su.mutation.SetAddress(s)
+	return su
+}
+
+// SetNillableAddress sets the "address" field if the given value is not nil.
+func (su *StoreUpdate) SetNillableAddress(s *string) *StoreUpdate {
+	if s != nil {
+		su.SetAddress(*s)
+	}
 	return su
 }
 
@@ -792,6 +840,14 @@ func (suo *StoreUpdateOne) SetCityID(u uint64) *StoreUpdateOne {
 	return suo
 }
 
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (suo *StoreUpdateOne) SetNillableCityID(u *uint64) *StoreUpdateOne {
+	if u != nil {
+		suo.SetCityID(*u)
+	}
+	return suo
+}
+
 // SetEmployeeID sets the "employee_id" field.
 func (suo *StoreUpdateOne) SetEmployeeID(u uint64) *StoreUpdateOne {
 	suo.mutation.SetEmployeeID(u)
@@ -818,9 +874,25 @@ func (suo *StoreUpdateOne) SetBranchID(u uint64) *StoreUpdateOne {
 	return suo
 }
 
+// SetNillableBranchID sets the "branch_id" field if the given value is not nil.
+func (suo *StoreUpdateOne) SetNillableBranchID(u *uint64) *StoreUpdateOne {
+	if u != nil {
+		suo.SetBranchID(*u)
+	}
+	return suo
+}
+
 // SetName sets the "name" field.
 func (suo *StoreUpdateOne) SetName(s string) *StoreUpdateOne {
 	suo.mutation.SetName(s)
+	return suo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (suo *StoreUpdateOne) SetNillableName(s *string) *StoreUpdateOne {
+	if s != nil {
+		suo.SetName(*s)
+	}
 	return suo
 }
 
@@ -852,6 +924,14 @@ func (suo *StoreUpdateOne) SetLng(f float64) *StoreUpdateOne {
 	return suo
 }
 
+// SetNillableLng sets the "lng" field if the given value is not nil.
+func (suo *StoreUpdateOne) SetNillableLng(f *float64) *StoreUpdateOne {
+	if f != nil {
+		suo.SetLng(*f)
+	}
+	return suo
+}
+
 // AddLng adds f to the "lng" field.
 func (suo *StoreUpdateOne) AddLng(f float64) *StoreUpdateOne {
 	suo.mutation.AddLng(f)
@@ -865,6 +945,14 @@ func (suo *StoreUpdateOne) SetLat(f float64) *StoreUpdateOne {
 	return suo
 }
 
+// SetNillableLat sets the "lat" field if the given value is not nil.
+func (suo *StoreUpdateOne) SetNillableLat(f *float64) *StoreUpdateOne {
+	if f != nil {
+		suo.SetLat(*f)
+	}
+	return suo
+}
+
 // AddLat adds f to the "lat" field.
 func (suo *StoreUpdateOne) AddLat(f float64) *StoreUpdateOne {
 	suo.mutation.AddLat(f)
@@ -874,6 +962,14 @@ func (suo *StoreUpdateOne) AddLat(f float64) *StoreUpdateOne {
 // SetAddress sets the "address" field.
 func (suo *StoreUpdateOne) SetAddress(s string) *StoreUpdateOne {
 	suo.mutation.SetAddress(s)
+	return suo
+}
+
+// SetNillableAddress sets the "address" field if the given value is not nil.
+func (suo *StoreUpdateOne) SetNillableAddress(s *string) *StoreUpdateOne {
+	if s != nil {
+		suo.SetAddress(*s)
+	}
 	return suo
 }
 

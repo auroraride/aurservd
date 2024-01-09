@@ -130,6 +130,14 @@ func (pu *PersonUpdate) SetName(s string) *PersonUpdate {
 	return pu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (pu *PersonUpdate) SetNillableName(s *string) *PersonUpdate {
+	if s != nil {
+		pu.SetName(*s)
+	}
+	return pu
+}
+
 // SetIDCardNumber sets the "id_card_number" field.
 func (pu *PersonUpdate) SetIDCardNumber(s string) *PersonUpdate {
 	pu.mutation.SetIDCardNumber(s)
@@ -698,6 +706,14 @@ func (puo *PersonUpdateOne) SetNillableBanned(b *bool) *PersonUpdateOne {
 // SetName sets the "name" field.
 func (puo *PersonUpdateOne) SetName(s string) *PersonUpdateOne {
 	puo.mutation.SetName(s)
+	return puo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (puo *PersonUpdateOne) SetNillableName(s *string) *PersonUpdateOne {
+	if s != nil {
+		puo.SetName(*s)
+	}
 	return puo
 }
 

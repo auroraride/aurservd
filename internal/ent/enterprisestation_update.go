@@ -121,9 +121,25 @@ func (esu *EnterpriseStationUpdate) SetEnterpriseID(u uint64) *EnterpriseStation
 	return esu
 }
 
+// SetNillableEnterpriseID sets the "enterprise_id" field if the given value is not nil.
+func (esu *EnterpriseStationUpdate) SetNillableEnterpriseID(u *uint64) *EnterpriseStationUpdate {
+	if u != nil {
+		esu.SetEnterpriseID(*u)
+	}
+	return esu
+}
+
 // SetName sets the "name" field.
 func (esu *EnterpriseStationUpdate) SetName(s string) *EnterpriseStationUpdate {
 	esu.mutation.SetName(s)
+	return esu
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (esu *EnterpriseStationUpdate) SetNillableName(s *string) *EnterpriseStationUpdate {
+	if s != nil {
+		esu.SetName(*s)
+	}
 	return esu
 }
 
@@ -899,9 +915,25 @@ func (esuo *EnterpriseStationUpdateOne) SetEnterpriseID(u uint64) *EnterpriseSta
 	return esuo
 }
 
+// SetNillableEnterpriseID sets the "enterprise_id" field if the given value is not nil.
+func (esuo *EnterpriseStationUpdateOne) SetNillableEnterpriseID(u *uint64) *EnterpriseStationUpdateOne {
+	if u != nil {
+		esuo.SetEnterpriseID(*u)
+	}
+	return esuo
+}
+
 // SetName sets the "name" field.
 func (esuo *EnterpriseStationUpdateOne) SetName(s string) *EnterpriseStationUpdateOne {
 	esuo.mutation.SetName(s)
+	return esuo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (esuo *EnterpriseStationUpdateOne) SetNillableName(s *string) *EnterpriseStationUpdateOne {
+	if s != nil {
+		esuo.SetName(*s)
+	}
 	return esuo
 }
 

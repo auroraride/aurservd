@@ -95,10 +95,26 @@ func (oru *OrderRefundUpdate) SetOrderID(u uint64) *OrderRefundUpdate {
 	return oru
 }
 
+// SetNillableOrderID sets the "order_id" field if the given value is not nil.
+func (oru *OrderRefundUpdate) SetNillableOrderID(u *uint64) *OrderRefundUpdate {
+	if u != nil {
+		oru.SetOrderID(*u)
+	}
+	return oru
+}
+
 // SetStatus sets the "status" field.
 func (oru *OrderRefundUpdate) SetStatus(u uint8) *OrderRefundUpdate {
 	oru.mutation.ResetStatus()
 	oru.mutation.SetStatus(u)
+	return oru
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (oru *OrderRefundUpdate) SetNillableStatus(u *uint8) *OrderRefundUpdate {
+	if u != nil {
+		oru.SetStatus(*u)
+	}
 	return oru
 }
 
@@ -115,6 +131,14 @@ func (oru *OrderRefundUpdate) SetAmount(f float64) *OrderRefundUpdate {
 	return oru
 }
 
+// SetNillableAmount sets the "amount" field if the given value is not nil.
+func (oru *OrderRefundUpdate) SetNillableAmount(f *float64) *OrderRefundUpdate {
+	if f != nil {
+		oru.SetAmount(*f)
+	}
+	return oru
+}
+
 // AddAmount adds f to the "amount" field.
 func (oru *OrderRefundUpdate) AddAmount(f float64) *OrderRefundUpdate {
 	oru.mutation.AddAmount(f)
@@ -127,9 +151,25 @@ func (oru *OrderRefundUpdate) SetOutRefundNo(s string) *OrderRefundUpdate {
 	return oru
 }
 
+// SetNillableOutRefundNo sets the "out_refund_no" field if the given value is not nil.
+func (oru *OrderRefundUpdate) SetNillableOutRefundNo(s *string) *OrderRefundUpdate {
+	if s != nil {
+		oru.SetOutRefundNo(*s)
+	}
+	return oru
+}
+
 // SetReason sets the "reason" field.
 func (oru *OrderRefundUpdate) SetReason(s string) *OrderRefundUpdate {
 	oru.mutation.SetReason(s)
+	return oru
+}
+
+// SetNillableReason sets the "reason" field if the given value is not nil.
+func (oru *OrderRefundUpdate) SetNillableReason(s *string) *OrderRefundUpdate {
+	if s != nil {
+		oru.SetReason(*s)
+	}
 	return oru
 }
 
@@ -400,10 +440,26 @@ func (oruo *OrderRefundUpdateOne) SetOrderID(u uint64) *OrderRefundUpdateOne {
 	return oruo
 }
 
+// SetNillableOrderID sets the "order_id" field if the given value is not nil.
+func (oruo *OrderRefundUpdateOne) SetNillableOrderID(u *uint64) *OrderRefundUpdateOne {
+	if u != nil {
+		oruo.SetOrderID(*u)
+	}
+	return oruo
+}
+
 // SetStatus sets the "status" field.
 func (oruo *OrderRefundUpdateOne) SetStatus(u uint8) *OrderRefundUpdateOne {
 	oruo.mutation.ResetStatus()
 	oruo.mutation.SetStatus(u)
+	return oruo
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (oruo *OrderRefundUpdateOne) SetNillableStatus(u *uint8) *OrderRefundUpdateOne {
+	if u != nil {
+		oruo.SetStatus(*u)
+	}
 	return oruo
 }
 
@@ -420,6 +476,14 @@ func (oruo *OrderRefundUpdateOne) SetAmount(f float64) *OrderRefundUpdateOne {
 	return oruo
 }
 
+// SetNillableAmount sets the "amount" field if the given value is not nil.
+func (oruo *OrderRefundUpdateOne) SetNillableAmount(f *float64) *OrderRefundUpdateOne {
+	if f != nil {
+		oruo.SetAmount(*f)
+	}
+	return oruo
+}
+
 // AddAmount adds f to the "amount" field.
 func (oruo *OrderRefundUpdateOne) AddAmount(f float64) *OrderRefundUpdateOne {
 	oruo.mutation.AddAmount(f)
@@ -432,9 +496,25 @@ func (oruo *OrderRefundUpdateOne) SetOutRefundNo(s string) *OrderRefundUpdateOne
 	return oruo
 }
 
+// SetNillableOutRefundNo sets the "out_refund_no" field if the given value is not nil.
+func (oruo *OrderRefundUpdateOne) SetNillableOutRefundNo(s *string) *OrderRefundUpdateOne {
+	if s != nil {
+		oruo.SetOutRefundNo(*s)
+	}
+	return oruo
+}
+
 // SetReason sets the "reason" field.
 func (oruo *OrderRefundUpdateOne) SetReason(s string) *OrderRefundUpdateOne {
 	oruo.mutation.SetReason(s)
+	return oruo
+}
+
+// SetNillableReason sets the "reason" field if the given value is not nil.
+func (oruo *OrderRefundUpdateOne) SetNillableReason(s *string) *OrderRefundUpdateOne {
+	if s != nil {
+		oruo.SetReason(*s)
+	}
 	return oruo
 }
 

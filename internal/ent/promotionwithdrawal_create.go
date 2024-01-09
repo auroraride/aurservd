@@ -1120,12 +1120,16 @@ func (u *PromotionWithdrawalUpsertOne) IDX(ctx context.Context) uint64 {
 // PromotionWithdrawalCreateBulk is the builder for creating many PromotionWithdrawal entities in bulk.
 type PromotionWithdrawalCreateBulk struct {
 	config
+	err      error
 	builders []*PromotionWithdrawalCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the PromotionWithdrawal entities in the database.
 func (pwcb *PromotionWithdrawalCreateBulk) Save(ctx context.Context) ([]*PromotionWithdrawal, error) {
+	if pwcb.err != nil {
+		return nil, pwcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(pwcb.builders))
 	nodes := make([]*PromotionWithdrawal, len(pwcb.builders))
 	mutators := make([]Mutator, len(pwcb.builders))
@@ -1576,6 +1580,9 @@ func (u *PromotionWithdrawalUpsertBulk) ClearReviewTime() *PromotionWithdrawalUp
 
 // Exec executes the query.
 func (u *PromotionWithdrawalUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the PromotionWithdrawalCreateBulk instead", i)

@@ -823,12 +823,16 @@ func (u *EnterprisePriceUpsertOne) IDX(ctx context.Context) uint64 {
 // EnterprisePriceCreateBulk is the builder for creating many EnterprisePrice entities in bulk.
 type EnterprisePriceCreateBulk struct {
 	config
+	err      error
 	builders []*EnterprisePriceCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the EnterprisePrice entities in the database.
 func (epcb *EnterprisePriceCreateBulk) Save(ctx context.Context) ([]*EnterprisePrice, error) {
+	if epcb.err != nil {
+		return nil, epcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(epcb.builders))
 	nodes := make([]*EnterprisePrice, len(epcb.builders))
 	mutators := make([]Mutator, len(epcb.builders))
@@ -1174,6 +1178,9 @@ func (u *EnterprisePriceUpsertBulk) UpdateIntelligent() *EnterprisePriceUpsertBu
 
 // Exec executes the query.
 func (u *EnterprisePriceUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the EnterprisePriceCreateBulk instead", i)

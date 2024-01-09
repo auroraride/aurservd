@@ -139,6 +139,14 @@ func (pcu *PromotionCommissionUpdate) SetName(s string) *PromotionCommissionUpda
 	return pcu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (pcu *PromotionCommissionUpdate) SetNillableName(s *string) *PromotionCommissionUpdate {
+	if s != nil {
+		pcu.SetName(*s)
+	}
+	return pcu
+}
+
 // SetRule sets the "rule" field.
 func (pcu *PromotionCommissionUpdate) SetRule(pr *promotion.CommissionRule) *PromotionCommissionUpdate {
 	pcu.mutation.SetRule(pr)
@@ -855,6 +863,14 @@ func (pcuo *PromotionCommissionUpdateOne) AddType(u int8) *PromotionCommissionUp
 // SetName sets the "name" field.
 func (pcuo *PromotionCommissionUpdateOne) SetName(s string) *PromotionCommissionUpdateOne {
 	pcuo.mutation.SetName(s)
+	return pcuo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (pcuo *PromotionCommissionUpdateOne) SetNillableName(s *string) *PromotionCommissionUpdateOne {
+	if s != nil {
+		pcuo.SetName(*s)
+	}
 	return pcuo
 }
 

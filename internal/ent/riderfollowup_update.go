@@ -96,9 +96,25 @@ func (rfuu *RiderFollowUpUpdate) SetManagerID(u uint64) *RiderFollowUpUpdate {
 	return rfuu
 }
 
+// SetNillableManagerID sets the "manager_id" field if the given value is not nil.
+func (rfuu *RiderFollowUpUpdate) SetNillableManagerID(u *uint64) *RiderFollowUpUpdate {
+	if u != nil {
+		rfuu.SetManagerID(*u)
+	}
+	return rfuu
+}
+
 // SetRiderID sets the "rider_id" field.
 func (rfuu *RiderFollowUpUpdate) SetRiderID(u uint64) *RiderFollowUpUpdate {
 	rfuu.mutation.SetRiderID(u)
+	return rfuu
+}
+
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (rfuu *RiderFollowUpUpdate) SetNillableRiderID(u *uint64) *RiderFollowUpUpdate {
+	if u != nil {
+		rfuu.SetRiderID(*u)
+	}
 	return rfuu
 }
 
@@ -368,9 +384,25 @@ func (rfuuo *RiderFollowUpUpdateOne) SetManagerID(u uint64) *RiderFollowUpUpdate
 	return rfuuo
 }
 
+// SetNillableManagerID sets the "manager_id" field if the given value is not nil.
+func (rfuuo *RiderFollowUpUpdateOne) SetNillableManagerID(u *uint64) *RiderFollowUpUpdateOne {
+	if u != nil {
+		rfuuo.SetManagerID(*u)
+	}
+	return rfuuo
+}
+
 // SetRiderID sets the "rider_id" field.
 func (rfuuo *RiderFollowUpUpdateOne) SetRiderID(u uint64) *RiderFollowUpUpdateOne {
 	rfuuo.mutation.SetRiderID(u)
+	return rfuuo
+}
+
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (rfuuo *RiderFollowUpUpdateOne) SetNillableRiderID(u *uint64) *RiderFollowUpUpdateOne {
+	if u != nil {
+		rfuuo.SetRiderID(*u)
+	}
 	return rfuuo
 }
 

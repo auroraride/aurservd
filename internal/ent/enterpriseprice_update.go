@@ -97,6 +97,14 @@ func (epu *EnterprisePriceUpdate) SetCityID(u uint64) *EnterprisePriceUpdate {
 	return epu
 }
 
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (epu *EnterprisePriceUpdate) SetNillableCityID(u *uint64) *EnterprisePriceUpdate {
+	if u != nil {
+		epu.SetCityID(*u)
+	}
+	return epu
+}
+
 // SetBrandID sets the "brand_id" field.
 func (epu *EnterprisePriceUpdate) SetBrandID(u uint64) *EnterprisePriceUpdate {
 	epu.mutation.SetBrandID(u)
@@ -123,10 +131,26 @@ func (epu *EnterprisePriceUpdate) SetEnterpriseID(u uint64) *EnterprisePriceUpda
 	return epu
 }
 
+// SetNillableEnterpriseID sets the "enterprise_id" field if the given value is not nil.
+func (epu *EnterprisePriceUpdate) SetNillableEnterpriseID(u *uint64) *EnterprisePriceUpdate {
+	if u != nil {
+		epu.SetEnterpriseID(*u)
+	}
+	return epu
+}
+
 // SetPrice sets the "price" field.
 func (epu *EnterprisePriceUpdate) SetPrice(f float64) *EnterprisePriceUpdate {
 	epu.mutation.ResetPrice()
 	epu.mutation.SetPrice(f)
+	return epu
+}
+
+// SetNillablePrice sets the "price" field if the given value is not nil.
+func (epu *EnterprisePriceUpdate) SetNillablePrice(f *float64) *EnterprisePriceUpdate {
+	if f != nil {
+		epu.SetPrice(*f)
+	}
 	return epu
 }
 
@@ -139,6 +163,14 @@ func (epu *EnterprisePriceUpdate) AddPrice(f float64) *EnterprisePriceUpdate {
 // SetModel sets the "model" field.
 func (epu *EnterprisePriceUpdate) SetModel(s string) *EnterprisePriceUpdate {
 	epu.mutation.SetModel(s)
+	return epu
+}
+
+// SetNillableModel sets the "model" field if the given value is not nil.
+func (epu *EnterprisePriceUpdate) SetNillableModel(s *string) *EnterprisePriceUpdate {
+	if s != nil {
+		epu.SetModel(*s)
+	}
 	return epu
 }
 
@@ -474,6 +506,14 @@ func (epuo *EnterprisePriceUpdateOne) SetCityID(u uint64) *EnterprisePriceUpdate
 	return epuo
 }
 
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (epuo *EnterprisePriceUpdateOne) SetNillableCityID(u *uint64) *EnterprisePriceUpdateOne {
+	if u != nil {
+		epuo.SetCityID(*u)
+	}
+	return epuo
+}
+
 // SetBrandID sets the "brand_id" field.
 func (epuo *EnterprisePriceUpdateOne) SetBrandID(u uint64) *EnterprisePriceUpdateOne {
 	epuo.mutation.SetBrandID(u)
@@ -500,10 +540,26 @@ func (epuo *EnterprisePriceUpdateOne) SetEnterpriseID(u uint64) *EnterprisePrice
 	return epuo
 }
 
+// SetNillableEnterpriseID sets the "enterprise_id" field if the given value is not nil.
+func (epuo *EnterprisePriceUpdateOne) SetNillableEnterpriseID(u *uint64) *EnterprisePriceUpdateOne {
+	if u != nil {
+		epuo.SetEnterpriseID(*u)
+	}
+	return epuo
+}
+
 // SetPrice sets the "price" field.
 func (epuo *EnterprisePriceUpdateOne) SetPrice(f float64) *EnterprisePriceUpdateOne {
 	epuo.mutation.ResetPrice()
 	epuo.mutation.SetPrice(f)
+	return epuo
+}
+
+// SetNillablePrice sets the "price" field if the given value is not nil.
+func (epuo *EnterprisePriceUpdateOne) SetNillablePrice(f *float64) *EnterprisePriceUpdateOne {
+	if f != nil {
+		epuo.SetPrice(*f)
+	}
 	return epuo
 }
 
@@ -516,6 +572,14 @@ func (epuo *EnterprisePriceUpdateOne) AddPrice(f float64) *EnterprisePriceUpdate
 // SetModel sets the "model" field.
 func (epuo *EnterprisePriceUpdateOne) SetModel(s string) *EnterprisePriceUpdateOne {
 	epuo.mutation.SetModel(s)
+	return epuo
+}
+
+// SetNillableModel sets the "model" field if the given value is not nil.
+func (epuo *EnterprisePriceUpdateOne) SetNillableModel(s *string) *EnterprisePriceUpdateOne {
+	if s != nil {
+		epuo.SetModel(*s)
+	}
 	return epuo
 }
 

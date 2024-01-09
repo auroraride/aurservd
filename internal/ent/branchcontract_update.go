@@ -96,9 +96,25 @@ func (bcu *BranchContractUpdate) SetBranchID(u uint64) *BranchContractUpdate {
 	return bcu
 }
 
+// SetNillableBranchID sets the "branch_id" field if the given value is not nil.
+func (bcu *BranchContractUpdate) SetNillableBranchID(u *uint64) *BranchContractUpdate {
+	if u != nil {
+		bcu.SetBranchID(*u)
+	}
+	return bcu
+}
+
 // SetLandlordName sets the "landlord_name" field.
 func (bcu *BranchContractUpdate) SetLandlordName(s string) *BranchContractUpdate {
 	bcu.mutation.SetLandlordName(s)
+	return bcu
+}
+
+// SetNillableLandlordName sets the "landlord_name" field if the given value is not nil.
+func (bcu *BranchContractUpdate) SetNillableLandlordName(s *string) *BranchContractUpdate {
+	if s != nil {
+		bcu.SetLandlordName(*s)
+	}
 	return bcu
 }
 
@@ -108,9 +124,25 @@ func (bcu *BranchContractUpdate) SetIDCardNumber(s string) *BranchContractUpdate
 	return bcu
 }
 
+// SetNillableIDCardNumber sets the "id_card_number" field if the given value is not nil.
+func (bcu *BranchContractUpdate) SetNillableIDCardNumber(s *string) *BranchContractUpdate {
+	if s != nil {
+		bcu.SetIDCardNumber(*s)
+	}
+	return bcu
+}
+
 // SetPhone sets the "phone" field.
 func (bcu *BranchContractUpdate) SetPhone(s string) *BranchContractUpdate {
 	bcu.mutation.SetPhone(s)
+	return bcu
+}
+
+// SetNillablePhone sets the "phone" field if the given value is not nil.
+func (bcu *BranchContractUpdate) SetNillablePhone(s *string) *BranchContractUpdate {
+	if s != nil {
+		bcu.SetPhone(*s)
+	}
 	return bcu
 }
 
@@ -120,10 +152,26 @@ func (bcu *BranchContractUpdate) SetBankNumber(s string) *BranchContractUpdate {
 	return bcu
 }
 
+// SetNillableBankNumber sets the "bank_number" field if the given value is not nil.
+func (bcu *BranchContractUpdate) SetNillableBankNumber(s *string) *BranchContractUpdate {
+	if s != nil {
+		bcu.SetBankNumber(*s)
+	}
+	return bcu
+}
+
 // SetPledge sets the "pledge" field.
 func (bcu *BranchContractUpdate) SetPledge(f float64) *BranchContractUpdate {
 	bcu.mutation.ResetPledge()
 	bcu.mutation.SetPledge(f)
+	return bcu
+}
+
+// SetNillablePledge sets the "pledge" field if the given value is not nil.
+func (bcu *BranchContractUpdate) SetNillablePledge(f *float64) *BranchContractUpdate {
+	if f != nil {
+		bcu.SetPledge(*f)
+	}
 	return bcu
 }
 
@@ -140,6 +188,14 @@ func (bcu *BranchContractUpdate) SetRent(f float64) *BranchContractUpdate {
 	return bcu
 }
 
+// SetNillableRent sets the "rent" field if the given value is not nil.
+func (bcu *BranchContractUpdate) SetNillableRent(f *float64) *BranchContractUpdate {
+	if f != nil {
+		bcu.SetRent(*f)
+	}
+	return bcu
+}
+
 // AddRent adds f to the "rent" field.
 func (bcu *BranchContractUpdate) AddRent(f float64) *BranchContractUpdate {
 	bcu.mutation.AddRent(f)
@@ -150,6 +206,14 @@ func (bcu *BranchContractUpdate) AddRent(f float64) *BranchContractUpdate {
 func (bcu *BranchContractUpdate) SetLease(u uint) *BranchContractUpdate {
 	bcu.mutation.ResetLease()
 	bcu.mutation.SetLease(u)
+	return bcu
+}
+
+// SetNillableLease sets the "lease" field if the given value is not nil.
+func (bcu *BranchContractUpdate) SetNillableLease(u *uint) *BranchContractUpdate {
+	if u != nil {
+		bcu.SetLease(*u)
+	}
 	return bcu
 }
 
@@ -166,6 +230,14 @@ func (bcu *BranchContractUpdate) SetElectricityPledge(f float64) *BranchContract
 	return bcu
 }
 
+// SetNillableElectricityPledge sets the "electricity_pledge" field if the given value is not nil.
+func (bcu *BranchContractUpdate) SetNillableElectricityPledge(f *float64) *BranchContractUpdate {
+	if f != nil {
+		bcu.SetElectricityPledge(*f)
+	}
+	return bcu
+}
+
 // AddElectricityPledge adds f to the "electricity_pledge" field.
 func (bcu *BranchContractUpdate) AddElectricityPledge(f float64) *BranchContractUpdate {
 	bcu.mutation.AddElectricityPledge(f)
@@ -178,10 +250,26 @@ func (bcu *BranchContractUpdate) SetElectricity(s string) *BranchContractUpdate 
 	return bcu
 }
 
+// SetNillableElectricity sets the "electricity" field if the given value is not nil.
+func (bcu *BranchContractUpdate) SetNillableElectricity(s *string) *BranchContractUpdate {
+	if s != nil {
+		bcu.SetElectricity(*s)
+	}
+	return bcu
+}
+
 // SetArea sets the "area" field.
 func (bcu *BranchContractUpdate) SetArea(f float64) *BranchContractUpdate {
 	bcu.mutation.ResetArea()
 	bcu.mutation.SetArea(f)
+	return bcu
+}
+
+// SetNillableArea sets the "area" field if the given value is not nil.
+func (bcu *BranchContractUpdate) SetNillableArea(f *float64) *BranchContractUpdate {
+	if f != nil {
+		bcu.SetArea(*f)
+	}
 	return bcu
 }
 
@@ -197,15 +285,39 @@ func (bcu *BranchContractUpdate) SetStartTime(t time.Time) *BranchContractUpdate
 	return bcu
 }
 
+// SetNillableStartTime sets the "start_time" field if the given value is not nil.
+func (bcu *BranchContractUpdate) SetNillableStartTime(t *time.Time) *BranchContractUpdate {
+	if t != nil {
+		bcu.SetStartTime(*t)
+	}
+	return bcu
+}
+
 // SetEndTime sets the "end_time" field.
 func (bcu *BranchContractUpdate) SetEndTime(t time.Time) *BranchContractUpdate {
 	bcu.mutation.SetEndTime(t)
 	return bcu
 }
 
+// SetNillableEndTime sets the "end_time" field if the given value is not nil.
+func (bcu *BranchContractUpdate) SetNillableEndTime(t *time.Time) *BranchContractUpdate {
+	if t != nil {
+		bcu.SetEndTime(*t)
+	}
+	return bcu
+}
+
 // SetFile sets the "file" field.
 func (bcu *BranchContractUpdate) SetFile(s string) *BranchContractUpdate {
 	bcu.mutation.SetFile(s)
+	return bcu
+}
+
+// SetNillableFile sets the "file" field if the given value is not nil.
+func (bcu *BranchContractUpdate) SetNillableFile(s *string) *BranchContractUpdate {
+	if s != nil {
+		bcu.SetFile(*s)
+	}
 	return bcu
 }
 
@@ -506,9 +618,25 @@ func (bcuo *BranchContractUpdateOne) SetBranchID(u uint64) *BranchContractUpdate
 	return bcuo
 }
 
+// SetNillableBranchID sets the "branch_id" field if the given value is not nil.
+func (bcuo *BranchContractUpdateOne) SetNillableBranchID(u *uint64) *BranchContractUpdateOne {
+	if u != nil {
+		bcuo.SetBranchID(*u)
+	}
+	return bcuo
+}
+
 // SetLandlordName sets the "landlord_name" field.
 func (bcuo *BranchContractUpdateOne) SetLandlordName(s string) *BranchContractUpdateOne {
 	bcuo.mutation.SetLandlordName(s)
+	return bcuo
+}
+
+// SetNillableLandlordName sets the "landlord_name" field if the given value is not nil.
+func (bcuo *BranchContractUpdateOne) SetNillableLandlordName(s *string) *BranchContractUpdateOne {
+	if s != nil {
+		bcuo.SetLandlordName(*s)
+	}
 	return bcuo
 }
 
@@ -518,9 +646,25 @@ func (bcuo *BranchContractUpdateOne) SetIDCardNumber(s string) *BranchContractUp
 	return bcuo
 }
 
+// SetNillableIDCardNumber sets the "id_card_number" field if the given value is not nil.
+func (bcuo *BranchContractUpdateOne) SetNillableIDCardNumber(s *string) *BranchContractUpdateOne {
+	if s != nil {
+		bcuo.SetIDCardNumber(*s)
+	}
+	return bcuo
+}
+
 // SetPhone sets the "phone" field.
 func (bcuo *BranchContractUpdateOne) SetPhone(s string) *BranchContractUpdateOne {
 	bcuo.mutation.SetPhone(s)
+	return bcuo
+}
+
+// SetNillablePhone sets the "phone" field if the given value is not nil.
+func (bcuo *BranchContractUpdateOne) SetNillablePhone(s *string) *BranchContractUpdateOne {
+	if s != nil {
+		bcuo.SetPhone(*s)
+	}
 	return bcuo
 }
 
@@ -530,10 +674,26 @@ func (bcuo *BranchContractUpdateOne) SetBankNumber(s string) *BranchContractUpda
 	return bcuo
 }
 
+// SetNillableBankNumber sets the "bank_number" field if the given value is not nil.
+func (bcuo *BranchContractUpdateOne) SetNillableBankNumber(s *string) *BranchContractUpdateOne {
+	if s != nil {
+		bcuo.SetBankNumber(*s)
+	}
+	return bcuo
+}
+
 // SetPledge sets the "pledge" field.
 func (bcuo *BranchContractUpdateOne) SetPledge(f float64) *BranchContractUpdateOne {
 	bcuo.mutation.ResetPledge()
 	bcuo.mutation.SetPledge(f)
+	return bcuo
+}
+
+// SetNillablePledge sets the "pledge" field if the given value is not nil.
+func (bcuo *BranchContractUpdateOne) SetNillablePledge(f *float64) *BranchContractUpdateOne {
+	if f != nil {
+		bcuo.SetPledge(*f)
+	}
 	return bcuo
 }
 
@@ -550,6 +710,14 @@ func (bcuo *BranchContractUpdateOne) SetRent(f float64) *BranchContractUpdateOne
 	return bcuo
 }
 
+// SetNillableRent sets the "rent" field if the given value is not nil.
+func (bcuo *BranchContractUpdateOne) SetNillableRent(f *float64) *BranchContractUpdateOne {
+	if f != nil {
+		bcuo.SetRent(*f)
+	}
+	return bcuo
+}
+
 // AddRent adds f to the "rent" field.
 func (bcuo *BranchContractUpdateOne) AddRent(f float64) *BranchContractUpdateOne {
 	bcuo.mutation.AddRent(f)
@@ -560,6 +728,14 @@ func (bcuo *BranchContractUpdateOne) AddRent(f float64) *BranchContractUpdateOne
 func (bcuo *BranchContractUpdateOne) SetLease(u uint) *BranchContractUpdateOne {
 	bcuo.mutation.ResetLease()
 	bcuo.mutation.SetLease(u)
+	return bcuo
+}
+
+// SetNillableLease sets the "lease" field if the given value is not nil.
+func (bcuo *BranchContractUpdateOne) SetNillableLease(u *uint) *BranchContractUpdateOne {
+	if u != nil {
+		bcuo.SetLease(*u)
+	}
 	return bcuo
 }
 
@@ -576,6 +752,14 @@ func (bcuo *BranchContractUpdateOne) SetElectricityPledge(f float64) *BranchCont
 	return bcuo
 }
 
+// SetNillableElectricityPledge sets the "electricity_pledge" field if the given value is not nil.
+func (bcuo *BranchContractUpdateOne) SetNillableElectricityPledge(f *float64) *BranchContractUpdateOne {
+	if f != nil {
+		bcuo.SetElectricityPledge(*f)
+	}
+	return bcuo
+}
+
 // AddElectricityPledge adds f to the "electricity_pledge" field.
 func (bcuo *BranchContractUpdateOne) AddElectricityPledge(f float64) *BranchContractUpdateOne {
 	bcuo.mutation.AddElectricityPledge(f)
@@ -588,10 +772,26 @@ func (bcuo *BranchContractUpdateOne) SetElectricity(s string) *BranchContractUpd
 	return bcuo
 }
 
+// SetNillableElectricity sets the "electricity" field if the given value is not nil.
+func (bcuo *BranchContractUpdateOne) SetNillableElectricity(s *string) *BranchContractUpdateOne {
+	if s != nil {
+		bcuo.SetElectricity(*s)
+	}
+	return bcuo
+}
+
 // SetArea sets the "area" field.
 func (bcuo *BranchContractUpdateOne) SetArea(f float64) *BranchContractUpdateOne {
 	bcuo.mutation.ResetArea()
 	bcuo.mutation.SetArea(f)
+	return bcuo
+}
+
+// SetNillableArea sets the "area" field if the given value is not nil.
+func (bcuo *BranchContractUpdateOne) SetNillableArea(f *float64) *BranchContractUpdateOne {
+	if f != nil {
+		bcuo.SetArea(*f)
+	}
 	return bcuo
 }
 
@@ -607,15 +807,39 @@ func (bcuo *BranchContractUpdateOne) SetStartTime(t time.Time) *BranchContractUp
 	return bcuo
 }
 
+// SetNillableStartTime sets the "start_time" field if the given value is not nil.
+func (bcuo *BranchContractUpdateOne) SetNillableStartTime(t *time.Time) *BranchContractUpdateOne {
+	if t != nil {
+		bcuo.SetStartTime(*t)
+	}
+	return bcuo
+}
+
 // SetEndTime sets the "end_time" field.
 func (bcuo *BranchContractUpdateOne) SetEndTime(t time.Time) *BranchContractUpdateOne {
 	bcuo.mutation.SetEndTime(t)
 	return bcuo
 }
 
+// SetNillableEndTime sets the "end_time" field if the given value is not nil.
+func (bcuo *BranchContractUpdateOne) SetNillableEndTime(t *time.Time) *BranchContractUpdateOne {
+	if t != nil {
+		bcuo.SetEndTime(*t)
+	}
+	return bcuo
+}
+
 // SetFile sets the "file" field.
 func (bcuo *BranchContractUpdateOne) SetFile(s string) *BranchContractUpdateOne {
 	bcuo.mutation.SetFile(s)
+	return bcuo
+}
+
+// SetNillableFile sets the "file" field if the given value is not nil.
+func (bcuo *BranchContractUpdateOne) SetNillableFile(s *string) *BranchContractUpdateOne {
+	if s != nil {
+		bcuo.SetFile(*s)
+	}
 	return bcuo
 }
 

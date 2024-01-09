@@ -125,6 +125,11 @@ func BatteryID(v uint64) predicate.Business {
 	return predicate.Business(sql.FieldEQ(FieldBatteryID, v))
 }
 
+// AgentID applies equality check predicate on the "agent_id" field. It's identical to AgentIDEQ.
+func AgentID(v uint64) predicate.Business {
+	return predicate.Business(sql.FieldEQ(FieldAgentID, v))
+}
+
 // StockSn applies equality check predicate on the "stock_sn" field. It's identical to StockSnEQ.
 func StockSn(v string) predicate.Business {
 	return predicate.Business(sql.FieldEQ(FieldStockSn, v))
@@ -625,6 +630,36 @@ func BatteryIDNotNil() predicate.Business {
 	return predicate.Business(sql.FieldNotNull(FieldBatteryID))
 }
 
+// AgentIDEQ applies the EQ predicate on the "agent_id" field.
+func AgentIDEQ(v uint64) predicate.Business {
+	return predicate.Business(sql.FieldEQ(FieldAgentID, v))
+}
+
+// AgentIDNEQ applies the NEQ predicate on the "agent_id" field.
+func AgentIDNEQ(v uint64) predicate.Business {
+	return predicate.Business(sql.FieldNEQ(FieldAgentID, v))
+}
+
+// AgentIDIn applies the In predicate on the "agent_id" field.
+func AgentIDIn(vs ...uint64) predicate.Business {
+	return predicate.Business(sql.FieldIn(FieldAgentID, vs...))
+}
+
+// AgentIDNotIn applies the NotIn predicate on the "agent_id" field.
+func AgentIDNotIn(vs ...uint64) predicate.Business {
+	return predicate.Business(sql.FieldNotIn(FieldAgentID, vs...))
+}
+
+// AgentIDIsNil applies the IsNil predicate on the "agent_id" field.
+func AgentIDIsNil() predicate.Business {
+	return predicate.Business(sql.FieldIsNull(FieldAgentID))
+}
+
+// AgentIDNotNil applies the NotNil predicate on the "agent_id" field.
+func AgentIDNotNil() predicate.Business {
+	return predicate.Business(sql.FieldNotNull(FieldAgentID))
+}
+
 // TypeEQ applies the EQ predicate on the "type" field.
 func TypeEQ(v Type) predicate.Business {
 	return predicate.Business(sql.FieldEQ(FieldType, v))
@@ -960,34 +995,40 @@ func HasBatteryWith(preds ...predicate.Battery) predicate.Business {
 	})
 }
 
+// HasAgent applies the HasEdge predicate on the "agent" edge.
+func HasAgent() predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, AgentTable, AgentColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasAgentWith applies the HasEdge predicate on the "agent" edge with a given conditions (other predicates).
+func HasAgentWith(preds ...predicate.Agent) predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		step := newAgentStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Business) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s1 := s.Clone().SetP(nil)
-		for _, p := range predicates {
-			p(s1)
-		}
-		s.Where(s1.P())
-	})
+	return predicate.Business(sql.AndPredicates(predicates...))
 }
 
 // Or groups predicates with the OR operator between them.
 func Or(predicates ...predicate.Business) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		s1 := s.Clone().SetP(nil)
-		for i, p := range predicates {
-			if i > 0 {
-				s1.Or()
-			}
-			p(s1)
-		}
-		s.Where(s1.P())
-	})
+	return predicate.Business(sql.OrPredicates(predicates...))
 }
 
 // Not applies the not operator on the given predicate.
 func Not(p predicate.Business) predicate.Business {
-	return predicate.Business(func(s *sql.Selector) {
-		p(s.Not())
-	})
+	return predicate.Business(sql.NotPredicates(p))
 }

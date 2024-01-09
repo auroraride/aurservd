@@ -117,3 +117,9 @@ func (s *businessLogService) SaveX(typ business.Type) *ent.Business {
 	}
 	return biz
 }
+
+// SetAgentId 设置代理人
+func (s *businessLogService) SetAgentId(agentId *uint64) *businessLogService {
+	s.creator.SetNillableAgentID(agentId)
+	return s
+}

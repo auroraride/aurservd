@@ -705,12 +705,16 @@ func (u *AgentUpsertOne) IDX(ctx context.Context) uint64 {
 // AgentCreateBulk is the builder for creating many Agent entities in bulk.
 type AgentCreateBulk struct {
 	config
+	err      error
 	builders []*AgentCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the Agent entities in the database.
 func (acb *AgentCreateBulk) Save(ctx context.Context) ([]*Agent, error) {
+	if acb.err != nil {
+		return nil, acb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(acb.builders))
 	nodes := make([]*Agent, len(acb.builders))
 	mutators := make([]Mutator, len(acb.builders))
@@ -1014,6 +1018,9 @@ func (u *AgentUpsertBulk) UpdateSuper() *AgentUpsertBulk {
 
 // Exec executes the query.
 func (u *AgentUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the AgentCreateBulk instead", i)

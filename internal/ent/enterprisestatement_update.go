@@ -96,6 +96,14 @@ func (esu *EnterpriseStatementUpdate) SetEnterpriseID(u uint64) *EnterpriseState
 	return esu
 }
 
+// SetNillableEnterpriseID sets the "enterprise_id" field if the given value is not nil.
+func (esu *EnterpriseStatementUpdate) SetNillableEnterpriseID(u *uint64) *EnterpriseStatementUpdate {
+	if u != nil {
+		esu.SetEnterpriseID(*u)
+	}
+	return esu
+}
+
 // SetCost sets the "cost" field.
 func (esu *EnterpriseStatementUpdate) SetCost(f float64) *EnterpriseStatementUpdate {
 	esu.mutation.ResetCost()
@@ -202,6 +210,14 @@ func (esu *EnterpriseStatementUpdate) ClearDate() *EnterpriseStatementUpdate {
 // SetStart sets the "start" field.
 func (esu *EnterpriseStatementUpdate) SetStart(t time.Time) *EnterpriseStatementUpdate {
 	esu.mutation.SetStart(t)
+	return esu
+}
+
+// SetNillableStart sets the "start" field if the given value is not nil.
+func (esu *EnterpriseStatementUpdate) SetNillableStart(t *time.Time) *EnterpriseStatementUpdate {
+	if t != nil {
+		esu.SetStart(*t)
+	}
 	return esu
 }
 
@@ -568,6 +584,14 @@ func (esuo *EnterpriseStatementUpdateOne) SetEnterpriseID(u uint64) *EnterpriseS
 	return esuo
 }
 
+// SetNillableEnterpriseID sets the "enterprise_id" field if the given value is not nil.
+func (esuo *EnterpriseStatementUpdateOne) SetNillableEnterpriseID(u *uint64) *EnterpriseStatementUpdateOne {
+	if u != nil {
+		esuo.SetEnterpriseID(*u)
+	}
+	return esuo
+}
+
 // SetCost sets the "cost" field.
 func (esuo *EnterpriseStatementUpdateOne) SetCost(f float64) *EnterpriseStatementUpdateOne {
 	esuo.mutation.ResetCost()
@@ -674,6 +698,14 @@ func (esuo *EnterpriseStatementUpdateOne) ClearDate() *EnterpriseStatementUpdate
 // SetStart sets the "start" field.
 func (esuo *EnterpriseStatementUpdateOne) SetStart(t time.Time) *EnterpriseStatementUpdateOne {
 	esuo.mutation.SetStart(t)
+	return esuo
+}
+
+// SetNillableStart sets the "start" field if the given value is not nil.
+func (esuo *EnterpriseStatementUpdateOne) SetNillableStart(t *time.Time) *EnterpriseStatementUpdateOne {
+	if t != nil {
+		esuo.SetStart(*t)
+	}
 	return esuo
 }
 

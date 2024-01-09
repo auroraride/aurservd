@@ -116,6 +116,14 @@ func (pbcu *PromotionBankCardUpdate) SetCardNo(s string) *PromotionBankCardUpdat
 	return pbcu
 }
 
+// SetNillableCardNo sets the "card_no" field if the given value is not nil.
+func (pbcu *PromotionBankCardUpdate) SetNillableCardNo(s *string) *PromotionBankCardUpdate {
+	if s != nil {
+		pbcu.SetCardNo(*s)
+	}
+	return pbcu
+}
+
 // SetBank sets the "bank" field.
 func (pbcu *PromotionBankCardUpdate) SetBank(s string) *PromotionBankCardUpdate {
 	pbcu.mutation.SetBank(s)
@@ -550,6 +558,14 @@ func (pbcuo *PromotionBankCardUpdateOne) ClearMemberID() *PromotionBankCardUpdat
 // SetCardNo sets the "card_no" field.
 func (pbcuo *PromotionBankCardUpdateOne) SetCardNo(s string) *PromotionBankCardUpdateOne {
 	pbcuo.mutation.SetCardNo(s)
+	return pbcuo
+}
+
+// SetNillableCardNo sets the "card_no" field if the given value is not nil.
+func (pbcuo *PromotionBankCardUpdateOne) SetNillableCardNo(s *string) *PromotionBankCardUpdateOne {
+	if s != nil {
+		pbcuo.SetCardNo(*s)
+	}
 	return pbcuo
 }
 

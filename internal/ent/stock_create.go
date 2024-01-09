@@ -1739,12 +1739,16 @@ func (u *StockUpsertOne) IDX(ctx context.Context) uint64 {
 // StockCreateBulk is the builder for creating many Stock entities in bulk.
 type StockCreateBulk struct {
 	config
+	err      error
 	builders []*StockCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the Stock entities in the database.
 func (scb *StockCreateBulk) Save(ctx context.Context) ([]*Stock, error) {
+	if scb.err != nil {
+		return nil, scb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(scb.builders))
 	nodes := make([]*Stock, len(scb.builders))
 	mutators := make([]Mutator, len(scb.builders))
@@ -2331,6 +2335,9 @@ func (u *StockUpsertBulk) UpdateMaterial() *StockUpsertBulk {
 
 // Exec executes the query.
 func (u *StockUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the StockCreateBulk instead", i)

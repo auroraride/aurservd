@@ -115,15 +115,39 @@ func (mu *ManagerUpdate) SetPhone(s string) *ManagerUpdate {
 	return mu
 }
 
+// SetNillablePhone sets the "phone" field if the given value is not nil.
+func (mu *ManagerUpdate) SetNillablePhone(s *string) *ManagerUpdate {
+	if s != nil {
+		mu.SetPhone(*s)
+	}
+	return mu
+}
+
 // SetName sets the "name" field.
 func (mu *ManagerUpdate) SetName(s string) *ManagerUpdate {
 	mu.mutation.SetName(s)
 	return mu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (mu *ManagerUpdate) SetNillableName(s *string) *ManagerUpdate {
+	if s != nil {
+		mu.SetName(*s)
+	}
+	return mu
+}
+
 // SetPassword sets the "password" field.
 func (mu *ManagerUpdate) SetPassword(s string) *ManagerUpdate {
 	mu.mutation.SetPassword(s)
+	return mu
+}
+
+// SetNillablePassword sets the "password" field if the given value is not nil.
+func (mu *ManagerUpdate) SetNillablePassword(s *string) *ManagerUpdate {
+	if s != nil {
+		mu.SetPassword(*s)
+	}
 	return mu
 }
 
@@ -412,15 +436,39 @@ func (muo *ManagerUpdateOne) SetPhone(s string) *ManagerUpdateOne {
 	return muo
 }
 
+// SetNillablePhone sets the "phone" field if the given value is not nil.
+func (muo *ManagerUpdateOne) SetNillablePhone(s *string) *ManagerUpdateOne {
+	if s != nil {
+		muo.SetPhone(*s)
+	}
+	return muo
+}
+
 // SetName sets the "name" field.
 func (muo *ManagerUpdateOne) SetName(s string) *ManagerUpdateOne {
 	muo.mutation.SetName(s)
 	return muo
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (muo *ManagerUpdateOne) SetNillableName(s *string) *ManagerUpdateOne {
+	if s != nil {
+		muo.SetName(*s)
+	}
+	return muo
+}
+
 // SetPassword sets the "password" field.
 func (muo *ManagerUpdateOne) SetPassword(s string) *ManagerUpdateOne {
 	muo.mutation.SetPassword(s)
+	return muo
+}
+
+// SetNillablePassword sets the "password" field if the given value is not nil.
+func (muo *ManagerUpdateOne) SetNillablePassword(s *string) *ManagerUpdateOne {
+	if s != nil {
+		muo.SetPassword(*s)
+	}
 	return muo
 }
 

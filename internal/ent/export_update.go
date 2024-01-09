@@ -62,15 +62,39 @@ func (eu *ExportUpdate) SetManagerID(u uint64) *ExportUpdate {
 	return eu
 }
 
+// SetNillableManagerID sets the "manager_id" field if the given value is not nil.
+func (eu *ExportUpdate) SetNillableManagerID(u *uint64) *ExportUpdate {
+	if u != nil {
+		eu.SetManagerID(*u)
+	}
+	return eu
+}
+
 // SetTaxonomy sets the "taxonomy" field.
 func (eu *ExportUpdate) SetTaxonomy(s string) *ExportUpdate {
 	eu.mutation.SetTaxonomy(s)
 	return eu
 }
 
+// SetNillableTaxonomy sets the "taxonomy" field if the given value is not nil.
+func (eu *ExportUpdate) SetNillableTaxonomy(s *string) *ExportUpdate {
+	if s != nil {
+		eu.SetTaxonomy(*s)
+	}
+	return eu
+}
+
 // SetSn sets the "sn" field.
 func (eu *ExportUpdate) SetSn(s string) *ExportUpdate {
 	eu.mutation.SetSn(s)
+	return eu
+}
+
+// SetNillableSn sets the "sn" field if the given value is not nil.
+func (eu *ExportUpdate) SetNillableSn(s *string) *ExportUpdate {
+	if s != nil {
+		eu.SetSn(*s)
+	}
 	return eu
 }
 
@@ -188,6 +212,14 @@ func (eu *ExportUpdate) SetCondition(s string) *ExportUpdate {
 	return eu
 }
 
+// SetNillableCondition sets the "condition" field if the given value is not nil.
+func (eu *ExportUpdate) SetNillableCondition(s *string) *ExportUpdate {
+	if s != nil {
+		eu.SetCondition(*s)
+	}
+	return eu
+}
+
 // SetInfo sets the "info" field.
 func (eu *ExportUpdate) SetInfo(m map[string]interface{}) *ExportUpdate {
 	eu.mutation.SetInfo(m)
@@ -203,6 +235,14 @@ func (eu *ExportUpdate) ClearInfo() *ExportUpdate {
 // SetRemark sets the "remark" field.
 func (eu *ExportUpdate) SetRemark(s string) *ExportUpdate {
 	eu.mutation.SetRemark(s)
+	return eu
+}
+
+// SetNillableRemark sets the "remark" field if the given value is not nil.
+func (eu *ExportUpdate) SetNillableRemark(s *string) *ExportUpdate {
+	if s != nil {
+		eu.SetRemark(*s)
+	}
 	return eu
 }
 
@@ -427,15 +467,39 @@ func (euo *ExportUpdateOne) SetManagerID(u uint64) *ExportUpdateOne {
 	return euo
 }
 
+// SetNillableManagerID sets the "manager_id" field if the given value is not nil.
+func (euo *ExportUpdateOne) SetNillableManagerID(u *uint64) *ExportUpdateOne {
+	if u != nil {
+		euo.SetManagerID(*u)
+	}
+	return euo
+}
+
 // SetTaxonomy sets the "taxonomy" field.
 func (euo *ExportUpdateOne) SetTaxonomy(s string) *ExportUpdateOne {
 	euo.mutation.SetTaxonomy(s)
 	return euo
 }
 
+// SetNillableTaxonomy sets the "taxonomy" field if the given value is not nil.
+func (euo *ExportUpdateOne) SetNillableTaxonomy(s *string) *ExportUpdateOne {
+	if s != nil {
+		euo.SetTaxonomy(*s)
+	}
+	return euo
+}
+
 // SetSn sets the "sn" field.
 func (euo *ExportUpdateOne) SetSn(s string) *ExportUpdateOne {
 	euo.mutation.SetSn(s)
+	return euo
+}
+
+// SetNillableSn sets the "sn" field if the given value is not nil.
+func (euo *ExportUpdateOne) SetNillableSn(s *string) *ExportUpdateOne {
+	if s != nil {
+		euo.SetSn(*s)
+	}
 	return euo
 }
 
@@ -553,6 +617,14 @@ func (euo *ExportUpdateOne) SetCondition(s string) *ExportUpdateOne {
 	return euo
 }
 
+// SetNillableCondition sets the "condition" field if the given value is not nil.
+func (euo *ExportUpdateOne) SetNillableCondition(s *string) *ExportUpdateOne {
+	if s != nil {
+		euo.SetCondition(*s)
+	}
+	return euo
+}
+
 // SetInfo sets the "info" field.
 func (euo *ExportUpdateOne) SetInfo(m map[string]interface{}) *ExportUpdateOne {
 	euo.mutation.SetInfo(m)
@@ -568,6 +640,14 @@ func (euo *ExportUpdateOne) ClearInfo() *ExportUpdateOne {
 // SetRemark sets the "remark" field.
 func (euo *ExportUpdateOne) SetRemark(s string) *ExportUpdateOne {
 	euo.mutation.SetRemark(s)
+	return euo
+}
+
+// SetNillableRemark sets the "remark" field if the given value is not nil.
+func (euo *ExportUpdateOne) SetNillableRemark(s *string) *ExportUpdateOne {
+	if s != nil {
+		euo.SetRemark(*s)
+	}
 	return euo
 }
 

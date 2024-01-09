@@ -920,12 +920,16 @@ func (u *EnterpriseBatterySwapUpsertOne) IDX(ctx context.Context) uint64 {
 // EnterpriseBatterySwapCreateBulk is the builder for creating many EnterpriseBatterySwap entities in bulk.
 type EnterpriseBatterySwapCreateBulk struct {
 	config
+	err      error
 	builders []*EnterpriseBatterySwapCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the EnterpriseBatterySwap entities in the database.
 func (ebscb *EnterpriseBatterySwapCreateBulk) Save(ctx context.Context) ([]*EnterpriseBatterySwap, error) {
+	if ebscb.err != nil {
+		return nil, ebscb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ebscb.builders))
 	nodes := make([]*EnterpriseBatterySwap, len(ebscb.builders))
 	mutators := make([]Mutator, len(ebscb.builders))
@@ -1275,6 +1279,9 @@ func (u *EnterpriseBatterySwapUpsertBulk) ClearPutoutStationID() *EnterpriseBatt
 
 // Exec executes the query.
 func (u *EnterpriseBatterySwapUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the EnterpriseBatterySwapCreateBulk instead", i)

@@ -545,6 +545,7 @@ func (s *businessRiderService) do(bt business.Type, cb func(tx *ent.Tx)) {
 			SetBinInfo(bin).
 			SetStock(sk).
 			SetBattery(bat).
+			SetAgentId(s.agentID).
 			Save(bt)
 		var bussinessID *uint64
 		revStatus := model.ReserveStatusFail

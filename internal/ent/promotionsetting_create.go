@@ -579,12 +579,16 @@ func (u *PromotionSettingUpsertOne) IDX(ctx context.Context) uint64 {
 // PromotionSettingCreateBulk is the builder for creating many PromotionSetting entities in bulk.
 type PromotionSettingCreateBulk struct {
 	config
+	err      error
 	builders []*PromotionSettingCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the PromotionSetting entities in the database.
 func (pscb *PromotionSettingCreateBulk) Save(ctx context.Context) ([]*PromotionSetting, error) {
+	if pscb.err != nil {
+		return nil, pscb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(pscb.builders))
 	nodes := make([]*PromotionSetting, len(pscb.builders))
 	mutators := make([]Mutator, len(pscb.builders))
@@ -867,6 +871,9 @@ func (u *PromotionSettingUpsertBulk) UpdateKey() *PromotionSettingUpsertBulk {
 
 // Exec executes the query.
 func (u *PromotionSettingUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the PromotionSettingCreateBulk instead", i)

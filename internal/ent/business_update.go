@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/battery"
 	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
@@ -104,15 +105,39 @@ func (bu *BusinessUpdate) SetRiderID(u uint64) *BusinessUpdate {
 	return bu
 }
 
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (bu *BusinessUpdate) SetNillableRiderID(u *uint64) *BusinessUpdate {
+	if u != nil {
+		bu.SetRiderID(*u)
+	}
+	return bu
+}
+
 // SetCityID sets the "city_id" field.
 func (bu *BusinessUpdate) SetCityID(u uint64) *BusinessUpdate {
 	bu.mutation.SetCityID(u)
 	return bu
 }
 
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (bu *BusinessUpdate) SetNillableCityID(u *uint64) *BusinessUpdate {
+	if u != nil {
+		bu.SetCityID(*u)
+	}
+	return bu
+}
+
 // SetSubscribeID sets the "subscribe_id" field.
 func (bu *BusinessUpdate) SetSubscribeID(u uint64) *BusinessUpdate {
 	bu.mutation.SetSubscribeID(u)
+	return bu
+}
+
+// SetNillableSubscribeID sets the "subscribe_id" field if the given value is not nil.
+func (bu *BusinessUpdate) SetNillableSubscribeID(u *uint64) *BusinessUpdate {
+	if u != nil {
+		bu.SetSubscribeID(*u)
+	}
 	return bu
 }
 
@@ -256,9 +281,37 @@ func (bu *BusinessUpdate) ClearBatteryID() *BusinessUpdate {
 	return bu
 }
 
+// SetAgentID sets the "agent_id" field.
+func (bu *BusinessUpdate) SetAgentID(u uint64) *BusinessUpdate {
+	bu.mutation.SetAgentID(u)
+	return bu
+}
+
+// SetNillableAgentID sets the "agent_id" field if the given value is not nil.
+func (bu *BusinessUpdate) SetNillableAgentID(u *uint64) *BusinessUpdate {
+	if u != nil {
+		bu.SetAgentID(*u)
+	}
+	return bu
+}
+
+// ClearAgentID clears the value of the "agent_id" field.
+func (bu *BusinessUpdate) ClearAgentID() *BusinessUpdate {
+	bu.mutation.ClearAgentID()
+	return bu
+}
+
 // SetType sets the "type" field.
 func (bu *BusinessUpdate) SetType(b business.Type) *BusinessUpdate {
 	bu.mutation.SetType(b)
+	return bu
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (bu *BusinessUpdate) SetNillableType(b *business.Type) *BusinessUpdate {
+	if b != nil {
+		bu.SetType(*b)
+	}
 	return bu
 }
 
@@ -344,6 +397,11 @@ func (bu *BusinessUpdate) SetBattery(b *Battery) *BusinessUpdate {
 	return bu.SetBatteryID(b.ID)
 }
 
+// SetAgent sets the "agent" edge to the Agent entity.
+func (bu *BusinessUpdate) SetAgent(a *Agent) *BusinessUpdate {
+	return bu.SetAgentID(a.ID)
+}
+
 // Mutation returns the BusinessMutation object of the builder.
 func (bu *BusinessUpdate) Mutation() *BusinessMutation {
 	return bu.mutation
@@ -406,6 +464,12 @@ func (bu *BusinessUpdate) ClearCabinet() *BusinessUpdate {
 // ClearBattery clears the "battery" edge to the Battery entity.
 func (bu *BusinessUpdate) ClearBattery() *BusinessUpdate {
 	bu.mutation.ClearBattery()
+	return bu
+}
+
+// ClearAgent clears the "agent" edge to the Agent entity.
+func (bu *BusinessUpdate) ClearAgent() *BusinessUpdate {
+	bu.mutation.ClearAgent()
 	return bu
 }
 
@@ -817,6 +881,35 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if bu.mutation.AgentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   business.AgentTable,
+			Columns: []string{business.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.AgentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   business.AgentTable,
+			Columns: []string{business.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	_spec.AddModifiers(bu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, bu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -903,15 +996,39 @@ func (buo *BusinessUpdateOne) SetRiderID(u uint64) *BusinessUpdateOne {
 	return buo
 }
 
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (buo *BusinessUpdateOne) SetNillableRiderID(u *uint64) *BusinessUpdateOne {
+	if u != nil {
+		buo.SetRiderID(*u)
+	}
+	return buo
+}
+
 // SetCityID sets the "city_id" field.
 func (buo *BusinessUpdateOne) SetCityID(u uint64) *BusinessUpdateOne {
 	buo.mutation.SetCityID(u)
 	return buo
 }
 
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (buo *BusinessUpdateOne) SetNillableCityID(u *uint64) *BusinessUpdateOne {
+	if u != nil {
+		buo.SetCityID(*u)
+	}
+	return buo
+}
+
 // SetSubscribeID sets the "subscribe_id" field.
 func (buo *BusinessUpdateOne) SetSubscribeID(u uint64) *BusinessUpdateOne {
 	buo.mutation.SetSubscribeID(u)
+	return buo
+}
+
+// SetNillableSubscribeID sets the "subscribe_id" field if the given value is not nil.
+func (buo *BusinessUpdateOne) SetNillableSubscribeID(u *uint64) *BusinessUpdateOne {
+	if u != nil {
+		buo.SetSubscribeID(*u)
+	}
 	return buo
 }
 
@@ -1055,9 +1172,37 @@ func (buo *BusinessUpdateOne) ClearBatteryID() *BusinessUpdateOne {
 	return buo
 }
 
+// SetAgentID sets the "agent_id" field.
+func (buo *BusinessUpdateOne) SetAgentID(u uint64) *BusinessUpdateOne {
+	buo.mutation.SetAgentID(u)
+	return buo
+}
+
+// SetNillableAgentID sets the "agent_id" field if the given value is not nil.
+func (buo *BusinessUpdateOne) SetNillableAgentID(u *uint64) *BusinessUpdateOne {
+	if u != nil {
+		buo.SetAgentID(*u)
+	}
+	return buo
+}
+
+// ClearAgentID clears the value of the "agent_id" field.
+func (buo *BusinessUpdateOne) ClearAgentID() *BusinessUpdateOne {
+	buo.mutation.ClearAgentID()
+	return buo
+}
+
 // SetType sets the "type" field.
 func (buo *BusinessUpdateOne) SetType(b business.Type) *BusinessUpdateOne {
 	buo.mutation.SetType(b)
+	return buo
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (buo *BusinessUpdateOne) SetNillableType(b *business.Type) *BusinessUpdateOne {
+	if b != nil {
+		buo.SetType(*b)
+	}
 	return buo
 }
 
@@ -1143,6 +1288,11 @@ func (buo *BusinessUpdateOne) SetBattery(b *Battery) *BusinessUpdateOne {
 	return buo.SetBatteryID(b.ID)
 }
 
+// SetAgent sets the "agent" edge to the Agent entity.
+func (buo *BusinessUpdateOne) SetAgent(a *Agent) *BusinessUpdateOne {
+	return buo.SetAgentID(a.ID)
+}
+
 // Mutation returns the BusinessMutation object of the builder.
 func (buo *BusinessUpdateOne) Mutation() *BusinessMutation {
 	return buo.mutation
@@ -1205,6 +1355,12 @@ func (buo *BusinessUpdateOne) ClearCabinet() *BusinessUpdateOne {
 // ClearBattery clears the "battery" edge to the Battery entity.
 func (buo *BusinessUpdateOne) ClearBattery() *BusinessUpdateOne {
 	buo.mutation.ClearBattery()
+	return buo
+}
+
+// ClearAgent clears the "agent" edge to the Agent entity.
+func (buo *BusinessUpdateOne) ClearAgent() *BusinessUpdateOne {
+	buo.mutation.ClearAgent()
 	return buo
 }
 
@@ -1639,6 +1795,35 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(battery.FieldID, field.TypeUint64),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if buo.mutation.AgentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   business.AgentTable,
+			Columns: []string{business.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.AgentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   business.AgentTable,
+			Columns: []string{business.AgentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(agent.FieldID, field.TypeUint64),
 			},
 		}
 		for _, k := range nodes {

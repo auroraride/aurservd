@@ -160,15 +160,39 @@ func (cu *ContractUpdate) SetRiderID(u uint64) *ContractUpdate {
 	return cu
 }
 
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (cu *ContractUpdate) SetNillableRiderID(u *uint64) *ContractUpdate {
+	if u != nil {
+		cu.SetRiderID(*u)
+	}
+	return cu
+}
+
 // SetFlowID sets the "flow_id" field.
 func (cu *ContractUpdate) SetFlowID(s string) *ContractUpdate {
 	cu.mutation.SetFlowID(s)
 	return cu
 }
 
+// SetNillableFlowID sets the "flow_id" field if the given value is not nil.
+func (cu *ContractUpdate) SetNillableFlowID(s *string) *ContractUpdate {
+	if s != nil {
+		cu.SetFlowID(*s)
+	}
+	return cu
+}
+
 // SetSn sets the "sn" field.
 func (cu *ContractUpdate) SetSn(s string) *ContractUpdate {
 	cu.mutation.SetSn(s)
+	return cu
+}
+
+// SetNillableSn sets the "sn" field if the given value is not nil.
+func (cu *ContractUpdate) SetNillableSn(s *string) *ContractUpdate {
+	if s != nil {
+		cu.SetSn(*s)
+	}
 	return cu
 }
 
@@ -760,15 +784,39 @@ func (cuo *ContractUpdateOne) SetRiderID(u uint64) *ContractUpdateOne {
 	return cuo
 }
 
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (cuo *ContractUpdateOne) SetNillableRiderID(u *uint64) *ContractUpdateOne {
+	if u != nil {
+		cuo.SetRiderID(*u)
+	}
+	return cuo
+}
+
 // SetFlowID sets the "flow_id" field.
 func (cuo *ContractUpdateOne) SetFlowID(s string) *ContractUpdateOne {
 	cuo.mutation.SetFlowID(s)
 	return cuo
 }
 
+// SetNillableFlowID sets the "flow_id" field if the given value is not nil.
+func (cuo *ContractUpdateOne) SetNillableFlowID(s *string) *ContractUpdateOne {
+	if s != nil {
+		cuo.SetFlowID(*s)
+	}
+	return cuo
+}
+
 // SetSn sets the "sn" field.
 func (cuo *ContractUpdateOne) SetSn(s string) *ContractUpdateOne {
 	cuo.mutation.SetSn(s)
+	return cuo
+}
+
+// SetNillableSn sets the "sn" field if the given value is not nil.
+func (cuo *ContractUpdateOne) SetNillableSn(s *string) *ContractUpdateOne {
+	if s != nil {
+		cuo.SetSn(*s)
+	}
 	return cuo
 }
 

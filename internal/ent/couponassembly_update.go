@@ -75,9 +75,25 @@ func (cau *CouponAssemblyUpdate) SetTemplateID(u uint64) *CouponAssemblyUpdate {
 	return cau
 }
 
+// SetNillableTemplateID sets the "template_id" field if the given value is not nil.
+func (cau *CouponAssemblyUpdate) SetNillableTemplateID(u *uint64) *CouponAssemblyUpdate {
+	if u != nil {
+		cau.SetTemplateID(*u)
+	}
+	return cau
+}
+
 // SetName sets the "name" field.
 func (cau *CouponAssemblyUpdate) SetName(s string) *CouponAssemblyUpdate {
 	cau.mutation.SetName(s)
+	return cau
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (cau *CouponAssemblyUpdate) SetNillableName(s *string) *CouponAssemblyUpdate {
+	if s != nil {
+		cau.SetName(*s)
+	}
 	return cau
 }
 
@@ -85,6 +101,14 @@ func (cau *CouponAssemblyUpdate) SetName(s string) *CouponAssemblyUpdate {
 func (cau *CouponAssemblyUpdate) SetNumber(i int) *CouponAssemblyUpdate {
 	cau.mutation.ResetNumber()
 	cau.mutation.SetNumber(i)
+	return cau
+}
+
+// SetNillableNumber sets the "number" field if the given value is not nil.
+func (cau *CouponAssemblyUpdate) SetNillableNumber(i *int) *CouponAssemblyUpdate {
+	if i != nil {
+		cau.SetNumber(*i)
+	}
 	return cau
 }
 
@@ -101,6 +125,14 @@ func (cau *CouponAssemblyUpdate) SetAmount(f float64) *CouponAssemblyUpdate {
 	return cau
 }
 
+// SetNillableAmount sets the "amount" field if the given value is not nil.
+func (cau *CouponAssemblyUpdate) SetNillableAmount(f *float64) *CouponAssemblyUpdate {
+	if f != nil {
+		cau.SetAmount(*f)
+	}
+	return cau
+}
+
 // AddAmount adds f to the "amount" field.
 func (cau *CouponAssemblyUpdate) AddAmount(f float64) *CouponAssemblyUpdate {
 	cau.mutation.AddAmount(f)
@@ -111,6 +143,14 @@ func (cau *CouponAssemblyUpdate) AddAmount(f float64) *CouponAssemblyUpdate {
 func (cau *CouponAssemblyUpdate) SetTarget(u uint8) *CouponAssemblyUpdate {
 	cau.mutation.ResetTarget()
 	cau.mutation.SetTarget(u)
+	return cau
+}
+
+// SetNillableTarget sets the "target" field if the given value is not nil.
+func (cau *CouponAssemblyUpdate) SetNillableTarget(u *uint8) *CouponAssemblyUpdate {
+	if u != nil {
+		cau.SetTarget(*u)
+	}
 	return cau
 }
 
@@ -347,9 +387,25 @@ func (cauo *CouponAssemblyUpdateOne) SetTemplateID(u uint64) *CouponAssemblyUpda
 	return cauo
 }
 
+// SetNillableTemplateID sets the "template_id" field if the given value is not nil.
+func (cauo *CouponAssemblyUpdateOne) SetNillableTemplateID(u *uint64) *CouponAssemblyUpdateOne {
+	if u != nil {
+		cauo.SetTemplateID(*u)
+	}
+	return cauo
+}
+
 // SetName sets the "name" field.
 func (cauo *CouponAssemblyUpdateOne) SetName(s string) *CouponAssemblyUpdateOne {
 	cauo.mutation.SetName(s)
+	return cauo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (cauo *CouponAssemblyUpdateOne) SetNillableName(s *string) *CouponAssemblyUpdateOne {
+	if s != nil {
+		cauo.SetName(*s)
+	}
 	return cauo
 }
 
@@ -357,6 +413,14 @@ func (cauo *CouponAssemblyUpdateOne) SetName(s string) *CouponAssemblyUpdateOne 
 func (cauo *CouponAssemblyUpdateOne) SetNumber(i int) *CouponAssemblyUpdateOne {
 	cauo.mutation.ResetNumber()
 	cauo.mutation.SetNumber(i)
+	return cauo
+}
+
+// SetNillableNumber sets the "number" field if the given value is not nil.
+func (cauo *CouponAssemblyUpdateOne) SetNillableNumber(i *int) *CouponAssemblyUpdateOne {
+	if i != nil {
+		cauo.SetNumber(*i)
+	}
 	return cauo
 }
 
@@ -373,6 +437,14 @@ func (cauo *CouponAssemblyUpdateOne) SetAmount(f float64) *CouponAssemblyUpdateO
 	return cauo
 }
 
+// SetNillableAmount sets the "amount" field if the given value is not nil.
+func (cauo *CouponAssemblyUpdateOne) SetNillableAmount(f *float64) *CouponAssemblyUpdateOne {
+	if f != nil {
+		cauo.SetAmount(*f)
+	}
+	return cauo
+}
+
 // AddAmount adds f to the "amount" field.
 func (cauo *CouponAssemblyUpdateOne) AddAmount(f float64) *CouponAssemblyUpdateOne {
 	cauo.mutation.AddAmount(f)
@@ -383,6 +455,14 @@ func (cauo *CouponAssemblyUpdateOne) AddAmount(f float64) *CouponAssemblyUpdateO
 func (cauo *CouponAssemblyUpdateOne) SetTarget(u uint8) *CouponAssemblyUpdateOne {
 	cauo.mutation.ResetTarget()
 	cauo.mutation.SetTarget(u)
+	return cauo
+}
+
+// SetNillableTarget sets the "target" field if the given value is not nil.
+func (cauo *CouponAssemblyUpdateOne) SetNillableTarget(u *uint8) *CouponAssemblyUpdateOne {
+	if u != nil {
+		cauo.SetTarget(*u)
+	}
 	return cauo
 }
 

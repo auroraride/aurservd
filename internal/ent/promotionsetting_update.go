@@ -114,6 +114,14 @@ func (psu *PromotionSettingUpdate) SetKey(s string) *PromotionSettingUpdate {
 	return psu
 }
 
+// SetNillableKey sets the "key" field if the given value is not nil.
+func (psu *PromotionSettingUpdate) SetNillableKey(s *string) *PromotionSettingUpdate {
+	if s != nil {
+		psu.SetKey(*s)
+	}
+	return psu
+}
+
 // Mutation returns the PromotionSettingMutation object of the builder.
 func (psu *PromotionSettingUpdate) Mutation() *PromotionSettingMutation {
 	return psu.mutation
@@ -312,6 +320,14 @@ func (psuo *PromotionSettingUpdateOne) ClearContent() *PromotionSettingUpdateOne
 // SetKey sets the "key" field.
 func (psuo *PromotionSettingUpdateOne) SetKey(s string) *PromotionSettingUpdateOne {
 	psuo.mutation.SetKey(s)
+	return psuo
+}
+
+// SetNillableKey sets the "key" field if the given value is not nil.
+func (psuo *PromotionSettingUpdateOne) SetNillableKey(s *string) *PromotionSettingUpdateOne {
+	if s != nil {
+		psuo.SetKey(*s)
+	}
 	return psuo
 }
 

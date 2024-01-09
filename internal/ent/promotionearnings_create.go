@@ -1003,12 +1003,16 @@ func (u *PromotionEarningsUpsertOne) IDX(ctx context.Context) uint64 {
 // PromotionEarningsCreateBulk is the builder for creating many PromotionEarnings entities in bulk.
 type PromotionEarningsCreateBulk struct {
 	config
+	err      error
 	builders []*PromotionEarningsCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the PromotionEarnings entities in the database.
 func (pecb *PromotionEarningsCreateBulk) Save(ctx context.Context) ([]*PromotionEarnings, error) {
+	if pecb.err != nil {
+		return nil, pecb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(pecb.builders))
 	nodes := make([]*PromotionEarnings, len(pecb.builders))
 	mutators := make([]Mutator, len(pecb.builders))
@@ -1403,6 +1407,9 @@ func (u *PromotionEarningsUpsertBulk) ClearCommissionRuleKey() *PromotionEarning
 
 // Exec executes the query.
 func (u *PromotionEarningsUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the PromotionEarningsCreateBulk instead", i)

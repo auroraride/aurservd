@@ -96,15 +96,39 @@ func (au *AgentUpdate) SetEnterpriseID(u uint64) *AgentUpdate {
 	return au
 }
 
+// SetNillableEnterpriseID sets the "enterprise_id" field if the given value is not nil.
+func (au *AgentUpdate) SetNillableEnterpriseID(u *uint64) *AgentUpdate {
+	if u != nil {
+		au.SetEnterpriseID(*u)
+	}
+	return au
+}
+
 // SetName sets the "name" field.
 func (au *AgentUpdate) SetName(s string) *AgentUpdate {
 	au.mutation.SetName(s)
 	return au
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (au *AgentUpdate) SetNillableName(s *string) *AgentUpdate {
+	if s != nil {
+		au.SetName(*s)
+	}
+	return au
+}
+
 // SetPhone sets the "phone" field.
 func (au *AgentUpdate) SetPhone(s string) *AgentUpdate {
 	au.mutation.SetPhone(s)
+	return au
+}
+
+// SetNillablePhone sets the "phone" field if the given value is not nil.
+func (au *AgentUpdate) SetNillablePhone(s *string) *AgentUpdate {
+	if s != nil {
+		au.SetPhone(*s)
+	}
 	return au
 }
 
@@ -435,15 +459,39 @@ func (auo *AgentUpdateOne) SetEnterpriseID(u uint64) *AgentUpdateOne {
 	return auo
 }
 
+// SetNillableEnterpriseID sets the "enterprise_id" field if the given value is not nil.
+func (auo *AgentUpdateOne) SetNillableEnterpriseID(u *uint64) *AgentUpdateOne {
+	if u != nil {
+		auo.SetEnterpriseID(*u)
+	}
+	return auo
+}
+
 // SetName sets the "name" field.
 func (auo *AgentUpdateOne) SetName(s string) *AgentUpdateOne {
 	auo.mutation.SetName(s)
 	return auo
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (auo *AgentUpdateOne) SetNillableName(s *string) *AgentUpdateOne {
+	if s != nil {
+		auo.SetName(*s)
+	}
+	return auo
+}
+
 // SetPhone sets the "phone" field.
 func (auo *AgentUpdateOne) SetPhone(s string) *AgentUpdateOne {
 	auo.mutation.SetPhone(s)
+	return auo
+}
+
+// SetNillablePhone sets the "phone" field if the given value is not nil.
+func (auo *AgentUpdateOne) SetNillablePhone(s *string) *AgentUpdateOne {
+	if s != nil {
+		auo.SetPhone(*s)
+	}
 	return auo
 }
 

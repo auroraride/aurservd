@@ -804,12 +804,16 @@ func (u *PointLogUpsertOne) IDX(ctx context.Context) uint64 {
 // PointLogCreateBulk is the builder for creating many PointLog entities in bulk.
 type PointLogCreateBulk struct {
 	config
+	err      error
 	builders []*PointLogCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the PointLog entities in the database.
 func (plcb *PointLogCreateBulk) Save(ctx context.Context) ([]*PointLog, error) {
+	if plcb.err != nil {
+		return nil, plcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(plcb.builders))
 	nodes := make([]*PointLog, len(plcb.builders))
 	mutators := make([]Mutator, len(plcb.builders))
@@ -1173,6 +1177,9 @@ func (u *PointLogUpsertBulk) ClearAttach() *PointLogUpsertBulk {
 
 // Exec executes the query.
 func (u *PointLogUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the PointLogCreateBulk instead", i)

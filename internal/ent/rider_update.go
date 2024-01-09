@@ -207,6 +207,14 @@ func (ru *RiderUpdate) SetPhone(s string) *RiderUpdate {
 	return ru
 }
 
+// SetNillablePhone sets the "phone" field if the given value is not nil.
+func (ru *RiderUpdate) SetNillablePhone(s *string) *RiderUpdate {
+	if s != nil {
+		ru.SetPhone(*s)
+	}
+	return ru
+}
+
 // SetContact sets the "contact" field.
 func (ru *RiderUpdate) SetContact(mc *model.RiderContact) *RiderUpdate {
 	ru.mutation.SetContact(mc)
@@ -1639,6 +1647,14 @@ func (ruo *RiderUpdateOne) ClearEnterpriseID() *RiderUpdateOne {
 // SetPhone sets the "phone" field.
 func (ruo *RiderUpdateOne) SetPhone(s string) *RiderUpdateOne {
 	ruo.mutation.SetPhone(s)
+	return ruo
+}
+
+// SetNillablePhone sets the "phone" field if the given value is not nil.
+func (ruo *RiderUpdateOne) SetNillablePhone(s *string) *RiderUpdateOne {
+	if s != nil {
+		ruo.SetPhone(*s)
+	}
 	return ruo
 }
 

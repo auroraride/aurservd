@@ -1141,12 +1141,16 @@ func (u *StoreUpsertOne) IDX(ctx context.Context) uint64 {
 // StoreCreateBulk is the builder for creating many Store entities in bulk.
 type StoreCreateBulk struct {
 	config
+	err      error
 	builders []*StoreCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the Store entities in the database.
 func (scb *StoreCreateBulk) Save(ctx context.Context) ([]*Store, error) {
+	if scb.err != nil {
+		return nil, scb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(scb.builders))
 	nodes := make([]*Store, len(scb.builders))
 	mutators := make([]Mutator, len(scb.builders))
@@ -1565,6 +1569,9 @@ func (u *StoreUpsertBulk) UpdateEbikeRepair() *StoreUpsertBulk {
 
 // Exec executes the query.
 func (u *StoreUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the StoreCreateBulk instead", i)

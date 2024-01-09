@@ -1004,12 +1004,16 @@ func (u *CommissionUpsertOne) IDX(ctx context.Context) uint64 {
 // CommissionCreateBulk is the builder for creating many Commission entities in bulk.
 type CommissionCreateBulk struct {
 	config
+	err      error
 	builders []*CommissionCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the Commission entities in the database.
 func (ccb *CommissionCreateBulk) Save(ctx context.Context) ([]*Commission, error) {
+	if ccb.err != nil {
+		return nil, ccb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ccb.builders))
 	nodes := make([]*Commission, len(ccb.builders))
 	mutators := make([]Mutator, len(ccb.builders))
@@ -1400,6 +1404,9 @@ func (u *CommissionUpsertBulk) ClearEmployeeID() *CommissionUpsertBulk {
 
 // Exec executes the query.
 func (u *CommissionUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the CommissionCreateBulk instead", i)

@@ -96,6 +96,14 @@ func (pwu *PromotionWithdrawalUpdate) SetMemberID(u uint64) *PromotionWithdrawal
 	return pwu
 }
 
+// SetNillableMemberID sets the "member_id" field if the given value is not nil.
+func (pwu *PromotionWithdrawalUpdate) SetNillableMemberID(u *uint64) *PromotionWithdrawalUpdate {
+	if u != nil {
+		pwu.SetMemberID(*u)
+	}
+	return pwu
+}
+
 // SetStatus sets the "status" field.
 func (pwu *PromotionWithdrawalUpdate) SetStatus(u uint8) *PromotionWithdrawalUpdate {
 	pwu.mutation.ResetStatus()
@@ -205,6 +213,14 @@ func (pwu *PromotionWithdrawalUpdate) AddTex(f float64) *PromotionWithdrawalUpda
 func (pwu *PromotionWithdrawalUpdate) SetMethod(u uint8) *PromotionWithdrawalUpdate {
 	pwu.mutation.ResetMethod()
 	pwu.mutation.SetMethod(u)
+	return pwu
+}
+
+// SetNillableMethod sets the "method" field if the given value is not nil.
+func (pwu *PromotionWithdrawalUpdate) SetNillableMethod(u *uint8) *PromotionWithdrawalUpdate {
+	if u != nil {
+		pwu.SetMethod(*u)
+	}
 	return pwu
 }
 
@@ -599,6 +615,14 @@ func (pwuo *PromotionWithdrawalUpdateOne) SetMemberID(u uint64) *PromotionWithdr
 	return pwuo
 }
 
+// SetNillableMemberID sets the "member_id" field if the given value is not nil.
+func (pwuo *PromotionWithdrawalUpdateOne) SetNillableMemberID(u *uint64) *PromotionWithdrawalUpdateOne {
+	if u != nil {
+		pwuo.SetMemberID(*u)
+	}
+	return pwuo
+}
+
 // SetStatus sets the "status" field.
 func (pwuo *PromotionWithdrawalUpdateOne) SetStatus(u uint8) *PromotionWithdrawalUpdateOne {
 	pwuo.mutation.ResetStatus()
@@ -708,6 +732,14 @@ func (pwuo *PromotionWithdrawalUpdateOne) AddTex(f float64) *PromotionWithdrawal
 func (pwuo *PromotionWithdrawalUpdateOne) SetMethod(u uint8) *PromotionWithdrawalUpdateOne {
 	pwuo.mutation.ResetMethod()
 	pwuo.mutation.SetMethod(u)
+	return pwuo
+}
+
+// SetNillableMethod sets the "method" field if the given value is not nil.
+func (pwuo *PromotionWithdrawalUpdateOne) SetNillableMethod(u *uint8) *PromotionWithdrawalUpdateOne {
+	if u != nil {
+		pwuo.SetMethod(*u)
+	}
 	return pwuo
 }
 
