@@ -39,7 +39,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
-	"github.com/auroraride/aurservd/internal/ent/subscribereminder"
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
@@ -898,20 +897,17 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
 			row[3] = unsubscribeOperator
 
 			// 订单开始时间、订单结束时间
-			subscribes, _ := ent.Database.Subscribe.QueryNotDeleted().Where(subscribe.RiderID(item.ID)).All(s.ctx)
-			if len(subscribes) > 0 {
-				sub := subscribes[len(subscribes)-1]
+			subs := item.Edges.Subscribes
+			if len(subs) > 0 {
+				sub := subs[0]
 				if sub.StartAt != nil {
 					row[12] = sub.StartAt.Format(carbon.DateLayout)
 				}
 				// 到期时间 当前时间+订阅剩余天数
-				endAt := carbon.Now().AddDays(sub.Remaining).ToDateString()
-				row[13] = endAt
-			}
-			// 逾期费用
-			subscribeReminder, _ := ent.Database.SubscribeReminder.Query().Where(subscribereminder.RiderID(item.ID)).First(s.ctx)
-			if subscribeReminder != nil {
-				row[16] = subscribeReminder.Fee
+				row[13] = carbon.Now().AddDays(sub.Remaining).ToDateString()
+				// 逾期费用
+				fee, _ := NewSubscribe().OverdueFee(sub)
+				row[16] = fee
 			}
 			// 跟进详情
 			riderFollowUps, _ := ent.Database.RiderFollowUp.QueryNotDeleted().Where(riderfollowup.RiderID(item.ID)).All(s.ctx)
