@@ -859,7 +859,7 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
 				// 获取操作人员
 				var operator string
 				switch {
-				case biz.EmployeeID == nil && biz.CabinetID == nil && biz.Creator != nil:
+				case biz.EmployeeID == nil && biz.CabinetID == nil && biz.AgentID == nil && biz.Creator != nil:
 					// 操作人是平台
 					operator = biz.Creator.Name + "-" + biz.Creator.Phone
 				case biz.CabinetID != nil:
@@ -887,8 +887,8 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
 					activeOperator = operator
 				}
 
-				// 非最新记录为退租业务时记录退租操作人
-				if biz.Type == business.TypeUnsubscribe && i != 0 {
+				// 最新记录为退租业务时记录退租操作人
+				if biz.Type == business.TypeUnsubscribe && i == 0 {
 					unsubscribeOperator = operator
 				}
 			}
