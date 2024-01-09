@@ -336,13 +336,36 @@ func (s *businessService) detailInfo(item *ent.Business) model.BusinessListRes {
 			Name:   cab.Name,
 		}
 	}
+	// 操作人
+	var operator string
+	switch {
+	case item.EmployeeID == nil && item.CabinetID == nil && item.AgentID == nil && item.Creator != nil:
+		// 操作人是平台
+		operator = "平台-" + item.Creator.Name
+	case item.CabinetID != nil:
+		// 操作人是骑手
+		if item.Edges.Rider != nil {
+			operator = "骑手-" + item.Edges.Rider.Name
+		}
+	case item.EmployeeID != nil:
+		// 操作人是店员
+		if item.Edges.Employee != nil {
+			operator = "店员-" + item.Edges.Employee.Name
+		}
+	case item.AgentID != nil:
+		// 操作人是代理
+		if item.Edges.Agent != nil {
+			operator = "代理-" + item.Edges.Agent.Name
+		}
+	}
+	detail.Operator = operator
 	return detail
 }
 
 // ListManager 业务列表 - 后台
 func (s *businessService) ListManager(req *model.BusinessListReq) *model.PaginationRes {
 	q, _ := s.listFilter(req.BusinessFilter)
-	q.WithEmployee().WithCabinet().WithStore()
+	q.WithEmployee().WithCabinet().WithStore().WithAgent()
 
 	return model.ParsePaginationResponse(
 		q,

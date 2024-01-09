@@ -63,6 +63,7 @@ type BusinessEmployeeListRes struct {
 
 type BusinessListRes struct {
 	BusinessEmployeeListRes
+	Operator string            `json:"operator"`           // 操作人
 	Employee *Employee         `json:"employee,omitempty"` // 店员, 可能为空
 	Cabinet  *CabinetBasicInfo `json:"cabinet,omitempty"`  // 电柜, 可能为空
 	Store    *Store            `json:"store,omitempty"`    // 门店, 可能为空
