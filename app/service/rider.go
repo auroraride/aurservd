@@ -39,7 +39,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
-	"github.com/auroraride/aurservd/internal/ent/subscribereminder"
 	"github.com/auroraride/aurservd/pkg/cache"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/snag"
@@ -763,7 +762,7 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
 			"电话",     // 5
 			"证件",     // 6
 			"户籍",     // 7
-			"企业",     // 8
+			"团签",     // 8
 			"押金",     // 9
 			"订阅",     // 10
 			"暂停",     // 11
@@ -817,9 +816,15 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
 			if detail.Person != nil {
 				row[6] = detail.Person.IDCardNumber
 			}
+			// 团签
+			var group string
 			if detail.Enterprise != nil {
-				row[8] = detail.Enterprise.Name
+				group = detail.Enterprise.Name
+				if detail.Station != nil {
+					group += "-" + detail.Station.Name
+				}
 			}
+			row[8] = group
 			if detail.Subscribe != nil {
 				row[10] = model.SubscribeStatusText(detail.Subscribe.Status)
 				if detail.Subscribe.Suspend {
@@ -898,20 +903,24 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
 			row[3] = unsubscribeOperator
 
 			// 订单开始时间、订单结束时间
-			subscribes, _ := ent.Database.Subscribe.QueryNotDeleted().Where(subscribe.RiderID(item.ID)).All(s.ctx)
-			if len(subscribes) > 0 {
-				sub := subscribes[len(subscribes)-1]
+			subs := item.Edges.Subscribes
+			if len(subs) > 0 {
+				sub := subs[0]
 				if sub.StartAt != nil {
 					row[12] = sub.StartAt.Format(carbon.DateLayout)
 				}
-				// 到期时间 当前时间+订阅剩余天数
-				endAt := carbon.Now().AddDays(sub.Remaining).ToDateString()
-				row[13] = endAt
-			}
-			// 逾期费用
-			subscribeReminder, _ := ent.Database.SubscribeReminder.Query().Where(subscribereminder.RiderID(item.ID)).First(s.ctx)
-			if subscribeReminder != nil {
-				row[16] = subscribeReminder.Fee
+				if detail.Subscribe.AgentEndAt != "" {
+					// 代理商处到期时间
+					row[13] = detail.Subscribe.AgentEndAt
+				} else {
+					// 到期时间 当前时间+订阅剩余天数
+					row[13] = carbon.Now().AddDays(sub.Remaining).ToDateString()
+				}
+				// 逾期费用
+				if sub.Remaining < 0 {
+					fee, _ := NewSubscribe().OverdueFee(sub)
+					row[16] = fee
+				}
 			}
 			// 跟进详情
 			riderFollowUps, _ := ent.Database.RiderFollowUp.QueryNotDeleted().Where(riderfollowup.RiderID(item.ID)).All(s.ctx)
