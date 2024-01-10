@@ -911,8 +911,10 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
 					row[13] = carbon.Now().AddDays(sub.Remaining).ToDateString()
 				}
 				// 逾期费用
-				fee, _ := NewSubscribe().OverdueFee(sub)
-				row[16] = fee
+				if sub.Remaining < 0 {
+					fee, _ := NewSubscribe().OverdueFee(sub)
+					row[16] = fee
+				}
 			}
 			// 跟进详情
 			riderFollowUps, _ := ent.Database.RiderFollowUp.QueryNotDeleted().Where(riderfollowup.RiderID(item.ID)).All(s.ctx)
