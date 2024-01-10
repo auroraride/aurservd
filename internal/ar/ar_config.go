@@ -250,6 +250,9 @@ type config struct {
 			PublicCert    string
 			NotifyUrl     string
 		}
+		AlipayAuthFreeze struct {
+			NotifyUrl string
+		}
 	}
 	RiderApp    AppVersion
 	EmployeeApp AppVersion

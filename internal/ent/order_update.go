@@ -438,6 +438,26 @@ func (ou *OrderUpdate) AddDiscountNewly(f float64) *OrderUpdate {
 	return ou
 }
 
+// SetTradePayAt sets the "trade_pay_at" field.
+func (ou *OrderUpdate) SetTradePayAt(t time.Time) *OrderUpdate {
+	ou.mutation.SetTradePayAt(t)
+	return ou
+}
+
+// SetNillableTradePayAt sets the "trade_pay_at" field if the given value is not nil.
+func (ou *OrderUpdate) SetNillableTradePayAt(t *time.Time) *OrderUpdate {
+	if t != nil {
+		ou.SetTradePayAt(*t)
+	}
+	return ou
+}
+
+// ClearTradePayAt clears the value of the "trade_pay_at" field.
+func (ou *OrderUpdate) ClearTradePayAt() *OrderUpdate {
+	ou.mutation.ClearTradePayAt()
+	return ou
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (ou *OrderUpdate) SetPlan(p *Plan) *OrderUpdate {
 	return ou.SetPlanID(p.ID)
@@ -812,6 +832,12 @@ func (ou *OrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := ou.mutation.AddedDiscountNewly(); ok {
 		_spec.AddField(order.FieldDiscountNewly, field.TypeFloat64, value)
+	}
+	if value, ok := ou.mutation.TradePayAt(); ok {
+		_spec.SetField(order.FieldTradePayAt, field.TypeTime, value)
+	}
+	if ou.mutation.TradePayAtCleared() {
+		_spec.ClearField(order.FieldTradePayAt, field.TypeTime)
 	}
 	if ou.mutation.PlanCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1641,6 +1667,26 @@ func (ouo *OrderUpdateOne) AddDiscountNewly(f float64) *OrderUpdateOne {
 	return ouo
 }
 
+// SetTradePayAt sets the "trade_pay_at" field.
+func (ouo *OrderUpdateOne) SetTradePayAt(t time.Time) *OrderUpdateOne {
+	ouo.mutation.SetTradePayAt(t)
+	return ouo
+}
+
+// SetNillableTradePayAt sets the "trade_pay_at" field if the given value is not nil.
+func (ouo *OrderUpdateOne) SetNillableTradePayAt(t *time.Time) *OrderUpdateOne {
+	if t != nil {
+		ouo.SetTradePayAt(*t)
+	}
+	return ouo
+}
+
+// ClearTradePayAt clears the value of the "trade_pay_at" field.
+func (ouo *OrderUpdateOne) ClearTradePayAt() *OrderUpdateOne {
+	ouo.mutation.ClearTradePayAt()
+	return ouo
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (ouo *OrderUpdateOne) SetPlan(p *Plan) *OrderUpdateOne {
 	return ouo.SetPlanID(p.ID)
@@ -2045,6 +2091,12 @@ func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error
 	}
 	if value, ok := ouo.mutation.AddedDiscountNewly(); ok {
 		_spec.AddField(order.FieldDiscountNewly, field.TypeFloat64, value)
+	}
+	if value, ok := ouo.mutation.TradePayAt(); ok {
+		_spec.SetField(order.FieldTradePayAt, field.TypeTime, value)
+	}
+	if ouo.mutation.TradePayAtCleared() {
+		_spec.ClearField(order.FieldTradePayAt, field.TypeTime)
 	}
 	if ouo.mutation.PlanCleared() {
 		edge := &sqlgraph.EdgeSpec{

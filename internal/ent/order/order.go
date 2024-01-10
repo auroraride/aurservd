@@ -71,6 +71,8 @@ const (
 	FieldCouponAmount = "coupon_amount"
 	// FieldDiscountNewly holds the string denoting the discount_newly field in the database.
 	FieldDiscountNewly = "discount_newly"
+	// FieldTradePayAt holds the string denoting the trade_pay_at field in the database.
+	FieldTradePayAt = "trade_pay_at"
 	// EdgePlan holds the string denoting the plan edge name in mutations.
 	EdgePlan = "plan"
 	// EdgeCity holds the string denoting the city edge name in mutations.
@@ -217,6 +219,7 @@ var Columns = []string{
 	FieldPointRatio,
 	FieldCouponAmount,
 	FieldDiscountNewly,
+	FieldTradePayAt,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -392,6 +395,11 @@ func ByCouponAmount(opts ...sql.OrderTermOption) OrderOption {
 // ByDiscountNewly orders the results by the discount_newly field.
 func ByDiscountNewly(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDiscountNewly, opts...).ToFunc()
+}
+
+// ByTradePayAt orders the results by the trade_pay_at field.
+func ByTradePayAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTradePayAt, opts...).ToFunc()
 }
 
 // ByPlanField orders the results by plan field.

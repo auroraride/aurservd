@@ -10,11 +10,12 @@ import (
 	"net/http"
 
 	"github.com/auroraride/adapter/log"
+	"github.com/labstack/echo/v4"
+	"go.uber.org/zap"
+
 	"github.com/auroraride/aurservd/app/service"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/payment"
-	"github.com/labstack/echo/v4"
-	"go.uber.org/zap"
 )
 
 type callback struct{}
@@ -68,4 +69,14 @@ func (*callback) WechatRefundCallback(c echo.Context) (err error) {
 	res := payment.NewWechat().RefundNotification(c.Request())
 	service.NewOrder().DoPayment(res)
 	return c.JSON(http.StatusOK, ar.Map{"code": "SUCCESS", "message": "成功"})
+}
+
+// AlipayFandAuthFreeze 支付宝资金授权冻结回调
+func (*callback) AlipayFandAuthFreeze(c echo.Context) (err error) {
+	res := payment.NewAlipay().NotificationFandAuthFreeze(c.Request())
+
+	zap.L().Info("支付宝资金授权冻结缓存更新", log.JsonData(res))
+
+	service.NewOrder().DoPayment(res)
+	return c.String(http.StatusOK, "success")
 }

@@ -393,6 +393,13 @@ func (s *orderService) Prepay(payway uint8, no string, prepay *model.PaymentCach
 			snag.Panic("微信支付请求失败")
 		}
 		result.Prepay = str
+	case model.OrderPaywayAlipayAuthFreeze:
+		// 使用支付宝预授权支付
+		str, err = payment.NewAlipay().FandAuthFreeze(prepay)
+		if err != nil {
+			snag.Panic("支付宝预授权支付请求失败")
+		}
+		result.Prepay = str
 	default:
 		snag.Panic("支付方式错误")
 	}
@@ -1000,4 +1007,54 @@ func (s *orderService) QueryStatus(req *model.OrderStatusReq) (res model.OrderSt
 
 		time.Sleep(1 * time.Second)
 	}
+}
+
+func (s *orderService) TradePay(o *ent.Order) {
+
+	subject := "订阅骑士卡"
+	if o.Edges.Plan != nil {
+		subject = o.Edges.Plan.Name
+	}
+
+	// 调用资金冻结转支付
+	res, err := payment.NewAlipay().AlipayTradePay(&model.TradePay{
+		AuthNo:      o.TradeNo,
+		OutTradeNo:  o.OutTradeNo,
+		TotalAmount: o.Total,
+		Subject:     subject,
+	})
+	if err != nil {
+		zap.L().Error("资金冻结转支付失败", zap.Error(err))
+		return
+	}
+	no := tools.NewUnique().NewSN28()
+	var amount float64
+	amount, err = strconv.ParseFloat(res.TotalAmount, 64)
+	if err != nil {
+		zap.L().Error("资金冻结转支付失败", zap.Error(err))
+		return
+	}
+	// 创建支付创建订单
+	ent.Database.Order.Create().
+		SetPayway(model.OrderPaywayAlipay).
+		SetNillablePlanID(o.PlanID).
+		SetRiderID(o.RiderID).
+		SetAmount(amount).
+		SetTotal(amount).
+		SetOutTradeNo(no).
+		SetTradeNo(res.TradeNo).
+		SetStatus(model.OrderStatusPaid).
+		SetType(o.Type).
+		SetNillableCityID(o.CityID).
+		SetInitialDays(o.InitialDays).
+		SetParentID(o.ParentID).
+		SetSubscribeID(o.SubscribeID).
+		SetPastDays(o.PastDays).
+		SetPoints(o.Points).
+		SetPointRatio(o.PointRatio).
+		SetCouponAmount(o.CouponAmount).
+		SetDiscountNewly(o.DiscountNewly).
+		SetNillableBrandID(o.BrandID).
+		SaveX(s.ctx)
+
 }

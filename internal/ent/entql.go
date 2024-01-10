@@ -1127,6 +1127,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			order.FieldPointRatio:    {Type: field.TypeFloat64, Column: order.FieldPointRatio},
 			order.FieldCouponAmount:  {Type: field.TypeFloat64, Column: order.FieldCouponAmount},
 			order.FieldDiscountNewly: {Type: field.TypeFloat64, Column: order.FieldDiscountNewly},
+			order.FieldTradePayAt:    {Type: field.TypeTime, Column: order.FieldTradePayAt},
 		},
 	}
 	graph.Nodes[37] = &sqlgraph.Node{
@@ -12119,6 +12120,11 @@ func (f *OrderFilter) WhereCouponAmount(p entql.Float64P) {
 // WhereDiscountNewly applies the entql float64 predicate on the discount_newly field.
 func (f *OrderFilter) WhereDiscountNewly(p entql.Float64P) {
 	f.Where(p.Field(order.FieldDiscountNewly))
+}
+
+// WhereTradePayAt applies the entql time.Time predicate on the trade_pay_at field.
+func (f *OrderFilter) WhereTradePayAt(p entql.TimeP) {
+	f.Where(p.Field(order.FieldTradePayAt))
 }
 
 // WhereHasPlan applies a predicate to check if query has an edge plan.

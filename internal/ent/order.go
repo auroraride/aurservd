@@ -59,7 +59,7 @@ type Order struct {
 	SubscribeID uint64 `json:"subscribe_id,omitempty"`
 	// 订单状态 0未支付 1已支付 2申请退款 3已退款
 	Status uint8 `json:"status,omitempty"`
-	// 支付方式 0手动 1支付宝 2微信
+	// 支付方式 0手动 1支付宝 2微信 3预授权支付
 	Payway uint8 `json:"payway,omitempty"`
 	// 订单类型 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金 8代理充值
 	Type uint `json:"type,omitempty"`
@@ -85,6 +85,8 @@ type Order struct {
 	CouponAmount float64 `json:"coupon_amount,omitempty"`
 	// 新签优惠
 	DiscountNewly float64 `json:"discount_newly,omitempty"`
+	// 冻结金额转支付时间
+	TradePayAt *time.Time `json:"trade_pay_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the OrderQuery when eager-loading is set.
 	Edges        OrderEdges `json:"edges"`
@@ -298,7 +300,7 @@ func (*Order) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case order.FieldRemark, order.FieldOutTradeNo, order.FieldTradeNo:
 			values[i] = new(sql.NullString)
-		case order.FieldCreatedAt, order.FieldUpdatedAt, order.FieldDeletedAt, order.FieldRefundAt:
+		case order.FieldCreatedAt, order.FieldUpdatedAt, order.FieldDeletedAt, order.FieldRefundAt, order.FieldTradePayAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -500,6 +502,13 @@ func (o *Order) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				o.DiscountNewly = value.Float64
 			}
+		case order.FieldTradePayAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field trade_pay_at", values[i])
+			} else if value.Valid {
+				o.TradePayAt = new(time.Time)
+				*o.TradePayAt = value.Time
+			}
 		default:
 			o.selectValues.Set(columns[i], values[i])
 		}
@@ -698,6 +707,11 @@ func (o *Order) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("discount_newly=")
 	builder.WriteString(fmt.Sprintf("%v", o.DiscountNewly))
+	builder.WriteString(", ")
+	if v := o.TradePayAt; v != nil {
+		builder.WriteString("trade_pay_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }
