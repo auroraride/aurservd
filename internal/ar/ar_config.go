@@ -186,8 +186,15 @@ type config struct {
 		IdVerify struct {
 			AppCode string
 		}
+
 		BankAddr struct {
 			AppCode string
+		}
+
+		Cloudauth struct {
+			AccessKeyId     string
+			AccessKeySecret string
+			Endpoint        string
 		}
 	}
 
