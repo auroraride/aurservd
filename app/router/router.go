@@ -6,6 +6,7 @@
 package router
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -51,16 +52,19 @@ func Run() {
 		}
 		message := err.Error()
 		code := int(snag.StatusBadRequest)
-		var data any
-		switch v := err.(type) {
-		case *snag.Error:
-			target := v
-			code = int(target.Code)
-			data = target.Data
-		case *echo.HTTPError:
-			target := v
-			message = fmt.Sprintf("%v", target.Message)
-			switch target.Code {
+		var (
+			data    any
+			snagErr = new(snag.Error)
+			httpErr = new(echo.HTTPError)
+		)
+
+		switch {
+		case errors.As(err, &snagErr):
+			code = int(snagErr.Code)
+			data = snagErr.Data
+		case errors.As(err, &httpErr):
+			message = fmt.Sprintf("%v", httpErr.Message)
+			switch httpErr.Code {
 			case http.StatusNotFound:
 				code = int(snag.StatusNotFound)
 			default:
