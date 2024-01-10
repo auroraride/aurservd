@@ -762,7 +762,7 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
 			"电话",     // 5
 			"证件",     // 6
 			"户籍",     // 7
-			"企业",     // 8
+			"团签",     // 8
 			"押金",     // 9
 			"订阅",     // 10
 			"暂停",     // 11
@@ -816,9 +816,15 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
 			if detail.Person != nil {
 				row[6] = detail.Person.IDCardNumber
 			}
+			// 团签
+			var group string
 			if detail.Enterprise != nil {
-				row[8] = detail.Enterprise.Name
+				group = detail.Enterprise.Name
+				if detail.Station != nil {
+					group += "-" + detail.Station.Name
+				}
 			}
+			row[8] = group
 			if detail.Subscribe != nil {
 				row[10] = model.SubscribeStatusText(detail.Subscribe.Status)
 				if detail.Subscribe.Suspend {
