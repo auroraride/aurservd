@@ -903,8 +903,13 @@ func (s *riderService) ListExport(req *model.RiderListExport) model.ExportRes {
 				if sub.StartAt != nil {
 					row[12] = sub.StartAt.Format(carbon.DateLayout)
 				}
-				// 到期时间 当前时间+订阅剩余天数
-				row[13] = carbon.Now().AddDays(sub.Remaining).ToDateString()
+				if detail.Subscribe.AgentEndAt != "" {
+					// 代理商处到期时间
+					row[13] = detail.Subscribe.AgentEndAt
+				} else {
+					// 到期时间 当前时间+订阅剩余天数
+					row[13] = carbon.Now().AddDays(sub.Remaining).ToDateString()
+				}
 				// 逾期费用
 				fee, _ := NewSubscribe().OverdueFee(sub)
 				row[16] = fee
