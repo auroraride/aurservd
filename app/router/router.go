@@ -126,7 +126,7 @@ func Run() {
 	loadDocRoutes() // 文档
 	// loadCabinetRoutes()  // 电柜回调
 	loadCommonRoutes()   // 公共API
-	loadRideRoutes()     // 骑手路由
+	loadRiderRoutes()    // 骑手路由
 	loadManagerRoutes()  // 管理员路由
 	loadEmployeeRoutes() // 门店端路由
 	loadToolRoutes()
