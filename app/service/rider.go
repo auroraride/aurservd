@@ -494,11 +494,13 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
 						subscribe.EnterpriseIDIsNil(),
 						subscribe.StatusIn(model.SubscribeNotUnSubscribed()...),
 						subscribe.RemainingLTE(3),
+						subscribe.RemainingGTE(0),
 					),
 					subscribe.And(
 						subscribe.EnterpriseIDNotNil(),
 						subscribe.Status(model.SubscribeStatusUsing),
 						subscribe.AgentEndAtLTE(carbon.CreateFromStdTime(tools.NewTime().WillEnd(time.Now(), 3, true)).EndOfDay().ToStdTime()),
+						subscribe.AgentEndAtGTE(carbon.CreateFromStdTime(tools.NewTime().WillEnd(time.Now(), 0, true)).StartOfDay().ToStdTime()),
 					),
 				),
 			)
