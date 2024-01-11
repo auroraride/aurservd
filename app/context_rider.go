@@ -6,8 +6,9 @@
 package app
 
 import (
-	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/labstack/echo/v4"
+
+	"github.com/auroraride/aurservd/internal/ent"
 )
 
 // RiderContext 骑手上下文

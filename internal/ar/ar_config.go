@@ -191,10 +191,12 @@ type config struct {
 			AppCode string
 		}
 
-		Cloudauth struct {
+		FaceVerify struct {
 			AccessKeyId     string
 			AccessKeySecret string
 			Endpoint        string
+			SceneId         int64
+			Callback        string
 		}
 	}
 

@@ -10,6 +10,7 @@ import (
 	"net/http"
 
 	jsoniter "github.com/json-iterator/go"
+	"github.com/modern-go/reflect2"
 
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/pkg/snag"
@@ -28,6 +29,11 @@ func (r *Response) processParam(param any) {
 		r.Message = v
 	case int:
 		r.Code = v
+	case error:
+		r.Message = v.Error()
+		if r.Code == int(snag.StatusOK) {
+			r.Code = int(snag.StatusBadRequest)
+		}
 	default:
 		if v != nil {
 			r.Data = param
@@ -48,6 +54,10 @@ func (c *BaseContext) SendResponse(params ...any) error {
 
 	if r.Code == int(snag.StatusOK) && r.Data == nil {
 		r.Data = model.StatusResponse{Status: true}
+	}
+
+	if reflect2.IsNil(r.Data) {
+		r.Data = nil
 	}
 
 	buffer := &bytes.Buffer{}
