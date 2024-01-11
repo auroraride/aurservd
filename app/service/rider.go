@@ -604,6 +604,11 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
 		q.Where(rider.HasBatteryWith(battery.ID(*req.BatteryID)))
 	}
 
+	// 订阅类型筛选
+	if req.PlanType != nil {
+		subqs = append(subqs, subscribe.HasPlanWith(plan.Type(*req.PlanType)))
+	}
+
 	if len(subqs) > 0 {
 		q.Where(rider.HasSubscribesWith(subqs...))
 	}
