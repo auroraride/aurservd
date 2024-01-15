@@ -5,7 +5,7 @@ go 1.21
 toolchain go1.21.4
 
 require (
-	ariga.io/atlas v0.17.0
+	ariga.io/atlas v0.18.0
 	entgo.io/ent v0.12.5
 	github.com/LucaTheHacker/go-haversine v0.0.0-20220213075817-0d811fb84a1a
 	github.com/PuerkitoBio/goquery v1.8.1
@@ -13,18 +13,18 @@ require (
 	github.com/alibabacloud-go/dysmsapi-20170525/v2 v2.0.18
 	github.com/alibabacloud-go/dyvmsapi-20170525/v2 v2.1.4
 	github.com/alibabacloud-go/tea v1.2.1
-	github.com/aliyun/alibaba-cloud-sdk-go v1.62.654
+	github.com/aliyun/alibaba-cloud-sdk-go v1.62.659
 	github.com/aliyun/aliyun-log-go-sdk v0.1.68
 	github.com/aliyun/aliyun-oss-go-sdk v3.0.2+incompatible
 	github.com/auroraride/adapter v0.0.0-20231127100528-b8e7799effa1
-	github.com/ethereum/go-ethereum v1.13.8
+	github.com/ethereum/go-ethereum v1.13.10
 	github.com/fsnotify/fsnotify v1.7.0
 	github.com/getkin/kin-openapi v0.122.0
 	github.com/go-playground/locales v0.14.1
 	github.com/go-playground/universal-translator v0.18.1
-	github.com/go-playground/validator/v10 v10.16.0
+	github.com/go-playground/validator/v10 v10.17.0
 	github.com/go-resty/resty/v2 v2.11.0
-	github.com/golang-module/carbon/v2 v2.3.4
+	github.com/golang-module/carbon/v2 v2.3.5
 	github.com/google/uuid v1.5.0
 	github.com/gorilla/websocket v1.5.1
 	github.com/h2non/filetype v1.1.3
@@ -50,14 +50,14 @@ require (
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.18.2
 	github.com/swaggo/echo-swagger v1.4.1
-	github.com/swaggo/swag v1.16.1
+	github.com/swaggo/swag v1.16.2
 	github.com/wechatpay-apiv3/wechatpay-go v0.2.18
 	github.com/xuri/excelize/v2 v2.8.0
 	go.uber.org/zap v1.26.0
 	golang.org/x/crypto v0.18.0
-	golang.org/x/exp v0.0.0-20240103183307-be819d1f06fc
+	golang.org/x/exp v0.0.0-20240112132812-db7319d0e0e3
 	golang.org/x/time v0.5.0
-	golang.org/x/tools v0.16.1
+	golang.org/x/tools v0.17.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -71,7 +71,7 @@ require (
 	github.com/alibabacloud-go/tea-utils v1.4.5 // indirect
 	github.com/alibabacloud-go/tea-xml v1.1.3 // indirect
 	github.com/aliyun/credentials-go v1.3.2 // indirect
-	github.com/andybalholm/brotli v1.0.6 // indirect
+	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/andybalholm/cascadia v1.3.2 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
@@ -115,7 +115,7 @@ require (
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgproto3/v2 v2.3.2 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d80cb9 // indirect
-	github.com/jackc/pgtype v1.14.0 // indirect
+	github.com/jackc/pgtype v1.14.1 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/klauspost/compress v1.17.4 // indirect
