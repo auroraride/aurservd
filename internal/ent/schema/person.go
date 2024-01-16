@@ -44,6 +44,7 @@ func (Person) Fields() []ent.Field {
 		field.String("esign_account_id").Optional().Comment("E签宝账户ID"),
 		field.String("baidu_verify_token").Optional().Comment("百度人脸verify_token"),
 		field.String("baidu_log_id").Optional().Comment("百度人脸log_id"),
+		field.String("certify_id").Optional().MaxLen(32).Comment("阿里云人脸实名认证ID"),
 	}
 }
 

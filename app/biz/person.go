@@ -4,6 +4,7 @@ package biz
 
 import (
 	cloudauth "github.com/alibabacloud-go/cloudauth-20190307/v3/client"
+	jsoniter "github.com/json-iterator/go"
 
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/internal/ali"
@@ -39,6 +40,7 @@ func (s *personBiz) Certification(req *definition.PersonCertificationReq) (*defi
 	return &definition.PersonCertification{CertifyId: id}, nil
 }
 
+// CertificationResult 获取实名认证结果
 func (s *personBiz) CertificationResult(req *definition.PersonCertification) (*definition.PersonCertificationResultRes, error) {
 	client, err := ali.NewFaceVerify()
 	if err != nil {
@@ -50,6 +52,38 @@ func (s *personBiz) CertificationResult(req *definition.PersonCertification) (*d
 	if err != nil {
 		return nil, err
 	}
-	passed := *data.Passed == "T"
+	var passed bool
+	if data.MaterialInfo != nil && data.Passed != nil {
+		passed = *data.Passed == "T"
+
+		// 解析返回
+		result := new(ali.FaceVerifyResult)
+		err = jsoniter.Unmarshal([]byte(*data.MaterialInfo), result)
+		if err != nil {
+			return nil, err
+		}
+
+		// 存储实名信息
+		// 面容
+		// result.FacialPictureFront.OssObjectName
+
+		// PRO中 OcrIdCardInfo / OcrPictureFront 均为空
+
+		// faceVerifyResult := model.FaceVerifyResult{
+		// 	Birthday:       "",
+		// 	IssueAuthority: "",
+		// 	Address:        "",
+		// 	Gender:         "",
+		// 	Nation:         "",
+		// 	ExpireTime:     "",
+		// 	Name:           "",
+		// 	IssueTime:      "",
+		// 	IdCardNumber:   "",
+		// 	Score:          0,
+		// 	LivenessScore:  0,
+		// 	Spoofing:       0,
+		// }
+	}
+
 	return &definition.PersonCertificationResultRes{Passed: passed}, nil
 }
