@@ -10,8 +10,10 @@ import (
 	"errors"
 	"time"
 
+	"github.com/auroraride/adapter/log"
 	"github.com/go-resty/resty/v2"
 	"github.com/redis/go-redis/v9"
+	"go.uber.org/zap"
 
 	"github.com/auroraride/aurservd/internal/ar"
 )
@@ -20,8 +22,12 @@ const (
 	urlAccessToken = "https://kyc.qcloud.com/api/oauth2/access_token"
 	urlTicket      = "https://kyc.qcloud.com/api/oauth2/api_ticket"
 
-	cacheKeyAccessToken = "AURORARIDE_WB_FACE_ACCESS_TOKEN_KEY"
+	cacheKeyAccessToken = "AURORARIDE:WB_FACE:ACCESS_TOKEN"
+	cacheKeySignTicket  = "AURORARIDE:WB_FACE:SIGN_TICKET"
 )
+
+// 缓存时间
+var cacheDuration = time.Minute * 20
 
 type wbface struct {
 	appid   string
@@ -30,14 +36,30 @@ type wbface struct {
 	cache   *redis.Client
 }
 
-func NewWbFace(cache *redis.Client) *wbface {
+var _wbface *wbface
+
+func NewWbFace() *wbface {
+	return _wbface
+}
+
+func BootWbFace(cache *redis.Client) {
+	if _wbface != nil {
+		return
+	}
 	cfg := ar.Config.WbFace
-	return &wbface{
+	_wbface = &wbface{
 		appid:   cfg.AppId,
 		secret:  cfg.Secret,
 		licence: cfg.Licence,
 		cache:   cache,
 	}
+
+	go func() {
+		ticker := time.NewTicker(cacheDuration - time.Minute)
+		for range ticker.C {
+			_ = _wbface.Refresh()
+		}
+	}()
 }
 
 func (w *wbface) AppId() string {
@@ -53,51 +75,6 @@ type AccessTokenRes struct {
 	ExpireIn        int    `json:"expire_in"`
 }
 
-func (w *wbface) AccessToken(params ...bool) (token string, err error) {
-	var result AccessTokenRes
-
-	ctx := context.Background()
-
-	var force bool
-	if len(params) > 0 {
-		force = params[0]
-	}
-
-	if !force {
-		token = w.cache.Get(ctx, cacheKeyAccessToken).Val()
-	}
-
-	if token == "" {
-		_, err = resty.New().R().
-			SetQueryParams(map[string]string{
-				"app_id":     w.appid,
-				"secret":     w.secret,
-				"grant_type": "client_credential",
-				"version":    "1.0.0",
-			}).
-			SetResult(&result).
-			Get(urlAccessToken)
-
-		if result.Code != "0" {
-			msg := result.Msg
-			if msg == "" {
-				msg = "access_token 请求失败"
-			}
-			err = errors.New(msg)
-		}
-
-		if err != nil {
-			return
-		}
-
-		token = result.AccessToken
-
-		w.cache.Set(ctx, cacheKeyAccessToken, token, time.Second*time.Duration(result.ExpireIn-60))
-	}
-
-	return
-}
-
 type TicketRes struct {
 	Code            string `json:"code"`
 	Msg             string `json:"msg"`
@@ -109,25 +86,128 @@ type TicketRes struct {
 	} `json:"tickets"`
 }
 
-func (w *wbface) Ticket(userId string, params ...bool) (ticket string, err error) {
-	var result TicketRes
+func (w *wbface) Refresh() (err error) {
+	var token string
+	token, err = w.RefreshAccessToken()
+	if err != nil {
+		return
+	}
 
-	accessToken, _ := w.AccessToken(params...)
+	return w.RefreshSignTicket(token)
+}
 
-	_, err = resty.New().R().
+func (w *wbface) ClearCached() {
+	w.cache.Del(context.Background(), cacheKeyAccessToken)
+	w.cache.Del(context.Background(), cacheKeySignTicket)
+}
+
+func (w *wbface) GetCached(retried ...bool) (token string, ticket string) {
+	token = w.cache.Get(context.Background(), cacheKeyAccessToken).Val()
+	ticket = w.cache.Get(context.Background(), cacheKeySignTicket).Val()
+
+	if token == "" && len(retried) == 0 {
+		_ = w.Refresh()
+		return w.GetCached(true)
+	}
+	if ticket == "" {
+		_ = w.RefreshSignTicket(token)
+	}
+	return
+}
+
+func (w *wbface) RefreshAccessToken() (token string, err error) {
+	var (
+		result AccessTokenRes
+		r      *resty.Response
+	)
+
+	ctx := context.Background()
+	r, err = resty.New().R().
+		SetQueryParams(map[string]string{
+			"app_id":     w.appid,
+			"secret":     w.secret,
+			"grant_type": "client_credential",
+			"version":    "1.0.0",
+		}).
+		SetResult(&result).
+		Get(urlAccessToken)
+
+	zap.L().Info("Tencent - RefreshAccessToken", log.ResponseBody(r.Body()))
+
+	if result.Code != "0" {
+		msg := result.Msg
+		if msg == "" {
+			msg = "access_token 请求失败"
+		}
+		err = errors.New(msg)
+	}
+
+	if err != nil {
+		return
+	}
+
+	token = result.AccessToken
+
+	w.cache.Set(ctx, cacheKeyAccessToken, token, cacheDuration)
+	return
+}
+
+func (w *wbface) RefreshSignTicket(token string) (err error) {
+	var (
+		r      *resty.Response
+		result TicketRes
+	)
+
+	r, err = resty.New().R().
+		SetQueryParams(map[string]string{
+			"app_id":       w.appid,
+			"type":         "SIGN",
+			"version":      "1.0.0",
+			"access_token": token,
+		}).
+		SetResult(&result).
+		Get(urlTicket)
+
+	zap.L().Info("Tencent - RefreshSignTicket", log.ResponseBody(r.Body()))
+
+	if result.Code != "0" && err == nil {
+		err = errors.New(result.Msg)
+	}
+
+	if err != nil {
+		return
+	}
+
+	if len(result.Tickets) > 0 {
+		w.cache.Set(context.Background(), cacheKeySignTicket, result.Tickets[0].Value, cacheDuration)
+	}
+	return
+}
+
+func (w *wbface) NonceTicket(userId string, retried ...bool) (ticket string, err error) {
+	token, _ := w.GetCached()
+
+	var (
+		r      *resty.Response
+		result TicketRes
+	)
+	r, err = resty.New().R().
 		SetQueryParams(map[string]string{
 			"app_id":       w.appid,
 			"type":         "NONCE",
 			"version":      "1.0.0",
 			"user_id":      userId,
-			"access_token": accessToken,
+			"access_token": token,
 		}).
 		SetResult(&result).
 		Get(urlTicket)
 
+	zap.L().Info("Tencent - NonceTicket", log.ResponseBody(r.Body()))
+
 	retry := err != nil || result.Code == "15" || result.Code == "400101"
-	if retry && len(params) == 0 {
-		return w.Ticket(userId, true)
+	if retry && len(retried) == 0 {
+		w.ClearCached()
+		return w.NonceTicket(userId, true)
 	}
 
 	if len(result.Tickets) > 0 {

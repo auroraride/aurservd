@@ -6,7 +6,6 @@ import (
 	"strconv"
 
 	"github.com/auroraride/aurservd/app/biz/definition"
-	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/tencent"
 	"github.com/auroraride/aurservd/pkg/tools"
@@ -27,8 +26,8 @@ func (p *personBiz) CertificationOcr(r *ent.Rider) (res *definition.PersonCertif
 	userId := strconv.FormatUint(r.ID, 10)
 
 	var ticket string
-	w := tencent.NewWbFace(ar.Redis)
-	ticket, err = w.Ticket(userId)
+	w := tencent.NewWbFace()
+	ticket, err = w.NonceTicket(userId)
 	if err != nil {
 		return
 	}
