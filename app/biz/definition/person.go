@@ -10,5 +10,7 @@ type PersonCertificationOcrRes struct {
 	AppID   string `json:"appId"`   // WBAppid
 	UserId  string `json:"userId"`  // 用户唯一标识
 	OrderNo string `json:"orderNo"` // 订单号
-	Ticket  string `json:"ticket"`  // NONCE ticket
+	Ticket  string `json:"ticket"`  // NONCE / SIGN ticket
+	Version string `json:"version"` // 版本号
+	Nonce   string `json:"nonce"`   // 随机字符串
 }

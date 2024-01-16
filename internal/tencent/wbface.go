@@ -219,3 +219,6 @@ func (w *wbface) NonceTicket(userId string, retried ...bool) (ticket string, err
 	}
 	return
 }
+
+func (w *wbface) Sign(pointer any) {
+}
