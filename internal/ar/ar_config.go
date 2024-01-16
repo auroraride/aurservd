@@ -12,13 +12,14 @@ import (
 	"github.com/auroraride/adapter"
 )
 
-const (
+var (
+	Config     *config
 	configFile = "./config/config.yaml"
 )
 
-var (
-	Config *config
-)
+func SetConfigFile(cfgFile string) {
+	configFile = cfgFile
+}
 
 type Wechat struct {
 	AppID     string `koanf:"appID"`
