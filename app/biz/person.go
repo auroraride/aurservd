@@ -3,12 +3,13 @@
 package biz
 
 import (
-	cloudauth "github.com/alibabacloud-go/cloudauth-20190307/v3/client"
-	jsoniter "github.com/json-iterator/go"
+	"strconv"
 
 	"github.com/auroraride/aurservd/app/biz/definition"
-	"github.com/auroraride/aurservd/internal/ali"
+	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
+	"github.com/auroraride/aurservd/internal/tencent"
+	"github.com/auroraride/aurservd/pkg/tools"
 )
 
 type personBiz struct {
@@ -21,69 +22,21 @@ func NewPerson() *personBiz {
 	}
 }
 
-// Certification 发起实名认证
-func (s *personBiz) Certification(req *definition.PersonCertificationReq) (*definition.PersonCertification, error) {
-	client, err := ali.NewFaceVerify()
+// CertificationOcr 获取人身核验OCR参数
+func (p *personBiz) CertificationOcr(r *ent.Rider) (res *definition.PersonCertificationOcrRes, err error) {
+	userId := strconv.FormatUint(r.ID, 10)
+
+	var ticket string
+	w := tencent.NewWbFace(ar.Redis)
+	ticket, err = w.Ticket(userId)
 	if err != nil {
-		return nil, err
-	}
-	var id string
-	id, err = client.RequestCertifyId(ali.RequestCertifyIdParams{
-		Name:         req.Name,
-		IDCardNumber: req.IDCardNumber,
-		MetaInfo:     req.MetaInfo,
-	})
-	if err != nil {
-		return nil, err
+		return
 	}
 
-	return &definition.PersonCertification{CertifyId: id}, nil
-}
-
-// CertificationResult 获取实名认证结果
-func (s *personBiz) CertificationResult(req *definition.PersonCertification) (*definition.PersonCertificationResultRes, error) {
-	client, err := ali.NewFaceVerify()
-	if err != nil {
-		return nil, err
-	}
-
-	var data *cloudauth.DescribeFaceVerifyResponseBodyResultObject
-	data, err = client.Describe(req.CertifyId)
-	if err != nil {
-		return nil, err
-	}
-	var passed bool
-	if data.MaterialInfo != nil && data.Passed != nil {
-		passed = *data.Passed == "T"
-
-		// 解析返回
-		result := new(ali.FaceVerifyResult)
-		err = jsoniter.Unmarshal([]byte(*data.MaterialInfo), result)
-		if err != nil {
-			return nil, err
-		}
-
-		// 存储实名信息
-		// 面容
-		// result.FacialPictureFront.OssObjectName
-
-		// PRO中 OcrIdCardInfo / OcrPictureFront 均为空
-
-		// faceVerifyResult := model.FaceVerifyResult{
-		// 	Birthday:       "",
-		// 	IssueAuthority: "",
-		// 	Address:        "",
-		// 	Gender:         "",
-		// 	Nation:         "",
-		// 	ExpireTime:     "",
-		// 	Name:           "",
-		// 	IssueTime:      "",
-		// 	IdCardNumber:   "",
-		// 	Score:          0,
-		// 	LivenessScore:  0,
-		// 	Spoofing:       0,
-		// }
-	}
-
-	return &definition.PersonCertificationResultRes{Passed: passed}, nil
+	return &definition.PersonCertificationOcrRes{
+		AppID:   w.AppId(),
+		UserId:  userId,
+		OrderNo: tools.NewUnique().NewSN28(),
+		Ticket:  ticket,
+	}, nil
 }

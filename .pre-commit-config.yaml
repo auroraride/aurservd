@@ -6,17 +6,36 @@ exclude: ^assets/docs
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v4.5.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: check-yaml
       - id: check-added-large-files
-  - repo: https://github.com/dnephin/pre-commit-golang
-    rev: v0.5.1
+  - repo: https://github.com/golangci/golangci-lint
+    rev: ad4a6b2
     hooks:
-      - id: go-fmt
-      - id: go-imports
       - id: golangci-lint
+        name: golangci-lint
+        description: Fast linters runner for Go. Note that only modified files are linted, so linters like 'unused' that need to scan all files won't work as expected.
+        entry: golangci-lint run --new-from-rev HEAD --fix
+        types: [ go ]
+        language: golang
+        require_serial: true
+        pass_filenames: false
+#      - id: golangci-lint-full
+#        name: golangci-lint-full
+#        description: Fast linters runner for Go. Runs on all files in the repo. Use this hook if you use pre-commit in CI.
+#        entry: golangci-lint run --fix
+#        types: [ go ]
+#        language: golang
+#        require_serial: true
+#        pass_filenames: false
+#  - repo: https://github.com/dnephin/pre-commit-golang
+#    rev: v0.5.1
+#    hooks:
+#      - id: go-fmt
+#      - id: go-imports
+#      - id: golangci-lint
 #      - id: no-go-testing
 #      - id: go-unit-tests

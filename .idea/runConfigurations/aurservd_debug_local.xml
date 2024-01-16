@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="aurservd_debug_local" type="GoApplicationRunConfiguration" factoryName="Go Application">
+    <module name="aurservd" />
+    <working_directory value="$PROJECT_DIR$" />
+    <parameters value="server --config $USER_HOME$/Documents/_SYNC/极光出行/aurservd.yaml" />
+    <kind value="DIRECTORY" />
+    <package value="github.com/auroraride/aurservd" />
+    <directory value="$PROJECT_DIR$/cmd/aurservd" />
+    <filePath value="$PROJECT_DIR$" />
+    <output_directory value="$PROJECT_DIR$/build/debug" />
+    <method v="2" />
+  </configuration>
+</component>

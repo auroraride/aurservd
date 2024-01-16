@@ -494,11 +494,13 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
 						subscribe.EnterpriseIDIsNil(),
 						subscribe.StatusIn(model.SubscribeNotUnSubscribed()...),
 						subscribe.RemainingLTE(3),
+						subscribe.RemainingGTE(0),
 					),
 					subscribe.And(
 						subscribe.EnterpriseIDNotNil(),
 						subscribe.Status(model.SubscribeStatusUsing),
 						subscribe.AgentEndAtLTE(carbon.CreateFromStdTime(tools.NewTime().WillEnd(time.Now(), 3, true)).EndOfDay().ToStdTime()),
+						subscribe.AgentEndAtGTE(carbon.CreateFromStdTime(tools.NewTime().WillEnd(time.Now(), 0, true)).StartOfDay().ToStdTime()),
 					),
 				),
 			)
@@ -602,6 +604,11 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
 	if req.BatteryID != nil {
 		info["电池编码"] = ent.NewExportInfo(*req.BatteryID, battery.Table)
 		q.Where(rider.HasBatteryWith(battery.ID(*req.BatteryID)))
+	}
+
+	// 订阅类型筛选
+	if req.PlanType != nil {
+		subqs = append(subqs, subscribe.HasPlanWith(plan.Type(*req.PlanType)))
 	}
 
 	if len(subqs) > 0 {

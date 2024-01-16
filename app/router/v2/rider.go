@@ -21,10 +21,10 @@ import (
 func LoadRiderV2Routes(root *echo.Group) {
 	g := root.Group("rider/v2")
 
-	rawDump := app.NewDumpLoggerMiddleware().WithConfig(&app.DumpConfig{
-		RequestHeader:  true,
-		ResponseHeader: true,
-	})
+	// rawDump := app.NewDumpLoggerMiddleware().WithConfig(&app.DumpConfig{
+	// 	RequestHeader:  true,
+	// 	ResponseHeader: true,
+	// })
 
 	// 记录请求日志
 	dumpSkipPaths := map[string]bool{}
@@ -68,12 +68,12 @@ func LoadRiderV2Routes(root *echo.Group) {
 		dump,
 	)
 
-	// 实名认证
-	g.POST("/certification", rapi.Person.Certification)
+	// 骑手登录认证中间件
+	auth := middleware.RiderAuthMiddlewareV2
 
-	// 实名认证回调
-	g.GET("/certification/callback", rapi.Person.CertificationCallback, rawDump)
+	// 实人认证中间件（包含骑手登录认证）
+	// cert := middleware.RiderCertificationMiddlewareV2
 
-	// 实名认证结果
-	g.GET("/certification/result", rapi.Person.CertificationResult)
+	// 获取人身核验OCR参数
+	g.GET("/certification/ocr", rapi.Person.CertificationOcr, auth())
 }

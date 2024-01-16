@@ -5,19 +5,10 @@
 
 package definition
 
-// PersonCertificationReq 实名认证请求
-type PersonCertificationReq struct {
-	Name         *string `json:"name" validate:"required" trans:"姓名"`
-	IDCardNumber *string `json:"idCardNumber" validate:"required" trans:"身份证号"`
-	MetaInfo     *string `json:"metaInfo" validate:"required" trans:"环境参数"`
-}
-
-// PersonCertification 实名认证ID
-type PersonCertification struct {
-	CertifyId string `json:"certifyId" query:"certifyId" validate:"required" trans:"实名认证ID"`
-}
-
-// PersonCertificationResultRes 实名认证结果
-type PersonCertificationResultRes struct {
-	Passed bool `json:"passed"` // 是否通过
+// PersonCertificationOcrRes 实名认证Ocr参数
+type PersonCertificationOcrRes struct {
+	AppID   string `json:"appId"`   // WBAppid
+	UserId  string `json:"userId"`  // 用户唯一标识
+	OrderNo string `json:"orderNo"` // 订单号
+	Ticket  string `json:"ticket"`  // NONCE ticket
 }
