@@ -76,4 +76,7 @@ func LoadRiderV2Routes(root *echo.Group) {
 
 	// 获取人身核验OCR参数
 	g.GET("/certification/ocr", rapi.Person.CertificationOcr, auth())
+
+	// 获取人脸核身参数
+	g.GET("/certification/face", rapi.Person.CertificationFace, auth())
 }

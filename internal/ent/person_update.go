@@ -240,7 +240,7 @@ func (pu *PersonUpdate) ClearAuthFace() *PersonUpdate {
 }
 
 // SetAuthResult sets the "auth_result" field.
-func (pu *PersonUpdate) SetAuthResult(mvr *model.FaceVerifyResult) *PersonUpdate {
+func (pu *PersonUpdate) SetAuthResult(mvr *model.BaiduFaceVerifyResult) *PersonUpdate {
 	pu.mutation.SetAuthResult(mvr)
 	return pu
 }
@@ -819,7 +819,7 @@ func (puo *PersonUpdateOne) ClearAuthFace() *PersonUpdateOne {
 }
 
 // SetAuthResult sets the "auth_result" field.
-func (puo *PersonUpdateOne) SetAuthResult(mvr *model.FaceVerifyResult) *PersonUpdateOne {
+func (puo *PersonUpdateOne) SetAuthResult(mvr *model.BaiduFaceVerifyResult) *PersonUpdateOne {
 	puo.mutation.SetAuthResult(mvr)
 	return puo
 }

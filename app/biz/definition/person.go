@@ -5,12 +5,20 @@
 
 package definition
 
-// PersonCertificationOcrRes 实名认证Ocr参数
+// PersonCertificationOcrRes 腾讯人脸核验OCR参数
 type PersonCertificationOcrRes struct {
 	AppID   string `json:"appId"`   // WBAppid
 	UserId  string `json:"userId"`  // 用户唯一标识
 	OrderNo string `json:"orderNo"` // 订单号
-	Ticket  string `json:"ticket"`  // NONCE / SIGN ticket
 	Version string `json:"version"` // 版本号
 	Nonce   string `json:"nonce"`   // 随机字符串
+	Sign    string `json:"sign"`    // 签名
+}
+
+// PersonCertificationFaceReq 实名认证人脸核身请求参数
+type PersonCertificationFaceReq struct {
+	OrderNo string `json:"orderNo"` // 订单号
+}
+
+type PersonCertificationFaceRes struct {
 }

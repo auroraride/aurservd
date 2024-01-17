@@ -246,7 +246,7 @@ func (p *kaixin) DoorOperate(code, serial, operation string, door int) (state bo
 func (p *kaixin) BatteryBind(code, serial, model string, door int) (state bool) {
 	re := regexp.MustCompile(`(?m)(\d+)V(\d+)AH`)
 	battery := re.ReplaceAllString(strings.ToUpper(model), `JG10${1}${2}`)
-	battery += fmt.Sprintf("%02d%02d", door+1, utils.RandomIntMaxMin(0, 99))
+	battery += fmt.Sprintf("%02d%02d", door+1, utils.RandIntMaxMin(0, 99))
 	return p.doDoorOperate(code, serial, "6", door, battery)
 }
 

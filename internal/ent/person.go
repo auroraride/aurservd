@@ -48,7 +48,7 @@ type Person struct {
 	// 实名认证人脸照片
 	AuthFace string `json:"auth_face,omitempty"`
 	// 实名认证结果详情
-	AuthResult *model.FaceVerifyResult `json:"auth_result,omitempty"`
+	AuthResult *model.BaiduFaceVerifyResult `json:"auth_result,omitempty"`
 	// 实名认证结果获取时间
 	AuthAt *time.Time `json:"auth_at,omitempty"`
 	// E签宝账户ID

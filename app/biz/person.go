@@ -22,20 +22,30 @@ func NewPerson() *personBiz {
 }
 
 // CertificationOcr 获取人身核验OCR参数
-func (p *personBiz) CertificationOcr(r *ent.Rider) (res *definition.PersonCertificationOcrRes, err error) {
+func (b *personBiz) CertificationOcr(r *ent.Rider) (res *definition.PersonCertificationOcrRes, err error) {
+	w := tencent.NewWbFace()
+
 	userId := strconv.FormatUint(r.ID, 10)
+	orderNo := tools.NewUnique().Rand(32)
+
+	res = &definition.PersonCertificationOcrRes{
+		AppID:   w.AppId(),
+		UserId:  userId,
+		OrderNo: orderNo,
+		Version: w.Version(),
+	}
 
 	var ticket string
-	w := tencent.NewWbFace()
 	ticket, err = w.NonceTicket(userId)
 	if err != nil {
 		return
 	}
 
-	return &definition.PersonCertificationOcrRes{
-		AppID:   w.AppId(),
-		UserId:  userId,
-		OrderNo: tools.NewUnique().NewSN28(),
-		Ticket:  ticket,
-	}, nil
+	res.Sign, res.Nonce = w.Sign(userId, ticket)
+	return
+}
+
+// CertificationFace 获取人身核验参数
+func (b *personBiz) CertificationFace(r *ent.Rider, orderNo string) (res *definition.PersonCertificationOcrRes, err error) {
+	return
 }

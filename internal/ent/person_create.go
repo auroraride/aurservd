@@ -197,7 +197,7 @@ func (pc *PersonCreate) SetNillableAuthFace(s *string) *PersonCreate {
 }
 
 // SetAuthResult sets the "auth_result" field.
-func (pc *PersonCreate) SetAuthResult(mvr *model.FaceVerifyResult) *PersonCreate {
+func (pc *PersonCreate) SetAuthResult(mvr *model.BaiduFaceVerifyResult) *PersonCreate {
 	pc.mutation.SetAuthResult(mvr)
 	return pc
 }
@@ -739,7 +739,7 @@ func (u *PersonUpsert) ClearAuthFace() *PersonUpsert {
 }
 
 // SetAuthResult sets the "auth_result" field.
-func (u *PersonUpsert) SetAuthResult(v *model.FaceVerifyResult) *PersonUpsert {
+func (u *PersonUpsert) SetAuthResult(v *model.BaiduFaceVerifyResult) *PersonUpsert {
 	u.Set(person.FieldAuthResult, v)
 	return u
 }
@@ -1108,7 +1108,7 @@ func (u *PersonUpsertOne) ClearAuthFace() *PersonUpsertOne {
 }
 
 // SetAuthResult sets the "auth_result" field.
-func (u *PersonUpsertOne) SetAuthResult(v *model.FaceVerifyResult) *PersonUpsertOne {
+func (u *PersonUpsertOne) SetAuthResult(v *model.BaiduFaceVerifyResult) *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
 		s.SetAuthResult(v)
 	})
@@ -1658,7 +1658,7 @@ func (u *PersonUpsertBulk) ClearAuthFace() *PersonUpsertBulk {
 }
 
 // SetAuthResult sets the "auth_result" field.
-func (u *PersonUpsertBulk) SetAuthResult(v *model.FaceVerifyResult) *PersonUpsertBulk {
+func (u *PersonUpsertBulk) SetAuthResult(v *model.BaiduFaceVerifyResult) *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
 		s.SetAuthResult(v)
 	})

@@ -7,7 +7,11 @@ package tencent
 
 import (
 	"context"
+	"crypto/sha1"
+	"encoding/hex"
 	"errors"
+	"sort"
+	"strings"
 	"time"
 
 	"github.com/auroraride/adapter/log"
@@ -16,6 +20,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/auroraride/aurservd/internal/ar"
+	"github.com/auroraride/aurservd/pkg/utils"
 )
 
 const (
@@ -29,41 +34,14 @@ const (
 // 缓存时间
 var cacheDuration = time.Minute * 20
 
+var _wbface *wbface
+
 type wbface struct {
 	appid   string
 	secret  string
 	licence string
 	cache   *redis.Client
-}
-
-var _wbface *wbface
-
-func NewWbFace() *wbface {
-	return _wbface
-}
-
-func BootWbFace(cache *redis.Client) {
-	if _wbface != nil {
-		return
-	}
-	cfg := ar.Config.WbFace
-	_wbface = &wbface{
-		appid:   cfg.AppId,
-		secret:  cfg.Secret,
-		licence: cfg.Licence,
-		cache:   cache,
-	}
-
-	go func() {
-		ticker := time.NewTicker(cacheDuration - time.Minute)
-		for range ticker.C {
-			_ = _wbface.Refresh()
-		}
-	}()
-}
-
-func (w *wbface) AppId() string {
-	return w.appid
+	version string
 }
 
 type AccessTokenRes struct {
@@ -84,6 +62,49 @@ type TicketRes struct {
 		ExpireIn   int    `json:"expire_in"`
 		ExpireTime string `json:"expire_time"`
 	} `json:"tickets"`
+}
+
+func NewWbFace() *wbface {
+	return _wbface
+}
+
+func BootWbFace(cache *redis.Client) {
+	if _wbface != nil {
+		return
+	}
+	cfg := ar.Config.WbFace
+	_wbface = &wbface{
+		appid:   cfg.AppId,
+		secret:  cfg.Secret,
+		licence: cfg.Licence,
+		cache:   cache,
+		version: "1.0.0",
+	}
+
+	go func() {
+		// 判定是否需要刷新
+		if cache.Get(context.Background(), cacheKeyAccessToken).Val() == "" {
+			_ = _wbface.Refresh()
+		}
+
+		// 定时刷新
+		ticker := time.NewTicker(cacheDuration - time.Minute)
+		for range ticker.C {
+			_ = _wbface.Refresh()
+		}
+	}()
+}
+
+func (w *wbface) AppId() string {
+	return w.appid
+}
+
+func (w *wbface) Version() string {
+	return w.version
+}
+
+func (w *wbface) nonce() string {
+	return utils.RandStr(32)
 }
 
 func (w *wbface) Refresh() (err error) {
@@ -220,5 +241,21 @@ func (w *wbface) NonceTicket(userId string, retried ...bool) (ticket string, err
 	return
 }
 
-func (w *wbface) Sign(pointer any) {
+func (w *wbface) SignTicket() string {
+	return w.cache.Get(context.Background(), cacheKeySignTicket).Val()
+}
+
+func (w *wbface) Sign(userId, ticket string) (sign string, nonce string) {
+	nonce = w.nonce()
+	appid := w.appid
+	list := []string{appid, userId, w.version, ticket, nonce}
+	sort.Strings(list)
+
+	s := strings.Join(list, "")
+
+	h := sha1.New()
+	h.Write([]byte(s))
+	bs := h.Sum(nil)
+	sign = strings.ToUpper(hex.EncodeToString(bs))
+	return
 }

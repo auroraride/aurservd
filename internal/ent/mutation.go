@@ -60055,7 +60055,7 @@ type PersonMutation struct {
 	id_card_portrait   *string
 	id_card_national   *string
 	auth_face          *string
-	auth_result        **model.FaceVerifyResult
+	auth_result        **model.BaiduFaceVerifyResult
 	auth_at            *time.Time
 	esign_account_id   *string
 	baidu_verify_token *string
@@ -60816,12 +60816,12 @@ func (m *PersonMutation) ResetAuthFace() {
 }
 
 // SetAuthResult sets the "auth_result" field.
-func (m *PersonMutation) SetAuthResult(mvr *model.FaceVerifyResult) {
+func (m *PersonMutation) SetAuthResult(mvr *model.BaiduFaceVerifyResult) {
 	m.auth_result = &mvr
 }
 
 // AuthResult returns the value of the "auth_result" field in the mutation.
-func (m *PersonMutation) AuthResult() (r *model.FaceVerifyResult, exists bool) {
+func (m *PersonMutation) AuthResult() (r *model.BaiduFaceVerifyResult, exists bool) {
 	v := m.auth_result
 	if v == nil {
 		return
@@ -60832,7 +60832,7 @@ func (m *PersonMutation) AuthResult() (r *model.FaceVerifyResult, exists bool) {
 // OldAuthResult returns the old "auth_result" field's value of the Person entity.
 // If the Person object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PersonMutation) OldAuthResult(ctx context.Context) (v *model.FaceVerifyResult, err error) {
+func (m *PersonMutation) OldAuthResult(ctx context.Context) (v *model.BaiduFaceVerifyResult, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldAuthResult is only allowed on UpdateOne operations")
 	}
@@ -61407,7 +61407,7 @@ func (m *PersonMutation) SetField(name string, value ent.Value) error {
 		m.SetAuthFace(v)
 		return nil
 	case person.FieldAuthResult:
-		v, ok := value.(*model.FaceVerifyResult)
+		v, ok := value.(*model.BaiduFaceVerifyResult)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

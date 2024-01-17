@@ -233,7 +233,7 @@ func (s *riderService) FaceAuthResult(c *app.RiderContext, token string) (succes
 		status = model.PersonAuthenticationFailed.Value()
 	}
 
-	vr := &model.FaceVerifyResult{
+	vr := &model.BaiduFaceVerifyResult{
 		Birthday:       detail.Birthday,
 		IssueAuthority: detail.IssueAuthority,
 		Address:        detail.Address,
