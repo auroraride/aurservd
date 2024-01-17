@@ -5,7 +5,7 @@
 
 package papi
 
-// @title                极光出行API - 代理端api
-// @version              1.0
-// @BasePath             /
+// @title		极光出行API - 代理端api
+// @version		1.0
+// @BasePath	/
 // @description.markdown

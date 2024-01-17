@@ -17,7 +17,8 @@ type PersonCertificationOcrRes struct {
 
 // PersonCertificationFaceReq 实名认证人脸核身请求参数
 type PersonCertificationFaceReq struct {
-	OrderNo string `json:"orderNo"` // 订单号
+	OrderNo  string `json:"orderNo" query:"orderNo"`   // 订单号
+	Identity string `json:"identity" query:"identity"` // 身份信息 // TODO: 加密传输
 }
 
 type PersonCertificationFaceRes struct {

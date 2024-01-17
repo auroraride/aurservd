@@ -38,13 +38,17 @@ func (Person) Fields() []ent.Field {
 		field.Uint8("id_card_type").Default(1).Comment("证件类别"),
 		field.String("id_card_portrait").Optional().Comment("证件人像面"),
 		field.String("id_card_national").Optional().Comment("证件国徽面"),
+		field.String("id_card_head").Optional().Comment("证件头像照片"),
 		field.String("auth_face").Optional().Comment("实名认证人脸照片"),
-		field.JSON("auth_result", &model.BaiduFaceVerifyResult{}).Optional().Comment("实名认证结果详情"),
-		field.Time("auth_at").Nillable().Optional().Comment("实名认证结果获取时间"),
+		field.JSON("auth_result", &model.BaiduFaceVerifyResult{}).Optional().Comment("百度实名认证结果详情"),
+		field.Time("auth_at").Nillable().Optional().Comment("百度实名认证结果获取时间"),
 		field.String("esign_account_id").Optional().Comment("E签宝账户ID"),
 		field.String("baidu_verify_token").Optional().Comment("百度人脸verify_token"),
 		field.String("baidu_log_id").Optional().Comment("百度人脸log_id"),
 		field.String("certify_id").Optional().MaxLen(32).Comment("阿里云人脸实名认证ID"),
+		field.String("wb_ocr_order_no").Optional().MaxLen(32).Comment("腾讯OCR订单号"),
+		field.String("wb_face_order_no").Optional().MaxLen(32).Comment("腾讯人脸核验订单号"),
+		field.JSON("face_verify_result", &model.PersonFaceVerifyResult{}).Optional().Comment("人身核验核验结果"),
 	}
 }
 

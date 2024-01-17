@@ -204,6 +204,7 @@ func (s *riderService) GetFaceUrl(c *app.RiderContext) string {
 }
 
 // FaceAuthResult 获取并更新人脸实名验证结果
+// TODO 兼容v2 api
 func (s *riderService) FaceAuthResult(c *app.RiderContext, token string) (success bool) {
 	if !s.ComparePrivacy(c) {
 		snag.Panic("验证失败")
@@ -248,7 +249,7 @@ func (s *riderService) FaceAuthResult(c *app.RiderContext, token string) (succes
 		Spoofing:       res.VerifyResult.Spoofing,
 	}
 
-	// 上传图片到七牛云
+	// 上传图片到阿里云OSS
 	var fm, pm, nm string
 	oss := ali.NewOss()
 	prefix := fmt.Sprintf("%s-%s/%s-", res.IdcardOcrResult.Name, res.IdcardOcrResult.IdCardNumber, time.Now().Format(carbon.ShortDateTimeLayout))
@@ -676,6 +677,7 @@ func (s *riderService) detailRiderItem(item *ent.Rider) model.RiderItem {
 			IDCardNumber:   p.IDCardNumber,
 			IDCardPortrait: p.IDCardPortrait,
 			IDCardNational: p.IDCardNational,
+			IDCardHead:     p.IDCardHead,
 			AuthFace:       p.AuthFace,
 		}
 	}

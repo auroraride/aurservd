@@ -45,11 +45,13 @@ type Person struct {
 	IDCardPortrait string `json:"id_card_portrait,omitempty"`
 	// 证件国徽面
 	IDCardNational string `json:"id_card_national,omitempty"`
+	// 证件头像照片
+	IDCardHead string `json:"id_card_head,omitempty"`
 	// 实名认证人脸照片
 	AuthFace string `json:"auth_face,omitempty"`
-	// 实名认证结果详情
+	// 百度实名认证结果详情
 	AuthResult *model.BaiduFaceVerifyResult `json:"auth_result,omitempty"`
-	// 实名认证结果获取时间
+	// 百度实名认证结果获取时间
 	AuthAt *time.Time `json:"auth_at,omitempty"`
 	// E签宝账户ID
 	EsignAccountID string `json:"esign_account_id,omitempty"`
@@ -57,6 +59,14 @@ type Person struct {
 	BaiduVerifyToken string `json:"baidu_verify_token,omitempty"`
 	// 百度人脸log_id
 	BaiduLogID string `json:"baidu_log_id,omitempty"`
+	// 阿里云人脸实名认证ID
+	CertifyID string `json:"certify_id,omitempty"`
+	// 腾讯OCR订单号
+	WbOcrOrderNo string `json:"wb_ocr_order_no,omitempty"`
+	// 腾讯人脸核验订单号
+	WbFaceOrderNo string `json:"wb_face_order_no,omitempty"`
+	// 人身核验核验结果
+	FaceVerifyResult *model.PersonFaceVerifyResult `json:"face_verify_result,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PersonQuery when eager-loading is set.
 	Edges        PersonEdges `json:"edges"`
@@ -86,13 +96,13 @@ func (*Person) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case person.FieldCreator, person.FieldLastModifier, person.FieldAuthResult:
+		case person.FieldCreator, person.FieldLastModifier, person.FieldAuthResult, person.FieldFaceVerifyResult:
 			values[i] = new([]byte)
 		case person.FieldBanned:
 			values[i] = new(sql.NullBool)
 		case person.FieldID, person.FieldStatus, person.FieldIDCardType:
 			values[i] = new(sql.NullInt64)
-		case person.FieldRemark, person.FieldName, person.FieldIDCardNumber, person.FieldIDCardPortrait, person.FieldIDCardNational, person.FieldAuthFace, person.FieldEsignAccountID, person.FieldBaiduVerifyToken, person.FieldBaiduLogID:
+		case person.FieldRemark, person.FieldName, person.FieldIDCardNumber, person.FieldIDCardPortrait, person.FieldIDCardNational, person.FieldIDCardHead, person.FieldAuthFace, person.FieldEsignAccountID, person.FieldBaiduVerifyToken, person.FieldBaiduLogID, person.FieldCertifyID, person.FieldWbOcrOrderNo, person.FieldWbFaceOrderNo:
 			values[i] = new(sql.NullString)
 		case person.FieldCreatedAt, person.FieldUpdatedAt, person.FieldDeletedAt, person.FieldAuthAt:
 			values[i] = new(sql.NullTime)
@@ -200,6 +210,12 @@ func (pe *Person) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pe.IDCardNational = value.String
 			}
+		case person.FieldIDCardHead:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field id_card_head", values[i])
+			} else if value.Valid {
+				pe.IDCardHead = value.String
+			}
 		case person.FieldAuthFace:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field auth_face", values[i])
@@ -238,6 +254,32 @@ func (pe *Person) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field baidu_log_id", values[i])
 			} else if value.Valid {
 				pe.BaiduLogID = value.String
+			}
+		case person.FieldCertifyID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field certify_id", values[i])
+			} else if value.Valid {
+				pe.CertifyID = value.String
+			}
+		case person.FieldWbOcrOrderNo:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field wb_ocr_order_no", values[i])
+			} else if value.Valid {
+				pe.WbOcrOrderNo = value.String
+			}
+		case person.FieldWbFaceOrderNo:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field wb_face_order_no", values[i])
+			} else if value.Valid {
+				pe.WbFaceOrderNo = value.String
+			}
+		case person.FieldFaceVerifyResult:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field face_verify_result", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &pe.FaceVerifyResult); err != nil {
+					return fmt.Errorf("unmarshal field face_verify_result: %w", err)
+				}
 			}
 		default:
 			pe.selectValues.Set(columns[i], values[i])
@@ -321,6 +363,9 @@ func (pe *Person) String() string {
 	builder.WriteString("id_card_national=")
 	builder.WriteString(pe.IDCardNational)
 	builder.WriteString(", ")
+	builder.WriteString("id_card_head=")
+	builder.WriteString(pe.IDCardHead)
+	builder.WriteString(", ")
 	builder.WriteString("auth_face=")
 	builder.WriteString(pe.AuthFace)
 	builder.WriteString(", ")
@@ -340,6 +385,18 @@ func (pe *Person) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("baidu_log_id=")
 	builder.WriteString(pe.BaiduLogID)
+	builder.WriteString(", ")
+	builder.WriteString("certify_id=")
+	builder.WriteString(pe.CertifyID)
+	builder.WriteString(", ")
+	builder.WriteString("wb_ocr_order_no=")
+	builder.WriteString(pe.WbOcrOrderNo)
+	builder.WriteString(", ")
+	builder.WriteString("wb_face_order_no=")
+	builder.WriteString(pe.WbFaceOrderNo)
+	builder.WriteString(", ")
+	builder.WriteString("face_verify_result=")
+	builder.WriteString(fmt.Sprintf("%v", pe.FaceVerifyResult))
 	builder.WriteByte(')')
 	return builder.String()
 }

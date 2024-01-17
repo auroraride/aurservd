@@ -46,6 +46,22 @@ type BaiduFaceVerifyResult struct {
 	Spoofing       float64 `json:"spoofing"`       // 合成图分数：若未进行合成图检测，则返回0；若进行活体检测，则返回合成图检测分值
 }
 
+type PersonFaceVerifyResult struct {
+	Name            string  `json:"name"`            // 姓名
+	Sex             string  `json:"sex"`             // 性别
+	Nation          string  `json:"nation"`          // 民族
+	Birth           string  `json:"birth"`           // 出生日期（例：19920320）
+	Address         string  `json:"address"`         // 地址
+	Idcard          string  `json:"idcard"`          // 身份证号
+	ValidStartDate  string  `json:"validStartDate"`  // 证件生效日期
+	ValidExpireDate string  `json:"validExpireDate"` // 证件失效日期
+	Authority       string  `json:"authority"`       // 发证机关
+	FrontClarity    string  `json:"frontClarity"`    // 正面图片清晰度
+	BackClarity     string  `json:"backClarity"`     // 反面图片清晰度
+	LiveRate        float64 `json:"liveRate"`        // 活体检测得分
+	Similarity      float64 `json:"similarity"`      // 人脸比对得分
+}
+
 // RequireAuth 是否需要认证
 func (s PersonAuthStatus) RequireAuth() bool {
 	return s != PersonAuthenticated
@@ -59,11 +75,13 @@ type PersonBanReq struct {
 
 type Person struct {
 	// 证件号码
-	IDCardNumber string `json:"id_card_number,omitempty"`
+	IDCardNumber string `json:"idCardNumber,omitempty"`
 	// 证件人像面
-	IDCardPortrait string `json:"id_card_portrait,omitempty"`
+	IDCardPortrait string `json:"idCardPortrait,omitempty"`
 	// 证件国徽面
-	IDCardNational string `json:"id_card_national,omitempty"`
+	IDCardNational string `json:"idCardNational,omitempty"`
+	// 证件人像照片
+	IDCardHead string `json:"idCardHead,omitempty"`
 	// 实名认证人脸照片
-	AuthFace string `json:"auth_face,omitempty"`
+	AuthFace string `json:"authFace,omitempty"`
 }

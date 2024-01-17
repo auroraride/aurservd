@@ -983,6 +983,18 @@ func init() {
 	personDescIDCardType := personFields[4].Descriptor()
 	// person.DefaultIDCardType holds the default value on creation for the id_card_type field.
 	person.DefaultIDCardType = personDescIDCardType.Default.(uint8)
+	// personDescCertifyID is the schema descriptor for certify_id field.
+	personDescCertifyID := personFields[14].Descriptor()
+	// person.CertifyIDValidator is a validator for the "certify_id" field. It is called by the builders before save.
+	person.CertifyIDValidator = personDescCertifyID.Validators[0].(func(string) error)
+	// personDescWbOcrOrderNo is the schema descriptor for wb_ocr_order_no field.
+	personDescWbOcrOrderNo := personFields[15].Descriptor()
+	// person.WbOcrOrderNoValidator is a validator for the "wb_ocr_order_no" field. It is called by the builders before save.
+	person.WbOcrOrderNoValidator = personDescWbOcrOrderNo.Validators[0].(func(string) error)
+	// personDescWbFaceOrderNo is the schema descriptor for wb_face_order_no field.
+	personDescWbFaceOrderNo := personFields[16].Descriptor()
+	// person.WbFaceOrderNoValidator is a validator for the "wb_face_order_no" field. It is called by the builders before save.
+	person.WbFaceOrderNoValidator = personDescWbFaceOrderNo.Validators[0].(func(string) error)
 	planMixin := schema.Plan{}.Mixin()
 	planMixinHooks2 := planMixin[2].Hooks()
 	plan.Hooks[0] = planMixinHooks2[0]

@@ -3178,12 +3178,17 @@ var (
 		{Name: "id_card_type", Type: field.TypeUint8, Comment: "证件类别", Default: 1},
 		{Name: "id_card_portrait", Type: field.TypeString, Nullable: true, Comment: "证件人像面"},
 		{Name: "id_card_national", Type: field.TypeString, Nullable: true, Comment: "证件国徽面"},
+		{Name: "id_card_head", Type: field.TypeString, Nullable: true, Comment: "证件头像照片"},
 		{Name: "auth_face", Type: field.TypeString, Nullable: true, Comment: "实名认证人脸照片"},
-		{Name: "auth_result", Type: field.TypeJSON, Nullable: true, Comment: "实名认证结果详情"},
-		{Name: "auth_at", Type: field.TypeTime, Nullable: true, Comment: "实名认证结果获取时间"},
+		{Name: "auth_result", Type: field.TypeJSON, Nullable: true, Comment: "百度实名认证结果详情"},
+		{Name: "auth_at", Type: field.TypeTime, Nullable: true, Comment: "百度实名认证结果获取时间"},
 		{Name: "esign_account_id", Type: field.TypeString, Nullable: true, Comment: "E签宝账户ID"},
 		{Name: "baidu_verify_token", Type: field.TypeString, Nullable: true, Comment: "百度人脸verify_token"},
 		{Name: "baidu_log_id", Type: field.TypeString, Nullable: true, Comment: "百度人脸log_id"},
+		{Name: "certify_id", Type: field.TypeString, Nullable: true, Size: 32, Comment: "阿里云人脸实名认证ID"},
+		{Name: "wb_ocr_order_no", Type: field.TypeString, Nullable: true, Size: 32, Comment: "腾讯OCR订单号"},
+		{Name: "wb_face_order_no", Type: field.TypeString, Nullable: true, Size: 32, Comment: "腾讯人脸核验订单号"},
+		{Name: "face_verify_result", Type: field.TypeJSON, Nullable: true, Comment: "人身核验核验结果"},
 	}
 	// PersonTable holds the schema information for the "person" table.
 	PersonTable = &schema.Table{

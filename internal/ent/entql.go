@@ -1178,12 +1178,17 @@ var schemaGraph = func() *sqlgraph.Schema {
 			person.FieldIDCardType:       {Type: field.TypeUint8, Column: person.FieldIDCardType},
 			person.FieldIDCardPortrait:   {Type: field.TypeString, Column: person.FieldIDCardPortrait},
 			person.FieldIDCardNational:   {Type: field.TypeString, Column: person.FieldIDCardNational},
+			person.FieldIDCardHead:       {Type: field.TypeString, Column: person.FieldIDCardHead},
 			person.FieldAuthFace:         {Type: field.TypeString, Column: person.FieldAuthFace},
 			person.FieldAuthResult:       {Type: field.TypeJSON, Column: person.FieldAuthResult},
 			person.FieldAuthAt:           {Type: field.TypeTime, Column: person.FieldAuthAt},
 			person.FieldEsignAccountID:   {Type: field.TypeString, Column: person.FieldEsignAccountID},
 			person.FieldBaiduVerifyToken: {Type: field.TypeString, Column: person.FieldBaiduVerifyToken},
 			person.FieldBaiduLogID:       {Type: field.TypeString, Column: person.FieldBaiduLogID},
+			person.FieldCertifyID:        {Type: field.TypeString, Column: person.FieldCertifyID},
+			person.FieldWbOcrOrderNo:     {Type: field.TypeString, Column: person.FieldWbOcrOrderNo},
+			person.FieldWbFaceOrderNo:    {Type: field.TypeString, Column: person.FieldWbFaceOrderNo},
+			person.FieldFaceVerifyResult: {Type: field.TypeJSON, Column: person.FieldFaceVerifyResult},
 		},
 	}
 	graph.Nodes[39] = &sqlgraph.Node{
@@ -12522,6 +12527,11 @@ func (f *PersonFilter) WhereIDCardNational(p entql.StringP) {
 	f.Where(p.Field(person.FieldIDCardNational))
 }
 
+// WhereIDCardHead applies the entql string predicate on the id_card_head field.
+func (f *PersonFilter) WhereIDCardHead(p entql.StringP) {
+	f.Where(p.Field(person.FieldIDCardHead))
+}
+
 // WhereAuthFace applies the entql string predicate on the auth_face field.
 func (f *PersonFilter) WhereAuthFace(p entql.StringP) {
 	f.Where(p.Field(person.FieldAuthFace))
@@ -12550,6 +12560,26 @@ func (f *PersonFilter) WhereBaiduVerifyToken(p entql.StringP) {
 // WhereBaiduLogID applies the entql string predicate on the baidu_log_id field.
 func (f *PersonFilter) WhereBaiduLogID(p entql.StringP) {
 	f.Where(p.Field(person.FieldBaiduLogID))
+}
+
+// WhereCertifyID applies the entql string predicate on the certify_id field.
+func (f *PersonFilter) WhereCertifyID(p entql.StringP) {
+	f.Where(p.Field(person.FieldCertifyID))
+}
+
+// WhereWbOcrOrderNo applies the entql string predicate on the wb_ocr_order_no field.
+func (f *PersonFilter) WhereWbOcrOrderNo(p entql.StringP) {
+	f.Where(p.Field(person.FieldWbOcrOrderNo))
+}
+
+// WhereWbFaceOrderNo applies the entql string predicate on the wb_face_order_no field.
+func (f *PersonFilter) WhereWbFaceOrderNo(p entql.StringP) {
+	f.Where(p.Field(person.FieldWbFaceOrderNo))
+}
+
+// WhereFaceVerifyResult applies the entql json.RawMessage predicate on the face_verify_result field.
+func (f *PersonFilter) WhereFaceVerifyResult(p entql.BytesP) {
+	f.Where(p.Field(person.FieldFaceVerifyResult))
 }
 
 // WhereHasRider applies a predicate to check if query has an edge rider.

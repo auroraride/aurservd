@@ -182,6 +182,20 @@ func (pc *PersonCreate) SetNillableIDCardNational(s *string) *PersonCreate {
 	return pc
 }
 
+// SetIDCardHead sets the "id_card_head" field.
+func (pc *PersonCreate) SetIDCardHead(s string) *PersonCreate {
+	pc.mutation.SetIDCardHead(s)
+	return pc
+}
+
+// SetNillableIDCardHead sets the "id_card_head" field if the given value is not nil.
+func (pc *PersonCreate) SetNillableIDCardHead(s *string) *PersonCreate {
+	if s != nil {
+		pc.SetIDCardHead(*s)
+	}
+	return pc
+}
+
 // SetAuthFace sets the "auth_face" field.
 func (pc *PersonCreate) SetAuthFace(s string) *PersonCreate {
 	pc.mutation.SetAuthFace(s)
@@ -197,8 +211,8 @@ func (pc *PersonCreate) SetNillableAuthFace(s *string) *PersonCreate {
 }
 
 // SetAuthResult sets the "auth_result" field.
-func (pc *PersonCreate) SetAuthResult(mvr *model.BaiduFaceVerifyResult) *PersonCreate {
-	pc.mutation.SetAuthResult(mvr)
+func (pc *PersonCreate) SetAuthResult(mfvr *model.BaiduFaceVerifyResult) *PersonCreate {
+	pc.mutation.SetAuthResult(mfvr)
 	return pc
 }
 
@@ -255,6 +269,54 @@ func (pc *PersonCreate) SetNillableBaiduLogID(s *string) *PersonCreate {
 	if s != nil {
 		pc.SetBaiduLogID(*s)
 	}
+	return pc
+}
+
+// SetCertifyID sets the "certify_id" field.
+func (pc *PersonCreate) SetCertifyID(s string) *PersonCreate {
+	pc.mutation.SetCertifyID(s)
+	return pc
+}
+
+// SetNillableCertifyID sets the "certify_id" field if the given value is not nil.
+func (pc *PersonCreate) SetNillableCertifyID(s *string) *PersonCreate {
+	if s != nil {
+		pc.SetCertifyID(*s)
+	}
+	return pc
+}
+
+// SetWbOcrOrderNo sets the "wb_ocr_order_no" field.
+func (pc *PersonCreate) SetWbOcrOrderNo(s string) *PersonCreate {
+	pc.mutation.SetWbOcrOrderNo(s)
+	return pc
+}
+
+// SetNillableWbOcrOrderNo sets the "wb_ocr_order_no" field if the given value is not nil.
+func (pc *PersonCreate) SetNillableWbOcrOrderNo(s *string) *PersonCreate {
+	if s != nil {
+		pc.SetWbOcrOrderNo(*s)
+	}
+	return pc
+}
+
+// SetWbFaceOrderNo sets the "wb_face_order_no" field.
+func (pc *PersonCreate) SetWbFaceOrderNo(s string) *PersonCreate {
+	pc.mutation.SetWbFaceOrderNo(s)
+	return pc
+}
+
+// SetNillableWbFaceOrderNo sets the "wb_face_order_no" field if the given value is not nil.
+func (pc *PersonCreate) SetNillableWbFaceOrderNo(s *string) *PersonCreate {
+	if s != nil {
+		pc.SetWbFaceOrderNo(*s)
+	}
+	return pc
+}
+
+// SetFaceVerifyResult sets the "face_verify_result" field.
+func (pc *PersonCreate) SetFaceVerifyResult(mfvr *model.PersonFaceVerifyResult) *PersonCreate {
+	pc.mutation.SetFaceVerifyResult(mfvr)
 	return pc
 }
 
@@ -369,6 +431,21 @@ func (pc *PersonCreate) check() error {
 	if _, ok := pc.mutation.IDCardType(); !ok {
 		return &ValidationError{Name: "id_card_type", err: errors.New(`ent: missing required field "Person.id_card_type"`)}
 	}
+	if v, ok := pc.mutation.CertifyID(); ok {
+		if err := person.CertifyIDValidator(v); err != nil {
+			return &ValidationError{Name: "certify_id", err: fmt.Errorf(`ent: validator failed for field "Person.certify_id": %w`, err)}
+		}
+	}
+	if v, ok := pc.mutation.WbOcrOrderNo(); ok {
+		if err := person.WbOcrOrderNoValidator(v); err != nil {
+			return &ValidationError{Name: "wb_ocr_order_no", err: fmt.Errorf(`ent: validator failed for field "Person.wb_ocr_order_no": %w`, err)}
+		}
+	}
+	if v, ok := pc.mutation.WbFaceOrderNo(); ok {
+		if err := person.WbFaceOrderNoValidator(v); err != nil {
+			return &ValidationError{Name: "wb_face_order_no", err: fmt.Errorf(`ent: validator failed for field "Person.wb_face_order_no": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -448,6 +525,10 @@ func (pc *PersonCreate) createSpec() (*Person, *sqlgraph.CreateSpec) {
 		_spec.SetField(person.FieldIDCardNational, field.TypeString, value)
 		_node.IDCardNational = value
 	}
+	if value, ok := pc.mutation.IDCardHead(); ok {
+		_spec.SetField(person.FieldIDCardHead, field.TypeString, value)
+		_node.IDCardHead = value
+	}
 	if value, ok := pc.mutation.AuthFace(); ok {
 		_spec.SetField(person.FieldAuthFace, field.TypeString, value)
 		_node.AuthFace = value
@@ -471,6 +552,22 @@ func (pc *PersonCreate) createSpec() (*Person, *sqlgraph.CreateSpec) {
 	if value, ok := pc.mutation.BaiduLogID(); ok {
 		_spec.SetField(person.FieldBaiduLogID, field.TypeString, value)
 		_node.BaiduLogID = value
+	}
+	if value, ok := pc.mutation.CertifyID(); ok {
+		_spec.SetField(person.FieldCertifyID, field.TypeString, value)
+		_node.CertifyID = value
+	}
+	if value, ok := pc.mutation.WbOcrOrderNo(); ok {
+		_spec.SetField(person.FieldWbOcrOrderNo, field.TypeString, value)
+		_node.WbOcrOrderNo = value
+	}
+	if value, ok := pc.mutation.WbFaceOrderNo(); ok {
+		_spec.SetField(person.FieldWbFaceOrderNo, field.TypeString, value)
+		_node.WbFaceOrderNo = value
+	}
+	if value, ok := pc.mutation.FaceVerifyResult(); ok {
+		_spec.SetField(person.FieldFaceVerifyResult, field.TypeJSON, value)
+		_node.FaceVerifyResult = value
 	}
 	if nodes := pc.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -720,6 +817,24 @@ func (u *PersonUpsert) ClearIDCardNational() *PersonUpsert {
 	return u
 }
 
+// SetIDCardHead sets the "id_card_head" field.
+func (u *PersonUpsert) SetIDCardHead(v string) *PersonUpsert {
+	u.Set(person.FieldIDCardHead, v)
+	return u
+}
+
+// UpdateIDCardHead sets the "id_card_head" field to the value that was provided on create.
+func (u *PersonUpsert) UpdateIDCardHead() *PersonUpsert {
+	u.SetExcluded(person.FieldIDCardHead)
+	return u
+}
+
+// ClearIDCardHead clears the value of the "id_card_head" field.
+func (u *PersonUpsert) ClearIDCardHead() *PersonUpsert {
+	u.SetNull(person.FieldIDCardHead)
+	return u
+}
+
 // SetAuthFace sets the "auth_face" field.
 func (u *PersonUpsert) SetAuthFace(v string) *PersonUpsert {
 	u.Set(person.FieldAuthFace, v)
@@ -825,6 +940,78 @@ func (u *PersonUpsert) UpdateBaiduLogID() *PersonUpsert {
 // ClearBaiduLogID clears the value of the "baidu_log_id" field.
 func (u *PersonUpsert) ClearBaiduLogID() *PersonUpsert {
 	u.SetNull(person.FieldBaiduLogID)
+	return u
+}
+
+// SetCertifyID sets the "certify_id" field.
+func (u *PersonUpsert) SetCertifyID(v string) *PersonUpsert {
+	u.Set(person.FieldCertifyID, v)
+	return u
+}
+
+// UpdateCertifyID sets the "certify_id" field to the value that was provided on create.
+func (u *PersonUpsert) UpdateCertifyID() *PersonUpsert {
+	u.SetExcluded(person.FieldCertifyID)
+	return u
+}
+
+// ClearCertifyID clears the value of the "certify_id" field.
+func (u *PersonUpsert) ClearCertifyID() *PersonUpsert {
+	u.SetNull(person.FieldCertifyID)
+	return u
+}
+
+// SetWbOcrOrderNo sets the "wb_ocr_order_no" field.
+func (u *PersonUpsert) SetWbOcrOrderNo(v string) *PersonUpsert {
+	u.Set(person.FieldWbOcrOrderNo, v)
+	return u
+}
+
+// UpdateWbOcrOrderNo sets the "wb_ocr_order_no" field to the value that was provided on create.
+func (u *PersonUpsert) UpdateWbOcrOrderNo() *PersonUpsert {
+	u.SetExcluded(person.FieldWbOcrOrderNo)
+	return u
+}
+
+// ClearWbOcrOrderNo clears the value of the "wb_ocr_order_no" field.
+func (u *PersonUpsert) ClearWbOcrOrderNo() *PersonUpsert {
+	u.SetNull(person.FieldWbOcrOrderNo)
+	return u
+}
+
+// SetWbFaceOrderNo sets the "wb_face_order_no" field.
+func (u *PersonUpsert) SetWbFaceOrderNo(v string) *PersonUpsert {
+	u.Set(person.FieldWbFaceOrderNo, v)
+	return u
+}
+
+// UpdateWbFaceOrderNo sets the "wb_face_order_no" field to the value that was provided on create.
+func (u *PersonUpsert) UpdateWbFaceOrderNo() *PersonUpsert {
+	u.SetExcluded(person.FieldWbFaceOrderNo)
+	return u
+}
+
+// ClearWbFaceOrderNo clears the value of the "wb_face_order_no" field.
+func (u *PersonUpsert) ClearWbFaceOrderNo() *PersonUpsert {
+	u.SetNull(person.FieldWbFaceOrderNo)
+	return u
+}
+
+// SetFaceVerifyResult sets the "face_verify_result" field.
+func (u *PersonUpsert) SetFaceVerifyResult(v *model.PersonFaceVerifyResult) *PersonUpsert {
+	u.Set(person.FieldFaceVerifyResult, v)
+	return u
+}
+
+// UpdateFaceVerifyResult sets the "face_verify_result" field to the value that was provided on create.
+func (u *PersonUpsert) UpdateFaceVerifyResult() *PersonUpsert {
+	u.SetExcluded(person.FieldFaceVerifyResult)
+	return u
+}
+
+// ClearFaceVerifyResult clears the value of the "face_verify_result" field.
+func (u *PersonUpsert) ClearFaceVerifyResult() *PersonUpsert {
+	u.SetNull(person.FieldFaceVerifyResult)
 	return u
 }
 
@@ -1086,6 +1273,27 @@ func (u *PersonUpsertOne) ClearIDCardNational() *PersonUpsertOne {
 	})
 }
 
+// SetIDCardHead sets the "id_card_head" field.
+func (u *PersonUpsertOne) SetIDCardHead(v string) *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetIDCardHead(v)
+	})
+}
+
+// UpdateIDCardHead sets the "id_card_head" field to the value that was provided on create.
+func (u *PersonUpsertOne) UpdateIDCardHead() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateIDCardHead()
+	})
+}
+
+// ClearIDCardHead clears the value of the "id_card_head" field.
+func (u *PersonUpsertOne) ClearIDCardHead() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.ClearIDCardHead()
+	})
+}
+
 // SetAuthFace sets the "auth_face" field.
 func (u *PersonUpsertOne) SetAuthFace(v string) *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
@@ -1209,6 +1417,90 @@ func (u *PersonUpsertOne) UpdateBaiduLogID() *PersonUpsertOne {
 func (u *PersonUpsertOne) ClearBaiduLogID() *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
 		s.ClearBaiduLogID()
+	})
+}
+
+// SetCertifyID sets the "certify_id" field.
+func (u *PersonUpsertOne) SetCertifyID(v string) *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetCertifyID(v)
+	})
+}
+
+// UpdateCertifyID sets the "certify_id" field to the value that was provided on create.
+func (u *PersonUpsertOne) UpdateCertifyID() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateCertifyID()
+	})
+}
+
+// ClearCertifyID clears the value of the "certify_id" field.
+func (u *PersonUpsertOne) ClearCertifyID() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.ClearCertifyID()
+	})
+}
+
+// SetWbOcrOrderNo sets the "wb_ocr_order_no" field.
+func (u *PersonUpsertOne) SetWbOcrOrderNo(v string) *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetWbOcrOrderNo(v)
+	})
+}
+
+// UpdateWbOcrOrderNo sets the "wb_ocr_order_no" field to the value that was provided on create.
+func (u *PersonUpsertOne) UpdateWbOcrOrderNo() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateWbOcrOrderNo()
+	})
+}
+
+// ClearWbOcrOrderNo clears the value of the "wb_ocr_order_no" field.
+func (u *PersonUpsertOne) ClearWbOcrOrderNo() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.ClearWbOcrOrderNo()
+	})
+}
+
+// SetWbFaceOrderNo sets the "wb_face_order_no" field.
+func (u *PersonUpsertOne) SetWbFaceOrderNo(v string) *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetWbFaceOrderNo(v)
+	})
+}
+
+// UpdateWbFaceOrderNo sets the "wb_face_order_no" field to the value that was provided on create.
+func (u *PersonUpsertOne) UpdateWbFaceOrderNo() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateWbFaceOrderNo()
+	})
+}
+
+// ClearWbFaceOrderNo clears the value of the "wb_face_order_no" field.
+func (u *PersonUpsertOne) ClearWbFaceOrderNo() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.ClearWbFaceOrderNo()
+	})
+}
+
+// SetFaceVerifyResult sets the "face_verify_result" field.
+func (u *PersonUpsertOne) SetFaceVerifyResult(v *model.PersonFaceVerifyResult) *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetFaceVerifyResult(v)
+	})
+}
+
+// UpdateFaceVerifyResult sets the "face_verify_result" field to the value that was provided on create.
+func (u *PersonUpsertOne) UpdateFaceVerifyResult() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateFaceVerifyResult()
+	})
+}
+
+// ClearFaceVerifyResult clears the value of the "face_verify_result" field.
+func (u *PersonUpsertOne) ClearFaceVerifyResult() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.ClearFaceVerifyResult()
 	})
 }
 
@@ -1636,6 +1928,27 @@ func (u *PersonUpsertBulk) ClearIDCardNational() *PersonUpsertBulk {
 	})
 }
 
+// SetIDCardHead sets the "id_card_head" field.
+func (u *PersonUpsertBulk) SetIDCardHead(v string) *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetIDCardHead(v)
+	})
+}
+
+// UpdateIDCardHead sets the "id_card_head" field to the value that was provided on create.
+func (u *PersonUpsertBulk) UpdateIDCardHead() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateIDCardHead()
+	})
+}
+
+// ClearIDCardHead clears the value of the "id_card_head" field.
+func (u *PersonUpsertBulk) ClearIDCardHead() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.ClearIDCardHead()
+	})
+}
+
 // SetAuthFace sets the "auth_face" field.
 func (u *PersonUpsertBulk) SetAuthFace(v string) *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
@@ -1759,6 +2072,90 @@ func (u *PersonUpsertBulk) UpdateBaiduLogID() *PersonUpsertBulk {
 func (u *PersonUpsertBulk) ClearBaiduLogID() *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
 		s.ClearBaiduLogID()
+	})
+}
+
+// SetCertifyID sets the "certify_id" field.
+func (u *PersonUpsertBulk) SetCertifyID(v string) *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetCertifyID(v)
+	})
+}
+
+// UpdateCertifyID sets the "certify_id" field to the value that was provided on create.
+func (u *PersonUpsertBulk) UpdateCertifyID() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateCertifyID()
+	})
+}
+
+// ClearCertifyID clears the value of the "certify_id" field.
+func (u *PersonUpsertBulk) ClearCertifyID() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.ClearCertifyID()
+	})
+}
+
+// SetWbOcrOrderNo sets the "wb_ocr_order_no" field.
+func (u *PersonUpsertBulk) SetWbOcrOrderNo(v string) *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetWbOcrOrderNo(v)
+	})
+}
+
+// UpdateWbOcrOrderNo sets the "wb_ocr_order_no" field to the value that was provided on create.
+func (u *PersonUpsertBulk) UpdateWbOcrOrderNo() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateWbOcrOrderNo()
+	})
+}
+
+// ClearWbOcrOrderNo clears the value of the "wb_ocr_order_no" field.
+func (u *PersonUpsertBulk) ClearWbOcrOrderNo() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.ClearWbOcrOrderNo()
+	})
+}
+
+// SetWbFaceOrderNo sets the "wb_face_order_no" field.
+func (u *PersonUpsertBulk) SetWbFaceOrderNo(v string) *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetWbFaceOrderNo(v)
+	})
+}
+
+// UpdateWbFaceOrderNo sets the "wb_face_order_no" field to the value that was provided on create.
+func (u *PersonUpsertBulk) UpdateWbFaceOrderNo() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateWbFaceOrderNo()
+	})
+}
+
+// ClearWbFaceOrderNo clears the value of the "wb_face_order_no" field.
+func (u *PersonUpsertBulk) ClearWbFaceOrderNo() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.ClearWbFaceOrderNo()
+	})
+}
+
+// SetFaceVerifyResult sets the "face_verify_result" field.
+func (u *PersonUpsertBulk) SetFaceVerifyResult(v *model.PersonFaceVerifyResult) *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetFaceVerifyResult(v)
+	})
+}
+
+// UpdateFaceVerifyResult sets the "face_verify_result" field to the value that was provided on create.
+func (u *PersonUpsertBulk) UpdateFaceVerifyResult() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateFaceVerifyResult()
+	})
+}
+
+// ClearFaceVerifyResult clears the value of the "face_verify_result" field.
+func (u *PersonUpsertBulk) ClearFaceVerifyResult() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.ClearFaceVerifyResult()
 	})
 }
 
