@@ -9340,6 +9340,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "integer",
+                        "description": "骑士卡类别 1:单电 2:车加电",
+                        "name": "planType",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "description": "订阅剩余天数区间, 逗号分隔, 例如 ` + "`" + `0,7` + "`" + `",
                         "name": "remaining",
@@ -12251,6 +12257,61 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/v2/certification/face": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Person - 实人"
+                ],
+                "summary": "获取人脸核身参数",
+                "operationId": "CertificationFace",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "订单编号",
+                        "name": "orderNo",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/definition.PersonCertificationOcrRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/v2/certification/ocr": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Person - 实人"
+                ],
+                "summary": "获取人脸核身OCR参数",
+                "operationId": "CertificationOcr",
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/definition.PersonCertificationOcrRes"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -12300,6 +12361,35 @@ const docTemplate = `{
                 },
                 "lng": {
                     "type": "number"
+                }
+            }
+        },
+        "definition.PersonCertificationOcrRes": {
+            "type": "object",
+            "properties": {
+                "appId": {
+                    "description": "WBAppid",
+                    "type": "string"
+                },
+                "nonce": {
+                    "description": "随机字符串",
+                    "type": "string"
+                },
+                "orderNo": {
+                    "description": "订单号",
+                    "type": "string"
+                },
+                "sign": {
+                    "description": "签名",
+                    "type": "string"
+                },
+                "userId": {
+                    "description": "用户唯一标识",
+                    "type": "string"
+                },
+                "version": {
+                    "description": "版本号",
+                    "type": "string"
                 }
             }
         },
@@ -13740,6 +13830,10 @@ const docTemplate = `{
                 },
                 "name": {
                     "description": "骑手姓名",
+                    "type": "string"
+                },
+                "operator": {
+                    "description": "操作人",
                     "type": "string"
                 },
                 "phone": {
@@ -15794,25 +15888,6 @@ const docTemplate = `{
                 "agent": {
                     "description": "是否代理商模式",
                     "type": "boolean"
-                },
-                "days": {
-                    "description": "代理商时间选项",
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
-                "enterpriseContactName": {
-                    "description": "团签联系人",
-                    "type": "string"
-                },
-                "enterpriseContactPhone": {
-                    "description": "团签联系电话",
-                    "type": "string"
-                },
-                "enterpriseName": {
-                    "description": "团签名称",
-                    "type": "string"
                 },
                 "id": {
                     "description": "企业ID",
@@ -18527,6 +18602,10 @@ const docTemplate = `{
                 },
                 "planId": {
                     "description": "骑士卡",
+                    "type": "integer"
+                },
+                "planType": {
+                    "description": "骑士卡类别 1:单电 2:车加电",
                     "type": "integer"
                 },
                 "remaining": {
