@@ -1501,15 +1501,15 @@ func init() {
 	// rider.DefaultIsNewDevice holds the default value on creation for the is_new_device field.
 	rider.DefaultIsNewDevice = riderDescIsNewDevice.Default.(bool)
 	// riderDescPushID is the schema descriptor for push_id field.
-	riderDescPushID := riderFields[10].Descriptor()
+	riderDescPushID := riderFields[9].Descriptor()
 	// rider.PushIDValidator is a validator for the "push_id" field. It is called by the builders before save.
 	rider.PushIDValidator = riderDescPushID.Validators[0].(func(string) error)
 	// riderDescBlocked is the schema descriptor for blocked field.
-	riderDescBlocked := riderFields[12].Descriptor()
+	riderDescBlocked := riderFields[11].Descriptor()
 	// rider.DefaultBlocked holds the default value on creation for the blocked field.
 	rider.DefaultBlocked = riderDescBlocked.Default.(bool)
 	// riderDescPoints is the schema descriptor for points field.
-	riderDescPoints := riderFields[13].Descriptor()
+	riderDescPoints := riderFields[12].Descriptor()
 	// rider.DefaultPoints holds the default value on creation for the points field.
 	rider.DefaultPoints = riderDescPoints.Default.(int64)
 	riderfollowupMixin := schema.RiderFollowUp{}.Mixin()

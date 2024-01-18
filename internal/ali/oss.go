@@ -13,10 +13,11 @@ import (
 
 	"github.com/aliyun/alibaba-cloud-sdk-go/services/sts"
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
+	"github.com/go-resty/resty/v2"
+
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/pkg/snag"
-	"github.com/go-resty/resty/v2"
 )
 
 type ossClient struct {
@@ -53,8 +54,8 @@ func (c *ossClient) UploadUrlFile(name string, url string) string {
 	return c.UploadBytes(name, r.Body())
 }
 
-// UploadBase64ImageJpeg 上传jpg图片
-func (c *ossClient) UploadBase64ImageJpeg(name string, b64 string) string {
+// UploadBase64 上传jpg图片
+func (c *ossClient) UploadBase64(name string, b64 string) string {
 	b, err := base64.StdEncoding.DecodeString(b64)
 	if err != nil {
 		snag.Panic(err)

@@ -17,15 +17,15 @@ type csc struct{}
 var Csc = new(csc)
 
 // BatchReminder
-// @ID           CscBatchReminder
-// @Router       /manager/v1/csc/irv [POST]
-// @Summary      MT1001 时光驹催费工具
-// @Tags         [M]管理接口
-// @Accept       mpfd
-// @Produce      json
-// @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        file  formData  file  true  "外呼文件"
-// @Success      200  {object}  model.ShiguangjuIVRRes  "请求成功"
+// @ID		CscBatchReminder
+// @Router	/manager/v1/csc/irv [POST]
+// @Summary	MT1001 时光驹催费工具
+// @Tags	[M]管理接口
+// @Accept	mpfd
+// @Produce	json
+// @Param	X-Manager-Token	header		string					true	"管理员校验token"
+// @Param	file			formData	file					true	"外呼文件"
+// @Success	200				{object}	model.ShiguangjuIVRRes	"请求成功"
 func (*csc) BatchReminder(c echo.Context) (err error) {
 	file, err := c.FormFile("file")
 	if err != nil {

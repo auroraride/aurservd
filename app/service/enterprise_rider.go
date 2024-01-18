@@ -535,7 +535,6 @@ func (s *enterpriseRiderService) CopyAndCreateRider(tx *ent.Tx, r *ent.Rider, pa
 		SetDeviceType(r.DeviceType).
 		SetLastDevice(r.LastDevice).
 		SetIsNewDevice(r.IsNewDevice).
-		SetNillableLastFace(r.LastFace).
 		SetPushID(r.PushID).
 		SetNillableLastSigninAt(r.LastSigninAt).
 		SetBlocked(r.Blocked).

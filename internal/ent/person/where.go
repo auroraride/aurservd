@@ -1100,6 +1100,16 @@ func BaiduLogIDContainsFold(v string) predicate.Person {
 	return predicate.Person(sql.FieldContainsFold(FieldBaiduLogID, v))
 }
 
+// FaceVerifyResultIsNil applies the IsNil predicate on the "face_verify_result" field.
+func FaceVerifyResultIsNil() predicate.Person {
+	return predicate.Person(sql.FieldIsNull(FieldFaceVerifyResult))
+}
+
+// FaceVerifyResultNotNil applies the NotNil predicate on the "face_verify_result" field.
+func FaceVerifyResultNotNil() predicate.Person {
+	return predicate.Person(sql.FieldNotNull(FieldFaceVerifyResult))
+}
+
 // HasRider applies the HasEdge predicate on the "rider" edge.
 func HasRider() predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {

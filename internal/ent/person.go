@@ -47,9 +47,9 @@ type Person struct {
 	IDCardNational string `json:"id_card_national,omitempty"`
 	// 实名认证人脸照片
 	AuthFace string `json:"auth_face,omitempty"`
-	// 实名认证结果详情
-	AuthResult *model.FaceVerifyResult `json:"auth_result,omitempty"`
-	// 实名认证结果获取时间
+	// 百度实名认证结果详情
+	AuthResult *model.BaiduFaceVerifyResult `json:"auth_result,omitempty"`
+	// 百度实名认证结果获取时间
 	AuthAt *time.Time `json:"auth_at,omitempty"`
 	// E签宝账户ID
 	EsignAccountID string `json:"esign_account_id,omitempty"`
@@ -57,6 +57,8 @@ type Person struct {
 	BaiduVerifyToken string `json:"baidu_verify_token,omitempty"`
 	// 百度人脸log_id
 	BaiduLogID string `json:"baidu_log_id,omitempty"`
+	// 人身核验核验结果
+	FaceVerifyResult *model.PersonFaceVerifyResult `json:"face_verify_result,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PersonQuery when eager-loading is set.
 	Edges        PersonEdges `json:"edges"`
@@ -86,7 +88,7 @@ func (*Person) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case person.FieldCreator, person.FieldLastModifier, person.FieldAuthResult:
+		case person.FieldCreator, person.FieldLastModifier, person.FieldAuthResult, person.FieldFaceVerifyResult:
 			values[i] = new([]byte)
 		case person.FieldBanned:
 			values[i] = new(sql.NullBool)
@@ -239,6 +241,14 @@ func (pe *Person) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pe.BaiduLogID = value.String
 			}
+		case person.FieldFaceVerifyResult:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field face_verify_result", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &pe.FaceVerifyResult); err != nil {
+					return fmt.Errorf("unmarshal field face_verify_result: %w", err)
+				}
+			}
 		default:
 			pe.selectValues.Set(columns[i], values[i])
 		}
@@ -340,6 +350,9 @@ func (pe *Person) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("baidu_log_id=")
 	builder.WriteString(pe.BaiduLogID)
+	builder.WriteString(", ")
+	builder.WriteString("face_verify_result=")
+	builder.WriteString(fmt.Sprintf("%v", pe.FaceVerifyResult))
 	builder.WriteByte(')')
 	return builder.String()
 }

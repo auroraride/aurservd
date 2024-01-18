@@ -12,13 +12,14 @@ import (
 	"github.com/auroraride/adapter"
 )
 
-const (
+var (
+	Config     *config
 	configFile = "./config/config.yaml"
 )
 
-var (
-	Config *config
-)
+func SetConfigFile(cfgFile string) {
+	configFile = cfgFile
+}
 
 type Wechat struct {
 	AppID     string `koanf:"appID"`
@@ -186,8 +187,17 @@ type config struct {
 		IdVerify struct {
 			AppCode string
 		}
+
 		BankAddr struct {
 			AppCode string
+		}
+
+		FaceVerify struct {
+			AccessKeyId     string
+			AccessKeySecret string
+			Endpoint        string
+			SceneId         int64
+			Callback        string
 		}
 	}
 
@@ -252,6 +262,12 @@ type config struct {
 		Agent     Wechat
 		Promotion Wechat
 	} `koanf:"wechatMiniprogram"`
+
+	WbFace struct {
+		AppId   string
+		Secret  string
+		Licence string
+	}
 }
 
 func LoadConfig() {

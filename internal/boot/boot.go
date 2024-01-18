@@ -18,6 +18,7 @@ import (
 	"github.com/auroraride/aurservd/assets"
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/payment"
+	"github.com/auroraride/aurservd/internal/tencent"
 )
 
 func Bootstrap() {
@@ -62,4 +63,7 @@ func Bootstrap() {
 
 	// 加载模板
 	assets.LoadTemplates()
+
+	// 初始化腾讯人身核验
+	tencent.BootWbFace(ar.Redis)
 }

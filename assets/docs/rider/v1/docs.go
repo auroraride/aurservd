@@ -15,102 +15,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/common/captcha": {
-            "get": {
-                "description": "生成的图片验证码有效时间为10分钟",
-                "consumes": [
-                    "image/png"
-                ],
-                "produces": [
-                    "image/png"
-                ],
-                "tags": [
-                    "Communal - 公共接口"
-                ],
-                "summary": "C1 生成图片验证码",
-                "operationId": "CaptchaGenerate",
-                "responses": {
-                    "200": {
-                        "description": "ok",
-                        "schema": {
-                            "type": "string"
-                        },
-                        "headers": {
-                            "X-Captcha-Id  true": {
-                                "type": "string",
-                                "description": "Captcha验证码ID"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/common/oss/token": {
-            "get": {
-                "description": "上传文件必须，单次获取有效时间为1个小时",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Communal - 公共接口"
-                ],
-                "summary": "C3 获取阿里云oss临时凭证",
-                "operationId": "AliyunOssToken",
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.AliyunOssStsRes"
-                        }
-                    }
-                }
-            }
-        },
-        "/common/sms": {
-            "post": {
-                "description": "上传文件必须，单次获取有效时间为1个小时",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Communal - 公共接口"
-                ],
-                "summary": "C2 发送短信验证码",
-                "operationId": "SendSmsCode",
-                "parameters": [
-                    {
-                        "description": "请求参数",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.SmsReq"
-                        }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Captcha验证码ID",
-                        "name": "X-Captcha-Id",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.SmsRes"
-                        }
-                    }
-                }
-            }
-        },
         "/rider/v1/assistance": {
             "get": {
                 "consumes": [
@@ -2567,29 +2471,6 @@ const docTemplate = `{
                 "CabinetBrandXiliulouServer"
             ]
         },
-        "model.AliyunOssStsRes": {
-            "type": "object",
-            "properties": {
-                "accessKeyId": {
-                    "type": "string"
-                },
-                "accessKeySecret": {
-                    "type": "string"
-                },
-                "bucket": {
-                    "type": "string"
-                },
-                "expiration": {
-                    "type": "string"
-                },
-                "region": {
-                    "type": "string"
-                },
-                "stsToken": {
-                    "type": "string"
-                }
-            }
-        },
         "model.AllocateRiderRes": {
             "type": "object",
             "properties": {
@@ -3353,25 +3234,6 @@ const docTemplate = `{
                 "agent": {
                     "description": "是否代理商模式",
                     "type": "boolean"
-                },
-                "days": {
-                    "description": "代理商时间选项",
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
-                "enterpriseContactName": {
-                    "description": "团签联系人",
-                    "type": "string"
-                },
-                "enterpriseContactPhone": {
-                    "description": "团签联系电话",
-                    "type": "string"
-                },
-                "enterpriseName": {
-                    "description": "团签名称",
-                    "type": "string"
                 },
                 "id": {
                     "description": "企业ID",
@@ -4672,32 +4534,6 @@ const docTemplate = `{
                 "reserveDuration": {
                     "description": "预约最长时间(分钟)",
                     "type": "integer"
-                }
-            }
-        },
-        "model.SmsReq": {
-            "type": "object",
-            "required": [
-                "captchaCode",
-                "phone"
-            ],
-            "properties": {
-                "captchaCode": {
-                    "description": "captcha 验证码",
-                    "type": "string"
-                },
-                "phone": {
-                    "description": "手机号",
-                    "type": "string"
-                }
-            }
-        },
-        "model.SmsRes": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "description": "任务ID",
-                    "type": "string"
                 }
             }
         },

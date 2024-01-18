@@ -18,15 +18,15 @@ type maintainer struct{}
 var Maintainer = new(maintainer)
 
 // Signin
-// @ID           AgentMaintainerSignin
-// @Router       /maintainer/v1/signin [POST]
-// @Summary      O1001 运维登录
-// @Tags         [O]运维接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Maintainer-Token  header  string  true  "运维校验token"
-// @Param        body  body  model.MaintainerSigninReq  true  "请求参数"
-// @Success      200  {object}  model.MaintainerSigninRes  "请求成功"
+// @ID		AgentMaintainerSignin
+// @Router	/maintainer/v1/signin [POST]
+// @Summary	O1001 运维登录
+// @Tags	[O]运维接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Maintainer-Token	header		string						true	"运维校验token"
+// @Param	body				body		model.MaintainerSigninReq	true	"请求参数"
+// @Success	200					{object}	model.MaintainerSigninRes	"请求成功"
 func (*maintainer) Signin(c echo.Context) (err error) {
 	ctx, req := app.MaintainerContextAndBinding[model.MaintainerSigninReq](c)
 	return ctx.SendResponse(service.NewMaintainer().Signin(req))

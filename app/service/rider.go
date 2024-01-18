@@ -204,6 +204,7 @@ func (s *riderService) GetFaceUrl(c *app.RiderContext) string {
 }
 
 // FaceAuthResult 获取并更新人脸实名验证结果
+// TODO 兼容v2 api
 func (s *riderService) FaceAuthResult(c *app.RiderContext, token string) (success bool) {
 	if !s.ComparePrivacy(c) {
 		snag.Panic("验证失败")
@@ -233,7 +234,7 @@ func (s *riderService) FaceAuthResult(c *app.RiderContext, token string) (succes
 		status = model.PersonAuthenticationFailed.Value()
 	}
 
-	vr := &model.FaceVerifyResult{
+	vr := &model.BaiduFaceVerifyResult{
 		Birthday:       detail.Birthday,
 		IssueAuthority: detail.IssueAuthority,
 		Address:        detail.Address,
@@ -248,7 +249,7 @@ func (s *riderService) FaceAuthResult(c *app.RiderContext, token string) (succes
 		Spoofing:       res.VerifyResult.Spoofing,
 	}
 
-	// 上传图片到七牛云
+	// 上传图片到阿里云OSS
 	var fm, pm, nm string
 	oss := ali.NewOss()
 	prefix := fmt.Sprintf("%s-%s/%s-", res.IdcardOcrResult.Name, res.IdcardOcrResult.IdCardNumber, time.Now().Format(carbon.ShortDateTimeLayout))
@@ -256,10 +257,10 @@ func (s *riderService) FaceAuthResult(c *app.RiderContext, token string) (succes
 		fm = oss.UploadUrlFile(prefix+"face.jpg", res.FaceImg)
 	}
 	if res.IdcardImages.FrontBase64 != "" {
-		pm = oss.UploadBase64ImageJpeg(prefix+"portrait.jpg", res.IdcardImages.FrontBase64)
+		pm = oss.UploadBase64(prefix+"portrait.jpg", res.IdcardImages.FrontBase64)
 	}
 	if res.IdcardImages.BackBase64 != "" {
-		nm = oss.UploadBase64ImageJpeg(prefix+"national.jpg", res.IdcardImages.BackBase64)
+		nm = oss.UploadBase64(prefix+"national.jpg", res.IdcardImages.BackBase64)
 	}
 
 	icNum := vr.IdCardNumber
@@ -293,7 +294,6 @@ func (s *riderService) FaceAuthResult(c *app.RiderContext, token string) (succes
 		ri, err := ent.Database.Rider.
 			UpdateOneID(u.ID).
 			SetPersonID(id).
-			SetLastFace(fm).
 			SetIsNewDevice(false).
 			SetName(vr.Name).
 			SetIDCardNumber(icNum).
@@ -325,10 +325,9 @@ func (s *riderService) FaceResult(c *app.RiderContext, token string) (success bo
 	}
 	// 上传人脸图
 	p := u.Edges.Person
-	fm := ali.NewOss().UploadUrlFile(fmt.Sprintf("%s-%s/face-%s.jpg", p.Name, p.IDCardNumber, u.LastDevice), res.Result.Image)
+	ali.NewOss().UploadUrlFile(fmt.Sprintf("%s-%s/face-%s.jpg", p.Name, p.IDCardNumber, u.LastDevice), res.Result.Image)
 	err = ent.Database.Rider.
 		UpdateOneID(u.ID).
-		SetLastFace(fm).
 		SetIsNewDevice(false).
 		Exec(context.Background())
 	if err != nil {

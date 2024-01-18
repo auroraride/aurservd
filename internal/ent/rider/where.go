@@ -120,11 +120,6 @@ func IsNewDevice(v bool) predicate.Rider {
 	return predicate.Rider(sql.FieldEQ(FieldIsNewDevice, v))
 }
 
-// LastFace applies equality check predicate on the "last_face" field. It's identical to LastFaceEQ.
-func LastFace(v string) predicate.Rider {
-	return predicate.Rider(sql.FieldEQ(FieldLastFace, v))
-}
-
 // PushID applies equality check predicate on the "push_id" field. It's identical to PushIDEQ.
 func PushID(v string) predicate.Rider {
 	return predicate.Rider(sql.FieldEQ(FieldPushID, v))
@@ -823,81 +818,6 @@ func IsNewDeviceEQ(v bool) predicate.Rider {
 // IsNewDeviceNEQ applies the NEQ predicate on the "is_new_device" field.
 func IsNewDeviceNEQ(v bool) predicate.Rider {
 	return predicate.Rider(sql.FieldNEQ(FieldIsNewDevice, v))
-}
-
-// LastFaceEQ applies the EQ predicate on the "last_face" field.
-func LastFaceEQ(v string) predicate.Rider {
-	return predicate.Rider(sql.FieldEQ(FieldLastFace, v))
-}
-
-// LastFaceNEQ applies the NEQ predicate on the "last_face" field.
-func LastFaceNEQ(v string) predicate.Rider {
-	return predicate.Rider(sql.FieldNEQ(FieldLastFace, v))
-}
-
-// LastFaceIn applies the In predicate on the "last_face" field.
-func LastFaceIn(vs ...string) predicate.Rider {
-	return predicate.Rider(sql.FieldIn(FieldLastFace, vs...))
-}
-
-// LastFaceNotIn applies the NotIn predicate on the "last_face" field.
-func LastFaceNotIn(vs ...string) predicate.Rider {
-	return predicate.Rider(sql.FieldNotIn(FieldLastFace, vs...))
-}
-
-// LastFaceGT applies the GT predicate on the "last_face" field.
-func LastFaceGT(v string) predicate.Rider {
-	return predicate.Rider(sql.FieldGT(FieldLastFace, v))
-}
-
-// LastFaceGTE applies the GTE predicate on the "last_face" field.
-func LastFaceGTE(v string) predicate.Rider {
-	return predicate.Rider(sql.FieldGTE(FieldLastFace, v))
-}
-
-// LastFaceLT applies the LT predicate on the "last_face" field.
-func LastFaceLT(v string) predicate.Rider {
-	return predicate.Rider(sql.FieldLT(FieldLastFace, v))
-}
-
-// LastFaceLTE applies the LTE predicate on the "last_face" field.
-func LastFaceLTE(v string) predicate.Rider {
-	return predicate.Rider(sql.FieldLTE(FieldLastFace, v))
-}
-
-// LastFaceContains applies the Contains predicate on the "last_face" field.
-func LastFaceContains(v string) predicate.Rider {
-	return predicate.Rider(sql.FieldContains(FieldLastFace, v))
-}
-
-// LastFaceHasPrefix applies the HasPrefix predicate on the "last_face" field.
-func LastFaceHasPrefix(v string) predicate.Rider {
-	return predicate.Rider(sql.FieldHasPrefix(FieldLastFace, v))
-}
-
-// LastFaceHasSuffix applies the HasSuffix predicate on the "last_face" field.
-func LastFaceHasSuffix(v string) predicate.Rider {
-	return predicate.Rider(sql.FieldHasSuffix(FieldLastFace, v))
-}
-
-// LastFaceIsNil applies the IsNil predicate on the "last_face" field.
-func LastFaceIsNil() predicate.Rider {
-	return predicate.Rider(sql.FieldIsNull(FieldLastFace))
-}
-
-// LastFaceNotNil applies the NotNil predicate on the "last_face" field.
-func LastFaceNotNil() predicate.Rider {
-	return predicate.Rider(sql.FieldNotNull(FieldLastFace))
-}
-
-// LastFaceEqualFold applies the EqualFold predicate on the "last_face" field.
-func LastFaceEqualFold(v string) predicate.Rider {
-	return predicate.Rider(sql.FieldEqualFold(FieldLastFace, v))
-}
-
-// LastFaceContainsFold applies the ContainsFold predicate on the "last_face" field.
-func LastFaceContainsFold(v string) predicate.Rider {
-	return predicate.Rider(sql.FieldContainsFold(FieldLastFace, v))
 }
 
 // PushIDEQ applies the EQ predicate on the "push_id" field.

@@ -240,8 +240,8 @@ func (pu *PersonUpdate) ClearAuthFace() *PersonUpdate {
 }
 
 // SetAuthResult sets the "auth_result" field.
-func (pu *PersonUpdate) SetAuthResult(mvr *model.FaceVerifyResult) *PersonUpdate {
-	pu.mutation.SetAuthResult(mvr)
+func (pu *PersonUpdate) SetAuthResult(mfvr *model.BaiduFaceVerifyResult) *PersonUpdate {
+	pu.mutation.SetAuthResult(mfvr)
 	return pu
 }
 
@@ -328,6 +328,18 @@ func (pu *PersonUpdate) SetNillableBaiduLogID(s *string) *PersonUpdate {
 // ClearBaiduLogID clears the value of the "baidu_log_id" field.
 func (pu *PersonUpdate) ClearBaiduLogID() *PersonUpdate {
 	pu.mutation.ClearBaiduLogID()
+	return pu
+}
+
+// SetFaceVerifyResult sets the "face_verify_result" field.
+func (pu *PersonUpdate) SetFaceVerifyResult(mfvr *model.PersonFaceVerifyResult) *PersonUpdate {
+	pu.mutation.SetFaceVerifyResult(mfvr)
+	return pu
+}
+
+// ClearFaceVerifyResult clears the value of the "face_verify_result" field.
+func (pu *PersonUpdate) ClearFaceVerifyResult() *PersonUpdate {
+	pu.mutation.ClearFaceVerifyResult()
 	return pu
 }
 
@@ -542,6 +554,12 @@ func (pu *PersonUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if pu.mutation.BaiduLogIDCleared() {
 		_spec.ClearField(person.FieldBaiduLogID, field.TypeString)
+	}
+	if value, ok := pu.mutation.FaceVerifyResult(); ok {
+		_spec.SetField(person.FieldFaceVerifyResult, field.TypeJSON, value)
+	}
+	if pu.mutation.FaceVerifyResultCleared() {
+		_spec.ClearField(person.FieldFaceVerifyResult, field.TypeJSON)
 	}
 	if pu.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -819,8 +837,8 @@ func (puo *PersonUpdateOne) ClearAuthFace() *PersonUpdateOne {
 }
 
 // SetAuthResult sets the "auth_result" field.
-func (puo *PersonUpdateOne) SetAuthResult(mvr *model.FaceVerifyResult) *PersonUpdateOne {
-	puo.mutation.SetAuthResult(mvr)
+func (puo *PersonUpdateOne) SetAuthResult(mfvr *model.BaiduFaceVerifyResult) *PersonUpdateOne {
+	puo.mutation.SetAuthResult(mfvr)
 	return puo
 }
 
@@ -907,6 +925,18 @@ func (puo *PersonUpdateOne) SetNillableBaiduLogID(s *string) *PersonUpdateOne {
 // ClearBaiduLogID clears the value of the "baidu_log_id" field.
 func (puo *PersonUpdateOne) ClearBaiduLogID() *PersonUpdateOne {
 	puo.mutation.ClearBaiduLogID()
+	return puo
+}
+
+// SetFaceVerifyResult sets the "face_verify_result" field.
+func (puo *PersonUpdateOne) SetFaceVerifyResult(mfvr *model.PersonFaceVerifyResult) *PersonUpdateOne {
+	puo.mutation.SetFaceVerifyResult(mfvr)
+	return puo
+}
+
+// ClearFaceVerifyResult clears the value of the "face_verify_result" field.
+func (puo *PersonUpdateOne) ClearFaceVerifyResult() *PersonUpdateOne {
+	puo.mutation.ClearFaceVerifyResult()
 	return puo
 }
 
@@ -1151,6 +1181,12 @@ func (puo *PersonUpdateOne) sqlSave(ctx context.Context) (_node *Person, err err
 	}
 	if puo.mutation.BaiduLogIDCleared() {
 		_spec.ClearField(person.FieldBaiduLogID, field.TypeString)
+	}
+	if value, ok := puo.mutation.FaceVerifyResult(); ok {
+		_spec.SetField(person.FieldFaceVerifyResult, field.TypeJSON, value)
+	}
+	if puo.mutation.FaceVerifyResultCleared() {
+		_spec.ClearField(person.FieldFaceVerifyResult, field.TypeJSON)
 	}
 	if puo.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{

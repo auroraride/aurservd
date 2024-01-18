@@ -227,20 +227,6 @@ func (rc *RiderCreate) SetNillableIsNewDevice(b *bool) *RiderCreate {
 	return rc
 }
 
-// SetLastFace sets the "last_face" field.
-func (rc *RiderCreate) SetLastFace(s string) *RiderCreate {
-	rc.mutation.SetLastFace(s)
-	return rc
-}
-
-// SetNillableLastFace sets the "last_face" field if the given value is not nil.
-func (rc *RiderCreate) SetNillableLastFace(s *string) *RiderCreate {
-	if s != nil {
-		rc.SetLastFace(*s)
-	}
-	return rc
-}
-
 // SetPushID sets the "push_id" field.
 func (rc *RiderCreate) SetPushID(s string) *RiderCreate {
 	rc.mutation.SetPushID(s)
@@ -656,10 +642,6 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 	if value, ok := rc.mutation.IsNewDevice(); ok {
 		_spec.SetField(rider.FieldIsNewDevice, field.TypeBool, value)
 		_node.IsNewDevice = value
-	}
-	if value, ok := rc.mutation.LastFace(); ok {
-		_spec.SetField(rider.FieldLastFace, field.TypeString, value)
-		_node.LastFace = &value
 	}
 	if value, ok := rc.mutation.PushID(); ok {
 		_spec.SetField(rider.FieldPushID, field.TypeString, value)
@@ -1176,24 +1158,6 @@ func (u *RiderUpsert) UpdateIsNewDevice() *RiderUpsert {
 	return u
 }
 
-// SetLastFace sets the "last_face" field.
-func (u *RiderUpsert) SetLastFace(v string) *RiderUpsert {
-	u.Set(rider.FieldLastFace, v)
-	return u
-}
-
-// UpdateLastFace sets the "last_face" field to the value that was provided on create.
-func (u *RiderUpsert) UpdateLastFace() *RiderUpsert {
-	u.SetExcluded(rider.FieldLastFace)
-	return u
-}
-
-// ClearLastFace clears the value of the "last_face" field.
-func (u *RiderUpsert) ClearLastFace() *RiderUpsert {
-	u.SetNull(rider.FieldLastFace)
-	return u
-}
-
 // SetPushID sets the "push_id" field.
 func (u *RiderUpsert) SetPushID(v string) *RiderUpsert {
 	u.Set(rider.FieldPushID, v)
@@ -1639,27 +1603,6 @@ func (u *RiderUpsertOne) SetIsNewDevice(v bool) *RiderUpsertOne {
 func (u *RiderUpsertOne) UpdateIsNewDevice() *RiderUpsertOne {
 	return u.Update(func(s *RiderUpsert) {
 		s.UpdateIsNewDevice()
-	})
-}
-
-// SetLastFace sets the "last_face" field.
-func (u *RiderUpsertOne) SetLastFace(v string) *RiderUpsertOne {
-	return u.Update(func(s *RiderUpsert) {
-		s.SetLastFace(v)
-	})
-}
-
-// UpdateLastFace sets the "last_face" field to the value that was provided on create.
-func (u *RiderUpsertOne) UpdateLastFace() *RiderUpsertOne {
-	return u.Update(func(s *RiderUpsert) {
-		s.UpdateLastFace()
-	})
-}
-
-// ClearLastFace clears the value of the "last_face" field.
-func (u *RiderUpsertOne) ClearLastFace() *RiderUpsertOne {
-	return u.Update(func(s *RiderUpsert) {
-		s.ClearLastFace()
 	})
 }
 
@@ -2294,27 +2237,6 @@ func (u *RiderUpsertBulk) SetIsNewDevice(v bool) *RiderUpsertBulk {
 func (u *RiderUpsertBulk) UpdateIsNewDevice() *RiderUpsertBulk {
 	return u.Update(func(s *RiderUpsert) {
 		s.UpdateIsNewDevice()
-	})
-}
-
-// SetLastFace sets the "last_face" field.
-func (u *RiderUpsertBulk) SetLastFace(v string) *RiderUpsertBulk {
-	return u.Update(func(s *RiderUpsert) {
-		s.SetLastFace(v)
-	})
-}
-
-// UpdateLastFace sets the "last_face" field to the value that was provided on create.
-func (u *RiderUpsertBulk) UpdateLastFace() *RiderUpsertBulk {
-	return u.Update(func(s *RiderUpsert) {
-		s.UpdateLastFace()
-	})
-}
-
-// ClearLastFace clears the value of the "last_face" field.
-func (u *RiderUpsertBulk) ClearLastFace() *RiderUpsertBulk {
-	return u.Update(func(s *RiderUpsert) {
-		s.ClearLastFace()
 	})
 }
 

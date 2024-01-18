@@ -42,7 +42,7 @@ func (s *sms) SendCode(phone string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	code := fmt.Sprintf("%06d", utils.RandomIntMaxMin(1000, 999999))
+	code := fmt.Sprintf("%06d", utils.RandIntMaxMin(1000, 999999))
 	var id string
 	// log.Info(*c.Endpoint)
 	// id = "test"

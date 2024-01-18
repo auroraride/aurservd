@@ -17,44 +17,44 @@ type battery struct{}
 var Battery = new(battery)
 
 // ListModels
-// @ID           BatteryModels
-// @Router       /manager/v1/battery/model [GET]
-// @Summary      M4001 获取电池型号
-// @Tags         [M]管理接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Success      200  {object}  model.ItemListRes{items=[]model.BatteryModel}  "请求成功"
+// @ID		BatteryModels
+// @Router	/manager/v1/battery/model [GET]
+// @Summary	M4001 获取电池型号
+// @Tags	[M]管理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string											true	"管理员校验token"
+// @Success	200				{object}	model.ItemListRes{items=[]model.BatteryModel}	"请求成功"
 func (*battery) ListModels(c echo.Context) (err error) {
 	ctx := app.ContextX[app.ManagerContext](c)
 	return ctx.SendResponse(service.NewBatteryModel().List())
 }
 
 // CreateModel
-// @ID           BatteryCreateModel
-// @Router       /manager/v1/battery/model [POST]
-// @Summary      M4002 创建电池型号
-// @Tags         [M]管理接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        body  body  model.BatteryModelReq  true  "电池型号数据"
-// @Success      200  {object}  model.ItemRes{item=model.BatteryModel}  "请求成功"
+// @ID		BatteryCreateModel
+// @Router	/manager/v1/battery/model [POST]
+// @Summary	M4002 创建电池型号
+// @Tags	[M]管理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string									true	"管理员校验token"
+// @Param	body			body		model.BatteryModelReq					true	"电池型号数据"
+// @Success	200				{object}	model.ItemRes{item=model.BatteryModel}	"请求成功"
 func (*battery) CreateModel(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.BatteryModelReq](c)
 	return ctx.SendResponse(model.ItemRes{Item: service.NewBatteryModelWithModifier(ctx.Modifier).CreateModel(req)})
 }
 
 // DeleteModel
-// @ID           ManagerBatteryDeleteModel
-// @Router       /manager/v1/battery/model [DELETE]
-// @Summary      M4003 删除电池型号
-// @Tags         [M]管理接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        body  body     model.BatteryModelReq  true  "电池型号数据"
-// @Success      200  {object}  model.StatusResponse  "请求成功"
+// @ID		ManagerBatteryDeleteModel
+// @Router	/manager/v1/battery/model [DELETE]
+// @Summary	M4003 删除电池型号
+// @Tags	[M]管理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string					true	"管理员校验token"
+// @Param	body			body		model.BatteryModelReq	true	"电池型号数据"
+// @Success	200				{object}	model.StatusResponse	"请求成功"
 func (*battery) DeleteModel(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.BatteryModelReq](c)
 	service.NewBatteryModelWithModifier(ctx.Modifier).Delete(req)
@@ -62,30 +62,30 @@ func (*battery) DeleteModel(c echo.Context) (err error) {
 }
 
 // List
-// @ID           ManagerBatteryList
-// @Router       /manager/v1/battery [GET]
-// @Summary      M4004 电池列表
-// @Tags         [M]管理接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Manager-Token header string true "管理员校验token"
-// @Param        qery query   model.BatteryListReq false "筛选条件"
-// @Success      200 {object} model.PaginationRes{items=[]model.BatteryListRes} "请求成功"
+// @ID		ManagerBatteryList
+// @Router	/manager/v1/battery [GET]
+// @Summary	M4004 电池列表
+// @Tags	[M]管理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string												true	"管理员校验token"
+// @Param	qery			query		model.BatteryListReq								false	"筛选条件"
+// @Success	200				{object}	model.PaginationRes{items=[]model.BatteryListRes}	"请求成功"
 func (*battery) List(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.BatteryListReq](c)
 	return ctx.SendResponse(service.NewBattery(ctx.Modifier).List(req))
 }
 
 // Create
-// @ID           ManagerBatteryCreate
-// @Router       /manager/v1/battery [POST]
-// @Summary      M4005 添加电池
-// @Tags         [M]管理接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Manager-Token header string true "管理员校验token"
-// @Param        body body    model.BatteryCreateReq true "电池信息"
-// @Success      200 {object} model.StatusResponse "请求成功"
+// @ID		ManagerBatteryCreate
+// @Router	/manager/v1/battery [POST]
+// @Summary	M4005 添加电池
+// @Tags	[M]管理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string					true	"管理员校验token"
+// @Param	body			body		model.BatteryCreateReq	true	"电池信息"
+// @Success	200				{object}	model.StatusResponse	"请求成功"
 func (*battery) Create(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.BatteryCreateReq](c)
 	service.NewBattery(ctx.Modifier).Create(req)
@@ -93,32 +93,32 @@ func (*battery) Create(c echo.Context) (err error) {
 }
 
 // BatchCreate
-// @ID           ManagerBatteryBatchCreate
-// @Router       /manager/v1/battery/batch [POST]
-// @Summary      M4006 批量导入电池
-// @Description  参考 [MI007 批量导入电车]
-// @Tags         [M]管理接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Manager-Token header string true "管理员校验token"
-// @Param        file  formData  file  true  "电池信息"
-// @Success      200 {object} model.StatusResponse "请求成功"
+// @ID			ManagerBatteryBatchCreate
+// @Router		/manager/v1/battery/batch [POST]
+// @Summary		M4006 批量导入电池
+// @Description	参考 [MI007 批量导入电车]
+// @Tags		[M]管理接口
+// @Accept		json
+// @Produce		json
+// @Param		X-Manager-Token	header		string					true	"管理员校验token"
+// @Param		file			formData	file					true	"电池信息"
+// @Success		200				{object}	model.StatusResponse	"请求成功"
 func (*battery) BatchCreate(c echo.Context) (err error) {
 	ctx := app.ContextX[app.ManagerContext](c)
 	return ctx.SendResponse(service.NewBattery(ctx.Modifier).BatchCreate(ctx.Context))
 }
 
 // Modify
-// @ID           ManagerBatteryModify
-// @Router       /manager/v1/battery/{id} [PUT]
-// @Summary      M4007 修改电池
-// @Tags         [M]管理接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Manager-Token header string true "管理员校验token"
-// @Param        id path uint64 true "电池ID"
-// @Param        body body model.BatteryModifyReq true "修改信息"
-// @Success      200 {object} model.StatusResponse "请求成功"
+// @ID		ManagerBatteryModify
+// @Router	/manager/v1/battery/{id} [PUT]
+// @Summary	M4007 修改电池
+// @Tags	[M]管理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string					true	"管理员校验token"
+// @Param	id				path		uint64					true	"电池ID"
+// @Param	body			body		model.BatteryModifyReq	true	"修改信息"
+// @Success	200				{object}	model.StatusResponse	"请求成功"
 func (*battery) Modify(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.BatteryModifyReq](c)
 	service.NewBattery(ctx.Modifier).Modify(req)
@@ -126,15 +126,15 @@ func (*battery) Modify(c echo.Context) (err error) {
 }
 
 // Bind
-// @ID           ManagerBatteryBind
-// @Router       /manager/v1/battery/bind [POST]
-// @Summary      M4008 绑定骑手
-// @Tags         [M]管理接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        body  body  model.BatteryBind  true  "绑定参数"
-// @Success      200  {object}  model.StatusResponse  "请求成功"
+// @ID		ManagerBatteryBind
+// @Router	/manager/v1/battery/bind [POST]
+// @Summary	M4008 绑定骑手
+// @Tags	[M]管理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string					true	"管理员校验token"
+// @Param	body			body		model.BatteryBind		true	"绑定参数"
+// @Success	200				{object}	model.StatusResponse	"请求成功"
 func (*battery) Bind(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.BatteryBind](c)
 	service.NewBattery(ctx.Modifier).BindRequest(req)
@@ -142,15 +142,15 @@ func (*battery) Bind(c echo.Context) (err error) {
 }
 
 // Unbind
-// @ID           ManagerBatteryUnbind
-// @Router       /manager/v1/battery/unbind [POST]
-// @Summary      M4009 解绑骑手
-// @Tags         [M]管理接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        body  body     model.BatteryUnbindRequest  true  "解绑参数"
-// @Success      200  {object}  model.StatusResponse  "请求成功"
+// @ID		ManagerBatteryUnbind
+// @Router	/manager/v1/battery/unbind [POST]
+// @Summary	M4009 解绑骑手
+// @Tags	[M]管理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string						true	"管理员校验token"
+// @Param	body			body		model.BatteryUnbindRequest	true	"解绑参数"
+// @Success	200				{object}	model.StatusResponse		"请求成功"
 func (*battery) Unbind(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.BatteryUnbindRequest](c)
 	service.NewBattery(ctx.Modifier).Unbind(req)
@@ -158,62 +158,62 @@ func (*battery) Unbind(c echo.Context) (err error) {
 }
 
 // Detail
-// @ID           ManagerBatteryDetail
-// @Router       /manager/v1/battery/xc/{sn} [GET]
-// @Summary      M4010 电池详情
-// @Tags         [M]管理接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        sn  path  string  true  "电池编号"
-// @Success      200  {object}  model.BatteryBmsDetail  "请求成功"
+// @ID		ManagerBatteryDetail
+// @Router	/manager/v1/battery/xc/{sn} [GET]
+// @Summary	M4010 电池详情
+// @Tags	[M]管理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string					true	"管理员校验token"
+// @Param	sn				path		string					true	"电池编号"
+// @Success	200				{object}	model.BatteryBmsDetail	"请求成功"
 func (*battery) Detail(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.BatterySNRequest](c)
 	return ctx.SendResponse(service.NewBatteryBms().Detail(req))
 }
 
 // Statistics
-// @ID           ManagerBatteryStatistics
-// @Router       /manager/v1/battery/xc/statistics/{sn} [GET]
-// @Summary      M4011 电池数据
-// @Tags         [M]管理接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        sn  path  string  true  "电池编号"
-// @Success      200  {object}  model.BatteryStatistics  "请求成功"
+// @ID		ManagerBatteryStatistics
+// @Router	/manager/v1/battery/xc/statistics/{sn} [GET]
+// @Summary	M4011 电池数据
+// @Tags	[M]管理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string					true	"管理员校验token"
+// @Param	sn				path		string					true	"电池编号"
+// @Success	200				{object}	model.BatteryStatistics	"请求成功"
 func (*battery) Statistics(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.BatterySNRequest](c)
 	return ctx.SendResponse(service.NewBatteryBms().Statistics(req))
 }
 
 // Position
-// @ID           ManagerBatteryPosition
-// @Router       /manager/v1/battery/xc/position/{sn} [GET]
-// @Summary      M4012 电池位置
-// @Tags         [M]管理接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        sn  path  string  true  "电池编号"
-// @Param        start  query  string  false  "开始时间 (精确到秒, 默认6小时前, 格式为: yyyy-mm-dd hh:mm:ss)"
-// @Param        end  query  string  false  "结束时间 (精确到秒, 默认当前时间, 格式为: yyyy-mm-dd hh:mm:ss)"
-// @Success      200  {object}  model.BatteryPositionRes  "请求成功"
+// @ID		ManagerBatteryPosition
+// @Router	/manager/v1/battery/xc/position/{sn} [GET]
+// @Summary	M4012 电池位置
+// @Tags	[M]管理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string						true	"管理员校验token"
+// @Param	sn				path		string						true	"电池编号"
+// @Param	start			query		string						false	"开始时间 (精确到秒, 默认6小时前, 格式为: yyyy-mm-dd hh:mm:ss)"
+// @Param	end				query		string						false	"结束时间 (精确到秒, 默认当前时间, 格式为: yyyy-mm-dd hh:mm:ss)"
+// @Success	200				{object}	model.BatteryPositionRes	"请求成功"
 func (*battery) Position(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.BatteryPositionReq](c)
 	return ctx.SendResponse(service.NewBatteryBms().Position(req))
 }
 
 // Fault
-// @ID           ManagerBatteryFault
-// @Router       /manager/v1/battery/xc/fault [GET]
-// @Summary      M4013 电池故障列表
-// @Tags         [M]管理接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        query  query  model.BatteryFaultReq  false  "请求参数"
-// @Success      200 {object} model.PaginationRes{items=[]model.BatteryFaultRes} "请求成功"
+// @ID		ManagerBatteryFault
+// @Router	/manager/v1/battery/xc/fault [GET]
+// @Summary	M4013 电池故障列表
+// @Tags	[M]管理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string												true	"管理员校验token"
+// @Param	query			query		model.BatteryFaultReq								false	"请求参数"
+// @Success	200				{object}	model.PaginationRes{items=[]model.BatteryFaultRes}	"请求成功"
 func (*battery) Fault(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.BatteryFaultReq](c)
 	return ctx.SendResponse(service.NewBatteryBms().FaultList(req))

@@ -18,44 +18,44 @@ type reserve struct{}
 var Reserve = new(reserve)
 
 // Unfinished
-// @ID           ReserveUnfinished
-// @Router       /rider/v1/reserve [GET]
-// @Summary      R8001 获取未完成预约
-// @Tags         Reserve - 预约
-// @Accept       json
-// @Produce      json
-// @Param        X-Rider-Token  header  string  true  "骑手校验token"
-// @Success      200 {object}  model.ReserveUnfinishedRes  "请求成功, 预约不存在时为`null`"
+// @ID		ReserveUnfinished
+// @Router	/rider/v1/reserve [GET]
+// @Summary	R8001 获取未完成预约
+// @Tags	Reserve - 预约
+// @Accept	json
+// @Produce	json
+// @Param	X-Rider-Token	header		string						true	"骑手校验token"
+// @Success	200				{object}	model.ReserveUnfinishedRes	"请求成功, 预约不存在时为`null`"
 func (*reserve) Unfinished(c echo.Context) (err error) {
 	ctx := app.ContextX[app.RiderContext](c)
 	return ctx.SendResponse(service.NewReserve().RiderUnfinishedDetail(ctx.Rider.ID))
 }
 
 // Create
-// @ID           ReserveCreate
-// @Router       /rider/v1/reserve [POST]
-// @Summary      R8002 创建预约
-// @Tags         Reserve - 预约
-// @Accept       json
-// @Produce      json
-// @Param        X-Rider-Token  header  string  true  "骑手校验token"
-// @Param        body  body     model.ReserveCreateReq  true  "预约信息"
-// @Success      200 {object}   model.ReserveUnfinishedRes  "请求成功"
+// @ID		ReserveCreate
+// @Router	/rider/v1/reserve [POST]
+// @Summary	R8002 创建预约
+// @Tags	Reserve - 预约
+// @Accept	json
+// @Produce	json
+// @Param	X-Rider-Token	header		string						true	"骑手校验token"
+// @Param	body			body		model.ReserveCreateReq		true	"预约信息"
+// @Success	200				{object}	model.ReserveUnfinishedRes	"请求成功"
 func (*reserve) Create(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[model.ReserveCreateReq](c)
 	return ctx.SendResponse(service.NewReserveWithRider(ctx.Rider).Create(req))
 }
 
 // Cancel
-// @ID           ManagerReserveCancel
-// @Router       /rider/v1/reserve/{id} [DELETE]
-// @Summary      R8003 取消预约
-// @Tags         Reserve - 预约
-// @Accept       json
-// @Produce      json
-// @Param        X-Rider-Token  header  string  true  "骑手校验token"
-// @Param        id  path  uint64  true  "预约ID"
-// @Success      200  {object}  model.StatusResponse  "请求成功"
+// @ID		ManagerReserveCancel
+// @Router	/rider/v1/reserve/{id} [DELETE]
+// @Summary	R8003 取消预约
+// @Tags	Reserve - 预约
+// @Accept	json
+// @Produce	json
+// @Param	X-Rider-Token	header		string					true	"骑手校验token"
+// @Param	id				path		uint64					true	"预约ID"
+// @Success	200				{object}	model.StatusResponse	"请求成功"
 func (*reserve) Cancel(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[model.IDParamReq](c)
 	service.NewReserveWithRider(ctx.Rider).Cancel(req)

@@ -60055,11 +60055,12 @@ type PersonMutation struct {
 	id_card_portrait   *string
 	id_card_national   *string
 	auth_face          *string
-	auth_result        **model.FaceVerifyResult
+	auth_result        **model.BaiduFaceVerifyResult
 	auth_at            *time.Time
 	esign_account_id   *string
 	baidu_verify_token *string
 	baidu_log_id       *string
+	face_verify_result **model.PersonFaceVerifyResult
 	clearedFields      map[string]struct{}
 	rider              map[uint64]struct{}
 	removedrider       map[uint64]struct{}
@@ -60816,12 +60817,12 @@ func (m *PersonMutation) ResetAuthFace() {
 }
 
 // SetAuthResult sets the "auth_result" field.
-func (m *PersonMutation) SetAuthResult(mvr *model.FaceVerifyResult) {
-	m.auth_result = &mvr
+func (m *PersonMutation) SetAuthResult(mfvr *model.BaiduFaceVerifyResult) {
+	m.auth_result = &mfvr
 }
 
 // AuthResult returns the value of the "auth_result" field in the mutation.
-func (m *PersonMutation) AuthResult() (r *model.FaceVerifyResult, exists bool) {
+func (m *PersonMutation) AuthResult() (r *model.BaiduFaceVerifyResult, exists bool) {
 	v := m.auth_result
 	if v == nil {
 		return
@@ -60832,7 +60833,7 @@ func (m *PersonMutation) AuthResult() (r *model.FaceVerifyResult, exists bool) {
 // OldAuthResult returns the old "auth_result" field's value of the Person entity.
 // If the Person object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PersonMutation) OldAuthResult(ctx context.Context) (v *model.FaceVerifyResult, err error) {
+func (m *PersonMutation) OldAuthResult(ctx context.Context) (v *model.BaiduFaceVerifyResult, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldAuthResult is only allowed on UpdateOne operations")
 	}
@@ -61060,6 +61061,55 @@ func (m *PersonMutation) ResetBaiduLogID() {
 	delete(m.clearedFields, person.FieldBaiduLogID)
 }
 
+// SetFaceVerifyResult sets the "face_verify_result" field.
+func (m *PersonMutation) SetFaceVerifyResult(mfvr *model.PersonFaceVerifyResult) {
+	m.face_verify_result = &mfvr
+}
+
+// FaceVerifyResult returns the value of the "face_verify_result" field in the mutation.
+func (m *PersonMutation) FaceVerifyResult() (r *model.PersonFaceVerifyResult, exists bool) {
+	v := m.face_verify_result
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFaceVerifyResult returns the old "face_verify_result" field's value of the Person entity.
+// If the Person object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PersonMutation) OldFaceVerifyResult(ctx context.Context) (v *model.PersonFaceVerifyResult, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFaceVerifyResult is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFaceVerifyResult requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFaceVerifyResult: %w", err)
+	}
+	return oldValue.FaceVerifyResult, nil
+}
+
+// ClearFaceVerifyResult clears the value of the "face_verify_result" field.
+func (m *PersonMutation) ClearFaceVerifyResult() {
+	m.face_verify_result = nil
+	m.clearedFields[person.FieldFaceVerifyResult] = struct{}{}
+}
+
+// FaceVerifyResultCleared returns if the "face_verify_result" field was cleared in this mutation.
+func (m *PersonMutation) FaceVerifyResultCleared() bool {
+	_, ok := m.clearedFields[person.FieldFaceVerifyResult]
+	return ok
+}
+
+// ResetFaceVerifyResult resets all changes to the "face_verify_result" field.
+func (m *PersonMutation) ResetFaceVerifyResult() {
+	m.face_verify_result = nil
+	delete(m.clearedFields, person.FieldFaceVerifyResult)
+}
+
 // AddRiderIDs adds the "rider" edge to the Rider entity by ids.
 func (m *PersonMutation) AddRiderIDs(ids ...uint64) {
 	if m.rider == nil {
@@ -61148,7 +61198,7 @@ func (m *PersonMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PersonMutation) Fields() []string {
-	fields := make([]string, 0, 19)
+	fields := make([]string, 0, 20)
 	if m.created_at != nil {
 		fields = append(fields, person.FieldCreatedAt)
 	}
@@ -61206,6 +61256,9 @@ func (m *PersonMutation) Fields() []string {
 	if m.baidu_log_id != nil {
 		fields = append(fields, person.FieldBaiduLogID)
 	}
+	if m.face_verify_result != nil {
+		fields = append(fields, person.FieldFaceVerifyResult)
+	}
 	return fields
 }
 
@@ -61252,6 +61305,8 @@ func (m *PersonMutation) Field(name string) (ent.Value, bool) {
 		return m.BaiduVerifyToken()
 	case person.FieldBaiduLogID:
 		return m.BaiduLogID()
+	case person.FieldFaceVerifyResult:
+		return m.FaceVerifyResult()
 	}
 	return nil, false
 }
@@ -61299,6 +61354,8 @@ func (m *PersonMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldBaiduVerifyToken(ctx)
 	case person.FieldBaiduLogID:
 		return m.OldBaiduLogID(ctx)
+	case person.FieldFaceVerifyResult:
+		return m.OldFaceVerifyResult(ctx)
 	}
 	return nil, fmt.Errorf("unknown Person field %s", name)
 }
@@ -61407,7 +61464,7 @@ func (m *PersonMutation) SetField(name string, value ent.Value) error {
 		m.SetAuthFace(v)
 		return nil
 	case person.FieldAuthResult:
-		v, ok := value.(*model.FaceVerifyResult)
+		v, ok := value.(*model.BaiduFaceVerifyResult)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -61440,6 +61497,13 @@ func (m *PersonMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetBaiduLogID(v)
+		return nil
+	case person.FieldFaceVerifyResult:
+		v, ok := value.(*model.PersonFaceVerifyResult)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFaceVerifyResult(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Person field %s", name)
@@ -61537,6 +61601,9 @@ func (m *PersonMutation) ClearedFields() []string {
 	if m.FieldCleared(person.FieldBaiduLogID) {
 		fields = append(fields, person.FieldBaiduLogID)
 	}
+	if m.FieldCleared(person.FieldFaceVerifyResult) {
+		fields = append(fields, person.FieldFaceVerifyResult)
+	}
 	return fields
 }
 
@@ -61589,6 +61656,9 @@ func (m *PersonMutation) ClearField(name string) error {
 		return nil
 	case person.FieldBaiduLogID:
 		m.ClearBaiduLogID()
+		return nil
+	case person.FieldFaceVerifyResult:
+		m.ClearFaceVerifyResult()
 		return nil
 	}
 	return fmt.Errorf("unknown Person nullable field %s", name)
@@ -61654,6 +61724,9 @@ func (m *PersonMutation) ResetField(name string) error {
 		return nil
 	case person.FieldBaiduLogID:
 		m.ResetBaiduLogID()
+		return nil
+	case person.FieldFaceVerifyResult:
+		m.ResetFaceVerifyResult()
 		return nil
 	}
 	return fmt.Errorf("unknown Person field %s", name)
@@ -85900,7 +85973,6 @@ type RiderMutation struct {
 	adddevice_type           *int8
 	last_device              *string
 	is_new_device            *bool
-	last_face                *string
 	push_id                  *string
 	last_signin_at           *time.Time
 	blocked                  *bool
@@ -86798,55 +86870,6 @@ func (m *RiderMutation) OldIsNewDevice(ctx context.Context) (v bool, err error) 
 // ResetIsNewDevice resets all changes to the "is_new_device" field.
 func (m *RiderMutation) ResetIsNewDevice() {
 	m.is_new_device = nil
-}
-
-// SetLastFace sets the "last_face" field.
-func (m *RiderMutation) SetLastFace(s string) {
-	m.last_face = &s
-}
-
-// LastFace returns the value of the "last_face" field in the mutation.
-func (m *RiderMutation) LastFace() (r string, exists bool) {
-	v := m.last_face
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldLastFace returns the old "last_face" field's value of the Rider entity.
-// If the Rider object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RiderMutation) OldLastFace(ctx context.Context) (v *string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldLastFace is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldLastFace requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldLastFace: %w", err)
-	}
-	return oldValue.LastFace, nil
-}
-
-// ClearLastFace clears the value of the "last_face" field.
-func (m *RiderMutation) ClearLastFace() {
-	m.last_face = nil
-	m.clearedFields[rider.FieldLastFace] = struct{}{}
-}
-
-// LastFaceCleared returns if the "last_face" field was cleared in this mutation.
-func (m *RiderMutation) LastFaceCleared() bool {
-	_, ok := m.clearedFields[rider.FieldLastFace]
-	return ok
-}
-
-// ResetLastFace resets all changes to the "last_face" field.
-func (m *RiderMutation) ResetLastFace() {
-	m.last_face = nil
-	delete(m.clearedFields, rider.FieldLastFace)
 }
 
 // SetPushID sets the "push_id" field.
@@ -87804,7 +87827,7 @@ func (m *RiderMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RiderMutation) Fields() []string {
-	fields := make([]string, 0, 24)
+	fields := make([]string, 0, 23)
 	if m.created_at != nil {
 		fields = append(fields, rider.FieldCreatedAt)
 	}
@@ -87852,9 +87875,6 @@ func (m *RiderMutation) Fields() []string {
 	}
 	if m.is_new_device != nil {
 		fields = append(fields, rider.FieldIsNewDevice)
-	}
-	if m.last_face != nil {
-		fields = append(fields, rider.FieldLastFace)
 	}
 	if m.push_id != nil {
 		fields = append(fields, rider.FieldPushID)
@@ -87917,8 +87937,6 @@ func (m *RiderMutation) Field(name string) (ent.Value, bool) {
 		return m.LastDevice()
 	case rider.FieldIsNewDevice:
 		return m.IsNewDevice()
-	case rider.FieldLastFace:
-		return m.LastFace()
 	case rider.FieldPushID:
 		return m.PushID()
 	case rider.FieldLastSigninAt:
@@ -87974,8 +87992,6 @@ func (m *RiderMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldLastDevice(ctx)
 	case rider.FieldIsNewDevice:
 		return m.OldIsNewDevice(ctx)
-	case rider.FieldLastFace:
-		return m.OldLastFace(ctx)
 	case rider.FieldPushID:
 		return m.OldPushID(ctx)
 	case rider.FieldLastSigninAt:
@@ -88110,13 +88126,6 @@ func (m *RiderMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetIsNewDevice(v)
-		return nil
-	case rider.FieldLastFace:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetLastFace(v)
 		return nil
 	case rider.FieldPushID:
 		v, ok := value.(string)
@@ -88260,9 +88269,6 @@ func (m *RiderMutation) ClearedFields() []string {
 	if m.FieldCleared(rider.FieldLastDevice) {
 		fields = append(fields, rider.FieldLastDevice)
 	}
-	if m.FieldCleared(rider.FieldLastFace) {
-		fields = append(fields, rider.FieldLastFace)
-	}
 	if m.FieldCleared(rider.FieldPushID) {
 		fields = append(fields, rider.FieldPushID)
 	}
@@ -88327,9 +88333,6 @@ func (m *RiderMutation) ClearField(name string) error {
 		return nil
 	case rider.FieldLastDevice:
 		m.ClearLastDevice()
-		return nil
-	case rider.FieldLastFace:
-		m.ClearLastFace()
 		return nil
 	case rider.FieldPushID:
 		m.ClearPushID()
@@ -88401,9 +88404,6 @@ func (m *RiderMutation) ResetField(name string) error {
 		return nil
 	case rider.FieldIsNewDevice:
 		m.ResetIsNewDevice()
-		return nil
-	case rider.FieldLastFace:
-		m.ResetLastFace()
 		return nil
 	case rider.FieldPushID:
 		m.ResetPushID()

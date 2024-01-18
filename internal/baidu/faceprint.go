@@ -100,7 +100,7 @@ type faceprintSubmitResp struct {
 	CertificateType int    `json:"certificate_type"`
 }
 
-// getFaceprintUrl 获取人脸核验URL
+// getFaceprintUrl 获取人身核验URL
 func (b *faceClient) getFaceprintUrl(typ string) (url string, token string) {
 	var err error
 	var planId string
@@ -122,7 +122,7 @@ func (b *faceClient) getFaceprintUrl(typ string) (url string, token string) {
 	if err != nil {
 		snag.Panic(err)
 	}
-	zap.L().Info("获取人脸核验URL", log.ResponseBody(r.Body()))
+	zap.L().Info("获取人身核验URL", log.ResponseBody(r.Body()))
 	if !res.Success {
 		snag.Panic("实名认证请求失败")
 	}

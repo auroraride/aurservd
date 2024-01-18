@@ -1184,6 +1184,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			person.FieldEsignAccountID:   {Type: field.TypeString, Column: person.FieldEsignAccountID},
 			person.FieldBaiduVerifyToken: {Type: field.TypeString, Column: person.FieldBaiduVerifyToken},
 			person.FieldBaiduLogID:       {Type: field.TypeString, Column: person.FieldBaiduLogID},
+			person.FieldFaceVerifyResult: {Type: field.TypeJSON, Column: person.FieldFaceVerifyResult},
 		},
 	}
 	graph.Nodes[39] = &sqlgraph.Node{
@@ -1700,7 +1701,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 			rider.FieldDeviceType:        {Type: field.TypeUint8, Column: rider.FieldDeviceType},
 			rider.FieldLastDevice:        {Type: field.TypeString, Column: rider.FieldLastDevice},
 			rider.FieldIsNewDevice:       {Type: field.TypeBool, Column: rider.FieldIsNewDevice},
-			rider.FieldLastFace:          {Type: field.TypeString, Column: rider.FieldLastFace},
 			rider.FieldPushID:            {Type: field.TypeString, Column: rider.FieldPushID},
 			rider.FieldLastSigninAt:      {Type: field.TypeTime, Column: rider.FieldLastSigninAt},
 			rider.FieldBlocked:           {Type: field.TypeBool, Column: rider.FieldBlocked},
@@ -12552,6 +12552,11 @@ func (f *PersonFilter) WhereBaiduLogID(p entql.StringP) {
 	f.Where(p.Field(person.FieldBaiduLogID))
 }
 
+// WhereFaceVerifyResult applies the entql json.RawMessage predicate on the face_verify_result field.
+func (f *PersonFilter) WhereFaceVerifyResult(p entql.BytesP) {
+	f.Where(p.Field(person.FieldFaceVerifyResult))
+}
+
 // WhereHasRider applies a predicate to check if query has an edge rider.
 func (f *PersonFilter) WhereHasRider() {
 	f.Where(entql.HasEdge("rider"))
@@ -15249,11 +15254,6 @@ func (f *RiderFilter) WhereLastDevice(p entql.StringP) {
 // WhereIsNewDevice applies the entql bool predicate on the is_new_device field.
 func (f *RiderFilter) WhereIsNewDevice(p entql.BoolP) {
 	f.Where(p.Field(rider.FieldIsNewDevice))
-}
-
-// WhereLastFace applies the entql string predicate on the last_face field.
-func (f *RiderFilter) WhereLastFace(p entql.StringP) {
-	f.Where(p.Field(rider.FieldLastFace))
 }
 
 // WherePushID applies the entql string predicate on the push_id field.
