@@ -55,8 +55,6 @@ type Rider struct {
 	LastDevice string `json:"last_device,omitempty"`
 	// 是否新设备
 	IsNewDevice bool `json:"is_new_device,omitempty"`
-	// 上次登录人脸
-	LastFace *string `json:"last_face,omitempty"`
 	// 推送ID
 	PushID string `json:"push_id,omitempty"`
 	// 最后登录时间
@@ -243,7 +241,7 @@ func (*Rider) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case rider.FieldID, rider.FieldStationID, rider.FieldPersonID, rider.FieldEnterpriseID, rider.FieldDeviceType, rider.FieldPoints:
 			values[i] = new(sql.NullInt64)
-		case rider.FieldRemark, rider.FieldName, rider.FieldIDCardNumber, rider.FieldPhone, rider.FieldLastDevice, rider.FieldLastFace, rider.FieldPushID:
+		case rider.FieldRemark, rider.FieldName, rider.FieldIDCardNumber, rider.FieldPhone, rider.FieldLastDevice, rider.FieldPushID:
 			values[i] = new(sql.NullString)
 		case rider.FieldCreatedAt, rider.FieldUpdatedAt, rider.FieldDeletedAt, rider.FieldLastSigninAt, rider.FieldJoinEnterpriseAt:
 			values[i] = new(sql.NullTime)
@@ -373,13 +371,6 @@ func (r *Rider) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field is_new_device", values[i])
 			} else if value.Valid {
 				r.IsNewDevice = value.Bool
-			}
-		case rider.FieldLastFace:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field last_face", values[i])
-			} else if value.Valid {
-				r.LastFace = new(string)
-				*r.LastFace = value.String
 			}
 		case rider.FieldPushID:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -580,11 +571,6 @@ func (r *Rider) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("is_new_device=")
 	builder.WriteString(fmt.Sprintf("%v", r.IsNewDevice))
-	builder.WriteString(", ")
-	if v := r.LastFace; v != nil {
-		builder.WriteString("last_face=")
-		builder.WriteString(*v)
-	}
 	builder.WriteString(", ")
 	builder.WriteString("push_id=")
 	builder.WriteString(r.PushID)

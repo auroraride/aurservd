@@ -64,6 +64,6 @@ func Bootstrap() {
 	// 加载模板
 	assets.LoadTemplates()
 
-	// 初始化腾讯人脸核验
+	// 初始化腾讯人身核验
 	tencent.BootWbFace(ar.Redis)
 }

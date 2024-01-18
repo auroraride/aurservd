@@ -39,9 +39,24 @@ func (*person) CertificationOcr(c echo.Context) (err error) {
 // @Tags	Person - 实人
 // @Accept	json
 // @Produce	json
-// @Param	orderNo	query		string									true	"订单编号"
-// @Success	200		{object}	definition.PersonCertificationOcrRes	"请求成功"
+// @Param	query	query		definition.PersonCertificationFaceReq	true	"请求参数"
+// @Success	200		{object}	definition.PersonCertificationFaceRes	"请求成功"
 func (*person) CertificationFace(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[definition.PersonCertificationFaceReq](c)
-	return ctx.SendResponse(biz.NewPerson().CertificationFace(ctx.Rider, req.OrderNo))
+	return ctx.SendResponse(biz.NewPerson().CertificationFace(ctx.Rider, req))
+}
+
+// CertificationFaceResult
+//
+// @ID		CertificationFaceResult
+// @Router	/v2/certification/face/result [GET]
+// @Summary	获取实人核身结果
+// @Tags	Person - 实人
+// @Accept	json
+// @Produce	json
+// @Param	query	query		definition.PersonCertificationFaceResultReq	true	"请求参数"
+// @Success	200		{object}	definition.PersonCertificationFaceResultRes	"请求成功"
+func (p *person) CertificationFaceResult(c echo.Context) (err error) {
+	ctx, req := app.RiderContextAndBinding[definition.PersonCertificationFaceResultReq](c)
+	return ctx.SendResponse(biz.NewPerson().CertificationFaceResult(ctx.Rider, req))
 }

@@ -288,26 +288,6 @@ func (ru *RiderUpdate) SetNillableIsNewDevice(b *bool) *RiderUpdate {
 	return ru
 }
 
-// SetLastFace sets the "last_face" field.
-func (ru *RiderUpdate) SetLastFace(s string) *RiderUpdate {
-	ru.mutation.SetLastFace(s)
-	return ru
-}
-
-// SetNillableLastFace sets the "last_face" field if the given value is not nil.
-func (ru *RiderUpdate) SetNillableLastFace(s *string) *RiderUpdate {
-	if s != nil {
-		ru.SetLastFace(*s)
-	}
-	return ru
-}
-
-// ClearLastFace clears the value of the "last_face" field.
-func (ru *RiderUpdate) ClearLastFace() *RiderUpdate {
-	ru.mutation.ClearLastFace()
-	return ru
-}
-
 // SetPushID sets the "push_id" field.
 func (ru *RiderUpdate) SetPushID(s string) *RiderUpdate {
 	ru.mutation.SetPushID(s)
@@ -932,12 +912,6 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := ru.mutation.IsNewDevice(); ok {
 		_spec.SetField(rider.FieldIsNewDevice, field.TypeBool, value)
-	}
-	if value, ok := ru.mutation.LastFace(); ok {
-		_spec.SetField(rider.FieldLastFace, field.TypeString, value)
-	}
-	if ru.mutation.LastFaceCleared() {
-		_spec.ClearField(rider.FieldLastFace, field.TypeString)
 	}
 	if value, ok := ru.mutation.PushID(); ok {
 		_spec.SetField(rider.FieldPushID, field.TypeString, value)
@@ -1731,26 +1705,6 @@ func (ruo *RiderUpdateOne) SetNillableIsNewDevice(b *bool) *RiderUpdateOne {
 	return ruo
 }
 
-// SetLastFace sets the "last_face" field.
-func (ruo *RiderUpdateOne) SetLastFace(s string) *RiderUpdateOne {
-	ruo.mutation.SetLastFace(s)
-	return ruo
-}
-
-// SetNillableLastFace sets the "last_face" field if the given value is not nil.
-func (ruo *RiderUpdateOne) SetNillableLastFace(s *string) *RiderUpdateOne {
-	if s != nil {
-		ruo.SetLastFace(*s)
-	}
-	return ruo
-}
-
-// ClearLastFace clears the value of the "last_face" field.
-func (ruo *RiderUpdateOne) ClearLastFace() *RiderUpdateOne {
-	ruo.mutation.ClearLastFace()
-	return ruo
-}
-
 // SetPushID sets the "push_id" field.
 func (ruo *RiderUpdateOne) SetPushID(s string) *RiderUpdateOne {
 	ruo.mutation.SetPushID(s)
@@ -2405,12 +2359,6 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 	}
 	if value, ok := ruo.mutation.IsNewDevice(); ok {
 		_spec.SetField(rider.FieldIsNewDevice, field.TypeBool, value)
-	}
-	if value, ok := ruo.mutation.LastFace(); ok {
-		_spec.SetField(rider.FieldLastFace, field.TypeString, value)
-	}
-	if ruo.mutation.LastFaceCleared() {
-		_spec.ClearField(rider.FieldLastFace, field.TypeString)
 	}
 	if value, ok := ruo.mutation.PushID(); ok {
 		_spec.SetField(rider.FieldPushID, field.TypeString, value)

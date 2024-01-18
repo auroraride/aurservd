@@ -16,6 +16,7 @@ import (
 
 	"github.com/auroraride/adapter/log"
 	"github.com/go-resty/resty/v2"
+	"github.com/golang-module/carbon/v2"
 	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
 
@@ -24,12 +25,15 @@ import (
 )
 
 const (
-	urlAccessToken = "https://kyc.qcloud.com/api/oauth2/access_token"
-	urlTicket      = "https://kyc.qcloud.com/api/oauth2/api_ticket"
-	urlOcrResult   = "https://miniprogram-kyc.tencentcloudapi.com/api/server/getOcrResult"
+	urlAccessToken      = "https://kyc.qcloud.com/api/oauth2/access_token"
+	urlTicket           = "https://kyc.qcloud.com/api/oauth2/api_ticket"
+	urlOcrResult        = "https://miniprogram-kyc.tencentcloudapi.com/api/server/getOcrResult"
+	urlFaceId           = "https://miniprogram-kyc.tencentcloudapi.com/api/server/getfaceid"
+	urlFaceVerifyResult = "https://miniprogram-kyc.tencentcloudapi.com/api/v2/base/queryfacerecord"
 
-	cacheKeyAccessToken = "AURORARIDE:WB_FACE:ACCESS_TOKEN"
-	cacheKeySignTicket  = "AURORARIDE:WB_FACE:SIGN_TICKET"
+	cacheKeyAccessToken     = "AURORARIDE:WB_FACE:ACCESS_TOKEN"
+	cacheKeySignTicket      = "AURORARIDE:WB_FACE:SIGN_TICKET"
+	cacheKeyFaceVerifyTimes = "AURORARIDE:WB_FACE:TIMES:"
 )
 
 // 缓存时间
@@ -46,67 +50,118 @@ type wbface struct {
 }
 
 type AccessTokenRes struct {
-	Code            string `json:"code"`
-	Msg             string `json:"msg"`
-	TransactionTime string `json:"transactionTime"`
-	AccessToken     string `json:"access_token"`
-	ExpireTime      string `json:"expire_time"`
-	ExpireIn        int    `json:"expire_in"`
+	Code            string `json:"code,omitempty"`
+	Msg             string `json:"msg,omitempty"`
+	TransactionTime string `json:"transactionTime,omitempty"`
+	AccessToken     string `json:"access_token,omitempty"`
+	ExpireTime      string `json:"expire_time,omitempty"`
+	ExpireIn        int    `json:"expire_in,omitempty"`
 }
 
 type TicketRes struct {
-	Code            string `json:"code"`
-	Msg             string `json:"msg"`
-	TransactionTime string `json:"transactionTime"`
+	Code            string `json:"code,omitempty"`
+	Msg             string `json:"msg,omitempty"`
+	TransactionTime string `json:"transactionTime,omitempty"`
 	Tickets         []struct {
-		Value      string `json:"value"`
-		ExpireIn   int    `json:"expire_in"`
-		ExpireTime string `json:"expire_time"`
-	} `json:"tickets"`
+		Value      string `json:"value,omitempty"`
+		ExpireIn   int    `json:"expire_in,omitempty"`
+		ExpireTime string `json:"expire_time,omitempty"`
+	} `json:"tickets,omitempty"`
 }
 
 // OcrResultRes OCR结果
-// https://cloud.tencent.com/document/product/1007/35864
 // 身份证OCR错误码: https://cloud.tencent.com/document/product/1007/47902
 type OcrResultRes struct {
-	Code            string    `json:"code"`
-	Msg             string    `json:"msg"`
-	BizSeqNo        string    `json:"bizSeqNo"`
-	Result          OcrResult `json:"result"`
-	TransactionTime string    `json:"transactionTime"`
+	Code            string    `json:"code,omitempty"`
+	Msg             string    `json:"msg,omitempty"`
+	BizSeqNo        string    `json:"bizSeqNo,omitempty"`
+	Result          OcrResult `json:"result,omitempty"`
+	TransactionTime string    `json:"transactionTime,omitempty"`
 }
 
 type OcrResult struct {
-	FrontCode         string `json:"frontCode"`         // 0 说明人像面识别成功
-	BackCode          string `json:"backCode"`          // 0 说明国徽面识别成功
-	OrderNo           string `json:"orderNo"`           // 订单编号
-	Name              string `json:"name"`              // frontCode 为 0 返回：证件姓名
-	Sex               string `json:"sex"`               // frontCode 为 0 返回：性别
-	Nation            string `json:"nation"`            // frontCode 为 0 返回：民族
-	Birth             string `json:"birth"`             // frontCode 为 0 返回：出生日期（例：19920320）
-	Address           string `json:"address"`           // frontCode 为 0 返回：地址
-	Idcard            string `json:"idcard"`            // frontCode 为 0 返回：身份证号
-	ValidDate         string `json:"validDate"`         // backCode 为 0 返回：证件的有效期（例：20160725-20260725）
-	Authority         string `json:"authority"`         // backCode 为 0 返回：发证机关
-	FrontPhoto        string `json:"frontPhoto"`        // 人像面照片，转换后为 JPG 格式
-	BackPhoto         string `json:"backPhoto"`         // 国徽面照片，转换后为 JPG 格式
-	FrontCrop         string `json:"frontCrop"`         // 人像面切边照片，切边图在识别原图少边或者存在遮挡的情况有小概率可能会导致切图失败，该字段会返回空；如切边图为空时建议可使用原图替代
-	BackCrop          string `json:"backCrop"`          // 国徽面切边照片，切边图在识别原图少边或者存在遮挡的情况有小概率可能会导致切图失败，该字段会返回空；如切边图为空时建议可使用原图替代
-	HeadPhoto         string `json:"headPhoto"`         // 身份证头像照片
-	FrontWarnCode     string `json:"frontWarnCode"`     // 人像面告警码，在身份证有遮挡、缺失、信息不全时会返回告警码；当 frontCode 为0时才会出现告警码，告警码的含义请参考 身份证 OCR 错误码
-	BackWarnCode      string `json:"backWarnCode"`      // 国徽面告警码，在身份证有遮挡、缺失、信息不全时会返回告警码；当 backCode 为0时才会出现告警码，告警码的含义请参考 身份证 OCR 错误码
-	OperateTime       string `json:"operateTime"`       // 做 OCR 的操作时间（例：2020-02-27 17:08:03）
-	FrontMultiWarning string `json:"frontMultiWarning"` // 正面多重告警码，含义请参考 身份证 OCR 错误码
-	BackMultiWarning  string `json:"backMultiWarning"`  // 反面多重告警码，含义请参考 身份证 OCR 错误码
-	FrontClarity      string `json:"frontClarity"`      // 正面图片清晰度
-	BackClarity       string `json:"backClarity"`       // 反面图片清晰度
-	Success           bool   `json:"success"`
-	BizSeqNo          string `json:"bizSeqNo"`
-	TransactionTime   string `json:"transactionTime"`
+	FrontCode         string `json:"frontCode,omitempty"`         // 0 说明人像面识别成功
+	BackCode          string `json:"backCode,omitempty"`          // 0 说明国徽面识别成功
+	OrderNo           string `json:"orderNo,omitempty"`           // 订单编号
+	Name              string `json:"name,omitempty"`              // frontCode 为 0 返回：证件姓名
+	Sex               string `json:"sex,omitempty"`               // frontCode 为 0 返回：性别
+	Nation            string `json:"nation,omitempty"`            // frontCode 为 0 返回：民族
+	Birth             string `json:"birth,omitempty"`             // frontCode 为 0 返回：出生日期（例：19920320）
+	Address           string `json:"address,omitempty"`           // frontCode 为 0 返回：地址
+	Idcard            string `json:"idcard,omitempty"`            // frontCode 为 0 返回：身份证号
+	ValidDate         string `json:"validDate,omitempty"`         // backCode 为 0 返回：证件的有效期（例：20160725-20260725）
+	Authority         string `json:"authority,omitempty"`         // backCode 为 0 返回：发证机关
+	FrontPhoto        string `json:"frontPhoto,omitempty"`        // 人像面照片，转换后为 JPG 格式
+	BackPhoto         string `json:"backPhoto,omitempty"`         // 国徽面照片，转换后为 JPG 格式
+	FrontCrop         string `json:"frontCrop,omitempty"`         // 人像面切边照片，切边图在识别原图少边或者存在遮挡的情况有小概率可能会导致切图失败，该字段会返回空；如切边图为空时建议可使用原图替代
+	BackCrop          string `json:"backCrop,omitempty"`          // 国徽面切边照片，切边图在识别原图少边或者存在遮挡的情况有小概率可能会导致切图失败，该字段会返回空；如切边图为空时建议可使用原图替代
+	HeadPhoto         string `json:"headPhoto,omitempty"`         // 身份证头像照片
+	FrontWarnCode     string `json:"frontWarnCode,omitempty"`     // 人像面告警码，在身份证有遮挡、缺失、信息不全时会返回告警码；当 frontCode 为0时才会出现告警码，告警码的含义请参考 身份证 OCR 错误码
+	BackWarnCode      string `json:"backWarnCode,omitempty"`      // 国徽面告警码，在身份证有遮挡、缺失、信息不全时会返回告警码；当 backCode 为0时才会出现告警码，告警码的含义请参考 身份证 OCR 错误码
+	OperateTime       string `json:"operateTime,omitempty"`       // 做 OCR 的操作时间（例：2020-02-27 17:08:03）
+	FrontMultiWarning string `json:"frontMultiWarning,omitempty"` // 正面多重告警码，含义请参考 身份证 OCR 错误码
+	BackMultiWarning  string `json:"backMultiWarning,omitempty"`  // 反面多重告警码，含义请参考 身份证 OCR 错误码
+	FrontClarity      string `json:"frontClarity,omitempty"`      // 正面图片清晰度
+	BackClarity       string `json:"backClarity,omitempty"`       // 反面图片清晰度
+	Success           bool   `json:"success,omitempty"`
+	BizSeqNo          string `json:"bizSeqNo,omitempty"`
+	TransactionTime   string `json:"transactionTime,omitempty"`
+}
+
+type FaceIdReq struct {
+	OrderNo string `json:"orderNo,omitempty"` // 订单号，字母/数字组成的字符串，由合作方上传，每次唯一，不能超过32位
+	Name    string `json:"name,omitempty"`    // 姓名
+	IdNo    string `json:"idNo,omitempty"`    // 证件号码
+	UserId  string `json:"userId,omitempty"`  // 用户 ID ，用户的唯一标识
+}
+
+type FaceIdRes struct {
+	Code     string `json:"code,omitempty"`
+	Msg      string `json:"msg,omitempty"`
+	BizSeqNo string `json:"bizSeqNo,omitempty"`
+	Result   struct {
+		BizSeqNo        string `json:"bizSeqNo,omitempty"`
+		TransactionTime string `json:"transactionTime,omitempty"`
+		OrderNo         string `json:"orderNo,omitempty"`
+		FaceId          string `json:"faceId,omitempty"`
+		Success         bool   `json:"success,omitempty"`
+	} `json:"result,omitempty"`
+	TransactionTime string `json:"transactionTime,omitempty"`
+}
+
+type FaceVerifyRes struct {
+	Code            string            `json:"code,omitempty"`
+	Msg             string            `json:"msg,omitempty"`
+	BizSeqNo        string            `json:"bizSeqNo,omitempty"`
+	Result          *FaceVerifyResult `json:"result,omitempty"`
+	TransactionTime string            `json:"transactionTime,omitempty"`
+}
+
+type FaceVerifyResult struct {
+	OrderNo      string `json:"orderNo,omitempty"`
+	LiveRate     string `json:"liveRate,omitempty"`
+	Similarity   string `json:"similarity,omitempty"`
+	OccurredTime string `json:"occurredTime,omitempty"`
+	AppId        string `json:"appId,omitempty"`
+	Photo        string `json:"photo,omitempty"`
+	Video        string `json:"video,omitempty"`
+	BizSeqNo     string `json:"bizSeqNo,omitempty"`
+	SdkVersion   string `json:"sdkVersion,omitempty"`
+	TrtcFlag     string `json:"trtcFlag,omitempty"`
 }
 
 func NewWbFace() *wbface {
 	return _wbface
+}
+
+func (w *wbface) GetTimes(idCardNumber string) (times int) {
+	times, _ = w.cache.Get(context.Background(), cacheKeyFaceVerifyTimes+idCardNumber).Int()
+	return
+}
+
+func (w *wbface) UpdateTimes(idCardNumber string) {
+	diff := time.Duration(carbon.Now().EndOfDay().DiffAbsInSeconds(carbon.Now())) * time.Second
+	w.cache.Set(context.Background(), cacheKeyFaceVerifyTimes+idCardNumber, w.GetTimes(idCardNumber)+1, diff)
 }
 
 func BootWbFace(cache *redis.Client) {
@@ -142,6 +197,10 @@ func (w *wbface) AppId() string {
 
 func (w *wbface) Version() string {
 	return w.version
+}
+
+func (w *wbface) Licence() string {
+	return w.licence
 }
 
 func (w *wbface) nonce() string {
@@ -302,6 +361,8 @@ func (w *wbface) Sign(ticket string, params ...string) (sign string, nonce strin
 	return
 }
 
+// OcrResult 获取OCR结果
+// https://cloud.tencent.com/document/product/1007/35864
 func (w *wbface) OcrResult(orderNo string) (err error, ocrResult *OcrResult) {
 	ticket := w.SignTicket()
 	sign, nonce := w.Sign(ticket, orderNo)
@@ -352,6 +413,83 @@ func (w *wbface) OcrResult(orderNo string) (err error, ocrResult *OcrResult) {
 	if ocrResult.BackCrop == "" {
 		ocrResult.BackCode = ocrResult.BackPhoto
 	}
+
+	return
+}
+
+// GetFaceId 上传用户信息获取人脸核身参数
+// https://cloud.tencent.com/document/product/1007/35866
+func (w *wbface) GetFaceId(req *FaceIdReq) (faceId, sign, nonce string, err error) {
+	sign, nonce = w.Sign(w.SignTicket(), req.UserId)
+	body := map[string]string{
+		"appId":   w.appid,
+		"orderNo": req.OrderNo,
+		"name":    req.Name,
+		"idNo":    req.IdNo,
+		"userId":  req.UserId,
+		"version": w.version,
+		"sign":    sign,
+		"nonce":   nonce,
+	}
+	var (
+		r      *resty.Response
+		result FaceIdRes
+	)
+
+	r, err = resty.New().R().
+		SetBody(body).
+		SetResult(&result).
+		SetQueryParam("orderNo", req.OrderNo).
+		Post(urlFaceId + req.OrderNo)
+
+	zap.L().Info("Tencent - Face - GetFaceId", log.ResponseBody(r.Body()))
+
+	if err != nil {
+		return
+	}
+
+	if result.Code != "0" {
+		return "", "", "", errors.New(result.Msg)
+	}
+
+	return result.Result.FaceId, sign, nonce, nil
+}
+
+// FaceVerifyResult 获取人脸核身结果
+// https://cloud.tencent.com/document/product/1007/35880
+func (w *wbface) FaceVerifyResult(orderNo string) (data *FaceVerifyResult, err error) {
+	ticket := w.SignTicket()
+	sign, nonce := w.Sign(ticket, orderNo)
+
+	var (
+		r      *resty.Response
+		result FaceVerifyRes
+	)
+
+	r, err = resty.New().R().
+		SetBody(map[string]string{
+			"appId":   w.appid,
+			"version": w.version,
+			"nonce":   nonce,
+			"orderNo": orderNo,
+			"sign":    sign,
+			"getFile": "1",
+		}).
+		SetResult(&result).
+		SetQueryParam("orderNo", orderNo).
+		Post(urlFaceVerifyResult)
+
+	if err != nil {
+		return
+	}
+
+	if result.Code != "0" {
+		zap.L().Info("Tencent - Face - FaceVerifyResult", log.ResponseBody(r.Body()))
+		err = errors.New(result.Msg)
+		return
+	}
+
+	data = result.Result
 
 	return
 }

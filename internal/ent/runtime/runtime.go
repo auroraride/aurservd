@@ -983,18 +983,6 @@ func init() {
 	personDescIDCardType := personFields[4].Descriptor()
 	// person.DefaultIDCardType holds the default value on creation for the id_card_type field.
 	person.DefaultIDCardType = personDescIDCardType.Default.(uint8)
-	// personDescCertifyID is the schema descriptor for certify_id field.
-	personDescCertifyID := personFields[14].Descriptor()
-	// person.CertifyIDValidator is a validator for the "certify_id" field. It is called by the builders before save.
-	person.CertifyIDValidator = personDescCertifyID.Validators[0].(func(string) error)
-	// personDescWbOcrOrderNo is the schema descriptor for wb_ocr_order_no field.
-	personDescWbOcrOrderNo := personFields[15].Descriptor()
-	// person.WbOcrOrderNoValidator is a validator for the "wb_ocr_order_no" field. It is called by the builders before save.
-	person.WbOcrOrderNoValidator = personDescWbOcrOrderNo.Validators[0].(func(string) error)
-	// personDescWbFaceOrderNo is the schema descriptor for wb_face_order_no field.
-	personDescWbFaceOrderNo := personFields[16].Descriptor()
-	// person.WbFaceOrderNoValidator is a validator for the "wb_face_order_no" field. It is called by the builders before save.
-	person.WbFaceOrderNoValidator = personDescWbFaceOrderNo.Validators[0].(func(string) error)
 	planMixin := schema.Plan{}.Mixin()
 	planMixinHooks2 := planMixin[2].Hooks()
 	plan.Hooks[0] = planMixinHooks2[0]
@@ -1513,15 +1501,15 @@ func init() {
 	// rider.DefaultIsNewDevice holds the default value on creation for the is_new_device field.
 	rider.DefaultIsNewDevice = riderDescIsNewDevice.Default.(bool)
 	// riderDescPushID is the schema descriptor for push_id field.
-	riderDescPushID := riderFields[10].Descriptor()
+	riderDescPushID := riderFields[9].Descriptor()
 	// rider.PushIDValidator is a validator for the "push_id" field. It is called by the builders before save.
 	rider.PushIDValidator = riderDescPushID.Validators[0].(func(string) error)
 	// riderDescBlocked is the schema descriptor for blocked field.
-	riderDescBlocked := riderFields[12].Descriptor()
+	riderDescBlocked := riderFields[11].Descriptor()
 	// rider.DefaultBlocked holds the default value on creation for the blocked field.
 	rider.DefaultBlocked = riderDescBlocked.Default.(bool)
 	// riderDescPoints is the schema descriptor for points field.
-	riderDescPoints := riderFields[13].Descriptor()
+	riderDescPoints := riderFields[12].Descriptor()
 	// rider.DefaultPoints holds the default value on creation for the points field.
 	rider.DefaultPoints = riderDescPoints.Default.(int64)
 	riderfollowupMixin := schema.RiderFollowUp{}.Mixin()

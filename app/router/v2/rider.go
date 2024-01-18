@@ -79,4 +79,7 @@ func LoadRiderV2Routes(root *echo.Group) {
 
 	// 获取人脸核身参数
 	g.GET("/certification/face", rapi.Person.CertificationFace, auth())
+
+	// 获取人脸核身结果
+	g.GET("/certification/face/result", rapi.Person.CertificationFaceResult, auth())
 }

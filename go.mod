@@ -2,8 +2,6 @@ module github.com/auroraride/aurservd
 
 go 1.21
 
-toolchain go1.21.4
-
 require (
 	ariga.io/atlas v0.18.0
 	entgo.io/ent v0.12.5
@@ -15,12 +13,11 @@ require (
 	github.com/alibabacloud-go/dysmsapi-20170525/v2 v2.0.18
 	github.com/alibabacloud-go/dyvmsapi-20170525/v2 v2.1.4
 	github.com/alibabacloud-go/tea v1.2.1
-	github.com/aliyun/alibaba-cloud-sdk-go v1.62.659
+	github.com/aliyun/alibaba-cloud-sdk-go v1.62.664
 	github.com/aliyun/aliyun-log-go-sdk v0.1.68
 	github.com/aliyun/aliyun-oss-go-sdk v3.0.2+incompatible
 	github.com/aliyun/credentials-go v1.3.2
-	github.com/auroraride/adapter v0.0.0-20240116004651-1aa68f8ac8b3
-	github.com/ethereum/go-ethereum v1.13.10
+	github.com/auroraride/adapter v0.0.0-20240118093640-1878b62fb31e
 	github.com/fsnotify/fsnotify v1.7.0
 	github.com/getkin/kin-openapi v0.122.0
 	github.com/go-playground/locales v0.14.1
@@ -53,6 +50,7 @@ require (
 	github.com/speps/go-hashids/v2 v2.0.1
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.18.2
+	github.com/stretchr/testify v1.8.4
 	github.com/swaggo/echo-swagger v1.4.1
 	github.com/swaggo/swag v1.16.2
 	github.com/wechatpay-apiv3/wechatpay-go v0.2.18
@@ -84,11 +82,10 @@ require (
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/bradfitz/gomemcache v0.0.0-20230905024940-24af94b03874 // indirect
-	github.com/btcsuite/btcd/btcec/v2 v2.3.2 // indirect
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/clbanning/mxj/v2 v2.7.0 // indirect
-	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.2.0 // indirect
+	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
@@ -112,7 +109,6 @@ require (
 	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/hashicorp/hcl/v2 v2.19.1 // indirect
-	github.com/holiman/uint256 v1.2.4 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/invopop/yaml v0.2.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
@@ -144,6 +140,7 @@ require (
 	github.com/perimeterx/marshmallow v1.1.5 // indirect
 	github.com/pierrec/lz4 v2.6.1+incompatible // indirect
 	github.com/pkg/errors v0.9.1 // indirect
+	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/qichengzx/coordtransform v0.0.0-20220708113031-010878418826 // indirect
 	github.com/richardlehane/mscfb v1.0.4 // indirect
 	github.com/richardlehane/msoleps v1.0.3 // indirect
@@ -173,6 +170,7 @@ require (
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/tjfoc/gmsm v1.4.1 // indirect
+	github.com/ugorji/go/codec v1.2.12 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.51.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
@@ -188,7 +186,7 @@ require (
 	golang.org/x/net v0.20.0 // indirect
 	golang.org/x/sys v0.16.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240108191215-35c7eff3a6b1 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240116215550-a9fa1716bcac // indirect
 	google.golang.org/grpc v1.60.1 // indirect
 	google.golang.org/protobuf v1.32.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
@@ -197,7 +195,7 @@ require (
 )
 
 //replace github.com/swaggo/swag => /Users/liasica/Downloads/swag
-replace github.com/swaggo/swag => github.com/liasica/swag v1.16.2-0.20230517011152-3279b6061bcc
+replace github.com/swaggo/swag => github.com/liasica/swag v1.16.2-adaptation
 
 //replace entgo.io/ent => github.com/CharlesGe129/ent v0.10.2-0.20220520130033-5886b54e4875
 //replace entgo.io/ent => github.com/liasica/ent v0.11.3-0.20220926082554-08715525d2cf

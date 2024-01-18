@@ -257,10 +257,10 @@ func (s *riderService) FaceAuthResult(c *app.RiderContext, token string) (succes
 		fm = oss.UploadUrlFile(prefix+"face.jpg", res.FaceImg)
 	}
 	if res.IdcardImages.FrontBase64 != "" {
-		pm = oss.UploadBase64ImageJpeg(prefix+"portrait.jpg", res.IdcardImages.FrontBase64)
+		pm = oss.UploadBase64(prefix+"portrait.jpg", res.IdcardImages.FrontBase64)
 	}
 	if res.IdcardImages.BackBase64 != "" {
-		nm = oss.UploadBase64ImageJpeg(prefix+"national.jpg", res.IdcardImages.BackBase64)
+		nm = oss.UploadBase64(prefix+"national.jpg", res.IdcardImages.BackBase64)
 	}
 
 	icNum := vr.IdCardNumber
@@ -294,7 +294,6 @@ func (s *riderService) FaceAuthResult(c *app.RiderContext, token string) (succes
 		ri, err := ent.Database.Rider.
 			UpdateOneID(u.ID).
 			SetPersonID(id).
-			SetLastFace(fm).
 			SetIsNewDevice(false).
 			SetName(vr.Name).
 			SetIDCardNumber(icNum).
@@ -326,10 +325,9 @@ func (s *riderService) FaceResult(c *app.RiderContext, token string) (success bo
 	}
 	// 上传人脸图
 	p := u.Edges.Person
-	fm := ali.NewOss().UploadUrlFile(fmt.Sprintf("%s-%s/face-%s.jpg", p.Name, p.IDCardNumber, u.LastDevice), res.Result.Image)
+	ali.NewOss().UploadUrlFile(fmt.Sprintf("%s-%s/face-%s.jpg", p.Name, p.IDCardNumber, u.LastDevice), res.Result.Image)
 	err = ent.Database.Rider.
 		UpdateOneID(u.ID).
-		SetLastFace(fm).
 		SetIsNewDevice(false).
 		Exec(context.Background())
 	if err != nil {
@@ -677,7 +675,6 @@ func (s *riderService) detailRiderItem(item *ent.Rider) model.RiderItem {
 			IDCardNumber:   p.IDCardNumber,
 			IDCardPortrait: p.IDCardPortrait,
 			IDCardNational: p.IDCardNational,
-			IDCardHead:     p.IDCardHead,
 			AuthFace:       p.AuthFace,
 		}
 	}

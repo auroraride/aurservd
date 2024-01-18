@@ -3178,16 +3178,12 @@ var (
 		{Name: "id_card_type", Type: field.TypeUint8, Comment: "证件类别", Default: 1},
 		{Name: "id_card_portrait", Type: field.TypeString, Nullable: true, Comment: "证件人像面"},
 		{Name: "id_card_national", Type: field.TypeString, Nullable: true, Comment: "证件国徽面"},
-		{Name: "id_card_head", Type: field.TypeString, Nullable: true, Comment: "证件头像照片"},
 		{Name: "auth_face", Type: field.TypeString, Nullable: true, Comment: "实名认证人脸照片"},
 		{Name: "auth_result", Type: field.TypeJSON, Nullable: true, Comment: "百度实名认证结果详情"},
 		{Name: "auth_at", Type: field.TypeTime, Nullable: true, Comment: "百度实名认证结果获取时间"},
 		{Name: "esign_account_id", Type: field.TypeString, Nullable: true, Comment: "E签宝账户ID"},
 		{Name: "baidu_verify_token", Type: field.TypeString, Nullable: true, Comment: "百度人脸verify_token"},
 		{Name: "baidu_log_id", Type: field.TypeString, Nullable: true, Comment: "百度人脸log_id"},
-		{Name: "certify_id", Type: field.TypeString, Nullable: true, Size: 32, Comment: "阿里云人脸实名认证ID"},
-		{Name: "wb_ocr_order_no", Type: field.TypeString, Nullable: true, Size: 32, Comment: "腾讯OCR订单号"},
-		{Name: "wb_face_order_no", Type: field.TypeString, Nullable: true, Size: 32, Comment: "腾讯人脸核验订单号"},
 		{Name: "face_verify_result", Type: field.TypeJSON, Nullable: true, Comment: "人身核验核验结果"},
 	}
 	// PersonTable holds the schema information for the "person" table.
@@ -4291,7 +4287,6 @@ var (
 		{Name: "device_type", Type: field.TypeUint8, Nullable: true, Comment: "登录设备类型: 1iOS 2Android"},
 		{Name: "last_device", Type: field.TypeString, Nullable: true, Size: 60, Comment: "最近登录设备"},
 		{Name: "is_new_device", Type: field.TypeBool, Comment: "是否新设备", Default: false},
-		{Name: "last_face", Type: field.TypeString, Nullable: true, Comment: "上次登录人脸"},
 		{Name: "push_id", Type: field.TypeString, Nullable: true, Size: 60, Comment: "推送ID"},
 		{Name: "last_signin_at", Type: field.TypeTime, Nullable: true, Comment: "最后登录时间"},
 		{Name: "blocked", Type: field.TypeBool, Comment: "是否封禁骑手账号", Default: false},
@@ -4311,19 +4306,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "rider_enterprise_riders",
-				Columns:    []*schema.Column{RiderColumns[22]},
+				Columns:    []*schema.Column{RiderColumns[21]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "rider_person_rider",
-				Columns:    []*schema.Column{RiderColumns[23]},
+				Columns:    []*schema.Column{RiderColumns[22]},
 				RefColumns: []*schema.Column{PersonColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "rider_enterprise_station_station",
-				Columns:    []*schema.Column{RiderColumns[24]},
+				Columns:    []*schema.Column{RiderColumns[23]},
 				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -4342,7 +4337,7 @@ var (
 			{
 				Name:    "rider_station_id",
 				Unique:  false,
-				Columns: []*schema.Column{RiderColumns[24]},
+				Columns: []*schema.Column{RiderColumns[23]},
 			},
 			{
 				Name:    "rider_phone",
@@ -4374,12 +4369,12 @@ var (
 			{
 				Name:    "rider_person_id",
 				Unique:  false,
-				Columns: []*schema.Column{RiderColumns[23]},
+				Columns: []*schema.Column{RiderColumns[22]},
 			},
 			{
 				Name:    "rider_enterprise_id",
 				Unique:  false,
-				Columns: []*schema.Column{RiderColumns[22]},
+				Columns: []*schema.Column{RiderColumns[21]},
 			},
 			{
 				Name:    "rider_last_device",
@@ -4389,7 +4384,7 @@ var (
 			{
 				Name:    "rider_push_id",
 				Unique:  false,
-				Columns: []*schema.Column{RiderColumns[15]},
+				Columns: []*schema.Column{RiderColumns[14]},
 			},
 		},
 	}

@@ -219,26 +219,6 @@ func (pu *PersonUpdate) ClearIDCardNational() *PersonUpdate {
 	return pu
 }
 
-// SetIDCardHead sets the "id_card_head" field.
-func (pu *PersonUpdate) SetIDCardHead(s string) *PersonUpdate {
-	pu.mutation.SetIDCardHead(s)
-	return pu
-}
-
-// SetNillableIDCardHead sets the "id_card_head" field if the given value is not nil.
-func (pu *PersonUpdate) SetNillableIDCardHead(s *string) *PersonUpdate {
-	if s != nil {
-		pu.SetIDCardHead(*s)
-	}
-	return pu
-}
-
-// ClearIDCardHead clears the value of the "id_card_head" field.
-func (pu *PersonUpdate) ClearIDCardHead() *PersonUpdate {
-	pu.mutation.ClearIDCardHead()
-	return pu
-}
-
 // SetAuthFace sets the "auth_face" field.
 func (pu *PersonUpdate) SetAuthFace(s string) *PersonUpdate {
 	pu.mutation.SetAuthFace(s)
@@ -351,66 +331,6 @@ func (pu *PersonUpdate) ClearBaiduLogID() *PersonUpdate {
 	return pu
 }
 
-// SetCertifyID sets the "certify_id" field.
-func (pu *PersonUpdate) SetCertifyID(s string) *PersonUpdate {
-	pu.mutation.SetCertifyID(s)
-	return pu
-}
-
-// SetNillableCertifyID sets the "certify_id" field if the given value is not nil.
-func (pu *PersonUpdate) SetNillableCertifyID(s *string) *PersonUpdate {
-	if s != nil {
-		pu.SetCertifyID(*s)
-	}
-	return pu
-}
-
-// ClearCertifyID clears the value of the "certify_id" field.
-func (pu *PersonUpdate) ClearCertifyID() *PersonUpdate {
-	pu.mutation.ClearCertifyID()
-	return pu
-}
-
-// SetWbOcrOrderNo sets the "wb_ocr_order_no" field.
-func (pu *PersonUpdate) SetWbOcrOrderNo(s string) *PersonUpdate {
-	pu.mutation.SetWbOcrOrderNo(s)
-	return pu
-}
-
-// SetNillableWbOcrOrderNo sets the "wb_ocr_order_no" field if the given value is not nil.
-func (pu *PersonUpdate) SetNillableWbOcrOrderNo(s *string) *PersonUpdate {
-	if s != nil {
-		pu.SetWbOcrOrderNo(*s)
-	}
-	return pu
-}
-
-// ClearWbOcrOrderNo clears the value of the "wb_ocr_order_no" field.
-func (pu *PersonUpdate) ClearWbOcrOrderNo() *PersonUpdate {
-	pu.mutation.ClearWbOcrOrderNo()
-	return pu
-}
-
-// SetWbFaceOrderNo sets the "wb_face_order_no" field.
-func (pu *PersonUpdate) SetWbFaceOrderNo(s string) *PersonUpdate {
-	pu.mutation.SetWbFaceOrderNo(s)
-	return pu
-}
-
-// SetNillableWbFaceOrderNo sets the "wb_face_order_no" field if the given value is not nil.
-func (pu *PersonUpdate) SetNillableWbFaceOrderNo(s *string) *PersonUpdate {
-	if s != nil {
-		pu.SetWbFaceOrderNo(*s)
-	}
-	return pu
-}
-
-// ClearWbFaceOrderNo clears the value of the "wb_face_order_no" field.
-func (pu *PersonUpdate) ClearWbFaceOrderNo() *PersonUpdate {
-	pu.mutation.ClearWbFaceOrderNo()
-	return pu
-}
-
 // SetFaceVerifyResult sets the "face_verify_result" field.
 func (pu *PersonUpdate) SetFaceVerifyResult(mfvr *model.PersonFaceVerifyResult) *PersonUpdate {
 	pu.mutation.SetFaceVerifyResult(mfvr)
@@ -518,21 +438,6 @@ func (pu *PersonUpdate) check() error {
 			return &ValidationError{Name: "id_card_number", err: fmt.Errorf(`ent: validator failed for field "Person.id_card_number": %w`, err)}
 		}
 	}
-	if v, ok := pu.mutation.CertifyID(); ok {
-		if err := person.CertifyIDValidator(v); err != nil {
-			return &ValidationError{Name: "certify_id", err: fmt.Errorf(`ent: validator failed for field "Person.certify_id": %w`, err)}
-		}
-	}
-	if v, ok := pu.mutation.WbOcrOrderNo(); ok {
-		if err := person.WbOcrOrderNoValidator(v); err != nil {
-			return &ValidationError{Name: "wb_ocr_order_no", err: fmt.Errorf(`ent: validator failed for field "Person.wb_ocr_order_no": %w`, err)}
-		}
-	}
-	if v, ok := pu.mutation.WbFaceOrderNo(); ok {
-		if err := person.WbFaceOrderNoValidator(v); err != nil {
-			return &ValidationError{Name: "wb_face_order_no", err: fmt.Errorf(`ent: validator failed for field "Person.wb_face_order_no": %w`, err)}
-		}
-	}
 	return nil
 }
 
@@ -614,12 +519,6 @@ func (pu *PersonUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if pu.mutation.IDCardNationalCleared() {
 		_spec.ClearField(person.FieldIDCardNational, field.TypeString)
 	}
-	if value, ok := pu.mutation.IDCardHead(); ok {
-		_spec.SetField(person.FieldIDCardHead, field.TypeString, value)
-	}
-	if pu.mutation.IDCardHeadCleared() {
-		_spec.ClearField(person.FieldIDCardHead, field.TypeString)
-	}
 	if value, ok := pu.mutation.AuthFace(); ok {
 		_spec.SetField(person.FieldAuthFace, field.TypeString, value)
 	}
@@ -655,24 +554,6 @@ func (pu *PersonUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if pu.mutation.BaiduLogIDCleared() {
 		_spec.ClearField(person.FieldBaiduLogID, field.TypeString)
-	}
-	if value, ok := pu.mutation.CertifyID(); ok {
-		_spec.SetField(person.FieldCertifyID, field.TypeString, value)
-	}
-	if pu.mutation.CertifyIDCleared() {
-		_spec.ClearField(person.FieldCertifyID, field.TypeString)
-	}
-	if value, ok := pu.mutation.WbOcrOrderNo(); ok {
-		_spec.SetField(person.FieldWbOcrOrderNo, field.TypeString, value)
-	}
-	if pu.mutation.WbOcrOrderNoCleared() {
-		_spec.ClearField(person.FieldWbOcrOrderNo, field.TypeString)
-	}
-	if value, ok := pu.mutation.WbFaceOrderNo(); ok {
-		_spec.SetField(person.FieldWbFaceOrderNo, field.TypeString, value)
-	}
-	if pu.mutation.WbFaceOrderNoCleared() {
-		_spec.ClearField(person.FieldWbFaceOrderNo, field.TypeString)
 	}
 	if value, ok := pu.mutation.FaceVerifyResult(); ok {
 		_spec.SetField(person.FieldFaceVerifyResult, field.TypeJSON, value)
@@ -935,26 +816,6 @@ func (puo *PersonUpdateOne) ClearIDCardNational() *PersonUpdateOne {
 	return puo
 }
 
-// SetIDCardHead sets the "id_card_head" field.
-func (puo *PersonUpdateOne) SetIDCardHead(s string) *PersonUpdateOne {
-	puo.mutation.SetIDCardHead(s)
-	return puo
-}
-
-// SetNillableIDCardHead sets the "id_card_head" field if the given value is not nil.
-func (puo *PersonUpdateOne) SetNillableIDCardHead(s *string) *PersonUpdateOne {
-	if s != nil {
-		puo.SetIDCardHead(*s)
-	}
-	return puo
-}
-
-// ClearIDCardHead clears the value of the "id_card_head" field.
-func (puo *PersonUpdateOne) ClearIDCardHead() *PersonUpdateOne {
-	puo.mutation.ClearIDCardHead()
-	return puo
-}
-
 // SetAuthFace sets the "auth_face" field.
 func (puo *PersonUpdateOne) SetAuthFace(s string) *PersonUpdateOne {
 	puo.mutation.SetAuthFace(s)
@@ -1064,66 +925,6 @@ func (puo *PersonUpdateOne) SetNillableBaiduLogID(s *string) *PersonUpdateOne {
 // ClearBaiduLogID clears the value of the "baidu_log_id" field.
 func (puo *PersonUpdateOne) ClearBaiduLogID() *PersonUpdateOne {
 	puo.mutation.ClearBaiduLogID()
-	return puo
-}
-
-// SetCertifyID sets the "certify_id" field.
-func (puo *PersonUpdateOne) SetCertifyID(s string) *PersonUpdateOne {
-	puo.mutation.SetCertifyID(s)
-	return puo
-}
-
-// SetNillableCertifyID sets the "certify_id" field if the given value is not nil.
-func (puo *PersonUpdateOne) SetNillableCertifyID(s *string) *PersonUpdateOne {
-	if s != nil {
-		puo.SetCertifyID(*s)
-	}
-	return puo
-}
-
-// ClearCertifyID clears the value of the "certify_id" field.
-func (puo *PersonUpdateOne) ClearCertifyID() *PersonUpdateOne {
-	puo.mutation.ClearCertifyID()
-	return puo
-}
-
-// SetWbOcrOrderNo sets the "wb_ocr_order_no" field.
-func (puo *PersonUpdateOne) SetWbOcrOrderNo(s string) *PersonUpdateOne {
-	puo.mutation.SetWbOcrOrderNo(s)
-	return puo
-}
-
-// SetNillableWbOcrOrderNo sets the "wb_ocr_order_no" field if the given value is not nil.
-func (puo *PersonUpdateOne) SetNillableWbOcrOrderNo(s *string) *PersonUpdateOne {
-	if s != nil {
-		puo.SetWbOcrOrderNo(*s)
-	}
-	return puo
-}
-
-// ClearWbOcrOrderNo clears the value of the "wb_ocr_order_no" field.
-func (puo *PersonUpdateOne) ClearWbOcrOrderNo() *PersonUpdateOne {
-	puo.mutation.ClearWbOcrOrderNo()
-	return puo
-}
-
-// SetWbFaceOrderNo sets the "wb_face_order_no" field.
-func (puo *PersonUpdateOne) SetWbFaceOrderNo(s string) *PersonUpdateOne {
-	puo.mutation.SetWbFaceOrderNo(s)
-	return puo
-}
-
-// SetNillableWbFaceOrderNo sets the "wb_face_order_no" field if the given value is not nil.
-func (puo *PersonUpdateOne) SetNillableWbFaceOrderNo(s *string) *PersonUpdateOne {
-	if s != nil {
-		puo.SetWbFaceOrderNo(*s)
-	}
-	return puo
-}
-
-// ClearWbFaceOrderNo clears the value of the "wb_face_order_no" field.
-func (puo *PersonUpdateOne) ClearWbFaceOrderNo() *PersonUpdateOne {
-	puo.mutation.ClearWbFaceOrderNo()
 	return puo
 }
 
@@ -1247,21 +1048,6 @@ func (puo *PersonUpdateOne) check() error {
 			return &ValidationError{Name: "id_card_number", err: fmt.Errorf(`ent: validator failed for field "Person.id_card_number": %w`, err)}
 		}
 	}
-	if v, ok := puo.mutation.CertifyID(); ok {
-		if err := person.CertifyIDValidator(v); err != nil {
-			return &ValidationError{Name: "certify_id", err: fmt.Errorf(`ent: validator failed for field "Person.certify_id": %w`, err)}
-		}
-	}
-	if v, ok := puo.mutation.WbOcrOrderNo(); ok {
-		if err := person.WbOcrOrderNoValidator(v); err != nil {
-			return &ValidationError{Name: "wb_ocr_order_no", err: fmt.Errorf(`ent: validator failed for field "Person.wb_ocr_order_no": %w`, err)}
-		}
-	}
-	if v, ok := puo.mutation.WbFaceOrderNo(); ok {
-		if err := person.WbFaceOrderNoValidator(v); err != nil {
-			return &ValidationError{Name: "wb_face_order_no", err: fmt.Errorf(`ent: validator failed for field "Person.wb_face_order_no": %w`, err)}
-		}
-	}
 	return nil
 }
 
@@ -1360,12 +1146,6 @@ func (puo *PersonUpdateOne) sqlSave(ctx context.Context) (_node *Person, err err
 	if puo.mutation.IDCardNationalCleared() {
 		_spec.ClearField(person.FieldIDCardNational, field.TypeString)
 	}
-	if value, ok := puo.mutation.IDCardHead(); ok {
-		_spec.SetField(person.FieldIDCardHead, field.TypeString, value)
-	}
-	if puo.mutation.IDCardHeadCleared() {
-		_spec.ClearField(person.FieldIDCardHead, field.TypeString)
-	}
 	if value, ok := puo.mutation.AuthFace(); ok {
 		_spec.SetField(person.FieldAuthFace, field.TypeString, value)
 	}
@@ -1401,24 +1181,6 @@ func (puo *PersonUpdateOne) sqlSave(ctx context.Context) (_node *Person, err err
 	}
 	if puo.mutation.BaiduLogIDCleared() {
 		_spec.ClearField(person.FieldBaiduLogID, field.TypeString)
-	}
-	if value, ok := puo.mutation.CertifyID(); ok {
-		_spec.SetField(person.FieldCertifyID, field.TypeString, value)
-	}
-	if puo.mutation.CertifyIDCleared() {
-		_spec.ClearField(person.FieldCertifyID, field.TypeString)
-	}
-	if value, ok := puo.mutation.WbOcrOrderNo(); ok {
-		_spec.SetField(person.FieldWbOcrOrderNo, field.TypeString, value)
-	}
-	if puo.mutation.WbOcrOrderNoCleared() {
-		_spec.ClearField(person.FieldWbOcrOrderNo, field.TypeString)
-	}
-	if value, ok := puo.mutation.WbFaceOrderNo(); ok {
-		_spec.SetField(person.FieldWbFaceOrderNo, field.TypeString, value)
-	}
-	if puo.mutation.WbFaceOrderNoCleared() {
-		_spec.ClearField(person.FieldWbFaceOrderNo, field.TypeString)
 	}
 	if value, ok := puo.mutation.FaceVerifyResult(); ok {
 		_spec.SetField(person.FieldFaceVerifyResult, field.TypeJSON, value)

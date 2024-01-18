@@ -1,8 +1,8 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="aurservd_debug_local" type="GoApplicationRunConfiguration" factoryName="Go Application">
+  <configuration default="false" name="aurservd_debug_liasica" type="GoApplicationRunConfiguration" factoryName="Go Application">
     <module name="aurservd" />
     <working_directory value="$PROJECT_DIR$" />
-    <parameters value="server --config $USER_HOME$/Documents/_SYNC/极光出行/aurservd.yaml" />
+    <parameters value="server --config $USER_HOME$/Documents/_SYNC/极光出行/config/config.yaml" />
     <kind value="DIRECTORY" />
     <package value="github.com/auroraride/aurservd" />
     <directory value="$PROJECT_DIR$/cmd/aurservd" />

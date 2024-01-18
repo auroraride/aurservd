@@ -47,19 +47,24 @@ type BaiduFaceVerifyResult struct {
 }
 
 type PersonFaceVerifyResult struct {
-	Name            string  `json:"name"`            // 姓名
-	Sex             string  `json:"sex"`             // 性别
-	Nation          string  `json:"nation"`          // 民族
-	Birth           string  `json:"birth"`           // 出生日期（例：19920320）
-	Address         string  `json:"address"`         // 地址
-	Idcard          string  `json:"idcard"`          // 身份证号
-	ValidStartDate  string  `json:"validStartDate"`  // 证件生效日期
-	ValidExpireDate string  `json:"validExpireDate"` // 证件失效日期
-	Authority       string  `json:"authority"`       // 发证机关
-	FrontClarity    string  `json:"frontClarity"`    // 正面图片清晰度
-	BackClarity     string  `json:"backClarity"`     // 反面图片清晰度
-	LiveRate        float64 `json:"liveRate"`        // 活体检测得分
-	Similarity      float64 `json:"similarity"`      // 人脸比对得分
+	Name            string  `json:"name"`                      // 姓名
+	IDCardNumber    string  `json:"idCardNumber"`              // 身份证号
+	Birth           string  `json:"birth"`                     // 出生日期（例：19920320）
+	Sex             string  `json:"sex,omitempty"`             // 性别
+	Nation          string  `json:"nation,omitempty"`          // 民族
+	Address         string  `json:"address,omitempty"`         // 地址
+	ValidStartDate  string  `json:"validStartDate,omitempty"`  // 证件生效日期
+	ValidExpireDate string  `json:"validExpireDate,omitempty"` // 证件失效日期
+	Authority       string  `json:"authority,omitempty"`       // 发证机关
+	FrontClarity    float64 `json:"frontClarity,omitempty"`    // 正面图片清晰度
+	BackClarity     float64 `json:"backClarity,omitempty"`     // 反面图片清晰度
+	LiveRate        float64 `json:"liveRate,omitempty"`        // 活体检测得分
+	Similarity      float64 `json:"similarity,omitempty"`      // 人脸比对得分
+	Video           string  `json:"video,omitempty"`           // 人身核验视频
+	Photo           string  `json:"photo,omitempty"`           // 人身核验照片
+	FaceOrderNo     string  `json:"orderNo,omitempty"`         // 人身核验订单号
+	OcrOrderNo      string  `json:"ocrOrderNo,omitempty"`      // ocr订单号
+	Head            string  `json:"head,omitempty"`            // 证件人像照片
 }
 
 // RequireAuth 是否需要认证
@@ -80,8 +85,6 @@ type Person struct {
 	IDCardPortrait string `json:"idCardPortrait,omitempty"`
 	// 证件国徽面
 	IDCardNational string `json:"idCardNational,omitempty"`
-	// 证件人像照片
-	IDCardHead string `json:"idCardHead,omitempty"`
 	// 实名认证人脸照片
 	AuthFace string `json:"authFace,omitempty"`
 }

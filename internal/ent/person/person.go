@@ -41,8 +41,6 @@ const (
 	FieldIDCardPortrait = "id_card_portrait"
 	// FieldIDCardNational holds the string denoting the id_card_national field in the database.
 	FieldIDCardNational = "id_card_national"
-	// FieldIDCardHead holds the string denoting the id_card_head field in the database.
-	FieldIDCardHead = "id_card_head"
 	// FieldAuthFace holds the string denoting the auth_face field in the database.
 	FieldAuthFace = "auth_face"
 	// FieldAuthResult holds the string denoting the auth_result field in the database.
@@ -55,12 +53,6 @@ const (
 	FieldBaiduVerifyToken = "baidu_verify_token"
 	// FieldBaiduLogID holds the string denoting the baidu_log_id field in the database.
 	FieldBaiduLogID = "baidu_log_id"
-	// FieldCertifyID holds the string denoting the certify_id field in the database.
-	FieldCertifyID = "certify_id"
-	// FieldWbOcrOrderNo holds the string denoting the wb_ocr_order_no field in the database.
-	FieldWbOcrOrderNo = "wb_ocr_order_no"
-	// FieldWbFaceOrderNo holds the string denoting the wb_face_order_no field in the database.
-	FieldWbFaceOrderNo = "wb_face_order_no"
 	// FieldFaceVerifyResult holds the string denoting the face_verify_result field in the database.
 	FieldFaceVerifyResult = "face_verify_result"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
@@ -92,16 +84,12 @@ var Columns = []string{
 	FieldIDCardType,
 	FieldIDCardPortrait,
 	FieldIDCardNational,
-	FieldIDCardHead,
 	FieldAuthFace,
 	FieldAuthResult,
 	FieldAuthAt,
 	FieldEsignAccountID,
 	FieldBaiduVerifyToken,
 	FieldBaiduLogID,
-	FieldCertifyID,
-	FieldWbOcrOrderNo,
-	FieldWbFaceOrderNo,
 	FieldFaceVerifyResult,
 }
 
@@ -138,12 +126,6 @@ var (
 	IDCardNumberValidator func(string) error
 	// DefaultIDCardType holds the default value on creation for the "id_card_type" field.
 	DefaultIDCardType uint8
-	// CertifyIDValidator is a validator for the "certify_id" field. It is called by the builders before save.
-	CertifyIDValidator func(string) error
-	// WbOcrOrderNoValidator is a validator for the "wb_ocr_order_no" field. It is called by the builders before save.
-	WbOcrOrderNoValidator func(string) error
-	// WbFaceOrderNoValidator is a validator for the "wb_face_order_no" field. It is called by the builders before save.
-	WbFaceOrderNoValidator func(string) error
 )
 
 // OrderOption defines the ordering options for the Person queries.
@@ -209,11 +191,6 @@ func ByIDCardNational(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIDCardNational, opts...).ToFunc()
 }
 
-// ByIDCardHead orders the results by the id_card_head field.
-func ByIDCardHead(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldIDCardHead, opts...).ToFunc()
-}
-
 // ByAuthFace orders the results by the auth_face field.
 func ByAuthFace(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldAuthFace, opts...).ToFunc()
@@ -237,21 +214,6 @@ func ByBaiduVerifyToken(opts ...sql.OrderTermOption) OrderOption {
 // ByBaiduLogID orders the results by the baidu_log_id field.
 func ByBaiduLogID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldBaiduLogID, opts...).ToFunc()
-}
-
-// ByCertifyID orders the results by the certify_id field.
-func ByCertifyID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldCertifyID, opts...).ToFunc()
-}
-
-// ByWbOcrOrderNo orders the results by the wb_ocr_order_no field.
-func ByWbOcrOrderNo(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldWbOcrOrderNo, opts...).ToFunc()
-}
-
-// ByWbFaceOrderNo orders the results by the wb_face_order_no field.
-func ByWbFaceOrderNo(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldWbFaceOrderNo, opts...).ToFunc()
 }
 
 // ByRiderCount orders the results by rider count.

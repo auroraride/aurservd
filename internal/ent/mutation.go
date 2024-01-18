@@ -60054,16 +60054,12 @@ type PersonMutation struct {
 	addid_card_type    *int8
 	id_card_portrait   *string
 	id_card_national   *string
-	id_card_head       *string
 	auth_face          *string
 	auth_result        **model.BaiduFaceVerifyResult
 	auth_at            *time.Time
 	esign_account_id   *string
 	baidu_verify_token *string
 	baidu_log_id       *string
-	certify_id         *string
-	wb_ocr_order_no    *string
-	wb_face_order_no   *string
 	face_verify_result **model.PersonFaceVerifyResult
 	clearedFields      map[string]struct{}
 	rider              map[uint64]struct{}
@@ -60771,55 +60767,6 @@ func (m *PersonMutation) ResetIDCardNational() {
 	delete(m.clearedFields, person.FieldIDCardNational)
 }
 
-// SetIDCardHead sets the "id_card_head" field.
-func (m *PersonMutation) SetIDCardHead(s string) {
-	m.id_card_head = &s
-}
-
-// IDCardHead returns the value of the "id_card_head" field in the mutation.
-func (m *PersonMutation) IDCardHead() (r string, exists bool) {
-	v := m.id_card_head
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldIDCardHead returns the old "id_card_head" field's value of the Person entity.
-// If the Person object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PersonMutation) OldIDCardHead(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldIDCardHead is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldIDCardHead requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldIDCardHead: %w", err)
-	}
-	return oldValue.IDCardHead, nil
-}
-
-// ClearIDCardHead clears the value of the "id_card_head" field.
-func (m *PersonMutation) ClearIDCardHead() {
-	m.id_card_head = nil
-	m.clearedFields[person.FieldIDCardHead] = struct{}{}
-}
-
-// IDCardHeadCleared returns if the "id_card_head" field was cleared in this mutation.
-func (m *PersonMutation) IDCardHeadCleared() bool {
-	_, ok := m.clearedFields[person.FieldIDCardHead]
-	return ok
-}
-
-// ResetIDCardHead resets all changes to the "id_card_head" field.
-func (m *PersonMutation) ResetIDCardHead() {
-	m.id_card_head = nil
-	delete(m.clearedFields, person.FieldIDCardHead)
-}
-
 // SetAuthFace sets the "auth_face" field.
 func (m *PersonMutation) SetAuthFace(s string) {
 	m.auth_face = &s
@@ -61114,153 +61061,6 @@ func (m *PersonMutation) ResetBaiduLogID() {
 	delete(m.clearedFields, person.FieldBaiduLogID)
 }
 
-// SetCertifyID sets the "certify_id" field.
-func (m *PersonMutation) SetCertifyID(s string) {
-	m.certify_id = &s
-}
-
-// CertifyID returns the value of the "certify_id" field in the mutation.
-func (m *PersonMutation) CertifyID() (r string, exists bool) {
-	v := m.certify_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCertifyID returns the old "certify_id" field's value of the Person entity.
-// If the Person object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PersonMutation) OldCertifyID(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCertifyID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCertifyID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCertifyID: %w", err)
-	}
-	return oldValue.CertifyID, nil
-}
-
-// ClearCertifyID clears the value of the "certify_id" field.
-func (m *PersonMutation) ClearCertifyID() {
-	m.certify_id = nil
-	m.clearedFields[person.FieldCertifyID] = struct{}{}
-}
-
-// CertifyIDCleared returns if the "certify_id" field was cleared in this mutation.
-func (m *PersonMutation) CertifyIDCleared() bool {
-	_, ok := m.clearedFields[person.FieldCertifyID]
-	return ok
-}
-
-// ResetCertifyID resets all changes to the "certify_id" field.
-func (m *PersonMutation) ResetCertifyID() {
-	m.certify_id = nil
-	delete(m.clearedFields, person.FieldCertifyID)
-}
-
-// SetWbOcrOrderNo sets the "wb_ocr_order_no" field.
-func (m *PersonMutation) SetWbOcrOrderNo(s string) {
-	m.wb_ocr_order_no = &s
-}
-
-// WbOcrOrderNo returns the value of the "wb_ocr_order_no" field in the mutation.
-func (m *PersonMutation) WbOcrOrderNo() (r string, exists bool) {
-	v := m.wb_ocr_order_no
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldWbOcrOrderNo returns the old "wb_ocr_order_no" field's value of the Person entity.
-// If the Person object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PersonMutation) OldWbOcrOrderNo(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldWbOcrOrderNo is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldWbOcrOrderNo requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldWbOcrOrderNo: %w", err)
-	}
-	return oldValue.WbOcrOrderNo, nil
-}
-
-// ClearWbOcrOrderNo clears the value of the "wb_ocr_order_no" field.
-func (m *PersonMutation) ClearWbOcrOrderNo() {
-	m.wb_ocr_order_no = nil
-	m.clearedFields[person.FieldWbOcrOrderNo] = struct{}{}
-}
-
-// WbOcrOrderNoCleared returns if the "wb_ocr_order_no" field was cleared in this mutation.
-func (m *PersonMutation) WbOcrOrderNoCleared() bool {
-	_, ok := m.clearedFields[person.FieldWbOcrOrderNo]
-	return ok
-}
-
-// ResetWbOcrOrderNo resets all changes to the "wb_ocr_order_no" field.
-func (m *PersonMutation) ResetWbOcrOrderNo() {
-	m.wb_ocr_order_no = nil
-	delete(m.clearedFields, person.FieldWbOcrOrderNo)
-}
-
-// SetWbFaceOrderNo sets the "wb_face_order_no" field.
-func (m *PersonMutation) SetWbFaceOrderNo(s string) {
-	m.wb_face_order_no = &s
-}
-
-// WbFaceOrderNo returns the value of the "wb_face_order_no" field in the mutation.
-func (m *PersonMutation) WbFaceOrderNo() (r string, exists bool) {
-	v := m.wb_face_order_no
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldWbFaceOrderNo returns the old "wb_face_order_no" field's value of the Person entity.
-// If the Person object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PersonMutation) OldWbFaceOrderNo(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldWbFaceOrderNo is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldWbFaceOrderNo requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldWbFaceOrderNo: %w", err)
-	}
-	return oldValue.WbFaceOrderNo, nil
-}
-
-// ClearWbFaceOrderNo clears the value of the "wb_face_order_no" field.
-func (m *PersonMutation) ClearWbFaceOrderNo() {
-	m.wb_face_order_no = nil
-	m.clearedFields[person.FieldWbFaceOrderNo] = struct{}{}
-}
-
-// WbFaceOrderNoCleared returns if the "wb_face_order_no" field was cleared in this mutation.
-func (m *PersonMutation) WbFaceOrderNoCleared() bool {
-	_, ok := m.clearedFields[person.FieldWbFaceOrderNo]
-	return ok
-}
-
-// ResetWbFaceOrderNo resets all changes to the "wb_face_order_no" field.
-func (m *PersonMutation) ResetWbFaceOrderNo() {
-	m.wb_face_order_no = nil
-	delete(m.clearedFields, person.FieldWbFaceOrderNo)
-}
-
 // SetFaceVerifyResult sets the "face_verify_result" field.
 func (m *PersonMutation) SetFaceVerifyResult(mfvr *model.PersonFaceVerifyResult) {
 	m.face_verify_result = &mfvr
@@ -61398,7 +61198,7 @@ func (m *PersonMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PersonMutation) Fields() []string {
-	fields := make([]string, 0, 24)
+	fields := make([]string, 0, 20)
 	if m.created_at != nil {
 		fields = append(fields, person.FieldCreatedAt)
 	}
@@ -61438,9 +61238,6 @@ func (m *PersonMutation) Fields() []string {
 	if m.id_card_national != nil {
 		fields = append(fields, person.FieldIDCardNational)
 	}
-	if m.id_card_head != nil {
-		fields = append(fields, person.FieldIDCardHead)
-	}
 	if m.auth_face != nil {
 		fields = append(fields, person.FieldAuthFace)
 	}
@@ -61458,15 +61255,6 @@ func (m *PersonMutation) Fields() []string {
 	}
 	if m.baidu_log_id != nil {
 		fields = append(fields, person.FieldBaiduLogID)
-	}
-	if m.certify_id != nil {
-		fields = append(fields, person.FieldCertifyID)
-	}
-	if m.wb_ocr_order_no != nil {
-		fields = append(fields, person.FieldWbOcrOrderNo)
-	}
-	if m.wb_face_order_no != nil {
-		fields = append(fields, person.FieldWbFaceOrderNo)
 	}
 	if m.face_verify_result != nil {
 		fields = append(fields, person.FieldFaceVerifyResult)
@@ -61505,8 +61293,6 @@ func (m *PersonMutation) Field(name string) (ent.Value, bool) {
 		return m.IDCardPortrait()
 	case person.FieldIDCardNational:
 		return m.IDCardNational()
-	case person.FieldIDCardHead:
-		return m.IDCardHead()
 	case person.FieldAuthFace:
 		return m.AuthFace()
 	case person.FieldAuthResult:
@@ -61519,12 +61305,6 @@ func (m *PersonMutation) Field(name string) (ent.Value, bool) {
 		return m.BaiduVerifyToken()
 	case person.FieldBaiduLogID:
 		return m.BaiduLogID()
-	case person.FieldCertifyID:
-		return m.CertifyID()
-	case person.FieldWbOcrOrderNo:
-		return m.WbOcrOrderNo()
-	case person.FieldWbFaceOrderNo:
-		return m.WbFaceOrderNo()
 	case person.FieldFaceVerifyResult:
 		return m.FaceVerifyResult()
 	}
@@ -61562,8 +61342,6 @@ func (m *PersonMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldIDCardPortrait(ctx)
 	case person.FieldIDCardNational:
 		return m.OldIDCardNational(ctx)
-	case person.FieldIDCardHead:
-		return m.OldIDCardHead(ctx)
 	case person.FieldAuthFace:
 		return m.OldAuthFace(ctx)
 	case person.FieldAuthResult:
@@ -61576,12 +61354,6 @@ func (m *PersonMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldBaiduVerifyToken(ctx)
 	case person.FieldBaiduLogID:
 		return m.OldBaiduLogID(ctx)
-	case person.FieldCertifyID:
-		return m.OldCertifyID(ctx)
-	case person.FieldWbOcrOrderNo:
-		return m.OldWbOcrOrderNo(ctx)
-	case person.FieldWbFaceOrderNo:
-		return m.OldWbFaceOrderNo(ctx)
 	case person.FieldFaceVerifyResult:
 		return m.OldFaceVerifyResult(ctx)
 	}
@@ -61684,13 +61456,6 @@ func (m *PersonMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetIDCardNational(v)
 		return nil
-	case person.FieldIDCardHead:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetIDCardHead(v)
-		return nil
 	case person.FieldAuthFace:
 		v, ok := value.(string)
 		if !ok {
@@ -61732,27 +61497,6 @@ func (m *PersonMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetBaiduLogID(v)
-		return nil
-	case person.FieldCertifyID:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCertifyID(v)
-		return nil
-	case person.FieldWbOcrOrderNo:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetWbOcrOrderNo(v)
-		return nil
-	case person.FieldWbFaceOrderNo:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetWbFaceOrderNo(v)
 		return nil
 	case person.FieldFaceVerifyResult:
 		v, ok := value.(*model.PersonFaceVerifyResult)
@@ -61839,9 +61583,6 @@ func (m *PersonMutation) ClearedFields() []string {
 	if m.FieldCleared(person.FieldIDCardNational) {
 		fields = append(fields, person.FieldIDCardNational)
 	}
-	if m.FieldCleared(person.FieldIDCardHead) {
-		fields = append(fields, person.FieldIDCardHead)
-	}
 	if m.FieldCleared(person.FieldAuthFace) {
 		fields = append(fields, person.FieldAuthFace)
 	}
@@ -61859,15 +61600,6 @@ func (m *PersonMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(person.FieldBaiduLogID) {
 		fields = append(fields, person.FieldBaiduLogID)
-	}
-	if m.FieldCleared(person.FieldCertifyID) {
-		fields = append(fields, person.FieldCertifyID)
-	}
-	if m.FieldCleared(person.FieldWbOcrOrderNo) {
-		fields = append(fields, person.FieldWbOcrOrderNo)
-	}
-	if m.FieldCleared(person.FieldWbFaceOrderNo) {
-		fields = append(fields, person.FieldWbFaceOrderNo)
 	}
 	if m.FieldCleared(person.FieldFaceVerifyResult) {
 		fields = append(fields, person.FieldFaceVerifyResult)
@@ -61907,9 +61639,6 @@ func (m *PersonMutation) ClearField(name string) error {
 	case person.FieldIDCardNational:
 		m.ClearIDCardNational()
 		return nil
-	case person.FieldIDCardHead:
-		m.ClearIDCardHead()
-		return nil
 	case person.FieldAuthFace:
 		m.ClearAuthFace()
 		return nil
@@ -61927,15 +61656,6 @@ func (m *PersonMutation) ClearField(name string) error {
 		return nil
 	case person.FieldBaiduLogID:
 		m.ClearBaiduLogID()
-		return nil
-	case person.FieldCertifyID:
-		m.ClearCertifyID()
-		return nil
-	case person.FieldWbOcrOrderNo:
-		m.ClearWbOcrOrderNo()
-		return nil
-	case person.FieldWbFaceOrderNo:
-		m.ClearWbFaceOrderNo()
 		return nil
 	case person.FieldFaceVerifyResult:
 		m.ClearFaceVerifyResult()
@@ -61987,9 +61707,6 @@ func (m *PersonMutation) ResetField(name string) error {
 	case person.FieldIDCardNational:
 		m.ResetIDCardNational()
 		return nil
-	case person.FieldIDCardHead:
-		m.ResetIDCardHead()
-		return nil
 	case person.FieldAuthFace:
 		m.ResetAuthFace()
 		return nil
@@ -62007,15 +61724,6 @@ func (m *PersonMutation) ResetField(name string) error {
 		return nil
 	case person.FieldBaiduLogID:
 		m.ResetBaiduLogID()
-		return nil
-	case person.FieldCertifyID:
-		m.ResetCertifyID()
-		return nil
-	case person.FieldWbOcrOrderNo:
-		m.ResetWbOcrOrderNo()
-		return nil
-	case person.FieldWbFaceOrderNo:
-		m.ResetWbFaceOrderNo()
 		return nil
 	case person.FieldFaceVerifyResult:
 		m.ResetFaceVerifyResult()
@@ -86265,7 +85973,6 @@ type RiderMutation struct {
 	adddevice_type           *int8
 	last_device              *string
 	is_new_device            *bool
-	last_face                *string
 	push_id                  *string
 	last_signin_at           *time.Time
 	blocked                  *bool
@@ -87163,55 +86870,6 @@ func (m *RiderMutation) OldIsNewDevice(ctx context.Context) (v bool, err error) 
 // ResetIsNewDevice resets all changes to the "is_new_device" field.
 func (m *RiderMutation) ResetIsNewDevice() {
 	m.is_new_device = nil
-}
-
-// SetLastFace sets the "last_face" field.
-func (m *RiderMutation) SetLastFace(s string) {
-	m.last_face = &s
-}
-
-// LastFace returns the value of the "last_face" field in the mutation.
-func (m *RiderMutation) LastFace() (r string, exists bool) {
-	v := m.last_face
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldLastFace returns the old "last_face" field's value of the Rider entity.
-// If the Rider object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RiderMutation) OldLastFace(ctx context.Context) (v *string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldLastFace is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldLastFace requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldLastFace: %w", err)
-	}
-	return oldValue.LastFace, nil
-}
-
-// ClearLastFace clears the value of the "last_face" field.
-func (m *RiderMutation) ClearLastFace() {
-	m.last_face = nil
-	m.clearedFields[rider.FieldLastFace] = struct{}{}
-}
-
-// LastFaceCleared returns if the "last_face" field was cleared in this mutation.
-func (m *RiderMutation) LastFaceCleared() bool {
-	_, ok := m.clearedFields[rider.FieldLastFace]
-	return ok
-}
-
-// ResetLastFace resets all changes to the "last_face" field.
-func (m *RiderMutation) ResetLastFace() {
-	m.last_face = nil
-	delete(m.clearedFields, rider.FieldLastFace)
 }
 
 // SetPushID sets the "push_id" field.
@@ -88169,7 +87827,7 @@ func (m *RiderMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RiderMutation) Fields() []string {
-	fields := make([]string, 0, 24)
+	fields := make([]string, 0, 23)
 	if m.created_at != nil {
 		fields = append(fields, rider.FieldCreatedAt)
 	}
@@ -88217,9 +87875,6 @@ func (m *RiderMutation) Fields() []string {
 	}
 	if m.is_new_device != nil {
 		fields = append(fields, rider.FieldIsNewDevice)
-	}
-	if m.last_face != nil {
-		fields = append(fields, rider.FieldLastFace)
 	}
 	if m.push_id != nil {
 		fields = append(fields, rider.FieldPushID)
@@ -88282,8 +87937,6 @@ func (m *RiderMutation) Field(name string) (ent.Value, bool) {
 		return m.LastDevice()
 	case rider.FieldIsNewDevice:
 		return m.IsNewDevice()
-	case rider.FieldLastFace:
-		return m.LastFace()
 	case rider.FieldPushID:
 		return m.PushID()
 	case rider.FieldLastSigninAt:
@@ -88339,8 +87992,6 @@ func (m *RiderMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldLastDevice(ctx)
 	case rider.FieldIsNewDevice:
 		return m.OldIsNewDevice(ctx)
-	case rider.FieldLastFace:
-		return m.OldLastFace(ctx)
 	case rider.FieldPushID:
 		return m.OldPushID(ctx)
 	case rider.FieldLastSigninAt:
@@ -88475,13 +88126,6 @@ func (m *RiderMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetIsNewDevice(v)
-		return nil
-	case rider.FieldLastFace:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetLastFace(v)
 		return nil
 	case rider.FieldPushID:
 		v, ok := value.(string)
@@ -88625,9 +88269,6 @@ func (m *RiderMutation) ClearedFields() []string {
 	if m.FieldCleared(rider.FieldLastDevice) {
 		fields = append(fields, rider.FieldLastDevice)
 	}
-	if m.FieldCleared(rider.FieldLastFace) {
-		fields = append(fields, rider.FieldLastFace)
-	}
 	if m.FieldCleared(rider.FieldPushID) {
 		fields = append(fields, rider.FieldPushID)
 	}
@@ -88692,9 +88333,6 @@ func (m *RiderMutation) ClearField(name string) error {
 		return nil
 	case rider.FieldLastDevice:
 		m.ClearLastDevice()
-		return nil
-	case rider.FieldLastFace:
-		m.ClearLastFace()
 		return nil
 	case rider.FieldPushID:
 		m.ClearPushID()
@@ -88766,9 +88404,6 @@ func (m *RiderMutation) ResetField(name string) error {
 		return nil
 	case rider.FieldIsNewDevice:
 		m.ResetIsNewDevice()
-		return nil
-	case rider.FieldLastFace:
-		m.ResetLastFace()
 		return nil
 	case rider.FieldPushID:
 		m.ResetPushID()
