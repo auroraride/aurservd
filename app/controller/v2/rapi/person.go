@@ -18,7 +18,6 @@ type person struct{}
 var Person = new(person)
 
 // CertificationOcr
-//
 // @ID		CertificationOcr
 // @Router	/v2/certification/ocr [GET]
 // @Summary	获取人脸核身OCR参数
@@ -32,7 +31,6 @@ func (*person) CertificationOcr(c echo.Context) (err error) {
 }
 
 // CertificationFace
-//
 // @ID		CertificationFace
 // @Router	/v2/certification/face [GET]
 // @Summary	获取人脸核身参数
@@ -47,7 +45,6 @@ func (*person) CertificationFace(c echo.Context) (err error) {
 }
 
 // CertificationFaceResult
-//
 // @ID		CertificationFaceResult
 // @Router	/v2/certification/face/result [GET]
 // @Summary	获取实人核身结果

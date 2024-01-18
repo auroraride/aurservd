@@ -33,6 +33,7 @@ func loadDocRoutes() {
 		"/operator/v1":  "运维接口 ver1",
 		"/promotion/v1": "推广接口 ver1",
 		"/rider/v1":     "骑手接口 ver1",
+		"/rider/v2":     "骑手接口 ver2",
 	}
 
 	g.GET("", func(c echo.Context) error {

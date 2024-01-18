@@ -11,6 +11,7 @@ ADAPTER="$(dir github.com/auroraride/adapter)"
 
 APIS=(
   'controller/v1/rapi/rapi.go'
+  'controller/v2/rapi/rapi.go'
   'controller/v1/aapi/aapi.go'
   'controller/v1/eapi/eapi.go'
   'controller/v1/mapi/mapi.go'
@@ -20,6 +21,7 @@ APIS=(
 
 OUTPUTS=(
   './assets/docs/rider/v1'
+  './assets/docs/rider/v2'
   './assets/docs/agent/v1'
   './assets/docs/employee/v1'
   './assets/docs/manager/v1'
