@@ -103,10 +103,6 @@ func (b *personBiz) CertificationFace(r *ent.Rider, req *definition.PersonCertif
 			return
 		}
 
-		if identity.IDCardNumber != result.Idcard || identity.Name != result.Name {
-			return nil, errors.New("OCR结果不匹配")
-		}
-
 		// 异步上传照片到阿里云OSS
 		portrait, national, head := b.uploadOcrFiles(result)
 
@@ -140,12 +136,12 @@ func (b *personBiz) CertificationFace(r *ent.Rider, req *definition.PersonCertif
 		bc, _ := strconv.ParseFloat(result.BackClarity, 64)
 
 		mfvr := &model.PersonFaceVerifyResult{
-			Name:            result.Name,
+			Name:            identity.Name,
 			Sex:             result.Sex,
 			Nation:          result.Nation,
-			Birth:           result.Birth,
+			Birth:           birth,
 			Address:         result.Address,
-			IDCardNumber:    result.Idcard,
+			IDCardNumber:    identity.IDCardNumber,
 			ValidStartDate:  start,
 			ValidExpireDate: expire,
 			Authority:       result.Authority,
