@@ -10,6 +10,7 @@ dir() {
 ADAPTER="$(dir github.com/auroraride/adapter)"
 
 APIS=(
+  'controller/v1/common/common.go'
   'controller/v1/rapi/rapi.go'
   'controller/v2/rapi/rapi.go'
   'controller/v1/aapi/aapi.go'
@@ -20,6 +21,7 @@ APIS=(
 )
 
 OUTPUTS=(
+  './assets/docs/common/v1'
   './assets/docs/rider/v1'
   './assets/docs/rider/v2'
   './assets/docs/agent/v1'
@@ -44,5 +46,5 @@ for i in "${!APIS[@]}" ; do
   API=${APIS[i]}
   FOLDER_PATH=${API%/*}
   TARGET_FILE=${API##*/}
-  eval "swag init -g $TARGET_FILE -d ./app/$FOLDER_PATH,./app/controller/v1/common,./app/model,./app/biz/definition,$ADAPTER -o ${OUTPUTS[i]} --md ./wiki"
+  eval "swag init -g $TARGET_FILE -d ./app/$FOLDER_PATH,./app/model,./app/biz/definition,$ADAPTER -o ${OUTPUTS[i]} --md ./wiki"
 done

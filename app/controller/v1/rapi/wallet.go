@@ -70,9 +70,9 @@ func (*wallet) Points(c echo.Context) (err error) {
 // @Tags	Wallet - 钱包
 // @Accept	json
 // @Produce	json
-// @Param	X-Rider-Token	header		string						true	"骑手校验token"
-// @Param	query			query		model.CouponRiderListReq	false	"筛选条件"
-// @Success	200				{object}	[]model.CouponRider			"请求成功"
+// @Param	X-Rider-Token	header		string				true	"骑手校验token"
+// @Param	type			query		int					false	"查询类别 0:可使用 1:已使用 2:已过期"
+// @Success	200				{object}	[]model.CouponRider	"请求成功"
 func (*wallet) Coupons(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[model.CouponRiderListReq](c)
 	return ctx.SendResponse(service.NewCouponWithRider(ctx.Rider).RiderList(req))

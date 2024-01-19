@@ -3,8 +3,8 @@
 // Created at 2024-01-19
 // Based on aurservd by liasica, magicrolan@qq.com.
 
-package rapi
+package common
 
-// @title		极光出行API - 骑手端api
-// @version		2.0
+// @title		极光出行API - 公共api
+// @version		1.0
 // @BasePath	/

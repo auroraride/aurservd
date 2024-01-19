@@ -28,13 +28,14 @@ func loadDocRoutes() {
 	g := e.Group("/docs")
 
 	items := map[string]string{
-		"/agent/v1":     "代理接口 ver1",
-		"/employee/v1":  "店员接口 ver1",
-		"/manager/v1":   "管理接口 ver1",
-		"/operator/v1":  "运维接口 ver1",
-		"/promotion/v1": "推广接口 ver1",
-		"/rider/v1":     "骑手接口 ver1",
-		"/rider/v2":     "骑手接口 ver2",
+		"/common/v1":    "公用接口 v1.0",
+		"/agent/v1":     "代理接口 v1.0",
+		"/employee/v1":  "店员接口 v1.0",
+		"/manager/v1":   "管理接口 v1.0",
+		"/operator/v1":  "运维接口 v1.0",
+		"/promotion/v1": "推广接口 v1.0",
+		"/rider/v1":     "骑手接口 v1.0",
+		"/rider/v2":     "骑手接口 v2.0",
 	}
 
 	g.GET("", func(c echo.Context) error {
