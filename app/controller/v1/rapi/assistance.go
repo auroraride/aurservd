@@ -83,9 +83,9 @@ func (*assistance) Current(c echo.Context) (err error) {
 // @Tags	Assistance - 救援
 // @Accept	json
 // @Produce	json
-// @Param	X-Rider-Token	header		string													true	"骑手校验token"
-// @Param	query			query		model.PaginationReq										true	"分页参数"
-// @Success	200				{object}	model.Pagination{items=[]model.AssistanceSimpleListRes}	"请求成功"
+// @Param	X-Rider-Token	header		string														true	"骑手校验token"
+// @Param	query			query		model.PaginationReq											true	"分页参数"
+// @Success	200				{object}	model.PaginationRes{items=[]model.AssistanceSimpleListRes}	"请求成功"
 func (*assistance) List(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[model.PaginationReq](c)
 	return ctx.SendResponse(service.NewAssistanceWithRider(ctx.Rider).SimpleList(*req))

@@ -7,6 +7,7 @@ package router
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -63,7 +64,7 @@ func loadDocRoutes() {
 				return
 			}
 			doc, _ := openapi2conv.ToV3(&doc2)
-			b, _ := jsoniter.Marshal(doc)
+			b, _ := json.MarshalIndent(doc, "", "  ")
 			return c.Blob(200, "application/json", b)
 		})
 	}
