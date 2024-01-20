@@ -63,7 +63,7 @@ paths:
       - application/json
       operationId: CertificationFace
       parameters:
-      - description: '身份信息 // TODO: 加密传输'
+      - description: 身份信息
         in: query
         name: identity
         required: true

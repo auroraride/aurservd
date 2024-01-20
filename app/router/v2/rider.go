@@ -65,6 +65,7 @@ func LoadRiderV2Routes(root *echo.Group) {
 	g.Use(
 		middleware.DeviceMiddleware(),
 		middleware.RiderMiddlewareV2(),
+		middleware.AutoToastMiddleware(),
 		dump,
 	)
 

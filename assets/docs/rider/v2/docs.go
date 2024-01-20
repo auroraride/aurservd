@@ -31,7 +31,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "身份信息 // TODO: 加密传输",
+                        "description": "身份信息",
                         "name": "identity",
                         "in": "query",
                         "required": true

@@ -30,4 +30,6 @@ const (
 	HeaderMaintainerToken = "X-Maintainer-Token"
 	// HeaderPromotionToken 推广token
 	HeaderPromotionToken = "X-Promotion-Token"
+	// HeaderToastVisible 自动显示toast（APP 2.x+）
+	HeaderToastVisible = "X-Toast-Visible"
 )

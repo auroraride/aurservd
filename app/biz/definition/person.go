@@ -80,7 +80,7 @@ type PersonCertificationOcrRes struct {
 // PersonCertificationFaceReq 实名认证人脸核身请求参数
 type PersonCertificationFaceReq struct {
 	OrderNo  string `json:"orderNo" query:"orderNo"`                       // 订单号，用户使用OCR识别时不为空
-	Identity string `json:"identity" query:"identity" validate:"required"` // 身份信息 // TODO: 加密传输
+	Identity string `json:"identity" query:"identity" validate:"required"` // 身份信息
 }
 
 // PersonCertificationFaceRes 实名认证人脸核身参数
