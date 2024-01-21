@@ -19,7 +19,7 @@ var Person = new(person)
 
 // CertificationOcr
 // @ID		CertificationOcr
-// @Router	/v2/certification/ocr [GET]
+// @Router	/rider/v2/certification/ocr [GET]
 // @Summary	获取人脸核身OCR参数
 // @Tags	Person - 实人
 // @Accept	json
@@ -32,7 +32,7 @@ func (*person) CertificationOcr(c echo.Context) (err error) {
 
 // CertificationFace
 // @ID		CertificationFace
-// @Router	/v2/certification/face [GET]
+// @Router	/rider/v2/certification/face [GET]
 // @Summary	获取人脸核身参数
 // @Tags	Person - 实人
 // @Accept	json
@@ -46,7 +46,7 @@ func (*person) CertificationFace(c echo.Context) (err error) {
 
 // CertificationFaceResult
 // @ID		CertificationFaceResult
-// @Router	/v2/certification/face/result [GET]
+// @Router	/rider/v2/certification/face/result [GET]
 // @Summary	获取实人核身结果
 // @Tags	Person - 实人
 // @Accept	json

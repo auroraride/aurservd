@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/v2/certification/face": {
+        "/rider/v2/certification/face": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -53,7 +53,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v2/certification/face/result": {
+        "/rider/v2/certification/face/result": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -85,7 +85,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v2/certification/ocr": {
+        "/rider/v2/certification/ocr": {
             "get": {
                 "consumes": [
                     "application/json"

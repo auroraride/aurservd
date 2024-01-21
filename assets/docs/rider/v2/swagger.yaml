@@ -57,7 +57,7 @@ info:
   title: 极光出行API - 骑手端api
   version: "2.0"
 paths:
-  /v2/certification/face:
+  /rider/v2/certification/face:
     get:
       consumes:
       - application/json
@@ -82,7 +82,7 @@ paths:
       summary: 获取人脸核身参数
       tags:
       - Person - 实人
-  /v2/certification/face/result:
+  /rider/v2/certification/face/result:
     get:
       consumes:
       - application/json
@@ -103,7 +103,7 @@ paths:
       summary: 获取实人核身结果
       tags:
       - Person - 实人
-  /v2/certification/ocr:
+  /rider/v2/certification/ocr:
     get:
       consumes:
       - application/json
