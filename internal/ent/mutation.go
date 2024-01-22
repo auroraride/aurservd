@@ -60062,9 +60062,9 @@ type PersonMutation struct {
 	baidu_log_id       *string
 	face_verify_result **model.PersonFaceVerifyResult
 	clearedFields      map[string]struct{}
-	rider              map[uint64]struct{}
-	removedrider       map[uint64]struct{}
-	clearedrider       bool
+	riders             map[uint64]struct{}
+	removedriders      map[uint64]struct{}
+	clearedriders      bool
 	done               bool
 	oldValue           func(context.Context) (*Person, error)
 	predicates         []predicate.Person
@@ -61110,58 +61110,58 @@ func (m *PersonMutation) ResetFaceVerifyResult() {
 	delete(m.clearedFields, person.FieldFaceVerifyResult)
 }
 
-// AddRiderIDs adds the "rider" edge to the Rider entity by ids.
+// AddRiderIDs adds the "riders" edge to the Rider entity by ids.
 func (m *PersonMutation) AddRiderIDs(ids ...uint64) {
-	if m.rider == nil {
-		m.rider = make(map[uint64]struct{})
+	if m.riders == nil {
+		m.riders = make(map[uint64]struct{})
 	}
 	for i := range ids {
-		m.rider[ids[i]] = struct{}{}
+		m.riders[ids[i]] = struct{}{}
 	}
 }
 
-// ClearRider clears the "rider" edge to the Rider entity.
-func (m *PersonMutation) ClearRider() {
-	m.clearedrider = true
+// ClearRiders clears the "riders" edge to the Rider entity.
+func (m *PersonMutation) ClearRiders() {
+	m.clearedriders = true
 }
 
-// RiderCleared reports if the "rider" edge to the Rider entity was cleared.
-func (m *PersonMutation) RiderCleared() bool {
-	return m.clearedrider
+// RidersCleared reports if the "riders" edge to the Rider entity was cleared.
+func (m *PersonMutation) RidersCleared() bool {
+	return m.clearedriders
 }
 
-// RemoveRiderIDs removes the "rider" edge to the Rider entity by IDs.
+// RemoveRiderIDs removes the "riders" edge to the Rider entity by IDs.
 func (m *PersonMutation) RemoveRiderIDs(ids ...uint64) {
-	if m.removedrider == nil {
-		m.removedrider = make(map[uint64]struct{})
+	if m.removedriders == nil {
+		m.removedriders = make(map[uint64]struct{})
 	}
 	for i := range ids {
-		delete(m.rider, ids[i])
-		m.removedrider[ids[i]] = struct{}{}
+		delete(m.riders, ids[i])
+		m.removedriders[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedRider returns the removed IDs of the "rider" edge to the Rider entity.
-func (m *PersonMutation) RemovedRiderIDs() (ids []uint64) {
-	for id := range m.removedrider {
+// RemovedRiders returns the removed IDs of the "riders" edge to the Rider entity.
+func (m *PersonMutation) RemovedRidersIDs() (ids []uint64) {
+	for id := range m.removedriders {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// RiderIDs returns the "rider" edge IDs in the mutation.
-func (m *PersonMutation) RiderIDs() (ids []uint64) {
-	for id := range m.rider {
+// RidersIDs returns the "riders" edge IDs in the mutation.
+func (m *PersonMutation) RidersIDs() (ids []uint64) {
+	for id := range m.riders {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetRider resets all changes to the "rider" edge.
-func (m *PersonMutation) ResetRider() {
-	m.rider = nil
-	m.clearedrider = false
-	m.removedrider = nil
+// ResetRiders resets all changes to the "riders" edge.
+func (m *PersonMutation) ResetRiders() {
+	m.riders = nil
+	m.clearedriders = false
+	m.removedriders = nil
 }
 
 // Where appends a list predicates to the PersonMutation builder.
@@ -61735,8 +61735,8 @@ func (m *PersonMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PersonMutation) AddedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.rider != nil {
-		edges = append(edges, person.EdgeRider)
+	if m.riders != nil {
+		edges = append(edges, person.EdgeRiders)
 	}
 	return edges
 }
@@ -61745,9 +61745,9 @@ func (m *PersonMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *PersonMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case person.EdgeRider:
-		ids := make([]ent.Value, 0, len(m.rider))
-		for id := range m.rider {
+	case person.EdgeRiders:
+		ids := make([]ent.Value, 0, len(m.riders))
+		for id := range m.riders {
 			ids = append(ids, id)
 		}
 		return ids
@@ -61758,8 +61758,8 @@ func (m *PersonMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PersonMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.removedrider != nil {
-		edges = append(edges, person.EdgeRider)
+	if m.removedriders != nil {
+		edges = append(edges, person.EdgeRiders)
 	}
 	return edges
 }
@@ -61768,9 +61768,9 @@ func (m *PersonMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *PersonMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
-	case person.EdgeRider:
-		ids := make([]ent.Value, 0, len(m.removedrider))
-		for id := range m.removedrider {
+	case person.EdgeRiders:
+		ids := make([]ent.Value, 0, len(m.removedriders))
+		for id := range m.removedriders {
 			ids = append(ids, id)
 		}
 		return ids
@@ -61781,8 +61781,8 @@ func (m *PersonMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PersonMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.clearedrider {
-		edges = append(edges, person.EdgeRider)
+	if m.clearedriders {
+		edges = append(edges, person.EdgeRiders)
 	}
 	return edges
 }
@@ -61791,8 +61791,8 @@ func (m *PersonMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *PersonMutation) EdgeCleared(name string) bool {
 	switch name {
-	case person.EdgeRider:
-		return m.clearedrider
+	case person.EdgeRiders:
+		return m.clearedriders
 	}
 	return false
 }
@@ -61809,8 +61809,8 @@ func (m *PersonMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *PersonMutation) ResetEdge(name string) error {
 	switch name {
-	case person.EdgeRider:
-		m.ResetRider()
+	case person.EdgeRiders:
+		m.ResetRiders()
 		return nil
 	}
 	return fmt.Errorf("unknown Person edge %s", name)

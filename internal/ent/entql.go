@@ -4094,12 +4094,12 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Order",
 	)
 	graph.MustAddE(
-		"rider",
+		"riders",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   person.RiderTable,
-			Columns: []string{person.RiderColumn},
+			Table:   person.RidersTable,
+			Columns: []string{person.RidersColumn},
 			Bidi:    false,
 		},
 		"Person",
@@ -12557,14 +12557,14 @@ func (f *PersonFilter) WhereFaceVerifyResult(p entql.BytesP) {
 	f.Where(p.Field(person.FieldFaceVerifyResult))
 }
 
-// WhereHasRider applies a predicate to check if query has an edge rider.
-func (f *PersonFilter) WhereHasRider() {
-	f.Where(entql.HasEdge("rider"))
+// WhereHasRiders applies a predicate to check if query has an edge riders.
+func (f *PersonFilter) WhereHasRiders() {
+	f.Where(entql.HasEdge("riders"))
 }
 
-// WhereHasRiderWith applies a predicate to check if query has an edge rider with a given conditions (other predicates).
-func (f *PersonFilter) WhereHasRiderWith(preds ...predicate.Rider) {
-	f.Where(entql.HasEdgeWith("rider", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasRidersWith applies a predicate to check if query has an edge riders with a given conditions (other predicates).
+func (f *PersonFilter) WhereHasRidersWith(preds ...predicate.Rider) {
+	f.Where(entql.HasEdgeWith("riders", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

@@ -117,6 +117,10 @@ const docTemplate = `{
                     "description": "WBAppid",
                     "type": "string"
                 },
+                "bindedPhone": {
+                    "description": "已绑定的其他手机号",
+                    "type": "string"
+                },
                 "faceId": {
                     "type": "string"
                 },

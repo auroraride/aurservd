@@ -23,7 +23,7 @@ type PersonQuery struct {
 	order      []person.OrderOption
 	inters     []Interceptor
 	predicates []predicate.Person
-	withRider  *RiderQuery
+	withRiders *RiderQuery
 	modifiers  []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -61,8 +61,8 @@ func (pq *PersonQuery) Order(o ...person.OrderOption) *PersonQuery {
 	return pq
 }
 
-// QueryRider chains the current query on the "rider" edge.
-func (pq *PersonQuery) QueryRider() *RiderQuery {
+// QueryRiders chains the current query on the "riders" edge.
+func (pq *PersonQuery) QueryRiders() *RiderQuery {
 	query := (&RiderClient{config: pq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := pq.prepareQuery(ctx); err != nil {
@@ -75,7 +75,7 @@ func (pq *PersonQuery) QueryRider() *RiderQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(person.Table, person.FieldID, selector),
 			sqlgraph.To(rider.Table, rider.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, person.RiderTable, person.RiderColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, person.RidersTable, person.RidersColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
 		return fromU, nil
@@ -275,21 +275,21 @@ func (pq *PersonQuery) Clone() *PersonQuery {
 		order:      append([]person.OrderOption{}, pq.order...),
 		inters:     append([]Interceptor{}, pq.inters...),
 		predicates: append([]predicate.Person{}, pq.predicates...),
-		withRider:  pq.withRider.Clone(),
+		withRiders: pq.withRiders.Clone(),
 		// clone intermediate query.
 		sql:  pq.sql.Clone(),
 		path: pq.path,
 	}
 }
 
-// WithRider tells the query-builder to eager-load the nodes that are connected to
-// the "rider" edge. The optional arguments are used to configure the query builder of the edge.
-func (pq *PersonQuery) WithRider(opts ...func(*RiderQuery)) *PersonQuery {
+// WithRiders tells the query-builder to eager-load the nodes that are connected to
+// the "riders" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *PersonQuery) WithRiders(opts ...func(*RiderQuery)) *PersonQuery {
 	query := (&RiderClient{config: pq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	pq.withRider = query
+	pq.withRiders = query
 	return pq
 }
 
@@ -372,7 +372,7 @@ func (pq *PersonQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Perso
 		nodes       = []*Person{}
 		_spec       = pq.querySpec()
 		loadedTypes = [1]bool{
-			pq.withRider != nil,
+			pq.withRiders != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -396,17 +396,17 @@ func (pq *PersonQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Perso
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := pq.withRider; query != nil {
-		if err := pq.loadRider(ctx, query, nodes,
-			func(n *Person) { n.Edges.Rider = []*Rider{} },
-			func(n *Person, e *Rider) { n.Edges.Rider = append(n.Edges.Rider, e) }); err != nil {
+	if query := pq.withRiders; query != nil {
+		if err := pq.loadRiders(ctx, query, nodes,
+			func(n *Person) { n.Edges.Riders = []*Rider{} },
+			func(n *Person, e *Rider) { n.Edges.Riders = append(n.Edges.Riders, e) }); err != nil {
 			return nil, err
 		}
 	}
 	return nodes, nil
 }
 
-func (pq *PersonQuery) loadRider(ctx context.Context, query *RiderQuery, nodes []*Person, init func(*Person), assign func(*Person, *Rider)) error {
+func (pq *PersonQuery) loadRiders(ctx context.Context, query *RiderQuery, nodes []*Person, init func(*Person), assign func(*Person, *Rider)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[uint64]*Person)
 	for i := range nodes {
@@ -420,7 +420,7 @@ func (pq *PersonQuery) loadRider(ctx context.Context, query *RiderQuery, nodes [
 		query.ctx.AppendFieldOnce(rider.FieldPersonID)
 	}
 	query.Where(predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(person.RiderColumn), fks...))
+		s.Where(sql.InValues(s.C(person.RidersColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -536,14 +536,14 @@ func (pq *PersonQuery) Modify(modifiers ...func(s *sql.Selector)) *PersonSelect 
 type PersonQueryWith string
 
 var (
-	PersonQueryWithRider PersonQueryWith = "Rider"
+	PersonQueryWithRiders PersonQueryWith = "Riders"
 )
 
 func (pq *PersonQuery) With(withEdges ...PersonQueryWith) *PersonQuery {
 	for _, v := range withEdges {
 		switch v {
-		case PersonQueryWithRider:
-			pq.WithRider()
+		case PersonQueryWithRiders:
+			pq.WithRiders()
 		}
 	}
 	return pq

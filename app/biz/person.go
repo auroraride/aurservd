@@ -18,6 +18,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ar"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/person"
+	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/tencent"
 	"github.com/auroraride/aurservd/pkg/silk"
 	"github.com/auroraride/aurservd/pkg/tools"
@@ -84,10 +85,25 @@ func (b *personBiz) CertificationFace(r *ent.Rider, req *definition.PersonCertif
 		return nil, errors.New("实名次数过于频繁，请明天再试")
 	}
 
-	faceOrderNo := tools.NewUnique().Rand(32)
-	if req.OrderNo != "" {
-		faceOrderNo = req.OrderNo
+	// 判定是否绑定其他账号
+	p, _ := ent.Database.Person.
+		QueryNotDeleted().
+		Where(person.IDCardNumber(identity.IDCardNumber)).
+		WithRiders(func(query *ent.RiderQuery) {
+			query.Where(rider.DeletedAtIsNil(), rider.IDNotIn(r.ID))
+		}).
+		First(context.Background())
+	if p != nil && len(p.Edges.Riders) > 0 {
+		phone := p.Edges.Riders[0].Phone
+		phone = phone[:3] + strings.Repeat("*", 5) + phone[8:]
+		return &definition.PersonCertificationFaceRes{BindedPhone: phone}, nil
 	}
+
+	// 生成人脸核身订单号
+	faceOrderNo := tools.NewUnique().Rand(32)
+	// if req.OrderNo != "" {
+	// 	faceOrderNo = req.OrderNo
+	// }
 
 	// 保存或更新实人表
 	creator := ent.Database.Person.Create().
@@ -161,6 +177,7 @@ func (b *personBiz) CertificationFace(r *ent.Rider, req *definition.PersonCertif
 			IDCardNumber: identity.IDCardNumber,
 			Name:         identity.Name,
 			Birth:        birth,
+			FaceOrderNo:  faceOrderNo,
 		})
 	}
 

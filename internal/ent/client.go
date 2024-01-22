@@ -8743,15 +8743,15 @@ func (c *PersonClient) GetX(ctx context.Context, id uint64) *Person {
 	return obj
 }
 
-// QueryRider queries the rider edge of a Person.
-func (c *PersonClient) QueryRider(pe *Person) *RiderQuery {
+// QueryRiders queries the riders edge of a Person.
+func (c *PersonClient) QueryRiders(pe *Person) *RiderQuery {
 	query := (&RiderClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := pe.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(person.Table, person.FieldID, id),
 			sqlgraph.To(rider.Table, rider.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, person.RiderTable, person.RiderColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, person.RidersTable, person.RidersColumn),
 		)
 		fromV = sqlgraph.Neighbors(pe.driver.Dialect(), step)
 		return fromV, nil

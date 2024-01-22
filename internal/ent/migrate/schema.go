@@ -4311,7 +4311,7 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "rider_person_rider",
+				Symbol:     "rider_person_riders",
 				Columns:    []*schema.Column{RiderColumns[22]},
 				RefColumns: []*schema.Column{PersonColumns[0]},
 				OnDelete:   schema.SetNull,

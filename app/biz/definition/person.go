@@ -69,12 +69,12 @@ func (p *PersonIdentity) UnPack(str string) error {
 
 // PersonCertificationOcrRes 腾讯人身核验OCR参数
 type PersonCertificationOcrRes struct {
-	AppID   string `json:"appId"`   // WBAppid
-	UserId  string `json:"userId"`  // 用户唯一标识
-	OrderNo string `json:"orderNo"` // 订单号
-	Version string `json:"version"` // 版本号
-	Nonce   string `json:"nonce"`   // 随机字符串
-	Sign    string `json:"sign"`    // 签名
+	AppID   string `json:"appId,omitempty"`   // WBAppid
+	UserId  string `json:"userId,omitempty"`  // 用户唯一标识
+	OrderNo string `json:"orderNo,omitempty"` // 订单号
+	Version string `json:"version,omitempty"` // 版本号
+	Nonce   string `json:"nonce,omitempty"`   // 随机字符串
+	Sign    string `json:"sign,omitempty"`    // 签名
 }
 
 // PersonCertificationFaceReq 实名认证人脸核身请求参数
@@ -86,8 +86,9 @@ type PersonCertificationFaceReq struct {
 // PersonCertificationFaceRes 实名认证人脸核身参数
 type PersonCertificationFaceRes struct {
 	PersonCertificationOcrRes
-	FaceId  string `json:"faceId"`
-	Licence string `json:"licence"`
+	FaceId      string `json:"faceId,omitempty"`
+	Licence     string `json:"licence,omitempty"`
+	BindedPhone string `json:"bindedPhone,omitempty"` // 已绑定的其他手机号
 }
 
 // PersonCertificationFaceResultReq 实名认证人脸核身结果请求参数

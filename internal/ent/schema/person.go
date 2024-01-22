@@ -51,7 +51,7 @@ func (Person) Fields() []ent.Field {
 // Edges of the Person.
 func (Person) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("rider", Rider.Type),
+		edge.To("riders", Rider.Type),
 	}
 }
 

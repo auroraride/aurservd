@@ -55,17 +55,17 @@ const (
 	FieldBaiduLogID = "baidu_log_id"
 	// FieldFaceVerifyResult holds the string denoting the face_verify_result field in the database.
 	FieldFaceVerifyResult = "face_verify_result"
-	// EdgeRider holds the string denoting the rider edge name in mutations.
-	EdgeRider = "rider"
+	// EdgeRiders holds the string denoting the riders edge name in mutations.
+	EdgeRiders = "riders"
 	// Table holds the table name of the person in the database.
 	Table = "person"
-	// RiderTable is the table that holds the rider relation/edge.
-	RiderTable = "rider"
-	// RiderInverseTable is the table name for the Rider entity.
+	// RidersTable is the table that holds the riders relation/edge.
+	RidersTable = "rider"
+	// RidersInverseTable is the table name for the Rider entity.
 	// It exists in this package in order to avoid circular dependency with the "rider" package.
-	RiderInverseTable = "rider"
-	// RiderColumn is the table column denoting the rider relation/edge.
-	RiderColumn = "person_id"
+	RidersInverseTable = "rider"
+	// RidersColumn is the table column denoting the riders relation/edge.
+	RidersColumn = "person_id"
 )
 
 // Columns holds all SQL columns for person fields.
@@ -216,23 +216,23 @@ func ByBaiduLogID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldBaiduLogID, opts...).ToFunc()
 }
 
-// ByRiderCount orders the results by rider count.
-func ByRiderCount(opts ...sql.OrderTermOption) OrderOption {
+// ByRidersCount orders the results by riders count.
+func ByRidersCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newRiderStep(), opts...)
+		sqlgraph.OrderByNeighborsCount(s, newRidersStep(), opts...)
 	}
 }
 
-// ByRider orders the results by rider terms.
-func ByRider(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+// ByRiders orders the results by riders terms.
+func ByRiders(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newRiderStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newRidersStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
-func newRiderStep() *sqlgraph.Step {
+func newRidersStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(RiderInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, RiderTable, RiderColumn),
+		sqlgraph.To(RidersInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, RidersTable, RidersColumn),
 	)
 }

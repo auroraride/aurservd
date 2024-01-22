@@ -67,20 +67,20 @@ type Person struct {
 
 // PersonEdges holds the relations/edges for other nodes in the graph.
 type PersonEdges struct {
-	// Rider holds the value of the rider edge.
-	Rider []*Rider `json:"rider,omitempty"`
+	// Riders holds the value of the riders edge.
+	Riders []*Rider `json:"riders,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [1]bool
 }
 
-// RiderOrErr returns the Rider value or an error if the edge
+// RidersOrErr returns the Riders value or an error if the edge
 // was not loaded in eager-loading.
-func (e PersonEdges) RiderOrErr() ([]*Rider, error) {
+func (e PersonEdges) RidersOrErr() ([]*Rider, error) {
 	if e.loadedTypes[0] {
-		return e.Rider, nil
+		return e.Riders, nil
 	}
-	return nil, &NotLoadedError{edge: "rider"}
+	return nil, &NotLoadedError{edge: "riders"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -262,9 +262,9 @@ func (pe *Person) Value(name string) (ent.Value, error) {
 	return pe.selectValues.Get(name)
 }
 
-// QueryRider queries the "rider" edge of the Person entity.
-func (pe *Person) QueryRider() *RiderQuery {
-	return NewPersonClient(pe.config).QueryRider(pe)
+// QueryRiders queries the "riders" edge of the Person entity.
+func (pe *Person) QueryRiders() *RiderQuery {
+	return NewPersonClient(pe.config).QueryRiders(pe)
 }
 
 // Update returns a builder for updating this Person.

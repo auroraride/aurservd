@@ -1110,21 +1110,21 @@ func FaceVerifyResultNotNil() predicate.Person {
 	return predicate.Person(sql.FieldNotNull(FieldFaceVerifyResult))
 }
 
-// HasRider applies the HasEdge predicate on the "rider" edge.
-func HasRider() predicate.Person {
+// HasRiders applies the HasEdge predicate on the "riders" edge.
+func HasRiders() predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, RiderTable, RiderColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, RidersTable, RidersColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasRiderWith applies the HasEdge predicate on the "rider" edge with a given conditions (other predicates).
-func HasRiderWith(preds ...predicate.Rider) predicate.Person {
+// HasRidersWith applies the HasEdge predicate on the "riders" edge with a given conditions (other predicates).
+func HasRidersWith(preds ...predicate.Rider) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		step := newRiderStep()
+		step := newRidersStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

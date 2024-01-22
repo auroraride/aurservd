@@ -264,14 +264,14 @@ func (pc *PersonCreate) SetFaceVerifyResult(mfvr *model.PersonFaceVerifyResult) 
 	return pc
 }
 
-// AddRiderIDs adds the "rider" edge to the Rider entity by IDs.
+// AddRiderIDs adds the "riders" edge to the Rider entity by IDs.
 func (pc *PersonCreate) AddRiderIDs(ids ...uint64) *PersonCreate {
 	pc.mutation.AddRiderIDs(ids...)
 	return pc
 }
 
-// AddRider adds the "rider" edges to the Rider entity.
-func (pc *PersonCreate) AddRider(r ...*Rider) *PersonCreate {
+// AddRiders adds the "riders" edges to the Rider entity.
+func (pc *PersonCreate) AddRiders(r ...*Rider) *PersonCreate {
 	ids := make([]uint64, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
@@ -482,12 +482,12 @@ func (pc *PersonCreate) createSpec() (*Person, *sqlgraph.CreateSpec) {
 		_spec.SetField(person.FieldFaceVerifyResult, field.TypeJSON, value)
 		_node.FaceVerifyResult = value
 	}
-	if nodes := pc.mutation.RiderIDs(); len(nodes) > 0 {
+	if nodes := pc.mutation.RidersIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   person.RiderTable,
-			Columns: []string{person.RiderColumn},
+			Table:   person.RidersTable,
+			Columns: []string{person.RidersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(rider.FieldID, field.TypeUint64),

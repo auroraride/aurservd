@@ -341,8 +341,11 @@ func (w *wbface) NonceTicket(userId string, retried ...bool) (ticket string, err
 	return
 }
 
+// SignTicket 获取SIGN ticket
+// TODO: 当获取失败的时候刷新
 func (w *wbface) SignTicket() string {
-	return w.cache.Get(context.Background(), cacheKeySignTicket).Val()
+	_, ticket := w.GetCached()
+	return ticket
 }
 
 func (w *wbface) Sign(ticket string, params ...string) (sign string, nonce string) {
@@ -440,7 +443,7 @@ func (w *wbface) GetFaceId(req *FaceIdReq) (faceId, sign, nonce string, err erro
 		SetBody(body).
 		SetResult(&result).
 		SetQueryParam("orderNo", req.OrderNo).
-		Post(urlFaceId + req.OrderNo)
+		Post(urlFaceId)
 
 	zap.L().Info("Tencent - Face - GetFaceId", log.ResponseBody(r.Body()))
 
