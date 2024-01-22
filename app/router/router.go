@@ -86,14 +86,17 @@ func Run() {
 		app.HeaderRiderToken,
 		app.HeaderManagerToken,
 		app.HeaderEmployeeToken,
+		app.HeaderToastVisible,
 	}...)
 	corsConfig.ExposeHeaders = append(corsConfig.ExposeHeaders, []string{
 		app.HeaderCaptchaID,
 		app.HeaderContentType,
 		app.HeaderDispositionType,
+		app.HeaderToastVisible,
 	}...)
 	// 加载全局中间件
 	root.Use(
+		middleware.AutoToastMiddleware(),
 		// AppContext
 		func(next echo.HandlerFunc) echo.HandlerFunc {
 			return func(ctx echo.Context) error {

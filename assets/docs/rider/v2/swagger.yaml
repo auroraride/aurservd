@@ -100,7 +100,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/definition.PersonCertificationFaceResultRes'
-      summary: 获取实人核身结果
+      summary: 获取人脸核身结果
       tags:
       - Person - 实人
   /rider/v2/certification/ocr:

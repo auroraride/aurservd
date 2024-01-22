@@ -14,7 +14,11 @@ import (
 func AutoToastMiddleware() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			c.Response().Header().Set(app.HeaderToastVisible, "YES")
+			visible := c.Request().Header.Get(app.HeaderToastVisible)
+			if visible != "NO" {
+				visible = "YES"
+			}
+			c.Response().Header().Set(app.HeaderToastVisible, visible)
 			return next(c)
 		}
 	}

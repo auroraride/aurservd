@@ -64,7 +64,7 @@ const docTemplate = `{
                 "tags": [
                     "Person - 实人"
                 ],
-                "summary": "获取实人核身结果",
+                "summary": "获取人脸核身结果",
                 "operationId": "CertificationFaceResult",
                 "parameters": [
                     {

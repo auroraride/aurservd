@@ -47,7 +47,7 @@ func (*person) CertificationFace(c echo.Context) (err error) {
 // CertificationFaceResult
 // @ID		CertificationFaceResult
 // @Router	/rider/v2/certification/face/result [GET]
-// @Summary	获取实人核身结果
+// @Summary	获取人脸核身结果
 // @Tags	Person - 实人
 // @Accept	json
 // @Produce	json
