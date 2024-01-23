@@ -36,6 +36,10 @@ func NewPerson() *personBiz {
 
 // CertificationOcr 获取人身核验OCR参数
 func (b *personBiz) CertificationOcr(r *ent.Rider) (res *definition.PersonCertificationOcrRes, err error) {
+	if service.NewRider().IsAuthed(r) {
+		return nil, errors.New("当前已认证，无法重复认证")
+	}
+
 	w := tencent.NewWbFace()
 
 	userId := strconv.FormatUint(r.ID, 10)
@@ -60,6 +64,10 @@ func (b *personBiz) CertificationOcr(r *ent.Rider) (res *definition.PersonCertif
 
 // CertificationFace 获取人脸核身参数
 func (b *personBiz) CertificationFace(r *ent.Rider, req *definition.PersonCertificationFaceReq) (res *definition.PersonCertificationFaceRes, err error) {
+	if service.NewRider().IsAuthed(r) {
+		return nil, errors.New("当前已认证，无法重复认证")
+	}
+
 	// 获取身份信息
 	identity := new(definition.PersonIdentity)
 	err = identity.UnPack(req.Identity)
