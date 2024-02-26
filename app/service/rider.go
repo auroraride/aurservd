@@ -407,7 +407,10 @@ func (s *riderService) listFilter(req model.RiderListFilter) (q *ent.RiderQuery,
 			)
 		}).
 		WithSubscribes(func(sq *ent.SubscribeQuery) {
-			sq.WithCity().Order(ent.Desc(subscribe.FieldCreatedAt)).WithEbike().WithBrand().WithPlan()
+			sq.Order(ent.Desc(subscribe.FieldCreatedAt)).WithCity().WithEbike().WithBrand().WithPlan()
+			if req.SubscribeStatus != nil && *req.SubscribeStatus != 11 && *req.SubscribeStatus != 99 {
+				sq.Where(subscribe.Status(*req.SubscribeStatus))
+			}
 		}).
 		WithContracts(func(cq *ent.ContractQuery) {
 			cq.Where(contract.DeletedAtIsNil(), contract.Status(model.ContractStatusSuccess.Value())).Order(ent.Desc(contract.FieldCreatedAt))
@@ -690,6 +693,7 @@ func (s *riderService) detailRiderItem(item *ent.Rider) model.RiderItem {
 	}
 
 	if item.Edges.Subscribes != nil && len(item.Edges.Subscribes) > 0 {
+		// TODO BUG 这里Edges可能有多个，这里默认取了第一个
 		sub := item.Edges.Subscribes[0]
 
 		remaining := sub.Remaining

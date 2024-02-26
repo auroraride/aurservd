@@ -94,3 +94,11 @@ fabric.properties
 /runtime
 /build
 /debug
+
+# vscode
+.vscode
+.VSCodeCounter
+__debug_bin*
+
+#config
+config
