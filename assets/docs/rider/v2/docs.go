@@ -16,7 +16,7 @@ const docTemplate = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/rider/v2/certification/face": {
-            "get": {
+            "post": {
                 "consumes": [
                     "application/json"
                 ],
@@ -26,20 +26,31 @@ const docTemplate = `{
                 "tags": [
                     "Person - 实人"
                 ],
-                "summary": "获取人脸核身参数",
+                "summary": "提交身份信息并获取人脸核身参数",
                 "operationId": "CertificationFace",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "身份信息",
+                        "description": "加密身份信息",
                         "name": "identity",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "身份证国徽面",
+                        "name": "nationalImage",
+                        "in": "query"
                     },
                     {
                         "type": "string",
                         "description": "订单号，用户使用OCR识别时不为空",
                         "name": "orderNo",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "身份证人像面",
+                        "name": "portraitImage",
                         "in": "query"
                     }
                 ],

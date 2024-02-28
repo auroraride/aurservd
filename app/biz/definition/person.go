@@ -79,8 +79,10 @@ type PersonCertificationOcrRes struct {
 
 // PersonCertificationFaceReq 实名认证人脸核身请求参数
 type PersonCertificationFaceReq struct {
-	OrderNo  string `json:"orderNo" query:"orderNo"`                       // 订单号，用户使用OCR识别时不为空
-	Identity string `json:"identity" query:"identity" validate:"required"` // 身份信息
+	OrderNo       string  `json:"orderNo" query:"orderNo"`                                      // 订单号，用户使用OCR识别时不为空
+	Identity      *string `json:"identity,omitempty" validate:"required_without=PortraitImage"` // 加密身份信息
+	PortraitImage *string `json:"portraitImage,omitempty" validate:"required_without=Identity"` // 身份证人像面
+	NationalImage *string `json:"nationalImage,omitempty" validate:"required_without=Identity"` // 身份证国徽面
 }
 
 // PersonCertificationFaceRes 实名认证人脸核身参数

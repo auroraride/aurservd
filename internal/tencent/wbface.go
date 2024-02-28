@@ -168,7 +168,7 @@ func BootWbFace(cache *redis.Client) {
 	if _wbface != nil {
 		return
 	}
-	cfg := ar.Config.WbFace
+	cfg := ar.Config.Tencent.WbFace
 	_wbface = &wbface{
 		appid:   cfg.AppId,
 		secret:  cfg.Secret,

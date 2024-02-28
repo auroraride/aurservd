@@ -60,13 +60,14 @@
 - [ ] 电柜未操作开门, 电池失联立即锁仓
 - [ ] 根据身份证查找所有的订阅情况, 并可操作将其标记为删除
 - [ ] 删除无用逻辑[是否使用微服务]
+- [ ] [阿里云OSS图片移动目录](https://youtrack.liasica.com/issue/AUR-342)
 
 
 ```sql
 INSERT INTO "public"."subscribe_pause"("id","created_at","updated_at","deleted_at","creator","last_modifier","remark","start_at","end_at","days","subscribe_id","rider_id","employee_id","end_employee_id","end_modifier","city_id","store_id","end_store_id","cabinet_id","end_cabinet_id","overdue_days","pause_overdue","suspend_days")
 VALUES
 (124554054387,E'2023-01-10 21:27:37.30464+08',E'2023-01-10 21:27:37.304641+08',NULL,NULL,NULL,NULL,E'2023-01-10 21:27:37.304638+08',NULL,NULL,115964117567,98784248510,NULL,NULL,NULL,410100,NULL,NULL,17179869463,NULL,0,FALSE,0),
-(124554054386,E'2023-01-10 21:27:37.195824+08',E'2023-01-28 11:53:57.767333+08',NULL,NULL,NULL,NULL,E'2023-01-10 21:27:37.195822+08',NULL,17,115964117567,98784248510,NULL,NULL,NULL,410100,NULL,NULL,17179869463,NULL,0,FALSE,0); 
+(124554054386,E'2023-01-10 21:27:37.195824+08',E'2023-01-28 11:53:57.767333+08',NULL,NULL,NULL,NULL,E'2023-01-10 21:27:37.195822+08',NULL,17,115964117567,98784248510,NULL,NULL,NULL,410100,NULL,NULL,17179869463,NULL,0,FALSE,0);
 ```
 
 ## 注意

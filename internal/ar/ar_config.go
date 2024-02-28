@@ -263,10 +263,18 @@ type config struct {
 		Promotion Wechat
 	} `koanf:"wechatMiniprogram"`
 
-	WbFace struct {
-		AppId   string
-		Secret  string
-		Licence string
+	Tencent struct {
+		WbFace struct {
+			AppId   string
+			Secret  string
+			Licence string
+		}
+		FaceId struct {
+			Id        string
+			Username  string
+			SecretId  string
+			SecretKey string
+		}
 	}
 }
 

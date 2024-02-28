@@ -32,8 +32,8 @@ func (*person) CertificationOcr(c echo.Context) (err error) {
 
 // CertificationFace
 // @ID		CertificationFace
-// @Router	/rider/v2/certification/face [GET]
-// @Summary	获取人脸核身参数
+// @Router	/rider/v2/certification/face [POST]
+// @Summary	提交身份信息并获取人脸核身参数
 // @Tags	Person - 实人
 // @Accept	json
 // @Produce	json
