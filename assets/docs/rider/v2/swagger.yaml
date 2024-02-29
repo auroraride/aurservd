@@ -55,11 +55,49 @@ definitions:
         description: 版本号
         type: string
     type: object
+  definition.PersonCertificationOcrSignatureResponse:
+    properties:
+      action:
+        type: string
+      authorization:
+        type: string
+      contentType:
+        type: string
+      date:
+        type: string
+      nonce:
+        type: string
+      token:
+        type: string
+      version:
+        type: string
+    type: object
 info:
   contact: {}
   title: 极光出行API - 骑手端api
   version: "2.0"
 paths:
+  /certification/ocr/signature:
+    get:
+      consumes:
+      - application/json
+      operationId: Signature
+      parameters:
+      - description: 文件 sha256 hex string
+        in: query
+        name: hash
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/definition.PersonCertificationOcrSignatureResponse'
+      summary: 获取阿里云OCR签名
+      tags:
+      - Person - 实人
   /rider/v2/certification/face:
     post:
       consumes:

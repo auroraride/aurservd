@@ -199,6 +199,15 @@ type config struct {
 			SceneId         int64
 			Callback        string
 		}
+
+		Ocr struct {
+			AccessKeyId     string
+			AccessKeySecret string
+			Endpoint        string
+			Arn             string
+			RamRole         string
+			RegionId        string
+		}
 	}
 
 	Baidu struct {

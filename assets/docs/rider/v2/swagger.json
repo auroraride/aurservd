@@ -7,6 +7,38 @@
     },
     "basePath": "/",
     "paths": {
+        "/certification/ocr/signature": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Person - 实人"
+                ],
+                "summary": "获取阿里云OCR签名",
+                "operationId": "Signature",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "文件 sha256 hex string",
+                        "name": "hash",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/definition.PersonCertificationOcrSignatureResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v2/certification/face": {
             "post": {
                 "consumes": [
@@ -186,6 +218,32 @@
                 },
                 "version": {
                     "description": "版本号",
+                    "type": "string"
+                }
+            }
+        },
+        "definition.PersonCertificationOcrSignatureResponse": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "type": "string"
+                },
+                "authorization": {
+                    "type": "string"
+                },
+                "contentType": {
+                    "type": "string"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "nonce": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "version": {
                     "type": "string"
                 }
             }

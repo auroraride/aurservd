@@ -77,6 +77,22 @@ type PersonCertificationOcrRes struct {
 	Sign    string `json:"sign,omitempty"`    // 签名
 }
 
+// PersonCertificationOcrSignatureRequest 阿里云OCR签名请求参数
+type PersonCertificationOcrSignatureRequest struct {
+	Hash string `json:"hash" query:"hash" validate:"required"` // 文件 sha256 hex string
+}
+
+// PersonCertificationOcrSignatureResponse 阿里云OCR签名响应参数
+type PersonCertificationOcrSignatureResponse struct {
+	ContentType   string `json:"contentType"`
+	Action        string `json:"action"`
+	Date          string `json:"date"`
+	Token         string `json:"token"`
+	Nonce         string `json:"nonce"`
+	Version       string `json:"version"`
+	Authorization string `json:"authorization"`
+}
+
 // PersonCertificationFaceReq 实名认证人脸核身请求参数
 type PersonCertificationFaceReq struct {
 	OrderNo       string  `json:"orderNo" query:"orderNo"`                                      // 订单号，用户使用OCR识别时不为空

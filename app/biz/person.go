@@ -404,3 +404,22 @@ func (b *personBiz) CertificationFaceResult(r *ent.Rider, req *definition.Person
 
 	return
 }
+
+// Signature 获取阿里云Ocr签名
+func (b *personBiz) Signature(hash string) (res *definition.PersonCertificationOcrSignatureResponse, err error) {
+	var params *ali.OcrParams
+	params, err = ali.NewOcr().Signature(hash)
+	if err != nil {
+		return
+	}
+
+	return &definition.PersonCertificationOcrSignatureResponse{
+		ContentType:   params.ContentType,
+		Action:        params.Action,
+		Date:          params.Date,
+		Token:         params.Token,
+		Nonce:         params.Nonce,
+		Version:       params.Version,
+		Authorization: params.Authorization,
+	}, nil
+}
