@@ -1,5 +1,16 @@
 basePath: /
 definitions:
+  definition.PersonCertificationFaceReq:
+    properties:
+      identity:
+        description: 加密身份信息
+        type: string
+      orderNo:
+        description: 订单号，用户使用OCR识别时不为空
+        type: string
+    required:
+    - identity
+    type: object
   definition.PersonCertificationFaceRes:
     properties:
       appId:
@@ -34,7 +45,7 @@ definitions:
         description: 是否成功
         type: boolean
     type: object
-  definition.PersonCertificationOcrRes:
+  definition.PersonCertificationOcrClientRes:
     properties:
       appId:
         description: WBAppid
@@ -55,7 +66,7 @@ definitions:
         description: 版本号
         type: string
     type: object
-  definition.PersonCertificationOcrSignatureResponse:
+  definition.PersonCertificationOcrCloudRes:
     properties:
       action:
         type: string
@@ -77,49 +88,18 @@ info:
   title: 极光出行API - 骑手端api
   version: "2.0"
 paths:
-  /certification/ocr/signature:
-    get:
-      consumes:
-      - application/json
-      operationId: Signature
-      parameters:
-      - description: 文件 sha256 hex string
-        in: query
-        name: hash
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/definition.PersonCertificationOcrSignatureResponse'
-      summary: 获取阿里云OCR签名
-      tags:
-      - Person - 实人
   /rider/v2/certification/face:
     post:
       consumes:
       - application/json
       operationId: CertificationFace
       parameters:
-      - description: 加密身份信息
-        in: query
-        name: identity
-        type: string
-      - description: 身份证国徽面
-        in: query
-        name: nationalImage
-        type: string
-      - description: 订单号，用户使用OCR识别时不为空
-        in: query
-        name: orderNo
-        type: string
-      - description: 身份证人像面
-        in: query
-        name: portraitImage
-        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.PersonCertificationFaceReq'
       produces:
       - application/json
       responses:
@@ -151,19 +131,40 @@ paths:
       summary: 获取人脸核身结果
       tags:
       - Person - 实人
-  /rider/v2/certification/ocr:
+  /rider/v2/certification/ocr/client:
     get:
       consumes:
       - application/json
-      operationId: CertificationOcr
+      operationId: CertificationOcrClient
       produces:
       - application/json
       responses:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/definition.PersonCertificationOcrRes'
-      summary: 获取人脸核身OCR参数
+            $ref: '#/definitions/definition.PersonCertificationOcrClientRes'
+      summary: 获取客户端OCR参数
+      tags:
+      - Person - 实人
+  /rider/v2/certification/ocr/cloud:
+    get:
+      consumes:
+      - application/json
+      operationId: CertificationOcrCloud
+      parameters:
+      - description: 文件 sha256 hex string
+        in: query
+        name: hash
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/definition.PersonCertificationOcrCloudRes'
+      summary: 获取云端OCR参数
       tags:
       - Person - 实人
 swagger: "2.0"

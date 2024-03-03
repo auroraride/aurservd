@@ -33,4 +33,7 @@ var (
 
 	//go:embed views/legal.go.html
 	LegalTemplate string
+
+	//go:embed keys/person_private_key.pem
+	PersonPrivateKey []byte
 )

@@ -12284,7 +12284,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/definition.PersonCertificationOcrRes"
+                            "$ref": "#/definitions/definition.PersonCertificationOcrClientRes"
                         }
                     }
                 }
@@ -12307,7 +12307,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/definition.PersonCertificationOcrRes"
+                            "$ref": "#/definitions/definition.PersonCertificationOcrClientRes"
                         }
                     }
                 }
@@ -12364,7 +12364,7 @@ const docTemplate = `{
                 }
             }
         },
-        "definition.PersonCertificationOcrRes": {
+        "definition.PersonCertificationOcrClientRes": {
             "type": "object",
             "properties": {
                 "appId": {

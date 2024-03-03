@@ -17,17 +17,31 @@ type person struct{}
 
 var Person = new(person)
 
-// CertificationOcr
-// @ID		CertificationOcr
-// @Router	/rider/v2/certification/ocr [GET]
-// @Summary	获取人脸核身OCR参数
+// CertificationOcrClient
+// @ID		CertificationOcrClient
+// @Router	/rider/v2/certification/ocr/client [GET]
+// @Summary	获取客户端OCR参数
 // @Tags	Person - 实人
 // @Accept	json
 // @Produce	json
-// @Success	200	{object}	definition.PersonCertificationOcrRes	"请求成功"
-func (*person) CertificationOcr(c echo.Context) (err error) {
+// @Success	200	{object}	definition.PersonCertificationOcrClientRes	"请求成功"
+func (*person) CertificationOcrClient(c echo.Context) (err error) {
 	ctx := app.ContextX[app.RiderContext](c)
-	return ctx.SendResponse(biz.NewPerson().CertificationOcr(ctx.Rider))
+	return ctx.SendResponse(biz.NewPerson().CertificationOcrClient(ctx.Rider))
+}
+
+// CertificationOcrCloud
+// @ID		CertificationOcrCloud
+// @Router	/rider/v2/certification/ocr/cloud [GET]
+// @Summary	获取云端OCR参数
+// @Tags	Person - 实人
+// @Accept	json
+// @Produce	json
+// @Param	query	query		definition.PersonCertificationOcrCloudReq	true	"请求参数"
+// @Success	200		{object}	definition.PersonCertificationOcrCloudRes	"请求成功"
+func (*person) CertificationOcrCloud(c echo.Context) (err error) {
+	ctx, req := app.RiderContextAndBinding[definition.PersonCertificationOcrCloudReq](c)
+	return ctx.SendResponse(biz.NewPerson().CertificationOcrCloud(req.Hash))
 }
 
 // CertificationFace
@@ -37,7 +51,7 @@ func (*person) CertificationOcr(c echo.Context) (err error) {
 // @Tags	Person - 实人
 // @Accept	json
 // @Produce	json
-// @Param	query	query		definition.PersonCertificationFaceReq	true	"请求参数"
+// @Param	body	body		definition.PersonCertificationFaceReq	true	"请求参数"
 // @Success	200		{object}	definition.PersonCertificationFaceRes	"请求成功"
 func (*person) CertificationFace(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[definition.PersonCertificationFaceReq](c)

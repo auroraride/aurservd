@@ -52,6 +52,9 @@ func Bootstrap() {
 	}
 	log.New(logcfg)
 
+	// 初始化RSA
+	ar.LoadRsa()
+
 	// 加载数据库
 	entInit()
 

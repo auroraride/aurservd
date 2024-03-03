@@ -15,38 +15,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/certification/ocr/signature": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Person - 实人"
-                ],
-                "summary": "获取阿里云OCR签名",
-                "operationId": "Signature",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "文件 sha256 hex string",
-                        "name": "hash",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/definition.PersonCertificationOcrSignatureResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/rider/v2/certification/face": {
             "post": {
                 "consumes": [
@@ -62,28 +30,13 @@ const docTemplate = `{
                 "operationId": "CertificationFace",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "加密身份信息",
-                        "name": "identity",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "身份证国徽面",
-                        "name": "nationalImage",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "订单号，用户使用OCR识别时不为空",
-                        "name": "orderNo",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "身份证人像面",
-                        "name": "portraitImage",
-                        "in": "query"
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/definition.PersonCertificationFaceReq"
+                        }
                     }
                 ],
                 "responses": {
@@ -128,7 +81,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/rider/v2/certification/ocr": {
+        "/rider/v2/certification/ocr/client": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -139,13 +92,45 @@ const docTemplate = `{
                 "tags": [
                     "Person - 实人"
                 ],
-                "summary": "获取人脸核身OCR参数",
-                "operationId": "CertificationOcr",
+                "summary": "获取客户端OCR参数",
+                "operationId": "CertificationOcrClient",
                 "responses": {
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/definition.PersonCertificationOcrRes"
+                            "$ref": "#/definitions/definition.PersonCertificationOcrClientRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/rider/v2/certification/ocr/cloud": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Person - 实人"
+                ],
+                "summary": "获取云端OCR参数",
+                "operationId": "CertificationOcrCloud",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "文件 sha256 hex string",
+                        "name": "hash",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/definition.PersonCertificationOcrCloudRes"
                         }
                     }
                 }
@@ -153,6 +138,22 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "definition.PersonCertificationFaceReq": {
+            "type": "object",
+            "required": [
+                "identity"
+            ],
+            "properties": {
+                "identity": {
+                    "description": "加密身份信息",
+                    "type": "string"
+                },
+                "orderNo": {
+                    "description": "订单号，用户使用OCR识别时不为空",
+                    "type": "string"
+                }
+            }
+        },
         "definition.PersonCertificationFaceRes": {
             "type": "object",
             "properties": {
@@ -201,7 +202,7 @@ const docTemplate = `{
                 }
             }
         },
-        "definition.PersonCertificationOcrRes": {
+        "definition.PersonCertificationOcrClientRes": {
             "type": "object",
             "properties": {
                 "appId": {
@@ -230,7 +231,7 @@ const docTemplate = `{
                 }
             }
         },
-        "definition.PersonCertificationOcrSignatureResponse": {
+        "definition.PersonCertificationOcrCloudRes": {
             "type": "object",
             "properties": {
                 "action": {
