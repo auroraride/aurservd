@@ -29,6 +29,7 @@ type PersonCertificationOcrCloudRes struct {
 	Nonce         string `json:"nonce"`
 	Version       string `json:"version"`
 	Authorization string `json:"authorization"`
+	Url           string `json:"url"`
 }
 
 // PersonCertificationFaceReq 实名认证人脸核身请求参数

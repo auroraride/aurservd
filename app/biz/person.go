@@ -441,5 +441,6 @@ func (b *personBiz) CertificationOcrCloud(hash string) (res *definition.PersonCe
 		Nonce:         params.Nonce,
 		Version:       params.Version,
 		Authorization: params.Authorization,
+		Url:           params.Url,
 	}, nil
 }

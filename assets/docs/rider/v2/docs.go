@@ -252,6 +252,9 @@ const docTemplate = `{
                 "token": {
                     "type": "string"
                 },
+                "url": {
+                    "type": "string"
+                },
                 "version": {
                     "type": "string"
                 }

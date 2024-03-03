@@ -61,6 +61,7 @@ type OcrParams struct {
 	Nonce         string
 	Version       string
 	Authorization string
+	Url           string
 }
 
 // Signature 获取阿里云Ocr签名
@@ -73,6 +74,7 @@ func (c *OcrClient) Signature(hash string) (params *OcrParams, err error) {
 		return
 	}
 
+	query := "OutputFigure=true&OutputQualityInfo=true"
 	params = &OcrParams{
 		ContentType: OcrContentType,
 		Action:      OcrActionRecognizeIdcard,
@@ -80,11 +82,12 @@ func (c *OcrClient) Signature(hash string) (params *OcrParams, err error) {
 		Token:       credentials.SecurityToken,
 		Nonce:       utils.RandStr(32),
 		Version:     OcrVersion,
+		Url:         "https://" + *c.EndPoint + "/?" + query,
 	}
 
 	canonicalRequest := "POST\n" +
 		"/\n" +
-		"OutputFigure=true&OutputQualityInfo=true\n" + // CanonicalQueryString，即使为空也需要填写一个换行符
+		query + "\n" + // CanonicalQueryString，即使为空也需要填写一个换行符
 		"content-type:" + OcrContentType + "\n" +
 		"host:" + cfg.Endpoint + "\n" +
 		"x-acs-action:" + OcrActionRecognizeIdcard + "\n" +
