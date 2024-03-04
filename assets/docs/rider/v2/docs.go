@@ -15,6 +15,72 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/rider/v2/cabinet": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cabinet - 电柜"
+                ],
+                "summary": "电柜列表",
+                "operationId": "CabinetList",
+                "parameters": [
+                    {
+                        "enum": [
+                            "active",
+                            "pause",
+                            "continue",
+                            "unsubscribe"
+                        ],
+                        "type": "string",
+                        "description": "业务选项 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租",
+                        "name": "business",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "距离(米)",
+                        "name": "distance",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "纬度",
+                        "name": "lat",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "经度",
+                        "name": "lng",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "电池型号",
+                        "name": "model",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/definition.CabinetByRiderRes"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v2/certification/face": {
             "post": {
                 "consumes": [
@@ -154,6 +220,109 @@ const docTemplate = `{
                 }
             }
         },
+        "adapter.CabinetBrand": {
+            "type": "string",
+            "enum": [
+                "UNKNOWN",
+                "KAIXIN",
+                "YUNDONG",
+                "TUOBANG",
+                "XILIULOUSERV"
+            ],
+            "x-enum-comments": {
+                "CabinetBrandXiliulouServer": "西六楼服务器版"
+            },
+            "x-enum-varnames": [
+                "CabinetBrandUnknown",
+                "CabinetBrandKaixin",
+                "CabinetBrandYundong",
+                "CabinetBrandTuobang",
+                "CabinetBrandXiliulouServer"
+            ]
+        },
+        "definition.CabinetByRiderRes": {
+            "type": "object",
+            "properties": {
+                "batteryNum": {
+                    "description": "电池数量",
+                    "type": "integer"
+                },
+                "binNum": {
+                    "description": "仓位数量",
+                    "type": "integer"
+                },
+                "bins": {
+                    "description": "仓位信息",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.CabinetDataBin"
+                    }
+                },
+                "branchId": {
+                    "description": "网点ID",
+                    "type": "integer"
+                },
+                "brand": {
+                    "description": "品牌 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/adapter.CabinetBrand"
+                        }
+                    ]
+                },
+                "distance": {
+                    "description": "距离",
+                    "type": "number"
+                },
+                "emptyNum": {
+                    "description": "空仓数量",
+                    "type": "integer"
+                },
+                "fid": {
+                    "description": "电柜FID",
+                    "type": "string"
+                },
+                "fullNum": {
+                    "description": "满电数",
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "lat": {
+                    "description": "纬度",
+                    "type": "number"
+                },
+                "lng": {
+                    "description": "经度",
+                    "type": "number"
+                },
+                "lockNum": {
+                    "description": "锁仓数",
+                    "type": "integer"
+                },
+                "model": {
+                    "description": "型号",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "名称",
+                    "type": "string"
+                },
+                "online": {
+                    "description": "是否在线",
+                    "type": "boolean"
+                },
+                "serial": {
+                    "description": "编号",
+                    "type": "string"
+                },
+                "stockNum": {
+                    "description": "库存电池",
+                    "type": "integer"
+                }
+            }
+        },
         "definition.PersonCertificationFaceRes": {
             "type": "object",
             "properties": {
@@ -257,6 +426,25 @@ const docTemplate = `{
                 },
                 "version": {
                     "type": "string"
+                }
+            }
+        },
+        "model.CabinetDataBin": {
+            "type": "object",
+            "properties": {
+                "remark": {
+                    "description": "备注信息, 仅状态` + "`" + `3 锁仓` + "`" + `有此字段",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "状态 0:无电池 1:有电池未满电 2:满电 3:锁仓, 状态值大的优先显示",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1,
+                        2,
+                        3
+                    ]
                 }
             }
         }

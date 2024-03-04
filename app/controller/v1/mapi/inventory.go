@@ -17,15 +17,15 @@ type inventory struct{}
 var Inventory = new(inventory)
 
 // CreateOrModify
-// @ID		ManagerInventoryCreateOrModify
-// @Router	/manager/v1/inventory [POST]
-// @Summary	M1012 物资设定创建或更新
-// @Tags	[M]管理接口
-// @Accept	json
-// @Produce	json
-// @Param	X-Manager-Token	header		string					true	"管理员校验token"
-// @Param	body			body		model.Inventory			true	"desc"
-// @Success	200				{object}	model.StatusResponse	"请求成功"
+//	@ID			ManagerInventoryCreateOrModify
+//	@Router		/manager/v1/inventory [POST]
+//	@Summary	M1012 物资设定创建或更新
+//	@Tags		[M]管理接口
+//	@Accept		json
+//	@Produce	json
+//	@Param		X-Manager-Token	header		string					true	"管理员校验token"
+//	@Param		body			body		model.Inventory			true	"desc"
+//	@Success	200				{object}	model.StatusResponse	"请求成功"
 func (*inventory) CreateOrModify(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.Inventory](c)
 	service.NewInventoryWithModifier(ctx.Modifier).CreateOrModify(req)
@@ -33,29 +33,29 @@ func (*inventory) CreateOrModify(c echo.Context) (err error) {
 }
 
 // List
-// @ID		ManagerInventoryList
-// @Router	/manager/v1/inventory [GET]
-// @Summary	M1013 列举物资设定
-// @Tags	[M]管理接口
-// @Accept	json
-// @Produce	json
-// @Param	X-Manager-Token	header		string			true	"管理员校验token"
-// @Success	200				{object}	model.Inventory	"请求成功"
+//	@ID			ManagerInventoryList
+//	@Router		/manager/v1/inventory [GET]
+//	@Summary	M1013 列举物资设定
+//	@Tags		[M]管理接口
+//	@Accept		json
+//	@Produce	json
+//	@Param		X-Manager-Token	header		string			true	"管理员校验token"
+//	@Success	200				{object}	model.Inventory	"请求成功"
 func (*inventory) List(c echo.Context) (err error) {
 	ctx := app.ContextX[app.ManagerContext](c)
 	return ctx.SendResponse(service.NewInventory().List())
 }
 
 // Delete
-// @ID		ManagerInventoryDelete
-// @Router	/manager/v1/inventory [DELETE]
-// @Summary	M1014 删除物资设定
-// @Tags	[M]管理接口
-// @Accept	json
-// @Produce	json
-// @Param	X-Manager-Token	header		string					true	"管理员校验token"
-// @Param	body			body		model.InventoryDelete	true	"desc"
-// @Success	200				{object}	model.StatusResponse	"请求成功"
+//	@ID			ManagerInventoryDelete
+//	@Router		/manager/v1/inventory [DELETE]
+//	@Summary	M1014 删除物资设定
+//	@Tags		[M]管理接口
+//	@Accept		json
+//	@Produce	json
+//	@Param		X-Manager-Token	header		string					true	"管理员校验token"
+//	@Param		body			body		model.InventoryDelete	true	"desc"
+//	@Success	200				{object}	model.StatusResponse	"请求成功"
 func (*inventory) Delete(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.InventoryDelete](c)
 	service.NewInventoryWithModifier(ctx.Modifier).Delete(req)
@@ -63,14 +63,14 @@ func (*inventory) Delete(c echo.Context) (err error) {
 }
 
 // Transferable
-// @ID		ManagerInventoryTransferable
-// @Router	/manager/v1/inventory/transferable [GET]
-// @Summary	M1015 可调拨物资清单
-// @Tags	[M]管理接口
-// @Accept	json
-// @Produce	json
-// @Param	X-Manager-Token	header		string					true	"管理员校验token"
-// @Success	200				{object}	[]model.InventoryItem	"请求成功"
+//	@ID			ManagerInventoryTransferable
+//	@Router		/manager/v1/inventory/transferable [GET]
+//	@Summary	M1015 可调拨物资清单
+//	@Tags		[M]管理接口
+//	@Accept		json
+//	@Produce	json
+//	@Param		X-Manager-Token	header		string					true	"管理员校验token"
+//	@Success	200				{object}	[]model.InventoryItem	"请求成功"
 func (*inventory) Transferable(c echo.Context) (err error) {
 	ctx := app.ContextX[app.ManagerContext](c)
 	return ctx.SendResponse(service.NewInventory().ListInventory(model.InventoryListReq{Transfer: true}))

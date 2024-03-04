@@ -19,14 +19,14 @@ type setting struct{}
 var Setting = new(setting)
 
 // App
-// @ID		SettingApp
-// @Router	/rider/v1/setting/app [GET]
-// @Summary	R6001 获取APP设置
-// @Tags	Setting - 设置
-// @Accept	json
-// @Produce	json
-// @Param	X-Rider-Token	header		string					true	"骑手校验token"
-// @Success	200				{object}	model.SettingRiderApp	"请求成功"
+//	@ID			SettingApp
+//	@Router		/rider/v1/setting/app [GET]
+//	@Summary	R6001 获取APP设置
+//	@Tags		Setting - 设置
+//	@Accept		json
+//	@Produce	json
+//	@Param		X-Rider-Token	header		string					true	"骑手校验token"
+//	@Success	200				{object}	model.SettingRiderApp	"请求成功"
 func (*setting) App(c echo.Context) (err error) {
 	ctx := app.Context(c)
 
@@ -37,14 +37,14 @@ func (*setting) App(c echo.Context) (err error) {
 }
 
 // Question
-// @ID		SettingQuestion
-// @Router	/rider/v1/setting/question [GET]
-// @Summary	R6002 获取常见问题
-// @Tags	Setting - 设置
-// @Accept	json
-// @Produce	json
-// @Param	X-Rider-Token	header		string					true	"骑手校验token"
-// @Success	200				{object}	[]model.SettingQuestion	"请求成功"
+//	@ID			SettingQuestion
+//	@Router		/rider/v1/setting/question [GET]
+//	@Summary	R6002 获取常见问题
+//	@Tags		Setting - 设置
+//	@Accept		json
+//	@Produce	json
+//	@Param		X-Rider-Token	header		string					true	"骑手校验token"
+//	@Success	200				{object}	[]model.SettingQuestion	"请求成功"
 func (*setting) Question(c echo.Context) (err error) {
 	ctx := app.Context(c)
 	return ctx.SendResponse(service.NewSetting().Question())

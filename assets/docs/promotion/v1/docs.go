@@ -1174,7 +1174,16 @@ const docTemplate = `{
             }
         },
         "promotion.BankCardReq": {
-            "type": "object"
+            "type": "object",
+            "required": [
+                "cardNo"
+            ],
+            "properties": {
+                "cardNo": {
+                    "description": "银行卡号",
+                    "type": "string"
+                }
+            }
         },
         "promotion.BankCardRes": {
             "type": "object",
@@ -1281,6 +1290,10 @@ const docTemplate = `{
                 "end": {
                     "description": "结束日期",
                     "type": "string"
+                },
+                "id": {
+                    "description": "id",
+                    "type": "integer"
                 },
                 "keyword": {
                     "description": "关键词 手机号/姓名",
@@ -1499,6 +1512,10 @@ const docTemplate = `{
                     "description": "结束日期",
                     "type": "string"
                 },
+                "id": {
+                    "description": "id",
+                    "type": "integer"
+                },
                 "keyword": {
                     "description": "关键词",
                     "type": "string"
@@ -1621,6 +1638,9 @@ const docTemplate = `{
                     "description": "关键词",
                     "type": "string"
                 },
+                "memberId": {
+                    "type": "integer"
+                },
                 "pageSize": {
                     "description": "每页数据, 默认20",
                     "type": "integer"
@@ -1689,10 +1709,21 @@ const docTemplate = `{
         },
         "promotion.Setting": {
             "type": "object",
+            "required": [
+                "key"
+            ],
             "properties": {
                 "context": {
                     "description": "内容",
                     "type": "string"
+                },
+                "key": {
+                    "description": "键 GROWTH_VALUE_TEXT 成长值说明  WITHDRAWAL_TEXT 提现说明",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/promotion.SettingKey"
+                        }
+                    ]
                 },
                 "title": {
                     "description": "标题",
@@ -1700,8 +1731,36 @@ const docTemplate = `{
                 }
             }
         },
+        "promotion.SettingKey": {
+            "type": "string",
+            "enum": [
+                "GROWTH_VALUE_TEXT",
+                "WITHDRAWAL_TEXT"
+            ],
+            "x-enum-comments": {
+                "SettingGrowthValueText": "成长值说明",
+                "SettingWithdrawalText": "提现说明"
+            },
+            "x-enum-varnames": [
+                "SettingGrowthValueText",
+                "SettingWithdrawalText"
+            ]
+        },
         "promotion.SettingReq": {
-            "type": "object"
+            "type": "object",
+            "required": [
+                "key"
+            ],
+            "properties": {
+                "key": {
+                    "description": "键 GROWTH_VALUE_TEXT 成长值说明  WITHDRAWAL_TEXT 提现说明",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/promotion.SettingKey"
+                        }
+                    ]
+                }
+            }
         },
         "promotion.StatisticsEarningsDetail": {
             "type": "object",

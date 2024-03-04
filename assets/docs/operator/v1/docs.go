@@ -443,7 +443,9 @@ const docTemplate = `{
                 "lat",
                 "lng",
                 "operate",
-                "reason"
+                "ordinal",
+                "reason",
+                "serial"
             ],
             "properties": {
                 "lat": {
@@ -460,7 +462,13 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "ordinal": {
+                    "type": "integer"
+                },
                 "reason": {
+                    "type": "string"
+                },
+                "serial": {
                     "type": "string"
                 }
             }
@@ -656,7 +664,8 @@ const docTemplate = `{
                 "lat",
                 "lng",
                 "operate",
-                "reason"
+                "reason",
+                "serial"
             ],
             "properties": {
                 "lat": {
@@ -674,6 +683,9 @@ const docTemplate = `{
                     ]
                 },
                 "reason": {
+                    "type": "string"
+                },
+                "serial": {
                     "type": "string"
                 }
             }

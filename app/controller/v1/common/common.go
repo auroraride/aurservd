@@ -5,6 +5,6 @@
 
 package common
 
-// @title		极光出行API - 公共api
-// @version		1.0
-// @BasePath	/
+//	@title		极光出行API - 公共api
+//	@version	1.0
+//	@BasePath	/

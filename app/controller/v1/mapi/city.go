@@ -18,14 +18,14 @@ var City = new(city)
 
 // List
 // ID            CityList
-// @Router	/manager/v1/city [GET]
-// @Summary	M2001 城市列表
-// @Tags	[M]管理接口
-// @Accept	json
-// @Produce	json
-// @Param	X-Manager-Token	header		string				true	"管理员校验token"
-// @Param	status			query		model.CityListReq	false	"启用状态"
-// @Success	200				{object}	[]model.CityItem	"请求成功"
+//	@Router		/manager/v1/city [GET]
+//	@Summary	M2001 城市列表
+//	@Tags		[M]管理接口
+//	@Accept		json
+//	@Produce	json
+//	@Param		X-Manager-Token	header		string				true	"管理员校验token"
+//	@Param		status			query		model.CityListReq	false	"启用状态"
+//	@Success	200				{object}	[]model.CityItem	"请求成功"
 func (*city) List(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.CityListReq](c)
 
@@ -33,17 +33,17 @@ func (*city) List(c echo.Context) (err error) {
 }
 
 // Modify
-// @ID			CityModify
-// @Router		/manager/v1/city/{id} [PUT]
-// @Summary		M2002 修改城市
-// @Description	desc
-// @Tags		[M]管理接口
-// @Accept		json
-// @Produce		json
-// @Param		X-Manager-Token	header		string					true	"管理员校验token"
-// @Param		id				path		int						true	"城市ID"
-// @Param		body			body		model.CityModifyReq		true	"城市数据"
-// @Success		200				{object}	model.StatusResponse	"请求成功"
+//	@ID				CityModify
+//	@Router			/manager/v1/city/{id} [PUT]
+//	@Summary		M2002 修改城市
+//	@Description	desc
+//	@Tags			[M]管理接口
+//	@Accept			json
+//	@Produce		json
+//	@Param			X-Manager-Token	header		string					true	"管理员校验token"
+//	@Param			id				path		int						true	"城市ID"
+//	@Param			body			body		model.CityModifyReq		true	"城市数据"
+//	@Success		200				{object}	model.StatusResponse	"请求成功"
 func (*city) Modify(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.CityModifyReq](c)
 

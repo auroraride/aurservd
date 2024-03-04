@@ -75,7 +75,7 @@ func LoadRiderV2Routes(root *echo.Group) {
 	// cert := middleware.RiderCertificationMiddlewareV2
 
 	// 获取人身核验OCR参数
-	g.GET("/certification/ocr/client", rapi.Person.CertificationOcrClient, auth())
+	g.GET("/certification/ocr", rapi.Person.CertificationOcr, auth())
 
 	// 获取阿里云OCR签名
 	g.GET("/certification/ocr/cloud", rapi.Person.CertificationOcrCloud, auth())
@@ -88,4 +88,7 @@ func LoadRiderV2Routes(root *echo.Group) {
 
 	// 订单
 	g.POST("/order", rapi.Order.Create)
+
+	// 电柜列表
+	g.GET("/cabinet", rapi.Cabinet.List, auth())
 }

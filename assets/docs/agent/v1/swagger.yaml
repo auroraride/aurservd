@@ -997,6 +997,12 @@ definitions:
     - stationId
     type: object
   model.EnterpriseRiderInviteReq:
+    properties:
+      stationID:
+        description: 站点id
+        type: integer
+    required:
+      - stationID
     type: object
   model.EnterpriseStation:
     properties:

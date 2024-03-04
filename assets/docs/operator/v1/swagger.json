@@ -436,7 +436,9 @@
                 "lat",
                 "lng",
                 "operate",
-                "reason"
+              "ordinal",
+              "reason",
+              "serial"
             ],
             "properties": {
                 "lat": {
@@ -453,8 +455,14 @@
                         }
                     ]
                 },
+              "ordinal": {
+                "type": "integer"
+              },
                 "reason": {
                     "type": "string"
+                },
+              "serial": {
+                "type": "string"
                 }
             }
         },
@@ -649,7 +657,8 @@
                 "lat",
                 "lng",
                 "operate",
-                "reason"
+              "reason",
+              "serial"
             ],
             "properties": {
                 "lat": {
@@ -668,6 +677,9 @@
                 },
                 "reason": {
                     "type": "string"
+                },
+              "serial": {
+                "type": "string"
                 }
             }
         },

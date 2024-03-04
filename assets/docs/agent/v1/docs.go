@@ -3776,7 +3776,16 @@ const docTemplate = `{
             }
         },
         "model.EnterpriseRiderInviteReq": {
-            "type": "object"
+            "type": "object",
+            "required": [
+                "stationID"
+            ],
+            "properties": {
+                "stationID": {
+                    "description": "站点id",
+                    "type": "integer"
+                }
+            }
         },
         "model.EnterpriseStation": {
             "type": "object",

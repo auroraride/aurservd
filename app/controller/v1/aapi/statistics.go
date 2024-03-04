@@ -17,14 +17,14 @@ type statistics struct{}
 var Statistics = new(statistics)
 
 // Overview
-// @ID		AgentStatisticsOverview
-// @Router	/agent/v1/statistics/overview [GET]
-// @Summary	A9001 统计概览
-// @Tags	[A]代理接口
-// @Accept	json
-// @Produce	json
-// @Param	X-Agent-Token	header		string								true	"代理校验token"
-// @Success	200				{object}	model.AgentStatisticsOverviewRes	"请求成功"
+//	@ID			AgentStatisticsOverview
+//	@Router		/agent/v1/statistics/overview [GET]
+//	@Summary	A9001 统计概览
+//	@Tags		[A]代理接口
+//	@Accept		json
+//	@Produce	json
+//	@Param		X-Agent-Token	header		string								true	"代理校验token"
+//	@Success	200				{object}	model.AgentStatisticsOverviewRes	"请求成功"
 func (*statistics) Overview(c echo.Context) (err error) {
 	ctx := app.ContextX[app.AgentContext](c)
 	return ctx.SendResponse(service.NewAgentStatistics().Overview(ctx))
