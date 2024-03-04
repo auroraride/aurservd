@@ -113,6 +113,7 @@ type BranchWithDistanceReq struct {
 	CityID   *uint64  `json:"cityId" query:"cityId" trans:"城市ID"`
 	Business string   `json:"business" query:"business" enums:"active,pause,continue,unsubscribe"` // 业务选项 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
 	Filter   string   `json:"filter" query:"filter"`                                               // 额外筛选参数
+	Model    *string  `json:"model" query:"model"`                                                 // 电池型号
 }
 
 type BranchDistanceListReq struct {
