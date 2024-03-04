@@ -703,6 +703,7 @@ func (s *branchService) Facility(req *model.BranchFacilityReq) (data model.Branc
 						}
 					}
 				}
+				c.Bins[bi].BatterySN = bin.BatterySN
 			}
 
 			c.Batteries = []model.BranchFacilityCabinetBattery{batInfo}
