@@ -185,6 +185,11 @@ func DiscountNewly(v float64) predicate.Order {
 	return predicate.Order(sql.FieldEQ(FieldDiscountNewly, v))
 }
 
+// TradePayAt applies equality check predicate on the "trade_pay_at" field. It's identical to TradePayAtEQ.
+func TradePayAt(v time.Time) predicate.Order {
+	return predicate.Order(sql.FieldEQ(FieldTradePayAt, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Order {
 	return predicate.Order(sql.FieldEQ(FieldCreatedAt, v))
@@ -1288,6 +1293,56 @@ func DiscountNewlyLT(v float64) predicate.Order {
 // DiscountNewlyLTE applies the LTE predicate on the "discount_newly" field.
 func DiscountNewlyLTE(v float64) predicate.Order {
 	return predicate.Order(sql.FieldLTE(FieldDiscountNewly, v))
+}
+
+// TradePayAtEQ applies the EQ predicate on the "trade_pay_at" field.
+func TradePayAtEQ(v time.Time) predicate.Order {
+	return predicate.Order(sql.FieldEQ(FieldTradePayAt, v))
+}
+
+// TradePayAtNEQ applies the NEQ predicate on the "trade_pay_at" field.
+func TradePayAtNEQ(v time.Time) predicate.Order {
+	return predicate.Order(sql.FieldNEQ(FieldTradePayAt, v))
+}
+
+// TradePayAtIn applies the In predicate on the "trade_pay_at" field.
+func TradePayAtIn(vs ...time.Time) predicate.Order {
+	return predicate.Order(sql.FieldIn(FieldTradePayAt, vs...))
+}
+
+// TradePayAtNotIn applies the NotIn predicate on the "trade_pay_at" field.
+func TradePayAtNotIn(vs ...time.Time) predicate.Order {
+	return predicate.Order(sql.FieldNotIn(FieldTradePayAt, vs...))
+}
+
+// TradePayAtGT applies the GT predicate on the "trade_pay_at" field.
+func TradePayAtGT(v time.Time) predicate.Order {
+	return predicate.Order(sql.FieldGT(FieldTradePayAt, v))
+}
+
+// TradePayAtGTE applies the GTE predicate on the "trade_pay_at" field.
+func TradePayAtGTE(v time.Time) predicate.Order {
+	return predicate.Order(sql.FieldGTE(FieldTradePayAt, v))
+}
+
+// TradePayAtLT applies the LT predicate on the "trade_pay_at" field.
+func TradePayAtLT(v time.Time) predicate.Order {
+	return predicate.Order(sql.FieldLT(FieldTradePayAt, v))
+}
+
+// TradePayAtLTE applies the LTE predicate on the "trade_pay_at" field.
+func TradePayAtLTE(v time.Time) predicate.Order {
+	return predicate.Order(sql.FieldLTE(FieldTradePayAt, v))
+}
+
+// TradePayAtIsNil applies the IsNil predicate on the "trade_pay_at" field.
+func TradePayAtIsNil() predicate.Order {
+	return predicate.Order(sql.FieldIsNull(FieldTradePayAt))
+}
+
+// TradePayAtNotNil applies the NotNil predicate on the "trade_pay_at" field.
+func TradePayAtNotNil() predicate.Order {
+	return predicate.Order(sql.FieldNotNull(FieldTradePayAt))
 }
 
 // HasPlan applies the HasEdge predicate on the "plan" edge.

@@ -370,6 +370,20 @@ func (oc *OrderCreate) SetNillableDiscountNewly(f *float64) *OrderCreate {
 	return oc
 }
 
+// SetTradePayAt sets the "trade_pay_at" field.
+func (oc *OrderCreate) SetTradePayAt(t time.Time) *OrderCreate {
+	oc.mutation.SetTradePayAt(t)
+	return oc
+}
+
+// SetNillableTradePayAt sets the "trade_pay_at" field if the given value is not nil.
+func (oc *OrderCreate) SetNillableTradePayAt(t *time.Time) *OrderCreate {
+	if t != nil {
+		oc.SetTradePayAt(*t)
+	}
+	return oc
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (oc *OrderCreate) SetPlan(p *Plan) *OrderCreate {
 	return oc.SetPlanID(p.ID)
@@ -722,6 +736,10 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 	if value, ok := oc.mutation.DiscountNewly(); ok {
 		_spec.SetField(order.FieldDiscountNewly, field.TypeFloat64, value)
 		_node.DiscountNewly = value
+	}
+	if value, ok := oc.mutation.TradePayAt(); ok {
+		_spec.SetField(order.FieldTradePayAt, field.TypeTime, value)
+		_node.TradePayAt = &value
 	}
 	if nodes := oc.mutation.PlanIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1357,6 +1375,24 @@ func (u *OrderUpsert) AddDiscountNewly(v float64) *OrderUpsert {
 	return u
 }
 
+// SetTradePayAt sets the "trade_pay_at" field.
+func (u *OrderUpsert) SetTradePayAt(v time.Time) *OrderUpsert {
+	u.Set(order.FieldTradePayAt, v)
+	return u
+}
+
+// UpdateTradePayAt sets the "trade_pay_at" field to the value that was provided on create.
+func (u *OrderUpsert) UpdateTradePayAt() *OrderUpsert {
+	u.SetExcluded(order.FieldTradePayAt)
+	return u
+}
+
+// ClearTradePayAt clears the value of the "trade_pay_at" field.
+func (u *OrderUpsert) ClearTradePayAt() *OrderUpsert {
+	u.SetNull(order.FieldTradePayAt)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1847,6 +1883,27 @@ func (u *OrderUpsertOne) AddDiscountNewly(v float64) *OrderUpsertOne {
 func (u *OrderUpsertOne) UpdateDiscountNewly() *OrderUpsertOne {
 	return u.Update(func(s *OrderUpsert) {
 		s.UpdateDiscountNewly()
+	})
+}
+
+// SetTradePayAt sets the "trade_pay_at" field.
+func (u *OrderUpsertOne) SetTradePayAt(v time.Time) *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetTradePayAt(v)
+	})
+}
+
+// UpdateTradePayAt sets the "trade_pay_at" field to the value that was provided on create.
+func (u *OrderUpsertOne) UpdateTradePayAt() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateTradePayAt()
+	})
+}
+
+// ClearTradePayAt clears the value of the "trade_pay_at" field.
+func (u *OrderUpsertOne) ClearTradePayAt() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearTradePayAt()
 	})
 }
 
@@ -2506,6 +2563,27 @@ func (u *OrderUpsertBulk) AddDiscountNewly(v float64) *OrderUpsertBulk {
 func (u *OrderUpsertBulk) UpdateDiscountNewly() *OrderUpsertBulk {
 	return u.Update(func(s *OrderUpsert) {
 		s.UpdateDiscountNewly()
+	})
+}
+
+// SetTradePayAt sets the "trade_pay_at" field.
+func (u *OrderUpsertBulk) SetTradePayAt(v time.Time) *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetTradePayAt(v)
+	})
+}
+
+// UpdateTradePayAt sets the "trade_pay_at" field to the value that was provided on create.
+func (u *OrderUpsertBulk) UpdateTradePayAt() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateTradePayAt()
+	})
+}
+
+// ClearTradePayAt clears the value of the "trade_pay_at" field.
+func (u *OrderUpsertBulk) ClearTradePayAt() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearTradePayAt()
 	})
 }
 

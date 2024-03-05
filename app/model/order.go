@@ -17,9 +17,10 @@ const (
 )
 
 const (
-	OrderPaywayManual uint8 = iota // 后台手动调整
-	OrderPaywayAlipay              // 支付宝支付
-	OrderPaywayWechat              // 微信支付
+	OrderPaywayManual           uint8 = iota // 后台手动调整
+	OrderPaywayAlipay                        // 支付宝支付
+	OrderPaywayWechat                        // 微信支付
+	OrderPaywayAlipayAuthFreeze              // 支付宝预授权支付
 )
 
 const (
@@ -53,16 +54,17 @@ var (
 	}
 
 	OrderPayways = map[uint8]string{
-		OrderPaywayManual: "后台手动调整",
-		OrderPaywayAlipay: "支付宝支付",
-		OrderPaywayWechat: "微信支付",
+		OrderPaywayManual:           "后台手动调整",
+		OrderPaywayAlipay:           "支付宝支付",
+		OrderPaywayWechat:           "微信支付",
+		OrderPaywayAlipayAuthFreeze: "支付宝预授权支付",
 	}
 )
 
 // OrderCreateReq 订单创建请求
 type OrderCreateReq struct {
 	PlanID    uint64 `json:"planId" validate:"required" trans:"套餐ID"`
-	Payway    uint8  `json:"payway" validate:"required" trans:"支付方式" enums:"1,2"`              // 1支付宝 2微信
+	Payway    uint8  `json:"payway" validate:"required" trans:"支付方式" enums:"1,2,3"`            // 1支付宝 2微信 3支付宝预授权
 	OrderType uint   `json:"orderType" validate:"required" trans:"订单类型" enums:"1,2,3,4,5,6,7"` // 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金
 
 	CityID uint64 `json:"cityId"` // 城市ID, 新签必填

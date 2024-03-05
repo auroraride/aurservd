@@ -56,6 +56,9 @@ func serverCommand() *cobra.Command {
 			// 启动 earnings task
 			go task.NewPromotionEarnings().Start()
 
+			// 启动 order task
+			go task.NewOrder().Start()
+
 			// 启动电柜任务
 			go ec.Start()
 

@@ -22,6 +22,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/ebike"
+	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
@@ -766,6 +767,17 @@ func (s *businessRiderService) UnSubscribe(req *model.BusinessSubscribeReq, fns 
 	// 更新企业账单
 	if sub.EnterpriseID != nil {
 		go NewEnterprise().UpdateStatementByID(*sub.EnterpriseID)
+	}
+
+	// 当强制退租时 如果订阅为预授权支付 需要扣除金额并解冻
+	var o *ent.Order
+	o, _ = ent.Database.Order.QueryNotDeleted().Where(
+		order.SubscribeID(sub.ID),
+		order.Payway(model.OrderPaywayAlipayAuthFreeze),
+		order.TradePayAtIsNil(),
+	).Order(ent.Desc(order.FieldCreatedAt)).WithPlan().First(s.ctx)
+	if o != nil {
+		NewOrder().TradePay(o)
 	}
 }
 

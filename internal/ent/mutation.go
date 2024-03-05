@@ -55768,6 +55768,7 @@ type OrderMutation struct {
 	addcoupon_amount  *float64
 	discount_newly    *float64
 	adddiscount_newly *float64
+	trade_pay_at      *time.Time
 	clearedFields     map[string]struct{}
 	plan              *uint64
 	clearedplan       bool
@@ -57325,6 +57326,55 @@ func (m *OrderMutation) ResetDiscountNewly() {
 	m.adddiscount_newly = nil
 }
 
+// SetTradePayAt sets the "trade_pay_at" field.
+func (m *OrderMutation) SetTradePayAt(t time.Time) {
+	m.trade_pay_at = &t
+}
+
+// TradePayAt returns the value of the "trade_pay_at" field in the mutation.
+func (m *OrderMutation) TradePayAt() (r time.Time, exists bool) {
+	v := m.trade_pay_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTradePayAt returns the old "trade_pay_at" field's value of the Order entity.
+// If the Order object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OrderMutation) OldTradePayAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTradePayAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTradePayAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTradePayAt: %w", err)
+	}
+	return oldValue.TradePayAt, nil
+}
+
+// ClearTradePayAt clears the value of the "trade_pay_at" field.
+func (m *OrderMutation) ClearTradePayAt() {
+	m.trade_pay_at = nil
+	m.clearedFields[order.FieldTradePayAt] = struct{}{}
+}
+
+// TradePayAtCleared returns if the "trade_pay_at" field was cleared in this mutation.
+func (m *OrderMutation) TradePayAtCleared() bool {
+	_, ok := m.clearedFields[order.FieldTradePayAt]
+	return ok
+}
+
+// ResetTradePayAt resets all changes to the "trade_pay_at" field.
+func (m *OrderMutation) ResetTradePayAt() {
+	m.trade_pay_at = nil
+	delete(m.clearedFields, order.FieldTradePayAt)
+}
+
 // ClearPlan clears the "plan" edge to the Plan entity.
 func (m *OrderMutation) ClearPlan() {
 	m.clearedplan = true
@@ -57800,7 +57850,7 @@ func (m *OrderMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *OrderMutation) Fields() []string {
-	fields := make([]string, 0, 28)
+	fields := make([]string, 0, 29)
 	if m.created_at != nil {
 		fields = append(fields, order.FieldCreatedAt)
 	}
@@ -57885,6 +57935,9 @@ func (m *OrderMutation) Fields() []string {
 	if m.discount_newly != nil {
 		fields = append(fields, order.FieldDiscountNewly)
 	}
+	if m.trade_pay_at != nil {
+		fields = append(fields, order.FieldTradePayAt)
+	}
 	return fields
 }
 
@@ -57949,6 +58002,8 @@ func (m *OrderMutation) Field(name string) (ent.Value, bool) {
 		return m.CouponAmount()
 	case order.FieldDiscountNewly:
 		return m.DiscountNewly()
+	case order.FieldTradePayAt:
+		return m.TradePayAt()
 	}
 	return nil, false
 }
@@ -58014,6 +58069,8 @@ func (m *OrderMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldCouponAmount(ctx)
 	case order.FieldDiscountNewly:
 		return m.OldDiscountNewly(ctx)
+	case order.FieldTradePayAt:
+		return m.OldTradePayAt(ctx)
 	}
 	return nil, fmt.Errorf("unknown Order field %s", name)
 }
@@ -58218,6 +58275,13 @@ func (m *OrderMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDiscountNewly(v)
+		return nil
+	case order.FieldTradePayAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTradePayAt(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Order field %s", name)
@@ -58429,6 +58493,9 @@ func (m *OrderMutation) ClearedFields() []string {
 	if m.FieldCleared(order.FieldPastDays) {
 		fields = append(fields, order.FieldPastDays)
 	}
+	if m.FieldCleared(order.FieldTradePayAt) {
+		fields = append(fields, order.FieldTradePayAt)
+	}
 	return fields
 }
 
@@ -58487,6 +58554,9 @@ func (m *OrderMutation) ClearField(name string) error {
 		return nil
 	case order.FieldPastDays:
 		m.ClearPastDays()
+		return nil
+	case order.FieldTradePayAt:
+		m.ClearTradePayAt()
 		return nil
 	}
 	return fmt.Errorf("unknown Order nullable field %s", name)
@@ -58579,6 +58649,9 @@ func (m *OrderMutation) ResetField(name string) error {
 		return nil
 	case order.FieldDiscountNewly:
 		m.ResetDiscountNewly()
+		return nil
+	case order.FieldTradePayAt:
+		m.ResetTradePayAt()
 		return nil
 	}
 	return fmt.Errorf("unknown Order field %s", name)
