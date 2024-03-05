@@ -48,6 +48,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "description": "关键字",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
                         "type": "number",
                         "description": "纬度",
                         "name": "lat",
@@ -243,6 +249,10 @@ const docTemplate = `{
         "definition.CabinetByRiderRes": {
             "type": "object",
             "properties": {
+                "address": {
+                    "description": "详细地址",
+                    "type": "string"
+                },
                 "batteryNum": {
                     "description": "电池数量",
                     "type": "integer"

@@ -235,6 +235,9 @@ definitions:
     type: object
   model.BranchFacilityCabinetBin:
     properties:
+      batterySN:
+        description: 电池SN码 锁仓或空仓无此字段
+        type: string
       electricity:
         description: 当前电量 锁仓或空仓无此字段
         type: number
@@ -1947,6 +1950,10 @@ paths:
         name: lng
         required: true
         type: number
+      - description: 电池型号
+        in: query
+        name: model
+        type: string
       produces:
       - application/json
       responses:

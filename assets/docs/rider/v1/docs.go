@@ -393,6 +393,12 @@ const docTemplate = `{
                         "name": "lng",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "电池型号",
+                        "name": "model",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -2790,6 +2796,10 @@ const docTemplate = `{
         "model.BranchFacilityCabinetBin": {
             "type": "object",
             "properties": {
+                "batterySN": {
+                    "description": "电池SN码 锁仓或空仓无此字段",
+                    "type": "string"
+                },
                 "electricity": {
                     "description": "当前电量 锁仓或空仓无此字段",
                     "type": "number"

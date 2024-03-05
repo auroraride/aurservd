@@ -99,8 +99,9 @@ func (s *cabinetBiz) ListByRider(rid *ent.Rider, req *definition.CabinetByRiderR
 					BatteryNum: c.BatteryNum,
 					BinNum:     c.Doors,
 				},
-				Lng: c.Lng,
-				Lat: c.Lat,
+				Lng:     c.Lng,
+				Lat:     c.Lat,
+				Address: c.Address,
 			}
 
 			if c.Edges.Branch != nil {

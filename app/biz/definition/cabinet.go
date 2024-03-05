@@ -19,4 +19,5 @@ type CabinetByRiderRes struct {
 	StockNum int     `json:"stockNum,omitempty"` // 库存电池
 	BranchID uint64  `json:"branchId"`           // 网点ID
 	Fid      string  `json:"fid"`                // 电柜FID
+	Address  string  `json:"address"`            // 详细地址
 }
