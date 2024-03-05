@@ -280,6 +280,13 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "businesses": {
+                    "description": "可办理业务",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "distance": {
                     "description": "距离",
                     "type": "number"
@@ -322,6 +329,14 @@ const docTemplate = `{
                 "online": {
                     "description": "是否在线",
                     "type": "boolean"
+                },
+                "reserve": {
+                    "description": "当前预约, 预约不存在时无此字段",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.ReserveUnfinishedRes"
+                        }
+                    ]
                 },
                 "serial": {
                     "description": "编号",
@@ -455,6 +470,69 @@ const docTemplate = `{
                         2,
                         3
                     ]
+                }
+            }
+        },
+        "model.ReserveStatus": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+            ],
+            "x-enum-comments": {
+                "ReserveStatusCancel": "已取消",
+                "ReserveStatusFail": "已失败",
+                "ReserveStatusInvalid": "已失效",
+                "ReserveStatusPending": "已预约",
+                "ReserveStatusProcessing": "进行中",
+                "ReserveStatusSuccess": "已完成",
+                "ReserveStatusTimeout": "已超时"
+            },
+            "x-enum-varnames": [
+                "ReserveStatusPending",
+                "ReserveStatusProcessing",
+                "ReserveStatusSuccess",
+                "ReserveStatusFail",
+                "ReserveStatusTimeout",
+                "ReserveStatusCancel",
+                "ReserveStatusInvalid"
+            ]
+        },
+        "model.ReserveUnfinishedRes": {
+            "type": "object",
+            "properties": {
+                "business": {
+                    "description": "预约业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租",
+                    "type": "string"
+                },
+                "cabinetId": {
+                    "description": "电柜ID",
+                    "type": "integer"
+                },
+                "fid": {
+                    "description": "设施ID",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "预约ID",
+                    "type": "integer"
+                },
+                "status": {
+                    "description": "状态 0:已预约 1:进行中",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.ReserveStatus"
+                        }
+                    ]
+                },
+                "time": {
+                    "description": "预约时间",
+                    "type": "string"
                 }
             }
         }

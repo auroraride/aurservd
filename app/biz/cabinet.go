@@ -51,11 +51,14 @@ func (s *cabinetBiz) ListByRider(rid *ent.Rider, req *definition.CabinetByRiderR
 		})
 	// 默认查询骑手订阅型号的电柜
 	var sub *ent.Subscribe
+	var rev *model.ReserveUnfinishedRes
 	if rid != nil {
-		sub, _ = service.NewSubscribeWithRider(rid).QueryEffective(rid.ID)
+		sub = service.NewSubscribeWithRider(rid).Recent(rid.ID)
 		if sub != nil {
 			req.Model = &sub.Model
 		}
+		// 预约
+		rev = service.NewReserveWithRider(rid).RiderUnfinishedDetail(rid.ID)
 	}
 
 	if req.Model != nil {
@@ -102,6 +105,26 @@ func (s *cabinetBiz) ListByRider(rid *ent.Rider, req *definition.CabinetByRiderR
 				Lng:     c.Lng,
 				Lat:     c.Lat,
 				Address: c.Address,
+				Reserve: nil,
+			}
+
+			if rev != nil && rev.CabinetID == c.ID {
+				cdr.Reserve = rev
+			}
+
+			if sub != nil && service.NewCabinet().ModelInclude(c, sub.Model) {
+				// 获取可办理业务
+				switch sub.Status {
+				case model.SubscribeStatusInactive:
+					// 未激活时仅能办理激活业务
+					cdr.Businesses = []string{business.TypeActive.String()}
+				case model.SubscribeStatusPaused:
+					// 寄存中时仅能办理取消寄存业务
+					cdr.Businesses = []string{business.TypeContinue.String()}
+				case model.SubscribeStatusUsing:
+					// 使用中可办理寄存和退租业务
+					cdr.Businesses = []string{business.TypePause.String(), business.TypeUnsubscribe.String()}
+				}
 			}
 
 			if c.Edges.Branch != nil {
