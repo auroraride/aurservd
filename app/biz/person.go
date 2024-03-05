@@ -4,12 +4,16 @@ package biz
 
 import (
 	"context"
+	crand "crypto/rand"
+	"encoding/base64"
 	"errors"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/golang-module/carbon/v2"
+	"github.com/lithammer/shortuuid/v4"
+	"google.golang.org/protobuf/proto"
 
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
@@ -24,6 +28,12 @@ import (
 	"github.com/auroraride/aurservd/pkg/tools"
 )
 
+const (
+	personAesKeySize            = 32
+	personAesIvSize             = 16
+	personAesKeyIvEncryptedSize = 512
+)
+
 type personBiz struct {
 	orm *ent.PersonClient
 }
@@ -34,8 +44,65 @@ func NewPerson() *personBiz {
 	}
 }
 
-// CertificationOcr 获取人身核验OCR参数
-func (b *personBiz) CertificationOcr(r *ent.Rider) (res *definition.PersonCertificationOcrRes, err error) {
+// 加密身份信息
+func encryptPersonIdentity(identity *definition.PersonIdentity) string {
+	src, _ := proto.Marshal(identity)
+	rsa := ar.PersonRsa()
+
+	// 生成随机AES密钥和向量
+	key := make([]byte, personAesKeySize)
+	iv := make([]byte, personAesIvSize)
+	_, _ = crand.Read(key)
+	_, _ = crand.Read(iv)
+
+	// AES加密
+	aes := tools.NewAesCrypto(iv, key)
+	encrypted, _ := aes.CBCEncrypt(src)
+
+	// 加密AES密钥和向量
+	encryptedKeyIv, _ := rsa.Encrypt(append(key, iv...))
+
+	// 合并后base64编码
+	return base64.StdEncoding.EncodeToString(append(encryptedKeyIv, encrypted...))
+}
+
+// 解密身份信息
+func decryptPersonIdentity(str string) (identity *definition.PersonIdentity, err error) {
+	rsa := ar.PersonRsa()
+
+	var src []byte
+	src, err = base64.StdEncoding.DecodeString(str)
+	if err != nil {
+		return
+	}
+
+	// 获取AES密钥和向量
+	ikEnctyped := src[:personAesKeyIvEncryptedSize]
+	var ik []byte
+	ik, err = rsa.Decrypt(ikEnctyped)
+	if err != nil {
+		return
+	}
+	if len(ik) != personAesKeySize+personAesIvSize {
+		return nil, errors.New("密钥长度错误")
+	}
+	key, iv := ik[:personAesKeySize], ik[personAesKeySize:]
+
+	// 解密身份信息
+	aes := tools.NewAesCrypto(iv, key)
+	var b []byte
+	b, err = aes.CBCDecrypt(src[personAesKeyIvEncryptedSize:])
+	if err != nil {
+		return
+	}
+
+	identity = new(definition.PersonIdentity)
+	err = proto.Unmarshal(b, identity)
+	return
+}
+
+// CertificationOcrClient 获取人身核验OCR参数
+func (b *personBiz) CertificationOcrClient(r *ent.Rider) (res *definition.PersonCertificationOcrClientRes, err error) {
 	if service.NewRider().IsAuthed(r) {
 		return nil, errors.New("当前已认证，无法重复认证")
 	}
@@ -45,7 +112,7 @@ func (b *personBiz) CertificationOcr(r *ent.Rider) (res *definition.PersonCertif
 	userId := strconv.FormatUint(r.ID, 10)
 	orderNo := tools.NewUnique().Rand(32)
 
-	res = &definition.PersonCertificationOcrRes{
+	res = &definition.PersonCertificationOcrClientRes{
 		AppID:   w.AppId(),
 		UserId:  userId,
 		OrderNo: orderNo,
@@ -62,22 +129,115 @@ func (b *personBiz) CertificationOcr(r *ent.Rider) (res *definition.PersonCertif
 	return
 }
 
-// CertificationFace 获取人脸核身参数
+// 解析ocr识别结果
+// 通过腾讯OCR订单号获取到的result中，包含订单号`OrderNo`
+// 通过腾讯身份证识别及信息核验识别的身份证result中，不包含`OrderNo`
+func (b *personBiz) ocrResult(creator *ent.PersonCreate, identity *definition.PersonIdentity, ocrOrderNo, faceOrderNo string) {
+	result := identity.OcrResult
+
+	// 异步上传照片到阿里云OSS
+	portrait, national := b.uploadOcrFiles(result)
+
+	url := ar.Config.Aliyun.Oss.Url
+	if !strings.HasSuffix(url, "/") {
+		url += "/"
+	}
+
+	// 保存人像面
+	if portrait != "" {
+		creator.SetIDCardPortrait(url + portrait)
+	}
+
+	// 保存国徽面
+	if national != "" {
+		creator.SetIDCardNational(url + national)
+	}
+
+	mfvr := &model.PersonFaceVerifyResult{
+		Name:            identity.Name,
+		Sex:             result.Sex,
+		Nation:          result.Nation,
+		Birth:           identity.IdCardNumber[7:14],
+		Address:         result.Address,
+		IDCardNumber:    identity.IdCardNumber,
+		ValidStartDate:  result.ValidStartDate,
+		ValidExpireDate: result.ValidExpireDate,
+		Authority:       result.Authority,
+		PortraitClarity: result.PortraitClarity,
+		NationalClarity: result.NationalClarity,
+		FaceOrderNo:     faceOrderNo,
+		OcrOrderNo:      ocrOrderNo,
+	}
+
+	creator.SetFaceVerifyResult(mfvr)
+}
+
+// 异步上传ocr照片到阿里云OSS
+// TODO: 阿里云OSS以前的图片移动目录
+func (b *personBiz) uploadOcrFiles(result *definition.PersonIdentityOcrResult) (portrait, national string) {
+	prefix := "__rider_assets/faceverify/" + result.IdCardNumber + "/ocr-" + shortuuid.New() + "-"
+
+	if result.PortraitCrop != "" {
+		portrait = prefix + "portrait.jpg"
+	}
+	if result.NationalCrop != "" {
+		national = prefix + "national.jpg"
+	}
+
+	go func() {
+		oss := ali.NewOss()
+		if portrait != "" {
+			oss.UploadBase64(portrait, result.PortraitCrop)
+		}
+		if national != "" {
+			oss.UploadBase64(national, result.NationalCrop)
+		}
+	}()
+
+	return
+}
+
+// 上传人身核验图片和视频
+func (b *personBiz) uploadFaceVerifyFiles(idCardNumber string, result *tencent.FaceVerifyResult) (photo, video string) {
+	prefix := "__rider_assets/faceverify/" + idCardNumber + "/faceverify-" + result.OrderNo + "-"
+
+	if result.Photo != "" {
+		photo = prefix + "photo.jpg"
+	}
+
+	if result.Video != "" {
+		video = prefix + "video.mp4"
+	}
+
+	go func() {
+		oss := ali.NewOss()
+		if photo != "" {
+			oss.UploadBase64(photo, result.Photo)
+		}
+		if video != "" {
+			oss.UploadBase64(video, result.Video)
+		}
+	}()
+
+	return
+}
+
+// CertificationFace 提交身份信息并获取人脸核身参数
 func (b *personBiz) CertificationFace(r *ent.Rider, req *definition.PersonCertificationFaceReq) (res *definition.PersonCertificationFaceRes, err error) {
 	if service.NewRider().IsAuthed(r) {
 		return nil, errors.New("当前已认证，无法重复认证")
 	}
 
-	// 获取身份信息
-	identity := new(definition.PersonIdentity)
-	err = identity.UnPack(req.Identity)
+	var identity *definition.PersonIdentity
+	// 解密身份信息
+	identity, err = decryptPersonIdentity(req.Identity)
 	if err != nil {
 		return
 	}
 
 	// 获取生日
-	birth := identity.IDCardNumber[7:14]
-	birthday := carbon.Parse(birth).ToStdTime().AddDate(18, 0, 0)
+	birth := identity.IdCardNumber[7:14]
+	birthday := carbon.Parse(birth).StdTime().AddDate(18, 0, 0)
 
 	// 未年满18岁认证标记为失败
 	if birthday.After(time.Now()) {
@@ -88,7 +248,7 @@ func (b *personBiz) CertificationFace(r *ent.Rider, req *definition.PersonCertif
 
 	// 判定今日实名认证次数
 	// TODO: 后台设定次数
-	times := w.GetTimes(identity.IDCardNumber)
+	times := w.GetTimes(identity.IdCardNumber)
 	if times >= 5 {
 		return nil, errors.New("实名次数过于频繁，请明天再试")
 	}
@@ -96,7 +256,7 @@ func (b *personBiz) CertificationFace(r *ent.Rider, req *definition.PersonCertif
 	// 判定是否绑定其他账号
 	p, _ := ent.Database.Person.
 		QueryNotDeleted().
-		Where(person.IDCardNumber(identity.IDCardNumber)).
+		Where(person.IDCardNumber(identity.IdCardNumber)).
 		WithRiders(func(query *ent.RiderQuery) {
 			query.Where(rider.DeletedAtIsNil(), rider.IDNotIn(r.ID))
 		}).
@@ -116,73 +276,31 @@ func (b *personBiz) CertificationFace(r *ent.Rider, req *definition.PersonCertif
 	// 保存或更新实人表
 	creator := ent.Database.Person.Create().
 		SetStatus(model.PersonAuthPending.Value()).
-		SetIDCardNumber(identity.IDCardNumber).
+		SetIDCardNumber(identity.IdCardNumber).
 		SetName(identity.Name)
 
-	if req.OrderNo != "" {
-		// 查询OCR结果
-		var result *tencent.OcrResult
-		err, result = w.OcrResult(req.OrderNo)
-		if err != nil {
-			return
-		}
+	// 查询客户端OCR结果
+	// if req.OrderNo != "" {
+	// 	// 查询OCR结果
+	// 	err, result = w.OcrResult(req.OrderNo)
+	// 	if err != nil {
+	// 		return
+	// 	}
+	// 	b.ocrResult(creator, identity, result, faceOrderNo)
+	// }
 
-		// 异步上传照片到阿里云OSS
-		portrait, national, head := b.uploadOcrFiles(result)
-
-		url := ar.Config.Aliyun.Oss.Url
-		if !strings.HasSuffix(url, "/") {
-			url += "/"
+	if identity.OcrResult != nil {
+		// 判定证件有效期
+		if identity.OcrResult.ValidExpireDate != "" {
+			expireDate := carbon.Parse(identity.OcrResult.ValidExpireDate).StdTime()
+			if expireDate.Before(time.Now()) {
+				return nil, errors.New("证件已过期")
+			}
 		}
-
-		// 保存人像面
-		if portrait != "" {
-			creator.SetIDCardPortrait(url + portrait)
-		}
-
-		// 保存国徽面
-		if national != "" {
-			creator.SetIDCardNational(url + national)
-		}
-
-		// 解析有效期
-		arr := strings.Split(result.ValidDate, "-")
-		var start, expire string
-		if len(arr) > 0 {
-			start = arr[0]
-		}
-		if len(arr) > 1 {
-			expire = arr[1]
-		}
-
-		// 解析清晰度
-		fc, _ := strconv.ParseFloat(result.FrontClarity, 64)
-		bc, _ := strconv.ParseFloat(result.BackClarity, 64)
-
-		mfvr := &model.PersonFaceVerifyResult{
-			Name:            identity.Name,
-			Sex:             result.Sex,
-			Nation:          result.Nation,
-			Birth:           birth,
-			Address:         result.Address,
-			IDCardNumber:    identity.IDCardNumber,
-			ValidStartDate:  start,
-			ValidExpireDate: expire,
-			Authority:       result.Authority,
-			FrontClarity:    fc,
-			BackClarity:     bc,
-			FaceOrderNo:     faceOrderNo,
-			OcrOrderNo:      req.OrderNo,
-			Head:            head,
-		}
-		if head != "" {
-			mfvr.Head = url + head
-		}
-
-		creator.SetFaceVerifyResult(mfvr)
+		b.ocrResult(creator, identity, req.OrderNo, faceOrderNo)
 	} else {
 		creator.SetFaceVerifyResult(&model.PersonFaceVerifyResult{
-			IDCardNumber: identity.IDCardNumber,
+			IDCardNumber: identity.IdCardNumber,
 			Name:         identity.Name,
 			Birth:        birth,
 			FaceOrderNo:  faceOrderNo,
@@ -207,7 +325,7 @@ func (b *personBiz) CertificationFace(r *ent.Rider, req *definition.PersonCertif
 	}
 
 	// 更新骑手表
-	err = r.Update().SetPersonID(id).SetIDCardNumber(identity.IDCardNumber).Exec(context.Background())
+	err = r.Update().SetPersonID(id).SetIDCardNumber(identity.IdCardNumber).Exec(context.Background())
 	if err != nil {
 		return
 	}
@@ -219,7 +337,7 @@ func (b *personBiz) CertificationFace(r *ent.Rider, req *definition.PersonCertif
 	faceId, sign, nonce, err = w.GetFaceId(&tencent.FaceIdReq{
 		OrderNo: faceOrderNo,
 		Name:    identity.Name,
-		IdNo:    identity.IDCardNumber,
+		IdNo:    identity.IdCardNumber,
 		UserId:  userId,
 	})
 	if err != nil {
@@ -227,7 +345,7 @@ func (b *personBiz) CertificationFace(r *ent.Rider, req *definition.PersonCertif
 	}
 
 	return &definition.PersonCertificationFaceRes{
-		PersonCertificationOcrRes: definition.PersonCertificationOcrRes{
+		PersonCertificationOcrClientRes: definition.PersonCertificationOcrClientRes{
 			AppID:   w.AppId(),
 			UserId:  userId,
 			OrderNo: faceOrderNo,
@@ -307,58 +425,22 @@ func (b *personBiz) CertificationFaceResult(r *ent.Rider, req *definition.Person
 	return
 }
 
-// 异步上传ocr照片到阿里云OSS
-// TODO: 阿里云OSS以前的图片移动到faceverify目录下
-func (b *personBiz) uploadOcrFiles(result *tencent.OcrResult) (portrait, national, head string) {
-	prefix := "faceverify/" + result.Idcard + "/" + result.OrderNo + "-"
-
-	if result.FrontCrop != "" {
-		portrait = prefix + "portrait.jpg"
-	}
-	if result.BackCrop != "" {
-		national = prefix + "national.jpg"
-	}
-	if result.HeadPhoto != "" {
-		head = prefix + "head.jpg"
+// CertificationOcrCloud 获取阿里云Ocr签名
+func (b *personBiz) CertificationOcrCloud(hash string) (res *definition.PersonCertificationOcrCloudRes, err error) {
+	var params *ali.OcrParams
+	params, err = ali.NewOcr().Signature(hash)
+	if err != nil {
+		return
 	}
 
-	go func() {
-		oss := ali.NewOss()
-		if portrait != "" {
-			oss.UploadBase64(portrait, result.FrontCrop)
-		}
-		if national != "" {
-			oss.UploadBase64(national, result.BackCrop)
-		}
-		if head != "" {
-			oss.UploadBase64(head, result.HeadPhoto)
-		}
-	}()
-
-	return
-}
-
-// 上传人身核验图片和视频
-func (b *personBiz) uploadFaceVerifyFiles(idCardNumber string, result *tencent.FaceVerifyResult) (photo, video string) {
-	prefix := "faceverify/" + idCardNumber + "/" + result.OrderNo + "-"
-
-	if result.Photo != "" {
-		photo = prefix + "photo.jpg"
-	}
-
-	if result.Video != "" {
-		video = prefix + "video.mp4"
-	}
-
-	go func() {
-		oss := ali.NewOss()
-		if photo != "" {
-			oss.UploadBase64(photo, result.Photo)
-		}
-		if video != "" {
-			oss.UploadBase64(video, result.Video)
-		}
-	}()
-
-	return
+	return &definition.PersonCertificationOcrCloudRes{
+		ContentType:   params.ContentType,
+		Action:        params.Action,
+		Date:          params.Date,
+		Token:         params.Token,
+		Nonce:         params.Nonce,
+		Version:       params.Version,
+		Authorization: params.Authorization,
+		Url:           params.Url,
+	}, nil
 }

@@ -46,5 +46,6 @@ for i in "${!APIS[@]}" ; do
   API=${APIS[i]}
   FOLDER_PATH=${API%/*}
   TARGET_FILE=${API##*/}
+  eval "swag fmt $TARGET_FILE"
   eval "swag init -g $TARGET_FILE -d ./app/$FOLDER_PATH,./app/model,./app/biz/definition,$ADAPTER -o ${OUTPUTS[i]} --md ./wiki"
 done

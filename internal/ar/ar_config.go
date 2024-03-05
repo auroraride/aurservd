@@ -199,6 +199,15 @@ type config struct {
 			SceneId         int64
 			Callback        string
 		}
+
+		Ocr struct {
+			AccessKeyId     string
+			AccessKeySecret string
+			Endpoint        string
+			Arn             string
+			RamRole         string
+			RegionId        string
+		}
 	}
 
 	Baidu struct {
@@ -266,10 +275,18 @@ type config struct {
 		Promotion Wechat
 	} `koanf:"wechatMiniprogram"`
 
-	WbFace struct {
-		AppId   string
-		Secret  string
-		Licence string
+	Tencent struct {
+		WbFace struct {
+			AppId   string
+			Secret  string
+			Licence string
+		}
+		FaceId struct {
+			Id        string
+			Username  string
+			SecretId  string
+			SecretKey string
+		}
 	}
 }
 

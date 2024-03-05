@@ -53,18 +53,21 @@ type PersonFaceVerifyResult struct {
 	Sex             string  `json:"sex,omitempty"`             // 性别
 	Nation          string  `json:"nation,omitempty"`          // 民族
 	Address         string  `json:"address,omitempty"`         // 地址
-	ValidStartDate  string  `json:"validStartDate,omitempty"`  // 证件生效日期
-	ValidExpireDate string  `json:"validExpireDate,omitempty"` // 证件失效日期
+	ValidStartDate  string  `json:"validStartDate,omitempty"`  // 证件生效日期（例：19920320）
+	ValidExpireDate string  `json:"validExpireDate,omitempty"` // 证件失效日期（例：19920320）
 	Authority       string  `json:"authority,omitempty"`       // 发证机关
-	FrontClarity    float64 `json:"frontClarity,omitempty"`    // 正面图片清晰度
-	BackClarity     float64 `json:"backClarity,omitempty"`     // 反面图片清晰度
-	LiveRate        float64 `json:"liveRate,omitempty"`        // 活体检测得分
-	Similarity      float64 `json:"similarity,omitempty"`      // 人脸比对得分
-	Video           string  `json:"video,omitempty"`           // 人身核验视频
-	Photo           string  `json:"photo,omitempty"`           // 人身核验照片
-	FaceOrderNo     string  `json:"orderNo,omitempty"`         // 人身核验订单号
-	OcrOrderNo      string  `json:"ocrOrderNo,omitempty"`      // ocr订单号
-	Head            string  `json:"head,omitempty"`            // 证件人像照片
+	Head            string  `json:"head,omitempty"`            // 证件头像照片
+	PortraitClarity float64 `json:"portraitClarity,omitempty"` // 人像面图片清晰度
+	NationalClarity float64 `json:"nationalClarity,omitempty"` // 国徽面图片清晰度
+
+	OcrOrderNo string `json:"ocrOrderNo,omitempty"` // ocr订单号
+
+	LiveRate   float64 `json:"liveRate,omitempty"`   // 活体检测得分
+	Similarity float64 `json:"similarity,omitempty"` // 人脸比对得分
+	Video      string  `json:"video,omitempty"`      // 人身核验视频
+	Photo      string  `json:"photo,omitempty"`      // 人身核验照片
+
+	FaceOrderNo string `json:"orderNo,omitempty"` // 人身核验订单号
 }
 
 // RequireAuth 是否需要认证

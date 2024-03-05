@@ -49,6 +49,7 @@ func Execute() {
 		customerCommand(),
 		fixCommand(),
 		personCommand(),
+		keyCommand(),
 	)
 
 	_ = rootCmd.Execute()

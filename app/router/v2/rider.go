@@ -75,10 +75,13 @@ func LoadRiderV2Routes(root *echo.Group) {
 	// cert := middleware.RiderCertificationMiddlewareV2
 
 	// 获取人身核验OCR参数
-	g.GET("/certification/ocr", rapi.Person.CertificationOcr, auth())
+	g.GET("/certification/ocr/client", rapi.Person.CertificationOcrClient, auth())
 
-	// 获取人脸核身参数
-	g.GET("/certification/face", rapi.Person.CertificationFace, auth())
+	// 获取阿里云OCR签名
+	g.GET("/certification/ocr/cloud", rapi.Person.CertificationOcrCloud, auth())
+
+	// 提交身份信息并获取人脸核身参数
+	g.POST("/certification/face", rapi.Person.CertificationFace, auth())
 
 	// 获取人脸核身结果
 	g.GET("/certification/face/result", rapi.Person.CertificationFaceResult, auth())
