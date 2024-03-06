@@ -445,22 +445,16 @@ type CabinetInterruptRequest struct {
 
 // EnterpriseBindCabinetReq 团签绑定电柜请求
 type EnterpriseBindCabinetReq struct {
-	// ID 电柜ID
-	ID uint64 `json:"id" validate:"required" param:"id"`
-	// 站点id
-	StationID uint64 `json:"stationID" validate:"required"`
-	// 团签ID
-	EnterpriseID uint64 `json:"enterpriseID" validate:"required"`
+	ID           uint64 `json:"id" validate:"required" param:"id"` // 电柜ID
+	StationID    uint64 `json:"stationID" validate:"required"`     // 站点ID
+	EnterpriseID uint64 `json:"enterpriseID" validate:"required"`  // 团签ID
 }
 
 // CabinetAgentEditReq 代理商电柜编辑请求
 type CabinetAgentEditReq struct {
-	// ID 电柜ID
-	ID uint64 `json:"id" validate:"required" param:"id"`
-	// 站点id
-	StationID uint64 `json:"stationID" validate:"required"`
-	// 电柜状态  0未投放 1运营中 2维护中
-	Status uint8 `json:"status" validate:"required,enums=0,1,2"`
+	ID        uint64 `json:"id" validate:"required" param:"id"`      // 电柜ID
+	StationID uint64 `json:"stationID" validate:"required"`          // 站点ID
+	Status    uint8  `json:"status" validate:"required,enums=0,1,2"` // 电柜状态 0:未投放 1:运营中 2:维护中
 }
 
 type CabinetSelectionReq struct {

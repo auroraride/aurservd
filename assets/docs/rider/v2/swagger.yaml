@@ -1,5 +1,92 @@
 basePath: /
 definitions:
+  adapter.CabinetBrand:
+    enum:
+    - UNKNOWN
+    - KAIXIN
+    - YUNDONG
+    - TUOBANG
+    - XILIULOUSERV
+    type: string
+    x-enum-comments:
+      CabinetBrandXiliulouServer: 西六楼服务器版
+    x-enum-varnames:
+    - CabinetBrandUnknown
+    - CabinetBrandKaixin
+    - CabinetBrandYundong
+    - CabinetBrandTuobang
+    - CabinetBrandXiliulouServer
+  definition.CabinetByRiderRes:
+    properties:
+      address:
+        description: 详细地址
+        type: string
+      batteryNum:
+        description: 电池数量
+        type: integer
+      binNum:
+        description: 仓位数量
+        type: integer
+      bins:
+        description: 仓位信息
+        items:
+          $ref: '#/definitions/model.CabinetDataBin'
+        type: array
+      branchId:
+        description: 网点ID
+        type: integer
+      brand:
+        allOf:
+        - $ref: '#/definitions/adapter.CabinetBrand'
+        description: 品牌 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
+      businesses:
+        description: 可办理业务  active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
+        items:
+          type: string
+        type: array
+      distance:
+        description: 距离
+        type: number
+      emptyNum:
+        description: 空仓数量
+        type: integer
+      fid:
+        description: 电柜FID
+        type: string
+      fullNum:
+        description: 满电数
+        type: integer
+      id:
+        type: integer
+      lat:
+        description: 纬度
+        type: number
+      lng:
+        description: 经度
+        type: number
+      lockNum:
+        description: 锁仓数
+        type: integer
+      model:
+        description: 型号
+        type: string
+      name:
+        description: 名称
+        type: string
+      online:
+        description: 是否在线
+        type: boolean
+      reserve:
+        allOf:
+        - $ref: '#/definitions/model.ReserveUnfinishedRes'
+        description: 当前预约, 预约不存在时无此字段
+      serial:
+        description: 编号
+        type: string
+      stockNum:
+        description: 库存电池
+        type: integer
+    type: object
   definition.PersonCertificationFaceReq:
     properties:
       identity:
@@ -85,11 +172,181 @@ definitions:
       version:
         type: string
     type: object
+  model.CabinetDataBin:
+    properties:
+      remark:
+        description: 备注信息, 仅状态`3 锁仓`有此字段
+        type: string
+      status:
+        description: 状态 0:无电池 1:有电池未满电 2:满电 3:锁仓, 状态值大的优先显示
+        enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        type: integer
+    type: object
+  model.OrderCreateReq:
+    properties:
+      cityId:
+        description: 城市ID, 新签必填
+        type: integer
+      coupons:
+        description: 优惠券
+        items:
+          type: integer
+        type: array
+      orderType:
+        description: 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        type: integer
+      payway:
+        description: 1支付宝 2微信 3支付宝预授权
+        enum:
+        - 1
+        - 2
+        - 3
+        type: integer
+      planId:
+        type: integer
+      point:
+        description: 是否使用积分
+        type: boolean
+    required:
+    - orderType
+    - payway
+    - planId
+    type: object
+  model.OrderCreateRes:
+    properties:
+      outTradeNo:
+        description: 交易编码
+        type: string
+      prepay:
+        description: 预支付字符串
+        type: string
+    type: object
+  model.ReserveStatus:
+    enum:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    type: integer
+    x-enum-comments:
+      ReserveStatusCancel: 已取消
+      ReserveStatusFail: 已失败
+      ReserveStatusInvalid: 已失效
+      ReserveStatusPending: 已预约
+      ReserveStatusProcessing: 进行中
+      ReserveStatusSuccess: 已完成
+      ReserveStatusTimeout: 已超时
+    x-enum-varnames:
+    - ReserveStatusPending
+    - ReserveStatusProcessing
+    - ReserveStatusSuccess
+    - ReserveStatusFail
+    - ReserveStatusTimeout
+    - ReserveStatusCancel
+    - ReserveStatusInvalid
+  model.ReserveUnfinishedRes:
+    properties:
+      business:
+        description: 预约业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
+        type: string
+      cabinetId:
+        description: 电柜ID
+        type: integer
+      fid:
+        description: 设施ID
+        type: string
+      id:
+        description: 预约ID
+        type: integer
+      status:
+        allOf:
+        - $ref: '#/definitions/model.ReserveStatus'
+        description: 状态 0:已预约 1:进行中
+      time:
+        description: 预约时间
+        type: string
+    type: object
+  model.SelectOption:
+    properties:
+      desc:
+        description: 描述
+        type: string
+      label:
+        description: 选择项名称
+        type: string
+      value:
+        description: 选择项值 (ID)
+        type: integer
+    type: object
 info:
   contact: {}
   title: 极光出行API - 骑手端api
   version: "2.0"
 paths:
+  /rider/v2/cabinet:
+    get:
+      consumes:
+      - application/json
+      operationId: CabinetList
+      parameters:
+      - description: 业务选项 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
+        enum:
+        - active
+        - pause
+        - continue
+        - unsubscribe
+        in: query
+        name: business
+        type: string
+      - description: 距离(米)
+        in: query
+        name: distance
+        type: number
+      - description: 关键字
+        in: query
+        name: keyword
+        type: string
+      - description: 纬度
+        in: query
+        name: lat
+        required: true
+        type: number
+      - description: 经度
+        in: query
+        name: lng
+        required: true
+        type: number
+      - description: 电池型号
+        in: query
+        name: model
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/definition.CabinetByRiderRes'
+            type: array
+      summary: 电柜列表
+      tags:
+      - Cabinet - 电柜
   /rider/v2/certification/face:
     post:
       consumes:
@@ -169,4 +426,48 @@ paths:
       summary: 获取云端OCR参数
       tags:
       - Person - 实人
+  /rider/v2/order:
+    post:
+      consumes:
+      - application/json
+      operationId: OrderCreate
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 订单创建请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.OrderCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.OrderCreateRes'
+      summary: R3005 支付请求
+      tags:
+      - Order - 订单
+  /rider/v2/selection/model:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderSelectionModel
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.SelectOption'
+            type: array
+      summary: 获取车型列表
+      tags:
+      - Selection - 筛选
 swagger: "2.0"

@@ -113,6 +113,7 @@ type BranchWithDistanceReq struct {
 	CityID   *uint64  `json:"cityId" query:"cityId" trans:"城市ID"`
 	Business string   `json:"business" query:"business" enums:"active,pause,continue,unsubscribe"` // 业务选项 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
 	Filter   string   `json:"filter" query:"filter"`                                               // 额外筛选参数
+	Model    *string  `json:"model" query:"model"`                                                 // 电池型号
 }
 
 type BranchDistanceListReq struct {
@@ -219,4 +220,5 @@ type BranchFacilityCabinetBattery struct {
 type BranchFacilityCabinetBin struct {
 	Status      uint8       `json:"status"`                // 状态 0:空仓 1:充电 2:可用 3:锁仓
 	Electricity *BatterySoc `json:"electricity,omitempty"` // 当前电量 锁仓或空仓无此字段
+	BatterySN   string      `json:"batterySN,omitempty"`   // 电池SN码 锁仓或空仓无此字段
 }

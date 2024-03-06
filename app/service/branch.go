@@ -230,7 +230,7 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq, sub *en
 	if req.Distance == nil && req.CityID == nil {
 		snag.Panic("距离和城市不能同时为空")
 	}
-	err := s.orm.QueryNotDeleted().
+	q := s.orm.QueryNotDeleted().
 		Modify(func(sel *sql.Selector) {
 			bt := sql.Table(branch.Table)
 			sel.Select(bt.C(branch.FieldID), bt.C(branch.FieldName), bt.C(branch.FieldAddress), bt.C(branch.FieldLat), bt.C(branch.FieldLng)).
@@ -248,8 +248,11 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq, sub *en
 			} else if req.CityID != nil {
 				sel.Where(sql.EQ(sel.C(branch.FieldCityID), *req.CityID))
 			}
-		}).
-		Scan(s.ctx, &temps)
+		})
+	if req.Model != nil {
+		q.Where(branch.HasCabinetsWith(cabinet.HasModelsWith(batterymodel.Model(*req.Model))))
+	}
+	err := q.Scan(s.ctx, &temps)
 	if err != nil || len(temps) == 0 {
 		return
 	}
@@ -703,6 +706,7 @@ func (s *branchService) Facility(req *model.BranchFacilityReq) (data model.Branc
 						}
 					}
 				}
+				c.Bins[bi].BatterySN = bin.BatterySN
 			}
 
 			c.Batteries = []model.BranchFacilityCabinetBattery{batInfo}
