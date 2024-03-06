@@ -41,8 +41,8 @@ func (s *guideBiz) List(req *model.GuideListReq) *model.PaginationRes {
 	})
 }
 
-func (s *guideBiz) Save(req *model.GuideReq) *model.GuideDetail {
-	guide, err := s.orm.Create().
+func (s *guideBiz) Save(req *model.GuideSaveReq) *model.GuideDetail {
+	data, err := s.orm.Create().
 		SetName(req.Name).
 		SetSort(req.Sort).
 		SetAnswer(req.Answer).
@@ -53,7 +53,7 @@ func (s *guideBiz) Save(req *model.GuideReq) *model.GuideDetail {
 	if err != nil {
 		snag.Panic(err)
 	}
-	return toGuideDetail(guide)
+	return toGuideDetail(data)
 }
 
 func (s *guideBiz) Modify(req *model.GuideModifyReq) {
@@ -70,11 +70,11 @@ func (s *guideBiz) Modify(req *model.GuideModifyReq) {
 }
 
 func (s *guideBiz) Get(id uint64) *model.GuideDetail {
-	guide, err := s.orm.Query().Where(guide.ID(id)).First(context.Background())
+	data, err := s.orm.Query().Where(guide.ID(id)).First(context.Background())
 	if err != nil {
 		snag.Panic(err)
 	}
-	return toGuideDetail(guide)
+	return toGuideDetail(data)
 }
 
 func (s *guideBiz) Delete(id uint64) bool {
@@ -92,7 +92,7 @@ func toGuideDetail(item *ent.Guide) *model.GuideDetail {
 		Sort:      item.Sort,
 		Answer:    item.Answer,
 		Remark:    item.Remark,
-		CreatedAt: item.CreatedAt,
-		UpdatedAt: item.UpdatedAt,
+		CreatedAt: item.CreatedAt.Format("2006-01-02 15:04:05"),
+		UpdatedAt: item.UpdatedAt.Format("2006-01-02 15:04:05"),
 	}
 }
