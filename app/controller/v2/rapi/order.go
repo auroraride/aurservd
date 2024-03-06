@@ -15,7 +15,7 @@ var Order = new(order)
 // Create
 // @ID		OrderCreate
 // @Router	/rider/v2/order [POST]
-// @Summary	R3005 支付请求
+// @Summary	支付请求
 // @Tags	Order - 订单
 // @Accept	json
 // @Produce	json
