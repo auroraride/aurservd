@@ -87,9 +87,6 @@ func LoadRiderV2Routes(root *echo.Group) {
 	// 获取人脸核身结果
 	g.GET("/certification/face/result", rapi.Person.CertificationFaceResult, auth())
 
-	// 订单
-	g.POST("/order", rapi.Order.Create)
-
 	g.POST("/signin", v1.Rider.Signin)          // 登录
 	g.GET("/profile", v1.Rider.Profile, auth()) // 获取用户信息
 	g.GET("/deposit", v1.Rider.Deposit, auth())
@@ -111,7 +108,7 @@ func LoadRiderV2Routes(root *echo.Group) {
 	// 业务
 	g.GET("/plan", v1.Plan.List, auth())
 	g.GET("/plan/renewly", v1.Plan.Renewly, auth())
-	g.POST("/order", v1.Order.Create, auth())
+	g.POST("/order", rapi.Order.Create, auth())
 	g.POST("/order/refund", v1.Order.Refund, auth()) // 申请退款
 	g.GET("/order", v1.Order.List, auth())
 	g.GET("/order/:id", v1.Order.Detail, auth())
