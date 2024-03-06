@@ -1036,12 +1036,15 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Guide",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			guide.FieldName:      {Type: field.TypeString, Column: guide.FieldName},
-			guide.FieldSort:      {Type: field.TypeUint8, Column: guide.FieldSort},
-			guide.FieldAnswer:    {Type: field.TypeString, Column: guide.FieldAnswer},
-			guide.FieldRemark:    {Type: field.TypeString, Column: guide.FieldRemark},
-			guide.FieldCreatedAt: {Type: field.TypeTime, Column: guide.FieldCreatedAt},
-			guide.FieldUpdatedAt: {Type: field.TypeTime, Column: guide.FieldUpdatedAt},
+			guide.FieldCreatedAt:    {Type: field.TypeTime, Column: guide.FieldCreatedAt},
+			guide.FieldUpdatedAt:    {Type: field.TypeTime, Column: guide.FieldUpdatedAt},
+			guide.FieldDeletedAt:    {Type: field.TypeTime, Column: guide.FieldDeletedAt},
+			guide.FieldCreator:      {Type: field.TypeJSON, Column: guide.FieldCreator},
+			guide.FieldLastModifier: {Type: field.TypeJSON, Column: guide.FieldLastModifier},
+			guide.FieldRemark:       {Type: field.TypeString, Column: guide.FieldRemark},
+			guide.FieldName:         {Type: field.TypeString, Column: guide.FieldName},
+			guide.FieldSort:         {Type: field.TypeUint8, Column: guide.FieldSort},
+			guide.FieldAnswer:       {Type: field.TypeString, Column: guide.FieldAnswer},
 		},
 	}
 	graph.Nodes[34] = &sqlgraph.Node{
@@ -11729,6 +11732,36 @@ func (f *GuideFilter) WhereID(p entql.Uint64P) {
 	f.Where(p.Field(guide.FieldID))
 }
 
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *GuideFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(guide.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *GuideFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(guide.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *GuideFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(guide.FieldDeletedAt))
+}
+
+// WhereCreator applies the entql json.RawMessage predicate on the creator field.
+func (f *GuideFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(guide.FieldCreator))
+}
+
+// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
+func (f *GuideFilter) WhereLastModifier(p entql.BytesP) {
+	f.Where(p.Field(guide.FieldLastModifier))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *GuideFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(guide.FieldRemark))
+}
+
 // WhereName applies the entql string predicate on the name field.
 func (f *GuideFilter) WhereName(p entql.StringP) {
 	f.Where(p.Field(guide.FieldName))
@@ -11742,21 +11775,6 @@ func (f *GuideFilter) WhereSort(p entql.Uint8P) {
 // WhereAnswer applies the entql string predicate on the answer field.
 func (f *GuideFilter) WhereAnswer(p entql.StringP) {
 	f.Where(p.Field(guide.FieldAnswer))
-}
-
-// WhereRemark applies the entql string predicate on the remark field.
-func (f *GuideFilter) WhereRemark(p entql.StringP) {
-	f.Where(p.Field(guide.FieldRemark))
-}
-
-// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *GuideFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(guide.FieldCreatedAt))
-}
-
-// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
-func (f *GuideFilter) WhereUpdatedAt(p entql.TimeP) {
-	f.Where(p.Field(guide.FieldUpdatedAt))
 }
 
 // addPredicate implements the predicateAdder interface.

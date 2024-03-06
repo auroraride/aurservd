@@ -7,8 +7,6 @@ type GuideDetail struct {
 	Sort      uint8  `json:"sort"`
 	Answer    string `json:"answer"`
 	Remark    string `json:"remark"`
-	CreatedAt string `json:"createdAt"`
-	UpdatedAt string `json:"updatedAt"`
 }
 
 // GuideSaveReq 引导保存请求

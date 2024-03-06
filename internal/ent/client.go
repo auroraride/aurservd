@@ -7828,7 +7828,8 @@ func (c *GuideClient) GetX(ctx context.Context, id uint64) *Guide {
 
 // Hooks returns the client hooks.
 func (c *GuideClient) Hooks() []Hook {
-	return c.hooks.Guide
+	hooks := c.hooks.Guide
+	return append(hooks[:len(hooks):len(hooks)], guide.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.

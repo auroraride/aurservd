@@ -845,8 +845,23 @@ func init() {
 	feedbackDescType := feedbackFields[1].Descriptor()
 	// feedback.DefaultType holds the default value on creation for the type field.
 	feedback.DefaultType = feedbackDescType.Default.(uint8)
+	guideMixin := schema.Guide{}.Mixin()
+	guideMixinHooks2 := guideMixin[2].Hooks()
+	guide.Hooks[0] = guideMixinHooks2[0]
+	guideMixinFields0 := guideMixin[0].Fields()
+	_ = guideMixinFields0
 	guideFields := schema.Guide{}.Fields()
 	_ = guideFields
+	// guideDescCreatedAt is the schema descriptor for created_at field.
+	guideDescCreatedAt := guideMixinFields0[0].Descriptor()
+	// guide.DefaultCreatedAt holds the default value on creation for the created_at field.
+	guide.DefaultCreatedAt = guideDescCreatedAt.Default.(func() time.Time)
+	// guideDescUpdatedAt is the schema descriptor for updated_at field.
+	guideDescUpdatedAt := guideMixinFields0[1].Descriptor()
+	// guide.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	guide.DefaultUpdatedAt = guideDescUpdatedAt.Default.(func() time.Time)
+	// guide.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	guide.UpdateDefaultUpdatedAt = guideDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// guideDescSort is the schema descriptor for sort field.
 	guideDescSort := guideFields[1].Descriptor()
 	// guide.DefaultSort holds the default value on creation for the sort field.

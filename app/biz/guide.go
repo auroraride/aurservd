@@ -2,7 +2,6 @@ package biz
 
 import (
 	"context"
-	"time"
 
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
@@ -47,8 +46,6 @@ func (s *guideBiz) Save(req *model.GuideSaveReq) *model.GuideDetail {
 		SetSort(req.Sort).
 		SetAnswer(req.Answer).
 		SetRemark(req.Remark).
-		SetCreatedAt(time.Now()).
-		SetUpdatedAt(time.Now()).
 		Save(context.Background())
 	if err != nil {
 		snag.Panic(err)
@@ -62,7 +59,6 @@ func (s *guideBiz) Modify(req *model.GuideModifyReq) {
 		SetSort(req.Sort).
 		SetAnswer(req.Answer).
 		SetRemark(req.Remark).
-		SetUpdatedAt(time.Now()).
 		Exec(context.Background())
 	if err != nil {
 		snag.Panic(err)
@@ -87,12 +83,10 @@ func (s *guideBiz) Delete(id uint64) bool {
 
 func toGuideDetail(item *ent.Guide) *model.GuideDetail {
 	return &model.GuideDetail{
-		ID:        item.ID,
-		Name:      item.Name,
-		Sort:      item.Sort,
-		Answer:    item.Answer,
-		Remark:    item.Remark,
-		CreatedAt: item.CreatedAt.Format("2006-01-02 15:04:05"),
-		UpdatedAt: item.UpdatedAt.Format("2006-01-02 15:04:05"),
+		ID:     item.ID,
+		Name:   item.Name,
+		Sort:   item.Sort,
+		Answer: item.Answer,
+		Remark: item.Remark,
 	}
 }

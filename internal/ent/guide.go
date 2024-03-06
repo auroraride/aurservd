@@ -3,12 +3,14 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/guide"
 )
 
@@ -17,18 +19,24 @@ type Guide struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID uint64 `json:"id,omitempty"`
+	// CreatedAt holds the value of the "created_at" field.
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	// UpdatedAt holds the value of the "updated_at" field.
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// DeletedAt holds the value of the "deleted_at" field.
+	DeletedAt *time.Time `json:"deleted_at,omitempty"`
+	// 创建人
+	Creator *model.Modifier `json:"creator,omitempty"`
+	// 最后修改人
+	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
+	// 管理员改动原因/备注
+	Remark string `json:"remark,omitempty"`
 	// 名称
 	Name string `json:"name,omitempty"`
 	// 排序
 	Sort uint8 `json:"sort,omitempty"`
 	// 答案
-	Answer string `json:"answer,omitempty"`
-	// 备注
-	Remark string `json:"remark,omitempty"`
-	// CreatedAt holds the value of the "created_at" field.
-	CreatedAt time.Time `json:"created_at,omitempty"`
-	// UpdatedAt holds the value of the "updated_at" field.
-	UpdatedAt    time.Time `json:"updated_at,omitempty"`
+	Answer       string `json:"answer,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -37,11 +45,13 @@ func (*Guide) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case guide.FieldCreator, guide.FieldLastModifier:
+			values[i] = new([]byte)
 		case guide.FieldID, guide.FieldSort:
 			values[i] = new(sql.NullInt64)
-		case guide.FieldName, guide.FieldAnswer, guide.FieldRemark:
+		case guide.FieldRemark, guide.FieldName, guide.FieldAnswer:
 			values[i] = new(sql.NullString)
-		case guide.FieldCreatedAt, guide.FieldUpdatedAt:
+		case guide.FieldCreatedAt, guide.FieldUpdatedAt, guide.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -64,6 +74,47 @@ func (gu *Guide) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			gu.ID = uint64(value.Int64)
+		case guide.FieldCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field created_at", values[i])
+			} else if value.Valid {
+				gu.CreatedAt = value.Time
+			}
+		case guide.FieldUpdatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
+			} else if value.Valid {
+				gu.UpdatedAt = value.Time
+			}
+		case guide.FieldDeletedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
+			} else if value.Valid {
+				gu.DeletedAt = new(time.Time)
+				*gu.DeletedAt = value.Time
+			}
+		case guide.FieldCreator:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field creator", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &gu.Creator); err != nil {
+					return fmt.Errorf("unmarshal field creator: %w", err)
+				}
+			}
+		case guide.FieldLastModifier:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field last_modifier", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &gu.LastModifier); err != nil {
+					return fmt.Errorf("unmarshal field last_modifier: %w", err)
+				}
+			}
+		case guide.FieldRemark:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field remark", values[i])
+			} else if value.Valid {
+				gu.Remark = value.String
+			}
 		case guide.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
@@ -81,24 +132,6 @@ func (gu *Guide) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field answer", values[i])
 			} else if value.Valid {
 				gu.Answer = value.String
-			}
-		case guide.FieldRemark:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field remark", values[i])
-			} else if value.Valid {
-				gu.Remark = value.String
-			}
-		case guide.FieldCreatedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field created_at", values[i])
-			} else if value.Valid {
-				gu.CreatedAt = value.Time
-			}
-		case guide.FieldUpdatedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
-			} else if value.Valid {
-				gu.UpdatedAt = value.Time
 			}
 		default:
 			gu.selectValues.Set(columns[i], values[i])
@@ -136,6 +169,26 @@ func (gu *Guide) String() string {
 	var builder strings.Builder
 	builder.WriteString("Guide(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", gu.ID))
+	builder.WriteString("created_at=")
+	builder.WriteString(gu.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("updated_at=")
+	builder.WriteString(gu.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	if v := gu.DeletedAt; v != nil {
+		builder.WriteString("deleted_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
+	builder.WriteString("creator=")
+	builder.WriteString(fmt.Sprintf("%v", gu.Creator))
+	builder.WriteString(", ")
+	builder.WriteString("last_modifier=")
+	builder.WriteString(fmt.Sprintf("%v", gu.LastModifier))
+	builder.WriteString(", ")
+	builder.WriteString("remark=")
+	builder.WriteString(gu.Remark)
+	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(gu.Name)
 	builder.WriteString(", ")
@@ -144,15 +197,6 @@ func (gu *Guide) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("answer=")
 	builder.WriteString(gu.Answer)
-	builder.WriteString(", ")
-	builder.WriteString("remark=")
-	builder.WriteString(gu.Remark)
-	builder.WriteString(", ")
-	builder.WriteString("created_at=")
-	builder.WriteString(gu.CreatedAt.Format(time.ANSIC))
-	builder.WriteString(", ")
-	builder.WriteString("updated_at=")
-	builder.WriteString(gu.UpdatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

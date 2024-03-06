@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/guide"
 )
 
@@ -20,6 +21,74 @@ type GuideCreate struct {
 	mutation *GuideMutation
 	hooks    []Hook
 	conflict []sql.ConflictOption
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (gc *GuideCreate) SetCreatedAt(t time.Time) *GuideCreate {
+	gc.mutation.SetCreatedAt(t)
+	return gc
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (gc *GuideCreate) SetNillableCreatedAt(t *time.Time) *GuideCreate {
+	if t != nil {
+		gc.SetCreatedAt(*t)
+	}
+	return gc
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (gc *GuideCreate) SetUpdatedAt(t time.Time) *GuideCreate {
+	gc.mutation.SetUpdatedAt(t)
+	return gc
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (gc *GuideCreate) SetNillableUpdatedAt(t *time.Time) *GuideCreate {
+	if t != nil {
+		gc.SetUpdatedAt(*t)
+	}
+	return gc
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (gc *GuideCreate) SetDeletedAt(t time.Time) *GuideCreate {
+	gc.mutation.SetDeletedAt(t)
+	return gc
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (gc *GuideCreate) SetNillableDeletedAt(t *time.Time) *GuideCreate {
+	if t != nil {
+		gc.SetDeletedAt(*t)
+	}
+	return gc
+}
+
+// SetCreator sets the "creator" field.
+func (gc *GuideCreate) SetCreator(m *model.Modifier) *GuideCreate {
+	gc.mutation.SetCreator(m)
+	return gc
+}
+
+// SetLastModifier sets the "last_modifier" field.
+func (gc *GuideCreate) SetLastModifier(m *model.Modifier) *GuideCreate {
+	gc.mutation.SetLastModifier(m)
+	return gc
+}
+
+// SetRemark sets the "remark" field.
+func (gc *GuideCreate) SetRemark(s string) *GuideCreate {
+	gc.mutation.SetRemark(s)
+	return gc
+}
+
+// SetNillableRemark sets the "remark" field if the given value is not nil.
+func (gc *GuideCreate) SetNillableRemark(s *string) *GuideCreate {
+	if s != nil {
+		gc.SetRemark(*s)
+	}
+	return gc
 }
 
 // SetName sets the "name" field.
@@ -48,32 +117,6 @@ func (gc *GuideCreate) SetAnswer(s string) *GuideCreate {
 	return gc
 }
 
-// SetRemark sets the "remark" field.
-func (gc *GuideCreate) SetRemark(s string) *GuideCreate {
-	gc.mutation.SetRemark(s)
-	return gc
-}
-
-// SetNillableRemark sets the "remark" field if the given value is not nil.
-func (gc *GuideCreate) SetNillableRemark(s *string) *GuideCreate {
-	if s != nil {
-		gc.SetRemark(*s)
-	}
-	return gc
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (gc *GuideCreate) SetCreatedAt(t time.Time) *GuideCreate {
-	gc.mutation.SetCreatedAt(t)
-	return gc
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (gc *GuideCreate) SetUpdatedAt(t time.Time) *GuideCreate {
-	gc.mutation.SetUpdatedAt(t)
-	return gc
-}
-
 // Mutation returns the GuideMutation object of the builder.
 func (gc *GuideCreate) Mutation() *GuideMutation {
 	return gc.mutation
@@ -81,7 +124,9 @@ func (gc *GuideCreate) Mutation() *GuideMutation {
 
 // Save creates the Guide in the database.
 func (gc *GuideCreate) Save(ctx context.Context) (*Guide, error) {
-	gc.defaults()
+	if err := gc.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, gc.sqlSave, gc.mutation, gc.hooks)
 }
 
@@ -108,15 +153,36 @@ func (gc *GuideCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (gc *GuideCreate) defaults() {
+func (gc *GuideCreate) defaults() error {
+	if _, ok := gc.mutation.CreatedAt(); !ok {
+		if guide.DefaultCreatedAt == nil {
+			return fmt.Errorf("ent: uninitialized guide.DefaultCreatedAt (forgotten import ent/runtime?)")
+		}
+		v := guide.DefaultCreatedAt()
+		gc.mutation.SetCreatedAt(v)
+	}
+	if _, ok := gc.mutation.UpdatedAt(); !ok {
+		if guide.DefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized guide.DefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
+		v := guide.DefaultUpdatedAt()
+		gc.mutation.SetUpdatedAt(v)
+	}
 	if _, ok := gc.mutation.Sort(); !ok {
 		v := guide.DefaultSort
 		gc.mutation.SetSort(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (gc *GuideCreate) check() error {
+	if _, ok := gc.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Guide.created_at"`)}
+	}
+	if _, ok := gc.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Guide.updated_at"`)}
+	}
 	if _, ok := gc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Guide.name"`)}
 	}
@@ -125,12 +191,6 @@ func (gc *GuideCreate) check() error {
 	}
 	if _, ok := gc.mutation.Answer(); !ok {
 		return &ValidationError{Name: "answer", err: errors.New(`ent: missing required field "Guide.answer"`)}
-	}
-	if _, ok := gc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Guide.created_at"`)}
-	}
-	if _, ok := gc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Guide.updated_at"`)}
 	}
 	return nil
 }
@@ -159,6 +219,30 @@ func (gc *GuideCreate) createSpec() (*Guide, *sqlgraph.CreateSpec) {
 		_spec = sqlgraph.NewCreateSpec(guide.Table, sqlgraph.NewFieldSpec(guide.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = gc.conflict
+	if value, ok := gc.mutation.CreatedAt(); ok {
+		_spec.SetField(guide.FieldCreatedAt, field.TypeTime, value)
+		_node.CreatedAt = value
+	}
+	if value, ok := gc.mutation.UpdatedAt(); ok {
+		_spec.SetField(guide.FieldUpdatedAt, field.TypeTime, value)
+		_node.UpdatedAt = value
+	}
+	if value, ok := gc.mutation.DeletedAt(); ok {
+		_spec.SetField(guide.FieldDeletedAt, field.TypeTime, value)
+		_node.DeletedAt = &value
+	}
+	if value, ok := gc.mutation.Creator(); ok {
+		_spec.SetField(guide.FieldCreator, field.TypeJSON, value)
+		_node.Creator = value
+	}
+	if value, ok := gc.mutation.LastModifier(); ok {
+		_spec.SetField(guide.FieldLastModifier, field.TypeJSON, value)
+		_node.LastModifier = value
+	}
+	if value, ok := gc.mutation.Remark(); ok {
+		_spec.SetField(guide.FieldRemark, field.TypeString, value)
+		_node.Remark = value
+	}
 	if value, ok := gc.mutation.Name(); ok {
 		_spec.SetField(guide.FieldName, field.TypeString, value)
 		_node.Name = value
@@ -171,18 +255,6 @@ func (gc *GuideCreate) createSpec() (*Guide, *sqlgraph.CreateSpec) {
 		_spec.SetField(guide.FieldAnswer, field.TypeString, value)
 		_node.Answer = value
 	}
-	if value, ok := gc.mutation.Remark(); ok {
-		_spec.SetField(guide.FieldRemark, field.TypeString, value)
-		_node.Remark = value
-	}
-	if value, ok := gc.mutation.CreatedAt(); ok {
-		_spec.SetField(guide.FieldCreatedAt, field.TypeTime, value)
-		_node.CreatedAt = value
-	}
-	if value, ok := gc.mutation.UpdatedAt(); ok {
-		_spec.SetField(guide.FieldUpdatedAt, field.TypeTime, value)
-		_node.UpdatedAt = value
-	}
 	return _node, _spec
 }
 
@@ -190,7 +262,7 @@ func (gc *GuideCreate) createSpec() (*Guide, *sqlgraph.CreateSpec) {
 // of the `INSERT` statement. For example:
 //
 //	client.Guide.Create().
-//		SetName(v).
+//		SetCreatedAt(v).
 //		OnConflict(
 //			// Update the row with the new values
 //			// the was proposed for insertion.
@@ -199,7 +271,7 @@ func (gc *GuideCreate) createSpec() (*Guide, *sqlgraph.CreateSpec) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.GuideUpsert) {
-//			SetName(v+v).
+//			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
 func (gc *GuideCreate) OnConflict(opts ...sql.ConflictOption) *GuideUpsertOne {
@@ -234,6 +306,72 @@ type (
 		*sql.UpdateSet
 	}
 )
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *GuideUpsert) SetUpdatedAt(v time.Time) *GuideUpsert {
+	u.Set(guide.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *GuideUpsert) UpdateUpdatedAt() *GuideUpsert {
+	u.SetExcluded(guide.FieldUpdatedAt)
+	return u
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (u *GuideUpsert) SetDeletedAt(v time.Time) *GuideUpsert {
+	u.Set(guide.FieldDeletedAt, v)
+	return u
+}
+
+// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
+func (u *GuideUpsert) UpdateDeletedAt() *GuideUpsert {
+	u.SetExcluded(guide.FieldDeletedAt)
+	return u
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (u *GuideUpsert) ClearDeletedAt() *GuideUpsert {
+	u.SetNull(guide.FieldDeletedAt)
+	return u
+}
+
+// SetLastModifier sets the "last_modifier" field.
+func (u *GuideUpsert) SetLastModifier(v *model.Modifier) *GuideUpsert {
+	u.Set(guide.FieldLastModifier, v)
+	return u
+}
+
+// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
+func (u *GuideUpsert) UpdateLastModifier() *GuideUpsert {
+	u.SetExcluded(guide.FieldLastModifier)
+	return u
+}
+
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (u *GuideUpsert) ClearLastModifier() *GuideUpsert {
+	u.SetNull(guide.FieldLastModifier)
+	return u
+}
+
+// SetRemark sets the "remark" field.
+func (u *GuideUpsert) SetRemark(v string) *GuideUpsert {
+	u.Set(guide.FieldRemark, v)
+	return u
+}
+
+// UpdateRemark sets the "remark" field to the value that was provided on create.
+func (u *GuideUpsert) UpdateRemark() *GuideUpsert {
+	u.SetExcluded(guide.FieldRemark)
+	return u
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (u *GuideUpsert) ClearRemark() *GuideUpsert {
+	u.SetNull(guide.FieldRemark)
+	return u
+}
 
 // SetName sets the "name" field.
 func (u *GuideUpsert) SetName(v string) *GuideUpsert {
@@ -277,36 +415,6 @@ func (u *GuideUpsert) UpdateAnswer() *GuideUpsert {
 	return u
 }
 
-// SetRemark sets the "remark" field.
-func (u *GuideUpsert) SetRemark(v string) *GuideUpsert {
-	u.Set(guide.FieldRemark, v)
-	return u
-}
-
-// UpdateRemark sets the "remark" field to the value that was provided on create.
-func (u *GuideUpsert) UpdateRemark() *GuideUpsert {
-	u.SetExcluded(guide.FieldRemark)
-	return u
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (u *GuideUpsert) ClearRemark() *GuideUpsert {
-	u.SetNull(guide.FieldRemark)
-	return u
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *GuideUpsert) SetUpdatedAt(v time.Time) *GuideUpsert {
-	u.Set(guide.FieldUpdatedAt, v)
-	return u
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *GuideUpsert) UpdateUpdatedAt() *GuideUpsert {
-	u.SetExcluded(guide.FieldUpdatedAt)
-	return u
-}
-
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -320,6 +428,9 @@ func (u *GuideUpsertOne) UpdateNewValues() *GuideUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(guide.FieldCreatedAt)
+		}
+		if _, exists := u.create.mutation.Creator(); exists {
+			s.SetIgnore(guide.FieldCreator)
 		}
 	}))
 	return u
@@ -350,6 +461,83 @@ func (u *GuideUpsertOne) Update(set func(*GuideUpsert)) *GuideUpsertOne {
 		set(&GuideUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *GuideUpsertOne) SetUpdatedAt(v time.Time) *GuideUpsertOne {
+	return u.Update(func(s *GuideUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *GuideUpsertOne) UpdateUpdatedAt() *GuideUpsertOne {
+	return u.Update(func(s *GuideUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (u *GuideUpsertOne) SetDeletedAt(v time.Time) *GuideUpsertOne {
+	return u.Update(func(s *GuideUpsert) {
+		s.SetDeletedAt(v)
+	})
+}
+
+// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
+func (u *GuideUpsertOne) UpdateDeletedAt() *GuideUpsertOne {
+	return u.Update(func(s *GuideUpsert) {
+		s.UpdateDeletedAt()
+	})
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (u *GuideUpsertOne) ClearDeletedAt() *GuideUpsertOne {
+	return u.Update(func(s *GuideUpsert) {
+		s.ClearDeletedAt()
+	})
+}
+
+// SetLastModifier sets the "last_modifier" field.
+func (u *GuideUpsertOne) SetLastModifier(v *model.Modifier) *GuideUpsertOne {
+	return u.Update(func(s *GuideUpsert) {
+		s.SetLastModifier(v)
+	})
+}
+
+// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
+func (u *GuideUpsertOne) UpdateLastModifier() *GuideUpsertOne {
+	return u.Update(func(s *GuideUpsert) {
+		s.UpdateLastModifier()
+	})
+}
+
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (u *GuideUpsertOne) ClearLastModifier() *GuideUpsertOne {
+	return u.Update(func(s *GuideUpsert) {
+		s.ClearLastModifier()
+	})
+}
+
+// SetRemark sets the "remark" field.
+func (u *GuideUpsertOne) SetRemark(v string) *GuideUpsertOne {
+	return u.Update(func(s *GuideUpsert) {
+		s.SetRemark(v)
+	})
+}
+
+// UpdateRemark sets the "remark" field to the value that was provided on create.
+func (u *GuideUpsertOne) UpdateRemark() *GuideUpsertOne {
+	return u.Update(func(s *GuideUpsert) {
+		s.UpdateRemark()
+	})
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (u *GuideUpsertOne) ClearRemark() *GuideUpsertOne {
+	return u.Update(func(s *GuideUpsert) {
+		s.ClearRemark()
+	})
 }
 
 // SetName sets the "name" field.
@@ -398,41 +586,6 @@ func (u *GuideUpsertOne) SetAnswer(v string) *GuideUpsertOne {
 func (u *GuideUpsertOne) UpdateAnswer() *GuideUpsertOne {
 	return u.Update(func(s *GuideUpsert) {
 		s.UpdateAnswer()
-	})
-}
-
-// SetRemark sets the "remark" field.
-func (u *GuideUpsertOne) SetRemark(v string) *GuideUpsertOne {
-	return u.Update(func(s *GuideUpsert) {
-		s.SetRemark(v)
-	})
-}
-
-// UpdateRemark sets the "remark" field to the value that was provided on create.
-func (u *GuideUpsertOne) UpdateRemark() *GuideUpsertOne {
-	return u.Update(func(s *GuideUpsert) {
-		s.UpdateRemark()
-	})
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (u *GuideUpsertOne) ClearRemark() *GuideUpsertOne {
-	return u.Update(func(s *GuideUpsert) {
-		s.ClearRemark()
-	})
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *GuideUpsertOne) SetUpdatedAt(v time.Time) *GuideUpsertOne {
-	return u.Update(func(s *GuideUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *GuideUpsertOne) UpdateUpdatedAt() *GuideUpsertOne {
-	return u.Update(func(s *GuideUpsert) {
-		s.UpdateUpdatedAt()
 	})
 }
 
@@ -571,7 +724,7 @@ func (gcb *GuideCreateBulk) ExecX(ctx context.Context) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.GuideUpsert) {
-//			SetName(v+v).
+//			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
 func (gcb *GuideCreateBulk) OnConflict(opts ...sql.ConflictOption) *GuideUpsertBulk {
@@ -615,6 +768,9 @@ func (u *GuideUpsertBulk) UpdateNewValues() *GuideUpsertBulk {
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(guide.FieldCreatedAt)
 			}
+			if _, exists := b.mutation.Creator(); exists {
+				s.SetIgnore(guide.FieldCreator)
+			}
 		}
 	}))
 	return u
@@ -645,6 +801,83 @@ func (u *GuideUpsertBulk) Update(set func(*GuideUpsert)) *GuideUpsertBulk {
 		set(&GuideUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *GuideUpsertBulk) SetUpdatedAt(v time.Time) *GuideUpsertBulk {
+	return u.Update(func(s *GuideUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *GuideUpsertBulk) UpdateUpdatedAt() *GuideUpsertBulk {
+	return u.Update(func(s *GuideUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (u *GuideUpsertBulk) SetDeletedAt(v time.Time) *GuideUpsertBulk {
+	return u.Update(func(s *GuideUpsert) {
+		s.SetDeletedAt(v)
+	})
+}
+
+// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
+func (u *GuideUpsertBulk) UpdateDeletedAt() *GuideUpsertBulk {
+	return u.Update(func(s *GuideUpsert) {
+		s.UpdateDeletedAt()
+	})
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (u *GuideUpsertBulk) ClearDeletedAt() *GuideUpsertBulk {
+	return u.Update(func(s *GuideUpsert) {
+		s.ClearDeletedAt()
+	})
+}
+
+// SetLastModifier sets the "last_modifier" field.
+func (u *GuideUpsertBulk) SetLastModifier(v *model.Modifier) *GuideUpsertBulk {
+	return u.Update(func(s *GuideUpsert) {
+		s.SetLastModifier(v)
+	})
+}
+
+// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
+func (u *GuideUpsertBulk) UpdateLastModifier() *GuideUpsertBulk {
+	return u.Update(func(s *GuideUpsert) {
+		s.UpdateLastModifier()
+	})
+}
+
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (u *GuideUpsertBulk) ClearLastModifier() *GuideUpsertBulk {
+	return u.Update(func(s *GuideUpsert) {
+		s.ClearLastModifier()
+	})
+}
+
+// SetRemark sets the "remark" field.
+func (u *GuideUpsertBulk) SetRemark(v string) *GuideUpsertBulk {
+	return u.Update(func(s *GuideUpsert) {
+		s.SetRemark(v)
+	})
+}
+
+// UpdateRemark sets the "remark" field to the value that was provided on create.
+func (u *GuideUpsertBulk) UpdateRemark() *GuideUpsertBulk {
+	return u.Update(func(s *GuideUpsert) {
+		s.UpdateRemark()
+	})
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (u *GuideUpsertBulk) ClearRemark() *GuideUpsertBulk {
+	return u.Update(func(s *GuideUpsert) {
+		s.ClearRemark()
+	})
 }
 
 // SetName sets the "name" field.
@@ -693,41 +926,6 @@ func (u *GuideUpsertBulk) SetAnswer(v string) *GuideUpsertBulk {
 func (u *GuideUpsertBulk) UpdateAnswer() *GuideUpsertBulk {
 	return u.Update(func(s *GuideUpsert) {
 		s.UpdateAnswer()
-	})
-}
-
-// SetRemark sets the "remark" field.
-func (u *GuideUpsertBulk) SetRemark(v string) *GuideUpsertBulk {
-	return u.Update(func(s *GuideUpsert) {
-		s.SetRemark(v)
-	})
-}
-
-// UpdateRemark sets the "remark" field to the value that was provided on create.
-func (u *GuideUpsertBulk) UpdateRemark() *GuideUpsertBulk {
-	return u.Update(func(s *GuideUpsert) {
-		s.UpdateRemark()
-	})
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (u *GuideUpsertBulk) ClearRemark() *GuideUpsertBulk {
-	return u.Update(func(s *GuideUpsert) {
-		s.ClearRemark()
-	})
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (u *GuideUpsertBulk) SetUpdatedAt(v time.Time) *GuideUpsertBulk {
-	return u.Update(func(s *GuideUpsert) {
-		s.SetUpdatedAt(v)
-	})
-}
-
-// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *GuideUpsertBulk) UpdateUpdatedAt() *GuideUpsertBulk {
-	return u.Update(func(s *GuideUpsert) {
-		s.UpdateUpdatedAt()
 	})
 }
 

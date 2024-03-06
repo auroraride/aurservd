@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/guide"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
@@ -26,6 +27,64 @@ type GuideUpdate struct {
 // Where appends a list predicates to the GuideUpdate builder.
 func (gu *GuideUpdate) Where(ps ...predicate.Guide) *GuideUpdate {
 	gu.mutation.Where(ps...)
+	return gu
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (gu *GuideUpdate) SetUpdatedAt(t time.Time) *GuideUpdate {
+	gu.mutation.SetUpdatedAt(t)
+	return gu
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (gu *GuideUpdate) SetDeletedAt(t time.Time) *GuideUpdate {
+	gu.mutation.SetDeletedAt(t)
+	return gu
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (gu *GuideUpdate) SetNillableDeletedAt(t *time.Time) *GuideUpdate {
+	if t != nil {
+		gu.SetDeletedAt(*t)
+	}
+	return gu
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (gu *GuideUpdate) ClearDeletedAt() *GuideUpdate {
+	gu.mutation.ClearDeletedAt()
+	return gu
+}
+
+// SetLastModifier sets the "last_modifier" field.
+func (gu *GuideUpdate) SetLastModifier(m *model.Modifier) *GuideUpdate {
+	gu.mutation.SetLastModifier(m)
+	return gu
+}
+
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (gu *GuideUpdate) ClearLastModifier() *GuideUpdate {
+	gu.mutation.ClearLastModifier()
+	return gu
+}
+
+// SetRemark sets the "remark" field.
+func (gu *GuideUpdate) SetRemark(s string) *GuideUpdate {
+	gu.mutation.SetRemark(s)
+	return gu
+}
+
+// SetNillableRemark sets the "remark" field if the given value is not nil.
+func (gu *GuideUpdate) SetNillableRemark(s *string) *GuideUpdate {
+	if s != nil {
+		gu.SetRemark(*s)
+	}
+	return gu
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (gu *GuideUpdate) ClearRemark() *GuideUpdate {
+	gu.mutation.ClearRemark()
 	return gu
 }
 
@@ -78,40 +137,6 @@ func (gu *GuideUpdate) SetNillableAnswer(s *string) *GuideUpdate {
 	return gu
 }
 
-// SetRemark sets the "remark" field.
-func (gu *GuideUpdate) SetRemark(s string) *GuideUpdate {
-	gu.mutation.SetRemark(s)
-	return gu
-}
-
-// SetNillableRemark sets the "remark" field if the given value is not nil.
-func (gu *GuideUpdate) SetNillableRemark(s *string) *GuideUpdate {
-	if s != nil {
-		gu.SetRemark(*s)
-	}
-	return gu
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (gu *GuideUpdate) ClearRemark() *GuideUpdate {
-	gu.mutation.ClearRemark()
-	return gu
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (gu *GuideUpdate) SetUpdatedAt(t time.Time) *GuideUpdate {
-	gu.mutation.SetUpdatedAt(t)
-	return gu
-}
-
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (gu *GuideUpdate) SetNillableUpdatedAt(t *time.Time) *GuideUpdate {
-	if t != nil {
-		gu.SetUpdatedAt(*t)
-	}
-	return gu
-}
-
 // Mutation returns the GuideMutation object of the builder.
 func (gu *GuideUpdate) Mutation() *GuideMutation {
 	return gu.mutation
@@ -119,6 +144,9 @@ func (gu *GuideUpdate) Mutation() *GuideMutation {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (gu *GuideUpdate) Save(ctx context.Context) (int, error) {
+	if err := gu.defaults(); err != nil {
+		return 0, err
+	}
 	return withHooks(ctx, gu.sqlSave, gu.mutation, gu.hooks)
 }
 
@@ -144,6 +172,18 @@ func (gu *GuideUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (gu *GuideUpdate) defaults() error {
+	if _, ok := gu.mutation.UpdatedAt(); !ok {
+		if guide.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized guide.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
+		v := guide.UpdateDefaultUpdatedAt()
+		gu.mutation.SetUpdatedAt(v)
+	}
+	return nil
+}
+
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (gu *GuideUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *GuideUpdate {
 	gu.modifiers = append(gu.modifiers, modifiers...)
@@ -159,6 +199,30 @@ func (gu *GuideUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
+	if value, ok := gu.mutation.UpdatedAt(); ok {
+		_spec.SetField(guide.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if value, ok := gu.mutation.DeletedAt(); ok {
+		_spec.SetField(guide.FieldDeletedAt, field.TypeTime, value)
+	}
+	if gu.mutation.DeletedAtCleared() {
+		_spec.ClearField(guide.FieldDeletedAt, field.TypeTime)
+	}
+	if gu.mutation.CreatorCleared() {
+		_spec.ClearField(guide.FieldCreator, field.TypeJSON)
+	}
+	if value, ok := gu.mutation.LastModifier(); ok {
+		_spec.SetField(guide.FieldLastModifier, field.TypeJSON, value)
+	}
+	if gu.mutation.LastModifierCleared() {
+		_spec.ClearField(guide.FieldLastModifier, field.TypeJSON)
+	}
+	if value, ok := gu.mutation.Remark(); ok {
+		_spec.SetField(guide.FieldRemark, field.TypeString, value)
+	}
+	if gu.mutation.RemarkCleared() {
+		_spec.ClearField(guide.FieldRemark, field.TypeString)
+	}
 	if value, ok := gu.mutation.Name(); ok {
 		_spec.SetField(guide.FieldName, field.TypeString, value)
 	}
@@ -170,15 +234,6 @@ func (gu *GuideUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := gu.mutation.Answer(); ok {
 		_spec.SetField(guide.FieldAnswer, field.TypeString, value)
-	}
-	if value, ok := gu.mutation.Remark(); ok {
-		_spec.SetField(guide.FieldRemark, field.TypeString, value)
-	}
-	if gu.mutation.RemarkCleared() {
-		_spec.ClearField(guide.FieldRemark, field.TypeString)
-	}
-	if value, ok := gu.mutation.UpdatedAt(); ok {
-		_spec.SetField(guide.FieldUpdatedAt, field.TypeTime, value)
 	}
 	_spec.AddModifiers(gu.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, gu.driver, _spec); err != nil {
@@ -200,6 +255,64 @@ type GuideUpdateOne struct {
 	hooks     []Hook
 	mutation  *GuideMutation
 	modifiers []func(*sql.UpdateBuilder)
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (guo *GuideUpdateOne) SetUpdatedAt(t time.Time) *GuideUpdateOne {
+	guo.mutation.SetUpdatedAt(t)
+	return guo
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (guo *GuideUpdateOne) SetDeletedAt(t time.Time) *GuideUpdateOne {
+	guo.mutation.SetDeletedAt(t)
+	return guo
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (guo *GuideUpdateOne) SetNillableDeletedAt(t *time.Time) *GuideUpdateOne {
+	if t != nil {
+		guo.SetDeletedAt(*t)
+	}
+	return guo
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (guo *GuideUpdateOne) ClearDeletedAt() *GuideUpdateOne {
+	guo.mutation.ClearDeletedAt()
+	return guo
+}
+
+// SetLastModifier sets the "last_modifier" field.
+func (guo *GuideUpdateOne) SetLastModifier(m *model.Modifier) *GuideUpdateOne {
+	guo.mutation.SetLastModifier(m)
+	return guo
+}
+
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (guo *GuideUpdateOne) ClearLastModifier() *GuideUpdateOne {
+	guo.mutation.ClearLastModifier()
+	return guo
+}
+
+// SetRemark sets the "remark" field.
+func (guo *GuideUpdateOne) SetRemark(s string) *GuideUpdateOne {
+	guo.mutation.SetRemark(s)
+	return guo
+}
+
+// SetNillableRemark sets the "remark" field if the given value is not nil.
+func (guo *GuideUpdateOne) SetNillableRemark(s *string) *GuideUpdateOne {
+	if s != nil {
+		guo.SetRemark(*s)
+	}
+	return guo
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (guo *GuideUpdateOne) ClearRemark() *GuideUpdateOne {
+	guo.mutation.ClearRemark()
+	return guo
 }
 
 // SetName sets the "name" field.
@@ -251,40 +364,6 @@ func (guo *GuideUpdateOne) SetNillableAnswer(s *string) *GuideUpdateOne {
 	return guo
 }
 
-// SetRemark sets the "remark" field.
-func (guo *GuideUpdateOne) SetRemark(s string) *GuideUpdateOne {
-	guo.mutation.SetRemark(s)
-	return guo
-}
-
-// SetNillableRemark sets the "remark" field if the given value is not nil.
-func (guo *GuideUpdateOne) SetNillableRemark(s *string) *GuideUpdateOne {
-	if s != nil {
-		guo.SetRemark(*s)
-	}
-	return guo
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (guo *GuideUpdateOne) ClearRemark() *GuideUpdateOne {
-	guo.mutation.ClearRemark()
-	return guo
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (guo *GuideUpdateOne) SetUpdatedAt(t time.Time) *GuideUpdateOne {
-	guo.mutation.SetUpdatedAt(t)
-	return guo
-}
-
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (guo *GuideUpdateOne) SetNillableUpdatedAt(t *time.Time) *GuideUpdateOne {
-	if t != nil {
-		guo.SetUpdatedAt(*t)
-	}
-	return guo
-}
-
 // Mutation returns the GuideMutation object of the builder.
 func (guo *GuideUpdateOne) Mutation() *GuideMutation {
 	return guo.mutation
@@ -305,6 +384,9 @@ func (guo *GuideUpdateOne) Select(field string, fields ...string) *GuideUpdateOn
 
 // Save executes the query and returns the updated Guide entity.
 func (guo *GuideUpdateOne) Save(ctx context.Context) (*Guide, error) {
+	if err := guo.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, guo.sqlSave, guo.mutation, guo.hooks)
 }
 
@@ -328,6 +410,18 @@ func (guo *GuideUpdateOne) ExecX(ctx context.Context) {
 	if err := guo.Exec(ctx); err != nil {
 		panic(err)
 	}
+}
+
+// defaults sets the default values of the builder before save.
+func (guo *GuideUpdateOne) defaults() error {
+	if _, ok := guo.mutation.UpdatedAt(); !ok {
+		if guide.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized guide.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
+		v := guide.UpdateDefaultUpdatedAt()
+		guo.mutation.SetUpdatedAt(v)
+	}
+	return nil
 }
 
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
@@ -362,6 +456,30 @@ func (guo *GuideUpdateOne) sqlSave(ctx context.Context) (_node *Guide, err error
 			}
 		}
 	}
+	if value, ok := guo.mutation.UpdatedAt(); ok {
+		_spec.SetField(guide.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if value, ok := guo.mutation.DeletedAt(); ok {
+		_spec.SetField(guide.FieldDeletedAt, field.TypeTime, value)
+	}
+	if guo.mutation.DeletedAtCleared() {
+		_spec.ClearField(guide.FieldDeletedAt, field.TypeTime)
+	}
+	if guo.mutation.CreatorCleared() {
+		_spec.ClearField(guide.FieldCreator, field.TypeJSON)
+	}
+	if value, ok := guo.mutation.LastModifier(); ok {
+		_spec.SetField(guide.FieldLastModifier, field.TypeJSON, value)
+	}
+	if guo.mutation.LastModifierCleared() {
+		_spec.ClearField(guide.FieldLastModifier, field.TypeJSON)
+	}
+	if value, ok := guo.mutation.Remark(); ok {
+		_spec.SetField(guide.FieldRemark, field.TypeString, value)
+	}
+	if guo.mutation.RemarkCleared() {
+		_spec.ClearField(guide.FieldRemark, field.TypeString)
+	}
 	if value, ok := guo.mutation.Name(); ok {
 		_spec.SetField(guide.FieldName, field.TypeString, value)
 	}
@@ -373,15 +491,6 @@ func (guo *GuideUpdateOne) sqlSave(ctx context.Context) (_node *Guide, err error
 	}
 	if value, ok := guo.mutation.Answer(); ok {
 		_spec.SetField(guide.FieldAnswer, field.TypeString, value)
-	}
-	if value, ok := guo.mutation.Remark(); ok {
-		_spec.SetField(guide.FieldRemark, field.TypeString, value)
-	}
-	if guo.mutation.RemarkCleared() {
-		_spec.ClearField(guide.FieldRemark, field.TypeString)
-	}
-	if value, ok := guo.mutation.UpdatedAt(); ok {
-		_spec.SetField(guide.FieldUpdatedAt, field.TypeTime, value)
 	}
 	_spec.AddModifiers(guo.modifiers...)
 	_node = &Guide{config: guo.config}

@@ -262,12 +262,12 @@ func (gq *GuideQuery) Clone() *GuideQuery {
 // Example:
 //
 //	var v []struct {
-//		Name string `json:"name,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Guide.Query().
-//		GroupBy(guide.FieldName).
+//		GroupBy(guide.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (gq *GuideQuery) GroupBy(field string, fields ...string) *GuideGroupBy {
@@ -285,11 +285,11 @@ func (gq *GuideQuery) GroupBy(field string, fields ...string) *GuideGroupBy {
 // Example:
 //
 //	var v []struct {
-//		Name string `json:"name,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //	}
 //
 //	client.Guide.Query().
-//		Select(guide.FieldName).
+//		Select(guide.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (gq *GuideQuery) Select(fields ...string) *GuideSelect {
 	gq.ctx.Fields = append(gq.ctx.Fields, fields...)

@@ -386,7 +386,7 @@ func (f *Feedback) GetName() string {
 
 // GetTableName returns table name for Guide.
 func (gu *Guide) GetTableName() string {
-	return "guides"
+	return "guide"
 }
 
 // GetID returns id for Guide.

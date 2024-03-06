@@ -53227,13 +53227,16 @@ type GuideMutation struct {
 	op            Op
 	typ           string
 	id            *uint64
+	created_at    *time.Time
+	updated_at    *time.Time
+	deleted_at    *time.Time
+	creator       **model.Modifier
+	last_modifier **model.Modifier
+	remark        *string
 	name          *string
 	sort          *uint8
 	addsort       *int8
 	answer        *string
-	remark        *string
-	created_at    *time.Time
-	updated_at    *time.Time
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*Guide, error)
@@ -53336,6 +53339,274 @@ func (m *GuideMutation) IDs(ctx context.Context) ([]uint64, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *GuideMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *GuideMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the Guide entity.
+// If the Guide object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GuideMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *GuideMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *GuideMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *GuideMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the Guide entity.
+// If the Guide object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GuideMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *GuideMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *GuideMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *GuideMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the Guide entity.
+// If the Guide object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GuideMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *GuideMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[guide.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *GuideMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[guide.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *GuideMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, guide.FieldDeletedAt)
+}
+
+// SetCreator sets the "creator" field.
+func (m *GuideMutation) SetCreator(value *model.Modifier) {
+	m.creator = &value
+}
+
+// Creator returns the value of the "creator" field in the mutation.
+func (m *GuideMutation) Creator() (r *model.Modifier, exists bool) {
+	v := m.creator
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreator returns the old "creator" field's value of the Guide entity.
+// If the Guide object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GuideMutation) OldCreator(ctx context.Context) (v *model.Modifier, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreator is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreator requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreator: %w", err)
+	}
+	return oldValue.Creator, nil
+}
+
+// ClearCreator clears the value of the "creator" field.
+func (m *GuideMutation) ClearCreator() {
+	m.creator = nil
+	m.clearedFields[guide.FieldCreator] = struct{}{}
+}
+
+// CreatorCleared returns if the "creator" field was cleared in this mutation.
+func (m *GuideMutation) CreatorCleared() bool {
+	_, ok := m.clearedFields[guide.FieldCreator]
+	return ok
+}
+
+// ResetCreator resets all changes to the "creator" field.
+func (m *GuideMutation) ResetCreator() {
+	m.creator = nil
+	delete(m.clearedFields, guide.FieldCreator)
+}
+
+// SetLastModifier sets the "last_modifier" field.
+func (m *GuideMutation) SetLastModifier(value *model.Modifier) {
+	m.last_modifier = &value
+}
+
+// LastModifier returns the value of the "last_modifier" field in the mutation.
+func (m *GuideMutation) LastModifier() (r *model.Modifier, exists bool) {
+	v := m.last_modifier
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastModifier returns the old "last_modifier" field's value of the Guide entity.
+// If the Guide object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GuideMutation) OldLastModifier(ctx context.Context) (v *model.Modifier, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastModifier is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastModifier requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastModifier: %w", err)
+	}
+	return oldValue.LastModifier, nil
+}
+
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (m *GuideMutation) ClearLastModifier() {
+	m.last_modifier = nil
+	m.clearedFields[guide.FieldLastModifier] = struct{}{}
+}
+
+// LastModifierCleared returns if the "last_modifier" field was cleared in this mutation.
+func (m *GuideMutation) LastModifierCleared() bool {
+	_, ok := m.clearedFields[guide.FieldLastModifier]
+	return ok
+}
+
+// ResetLastModifier resets all changes to the "last_modifier" field.
+func (m *GuideMutation) ResetLastModifier() {
+	m.last_modifier = nil
+	delete(m.clearedFields, guide.FieldLastModifier)
+}
+
+// SetRemark sets the "remark" field.
+func (m *GuideMutation) SetRemark(s string) {
+	m.remark = &s
+}
+
+// Remark returns the value of the "remark" field in the mutation.
+func (m *GuideMutation) Remark() (r string, exists bool) {
+	v := m.remark
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRemark returns the old "remark" field's value of the Guide entity.
+// If the Guide object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GuideMutation) OldRemark(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRemark is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRemark requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRemark: %w", err)
+	}
+	return oldValue.Remark, nil
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (m *GuideMutation) ClearRemark() {
+	m.remark = nil
+	m.clearedFields[guide.FieldRemark] = struct{}{}
+}
+
+// RemarkCleared returns if the "remark" field was cleared in this mutation.
+func (m *GuideMutation) RemarkCleared() bool {
+	_, ok := m.clearedFields[guide.FieldRemark]
+	return ok
+}
+
+// ResetRemark resets all changes to the "remark" field.
+func (m *GuideMutation) ResetRemark() {
+	m.remark = nil
+	delete(m.clearedFields, guide.FieldRemark)
 }
 
 // SetName sets the "name" field.
@@ -53466,127 +53737,6 @@ func (m *GuideMutation) ResetAnswer() {
 	m.answer = nil
 }
 
-// SetRemark sets the "remark" field.
-func (m *GuideMutation) SetRemark(s string) {
-	m.remark = &s
-}
-
-// Remark returns the value of the "remark" field in the mutation.
-func (m *GuideMutation) Remark() (r string, exists bool) {
-	v := m.remark
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldRemark returns the old "remark" field's value of the Guide entity.
-// If the Guide object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *GuideMutation) OldRemark(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldRemark is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldRemark requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldRemark: %w", err)
-	}
-	return oldValue.Remark, nil
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (m *GuideMutation) ClearRemark() {
-	m.remark = nil
-	m.clearedFields[guide.FieldRemark] = struct{}{}
-}
-
-// RemarkCleared returns if the "remark" field was cleared in this mutation.
-func (m *GuideMutation) RemarkCleared() bool {
-	_, ok := m.clearedFields[guide.FieldRemark]
-	return ok
-}
-
-// ResetRemark resets all changes to the "remark" field.
-func (m *GuideMutation) ResetRemark() {
-	m.remark = nil
-	delete(m.clearedFields, guide.FieldRemark)
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (m *GuideMutation) SetCreatedAt(t time.Time) {
-	m.created_at = &t
-}
-
-// CreatedAt returns the value of the "created_at" field in the mutation.
-func (m *GuideMutation) CreatedAt() (r time.Time, exists bool) {
-	v := m.created_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCreatedAt returns the old "created_at" field's value of the Guide entity.
-// If the Guide object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *GuideMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
-	}
-	return oldValue.CreatedAt, nil
-}
-
-// ResetCreatedAt resets all changes to the "created_at" field.
-func (m *GuideMutation) ResetCreatedAt() {
-	m.created_at = nil
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (m *GuideMutation) SetUpdatedAt(t time.Time) {
-	m.updated_at = &t
-}
-
-// UpdatedAt returns the value of the "updated_at" field in the mutation.
-func (m *GuideMutation) UpdatedAt() (r time.Time, exists bool) {
-	v := m.updated_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUpdatedAt returns the old "updated_at" field's value of the Guide entity.
-// If the Guide object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *GuideMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
-	}
-	return oldValue.UpdatedAt, nil
-}
-
-// ResetUpdatedAt resets all changes to the "updated_at" field.
-func (m *GuideMutation) ResetUpdatedAt() {
-	m.updated_at = nil
-}
-
 // Where appends a list predicates to the GuideMutation builder.
 func (m *GuideMutation) Where(ps ...predicate.Guide) {
 	m.predicates = append(m.predicates, ps...)
@@ -53621,7 +53771,25 @@ func (m *GuideMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *GuideMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 9)
+	if m.created_at != nil {
+		fields = append(fields, guide.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, guide.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, guide.FieldDeletedAt)
+	}
+	if m.creator != nil {
+		fields = append(fields, guide.FieldCreator)
+	}
+	if m.last_modifier != nil {
+		fields = append(fields, guide.FieldLastModifier)
+	}
+	if m.remark != nil {
+		fields = append(fields, guide.FieldRemark)
+	}
 	if m.name != nil {
 		fields = append(fields, guide.FieldName)
 	}
@@ -53631,15 +53799,6 @@ func (m *GuideMutation) Fields() []string {
 	if m.answer != nil {
 		fields = append(fields, guide.FieldAnswer)
 	}
-	if m.remark != nil {
-		fields = append(fields, guide.FieldRemark)
-	}
-	if m.created_at != nil {
-		fields = append(fields, guide.FieldCreatedAt)
-	}
-	if m.updated_at != nil {
-		fields = append(fields, guide.FieldUpdatedAt)
-	}
 	return fields
 }
 
@@ -53648,18 +53807,24 @@ func (m *GuideMutation) Fields() []string {
 // schema.
 func (m *GuideMutation) Field(name string) (ent.Value, bool) {
 	switch name {
+	case guide.FieldCreatedAt:
+		return m.CreatedAt()
+	case guide.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case guide.FieldDeletedAt:
+		return m.DeletedAt()
+	case guide.FieldCreator:
+		return m.Creator()
+	case guide.FieldLastModifier:
+		return m.LastModifier()
+	case guide.FieldRemark:
+		return m.Remark()
 	case guide.FieldName:
 		return m.Name()
 	case guide.FieldSort:
 		return m.Sort()
 	case guide.FieldAnswer:
 		return m.Answer()
-	case guide.FieldRemark:
-		return m.Remark()
-	case guide.FieldCreatedAt:
-		return m.CreatedAt()
-	case guide.FieldUpdatedAt:
-		return m.UpdatedAt()
 	}
 	return nil, false
 }
@@ -53669,18 +53834,24 @@ func (m *GuideMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *GuideMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
+	case guide.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case guide.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case guide.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case guide.FieldCreator:
+		return m.OldCreator(ctx)
+	case guide.FieldLastModifier:
+		return m.OldLastModifier(ctx)
+	case guide.FieldRemark:
+		return m.OldRemark(ctx)
 	case guide.FieldName:
 		return m.OldName(ctx)
 	case guide.FieldSort:
 		return m.OldSort(ctx)
 	case guide.FieldAnswer:
 		return m.OldAnswer(ctx)
-	case guide.FieldRemark:
-		return m.OldRemark(ctx)
-	case guide.FieldCreatedAt:
-		return m.OldCreatedAt(ctx)
-	case guide.FieldUpdatedAt:
-		return m.OldUpdatedAt(ctx)
 	}
 	return nil, fmt.Errorf("unknown Guide field %s", name)
 }
@@ -53690,6 +53861,48 @@ func (m *GuideMutation) OldField(ctx context.Context, name string) (ent.Value, e
 // type.
 func (m *GuideMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case guide.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case guide.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case guide.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case guide.FieldCreator:
+		v, ok := value.(*model.Modifier)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreator(v)
+		return nil
+	case guide.FieldLastModifier:
+		v, ok := value.(*model.Modifier)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastModifier(v)
+		return nil
+	case guide.FieldRemark:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRemark(v)
+		return nil
 	case guide.FieldName:
 		v, ok := value.(string)
 		if !ok {
@@ -53710,27 +53923,6 @@ func (m *GuideMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetAnswer(v)
-		return nil
-	case guide.FieldRemark:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetRemark(v)
-		return nil
-	case guide.FieldCreatedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCreatedAt(v)
-		return nil
-	case guide.FieldUpdatedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUpdatedAt(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Guide field %s", name)
@@ -53777,6 +53969,15 @@ func (m *GuideMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *GuideMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(guide.FieldDeletedAt) {
+		fields = append(fields, guide.FieldDeletedAt)
+	}
+	if m.FieldCleared(guide.FieldCreator) {
+		fields = append(fields, guide.FieldCreator)
+	}
+	if m.FieldCleared(guide.FieldLastModifier) {
+		fields = append(fields, guide.FieldLastModifier)
+	}
 	if m.FieldCleared(guide.FieldRemark) {
 		fields = append(fields, guide.FieldRemark)
 	}
@@ -53794,6 +53995,15 @@ func (m *GuideMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *GuideMutation) ClearField(name string) error {
 	switch name {
+	case guide.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
+	case guide.FieldCreator:
+		m.ClearCreator()
+		return nil
+	case guide.FieldLastModifier:
+		m.ClearLastModifier()
+		return nil
 	case guide.FieldRemark:
 		m.ClearRemark()
 		return nil
@@ -53805,6 +54015,24 @@ func (m *GuideMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *GuideMutation) ResetField(name string) error {
 	switch name {
+	case guide.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case guide.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case guide.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case guide.FieldCreator:
+		m.ResetCreator()
+		return nil
+	case guide.FieldLastModifier:
+		m.ResetLastModifier()
+		return nil
+	case guide.FieldRemark:
+		m.ResetRemark()
+		return nil
 	case guide.FieldName:
 		m.ResetName()
 		return nil
@@ -53813,15 +54041,6 @@ func (m *GuideMutation) ResetField(name string) error {
 		return nil
 	case guide.FieldAnswer:
 		m.ResetAnswer()
-		return nil
-	case guide.FieldRemark:
-		m.ResetRemark()
-		return nil
-	case guide.FieldCreatedAt:
-		m.ResetCreatedAt()
-		return nil
-	case guide.FieldUpdatedAt:
-		m.ResetUpdatedAt()
 		return nil
 	}
 	return fmt.Errorf("unknown Guide field %s", name)
