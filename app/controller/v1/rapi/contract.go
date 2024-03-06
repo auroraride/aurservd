@@ -19,30 +19,30 @@ type contract struct {
 var Contract = new(contract)
 
 // Sign
-//	@ID			ContractSign
-//	@Router		/rider/v1/contract/sign [POST]
-//	@Summary	R3003 签署合同
-//	@Tags		Contract - 合同
-//	@Accept		json
-//	@Produce	json
-//	@Param		X-Rider-Token	header		string					true	"骑手校验token"
-//	@Param		body			body		model.ContractSignReq	true	"desc"
-//	@Success	200				{object}	model.ContractSignRes	"请求成功"
+// @ID		ContractSign
+// @Router	/rider/v1/contract/sign [POST]
+// @Summary	R3003 签署合同
+// @Tags	Contract - 合同
+// @Accept	json
+// @Produce	json
+// @Param	X-Rider-Token	header		string					true	"骑手校验token"
+// @Param	body			body		model.ContractSignReq	true	"desc"
+// @Success	200				{object}	model.ContractSignRes	"请求成功"
 func (*contract) Sign(c echo.Context) error {
 	ctx, req := app.RiderContextAndBinding[model.ContractSignReq](c)
 	return ctx.SendResponse(service.NewContractWithRider(ctx.Rider).Sign(req))
 }
 
 // SignResult
-//	@ID			ContractSignResult
-//	@Router		/rider/v1/constract/{sn} [GET]
-//	@Summary	R3004 合同签署结果
-//	@Tags		Contract - 合同
-//	@Accept		json
-//	@Produce	json
-//	@Param		X-Rider-Token	header		string					true	"骑手校验token"
-//	@Param		sn				path		string					true	"合同编号"
-//	@Success	200				{object}	model.StatusResponse	"请求成功"
+// @ID		ContractSignResult
+// @Router	/rider/v1/constract/{sn} [GET]
+// @Summary	R3004 合同签署结果
+// @Tags	Contract - 合同
+// @Accept	json
+// @Produce	json
+// @Param	X-Rider-Token	header		string					true	"骑手校验token"
+// @Param	sn				path		string					true	"合同编号"
+// @Success	200				{object}	model.StatusResponse	"请求成功"
 func (*contract) SignResult(c echo.Context) error {
 	ctx, req := app.RiderContextAndBinding[model.ContractSignResultReq](c)
 	return ctx.SendResponse(service.NewContract().Result(ctx.Rider, req.Sn))

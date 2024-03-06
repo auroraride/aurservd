@@ -18,15 +18,15 @@ type business struct{}
 var Business = new(business)
 
 // Exchange
-//	@ID			AgentExchangeList
-//	@Router		/agent/v1/business/exchange [GET]
-//	@Summary	A8001 换电列表
-//	@Tags		[A]代理接口
-//	@Accept		json
-//	@Produce	json
-//	@Param		X-Agent-Token	header		string														true	"代理校验token"
-//	@Param		query			query		model.AgentExchangeListReq									true	"查询条件"
-//	@Success	200				{object}	model.PaginationRes{items=[]model.ExchangeManagerListRes}	"请求成功"
+// @ID		AgentExchangeList
+// @Router	/agent/v1/business/exchange [GET]
+// @Summary	A8001 换电列表
+// @Tags	[A]代理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Agent-Token	header		string														true	"代理校验token"
+// @Param	query			query		model.AgentExchangeListReq									true	"查询条件"
+// @Success	200				{object}	model.PaginationRes{items=[]model.ExchangeManagerListRes}	"请求成功"
 func (*business) Exchange(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.AgentExchangeListReq](c)
 	// TODO 筛选站点
@@ -47,29 +47,29 @@ func (*business) Exchange(c echo.Context) (err error) {
 }
 
 // Price
-//	@ID			AgentBusinessPrice
-//	@Router		/agent/v1/business/price [GET]
-//	@Summary	A8002 价格列表
-//	@Tags		[A]代理接口
-//	@Accept		json
-//	@Produce	json
-//	@Param		X-Agent-Token	header		string	true	"代理校验token"
-//	@Success	200				{object}	[]model.EnterprisePriceWithCity
+// @ID		AgentBusinessPrice
+// @Router	/agent/v1/business/price [GET]
+// @Summary	A8002 价格列表
+// @Tags	[A]代理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Agent-Token	header		string	true	"代理校验token"
+// @Success	200				{object}	[]model.EnterprisePriceWithCity
 func (*business) Price(c echo.Context) (err error) {
 	ctx := app.ContextX[app.AgentContext](c)
 	return ctx.SendResponse(service.NewEnterprisePrice().PriceList(ctx.Enterprise.ID))
 }
 
 // List
-//	@ID			AgentBusinessList
-//	@Router		/agent/v1/business [GET]
-//	@Summary	A8003 业务列表
-//	@Tags		[A]代理接口
-//	@Accept		json
-//	@Produce	json
-//	@Param		X-Agent-Token	header		string					true	"代理校验token"
-//	@Param		query			query		model.BusinessListReq	true	"查询条件"
-//	@Success	200				{object}	[]model.BusinessListRes
+// @ID		AgentBusinessList
+// @Router	/agent/v1/business [GET]
+// @Summary	A8003 业务列表
+// @Tags	[A]代理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Agent-Token	header		string					true	"代理校验token"
+// @Param	query			query		model.BusinessListReq	true	"查询条件"
+// @Success	200				{object}	[]model.BusinessListRes
 func (*business) List(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.BusinessListReq](c)
 	req.EnterpriseID = ctx.Agent.EnterpriseID

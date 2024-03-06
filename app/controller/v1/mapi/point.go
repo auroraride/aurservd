@@ -18,15 +18,15 @@ type point struct{}
 var Point = new(point)
 
 // Modify
-//	@ID			ManagerPointModify
-//	@Router		/manager/v1/point/modify [POST]
-//	@Summary	M7016 修改骑手积分
-//	@Tags		[M]管理接口
-//	@Accept		json
-//	@Produce	json
-//	@Param		X-Manager-Token	header		string					true	"管理员校验token"
-//	@Param		body			body		model.PointModifyReq	true	"请求参数"
-//	@Success	200				{object}	model.StatusResponse	"请求成功"
+// @ID		ManagerPointModify
+// @Router	/manager/v1/point/modify [POST]
+// @Summary	M7016 修改骑手积分
+// @Tags	[M]管理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string					true	"管理员校验token"
+// @Param	body			body		model.PointModifyReq	true	"请求参数"
+// @Success	200				{object}	model.StatusResponse	"请求成功"
 func (*point) Modify(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.PointModifyReq](c)
 	err = service.NewPointWithModifier(ctx.Modifier).Modify(req)
@@ -37,30 +37,30 @@ func (*point) Modify(c echo.Context) (err error) {
 }
 
 // Log
-//	@ID			ManagerPointLog
-//	@Router		/manager/v1/point/log [GET]
-//	@Summary	M7017 积分变动日志
-//	@Tags		[M]管理接口
-//	@Accept		json
-//	@Produce	json
-//	@Param		X-Manager-Token	header		string												true	"管理员校验token"
-//	@Param		query			query		model.PointLogListReq								false	"筛选选项"
-//	@Success	200				{object}	model.PaginationRes{items=[]model.PointLogListRes}	"请求成功"
+// @ID		ManagerPointLog
+// @Router	/manager/v1/point/log [GET]
+// @Summary	M7017 积分变动日志
+// @Tags	[M]管理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string												true	"管理员校验token"
+// @Param	query			query		model.PointLogListReq								false	"筛选选项"
+// @Success	200				{object}	model.PaginationRes{items=[]model.PointLogListRes}	"请求成功"
 func (*point) Log(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.PointLogListReq](c)
 	return ctx.SendResponse(service.NewPointWithModifier(ctx.Modifier).List(req))
 }
 
 // Batch
-//	@ID			ManagerPointBatch
-//	@Router		/manager/v1/point/batch [POST]
-//	@Summary	M7018 批量变动积分
-//	@Tags		[M]管理接口
-//	@Accept		json
-//	@Produce	json
-//	@Param		X-Manager-Token	header		string				true	"管理员校验token"
-//	@Param		body			body		model.PointBatchReq	true	"请求参数"
-//	@Success	200				{object}	[]string			"失败列表"
+// @ID		ManagerPointBatch
+// @Router	/manager/v1/point/batch [POST]
+// @Summary	M7018 批量变动积分
+// @Tags	[M]管理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string				true	"管理员校验token"
+// @Param	body			body		model.PointBatchReq	true	"请求参数"
+// @Success	200				{object}	[]string			"失败列表"
 func (*point) Batch(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.PointBatchReq](c)
 	return ctx.SendResponse(service.NewPointWithModifier(ctx.Modifier).Batch(req))

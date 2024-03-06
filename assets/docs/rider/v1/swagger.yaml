@@ -847,10 +847,11 @@ definitions:
         - 7
         type: integer
       payway:
-        description: 1支付宝 2微信
+        description: 1支付宝 2微信 3支付宝预授权
         enum:
         - 1
         - 2
+        - 3
         type: integer
       planId:
         type: integer

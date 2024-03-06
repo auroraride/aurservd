@@ -14,14 +14,14 @@ var Cabinet = new(cabinet)
 
 // List
 //
-//	@ID			CabinetList
-//	@Router		/rider/v2/cabinet [GET]
-//	@Summary	电柜列表
-//	@Tags		Cabinet - 电柜
-//	@Accept		json
-//	@Produce	json
-//	@Param		query	query		definition.CabinetByRiderReq	true	"根据骑手获取电柜请求参数"
-//	@Success	200		{object}	[]definition.CabinetByRiderRes	"请求成功"
+// @ID		CabinetList
+// @Router	/rider/v2/cabinet [GET]
+// @Summary	电柜列表
+// @Tags	Cabinet - 电柜
+// @Accept	json
+// @Produce	json
+// @Param	query	query		definition.CabinetByRiderReq	true	"根据骑手获取电柜请求参数"
+// @Success	200		{object}	[]definition.CabinetByRiderRes	"请求成功"
 func (*cabinet) List(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[definition.CabinetByRiderReq](c)
 	return ctx.SendResponse(biz.NewCabinet().ListByRider(ctx.Rider, req))

@@ -152,19 +152,13 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.MaintainerBinOperate'
         description: 所有操作均需要提前设电柜为维护状态。open:开仓, lock:锁定, unlock:解锁, disable:禁用, enable:启用
-      ordinal:
-        type: integer
       reason:
-        type: string
-      serial:
         type: string
     required:
     - lat
     - lng
     - operate
-    - ordinal
     - reason
-    - serial
     type: object
   model.MaintainerCabinetDetailRes:
     properties:
@@ -310,14 +304,11 @@ definitions:
           maintenance:电柜维护, maintenance-cancel:取消维护, interrupt:中断业务, reboot:重启（暂时不做）
       reason:
         type: string
-      serial:
-        type: string
     required:
     - lat
     - lng
     - operate
     - reason
-    - serial
     type: object
   model.MaintainerSigninReq:
     properties:

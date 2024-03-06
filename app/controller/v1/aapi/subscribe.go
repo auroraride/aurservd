@@ -18,15 +18,15 @@ type subscribe struct{}
 var Subscribe = new(subscribe)
 
 // Active
-//	@ID			AgentSubscribeActive
-//	@Router		/agent/v1/subscribe/active [POST]
-//	@Summary	A7001 激活订阅
-//	@Tags		[A]代理接口
-//	@Accept		json
-//	@Produce	json
-//	@Param		X-Agent-Token	header		string							true	"代理校验token"
-//	@Param		body			body		model.AgentSubscribeActiveReq	true	"请求详情"
-//	@Success	200				{object}	model.AllocateCreateRes			"请求成功"
+// @ID		AgentSubscribeActive
+// @Router	/agent/v1/subscribe/active [POST]
+// @Summary	A7001 激活订阅
+// @Tags	[A]代理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Agent-Token	header		string							true	"代理校验token"
+// @Param	body			body		model.AgentSubscribeActiveReq	true	"请求详情"
+// @Success	200				{object}	model.AllocateCreateRes			"请求成功"
 func (*subscribe) Active(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.AgentSubscribeActiveReq](c)
 	return ctx.SendResponse(service.NewAllocate().Create(&model.AllocateCreateParams{
@@ -38,15 +38,15 @@ func (*subscribe) Active(c echo.Context) (err error) {
 }
 
 // AlterList
-//	@ID			AgentSubscribeAlterList
-//	@Router		/agent/v1/subscribe/alter [GET]
-//	@Summary	A7002 申请加时列表
-//	@Tags		[A]代理接口
-//	@Accept		json
-//	@Produce	json
-//	@Param		X-Agent-Token	header		string															true	"代理校验token"
-//	@Param		query			query		model.SubscribeAlterFilter										true	"查询条件"
-//	@Success	200				{object}	model.PaginationRes{items=[]model.SubscribeAlterApplyListRes}	"请求成功"
+// @ID		AgentSubscribeAlterList
+// @Router	/agent/v1/subscribe/alter [GET]
+// @Summary	A7002 申请加时列表
+// @Tags	[A]代理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Agent-Token	header		string															true	"代理校验token"
+// @Param	query			query		model.SubscribeAlterFilter										true	"查询条件"
+// @Success	200				{object}	model.PaginationRes{items=[]model.SubscribeAlterApplyListRes}	"请求成功"
 func (*subscribe) AlterList(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.SubscribeAlterFilter](c)
 	return ctx.SendResponse(service.NewSubscribeAlter(ctx.Agent, ctx.Enterprise).List(&model.SubscribeAlterListReq{
@@ -56,15 +56,15 @@ func (*subscribe) AlterList(c echo.Context) (err error) {
 }
 
 // AlterReivew
-//	@ID			AgentSubscribeAlterReivew
-//	@Router		/agent/v1/subscribe/alter/review [POST]
-//	@Summary	A7003 审核加时
-//	@Tags		[A]代理接口
-//	@Accept		json
-//	@Produce	json
-//	@Param		X-Agent-Token	header		string							true	"代理校验token"
-//	@Param		body			body		model.SubscribeAlterReviewReq	true	"审核请求"
-//	@Success	200				{object}	model.StatusResponse			"请求成功"
+// @ID		AgentSubscribeAlterReivew
+// @Router	/agent/v1/subscribe/alter/review [POST]
+// @Summary	A7003 审核加时
+// @Tags	[A]代理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Agent-Token	header		string							true	"代理校验token"
+// @Param	body			body		model.SubscribeAlterReviewReq	true	"审核请求"
+// @Success	200				{object}	model.StatusResponse			"请求成功"
 func (*subscribe) AlterReivew(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.SubscribeAlterReviewReq](c)
 	service.NewAgentSubscribe(ctx.Agent, ctx.Enterprise).AlterReview(&model.SubscribeAlterReviewReq{
@@ -76,15 +76,15 @@ func (*subscribe) AlterReivew(c echo.Context) (err error) {
 }
 
 // Halt
-//	@ID			AgentSubscribeHalt
-//	@Router		/agent/v1/subscribe/halt [POST]
-//	@Summary	A7004 强制退租
-//	@Tags		[A]代理接口
-//	@Accept		json
-//	@Produce	json
-//	@Param		X-Agent-Token	header		string						true	"代理校验token"
-//	@Param		body			body		model.BusinessSubscribeReq	true	"请求详情"
-//	@Success	200				{object}	string						"请求成功"
+// @ID		AgentSubscribeHalt
+// @Router	/agent/v1/subscribe/halt [POST]
+// @Summary	A7004 强制退租
+// @Tags	[A]代理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Agent-Token	header		string						true	"代理校验token"
+// @Param	body			body		model.BusinessSubscribeReq	true	"请求详情"
+// @Success	200				{object}	string						"请求成功"
 func (*subscribe) Halt(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.BusinessSubscribeReq](c)
 	service.NewBusinessRider(nil).UnSubscribe(&model.BusinessSubscribeReq{

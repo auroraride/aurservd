@@ -3769,16 +3769,7 @@
             }
         },
         "model.EnterpriseRiderInviteReq": {
-          "type": "object",
-          "required": [
-            "stationID"
-          ],
-          "properties": {
-            "stationID": {
-              "description": "站点id",
-              "type": "integer"
-            }
-          }
+            "type": "object"
         },
         "model.EnterpriseStation": {
             "type": "object",

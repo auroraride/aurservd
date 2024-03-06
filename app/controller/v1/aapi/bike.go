@@ -18,15 +18,15 @@ type bike struct{}
 var Bike = new(bike)
 
 // List 电车列表
-//	@ID			AgentBikeList
-//	@Router		/agent/v1/bike [GET]
-//	@Summary	AB001 电车列表
-//	@Tags		[A]代理接口
-//	@Accept		json
-//	@Produce	json
-//	@Param		X-Agent-Token	header		string					true	"代理校验token"
-//	@Param		query			query		model.EbikeListReq		true	"请求参数"
-//	@Success	200				{object}	[]model.EbikeListRes	"请求成功"
+// @ID		AgentBikeList
+// @Router	/agent/v1/bike [GET]
+// @Summary	AB001 电车列表
+// @Tags	[A]代理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Agent-Token	header		string					true	"代理校验token"
+// @Param	query			query		model.EbikeListReq		true	"请求参数"
+// @Success	200				{object}	[]model.EbikeListRes	"请求成功"
 func (*bike) List(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.EbikeListReq](c)
 	return ctx.SendResponse(service.NewEbike().List(&model.EbikeListReq{
@@ -44,15 +44,15 @@ func (*bike) List(c echo.Context) (err error) {
 }
 
 // Unallocated
-//	@ID			AgentBikeUnallocated
-//	@Router		/agent/v1/bike/unallocated [GET]
-//	@Summary	AB003 搜索未分配车辆
-//	@Tags		[A]代理接口
-//	@Accept		json
-//	@Produce	json
-//	@Param		X-Agent-Token	header		string						true	"代理校验token"
-//	@Param		query			query		model.EbikeAgentSearchReq	true	"请求参数"
-//	@Success	200				{object}	[]model.Ebike				"请求成功"
+// @ID		AgentBikeUnallocated
+// @Router	/agent/v1/bike/unallocated [GET]
+// @Summary	AB003 搜索未分配车辆
+// @Tags	[A]代理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Agent-Token	header		string						true	"代理校验token"
+// @Param	query			query		model.EbikeAgentSearchReq	true	"请求参数"
+// @Success	200				{object}	[]model.Ebike				"请求成功"
 func (*bike) Unallocated(c echo.Context) (err error) {
 	ctx, req := app.AgentContextAndBinding[model.EbikeAgentSearchReq](c)
 	// TODO 二级代理校验站点权限
