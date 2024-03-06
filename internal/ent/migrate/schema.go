@@ -2797,6 +2797,22 @@ var (
 			},
 		},
 	}
+	// GuidesColumns holds the columns for the "guides" table.
+	GuidesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "name", Type: field.TypeString},
+		{Name: "sort", Type: field.TypeUint8, Default: 0},
+		{Name: "answer", Type: field.TypeString},
+		{Name: "remark", Type: field.TypeString, Nullable: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// GuidesTable holds the schema information for the "guides" table.
+	GuidesTable = &schema.Table{
+		Name:       "guides",
+		Columns:    GuidesColumns,
+		PrimaryKey: []*schema.Column{GuidesColumns[0]},
+	}
 	// InventoryColumns holds the columns for the "inventory" table.
 	InventoryColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -5626,6 +5642,7 @@ var (
 		ExchangeTable,
 		ExportTable,
 		FeedbackTable,
+		GuidesTable,
 		InventoryTable,
 		MaintainerTable,
 		ManagerTable,

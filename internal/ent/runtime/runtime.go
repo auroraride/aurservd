@@ -40,6 +40,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/export"
 	"github.com/auroraride/aurservd/internal/ent/feedback"
+	"github.com/auroraride/aurservd/internal/ent/guide"
 	"github.com/auroraride/aurservd/internal/ent/inventory"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/order"
@@ -844,6 +845,12 @@ func init() {
 	feedbackDescType := feedbackFields[1].Descriptor()
 	// feedback.DefaultType holds the default value on creation for the type field.
 	feedback.DefaultType = feedbackDescType.Default.(uint8)
+	guideFields := schema.Guide{}.Fields()
+	_ = guideFields
+	// guideDescSort is the schema descriptor for sort field.
+	guideDescSort := guideFields[1].Descriptor()
+	// guide.DefaultSort holds the default value on creation for the sort field.
+	guide.DefaultSort = guideDescSort.Default.(uint8)
 	inventoryMixin := schema.Inventory{}.Mixin()
 	inventoryMixinHooks2 := inventoryMixin[2].Hooks()
 	inventory.Hooks[0] = inventoryMixinHooks2[0]
@@ -1786,6 +1793,6 @@ func init() {
 }
 
 const (
-	Version = "v0.12.5"                                         // Version of ent codegen.
-	Sum     = "h1:KREM5E4CSoej4zeGa88Ou/gfturAnpUv0mzAjch1sj4=" // Sum of ent codegen.
+	Version = "v0.13.0"                                         // Version of ent codegen.
+	Sum     = "h1:DclxWczaCpyiKn6ZWVcJjq1zIKtJ11iNKy+08lNYsJE=" // Sum of ent codegen.
 )
