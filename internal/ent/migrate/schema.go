@@ -2754,6 +2754,7 @@ var (
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "content", Type: field.TypeString},
 		{Name: "type", Type: field.TypeUint8, Default: 0},
+		{Name: "source", Type: field.TypeUint8, Default: 2},
 		{Name: "url", Type: field.TypeJSON, Nullable: true},
 		{Name: "name", Type: field.TypeString, Nullable: true},
 		{Name: "phone", Type: field.TypeString, Nullable: true},
@@ -2768,13 +2769,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "feedback_enterprise_enterprise",
-				Columns:    []*schema.Column{FeedbackColumns[8]},
+				Columns:    []*schema.Column{FeedbackColumns[9]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "feedback_agent_agent",
-				Columns:    []*schema.Column{FeedbackColumns[9]},
+				Columns:    []*schema.Column{FeedbackColumns[10]},
 				RefColumns: []*schema.Column{AgentColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -2788,12 +2789,12 @@ var (
 			{
 				Name:    "feedback_enterprise_id",
 				Unique:  false,
-				Columns: []*schema.Column{FeedbackColumns[8]},
+				Columns: []*schema.Column{FeedbackColumns[9]},
 			},
 			{
 				Name:    "feedback_agent_id",
 				Unique:  false,
-				Columns: []*schema.Column{FeedbackColumns[9]},
+				Columns: []*schema.Column{FeedbackColumns[10]},
 			},
 		},
 	}

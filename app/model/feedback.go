@@ -1,5 +1,10 @@
 package model
 
+const (
+	SourceRider = uint8(iota) + 1 // 骑手
+	SourceAgent                   // 代理
+)
+
 // FeedbackReq 新增反馈记录请求参数
 type FeedbackReq struct {
 	// 反馈内容
@@ -17,13 +22,17 @@ type FeedbackListReq struct {
 	PaginationReq
 	// 反馈类型
 	Type *uint8 `json:"type" query:"type"`
+	// 反馈来源
+	Source *uint8 `json:"source" query:"source"`
 	// 关键词
 	Keyword string `json:"keyword" query:"keyword"`
 	// 反馈开始时间
 	Start *string `json:"start" query:"start"`
 	// 反馈结束时间
 	End *string `json:"end" query:"end"`
-	// 反馈用户团签id
+	// 是否团签, 0:全部 1:团签 2:个签
+	Enterprise *uint8 `json:"enterprise,omitempty" query:"enterprise"`
+	// 团签企业ID, `enterprise = 1`时才会生效
 	EnterpriseID *uint64 `json:"enterpriseID" query:"enterpriseId"`
 }
 
@@ -37,6 +46,8 @@ type FeedbackDetail struct {
 	Url []string `json:"url"`
 	// 反馈类型
 	Type uint8 `json:"type"`
+	// 反馈来源
+	Source uint8 `json:"source"`
 	// 反馈用户团签id
 	EnterpriseID int64 `json:"enterpriseID"`
 	// 反馈用户团签名称

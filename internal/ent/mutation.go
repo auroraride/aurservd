@@ -52223,6 +52223,8 @@ type FeedbackMutation struct {
 	content           *string
 	_type             *uint8
 	add_type          *int8
+	source            *uint8
+	addsource         *int8
 	url               *[]string
 	appendurl         []string
 	name              *string
@@ -52597,6 +52599,62 @@ func (m *FeedbackMutation) ResetType() {
 	m.add_type = nil
 }
 
+// SetSource sets the "source" field.
+func (m *FeedbackMutation) SetSource(u uint8) {
+	m.source = &u
+	m.addsource = nil
+}
+
+// Source returns the value of the "source" field in the mutation.
+func (m *FeedbackMutation) Source() (r uint8, exists bool) {
+	v := m.source
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSource returns the old "source" field's value of the Feedback entity.
+// If the Feedback object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FeedbackMutation) OldSource(ctx context.Context) (v uint8, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSource is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSource requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSource: %w", err)
+	}
+	return oldValue.Source, nil
+}
+
+// AddSource adds u to the "source" field.
+func (m *FeedbackMutation) AddSource(u int8) {
+	if m.addsource != nil {
+		*m.addsource += u
+	} else {
+		m.addsource = &u
+	}
+}
+
+// AddedSource returns the value that was added to the "source" field in this mutation.
+func (m *FeedbackMutation) AddedSource() (r int8, exists bool) {
+	v := m.addsource
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetSource resets all changes to the "source" field.
+func (m *FeedbackMutation) ResetSource() {
+	m.source = nil
+	m.addsource = nil
+}
+
 // SetURL sets the "url" field.
 func (m *FeedbackMutation) SetURL(s []string) {
 	m.url = &s
@@ -52848,7 +52906,7 @@ func (m *FeedbackMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *FeedbackMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 10)
 	if m.created_at != nil {
 		fields = append(fields, feedback.FieldCreatedAt)
 	}
@@ -52866,6 +52924,9 @@ func (m *FeedbackMutation) Fields() []string {
 	}
 	if m._type != nil {
 		fields = append(fields, feedback.FieldType)
+	}
+	if m.source != nil {
+		fields = append(fields, feedback.FieldSource)
 	}
 	if m.url != nil {
 		fields = append(fields, feedback.FieldURL)
@@ -52896,6 +52957,8 @@ func (m *FeedbackMutation) Field(name string) (ent.Value, bool) {
 		return m.Content()
 	case feedback.FieldType:
 		return m.GetType()
+	case feedback.FieldSource:
+		return m.Source()
 	case feedback.FieldURL:
 		return m.URL()
 	case feedback.FieldName:
@@ -52923,6 +52986,8 @@ func (m *FeedbackMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldContent(ctx)
 	case feedback.FieldType:
 		return m.OldType(ctx)
+	case feedback.FieldSource:
+		return m.OldSource(ctx)
 	case feedback.FieldURL:
 		return m.OldURL(ctx)
 	case feedback.FieldName:
@@ -52980,6 +53045,13 @@ func (m *FeedbackMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetType(v)
 		return nil
+	case feedback.FieldSource:
+		v, ok := value.(uint8)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSource(v)
+		return nil
 	case feedback.FieldURL:
 		v, ok := value.([]string)
 		if !ok {
@@ -53012,6 +53084,9 @@ func (m *FeedbackMutation) AddedFields() []string {
 	if m.add_type != nil {
 		fields = append(fields, feedback.FieldType)
 	}
+	if m.addsource != nil {
+		fields = append(fields, feedback.FieldSource)
+	}
 	return fields
 }
 
@@ -53022,6 +53097,8 @@ func (m *FeedbackMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	case feedback.FieldType:
 		return m.AddedType()
+	case feedback.FieldSource:
+		return m.AddedSource()
 	}
 	return nil, false
 }
@@ -53037,6 +53114,13 @@ func (m *FeedbackMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddType(v)
+		return nil
+	case feedback.FieldSource:
+		v, ok := value.(int8)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddSource(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Feedback numeric field %s", name)
@@ -53115,6 +53199,9 @@ func (m *FeedbackMutation) ResetField(name string) error {
 		return nil
 	case feedback.FieldType:
 		m.ResetType()
+		return nil
+	case feedback.FieldSource:
+		m.ResetSource()
 		return nil
 	case feedback.FieldURL:
 		m.ResetURL()

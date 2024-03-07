@@ -32,6 +32,8 @@ type Feedback struct {
 	Content string `json:"content,omitempty"`
 	// 反馈类型
 	Type uint8 `json:"type,omitempty"`
+	// 反馈来源
+	Source uint8 `json:"source,omitempty"`
 	// 反馈图片
 	URL []string `json:"url,omitempty"`
 	// 姓名
@@ -88,7 +90,7 @@ func (*Feedback) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case feedback.FieldURL:
 			values[i] = new([]byte)
-		case feedback.FieldID, feedback.FieldEnterpriseID, feedback.FieldAgentID, feedback.FieldType:
+		case feedback.FieldID, feedback.FieldEnterpriseID, feedback.FieldAgentID, feedback.FieldType, feedback.FieldSource:
 			values[i] = new(sql.NullInt64)
 		case feedback.FieldContent, feedback.FieldName, feedback.FieldPhone:
 			values[i] = new(sql.NullString)
@@ -152,6 +154,12 @@ func (f *Feedback) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field type", values[i])
 			} else if value.Valid {
 				f.Type = uint8(value.Int64)
+			}
+		case feedback.FieldSource:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field source", values[i])
+			} else if value.Valid {
+				f.Source = uint8(value.Int64)
 			}
 		case feedback.FieldURL:
 			if value, ok := values[i].(*[]byte); !ok {
@@ -240,6 +248,9 @@ func (f *Feedback) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("type=")
 	builder.WriteString(fmt.Sprintf("%v", f.Type))
+	builder.WriteString(", ")
+	builder.WriteString("source=")
+	builder.WriteString(fmt.Sprintf("%v", f.Source))
 	builder.WriteString(", ")
 	builder.WriteString("url=")
 	builder.WriteString(fmt.Sprintf("%v", f.URL))

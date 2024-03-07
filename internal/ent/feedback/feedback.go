@@ -26,6 +26,8 @@ const (
 	FieldContent = "content"
 	// FieldType holds the string denoting the type field in the database.
 	FieldType = "type"
+	// FieldSource holds the string denoting the source field in the database.
+	FieldSource = "source"
 	// FieldURL holds the string denoting the url field in the database.
 	FieldURL = "url"
 	// FieldName holds the string denoting the name field in the database.
@@ -63,6 +65,7 @@ var Columns = []string{
 	FieldAgentID,
 	FieldContent,
 	FieldType,
+	FieldSource,
 	FieldURL,
 	FieldName,
 	FieldPhone,
@@ -87,6 +90,8 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 	// DefaultType holds the default value on creation for the "type" field.
 	DefaultType uint8
+	// DefaultSource holds the default value on creation for the "source" field.
+	DefaultSource uint8
 )
 
 // OrderOption defines the ordering options for the Feedback queries.
@@ -125,6 +130,11 @@ func ByContent(opts ...sql.OrderTermOption) OrderOption {
 // ByType orders the results by the type field.
 func ByType(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldType, opts...).ToFunc()
+}
+
+// BySource orders the results by the source field.
+func BySource(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSource, opts...).ToFunc()
 }
 
 // ByName orders the results by the name field.
