@@ -1178,7 +1178,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.FeedbackReq"
+                            "$ref": "#/definitions/definition.FeedbackReq"
                         }
                     }
                 ],
@@ -2501,6 +2501,30 @@ const docTemplate = `{
                 },
                 "uuid": {
                     "type": "string"
+                }
+            }
+        },
+        "definition.FeedbackReq": {
+            "type": "object",
+            "required": [
+                "content",
+                "type"
+            ],
+            "properties": {
+                "content": {
+                    "description": "反馈内容",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "反馈类型",
+                    "type": "integer"
+                },
+                "url": {
+                    "description": "反馈图片",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },
@@ -3872,30 +3896,6 @@ const docTemplate = `{
                 "time": {
                     "description": "换电时间",
                     "type": "string"
-                }
-            }
-        },
-        "model.FeedbackReq": {
-            "type": "object",
-            "properties": {
-                "content": {
-                    "description": "反馈内容",
-                    "type": "string"
-                },
-                "enterpriseID": {
-                    "description": "反馈用户团签id",
-                    "type": "integer"
-                },
-                "type": {
-                    "description": "反馈类型",
-                    "type": "integer"
-                },
-                "url": {
-                    "description": "反馈图片",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
                 }
             }
         },
