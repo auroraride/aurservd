@@ -3,6 +3,7 @@ package biz
 import (
 	"context"
 
+	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/pkg/snag"
@@ -24,7 +25,7 @@ func (s *feedbackBiz) RiderCreate(req *model.FeedbackReq, ri *ent.Rider) bool {
 	// 保存反馈信息
 	query := s.orm.Create().SetEnterpriseID(*ri.EnterpriseID).
 		SetContent(req.Content).
-		SetSource(model.SourceRider). // 反馈来源
+		SetSource(definition.SourceRider). // 反馈来源
 		SetType(req.Type).
 		SetURL(req.Url).
 		SetName(ri.Name).

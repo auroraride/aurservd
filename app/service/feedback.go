@@ -11,6 +11,7 @@ import (
 	"github.com/golang-module/carbon/v2"
 	"github.com/labstack/echo/v4"
 
+	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ali"
 	"github.com/auroraride/aurservd/internal/ent"
@@ -47,7 +48,7 @@ func (s *feedbackService) QueryX(id uint64) *ent.Feedback {
 func (s *feedbackService) Create(req *model.FeedbackReq, ag *ent.Agent) bool {
 	_, err := s.orm.Create().SetEnterpriseID(ag.EnterpriseID).
 		SetContent(req.Content).
-		SetSource(model.SourceAgent). // 反馈来源
+		SetSource(definition.SourceAgent). // 反馈来源
 		SetType(req.Type).
 		SetURL(req.Url).
 		SetName(ag.Name).

@@ -10,6 +10,7 @@ import (
 
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/biz"
+	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
 )
@@ -91,7 +92,7 @@ func (*setting) LegalSave(c echo.Context) (err error) {
 // @Param	X-Manager-Token	header		string			true	"管理员校验token"
 // @Success	200				{object}	model.GuideRes	"请求成功"
 func (*setting) GuideList(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[model.GuideListReq](c)
+	ctx, req := app.ManagerContextAndBinding[definition.GuideListReq](c)
 	return ctx.SendResponse(biz.NewGuide().List(req))
 }
 
@@ -102,9 +103,9 @@ func (*setting) GuideList(c echo.Context) (err error) {
 // @Tags	[M]管理接口
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string		true	"管理员校验token"
-// @Param	id				path		string		true	"引导ID"
-// @Success	200				{object}	model.Guide	"请求成功"
+// @Param	X-Manager-Token	header		string					true	"管理员校验token"
+// @Param	id				path		string					true	"引导ID"
+// @Success	200				{object}	definition.GuideDetail	"请求成功"
 func (*setting) GuideGet(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
 	return ctx.SendResponse(biz.NewGuide().Get(req.ID))
@@ -118,10 +119,10 @@ func (*setting) GuideGet(c echo.Context) (err error) {
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
-// @Param	body			body		model.GuideSaveReq		true	"请求参数"
+// @Param	body			body		definition.GuideSaveReq	true	"请求参数"
 // @Success	200				{object}	model.StatusResponse	"请求成功"
 func (*setting) GuideSave(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[model.GuideSaveReq](c)
+	ctx, req := app.ManagerContextAndBinding[definition.GuideSaveReq](c)
 	detail := biz.NewGuide().Save(req)
 	return ctx.SendResponse(detail)
 }
@@ -149,11 +150,11 @@ func (*setting) GuideDelete(c echo.Context) (err error) {
 // @Tags	[M]管理接口
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string					true	"管理员校验token"
-// @Param	body			body		model.GuideModifyReq	true	"请求参数"
-// @Success	200				{object}	model.StatusResponse	"请求成功"
+// @Param	X-Manager-Token	header		string						true	"管理员校验token"
+// @Param	body			body		definition.GuideModifyReq	true	"请求参数"
+// @Success	200				{object}	model.StatusResponse		"请求成功"
 func (*setting) GuideModify(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[model.GuideModifyReq](c)
+	ctx, req := app.ManagerContextAndBinding[definition.GuideModifyReq](c)
 	biz.NewGuide().Modify(req)
 	return ctx.SendResponse()
 }

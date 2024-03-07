@@ -7,7 +7,9 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-var Rider = new(rider)
+var Feedback = new(feedback)
+
+type feedback struct{}
 
 // Feedback
 // @ID		RiderFeedback
@@ -19,7 +21,7 @@ var Rider = new(rider)
 // @Param	X-Rider-Token	header		string				true	"骑手校验token"
 // @Param	body			body		model.FeedbackReq	true	"反馈内容"
 // @Success	200				{object}	bool				"请求成功"
-func (*rider) Feedback(c echo.Context) (err error) {
+func (*feedback) Feedback(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[model.FeedbackReq](c)
 	return ctx.SendResponse(biz.NewFeedback().RiderCreate(req, ctx.Rider))
 }

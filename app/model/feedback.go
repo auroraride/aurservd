@@ -1,10 +1,5 @@
 package model
 
-const (
-	SourceRider = uint8(iota) + 1 // 骑手
-	SourceAgent                   // 代理
-)
-
 // FeedbackReq 新增反馈记录请求参数
 type FeedbackReq struct {
 	// 反馈内容

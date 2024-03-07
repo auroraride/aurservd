@@ -12,7 +12,7 @@ var Guide = new(guide)
 
 // List
 // @ID		guideList
-// @Router	/rider/v2/guide/list [POST]
+// @Router	/rider/v2/guide [Get]
 // @Summary	新手引导
 // @Tags	Guide - 新手引导
 // @Accept	json
