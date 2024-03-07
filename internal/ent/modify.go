@@ -51,6 +51,13 @@ func EntitySetAttributes[T, O any](client *T, entity *O, data any) *T {
 	return client
 }
 
+// ModifyOne returns an update with pointer struct builder for Advert.
+func (c *AdvertClient) ModifyOne(old *Advert, data any) *AdvertUpdateOne {
+	mutation := newAdvertMutation(c.config, OpUpdateOne, withAdvert(old))
+	up := &AdvertUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[AdvertUpdateOne, Advert](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for Agent.
 func (c *AgentClient) ModifyOne(old *Agent, data any) *AgentUpdateOne {
 	mutation := newAgentMutation(c.config, OpUpdateOne, withAgent(old))

@@ -15,6 +15,7 @@ import (
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/auroraride/aurservd/internal/ent/advert"
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
@@ -96,6 +97,8 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// Advert is the client for interacting with the Advert builders.
+	Advert *AdvertClient
 	// Agent is the client for interacting with the Agent builders.
 	Agent *AgentClient
 	// Allocate is the client for interacting with the Allocate builders.
@@ -251,6 +254,7 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.Advert = NewAdvertClient(c.config)
 	c.Agent = NewAgentClient(c.config)
 	c.Allocate = NewAllocateClient(c.config)
 	c.Assistance = NewAssistanceClient(c.config)
@@ -415,6 +419,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	return &Tx{
 		ctx:                        ctx,
 		config:                     cfg,
+		Advert:                     NewAdvertClient(cfg),
 		Agent:                      NewAgentClient(cfg),
 		Allocate:                   NewAllocateClient(cfg),
 		Assistance:                 NewAssistanceClient(cfg),
@@ -506,6 +511,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	return &Tx{
 		ctx:                        ctx,
 		config:                     cfg,
+		Advert:                     NewAdvertClient(cfg),
 		Agent:                      NewAgentClient(cfg),
 		Allocate:                   NewAllocateClient(cfg),
 		Assistance:                 NewAssistanceClient(cfg),
@@ -584,7 +590,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Agent.
+//		Advert.
 //		Query().
 //		Count(ctx)
 func (c *Client) Debug() *Client {
@@ -607,11 +613,11 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
-		c.Agent, c.Allocate, c.Assistance, c.Attendance, c.Battery, c.BatteryFlow,
-		c.BatteryModel, c.Branch, c.BranchContract, c.Business, c.Cabinet,
-		c.CabinetFault, c.City, c.Commission, c.Contract, c.Coupon, c.CouponAssembly,
-		c.CouponTemplate, c.Ebike, c.EbikeBrand, c.Employee, c.Enterprise,
-		c.EnterpriseBatterySwap, c.EnterpriseBill, c.EnterpriseContract,
+		c.Advert, c.Agent, c.Allocate, c.Assistance, c.Attendance, c.Battery,
+		c.BatteryFlow, c.BatteryModel, c.Branch, c.BranchContract, c.Business,
+		c.Cabinet, c.CabinetFault, c.City, c.Commission, c.Contract, c.Coupon,
+		c.CouponAssembly, c.CouponTemplate, c.Ebike, c.EbikeBrand, c.Employee,
+		c.Enterprise, c.EnterpriseBatterySwap, c.EnterpriseBill, c.EnterpriseContract,
 		c.EnterprisePrepayment, c.EnterprisePrice, c.EnterpriseStatement,
 		c.EnterpriseStation, c.Exception, c.Exchange, c.Export, c.Feedback, c.Guide,
 		c.Inventory, c.Maintainer, c.Manager, c.Order, c.OrderRefund, c.Person, c.Plan,
@@ -632,11 +638,11 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.Agent, c.Allocate, c.Assistance, c.Attendance, c.Battery, c.BatteryFlow,
-		c.BatteryModel, c.Branch, c.BranchContract, c.Business, c.Cabinet,
-		c.CabinetFault, c.City, c.Commission, c.Contract, c.Coupon, c.CouponAssembly,
-		c.CouponTemplate, c.Ebike, c.EbikeBrand, c.Employee, c.Enterprise,
-		c.EnterpriseBatterySwap, c.EnterpriseBill, c.EnterpriseContract,
+		c.Advert, c.Agent, c.Allocate, c.Assistance, c.Attendance, c.Battery,
+		c.BatteryFlow, c.BatteryModel, c.Branch, c.BranchContract, c.Business,
+		c.Cabinet, c.CabinetFault, c.City, c.Commission, c.Contract, c.Coupon,
+		c.CouponAssembly, c.CouponTemplate, c.Ebike, c.EbikeBrand, c.Employee,
+		c.Enterprise, c.EnterpriseBatterySwap, c.EnterpriseBill, c.EnterpriseContract,
 		c.EnterprisePrepayment, c.EnterprisePrice, c.EnterpriseStatement,
 		c.EnterpriseStation, c.Exception, c.Exchange, c.Export, c.Feedback, c.Guide,
 		c.Inventory, c.Maintainer, c.Manager, c.Order, c.OrderRefund, c.Person, c.Plan,
@@ -656,6 +662,8 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 // Mutate implements the ent.Mutator interface.
 func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
+	case *AdvertMutation:
+		return c.Advert.mutate(ctx, m)
 	case *AgentMutation:
 		return c.Agent.mutate(ctx, m)
 	case *AllocateMutation:
@@ -802,6 +810,140 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.SubscribeSuspend.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
+	}
+}
+
+// AdvertClient is a client for the Advert schema.
+type AdvertClient struct {
+	config
+}
+
+// NewAdvertClient returns a client for the Advert from the given config.
+func NewAdvertClient(c config) *AdvertClient {
+	return &AdvertClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `advert.Hooks(f(g(h())))`.
+func (c *AdvertClient) Use(hooks ...Hook) {
+	c.hooks.Advert = append(c.hooks.Advert, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `advert.Intercept(f(g(h())))`.
+func (c *AdvertClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Advert = append(c.inters.Advert, interceptors...)
+}
+
+// Create returns a builder for creating a Advert entity.
+func (c *AdvertClient) Create() *AdvertCreate {
+	mutation := newAdvertMutation(c.config, OpCreate)
+	return &AdvertCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Advert entities.
+func (c *AdvertClient) CreateBulk(builders ...*AdvertCreate) *AdvertCreateBulk {
+	return &AdvertCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *AdvertClient) MapCreateBulk(slice any, setFunc func(*AdvertCreate, int)) *AdvertCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &AdvertCreateBulk{err: fmt.Errorf("calling to AdvertClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*AdvertCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &AdvertCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Advert.
+func (c *AdvertClient) Update() *AdvertUpdate {
+	mutation := newAdvertMutation(c.config, OpUpdate)
+	return &AdvertUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AdvertClient) UpdateOne(a *Advert) *AdvertUpdateOne {
+	mutation := newAdvertMutation(c.config, OpUpdateOne, withAdvert(a))
+	return &AdvertUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AdvertClient) UpdateOneID(id uint64) *AdvertUpdateOne {
+	mutation := newAdvertMutation(c.config, OpUpdateOne, withAdvertID(id))
+	return &AdvertUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Advert.
+func (c *AdvertClient) Delete() *AdvertDelete {
+	mutation := newAdvertMutation(c.config, OpDelete)
+	return &AdvertDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *AdvertClient) DeleteOne(a *Advert) *AdvertDeleteOne {
+	return c.DeleteOneID(a.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *AdvertClient) DeleteOneID(id uint64) *AdvertDeleteOne {
+	builder := c.Delete().Where(advert.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AdvertDeleteOne{builder}
+}
+
+// Query returns a query builder for Advert.
+func (c *AdvertClient) Query() *AdvertQuery {
+	return &AdvertQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeAdvert},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Advert entity by its id.
+func (c *AdvertClient) Get(ctx context.Context, id uint64) (*Advert, error) {
+	return c.Query().Where(advert.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AdvertClient) GetX(ctx context.Context, id uint64) *Advert {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *AdvertClient) Hooks() []Hook {
+	hooks := c.hooks.Advert
+	return append(hooks[:len(hooks):len(hooks)], advert.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *AdvertClient) Interceptors() []Interceptor {
+	return c.inters.Advert
+}
+
+func (c *AdvertClient) mutate(ctx context.Context, m *AdvertMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AdvertCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AdvertUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AdvertUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AdvertDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Advert mutation op: %q", m.Op())
 	}
 }
 
@@ -15210,13 +15352,13 @@ func (c *SubscribeSuspendClient) mutate(ctx context.Context, m *SubscribeSuspend
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Agent, Allocate, Assistance, Attendance, Battery, BatteryFlow, BatteryModel,
-		Branch, BranchContract, Business, Cabinet, CabinetFault, City, Commission,
-		Contract, Coupon, CouponAssembly, CouponTemplate, Ebike, EbikeBrand, Employee,
-		Enterprise, EnterpriseBatterySwap, EnterpriseBill, EnterpriseContract,
-		EnterprisePrepayment, EnterprisePrice, EnterpriseStatement, EnterpriseStation,
-		Exception, Exchange, Export, Feedback, Guide, Inventory, Maintainer, Manager,
-		Order, OrderRefund, Person, Plan, PlanIntroduce, PointLog,
+		Advert, Agent, Allocate, Assistance, Attendance, Battery, BatteryFlow,
+		BatteryModel, Branch, BranchContract, Business, Cabinet, CabinetFault, City,
+		Commission, Contract, Coupon, CouponAssembly, CouponTemplate, Ebike,
+		EbikeBrand, Employee, Enterprise, EnterpriseBatterySwap, EnterpriseBill,
+		EnterpriseContract, EnterprisePrepayment, EnterprisePrice, EnterpriseStatement,
+		EnterpriseStation, Exception, Exchange, Export, Feedback, Guide, Inventory,
+		Maintainer, Manager, Order, OrderRefund, Person, Plan, PlanIntroduce, PointLog,
 		PromotionAchievement, PromotionBankCard, PromotionCommission,
 		PromotionCommissionPlan, PromotionEarnings, PromotionGrowth, PromotionLevel,
 		PromotionLevelTask, PromotionMember, PromotionMemberCommission,
@@ -15226,13 +15368,13 @@ type (
 		SubscribeAlter, SubscribePause, SubscribeReminder, SubscribeSuspend []ent.Hook
 	}
 	inters struct {
-		Agent, Allocate, Assistance, Attendance, Battery, BatteryFlow, BatteryModel,
-		Branch, BranchContract, Business, Cabinet, CabinetFault, City, Commission,
-		Contract, Coupon, CouponAssembly, CouponTemplate, Ebike, EbikeBrand, Employee,
-		Enterprise, EnterpriseBatterySwap, EnterpriseBill, EnterpriseContract,
-		EnterprisePrepayment, EnterprisePrice, EnterpriseStatement, EnterpriseStation,
-		Exception, Exchange, Export, Feedback, Guide, Inventory, Maintainer, Manager,
-		Order, OrderRefund, Person, Plan, PlanIntroduce, PointLog,
+		Advert, Agent, Allocate, Assistance, Attendance, Battery, BatteryFlow,
+		BatteryModel, Branch, BranchContract, Business, Cabinet, CabinetFault, City,
+		Commission, Contract, Coupon, CouponAssembly, CouponTemplate, Ebike,
+		EbikeBrand, Employee, Enterprise, EnterpriseBatterySwap, EnterpriseBill,
+		EnterpriseContract, EnterprisePrepayment, EnterprisePrice, EnterpriseStatement,
+		EnterpriseStation, Exception, Exchange, Export, Feedback, Guide, Inventory,
+		Maintainer, Manager, Order, OrderRefund, Person, Plan, PlanIntroduce, PointLog,
 		PromotionAchievement, PromotionBankCard, PromotionCommission,
 		PromotionCommissionPlan, PromotionEarnings, PromotionGrowth, PromotionLevel,
 		PromotionLevelTask, PromotionMember, PromotionMemberCommission,

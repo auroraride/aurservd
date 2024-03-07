@@ -9,6 +9,38 @@ import (
 )
 
 var (
+	// AdvertColumns holds the columns for the "advert" table.
+	AdvertColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
+		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
+		{Name: "name", Type: field.TypeString, Comment: "名称"},
+		{Name: "image", Type: field.TypeString, Comment: "图片"},
+		{Name: "link", Type: field.TypeString, Comment: "连接"},
+		{Name: "sort", Type: field.TypeInt, Comment: "排序", Default: 0},
+	}
+	// AdvertTable holds the schema information for the "advert" table.
+	AdvertTable = &schema.Table{
+		Name:       "advert",
+		Columns:    AdvertColumns,
+		PrimaryKey: []*schema.Column{AdvertColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "advert_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{AdvertColumns[1]},
+			},
+			{
+				Name:    "advert_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{AdvertColumns[3]},
+			},
+		},
+	}
 	// AgentColumns holds the columns for the "agent" table.
 	AgentColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -5625,6 +5657,7 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		AdvertTable,
 		AgentTable,
 		AllocateTable,
 		AssistanceTable,
@@ -5705,6 +5738,9 @@ var (
 )
 
 func init() {
+	AdvertTable.Annotation = &entsql.Annotation{
+		Table: "advert",
+	}
 	AgentTable.ForeignKeys[0].RefTable = EnterpriseTable
 	AgentTable.ForeignKeys[1].RefTable = EnterpriseTable
 	AgentTable.Annotation = &entsql.Annotation{

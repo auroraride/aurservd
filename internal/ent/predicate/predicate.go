@@ -6,6 +6,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// Advert is the predicate function for advert builders.
+type Advert func(*sql.Selector)
+
 // Agent is the predicate function for agent builders.
 type Agent func(*sql.Selector)
 

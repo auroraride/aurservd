@@ -6,6 +6,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/auroraride/aurservd/internal/ent/advert"
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/attendance"
@@ -54,6 +55,46 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
 )
+
+// SoftDelete returns an soft delete builder for Advert.
+func (c *AdvertClient) SoftDelete() *AdvertUpdate {
+	mutation := newAdvertMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &AdvertUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *AdvertClient) SoftDeleteOne(a *Advert) *AdvertUpdateOne {
+	mutation := newAdvertMutation(c.config, OpUpdateOne, withAdvert(a))
+	mutation.SetDeletedAt(time.Now())
+	return &AdvertUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *AdvertClient) SoftDeleteOneID(id uint64) *AdvertUpdateOne {
+	mutation := newAdvertMutation(c.config, OpUpdateOne, withAdvertID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &AdvertUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for Advert.
+func (c *AdvertClient) QueryNotDeleted() *AdvertQuery {
+	return c.Query().Where(advert.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a Advert not deleted entity by its id.
+func (c *AdvertClient) GetNotDeleted(ctx context.Context, id uint64) (*Advert, error) {
+	return c.Query().Where(advert.ID(id), advert.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *AdvertClient) GetNotDeletedX(ctx context.Context, id uint64) *Advert {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
 
 // SoftDelete returns an soft delete builder for Agent.
 func (c *AgentClient) SoftDelete() *AgentUpdate {
