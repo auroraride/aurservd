@@ -157,6 +157,7 @@ type BranchWithDistanceRes struct {
 	Address     string                     `json:"address"`  // 网点地址
 	Facility    []*BranchFacility          `json:"facility"` // 网点设施
 	FacilityMap map[string]*BranchFacility `json:"-" swaggerignore:"true"`
+	Businesses  []string                   `json:"businesses"` // 可办理业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
 }
 
 // BranchRidingReq 骑行规划时间请求
