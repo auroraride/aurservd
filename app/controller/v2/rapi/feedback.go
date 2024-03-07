@@ -28,7 +28,7 @@ func (*feedback) Feedback(c echo.Context) (err error) {
 }
 
 // FeedbackImage
-// @ID		AgentMiscFeedbackImage
+// @ID		RiderFeedbackImage
 // @Router	/rider/v2/feedback/image [POST]
 // @Summary	意见反馈上传图片
 // @Tags	Rider - 图片接口
