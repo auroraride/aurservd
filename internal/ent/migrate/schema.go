@@ -2797,6 +2797,37 @@ var (
 			},
 		},
 	}
+	// GuideColumns holds the columns for the "guide" table.
+	GuideColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
+		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
+		{Name: "name", Type: field.TypeString, Comment: "名称"},
+		{Name: "sort", Type: field.TypeUint8, Comment: "排序", Default: 0},
+		{Name: "answer", Type: field.TypeString, Comment: "答案"},
+	}
+	// GuideTable holds the schema information for the "guide" table.
+	GuideTable = &schema.Table{
+		Name:       "guide",
+		Columns:    GuideColumns,
+		PrimaryKey: []*schema.Column{GuideColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "guide_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{GuideColumns[1]},
+			},
+			{
+				Name:    "guide_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{GuideColumns[3]},
+			},
+		},
+	}
 	// InventoryColumns holds the columns for the "inventory" table.
 	InventoryColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -5626,6 +5657,7 @@ var (
 		ExchangeTable,
 		ExportTable,
 		FeedbackTable,
+		GuideTable,
 		InventoryTable,
 		MaintainerTable,
 		ManagerTable,
@@ -5882,6 +5914,9 @@ func init() {
 	FeedbackTable.ForeignKeys[1].RefTable = AgentTable
 	FeedbackTable.Annotation = &entsql.Annotation{
 		Table: "feedback",
+	}
+	GuideTable.Annotation = &entsql.Annotation{
+		Table: "guide",
 	}
 	InventoryTable.Annotation = &entsql.Annotation{
 		Table: "inventory",

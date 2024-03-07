@@ -32,6 +32,13 @@ func loadManagerRoutes() {
 	g.GET("/setting/legal/:name", mapi.Setting.LegalRead)
 	g.POST("/setting/legal", mapi.Setting.LegalSave)
 
+	// 设置-新手引导
+	g.GET("/guideList", mapi.Setting.GuideList)      // 列表
+	g.GET("/guide/:id", mapi.Setting.GuideGet)       // 详情
+	g.POST("/guide", mapi.Setting.GuideSave)         // 新增
+	g.PUT("/guide", mapi.Setting.GuideModify)        // 编辑
+	g.DELETE("/guide/:id", mapi.Setting.GuideDelete) // 删除
+
 	// 城市
 	g.GET("/city", mapi.City.List)       // 城市列表
 	g.PUT("/city/:id", mapi.City.Modify) // 启用或关闭城市

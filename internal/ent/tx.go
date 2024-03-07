@@ -80,6 +80,8 @@ type Tx struct {
 	Export *ExportClient
 	// Feedback is the client for interacting with the Feedback builders.
 	Feedback *FeedbackClient
+	// Guide is the client for interacting with the Guide builders.
+	Guide *GuideClient
 	// Inventory is the client for interacting with the Inventory builders.
 	Inventory *InventoryClient
 	// Maintainer is the client for interacting with the Maintainer builders.
@@ -320,6 +322,7 @@ func (tx *Tx) init() {
 	tx.Exchange = NewExchangeClient(tx.config)
 	tx.Export = NewExportClient(tx.config)
 	tx.Feedback = NewFeedbackClient(tx.config)
+	tx.Guide = NewGuideClient(tx.config)
 	tx.Inventory = NewInventoryClient(tx.config)
 	tx.Maintainer = NewMaintainerClient(tx.config)
 	tx.Manager = NewManagerClient(tx.config)

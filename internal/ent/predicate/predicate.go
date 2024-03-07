@@ -105,6 +105,9 @@ type Export func(*sql.Selector)
 // Feedback is the predicate function for feedback builders.
 type Feedback func(*sql.Selector)
 
+// Guide is the predicate function for guide builders.
+type Guide func(*sql.Selector)
+
 // Inventory is the predicate function for inventory builders.
 type Inventory func(*sql.Selector)
 
