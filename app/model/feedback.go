@@ -49,7 +49,7 @@ type FeedbackDetail struct {
 	// 反馈来源
 	Source uint8 `json:"source"`
 	// 反馈用户团签id
-	EnterpriseID int64 `json:"enterpriseID"`
+	EnterpriseID *uint64 `json:"enterpriseID"`
 	// 反馈用户团签名称
 	EnterpriseName string `json:"enterpriseName"`
 	// 反馈用户团签联系人

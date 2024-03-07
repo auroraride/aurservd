@@ -15,7 +15,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ali"
 	"github.com/auroraride/aurservd/internal/ent"
 	"github.com/auroraride/aurservd/internal/ent/feedback"
-	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/pkg/snag"
 	"github.com/auroraride/aurservd/pkg/tools"
 )
@@ -62,11 +61,6 @@ func (s *feedbackService) Create(req *model.FeedbackReq, ag *ent.Agent) bool {
 
 // RiderCreate 骑手创建反馈
 func (s *feedbackService) RiderCreate(req *model.FeedbackReq, ri *ent.Rider) bool {
-	// 查询该骑手下最新的订阅
-	sub := ent.Database.Subscribe.Query().
-		Select(feedback.FieldEnterpriseID).
-		Where(subscribe.RiderID(ri.ID)).
-		Order(ent.Desc(subscribe.FieldCreatedAt)).FirstX(s.ctx)
 	// 保存反馈信息
 	query := s.orm.Create().SetEnterpriseID(*ri.EnterpriseID).
 		SetContent(req.Content).
@@ -75,9 +69,6 @@ func (s *feedbackService) RiderCreate(req *model.FeedbackReq, ri *ent.Rider) boo
 		SetURL(req.Url).
 		SetName(ri.Name).
 		SetPhone(ri.Phone)
-	if sub != nil {
-		query.SetEnterpriseID(*sub.EnterpriseID)
-	}
 	if query.Exec(s.ctx) != nil {
 		snag.Panic("添加失败")
 	}
@@ -102,14 +93,16 @@ func (s *feedbackService) FeedbackList(req *model.FeedbackListReq) *model.Pagina
 	}
 
 	// 是否团签, 0:全部 1:团签 2:个签
-	if req.Enterprise != nil {
+	if req.Enterprise != nil && *req.Enterprise != 0 {
 		if *req.Enterprise == 1 {
-			if req.EnterpriseID == nil {
+			// 未传企业ID时，默认查询所有带有团签的反馈（企业ID不为空）
+			if req.EnterpriseID == nil || *req.EnterpriseID == 0 {
 				q.Where(feedback.EnterpriseIDNotNil())
 			} else {
 				q.Where(feedback.EnterpriseID(*req.EnterpriseID))
 			}
 		} else {
+			// 个签
 			q.Where(feedback.EnterpriseIDIsNil())
 		}
 	}
@@ -126,15 +119,14 @@ func (s *feedbackService) FeedbackList(req *model.FeedbackListReq) *model.Pagina
 		q.Where(feedback.CreatedAtLT(tools.NewTime().ParseNextDateStringX(*req.End)))
 	}
 
-	if req.EnterpriseID != nil {
-		q.Where(feedback.EnterpriseID(*req.EnterpriseID))
-	}
 	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Feedback) model.FeedbackDetail {
 		rsp := model.FeedbackDetail{
 			ID:                     item.ID,
 			Content:                item.Content,
 			Url:                    item.URL,
 			Type:                   item.Type,
+			Source:                 item.Source,
+			EnterpriseID:           &item.Edges.Enterprise.ID,
 			EnterpriseName:         item.Edges.Enterprise.Name,
 			EnterpriseContactName:  item.Name,
 			EnterpriseContactPhone: item.Phone,

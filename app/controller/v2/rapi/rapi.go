@@ -18,7 +18,7 @@ import (
 
 var Rider = new(rider)
 
-// FeedBack
+// Feedback
 // @ID		RiderFeedback
 // @Router	/rider/v2/feedback [POST]
 // @Summary	AZ001 意见反馈
