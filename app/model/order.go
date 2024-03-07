@@ -21,6 +21,8 @@ const (
 	OrderPaywayAlipay                        // 支付宝支付
 	OrderPaywayWechat                        // 微信支付
 	OrderPaywayAlipayAuthFreeze              // 支付宝预授权支付
+	OrderPaywayWechatPayScore                // 微信支付分支付
+	OrderPaywayAlipayZmFreeze                // 支付宝芝麻免押
 )
 
 const (

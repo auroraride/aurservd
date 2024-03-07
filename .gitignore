@@ -97,3 +97,4 @@ fabric.properties
 /runtime
 /build
 /debug
+/.idea/golinter.xml

@@ -26,3 +26,19 @@ func (*order) Create(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[model.OrderCreateReq](c)
 	return ctx.SendResponse(service.NewOrderWithRider(ctx.Rider).Create(req))
 }
+
+// DepositFree 免押金支付
+// @ID		OrderDepositFree
+// @Router	/rider/v2/order/depositfree [POST]
+// @Summary	免押金支付
+// @Tags	Order - 订单
+// @Accept	json
+// @Produce	json
+// @Param	X-Rider-Token	header		string					true	"骑手校验token"
+// @Param	body			body		definition.OrderDepositFreeReq	true	"免押金支付请求"
+// @Success	200				{object}	definition.OrderDepositFreeRes	"请求成功"
+func (*order) DepositFree(c echo.Context) (err error) {
+	// ctx, req := app.RiderContextAndBinding[definition.OrderDepositFreeReq](c)
+	// return ctx.SendResponse(biz.NewOrder().DepositFree(ctx.Rider, req))
+	return nil
+}

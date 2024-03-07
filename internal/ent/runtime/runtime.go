@@ -1060,6 +1060,10 @@ func init() {
 	planDescIntelligent := planFields[14].Descriptor()
 	// plan.DefaultIntelligent holds the default value on creation for the intelligent field.
 	plan.DefaultIntelligent = planDescIntelligent.Default.(bool)
+	// planDescDeposit is the schema descriptor for deposit field.
+	planDescDeposit := planFields[15].Descriptor()
+	// plan.DefaultDeposit holds the default value on creation for the deposit field.
+	plan.DefaultDeposit = planDescDeposit.Default.(bool)
 	planintroduceMixin := schema.PlanIntroduce{}.Mixin()
 	planintroduceMixinFields0 := planintroduceMixin[0].Fields()
 	_ = planintroduceMixinFields0

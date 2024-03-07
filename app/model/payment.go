@@ -17,6 +17,7 @@ const (
 	PaymentCacheTypeOverdueFee                  // 欠费订单
 	PaymentCacheTypeAssistance                  // 救援订单
 	PaymentCacheTypeAgentPrepay                 // 代理商预储值
+	PaymentCacheTypeDepositFree                 // 押金免押
 )
 
 // PaymentSubscribe 购买骑士卡订单
@@ -97,6 +98,14 @@ type PaymentAgentPrepay struct {
 	Attach     string `json:"attach,omitempty"`  // 订单备注
 }
 
+// DepositFree 押金免押订单
+type DepositFree struct {
+	PlanID     uint64 `json:"planId"` // 套餐ID
+	Payway     uint8  `json:"payway"`
+	OutTradeNo string `json:"outTradeNo"`
+	TradeNo    string `json:"tradeNo,omitempty"` // 支付单号
+}
+
 // PaymentCache 支付缓存
 type PaymentCache struct {
 	CacheType   uint                `json:"cacheType"`             // 订单类型
@@ -105,6 +114,7 @@ type PaymentCache struct {
 	OverDueFee  *PaymentOverdueFee  `json:"overDueFee,omitempty"`  // 逾期费用订单
 	Assistance  *PaymentAssistance  `json:"assistance,omitempty"`  // 救援订单
 	AgentPrepay *PaymentAgentPrepay `json:"agentPrepay,omitempty"` // 代理商预充值
+	DepositFree *DepositFree        `json:"depositFree,omitempty"` // 押金免押订单
 }
 
 func (pc *PaymentCache) MarshalBinary() ([]byte, error) {

@@ -218,18 +218,37 @@ func (c *alipayClient) Notification(req *http.Request) *model.PaymentCache {
 func (c *alipayClient) FandAuthFreeze(pc *model.PaymentCache) (string, error) {
 	cfg := ar.Config.Payment.AlipayAuthFreeze
 	amount, subject, no, _ := pc.GetPaymentArgs()
-	trade := alipay.FundAuthOrderAppFreeze{
-		OutOrderNo:   no,
-		OutRequestNo: no,
-		OrderTitle:   subject,
-		NotifyURL:    cfg.NotifyUrl,
-		Amount:       fmt.Sprintf("%.2f", amount),
-		ProductCode:  "PRE_AUTH_ONLINE",
-		PayTimeout:   "10m",
+	trade := FundAuthOrderAppFreeze{
+		FundAuthOrderAppFreeze: alipay.FundAuthOrderAppFreeze{
+			OutOrderNo:   no,
+			OutRequestNo: no,
+			OrderTitle:   subject,
+			NotifyURL:    cfg.NotifyUrl,
+			Amount:       fmt.Sprintf("%.2f", amount),
+			ProductCode:  "PRE_AUTH_ONLINE",
+			PayTimeout:   "20m",
+		},
+		// 目前为纯免押  有后付金额已经知POSTPAY
+		DepositProductMode: "DEPOSIT_ONLY",
+	}
+
+	// 芝麻信用免押金
+	if pc.CacheType == model.PaymentCacheTypeDepositFree {
+		trade.ExtraParam = fmt.Sprintf(`{"category":"%s","serviceId":"%s"}`, cfg.Category, cfg.ServiceId)
 	}
 
 	res, err := c.FundAuthOrderAppFreeze(trade)
 	return res, err
+}
+
+type FundAuthOrderAppFreeze struct {
+	alipay.FundAuthOrderAppFreeze
+	// 免押受理台模式，根据免押不同业务模式将开通受理台区分三种模式，商家可根据调用预授权冻结接口传入的参数决定该笔免押订单使用哪种受理台模式。不同受理台模式需要传入不同参数，其中：POSTPAY 表示后付金额已知，POSTPAY_UNCERTAIN 表示后付金额未知，DEPOSIT_ONLY 表示纯免押。
+	DepositProductMode string `json:"deposit_product_mode,omitempty"`
+}
+
+func (c *alipayClient) FundAuthOrderAppFreeze(param FundAuthOrderAppFreeze) (result string, err error) {
+	return c.EncodeParam(param)
 }
 
 // NotificationFandAuthFreeze 资金授权冻结回调
