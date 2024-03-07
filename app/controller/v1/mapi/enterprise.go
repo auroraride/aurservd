@@ -9,6 +9,7 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
 )
@@ -383,9 +384,9 @@ func (*enterprise) SubscribeApply(c echo.Context) (err error) {
 // @Tags	[M]管理接口
 // @Accept	json
 // @Produce	json
-// @Param	body	body		model.FeedbackListReq	true	"反馈列表请求"
+// @Param	body	body		definition.FeedbackListReq	true	"反馈列表请求"
 // @Success	200		{object}	model.PaginationRes{items=[]model.FeedbackDetail}
 func (*enterprise) FeedbackList(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[model.FeedbackListReq](c)
+	ctx, req := app.ManagerContextAndBinding[definition.FeedbackListReq](c)
 	return ctx.SendResponse(service.NewFeedback().FeedbackList(req))
 }

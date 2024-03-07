@@ -45,7 +45,7 @@ func (s *feedbackService) QueryX(id uint64) *ent.Feedback {
 }
 
 // Create 创建反馈
-func (s *feedbackService) Create(req *model.FeedbackReq, ag *ent.Agent) bool {
+func (s *feedbackService) Create(req *definition.FeedbackReq, ag *ent.Agent) bool {
 	_, err := s.orm.Create().SetEnterpriseID(ag.EnterpriseID).
 		SetContent(req.Content).
 		SetSource(definition.SourceAgent). // 反馈来源
@@ -61,7 +61,7 @@ func (s *feedbackService) Create(req *model.FeedbackReq, ag *ent.Agent) bool {
 }
 
 // FeedbackList List 反馈列表
-func (s *feedbackService) FeedbackList(req *model.FeedbackListReq) *model.PaginationRes {
+func (s *feedbackService) FeedbackList(req *definition.FeedbackListReq) *model.PaginationRes {
 	q := s.orm.Query().WithEnterprise().Order(ent.Desc(feedback.FieldCreatedAt))
 	// 筛选条件
 	if req.Keyword != "" {
@@ -104,8 +104,8 @@ func (s *feedbackService) FeedbackList(req *model.FeedbackListReq) *model.Pagina
 		q.Where(feedback.CreatedAtLT(tools.NewTime().ParseNextDateStringX(*req.End)))
 	}
 
-	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Feedback) model.FeedbackDetail {
-		rsp := model.FeedbackDetail{
+	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Feedback) definition.FeedbackDetail {
+		rsp := definition.FeedbackDetail{
 			ID:                     item.ID,
 			Content:                item.Content,
 			Url:                    item.URL,
