@@ -100,6 +100,20 @@ func (fc *FeedbackCreate) SetNillableType(u *uint8) *FeedbackCreate {
 	return fc
 }
 
+// SetSource sets the "source" field.
+func (fc *FeedbackCreate) SetSource(u uint8) *FeedbackCreate {
+	fc.mutation.SetSource(u)
+	return fc
+}
+
+// SetNillableSource sets the "source" field if the given value is not nil.
+func (fc *FeedbackCreate) SetNillableSource(u *uint8) *FeedbackCreate {
+	if u != nil {
+		fc.SetSource(*u)
+	}
+	return fc
+}
+
 // SetURL sets the "url" field.
 func (fc *FeedbackCreate) SetURL(s []string) *FeedbackCreate {
 	fc.mutation.SetURL(s)
@@ -191,6 +205,10 @@ func (fc *FeedbackCreate) defaults() {
 		v := feedback.DefaultType
 		fc.mutation.SetType(v)
 	}
+	if _, ok := fc.mutation.Source(); !ok {
+		v := feedback.DefaultSource
+		fc.mutation.SetSource(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -206,6 +224,9 @@ func (fc *FeedbackCreate) check() error {
 	}
 	if _, ok := fc.mutation.GetType(); !ok {
 		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "Feedback.type"`)}
+	}
+	if _, ok := fc.mutation.Source(); !ok {
+		return &ValidationError{Name: "source", err: errors.New(`ent: missing required field "Feedback.source"`)}
 	}
 	return nil
 }
@@ -249,6 +270,10 @@ func (fc *FeedbackCreate) createSpec() (*Feedback, *sqlgraph.CreateSpec) {
 	if value, ok := fc.mutation.GetType(); ok {
 		_spec.SetField(feedback.FieldType, field.TypeUint8, value)
 		_node.Type = value
+	}
+	if value, ok := fc.mutation.Source(); ok {
+		_spec.SetField(feedback.FieldSource, field.TypeUint8, value)
+		_node.Source = value
 	}
 	if value, ok := fc.mutation.URL(); ok {
 		_spec.SetField(feedback.FieldURL, field.TypeJSON, value)
@@ -423,6 +448,24 @@ func (u *FeedbackUpsert) UpdateType() *FeedbackUpsert {
 // AddType adds v to the "type" field.
 func (u *FeedbackUpsert) AddType(v uint8) *FeedbackUpsert {
 	u.Add(feedback.FieldType, v)
+	return u
+}
+
+// SetSource sets the "source" field.
+func (u *FeedbackUpsert) SetSource(v uint8) *FeedbackUpsert {
+	u.Set(feedback.FieldSource, v)
+	return u
+}
+
+// UpdateSource sets the "source" field to the value that was provided on create.
+func (u *FeedbackUpsert) UpdateSource() *FeedbackUpsert {
+	u.SetExcluded(feedback.FieldSource)
+	return u
+}
+
+// AddSource adds v to the "source" field.
+func (u *FeedbackUpsert) AddSource(v uint8) *FeedbackUpsert {
+	u.Add(feedback.FieldSource, v)
 	return u
 }
 
@@ -613,6 +656,27 @@ func (u *FeedbackUpsertOne) AddType(v uint8) *FeedbackUpsertOne {
 func (u *FeedbackUpsertOne) UpdateType() *FeedbackUpsertOne {
 	return u.Update(func(s *FeedbackUpsert) {
 		s.UpdateType()
+	})
+}
+
+// SetSource sets the "source" field.
+func (u *FeedbackUpsertOne) SetSource(v uint8) *FeedbackUpsertOne {
+	return u.Update(func(s *FeedbackUpsert) {
+		s.SetSource(v)
+	})
+}
+
+// AddSource adds v to the "source" field.
+func (u *FeedbackUpsertOne) AddSource(v uint8) *FeedbackUpsertOne {
+	return u.Update(func(s *FeedbackUpsert) {
+		s.AddSource(v)
+	})
+}
+
+// UpdateSource sets the "source" field to the value that was provided on create.
+func (u *FeedbackUpsertOne) UpdateSource() *FeedbackUpsertOne {
+	return u.Update(func(s *FeedbackUpsert) {
+		s.UpdateSource()
 	})
 }
 
@@ -978,6 +1042,27 @@ func (u *FeedbackUpsertBulk) AddType(v uint8) *FeedbackUpsertBulk {
 func (u *FeedbackUpsertBulk) UpdateType() *FeedbackUpsertBulk {
 	return u.Update(func(s *FeedbackUpsert) {
 		s.UpdateType()
+	})
+}
+
+// SetSource sets the "source" field.
+func (u *FeedbackUpsertBulk) SetSource(v uint8) *FeedbackUpsertBulk {
+	return u.Update(func(s *FeedbackUpsert) {
+		s.SetSource(v)
+	})
+}
+
+// AddSource adds v to the "source" field.
+func (u *FeedbackUpsertBulk) AddSource(v uint8) *FeedbackUpsertBulk {
+	return u.Update(func(s *FeedbackUpsert) {
+		s.AddSource(v)
+	})
+}
+
+// UpdateSource sets the "source" field to the value that was provided on create.
+func (u *FeedbackUpsertBulk) UpdateSource() *FeedbackUpsertBulk {
+	return u.Update(func(s *FeedbackUpsert) {
+		s.UpdateSource()
 	})
 }
 

@@ -10,6 +10,7 @@ import (
 
 	"github.com/auroraride/aurservd/app"
 	"github.com/auroraride/aurservd/app/biz"
+	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
 )
@@ -82,52 +83,53 @@ func (*setting) LegalSave(c echo.Context) (err error) {
 }
 
 // GuideList
-// @ID		ManagerSettingGuide
+// @ID		SettingGuideList
 // @Router	/manager/v1/setting/guide [GET]
-// @Summary	M1018 获取引导
-// @Tags	[M]管理接口
+// @Summary	获取引导
+// @Tags	Setting - 管理接口
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string			true	"管理员校验token"
-// @Success	200				{object}	model.GuideRes	"请求成功"
+// @Param	X-Manager-Token	header		string					true	"管理员校验token"
+// @Param	body			body		definition.GuideListReq	true	"请求参数"
+// @Success	200				{object}	model.PaginationRes		"请求成功"
 func (*setting) GuideList(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[model.GuideListReq](c)
+	ctx, req := app.ManagerContextAndBinding[definition.GuideListReq](c)
 	return ctx.SendResponse(biz.NewGuide().List(req))
 }
 
 // GuideGet
-// @ID		ManagerSettingGuideGet
+// @ID		SettingGuideGet
 // @Router	/manager/v1/setting/guide/{id} [GET]
-// @Summary	M1019 获取指定引导
-// @Tags	[M]管理接口
+// @Summary	获取指定引导
+// @Tags	Setting - 管理接口
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string		true	"管理员校验token"
-// @Param	id				path		string		true	"引导ID"
-// @Success	200				{object}	model.Guide	"请求成功"
+// @Param	X-Manager-Token	header		string					true	"管理员校验token"
+// @Param	id				path		string					true	"引导ID"
+// @Success	200				{object}	definition.GuideDetail	"请求成功"
 func (*setting) GuideGet(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
 	return ctx.SendResponse(biz.NewGuide().Get(req.ID))
 }
 
 // GuideSave
-// @ID		ManagerSettingGuideSave
+// @ID		SettingGuideSave
 // @Router	/manager/v1/setting/guide [POST]
-// @Summary	M1020 保存引导
-// @Tags	[M]管理接口
+// @Summary	保存引导
+// @Tags	Setting - 管理接口
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
-// @Param	body			body		model.GuideSaveReq		true	"请求参数"
+// @Param	body			body		definition.GuideSaveReq	true	"请求参数"
 // @Success	200				{object}	model.StatusResponse	"请求成功"
 func (*setting) GuideSave(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[model.GuideSaveReq](c)
+	ctx, req := app.ManagerContextAndBinding[definition.GuideSaveReq](c)
 	detail := biz.NewGuide().Save(req)
 	return ctx.SendResponse(detail)
 }
 
 // GuideDelete
-// @ID		ManagerSettingGuideDelete
+// @ID		SettingGuideDelete
 // @Router	/manager/v1/setting/guide/{id} [DELETE]
 // @Summary	M1021 删除引导
 // @Tags	[M]管理接口
@@ -143,17 +145,17 @@ func (*setting) GuideDelete(c echo.Context) (err error) {
 }
 
 // GuideModify
-// @ID		ManagerSettingGuideModify
+// @ID		SettingGuideModify
 // @Router	/manager/v1/setting/guide [PUT]
 // @Summary	M1022 修改引导
 // @Tags	[M]管理接口
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string					true	"管理员校验token"
-// @Param	body			body		model.GuideModifyReq	true	"请求参数"
-// @Success	200				{object}	model.StatusResponse	"请求成功"
+// @Param	X-Manager-Token	header		string						true	"管理员校验token"
+// @Param	body			body		definition.GuideModifyReq	true	"请求参数"
+// @Success	200				{object}	model.StatusResponse		"请求成功"
 func (*setting) GuideModify(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[model.GuideModifyReq](c)
+	ctx, req := app.ManagerContextAndBinding[definition.GuideModifyReq](c)
 	biz.NewGuide().Modify(req)
 	return ctx.SendResponse()
 }

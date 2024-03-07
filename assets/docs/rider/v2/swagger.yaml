@@ -87,6 +87,19 @@ definitions:
         description: 库存电池
         type: integer
     type: object
+  definition.GuideDetail:
+    properties:
+      answer:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      remark:
+        type: string
+      sort:
+        type: integer
+    type: object
   definition.PersonCertificationFaceReq:
     properties:
       identity:
@@ -882,6 +895,23 @@ definitions:
       url:
         description: 实名认证跳转链接
         type: string
+    type: object
+  model.FeedbackReq:
+    properties:
+      content:
+        description: 反馈内容
+        type: string
+      type:
+        description: 反馈类型
+        type: integer
+      url:
+        description: 反馈图片
+        items:
+          type: string
+        type: array
+    required:
+    - content
+    - type
     type: object
   model.LngLat:
     properties:
@@ -3077,6 +3107,54 @@ paths:
       summary: R1005 获取人脸校验结果
       tags:
       - Rider - 骑手
+  /rider/v2/feedback:
+    post:
+      consumes:
+      - application/json
+      operationId: FeedbackCreate
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 反馈内容
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.FeedbackReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: 意见反馈
+      tags:
+      - Feedback - 反馈
+  /rider/v2/guide:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderList
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/definition.GuideDetail'
+      summary: 新手指引列表
+      tags:
+      - Guide - 新手引导
   /rider/v2/order:
     get:
       consumes:

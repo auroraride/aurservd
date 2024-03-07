@@ -1949,6 +1949,79 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v2/feedback": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Feedback - 反馈"
+                ],
+                "summary": "意见反馈",
+                "operationId": "FeedbackCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "反馈内容",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.FeedbackReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/rider/v2/guide": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Guide - 新手引导"
+                ],
+                "summary": "新手指引列表",
+                "operationId": "RiderList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/definition.GuideDetail"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v2/order": {
             "get": {
                 "consumes": [
@@ -2789,6 +2862,26 @@ const docTemplate = `{
                 },
                 "stockNum": {
                     "description": "库存电池",
+                    "type": "integer"
+                }
+            }
+        },
+        "definition.GuideDetail": {
+            "type": "object",
+            "properties": {
+                "answer": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "sort": {
                     "type": "integer"
                 }
             }
@@ -3948,6 +4041,30 @@ const docTemplate = `{
                 "url": {
                     "description": "实名认证跳转链接",
                     "type": "string"
+                }
+            }
+        },
+        "model.FeedbackReq": {
+            "type": "object",
+            "required": [
+                "content",
+                "type"
+            ],
+            "properties": {
+                "content": {
+                    "description": "反馈内容",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "反馈类型",
+                    "type": "integer"
+                },
+                "url": {
+                    "description": "反馈图片",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },

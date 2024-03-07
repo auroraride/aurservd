@@ -1066,9 +1066,6 @@ definitions:
       content:
         description: 反馈内容
         type: string
-      enterpriseID:
-        description: 反馈用户团签id
-        type: integer
       type:
         description: 反馈类型
         type: integer
@@ -1077,6 +1074,9 @@ definitions:
         items:
           type: string
         type: array
+    required:
+    - content
+    - type
     type: object
   model.ItemListRes:
     properties:

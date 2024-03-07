@@ -174,5 +174,8 @@ func LoadRiderV2Routes(root *echo.Group) {
 	g.GET("/cabinet", rapi.Cabinet.List, auth())
 
 	// 新手引导
-	g.GET("/guide/list", rapi.Guide.List, auth())
+	g.GET("/guide", rapi.Guide.List, auth())
+
+	// 骑手端意见反馈
+	g.POST("/feedback", rapi.Feedback.Create, auth())
 }

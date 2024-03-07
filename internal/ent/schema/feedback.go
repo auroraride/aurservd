@@ -19,6 +19,7 @@ func (Feedback) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("content").Comment("反馈内容"),
 		field.Uint8("type").Default(0).Comment("反馈类型"),
+		field.Uint8("source").Default(2).Comment("反馈来源"), // 默认初始化为代理，
 		field.JSON("url", []string{}).Optional().Comment("反馈图片"),
 		field.String("name").Optional().Comment("姓名"),
 		field.String("phone").Optional().Comment("电话"),
@@ -29,6 +30,7 @@ func (Feedback) Fields() []ent.Field {
 func (Feedback) Edges() []ent.Edge {
 	return []ent.Edge{}
 }
+
 func (Feedback) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		internal.TimeMixin{},

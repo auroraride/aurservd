@@ -866,6 +866,10 @@ func init() {
 	guideDescSort := guideFields[1].Descriptor()
 	// guide.DefaultSort holds the default value on creation for the sort field.
 	guide.DefaultSort = guideDescSort.Default.(uint8)
+	// feedbackDescSource is the schema descriptor for source field.
+	feedbackDescSource := feedbackFields[2].Descriptor()
+	// feedback.DefaultSource holds the default value on creation for the source field.
+	feedback.DefaultSource = feedbackDescSource.Default.(uint8)
 	inventoryMixin := schema.Inventory{}.Mixin()
 	inventoryMixinHooks2 := inventoryMixin[2].Hooks()
 	inventory.Hooks[0] = inventoryMixinHooks2[0]

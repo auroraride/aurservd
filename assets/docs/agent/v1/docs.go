@@ -3877,14 +3877,14 @@ const docTemplate = `{
         },
         "model.FeedbackReq": {
             "type": "object",
+            "required": [
+                "content",
+                "type"
+            ],
             "properties": {
                 "content": {
                     "description": "反馈内容",
                     "type": "string"
-                },
-                "enterpriseID": {
-                    "description": "反馈用户团签id",
-                    "type": "integer"
                 },
                 "type": {
                     "description": "反馈类型",

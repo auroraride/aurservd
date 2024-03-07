@@ -113,6 +113,27 @@ func (fu *FeedbackUpdate) AddType(u int8) *FeedbackUpdate {
 	return fu
 }
 
+// SetSource sets the "source" field.
+func (fu *FeedbackUpdate) SetSource(u uint8) *FeedbackUpdate {
+	fu.mutation.ResetSource()
+	fu.mutation.SetSource(u)
+	return fu
+}
+
+// SetNillableSource sets the "source" field if the given value is not nil.
+func (fu *FeedbackUpdate) SetNillableSource(u *uint8) *FeedbackUpdate {
+	if u != nil {
+		fu.SetSource(*u)
+	}
+	return fu
+}
+
+// AddSource adds u to the "source" field.
+func (fu *FeedbackUpdate) AddSource(u int8) *FeedbackUpdate {
+	fu.mutation.AddSource(u)
+	return fu
+}
+
 // SetURL sets the "url" field.
 func (fu *FeedbackUpdate) SetURL(s []string) *FeedbackUpdate {
 	fu.mutation.SetURL(s)
@@ -260,6 +281,12 @@ func (fu *FeedbackUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := fu.mutation.AddedType(); ok {
 		_spec.AddField(feedback.FieldType, field.TypeUint8, value)
+	}
+	if value, ok := fu.mutation.Source(); ok {
+		_spec.SetField(feedback.FieldSource, field.TypeUint8, value)
+	}
+	if value, ok := fu.mutation.AddedSource(); ok {
+		_spec.AddField(feedback.FieldSource, field.TypeUint8, value)
 	}
 	if value, ok := fu.mutation.URL(); ok {
 		_spec.SetField(feedback.FieldURL, field.TypeJSON, value)
@@ -445,6 +472,27 @@ func (fuo *FeedbackUpdateOne) AddType(u int8) *FeedbackUpdateOne {
 	return fuo
 }
 
+// SetSource sets the "source" field.
+func (fuo *FeedbackUpdateOne) SetSource(u uint8) *FeedbackUpdateOne {
+	fuo.mutation.ResetSource()
+	fuo.mutation.SetSource(u)
+	return fuo
+}
+
+// SetNillableSource sets the "source" field if the given value is not nil.
+func (fuo *FeedbackUpdateOne) SetNillableSource(u *uint8) *FeedbackUpdateOne {
+	if u != nil {
+		fuo.SetSource(*u)
+	}
+	return fuo
+}
+
+// AddSource adds u to the "source" field.
+func (fuo *FeedbackUpdateOne) AddSource(u int8) *FeedbackUpdateOne {
+	fuo.mutation.AddSource(u)
+	return fuo
+}
+
 // SetURL sets the "url" field.
 func (fuo *FeedbackUpdateOne) SetURL(s []string) *FeedbackUpdateOne {
 	fuo.mutation.SetURL(s)
@@ -622,6 +670,12 @@ func (fuo *FeedbackUpdateOne) sqlSave(ctx context.Context) (_node *Feedback, err
 	}
 	if value, ok := fuo.mutation.AddedType(); ok {
 		_spec.AddField(feedback.FieldType, field.TypeUint8, value)
+	}
+	if value, ok := fuo.mutation.Source(); ok {
+		_spec.SetField(feedback.FieldSource, field.TypeUint8, value)
+	}
+	if value, ok := fuo.mutation.AddedSource(); ok {
+		_spec.AddField(feedback.FieldSource, field.TypeUint8, value)
 	}
 	if value, ok := fuo.mutation.URL(); ok {
 		_spec.SetField(feedback.FieldURL, field.TypeJSON, value)

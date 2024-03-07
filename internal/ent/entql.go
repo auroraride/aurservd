@@ -1020,6 +1020,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			feedback.FieldAgentID:      {Type: field.TypeUint64, Column: feedback.FieldAgentID},
 			feedback.FieldContent:      {Type: field.TypeString, Column: feedback.FieldContent},
 			feedback.FieldType:         {Type: field.TypeUint8, Column: feedback.FieldType},
+			feedback.FieldSource:       {Type: field.TypeUint8, Column: feedback.FieldSource},
 			feedback.FieldURL:          {Type: field.TypeJSON, Column: feedback.FieldURL},
 			feedback.FieldName:         {Type: field.TypeString, Column: feedback.FieldName},
 			feedback.FieldPhone:        {Type: field.TypeString, Column: feedback.FieldPhone},
@@ -11647,6 +11648,11 @@ func (f *FeedbackFilter) WhereContent(p entql.StringP) {
 // WhereType applies the entql uint8 predicate on the type field.
 func (f *FeedbackFilter) WhereType(p entql.Uint8P) {
 	f.Where(p.Field(feedback.FieldType))
+}
+
+// WhereSource applies the entql uint8 predicate on the source field.
+func (f *FeedbackFilter) WhereSource(p entql.Uint8P) {
+	f.Where(p.Field(feedback.FieldSource))
 }
 
 // WhereURL applies the entql json.RawMessage predicate on the url field.
