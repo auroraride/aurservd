@@ -39,6 +39,13 @@ func loadManagerRoutes() {
 	g.PUT("/guide", mapi.Setting.GuideModify)        // 编辑
 	g.DELETE("/guide/:id", mapi.Setting.GuideDelete) // 删除
 
+	// 设置-广告活动
+	g.GET("/advert", mapi.Setting.AdvertList)          // 列表
+	g.GET("/advert/:id", mapi.Setting.AdvertGet)       // 详情
+	g.POST("/advert", mapi.Setting.AdvertSave)         // 新增
+	g.PUT("/advert", mapi.Setting.AdvertModify)        // 编辑
+	g.DELETE("/advert/:id", mapi.Setting.AdvertDelete) // 删除
+
 	// 城市
 	g.GET("/city", mapi.City.List)       // 城市列表
 	g.PUT("/city/:id", mapi.City.Modify) // 启用或关闭城市

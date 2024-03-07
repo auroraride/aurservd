@@ -132,7 +132,7 @@ func (*setting) GuideSave(c echo.Context) (err error) {
 // @ID		SettingGuideDelete
 // @Router	/manager/v1/setting/guide/{id} [DELETE]
 // @Summary	M1021 删除引导
-// @Tags	[M]管理接口
+// @Tags	Setting - 管理接口
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -148,7 +148,7 @@ func (*setting) GuideDelete(c echo.Context) (err error) {
 // @ID		SettingGuideModify
 // @Router	/manager/v1/setting/guide [PUT]
 // @Summary	M1022 修改引导
-// @Tags	[M]管理接口
+// @Tags	Setting - 管理接口
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string						true	"管理员校验token"
@@ -157,5 +157,83 @@ func (*setting) GuideDelete(c echo.Context) (err error) {
 func (*setting) GuideModify(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[definition.GuideModifyReq](c)
 	biz.NewGuide().Modify(req)
+	return ctx.SendResponse()
+}
+
+// AdvertList
+// @ID		SettingAdvertList
+// @Router	/manager/v1/setting/advert [GET]
+// @Summary	获取广告列表
+// @Tags	Setting - 管理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string						true	"管理员校验token"
+// @Param	body			body		definition.AdvertListReq	true	"请求参数"
+// @Success	200				{object}	model.StatusResponse		"请求成功"
+func (*setting) AdvertList(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[definition.AdvertListReq](c)
+	return ctx.SendResponse(biz.NewAdvert().List(req))
+}
+
+// AdvertGet
+// @ID		SettingAdvertGet
+// @Router	/manager/v1/setting/advert/{id} [GET]
+// @Summary	获取指定广告
+// @Tags	Setting - 管理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string					true	"管理员校验token"
+// @Param	id				path		string					true	"广告ID"
+// @Success	200				{object}	model.StatusResponse	"请求成功"
+func (*setting) AdvertGet(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
+	return ctx.SendResponse(biz.NewAdvert().Get(req.ID))
+}
+
+// AdvertModify
+// @ID		SettingAdvertModify
+// @Router	/manager/v1/setting/advert [PUT]
+// @Summary	修改广告
+// @Tags	Setting - 管理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string						true	"管理员校验token"
+// @Param	body			body		definition.AdvertModifyReq	true	"请求参数"
+// @Success	200				{object}	model.StatusResponse		"请求成功"
+func (*setting) AdvertModify(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[definition.AdvertModifyReq](c)
+	biz.NewAdvert().Modify(req)
+	return ctx.SendResponse()
+}
+
+// AdvertDelete
+// @ID		SettingAdvertDelete
+// @Router	/manager/v1/setting/advert/{id} [DELETE]
+// @Summary
+// @Tags	Setting - 管理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string					true	"管理员校验token"
+// @Param	id				path		string					true	"广告ID"
+// @Success	200				{object}	model.StatusResponse	"请求成功"
+func (*setting) AdvertDelete(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
+	biz.NewAdvert().Delete(req.ID)
+	return ctx.SendResponse()
+}
+
+// AdvertSave
+// @ID		SettingAdvertSave
+// @Router	/manager/v1/setting/advert [POST]
+// @Summary	保存广告
+// @Tags	Setting -  管理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string						true	"管理员校验token"
+// @Param	body			body		definition.AdvertSaveReq	true	"请求参数"
+// @Success	200				{object}	model.StatusResponse		"请求成功"
+func (*setting) AdvertSave(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[definition.AdvertSaveReq](c)
+	biz.NewAdvert().Create(req)
 	return ctx.SendResponse()
 }
