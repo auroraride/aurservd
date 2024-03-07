@@ -413,6 +413,7 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq) (i
 			Address:     temp.Address,
 			Facility:    make([]*model.BranchFacility, 0),
 			FacilityMap: make(map[string]*model.BranchFacility),
+			Businesses:  make([]string, 0),
 		}
 	}
 
@@ -437,6 +438,10 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq) (i
 	var cabIDs []uint64
 	// 预约数量map
 	var rm map[uint64]int
+
+	// 每个网点可用业务
+	var branchBusinessesMap map[uint64]map[uint64][]string
+	branchBusinessesMap = make(map[uint64]map[uint64][]string)
 
 	if req.Business != "" {
 		for _, c := range cabinets {
@@ -493,7 +498,43 @@ func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq) (i
 			}
 
 			s.facility(itemsMap[*c.BranchID].FacilityMap, fa)
+
+			if sub != nil && NewCabinet().ModelInclude(c, sub.Model) {
+				if branchBusinessesMap[*c.BranchID] == nil {
+					branchBusinessesMap[*c.BranchID] = make(map[uint64][]string)
+				}
+				// 获取可办理业务
+				switch sub.Status {
+				case model.SubscribeStatusInactive:
+					// 未激活时仅能办理激活业务
+					branchBusinessesMap[*c.BranchID][c.ID] = append(branchBusinessesMap[*c.BranchID][c.ID], business.TypeActive.String())
+				case model.SubscribeStatusPaused:
+					// 寄存中时仅能办理取消寄存业务
+					branchBusinessesMap[*c.BranchID][c.ID] = append(branchBusinessesMap[*c.BranchID][c.ID], business.TypeContinue.String())
+				case model.SubscribeStatusUsing:
+					// 使用中可办理寄存和退租业务
+					branchBusinessesMap[*c.BranchID][c.ID] = append(branchBusinessesMap[*c.BranchID][c.ID], business.TypePause.String(), business.TypeUnsubscribe.String())
+				}
+			}
 		}
+	}
+
+	// 网点业务
+	for k, businessesMap := range branchBusinessesMap {
+		added := make(map[string]bool)
+		businesses := make([]string, 0)
+		// 遍历 businessesMap
+		for _, b := range businessesMap {
+			// 遍历每个切片中的元素
+			for _, item := range b {
+				// 如果元素不在 added map 中，则添加到 businesses 切片中，并将其标记为已添加
+				if !added[item] {
+					businesses = append(businesses, item)
+					added[item] = true
+				}
+			}
+		}
+		itemsMap[k].Businesses = businesses
 	}
 
 	for _, m := range itemsMap {
