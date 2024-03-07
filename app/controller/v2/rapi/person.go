@@ -18,7 +18,7 @@ type person struct{}
 var Person = new(person)
 
 // CertificationOcrClient
-// @ID		CertificationOcrClient
+// @ID		PersonCertificationOcrClient
 // @Router	/rider/v2/certification/ocr/client [GET]
 // @Summary	获取客户端OCR参数
 // @Tags	Person - 实人
@@ -31,7 +31,7 @@ func (*person) CertificationOcrClient(c echo.Context) (err error) {
 }
 
 // CertificationOcrCloud
-// @ID		CertificationOcrCloud
+// @ID		PersonCertificationOcrCloud
 // @Router	/rider/v2/certification/ocr/cloud [GET]
 // @Summary	获取云端OCR参数
 // @Tags	Person - 实人
@@ -45,7 +45,7 @@ func (*person) CertificationOcrCloud(c echo.Context) (err error) {
 }
 
 // CertificationFace
-// @ID		CertificationFace
+// @ID		PersonCertificationFace
 // @Router	/rider/v2/certification/face [POST]
 // @Summary	提交身份信息并获取人脸核身参数
 // @Tags	Person - 实人
@@ -59,7 +59,7 @@ func (*person) CertificationFace(c echo.Context) (err error) {
 }
 
 // CertificationFaceResult
-// @ID		CertificationFaceResult
+// @ID		PersonCertificationFaceResult
 // @Router	/rider/v2/certification/face/result [GET]
 // @Summary	获取人脸核身结果
 // @Tags	Person - 实人

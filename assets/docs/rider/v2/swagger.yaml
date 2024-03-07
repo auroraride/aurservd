@@ -1870,7 +1870,7 @@ paths:
                     $ref: '#/definitions/model.AssistanceSimpleListRes'
                   type: array
               type: object
-      summary: R5005 救援列表
+      summary: 救援列表
       tags:
       - Assistance - 救援
     post:
@@ -1896,7 +1896,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.AssistanceCreateRes'
-      summary: R5002 发起救援
+      summary: 发起救援
       tags:
       - Assistance - 救援
   /rider/v2/assistance/breakdown:
@@ -1919,7 +1919,7 @@ paths:
             items:
               type: string
             type: array
-      summary: R5001 获取救援原因
+      summary: 获取救援原因
       tags:
       - Assistance - 救援
   /rider/v2/assistance/cancel:
@@ -1946,7 +1946,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: R5003 取消救援
+      summary: 取消救援
       tags:
       - Assistance - 救援
   /rider/v2/assistance/current:
@@ -1967,7 +1967,7 @@ paths:
           description: 救援信息, 救援不存在的时候返回data为null
           schema:
             $ref: '#/definitions/model.AssistanceSocketMessage'
-      summary: R5004 当前救援
+      summary: 当前救援
       tags:
       - Assistance - 救援
   /rider/v2/authenticator:
@@ -1994,7 +1994,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.FaceAuthUrlResponse'
-      summary: R1003 实名认证
+      summary: 实名认证
       tags:
       - Rider - 骑手
   /rider/v2/authenticator/{token}:
@@ -2020,7 +2020,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: R1004 实名认证结果
+      summary: 实名认证结果
       tags:
       - Rider - 骑手
   /rider/v2/battery:
@@ -2041,7 +2041,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.BatteryDetail'
-      summary: RA001 获取电池详情
+      summary: 获取电池详情
       tags:
       - Battery - 电池
   /rider/v2/branch:
@@ -2095,7 +2095,7 @@ paths:
             items:
               $ref: '#/definitions/model.BranchWithDistanceRes'
             type: array
-      summary: R2001 列举网点
+      summary: 列举网点
       tags:
       - Branch - 网点
   /rider/v2/branch/facility/{fid}:
@@ -2131,7 +2131,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.BranchFacilityRes'
-      summary: R2004 设施详情
+      summary: 设施详情
       tags:
       - Branch - 网点
   /rider/v2/branch/riding:
@@ -2158,7 +2158,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.BranchRidingRes'
-      summary: R2002 网点骑行规划时间
+      summary: 网点骑行规划时间
       tags:
       - Branch - 网点
   /rider/v2/business/active:
@@ -2185,7 +2185,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.BusinessCabinetStatus'
-      summary: R7001 激活骑士卡
+      summary: 激活骑士卡
       tags:
       - Business - 业务
   /rider/v2/business/allocated/{id}:
@@ -2212,7 +2212,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.AllocateRiderRes'
-      summary: R7009 长连接轮询是否已分配
+      summary: 长连接轮询是否已分配
       tags:
       - Business - 业务
   /rider/v2/business/continue:
@@ -2239,7 +2239,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.BusinessCabinetStatus'
-      summary: R7004 取消寄存
+      summary: 取消寄存
       tags:
       - Business - 业务
   /rider/v2/business/pause:
@@ -2266,7 +2266,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.BusinessCabinetStatus'
-      summary: R7003 寄存
+      summary: 寄存
       tags:
       - Business - 业务
   /rider/v2/business/pause/info:
@@ -2287,7 +2287,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.BusinessPauseInfoRes'
-      summary: R7006 寄存信息
+      summary: 寄存信息
       tags:
       - Business - 业务
   /rider/v2/business/status:
@@ -2312,7 +2312,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.BusinessCabinetStatusRes'
-      summary: R7005 业务状态
+      summary: 业务状态
       tags:
       - Business - 业务
   /rider/v2/business/subscribe/signed/{id}:
@@ -2338,7 +2338,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.SubscribeSigned'
-      summary: R7010 长连接轮询是否已签约
+      summary: 长连接轮询是否已签约
       tags:
       - Business - 业务
   /rider/v2/business/unsubscribe:
@@ -2365,7 +2365,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.BusinessCabinetStatus'
-      summary: R7002 退租
+      summary: 退租
       tags:
       - Business - 业务
   /rider/v2/cabinet:
@@ -2437,7 +2437,7 @@ paths:
             items:
               type: string
             type: array
-      summary: R4008 电柜故障列表
+      summary: 电柜故障列表
       tags:
       - Cabinet - 电柜
   /rider/v2/cabinet/process:
@@ -2464,7 +2464,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: R4002 操作换电
+      summary: 操作换电
       tags:
       - Cabinet - 电柜
   /rider/v2/cabinet/process/{serial}:
@@ -2490,7 +2490,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.RiderExchangeInfo'
-      summary: R4001 获取换电信息
+      summary: 获取换电信息
       tags:
       - Cabinet - 电柜
   /rider/v2/cabinet/process/status:
@@ -2514,7 +2514,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.RiderExchangeProcessRes'
-      summary: R4003 换电状态
+      summary: 换电状态
       tags:
       - Cabinet - 电柜
   /rider/v2/cabinet/report:
@@ -2541,14 +2541,14 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: R4004 电柜故障上报
+      summary: 电柜故障上报
       tags:
       - Cabinet - 电柜
   /rider/v2/certification/face:
     post:
       consumes:
       - application/json
-      operationId: CertificationFace
+      operationId: PersonCertificationFace
       parameters:
       - description: 请求参数
         in: body
@@ -2570,7 +2570,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: CertificationFaceResult
+      operationId: PersonCertificationFaceResult
       parameters:
       - description: 订单号
         in: query
@@ -2591,7 +2591,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: CertificationOcrClient
+      operationId: PersonCertificationOcrClient
       produces:
       - application/json
       responses:
@@ -2606,7 +2606,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: CertificationOcrCloud
+      operationId: PersonCertificationOcrCloud
       parameters:
       - description: 文件 sha256 hex string
         in: query
@@ -2643,7 +2643,7 @@ paths:
             items:
               $ref: '#/definitions/model.CityWithLocation'
             type: array
-      summary: R2003 获取已开通城市
+      summary: 获取已开通城市
       tags:
       - City - 城市
   /rider/v2/constract/{sn}:
@@ -2669,7 +2669,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: R3004 合同签署结果
+      summary: 合同签署结果
       tags:
       - Contract - 合同
   /rider/v2/contact:
@@ -2696,7 +2696,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: R1002 添加紧急联系人
+      summary: 添加紧急联系人
       tags:
       - Rider - 骑手
   /rider/v2/contract/sign:
@@ -2723,7 +2723,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.ContractSignRes'
-      summary: R3003 签署合同
+      summary: 签署合同
       tags:
       - Contract - 合同
   /rider/v2/deposit:
@@ -2744,7 +2744,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.RiderDepositRes'
-      summary: R1007 获取已缴押金
+      summary: 获取已缴押金
       tags:
       - Rider - 骑手
   /rider/v2/deregister:
@@ -2765,7 +2765,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: R1008 注销账户
+      summary: 注销账户
       tags:
       - Rider - 骑手
   /rider/v2/enterprise/battery:
@@ -2793,7 +2793,7 @@ paths:
             items:
               type: string
             type: array
-      summary: R3010 企业骑手获取可用电池
+      summary: 企业骑手获取可用电池
       tags:
       - Enterprise - 团签
   /rider/v2/enterprise/exit:
@@ -2814,7 +2814,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: R3017 退出团签
+      summary: 退出团签
       tags:
       - Enterprise - 团签
   /rider/v2/enterprise/info:
@@ -2845,7 +2845,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.EnterproseInfoRsp'
-      summary: R3016 骑手团签信息
+      summary: 骑手团签信息
       tags:
       - Enterprise - 团签
   /rider/v2/enterprise/join:
@@ -2867,7 +2867,7 @@ paths:
           description: 请求成功
           schema:
             type: boolean
-      summary: R3015 企业骑手加入团签
+      summary: 企业骑手加入团签
       tags:
       - Enterprise - 团签
   /rider/v2/enterprise/subscribe:
@@ -2893,7 +2893,7 @@ paths:
           description: TRUE已激活, FALSE未激活
           schema:
             type: boolean
-      summary: R3012 企业骑手订阅激活状态
+      summary: 企业骑手订阅激活状态
       tags:
       - Enterprise - 团签
     post:
@@ -2919,7 +2919,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.EnterpriseRiderSubscribeChooseRes'
-      summary: R3011 企业骑手选择电池
+      summary: 企业骑手选择电池
       tags:
       - Enterprise - 团签
   /rider/v2/enterprise/subscribe/alter:
@@ -2946,7 +2946,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: R3013 加时申请
+      summary: 加时申请
       tags:
       - Enterprise - 团签
   /rider/v2/enterprise/subscribe/alter/list:
@@ -2994,7 +2994,7 @@ paths:
                     $ref: '#/definitions/model.SubscribeAlterApplyListRes'
                   type: array
               type: object
-      summary: R3014 加时申请列表
+      summary: 加时申请列表
       tags:
       - Enterprise - 团签
   /rider/v2/exchange/log:
@@ -3030,7 +3030,7 @@ paths:
                     $ref: '#/definitions/model.ExchangeRiderListRes'
                   type: array
               type: object
-      summary: R4007 换电记录
+      summary: 换电记录
       tags:
       - Exchange - 换电
   /rider/v2/exchange/overview:
@@ -3051,7 +3051,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.ExchangeOverview'
-      summary: R4006 换电概览
+      summary: 换电概览
       tags:
       - Exchange - 换电
   /rider/v2/exchange/store:
@@ -3078,7 +3078,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.ExchangeStoreRes'
-      summary: R4005 门店换电
+      summary: 门店换电
       tags:
       - Exchange - 换电
   /rider/v2/face/{token}:
@@ -3104,7 +3104,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: R1005 获取人脸校验结果
+      summary: 获取人脸校验结果
       tags:
       - Rider - 骑手
   /rider/v2/feedback:
@@ -3138,7 +3138,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderList
+      operationId: GuideList
       parameters:
       - description: 骑手校验token
         in: header
@@ -3188,7 +3188,7 @@ paths:
                     $ref: '#/definitions/model.Order'
                   type: array
               type: object
-      summary: R3007 骑士卡购买历史
+      summary: 骑士卡购买历史
       tags:
       - Order - 订单
     post:
@@ -3240,7 +3240,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.Order'
-      summary: R3008 订单详情
+      summary: 订单详情
       tags:
       - Order - 订单
   /rider/v2/order/refund:
@@ -3267,7 +3267,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.RefundRes'
-      summary: R3006 申请退款
+      summary: 申请退款
       tags:
       - Order - 订单
   /rider/v2/order/status:
@@ -3293,7 +3293,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.OrderStatusRes'
-      summary: R3009 订单支付状态
+      summary: 订单支付状态
       tags:
       - Order - 订单
   /rider/v2/plan:
@@ -3318,7 +3318,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.PlanNewlyRes'
-      summary: R3001 新购骑士卡
+      summary: 新购骑士卡
       tags:
       - Plan - 骑士卡
   /rider/v2/plan/renewly:
@@ -3339,7 +3339,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.RiderPlanRenewalRes'
-      summary: R3002 续费骑士卡
+      summary: 续费骑士卡
       tags:
       - Plan - 骑士卡
   /rider/v2/profile:
@@ -3360,7 +3360,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.RiderSigninRes'
-      summary: R1006 获取个人信息
+      summary: 获取个人信息
       tags:
       - Rider - 骑手
   /rider/v2/reserve:
@@ -3381,7 +3381,7 @@ paths:
           description: 请求成功, 预约不存在时为`null`
           schema:
             $ref: '#/definitions/model.ReserveUnfinishedRes'
-      summary: R8001 获取未完成预约
+      summary: 获取未完成预约
       tags:
       - Reserve - 预约
     post:
@@ -3407,7 +3407,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.ReserveUnfinishedRes'
-      summary: R8002 创建预约
+      summary: 创建预约
       tags:
       - Reserve - 预约
   /rider/v2/reserve/{id}:
@@ -3433,14 +3433,14 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: R8003 取消预约
+      summary: 取消预约
       tags:
       - Reserve - 预约
   /rider/v2/selection/model:
     get:
       consumes:
       - application/json
-      operationId: RiderSelectionModel
+      operationId: SelectionModel
       produces:
       - application/json
       responses:
@@ -3471,7 +3471,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.SettingRiderApp'
-      summary: R6001 获取APP设置
+      summary: 获取APP设置
       tags:
       - Setting - 设置
   /rider/v2/setting/question:
@@ -3494,7 +3494,7 @@ paths:
             items:
               $ref: '#/definitions/model.SettingQuestion'
             type: array
-      summary: R6002 获取常见问题
+      summary: 获取常见问题
       tags:
       - Setting - 设置
   /rider/v2/signin:
@@ -3516,7 +3516,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.RiderSigninRes'
-      summary: R1001 登录或注册
+      summary: 登录或注册
       tags:
       - Rider - 骑手
   /rider/v2/wallet/coupons:
@@ -3543,7 +3543,7 @@ paths:
             items:
               $ref: '#/definitions/model.CouponRider'
             type: array
-      summary: R9004 优惠券列表
+      summary: 优惠券列表
       tags:
       - Wallet - 钱包
   /rider/v2/wallet/overview:
@@ -3564,7 +3564,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.WalletOverview'
-      summary: R9001 钱包概览
+      summary: 钱包概览
       tags:
       - Wallet - 钱包
   /rider/v2/wallet/pointlog:
@@ -3600,7 +3600,7 @@ paths:
                     $ref: '#/definitions/model.PointLogListRes'
                   type: array
               type: object
-      summary: R9002 积分日志
+      summary: 积分日志
       tags:
       - Wallet - 钱包
   /rider/v2/wallet/points:
@@ -3621,7 +3621,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.PointRes'
-      summary: R9003 积分详情
+      summary: 积分详情
       tags:
       - Wallet - 钱包
 swagger: "2.0"

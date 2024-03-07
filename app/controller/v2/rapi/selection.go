@@ -13,7 +13,7 @@ type selection struct {
 var Selection = new(selection)
 
 // Model
-// @ID		RiderSelectionModel
+// @ID		SelectionModel
 // @Router	/rider/v2/selection/model [GET]
 // @Summary	获取车型列表
 // @Tags	Selection - 筛选

@@ -12,7 +12,7 @@ type guide struct{}
 var Guide = new(guide)
 
 // List
-// @ID		RiderList
+// @ID		GuideList
 // @Router	/rider/v2/guide [GET]
 // @Summary	新手指引列表
 // @Tags	Guide - 新手引导
