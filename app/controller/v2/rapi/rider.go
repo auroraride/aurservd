@@ -12,8 +12,8 @@ var Rider = new(rider)
 // Feedback
 // @ID		RiderFeedback
 // @Router	/rider/v2/feedback [POST]
-// @Summary	AZ001 意见反馈
-// @Tags	[R]骑手接口
+// @Summary	意见反馈
+// @Tags	Rider - 骑手接口
 // @Accept	json
 // @Produce	json
 // @Param	X-Rider-Token	header		string				true	"骑手校验token"
