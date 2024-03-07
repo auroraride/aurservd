@@ -19,7 +19,7 @@ func NewFeedback() *feedbackBiz {
 }
 
 // RiderCreate 骑手创建反馈
-func (s *feedbackBiz) RiderCreate(req *definition.FeedbackReq, ri *ent.Rider) bool {
+func (s *feedbackBiz) RiderCreate(req *definition.FeedbackReq, ri *ent.Rider) {
 	ctx := context.Background()
 	// 保存反馈信息
 	query := s.orm.Create().SetEnterpriseID(*ri.EnterpriseID).
@@ -32,5 +32,4 @@ func (s *feedbackBiz) RiderCreate(req *definition.FeedbackReq, ri *ent.Rider) bo
 	if query.Exec(ctx) != nil {
 		snag.Panic("添加失败")
 	}
-	return false
 }

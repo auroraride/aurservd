@@ -12,19 +12,19 @@ type GuideDetail struct {
 
 // GuideSaveReq 引导保存请求
 type GuideSaveReq struct {
-	Name   string `json:"name" validate:"required"`
-	Sort   uint8  `json:"sort" validate:"required"`
-	Answer string `json:"answer" validate:"required"`
-	Remark string `json:"remark,omitempty"`
+	Name   string `json:"name" validate:"required" trans:"名称"`
+	Sort   uint8  `json:"sort" validate:"required" trans:"排序"`
+	Answer string `json:"answer" validate:"required" trans:"答案"`
+	Remark string `json:"remark,omitempty" trans:"备注"`
 }
 
 // GuideModifyReq 引导修改请求
 type GuideModifyReq struct {
 	model.IDParamReq
-	Name   string `json:"name" validate:"required"`
-	Sort   uint8  `json:"sort" validate:"required"`
-	Answer string `json:"answer" validate:"required"`
-	Remark string `json:"remark,omitempty"`
+	Name   string `json:"name" validate:"required" trans:"名称"`
+	Sort   uint8  `json:"sort" validate:"required" trans:"排序"`
+	Answer string `json:"answer" validate:"required" trans:"答案"`
+	Remark string `json:"remark,omitempty" trans:"备注"`
 }
 
 // GuideListReq 引导列表请求

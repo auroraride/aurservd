@@ -177,6 +177,6 @@ func LoadRiderV2Routes(root *echo.Group) {
 	g.GET("/guide", rapi.Guide.List, auth())
 
 	// 骑手端意见反馈
-	g.POST("/feedback", rapi.Feedback.Feedback, auth())
-	g.POST("/feedback/image", rapi.Feedback.FeedbackImage, auth())
+	g.POST("/feedback", rapi.Feedback.Create, auth())
+	g.POST("/feedback/image", rapi.Feedback.UploadImage, auth())
 }

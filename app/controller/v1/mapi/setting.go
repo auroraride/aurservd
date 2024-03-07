@@ -83,24 +83,25 @@ func (*setting) LegalSave(c echo.Context) (err error) {
 }
 
 // GuideList
-// @ID		ManagerSettingGuide
+// @ID		GuideList
 // @Router	/manager/v1/setting/guide [GET]
-// @Summary	M1018 获取引导
-// @Tags	[M]管理接口
+// @Summary	获取引导
+// @Tags	Setting - 管理接口
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string			true	"管理员校验token"
-// @Success	200				{object}	model.GuideRes	"请求成功"
+// @Param	X-Manager-Token	header		string					true	"管理员校验token"
+// @Param	body			body		definition.GuideListReq	true	"请求参数"
+// @Success	200				{object}	model.PaginationRes		"请求成功"
 func (*setting) GuideList(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[definition.GuideListReq](c)
 	return ctx.SendResponse(biz.NewGuide().List(req))
 }
 
 // GuideGet
-// @ID		ManagerSettingGuideGet
+// @ID		GuideGet
 // @Router	/manager/v1/setting/guide/{id} [GET]
-// @Summary	M1019 获取指定引导
-// @Tags	[M]管理接口
+// @Summary	获取指定引导
+// @Tags	Setting - 管理接口
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -112,10 +113,10 @@ func (*setting) GuideGet(c echo.Context) (err error) {
 }
 
 // GuideSave
-// @ID		ManagerSettingGuideSave
+// @ID		GuideSave
 // @Router	/manager/v1/setting/guide [POST]
-// @Summary	M1020 保存引导
-// @Tags	[M]管理接口
+// @Summary	保存引导
+// @Tags	Setting - 管理接口
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
