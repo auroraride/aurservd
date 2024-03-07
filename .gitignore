@@ -74,6 +74,7 @@ fabric.properties
 
 .idea/jsonSchemas.xml
 .idea/copilot
+.idea/golinter.xml
 
 ### Go template
 # Binaries for programs and plugins
