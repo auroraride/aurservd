@@ -83,7 +83,7 @@ func (*setting) LegalSave(c echo.Context) (err error) {
 }
 
 // GuideList
-// @ID		GuideList
+// @ID		SettingGuideList
 // @Router	/manager/v1/setting/guide [GET]
 // @Summary	获取引导
 // @Tags	Setting - 管理接口
@@ -98,7 +98,7 @@ func (*setting) GuideList(c echo.Context) (err error) {
 }
 
 // GuideGet
-// @ID		GuideGet
+// @ID		SettingGuideGet
 // @Router	/manager/v1/setting/guide/{id} [GET]
 // @Summary	获取指定引导
 // @Tags	Setting - 管理接口
@@ -113,7 +113,7 @@ func (*setting) GuideGet(c echo.Context) (err error) {
 }
 
 // GuideSave
-// @ID		GuideSave
+// @ID		SettingGuideSave
 // @Router	/manager/v1/setting/guide [POST]
 // @Summary	保存引导
 // @Tags	Setting - 管理接口
@@ -129,7 +129,7 @@ func (*setting) GuideSave(c echo.Context) (err error) {
 }
 
 // GuideDelete
-// @ID		ManagerSettingGuideDelete
+// @ID		SettingGuideDelete
 // @Router	/manager/v1/setting/guide/{id} [DELETE]
 // @Summary	M1021 删除引导
 // @Tags	[M]管理接口
@@ -145,7 +145,7 @@ func (*setting) GuideDelete(c echo.Context) (err error) {
 }
 
 // GuideModify
-// @ID		ManagerSettingGuideModify
+// @ID		SettingGuideModify
 // @Router	/manager/v1/setting/guide [PUT]
 // @Summary	M1022 修改引导
 // @Tags	[M]管理接口

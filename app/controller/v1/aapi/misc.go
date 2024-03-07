@@ -9,7 +9,7 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"github.com/auroraride/aurservd/app"
-	"github.com/auroraride/aurservd/app/biz/definition"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/service"
 )
 
@@ -24,11 +24,11 @@ var Misc = new(misc)
 // @Tags	[A]代理接口
 // @Accept	json
 // @Produce	json
-// @Param	X-Agent-Token	header		string					true	"代理校验token"
-// @Param	body			body		definition.FeedbackReq	true	"反馈内容"
-// @Success	200				{object}	bool					"请求成功"
+// @Param	X-Agent-Token	header		string				true	"代理校验token"
+// @Param	body			body		model.FeedbackReq	true	"反馈内容"
+// @Success	200				{object}	bool				"请求成功"
 func (*misc) Feedback(c echo.Context) (err error) {
-	ctx, req := app.AgentContextAndBinding[definition.FeedbackReq](c)
+	ctx, req := app.AgentContextAndBinding[model.FeedbackReq](c)
 	return ctx.SendResponse(service.NewFeedback().Create(req, ctx.Agent))
 }
 

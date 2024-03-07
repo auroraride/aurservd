@@ -1961,7 +1961,7 @@ const docTemplate = `{
                     "Feedback - 反馈"
                 ],
                 "summary": "意见反馈",
-                "operationId": "Create",
+                "operationId": "FeedbackCreate",
                 "parameters": [
                     {
                         "type": "string",
@@ -1976,7 +1976,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/definition.FeedbackReq"
+                            "$ref": "#/definitions/model.FeedbackReq"
                         }
                     }
                 ],
@@ -1985,48 +1985,6 @@ const docTemplate = `{
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.StatusResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/rider/v2/feedback/image": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Feedback - 反馈"
-                ],
-                "summary": "意见反馈上传图片",
-                "operationId": "UploadImage",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "代理校验token",
-                        "name": "X-Agent-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "file",
-                        "description": "图片文件",
-                        "name": "images",
-                        "in": "formData",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
                         }
                     }
                 }
@@ -2044,7 +2002,7 @@ const docTemplate = `{
                     "Guide - 新手引导"
                 ],
                 "summary": "新手指引列表",
-                "operationId": "List",
+                "operationId": "RiderList",
                 "parameters": [
                     {
                         "type": "string",
@@ -2905,30 +2863,6 @@ const docTemplate = `{
                 "stockNum": {
                     "description": "库存电池",
                     "type": "integer"
-                }
-            }
-        },
-        "definition.FeedbackReq": {
-            "type": "object",
-            "required": [
-                "content",
-                "type"
-            ],
-            "properties": {
-                "content": {
-                    "description": "反馈内容",
-                    "type": "string"
-                },
-                "type": {
-                    "description": "反馈类型",
-                    "type": "integer"
-                },
-                "url": {
-                    "description": "反馈图片",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
                 }
             }
         },
@@ -4107,6 +4041,30 @@ const docTemplate = `{
                 "url": {
                     "description": "实名认证跳转链接",
                     "type": "string"
+                }
+            }
+        },
+        "model.FeedbackReq": {
+            "type": "object",
+            "required": [
+                "content",
+                "type"
+            ],
+            "properties": {
+                "content": {
+                    "description": "反馈内容",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "反馈类型",
+                    "type": "integer"
+                },
+                "url": {
+                    "description": "反馈图片",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },

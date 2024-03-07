@@ -1,6 +1,4 @@
-package definition
-
-import "github.com/auroraride/aurservd/app/model"
+package model
 
 const (
 	SourceRider = uint8(iota) + 1 // 骑手
@@ -16,7 +14,7 @@ type FeedbackReq struct {
 
 // FeedbackListReq 反馈列表请求参数
 type FeedbackListReq struct {
-	model.PaginationReq
+	PaginationReq
 	Type         *uint8  `json:"type" query:"type"`                       // 反馈类型
 	Source       *uint8  `json:"source" query:"source"`                   // 反馈来源
 	Keyword      string  `json:"keyword" query:"keyword"`                 // 关键词

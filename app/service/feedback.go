@@ -11,7 +11,6 @@ import (
 	"github.com/golang-module/carbon/v2"
 	"github.com/labstack/echo/v4"
 
-	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ali"
 	"github.com/auroraride/aurservd/internal/ent"
@@ -45,10 +44,10 @@ func (s *feedbackService) QueryX(id uint64) *ent.Feedback {
 }
 
 // Create 创建反馈
-func (s *feedbackService) Create(req *definition.FeedbackReq, ag *ent.Agent) bool {
+func (s *feedbackService) Create(req *model.FeedbackReq, ag *ent.Agent) bool {
 	_, err := s.orm.Create().SetEnterpriseID(ag.EnterpriseID).
 		SetContent(req.Content).
-		SetSource(definition.SourceAgent). // 反馈来源
+		SetSource(model.SourceAgent). // 反馈来源
 		SetType(req.Type).
 		SetURL(req.Url).
 		SetName(ag.Name).
@@ -61,7 +60,7 @@ func (s *feedbackService) Create(req *definition.FeedbackReq, ag *ent.Agent) boo
 }
 
 // FeedbackList List 反馈列表
-func (s *feedbackService) FeedbackList(req *definition.FeedbackListReq) *model.PaginationRes {
+func (s *feedbackService) FeedbackList(req *model.FeedbackListReq) *model.PaginationRes {
 	q := s.orm.Query().WithEnterprise().Order(ent.Desc(feedback.FieldCreatedAt))
 	// 筛选条件
 	if req.Keyword != "" {
@@ -104,8 +103,8 @@ func (s *feedbackService) FeedbackList(req *definition.FeedbackListReq) *model.P
 		q.Where(feedback.CreatedAtLT(tools.NewTime().ParseNextDateStringX(*req.End)))
 	}
 
-	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Feedback) definition.FeedbackDetail {
-		rsp := definition.FeedbackDetail{
+	return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Feedback) model.FeedbackDetail {
+		rsp := model.FeedbackDetail{
 			ID:                     item.ID,
 			Content:                item.Content,
 			Url:                    item.URL,

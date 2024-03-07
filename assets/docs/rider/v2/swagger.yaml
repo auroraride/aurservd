@@ -87,23 +87,6 @@ definitions:
         description: 库存电池
         type: integer
     type: object
-  definition.FeedbackReq:
-    properties:
-      content:
-        description: 反馈内容
-        type: string
-      type:
-        description: 反馈类型
-        type: integer
-      url:
-        description: 反馈图片
-        items:
-          type: string
-        type: array
-    required:
-    - content
-    - type
-    type: object
   definition.GuideDetail:
     properties:
       answer:
@@ -912,6 +895,23 @@ definitions:
       url:
         description: 实名认证跳转链接
         type: string
+    type: object
+  model.FeedbackReq:
+    properties:
+      content:
+        description: 反馈内容
+        type: string
+      type:
+        description: 反馈类型
+        type: integer
+      url:
+        description: 反馈图片
+        items:
+          type: string
+        type: array
+    required:
+    - content
+    - type
     type: object
   model.LngLat:
     properties:
@@ -3111,7 +3111,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: Create
+      operationId: FeedbackCreate
       parameters:
       - description: 骑手校验token
         in: header
@@ -3123,7 +3123,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/definition.FeedbackReq'
+          $ref: '#/definitions/model.FeedbackReq'
       produces:
       - application/json
       responses:
@@ -3134,39 +3134,11 @@ paths:
       summary: 意见反馈
       tags:
       - Feedback - 反馈
-  /rider/v2/feedback/image:
-    post:
-      consumes:
-      - application/json
-      operationId: UploadImage
-      parameters:
-      - description: 代理校验token
-        in: header
-        name: X-Agent-Token
-        required: true
-        type: string
-      - description: 图片文件
-        in: formData
-        name: images
-        required: true
-        type: file
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            items:
-              type: string
-            type: array
-      summary: 意见反馈上传图片
-      tags:
-      - Feedback - 反馈
   /rider/v2/guide:
     get:
       consumes:
       - application/json
-      operationId: List
+      operationId: RiderList
       parameters:
       - description: 骑手校验token
         in: header
