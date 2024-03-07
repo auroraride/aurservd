@@ -7,8 +7,8 @@ package rapi
 
 import (
 	"github.com/auroraride/aurservd/app"
+	"github.com/auroraride/aurservd/app/biz"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/app/service"
 	"github.com/labstack/echo/v4"
 )
 
@@ -30,5 +30,5 @@ var Rider = new(rider)
 // @Success	200				{object}	bool				"请求成功"
 func (*rider) Feedback(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[model.FeedbackReq](c)
-	return ctx.SendResponse(service.NewFeedback().RiderCreate(req, ctx.Rider))
+	return ctx.SendResponse(biz.NewFeedback().RiderCreate(req, ctx.Rider))
 }

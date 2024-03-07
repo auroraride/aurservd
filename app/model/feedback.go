@@ -13,8 +13,6 @@ type FeedbackReq struct {
 	Url []string `json:"url"`
 	// 反馈类型
 	Type uint8 `json:"type"`
-	// 反馈用户团签id
-	EnterpriseID int64 `json:"enterpriseID"`
 }
 
 // FeedbackListReq 反馈列表请求参数

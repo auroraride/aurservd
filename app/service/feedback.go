@@ -59,22 +59,6 @@ func (s *feedbackService) Create(req *model.FeedbackReq, ag *ent.Agent) bool {
 	return true
 }
 
-// RiderCreate 骑手创建反馈
-func (s *feedbackService) RiderCreate(req *model.FeedbackReq, ri *ent.Rider) bool {
-	// 保存反馈信息
-	query := s.orm.Create().SetEnterpriseID(*ri.EnterpriseID).
-		SetContent(req.Content).
-		SetSource(model.SourceRider). // 反馈来源
-		SetType(req.Type).
-		SetURL(req.Url).
-		SetName(ri.Name).
-		SetPhone(ri.Phone)
-	if query.Exec(s.ctx) != nil {
-		snag.Panic("添加失败")
-	}
-	return false
-}
-
 // FeedbackList List 反馈列表
 func (s *feedbackService) FeedbackList(req *model.FeedbackListReq) *model.PaginationRes {
 	q := s.orm.Query().WithEnterprise().Order(ent.Desc(feedback.FieldCreatedAt))
