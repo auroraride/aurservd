@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/rider/v2/advert": {
+        "/rider/v2/activity": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -24,10 +24,10 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Advert - 广告"
+                    "Activity - 活动"
                 ],
-                "summary": "广告列表",
-                "operationId": "AdvertList",
+                "summary": "活动列表",
+                "operationId": "ActivityList",
                 "parameters": [
                     {
                         "type": "string",
@@ -41,7 +41,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/definition.AdvertDetail"
+                            "$ref": "#/definitions/definition.ActivityDetail"
                         }
                     }
                 }
@@ -2796,7 +2796,7 @@ const docTemplate = `{
                 "CabinetBrandXiliulouServer"
             ]
         },
-        "definition.AdvertDetail": {
+        "definition.ActivityDetail": {
             "type": "object",
             "properties": {
                 "id": {

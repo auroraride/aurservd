@@ -7,7 +7,7 @@
     },
     "basePath": "/",
     "paths": {
-        "/rider/v2/advert": {
+        "/rider/v2/activity": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -16,10 +16,10 @@
                     "application/json"
                 ],
                 "tags": [
-                    "Advert - 广告"
+                    "Activity - 活动"
                 ],
-                "summary": "广告列表",
-                "operationId": "AdvertList",
+                "summary": "活动列表",
+                "operationId": "ActivityList",
                 "parameters": [
                     {
                         "type": "string",
@@ -33,7 +33,7 @@
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/definition.AdvertDetail"
+                            "$ref": "#/definitions/definition.ActivityDetail"
                         }
                     }
                 }
@@ -2788,7 +2788,7 @@
                 "CabinetBrandXiliulouServer"
             ]
         },
-        "definition.AdvertDetail": {
+        "definition.ActivityDetail": {
             "type": "object",
             "properties": {
                 "id": {

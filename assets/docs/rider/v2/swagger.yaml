@@ -16,7 +16,7 @@ definitions:
     - CabinetBrandYundong
     - CabinetBrandTuobang
     - CabinetBrandXiliulouServer
-  definition.AdvertDetail:
+  definition.ActivityDetail:
     properties:
       id:
         type: integer
@@ -1852,11 +1852,11 @@ info:
   title: 极光出行API - 骑手端api
   version: "2.0"
 paths:
-  /rider/v2/advert:
+  /rider/v2/activity:
     get:
       consumes:
       - application/json
-      operationId: AdvertList
+      operationId: ActivityList
       parameters:
       - description: 骑手校验token
         in: header
@@ -1869,10 +1869,10 @@ paths:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/definition.AdvertDetail'
-      summary: 广告列表
+            $ref: '#/definitions/definition.ActivityDetail'
+      summary: 活动列表
       tags:
-      - Advert - 广告
+      - Activity - 活动
   /rider/v2/assistance:
     get:
       consumes:
