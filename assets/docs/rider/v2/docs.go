@@ -15,6 +15,38 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/rider/v2/advert": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Advert - 广告"
+                ],
+                "summary": "广告列表",
+                "operationId": "AdvertList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/definition.AdvertDetail"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v2/assistance": {
             "get": {
                 "consumes": [
@@ -2763,6 +2795,29 @@ const docTemplate = `{
                 "CabinetBrandTuobang",
                 "CabinetBrandXiliulouServer"
             ]
+        },
+        "definition.AdvertDetail": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "link": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "remark": {
+                    "type": "string"
+                },
+                "sort": {
+                    "type": "integer"
+                }
+            }
         },
         "definition.CabinetByRiderRes": {
             "type": "object",
