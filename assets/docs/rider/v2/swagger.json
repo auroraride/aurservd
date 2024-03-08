@@ -1111,6 +1111,29 @@
                 }
             }
         },
+      "/rider/v2/cabinet/{serial}": {
+        "get": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "Cabinet - 电柜"
+          ],
+          "summary": "电柜详情",
+          "operationId": "CabinetDetail",
+          "responses": {
+            "200": {
+              "description": "请求成功",
+              "schema": {
+                "$ref": "#/definitions/model.CabinetDetailRes"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v2/certification/face": {
             "post": {
                 "consumes": [
@@ -2144,6 +2167,47 @@
                 }
             }
         },
+      "/rider/v2/order/depositfree": {
+        "post": {
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "tags": [
+            "Order - 订单"
+          ],
+          "summary": "免押金支付",
+          "operationId": "OrderDepositFree",
+          "parameters": [
+            {
+              "type": "string",
+              "description": "骑手校验token",
+              "name": "X-Rider-Token",
+              "in": "header",
+              "required": true
+            },
+            {
+              "description": "免押金支付请求",
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/definition.OrderDepositFreeReq"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "请求成功",
+              "schema": {
+                "$ref": "#/definitions/definition.OrderDepositFreeRes"
+              }
+            }
+          }
+        }
+      },
         "/rider/v2/order/refund": {
             "post": {
                 "consumes": [
@@ -2486,7 +2550,7 @@
                 "tags": [
                     "Selection - 筛选"
                 ],
-                "summary": "获取车型列表",
+              "summary": "获取电池型号选择",
                 "operationId": "SelectionModel",
                 "responses": {
                     "200": {
@@ -2939,6 +3003,59 @@
                 }
             }
         },
+      "definition.OrderDepositFreeReq": {
+        "type": "object",
+        "required": [
+          "payway",
+          "planId"
+        ],
+        "properties": {
+          "payway": {
+            "description": "1支付宝 2微信 3支付宝预授权",
+            "enum": [
+              1,
+              2,
+              3
+            ],
+            "allOf": [
+              {
+                "$ref": "#/definitions/definition.Payway"
+              }
+            ]
+          },
+          "planId": {
+            "description": "套餐ID",
+            "type": "integer"
+          }
+        }
+      },
+      "definition.OrderDepositFreeRes": {
+        "type": "object",
+        "properties": {
+          "prepay": {
+            "description": "预支付信息",
+            "type": "string"
+          }
+        }
+      },
+      "definition.Payway": {
+        "type": "integer",
+        "enum": [
+          1,
+          2,
+          3
+        ],
+        "x-enum-comments": {
+          "PaywayAlipay": "预支付",
+          "PaywayAlipayDeposit": "支付宝芝麻免押",
+          "PaywayWechatDeposit": "微信支付分支付"
+        },
+        "x-enum-varnames": [
+          "PaywayAlipayDeposit",
+          "PaywayWechatDeposit",
+          "PaywayAlipay"
+        ]
+      },
         "definition.PersonCertificationFaceReq": {
             "type": "object",
             "required": [
@@ -3586,6 +3703,74 @@
                 }
             }
         },
+      "model.CabinetBin": {
+        "type": "object",
+        "properties": {
+          "battery": {
+            "description": "是否有电池",
+            "type": "boolean"
+          },
+          "batterySN": {
+            "description": "电池序列号",
+            "type": "string"
+          },
+          "chargerErrors": {
+            "description": "故障信息",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "current": {
+            "description": "充电电流(A)",
+            "type": "number"
+          },
+          "deactivate": {
+            "description": "是否禁用",
+            "type": "boolean"
+          },
+          "deactivateReason": {
+            "description": "禁用原因",
+            "type": "string"
+          },
+          "doorHealth": {
+            "description": "是否锁仓 (柜门是否正常)",
+            "type": "boolean"
+          },
+          "electricity": {
+            "description": "当前电量",
+            "type": "number"
+          },
+          "full": {
+            "description": "是否满电",
+            "type": "boolean"
+          },
+          "index": {
+            "description": "仓位index (从0开始)",
+            "type": "integer"
+          },
+          "name": {
+            "description": "柜门名称",
+            "type": "string"
+          },
+          "openStatus": {
+            "description": "是否开门",
+            "type": "boolean"
+          },
+          "ordinal": {
+            "description": "仓位序号 (从1开始)",
+            "type": "integer"
+          },
+          "remark": {
+            "description": "备注",
+            "type": "string"
+          },
+          "voltage": {
+            "description": "电压(V)",
+            "type": "number"
+                }
+            }
+        },
         "model.CabinetDataBin": {
             "type": "object",
             "properties": {
@@ -3605,6 +3790,159 @@
                 }
             }
         },
+      "model.CabinetDetailRes": {
+        "type": "object",
+        "required": [
+          "brand",
+          "name",
+          "serial"
+        ],
+        "properties": {
+          "batteryNum": {
+            "description": "电池数量",
+            "type": "integer"
+          },
+          "bins": {
+            "description": "仓位信息",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/model.CabinetBin"
+            }
+          },
+          "biz": {
+            "description": "电柜当前业务",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/pb.CabinetBiz"
+            }
+          },
+          "branchId": {
+            "description": "网点",
+            "type": "integer"
+          },
+          "brand": {
+            "description": "KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)",
+            "enum": [
+              "KAIXIN",
+              "YUNDONG",
+              "TUOBANG"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/definitions/adapter.CabinetBrand"
+              }
+            ]
+          },
+          "city": {
+            "description": "城市",
+            "allOf": [
+              {
+                "$ref": "#/definitions/model.City"
+              }
+            ]
+          },
+          "createdAt": {
+            "description": "创建时间",
+            "type": "string"
+          },
+          "doors": {
+            "description": "柜门数量",
+            "type": "integer"
+          },
+          "enterpriseId": {
+            "description": "团签ID",
+            "type": "integer"
+          },
+          "enterpriseName": {
+            "description": "团签名称",
+            "type": "string"
+          },
+          "health": {
+            "description": "在线状态 0离线 1在线 2故障",
+            "type": "integer"
+          },
+          "id": {
+            "description": "电柜ID",
+            "type": "integer"
+          },
+          "intelligent": {
+            "description": "是否智能柜",
+            "type": "boolean"
+          },
+          "lat": {
+            "description": "纬度",
+            "type": "number"
+          },
+          "lng": {
+            "description": "经度",
+            "type": "number"
+          },
+          "models": {
+            "description": "电池型号",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "name": {
+            "type": "string"
+          },
+          "remark": {
+            "type": "string"
+          },
+          "reserves": {
+            "description": "当前预约",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/model.ReserveCabinetItem"
+            }
+          },
+          "serial": {
+            "type": "string"
+          },
+          "simDate": {
+            "description": "SIM卡到期日期, 例: 2022-06-01",
+            "type": "string"
+          },
+          "simSn": {
+            "description": "SIM卡号",
+            "type": "string"
+          },
+          "sn": {
+            "description": "平台编码",
+            "type": "string"
+          },
+          "stationId": {
+            "description": "站点id",
+            "type": "integer"
+          },
+          "stationName": {
+            "description": "所属站点名称",
+            "type": "string"
+          },
+          "status": {
+            "description": "电柜状态 0未投放 1运营中 2维护中",
+            "enum": [
+              0,
+              1,
+              2
+            ],
+            "allOf": [
+              {
+                "$ref": "#/definitions/model.CabinetStatus"
+              }
+            ]
+          },
+          "stockNum": {
+            "description": "库存电池",
+            "type": "integer"
+          },
+          "transferred": {
+            "description": "是否初始化过调拨",
+            "type": "boolean"
+          }
+        }
+      },
         "model.CabinetFaultReportReq": {
             "type": "object",
             "required": [
@@ -3632,6 +3970,24 @@
                 }
             }
         },
+      "model.CabinetStatus": {
+        "type": "integer",
+        "enum": [
+          0,
+          1,
+          2
+        ],
+        "x-enum-comments": {
+          "CabinetStatusMaintenance": "维护中",
+          "CabinetStatusNormal": "运营中",
+          "CabinetStatusPending": "未投放"
+        },
+        "x-enum-varnames": [
+          "CabinetStatusPending",
+          "CabinetStatusNormal",
+          "CabinetStatusMaintenance"
+        ]
+      },
         "model.City": {
             "type": "object",
             "properties": {
@@ -4699,6 +5055,33 @@
                 }
             }
         },
+      "model.ReserveCabinetItem": {
+        "type": "object",
+        "properties": {
+          "business": {
+            "description": "业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租",
+            "type": "string",
+            "enum": [
+              "active",
+              "pause",
+              "continue",
+              "unsubscribe"
+            ]
+          },
+          "name": {
+            "description": "姓名",
+            "type": "string"
+          },
+          "phone": {
+            "description": "电话",
+            "type": "string"
+          },
+          "time": {
+            "description": "预约时间",
+            "type": "string"
+                }
+            }
+        },
         "model.ReserveCreateReq": {
             "type": "object",
             "properties": {
@@ -5472,6 +5855,25 @@
                     "type": "integer"
                 }
             }
+        },
+      "pb.CabinetBiz": {
+        "type": "object",
+        "properties": {
+          "desc": {
+            "description": "业务描述",
+            "type": "string"
+          },
+          "ordinal": {
+            "type": "integer"
+          },
+          "serial": {
+            "type": "string"
+          },
+          "user": {
+            "description": "业务人员",
+            "type": "string"
+          }
+        }
         }
     }
 }

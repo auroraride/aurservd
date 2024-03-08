@@ -12,12 +12,13 @@ import (
 )
 
 const (
-	PaymentCacheTypePlan        uint = iota + 1 // 购买骑士卡订单
-	PaymentCacheTypeRefund                      // 退款订单
-	PaymentCacheTypeOverdueFee                  // 欠费订单
-	PaymentCacheTypeAssistance                  // 救援订单
-	PaymentCacheTypeAgentPrepay                 // 代理商预储值
-	PaymentCacheTypeDepositFree                 // 押金免押
+	PaymentCacheTypePlan              uint = iota + 1 // 购买骑士卡订单
+	PaymentCacheTypeRefund                            // 退款订单
+	PaymentCacheTypeOverdueFee                        // 欠费订单
+	PaymentCacheTypeAssistance                        // 救援订单
+	PaymentCacheTypeAgentPrepay                       // 代理商预储值
+	PaymentCacheTypeAliDepositFree                    // 芝麻信用免押
+	PaymentCacheTypeWechatDepositFree                 // 微信免押
 )
 
 // PaymentSubscribe 购买骑士卡订单
@@ -100,10 +101,13 @@ type PaymentAgentPrepay struct {
 
 // DepositFree 押金免押订单
 type DepositFree struct {
-	PlanID     uint64 `json:"planId"` // 套餐ID
-	Payway     uint8  `json:"payway"`
-	OutTradeNo string `json:"outTradeNo"`
-	TradeNo    string `json:"tradeNo,omitempty"` // 支付单号
+	PlanID     uint64  `json:"planId"` // 套餐ID
+	Payway     uint8   `json:"payway"`
+	OutTradeNo string  `json:"outTradeNo"`
+	TradeNo    string  `json:"tradeNo,omitempty"` // 支付单号
+	Amount     float64 `json:"amount"`            // 押金金额
+	Plan       *Plan   `json:"plan"`              // 骑士卡
+	RiderID    uint64  `json:"riderId"`           // 骑手ID
 }
 
 // PaymentCache 支付缓存

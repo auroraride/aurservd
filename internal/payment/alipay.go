@@ -7,6 +7,7 @@ package payment
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -228,13 +229,13 @@ func (c *alipayClient) FandAuthFreeze(pc *model.PaymentCache) (string, error) {
 			ProductCode:  "PRE_AUTH_ONLINE",
 			PayTimeout:   "20m",
 		},
-		// 目前为纯免押  有后付金额已经知POSTPAY
-		DepositProductMode: "DEPOSIT_ONLY",
 	}
 
 	// 芝麻信用免押金
-	if pc.CacheType == model.PaymentCacheTypeDepositFree {
+	if pc.CacheType == model.PaymentCacheTypeAliDepositFree {
 		trade.ExtraParam = fmt.Sprintf(`{"category":"%s","serviceId":"%s"}`, cfg.Category, cfg.ServiceId)
+		// 目前为纯免押
+		trade.DepositProductMode = "DEPOSIT_ONLY"
 	}
 
 	res, err := c.FundAuthOrderAppFreeze(trade)
@@ -274,17 +275,20 @@ func (c *alipayClient) NotificationFandAuthFreeze(req *http.Request) *model.Paym
 		return nil
 	}
 
-	switch pc.CacheType {
-	case model.PaymentCacheTypePlan:
-		if result.Status == model.FandAuthFreezeStatusSuccess {
-			pc.Subscribe.TradeNo = result.AuthNo
-		} else {
+	if result.Status == model.FandAuthFreezeStatusSuccess {
+		switch pc.CacheType {
+		case model.PaymentCacheTypePlan:
+			// 预授权支付
+			pc.Subscribe.TradeNo = result.OutOrderNo
+		case model.PaymentCacheTypeAliDepositFree:
+			// 芝麻信用免押金
+			pc.DepositFree.TradeNo = result.OutOrderNo
+		default:
 			return nil
 		}
 		return pc
-	default:
-		return nil
 	}
+	return nil
 }
 
 // DecodeFandAuthFreezeNotification 解析线上资金授权冻结回调
@@ -350,15 +354,29 @@ func (c *alipayClient) FandAuthUnfreeze(req *model.PaymentRefund) {
 
 // AlipayTradePay 资金冻结转支付
 func (c *alipayClient) AlipayTradePay(req *model.TradePay) (res *alipay.TradePayRsp, err error) {
+	cfg := ar.Config.Payment.AlipayAuthFreeze
+
+	// 如果下单时指定了免押受理台模式则必填
+	businessParams := map[string]string{
+		"deduction_subject": "DEPOSIT",
+	}
+	jsonBusinessParams, err := json.Marshal(businessParams)
+	if err != nil {
+		return nil, err
+	}
+
 	trade := alipay.TradePay{
 		AuthNo: req.AuthNo,
 		Trade: alipay.Trade{
-			OutTradeNo:  req.OutTradeNo,
-			TotalAmount: fmt.Sprintf("%.2f", req.TotalAmount),
-			Subject:     req.Subject,
-			ProductCode: "PRE_AUTH_ONLINE",
+			OutTradeNo:     req.OutTradeNo,
+			TotalAmount:    fmt.Sprintf("%.2f", req.TotalAmount),
+			Subject:        req.Subject,
+			ProductCode:    "PRE_AUTH_ONLINE",
+			NotifyURL:      cfg.NotifyUrl,
+			BusinessParams: jsonBusinessParams,
 		},
 		AuthConfirmMode: "COMPLETE", // COMPLETE：转交易支付完成结束预授权
+
 	}
 
 	res, err = c.TradePay(trade)
@@ -371,4 +389,81 @@ func (c *alipayClient) AlipayTradePay(req *model.TradePay) (res *alipay.TradePay
 	}
 
 	return res, nil
+}
+
+// 扣款完成回调通知
+func (c *alipayClient) NotificationTradePay(req *http.Request) *model.PaymentCache {
+	err := req.ParseForm()
+	if err != nil {
+		zap.L().Error("支付宝回调失败", zap.Error(err))
+		return nil
+	}
+
+	var result *alipay.Notification
+	result, err = c.Client.DecodeNotification(req.Form)
+	zap.L().Info("支付宝回调", log.JsonData(result), zap.Error(err))
+	if err != nil {
+		return nil
+	}
+
+	// 从缓存中获取订单数据
+	pc := new(model.PaymentCache)
+	out := result.OutTradeNo
+	err = cache.Get(context.Background(), out).Scan(pc)
+	if err != nil {
+		zap.L().Error("从缓存获取订单信息失败", zap.Error(err))
+		return nil
+	}
+
+	switch pc.CacheType {
+	case model.PaymentCacheTypePlan:
+		if result.TradeStatus == alipay.TradeStatusSuccess {
+			pc.Subscribe.TradeNo = result.TradeNo
+		} else {
+			return nil
+		}
+		return pc
+	case model.PaymentCacheTypeOverdueFee:
+		if result.TradeStatus == alipay.TradeStatusSuccess {
+			pc.OverDueFee.TradeNo = result.TradeNo
+		} else {
+			return nil
+		}
+		return pc
+	case model.PaymentCacheTypeAssistance:
+		if result.TradeStatus == alipay.TradeStatusSuccess {
+			pc.Assistance.TradeNo = result.TradeNo
+		} else {
+			return nil
+		}
+		return pc
+	case model.PaymentCacheTypeRefund:
+		pc.Refund.Success = true
+		pc.Refund.Request = true
+		pc.Refund.Time = carbon.Parse(result.GmtRefund).ToStdTime()
+		return pc
+	}
+
+	return nil
+}
+
+// AlipayFundAuthOperationDetailQuery 查询查询芝麻免押订单
+func (c *alipayClient) AlipayFundAuthOperationDetailQuery(outOrderNo, outRequestNo string) (result *alipay.FundAuthOperationDetailQueryRsp, err error) {
+	trade := alipay.FundAuthOperationDetailQuery{
+		OutOrderNo:   outOrderNo,
+		OutRequestNo: outRequestNo,
+	}
+	result, err = c.FundAuthOperationDetailQuery(trade)
+	return result, err
+}
+
+// AlipayFundAuthOperationCancelRequest 取消芝麻免押订单 订单为以下状态时可以取消订单：INIT（初始化）、AUTHORIZED（已创建）（此时一般为用户取消服务时使用）。
+func (c *alipayClient) AlipayFundAuthOperationCancelRequest(outOrderNo, outRequestNo string) (result *alipay.FundAuthOperationCancelRsp, err error) {
+	trade := alipay.FundAuthOperationCancel{
+		OutOrderNo:   outOrderNo,
+		OutRequestNo: outRequestNo,
+		Remark:       "用户取消",
+	}
+	result, err = c.FundAuthOperationCancel(trade)
+	return result, err
 }
