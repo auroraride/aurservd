@@ -12,14 +12,14 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/internal"
 )
 
-type AdvertMixin struct {
+type ActivityMixin struct {
 	mixin.Schema
 	Optional     bool
 	DisableIndex bool
 }
 
-func (m AdvertMixin) Fields() []ent.Field {
-	relate := field.Uint64("advert_id")
+func (m ActivityMixin) Fields() []ent.Field {
+	relate := field.Uint64("activity_id")
 	if m.Optional {
 		relate.Optional().Nillable()
 	}
@@ -28,36 +28,36 @@ func (m AdvertMixin) Fields() []ent.Field {
 	}
 }
 
-func (m AdvertMixin) Edges() []ent.Edge {
-	e := edge.To("advert", Advert.Type).Unique().Field("advert_id")
+func (m ActivityMixin) Edges() []ent.Edge {
+	e := edge.To("activity", Activity.Type).Unique().Field("activity_id")
 	if !m.Optional {
 		e.Required()
 	}
 	return []ent.Edge{e}
 }
 
-func (m AdvertMixin) Indexes() (arr []ent.Index) {
+func (m ActivityMixin) Indexes() (arr []ent.Index) {
 	if !m.DisableIndex {
-		arr = append(arr, index.Fields("advert_id"))
+		arr = append(arr, index.Fields("activity_id"))
 	}
 	return
 }
 
-// Advert holds the schema definition for the Advert entity.
-type Advert struct {
+// Activity holds the schema definition for the Activity entity.
+type Activity struct {
 	ent.Schema
 }
 
-// Annotations of the Advert.
-func (Advert) Annotations() []schema.Annotation {
+// Annotations of the Activity.
+func (Activity) Annotations() []schema.Annotation {
 	return []schema.Annotation{
-		entsql.Annotation{Table: "advert"},
+		entsql.Annotation{Table: "activity"},
 		entsql.WithComments(true),
 	}
 }
 
-// Fields of the Advert.
-func (Advert) Fields() []ent.Field {
+// Fields of the Activity.
+func (Activity) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").Comment("名称"),
 		field.String("image").Comment("图片"),
@@ -66,12 +66,12 @@ func (Advert) Fields() []ent.Field {
 	}
 }
 
-// Edges of the Advert.
-func (Advert) Edges() []ent.Edge {
+// Edges of the Activity.
+func (Activity) Edges() []ent.Edge {
 	return []ent.Edge{}
 }
 
-func (Advert) Mixin() []ent.Mixin {
+func (Activity) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		internal.TimeMixin{},
 		internal.DeleteMixin{},
@@ -79,6 +79,6 @@ func (Advert) Mixin() []ent.Mixin {
 	}
 }
 
-func (Advert) Indexes() []ent.Index {
+func (Activity) Indexes() []ent.Index {
 	return []ent.Index{}
 }

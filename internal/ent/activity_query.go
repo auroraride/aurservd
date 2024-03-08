@@ -10,69 +10,69 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/auroraride/aurservd/internal/ent/advert"
+	"github.com/auroraride/aurservd/internal/ent/activity"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
-// AdvertQuery is the builder for querying Advert entities.
-type AdvertQuery struct {
+// ActivityQuery is the builder for querying Activity entities.
+type ActivityQuery struct {
 	config
 	ctx        *QueryContext
-	order      []advert.OrderOption
+	order      []activity.OrderOption
 	inters     []Interceptor
-	predicates []predicate.Advert
+	predicates []predicate.Activity
 	modifiers  []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
 }
 
-// Where adds a new predicate for the AdvertQuery builder.
-func (aq *AdvertQuery) Where(ps ...predicate.Advert) *AdvertQuery {
+// Where adds a new predicate for the ActivityQuery builder.
+func (aq *ActivityQuery) Where(ps ...predicate.Activity) *ActivityQuery {
 	aq.predicates = append(aq.predicates, ps...)
 	return aq
 }
 
 // Limit the number of records to be returned by this query.
-func (aq *AdvertQuery) Limit(limit int) *AdvertQuery {
+func (aq *ActivityQuery) Limit(limit int) *ActivityQuery {
 	aq.ctx.Limit = &limit
 	return aq
 }
 
 // Offset to start from.
-func (aq *AdvertQuery) Offset(offset int) *AdvertQuery {
+func (aq *ActivityQuery) Offset(offset int) *ActivityQuery {
 	aq.ctx.Offset = &offset
 	return aq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
-func (aq *AdvertQuery) Unique(unique bool) *AdvertQuery {
+func (aq *ActivityQuery) Unique(unique bool) *ActivityQuery {
 	aq.ctx.Unique = &unique
 	return aq
 }
 
 // Order specifies how the records should be ordered.
-func (aq *AdvertQuery) Order(o ...advert.OrderOption) *AdvertQuery {
+func (aq *ActivityQuery) Order(o ...activity.OrderOption) *ActivityQuery {
 	aq.order = append(aq.order, o...)
 	return aq
 }
 
-// First returns the first Advert entity from the query.
-// Returns a *NotFoundError when no Advert was found.
-func (aq *AdvertQuery) First(ctx context.Context) (*Advert, error) {
+// First returns the first Activity entity from the query.
+// Returns a *NotFoundError when no Activity was found.
+func (aq *ActivityQuery) First(ctx context.Context) (*Activity, error) {
 	nodes, err := aq.Limit(1).All(setContextOp(ctx, aq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
 	if len(nodes) == 0 {
-		return nil, &NotFoundError{advert.Label}
+		return nil, &NotFoundError{activity.Label}
 	}
 	return nodes[0], nil
 }
 
 // FirstX is like First, but panics if an error occurs.
-func (aq *AdvertQuery) FirstX(ctx context.Context) *Advert {
+func (aq *ActivityQuery) FirstX(ctx context.Context) *Activity {
 	node, err := aq.First(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -80,22 +80,22 @@ func (aq *AdvertQuery) FirstX(ctx context.Context) *Advert {
 	return node
 }
 
-// FirstID returns the first Advert ID from the query.
-// Returns a *NotFoundError when no Advert ID was found.
-func (aq *AdvertQuery) FirstID(ctx context.Context) (id uint64, err error) {
+// FirstID returns the first Activity ID from the query.
+// Returns a *NotFoundError when no Activity ID was found.
+func (aq *ActivityQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
 	if ids, err = aq.Limit(1).IDs(setContextOp(ctx, aq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
-		err = &NotFoundError{advert.Label}
+		err = &NotFoundError{activity.Label}
 		return
 	}
 	return ids[0], nil
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (aq *AdvertQuery) FirstIDX(ctx context.Context) uint64 {
+func (aq *ActivityQuery) FirstIDX(ctx context.Context) uint64 {
 	id, err := aq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -103,10 +103,10 @@ func (aq *AdvertQuery) FirstIDX(ctx context.Context) uint64 {
 	return id
 }
 
-// Only returns a single Advert entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when more than one Advert entity is found.
-// Returns a *NotFoundError when no Advert entities are found.
-func (aq *AdvertQuery) Only(ctx context.Context) (*Advert, error) {
+// Only returns a single Activity entity found by the query, ensuring it only returns one.
+// Returns a *NotSingularError when more than one Activity entity is found.
+// Returns a *NotFoundError when no Activity entities are found.
+func (aq *ActivityQuery) Only(ctx context.Context) (*Activity, error) {
 	nodes, err := aq.Limit(2).All(setContextOp(ctx, aq.ctx, "Only"))
 	if err != nil {
 		return nil, err
@@ -115,14 +115,14 @@ func (aq *AdvertQuery) Only(ctx context.Context) (*Advert, error) {
 	case 1:
 		return nodes[0], nil
 	case 0:
-		return nil, &NotFoundError{advert.Label}
+		return nil, &NotFoundError{activity.Label}
 	default:
-		return nil, &NotSingularError{advert.Label}
+		return nil, &NotSingularError{activity.Label}
 	}
 }
 
 // OnlyX is like Only, but panics if an error occurs.
-func (aq *AdvertQuery) OnlyX(ctx context.Context) *Advert {
+func (aq *ActivityQuery) OnlyX(ctx context.Context) *Activity {
 	node, err := aq.Only(ctx)
 	if err != nil {
 		panic(err)
@@ -130,10 +130,10 @@ func (aq *AdvertQuery) OnlyX(ctx context.Context) *Advert {
 	return node
 }
 
-// OnlyID is like Only, but returns the only Advert ID in the query.
-// Returns a *NotSingularError when more than one Advert ID is found.
+// OnlyID is like Only, but returns the only Activity ID in the query.
+// Returns a *NotSingularError when more than one Activity ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (aq *AdvertQuery) OnlyID(ctx context.Context) (id uint64, err error) {
+func (aq *ActivityQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
 	if ids, err = aq.Limit(2).IDs(setContextOp(ctx, aq.ctx, "OnlyID")); err != nil {
 		return
@@ -142,15 +142,15 @@ func (aq *AdvertQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	case 1:
 		id = ids[0]
 	case 0:
-		err = &NotFoundError{advert.Label}
+		err = &NotFoundError{activity.Label}
 	default:
-		err = &NotSingularError{advert.Label}
+		err = &NotSingularError{activity.Label}
 	}
 	return
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (aq *AdvertQuery) OnlyIDX(ctx context.Context) uint64 {
+func (aq *ActivityQuery) OnlyIDX(ctx context.Context) uint64 {
 	id, err := aq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -158,18 +158,18 @@ func (aq *AdvertQuery) OnlyIDX(ctx context.Context) uint64 {
 	return id
 }
 
-// All executes the query and returns a list of Adverts.
-func (aq *AdvertQuery) All(ctx context.Context) ([]*Advert, error) {
+// All executes the query and returns a list of Activities.
+func (aq *ActivityQuery) All(ctx context.Context) ([]*Activity, error) {
 	ctx = setContextOp(ctx, aq.ctx, "All")
 	if err := aq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	qr := querierAll[[]*Advert, *AdvertQuery]()
-	return withInterceptors[[]*Advert](ctx, aq, qr, aq.inters)
+	qr := querierAll[[]*Activity, *ActivityQuery]()
+	return withInterceptors[[]*Activity](ctx, aq, qr, aq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
-func (aq *AdvertQuery) AllX(ctx context.Context) []*Advert {
+func (aq *ActivityQuery) AllX(ctx context.Context) []*Activity {
 	nodes, err := aq.All(ctx)
 	if err != nil {
 		panic(err)
@@ -177,20 +177,20 @@ func (aq *AdvertQuery) AllX(ctx context.Context) []*Advert {
 	return nodes
 }
 
-// IDs executes the query and returns a list of Advert IDs.
-func (aq *AdvertQuery) IDs(ctx context.Context) (ids []uint64, err error) {
+// IDs executes the query and returns a list of Activity IDs.
+func (aq *ActivityQuery) IDs(ctx context.Context) (ids []uint64, err error) {
 	if aq.ctx.Unique == nil && aq.path != nil {
 		aq.Unique(true)
 	}
 	ctx = setContextOp(ctx, aq.ctx, "IDs")
-	if err = aq.Select(advert.FieldID).Scan(ctx, &ids); err != nil {
+	if err = aq.Select(activity.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (aq *AdvertQuery) IDsX(ctx context.Context) []uint64 {
+func (aq *ActivityQuery) IDsX(ctx context.Context) []uint64 {
 	ids, err := aq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -199,16 +199,16 @@ func (aq *AdvertQuery) IDsX(ctx context.Context) []uint64 {
 }
 
 // Count returns the count of the given query.
-func (aq *AdvertQuery) Count(ctx context.Context) (int, error) {
+func (aq *ActivityQuery) Count(ctx context.Context) (int, error) {
 	ctx = setContextOp(ctx, aq.ctx, "Count")
 	if err := aq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return withInterceptors[int](ctx, aq, querierCount[*AdvertQuery](), aq.inters)
+	return withInterceptors[int](ctx, aq, querierCount[*ActivityQuery](), aq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
-func (aq *AdvertQuery) CountX(ctx context.Context) int {
+func (aq *ActivityQuery) CountX(ctx context.Context) int {
 	count, err := aq.Count(ctx)
 	if err != nil {
 		panic(err)
@@ -217,7 +217,7 @@ func (aq *AdvertQuery) CountX(ctx context.Context) int {
 }
 
 // Exist returns true if the query has elements in the graph.
-func (aq *AdvertQuery) Exist(ctx context.Context) (bool, error) {
+func (aq *ActivityQuery) Exist(ctx context.Context) (bool, error) {
 	ctx = setContextOp(ctx, aq.ctx, "Exist")
 	switch _, err := aq.FirstID(ctx); {
 	case IsNotFound(err):
@@ -230,7 +230,7 @@ func (aq *AdvertQuery) Exist(ctx context.Context) (bool, error) {
 }
 
 // ExistX is like Exist, but panics if an error occurs.
-func (aq *AdvertQuery) ExistX(ctx context.Context) bool {
+func (aq *ActivityQuery) ExistX(ctx context.Context) bool {
 	exist, err := aq.Exist(ctx)
 	if err != nil {
 		panic(err)
@@ -238,18 +238,18 @@ func (aq *AdvertQuery) ExistX(ctx context.Context) bool {
 	return exist
 }
 
-// Clone returns a duplicate of the AdvertQuery builder, including all associated steps. It can be
+// Clone returns a duplicate of the ActivityQuery builder, including all associated steps. It can be
 // used to prepare common query builders and use them differently after the clone is made.
-func (aq *AdvertQuery) Clone() *AdvertQuery {
+func (aq *ActivityQuery) Clone() *ActivityQuery {
 	if aq == nil {
 		return nil
 	}
-	return &AdvertQuery{
+	return &ActivityQuery{
 		config:     aq.config,
 		ctx:        aq.ctx.Clone(),
-		order:      append([]advert.OrderOption{}, aq.order...),
+		order:      append([]activity.OrderOption{}, aq.order...),
 		inters:     append([]Interceptor{}, aq.inters...),
-		predicates: append([]predicate.Advert{}, aq.predicates...),
+		predicates: append([]predicate.Activity{}, aq.predicates...),
 		// clone intermediate query.
 		sql:  aq.sql.Clone(),
 		path: aq.path,
@@ -266,15 +266,15 @@ func (aq *AdvertQuery) Clone() *AdvertQuery {
 //		Count int `json:"count,omitempty"`
 //	}
 //
-//	client.Advert.Query().
-//		GroupBy(advert.FieldCreatedAt).
+//	client.Activity.Query().
+//		GroupBy(activity.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-func (aq *AdvertQuery) GroupBy(field string, fields ...string) *AdvertGroupBy {
+func (aq *ActivityQuery) GroupBy(field string, fields ...string) *ActivityGroupBy {
 	aq.ctx.Fields = append([]string{field}, fields...)
-	grbuild := &AdvertGroupBy{build: aq}
+	grbuild := &ActivityGroupBy{build: aq}
 	grbuild.flds = &aq.ctx.Fields
-	grbuild.label = advert.Label
+	grbuild.label = activity.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
 }
@@ -288,23 +288,23 @@ func (aq *AdvertQuery) GroupBy(field string, fields ...string) *AdvertGroupBy {
 //		CreatedAt time.Time `json:"created_at,omitempty"`
 //	}
 //
-//	client.Advert.Query().
-//		Select(advert.FieldCreatedAt).
+//	client.Activity.Query().
+//		Select(activity.FieldCreatedAt).
 //		Scan(ctx, &v)
-func (aq *AdvertQuery) Select(fields ...string) *AdvertSelect {
+func (aq *ActivityQuery) Select(fields ...string) *ActivitySelect {
 	aq.ctx.Fields = append(aq.ctx.Fields, fields...)
-	sbuild := &AdvertSelect{AdvertQuery: aq}
-	sbuild.label = advert.Label
+	sbuild := &ActivitySelect{ActivityQuery: aq}
+	sbuild.label = activity.Label
 	sbuild.flds, sbuild.scan = &aq.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
-// Aggregate returns a AdvertSelect configured with the given aggregations.
-func (aq *AdvertQuery) Aggregate(fns ...AggregateFunc) *AdvertSelect {
+// Aggregate returns a ActivitySelect configured with the given aggregations.
+func (aq *ActivityQuery) Aggregate(fns ...AggregateFunc) *ActivitySelect {
 	return aq.Select().Aggregate(fns...)
 }
 
-func (aq *AdvertQuery) prepareQuery(ctx context.Context) error {
+func (aq *ActivityQuery) prepareQuery(ctx context.Context) error {
 	for _, inter := range aq.inters {
 		if inter == nil {
 			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
@@ -316,7 +316,7 @@ func (aq *AdvertQuery) prepareQuery(ctx context.Context) error {
 		}
 	}
 	for _, f := range aq.ctx.Fields {
-		if !advert.ValidColumn(f) {
+		if !activity.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
 	}
@@ -330,16 +330,16 @@ func (aq *AdvertQuery) prepareQuery(ctx context.Context) error {
 	return nil
 }
 
-func (aq *AdvertQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Advert, error) {
+func (aq *ActivityQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Activity, error) {
 	var (
-		nodes = []*Advert{}
+		nodes = []*Activity{}
 		_spec = aq.querySpec()
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
-		return (*Advert).scanValues(nil, columns)
+		return (*Activity).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []any) error {
-		node := &Advert{config: aq.config}
+		node := &Activity{config: aq.config}
 		nodes = append(nodes, node)
 		return node.assignValues(columns, values)
 	}
@@ -358,7 +358,7 @@ func (aq *AdvertQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Adver
 	return nodes, nil
 }
 
-func (aq *AdvertQuery) sqlCount(ctx context.Context) (int, error) {
+func (aq *ActivityQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := aq.querySpec()
 	if len(aq.modifiers) > 0 {
 		_spec.Modifiers = aq.modifiers
@@ -370,8 +370,8 @@ func (aq *AdvertQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, aq.driver, _spec)
 }
 
-func (aq *AdvertQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(advert.Table, advert.Columns, sqlgraph.NewFieldSpec(advert.FieldID, field.TypeUint64))
+func (aq *ActivityQuery) querySpec() *sqlgraph.QuerySpec {
+	_spec := sqlgraph.NewQuerySpec(activity.Table, activity.Columns, sqlgraph.NewFieldSpec(activity.FieldID, field.TypeUint64))
 	_spec.From = aq.sql
 	if unique := aq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
@@ -380,9 +380,9 @@ func (aq *AdvertQuery) querySpec() *sqlgraph.QuerySpec {
 	}
 	if fields := aq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
-		_spec.Node.Columns = append(_spec.Node.Columns, advert.FieldID)
+		_spec.Node.Columns = append(_spec.Node.Columns, activity.FieldID)
 		for i := range fields {
-			if fields[i] != advert.FieldID {
+			if fields[i] != activity.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
 		}
@@ -410,12 +410,12 @@ func (aq *AdvertQuery) querySpec() *sqlgraph.QuerySpec {
 	return _spec
 }
 
-func (aq *AdvertQuery) sqlQuery(ctx context.Context) *sql.Selector {
+func (aq *ActivityQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(aq.driver.Dialect())
-	t1 := builder.Table(advert.Table)
+	t1 := builder.Table(activity.Table)
 	columns := aq.ctx.Fields
 	if len(columns) == 0 {
-		columns = advert.Columns
+		columns = activity.Columns
 	}
 	selector := builder.Select(t1.Columns(columns...)...).From(t1)
 	if aq.sql != nil {
@@ -446,16 +446,16 @@ func (aq *AdvertQuery) sqlQuery(ctx context.Context) *sql.Selector {
 }
 
 // Modify adds a query modifier for attaching custom logic to queries.
-func (aq *AdvertQuery) Modify(modifiers ...func(s *sql.Selector)) *AdvertSelect {
+func (aq *ActivityQuery) Modify(modifiers ...func(s *sql.Selector)) *ActivitySelect {
 	aq.modifiers = append(aq.modifiers, modifiers...)
 	return aq.Select()
 }
 
-type AdvertQueryWith string
+type ActivityQueryWith string
 
 var ()
 
-func (aq *AdvertQuery) With(withEdges ...AdvertQueryWith) *AdvertQuery {
+func (aq *ActivityQuery) With(withEdges ...ActivityQueryWith) *ActivityQuery {
 	for _, v := range withEdges {
 		switch v {
 		}
@@ -463,28 +463,28 @@ func (aq *AdvertQuery) With(withEdges ...AdvertQueryWith) *AdvertQuery {
 	return aq
 }
 
-// AdvertGroupBy is the group-by builder for Advert entities.
-type AdvertGroupBy struct {
+// ActivityGroupBy is the group-by builder for Activity entities.
+type ActivityGroupBy struct {
 	selector
-	build *AdvertQuery
+	build *ActivityQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
-func (agb *AdvertGroupBy) Aggregate(fns ...AggregateFunc) *AdvertGroupBy {
+func (agb *ActivityGroupBy) Aggregate(fns ...AggregateFunc) *ActivityGroupBy {
 	agb.fns = append(agb.fns, fns...)
 	return agb
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (agb *AdvertGroupBy) Scan(ctx context.Context, v any) error {
+func (agb *ActivityGroupBy) Scan(ctx context.Context, v any) error {
 	ctx = setContextOp(ctx, agb.build.ctx, "GroupBy")
 	if err := agb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*AdvertQuery, *AdvertGroupBy](ctx, agb.build, agb, agb.build.inters, v)
+	return scanWithInterceptors[*ActivityQuery, *ActivityGroupBy](ctx, agb.build, agb, agb.build.inters, v)
 }
 
-func (agb *AdvertGroupBy) sqlScan(ctx context.Context, root *AdvertQuery, v any) error {
+func (agb *ActivityGroupBy) sqlScan(ctx context.Context, root *ActivityQuery, v any) error {
 	selector := root.sqlQuery(ctx).Select()
 	aggregation := make([]string, 0, len(agb.fns))
 	for _, fn := range agb.fns {
@@ -511,28 +511,28 @@ func (agb *AdvertGroupBy) sqlScan(ctx context.Context, root *AdvertQuery, v any)
 	return sql.ScanSlice(rows, v)
 }
 
-// AdvertSelect is the builder for selecting fields of Advert entities.
-type AdvertSelect struct {
-	*AdvertQuery
+// ActivitySelect is the builder for selecting fields of Activity entities.
+type ActivitySelect struct {
+	*ActivityQuery
 	selector
 }
 
 // Aggregate adds the given aggregation functions to the selector query.
-func (as *AdvertSelect) Aggregate(fns ...AggregateFunc) *AdvertSelect {
+func (as *ActivitySelect) Aggregate(fns ...AggregateFunc) *ActivitySelect {
 	as.fns = append(as.fns, fns...)
 	return as
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (as *AdvertSelect) Scan(ctx context.Context, v any) error {
+func (as *ActivitySelect) Scan(ctx context.Context, v any) error {
 	ctx = setContextOp(ctx, as.ctx, "Select")
 	if err := as.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*AdvertQuery, *AdvertSelect](ctx, as.AdvertQuery, as, as.inters, v)
+	return scanWithInterceptors[*ActivityQuery, *ActivitySelect](ctx, as.ActivityQuery, as, as.inters, v)
 }
 
-func (as *AdvertSelect) sqlScan(ctx context.Context, root *AdvertQuery, v any) error {
+func (as *ActivitySelect) sqlScan(ctx context.Context, root *ActivityQuery, v any) error {
 	selector := root.sqlQuery(ctx)
 	aggregation := make([]string, 0, len(as.fns))
 	for _, fn := range as.fns {
@@ -554,7 +554,7 @@ func (as *AdvertSelect) sqlScan(ctx context.Context, root *AdvertQuery, v any) e
 }
 
 // Modify adds a query modifier for attaching custom logic to queries.
-func (as *AdvertSelect) Modify(modifiers ...func(s *sql.Selector)) *AdvertSelect {
+func (as *ActivitySelect) Modify(modifiers ...func(s *sql.Selector)) *ActivitySelect {
 	as.modifiers = append(as.modifiers, modifiers...)
 	return as
 }

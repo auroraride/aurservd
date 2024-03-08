@@ -160,80 +160,80 @@ func (*setting) GuideModify(c echo.Context) (err error) {
 	return ctx.SendResponse()
 }
 
-// AdvertList
-// @ID		SettingAdvertList
-// @Router	/manager/v1/setting/advert [GET]
-// @Summary	获取广告列表
+// ActivityList
+// @ID		SettingActivityList
+// @Router	/manager/v1/setting/activity [GET]
+// @Summary	获取活动列表
 // @Tags	Setting - 管理接口
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string						true	"管理员校验token"
-// @Param	body			body		definition.AdvertListReq	true	"请求参数"
+// @Param	body			body		definition.ActivityListReq	true	"请求参数"
 // @Success	200				{object}	model.StatusResponse		"请求成功"
-func (*setting) AdvertList(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[definition.AdvertListReq](c)
-	return ctx.SendResponse(biz.NewAdvert().List(req))
+func (*setting) ActivityList(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[definition.ActivityListReq](c)
+	return ctx.SendResponse(biz.NewActivity().List(req))
 }
 
-// AdvertGet
-// @ID		SettingAdvertGet
-// @Router	/manager/v1/setting/advert/{id} [GET]
-// @Summary	获取指定广告
+// ActivityGet
+// @ID		SettingActivityGet
+// @Router	/manager/v1/setting/activity/{id} [GET]
+// @Summary	获取指定活动
 // @Tags	Setting - 管理接口
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
-// @Param	id				path		string					true	"广告ID"
+// @Param	id				path		string					true	"活动ID"
 // @Success	200				{object}	model.StatusResponse	"请求成功"
-func (*setting) AdvertGet(c echo.Context) (err error) {
+func (*setting) ActivityGet(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
-	return ctx.SendResponse(biz.NewAdvert().Get(req.ID))
+	return ctx.SendResponse(biz.NewActivity().Get(req.ID))
 }
 
-// AdvertModify
-// @ID		SettingAdvertModify
-// @Router	/manager/v1/setting/advert [PUT]
-// @Summary	修改广告
+// ActivityModify
+// @ID		SettingActivityModify
+// @Router	/manager/v1/setting/activity [PUT]
+// @Summary	修改活动
 // @Tags	Setting - 管理接口
 // @Accept	json
 // @Produce	json
-// @Param	X-Manager-Token	header		string						true	"管理员校验token"
-// @Param	body			body		definition.AdvertModifyReq	true	"请求参数"
-// @Success	200				{object}	model.StatusResponse		"请求成功"
-func (*setting) AdvertModify(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[definition.AdvertModifyReq](c)
-	biz.NewAdvert().Modify(req)
+// @Param	X-Manager-Token	header		string							true	"管理员校验token"
+// @Param	body			body		definition.ActivityModifyReq	true	"请求参数"
+// @Success	200				{object}	model.StatusResponse			"请求成功"
+func (*setting) ActivityModify(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[definition.ActivityModifyReq](c)
+	biz.NewActivity().Modify(req)
 	return ctx.SendResponse()
 }
 
-// AdvertDelete
-// @ID		SettingAdvertDelete
-// @Router	/manager/v1/setting/advert/{id} [DELETE]
+// ActivityDelete
+// @ID		SettingActivityDelete
+// @Router	/manager/v1/setting/activity/{id} [DELETE]
 // @Summary
 // @Tags	Setting - 管理接口
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
-// @Param	id				path		string					true	"广告ID"
+// @Param	id				path		string					true	"活动ID"
 // @Success	200				{object}	model.StatusResponse	"请求成功"
-func (*setting) AdvertDelete(c echo.Context) (err error) {
+func (*setting) ActivityDelete(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
-	biz.NewAdvert().Delete(req.ID)
+	biz.NewActivity().Delete(req.ID)
 	return ctx.SendResponse()
 }
 
-// AdvertSave
-// @ID		SettingAdvertSave
-// @Router	/manager/v1/setting/advert [POST]
-// @Summary	保存广告
+// ActivitySave
+// @ID		SettingActivitySave
+// @Router	/manager/v1/setting/activity [POST]
+// @Summary	保存活动
 // @Tags	Setting -  管理接口
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string						true	"管理员校验token"
-// @Param	body			body		definition.AdvertSaveReq	true	"请求参数"
+// @Param	body			body		definition.ActivitySaveReq	true	"请求参数"
 // @Success	200				{object}	model.StatusResponse		"请求成功"
-func (*setting) AdvertSave(c echo.Context) (err error) {
-	ctx, req := app.ManagerContextAndBinding[definition.AdvertSaveReq](c)
-	biz.NewAdvert().Create(req)
+func (*setting) ActivitySave(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[definition.ActivitySaveReq](c)
+	biz.NewActivity().Create(req)
 	return ctx.SendResponse()
 }

@@ -14,7 +14,7 @@ import (
 	"github.com/auroraride/adapter"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/app/model/promotion"
-	"github.com/auroraride/aurservd/internal/ent/advert"
+	"github.com/auroraride/aurservd/internal/ent/activity"
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
@@ -100,7 +100,7 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeAdvert                     = "Advert"
+	TypeActivity                   = "Activity"
 	TypeAgent                      = "Agent"
 	TypeAllocate                   = "Allocate"
 	TypeAssistance                 = "Assistance"
@@ -175,8 +175,8 @@ const (
 	TypeSubscribeSuspend           = "SubscribeSuspend"
 )
 
-// AdvertMutation represents an operation that mutates the Advert nodes in the graph.
-type AdvertMutation struct {
+// ActivityMutation represents an operation that mutates the Activity nodes in the graph.
+type ActivityMutation struct {
 	config
 	op            Op
 	typ           string
@@ -194,21 +194,21 @@ type AdvertMutation struct {
 	addsort       *int
 	clearedFields map[string]struct{}
 	done          bool
-	oldValue      func(context.Context) (*Advert, error)
-	predicates    []predicate.Advert
+	oldValue      func(context.Context) (*Activity, error)
+	predicates    []predicate.Activity
 }
 
-var _ ent.Mutation = (*AdvertMutation)(nil)
+var _ ent.Mutation = (*ActivityMutation)(nil)
 
-// advertOption allows management of the mutation configuration using functional options.
-type advertOption func(*AdvertMutation)
+// activityOption allows management of the mutation configuration using functional options.
+type activityOption func(*ActivityMutation)
 
-// newAdvertMutation creates new mutation for the Advert entity.
-func newAdvertMutation(c config, op Op, opts ...advertOption) *AdvertMutation {
-	m := &AdvertMutation{
+// newActivityMutation creates new mutation for the Activity entity.
+func newActivityMutation(c config, op Op, opts ...activityOption) *ActivityMutation {
+	m := &ActivityMutation{
 		config:        c,
 		op:            op,
-		typ:           TypeAdvert,
+		typ:           TypeActivity,
 		clearedFields: make(map[string]struct{}),
 	}
 	for _, opt := range opts {
@@ -217,20 +217,20 @@ func newAdvertMutation(c config, op Op, opts ...advertOption) *AdvertMutation {
 	return m
 }
 
-// withAdvertID sets the ID field of the mutation.
-func withAdvertID(id uint64) advertOption {
-	return func(m *AdvertMutation) {
+// withActivityID sets the ID field of the mutation.
+func withActivityID(id uint64) activityOption {
+	return func(m *ActivityMutation) {
 		var (
 			err   error
 			once  sync.Once
-			value *Advert
+			value *Activity
 		)
-		m.oldValue = func(ctx context.Context) (*Advert, error) {
+		m.oldValue = func(ctx context.Context) (*Activity, error) {
 			once.Do(func() {
 				if m.done {
 					err = errors.New("querying old values post mutation is not allowed")
 				} else {
-					value, err = m.Client().Advert.Get(ctx, id)
+					value, err = m.Client().Activity.Get(ctx, id)
 				}
 			})
 			return value, err
@@ -239,10 +239,10 @@ func withAdvertID(id uint64) advertOption {
 	}
 }
 
-// withAdvert sets the old Advert of the mutation.
-func withAdvert(node *Advert) advertOption {
-	return func(m *AdvertMutation) {
-		m.oldValue = func(context.Context) (*Advert, error) {
+// withActivity sets the old Activity of the mutation.
+func withActivity(node *Activity) activityOption {
+	return func(m *ActivityMutation) {
+		m.oldValue = func(context.Context) (*Activity, error) {
 			return node, nil
 		}
 		m.id = &node.ID
@@ -251,7 +251,7 @@ func withAdvert(node *Advert) advertOption {
 
 // Client returns a new `ent.Client` from the mutation. If the mutation was
 // executed in a transaction (ent.Tx), a transactional client is returned.
-func (m AdvertMutation) Client() *Client {
+func (m ActivityMutation) Client() *Client {
 	client := &Client{config: m.config}
 	client.init()
 	return client
@@ -259,7 +259,7 @@ func (m AdvertMutation) Client() *Client {
 
 // Tx returns an `ent.Tx` for mutations that were executed in transactions;
 // it returns an error otherwise.
-func (m AdvertMutation) Tx() (*Tx, error) {
+func (m ActivityMutation) Tx() (*Tx, error) {
 	if _, ok := m.driver.(*txDriver); !ok {
 		return nil, errors.New("ent: mutation is not running in a transaction")
 	}
@@ -270,7 +270,7 @@ func (m AdvertMutation) Tx() (*Tx, error) {
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *AdvertMutation) ID() (id uint64, exists bool) {
+func (m *ActivityMutation) ID() (id uint64, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -281,7 +281,7 @@ func (m *AdvertMutation) ID() (id uint64, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *AdvertMutation) IDs(ctx context.Context) ([]uint64, error) {
+func (m *ActivityMutation) IDs(ctx context.Context) ([]uint64, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
@@ -290,19 +290,19 @@ func (m *AdvertMutation) IDs(ctx context.Context) ([]uint64, error) {
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
-		return m.Client().Advert.Query().Where(m.predicates...).IDs(ctx)
+		return m.Client().Activity.Query().Where(m.predicates...).IDs(ctx)
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (m *AdvertMutation) SetCreatedAt(t time.Time) {
+func (m *ActivityMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
 }
 
 // CreatedAt returns the value of the "created_at" field in the mutation.
-func (m *AdvertMutation) CreatedAt() (r time.Time, exists bool) {
+func (m *ActivityMutation) CreatedAt() (r time.Time, exists bool) {
 	v := m.created_at
 	if v == nil {
 		return
@@ -310,10 +310,10 @@ func (m *AdvertMutation) CreatedAt() (r time.Time, exists bool) {
 	return *v, true
 }
 
-// OldCreatedAt returns the old "created_at" field's value of the Advert entity.
-// If the Advert object wasn't provided to the builder, the object is fetched from the database.
+// OldCreatedAt returns the old "created_at" field's value of the Activity entity.
+// If the Activity object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AdvertMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+func (m *ActivityMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
 	}
@@ -328,17 +328,17 @@ func (m *AdvertMutation) OldCreatedAt(ctx context.Context) (v time.Time, err err
 }
 
 // ResetCreatedAt resets all changes to the "created_at" field.
-func (m *AdvertMutation) ResetCreatedAt() {
+func (m *ActivityMutation) ResetCreatedAt() {
 	m.created_at = nil
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (m *AdvertMutation) SetUpdatedAt(t time.Time) {
+func (m *ActivityMutation) SetUpdatedAt(t time.Time) {
 	m.updated_at = &t
 }
 
 // UpdatedAt returns the value of the "updated_at" field in the mutation.
-func (m *AdvertMutation) UpdatedAt() (r time.Time, exists bool) {
+func (m *ActivityMutation) UpdatedAt() (r time.Time, exists bool) {
 	v := m.updated_at
 	if v == nil {
 		return
@@ -346,10 +346,10 @@ func (m *AdvertMutation) UpdatedAt() (r time.Time, exists bool) {
 	return *v, true
 }
 
-// OldUpdatedAt returns the old "updated_at" field's value of the Advert entity.
-// If the Advert object wasn't provided to the builder, the object is fetched from the database.
+// OldUpdatedAt returns the old "updated_at" field's value of the Activity entity.
+// If the Activity object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AdvertMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+func (m *ActivityMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
 	}
@@ -364,17 +364,17 @@ func (m *AdvertMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err err
 }
 
 // ResetUpdatedAt resets all changes to the "updated_at" field.
-func (m *AdvertMutation) ResetUpdatedAt() {
+func (m *ActivityMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
 // SetDeletedAt sets the "deleted_at" field.
-func (m *AdvertMutation) SetDeletedAt(t time.Time) {
+func (m *ActivityMutation) SetDeletedAt(t time.Time) {
 	m.deleted_at = &t
 }
 
 // DeletedAt returns the value of the "deleted_at" field in the mutation.
-func (m *AdvertMutation) DeletedAt() (r time.Time, exists bool) {
+func (m *ActivityMutation) DeletedAt() (r time.Time, exists bool) {
 	v := m.deleted_at
 	if v == nil {
 		return
@@ -382,10 +382,10 @@ func (m *AdvertMutation) DeletedAt() (r time.Time, exists bool) {
 	return *v, true
 }
 
-// OldDeletedAt returns the old "deleted_at" field's value of the Advert entity.
-// If the Advert object wasn't provided to the builder, the object is fetched from the database.
+// OldDeletedAt returns the old "deleted_at" field's value of the Activity entity.
+// If the Activity object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AdvertMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
+func (m *ActivityMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
 	}
@@ -400,30 +400,30 @@ func (m *AdvertMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err er
 }
 
 // ClearDeletedAt clears the value of the "deleted_at" field.
-func (m *AdvertMutation) ClearDeletedAt() {
+func (m *ActivityMutation) ClearDeletedAt() {
 	m.deleted_at = nil
-	m.clearedFields[advert.FieldDeletedAt] = struct{}{}
+	m.clearedFields[activity.FieldDeletedAt] = struct{}{}
 }
 
 // DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
-func (m *AdvertMutation) DeletedAtCleared() bool {
-	_, ok := m.clearedFields[advert.FieldDeletedAt]
+func (m *ActivityMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[activity.FieldDeletedAt]
 	return ok
 }
 
 // ResetDeletedAt resets all changes to the "deleted_at" field.
-func (m *AdvertMutation) ResetDeletedAt() {
+func (m *ActivityMutation) ResetDeletedAt() {
 	m.deleted_at = nil
-	delete(m.clearedFields, advert.FieldDeletedAt)
+	delete(m.clearedFields, activity.FieldDeletedAt)
 }
 
 // SetCreator sets the "creator" field.
-func (m *AdvertMutation) SetCreator(value *model.Modifier) {
+func (m *ActivityMutation) SetCreator(value *model.Modifier) {
 	m.creator = &value
 }
 
 // Creator returns the value of the "creator" field in the mutation.
-func (m *AdvertMutation) Creator() (r *model.Modifier, exists bool) {
+func (m *ActivityMutation) Creator() (r *model.Modifier, exists bool) {
 	v := m.creator
 	if v == nil {
 		return
@@ -431,10 +431,10 @@ func (m *AdvertMutation) Creator() (r *model.Modifier, exists bool) {
 	return *v, true
 }
 
-// OldCreator returns the old "creator" field's value of the Advert entity.
-// If the Advert object wasn't provided to the builder, the object is fetched from the database.
+// OldCreator returns the old "creator" field's value of the Activity entity.
+// If the Activity object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AdvertMutation) OldCreator(ctx context.Context) (v *model.Modifier, err error) {
+func (m *ActivityMutation) OldCreator(ctx context.Context) (v *model.Modifier, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldCreator is only allowed on UpdateOne operations")
 	}
@@ -449,30 +449,30 @@ func (m *AdvertMutation) OldCreator(ctx context.Context) (v *model.Modifier, err
 }
 
 // ClearCreator clears the value of the "creator" field.
-func (m *AdvertMutation) ClearCreator() {
+func (m *ActivityMutation) ClearCreator() {
 	m.creator = nil
-	m.clearedFields[advert.FieldCreator] = struct{}{}
+	m.clearedFields[activity.FieldCreator] = struct{}{}
 }
 
 // CreatorCleared returns if the "creator" field was cleared in this mutation.
-func (m *AdvertMutation) CreatorCleared() bool {
-	_, ok := m.clearedFields[advert.FieldCreator]
+func (m *ActivityMutation) CreatorCleared() bool {
+	_, ok := m.clearedFields[activity.FieldCreator]
 	return ok
 }
 
 // ResetCreator resets all changes to the "creator" field.
-func (m *AdvertMutation) ResetCreator() {
+func (m *ActivityMutation) ResetCreator() {
 	m.creator = nil
-	delete(m.clearedFields, advert.FieldCreator)
+	delete(m.clearedFields, activity.FieldCreator)
 }
 
 // SetLastModifier sets the "last_modifier" field.
-func (m *AdvertMutation) SetLastModifier(value *model.Modifier) {
+func (m *ActivityMutation) SetLastModifier(value *model.Modifier) {
 	m.last_modifier = &value
 }
 
 // LastModifier returns the value of the "last_modifier" field in the mutation.
-func (m *AdvertMutation) LastModifier() (r *model.Modifier, exists bool) {
+func (m *ActivityMutation) LastModifier() (r *model.Modifier, exists bool) {
 	v := m.last_modifier
 	if v == nil {
 		return
@@ -480,10 +480,10 @@ func (m *AdvertMutation) LastModifier() (r *model.Modifier, exists bool) {
 	return *v, true
 }
 
-// OldLastModifier returns the old "last_modifier" field's value of the Advert entity.
-// If the Advert object wasn't provided to the builder, the object is fetched from the database.
+// OldLastModifier returns the old "last_modifier" field's value of the Activity entity.
+// If the Activity object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AdvertMutation) OldLastModifier(ctx context.Context) (v *model.Modifier, err error) {
+func (m *ActivityMutation) OldLastModifier(ctx context.Context) (v *model.Modifier, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldLastModifier is only allowed on UpdateOne operations")
 	}
@@ -498,30 +498,30 @@ func (m *AdvertMutation) OldLastModifier(ctx context.Context) (v *model.Modifier
 }
 
 // ClearLastModifier clears the value of the "last_modifier" field.
-func (m *AdvertMutation) ClearLastModifier() {
+func (m *ActivityMutation) ClearLastModifier() {
 	m.last_modifier = nil
-	m.clearedFields[advert.FieldLastModifier] = struct{}{}
+	m.clearedFields[activity.FieldLastModifier] = struct{}{}
 }
 
 // LastModifierCleared returns if the "last_modifier" field was cleared in this mutation.
-func (m *AdvertMutation) LastModifierCleared() bool {
-	_, ok := m.clearedFields[advert.FieldLastModifier]
+func (m *ActivityMutation) LastModifierCleared() bool {
+	_, ok := m.clearedFields[activity.FieldLastModifier]
 	return ok
 }
 
 // ResetLastModifier resets all changes to the "last_modifier" field.
-func (m *AdvertMutation) ResetLastModifier() {
+func (m *ActivityMutation) ResetLastModifier() {
 	m.last_modifier = nil
-	delete(m.clearedFields, advert.FieldLastModifier)
+	delete(m.clearedFields, activity.FieldLastModifier)
 }
 
 // SetRemark sets the "remark" field.
-func (m *AdvertMutation) SetRemark(s string) {
+func (m *ActivityMutation) SetRemark(s string) {
 	m.remark = &s
 }
 
 // Remark returns the value of the "remark" field in the mutation.
-func (m *AdvertMutation) Remark() (r string, exists bool) {
+func (m *ActivityMutation) Remark() (r string, exists bool) {
 	v := m.remark
 	if v == nil {
 		return
@@ -529,10 +529,10 @@ func (m *AdvertMutation) Remark() (r string, exists bool) {
 	return *v, true
 }
 
-// OldRemark returns the old "remark" field's value of the Advert entity.
-// If the Advert object wasn't provided to the builder, the object is fetched from the database.
+// OldRemark returns the old "remark" field's value of the Activity entity.
+// If the Activity object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AdvertMutation) OldRemark(ctx context.Context) (v string, err error) {
+func (m *ActivityMutation) OldRemark(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldRemark is only allowed on UpdateOne operations")
 	}
@@ -547,30 +547,30 @@ func (m *AdvertMutation) OldRemark(ctx context.Context) (v string, err error) {
 }
 
 // ClearRemark clears the value of the "remark" field.
-func (m *AdvertMutation) ClearRemark() {
+func (m *ActivityMutation) ClearRemark() {
 	m.remark = nil
-	m.clearedFields[advert.FieldRemark] = struct{}{}
+	m.clearedFields[activity.FieldRemark] = struct{}{}
 }
 
 // RemarkCleared returns if the "remark" field was cleared in this mutation.
-func (m *AdvertMutation) RemarkCleared() bool {
-	_, ok := m.clearedFields[advert.FieldRemark]
+func (m *ActivityMutation) RemarkCleared() bool {
+	_, ok := m.clearedFields[activity.FieldRemark]
 	return ok
 }
 
 // ResetRemark resets all changes to the "remark" field.
-func (m *AdvertMutation) ResetRemark() {
+func (m *ActivityMutation) ResetRemark() {
 	m.remark = nil
-	delete(m.clearedFields, advert.FieldRemark)
+	delete(m.clearedFields, activity.FieldRemark)
 }
 
 // SetName sets the "name" field.
-func (m *AdvertMutation) SetName(s string) {
+func (m *ActivityMutation) SetName(s string) {
 	m.name = &s
 }
 
 // Name returns the value of the "name" field in the mutation.
-func (m *AdvertMutation) Name() (r string, exists bool) {
+func (m *ActivityMutation) Name() (r string, exists bool) {
 	v := m.name
 	if v == nil {
 		return
@@ -578,10 +578,10 @@ func (m *AdvertMutation) Name() (r string, exists bool) {
 	return *v, true
 }
 
-// OldName returns the old "name" field's value of the Advert entity.
-// If the Advert object wasn't provided to the builder, the object is fetched from the database.
+// OldName returns the old "name" field's value of the Activity entity.
+// If the Activity object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AdvertMutation) OldName(ctx context.Context) (v string, err error) {
+func (m *ActivityMutation) OldName(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldName is only allowed on UpdateOne operations")
 	}
@@ -596,17 +596,17 @@ func (m *AdvertMutation) OldName(ctx context.Context) (v string, err error) {
 }
 
 // ResetName resets all changes to the "name" field.
-func (m *AdvertMutation) ResetName() {
+func (m *ActivityMutation) ResetName() {
 	m.name = nil
 }
 
 // SetImage sets the "image" field.
-func (m *AdvertMutation) SetImage(s string) {
+func (m *ActivityMutation) SetImage(s string) {
 	m.image = &s
 }
 
 // Image returns the value of the "image" field in the mutation.
-func (m *AdvertMutation) Image() (r string, exists bool) {
+func (m *ActivityMutation) Image() (r string, exists bool) {
 	v := m.image
 	if v == nil {
 		return
@@ -614,10 +614,10 @@ func (m *AdvertMutation) Image() (r string, exists bool) {
 	return *v, true
 }
 
-// OldImage returns the old "image" field's value of the Advert entity.
-// If the Advert object wasn't provided to the builder, the object is fetched from the database.
+// OldImage returns the old "image" field's value of the Activity entity.
+// If the Activity object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AdvertMutation) OldImage(ctx context.Context) (v string, err error) {
+func (m *ActivityMutation) OldImage(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldImage is only allowed on UpdateOne operations")
 	}
@@ -632,17 +632,17 @@ func (m *AdvertMutation) OldImage(ctx context.Context) (v string, err error) {
 }
 
 // ResetImage resets all changes to the "image" field.
-func (m *AdvertMutation) ResetImage() {
+func (m *ActivityMutation) ResetImage() {
 	m.image = nil
 }
 
 // SetLink sets the "link" field.
-func (m *AdvertMutation) SetLink(s string) {
+func (m *ActivityMutation) SetLink(s string) {
 	m.link = &s
 }
 
 // Link returns the value of the "link" field in the mutation.
-func (m *AdvertMutation) Link() (r string, exists bool) {
+func (m *ActivityMutation) Link() (r string, exists bool) {
 	v := m.link
 	if v == nil {
 		return
@@ -650,10 +650,10 @@ func (m *AdvertMutation) Link() (r string, exists bool) {
 	return *v, true
 }
 
-// OldLink returns the old "link" field's value of the Advert entity.
-// If the Advert object wasn't provided to the builder, the object is fetched from the database.
+// OldLink returns the old "link" field's value of the Activity entity.
+// If the Activity object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AdvertMutation) OldLink(ctx context.Context) (v string, err error) {
+func (m *ActivityMutation) OldLink(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldLink is only allowed on UpdateOne operations")
 	}
@@ -668,18 +668,18 @@ func (m *AdvertMutation) OldLink(ctx context.Context) (v string, err error) {
 }
 
 // ResetLink resets all changes to the "link" field.
-func (m *AdvertMutation) ResetLink() {
+func (m *ActivityMutation) ResetLink() {
 	m.link = nil
 }
 
 // SetSort sets the "sort" field.
-func (m *AdvertMutation) SetSort(i int) {
+func (m *ActivityMutation) SetSort(i int) {
 	m.sort = &i
 	m.addsort = nil
 }
 
 // Sort returns the value of the "sort" field in the mutation.
-func (m *AdvertMutation) Sort() (r int, exists bool) {
+func (m *ActivityMutation) Sort() (r int, exists bool) {
 	v := m.sort
 	if v == nil {
 		return
@@ -687,10 +687,10 @@ func (m *AdvertMutation) Sort() (r int, exists bool) {
 	return *v, true
 }
 
-// OldSort returns the old "sort" field's value of the Advert entity.
-// If the Advert object wasn't provided to the builder, the object is fetched from the database.
+// OldSort returns the old "sort" field's value of the Activity entity.
+// If the Activity object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AdvertMutation) OldSort(ctx context.Context) (v int, err error) {
+func (m *ActivityMutation) OldSort(ctx context.Context) (v int, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldSort is only allowed on UpdateOne operations")
 	}
@@ -705,7 +705,7 @@ func (m *AdvertMutation) OldSort(ctx context.Context) (v int, err error) {
 }
 
 // AddSort adds i to the "sort" field.
-func (m *AdvertMutation) AddSort(i int) {
+func (m *ActivityMutation) AddSort(i int) {
 	if m.addsort != nil {
 		*m.addsort += i
 	} else {
@@ -714,7 +714,7 @@ func (m *AdvertMutation) AddSort(i int) {
 }
 
 // AddedSort returns the value that was added to the "sort" field in this mutation.
-func (m *AdvertMutation) AddedSort() (r int, exists bool) {
+func (m *ActivityMutation) AddedSort() (r int, exists bool) {
 	v := m.addsort
 	if v == nil {
 		return
@@ -723,20 +723,20 @@ func (m *AdvertMutation) AddedSort() (r int, exists bool) {
 }
 
 // ResetSort resets all changes to the "sort" field.
-func (m *AdvertMutation) ResetSort() {
+func (m *ActivityMutation) ResetSort() {
 	m.sort = nil
 	m.addsort = nil
 }
 
-// Where appends a list predicates to the AdvertMutation builder.
-func (m *AdvertMutation) Where(ps ...predicate.Advert) {
+// Where appends a list predicates to the ActivityMutation builder.
+func (m *ActivityMutation) Where(ps ...predicate.Activity) {
 	m.predicates = append(m.predicates, ps...)
 }
 
-// WhereP appends storage-level predicates to the AdvertMutation builder. Using this method,
+// WhereP appends storage-level predicates to the ActivityMutation builder. Using this method,
 // users can use type-assertion to append predicates that do not depend on any generated package.
-func (m *AdvertMutation) WhereP(ps ...func(*sql.Selector)) {
-	p := make([]predicate.Advert, len(ps))
+func (m *ActivityMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Activity, len(ps))
 	for i := range ps {
 		p[i] = ps[i]
 	}
@@ -744,54 +744,54 @@ func (m *AdvertMutation) WhereP(ps ...func(*sql.Selector)) {
 }
 
 // Op returns the operation name.
-func (m *AdvertMutation) Op() Op {
+func (m *ActivityMutation) Op() Op {
 	return m.op
 }
 
 // SetOp allows setting the mutation operation.
-func (m *AdvertMutation) SetOp(op Op) {
+func (m *ActivityMutation) SetOp(op Op) {
 	m.op = op
 }
 
-// Type returns the node type of this mutation (Advert).
-func (m *AdvertMutation) Type() string {
+// Type returns the node type of this mutation (Activity).
+func (m *ActivityMutation) Type() string {
 	return m.typ
 }
 
 // Fields returns all fields that were changed during this mutation. Note that in
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
-func (m *AdvertMutation) Fields() []string {
+func (m *ActivityMutation) Fields() []string {
 	fields := make([]string, 0, 10)
 	if m.created_at != nil {
-		fields = append(fields, advert.FieldCreatedAt)
+		fields = append(fields, activity.FieldCreatedAt)
 	}
 	if m.updated_at != nil {
-		fields = append(fields, advert.FieldUpdatedAt)
+		fields = append(fields, activity.FieldUpdatedAt)
 	}
 	if m.deleted_at != nil {
-		fields = append(fields, advert.FieldDeletedAt)
+		fields = append(fields, activity.FieldDeletedAt)
 	}
 	if m.creator != nil {
-		fields = append(fields, advert.FieldCreator)
+		fields = append(fields, activity.FieldCreator)
 	}
 	if m.last_modifier != nil {
-		fields = append(fields, advert.FieldLastModifier)
+		fields = append(fields, activity.FieldLastModifier)
 	}
 	if m.remark != nil {
-		fields = append(fields, advert.FieldRemark)
+		fields = append(fields, activity.FieldRemark)
 	}
 	if m.name != nil {
-		fields = append(fields, advert.FieldName)
+		fields = append(fields, activity.FieldName)
 	}
 	if m.image != nil {
-		fields = append(fields, advert.FieldImage)
+		fields = append(fields, activity.FieldImage)
 	}
 	if m.link != nil {
-		fields = append(fields, advert.FieldLink)
+		fields = append(fields, activity.FieldLink)
 	}
 	if m.sort != nil {
-		fields = append(fields, advert.FieldSort)
+		fields = append(fields, activity.FieldSort)
 	}
 	return fields
 }
@@ -799,27 +799,27 @@ func (m *AdvertMutation) Fields() []string {
 // Field returns the value of a field with the given name. The second boolean
 // return value indicates that this field was not set, or was not defined in the
 // schema.
-func (m *AdvertMutation) Field(name string) (ent.Value, bool) {
+func (m *ActivityMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case advert.FieldCreatedAt:
+	case activity.FieldCreatedAt:
 		return m.CreatedAt()
-	case advert.FieldUpdatedAt:
+	case activity.FieldUpdatedAt:
 		return m.UpdatedAt()
-	case advert.FieldDeletedAt:
+	case activity.FieldDeletedAt:
 		return m.DeletedAt()
-	case advert.FieldCreator:
+	case activity.FieldCreator:
 		return m.Creator()
-	case advert.FieldLastModifier:
+	case activity.FieldLastModifier:
 		return m.LastModifier()
-	case advert.FieldRemark:
+	case activity.FieldRemark:
 		return m.Remark()
-	case advert.FieldName:
+	case activity.FieldName:
 		return m.Name()
-	case advert.FieldImage:
+	case activity.FieldImage:
 		return m.Image()
-	case advert.FieldLink:
+	case activity.FieldLink:
 		return m.Link()
-	case advert.FieldSort:
+	case activity.FieldSort:
 		return m.Sort()
 	}
 	return nil, false
@@ -828,101 +828,101 @@ func (m *AdvertMutation) Field(name string) (ent.Value, bool) {
 // OldField returns the old value of the field from the database. An error is
 // returned if the mutation operation is not UpdateOne, or the query to the
 // database failed.
-func (m *AdvertMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+func (m *ActivityMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case advert.FieldCreatedAt:
+	case activity.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
-	case advert.FieldUpdatedAt:
+	case activity.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
-	case advert.FieldDeletedAt:
+	case activity.FieldDeletedAt:
 		return m.OldDeletedAt(ctx)
-	case advert.FieldCreator:
+	case activity.FieldCreator:
 		return m.OldCreator(ctx)
-	case advert.FieldLastModifier:
+	case activity.FieldLastModifier:
 		return m.OldLastModifier(ctx)
-	case advert.FieldRemark:
+	case activity.FieldRemark:
 		return m.OldRemark(ctx)
-	case advert.FieldName:
+	case activity.FieldName:
 		return m.OldName(ctx)
-	case advert.FieldImage:
+	case activity.FieldImage:
 		return m.OldImage(ctx)
-	case advert.FieldLink:
+	case activity.FieldLink:
 		return m.OldLink(ctx)
-	case advert.FieldSort:
+	case activity.FieldSort:
 		return m.OldSort(ctx)
 	}
-	return nil, fmt.Errorf("unknown Advert field %s", name)
+	return nil, fmt.Errorf("unknown Activity field %s", name)
 }
 
 // SetField sets the value of a field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *AdvertMutation) SetField(name string, value ent.Value) error {
+func (m *ActivityMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case advert.FieldCreatedAt:
+	case activity.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreatedAt(v)
 		return nil
-	case advert.FieldUpdatedAt:
+	case activity.FieldUpdatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUpdatedAt(v)
 		return nil
-	case advert.FieldDeletedAt:
+	case activity.FieldDeletedAt:
 		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDeletedAt(v)
 		return nil
-	case advert.FieldCreator:
+	case activity.FieldCreator:
 		v, ok := value.(*model.Modifier)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreator(v)
 		return nil
-	case advert.FieldLastModifier:
+	case activity.FieldLastModifier:
 		v, ok := value.(*model.Modifier)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetLastModifier(v)
 		return nil
-	case advert.FieldRemark:
+	case activity.FieldRemark:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetRemark(v)
 		return nil
-	case advert.FieldName:
+	case activity.FieldName:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetName(v)
 		return nil
-	case advert.FieldImage:
+	case activity.FieldImage:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetImage(v)
 		return nil
-	case advert.FieldLink:
+	case activity.FieldLink:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetLink(v)
 		return nil
-	case advert.FieldSort:
+	case activity.FieldSort:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
@@ -930,15 +930,15 @@ func (m *AdvertMutation) SetField(name string, value ent.Value) error {
 		m.SetSort(v)
 		return nil
 	}
-	return fmt.Errorf("unknown Advert field %s", name)
+	return fmt.Errorf("unknown Activity field %s", name)
 }
 
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
-func (m *AdvertMutation) AddedFields() []string {
+func (m *ActivityMutation) AddedFields() []string {
 	var fields []string
 	if m.addsort != nil {
-		fields = append(fields, advert.FieldSort)
+		fields = append(fields, activity.FieldSort)
 	}
 	return fields
 }
@@ -946,9 +946,9 @@ func (m *AdvertMutation) AddedFields() []string {
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
-func (m *AdvertMutation) AddedField(name string) (ent.Value, bool) {
+func (m *ActivityMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
-	case advert.FieldSort:
+	case activity.FieldSort:
 		return m.AddedSort()
 	}
 	return nil, false
@@ -957,9 +957,9 @@ func (m *AdvertMutation) AddedField(name string) (ent.Value, bool) {
 // AddField adds the value to the field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *AdvertMutation) AddField(name string, value ent.Value) error {
+func (m *ActivityMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case advert.FieldSort:
+	case activity.FieldSort:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
@@ -967,139 +967,139 @@ func (m *AdvertMutation) AddField(name string, value ent.Value) error {
 		m.AddSort(v)
 		return nil
 	}
-	return fmt.Errorf("unknown Advert numeric field %s", name)
+	return fmt.Errorf("unknown Activity numeric field %s", name)
 }
 
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
-func (m *AdvertMutation) ClearedFields() []string {
+func (m *ActivityMutation) ClearedFields() []string {
 	var fields []string
-	if m.FieldCleared(advert.FieldDeletedAt) {
-		fields = append(fields, advert.FieldDeletedAt)
+	if m.FieldCleared(activity.FieldDeletedAt) {
+		fields = append(fields, activity.FieldDeletedAt)
 	}
-	if m.FieldCleared(advert.FieldCreator) {
-		fields = append(fields, advert.FieldCreator)
+	if m.FieldCleared(activity.FieldCreator) {
+		fields = append(fields, activity.FieldCreator)
 	}
-	if m.FieldCleared(advert.FieldLastModifier) {
-		fields = append(fields, advert.FieldLastModifier)
+	if m.FieldCleared(activity.FieldLastModifier) {
+		fields = append(fields, activity.FieldLastModifier)
 	}
-	if m.FieldCleared(advert.FieldRemark) {
-		fields = append(fields, advert.FieldRemark)
+	if m.FieldCleared(activity.FieldRemark) {
+		fields = append(fields, activity.FieldRemark)
 	}
 	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
 // cleared in this mutation.
-func (m *AdvertMutation) FieldCleared(name string) bool {
+func (m *ActivityMutation) FieldCleared(name string) bool {
 	_, ok := m.clearedFields[name]
 	return ok
 }
 
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
-func (m *AdvertMutation) ClearField(name string) error {
+func (m *ActivityMutation) ClearField(name string) error {
 	switch name {
-	case advert.FieldDeletedAt:
+	case activity.FieldDeletedAt:
 		m.ClearDeletedAt()
 		return nil
-	case advert.FieldCreator:
+	case activity.FieldCreator:
 		m.ClearCreator()
 		return nil
-	case advert.FieldLastModifier:
+	case activity.FieldLastModifier:
 		m.ClearLastModifier()
 		return nil
-	case advert.FieldRemark:
+	case activity.FieldRemark:
 		m.ClearRemark()
 		return nil
 	}
-	return fmt.Errorf("unknown Advert nullable field %s", name)
+	return fmt.Errorf("unknown Activity nullable field %s", name)
 }
 
 // ResetField resets all changes in the mutation for the field with the given name.
 // It returns an error if the field is not defined in the schema.
-func (m *AdvertMutation) ResetField(name string) error {
+func (m *ActivityMutation) ResetField(name string) error {
 	switch name {
-	case advert.FieldCreatedAt:
+	case activity.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
-	case advert.FieldUpdatedAt:
+	case activity.FieldUpdatedAt:
 		m.ResetUpdatedAt()
 		return nil
-	case advert.FieldDeletedAt:
+	case activity.FieldDeletedAt:
 		m.ResetDeletedAt()
 		return nil
-	case advert.FieldCreator:
+	case activity.FieldCreator:
 		m.ResetCreator()
 		return nil
-	case advert.FieldLastModifier:
+	case activity.FieldLastModifier:
 		m.ResetLastModifier()
 		return nil
-	case advert.FieldRemark:
+	case activity.FieldRemark:
 		m.ResetRemark()
 		return nil
-	case advert.FieldName:
+	case activity.FieldName:
 		m.ResetName()
 		return nil
-	case advert.FieldImage:
+	case activity.FieldImage:
 		m.ResetImage()
 		return nil
-	case advert.FieldLink:
+	case activity.FieldLink:
 		m.ResetLink()
 		return nil
-	case advert.FieldSort:
+	case activity.FieldSort:
 		m.ResetSort()
 		return nil
 	}
-	return fmt.Errorf("unknown Advert field %s", name)
+	return fmt.Errorf("unknown Activity field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
-func (m *AdvertMutation) AddedEdges() []string {
+func (m *ActivityMutation) AddedEdges() []string {
 	edges := make([]string, 0, 0)
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
-func (m *AdvertMutation) AddedIDs(name string) []ent.Value {
+func (m *ActivityMutation) AddedIDs(name string) []ent.Value {
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
-func (m *AdvertMutation) RemovedEdges() []string {
+func (m *ActivityMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 0)
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
-func (m *AdvertMutation) RemovedIDs(name string) []ent.Value {
+func (m *ActivityMutation) RemovedIDs(name string) []ent.Value {
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *AdvertMutation) ClearedEdges() []string {
+func (m *ActivityMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 0)
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
-func (m *AdvertMutation) EdgeCleared(name string) bool {
+func (m *ActivityMutation) EdgeCleared(name string) bool {
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
-func (m *AdvertMutation) ClearEdge(name string) error {
-	return fmt.Errorf("unknown Advert unique edge %s", name)
+func (m *ActivityMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown Activity unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
-func (m *AdvertMutation) ResetEdge(name string) error {
-	return fmt.Errorf("unknown Advert edge %s", name)
+func (m *ActivityMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown Activity edge %s", name)
 }
 
 // AgentMutation represents an operation that mutates the Agent nodes in the graph.

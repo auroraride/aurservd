@@ -7,7 +7,7 @@ import (
 
 	"github.com/auroraride/adapter"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/internal/ent/advert"
+	"github.com/auroraride/aurservd/internal/ent/activity"
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
@@ -86,27 +86,27 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
-	advertMixin := schema.Advert{}.Mixin()
-	advertMixinHooks2 := advertMixin[2].Hooks()
-	advert.Hooks[0] = advertMixinHooks2[0]
-	advertMixinFields0 := advertMixin[0].Fields()
-	_ = advertMixinFields0
-	advertFields := schema.Advert{}.Fields()
-	_ = advertFields
-	// advertDescCreatedAt is the schema descriptor for created_at field.
-	advertDescCreatedAt := advertMixinFields0[0].Descriptor()
-	// advert.DefaultCreatedAt holds the default value on creation for the created_at field.
-	advert.DefaultCreatedAt = advertDescCreatedAt.Default.(func() time.Time)
-	// advertDescUpdatedAt is the schema descriptor for updated_at field.
-	advertDescUpdatedAt := advertMixinFields0[1].Descriptor()
-	// advert.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	advert.DefaultUpdatedAt = advertDescUpdatedAt.Default.(func() time.Time)
-	// advert.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	advert.UpdateDefaultUpdatedAt = advertDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// advertDescSort is the schema descriptor for sort field.
-	advertDescSort := advertFields[3].Descriptor()
-	// advert.DefaultSort holds the default value on creation for the sort field.
-	advert.DefaultSort = advertDescSort.Default.(int)
+	activityMixin := schema.Activity{}.Mixin()
+	activityMixinHooks2 := activityMixin[2].Hooks()
+	activity.Hooks[0] = activityMixinHooks2[0]
+	activityMixinFields0 := activityMixin[0].Fields()
+	_ = activityMixinFields0
+	activityFields := schema.Activity{}.Fields()
+	_ = activityFields
+	// activityDescCreatedAt is the schema descriptor for created_at field.
+	activityDescCreatedAt := activityMixinFields0[0].Descriptor()
+	// activity.DefaultCreatedAt holds the default value on creation for the created_at field.
+	activity.DefaultCreatedAt = activityDescCreatedAt.Default.(func() time.Time)
+	// activityDescUpdatedAt is the schema descriptor for updated_at field.
+	activityDescUpdatedAt := activityMixinFields0[1].Descriptor()
+	// activity.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	activity.DefaultUpdatedAt = activityDescUpdatedAt.Default.(func() time.Time)
+	// activity.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	activity.UpdateDefaultUpdatedAt = activityDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// activityDescSort is the schema descriptor for sort field.
+	activityDescSort := activityFields[3].Descriptor()
+	// activity.DefaultSort holds the default value on creation for the sort field.
+	activity.DefaultSort = activityDescSort.Default.(int)
 	agentMixin := schema.Agent{}.Mixin()
 	agentMixinHooks2 := agentMixin[2].Hooks()
 	agent.Hooks[0] = agentMixinHooks2[0]

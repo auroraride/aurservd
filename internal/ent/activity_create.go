@@ -12,25 +12,25 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/internal/ent/advert"
+	"github.com/auroraride/aurservd/internal/ent/activity"
 )
 
-// AdvertCreate is the builder for creating a Advert entity.
-type AdvertCreate struct {
+// ActivityCreate is the builder for creating a Activity entity.
+type ActivityCreate struct {
 	config
-	mutation *AdvertMutation
+	mutation *ActivityMutation
 	hooks    []Hook
 	conflict []sql.ConflictOption
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (ac *AdvertCreate) SetCreatedAt(t time.Time) *AdvertCreate {
+func (ac *ActivityCreate) SetCreatedAt(t time.Time) *ActivityCreate {
 	ac.mutation.SetCreatedAt(t)
 	return ac
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (ac *AdvertCreate) SetNillableCreatedAt(t *time.Time) *AdvertCreate {
+func (ac *ActivityCreate) SetNillableCreatedAt(t *time.Time) *ActivityCreate {
 	if t != nil {
 		ac.SetCreatedAt(*t)
 	}
@@ -38,13 +38,13 @@ func (ac *AdvertCreate) SetNillableCreatedAt(t *time.Time) *AdvertCreate {
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (ac *AdvertCreate) SetUpdatedAt(t time.Time) *AdvertCreate {
+func (ac *ActivityCreate) SetUpdatedAt(t time.Time) *ActivityCreate {
 	ac.mutation.SetUpdatedAt(t)
 	return ac
 }
 
 // SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (ac *AdvertCreate) SetNillableUpdatedAt(t *time.Time) *AdvertCreate {
+func (ac *ActivityCreate) SetNillableUpdatedAt(t *time.Time) *ActivityCreate {
 	if t != nil {
 		ac.SetUpdatedAt(*t)
 	}
@@ -52,13 +52,13 @@ func (ac *AdvertCreate) SetNillableUpdatedAt(t *time.Time) *AdvertCreate {
 }
 
 // SetDeletedAt sets the "deleted_at" field.
-func (ac *AdvertCreate) SetDeletedAt(t time.Time) *AdvertCreate {
+func (ac *ActivityCreate) SetDeletedAt(t time.Time) *ActivityCreate {
 	ac.mutation.SetDeletedAt(t)
 	return ac
 }
 
 // SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (ac *AdvertCreate) SetNillableDeletedAt(t *time.Time) *AdvertCreate {
+func (ac *ActivityCreate) SetNillableDeletedAt(t *time.Time) *ActivityCreate {
 	if t != nil {
 		ac.SetDeletedAt(*t)
 	}
@@ -66,25 +66,25 @@ func (ac *AdvertCreate) SetNillableDeletedAt(t *time.Time) *AdvertCreate {
 }
 
 // SetCreator sets the "creator" field.
-func (ac *AdvertCreate) SetCreator(m *model.Modifier) *AdvertCreate {
+func (ac *ActivityCreate) SetCreator(m *model.Modifier) *ActivityCreate {
 	ac.mutation.SetCreator(m)
 	return ac
 }
 
 // SetLastModifier sets the "last_modifier" field.
-func (ac *AdvertCreate) SetLastModifier(m *model.Modifier) *AdvertCreate {
+func (ac *ActivityCreate) SetLastModifier(m *model.Modifier) *ActivityCreate {
 	ac.mutation.SetLastModifier(m)
 	return ac
 }
 
 // SetRemark sets the "remark" field.
-func (ac *AdvertCreate) SetRemark(s string) *AdvertCreate {
+func (ac *ActivityCreate) SetRemark(s string) *ActivityCreate {
 	ac.mutation.SetRemark(s)
 	return ac
 }
 
 // SetNillableRemark sets the "remark" field if the given value is not nil.
-func (ac *AdvertCreate) SetNillableRemark(s *string) *AdvertCreate {
+func (ac *ActivityCreate) SetNillableRemark(s *string) *ActivityCreate {
 	if s != nil {
 		ac.SetRemark(*s)
 	}
@@ -92,44 +92,44 @@ func (ac *AdvertCreate) SetNillableRemark(s *string) *AdvertCreate {
 }
 
 // SetName sets the "name" field.
-func (ac *AdvertCreate) SetName(s string) *AdvertCreate {
+func (ac *ActivityCreate) SetName(s string) *ActivityCreate {
 	ac.mutation.SetName(s)
 	return ac
 }
 
 // SetImage sets the "image" field.
-func (ac *AdvertCreate) SetImage(s string) *AdvertCreate {
+func (ac *ActivityCreate) SetImage(s string) *ActivityCreate {
 	ac.mutation.SetImage(s)
 	return ac
 }
 
 // SetLink sets the "link" field.
-func (ac *AdvertCreate) SetLink(s string) *AdvertCreate {
+func (ac *ActivityCreate) SetLink(s string) *ActivityCreate {
 	ac.mutation.SetLink(s)
 	return ac
 }
 
 // SetSort sets the "sort" field.
-func (ac *AdvertCreate) SetSort(i int) *AdvertCreate {
+func (ac *ActivityCreate) SetSort(i int) *ActivityCreate {
 	ac.mutation.SetSort(i)
 	return ac
 }
 
 // SetNillableSort sets the "sort" field if the given value is not nil.
-func (ac *AdvertCreate) SetNillableSort(i *int) *AdvertCreate {
+func (ac *ActivityCreate) SetNillableSort(i *int) *ActivityCreate {
 	if i != nil {
 		ac.SetSort(*i)
 	}
 	return ac
 }
 
-// Mutation returns the AdvertMutation object of the builder.
-func (ac *AdvertCreate) Mutation() *AdvertMutation {
+// Mutation returns the ActivityMutation object of the builder.
+func (ac *ActivityCreate) Mutation() *ActivityMutation {
 	return ac.mutation
 }
 
-// Save creates the Advert in the database.
-func (ac *AdvertCreate) Save(ctx context.Context) (*Advert, error) {
+// Save creates the Activity in the database.
+func (ac *ActivityCreate) Save(ctx context.Context) (*Activity, error) {
 	if err := ac.defaults(); err != nil {
 		return nil, err
 	}
@@ -137,7 +137,7 @@ func (ac *AdvertCreate) Save(ctx context.Context) (*Advert, error) {
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (ac *AdvertCreate) SaveX(ctx context.Context) *Advert {
+func (ac *ActivityCreate) SaveX(ctx context.Context) *Activity {
 	v, err := ac.Save(ctx)
 	if err != nil {
 		panic(err)
@@ -146,65 +146,65 @@ func (ac *AdvertCreate) SaveX(ctx context.Context) *Advert {
 }
 
 // Exec executes the query.
-func (ac *AdvertCreate) Exec(ctx context.Context) error {
+func (ac *ActivityCreate) Exec(ctx context.Context) error {
 	_, err := ac.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (ac *AdvertCreate) ExecX(ctx context.Context) {
+func (ac *ActivityCreate) ExecX(ctx context.Context) {
 	if err := ac.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (ac *AdvertCreate) defaults() error {
+func (ac *ActivityCreate) defaults() error {
 	if _, ok := ac.mutation.CreatedAt(); !ok {
-		if advert.DefaultCreatedAt == nil {
-			return fmt.Errorf("ent: uninitialized advert.DefaultCreatedAt (forgotten import ent/runtime?)")
+		if activity.DefaultCreatedAt == nil {
+			return fmt.Errorf("ent: uninitialized activity.DefaultCreatedAt (forgotten import ent/runtime?)")
 		}
-		v := advert.DefaultCreatedAt()
+		v := activity.DefaultCreatedAt()
 		ac.mutation.SetCreatedAt(v)
 	}
 	if _, ok := ac.mutation.UpdatedAt(); !ok {
-		if advert.DefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized advert.DefaultUpdatedAt (forgotten import ent/runtime?)")
+		if activity.DefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized activity.DefaultUpdatedAt (forgotten import ent/runtime?)")
 		}
-		v := advert.DefaultUpdatedAt()
+		v := activity.DefaultUpdatedAt()
 		ac.mutation.SetUpdatedAt(v)
 	}
 	if _, ok := ac.mutation.Sort(); !ok {
-		v := advert.DefaultSort
+		v := activity.DefaultSort
 		ac.mutation.SetSort(v)
 	}
 	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (ac *AdvertCreate) check() error {
+func (ac *ActivityCreate) check() error {
 	if _, ok := ac.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Advert.created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Activity.created_at"`)}
 	}
 	if _, ok := ac.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Advert.updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Activity.updated_at"`)}
 	}
 	if _, ok := ac.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Advert.name"`)}
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Activity.name"`)}
 	}
 	if _, ok := ac.mutation.Image(); !ok {
-		return &ValidationError{Name: "image", err: errors.New(`ent: missing required field "Advert.image"`)}
+		return &ValidationError{Name: "image", err: errors.New(`ent: missing required field "Activity.image"`)}
 	}
 	if _, ok := ac.mutation.Link(); !ok {
-		return &ValidationError{Name: "link", err: errors.New(`ent: missing required field "Advert.link"`)}
+		return &ValidationError{Name: "link", err: errors.New(`ent: missing required field "Activity.link"`)}
 	}
 	if _, ok := ac.mutation.Sort(); !ok {
-		return &ValidationError{Name: "sort", err: errors.New(`ent: missing required field "Advert.sort"`)}
+		return &ValidationError{Name: "sort", err: errors.New(`ent: missing required field "Activity.sort"`)}
 	}
 	return nil
 }
 
-func (ac *AdvertCreate) sqlSave(ctx context.Context) (*Advert, error) {
+func (ac *ActivityCreate) sqlSave(ctx context.Context) (*Activity, error) {
 	if err := ac.check(); err != nil {
 		return nil, err
 	}
@@ -222,50 +222,50 @@ func (ac *AdvertCreate) sqlSave(ctx context.Context) (*Advert, error) {
 	return _node, nil
 }
 
-func (ac *AdvertCreate) createSpec() (*Advert, *sqlgraph.CreateSpec) {
+func (ac *ActivityCreate) createSpec() (*Activity, *sqlgraph.CreateSpec) {
 	var (
-		_node = &Advert{config: ac.config}
-		_spec = sqlgraph.NewCreateSpec(advert.Table, sqlgraph.NewFieldSpec(advert.FieldID, field.TypeUint64))
+		_node = &Activity{config: ac.config}
+		_spec = sqlgraph.NewCreateSpec(activity.Table, sqlgraph.NewFieldSpec(activity.FieldID, field.TypeUint64))
 	)
 	_spec.OnConflict = ac.conflict
 	if value, ok := ac.mutation.CreatedAt(); ok {
-		_spec.SetField(advert.FieldCreatedAt, field.TypeTime, value)
+		_spec.SetField(activity.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := ac.mutation.UpdatedAt(); ok {
-		_spec.SetField(advert.FieldUpdatedAt, field.TypeTime, value)
+		_spec.SetField(activity.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	if value, ok := ac.mutation.DeletedAt(); ok {
-		_spec.SetField(advert.FieldDeletedAt, field.TypeTime, value)
+		_spec.SetField(activity.FieldDeletedAt, field.TypeTime, value)
 		_node.DeletedAt = &value
 	}
 	if value, ok := ac.mutation.Creator(); ok {
-		_spec.SetField(advert.FieldCreator, field.TypeJSON, value)
+		_spec.SetField(activity.FieldCreator, field.TypeJSON, value)
 		_node.Creator = value
 	}
 	if value, ok := ac.mutation.LastModifier(); ok {
-		_spec.SetField(advert.FieldLastModifier, field.TypeJSON, value)
+		_spec.SetField(activity.FieldLastModifier, field.TypeJSON, value)
 		_node.LastModifier = value
 	}
 	if value, ok := ac.mutation.Remark(); ok {
-		_spec.SetField(advert.FieldRemark, field.TypeString, value)
+		_spec.SetField(activity.FieldRemark, field.TypeString, value)
 		_node.Remark = value
 	}
 	if value, ok := ac.mutation.Name(); ok {
-		_spec.SetField(advert.FieldName, field.TypeString, value)
+		_spec.SetField(activity.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
 	if value, ok := ac.mutation.Image(); ok {
-		_spec.SetField(advert.FieldImage, field.TypeString, value)
+		_spec.SetField(activity.FieldImage, field.TypeString, value)
 		_node.Image = value
 	}
 	if value, ok := ac.mutation.Link(); ok {
-		_spec.SetField(advert.FieldLink, field.TypeString, value)
+		_spec.SetField(activity.FieldLink, field.TypeString, value)
 		_node.Link = value
 	}
 	if value, ok := ac.mutation.Sort(); ok {
-		_spec.SetField(advert.FieldSort, field.TypeInt, value)
+		_spec.SetField(activity.FieldSort, field.TypeInt, value)
 		_node.Sort = value
 	}
 	return _node, _spec
@@ -274,7 +274,7 @@ func (ac *AdvertCreate) createSpec() (*Advert, *sqlgraph.CreateSpec) {
 // OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
 // of the `INSERT` statement. For example:
 //
-//	client.Advert.Create().
+//	client.Activity.Create().
 //		SetCreatedAt(v).
 //		OnConflict(
 //			// Update the row with the new values
@@ -283,13 +283,13 @@ func (ac *AdvertCreate) createSpec() (*Advert, *sqlgraph.CreateSpec) {
 //		).
 //		// Override some of the fields with custom
 //		// update values.
-//		Update(func(u *ent.AdvertUpsert) {
+//		Update(func(u *ent.ActivityUpsert) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
-func (ac *AdvertCreate) OnConflict(opts ...sql.ConflictOption) *AdvertUpsertOne {
+func (ac *ActivityCreate) OnConflict(opts ...sql.ConflictOption) *ActivityUpsertOne {
 	ac.conflict = opts
-	return &AdvertUpsertOne{
+	return &ActivityUpsertOne{
 		create: ac,
 	}
 }
@@ -297,165 +297,165 @@ func (ac *AdvertCreate) OnConflict(opts ...sql.ConflictOption) *AdvertUpsertOne 
 // OnConflictColumns calls `OnConflict` and configures the columns
 // as conflict target. Using this option is equivalent to using:
 //
-//	client.Advert.Create().
+//	client.Activity.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
-func (ac *AdvertCreate) OnConflictColumns(columns ...string) *AdvertUpsertOne {
+func (ac *ActivityCreate) OnConflictColumns(columns ...string) *ActivityUpsertOne {
 	ac.conflict = append(ac.conflict, sql.ConflictColumns(columns...))
-	return &AdvertUpsertOne{
+	return &ActivityUpsertOne{
 		create: ac,
 	}
 }
 
 type (
-	// AdvertUpsertOne is the builder for "upsert"-ing
-	//  one Advert node.
-	AdvertUpsertOne struct {
-		create *AdvertCreate
+	// ActivityUpsertOne is the builder for "upsert"-ing
+	//  one Activity node.
+	ActivityUpsertOne struct {
+		create *ActivityCreate
 	}
 
-	// AdvertUpsert is the "OnConflict" setter.
-	AdvertUpsert struct {
+	// ActivityUpsert is the "OnConflict" setter.
+	ActivityUpsert struct {
 		*sql.UpdateSet
 	}
 )
 
 // SetUpdatedAt sets the "updated_at" field.
-func (u *AdvertUpsert) SetUpdatedAt(v time.Time) *AdvertUpsert {
-	u.Set(advert.FieldUpdatedAt, v)
+func (u *ActivityUpsert) SetUpdatedAt(v time.Time) *ActivityUpsert {
+	u.Set(activity.FieldUpdatedAt, v)
 	return u
 }
 
 // UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *AdvertUpsert) UpdateUpdatedAt() *AdvertUpsert {
-	u.SetExcluded(advert.FieldUpdatedAt)
+func (u *ActivityUpsert) UpdateUpdatedAt() *ActivityUpsert {
+	u.SetExcluded(activity.FieldUpdatedAt)
 	return u
 }
 
 // SetDeletedAt sets the "deleted_at" field.
-func (u *AdvertUpsert) SetDeletedAt(v time.Time) *AdvertUpsert {
-	u.Set(advert.FieldDeletedAt, v)
+func (u *ActivityUpsert) SetDeletedAt(v time.Time) *ActivityUpsert {
+	u.Set(activity.FieldDeletedAt, v)
 	return u
 }
 
 // UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
-func (u *AdvertUpsert) UpdateDeletedAt() *AdvertUpsert {
-	u.SetExcluded(advert.FieldDeletedAt)
+func (u *ActivityUpsert) UpdateDeletedAt() *ActivityUpsert {
+	u.SetExcluded(activity.FieldDeletedAt)
 	return u
 }
 
 // ClearDeletedAt clears the value of the "deleted_at" field.
-func (u *AdvertUpsert) ClearDeletedAt() *AdvertUpsert {
-	u.SetNull(advert.FieldDeletedAt)
+func (u *ActivityUpsert) ClearDeletedAt() *ActivityUpsert {
+	u.SetNull(activity.FieldDeletedAt)
 	return u
 }
 
 // SetLastModifier sets the "last_modifier" field.
-func (u *AdvertUpsert) SetLastModifier(v *model.Modifier) *AdvertUpsert {
-	u.Set(advert.FieldLastModifier, v)
+func (u *ActivityUpsert) SetLastModifier(v *model.Modifier) *ActivityUpsert {
+	u.Set(activity.FieldLastModifier, v)
 	return u
 }
 
 // UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
-func (u *AdvertUpsert) UpdateLastModifier() *AdvertUpsert {
-	u.SetExcluded(advert.FieldLastModifier)
+func (u *ActivityUpsert) UpdateLastModifier() *ActivityUpsert {
+	u.SetExcluded(activity.FieldLastModifier)
 	return u
 }
 
 // ClearLastModifier clears the value of the "last_modifier" field.
-func (u *AdvertUpsert) ClearLastModifier() *AdvertUpsert {
-	u.SetNull(advert.FieldLastModifier)
+func (u *ActivityUpsert) ClearLastModifier() *ActivityUpsert {
+	u.SetNull(activity.FieldLastModifier)
 	return u
 }
 
 // SetRemark sets the "remark" field.
-func (u *AdvertUpsert) SetRemark(v string) *AdvertUpsert {
-	u.Set(advert.FieldRemark, v)
+func (u *ActivityUpsert) SetRemark(v string) *ActivityUpsert {
+	u.Set(activity.FieldRemark, v)
 	return u
 }
 
 // UpdateRemark sets the "remark" field to the value that was provided on create.
-func (u *AdvertUpsert) UpdateRemark() *AdvertUpsert {
-	u.SetExcluded(advert.FieldRemark)
+func (u *ActivityUpsert) UpdateRemark() *ActivityUpsert {
+	u.SetExcluded(activity.FieldRemark)
 	return u
 }
 
 // ClearRemark clears the value of the "remark" field.
-func (u *AdvertUpsert) ClearRemark() *AdvertUpsert {
-	u.SetNull(advert.FieldRemark)
+func (u *ActivityUpsert) ClearRemark() *ActivityUpsert {
+	u.SetNull(activity.FieldRemark)
 	return u
 }
 
 // SetName sets the "name" field.
-func (u *AdvertUpsert) SetName(v string) *AdvertUpsert {
-	u.Set(advert.FieldName, v)
+func (u *ActivityUpsert) SetName(v string) *ActivityUpsert {
+	u.Set(activity.FieldName, v)
 	return u
 }
 
 // UpdateName sets the "name" field to the value that was provided on create.
-func (u *AdvertUpsert) UpdateName() *AdvertUpsert {
-	u.SetExcluded(advert.FieldName)
+func (u *ActivityUpsert) UpdateName() *ActivityUpsert {
+	u.SetExcluded(activity.FieldName)
 	return u
 }
 
 // SetImage sets the "image" field.
-func (u *AdvertUpsert) SetImage(v string) *AdvertUpsert {
-	u.Set(advert.FieldImage, v)
+func (u *ActivityUpsert) SetImage(v string) *ActivityUpsert {
+	u.Set(activity.FieldImage, v)
 	return u
 }
 
 // UpdateImage sets the "image" field to the value that was provided on create.
-func (u *AdvertUpsert) UpdateImage() *AdvertUpsert {
-	u.SetExcluded(advert.FieldImage)
+func (u *ActivityUpsert) UpdateImage() *ActivityUpsert {
+	u.SetExcluded(activity.FieldImage)
 	return u
 }
 
 // SetLink sets the "link" field.
-func (u *AdvertUpsert) SetLink(v string) *AdvertUpsert {
-	u.Set(advert.FieldLink, v)
+func (u *ActivityUpsert) SetLink(v string) *ActivityUpsert {
+	u.Set(activity.FieldLink, v)
 	return u
 }
 
 // UpdateLink sets the "link" field to the value that was provided on create.
-func (u *AdvertUpsert) UpdateLink() *AdvertUpsert {
-	u.SetExcluded(advert.FieldLink)
+func (u *ActivityUpsert) UpdateLink() *ActivityUpsert {
+	u.SetExcluded(activity.FieldLink)
 	return u
 }
 
 // SetSort sets the "sort" field.
-func (u *AdvertUpsert) SetSort(v int) *AdvertUpsert {
-	u.Set(advert.FieldSort, v)
+func (u *ActivityUpsert) SetSort(v int) *ActivityUpsert {
+	u.Set(activity.FieldSort, v)
 	return u
 }
 
 // UpdateSort sets the "sort" field to the value that was provided on create.
-func (u *AdvertUpsert) UpdateSort() *AdvertUpsert {
-	u.SetExcluded(advert.FieldSort)
+func (u *ActivityUpsert) UpdateSort() *ActivityUpsert {
+	u.SetExcluded(activity.FieldSort)
 	return u
 }
 
 // AddSort adds v to the "sort" field.
-func (u *AdvertUpsert) AddSort(v int) *AdvertUpsert {
-	u.Add(advert.FieldSort, v)
+func (u *ActivityUpsert) AddSort(v int) *ActivityUpsert {
+	u.Add(activity.FieldSort, v)
 	return u
 }
 
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
-//	client.Advert.Create().
+//	client.Activity.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
-func (u *AdvertUpsertOne) UpdateNewValues() *AdvertUpsertOne {
+func (u *ActivityUpsertOne) UpdateNewValues() *ActivityUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		if _, exists := u.create.mutation.CreatedAt(); exists {
-			s.SetIgnore(advert.FieldCreatedAt)
+			s.SetIgnore(activity.FieldCreatedAt)
 		}
 		if _, exists := u.create.mutation.Creator(); exists {
-			s.SetIgnore(advert.FieldCreator)
+			s.SetIgnore(activity.FieldCreator)
 		}
 	}))
 	return u
@@ -464,187 +464,187 @@ func (u *AdvertUpsertOne) UpdateNewValues() *AdvertUpsertOne {
 // Ignore sets each column to itself in case of conflict.
 // Using this option is equivalent to using:
 //
-//	client.Advert.Create().
+//	client.Activity.Create().
 //	    OnConflict(sql.ResolveWithIgnore()).
 //	    Exec(ctx)
-func (u *AdvertUpsertOne) Ignore() *AdvertUpsertOne {
+func (u *ActivityUpsertOne) Ignore() *ActivityUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u
 }
 
 // DoNothing configures the conflict_action to `DO NOTHING`.
 // Supported only by SQLite and PostgreSQL.
-func (u *AdvertUpsertOne) DoNothing() *AdvertUpsertOne {
+func (u *ActivityUpsertOne) DoNothing() *ActivityUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.DoNothing())
 	return u
 }
 
-// Update allows overriding fields `UPDATE` values. See the AdvertCreate.OnConflict
+// Update allows overriding fields `UPDATE` values. See the ActivityCreate.OnConflict
 // documentation for more info.
-func (u *AdvertUpsertOne) Update(set func(*AdvertUpsert)) *AdvertUpsertOne {
+func (u *ActivityUpsertOne) Update(set func(*ActivityUpsert)) *ActivityUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
-		set(&AdvertUpsert{UpdateSet: update})
+		set(&ActivityUpsert{UpdateSet: update})
 	}))
 	return u
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (u *AdvertUpsertOne) SetUpdatedAt(v time.Time) *AdvertUpsertOne {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertOne) SetUpdatedAt(v time.Time) *ActivityUpsertOne {
+	return u.Update(func(s *ActivityUpsert) {
 		s.SetUpdatedAt(v)
 	})
 }
 
 // UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *AdvertUpsertOne) UpdateUpdatedAt() *AdvertUpsertOne {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertOne) UpdateUpdatedAt() *ActivityUpsertOne {
+	return u.Update(func(s *ActivityUpsert) {
 		s.UpdateUpdatedAt()
 	})
 }
 
 // SetDeletedAt sets the "deleted_at" field.
-func (u *AdvertUpsertOne) SetDeletedAt(v time.Time) *AdvertUpsertOne {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertOne) SetDeletedAt(v time.Time) *ActivityUpsertOne {
+	return u.Update(func(s *ActivityUpsert) {
 		s.SetDeletedAt(v)
 	})
 }
 
 // UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
-func (u *AdvertUpsertOne) UpdateDeletedAt() *AdvertUpsertOne {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertOne) UpdateDeletedAt() *ActivityUpsertOne {
+	return u.Update(func(s *ActivityUpsert) {
 		s.UpdateDeletedAt()
 	})
 }
 
 // ClearDeletedAt clears the value of the "deleted_at" field.
-func (u *AdvertUpsertOne) ClearDeletedAt() *AdvertUpsertOne {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertOne) ClearDeletedAt() *ActivityUpsertOne {
+	return u.Update(func(s *ActivityUpsert) {
 		s.ClearDeletedAt()
 	})
 }
 
 // SetLastModifier sets the "last_modifier" field.
-func (u *AdvertUpsertOne) SetLastModifier(v *model.Modifier) *AdvertUpsertOne {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertOne) SetLastModifier(v *model.Modifier) *ActivityUpsertOne {
+	return u.Update(func(s *ActivityUpsert) {
 		s.SetLastModifier(v)
 	})
 }
 
 // UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
-func (u *AdvertUpsertOne) UpdateLastModifier() *AdvertUpsertOne {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertOne) UpdateLastModifier() *ActivityUpsertOne {
+	return u.Update(func(s *ActivityUpsert) {
 		s.UpdateLastModifier()
 	})
 }
 
 // ClearLastModifier clears the value of the "last_modifier" field.
-func (u *AdvertUpsertOne) ClearLastModifier() *AdvertUpsertOne {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertOne) ClearLastModifier() *ActivityUpsertOne {
+	return u.Update(func(s *ActivityUpsert) {
 		s.ClearLastModifier()
 	})
 }
 
 // SetRemark sets the "remark" field.
-func (u *AdvertUpsertOne) SetRemark(v string) *AdvertUpsertOne {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertOne) SetRemark(v string) *ActivityUpsertOne {
+	return u.Update(func(s *ActivityUpsert) {
 		s.SetRemark(v)
 	})
 }
 
 // UpdateRemark sets the "remark" field to the value that was provided on create.
-func (u *AdvertUpsertOne) UpdateRemark() *AdvertUpsertOne {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertOne) UpdateRemark() *ActivityUpsertOne {
+	return u.Update(func(s *ActivityUpsert) {
 		s.UpdateRemark()
 	})
 }
 
 // ClearRemark clears the value of the "remark" field.
-func (u *AdvertUpsertOne) ClearRemark() *AdvertUpsertOne {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertOne) ClearRemark() *ActivityUpsertOne {
+	return u.Update(func(s *ActivityUpsert) {
 		s.ClearRemark()
 	})
 }
 
 // SetName sets the "name" field.
-func (u *AdvertUpsertOne) SetName(v string) *AdvertUpsertOne {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertOne) SetName(v string) *ActivityUpsertOne {
+	return u.Update(func(s *ActivityUpsert) {
 		s.SetName(v)
 	})
 }
 
 // UpdateName sets the "name" field to the value that was provided on create.
-func (u *AdvertUpsertOne) UpdateName() *AdvertUpsertOne {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertOne) UpdateName() *ActivityUpsertOne {
+	return u.Update(func(s *ActivityUpsert) {
 		s.UpdateName()
 	})
 }
 
 // SetImage sets the "image" field.
-func (u *AdvertUpsertOne) SetImage(v string) *AdvertUpsertOne {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertOne) SetImage(v string) *ActivityUpsertOne {
+	return u.Update(func(s *ActivityUpsert) {
 		s.SetImage(v)
 	})
 }
 
 // UpdateImage sets the "image" field to the value that was provided on create.
-func (u *AdvertUpsertOne) UpdateImage() *AdvertUpsertOne {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertOne) UpdateImage() *ActivityUpsertOne {
+	return u.Update(func(s *ActivityUpsert) {
 		s.UpdateImage()
 	})
 }
 
 // SetLink sets the "link" field.
-func (u *AdvertUpsertOne) SetLink(v string) *AdvertUpsertOne {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertOne) SetLink(v string) *ActivityUpsertOne {
+	return u.Update(func(s *ActivityUpsert) {
 		s.SetLink(v)
 	})
 }
 
 // UpdateLink sets the "link" field to the value that was provided on create.
-func (u *AdvertUpsertOne) UpdateLink() *AdvertUpsertOne {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertOne) UpdateLink() *ActivityUpsertOne {
+	return u.Update(func(s *ActivityUpsert) {
 		s.UpdateLink()
 	})
 }
 
 // SetSort sets the "sort" field.
-func (u *AdvertUpsertOne) SetSort(v int) *AdvertUpsertOne {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertOne) SetSort(v int) *ActivityUpsertOne {
+	return u.Update(func(s *ActivityUpsert) {
 		s.SetSort(v)
 	})
 }
 
 // AddSort adds v to the "sort" field.
-func (u *AdvertUpsertOne) AddSort(v int) *AdvertUpsertOne {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertOne) AddSort(v int) *ActivityUpsertOne {
+	return u.Update(func(s *ActivityUpsert) {
 		s.AddSort(v)
 	})
 }
 
 // UpdateSort sets the "sort" field to the value that was provided on create.
-func (u *AdvertUpsertOne) UpdateSort() *AdvertUpsertOne {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertOne) UpdateSort() *ActivityUpsertOne {
+	return u.Update(func(s *ActivityUpsert) {
 		s.UpdateSort()
 	})
 }
 
 // Exec executes the query.
-func (u *AdvertUpsertOne) Exec(ctx context.Context) error {
+func (u *ActivityUpsertOne) Exec(ctx context.Context) error {
 	if len(u.create.conflict) == 0 {
-		return errors.New("ent: missing options for AdvertCreate.OnConflict")
+		return errors.New("ent: missing options for ActivityCreate.OnConflict")
 	}
 	return u.create.Exec(ctx)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (u *AdvertUpsertOne) ExecX(ctx context.Context) {
+func (u *ActivityUpsertOne) ExecX(ctx context.Context) {
 	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *AdvertUpsertOne) ID(ctx context.Context) (id uint64, err error) {
+func (u *ActivityUpsertOne) ID(ctx context.Context) (id uint64, err error) {
 	node, err := u.create.Save(ctx)
 	if err != nil {
 		return id, err
@@ -653,7 +653,7 @@ func (u *AdvertUpsertOne) ID(ctx context.Context) (id uint64, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *AdvertUpsertOne) IDX(ctx context.Context) uint64 {
+func (u *ActivityUpsertOne) IDX(ctx context.Context) uint64 {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)
@@ -661,28 +661,28 @@ func (u *AdvertUpsertOne) IDX(ctx context.Context) uint64 {
 	return id
 }
 
-// AdvertCreateBulk is the builder for creating many Advert entities in bulk.
-type AdvertCreateBulk struct {
+// ActivityCreateBulk is the builder for creating many Activity entities in bulk.
+type ActivityCreateBulk struct {
 	config
 	err      error
-	builders []*AdvertCreate
+	builders []*ActivityCreate
 	conflict []sql.ConflictOption
 }
 
-// Save creates the Advert entities in the database.
-func (acb *AdvertCreateBulk) Save(ctx context.Context) ([]*Advert, error) {
+// Save creates the Activity entities in the database.
+func (acb *ActivityCreateBulk) Save(ctx context.Context) ([]*Activity, error) {
 	if acb.err != nil {
 		return nil, acb.err
 	}
 	specs := make([]*sqlgraph.CreateSpec, len(acb.builders))
-	nodes := make([]*Advert, len(acb.builders))
+	nodes := make([]*Activity, len(acb.builders))
 	mutators := make([]Mutator, len(acb.builders))
 	for i := range acb.builders {
 		func(i int, root context.Context) {
 			builder := acb.builders[i]
 			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-				mutation, ok := m.(*AdvertMutation)
+				mutation, ok := m.(*ActivityMutation)
 				if !ok {
 					return nil, fmt.Errorf("unexpected mutation type %T", m)
 				}
@@ -730,7 +730,7 @@ func (acb *AdvertCreateBulk) Save(ctx context.Context) ([]*Advert, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (acb *AdvertCreateBulk) SaveX(ctx context.Context) []*Advert {
+func (acb *ActivityCreateBulk) SaveX(ctx context.Context) []*Activity {
 	v, err := acb.Save(ctx)
 	if err != nil {
 		panic(err)
@@ -739,13 +739,13 @@ func (acb *AdvertCreateBulk) SaveX(ctx context.Context) []*Advert {
 }
 
 // Exec executes the query.
-func (acb *AdvertCreateBulk) Exec(ctx context.Context) error {
+func (acb *ActivityCreateBulk) Exec(ctx context.Context) error {
 	_, err := acb.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (acb *AdvertCreateBulk) ExecX(ctx context.Context) {
+func (acb *ActivityCreateBulk) ExecX(ctx context.Context) {
 	if err := acb.Exec(ctx); err != nil {
 		panic(err)
 	}
@@ -754,7 +754,7 @@ func (acb *AdvertCreateBulk) ExecX(ctx context.Context) {
 // OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
 // of the `INSERT` statement. For example:
 //
-//	client.Advert.CreateBulk(builders...).
+//	client.Activity.CreateBulk(builders...).
 //		OnConflict(
 //			// Update the row with the new values
 //			// the was proposed for insertion.
@@ -762,13 +762,13 @@ func (acb *AdvertCreateBulk) ExecX(ctx context.Context) {
 //		).
 //		// Override some of the fields with custom
 //		// update values.
-//		Update(func(u *ent.AdvertUpsert) {
+//		Update(func(u *ent.ActivityUpsert) {
 //			SetCreatedAt(v+v).
 //		}).
 //		Exec(ctx)
-func (acb *AdvertCreateBulk) OnConflict(opts ...sql.ConflictOption) *AdvertUpsertBulk {
+func (acb *ActivityCreateBulk) OnConflict(opts ...sql.ConflictOption) *ActivityUpsertBulk {
 	acb.conflict = opts
-	return &AdvertUpsertBulk{
+	return &ActivityUpsertBulk{
 		create: acb,
 	}
 }
@@ -776,39 +776,39 @@ func (acb *AdvertCreateBulk) OnConflict(opts ...sql.ConflictOption) *AdvertUpser
 // OnConflictColumns calls `OnConflict` and configures the columns
 // as conflict target. Using this option is equivalent to using:
 //
-//	client.Advert.Create().
+//	client.Activity.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
-func (acb *AdvertCreateBulk) OnConflictColumns(columns ...string) *AdvertUpsertBulk {
+func (acb *ActivityCreateBulk) OnConflictColumns(columns ...string) *ActivityUpsertBulk {
 	acb.conflict = append(acb.conflict, sql.ConflictColumns(columns...))
-	return &AdvertUpsertBulk{
+	return &ActivityUpsertBulk{
 		create: acb,
 	}
 }
 
-// AdvertUpsertBulk is the builder for "upsert"-ing
-// a bulk of Advert nodes.
-type AdvertUpsertBulk struct {
-	create *AdvertCreateBulk
+// ActivityUpsertBulk is the builder for "upsert"-ing
+// a bulk of Activity nodes.
+type ActivityUpsertBulk struct {
+	create *ActivityCreateBulk
 }
 
 // UpdateNewValues updates the mutable fields using the new values that
 // were set on create. Using this option is equivalent to using:
 //
-//	client.Advert.Create().
+//	client.Activity.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
 //		).
 //		Exec(ctx)
-func (u *AdvertUpsertBulk) UpdateNewValues() *AdvertUpsertBulk {
+func (u *ActivityUpsertBulk) UpdateNewValues() *ActivityUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		for _, b := range u.create.builders {
 			if _, exists := b.mutation.CreatedAt(); exists {
-				s.SetIgnore(advert.FieldCreatedAt)
+				s.SetIgnore(activity.FieldCreatedAt)
 			}
 			if _, exists := b.mutation.Creator(); exists {
-				s.SetIgnore(advert.FieldCreator)
+				s.SetIgnore(activity.FieldCreator)
 			}
 		}
 	}))
@@ -818,188 +818,188 @@ func (u *AdvertUpsertBulk) UpdateNewValues() *AdvertUpsertBulk {
 // Ignore sets each column to itself in case of conflict.
 // Using this option is equivalent to using:
 //
-//	client.Advert.Create().
+//	client.Activity.Create().
 //		OnConflict(sql.ResolveWithIgnore()).
 //		Exec(ctx)
-func (u *AdvertUpsertBulk) Ignore() *AdvertUpsertBulk {
+func (u *ActivityUpsertBulk) Ignore() *ActivityUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
 	return u
 }
 
 // DoNothing configures the conflict_action to `DO NOTHING`.
 // Supported only by SQLite and PostgreSQL.
-func (u *AdvertUpsertBulk) DoNothing() *AdvertUpsertBulk {
+func (u *ActivityUpsertBulk) DoNothing() *ActivityUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.DoNothing())
 	return u
 }
 
-// Update allows overriding fields `UPDATE` values. See the AdvertCreateBulk.OnConflict
+// Update allows overriding fields `UPDATE` values. See the ActivityCreateBulk.OnConflict
 // documentation for more info.
-func (u *AdvertUpsertBulk) Update(set func(*AdvertUpsert)) *AdvertUpsertBulk {
+func (u *ActivityUpsertBulk) Update(set func(*ActivityUpsert)) *ActivityUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
-		set(&AdvertUpsert{UpdateSet: update})
+		set(&ActivityUpsert{UpdateSet: update})
 	}))
 	return u
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (u *AdvertUpsertBulk) SetUpdatedAt(v time.Time) *AdvertUpsertBulk {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertBulk) SetUpdatedAt(v time.Time) *ActivityUpsertBulk {
+	return u.Update(func(s *ActivityUpsert) {
 		s.SetUpdatedAt(v)
 	})
 }
 
 // UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
-func (u *AdvertUpsertBulk) UpdateUpdatedAt() *AdvertUpsertBulk {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertBulk) UpdateUpdatedAt() *ActivityUpsertBulk {
+	return u.Update(func(s *ActivityUpsert) {
 		s.UpdateUpdatedAt()
 	})
 }
 
 // SetDeletedAt sets the "deleted_at" field.
-func (u *AdvertUpsertBulk) SetDeletedAt(v time.Time) *AdvertUpsertBulk {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertBulk) SetDeletedAt(v time.Time) *ActivityUpsertBulk {
+	return u.Update(func(s *ActivityUpsert) {
 		s.SetDeletedAt(v)
 	})
 }
 
 // UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
-func (u *AdvertUpsertBulk) UpdateDeletedAt() *AdvertUpsertBulk {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertBulk) UpdateDeletedAt() *ActivityUpsertBulk {
+	return u.Update(func(s *ActivityUpsert) {
 		s.UpdateDeletedAt()
 	})
 }
 
 // ClearDeletedAt clears the value of the "deleted_at" field.
-func (u *AdvertUpsertBulk) ClearDeletedAt() *AdvertUpsertBulk {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertBulk) ClearDeletedAt() *ActivityUpsertBulk {
+	return u.Update(func(s *ActivityUpsert) {
 		s.ClearDeletedAt()
 	})
 }
 
 // SetLastModifier sets the "last_modifier" field.
-func (u *AdvertUpsertBulk) SetLastModifier(v *model.Modifier) *AdvertUpsertBulk {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertBulk) SetLastModifier(v *model.Modifier) *ActivityUpsertBulk {
+	return u.Update(func(s *ActivityUpsert) {
 		s.SetLastModifier(v)
 	})
 }
 
 // UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
-func (u *AdvertUpsertBulk) UpdateLastModifier() *AdvertUpsertBulk {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertBulk) UpdateLastModifier() *ActivityUpsertBulk {
+	return u.Update(func(s *ActivityUpsert) {
 		s.UpdateLastModifier()
 	})
 }
 
 // ClearLastModifier clears the value of the "last_modifier" field.
-func (u *AdvertUpsertBulk) ClearLastModifier() *AdvertUpsertBulk {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertBulk) ClearLastModifier() *ActivityUpsertBulk {
+	return u.Update(func(s *ActivityUpsert) {
 		s.ClearLastModifier()
 	})
 }
 
 // SetRemark sets the "remark" field.
-func (u *AdvertUpsertBulk) SetRemark(v string) *AdvertUpsertBulk {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertBulk) SetRemark(v string) *ActivityUpsertBulk {
+	return u.Update(func(s *ActivityUpsert) {
 		s.SetRemark(v)
 	})
 }
 
 // UpdateRemark sets the "remark" field to the value that was provided on create.
-func (u *AdvertUpsertBulk) UpdateRemark() *AdvertUpsertBulk {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertBulk) UpdateRemark() *ActivityUpsertBulk {
+	return u.Update(func(s *ActivityUpsert) {
 		s.UpdateRemark()
 	})
 }
 
 // ClearRemark clears the value of the "remark" field.
-func (u *AdvertUpsertBulk) ClearRemark() *AdvertUpsertBulk {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertBulk) ClearRemark() *ActivityUpsertBulk {
+	return u.Update(func(s *ActivityUpsert) {
 		s.ClearRemark()
 	})
 }
 
 // SetName sets the "name" field.
-func (u *AdvertUpsertBulk) SetName(v string) *AdvertUpsertBulk {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertBulk) SetName(v string) *ActivityUpsertBulk {
+	return u.Update(func(s *ActivityUpsert) {
 		s.SetName(v)
 	})
 }
 
 // UpdateName sets the "name" field to the value that was provided on create.
-func (u *AdvertUpsertBulk) UpdateName() *AdvertUpsertBulk {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertBulk) UpdateName() *ActivityUpsertBulk {
+	return u.Update(func(s *ActivityUpsert) {
 		s.UpdateName()
 	})
 }
 
 // SetImage sets the "image" field.
-func (u *AdvertUpsertBulk) SetImage(v string) *AdvertUpsertBulk {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertBulk) SetImage(v string) *ActivityUpsertBulk {
+	return u.Update(func(s *ActivityUpsert) {
 		s.SetImage(v)
 	})
 }
 
 // UpdateImage sets the "image" field to the value that was provided on create.
-func (u *AdvertUpsertBulk) UpdateImage() *AdvertUpsertBulk {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertBulk) UpdateImage() *ActivityUpsertBulk {
+	return u.Update(func(s *ActivityUpsert) {
 		s.UpdateImage()
 	})
 }
 
 // SetLink sets the "link" field.
-func (u *AdvertUpsertBulk) SetLink(v string) *AdvertUpsertBulk {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertBulk) SetLink(v string) *ActivityUpsertBulk {
+	return u.Update(func(s *ActivityUpsert) {
 		s.SetLink(v)
 	})
 }
 
 // UpdateLink sets the "link" field to the value that was provided on create.
-func (u *AdvertUpsertBulk) UpdateLink() *AdvertUpsertBulk {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertBulk) UpdateLink() *ActivityUpsertBulk {
+	return u.Update(func(s *ActivityUpsert) {
 		s.UpdateLink()
 	})
 }
 
 // SetSort sets the "sort" field.
-func (u *AdvertUpsertBulk) SetSort(v int) *AdvertUpsertBulk {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertBulk) SetSort(v int) *ActivityUpsertBulk {
+	return u.Update(func(s *ActivityUpsert) {
 		s.SetSort(v)
 	})
 }
 
 // AddSort adds v to the "sort" field.
-func (u *AdvertUpsertBulk) AddSort(v int) *AdvertUpsertBulk {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertBulk) AddSort(v int) *ActivityUpsertBulk {
+	return u.Update(func(s *ActivityUpsert) {
 		s.AddSort(v)
 	})
 }
 
 // UpdateSort sets the "sort" field to the value that was provided on create.
-func (u *AdvertUpsertBulk) UpdateSort() *AdvertUpsertBulk {
-	return u.Update(func(s *AdvertUpsert) {
+func (u *ActivityUpsertBulk) UpdateSort() *ActivityUpsertBulk {
+	return u.Update(func(s *ActivityUpsert) {
 		s.UpdateSort()
 	})
 }
 
 // Exec executes the query.
-func (u *AdvertUpsertBulk) Exec(ctx context.Context) error {
+func (u *ActivityUpsertBulk) Exec(ctx context.Context) error {
 	if u.create.err != nil {
 		return u.create.err
 	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
-			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the AdvertCreateBulk instead", i)
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the ActivityCreateBulk instead", i)
 		}
 	}
 	if len(u.create.conflict) == 0 {
-		return errors.New("ent: missing options for AdvertCreateBulk.OnConflict")
+		return errors.New("ent: missing options for ActivityCreateBulk.OnConflict")
 	}
 	return u.create.Exec(ctx)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (u *AdvertUpsertBulk) ExecX(ctx context.Context) {
+func (u *ActivityUpsertBulk) ExecX(ctx context.Context) {
 	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}

@@ -9,19 +9,19 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 )
 
-// Pagination returns pagination query builder for AdvertQuery.
-func (aq *AdvertQuery) Pagination(req model.PaginationReq) *AdvertQuery {
+// Pagination returns pagination query builder for ActivityQuery.
+func (aq *ActivityQuery) Pagination(req model.PaginationReq) *ActivityQuery {
 	aq.Offset(req.GetOffset()).Limit(req.GetLimit())
 	return aq
 }
 
-// PaginationItems returns pagination query builder for AdvertQuery.
-func (aq *AdvertQuery) PaginationItemsX(req model.PaginationReq) any {
+// PaginationItems returns pagination query builder for ActivityQuery.
+func (aq *ActivityQuery) PaginationItemsX(req model.PaginationReq) any {
 	return aq.Pagination(req).AllX(context.Background())
 }
 
-// PaginationResult returns pagination for AdvertQuery.
-func (aq *AdvertQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+// PaginationResult returns pagination for ActivityQuery.
+func (aq *ActivityQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	query := aq.Clone()
 	query.order = nil
 	query.ctx.Limit = nil

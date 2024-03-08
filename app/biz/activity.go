@@ -1,6 +1,6 @@
 // Copyright (C) aurservd. 2024-present.
 //
-// Created at 2024-03-07, by lisicen
+// Created at 2024-03-08, by lisicen
 
 package biz
 
@@ -10,30 +10,30 @@ import (
 	"github.com/auroraride/aurservd/app/biz/definition"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent"
-	"github.com/auroraride/aurservd/internal/ent/advert"
+	"github.com/auroraride/aurservd/internal/ent/activity"
 	"github.com/auroraride/aurservd/pkg/snag"
 )
 
-type advertBiz struct {
-	orm *ent.AdvertClient
+type activityBiz struct {
+	orm *ent.ActivityClient
 }
 
-func NewAdvert() *advertBiz {
-	return &advertBiz{
-		orm: ent.Database.Advert,
+func NewActivity() *activityBiz {
+	return &activityBiz{
+		orm: ent.Database.Activity,
 	}
 }
 
-func (a *advertBiz) Get(id uint64) *definition.AdvertDetail {
+func (a *activityBiz) Get(id uint64) *definition.ActivityDetail {
 	ctx := context.Background()
 	item, err := a.orm.Get(ctx, id)
 	if err != nil {
 		snag.Panic(err)
 	}
-	return toAdvertDetail(item)
+	return toActivityDetail(item)
 }
 
-func (a *advertBiz) Create(req *definition.AdvertSaveReq) {
+func (a *activityBiz) Create(req *definition.ActivitySaveReq) {
 	ctx := context.Background()
 	_, err := a.orm.Create().
 		SetName(req.Name).
@@ -47,7 +47,7 @@ func (a *advertBiz) Create(req *definition.AdvertSaveReq) {
 	}
 }
 
-func (a *advertBiz) Modify(req *definition.AdvertModifyReq) {
+func (a *activityBiz) Modify(req *definition.ActivityModifyReq) {
 	ctx := context.Background()
 	_, err := a.orm.UpdateOneID(req.ID).
 		SetName(req.Name).
@@ -61,7 +61,7 @@ func (a *advertBiz) Modify(req *definition.AdvertModifyReq) {
 	}
 }
 
-func (a *advertBiz) Delete(id uint64) {
+func (a *activityBiz) Delete(id uint64) {
 	ctx := context.Background()
 	err := a.orm.DeleteOneID(id).Exec(ctx)
 	if err != nil {
@@ -69,28 +69,28 @@ func (a *advertBiz) Delete(id uint64) {
 	}
 }
 
-func (a *advertBiz) All() []*definition.AdvertDetail {
+func (a *activityBiz) All() []*definition.ActivityDetail {
 	ctx := context.Background()
-	items, err := a.orm.Query().Order(ent.Desc(advert.FieldSort)).All(ctx)
+	items, err := a.orm.Query().Order(ent.Desc(activity.FieldSort)).All(ctx)
 	if err != nil {
 		snag.Panic(err)
 	}
-	var res []*definition.AdvertDetail
+	var res []*definition.ActivityDetail
 	for _, item := range items {
-		res = append(res, toAdvertDetail(item))
+		res = append(res, toActivityDetail(item))
 	}
 	return res
 }
 
-func (a *advertBiz) List(req *definition.AdvertListReq) *model.PaginationRes {
-	query := a.orm.Query().Order(ent.Desc(advert.FieldSort))
-	return model.ParsePaginationResponse(query, req.PaginationReq, func(item *ent.Advert) *definition.AdvertDetail {
-		return toAdvertDetail(item)
+func (a *activityBiz) List(req *definition.ActivityListReq) *model.PaginationRes {
+	query := a.orm.Query().Order(ent.Desc(activity.FieldSort))
+	return model.ParsePaginationResponse(query, req.PaginationReq, func(item *ent.Activity) *definition.ActivityDetail {
+		return toActivityDetail(item)
 	})
 }
 
-func toAdvertDetail(item *ent.Advert) *definition.AdvertDetail {
-	return &definition.AdvertDetail{
+func toActivityDetail(item *ent.Activity) *definition.ActivityDetail {
+	return &definition.ActivityDetail{
 		ID:     item.ID,
 		Name:   item.Name,
 		Sort:   item.Sort,

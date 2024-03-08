@@ -12,38 +12,38 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/internal/ent/advert"
+	"github.com/auroraride/aurservd/internal/ent/activity"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
-// AdvertUpdate is the builder for updating Advert entities.
-type AdvertUpdate struct {
+// ActivityUpdate is the builder for updating Activity entities.
+type ActivityUpdate struct {
 	config
 	hooks     []Hook
-	mutation  *AdvertMutation
+	mutation  *ActivityMutation
 	modifiers []func(*sql.UpdateBuilder)
 }
 
-// Where appends a list predicates to the AdvertUpdate builder.
-func (au *AdvertUpdate) Where(ps ...predicate.Advert) *AdvertUpdate {
+// Where appends a list predicates to the ActivityUpdate builder.
+func (au *ActivityUpdate) Where(ps ...predicate.Activity) *ActivityUpdate {
 	au.mutation.Where(ps...)
 	return au
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (au *AdvertUpdate) SetUpdatedAt(t time.Time) *AdvertUpdate {
+func (au *ActivityUpdate) SetUpdatedAt(t time.Time) *ActivityUpdate {
 	au.mutation.SetUpdatedAt(t)
 	return au
 }
 
 // SetDeletedAt sets the "deleted_at" field.
-func (au *AdvertUpdate) SetDeletedAt(t time.Time) *AdvertUpdate {
+func (au *ActivityUpdate) SetDeletedAt(t time.Time) *ActivityUpdate {
 	au.mutation.SetDeletedAt(t)
 	return au
 }
 
 // SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (au *AdvertUpdate) SetNillableDeletedAt(t *time.Time) *AdvertUpdate {
+func (au *ActivityUpdate) SetNillableDeletedAt(t *time.Time) *ActivityUpdate {
 	if t != nil {
 		au.SetDeletedAt(*t)
 	}
@@ -51,31 +51,31 @@ func (au *AdvertUpdate) SetNillableDeletedAt(t *time.Time) *AdvertUpdate {
 }
 
 // ClearDeletedAt clears the value of the "deleted_at" field.
-func (au *AdvertUpdate) ClearDeletedAt() *AdvertUpdate {
+func (au *ActivityUpdate) ClearDeletedAt() *ActivityUpdate {
 	au.mutation.ClearDeletedAt()
 	return au
 }
 
 // SetLastModifier sets the "last_modifier" field.
-func (au *AdvertUpdate) SetLastModifier(m *model.Modifier) *AdvertUpdate {
+func (au *ActivityUpdate) SetLastModifier(m *model.Modifier) *ActivityUpdate {
 	au.mutation.SetLastModifier(m)
 	return au
 }
 
 // ClearLastModifier clears the value of the "last_modifier" field.
-func (au *AdvertUpdate) ClearLastModifier() *AdvertUpdate {
+func (au *ActivityUpdate) ClearLastModifier() *ActivityUpdate {
 	au.mutation.ClearLastModifier()
 	return au
 }
 
 // SetRemark sets the "remark" field.
-func (au *AdvertUpdate) SetRemark(s string) *AdvertUpdate {
+func (au *ActivityUpdate) SetRemark(s string) *ActivityUpdate {
 	au.mutation.SetRemark(s)
 	return au
 }
 
 // SetNillableRemark sets the "remark" field if the given value is not nil.
-func (au *AdvertUpdate) SetNillableRemark(s *string) *AdvertUpdate {
+func (au *ActivityUpdate) SetNillableRemark(s *string) *ActivityUpdate {
 	if s != nil {
 		au.SetRemark(*s)
 	}
@@ -83,19 +83,19 @@ func (au *AdvertUpdate) SetNillableRemark(s *string) *AdvertUpdate {
 }
 
 // ClearRemark clears the value of the "remark" field.
-func (au *AdvertUpdate) ClearRemark() *AdvertUpdate {
+func (au *ActivityUpdate) ClearRemark() *ActivityUpdate {
 	au.mutation.ClearRemark()
 	return au
 }
 
 // SetName sets the "name" field.
-func (au *AdvertUpdate) SetName(s string) *AdvertUpdate {
+func (au *ActivityUpdate) SetName(s string) *ActivityUpdate {
 	au.mutation.SetName(s)
 	return au
 }
 
 // SetNillableName sets the "name" field if the given value is not nil.
-func (au *AdvertUpdate) SetNillableName(s *string) *AdvertUpdate {
+func (au *ActivityUpdate) SetNillableName(s *string) *ActivityUpdate {
 	if s != nil {
 		au.SetName(*s)
 	}
@@ -103,13 +103,13 @@ func (au *AdvertUpdate) SetNillableName(s *string) *AdvertUpdate {
 }
 
 // SetImage sets the "image" field.
-func (au *AdvertUpdate) SetImage(s string) *AdvertUpdate {
+func (au *ActivityUpdate) SetImage(s string) *ActivityUpdate {
 	au.mutation.SetImage(s)
 	return au
 }
 
 // SetNillableImage sets the "image" field if the given value is not nil.
-func (au *AdvertUpdate) SetNillableImage(s *string) *AdvertUpdate {
+func (au *ActivityUpdate) SetNillableImage(s *string) *ActivityUpdate {
 	if s != nil {
 		au.SetImage(*s)
 	}
@@ -117,13 +117,13 @@ func (au *AdvertUpdate) SetNillableImage(s *string) *AdvertUpdate {
 }
 
 // SetLink sets the "link" field.
-func (au *AdvertUpdate) SetLink(s string) *AdvertUpdate {
+func (au *ActivityUpdate) SetLink(s string) *ActivityUpdate {
 	au.mutation.SetLink(s)
 	return au
 }
 
 // SetNillableLink sets the "link" field if the given value is not nil.
-func (au *AdvertUpdate) SetNillableLink(s *string) *AdvertUpdate {
+func (au *ActivityUpdate) SetNillableLink(s *string) *ActivityUpdate {
 	if s != nil {
 		au.SetLink(*s)
 	}
@@ -131,14 +131,14 @@ func (au *AdvertUpdate) SetNillableLink(s *string) *AdvertUpdate {
 }
 
 // SetSort sets the "sort" field.
-func (au *AdvertUpdate) SetSort(i int) *AdvertUpdate {
+func (au *ActivityUpdate) SetSort(i int) *ActivityUpdate {
 	au.mutation.ResetSort()
 	au.mutation.SetSort(i)
 	return au
 }
 
 // SetNillableSort sets the "sort" field if the given value is not nil.
-func (au *AdvertUpdate) SetNillableSort(i *int) *AdvertUpdate {
+func (au *ActivityUpdate) SetNillableSort(i *int) *ActivityUpdate {
 	if i != nil {
 		au.SetSort(*i)
 	}
@@ -146,18 +146,18 @@ func (au *AdvertUpdate) SetNillableSort(i *int) *AdvertUpdate {
 }
 
 // AddSort adds i to the "sort" field.
-func (au *AdvertUpdate) AddSort(i int) *AdvertUpdate {
+func (au *ActivityUpdate) AddSort(i int) *ActivityUpdate {
 	au.mutation.AddSort(i)
 	return au
 }
 
-// Mutation returns the AdvertMutation object of the builder.
-func (au *AdvertUpdate) Mutation() *AdvertMutation {
+// Mutation returns the ActivityMutation object of the builder.
+func (au *ActivityUpdate) Mutation() *ActivityMutation {
 	return au.mutation
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (au *AdvertUpdate) Save(ctx context.Context) (int, error) {
+func (au *ActivityUpdate) Save(ctx context.Context) (int, error) {
 	if err := au.defaults(); err != nil {
 		return 0, err
 	}
@@ -165,7 +165,7 @@ func (au *AdvertUpdate) Save(ctx context.Context) (int, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (au *AdvertUpdate) SaveX(ctx context.Context) int {
+func (au *ActivityUpdate) SaveX(ctx context.Context) int {
 	affected, err := au.Save(ctx)
 	if err != nil {
 		panic(err)
@@ -174,38 +174,38 @@ func (au *AdvertUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (au *AdvertUpdate) Exec(ctx context.Context) error {
+func (au *ActivityUpdate) Exec(ctx context.Context) error {
 	_, err := au.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (au *AdvertUpdate) ExecX(ctx context.Context) {
+func (au *ActivityUpdate) ExecX(ctx context.Context) {
 	if err := au.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (au *AdvertUpdate) defaults() error {
+func (au *ActivityUpdate) defaults() error {
 	if _, ok := au.mutation.UpdatedAt(); !ok {
-		if advert.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized advert.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		if activity.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized activity.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
 		}
-		v := advert.UpdateDefaultUpdatedAt()
+		v := activity.UpdateDefaultUpdatedAt()
 		au.mutation.SetUpdatedAt(v)
 	}
 	return nil
 }
 
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
-func (au *AdvertUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *AdvertUpdate {
+func (au *ActivityUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *ActivityUpdate {
 	au.modifiers = append(au.modifiers, modifiers...)
 	return au
 }
 
-func (au *AdvertUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	_spec := sqlgraph.NewUpdateSpec(advert.Table, advert.Columns, sqlgraph.NewFieldSpec(advert.FieldID, field.TypeUint64))
+func (au *ActivityUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	_spec := sqlgraph.NewUpdateSpec(activity.Table, activity.Columns, sqlgraph.NewFieldSpec(activity.FieldID, field.TypeUint64))
 	if ps := au.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -214,48 +214,48 @@ func (au *AdvertUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := au.mutation.UpdatedAt(); ok {
-		_spec.SetField(advert.FieldUpdatedAt, field.TypeTime, value)
+		_spec.SetField(activity.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := au.mutation.DeletedAt(); ok {
-		_spec.SetField(advert.FieldDeletedAt, field.TypeTime, value)
+		_spec.SetField(activity.FieldDeletedAt, field.TypeTime, value)
 	}
 	if au.mutation.DeletedAtCleared() {
-		_spec.ClearField(advert.FieldDeletedAt, field.TypeTime)
+		_spec.ClearField(activity.FieldDeletedAt, field.TypeTime)
 	}
 	if au.mutation.CreatorCleared() {
-		_spec.ClearField(advert.FieldCreator, field.TypeJSON)
+		_spec.ClearField(activity.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := au.mutation.LastModifier(); ok {
-		_spec.SetField(advert.FieldLastModifier, field.TypeJSON, value)
+		_spec.SetField(activity.FieldLastModifier, field.TypeJSON, value)
 	}
 	if au.mutation.LastModifierCleared() {
-		_spec.ClearField(advert.FieldLastModifier, field.TypeJSON)
+		_spec.ClearField(activity.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := au.mutation.Remark(); ok {
-		_spec.SetField(advert.FieldRemark, field.TypeString, value)
+		_spec.SetField(activity.FieldRemark, field.TypeString, value)
 	}
 	if au.mutation.RemarkCleared() {
-		_spec.ClearField(advert.FieldRemark, field.TypeString)
+		_spec.ClearField(activity.FieldRemark, field.TypeString)
 	}
 	if value, ok := au.mutation.Name(); ok {
-		_spec.SetField(advert.FieldName, field.TypeString, value)
+		_spec.SetField(activity.FieldName, field.TypeString, value)
 	}
 	if value, ok := au.mutation.Image(); ok {
-		_spec.SetField(advert.FieldImage, field.TypeString, value)
+		_spec.SetField(activity.FieldImage, field.TypeString, value)
 	}
 	if value, ok := au.mutation.Link(); ok {
-		_spec.SetField(advert.FieldLink, field.TypeString, value)
+		_spec.SetField(activity.FieldLink, field.TypeString, value)
 	}
 	if value, ok := au.mutation.Sort(); ok {
-		_spec.SetField(advert.FieldSort, field.TypeInt, value)
+		_spec.SetField(activity.FieldSort, field.TypeInt, value)
 	}
 	if value, ok := au.mutation.AddedSort(); ok {
-		_spec.AddField(advert.FieldSort, field.TypeInt, value)
+		_spec.AddField(activity.FieldSort, field.TypeInt, value)
 	}
 	_spec.AddModifiers(au.modifiers...)
 	if n, err = sqlgraph.UpdateNodes(ctx, au.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
-			err = &NotFoundError{advert.Label}
+			err = &NotFoundError{activity.Label}
 		} else if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{msg: err.Error(), wrap: err}
 		}
@@ -265,29 +265,29 @@ func (au *AdvertUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	return n, nil
 }
 
-// AdvertUpdateOne is the builder for updating a single Advert entity.
-type AdvertUpdateOne struct {
+// ActivityUpdateOne is the builder for updating a single Activity entity.
+type ActivityUpdateOne struct {
 	config
 	fields    []string
 	hooks     []Hook
-	mutation  *AdvertMutation
+	mutation  *ActivityMutation
 	modifiers []func(*sql.UpdateBuilder)
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (auo *AdvertUpdateOne) SetUpdatedAt(t time.Time) *AdvertUpdateOne {
+func (auo *ActivityUpdateOne) SetUpdatedAt(t time.Time) *ActivityUpdateOne {
 	auo.mutation.SetUpdatedAt(t)
 	return auo
 }
 
 // SetDeletedAt sets the "deleted_at" field.
-func (auo *AdvertUpdateOne) SetDeletedAt(t time.Time) *AdvertUpdateOne {
+func (auo *ActivityUpdateOne) SetDeletedAt(t time.Time) *ActivityUpdateOne {
 	auo.mutation.SetDeletedAt(t)
 	return auo
 }
 
 // SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (auo *AdvertUpdateOne) SetNillableDeletedAt(t *time.Time) *AdvertUpdateOne {
+func (auo *ActivityUpdateOne) SetNillableDeletedAt(t *time.Time) *ActivityUpdateOne {
 	if t != nil {
 		auo.SetDeletedAt(*t)
 	}
@@ -295,31 +295,31 @@ func (auo *AdvertUpdateOne) SetNillableDeletedAt(t *time.Time) *AdvertUpdateOne 
 }
 
 // ClearDeletedAt clears the value of the "deleted_at" field.
-func (auo *AdvertUpdateOne) ClearDeletedAt() *AdvertUpdateOne {
+func (auo *ActivityUpdateOne) ClearDeletedAt() *ActivityUpdateOne {
 	auo.mutation.ClearDeletedAt()
 	return auo
 }
 
 // SetLastModifier sets the "last_modifier" field.
-func (auo *AdvertUpdateOne) SetLastModifier(m *model.Modifier) *AdvertUpdateOne {
+func (auo *ActivityUpdateOne) SetLastModifier(m *model.Modifier) *ActivityUpdateOne {
 	auo.mutation.SetLastModifier(m)
 	return auo
 }
 
 // ClearLastModifier clears the value of the "last_modifier" field.
-func (auo *AdvertUpdateOne) ClearLastModifier() *AdvertUpdateOne {
+func (auo *ActivityUpdateOne) ClearLastModifier() *ActivityUpdateOne {
 	auo.mutation.ClearLastModifier()
 	return auo
 }
 
 // SetRemark sets the "remark" field.
-func (auo *AdvertUpdateOne) SetRemark(s string) *AdvertUpdateOne {
+func (auo *ActivityUpdateOne) SetRemark(s string) *ActivityUpdateOne {
 	auo.mutation.SetRemark(s)
 	return auo
 }
 
 // SetNillableRemark sets the "remark" field if the given value is not nil.
-func (auo *AdvertUpdateOne) SetNillableRemark(s *string) *AdvertUpdateOne {
+func (auo *ActivityUpdateOne) SetNillableRemark(s *string) *ActivityUpdateOne {
 	if s != nil {
 		auo.SetRemark(*s)
 	}
@@ -327,19 +327,19 @@ func (auo *AdvertUpdateOne) SetNillableRemark(s *string) *AdvertUpdateOne {
 }
 
 // ClearRemark clears the value of the "remark" field.
-func (auo *AdvertUpdateOne) ClearRemark() *AdvertUpdateOne {
+func (auo *ActivityUpdateOne) ClearRemark() *ActivityUpdateOne {
 	auo.mutation.ClearRemark()
 	return auo
 }
 
 // SetName sets the "name" field.
-func (auo *AdvertUpdateOne) SetName(s string) *AdvertUpdateOne {
+func (auo *ActivityUpdateOne) SetName(s string) *ActivityUpdateOne {
 	auo.mutation.SetName(s)
 	return auo
 }
 
 // SetNillableName sets the "name" field if the given value is not nil.
-func (auo *AdvertUpdateOne) SetNillableName(s *string) *AdvertUpdateOne {
+func (auo *ActivityUpdateOne) SetNillableName(s *string) *ActivityUpdateOne {
 	if s != nil {
 		auo.SetName(*s)
 	}
@@ -347,13 +347,13 @@ func (auo *AdvertUpdateOne) SetNillableName(s *string) *AdvertUpdateOne {
 }
 
 // SetImage sets the "image" field.
-func (auo *AdvertUpdateOne) SetImage(s string) *AdvertUpdateOne {
+func (auo *ActivityUpdateOne) SetImage(s string) *ActivityUpdateOne {
 	auo.mutation.SetImage(s)
 	return auo
 }
 
 // SetNillableImage sets the "image" field if the given value is not nil.
-func (auo *AdvertUpdateOne) SetNillableImage(s *string) *AdvertUpdateOne {
+func (auo *ActivityUpdateOne) SetNillableImage(s *string) *ActivityUpdateOne {
 	if s != nil {
 		auo.SetImage(*s)
 	}
@@ -361,13 +361,13 @@ func (auo *AdvertUpdateOne) SetNillableImage(s *string) *AdvertUpdateOne {
 }
 
 // SetLink sets the "link" field.
-func (auo *AdvertUpdateOne) SetLink(s string) *AdvertUpdateOne {
+func (auo *ActivityUpdateOne) SetLink(s string) *ActivityUpdateOne {
 	auo.mutation.SetLink(s)
 	return auo
 }
 
 // SetNillableLink sets the "link" field if the given value is not nil.
-func (auo *AdvertUpdateOne) SetNillableLink(s *string) *AdvertUpdateOne {
+func (auo *ActivityUpdateOne) SetNillableLink(s *string) *ActivityUpdateOne {
 	if s != nil {
 		auo.SetLink(*s)
 	}
@@ -375,14 +375,14 @@ func (auo *AdvertUpdateOne) SetNillableLink(s *string) *AdvertUpdateOne {
 }
 
 // SetSort sets the "sort" field.
-func (auo *AdvertUpdateOne) SetSort(i int) *AdvertUpdateOne {
+func (auo *ActivityUpdateOne) SetSort(i int) *ActivityUpdateOne {
 	auo.mutation.ResetSort()
 	auo.mutation.SetSort(i)
 	return auo
 }
 
 // SetNillableSort sets the "sort" field if the given value is not nil.
-func (auo *AdvertUpdateOne) SetNillableSort(i *int) *AdvertUpdateOne {
+func (auo *ActivityUpdateOne) SetNillableSort(i *int) *ActivityUpdateOne {
 	if i != nil {
 		auo.SetSort(*i)
 	}
@@ -390,31 +390,31 @@ func (auo *AdvertUpdateOne) SetNillableSort(i *int) *AdvertUpdateOne {
 }
 
 // AddSort adds i to the "sort" field.
-func (auo *AdvertUpdateOne) AddSort(i int) *AdvertUpdateOne {
+func (auo *ActivityUpdateOne) AddSort(i int) *ActivityUpdateOne {
 	auo.mutation.AddSort(i)
 	return auo
 }
 
-// Mutation returns the AdvertMutation object of the builder.
-func (auo *AdvertUpdateOne) Mutation() *AdvertMutation {
+// Mutation returns the ActivityMutation object of the builder.
+func (auo *ActivityUpdateOne) Mutation() *ActivityMutation {
 	return auo.mutation
 }
 
-// Where appends a list predicates to the AdvertUpdate builder.
-func (auo *AdvertUpdateOne) Where(ps ...predicate.Advert) *AdvertUpdateOne {
+// Where appends a list predicates to the ActivityUpdate builder.
+func (auo *ActivityUpdateOne) Where(ps ...predicate.Activity) *ActivityUpdateOne {
 	auo.mutation.Where(ps...)
 	return auo
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (auo *AdvertUpdateOne) Select(field string, fields ...string) *AdvertUpdateOne {
+func (auo *ActivityUpdateOne) Select(field string, fields ...string) *ActivityUpdateOne {
 	auo.fields = append([]string{field}, fields...)
 	return auo
 }
 
-// Save executes the query and returns the updated Advert entity.
-func (auo *AdvertUpdateOne) Save(ctx context.Context) (*Advert, error) {
+// Save executes the query and returns the updated Activity entity.
+func (auo *ActivityUpdateOne) Save(ctx context.Context) (*Activity, error) {
 	if err := auo.defaults(); err != nil {
 		return nil, err
 	}
@@ -422,7 +422,7 @@ func (auo *AdvertUpdateOne) Save(ctx context.Context) (*Advert, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (auo *AdvertUpdateOne) SaveX(ctx context.Context) *Advert {
+func (auo *ActivityUpdateOne) SaveX(ctx context.Context) *Activity {
 	node, err := auo.Save(ctx)
 	if err != nil {
 		panic(err)
@@ -431,51 +431,51 @@ func (auo *AdvertUpdateOne) SaveX(ctx context.Context) *Advert {
 }
 
 // Exec executes the query on the entity.
-func (auo *AdvertUpdateOne) Exec(ctx context.Context) error {
+func (auo *ActivityUpdateOne) Exec(ctx context.Context) error {
 	_, err := auo.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (auo *AdvertUpdateOne) ExecX(ctx context.Context) {
+func (auo *ActivityUpdateOne) ExecX(ctx context.Context) {
 	if err := auo.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (auo *AdvertUpdateOne) defaults() error {
+func (auo *ActivityUpdateOne) defaults() error {
 	if _, ok := auo.mutation.UpdatedAt(); !ok {
-		if advert.UpdateDefaultUpdatedAt == nil {
-			return fmt.Errorf("ent: uninitialized advert.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		if activity.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized activity.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
 		}
-		v := advert.UpdateDefaultUpdatedAt()
+		v := activity.UpdateDefaultUpdatedAt()
 		auo.mutation.SetUpdatedAt(v)
 	}
 	return nil
 }
 
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
-func (auo *AdvertUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *AdvertUpdateOne {
+func (auo *ActivityUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *ActivityUpdateOne {
 	auo.modifiers = append(auo.modifiers, modifiers...)
 	return auo
 }
 
-func (auo *AdvertUpdateOne) sqlSave(ctx context.Context) (_node *Advert, err error) {
-	_spec := sqlgraph.NewUpdateSpec(advert.Table, advert.Columns, sqlgraph.NewFieldSpec(advert.FieldID, field.TypeUint64))
+func (auo *ActivityUpdateOne) sqlSave(ctx context.Context) (_node *Activity, err error) {
+	_spec := sqlgraph.NewUpdateSpec(activity.Table, activity.Columns, sqlgraph.NewFieldSpec(activity.FieldID, field.TypeUint64))
 	id, ok := auo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Advert.id" for update`)}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Activity.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := auo.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
-		_spec.Node.Columns = append(_spec.Node.Columns, advert.FieldID)
+		_spec.Node.Columns = append(_spec.Node.Columns, activity.FieldID)
 		for _, f := range fields {
-			if !advert.ValidColumn(f) {
+			if !activity.ValidColumn(f) {
 				return nil, &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 			}
-			if f != advert.FieldID {
+			if f != activity.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, f)
 			}
 		}
@@ -488,51 +488,51 @@ func (auo *AdvertUpdateOne) sqlSave(ctx context.Context) (_node *Advert, err err
 		}
 	}
 	if value, ok := auo.mutation.UpdatedAt(); ok {
-		_spec.SetField(advert.FieldUpdatedAt, field.TypeTime, value)
+		_spec.SetField(activity.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if value, ok := auo.mutation.DeletedAt(); ok {
-		_spec.SetField(advert.FieldDeletedAt, field.TypeTime, value)
+		_spec.SetField(activity.FieldDeletedAt, field.TypeTime, value)
 	}
 	if auo.mutation.DeletedAtCleared() {
-		_spec.ClearField(advert.FieldDeletedAt, field.TypeTime)
+		_spec.ClearField(activity.FieldDeletedAt, field.TypeTime)
 	}
 	if auo.mutation.CreatorCleared() {
-		_spec.ClearField(advert.FieldCreator, field.TypeJSON)
+		_spec.ClearField(activity.FieldCreator, field.TypeJSON)
 	}
 	if value, ok := auo.mutation.LastModifier(); ok {
-		_spec.SetField(advert.FieldLastModifier, field.TypeJSON, value)
+		_spec.SetField(activity.FieldLastModifier, field.TypeJSON, value)
 	}
 	if auo.mutation.LastModifierCleared() {
-		_spec.ClearField(advert.FieldLastModifier, field.TypeJSON)
+		_spec.ClearField(activity.FieldLastModifier, field.TypeJSON)
 	}
 	if value, ok := auo.mutation.Remark(); ok {
-		_spec.SetField(advert.FieldRemark, field.TypeString, value)
+		_spec.SetField(activity.FieldRemark, field.TypeString, value)
 	}
 	if auo.mutation.RemarkCleared() {
-		_spec.ClearField(advert.FieldRemark, field.TypeString)
+		_spec.ClearField(activity.FieldRemark, field.TypeString)
 	}
 	if value, ok := auo.mutation.Name(); ok {
-		_spec.SetField(advert.FieldName, field.TypeString, value)
+		_spec.SetField(activity.FieldName, field.TypeString, value)
 	}
 	if value, ok := auo.mutation.Image(); ok {
-		_spec.SetField(advert.FieldImage, field.TypeString, value)
+		_spec.SetField(activity.FieldImage, field.TypeString, value)
 	}
 	if value, ok := auo.mutation.Link(); ok {
-		_spec.SetField(advert.FieldLink, field.TypeString, value)
+		_spec.SetField(activity.FieldLink, field.TypeString, value)
 	}
 	if value, ok := auo.mutation.Sort(); ok {
-		_spec.SetField(advert.FieldSort, field.TypeInt, value)
+		_spec.SetField(activity.FieldSort, field.TypeInt, value)
 	}
 	if value, ok := auo.mutation.AddedSort(); ok {
-		_spec.AddField(advert.FieldSort, field.TypeInt, value)
+		_spec.AddField(activity.FieldSort, field.TypeInt, value)
 	}
 	_spec.AddModifiers(auo.modifiers...)
-	_node = &Advert{config: auo.config}
+	_node = &Activity{config: auo.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
 	if err = sqlgraph.UpdateNode(ctx, auo.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
-			err = &NotFoundError{advert.Label}
+			err = &NotFoundError{activity.Label}
 		} else if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{msg: err.Error(), wrap: err}
 		}

@@ -11,11 +11,11 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/internal/ent/advert"
+	"github.com/auroraride/aurservd/internal/ent/activity"
 )
 
-// Advert is the model entity for the Advert schema.
-type Advert struct {
+// Activity is the model entity for the Activity schema.
+type Activity struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID uint64 `json:"id,omitempty"`
@@ -43,17 +43,17 @@ type Advert struct {
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*Advert) scanValues(columns []string) ([]any, error) {
+func (*Activity) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case advert.FieldCreator, advert.FieldLastModifier:
+		case activity.FieldCreator, activity.FieldLastModifier:
 			values[i] = new([]byte)
-		case advert.FieldID, advert.FieldSort:
+		case activity.FieldID, activity.FieldSort:
 			values[i] = new(sql.NullInt64)
-		case advert.FieldRemark, advert.FieldName, advert.FieldImage, advert.FieldLink:
+		case activity.FieldRemark, activity.FieldName, activity.FieldImage, activity.FieldLink:
 			values[i] = new(sql.NullString)
-		case advert.FieldCreatedAt, advert.FieldUpdatedAt, advert.FieldDeletedAt:
+		case activity.FieldCreatedAt, activity.FieldUpdatedAt, activity.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -63,39 +63,39 @@ func (*Advert) scanValues(columns []string) ([]any, error) {
 }
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
-// to the Advert fields.
-func (a *Advert) assignValues(columns []string, values []any) error {
+// to the Activity fields.
+func (a *Activity) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
 	for i := range columns {
 		switch columns[i] {
-		case advert.FieldID:
+		case activity.FieldID:
 			value, ok := values[i].(*sql.NullInt64)
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			a.ID = uint64(value.Int64)
-		case advert.FieldCreatedAt:
+		case activity.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
 				a.CreatedAt = value.Time
 			}
-		case advert.FieldUpdatedAt:
+		case activity.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
 				a.UpdatedAt = value.Time
 			}
-		case advert.FieldDeletedAt:
+		case activity.FieldDeletedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
 			} else if value.Valid {
 				a.DeletedAt = new(time.Time)
 				*a.DeletedAt = value.Time
 			}
-		case advert.FieldCreator:
+		case activity.FieldCreator:
 			if value, ok := values[i].(*[]byte); !ok {
 				return fmt.Errorf("unexpected type %T for field creator", values[i])
 			} else if value != nil && len(*value) > 0 {
@@ -103,7 +103,7 @@ func (a *Advert) assignValues(columns []string, values []any) error {
 					return fmt.Errorf("unmarshal field creator: %w", err)
 				}
 			}
-		case advert.FieldLastModifier:
+		case activity.FieldLastModifier:
 			if value, ok := values[i].(*[]byte); !ok {
 				return fmt.Errorf("unexpected type %T for field last_modifier", values[i])
 			} else if value != nil && len(*value) > 0 {
@@ -111,31 +111,31 @@ func (a *Advert) assignValues(columns []string, values []any) error {
 					return fmt.Errorf("unmarshal field last_modifier: %w", err)
 				}
 			}
-		case advert.FieldRemark:
+		case activity.FieldRemark:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field remark", values[i])
 			} else if value.Valid {
 				a.Remark = value.String
 			}
-		case advert.FieldName:
+		case activity.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
 				a.Name = value.String
 			}
-		case advert.FieldImage:
+		case activity.FieldImage:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field image", values[i])
 			} else if value.Valid {
 				a.Image = value.String
 			}
-		case advert.FieldLink:
+		case activity.FieldLink:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field link", values[i])
 			} else if value.Valid {
 				a.Link = value.String
 			}
-		case advert.FieldSort:
+		case activity.FieldSort:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field sort", values[i])
 			} else if value.Valid {
@@ -148,34 +148,34 @@ func (a *Advert) assignValues(columns []string, values []any) error {
 	return nil
 }
 
-// Value returns the ent.Value that was dynamically selected and assigned to the Advert.
+// Value returns the ent.Value that was dynamically selected and assigned to the Activity.
 // This includes values selected through modifiers, order, etc.
-func (a *Advert) Value(name string) (ent.Value, error) {
+func (a *Activity) Value(name string) (ent.Value, error) {
 	return a.selectValues.Get(name)
 }
 
-// Update returns a builder for updating this Advert.
-// Note that you need to call Advert.Unwrap() before calling this method if this Advert
+// Update returns a builder for updating this Activity.
+// Note that you need to call Activity.Unwrap() before calling this method if this Activity
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (a *Advert) Update() *AdvertUpdateOne {
-	return NewAdvertClient(a.config).UpdateOne(a)
+func (a *Activity) Update() *ActivityUpdateOne {
+	return NewActivityClient(a.config).UpdateOne(a)
 }
 
-// Unwrap unwraps the Advert entity that was returned from a transaction after it was closed,
+// Unwrap unwraps the Activity entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (a *Advert) Unwrap() *Advert {
+func (a *Activity) Unwrap() *Activity {
 	_tx, ok := a.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: Advert is not a transactional entity")
+		panic("ent: Activity is not a transactional entity")
 	}
 	a.config.driver = _tx.drv
 	return a
 }
 
 // String implements the fmt.Stringer.
-func (a *Advert) String() string {
+func (a *Activity) String() string {
 	var builder strings.Builder
-	builder.WriteString("Advert(")
+	builder.WriteString("Activity(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", a.ID))
 	builder.WriteString("created_at=")
 	builder.WriteString(a.CreatedAt.Format(time.ANSIC))
@@ -212,5 +212,5 @@ func (a *Advert) String() string {
 	return builder.String()
 }
 
-// Adverts is a parsable slice of Advert.
-type Adverts []*Advert
+// Activities is a parsable slice of Activity.
+type Activities []*Activity

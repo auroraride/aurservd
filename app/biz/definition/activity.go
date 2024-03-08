@@ -2,8 +2,8 @@ package definition
 
 import "github.com/auroraride/aurservd/app/model"
 
-// AdvertDetail 广告详情
-type AdvertDetail struct {
+// ActivityDetail 活动详情
+type ActivityDetail struct {
 	ID     uint64 `json:"id"`
 	Name   string `json:"name"`
 	Sort   int    `json:"sort"`
@@ -12,8 +12,8 @@ type AdvertDetail struct {
 	Remark string `json:"remark,omitempty"`
 }
 
-// AdvertReqCommon 广告请求公共字段
-type AdvertReqCommon struct {
+// ActivityReqCommon 活动请求公共字段
+type ActivityReqCommon struct {
 	Name   string `json:"name" validate:"required" trans:"名称"`
 	Sort   int    `json:"sort" validate:"required" trans:"排序"`
 	Image  string `json:"image" validate:"required" trans:"图片"`
@@ -21,18 +21,18 @@ type AdvertReqCommon struct {
 	Remark string `json:"remark,omitempty"`
 }
 
-// AdvertSaveReq 广告保存请求
-type AdvertSaveReq struct {
-	AdvertReqCommon
+// ActivitySaveReq 活动保存请求
+type ActivitySaveReq struct {
+	ActivityReqCommon
 }
 
-// AdvertModifyReq 广告修改请求
-type AdvertModifyReq struct {
+// ActivityModifyReq 活动修改请求
+type ActivityModifyReq struct {
 	model.IDParamReq
-	AdvertReqCommon
+	ActivityReqCommon
 }
 
-// AdvertListReq 广告列表请求
-type AdvertListReq struct {
+// ActivityListReq 活动列表请求
+type ActivityListReq struct {
 	model.PaginationReq
 }

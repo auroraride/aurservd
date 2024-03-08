@@ -9,16 +9,16 @@ import (
 	"github.com/auroraride/aurservd/internal/ent"
 )
 
-// The AdvertFunc type is an adapter to allow the use of ordinary
-// function as Advert mutator.
-type AdvertFunc func(context.Context, *ent.AdvertMutation) (ent.Value, error)
+// The ActivityFunc type is an adapter to allow the use of ordinary
+// function as Activity mutator.
+type ActivityFunc func(context.Context, *ent.ActivityMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f AdvertFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.AdvertMutation); ok {
+func (f ActivityFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ActivityMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AdvertMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ActivityMutation", m)
 }
 
 // The AgentFunc type is an adapter to allow the use of ordinary

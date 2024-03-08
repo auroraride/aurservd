@@ -2,17 +2,17 @@
 
 package ent
 
-// GetTableName returns table name for Advert.
-func (a *Advert) GetTableName() string {
-	return "advert"
+// GetTableName returns table name for Activity.
+func (a *Activity) GetTableName() string {
+	return "activity"
 }
 
-// GetID returns id for Advert.
-func (a *Advert) GetID() uint64 {
+// GetID returns id for Activity.
+func (a *Activity) GetID() uint64 {
 	return a.ID
 }
 
-func (a *Advert) GetName() string {
+func (a *Activity) GetName() string {
 	return a.Name
 }
 

@@ -9,8 +9,8 @@ import (
 )
 
 var (
-	// AdvertColumns holds the columns for the "advert" table.
-	AdvertColumns = []*schema.Column{
+	// ActivityColumns holds the columns for the "activity" table.
+	ActivityColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
@@ -23,21 +23,21 @@ var (
 		{Name: "link", Type: field.TypeString, Comment: "连接"},
 		{Name: "sort", Type: field.TypeInt, Comment: "排序", Default: 0},
 	}
-	// AdvertTable holds the schema information for the "advert" table.
-	AdvertTable = &schema.Table{
-		Name:       "advert",
-		Columns:    AdvertColumns,
-		PrimaryKey: []*schema.Column{AdvertColumns[0]},
+	// ActivityTable holds the schema information for the "activity" table.
+	ActivityTable = &schema.Table{
+		Name:       "activity",
+		Columns:    ActivityColumns,
+		PrimaryKey: []*schema.Column{ActivityColumns[0]},
 		Indexes: []*schema.Index{
 			{
-				Name:    "advert_created_at",
+				Name:    "activity_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{AdvertColumns[1]},
+				Columns: []*schema.Column{ActivityColumns[1]},
 			},
 			{
-				Name:    "advert_deleted_at",
+				Name:    "activity_deleted_at",
 				Unique:  false,
-				Columns: []*schema.Column{AdvertColumns[3]},
+				Columns: []*schema.Column{ActivityColumns[3]},
 			},
 		},
 	}
@@ -5657,7 +5657,7 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
-		AdvertTable,
+		ActivityTable,
 		AgentTable,
 		AllocateTable,
 		AssistanceTable,
@@ -5738,8 +5738,8 @@ var (
 )
 
 func init() {
-	AdvertTable.Annotation = &entsql.Annotation{
-		Table: "advert",
+	ActivityTable.Annotation = &entsql.Annotation{
+		Table: "activity",
 	}
 	AgentTable.ForeignKeys[0].RefTable = EnterpriseTable
 	AgentTable.ForeignKeys[1].RefTable = EnterpriseTable

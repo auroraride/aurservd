@@ -6,7 +6,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/auroraride/aurservd/internal/ent/advert"
+	"github.com/auroraride/aurservd/internal/ent/activity"
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/attendance"
@@ -56,39 +56,39 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
 )
 
-// SoftDelete returns an soft delete builder for Advert.
-func (c *AdvertClient) SoftDelete() *AdvertUpdate {
-	mutation := newAdvertMutation(c.config, OpUpdate)
+// SoftDelete returns an soft delete builder for Activity.
+func (c *ActivityClient) SoftDelete() *ActivityUpdate {
+	mutation := newActivityMutation(c.config, OpUpdate)
 	mutation.SetDeletedAt(time.Now())
-	return &AdvertUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return &ActivityUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // SoftDeleteOne returns an soft delete builder for the given entity.
-func (c *AdvertClient) SoftDeleteOne(a *Advert) *AdvertUpdateOne {
-	mutation := newAdvertMutation(c.config, OpUpdateOne, withAdvert(a))
+func (c *ActivityClient) SoftDeleteOne(a *Activity) *ActivityUpdateOne {
+	mutation := newActivityMutation(c.config, OpUpdateOne, withActivity(a))
 	mutation.SetDeletedAt(time.Now())
-	return &AdvertUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return &ActivityUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // SoftDeleteOneID returns an soft delete builder for the given id.
-func (c *AdvertClient) SoftDeleteOneID(id uint64) *AdvertUpdateOne {
-	mutation := newAdvertMutation(c.config, OpUpdateOne, withAdvertID(id))
+func (c *ActivityClient) SoftDeleteOneID(id uint64) *ActivityUpdateOne {
+	mutation := newActivityMutation(c.config, OpUpdateOne, withActivityID(id))
 	mutation.SetDeletedAt(time.Now())
-	return &AdvertUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return &ActivityUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// QueryNotDeleted returns a query not deleted builder for Advert.
-func (c *AdvertClient) QueryNotDeleted() *AdvertQuery {
-	return c.Query().Where(advert.DeletedAtIsNil())
+// QueryNotDeleted returns a query not deleted builder for Activity.
+func (c *ActivityClient) QueryNotDeleted() *ActivityQuery {
+	return c.Query().Where(activity.DeletedAtIsNil())
 }
 
-// GetNotDeleted returns a Advert not deleted entity by its id.
-func (c *AdvertClient) GetNotDeleted(ctx context.Context, id uint64) (*Advert, error) {
-	return c.Query().Where(advert.ID(id), advert.DeletedAtIsNil()).Only(ctx)
+// GetNotDeleted returns a Activity not deleted entity by its id.
+func (c *ActivityClient) GetNotDeleted(ctx context.Context, id uint64) (*Activity, error) {
+	return c.Query().Where(activity.ID(id), activity.DeletedAtIsNil()).Only(ctx)
 }
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
-func (c *AdvertClient) GetNotDeletedX(ctx context.Context, id uint64) *Advert {
+func (c *ActivityClient) GetNotDeletedX(ctx context.Context, id uint64) *Activity {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)

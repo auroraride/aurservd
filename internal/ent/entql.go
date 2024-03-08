@@ -3,7 +3,7 @@
 package ent
 
 import (
-	"github.com/auroraride/aurservd/internal/ent/advert"
+	"github.com/auroraride/aurservd/internal/ent/activity"
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
@@ -89,25 +89,25 @@ var schemaGraph = func() *sqlgraph.Schema {
 	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 73)}
 	graph.Nodes[0] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
-			Table:   advert.Table,
-			Columns: advert.Columns,
+			Table:   activity.Table,
+			Columns: activity.Columns,
 			ID: &sqlgraph.FieldSpec{
 				Type:   field.TypeUint64,
-				Column: advert.FieldID,
+				Column: activity.FieldID,
 			},
 		},
-		Type: "Advert",
+		Type: "Activity",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			advert.FieldCreatedAt:    {Type: field.TypeTime, Column: advert.FieldCreatedAt},
-			advert.FieldUpdatedAt:    {Type: field.TypeTime, Column: advert.FieldUpdatedAt},
-			advert.FieldDeletedAt:    {Type: field.TypeTime, Column: advert.FieldDeletedAt},
-			advert.FieldCreator:      {Type: field.TypeJSON, Column: advert.FieldCreator},
-			advert.FieldLastModifier: {Type: field.TypeJSON, Column: advert.FieldLastModifier},
-			advert.FieldRemark:       {Type: field.TypeString, Column: advert.FieldRemark},
-			advert.FieldName:         {Type: field.TypeString, Column: advert.FieldName},
-			advert.FieldImage:        {Type: field.TypeString, Column: advert.FieldImage},
-			advert.FieldLink:         {Type: field.TypeString, Column: advert.FieldLink},
-			advert.FieldSort:         {Type: field.TypeInt, Column: advert.FieldSort},
+			activity.FieldCreatedAt:    {Type: field.TypeTime, Column: activity.FieldCreatedAt},
+			activity.FieldUpdatedAt:    {Type: field.TypeTime, Column: activity.FieldUpdatedAt},
+			activity.FieldDeletedAt:    {Type: field.TypeTime, Column: activity.FieldDeletedAt},
+			activity.FieldCreator:      {Type: field.TypeJSON, Column: activity.FieldCreator},
+			activity.FieldLastModifier: {Type: field.TypeJSON, Column: activity.FieldLastModifier},
+			activity.FieldRemark:       {Type: field.TypeString, Column: activity.FieldRemark},
+			activity.FieldName:         {Type: field.TypeString, Column: activity.FieldName},
+			activity.FieldImage:        {Type: field.TypeString, Column: activity.FieldImage},
+			activity.FieldLink:         {Type: field.TypeString, Column: activity.FieldLink},
+			activity.FieldSort:         {Type: field.TypeInt, Column: activity.FieldSort},
 		},
 	}
 	graph.Nodes[1] = &sqlgraph.Node{
@@ -5664,33 +5664,33 @@ type predicateAdder interface {
 }
 
 // addPredicate implements the predicateAdder interface.
-func (aq *AdvertQuery) addPredicate(pred func(s *sql.Selector)) {
+func (aq *ActivityQuery) addPredicate(pred func(s *sql.Selector)) {
 	aq.predicates = append(aq.predicates, pred)
 }
 
-// Filter returns a Filter implementation to apply filters on the AdvertQuery builder.
-func (aq *AdvertQuery) Filter() *AdvertFilter {
-	return &AdvertFilter{config: aq.config, predicateAdder: aq}
+// Filter returns a Filter implementation to apply filters on the ActivityQuery builder.
+func (aq *ActivityQuery) Filter() *ActivityFilter {
+	return &ActivityFilter{config: aq.config, predicateAdder: aq}
 }
 
 // addPredicate implements the predicateAdder interface.
-func (m *AdvertMutation) addPredicate(pred func(s *sql.Selector)) {
+func (m *ActivityMutation) addPredicate(pred func(s *sql.Selector)) {
 	m.predicates = append(m.predicates, pred)
 }
 
-// Filter returns an entql.Where implementation to apply filters on the AdvertMutation builder.
-func (m *AdvertMutation) Filter() *AdvertFilter {
-	return &AdvertFilter{config: m.config, predicateAdder: m}
+// Filter returns an entql.Where implementation to apply filters on the ActivityMutation builder.
+func (m *ActivityMutation) Filter() *ActivityFilter {
+	return &ActivityFilter{config: m.config, predicateAdder: m}
 }
 
-// AdvertFilter provides a generic filtering capability at runtime for AdvertQuery.
-type AdvertFilter struct {
+// ActivityFilter provides a generic filtering capability at runtime for ActivityQuery.
+type ActivityFilter struct {
 	predicateAdder
 	config
 }
 
 // Where applies the entql predicate on the query filter.
-func (f *AdvertFilter) Where(p entql.P) {
+func (f *ActivityFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
 		if err := schemaGraph.EvalP(schemaGraph.Nodes[0].Type, p, s); err != nil {
 			s.AddError(err)
@@ -5699,58 +5699,58 @@ func (f *AdvertFilter) Where(p entql.P) {
 }
 
 // WhereID applies the entql uint64 predicate on the id field.
-func (f *AdvertFilter) WhereID(p entql.Uint64P) {
-	f.Where(p.Field(advert.FieldID))
+func (f *ActivityFilter) WhereID(p entql.Uint64P) {
+	f.Where(p.Field(activity.FieldID))
 }
 
 // WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *AdvertFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(advert.FieldCreatedAt))
+func (f *ActivityFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(activity.FieldCreatedAt))
 }
 
 // WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
-func (f *AdvertFilter) WhereUpdatedAt(p entql.TimeP) {
-	f.Where(p.Field(advert.FieldUpdatedAt))
+func (f *ActivityFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(activity.FieldUpdatedAt))
 }
 
 // WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
-func (f *AdvertFilter) WhereDeletedAt(p entql.TimeP) {
-	f.Where(p.Field(advert.FieldDeletedAt))
+func (f *ActivityFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(activity.FieldDeletedAt))
 }
 
 // WhereCreator applies the entql json.RawMessage predicate on the creator field.
-func (f *AdvertFilter) WhereCreator(p entql.BytesP) {
-	f.Where(p.Field(advert.FieldCreator))
+func (f *ActivityFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(activity.FieldCreator))
 }
 
 // WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
-func (f *AdvertFilter) WhereLastModifier(p entql.BytesP) {
-	f.Where(p.Field(advert.FieldLastModifier))
+func (f *ActivityFilter) WhereLastModifier(p entql.BytesP) {
+	f.Where(p.Field(activity.FieldLastModifier))
 }
 
 // WhereRemark applies the entql string predicate on the remark field.
-func (f *AdvertFilter) WhereRemark(p entql.StringP) {
-	f.Where(p.Field(advert.FieldRemark))
+func (f *ActivityFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(activity.FieldRemark))
 }
 
 // WhereName applies the entql string predicate on the name field.
-func (f *AdvertFilter) WhereName(p entql.StringP) {
-	f.Where(p.Field(advert.FieldName))
+func (f *ActivityFilter) WhereName(p entql.StringP) {
+	f.Where(p.Field(activity.FieldName))
 }
 
 // WhereImage applies the entql string predicate on the image field.
-func (f *AdvertFilter) WhereImage(p entql.StringP) {
-	f.Where(p.Field(advert.FieldImage))
+func (f *ActivityFilter) WhereImage(p entql.StringP) {
+	f.Where(p.Field(activity.FieldImage))
 }
 
 // WhereLink applies the entql string predicate on the link field.
-func (f *AdvertFilter) WhereLink(p entql.StringP) {
-	f.Where(p.Field(advert.FieldLink))
+func (f *ActivityFilter) WhereLink(p entql.StringP) {
+	f.Where(p.Field(activity.FieldLink))
 }
 
 // WhereSort applies the entql int predicate on the sort field.
-func (f *AdvertFilter) WhereSort(p entql.IntP) {
-	f.Where(p.Field(advert.FieldSort))
+func (f *ActivityFilter) WhereSort(p entql.IntP) {
+	f.Where(p.Field(activity.FieldSort))
 }
 
 // addPredicate implements the predicateAdder interface.
