@@ -16,6 +16,27 @@ definitions:
     - CabinetBrandYundong
     - CabinetBrandTuobang
     - CabinetBrandXiliulouServer
+  definition.ActivityDetail:
+    properties:
+      id:
+        description: ID
+        type: integer
+      image:
+        description: 图片
+        type: string
+      link:
+        description: 连接
+        type: string
+      name:
+        description: 名称
+        type: string
+      remark:
+        description: 备注
+        type: string
+      sort:
+        description: 排序
+        type: integer
+    type: object
   definition.CabinetByRiderRes:
     properties:
       address:
@@ -1837,6 +1858,27 @@ info:
   title: 极光出行API - 骑手端api
   version: "2.0"
 paths:
+  /rider/v2/activity:
+    get:
+      consumes:
+      - application/json
+      operationId: ActivityList
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/definition.ActivityDetail'
+      summary: 活动列表
+      tags:
+      - Activity - 活动
   /rider/v2/assistance:
     get:
       consumes:

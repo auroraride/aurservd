@@ -15,6 +15,38 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/rider/v2/activity": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Activity - 活动"
+                ],
+                "summary": "活动列表",
+                "operationId": "ActivityList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/definition.ActivityDetail"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v2/assistance": {
             "get": {
                 "consumes": [
@@ -2763,6 +2795,35 @@ const docTemplate = `{
                 "CabinetBrandTuobang",
                 "CabinetBrandXiliulouServer"
             ]
+        },
+        "definition.ActivityDetail": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "ID",
+                    "type": "integer"
+                },
+                "image": {
+                    "description": "图片",
+                    "type": "string"
+                },
+                "link": {
+                    "description": "连接",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "名称",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "sort": {
+                    "description": "排序",
+                    "type": "integer"
+                }
+            }
         },
         "definition.CabinetByRiderRes": {
             "type": "object",

@@ -7,6 +7,7 @@ import (
 
 	"github.com/auroraride/adapter"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/activity"
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/allocate"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
@@ -85,6 +86,27 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	activityMixin := schema.Activity{}.Mixin()
+	activityMixinHooks2 := activityMixin[2].Hooks()
+	activity.Hooks[0] = activityMixinHooks2[0]
+	activityMixinFields0 := activityMixin[0].Fields()
+	_ = activityMixinFields0
+	activityFields := schema.Activity{}.Fields()
+	_ = activityFields
+	// activityDescCreatedAt is the schema descriptor for created_at field.
+	activityDescCreatedAt := activityMixinFields0[0].Descriptor()
+	// activity.DefaultCreatedAt holds the default value on creation for the created_at field.
+	activity.DefaultCreatedAt = activityDescCreatedAt.Default.(func() time.Time)
+	// activityDescUpdatedAt is the schema descriptor for updated_at field.
+	activityDescUpdatedAt := activityMixinFields0[1].Descriptor()
+	// activity.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	activity.DefaultUpdatedAt = activityDescUpdatedAt.Default.(func() time.Time)
+	// activity.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	activity.UpdateDefaultUpdatedAt = activityDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// activityDescSort is the schema descriptor for sort field.
+	activityDescSort := activityFields[3].Descriptor()
+	// activity.DefaultSort holds the default value on creation for the sort field.
+	activity.DefaultSort = activityDescSort.Default.(int)
 	agentMixin := schema.Agent{}.Mixin()
 	agentMixinHooks2 := agentMixin[2].Hooks()
 	agent.Hooks[0] = agentMixinHooks2[0]
@@ -845,6 +867,10 @@ func init() {
 	feedbackDescType := feedbackFields[1].Descriptor()
 	// feedback.DefaultType holds the default value on creation for the type field.
 	feedback.DefaultType = feedbackDescType.Default.(uint8)
+	// feedbackDescSource is the schema descriptor for source field.
+	feedbackDescSource := feedbackFields[2].Descriptor()
+	// feedback.DefaultSource holds the default value on creation for the source field.
+	feedback.DefaultSource = feedbackDescSource.Default.(uint8)
 	guideMixin := schema.Guide{}.Mixin()
 	guideMixinHooks2 := guideMixin[2].Hooks()
 	guide.Hooks[0] = guideMixinHooks2[0]
@@ -866,10 +892,6 @@ func init() {
 	guideDescSort := guideFields[1].Descriptor()
 	// guide.DefaultSort holds the default value on creation for the sort field.
 	guide.DefaultSort = guideDescSort.Default.(uint8)
-	// feedbackDescSource is the schema descriptor for source field.
-	feedbackDescSource := feedbackFields[2].Descriptor()
-	// feedback.DefaultSource holds the default value on creation for the source field.
-	feedback.DefaultSource = feedbackDescSource.Default.(uint8)
 	inventoryMixin := schema.Inventory{}.Mixin()
 	inventoryMixinHooks2 := inventoryMixin[2].Hooks()
 	inventory.Hooks[0] = inventoryMixinHooks2[0]

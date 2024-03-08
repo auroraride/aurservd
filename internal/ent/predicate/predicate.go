@@ -6,6 +6,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// Activity is the predicate function for activity builders.
+type Activity func(*sql.Selector)
+
 // Agent is the predicate function for agent builders.
 type Agent func(*sql.Selector)
 

@@ -6,6 +6,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/auroraride/aurservd/internal/ent/activity"
 	"github.com/auroraride/aurservd/internal/ent/agent"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/attendance"
@@ -54,6 +55,46 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
 )
+
+// SoftDelete returns an soft delete builder for Activity.
+func (c *ActivityClient) SoftDelete() *ActivityUpdate {
+	mutation := newActivityMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &ActivityUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *ActivityClient) SoftDeleteOne(a *Activity) *ActivityUpdateOne {
+	mutation := newActivityMutation(c.config, OpUpdateOne, withActivity(a))
+	mutation.SetDeletedAt(time.Now())
+	return &ActivityUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *ActivityClient) SoftDeleteOneID(id uint64) *ActivityUpdateOne {
+	mutation := newActivityMutation(c.config, OpUpdateOne, withActivityID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &ActivityUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for Activity.
+func (c *ActivityClient) QueryNotDeleted() *ActivityQuery {
+	return c.Query().Where(activity.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a Activity not deleted entity by its id.
+func (c *ActivityClient) GetNotDeleted(ctx context.Context, id uint64) (*Activity, error) {
+	return c.Query().Where(activity.ID(id), activity.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *ActivityClient) GetNotDeletedX(ctx context.Context, id uint64) *Activity {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
 
 // SoftDelete returns an soft delete builder for Agent.
 func (c *AgentClient) SoftDelete() *AgentUpdate {

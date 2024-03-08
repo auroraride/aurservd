@@ -132,7 +132,7 @@ func (*setting) GuideSave(c echo.Context) (err error) {
 // @ID		SettingGuideDelete
 // @Router	/manager/v1/setting/guide/{id} [DELETE]
 // @Summary	M1021 删除引导
-// @Tags	[M]管理接口
+// @Tags	Setting - 管理接口
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -148,7 +148,7 @@ func (*setting) GuideDelete(c echo.Context) (err error) {
 // @ID		SettingGuideModify
 // @Router	/manager/v1/setting/guide [PUT]
 // @Summary	M1022 修改引导
-// @Tags	[M]管理接口
+// @Tags	Setting - 管理接口
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string						true	"管理员校验token"
@@ -157,5 +157,83 @@ func (*setting) GuideDelete(c echo.Context) (err error) {
 func (*setting) GuideModify(c echo.Context) (err error) {
 	ctx, req := app.ManagerContextAndBinding[definition.GuideModifyReq](c)
 	biz.NewGuide().Modify(req)
+	return ctx.SendResponse()
+}
+
+// ActivityList
+// @ID		SettingActivityList
+// @Router	/manager/v1/setting/activity [GET]
+// @Summary	获取活动列表
+// @Tags	Setting - 管理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string						true	"管理员校验token"
+// @Param	body			body		definition.ActivityListReq	true	"请求参数"
+// @Success	200				{object}	model.StatusResponse		"请求成功"
+func (*setting) ActivityList(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[definition.ActivityListReq](c)
+	return ctx.SendResponse(biz.NewActivity().List(req))
+}
+
+// ActivityGet
+// @ID		SettingActivityGet
+// @Router	/manager/v1/setting/activity/{id} [GET]
+// @Summary	获取指定活动
+// @Tags	Setting - 管理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string					true	"管理员校验token"
+// @Param	id				path		string					true	"活动ID"
+// @Success	200				{object}	model.StatusResponse	"请求成功"
+func (*setting) ActivityGet(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
+	return ctx.SendResponse(biz.NewActivity().Get(req.ID))
+}
+
+// ActivityModify
+// @ID		SettingActivityModify
+// @Router	/manager/v1/setting/activity [PUT]
+// @Summary	修改活动
+// @Tags	Setting - 管理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string							true	"管理员校验token"
+// @Param	body			body		definition.ActivityModifyReq	true	"请求参数"
+// @Success	200				{object}	model.StatusResponse			"请求成功"
+func (*setting) ActivityModify(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[definition.ActivityModifyReq](c)
+	biz.NewActivity().Modify(req)
+	return ctx.SendResponse()
+}
+
+// ActivityDelete
+// @ID		SettingActivityDelete
+// @Router	/manager/v1/setting/activity/{id} [DELETE]
+// @Summary
+// @Tags	Setting - 管理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string					true	"管理员校验token"
+// @Param	id				path		string					true	"活动ID"
+// @Success	200				{object}	model.StatusResponse	"请求成功"
+func (*setting) ActivityDelete(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
+	biz.NewActivity().Delete(req.ID)
+	return ctx.SendResponse()
+}
+
+// ActivitySave
+// @ID		SettingActivitySave
+// @Router	/manager/v1/setting/activity [POST]
+// @Summary	保存活动
+// @Tags	Setting -  管理接口
+// @Accept	json
+// @Produce	json
+// @Param	X-Manager-Token	header		string						true	"管理员校验token"
+// @Param	body			body		definition.ActivitySaveReq	true	"请求参数"
+// @Success	200				{object}	model.StatusResponse		"请求成功"
+func (*setting) ActivitySave(c echo.Context) (err error) {
+	ctx, req := app.ManagerContextAndBinding[definition.ActivitySaveReq](c)
+	biz.NewActivity().Create(req)
 	return ctx.SendResponse()
 }
