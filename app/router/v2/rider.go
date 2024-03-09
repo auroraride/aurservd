@@ -159,9 +159,10 @@ func LoadRiderV2Routes(root *echo.Group) {
 	g.GET("/assistance/current", v1.Assistance.Current, auth())
 	g.GET("/assistance", v1.Assistance.List, auth())
 
-	// 设定
+	// 设置
 	g.GET("/setting/app", v1.Setting.App, auth())
 	g.GET("/setting/question", v1.Setting.Question, auth())
+	g.GET("/setting/version", rapi.Setting.LatestVersion) // App最新版本
 
 	// 预约
 	g.GET("/reserve", v1.Reserve.Unfinished, auth())
@@ -186,7 +187,4 @@ func LoadRiderV2Routes(root *echo.Group) {
 
 	// 骑手端意见反馈
 	g.POST("/feedback", rapi.Feedback.Create, auth())
-
-	// 版本
-	g.GET("/version", rapi.Version.Latest)
 }

@@ -2649,6 +2649,45 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v2/setting/version": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Setting - 设置"
+                ],
+                "summary": "获取最新版本",
+                "operationId": "SettingLatestVersion",
+                "parameters": [
+                    {
+                        "enum": [
+                            "android",
+                            "ios"
+                        ],
+                        "type": "string",
+                        "x-enum-varnames": [
+                            "AppPlatformAndroid",
+                            "AppPlatformIOS"
+                        ],
+                        "name": "appPlatform",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/definition.VersionRes"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v2/signin": {
             "post": {
                 "consumes": [
@@ -2678,45 +2717,6 @@ const docTemplate = `{
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.RiderSigninRes"
-                        }
-                    }
-                }
-            }
-        },
-        "/rider/v2/version": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Version - 版本"
-                ],
-                "summary": "获取最新版本",
-                "operationId": "VersionLatest",
-                "parameters": [
-                    {
-                        "enum": [
-                            "android",
-                            "ios"
-                        ],
-                        "type": "string",
-                        "x-enum-varnames": [
-                            "AppPlatformAndroid",
-                            "AppPlatformIOS"
-                        ],
-                        "name": "appPlatform",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/definition.VersionRes"
                         }
                     }
                 }

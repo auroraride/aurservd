@@ -3844,6 +3844,32 @@ paths:
       summary: 获取常见问题
       tags:
       - Setting - 设置
+  /rider/v2/setting/version:
+    get:
+      consumes:
+      - application/json
+      operationId: SettingLatestVersion
+      parameters:
+      - enum:
+        - android
+        - ios
+        in: query
+        name: appPlatform
+        required: true
+        type: string
+        x-enum-varnames:
+        - AppPlatformAndroid
+        - AppPlatformIOS
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/definition.VersionRes'
+      summary: 获取最新版本
+      tags:
+      - Setting - 设置
   /rider/v2/signin:
     post:
       consumes:
@@ -3866,32 +3892,6 @@ paths:
       summary: 登录或注册
       tags:
       - Rider - 骑手
-  /rider/v2/version:
-    get:
-      consumes:
-      - application/json
-      operationId: VersionLatest
-      parameters:
-      - enum:
-        - android
-        - ios
-        in: query
-        name: appPlatform
-        required: true
-        type: string
-        x-enum-varnames:
-        - AppPlatformAndroid
-        - AppPlatformIOS
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/definition.VersionRes'
-      summary: 获取最新版本
-      tags:
-      - Version - 版本
   /rider/v2/wallet/coupons:
     get:
       consumes:

@@ -649,8 +649,6 @@ func (*Rider) Deposit() {}
 // @Success	200				{object}	model.StatusResponse	"请求成功"
 func (*Rider) Deregister() {}
 
-type Setting struct{}
-
 // App
 // @ID		SettingApp
 // @Router	/rider/v2/setting/app [GET]
@@ -660,7 +658,7 @@ type Setting struct{}
 // @Produce	json
 // @Param	X-Rider-Token	header		string					true	"骑手校验token"
 // @Success	200				{object}	model.SettingRiderApp	"请求成功"
-func (*Setting) App() {}
+func (*setting) App() {}
 
 // Question
 // @ID		SettingQuestion
@@ -671,7 +669,7 @@ func (*Setting) App() {}
 // @Produce	json
 // @Param	X-Rider-Token	header		string					true	"骑手校验token"
 // @Success	200				{object}	[]model.SettingQuestion	"请求成功"
-func (*Setting) Question() {}
+func (*setting) Question() {}
 
 type Wallet struct{}
 
