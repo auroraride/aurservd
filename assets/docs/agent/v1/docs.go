@@ -3313,7 +3313,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "brand": {
-                    "description": "品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
+                    "description": "品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)",
                     "enum": [
                         "KAIXIN",
                         "YUNDONG",

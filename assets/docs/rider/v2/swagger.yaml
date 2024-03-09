@@ -59,7 +59,7 @@ definitions:
       brand:
         allOf:
         - $ref: '#/definitions/adapter.CabinetBrand'
-        description: 品牌 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)
+        description: '品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)'
       businesses:
         description: 可办理业务  active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
         items:
@@ -708,11 +708,7 @@ definitions:
       brand:
         allOf:
         - $ref: '#/definitions/adapter.CabinetBrand'
-        description: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)
-        enum:
-        - KAIXIN
-        - YUNDONG
-        - TUOBANG
+        description: '品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)'
       city:
         allOf:
         - $ref: '#/definitions/model.City'

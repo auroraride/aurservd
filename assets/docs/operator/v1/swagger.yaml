@@ -79,7 +79,7 @@ definitions:
       brand:
         allOf:
         - $ref: '#/definitions/adapter.CabinetBrand'
-        description: '品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)'
+        description: '品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)'
         enum:
         - KAIXIN
         - YUNDONG
@@ -185,11 +185,7 @@ definitions:
       brand:
         allOf:
         - $ref: '#/definitions/adapter.CabinetBrand'
-        description: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)
-        enum:
-        - KAIXIN
-        - YUNDONG
-        - TUOBANG
+        description: '品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)'
       city:
         allOf:
         - $ref: '#/definitions/model.City'

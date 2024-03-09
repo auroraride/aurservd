@@ -2964,7 +2964,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "brand": {
-                    "description": "品牌 KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦)",
+                    "description": "品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)",
                     "allOf": [
                         {
                             "$ref": "#/definitions/adapter.CabinetBrand"
@@ -3905,12 +3905,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "brand": {
-                    "description": "KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)",
-                    "enum": [
-                        "KAIXIN",
-                        "YUNDONG",
-                        "TUOBANG"
-                    ],
+                    "description": "品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)",
                     "allOf": [
                         {
                             "$ref": "#/definitions/adapter.CabinetBrand"
