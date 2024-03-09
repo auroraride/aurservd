@@ -2175,7 +2175,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/rider/v2/order/depositfree": {
+        "/rider/v2/order/deposit/credit": {
             "post": {
                 "consumes": [
                     "application/json"
@@ -2202,7 +2202,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/definition.OrderDepositFreeReq"
+                            "$ref": "#/definitions/definition.OrderDepositCreditReq"
                         }
                     }
                 ],
@@ -2210,7 +2210,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/definition.OrderDepositFreeRes"
+                            "$ref": "#/definitions/definition.OrderDepositCreditRes"
                         }
                     }
                 }
@@ -2694,7 +2694,11 @@ const docTemplate = `{
                             "ios"
                         ],
                         "type": "string",
-                        "name": "platform",
+                        "x-enum-varnames": [
+                            "AppPlatformAndroid",
+                            "AppPlatformIOS"
+                        ],
+                        "name": "appPlatform",
                         "in": "query",
                         "required": true
                     }
@@ -3046,7 +3050,7 @@ const docTemplate = `{
                 }
             }
         },
-        "definition.OrderDepositFreeReq": {
+        "definition.OrderDepositCreditReq": {
             "type": "object",
             "required": [
                 "payway",
@@ -3072,7 +3076,7 @@ const docTemplate = `{
                 }
             }
         },
-        "definition.OrderDepositFreeRes": {
+        "definition.OrderDepositCreditRes": {
             "type": "object",
             "properties": {
                 "prepay": {
@@ -3246,6 +3250,17 @@ const docTemplate = `{
                     "type": "boolean"
                 }
             }
+        },
+        "model.AppPlatform": {
+            "type": "string",
+            "enum": [
+                "android",
+                "ios"
+            ],
+            "x-enum-varnames": [
+                "AppPlatformAndroid",
+                "AppPlatformIOS"
+            ]
         },
         "model.AssistanceCancelReq": {
             "type": "object",

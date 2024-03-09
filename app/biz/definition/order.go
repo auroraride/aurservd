@@ -2,6 +2,7 @@ package definition
 
 type Payway uint8
 
+// TODO: 禁止重复定义，统一使用 model.OrderPaywayWechatDeposit / model.OrderPaywayAlipayDeposit
 const (
 	PaywayAlipayDeposit Payway = iota + 1 // 支付宝芝麻免押
 	PaywayWechatDeposit                   // 微信支付分支付
@@ -12,13 +13,13 @@ func (p Payway) Value() uint8 {
 	return uint8(p)
 }
 
-// OrderDepositFreeReq  免押金支付请求
-type OrderDepositFreeReq struct {
+// OrderDepositCreditReq  信用免押请求
+type OrderDepositCreditReq struct {
 	PlanID uint64 `json:"planId" validate:"required"  trans:"套餐ID"`              // 套餐ID
 	Payway Payway `json:"payway" validate:"required" trans:"支付方式" enums:"1,2,3"` //   1支付宝 2微信 3支付宝预授权
 }
 
-type OrderDepositFreeRes struct {
+type OrderDepositCreditRes struct {
 	Prepay string `json:"prepay"` //  预支付信息
 }
 

@@ -121,24 +121,24 @@ definitions:
       sort:
         type: integer
     type: object
-  definition.OrderDepositFreeReq:
+  definition.OrderDepositCreditReq:
     properties:
       payway:
         allOf:
-          - $ref: '#/definitions/definition.Payway'
+        - $ref: '#/definitions/definition.Payway'
         description: 1支付宝 2微信 3支付宝预授权
         enum:
-          - 1
-          - 2
-          - 3
+        - 1
+        - 2
+        - 3
       planId:
         description: 套餐ID
         type: integer
     required:
-      - payway
-      - planId
+    - payway
+    - planId
     type: object
-  definition.OrderDepositFreeRes:
+  definition.OrderDepositCreditRes:
     properties:
       prepay:
         description: 预支付信息
@@ -146,18 +146,18 @@ definitions:
     type: object
   definition.Payway:
     enum:
-      - 1
-      - 2
-      - 3
+    - 1
+    - 2
+    - 3
     type: integer
     x-enum-comments:
       PaywayAlipay: 预支付
       PaywayAlipayDeposit: 支付宝芝麻免押
       PaywayWechatDeposit: 微信支付分支付
     x-enum-varnames:
-      - PaywayAlipayDeposit
-      - PaywayWechatDeposit
-      - PaywayAlipay
+    - PaywayAlipayDeposit
+    - PaywayWechatDeposit
+    - PaywayAlipay
   definition.PersonCertificationFaceReq:
     properties:
       identity:
@@ -261,6 +261,14 @@ definitions:
         description: 是否已分配
         type: boolean
     type: object
+  model.AppPlatform:
+    enum:
+    - android
+    - ios
+    type: string
+    x-enum-varnames:
+    - AppPlatformAndroid
+    - AppPlatformIOS
   model.AssistanceCancelReq:
     properties:
       desc:
@@ -699,15 +707,15 @@ definitions:
         type: integer
       brand:
         allOf:
-          - $ref: '#/definitions/adapter.CabinetBrand'
+        - $ref: '#/definitions/adapter.CabinetBrand'
         description: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)
         enum:
-          - KAIXIN
-          - YUNDONG
-          - TUOBANG
+        - KAIXIN
+        - YUNDONG
+        - TUOBANG
       city:
         allOf:
-          - $ref: '#/definitions/model.City'
+        - $ref: '#/definitions/model.City'
         description: 城市
       createdAt:
         description: 创建时间
@@ -769,12 +777,12 @@ definitions:
         type: string
       status:
         allOf:
-          - $ref: '#/definitions/model.CabinetStatus'
+        - $ref: '#/definitions/model.CabinetStatus'
         description: 电柜状态 0未投放 1运营中 2维护中
         enum:
-          - 0
-          - 1
-          - 2
+        - 0
+        - 1
+        - 2
       stockNum:
         description: 库存电池
         type: integer
@@ -782,9 +790,9 @@ definitions:
         description: 是否初始化过调拨
         type: boolean
     required:
-      - brand
-      - name
-      - serial
+    - brand
+    - name
+    - serial
     type: object
   model.CabinetFaultReportReq:
     properties:
@@ -807,18 +815,18 @@ definitions:
     type: object
   model.CabinetStatus:
     enum:
-      - 0
-      - 1
-      - 2
+    - 0
+    - 1
+    - 2
     type: integer
     x-enum-comments:
       CabinetStatusMaintenance: 维护中
       CabinetStatusNormal: 运营中
       CabinetStatusPending: 未投放
     x-enum-varnames:
-      - CabinetStatusPending
-      - CabinetStatusNormal
-      - CabinetStatusMaintenance
+    - CabinetStatusPending
+    - CabinetStatusNormal
+    - CabinetStatusMaintenance
   model.City:
     properties:
       id:
@@ -1550,10 +1558,10 @@ definitions:
       business:
         description: 业务 active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
         enum:
-          - active
-          - pause
-          - continue
-          - unsubscribe
+        - active
+        - pause
+        - continue
+        - unsubscribe
         type: string
       name:
         description: 姓名
@@ -2715,10 +2723,10 @@ paths:
   /rider/v2/cabinet/{serial}:
     get:
       consumes:
-        - application/json
+      - application/json
       operationId: CabinetDetail
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
@@ -2726,7 +2734,7 @@ paths:
             $ref: '#/definitions/model.CabinetDetailRes'
       summary: 电柜详情
       tags:
-        - Cabinet - 电柜
+      - Cabinet - 电柜
   /rider/v2/cabinet/fault:
     get:
       consumes:
@@ -3552,31 +3560,31 @@ paths:
             $ref: '#/definitions/model.Order'
       summary: 订单详情
       tags:
-        - Order - 订单
-  /rider/v2/order/depositfree:
+      - Order - 订单
+  /rider/v2/order/deposit/credit:
     post:
       consumes:
-        - application/json
+      - application/json
       operationId: OrderDepositFree
       parameters:
-        - description: 骑手校验token
-          in: header
-          name: X-Rider-Token
-          required: true
-          type: string
-        - description: 免押金支付请求
-          in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/definition.OrderDepositFreeReq'
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 免押金支付请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/definition.OrderDepositCreditReq'
       produces:
-        - application/json
+      - application/json
       responses:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/definition.OrderDepositFreeRes'
+            $ref: '#/definitions/definition.OrderDepositCreditRes'
       summary: 免押金支付
       tags:
       - Order - 订单
@@ -3866,9 +3874,12 @@ paths:
         - android
         - ios
         in: query
-        name: platform
+        name: appPlatform
         required: true
         type: string
+        x-enum-varnames:
+        - AppPlatformAndroid
+        - AppPlatformIOS
       produces:
       - application/json
       responses:

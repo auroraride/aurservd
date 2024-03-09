@@ -106,17 +106,11 @@ func LoadRiderV2Routes(root *echo.Group) {
 	g.GET("/branch/riding", v1.Branch.Riding, auth())
 	g.GET("/branch/facility/:fid", v1.Branch.Facility, auth())
 
-	// 业务
+	// 骑士卡
 	g.GET("/plan", v1.Plan.List, auth())
 	g.GET("/plan/renewly", v1.Plan.Renewly, auth())
-	g.POST("/order", rapi.Order.Create, auth())
-	g.POST("/order/refund", v1.Order.Refund, auth()) // 申请退款
-	g.GET("/order", v1.Order.List, auth())
-	g.GET("/order/:id", v1.Order.Detail, auth())
-	g.GET("/enterprise/battery", v1.Enterprise.Battery, auth())
-	g.POST("/enterprise/subscribe", v1.Enterprise.Subscribe, auth())
-	g.GET("/enterprise/subscribe", v1.Enterprise.SubscribeStatus, auth())
-	g.GET("/order/status", v1.Order.Status, auth())
+
+	// 业务
 	g.POST("/business/active", v1.Business.Active, auth())
 	g.POST("/business/unsubscribe", v1.Business.Unsubscribe, auth())
 	g.POST("/business/pause", v1.Business.Pause, auth())
@@ -126,7 +120,18 @@ func LoadRiderV2Routes(root *echo.Group) {
 	g.GET("/business/allocated/:id", v1.Business.Allocated, auth())
 	g.GET("/business/subscribe/signed/:id", v1.Business.SubscribeSigned, auth())
 
+	// 订单
+	g.POST("/order", rapi.Order.Create, auth())
+	g.POST("/order/refund", v1.Order.Refund, auth()) // 申请退款
+	g.GET("/order", v1.Order.List, auth())
+	g.GET("/order/:id", v1.Order.Detail, auth())
+	g.GET("/order/status", v1.Order.Status, auth())
+	g.POST("/deposit/credit", rapi.Order.DepositCredit, auth()) // 押金
+
 	// 代理、团签
+	g.GET("/enterprise/battery", v1.Enterprise.Battery, auth())
+	g.POST("/enterprise/subscribe", v1.Enterprise.Subscribe, auth())
+	g.GET("/enterprise/subscribe", v1.Enterprise.SubscribeStatus, auth())
 	g.POST("/enterprise/join", v1.Enterprise.JoinEnterprise, auth())                    // 加入团签
 	g.GET("/enterprise/info", v1.Enterprise.RiderEnterpriseInfo, auth())                // 小程序加入团签信息
 	g.POST("/enterprise/exit", v1.Enterprise.ExitEnterprise, auth())                    // 退出团签
@@ -172,9 +177,6 @@ func LoadRiderV2Routes(root *echo.Group) {
 	// 电池
 	g.GET("/battery", v1.Battery.Detail, auth())
 	g.GET("/selection/model", rapi.Selection.Model) // 电池型号选择
-
-	// 押金
-	g.POST("/deposit/free", rapi.Order.DepositFree, auth())
 
 	// 新手引导
 	g.GET("/guide", rapi.Guide.List, auth())

@@ -30,9 +30,9 @@ func NewOrderBiz() *orderBiz {
 	}
 }
 
-// DepositFree 押金免支付订单
-func (s *orderBiz) DepositFree(r *ent.Rider, req *definition.OrderDepositFreeReq) (result *definition.OrderDepositFreeRes, err error) {
-	result = &definition.OrderDepositFreeRes{}
+// DepositCredit 押金免支付订单
+func (s *orderBiz) DepositCredit(r *ent.Rider, req *definition.OrderDepositCreditReq) (result *definition.OrderDepositCreditRes, err error) {
+	result = &definition.OrderDepositCreditRes{}
 
 	no := tools.NewUnique().NewSN28()
 	// 查询套餐是否存在
