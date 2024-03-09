@@ -26,7 +26,7 @@ type CabinetByRiderRes struct {
 	Businesses []string                    `json:"businesses,omitempty"` // 可办理业务  active:激活, pause:寄存, continue:取消寄存, unsubscribe:退租
 }
 
-// CabinetDetailRes 电柜详情请求参数
-type CabinetDetailRes struct {
-	Serial string `json:"serial" param:"serial"` // 电柜序列号
+// CabinetDetailReq 电柜详情请求参数
+type CabinetDetailReq struct {
+	Serial string `json:"serial" param:"serial" validate:"required"` // 电柜编号
 }

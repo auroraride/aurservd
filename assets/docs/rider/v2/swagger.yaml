@@ -2725,6 +2725,12 @@ paths:
       consumes:
       - application/json
       operationId: CabinetDetail
+      parameters:
+      - description: 电柜详情请求参数
+        in: path
+        name: serial
+        required: true
+        type: string
       produces:
       - application/json
       responses:

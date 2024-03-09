@@ -33,9 +33,9 @@ func (*cabinet) List(c echo.Context) (err error) {
 // @Tags	Cabinet - 电柜
 // @Accept	json
 // @Produce	json
-// @Param	query	query		definition.CabinetDetailRes	true	"电柜详情请求参数"
-// @Success	200		{object}	model.CabinetDetailRes		"请求成功"
+// @Param	serial	path		string					true	"电柜详情请求参数"
+// @Success	200		{object}	model.CabinetDetailRes	"请求成功"
 func (*cabinet) Detail(c echo.Context) (err error) {
-	ctx, req := app.RiderContextAndBinding[definition.CabinetDetailRes](c)
+	ctx, req := app.RiderContextAndBinding[definition.CabinetDetailReq](c)
 	return ctx.SendResponse(biz.NewCabinet().DetailBySerial(req.Serial))
 }

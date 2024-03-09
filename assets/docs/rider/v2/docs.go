@@ -1132,6 +1132,15 @@ const docTemplate = `{
                 ],
                 "summary": "电柜详情",
                 "operationId": "CabinetDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "电柜详情请求参数",
+                        "name": "serial",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "请求成功",
