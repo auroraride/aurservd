@@ -59,6 +59,12 @@ const (
 	FieldNotes = "notes"
 	// FieldIntelligent holds the string denoting the intelligent field in the database.
 	FieldIntelligent = "intelligent"
+	// FieldDeposit holds the string denoting the deposit field in the database.
+	FieldDeposit = "deposit"
+	// FieldDepositAmount holds the string denoting the deposit_amount field in the database.
+	FieldDepositAmount = "deposit_amount"
+	// FieldDepositPayway holds the string denoting the deposit_payway field in the database.
+	FieldDepositPayway = "deposit_payway"
 	// EdgeBrand holds the string denoting the brand edge name in mutations.
 	EdgeBrand = "brand"
 	// EdgeCities holds the string denoting the cities edge name in mutations.
@@ -125,6 +131,9 @@ var Columns = []string{
 	FieldDiscountNewly,
 	FieldNotes,
 	FieldIntelligent,
+	FieldDeposit,
+	FieldDepositAmount,
+	FieldDepositPayway,
 }
 
 var (
@@ -162,6 +171,8 @@ var (
 	DefaultDiscountNewly float64
 	// DefaultIntelligent holds the default value on creation for the "intelligent" field.
 	DefaultIntelligent bool
+	// DefaultDeposit holds the default value on creation for the "deposit" field.
+	DefaultDeposit bool
 )
 
 // OrderOption defines the ordering options for the Plan queries.
@@ -265,6 +276,16 @@ func ByDiscountNewly(opts ...sql.OrderTermOption) OrderOption {
 // ByIntelligent orders the results by the intelligent field.
 func ByIntelligent(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIntelligent, opts...).ToFunc()
+}
+
+// ByDeposit orders the results by the deposit field.
+func ByDeposit(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDeposit, opts...).ToFunc()
+}
+
+// ByDepositAmount orders the results by the deposit_amount field.
+func ByDepositAmount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDepositAmount, opts...).ToFunc()
 }
 
 // ByBrandField orders the results by brand field.

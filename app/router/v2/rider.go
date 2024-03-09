@@ -22,10 +22,11 @@ import (
 func LoadRiderV2Routes(root *echo.Group) {
 	g := root.Group("rider/v2")
 
-	// rawDump := app.NewDumpLoggerMiddleware().WithConfig(&app.DumpConfig{
-	// 	RequestHeader:  true,
-	// 	ResponseHeader: true,
-	// })
+	rawDump := app.NewDumpLoggerMiddleware().WithConfig(&app.DumpConfig{
+		RequestHeader:  true,
+		ResponseHeader: true,
+	})
+	g.Any("/callback/fand/auth/freeze", rapi.Callback.AlipayFandAuthFreeze, rawDump) //  骑手支付宝资金授权冻结回调中心
 
 	// 记录请求日志
 	dumpSkipPaths := map[string]bool{}
@@ -171,6 +172,9 @@ func LoadRiderV2Routes(root *echo.Group) {
 	// 电池
 	g.GET("/battery", v1.Battery.Detail, auth())
 	g.GET("/selection/model", rapi.Selection.Model) // 电池型号选择
+
+	// 押金
+	g.POST("/deposit/free", rapi.Order.DepositFree, auth())
 
 	// 新手引导
 	g.GET("/guide", rapi.Guide.List, auth())

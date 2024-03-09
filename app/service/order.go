@@ -168,8 +168,15 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
 		snag.Panic("未知的支付请求")
 	}
 
-	// 判定用户是否需要缴纳押金
-	deposit := NewRider().Deposit(s.rider.ID)
+	// 判定用户是否需要缴纳押金（没有使用过) 现在使用骑士卡的押金
+	// deposit := NewRider().Deposit(s.rider.ID)
+
+	var deposit float64
+	if p.Deposit && p.DepositAmount > 0 {
+		// 如果
+		deposit = p.DepositAmount
+	}
+
 	no := tools.NewUnique().NewSN28()
 	result.OutTradeNo = no
 

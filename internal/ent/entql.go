@@ -1270,6 +1270,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 			plan.FieldDiscountNewly: {Type: field.TypeFloat64, Column: plan.FieldDiscountNewly},
 			plan.FieldNotes:         {Type: field.TypeJSON, Column: plan.FieldNotes},
 			plan.FieldIntelligent:   {Type: field.TypeBool, Column: plan.FieldIntelligent},
+			plan.FieldDeposit:       {Type: field.TypeBool, Column: plan.FieldDeposit},
+			plan.FieldDepositAmount: {Type: field.TypeFloat64, Column: plan.FieldDepositAmount},
+			plan.FieldDepositPayway: {Type: field.TypeJSON, Column: plan.FieldDepositPayway},
 		},
 	}
 	graph.Nodes[42] = &sqlgraph.Node{
@@ -12977,6 +12980,21 @@ func (f *PlanFilter) WhereNotes(p entql.BytesP) {
 // WhereIntelligent applies the entql bool predicate on the intelligent field.
 func (f *PlanFilter) WhereIntelligent(p entql.BoolP) {
 	f.Where(p.Field(plan.FieldIntelligent))
+}
+
+// WhereDeposit applies the entql bool predicate on the deposit field.
+func (f *PlanFilter) WhereDeposit(p entql.BoolP) {
+	f.Where(p.Field(plan.FieldDeposit))
+}
+
+// WhereDepositAmount applies the entql float64 predicate on the deposit_amount field.
+func (f *PlanFilter) WhereDepositAmount(p entql.Float64P) {
+	f.Where(p.Field(plan.FieldDepositAmount))
+}
+
+// WhereDepositPayway applies the entql json.RawMessage predicate on the deposit_payway field.
+func (f *PlanFilter) WhereDepositPayway(p entql.BytesP) {
+	f.Where(p.Field(plan.FieldDepositPayway))
 }
 
 // WhereHasBrand applies a predicate to check if query has an edge brand.

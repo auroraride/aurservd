@@ -64,6 +64,12 @@ type Plan struct {
 	Notes []string `json:"notes,omitempty"`
 	// 是否智能柜套餐
 	Intelligent bool `json:"intelligent,omitempty"`
+	// 是否开启押金(只对V2版本接口有用)
+	Deposit bool `json:"deposit,omitempty"`
+	// 押金金额
+	DepositAmount float64 `json:"deposit_amount,omitempty"`
+	// 押金支付方式 1：芝麻信用免押金 2：微信支付分免押金 3：支付押金
+	DepositPayway []uint8 `json:"deposit_payway,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PlanQuery when eager-loading is set.
 	Edges        PlanEdges `json:"edges"`
@@ -145,11 +151,11 @@ func (*Plan) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case plan.FieldCreator, plan.FieldLastModifier, plan.FieldNotes:
+		case plan.FieldCreator, plan.FieldLastModifier, plan.FieldNotes, plan.FieldDepositPayway:
 			values[i] = new([]byte)
-		case plan.FieldEnable, plan.FieldIntelligent:
+		case plan.FieldEnable, plan.FieldIntelligent, plan.FieldDeposit:
 			values[i] = new(sql.NullBool)
-		case plan.FieldPrice, plan.FieldCommission, plan.FieldOriginal, plan.FieldDiscountNewly:
+		case plan.FieldPrice, plan.FieldCommission, plan.FieldOriginal, plan.FieldDiscountNewly, plan.FieldDepositAmount:
 			values[i] = new(sql.NullFloat64)
 		case plan.FieldID, plan.FieldBrandID, plan.FieldType, plan.FieldDays, plan.FieldParentID:
 			values[i] = new(sql.NullInt64)
@@ -319,6 +325,26 @@ func (pl *Plan) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pl.Intelligent = value.Bool
 			}
+		case plan.FieldDeposit:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field deposit", values[i])
+			} else if value.Valid {
+				pl.Deposit = value.Bool
+			}
+		case plan.FieldDepositAmount:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field deposit_amount", values[i])
+			} else if value.Valid {
+				pl.DepositAmount = value.Float64
+			}
+		case plan.FieldDepositPayway:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field deposit_payway", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &pl.DepositPayway); err != nil {
+					return fmt.Errorf("unmarshal field deposit_payway: %w", err)
+				}
+			}
 		default:
 			pl.selectValues.Set(columns[i], values[i])
 		}
@@ -451,6 +477,15 @@ func (pl *Plan) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("intelligent=")
 	builder.WriteString(fmt.Sprintf("%v", pl.Intelligent))
+	builder.WriteString(", ")
+	builder.WriteString("deposit=")
+	builder.WriteString(fmt.Sprintf("%v", pl.Deposit))
+	builder.WriteString(", ")
+	builder.WriteString("deposit_amount=")
+	builder.WriteString(fmt.Sprintf("%v", pl.DepositAmount))
+	builder.WriteString(", ")
+	builder.WriteString("deposit_payway=")
+	builder.WriteString(fmt.Sprintf("%v", pl.DepositPayway))
 	builder.WriteByte(')')
 	return builder.String()
 }

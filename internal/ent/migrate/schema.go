@@ -3308,6 +3308,9 @@ var (
 		{Name: "discount_newly", Type: field.TypeFloat64, Comment: "新签减免", Default: 0},
 		{Name: "notes", Type: field.TypeJSON, Nullable: true, Comment: "购买须知"},
 		{Name: "intelligent", Type: field.TypeBool, Comment: "是否智能柜套餐", Default: false},
+		{Name: "deposit", Type: field.TypeBool, Comment: "是否开启押金(只对V2版本接口有用)", Default: false},
+		{Name: "deposit_amount", Type: field.TypeFloat64, Nullable: true, Comment: "押金金额"},
+		{Name: "deposit_payway", Type: field.TypeJSON, Nullable: true, Comment: "押金支付方式 1：芝麻信用免押金 2：微信支付分免押金 3：支付押金"},
 		{Name: "brand_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "parent_id", Type: field.TypeUint64, Nullable: true, Comment: "父级"},
 	}
@@ -3319,13 +3322,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "plan_ebike_brand_brand",
-				Columns:    []*schema.Column{PlanColumns[21]},
+				Columns:    []*schema.Column{PlanColumns[24]},
 				RefColumns: []*schema.Column{EbikeBrandColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "plan_plan_complexes",
-				Columns:    []*schema.Column{PlanColumns[22]},
+				Columns:    []*schema.Column{PlanColumns[25]},
 				RefColumns: []*schema.Column{PlanColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -3344,7 +3347,7 @@ var (
 			{
 				Name:    "plan_brand_id",
 				Unique:  false,
-				Columns: []*schema.Column{PlanColumns[21]},
+				Columns: []*schema.Column{PlanColumns[24]},
 			},
 			{
 				Name:    "plan_type",

@@ -254,6 +254,40 @@ func (pc *PlanCreate) SetNillableIntelligent(b *bool) *PlanCreate {
 	return pc
 }
 
+// SetDeposit sets the "deposit" field.
+func (pc *PlanCreate) SetDeposit(b bool) *PlanCreate {
+	pc.mutation.SetDeposit(b)
+	return pc
+}
+
+// SetNillableDeposit sets the "deposit" field if the given value is not nil.
+func (pc *PlanCreate) SetNillableDeposit(b *bool) *PlanCreate {
+	if b != nil {
+		pc.SetDeposit(*b)
+	}
+	return pc
+}
+
+// SetDepositAmount sets the "deposit_amount" field.
+func (pc *PlanCreate) SetDepositAmount(f float64) *PlanCreate {
+	pc.mutation.SetDepositAmount(f)
+	return pc
+}
+
+// SetNillableDepositAmount sets the "deposit_amount" field if the given value is not nil.
+func (pc *PlanCreate) SetNillableDepositAmount(f *float64) *PlanCreate {
+	if f != nil {
+		pc.SetDepositAmount(*f)
+	}
+	return pc
+}
+
+// SetDepositPayway sets the "deposit_payway" field.
+func (pc *PlanCreate) SetDepositPayway(u []uint8) *PlanCreate {
+	pc.mutation.SetDepositPayway(u)
+	return pc
+}
+
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
 func (pc *PlanCreate) SetBrand(e *EbikeBrand) *PlanCreate {
 	return pc.SetBrandID(e.ID)
@@ -372,6 +406,10 @@ func (pc *PlanCreate) defaults() error {
 		v := plan.DefaultIntelligent
 		pc.mutation.SetIntelligent(v)
 	}
+	if _, ok := pc.mutation.Deposit(); !ok {
+		v := plan.DefaultDeposit
+		pc.mutation.SetDeposit(v)
+	}
 	return nil
 }
 
@@ -412,6 +450,9 @@ func (pc *PlanCreate) check() error {
 	}
 	if _, ok := pc.mutation.Intelligent(); !ok {
 		return &ValidationError{Name: "intelligent", err: errors.New(`ent: missing required field "Plan.intelligent"`)}
+	}
+	if _, ok := pc.mutation.Deposit(); !ok {
+		return &ValidationError{Name: "deposit", err: errors.New(`ent: missing required field "Plan.deposit"`)}
 	}
 	return nil
 }
@@ -519,6 +560,18 @@ func (pc *PlanCreate) createSpec() (*Plan, *sqlgraph.CreateSpec) {
 	if value, ok := pc.mutation.Intelligent(); ok {
 		_spec.SetField(plan.FieldIntelligent, field.TypeBool, value)
 		_node.Intelligent = value
+	}
+	if value, ok := pc.mutation.Deposit(); ok {
+		_spec.SetField(plan.FieldDeposit, field.TypeBool, value)
+		_node.Deposit = value
+	}
+	if value, ok := pc.mutation.DepositAmount(); ok {
+		_spec.SetField(plan.FieldDepositAmount, field.TypeFloat64, value)
+		_node.DepositAmount = value
+	}
+	if value, ok := pc.mutation.DepositPayway(); ok {
+		_spec.SetField(plan.FieldDepositPayway, field.TypeJSON, value)
+		_node.DepositPayway = value
 	}
 	if nodes := pc.mutation.BrandIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -984,6 +1037,60 @@ func (u *PlanUpsert) UpdateIntelligent() *PlanUpsert {
 	return u
 }
 
+// SetDeposit sets the "deposit" field.
+func (u *PlanUpsert) SetDeposit(v bool) *PlanUpsert {
+	u.Set(plan.FieldDeposit, v)
+	return u
+}
+
+// UpdateDeposit sets the "deposit" field to the value that was provided on create.
+func (u *PlanUpsert) UpdateDeposit() *PlanUpsert {
+	u.SetExcluded(plan.FieldDeposit)
+	return u
+}
+
+// SetDepositAmount sets the "deposit_amount" field.
+func (u *PlanUpsert) SetDepositAmount(v float64) *PlanUpsert {
+	u.Set(plan.FieldDepositAmount, v)
+	return u
+}
+
+// UpdateDepositAmount sets the "deposit_amount" field to the value that was provided on create.
+func (u *PlanUpsert) UpdateDepositAmount() *PlanUpsert {
+	u.SetExcluded(plan.FieldDepositAmount)
+	return u
+}
+
+// AddDepositAmount adds v to the "deposit_amount" field.
+func (u *PlanUpsert) AddDepositAmount(v float64) *PlanUpsert {
+	u.Add(plan.FieldDepositAmount, v)
+	return u
+}
+
+// ClearDepositAmount clears the value of the "deposit_amount" field.
+func (u *PlanUpsert) ClearDepositAmount() *PlanUpsert {
+	u.SetNull(plan.FieldDepositAmount)
+	return u
+}
+
+// SetDepositPayway sets the "deposit_payway" field.
+func (u *PlanUpsert) SetDepositPayway(v []uint8) *PlanUpsert {
+	u.Set(plan.FieldDepositPayway, v)
+	return u
+}
+
+// UpdateDepositPayway sets the "deposit_payway" field to the value that was provided on create.
+func (u *PlanUpsert) UpdateDepositPayway() *PlanUpsert {
+	u.SetExcluded(plan.FieldDepositPayway)
+	return u
+}
+
+// ClearDepositPayway clears the value of the "deposit_payway" field.
+func (u *PlanUpsert) ClearDepositPayway() *PlanUpsert {
+	u.SetNull(plan.FieldDepositPayway)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1414,6 +1521,69 @@ func (u *PlanUpsertOne) SetIntelligent(v bool) *PlanUpsertOne {
 func (u *PlanUpsertOne) UpdateIntelligent() *PlanUpsertOne {
 	return u.Update(func(s *PlanUpsert) {
 		s.UpdateIntelligent()
+	})
+}
+
+// SetDeposit sets the "deposit" field.
+func (u *PlanUpsertOne) SetDeposit(v bool) *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetDeposit(v)
+	})
+}
+
+// UpdateDeposit sets the "deposit" field to the value that was provided on create.
+func (u *PlanUpsertOne) UpdateDeposit() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateDeposit()
+	})
+}
+
+// SetDepositAmount sets the "deposit_amount" field.
+func (u *PlanUpsertOne) SetDepositAmount(v float64) *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetDepositAmount(v)
+	})
+}
+
+// AddDepositAmount adds v to the "deposit_amount" field.
+func (u *PlanUpsertOne) AddDepositAmount(v float64) *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.AddDepositAmount(v)
+	})
+}
+
+// UpdateDepositAmount sets the "deposit_amount" field to the value that was provided on create.
+func (u *PlanUpsertOne) UpdateDepositAmount() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateDepositAmount()
+	})
+}
+
+// ClearDepositAmount clears the value of the "deposit_amount" field.
+func (u *PlanUpsertOne) ClearDepositAmount() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.ClearDepositAmount()
+	})
+}
+
+// SetDepositPayway sets the "deposit_payway" field.
+func (u *PlanUpsertOne) SetDepositPayway(v []uint8) *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetDepositPayway(v)
+	})
+}
+
+// UpdateDepositPayway sets the "deposit_payway" field to the value that was provided on create.
+func (u *PlanUpsertOne) UpdateDepositPayway() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateDepositPayway()
+	})
+}
+
+// ClearDepositPayway clears the value of the "deposit_payway" field.
+func (u *PlanUpsertOne) ClearDepositPayway() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.ClearDepositPayway()
 	})
 }
 
@@ -2013,6 +2183,69 @@ func (u *PlanUpsertBulk) SetIntelligent(v bool) *PlanUpsertBulk {
 func (u *PlanUpsertBulk) UpdateIntelligent() *PlanUpsertBulk {
 	return u.Update(func(s *PlanUpsert) {
 		s.UpdateIntelligent()
+	})
+}
+
+// SetDeposit sets the "deposit" field.
+func (u *PlanUpsertBulk) SetDeposit(v bool) *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetDeposit(v)
+	})
+}
+
+// UpdateDeposit sets the "deposit" field to the value that was provided on create.
+func (u *PlanUpsertBulk) UpdateDeposit() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateDeposit()
+	})
+}
+
+// SetDepositAmount sets the "deposit_amount" field.
+func (u *PlanUpsertBulk) SetDepositAmount(v float64) *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetDepositAmount(v)
+	})
+}
+
+// AddDepositAmount adds v to the "deposit_amount" field.
+func (u *PlanUpsertBulk) AddDepositAmount(v float64) *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.AddDepositAmount(v)
+	})
+}
+
+// UpdateDepositAmount sets the "deposit_amount" field to the value that was provided on create.
+func (u *PlanUpsertBulk) UpdateDepositAmount() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateDepositAmount()
+	})
+}
+
+// ClearDepositAmount clears the value of the "deposit_amount" field.
+func (u *PlanUpsertBulk) ClearDepositAmount() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.ClearDepositAmount()
+	})
+}
+
+// SetDepositPayway sets the "deposit_payway" field.
+func (u *PlanUpsertBulk) SetDepositPayway(v []uint8) *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetDepositPayway(v)
+	})
+}
+
+// UpdateDepositPayway sets the "deposit_payway" field to the value that was provided on create.
+func (u *PlanUpsertBulk) UpdateDepositPayway() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateDepositPayway()
+	})
+}
+
+// ClearDepositPayway clears the value of the "deposit_payway" field.
+func (u *PlanUpsertBulk) ClearDepositPayway() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.ClearDepositPayway()
 	})
 }
 

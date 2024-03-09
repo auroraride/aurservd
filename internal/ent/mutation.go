@@ -63785,53 +63785,58 @@ func (m *PersonMutation) ResetEdge(name string) error {
 // PlanMutation represents an operation that mutates the Plan nodes in the graph.
 type PlanMutation struct {
 	config
-	op                 Op
-	typ                string
-	id                 *uint64
-	created_at         *time.Time
-	updated_at         *time.Time
-	deleted_at         *time.Time
-	creator            **model.Modifier
-	last_modifier      **model.Modifier
-	remark             *string
-	model              *string
-	enable             *bool
-	_type              *uint8
-	add_type           *int8
-	name               *string
-	start              *time.Time
-	end                *time.Time
-	price              *float64
-	addprice           *float64
-	days               *uint
-	adddays            *int
-	commission         *float64
-	addcommission      *float64
-	original           *float64
-	addoriginal        *float64
-	desc               *string
-	discount_newly     *float64
-	adddiscount_newly  *float64
-	notes              *[]string
-	appendnotes        []string
-	intelligent        *bool
-	clearedFields      map[string]struct{}
-	brand              *uint64
-	clearedbrand       bool
-	cities             map[uint64]struct{}
-	removedcities      map[uint64]struct{}
-	clearedcities      bool
-	parent             *uint64
-	clearedparent      bool
-	complexes          map[uint64]struct{}
-	removedcomplexes   map[uint64]struct{}
-	clearedcomplexes   bool
-	commissions        map[uint64]struct{}
-	removedcommissions map[uint64]struct{}
-	clearedcommissions bool
-	done               bool
-	oldValue           func(context.Context) (*Plan, error)
-	predicates         []predicate.Plan
+	op                   Op
+	typ                  string
+	id                   *uint64
+	created_at           *time.Time
+	updated_at           *time.Time
+	deleted_at           *time.Time
+	creator              **model.Modifier
+	last_modifier        **model.Modifier
+	remark               *string
+	model                *string
+	enable               *bool
+	_type                *uint8
+	add_type             *int8
+	name                 *string
+	start                *time.Time
+	end                  *time.Time
+	price                *float64
+	addprice             *float64
+	days                 *uint
+	adddays              *int
+	commission           *float64
+	addcommission        *float64
+	original             *float64
+	addoriginal          *float64
+	desc                 *string
+	discount_newly       *float64
+	adddiscount_newly    *float64
+	notes                *[]string
+	appendnotes          []string
+	intelligent          *bool
+	deposit              *bool
+	deposit_amount       *float64
+	adddeposit_amount    *float64
+	deposit_payway       *[]uint8
+	appenddeposit_payway []uint8
+	clearedFields        map[string]struct{}
+	brand                *uint64
+	clearedbrand         bool
+	cities               map[uint64]struct{}
+	removedcities        map[uint64]struct{}
+	clearedcities        bool
+	parent               *uint64
+	clearedparent        bool
+	complexes            map[uint64]struct{}
+	removedcomplexes     map[uint64]struct{}
+	clearedcomplexes     bool
+	commissions          map[uint64]struct{}
+	removedcommissions   map[uint64]struct{}
+	clearedcommissions   bool
+	done                 bool
+	oldValue             func(context.Context) (*Plan, error)
+	predicates           []predicate.Plan
 }
 
 var _ ent.Mutation = (*PlanMutation)(nil)
@@ -64991,6 +64996,177 @@ func (m *PlanMutation) ResetIntelligent() {
 	m.intelligent = nil
 }
 
+// SetDeposit sets the "deposit" field.
+func (m *PlanMutation) SetDeposit(b bool) {
+	m.deposit = &b
+}
+
+// Deposit returns the value of the "deposit" field in the mutation.
+func (m *PlanMutation) Deposit() (r bool, exists bool) {
+	v := m.deposit
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeposit returns the old "deposit" field's value of the Plan entity.
+// If the Plan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlanMutation) OldDeposit(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeposit is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeposit requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeposit: %w", err)
+	}
+	return oldValue.Deposit, nil
+}
+
+// ResetDeposit resets all changes to the "deposit" field.
+func (m *PlanMutation) ResetDeposit() {
+	m.deposit = nil
+}
+
+// SetDepositAmount sets the "deposit_amount" field.
+func (m *PlanMutation) SetDepositAmount(f float64) {
+	m.deposit_amount = &f
+	m.adddeposit_amount = nil
+}
+
+// DepositAmount returns the value of the "deposit_amount" field in the mutation.
+func (m *PlanMutation) DepositAmount() (r float64, exists bool) {
+	v := m.deposit_amount
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDepositAmount returns the old "deposit_amount" field's value of the Plan entity.
+// If the Plan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlanMutation) OldDepositAmount(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDepositAmount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDepositAmount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDepositAmount: %w", err)
+	}
+	return oldValue.DepositAmount, nil
+}
+
+// AddDepositAmount adds f to the "deposit_amount" field.
+func (m *PlanMutation) AddDepositAmount(f float64) {
+	if m.adddeposit_amount != nil {
+		*m.adddeposit_amount += f
+	} else {
+		m.adddeposit_amount = &f
+	}
+}
+
+// AddedDepositAmount returns the value that was added to the "deposit_amount" field in this mutation.
+func (m *PlanMutation) AddedDepositAmount() (r float64, exists bool) {
+	v := m.adddeposit_amount
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearDepositAmount clears the value of the "deposit_amount" field.
+func (m *PlanMutation) ClearDepositAmount() {
+	m.deposit_amount = nil
+	m.adddeposit_amount = nil
+	m.clearedFields[plan.FieldDepositAmount] = struct{}{}
+}
+
+// DepositAmountCleared returns if the "deposit_amount" field was cleared in this mutation.
+func (m *PlanMutation) DepositAmountCleared() bool {
+	_, ok := m.clearedFields[plan.FieldDepositAmount]
+	return ok
+}
+
+// ResetDepositAmount resets all changes to the "deposit_amount" field.
+func (m *PlanMutation) ResetDepositAmount() {
+	m.deposit_amount = nil
+	m.adddeposit_amount = nil
+	delete(m.clearedFields, plan.FieldDepositAmount)
+}
+
+// SetDepositPayway sets the "deposit_payway" field.
+func (m *PlanMutation) SetDepositPayway(u []uint8) {
+	m.deposit_payway = &u
+	m.appenddeposit_payway = nil
+}
+
+// DepositPayway returns the value of the "deposit_payway" field in the mutation.
+func (m *PlanMutation) DepositPayway() (r []uint8, exists bool) {
+	v := m.deposit_payway
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDepositPayway returns the old "deposit_payway" field's value of the Plan entity.
+// If the Plan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlanMutation) OldDepositPayway(ctx context.Context) (v []uint8, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDepositPayway is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDepositPayway requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDepositPayway: %w", err)
+	}
+	return oldValue.DepositPayway, nil
+}
+
+// AppendDepositPayway adds u to the "deposit_payway" field.
+func (m *PlanMutation) AppendDepositPayway(u []uint8) {
+	m.appenddeposit_payway = append(m.appenddeposit_payway, u...)
+}
+
+// AppendedDepositPayway returns the list of values that were appended to the "deposit_payway" field in this mutation.
+func (m *PlanMutation) AppendedDepositPayway() ([]uint8, bool) {
+	if len(m.appenddeposit_payway) == 0 {
+		return nil, false
+	}
+	return m.appenddeposit_payway, true
+}
+
+// ClearDepositPayway clears the value of the "deposit_payway" field.
+func (m *PlanMutation) ClearDepositPayway() {
+	m.deposit_payway = nil
+	m.appenddeposit_payway = nil
+	m.clearedFields[plan.FieldDepositPayway] = struct{}{}
+}
+
+// DepositPaywayCleared returns if the "deposit_payway" field was cleared in this mutation.
+func (m *PlanMutation) DepositPaywayCleared() bool {
+	_, ok := m.clearedFields[plan.FieldDepositPayway]
+	return ok
+}
+
+// ResetDepositPayway resets all changes to the "deposit_payway" field.
+func (m *PlanMutation) ResetDepositPayway() {
+	m.deposit_payway = nil
+	m.appenddeposit_payway = nil
+	delete(m.clearedFields, plan.FieldDepositPayway)
+}
+
 // ClearBrand clears the "brand" edge to the EbikeBrand entity.
 func (m *PlanMutation) ClearBrand() {
 	m.clearedbrand = true
@@ -65241,7 +65417,7 @@ func (m *PlanMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PlanMutation) Fields() []string {
-	fields := make([]string, 0, 22)
+	fields := make([]string, 0, 25)
 	if m.created_at != nil {
 		fields = append(fields, plan.FieldCreatedAt)
 	}
@@ -65308,6 +65484,15 @@ func (m *PlanMutation) Fields() []string {
 	if m.intelligent != nil {
 		fields = append(fields, plan.FieldIntelligent)
 	}
+	if m.deposit != nil {
+		fields = append(fields, plan.FieldDeposit)
+	}
+	if m.deposit_amount != nil {
+		fields = append(fields, plan.FieldDepositAmount)
+	}
+	if m.deposit_payway != nil {
+		fields = append(fields, plan.FieldDepositPayway)
+	}
 	return fields
 }
 
@@ -65360,6 +65545,12 @@ func (m *PlanMutation) Field(name string) (ent.Value, bool) {
 		return m.Notes()
 	case plan.FieldIntelligent:
 		return m.Intelligent()
+	case plan.FieldDeposit:
+		return m.Deposit()
+	case plan.FieldDepositAmount:
+		return m.DepositAmount()
+	case plan.FieldDepositPayway:
+		return m.DepositPayway()
 	}
 	return nil, false
 }
@@ -65413,6 +65604,12 @@ func (m *PlanMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldNotes(ctx)
 	case plan.FieldIntelligent:
 		return m.OldIntelligent(ctx)
+	case plan.FieldDeposit:
+		return m.OldDeposit(ctx)
+	case plan.FieldDepositAmount:
+		return m.OldDepositAmount(ctx)
+	case plan.FieldDepositPayway:
+		return m.OldDepositPayway(ctx)
 	}
 	return nil, fmt.Errorf("unknown Plan field %s", name)
 }
@@ -65576,6 +65773,27 @@ func (m *PlanMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetIntelligent(v)
 		return nil
+	case plan.FieldDeposit:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeposit(v)
+		return nil
+	case plan.FieldDepositAmount:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDepositAmount(v)
+		return nil
+	case plan.FieldDepositPayway:
+		v, ok := value.([]uint8)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDepositPayway(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Plan field %s", name)
 }
@@ -65602,6 +65820,9 @@ func (m *PlanMutation) AddedFields() []string {
 	if m.adddiscount_newly != nil {
 		fields = append(fields, plan.FieldDiscountNewly)
 	}
+	if m.adddeposit_amount != nil {
+		fields = append(fields, plan.FieldDepositAmount)
+	}
 	return fields
 }
 
@@ -65622,6 +65843,8 @@ func (m *PlanMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedOriginal()
 	case plan.FieldDiscountNewly:
 		return m.AddedDiscountNewly()
+	case plan.FieldDepositAmount:
+		return m.AddedDepositAmount()
 	}
 	return nil, false
 }
@@ -65673,6 +65896,13 @@ func (m *PlanMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddDiscountNewly(v)
 		return nil
+	case plan.FieldDepositAmount:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDepositAmount(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Plan numeric field %s", name)
 }
@@ -65710,6 +65940,12 @@ func (m *PlanMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(plan.FieldNotes) {
 		fields = append(fields, plan.FieldNotes)
+	}
+	if m.FieldCleared(plan.FieldDepositAmount) {
+		fields = append(fields, plan.FieldDepositAmount)
+	}
+	if m.FieldCleared(plan.FieldDepositPayway) {
+		fields = append(fields, plan.FieldDepositPayway)
 	}
 	return fields
 }
@@ -65754,6 +65990,12 @@ func (m *PlanMutation) ClearField(name string) error {
 		return nil
 	case plan.FieldNotes:
 		m.ClearNotes()
+		return nil
+	case plan.FieldDepositAmount:
+		m.ClearDepositAmount()
+		return nil
+	case plan.FieldDepositPayway:
+		m.ClearDepositPayway()
 		return nil
 	}
 	return fmt.Errorf("unknown Plan nullable field %s", name)
@@ -65828,6 +66070,15 @@ func (m *PlanMutation) ResetField(name string) error {
 		return nil
 	case plan.FieldIntelligent:
 		m.ResetIntelligent()
+		return nil
+	case plan.FieldDeposit:
+		m.ResetDeposit()
+		return nil
+	case plan.FieldDepositAmount:
+		m.ResetDepositAmount()
+		return nil
+	case plan.FieldDepositPayway:
+		m.ResetDepositPayway()
 		return nil
 	}
 	return fmt.Errorf("unknown Plan field %s", name)

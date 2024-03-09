@@ -392,6 +392,65 @@ func (pu *PlanUpdate) SetNillableIntelligent(b *bool) *PlanUpdate {
 	return pu
 }
 
+// SetDeposit sets the "deposit" field.
+func (pu *PlanUpdate) SetDeposit(b bool) *PlanUpdate {
+	pu.mutation.SetDeposit(b)
+	return pu
+}
+
+// SetNillableDeposit sets the "deposit" field if the given value is not nil.
+func (pu *PlanUpdate) SetNillableDeposit(b *bool) *PlanUpdate {
+	if b != nil {
+		pu.SetDeposit(*b)
+	}
+	return pu
+}
+
+// SetDepositAmount sets the "deposit_amount" field.
+func (pu *PlanUpdate) SetDepositAmount(f float64) *PlanUpdate {
+	pu.mutation.ResetDepositAmount()
+	pu.mutation.SetDepositAmount(f)
+	return pu
+}
+
+// SetNillableDepositAmount sets the "deposit_amount" field if the given value is not nil.
+func (pu *PlanUpdate) SetNillableDepositAmount(f *float64) *PlanUpdate {
+	if f != nil {
+		pu.SetDepositAmount(*f)
+	}
+	return pu
+}
+
+// AddDepositAmount adds f to the "deposit_amount" field.
+func (pu *PlanUpdate) AddDepositAmount(f float64) *PlanUpdate {
+	pu.mutation.AddDepositAmount(f)
+	return pu
+}
+
+// ClearDepositAmount clears the value of the "deposit_amount" field.
+func (pu *PlanUpdate) ClearDepositAmount() *PlanUpdate {
+	pu.mutation.ClearDepositAmount()
+	return pu
+}
+
+// SetDepositPayway sets the "deposit_payway" field.
+func (pu *PlanUpdate) SetDepositPayway(u []uint8) *PlanUpdate {
+	pu.mutation.SetDepositPayway(u)
+	return pu
+}
+
+// AppendDepositPayway appends u to the "deposit_payway" field.
+func (pu *PlanUpdate) AppendDepositPayway(u []uint8) *PlanUpdate {
+	pu.mutation.AppendDepositPayway(u)
+	return pu
+}
+
+// ClearDepositPayway clears the value of the "deposit_payway" field.
+func (pu *PlanUpdate) ClearDepositPayway() *PlanUpdate {
+	pu.mutation.ClearDepositPayway()
+	return pu
+}
+
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
 func (pu *PlanUpdate) SetBrand(e *EbikeBrand) *PlanUpdate {
 	return pu.SetBrandID(e.ID)
@@ -684,6 +743,29 @@ func (pu *PlanUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := pu.mutation.Intelligent(); ok {
 		_spec.SetField(plan.FieldIntelligent, field.TypeBool, value)
+	}
+	if value, ok := pu.mutation.Deposit(); ok {
+		_spec.SetField(plan.FieldDeposit, field.TypeBool, value)
+	}
+	if value, ok := pu.mutation.DepositAmount(); ok {
+		_spec.SetField(plan.FieldDepositAmount, field.TypeFloat64, value)
+	}
+	if value, ok := pu.mutation.AddedDepositAmount(); ok {
+		_spec.AddField(plan.FieldDepositAmount, field.TypeFloat64, value)
+	}
+	if pu.mutation.DepositAmountCleared() {
+		_spec.ClearField(plan.FieldDepositAmount, field.TypeFloat64)
+	}
+	if value, ok := pu.mutation.DepositPayway(); ok {
+		_spec.SetField(plan.FieldDepositPayway, field.TypeJSON, value)
+	}
+	if value, ok := pu.mutation.AppendedDepositPayway(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, plan.FieldDepositPayway, value)
+		})
+	}
+	if pu.mutation.DepositPaywayCleared() {
+		_spec.ClearField(plan.FieldDepositPayway, field.TypeJSON)
 	}
 	if pu.mutation.BrandCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1258,6 +1340,65 @@ func (puo *PlanUpdateOne) SetNillableIntelligent(b *bool) *PlanUpdateOne {
 	return puo
 }
 
+// SetDeposit sets the "deposit" field.
+func (puo *PlanUpdateOne) SetDeposit(b bool) *PlanUpdateOne {
+	puo.mutation.SetDeposit(b)
+	return puo
+}
+
+// SetNillableDeposit sets the "deposit" field if the given value is not nil.
+func (puo *PlanUpdateOne) SetNillableDeposit(b *bool) *PlanUpdateOne {
+	if b != nil {
+		puo.SetDeposit(*b)
+	}
+	return puo
+}
+
+// SetDepositAmount sets the "deposit_amount" field.
+func (puo *PlanUpdateOne) SetDepositAmount(f float64) *PlanUpdateOne {
+	puo.mutation.ResetDepositAmount()
+	puo.mutation.SetDepositAmount(f)
+	return puo
+}
+
+// SetNillableDepositAmount sets the "deposit_amount" field if the given value is not nil.
+func (puo *PlanUpdateOne) SetNillableDepositAmount(f *float64) *PlanUpdateOne {
+	if f != nil {
+		puo.SetDepositAmount(*f)
+	}
+	return puo
+}
+
+// AddDepositAmount adds f to the "deposit_amount" field.
+func (puo *PlanUpdateOne) AddDepositAmount(f float64) *PlanUpdateOne {
+	puo.mutation.AddDepositAmount(f)
+	return puo
+}
+
+// ClearDepositAmount clears the value of the "deposit_amount" field.
+func (puo *PlanUpdateOne) ClearDepositAmount() *PlanUpdateOne {
+	puo.mutation.ClearDepositAmount()
+	return puo
+}
+
+// SetDepositPayway sets the "deposit_payway" field.
+func (puo *PlanUpdateOne) SetDepositPayway(u []uint8) *PlanUpdateOne {
+	puo.mutation.SetDepositPayway(u)
+	return puo
+}
+
+// AppendDepositPayway appends u to the "deposit_payway" field.
+func (puo *PlanUpdateOne) AppendDepositPayway(u []uint8) *PlanUpdateOne {
+	puo.mutation.AppendDepositPayway(u)
+	return puo
+}
+
+// ClearDepositPayway clears the value of the "deposit_payway" field.
+func (puo *PlanUpdateOne) ClearDepositPayway() *PlanUpdateOne {
+	puo.mutation.ClearDepositPayway()
+	return puo
+}
+
 // SetBrand sets the "brand" edge to the EbikeBrand entity.
 func (puo *PlanUpdateOne) SetBrand(e *EbikeBrand) *PlanUpdateOne {
 	return puo.SetBrandID(e.ID)
@@ -1580,6 +1721,29 @@ func (puo *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) 
 	}
 	if value, ok := puo.mutation.Intelligent(); ok {
 		_spec.SetField(plan.FieldIntelligent, field.TypeBool, value)
+	}
+	if value, ok := puo.mutation.Deposit(); ok {
+		_spec.SetField(plan.FieldDeposit, field.TypeBool, value)
+	}
+	if value, ok := puo.mutation.DepositAmount(); ok {
+		_spec.SetField(plan.FieldDepositAmount, field.TypeFloat64, value)
+	}
+	if value, ok := puo.mutation.AddedDepositAmount(); ok {
+		_spec.AddField(plan.FieldDepositAmount, field.TypeFloat64, value)
+	}
+	if puo.mutation.DepositAmountCleared() {
+		_spec.ClearField(plan.FieldDepositAmount, field.TypeFloat64)
+	}
+	if value, ok := puo.mutation.DepositPayway(); ok {
+		_spec.SetField(plan.FieldDepositPayway, field.TypeJSON, value)
+	}
+	if value, ok := puo.mutation.AppendedDepositPayway(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, plan.FieldDepositPayway, value)
+		})
+	}
+	if puo.mutation.DepositPaywayCleared() {
+		_spec.ClearField(plan.FieldDepositPayway, field.TypeJSON)
 	}
 	if puo.mutation.BrandCleared() {
 		edge := &sqlgraph.EdgeSpec{

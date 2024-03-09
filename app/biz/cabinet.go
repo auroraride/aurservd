@@ -4,6 +4,7 @@ package biz
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"regexp"
 	"time"
@@ -18,7 +19,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
-	"github.com/auroraride/aurservd/pkg/snag"
 )
 
 type cabinetBiz struct {
@@ -34,7 +34,7 @@ func NewCabinet() *cabinetBiz {
 }
 
 // ListByRider  查询电柜
-func (s *cabinetBiz) ListByRider(rid *ent.Rider, req *definition.CabinetByRiderReq) (res []definition.CabinetByRiderRes) {
+func (s *cabinetBiz) ListByRider(rid *ent.Rider, req *definition.CabinetByRiderReq) (res []definition.CabinetByRiderRes, err error) {
 	q := s.orm.QueryNotDeleted().WithModels().WithEnterprise().WithBranch().
 		Modify(func(sel *sql.Selector) {
 			sel.
@@ -42,7 +42,7 @@ func (s *cabinetBiz) ListByRider(rid *ent.Rider, req *definition.CabinetByRiderR
 				OrderBy(sql.Asc("distance"))
 			if req.Distance != nil {
 				if *req.Distance > 100000 {
-					snag.Panic("请求距离太远")
+					return
 				}
 				sel.Where(sql.P(func(b *sql.Builder) {
 					b.WriteString(fmt.Sprintf(`ST_DWithin(%s, ST_GeogFromText('POINT(%f %f)'), %f)`, cabinet.FieldGeom, *req.Lng, *req.Lat, *req.Distance))
@@ -131,10 +131,9 @@ func (s *cabinetBiz) ListByRider(rid *ent.Rider, req *definition.CabinetByRiderR
 				cdr.BranchID = c.Edges.Branch.ID
 				cdr.Fid = service.NewBranch().EncodeFacility(nil, c)
 			}
-
 			distance, err := c.Value("distance")
 			if err != nil {
-				snag.Panic(err)
+				return nil, err
 			}
 			cdr.Distance = distance.(float64)
 
@@ -172,4 +171,18 @@ func (s *cabinetBiz) ListByRider(rid *ent.Rider, req *definition.CabinetByRiderR
 		}
 	}
 	return
+}
+
+// DetailBySerial  通过serial获取电柜详情
+func (s *cabinetBiz) DetailBySerial(serial string) (res *model.CabinetDetailRes, err error) {
+	item, _ := s.orm.QueryNotDeleted().
+		Where(cabinet.Serial(serial)).
+		WithModels().
+		WithEnterprise().
+		WithStation().
+		First(s.ctx)
+	if item == nil {
+		return nil, errors.New("电柜不存在")
+	}
+	return service.NewCabinet().Detail(item), nil
 }

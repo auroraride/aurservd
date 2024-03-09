@@ -261,6 +261,10 @@ type config struct {
 		}
 		AlipayAuthFreeze struct {
 			NotifyUrl string
+
+			// 芝麻信用免押金
+			Category  string // 芝麻免押的类目
+			ServiceId string // 芝麻免押的服务ID
 		}
 	}
 	RiderApp    AppVersion

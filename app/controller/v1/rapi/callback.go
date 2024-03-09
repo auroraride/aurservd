@@ -70,13 +70,3 @@ func (*callback) WechatRefundCallback(c echo.Context) (err error) {
 	service.NewOrder().DoPayment(res)
 	return c.JSON(http.StatusOK, ar.Map{"code": "SUCCESS", "message": "成功"})
 }
-
-// AlipayFandAuthFreeze 支付宝资金授权冻结回调
-func (*callback) AlipayFandAuthFreeze(c echo.Context) (err error) {
-	res := payment.NewAlipay().NotificationFandAuthFreeze(c.Request())
-
-	zap.L().Info("支付宝资金授权冻结缓存更新", log.JsonData(res))
-
-	service.NewOrder().DoPayment(res)
-	return c.String(http.StatusOK, "success")
-}
