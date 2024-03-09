@@ -92,13 +92,13 @@ func (vc *VersionCreate) SetNillableRemark(s *string) *VersionCreate {
 }
 
 // SetPlatform sets the "platform" field.
-func (vc *VersionCreate) SetPlatform(m model.Platform) *VersionCreate {
+func (vc *VersionCreate) SetPlatform(m model.AppPlatform) *VersionCreate {
 	vc.mutation.SetPlatform(m)
 	return vc
 }
 
 // SetNillablePlatform sets the "platform" field if the given value is not nil.
-func (vc *VersionCreate) SetNillablePlatform(m *model.Platform) *VersionCreate {
+func (vc *VersionCreate) SetNillablePlatform(m *model.AppPlatform) *VersionCreate {
 	if m != nil {
 		vc.SetPlatform(*m)
 	}
@@ -387,7 +387,7 @@ func (u *VersionUpsert) ClearRemark() *VersionUpsert {
 }
 
 // SetPlatform sets the "platform" field.
-func (u *VersionUpsert) SetPlatform(v model.Platform) *VersionUpsert {
+func (u *VersionUpsert) SetPlatform(v model.AppPlatform) *VersionUpsert {
 	u.Set(version.FieldPlatform, v)
 	return u
 }
@@ -560,7 +560,7 @@ func (u *VersionUpsertOne) ClearRemark() *VersionUpsertOne {
 }
 
 // SetPlatform sets the "platform" field.
-func (u *VersionUpsertOne) SetPlatform(v model.Platform) *VersionUpsertOne {
+func (u *VersionUpsertOne) SetPlatform(v model.AppPlatform) *VersionUpsertOne {
 	return u.Update(func(s *VersionUpsert) {
 		s.SetPlatform(v)
 	})
@@ -907,7 +907,7 @@ func (u *VersionUpsertBulk) ClearRemark() *VersionUpsertBulk {
 }
 
 // SetPlatform sets the "platform" field.
-func (u *VersionUpsertBulk) SetPlatform(v model.Platform) *VersionUpsertBulk {
+func (u *VersionUpsertBulk) SetPlatform(v model.AppPlatform) *VersionUpsertBulk {
 	return u.Update(func(s *VersionUpsert) {
 		s.SetPlatform(v)
 	})

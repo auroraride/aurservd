@@ -76,7 +76,7 @@ func Remark(v string) predicate.Version {
 }
 
 // Platform applies equality check predicate on the "platform" field. It's identical to PlatformEQ.
-func Platform(v model.Platform) predicate.Version {
+func Platform(v model.AppPlatform) predicate.Version {
 	return predicate.Version(sql.FieldEQ(FieldPlatform, v))
 }
 
@@ -321,42 +321,42 @@ func RemarkContainsFold(v string) predicate.Version {
 }
 
 // PlatformEQ applies the EQ predicate on the "platform" field.
-func PlatformEQ(v model.Platform) predicate.Version {
+func PlatformEQ(v model.AppPlatform) predicate.Version {
 	return predicate.Version(sql.FieldEQ(FieldPlatform, v))
 }
 
 // PlatformNEQ applies the NEQ predicate on the "platform" field.
-func PlatformNEQ(v model.Platform) predicate.Version {
+func PlatformNEQ(v model.AppPlatform) predicate.Version {
 	return predicate.Version(sql.FieldNEQ(FieldPlatform, v))
 }
 
 // PlatformIn applies the In predicate on the "platform" field.
-func PlatformIn(vs ...model.Platform) predicate.Version {
+func PlatformIn(vs ...model.AppPlatform) predicate.Version {
 	return predicate.Version(sql.FieldIn(FieldPlatform, vs...))
 }
 
 // PlatformNotIn applies the NotIn predicate on the "platform" field.
-func PlatformNotIn(vs ...model.Platform) predicate.Version {
+func PlatformNotIn(vs ...model.AppPlatform) predicate.Version {
 	return predicate.Version(sql.FieldNotIn(FieldPlatform, vs...))
 }
 
 // PlatformGT applies the GT predicate on the "platform" field.
-func PlatformGT(v model.Platform) predicate.Version {
+func PlatformGT(v model.AppPlatform) predicate.Version {
 	return predicate.Version(sql.FieldGT(FieldPlatform, v))
 }
 
 // PlatformGTE applies the GTE predicate on the "platform" field.
-func PlatformGTE(v model.Platform) predicate.Version {
+func PlatformGTE(v model.AppPlatform) predicate.Version {
 	return predicate.Version(sql.FieldGTE(FieldPlatform, v))
 }
 
 // PlatformLT applies the LT predicate on the "platform" field.
-func PlatformLT(v model.Platform) predicate.Version {
+func PlatformLT(v model.AppPlatform) predicate.Version {
 	return predicate.Version(sql.FieldLT(FieldPlatform, v))
 }
 
 // PlatformLTE applies the LTE predicate on the "platform" field.
-func PlatformLTE(v model.Platform) predicate.Version {
+func PlatformLTE(v model.AppPlatform) predicate.Version {
 	return predicate.Version(sql.FieldLTE(FieldPlatform, v))
 }
 

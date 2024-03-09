@@ -26,3 +26,17 @@ func (*cabinet) List(c echo.Context) (err error) {
 	ctx, req := app.RiderContextAndBinding[definition.CabinetByRiderReq](c)
 	return ctx.SendResponse(biz.NewCabinet().ListByRider(ctx.Rider, req))
 }
+
+// Detail
+// @ID      	CabinetDetail
+// @Router  	/rider/v2/cabinet/{serial} [GET]
+// @Summary 	电柜详情
+// @Tags    	Cabinet - 电柜
+// @Accept  	json
+// @Produce 	json
+// @Success 	200		{object}	model.StatusResponse	"请求成功"
+func (*cabinet) Detail(c echo.Context) (err error) {
+	ctx := app.Context(c)
+
+	return ctx.SendResponse()
+}

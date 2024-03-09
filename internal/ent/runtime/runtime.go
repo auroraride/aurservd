@@ -1852,7 +1852,7 @@ func init() {
 	// versionDescPlatform is the schema descriptor for platform field.
 	versionDescPlatform := versionFields[0].Descriptor()
 	// version.DefaultPlatform holds the default value on creation for the platform field.
-	version.DefaultPlatform = versionDescPlatform.Default.(model.Platform)
+	version.DefaultPlatform = versionDescPlatform.Default.(model.AppPlatform)
 }
 
 const (

@@ -32,7 +32,7 @@ type Version struct {
 	// 管理员改动原因/备注
 	Remark string `json:"remark,omitempty"`
 	// 平台
-	Platform model.Platform `json:"platform,omitempty"`
+	Platform model.AppPlatform `json:"platform,omitempty"`
 	// 版本号
 	Version string `json:"version,omitempty"`
 	// 更新内容
@@ -50,7 +50,7 @@ func (*Version) scanValues(columns []string) ([]any, error) {
 		case version.FieldCreator, version.FieldLastModifier:
 			values[i] = new([]byte)
 		case version.FieldPlatform:
-			values[i] = new(model.Platform)
+			values[i] = new(model.AppPlatform)
 		case version.FieldForce:
 			values[i] = new(sql.NullBool)
 		case version.FieldID:
@@ -122,7 +122,7 @@ func (v *Version) assignValues(columns []string, values []any) error {
 				v.Remark = value.String
 			}
 		case version.FieldPlatform:
-			if value, ok := values[i].(*model.Platform); !ok {
+			if value, ok := values[i].(*model.AppPlatform); !ok {
 				return fmt.Errorf("unexpected type %T for field platform", values[i])
 			} else if value != nil {
 				v.Platform = *value

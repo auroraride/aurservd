@@ -62,7 +62,7 @@ func (Version) Annotations() []schema.Annotation {
 // Fields of the Version.
 func (Version) Fields() []ent.Field {
 	return []ent.Field{
-		field.Other("platform", model.PlatformUnknown).Default(model.PlatformUnknown).SchemaType(map[string]string{
+		field.Other("platform", model.AppPlatform("")).Default(model.AppPlatform("")).SchemaType(map[string]string{
 			dialect.Postgres: postgres.TypeCharVar,
 		}).Comment("平台"),
 		field.String("version").Comment("版本号"),

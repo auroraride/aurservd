@@ -4,8 +4,10 @@
 
 package definition
 
+import "github.com/auroraride/aurservd/app/model"
+
 type VersionReq struct {
-	Platform string `json:"platform" query:"platform" validate:"required,oneof=android ios" trans:"平台" enums:"android,ios"`
+	AppPlatform model.AppPlatform `json:"appPlatform" query:"appPlatform" validate:"required,oneof=android ios" trans:"平台" enums:"android,ios"`
 }
 
 type VersionRes struct {

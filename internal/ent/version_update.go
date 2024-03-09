@@ -89,13 +89,13 @@ func (vu *VersionUpdate) ClearRemark() *VersionUpdate {
 }
 
 // SetPlatform sets the "platform" field.
-func (vu *VersionUpdate) SetPlatform(m model.Platform) *VersionUpdate {
+func (vu *VersionUpdate) SetPlatform(m model.AppPlatform) *VersionUpdate {
 	vu.mutation.SetPlatform(m)
 	return vu
 }
 
 // SetNillablePlatform sets the "platform" field if the given value is not nil.
-func (vu *VersionUpdate) SetNillablePlatform(m *model.Platform) *VersionUpdate {
+func (vu *VersionUpdate) SetNillablePlatform(m *model.AppPlatform) *VersionUpdate {
 	if m != nil {
 		vu.SetPlatform(*m)
 	}
@@ -323,13 +323,13 @@ func (vuo *VersionUpdateOne) ClearRemark() *VersionUpdateOne {
 }
 
 // SetPlatform sets the "platform" field.
-func (vuo *VersionUpdateOne) SetPlatform(m model.Platform) *VersionUpdateOne {
+func (vuo *VersionUpdateOne) SetPlatform(m model.AppPlatform) *VersionUpdateOne {
 	vuo.mutation.SetPlatform(m)
 	return vuo
 }
 
 // SetNillablePlatform sets the "platform" field if the given value is not nil.
-func (vuo *VersionUpdateOne) SetNillablePlatform(m *model.Platform) *VersionUpdateOne {
+func (vuo *VersionUpdateOne) SetNillablePlatform(m *model.AppPlatform) *VersionUpdateOne {
 	if m != nil {
 		vuo.SetPlatform(*m)
 	}

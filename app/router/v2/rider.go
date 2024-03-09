@@ -134,6 +134,8 @@ func LoadRiderV2Routes(root *echo.Group) {
 
 	// 电柜
 	cabinet := g.Group("/cabinet")
+	cabinet.GET("", rapi.Cabinet.List, auth())           // 电柜列表
+	cabinet.GET("/:serial", rapi.Cabinet.Detail, auth()) // 详情
 	cabinet.GET("/process/:serial", v1.Cabinet.GetProcess, auth())
 	cabinet.POST("/process", v1.Cabinet.Process, auth())
 	cabinet.GET("/process/status", v1.Cabinet.ProcessStatus, auth())
@@ -169,9 +171,6 @@ func LoadRiderV2Routes(root *echo.Group) {
 	// 电池
 	g.GET("/battery", v1.Battery.Detail, auth())
 	g.GET("/selection/model", rapi.Selection.Model) // 电池型号选择
-
-	// 电柜列表
-	g.GET("/cabinet", rapi.Cabinet.List, auth())
 
 	// 新手引导
 	g.GET("/guide", rapi.Guide.List, auth())

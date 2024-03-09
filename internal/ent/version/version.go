@@ -78,7 +78,7 @@ var (
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
 	// DefaultPlatform holds the default value on creation for the "platform" field.
-	DefaultPlatform model.Platform
+	DefaultPlatform model.AppPlatform
 )
 
 // OrderOption defines the ordering options for the Version queries.
