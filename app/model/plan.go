@@ -26,6 +26,18 @@ var (
 	PlanTypes = []PlanType{PlanTypeBattery, PlanTypeEbikeWithBattery}
 )
 
+type DepositPayway uint8
+
+const (
+	DepositPaywayZmxy DepositPayway = 1 + iota // 芝麻信用免押金
+	DepositPaywayWxsf                          // 微信支付分免押金
+	DepositPaywayPay                           // 支付押金
+)
+
+func (t DepositPayway) Value() uint8 {
+	return uint8(t)
+}
+
 // Plan 骑士卡基础信息
 type Plan struct {
 	ID          uint64  `json:"id"`          // 骑士卡ID
@@ -68,6 +80,10 @@ type PlanCreateReq struct {
 	Notes  []string `json:"notes"`  // 购买须知
 
 	Intelligent *bool `json:"intelligent" validate:"required"` // 是否智能柜套餐
+
+	Deposit       *bool    `json:"deposit" validate:"required"` // 是否开启押金
+	DepositAmount *float64 `json:"depositAmount"`               // 押金金额
+	DepositPayway []uint8  `json:"depositPayway"`               // 押金支付方式 1：芝麻信用免押金 2：微信支付分免押金 3：支付押金
 }
 
 // PlanEnableModifyReq 骑士卡状态修改请求
@@ -87,6 +103,7 @@ type PlanListReq struct {
 	Model       *string   `json:"model" query:"model"`             // 电池型号
 	Type        *PlanType `json:"type" query:"type" enums:"1,2"`   // 骑士卡类别, 不携带字段为全部, 1:单电 2:车加电
 	BrandID     *uint64   `json:"brandId" query:"brandId"`         // 电车型号
+	Deposit     *bool     `json:"deposit" query:"deposit"`         // 是否开启押金 fales:未开启 true:开启
 }
 
 type PlanNotSettedDailyRent struct {
@@ -111,6 +128,10 @@ type PlanListRes struct {
 	Model       string      `json:"model"`           // 电池型号
 
 	NotSettedDailyRent []*PlanNotSettedDailyRent `json:"notSettedDailyRent,omitempty"` // 未设定的日租金
+
+	Deposit       bool    `json:"deposit"`       // 是否开启押金 fales:未开启 true:开启
+	DepositAmount float64 `json:"depositAmount"` // 押金金额
+	DepositPayway []uint8 `json:"depositPayway"` // 押金支付方式 1：芝麻信用免押金 2：微信支付分免押金 3：支付押金
 }
 
 // PlanListRiderReq 骑士卡列表请求

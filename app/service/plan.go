@@ -191,7 +191,10 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanListRes {
 			SetNotes(req.Notes).
 			SetNillableBrandID(brandID).
 			SetType(req.Type.Value()).
-			SetIntelligent(*req.Intelligent)
+			SetIntelligent(*req.Intelligent).
+			SetNillableDeposit(req.Deposit).
+			SetNillableDepositAmount(req.DepositAmount).
+			SetDepositPayway(req.DepositPayway)
 
 		for i, cl := range req.Complexes {
 			c := creator.Clone().
@@ -315,17 +318,20 @@ func (s *planService) PlanWithComplexes(item *ent.Plan) (res model.PlanListRes) 
 	})
 
 	res = model.PlanListRes{
-		ID:          item.ID,
-		Type:        model.PlanType(item.Type),
-		Name:        item.Name,
-		Enable:      item.Enable,
-		Start:       item.Start.Format(carbon.DateLayout),
-		End:         item.End.Format(carbon.DateLayout),
-		Cities:      make([]model.City, len(item.Edges.Cities)),
-		Complexes:   make([]*model.PlanComplexes, 0),
-		Notes:       item.Notes,
-		Intelligent: item.Intelligent,
-		Model:       item.Model,
+		ID:            item.ID,
+		Type:          model.PlanType(item.Type),
+		Name:          item.Name,
+		Enable:        item.Enable,
+		Start:         item.Start.Format(carbon.DateLayout),
+		End:           item.End.Format(carbon.DateLayout),
+		Cities:        make([]model.City, len(item.Edges.Cities)),
+		Complexes:     make([]*model.PlanComplexes, 0),
+		Notes:         item.Notes,
+		Intelligent:   item.Intelligent,
+		Model:         item.Model,
+		DepositPayway: item.DepositPayway,
+		Deposit:       item.Deposit,
+		DepositAmount: item.DepositAmount,
 	}
 
 	// 电车型号
@@ -431,6 +437,10 @@ func (s *planService) List(req *model.PlanListReq) *model.PaginationRes {
 	}
 	if req.BrandID != nil {
 		q.Where(plan.BrandID(*req.BrandID))
+	}
+
+	if req.Deposit != nil {
+		q.Where(plan.Deposit(*req.Deposit))
 	}
 
 	return model.ParsePaginationResponse(

@@ -150,6 +150,16 @@ func Intelligent(v bool) predicate.Plan {
 	return predicate.Plan(sql.FieldEQ(FieldIntelligent, v))
 }
 
+// Deposit applies equality check predicate on the "deposit" field. It's identical to DepositEQ.
+func Deposit(v bool) predicate.Plan {
+	return predicate.Plan(sql.FieldEQ(FieldDeposit, v))
+}
+
+// DepositAmount applies equality check predicate on the "deposit_amount" field. It's identical to DepositAmountEQ.
+func DepositAmount(v float64) predicate.Plan {
+	return predicate.Plan(sql.FieldEQ(FieldDepositAmount, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Plan {
 	return predicate.Plan(sql.FieldEQ(FieldCreatedAt, v))
@@ -1008,6 +1018,76 @@ func IntelligentEQ(v bool) predicate.Plan {
 // IntelligentNEQ applies the NEQ predicate on the "intelligent" field.
 func IntelligentNEQ(v bool) predicate.Plan {
 	return predicate.Plan(sql.FieldNEQ(FieldIntelligent, v))
+}
+
+// DepositEQ applies the EQ predicate on the "deposit" field.
+func DepositEQ(v bool) predicate.Plan {
+	return predicate.Plan(sql.FieldEQ(FieldDeposit, v))
+}
+
+// DepositNEQ applies the NEQ predicate on the "deposit" field.
+func DepositNEQ(v bool) predicate.Plan {
+	return predicate.Plan(sql.FieldNEQ(FieldDeposit, v))
+}
+
+// DepositAmountEQ applies the EQ predicate on the "deposit_amount" field.
+func DepositAmountEQ(v float64) predicate.Plan {
+	return predicate.Plan(sql.FieldEQ(FieldDepositAmount, v))
+}
+
+// DepositAmountNEQ applies the NEQ predicate on the "deposit_amount" field.
+func DepositAmountNEQ(v float64) predicate.Plan {
+	return predicate.Plan(sql.FieldNEQ(FieldDepositAmount, v))
+}
+
+// DepositAmountIn applies the In predicate on the "deposit_amount" field.
+func DepositAmountIn(vs ...float64) predicate.Plan {
+	return predicate.Plan(sql.FieldIn(FieldDepositAmount, vs...))
+}
+
+// DepositAmountNotIn applies the NotIn predicate on the "deposit_amount" field.
+func DepositAmountNotIn(vs ...float64) predicate.Plan {
+	return predicate.Plan(sql.FieldNotIn(FieldDepositAmount, vs...))
+}
+
+// DepositAmountGT applies the GT predicate on the "deposit_amount" field.
+func DepositAmountGT(v float64) predicate.Plan {
+	return predicate.Plan(sql.FieldGT(FieldDepositAmount, v))
+}
+
+// DepositAmountGTE applies the GTE predicate on the "deposit_amount" field.
+func DepositAmountGTE(v float64) predicate.Plan {
+	return predicate.Plan(sql.FieldGTE(FieldDepositAmount, v))
+}
+
+// DepositAmountLT applies the LT predicate on the "deposit_amount" field.
+func DepositAmountLT(v float64) predicate.Plan {
+	return predicate.Plan(sql.FieldLT(FieldDepositAmount, v))
+}
+
+// DepositAmountLTE applies the LTE predicate on the "deposit_amount" field.
+func DepositAmountLTE(v float64) predicate.Plan {
+	return predicate.Plan(sql.FieldLTE(FieldDepositAmount, v))
+}
+
+// DepositAmountIsNil applies the IsNil predicate on the "deposit_amount" field.
+func DepositAmountIsNil() predicate.Plan {
+	return predicate.Plan(sql.FieldIsNull(FieldDepositAmount))
+}
+
+// DepositAmountNotNil applies the NotNil predicate on the "deposit_amount" field.
+func DepositAmountNotNil() predicate.Plan {
+	return predicate.Plan(sql.FieldNotNull(FieldDepositAmount))
+}
+
+// DepositPaywayIsNil applies the IsNil predicate on the "deposit_payway" field.
+func DepositPaywayIsNil() predicate.Plan {
+	return predicate.Plan(sql.FieldIsNull(FieldDepositPayway))
+}
+
+// DepositPaywayNotNil applies the NotNil predicate on the "deposit_payway" field.
+func DepositPaywayNotNil() predicate.Plan {
+	return predicate.Plan(sql.FieldNotNull(FieldDepositPayway))
 }
 
 // HasBrand applies the HasEdge predicate on the "brand" edge.

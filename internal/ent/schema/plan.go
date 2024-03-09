@@ -75,6 +75,9 @@ func (Plan) Fields() []ent.Field {
 		field.Float("discount_newly").Default(0).Comment("新签减免"),
 		field.Strings("notes").Optional().Comment("购买须知"),
 		field.Bool("intelligent").Default(false).Comment("是否智能柜套餐"),
+		field.Bool("deposit").Default(false).Comment("是否开启押金(只对V2版本接口有用)"),
+		field.Float("deposit_amount").Optional().Comment("押金金额"),
+		field.JSON("deposit_payway", []uint8{}).Optional().Comment("押金支付方式 1：芝麻信用免押金 2：微信支付分免押金 3：支付押金"),
 	}
 }
 

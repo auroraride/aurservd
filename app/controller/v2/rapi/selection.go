@@ -15,7 +15,7 @@ var Selection = new(selection)
 // Model
 // @ID		SelectionModel
 // @Router	/rider/v2/selection/model [GET]
-// @Summary	获取车型列表
+// @Summary	获取电池型号选择
 // @Tags	Selection - 筛选
 // @Accept	json
 // @Produce	json
