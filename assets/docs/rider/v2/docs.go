@@ -2610,6 +2610,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v2/version": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Version - 版本"
+                ],
+                "summary": "获取最新版本",
+                "operationId": "VersionLatest",
+                "parameters": [
+                    {
+                        "enum": [
+                            "android",
+                            "ios"
+                        ],
+                        "type": "string",
+                        "name": "platform",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/definition.VersionRes"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v2/wallet/coupons": {
             "get": {
                 "consumes": [
@@ -3065,6 +3100,23 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "definition.VersionRes": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "description": "更新内容",
+                    "type": "string"
+                },
+                "force": {
+                    "description": "是否强制更新",
+                    "type": "boolean"
+                },
+                "version": {
+                    "description": "版本号",
                     "type": "string"
                 }
             }

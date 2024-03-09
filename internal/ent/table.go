@@ -859,3 +859,13 @@ func (ss *SubscribeSuspend) GetTableName() string {
 func (ss *SubscribeSuspend) GetID() uint64 {
 	return ss.ID
 }
+
+// GetTableName returns table name for Version.
+func (v *Version) GetTableName() string {
+	return "version"
+}
+
+// GetID returns id for Version.
+func (v *Version) GetID() uint64 {
+	return v.ID
+}

@@ -224,3 +224,6 @@ type SubscribeReminder func(*sql.Selector)
 
 // SubscribeSuspend is the predicate function for subscribesuspend builders.
 type SubscribeSuspend func(*sql.Selector)
+
+// Version is the predicate function for version builders.
+type Version func(*sql.Selector)

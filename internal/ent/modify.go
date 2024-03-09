@@ -561,3 +561,10 @@ func (c *SubscribeSuspendClient) ModifyOne(old *SubscribeSuspend, data any) *Sub
 	up := &SubscribeSuspendUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 	return EntitySetAttributes[SubscribeSuspendUpdateOne, SubscribeSuspend](up, old, data)
 }
+
+// ModifyOne returns an update with pointer struct builder for Version.
+func (c *VersionClient) ModifyOne(old *Version, data any) *VersionUpdateOne {
+	mutation := newVersionMutation(c.config, OpUpdateOne, withVersion(old))
+	up := &VersionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[VersionUpdateOne, Version](up, old, data)
+}

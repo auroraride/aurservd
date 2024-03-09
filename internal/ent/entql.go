@@ -77,6 +77,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
 	"github.com/auroraride/aurservd/internal/ent/subscribereminder"
 	"github.com/auroraride/aurservd/internal/ent/subscribesuspend"
+	"github.com/auroraride/aurservd/internal/ent/version"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -86,7 +87,7 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 73)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 74)}
 	graph.Nodes[0] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   activity.Table,
@@ -2076,6 +2077,29 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribesuspend.FieldEndAt:        {Type: field.TypeTime, Column: subscribesuspend.FieldEndAt},
 			subscribesuspend.FieldEndReason:    {Type: field.TypeString, Column: subscribesuspend.FieldEndReason},
 			subscribesuspend.FieldEndModifier:  {Type: field.TypeJSON, Column: subscribesuspend.FieldEndModifier},
+		},
+	}
+	graph.Nodes[73] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   version.Table,
+			Columns: version.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint64,
+				Column: version.FieldID,
+			},
+		},
+		Type: "Version",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			version.FieldCreatedAt:    {Type: field.TypeTime, Column: version.FieldCreatedAt},
+			version.FieldUpdatedAt:    {Type: field.TypeTime, Column: version.FieldUpdatedAt},
+			version.FieldDeletedAt:    {Type: field.TypeTime, Column: version.FieldDeletedAt},
+			version.FieldCreator:      {Type: field.TypeJSON, Column: version.FieldCreator},
+			version.FieldLastModifier: {Type: field.TypeJSON, Column: version.FieldLastModifier},
+			version.FieldRemark:       {Type: field.TypeString, Column: version.FieldRemark},
+			version.FieldPlatform:     {Type: field.TypeOther, Column: version.FieldPlatform},
+			version.FieldVersion:      {Type: field.TypeString, Column: version.FieldVersion},
+			version.FieldContent:      {Type: field.TypeString, Column: version.FieldContent},
+			version.FieldForce:        {Type: field.TypeBool, Column: version.FieldForce},
 		},
 	}
 	graph.MustAddE(
@@ -17963,4 +17987,94 @@ func (f *SubscribeSuspendFilter) WhereHasPauseWith(preds ...predicate.SubscribeP
 			p(s)
 		}
 	})))
+}
+
+// addPredicate implements the predicateAdder interface.
+func (vq *VersionQuery) addPredicate(pred func(s *sql.Selector)) {
+	vq.predicates = append(vq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the VersionQuery builder.
+func (vq *VersionQuery) Filter() *VersionFilter {
+	return &VersionFilter{config: vq.config, predicateAdder: vq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *VersionMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the VersionMutation builder.
+func (m *VersionMutation) Filter() *VersionFilter {
+	return &VersionFilter{config: m.config, predicateAdder: m}
+}
+
+// VersionFilter provides a generic filtering capability at runtime for VersionQuery.
+type VersionFilter struct {
+	predicateAdder
+	config
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *VersionFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[73].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *VersionFilter) WhereID(p entql.Uint64P) {
+	f.Where(p.Field(version.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *VersionFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(version.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *VersionFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(version.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *VersionFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(version.FieldDeletedAt))
+}
+
+// WhereCreator applies the entql json.RawMessage predicate on the creator field.
+func (f *VersionFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(version.FieldCreator))
+}
+
+// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
+func (f *VersionFilter) WhereLastModifier(p entql.BytesP) {
+	f.Where(p.Field(version.FieldLastModifier))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *VersionFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(version.FieldRemark))
+}
+
+// WherePlatform applies the entql other predicate on the platform field.
+func (f *VersionFilter) WherePlatform(p entql.OtherP) {
+	f.Where(p.Field(version.FieldPlatform))
+}
+
+// WhereVersion applies the entql string predicate on the version field.
+func (f *VersionFilter) WhereVersion(p entql.StringP) {
+	f.Where(p.Field(version.FieldVersion))
+}
+
+// WhereContent applies the entql string predicate on the content field.
+func (f *VersionFilter) WhereContent(p entql.StringP) {
+	f.Where(p.Field(version.FieldContent))
+}
+
+// WhereForce applies the entql bool predicate on the force field.
+func (f *VersionFilter) WhereForce(p entql.BoolP) {
+	f.Where(p.Field(version.FieldForce))
 }

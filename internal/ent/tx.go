@@ -160,6 +160,8 @@ type Tx struct {
 	SubscribeReminder *SubscribeReminderClient
 	// SubscribeSuspend is the client for interacting with the SubscribeSuspend builders.
 	SubscribeSuspend *SubscribeSuspendClient
+	// Version is the client for interacting with the Version builders.
+	Version *VersionClient
 
 	// lazily loaded.
 	client     *Client
@@ -364,6 +366,7 @@ func (tx *Tx) init() {
 	tx.SubscribePause = NewSubscribePauseClient(tx.config)
 	tx.SubscribeReminder = NewSubscribeReminderClient(tx.config)
 	tx.SubscribeSuspend = NewSubscribeSuspendClient(tx.config)
+	tx.Version = NewVersionClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.

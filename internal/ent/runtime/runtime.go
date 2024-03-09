@@ -80,6 +80,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
 	"github.com/auroraride/aurservd/internal/ent/subscribereminder"
 	"github.com/auroraride/aurservd/internal/ent/subscribesuspend"
+	"github.com/auroraride/aurservd/internal/ent/version"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -1831,6 +1832,27 @@ func init() {
 	subscribesuspendDescDays := subscribesuspendFields[2].Descriptor()
 	// subscribesuspend.DefaultDays holds the default value on creation for the days field.
 	subscribesuspend.DefaultDays = subscribesuspendDescDays.Default.(int)
+	versionMixin := schema.Version{}.Mixin()
+	versionMixinHooks2 := versionMixin[2].Hooks()
+	version.Hooks[0] = versionMixinHooks2[0]
+	versionMixinFields0 := versionMixin[0].Fields()
+	_ = versionMixinFields0
+	versionFields := schema.Version{}.Fields()
+	_ = versionFields
+	// versionDescCreatedAt is the schema descriptor for created_at field.
+	versionDescCreatedAt := versionMixinFields0[0].Descriptor()
+	// version.DefaultCreatedAt holds the default value on creation for the created_at field.
+	version.DefaultCreatedAt = versionDescCreatedAt.Default.(func() time.Time)
+	// versionDescUpdatedAt is the schema descriptor for updated_at field.
+	versionDescUpdatedAt := versionMixinFields0[1].Descriptor()
+	// version.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	version.DefaultUpdatedAt = versionDescUpdatedAt.Default.(func() time.Time)
+	// version.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	version.UpdateDefaultUpdatedAt = versionDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// versionDescPlatform is the schema descriptor for platform field.
+	versionDescPlatform := versionFields[0].Descriptor()
+	// version.DefaultPlatform holds the default value on creation for the platform field.
+	version.DefaultPlatform = versionDescPlatform.Default.(model.Platform)
 }
 
 const (

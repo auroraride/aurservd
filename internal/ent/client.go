@@ -88,6 +88,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
 	"github.com/auroraride/aurservd/internal/ent/subscribereminder"
 	"github.com/auroraride/aurservd/internal/ent/subscribesuspend"
+	"github.com/auroraride/aurservd/internal/ent/version"
 
 	stdsql "database/sql"
 )
@@ -243,6 +244,8 @@ type Client struct {
 	SubscribeReminder *SubscribeReminderClient
 	// SubscribeSuspend is the client for interacting with the SubscribeSuspend builders.
 	SubscribeSuspend *SubscribeSuspendClient
+	// Version is the client for interacting with the Version builders.
+	Version *VersionClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -327,6 +330,7 @@ func (c *Client) init() {
 	c.SubscribePause = NewSubscribePauseClient(c.config)
 	c.SubscribeReminder = NewSubscribeReminderClient(c.config)
 	c.SubscribeSuspend = NewSubscribeSuspendClient(c.config)
+	c.Version = NewVersionClient(c.config)
 }
 
 type (
@@ -492,6 +496,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		SubscribePause:             NewSubscribePauseClient(cfg),
 		SubscribeReminder:          NewSubscribeReminderClient(cfg),
 		SubscribeSuspend:           NewSubscribeSuspendClient(cfg),
+		Version:                    NewVersionClient(cfg),
 	}, nil
 }
 
@@ -584,6 +589,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		SubscribePause:             NewSubscribePauseClient(cfg),
 		SubscribeReminder:          NewSubscribeReminderClient(cfg),
 		SubscribeSuspend:           NewSubscribeSuspendClient(cfg),
+		Version:                    NewVersionClient(cfg),
 	}, nil
 }
 
@@ -628,7 +634,7 @@ func (c *Client) Use(hooks ...Hook) {
 		c.PromotionReferrals, c.PromotionReferralsProgress, c.PromotionSetting,
 		c.PromotionWithdrawal, c.Reserve, c.Rider, c.RiderFollowUp, c.Role, c.Setting,
 		c.Stock, c.StockSummary, c.Store, c.Subscribe, c.SubscribeAlter,
-		c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend,
+		c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend, c.Version,
 	} {
 		n.Use(hooks...)
 	}
@@ -653,7 +659,7 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.PromotionReferrals, c.PromotionReferralsProgress, c.PromotionSetting,
 		c.PromotionWithdrawal, c.Reserve, c.Rider, c.RiderFollowUp, c.Role, c.Setting,
 		c.Stock, c.StockSummary, c.Store, c.Subscribe, c.SubscribeAlter,
-		c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend,
+		c.SubscribePause, c.SubscribeReminder, c.SubscribeSuspend, c.Version,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -808,6 +814,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.SubscribeReminder.mutate(ctx, m)
 	case *SubscribeSuspendMutation:
 		return c.SubscribeSuspend.mutate(ctx, m)
+	case *VersionMutation:
+		return c.Version.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
 	}
@@ -15349,6 +15357,140 @@ func (c *SubscribeSuspendClient) mutate(ctx context.Context, m *SubscribeSuspend
 	}
 }
 
+// VersionClient is a client for the Version schema.
+type VersionClient struct {
+	config
+}
+
+// NewVersionClient returns a client for the Version from the given config.
+func NewVersionClient(c config) *VersionClient {
+	return &VersionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `version.Hooks(f(g(h())))`.
+func (c *VersionClient) Use(hooks ...Hook) {
+	c.hooks.Version = append(c.hooks.Version, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `version.Intercept(f(g(h())))`.
+func (c *VersionClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Version = append(c.inters.Version, interceptors...)
+}
+
+// Create returns a builder for creating a Version entity.
+func (c *VersionClient) Create() *VersionCreate {
+	mutation := newVersionMutation(c.config, OpCreate)
+	return &VersionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Version entities.
+func (c *VersionClient) CreateBulk(builders ...*VersionCreate) *VersionCreateBulk {
+	return &VersionCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *VersionClient) MapCreateBulk(slice any, setFunc func(*VersionCreate, int)) *VersionCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &VersionCreateBulk{err: fmt.Errorf("calling to VersionClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*VersionCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &VersionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Version.
+func (c *VersionClient) Update() *VersionUpdate {
+	mutation := newVersionMutation(c.config, OpUpdate)
+	return &VersionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *VersionClient) UpdateOne(v *Version) *VersionUpdateOne {
+	mutation := newVersionMutation(c.config, OpUpdateOne, withVersion(v))
+	return &VersionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *VersionClient) UpdateOneID(id uint64) *VersionUpdateOne {
+	mutation := newVersionMutation(c.config, OpUpdateOne, withVersionID(id))
+	return &VersionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Version.
+func (c *VersionClient) Delete() *VersionDelete {
+	mutation := newVersionMutation(c.config, OpDelete)
+	return &VersionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *VersionClient) DeleteOne(v *Version) *VersionDeleteOne {
+	return c.DeleteOneID(v.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *VersionClient) DeleteOneID(id uint64) *VersionDeleteOne {
+	builder := c.Delete().Where(version.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &VersionDeleteOne{builder}
+}
+
+// Query returns a query builder for Version.
+func (c *VersionClient) Query() *VersionQuery {
+	return &VersionQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeVersion},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Version entity by its id.
+func (c *VersionClient) Get(ctx context.Context, id uint64) (*Version, error) {
+	return c.Query().Where(version.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *VersionClient) GetX(ctx context.Context, id uint64) *Version {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *VersionClient) Hooks() []Hook {
+	hooks := c.hooks.Version
+	return append(hooks[:len(hooks):len(hooks)], version.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *VersionClient) Interceptors() []Interceptor {
+	return c.inters.Version
+}
+
+func (c *VersionClient) mutate(ctx context.Context, m *VersionMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&VersionCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&VersionUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&VersionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&VersionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Version mutation op: %q", m.Op())
+	}
+}
+
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
@@ -15365,7 +15507,8 @@ type (
 		PromotionPerson, PromotionPrivilege, PromotionReferrals,
 		PromotionReferralsProgress, PromotionSetting, PromotionWithdrawal, Reserve,
 		Rider, RiderFollowUp, Role, Setting, Stock, StockSummary, Store, Subscribe,
-		SubscribeAlter, SubscribePause, SubscribeReminder, SubscribeSuspend []ent.Hook
+		SubscribeAlter, SubscribePause, SubscribeReminder, SubscribeSuspend,
+		Version []ent.Hook
 	}
 	inters struct {
 		Activity, Agent, Allocate, Assistance, Attendance, Battery, BatteryFlow,
@@ -15381,8 +15524,8 @@ type (
 		PromotionPerson, PromotionPrivilege, PromotionReferrals,
 		PromotionReferralsProgress, PromotionSetting, PromotionWithdrawal, Reserve,
 		Rider, RiderFollowUp, Role, Setting, Stock, StockSummary, Store, Subscribe,
-		SubscribeAlter, SubscribePause, SubscribeReminder,
-		SubscribeSuspend []ent.Interceptor
+		SubscribeAlter, SubscribePause, SubscribeReminder, SubscribeSuspend,
+		Version []ent.Interceptor
 	}
 )
 

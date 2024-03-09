@@ -181,4 +181,7 @@ func LoadRiderV2Routes(root *echo.Group) {
 
 	// 骑手端意见反馈
 	g.POST("/feedback", rapi.Feedback.Create, auth())
+
+	// 版本
+	g.GET("/version", rapi.Version.Latest)
 }

@@ -5555,6 +5555,43 @@ var (
 			},
 		},
 	}
+	// VersionColumns holds the columns for the "version" table.
+	VersionColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Nullable: true, Comment: "创建人"},
+		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true, Comment: "最后修改人"},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "管理员改动原因/备注"},
+		{Name: "platform", Type: field.TypeOther, Comment: "平台", SchemaType: map[string]string{"postgres": "character varying"}},
+		{Name: "version", Type: field.TypeString, Comment: "版本号"},
+		{Name: "content", Type: field.TypeString, Comment: "更新内容"},
+		{Name: "force", Type: field.TypeBool, Comment: "是否强制更新"},
+	}
+	// VersionTable holds the schema information for the "version" table.
+	VersionTable = &schema.Table{
+		Name:       "version",
+		Columns:    VersionColumns,
+		PrimaryKey: []*schema.Column{VersionColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "version_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{VersionColumns[1]},
+			},
+			{
+				Name:    "version_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{VersionColumns[3]},
+			},
+			{
+				Name:    "version_platform_version",
+				Unique:  true,
+				Columns: []*schema.Column{VersionColumns[7], VersionColumns[8]},
+			},
+		},
+	}
 	// AgentStationsColumns holds the columns for the "agent_stations" table.
 	AgentStationsColumns = []*schema.Column{
 		{Name: "agent_id", Type: field.TypeInt},
@@ -5730,6 +5767,7 @@ var (
 		SubscribePauseTable,
 		SubscribeReminderTable,
 		SubscribeSuspendTable,
+		VersionTable,
 		AgentStationsTable,
 		CabinetModelsTable,
 		CityMaintainersTable,
@@ -6172,6 +6210,9 @@ func init() {
 	SubscribeSuspendTable.ForeignKeys[3].RefTable = RiderTable
 	SubscribeSuspendTable.Annotation = &entsql.Annotation{
 		Table: "subscribe_suspend",
+	}
+	VersionTable.Annotation = &entsql.Annotation{
+		Table: "version",
 	}
 	AgentStationsTable.ForeignKeys[0].RefTable = AgentTable
 	AgentStationsTable.ForeignKeys[1].RefTable = EnterpriseStationTable

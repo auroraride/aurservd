@@ -54,6 +54,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
+	"github.com/auroraride/aurservd/internal/ent/version"
 )
 
 // SoftDelete returns an soft delete builder for Activity.
@@ -1969,6 +1970,46 @@ func (c *SubscribePauseClient) GetNotDeleted(ctx context.Context, id uint64) (*S
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *SubscribePauseClient) GetNotDeletedX(ctx context.Context, id uint64) *SubscribePause {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for Version.
+func (c *VersionClient) SoftDelete() *VersionUpdate {
+	mutation := newVersionMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &VersionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *VersionClient) SoftDeleteOne(v *Version) *VersionUpdateOne {
+	mutation := newVersionMutation(c.config, OpUpdateOne, withVersion(v))
+	mutation.SetDeletedAt(time.Now())
+	return &VersionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *VersionClient) SoftDeleteOneID(id uint64) *VersionUpdateOne {
+	mutation := newVersionMutation(c.config, OpUpdateOne, withVersionID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &VersionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for Version.
+func (c *VersionClient) QueryNotDeleted() *VersionQuery {
+	return c.Query().Where(version.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a Version not deleted entity by its id.
+func (c *VersionClient) GetNotDeleted(ctx context.Context, id uint64) (*Version, error) {
+	return c.Query().Where(version.ID(id), version.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *VersionClient) GetNotDeletedX(ctx context.Context, id uint64) *Version {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)

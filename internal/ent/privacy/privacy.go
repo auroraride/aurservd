@@ -1863,6 +1863,30 @@ func (f SubscribeSuspendMutationRuleFunc) EvalMutation(ctx context.Context, m en
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.SubscribeSuspendMutation", m)
 }
 
+// The VersionQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type VersionQueryRuleFunc func(context.Context, *ent.VersionQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f VersionQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.VersionQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.VersionQuery", q)
+}
+
+// The VersionMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type VersionMutationRuleFunc func(context.Context, *ent.VersionMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f VersionMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.VersionMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.VersionMutation", m)
+}
+
 type (
 	// Filter is the interface that wraps the Where function
 	// for filtering nodes in queries and mutations.
@@ -2044,6 +2068,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.SubscribeSuspendQuery:
 		return q.Filter(), nil
+	case *ent.VersionQuery:
+		return q.Filter(), nil
 	default:
 		return nil, Denyf("ent/privacy: unexpected query type %T for query filter", q)
 	}
@@ -2196,6 +2222,8 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.SubscribeReminderMutation:
 		return m.Filter(), nil
 	case *ent.SubscribeSuspendMutation:
+		return m.Filter(), nil
+	case *ent.VersionMutation:
 		return m.Filter(), nil
 	default:
 		return nil, Denyf("ent/privacy: unexpected mutation type %T for mutation filter", m)
