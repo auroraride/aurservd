@@ -2,7 +2,8 @@ package definition
 
 type Payway uint8
 
-// TODO: 禁止重复定义，统一使用 model.OrderPaywayWechatDeposit / model.OrderPaywayAlipayDeposit
+// TODO: MP 禁止重复定义，支付方式统一使用 model.OrderPaywayWechatDeposit / model.OrderPaywayAlipayDeposit
+// TODO: MP 修改成三个字段，是否允许 芝麻信用 / 微信支付分 / 支付押金
 const (
 	PaywayAlipayDeposit Payway = iota + 1 // 支付宝芝麻免押
 	PaywayWechatDeposit                   // 微信支付分支付
