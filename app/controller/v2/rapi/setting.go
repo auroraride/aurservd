@@ -29,7 +29,7 @@ func (*setting) LatestVersion(c echo.Context) (err error) {
 	ctx := app.Context(c)
 	return ctx.SendResponse(&definition.VersionRes{
 		Version: definition.Version{
-			Version: "2.0.1",
+			Version: "2.0.0",
 			Content: "更新内容:\n1. 修复了一些bug\n2. 优化了一些功能\n3. 增加了一些新功能",
 			Force:   false,
 		},
