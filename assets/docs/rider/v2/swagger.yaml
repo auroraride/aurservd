@@ -2132,7 +2132,9 @@ paths:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/definition.ActivityDetail'
+            items:
+              $ref: '#/definitions/definition.ActivityDetail'
+            type: array
       summary: 活动列表
       tags:
       - Activity - 活动
@@ -3471,7 +3473,9 @@ paths:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/definition.GuideDetail'
+            items:
+              $ref: '#/definitions/definition.GuideDetail'
+            type: array
       summary: 新手指引列表
       tags:
       - Guide - 新手引导
