@@ -23,7 +23,7 @@ var Activity = new(activity)
 // @Accept	json
 // @Produce	json
 // @Param	X-Rider-Token	header		string						true	"骑手校验token"
-// @Success	200				{object}	definition.ActivityDetail	"请求成功"
+// @Success	200				{object}	[]definition.ActivityDetail	"请求成功"
 func (a *activity) List(c echo.Context) error {
 	ctx := app.ContextX[app.RiderContext](c)
 	res := biz.NewActivity().All()

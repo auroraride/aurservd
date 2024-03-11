@@ -41,7 +41,10 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/definition.ActivityDetail"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/definition.ActivityDetail"
+                            }
                         }
                     }
                 }
@@ -2080,7 +2083,10 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/definition.GuideDetail"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/definition.GuideDetail"
+                            }
                         }
                     }
                 }
