@@ -18,8 +18,8 @@ var Guide = new(guide)
 // @Tags	Guide - 新手引导
 // @Accept	json
 // @Produce	json
-// @Param	X-Rider-Token	header		string					true	"骑手校验token"
-// @Success	200				{object}	definition.GuideDetail	"请求成功"
+// @Param	X-Rider-Token	header		string						true	"骑手校验token"
+// @Success	200				{object}	[]definition.GuideDetail	"请求成功"
 func (g *guide) List(c echo.Context) error {
 	ctx := app.ContextX[app.RiderContext](c)
 	res := biz.NewGuide().All()
