@@ -1130,6 +1130,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "description": "骑手ID",
                         "name": "riderId",
                         "in": "query"
                     }
@@ -1625,10 +1626,11 @@ const docTemplate = `{
             ],
             "properties": {
                 "id": {
+                    "description": "救援ID",
                     "type": "integer"
                 },
                 "payway": {
-                    "description": "1支付宝 2微信",
+                    "description": "支付方式, 1支付宝 2微信",
                     "type": "integer",
                     "enum": [
                         1,
@@ -1796,6 +1798,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "address": {
+                    "description": "详细地址",
                     "type": "string"
                 },
                 "duty": {
@@ -1803,16 +1806,18 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "inventory": {
-                    "description": "格式为 [名称]:数量",
+                    "description": "物资盘点清单, 格式为 [名称]:数量",
                     "type": "object",
                     "additionalProperties": {
                         "type": "integer"
                     }
                 },
                 "lat": {
+                    "description": "纬度",
                     "type": "number"
                 },
                 "lng": {
+                    "description": "经度",
                     "type": "number"
                 },
                 "photo": {
@@ -1820,6 +1825,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "sn": {
+                    "description": "门店编号",
                     "type": "string"
                 }
             }
@@ -1834,6 +1840,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "address": {
+                    "description": "详细地址",
                     "type": "string"
                 },
                 "duty": {
@@ -1841,12 +1848,15 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "lat": {
+                    "description": "纬度",
                     "type": "number"
                 },
                 "lng": {
+                    "description": "经度",
                     "type": "number"
                 },
                 "sn": {
+                    "description": "门店编号",
                     "type": "string"
                 }
             }
@@ -1910,6 +1920,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "subscribeId": {
+                    "description": "订阅ID",
                     "type": "integer"
                 }
             }
@@ -1995,9 +2006,11 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "qrcode": {
+                    "description": "二维码",
                     "type": "string"
                 },
                 "subscribeId": {
+                    "description": "订阅ID",
                     "type": "integer"
                 }
             }
@@ -2055,12 +2068,15 @@ const docTemplate = `{
             ],
             "properties": {
                 "phone": {
+                    "description": "电话",
                     "type": "string"
                 },
                 "smsCode": {
+                    "description": "短信验证码",
                     "type": "string"
                 },
                 "smsId": {
+                    "description": "短信ID",
                     "type": "string"
                 }
             }
@@ -2112,6 +2128,7 @@ const docTemplate = `{
                     }
                 },
                 "description": {
+                    "description": "描述",
                     "type": "string"
                 },
                 "model": {
@@ -2123,11 +2140,12 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "num": {
+                    "description": "异常数量",
                     "type": "integer",
                     "minimum": 1
                 },
                 "reason": {
-                    "description": "异常原因查看接口 ` + "`" + `E3001 物资异常配置` + "`" + `",
+                    "description": "异常原因, 异常原因查看接口 ` + "`" + `E3001 物资异常配置` + "`" + `",
                     "type": "string"
                 }
             }
@@ -2808,6 +2826,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "subscribeId": {
+                    "description": "订阅ID",
                     "type": "integer"
                 }
             }

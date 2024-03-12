@@ -212,6 +212,7 @@ const docTemplate = `{
                     {
                         "minLength": 4,
                         "type": "string",
+                        "description": "流水号",
                         "name": "serial",
                         "in": "query",
                         "required": true
@@ -404,12 +405,14 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "车辆关键词 (编码或牌照)",
                         "name": "keyword",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "integer",
+                        "description": "站点ID (一般是subscribe.stationId)",
                         "name": "stationId",
                         "in": "query",
                         "required": true
@@ -463,6 +466,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "description": "企业ID",
                         "name": "enterpriseId",
                         "in": "query"
                     },
@@ -972,25 +976,28 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "description": "电柜ID",
                         "name": "id",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "number",
+                        "description": "纬度",
                         "name": "lat",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "number",
+                        "description": "经度",
                         "name": "lng",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "integer",
-                        "description": "从` + "`" + `1` + "`" + `开始",
+                        "description": "仓位序号, 从` + "`" + `1` + "`" + `开始",
                         "name": "ordinal",
                         "in": "query",
                         "required": true
@@ -1083,24 +1090,28 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "description": "电柜ID",
                         "name": "id",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "number",
+                        "description": "纬度",
                         "name": "lat",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "number",
+                        "description": "经度",
                         "name": "lng",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "boolean",
+                        "description": "是否维护",
                         "name": "maintain",
                         "in": "query",
                         "required": true
@@ -2875,9 +2886,11 @@ const docTemplate = `{
             ],
             "properties": {
                 "code": {
+                    "description": "验证码",
                     "type": "string"
                 },
                 "phone": {
+                    "description": "电话",
                     "type": "string"
                 },
                 "signinType": {
@@ -2888,6 +2901,7 @@ const docTemplate = `{
                     ]
                 },
                 "smsId": {
+                    "description": "短信ID",
                     "type": "string"
                 }
             }
@@ -2989,6 +3003,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "id": {
+                    "description": "订阅ID",
                     "type": "integer"
                 }
             }
@@ -3299,12 +3314,15 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "cabinetId": {
+                    "description": "电柜ID",
                     "type": "integer"
                 },
                 "id": {
+                    "description": "订阅ID",
                     "type": "integer"
                 },
                 "storeId": {
+                    "description": "门店ID",
                     "type": "integer"
                 }
             }
@@ -3758,12 +3776,15 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "enterpriseId": {
+                    "description": "企业ID",
                     "type": "integer"
                 },
                 "name": {
+                    "description": "姓名",
                     "type": "string"
                 },
                 "phone": {
+                    "description": "电话号",
                     "type": "string"
                 },
                 "priceId": {
@@ -3771,6 +3792,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "stationId": {
+                    "description": "站点ID",
                     "type": "integer"
                 }
             }
@@ -4469,7 +4491,7 @@ const docTemplate = `{
                     }
                 },
                 "status": {
-                    "description": "1:通过 2:拒绝",
+                    "description": "审批状态, 1:通过 2:拒绝",
                     "type": "integer",
                     "enum": [
                         1,

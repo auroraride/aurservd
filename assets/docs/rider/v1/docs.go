@@ -368,11 +368,13 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "description": "城市ID",
                         "name": "cityId",
                         "in": "query"
                     },
                     {
                         "type": "number",
+                        "description": "距离",
                         "name": "distance",
                         "in": "query"
                     },
@@ -384,12 +386,14 @@ const docTemplate = `{
                     },
                     {
                         "type": "number",
+                        "description": "纬度",
                         "name": "lat",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "number",
+                        "description": "经度",
                         "name": "lng",
                         "in": "query",
                         "required": true
@@ -490,11 +494,13 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "结束坐标",
                         "name": "destination",
                         "in": "query"
                     },
                     {
                         "type": "string",
+                        "description": "开始坐标",
                         "name": "origin",
                         "in": "query"
                     }
@@ -727,6 +733,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "操作ID",
                         "name": "uuid",
                         "in": "query",
                         "required": true
@@ -921,6 +928,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "操作ID",
                         "name": "uuid",
                         "in": "query"
                     }
@@ -1996,6 +2004,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "description": "城市ID",
                         "name": "cityId",
                         "in": "query",
                         "required": true
@@ -2493,9 +2502,11 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
+                    "description": "救援ID",
                     "type": "integer"
                 },
                 "reason": {
+                    "description": "取消原因",
                     "type": "string"
                 }
             }
@@ -2512,15 +2523,19 @@ const docTemplate = `{
             ],
             "properties": {
                 "address": {
+                    "description": "详细地址",
                     "type": "string"
                 },
                 "breakdown": {
+                    "description": "故障原因",
                     "type": "string"
                 },
                 "breakdownDesc": {
+                    "description": "故障描述",
                     "type": "string"
                 },
                 "breakdownPhotos": {
+                    "description": "故障图片",
                     "type": "array",
                     "maxItems": 3,
                     "minItems": 1,
@@ -2529,9 +2544,11 @@ const docTemplate = `{
                     }
                 },
                 "lat": {
+                    "description": "纬度",
                     "type": "number"
                 },
                 "lng": {
+                    "description": "经度",
                     "type": "number"
                 }
             }
@@ -2935,9 +2952,11 @@ const docTemplate = `{
             ],
             "properties": {
                 "id": {
+                    "description": "订阅ID",
                     "type": "integer"
                 },
                 "serial": {
+                    "description": "电柜编码",
                     "type": "string"
                 }
             }
@@ -3014,12 +3033,15 @@ const docTemplate = `{
                     }
                 },
                 "cabinetId": {
+                    "description": "电柜ID",
                     "type": "integer"
                 },
                 "description": {
+                    "description": "故障描述",
                     "type": "string"
                 },
                 "fault": {
+                    "description": "故障",
                     "type": "string"
                 }
             }
@@ -3065,6 +3087,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "subscribeId": {
+                    "description": "订阅ID",
                     "type": "integer"
                 }
             }
@@ -3307,6 +3330,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "model": {
+                    "description": "电池型号",
                     "type": "string"
                 }
             }
@@ -3685,7 +3709,7 @@ const docTemplate = `{
                     }
                 },
                 "orderType": {
-                    "description": "1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金",
+                    "description": "订单类型, 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金",
                     "type": "integer",
                     "enum": [
                         1,
@@ -3698,7 +3722,7 @@ const docTemplate = `{
                     ]
                 },
                 "payway": {
-                    "description": "1支付宝 2微信 3支付宝预授权",
+                    "description": "支付方式, 1支付宝 2微信 3支付宝预授权",
                     "type": "integer",
                     "enum": [
                         1,
@@ -3707,6 +3731,7 @@ const docTemplate = `{
                     ]
                 },
                 "planId": {
+                    "description": "套餐ID",
                     "type": "integer"
                 },
                 "point": {
@@ -4174,12 +4199,15 @@ const docTemplate = `{
             ],
             "properties": {
                 "name": {
+                    "description": "联系人姓名",
                     "type": "string"
                 },
                 "phone": {
+                    "description": "联系人电话",
                     "type": "string"
                 },
                 "relation": {
+                    "description": "关系",
                     "type": "string"
                 }
             }
@@ -4486,12 +4514,15 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "phone": {
+                    "description": "电话",
                     "type": "string"
                 },
                 "smsCode": {
+                    "description": "短信验证码",
                     "type": "string"
                 },
                 "smsId": {
+                    "description": "短信ID",
                     "type": "string"
                 }
             }
@@ -4752,6 +4783,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "days": {
+                    "description": "天数",
                     "type": "integer"
                 }
             }

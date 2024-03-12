@@ -382,8 +382,10 @@ definitions:
   model.AgentSigninReq:
     properties:
       code:
+        description: 验证码
         type: string
       phone:
+        description: 电话
         type: string
       signinType:
         enum:
@@ -391,6 +393,7 @@ definitions:
         - 2
         type: integer
       smsId:
+        description: 短信ID
         type: string
     required:
     - signinType
@@ -461,6 +464,7 @@ definitions:
         description: 电车ID
         type: integer
       id:
+        description: 订阅ID
         type: integer
     required:
     - id
@@ -664,10 +668,13 @@ definitions:
         description: 代理商ID
         type: integer
       cabinetId:
+        description: 电柜ID
         type: integer
       id:
+        description: 订阅ID
         type: integer
       storeId:
+        description: 门店ID
         type: integer
     required:
     - id
@@ -980,15 +987,19 @@ definitions:
         description: 天数, 仅代理商需要
         type: integer
       enterpriseId:
+        description: 企业ID
         type: integer
       name:
+        description: 姓名
         type: string
       phone:
+        description: 电话号
         type: string
       priceId:
         description: 价格ID, 仅代理商需要
         type: integer
       stationId:
+        description: 站点ID
         type: integer
     required:
     - enterpriseId
@@ -1471,7 +1482,7 @@ definitions:
           type: integer
         type: array
       status:
-        description: 1:通过 2:拒绝
+        description: 审批状态, 1:通过 2:拒绝
         enum:
         - 1
         - 2
@@ -1693,7 +1704,8 @@ paths:
         in: query
         name: enterpriseId
         type: integer
-      - in: query
+      - description: 流水号
+        in: query
         minLength: 4
         name: serial
         required: true
@@ -1826,11 +1838,13 @@ paths:
         name: X-Agent-Token
         required: true
         type: string
-      - in: query
+      - description: 车辆关键词 (编码或牌照)
+        in: query
         name: keyword
         required: true
         type: string
-      - in: query
+      - description: 站点ID (一般是subscribe.stationId)
+        in: query
         name: stationId
         required: true
         type: integer
@@ -1865,7 +1879,8 @@ paths:
         in: query
         name: end
         type: string
-      - in: query
+      - description: 企业ID
+        in: query
         name: enterpriseId
         type: integer
       - description: 每页数据, 默认20
@@ -2193,19 +2208,22 @@ paths:
         name: X-Agent-Token
         required: true
         type: string
-      - in: query
+      - description: 电柜ID
+        in: query
         name: id
         required: true
         type: integer
-      - in: query
+      - description: 纬度
+        in: query
         name: lat
         required: true
         type: number
-      - in: query
+      - description: 经度
+        in: query
         name: lng
         required: true
         type: number
-      - description: 从`1`开始
+      - description: 仓位序号, 从`1`开始
         in: query
         name: ordinal
         required: true
@@ -2267,19 +2285,23 @@ paths:
         name: X-Agent-Token
         required: true
         type: string
-      - in: query
+      - description: 电柜ID
+        in: query
         name: id
         required: true
         type: integer
-      - in: query
+      - description: 纬度
+        in: query
         name: lat
         required: true
         type: number
-      - in: query
+      - description: 经度
+        in: query
         name: lng
         required: true
         type: number
-      - in: query
+      - description: 是否维护
+        in: query
         name: maintain
         required: true
         type: boolean

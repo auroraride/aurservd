@@ -447,13 +447,15 @@ const docTemplate = `{
             ],
             "properties": {
                 "lat": {
+                    "description": "纬度",
                     "type": "number"
                 },
                 "lng": {
+                    "description": "经度",
                     "type": "number"
                 },
                 "operate": {
-                    "description": "所有操作均需要提前设电柜为维护状态。open:开仓, lock:锁定, unlock:解锁, disable:禁用, enable:启用",
+                    "description": "操作, 所有操作均需要提前设电柜为维护状态。open:开仓, lock:锁定, unlock:解锁, disable:禁用, enable:启用",
                     "allOf": [
                         {
                             "$ref": "#/definitions/model.MaintainerBinOperate"
@@ -461,6 +463,7 @@ const docTemplate = `{
                     ]
                 },
                 "reason": {
+                    "description": "操作原因",
                     "type": "string"
                 }
             }
@@ -504,7 +507,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "brand": {
-                    "description": "品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)",
+                    "description": "品牌, 品牌: KAIXIN(凯信) YUNDONG(云动) TUOBANG(拓邦) XILIULOUSERV(西六楼)",
                     "allOf": [
                         {
                             "$ref": "#/definitions/adapter.CabinetBrand"
@@ -563,9 +566,11 @@ const docTemplate = `{
                     }
                 },
                 "name": {
+                    "description": "电柜名称",
                     "type": "string"
                 },
                 "remark": {
+                    "description": "备注",
                     "type": "string"
                 },
                 "reserves": {
@@ -576,6 +581,7 @@ const docTemplate = `{
                     }
                 },
                 "serial": {
+                    "description": "电柜编码",
                     "type": "string"
                 },
                 "simDate": {
@@ -655,13 +661,15 @@ const docTemplate = `{
             ],
             "properties": {
                 "lat": {
+                    "description": "纬度",
                     "type": "number"
                 },
                 "lng": {
+                    "description": "经度",
                     "type": "number"
                 },
                 "operate": {
-                    "description": "除` + "`" + `maintenance` + "`" + `之外所有操作均需要提前设电柜为维护状态。 open:开仓, open-all:全部开仓（暂时不做）, maintenance:电柜维护, maintenance-cancel:取消维护, interrupt:中断业务, reboot:重启（暂时不做）",
+                    "description": "操作, 除` + "`" + `maintenance` + "`" + `之外所有操作均需要提前设电柜为维护状态。 open:开仓, open-all:全部开仓（暂时不做）, maintenance:电柜维护, maintenance-cancel:取消维护, interrupt:中断业务, reboot:重启（暂时不做）",
                     "allOf": [
                         {
                             "$ref": "#/definitions/model.MaintainerCabinetOperate"
@@ -669,6 +677,7 @@ const docTemplate = `{
                     ]
                 },
                 "reason": {
+                    "description": "操作原因",
                     "type": "string"
                 }
             }
@@ -681,9 +690,11 @@ const docTemplate = `{
             ],
             "properties": {
                 "password": {
+                    "description": "密码",
                     "type": "string"
                 },
                 "phone": {
+                    "description": "电话",
                     "type": "string"
                 }
             }

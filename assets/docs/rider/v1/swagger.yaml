@@ -28,8 +28,10 @@ definitions:
         description: 取消原因详细描述
         type: string
       id:
+        description: 救援ID
         type: integer
       reason:
+        description: 取消原因
         type: string
     required:
     - id
@@ -38,20 +40,26 @@ definitions:
   model.AssistanceCreateReq:
     properties:
       address:
+        description: 详细地址
         type: string
       breakdown:
+        description: 故障原因
         type: string
       breakdownDesc:
+        description: 故障描述
         type: string
       breakdownPhotos:
+        description: 故障图片
         items:
           type: string
         maxItems: 3
         minItems: 1
         type: array
       lat:
+        description: 纬度
         type: number
       lng:
+        description: 经度
         type: number
     required:
     - address
@@ -330,8 +338,10 @@ definitions:
   model.BusinessCabinetReq:
     properties:
       id:
+        description: 订阅ID
         type: integer
       serial:
+        description: 电柜编码
         type: string
     required:
     - id
@@ -385,10 +395,13 @@ definitions:
         maxItems: 3
         type: array
       cabinetId:
+        description: 电柜ID
         type: integer
       description:
+        description: 故障描述
         type: string
       fault:
+        description: 故障
         type: string
     required:
     - cabinetId
@@ -422,6 +435,7 @@ definitions:
   model.ContractSignReq:
     properties:
       subscribeId:
+        description: 订阅ID
         type: integer
     required:
     - subscribeId
@@ -588,6 +602,7 @@ definitions:
   model.EnterpriseRiderSubscribeChooseReq:
     properties:
       model:
+        description: 电池型号
         type: string
     required:
     - model
@@ -836,7 +851,7 @@ definitions:
           type: integer
         type: array
       orderType:
-        description: 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金
+        description: 订单类型, 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金
         enum:
         - 1
         - 2
@@ -847,13 +862,14 @@ definitions:
         - 7
         type: integer
       payway:
-        description: 1支付宝 2微信 3支付宝预授权
+        description: 支付方式, 1支付宝 2微信 3支付宝预授权
         enum:
         - 1
         - 2
         - 3
         type: integer
       planId:
+        description: 套餐ID
         type: integer
       point:
         description: 是否使用积分
@@ -1180,10 +1196,13 @@ definitions:
   model.RiderContact:
     properties:
       name:
+        description: 联系人姓名
         type: string
       phone:
+        description: 联系人电话
         type: string
       relation:
+        description: 关系
         type: string
     required:
     - name
@@ -1386,10 +1405,13 @@ definitions:
       cityId:
         type: integer
       phone:
+        description: 电话
         type: string
       smsCode:
+        description: 短信验证码
         type: string
       smsId:
+        description: 短信ID
         type: string
     required:
     - phone
@@ -1567,6 +1589,7 @@ definitions:
   model.SubscribeAlterRiderReq:
     properties:
       days:
+        description: 天数
         type: integer
     required:
     - days
@@ -1933,21 +1956,25 @@ paths:
         in: query
         name: business
         type: string
-      - in: query
+      - description: 城市ID
+        in: query
         name: cityId
         type: integer
-      - in: query
+      - description: 距离
+        in: query
         name: distance
         type: number
       - description: 额外筛选参数
         in: query
         name: filter
         type: string
-      - in: query
+      - description: 纬度
+        in: query
         name: lat
         required: true
         type: number
-      - in: query
+      - description: 经度
+        in: query
         name: lng
         required: true
         type: number
@@ -2014,10 +2041,12 @@ paths:
         name: X-Rider-Token
         required: true
         type: string
-      - in: query
+      - description: 结束坐标
+        in: query
         name: destination
         type: string
-      - in: query
+      - description: 开始坐标
+        in: query
         name: origin
         type: string
       produces:
@@ -2170,7 +2199,8 @@ paths:
         name: X-Rider-Token
         required: true
         type: string
-      - in: query
+      - description: 操作ID
+        in: query
         name: uuid
         required: true
         type: string
@@ -2324,7 +2354,8 @@ paths:
         name: X-Rider-Token
         required: true
         type: string
-      - in: query
+      - description: 操作ID
+        in: query
         name: uuid
         type: string
       produces:
@@ -3000,7 +3031,8 @@ paths:
         name: X-Rider-Token
         required: true
         type: string
-      - in: query
+      - description: 城市ID
+        in: query
         name: cityId
         required: true
         type: integer
