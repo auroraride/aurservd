@@ -10440,7 +10440,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "设置"
                 ],
                 "summary": "列举设置",
                 "operationId": "ManagerSettingList",
@@ -10553,9 +10553,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Setting -  管理接口"
+                    "设置"
                 ],
-                "summary": "保存活动",
+                "summary": "创建活动",
                 "operationId": "SettingActivityCreate",
                 "parameters": [
                     {
@@ -10633,6 +10633,7 @@ const docTemplate = `{
                 "tags": [
                     "设置"
                 ],
+                "summary": "删除活动",
                 "operationId": "SettingActivityDelete",
                 "parameters": [
                     {
@@ -10864,7 +10865,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "设置"
                 ],
                 "summary": "保存法规",
                 "operationId": "ManagerSettingLegalSave",
@@ -10905,7 +10906,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "设置"
                 ],
                 "summary": "获取法规",
                 "operationId": "ManagerSettingLegalRead",
@@ -10944,7 +10945,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[M]管理接口"
+                    "设置"
                 ],
                 "summary": "调整设置",
                 "operationId": "ManagerSettingModify",

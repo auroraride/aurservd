@@ -13539,7 +13539,7 @@ paths:
             type: array
       summary: 列举设置
       tags:
-      - '[M]管理接口'
+      - 设置
   /manager/v1/setting/{key}:
     put:
       consumes:
@@ -13571,7 +13571,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 调整设置
       tags:
-      - '[M]管理接口'
+      - 设置
   /manager/v1/setting/activity:
     get:
       consumes:
@@ -13622,9 +13622,9 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: 保存活动
+      summary: 创建活动
       tags:
-      - Setting -  管理接口
+      - 设置
     put:
       consumes:
       - application/json
@@ -13674,6 +13674,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
+      summary: 删除活动
       tags:
       - 设置
     get:
@@ -13857,7 +13858,7 @@ paths:
             $ref: '#/definitions/model.StatusResponse'
       summary: 保存法规
       tags:
-      - '[M]管理接口'
+      - 设置
   /manager/v1/setting/legal/{name}:
     get:
       consumes:
@@ -13885,7 +13886,7 @@ paths:
             $ref: '#/definitions/model.LegalRes'
       summary: 获取法规
       tags:
-      - '[M]管理接口'
+      - 设置
   /manager/v1/stock:
     post:
       consumes:

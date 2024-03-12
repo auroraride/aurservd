@@ -23,7 +23,7 @@ var Setting = new(setting)
 // @ID		ManagerSettingList
 // @Router	/manager/v1/setting [GET]
 // @Summary	列举设置
-// @Tags	[M]管理接口
+// @Tags	设置
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string				true	"管理员校验token"
@@ -38,7 +38,7 @@ func (*setting) List(c echo.Context) (err error) {
 // @ID		ManagerSettingModify
 // @Router	/manager/v1/setting/{key} [PUT]
 // @Summary	调整设置
-// @Tags	[M]管理接口
+// @Tags	设置
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -55,7 +55,7 @@ func (*setting) Modify(c echo.Context) (err error) {
 // @ID		ManagerSettingLegalRead
 // @Router	/manager/v1/setting/legal/{name} [GET]
 // @Summary	获取法规
-// @Tags	[M]管理接口
+// @Tags	设置
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string			true	"管理员校验token"
@@ -70,7 +70,7 @@ func (*setting) LegalRead(c echo.Context) (err error) {
 // @ID		ManagerSettingLegalSave
 // @Router	/manager/v1/setting/legal [POST]
 // @Summary	保存法规
-// @Tags	[M]管理接口
+// @Tags	设置
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string					true	"管理员校验token"
@@ -209,7 +209,7 @@ func (*setting) ActivityModify(c echo.Context) (err error) {
 // ActivityDelete
 // @ID		SettingActivityDelete
 // @Router	/manager/v1/setting/activity/{id} [DELETE]
-// @Summary
+// @Summary 删除活动
 // @Tags	设置
 // @Accept	json
 // @Produce	json
@@ -225,8 +225,8 @@ func (*setting) ActivityDelete(c echo.Context) (err error) {
 // ActivityCreate
 // @ID		SettingActivityCreate
 // @Router	/manager/v1/setting/activity [POST]
-// @Summary	保存活动
-// @Tags	Setting -  管理接口
+// @Summary	创建活动
+// @Tags	设置
 // @Accept	json
 // @Produce	json
 // @Param	X-Manager-Token	header		string							true	"管理员校验token"
